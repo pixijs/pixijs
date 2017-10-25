@@ -17,7 +17,7 @@ export default class Buffer
         /**
          * The data in the buffer, as a typed array
          *
-         * @type {ArrayBuffer| SharedArrayBuffer|ArrayBufferView} data  the array / typedArray
+         * @member {ArrayBuffer| SharedArrayBuffer|ArrayBufferView}
          */
         this.data = data || new Float32Array(1);
 

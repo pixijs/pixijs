@@ -190,8 +190,8 @@ export default class TilingSprite extends core.Sprite
             this._textureID = this._texture._updateID;
             // cut an object from a spritesheet..
             const tempCanvas = new core.CanvasRenderTarget(texture._frame.width,
-                                                        texture._frame.height,
-                                                        baseTextureResolution);
+                texture._frame.height,
+                baseTextureResolution);
 
             // Tint the tiling sprite
             if (this.tint !== 0xFFFFFF)
@@ -211,11 +211,11 @@ export default class TilingSprite extends core.Sprite
         // set context state..
         context.globalAlpha = this.worldAlpha;
         context.setTransform(transform.a * resolution,
-                           transform.b * resolution,
-                           transform.c * resolution,
-                           transform.d * resolution,
-                           transform.tx * resolution,
-                           transform.ty * resolution);
+            transform.b * resolution,
+            transform.c * resolution,
+            transform.d * resolution,
+            transform.tx * resolution,
+            transform.ty * resolution);
 
         renderer.setBlendMode(this.blendMode);
 

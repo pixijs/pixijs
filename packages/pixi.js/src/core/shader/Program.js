@@ -102,7 +102,7 @@ class Program
                 size: shaderUtils.mapSize(type),
                 location: 0,
             };
-            /*eslint-enable */
+            /* eslint-enable */
 
             attributes[attribData.name] = data;
             attributesArray.push(data);
@@ -134,7 +134,7 @@ class Program
         const totalUniforms = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
 
         // TODO expose this as a prop?
-       // const maskRegex = new RegExp('^(projectionMatrix|uSampler|translationMatrix)$');
+        // const maskRegex = new RegExp('^(projectionMatrix|uSampler|translationMatrix)$');
         // const maskRegex = new RegExp('^(projectionMatrix|uSampler|translationMatrix)$');
 
         for (let i = 0; i < totalUniforms; i++)
@@ -152,7 +152,7 @@ class Program
                 isArray:isArray,
                 value: shaderUtils.defaultValue(type, uniformData.size),
             };
-            /*eslint-enable */
+            /* eslint-enable */
         }
 
         return uniforms;

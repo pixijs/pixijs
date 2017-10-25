@@ -75,8 +75,8 @@ export default class WebGLGraphicsData
         this.shader = shader;
 
         this.geometry = new Geometry()
-        .addAttribute('aVertexPosition|aColor', this.buffer)
-        .addIndex(this.indexBuffer);
+            .addAttribute('aVertexPosition|aColor', this.buffer)
+            .addIndex(this.indexBuffer);
     }
 
     /**
@@ -99,7 +99,7 @@ export default class WebGLGraphicsData
         this.glIndices = new Uint16Array(this.indices);
         this.indexBuffer.update(this.glIndices);
 
-  //     console.log("UPKOADING,.",this.glPoints,this.glIndices)
+        //     console.log("UPKOADING,.",this.glPoints,this.glIndices)
         this.dirty = false;
     }
 

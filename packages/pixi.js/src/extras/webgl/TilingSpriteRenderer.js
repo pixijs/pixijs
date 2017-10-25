@@ -1,7 +1,8 @@
 import * as core from '../../core';
 import { WRAP_MODES } from '../../core/const';
-import { readFileSync } from 'fs';
-import { join } from 'path';
+import vertex from './tilingSprite.vert';
+import fragment from './tilingSprite.frag';
+import fragmentSimple from './tilingSprite_simple.frag';
 
 const tempMat = new core.Matrix();
 
@@ -14,7 +15,6 @@ const tempMat = new core.Matrix();
  */
 export default class TilingSpriteRenderer extends core.ObjectRenderer
 {
-
     /**
      * constructor for renderer
      *
@@ -26,15 +26,9 @@ export default class TilingSpriteRenderer extends core.ObjectRenderer
 
         const uniforms = { globals: this.renderer.globalUniforms };
 
-        this.shader = new core.Shader.from(
-            readFileSync(join(__dirname, './tilingSprite.vert'), 'utf8'),
-            readFileSync(join(__dirname, './tilingSprite.frag'), 'utf8'),
-            uniforms);
+        this.shader = new core.Shader.from(vertex, fragment, uniforms);
 
-        this.simpleShader = new core.Shader.from(
-            readFileSync(join(__dirname, './tilingSprite.vert'), 'utf8'),
-            readFileSync(join(__dirname, './tilingSprite_simple.frag'), 'utf8'),
-            uniforms);
+        this.simpleShader = new core.Shader.from(vertex, fragmentSimple, uniforms);
 
         this.quad = new core.Quad();
     }

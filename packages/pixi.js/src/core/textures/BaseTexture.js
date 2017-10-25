@@ -12,15 +12,14 @@ import bitTwiddle from 'bit-twiddle';
 
 export default class BaseTexture extends EventEmitter
 {
-
     constructor(resource,
-                scaleMode = settings.SCALE_MODE,
-                resolution,
-                width,
-                height,
-                format,
-                type,
-                mipmap = settings.MIPMAP_TEXTURES)
+        scaleMode = settings.SCALE_MODE,
+        resolution,
+        width,
+        height,
+        format,
+        type,
+        mipmap = settings.MIPMAP_TEXTURES)
     {
         super();
 
@@ -201,12 +200,12 @@ export default class BaseTexture extends EventEmitter
         }
 
         resource.load
-        .then(this.resourceLoaded.bind(this))
-        .catch((reason) =>
-        {
+            .then(this.resourceLoaded.bind(this))
+            .catch((reason) =>
+            {
             // failed to load - maybe resource was destroyed before it loaded.
-            console.warn(reason);
-        });
+                console.warn(reason);
+            });
     }
 
     resourceLoaded(resource)
@@ -356,12 +355,12 @@ export default class BaseTexture extends EventEmitter
         float32Array = float32Array || new Float32Array(width * height * 4);
 
         const texture = new BaseTexture(new BufferResource(float32Array),
-                                  SCALE_MODES.NEAREST,
-                                  1,
-                                  width,
-                                  height,
-                                  FORMATS.RGBA,
-                                  TYPES.FLOAT);
+            SCALE_MODES.NEAREST,
+            1,
+            width,
+            height,
+            FORMATS.RGBA,
+            TYPES.FLOAT);
 
         return texture;
     }
@@ -371,12 +370,12 @@ export default class BaseTexture extends EventEmitter
         uint8Array = uint8Array || new Uint8Array(width * height * 4);
 
         const texture = new BaseTexture(new BufferResource(uint8Array),
-                                  SCALE_MODES.NEAREST,
-                                  1,
-                                  width,
-                                  height,
-                                  FORMATS.RGBA,
-                                  TYPES.UNSIGNED_BYTE);
+            SCALE_MODES.NEAREST,
+            1,
+            width,
+            height,
+            FORMATS.RGBA,
+            TYPES.UNSIGNED_BYTE);
 
         return texture;
     }
@@ -397,7 +396,7 @@ export default class BaseTexture extends EventEmitter
                 baseTexture.textureCacheIds.push(id);
             }
 
-            // @if DEBUG
+            // @if DEV
             /* eslint-disable no-console */
             if (BaseTextureCache[id])
             {

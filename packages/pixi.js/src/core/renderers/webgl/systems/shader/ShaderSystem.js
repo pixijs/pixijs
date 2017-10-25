@@ -139,10 +139,10 @@ export default class ShaderSystem extends WebGLSystem
         }
 
         const glShader = new GLShader(this.gl,
-                                      program.vertexSrc,
-                                      program.fragmentSrc,
-                                      settings.PRECISION_FRAGMENT,
-                                      attribMap);
+            program.vertexSrc,
+            program.fragmentSrc,
+            settings.PRECISION_FRAGMENT,
+            attribMap);
 
         program.glShaders[this.renderer.CONTEXT_UID] = glShader;
 

@@ -60,7 +60,7 @@ export default class ImageResource extends TextureResource
             }
 
         //    source.onerror = () => {
-          //      reject('unable to load "' + source.src + '" resource cannot be found')
+            //      reject('unable to load "' + source.src + '" resource cannot be found')
             // }
         });
     }
@@ -87,5 +87,4 @@ export default class ImageResource extends TextureResource
 
         return new ImageResource(image);
     }
-
 }

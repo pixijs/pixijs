@@ -26,7 +26,7 @@ export default class ArrayTexture extends Texture
         layer.resource = resource;
 
         resource.load.then((resource) =>
-{
+        {
             if (layer.resource === resource)
             {
                 this.validate();
@@ -47,7 +47,7 @@ export default class ArrayTexture extends Texture
         if (this.array)
         {
             for (let i = 0; i < this.array.length; i++)
-{
+            {
                 const layer = this.array[i];
 
                 if (layer.resource && !layer.resource.loaded)

@@ -329,8 +329,8 @@ export default class Texture extends EventEmitter
 
         //  console.log('base resource ' + resource.width);
         const baseTexture = new BaseTexture(resource,
-                                            settings.SCALE_MODE,
-                                            getResolutionOfUrl(imageUrl));
+            settings.SCALE_MODE,
+            getResolutionOfUrl(imageUrl));
 
         const texture = new Texture(baseTexture);
 
@@ -370,7 +370,7 @@ export default class Texture extends EventEmitter
                 texture.textureCacheIds.push(id);
             }
 
-            // @if DEBUG
+            // @if DEV
             /* eslint-disable no-console */
             if (TextureCache[id])
             {

@@ -20,7 +20,7 @@ function extractUniformsFromString(string)
     // clean the lines a little - remove extra spaces / tabs etc
     // then split along ';'
     const lines = string.replace(/\s+/g, ' ')
-                .split(/\s*;\s*/);
+        .split(/\s*;\s*/);
 
     // loop through..
     for (let i = 0; i < lines.length; i++)

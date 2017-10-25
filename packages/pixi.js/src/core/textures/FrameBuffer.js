@@ -89,5 +89,4 @@ export default class FrameBuffer
             this.depthTexture.resize(width, height);
         }
     }
-
 }

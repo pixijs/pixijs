@@ -1170,7 +1170,6 @@ export default class Graphics extends Container
         this._webgl = null;
         this._localBounds = null;
     }
-
 }
 
 Graphics._SPRITE_TEXTURE = null;

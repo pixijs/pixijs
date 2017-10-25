@@ -7,7 +7,7 @@
  * @name VERSION
  * @type {string}
  */
-export const VERSION = __VERSION__;
+export const VERSION = '__VERSION__';
 
 /**
  * Two Pi.

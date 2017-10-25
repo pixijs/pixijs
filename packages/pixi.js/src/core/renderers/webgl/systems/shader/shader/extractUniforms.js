@@ -3,7 +3,7 @@ import defaultValue from './defaultValue';
 
 /**
  * Extracts the uniforms
- * @class
+ * @method extractUniforms
  * @memberof PIXI.glCore.shader
  * @param gl {WebGLRenderingContext} The current WebGL rendering context
  * @param program {WebGLProgram} The shader program to get the uniforms from

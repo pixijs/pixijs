@@ -318,7 +318,7 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
     m.ty -= bounds.y;
 
     // m.append(this.transform.worldTransform.)
-     // set all properties to there original so we can render to a texture
+    // set all properties to there original so we can render to a texture
     this.renderCanvas = this._cacheData.originalRenderCanvas;
 
     // renderTexture.render(this, m, true);

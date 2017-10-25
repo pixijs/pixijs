@@ -3,7 +3,7 @@
 // are being used within the code
 function warn(msg)
 {
-    // @if DEBUG
+    // @if DEV
     /* eslint-disable no-console */
     let stack = new Error().stack;
 

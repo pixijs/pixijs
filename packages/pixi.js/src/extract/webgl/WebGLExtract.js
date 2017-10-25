@@ -145,7 +145,7 @@ export default class WebGLExtract
             }
         }
 
-         // send the canvas back..
+        // send the canvas back..
         return canvasBuffer.canvas;
     }
 

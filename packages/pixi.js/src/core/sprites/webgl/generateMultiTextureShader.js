@@ -1,7 +1,6 @@
 import Shader from '../../shader/Shader';
 import UniformGroup from '../../shader/UniformGroup';
-import { readFileSync } from 'fs';
-import { join } from 'path';
+import vertex from './texture.vert';
 
 const fragTemplate = [
     'varying vec2 vTextureCoord;',
@@ -30,13 +29,12 @@ export default function generateMultiTextureShader(gl, maxTextures)
         default: UniformGroup.from({ uSamplers: sampleValues }, true),
     };
 
-    const vertexSrc = readFileSync(join(__dirname, './texture.vert'), 'utf8');
     let fragmentSrc = fragTemplate;
 
     fragmentSrc = fragmentSrc.replace(/%count%/gi, maxTextures);
     fragmentSrc = fragmentSrc.replace(/%forloop%/gi, generateSampleSrc(maxTextures));
 
-    const shader = Shader.from(vertexSrc, fragmentSrc, uniforms);
+    const shader = Shader.from(vertex, fragmentSrc, uniforms);
 
     return shader;
 }

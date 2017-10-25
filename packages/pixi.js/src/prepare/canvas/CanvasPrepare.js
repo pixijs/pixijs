@@ -56,7 +56,6 @@ export default class CanvasPrepare extends BasePrepare
         this.ctx = null;
         this.canvas = null;
     }
-
 }
 
 /**

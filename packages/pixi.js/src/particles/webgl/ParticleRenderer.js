@@ -452,7 +452,6 @@ export default class ParticleRenderer extends core.ObjectRenderer
         this.indices = null;
         this.tempMatrix = null;
     }
-
 }
 
 core.WebGLRenderer.registerPlugin('particle', ParticleRenderer);

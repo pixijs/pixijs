@@ -9,7 +9,6 @@ import * as core from '../../core';
  */
 export default class MeshRenderer extends core.ObjectRenderer
 {
-
     /**
      * constructor for renderer
      *

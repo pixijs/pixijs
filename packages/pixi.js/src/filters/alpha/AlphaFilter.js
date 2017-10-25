@@ -1,6 +1,6 @@
 import * as core from '../../core';
-import { readFileSync } from 'fs';
-import { join } from 'path';
+import vertex from '../fragments/default.vert';
+import fragment from './alpha.frag';
 
 /**
  * Simplest filter - applies alpha
@@ -26,12 +26,7 @@ export default class AlphaFilter extends core.Filter
      */
     constructor()
     {
-        super(
-            // vertex shader
-            readFileSync(join(__dirname, '../fragments/default.vert'), 'utf8'),
-            // fragment shader
-            readFileSync(join(__dirname, './alpha.frag'), 'utf8')
-        );
+        super(vertex, fragment);
 
         this.alpha = 1.0;
         this.glShaderKey = 'alpha';

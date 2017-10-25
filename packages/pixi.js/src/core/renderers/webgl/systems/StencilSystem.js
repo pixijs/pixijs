@@ -46,7 +46,7 @@ export default class StencilSystem extends WebGLSystem
     {
         this.renderer.batch.setObjectRenderer(this.renderer.plugins.graphics);
 
-//        this.renderer._activeRenderTarget.attachStencilBuffer();
+        //        this.renderer._activeRenderTarget.attachStencilBuffer();
 
         const gl = this.renderer.gl;
         const prevMaskCount = this.stencilMaskStack.length;

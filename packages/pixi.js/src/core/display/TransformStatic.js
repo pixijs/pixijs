@@ -17,7 +17,7 @@ export default class TransformStatic extends TransformBase
     {
         super();
 
-         /**
+        /**
          * The coordinate of the object relative to the local coordinates of the parent.
          *
          * @member {PIXI.ObservablePoint}
@@ -63,7 +63,7 @@ export default class TransformStatic extends TransformBase
      */
     onChange()
     {
-        this._localID ++;
+        this._localID++;
     }
 
     /**
@@ -78,7 +78,7 @@ export default class TransformStatic extends TransformBase
         this._cy = -Math.sin(this._rotation - this.skew._x); // cos, added PI/2
         this._sy = Math.cos(this._rotation - this.skew._x); // sin, added PI/2
 
-        this._localID ++;
+        this._localID++;
     }
 
     /**
@@ -146,7 +146,7 @@ export default class TransformStatic extends TransformBase
             this._parentID = parentTransform._worldID;
 
             // update the id of the transform..
-            this._worldID ++;
+            this._worldID++;
         }
     }
 
@@ -158,7 +158,7 @@ export default class TransformStatic extends TransformBase
     setFromMatrix(matrix)
     {
         matrix.decompose(this);
-        this._localID ++;
+        this._localID++;
     }
 
     /**

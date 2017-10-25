@@ -25,9 +25,9 @@ export default class Rope extends Mesh
     constructor(texture, points)
     {
         super(texture, new Float32Array(points.length * 4),
-                       new Float32Array(points.length * 4),
-                       new Uint16Array(points.length * 2),
-                       5);
+            new Float32Array(points.length * 4),
+            new Uint16Array(points.length * 2),
+            5);
 
         /*
          * @member {PIXI.Point[]} An array of points that determine the rope

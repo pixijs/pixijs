@@ -58,9 +58,8 @@ export default class TransformBase
         wt.tx = (lt.tx * pt.a) + (lt.ty * pt.c) + pt.tx;
         wt.ty = (lt.tx * pt.b) + (lt.ty * pt.d) + pt.ty;
 
-        this._worldID ++;
+        this._worldID++;
     }
-
 }
 
 /**

@@ -145,7 +145,7 @@ export default class MaskSystem extends WebGLSystem
      */
     popStencilMask()
     {
-       // this.renderer.currentRenderer.stop();
+        // this.renderer.currentRenderer.stop();
         this.renderer.stencil.popStencil();
     }
 

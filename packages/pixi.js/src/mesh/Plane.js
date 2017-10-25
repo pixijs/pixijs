@@ -62,7 +62,7 @@ export default class Plane extends Mesh
                 const y = ((i / this.verticesX) | 0);
 
                 verts.push((x * sizeX),
-                           (y * sizeY));
+                    (y * sizeY));
 
                 // this works for rectangular textures.
                 uvs.push(

@@ -1,6 +1,6 @@
 import * as core from '../../core';
-import { readFileSync } from 'fs';
-import { join } from 'path';
+import vertex from '../fragments/default.vert';
+import fragment from './noise.frag';
 
 /**
  * @author Vico @vicocotea
@@ -22,12 +22,7 @@ export default class NoiseFilter extends core.Filter
      */
     constructor(noise = 0.5, seed = Math.random())
     {
-        super(
-            // vertex shader
-            readFileSync(join(__dirname, '../fragments/default.vert'), 'utf8'),
-            // fragment shader
-            readFileSync(join(__dirname, './noise.frag'), 'utf8')
-        );
+        super(vertex, fragment);
 
         this.noise = noise;
         this.seed = seed;

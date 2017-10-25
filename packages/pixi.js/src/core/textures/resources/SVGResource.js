@@ -16,7 +16,7 @@ export default class SVGResource extends TextureResource
         this.resolve = null;
 
         this.load = new Promise((resolve) =>
-{
+        {
             this.resolve = resolve;
             this._loadSvgSourceUsingXhr();
         });
@@ -124,5 +124,4 @@ export default class SVGResource extends TextureResource
     {
         return new SVGResource(url);
     }
-
 }

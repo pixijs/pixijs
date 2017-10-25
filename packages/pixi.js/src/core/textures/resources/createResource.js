@@ -21,7 +21,7 @@ export default function createResource(source)
             return SVGResource.from(source);
         }
 
-            // probably an image!
+        // probably an image!
         return ImageResource.from(source);
     }
     else if (source instanceof HTMLImageElement)

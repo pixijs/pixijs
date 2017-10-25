@@ -62,7 +62,7 @@ export default class BaseRenderTexture extends BaseTexture
          * @private
          * @member {object<number, WebGLTexture>}
          */
-//        this._glRenderTargets = {};
+        //        this._glRenderTargets = {};
 
         /**
          * A reference to the canvas render target (we only need one as this can be shared across renderers)
@@ -75,7 +75,7 @@ export default class BaseRenderTexture extends BaseTexture
         this.clearColor = [0, 0, 0, 0];
 
         this.frameBuffer = new FrameBuffer(width, height)
-        .addColorTexture(0, this);
+            .addColorTexture(0, this);
 
         // TODO - could this be added the systems?
 

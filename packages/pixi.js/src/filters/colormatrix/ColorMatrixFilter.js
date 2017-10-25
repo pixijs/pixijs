@@ -1,6 +1,6 @@
 import * as core from '../../core';
-import { readFileSync } from 'fs';
-import { join } from 'path';
+import vertex from '../fragments/default.vert';
+import fragment from './colorMatrix.frag';
 
 /**
  * The ColorMatrixFilter class lets you apply a 5x4 matrix transformation on the RGBA
@@ -24,12 +24,7 @@ export default class ColorMatrixFilter extends core.Filter
      */
     constructor()
     {
-        super(
-            // vertex shader
-            readFileSync(join(__dirname, '../fragments/default.vert'), 'utf8'),
-            // fragment shader
-            readFileSync(join(__dirname, './colorMatrix.frag'), 'utf8')
-        );
+        super(vertex, fragment);
 
         this.uniforms.m = [
             1, 0, 0, 0, 0,

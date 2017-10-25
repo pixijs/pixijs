@@ -111,7 +111,7 @@ export default class BlurXFilter extends core.Filter
         this.strength = value;
     }
 
-     /**
+    /**
      * Sets the quality of the blur by modifying the number of passes. More passes means higher
      * quaility bluring but the lower the performance.
      *

@@ -130,11 +130,11 @@ export default class SpriteRenderer extends ObjectRenderer
 
             /* eslint-disable max-len */
             this.vaos[i] = new Geometry()
-            .addAttribute('aVertexPosition', buffer, 2, false, gl.FLOAT)
-            .addAttribute('aTextureCoord', buffer, 2, true, gl.UNSIGNED_SHORT)
-            .addAttribute('aColor', buffer, 4, true, gl.UNSIGNED_BYTE)
-            .addAttribute('aTextureId', buffer, 1, true, gl.FLOAT)
-            .addIndex(this.indexBuffer);
+                .addAttribute('aVertexPosition', buffer, 2, false, gl.FLOAT)
+                .addAttribute('aTextureCoord', buffer, 2, true, gl.UNSIGNED_SHORT)
+                .addAttribute('aColor', buffer, 4, true, gl.UNSIGNED_BYTE)
+                .addAttribute('aTextureId', buffer, 1, true, gl.FLOAT)
+                .addIndex(this.indexBuffer);
             /* eslint-enable max-len */
 
             this.vertexBuffers[i] = buffer;
@@ -201,7 +201,7 @@ export default class SpriteRenderer extends ObjectRenderer
         const float32View = buffer.float32View;
         const uint32View = buffer.uint32View;
 
-       // const touch = 0;// this.renderer.textureGC.count;
+        // const touch = 0;// this.renderer.textureGC.count;
 
         let index = 0;
         let nextTexture;
@@ -349,11 +349,11 @@ export default class SpriteRenderer extends ObjectRenderer
 
                 /* eslint-disable max-len */
                 this.vaos[this.vertexCount] = new Geometry()
-                .addAttribute('aVertexPosition', buffer, 2, false, gl.FLOAT)
-                .addAttribute('aTextureCoord', buffer, 2, true, gl.UNSIGNED_SHORT)
-                .addAttribute('aColor', buffer, 4, true, gl.UNSIGNED_BYTE)
-                .addAttribute('aTextureId', buffer, 1, true, gl.FLOAT)
-                .addIndex(this.indexBuffer);
+                    .addAttribute('aVertexPosition', buffer, 2, false, gl.FLOAT)
+                    .addAttribute('aTextureCoord', buffer, 2, true, gl.UNSIGNED_SHORT)
+                    .addAttribute('aColor', buffer, 4, true, gl.UNSIGNED_BYTE)
+                    .addAttribute('aTextureId', buffer, 1, true, gl.FLOAT)
+                    .addIndex(this.indexBuffer);
                 /* eslint-enable max-len */
 
                 this.vertexBuffers[this.vertexCount] = buffer;
@@ -374,7 +374,7 @@ export default class SpriteRenderer extends ObjectRenderer
 
         // / render the groups..
         for (i = 0; i < groupCount; i++)
-{
+        {
             const group = groups[i];
             const groupTextureCount = group.textureCount;
 

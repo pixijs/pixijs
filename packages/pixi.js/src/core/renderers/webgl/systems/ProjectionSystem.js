@@ -73,7 +73,6 @@ export default class ProjectionSystem extends WebGLSystem
      */
     setTransform()// matrix)
     {
-       // this._activeRenderTarget.transform = matrix;
+        // this._activeRenderTarget.transform = matrix;
     }
-
 }

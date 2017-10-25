@@ -7,6 +7,10 @@ import generateUniformAccessObject from './shader/generateUniformAccessObject';
 let ID = 0;
 
 /**
+ * @namespace PIXI.glCore
+ */
+
+/**
  * Helper class to create a webGL Shader
  *
  * @class

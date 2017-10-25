@@ -327,15 +327,15 @@ export default class GeometrySystem extends WebGLSystem
                 gl.enableVertexAttribArray(location);
 
                 gl.vertexAttribPointer(location,
-                                       attribute.size,
-                                       attribute.type || gl.FLOAT,
-                                       attribute.normalized,
-                                       attribute.stride,
-                                       attribute.start);
+                    attribute.size,
+                    attribute.type || gl.FLOAT,
+                    attribute.normalized,
+                    attribute.stride,
+                    attribute.start);
 
                 if (attribute.instance)
                 {
-                     // TODO calculate instance count based of this...
+                    // TODO calculate instance count based of this...
                     if (this.hasInstance)
                     {
                         gl.vertexAttribDivisor(location, 1);
@@ -371,12 +371,12 @@ export default class GeometrySystem extends WebGLSystem
         }
         else
         if (geometry.instanced)
-            {
-                // TODO need a better way to calculate size..
+        {
+            // TODO need a better way to calculate size..
             gl.drawArraysInstanced(type, start, size || geometry.getSize(), instanceCount || 1);
         }
-            else
-            {
+        else
+        {
             gl.drawArrays(type, start, size || geometry.getSize());
         }
 

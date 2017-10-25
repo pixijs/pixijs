@@ -18,7 +18,7 @@ export default class Transform extends TransformBase
     {
         super();
 
-         /**
+        /**
          * The coordinate of the object relative to the local coordinates of the parent.
          *
          * @member {PIXI.Point}
@@ -117,7 +117,7 @@ export default class Transform extends TransformBase
         wt.tx = (lt.tx * pt.a) + (lt.ty * pt.c) + pt.tx;
         wt.ty = (lt.tx * pt.b) + (lt.ty * pt.d) + pt.ty;
 
-        this._worldID ++;
+        this._worldID++;
     }
 
     /**

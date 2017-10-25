@@ -63,25 +63,25 @@ export default class Quad extends Geometry
          *
          * @member {glCore.GLBuffer}
          */
-       // this.vertexBuffer = glCore.GLBuffer.createVertexBuffer(gl, this.interleaved, gl.STATIC_DRAW);
+        // this.vertexBuffer = glCore.GLBuffer.createVertexBuffer(gl, this.interleaved, gl.STATIC_DRAW);
 
         /**
          * The index buffer
          *
          * @member {glCore.GLBuffer}
          */
-       // this.indexBuffer = glCore.GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW);
+        // this.indexBuffer = glCore.GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW);
 
         /**
          * The vertex array object
          *
          * @member {glCore.VertexArrayObject}
          */
-       // this.vao = new glCore.VertexArrayObject(gl, state);
+        // this.vao = new glCore.VertexArrayObject(gl, state);
 
         this.addAttribute('aVertexPosition', this.vertices)
-        .addAttribute('aTextureCoord', this.uvs)
-        .addIndex(this.indices);
+            .addAttribute('aTextureCoord', this.uvs)
+            .addIndex(this.indices);
     }
 
     /**
@@ -92,9 +92,9 @@ export default class Quad extends Geometry
     initVao(shader)
     {
         this.vao.clear()
-        .addIndex(this.indexBuffer)
-        .addAttribute(this.vertexBuffer, shader.attributes.aVertexPosition, this.gl.FLOAT, false, 4 * 4, 0)
-        .addAttribute(this.vertexBuffer, shader.attributes.aTextureCoord, this.gl.FLOAT, false, 4 * 4, 2 * 4);
+            .addIndex(this.indexBuffer)
+            .addAttribute(this.vertexBuffer, shader.attributes.aVertexPosition, this.gl.FLOAT, false, 4 * 4, 0)
+            .addAttribute(this.vertexBuffer, shader.attributes.aTextureCoord, this.gl.FLOAT, false, 4 * 4, 2 * 4);
     }
 
     /**
@@ -167,9 +167,9 @@ export default class Quad extends Geometry
      */
     destroy()
     {
-     //   const gl = this.gl;
+        //   const gl = this.gl;
 
-      //  gl.deleteBuffer(this.vertexBuffer);
-      //  gl.deleteBuffer(this.indexBuffer);
+        //  gl.deleteBuffer(this.vertexBuffer);
+        //  gl.deleteBuffer(this.indexBuffer);
     }
 }

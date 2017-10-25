@@ -5,7 +5,7 @@ export * from './polyfill';
 export * from './core';
 
 // export libs
-import deprecation from './deprecation';
+// import deprecation from './deprecation';
 import * as accessibility from './accessibility';
 import * as extract from './extract';
 import * as extras from './extras';
@@ -36,16 +36,16 @@ export {
     interaction,
     loaders,
     mesh,
-   // particles,
+    // particles,
     prepare,
     loader,
 };
 
 // Apply the deprecations
-if (typeof deprecation === 'function')
-{
-    deprecation(exports);
-}
+// if (typeof deprecation === 'function')
+// {
+//   deprecation(exports);
+// }
 
 // Always export PixiJS globally.
 global.PIXI = exports; // eslint-disable-line

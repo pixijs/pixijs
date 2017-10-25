@@ -1,6 +1,6 @@
 import * as core from '../../core';
-import { readFileSync } from 'fs';
-import { join } from 'path';
+import vertex from '../fragments/default-filter-matrix.vert';
+import fragment from './displacement.frag';
 
 /**
  * The DisplacementFilter class uses the pixel values from the specified texture
@@ -25,12 +25,7 @@ export default class DisplacementFilter extends core.Filter
 
         sprite.renderable = false;
 
-        super(
-            // vertex shader
-            readFileSync(join(__dirname, '../fragments/default-filter-matrix.vert'), 'utf8'),
-            // fragment shader
-            readFileSync(join(__dirname, './displacement.frag'), 'utf8')
-        );
+        super(vertex, fragment);
 
         this.maskSprite = sprite;
         this.maskMatrix = maskMatrix;
@@ -62,7 +57,7 @@ export default class DisplacementFilter extends core.Filter
         this.uniforms.scale.x = this.scale.x * ratio;
         this.uniforms.scale.y = this.scale.y * ratio;
 
-         // draw the filter...
+        // draw the filter...
         filterManager.applyFilter(this, input, output);
     }
 

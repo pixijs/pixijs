@@ -33,7 +33,7 @@ export default class CubeTexture extends Texture
         side.resource = resource;
 
         resource.load.then((resource) =>
-{
+        {
             if (side.resource === resource)
             {
                 this.width = resource.width;
@@ -59,7 +59,7 @@ export default class CubeTexture extends Texture
         if (this.sides)
         {
             for (let i = 0; i < this.sides.length; i++)
-{
+            {
                 const side = this.sides[i];
 
                 if (side.resource && !side.resource.loaded)

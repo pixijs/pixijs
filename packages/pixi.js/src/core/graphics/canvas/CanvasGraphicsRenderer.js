@@ -43,7 +43,7 @@ export default class CanvasGraphicsRenderer
         const transform = graphics.transform.worldTransform;
         const resolution = renderer.resolution;
 
-         // if the tint has changed, set the graphics object to dirty.
+        // if the tint has changed, set the graphics object to dirty.
         if (this._prevTint !== this.tint)
         {
             this.dirty = true;
@@ -150,10 +150,10 @@ export default class CanvasGraphicsRenderer
                 const kappa = 0.5522848;
                 const ox = (w / 2) * kappa; // control point offset horizontal
                 const oy = (h / 2) * kappa; // control point offset vertical
-                const xe = x + w;           // x-end
-                const ye = y + h;           // y-end
-                const xm = x + (w / 2);       // x-middle
-                const ym = y + (h / 2);       // y-middle
+                const xe = x + w; // x-end
+                const ye = y + h; // y-end
+                const xm = x + (w / 2); // x-middle
+                const ym = y + (h / 2); // y-middle
 
                 context.moveTo(x, ym);
                 context.bezierCurveTo(x, ym - oy, xm - ox, y, xm, y);

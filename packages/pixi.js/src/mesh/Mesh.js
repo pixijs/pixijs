@@ -1,8 +1,8 @@
 import RawMesh from './RawMesh';
 import Geometry from '../core/geometry/Geometry';
 import * as core from '../core';
-import { readFileSync } from 'fs';
-import { join } from 'path';
+import vertex from './webgl/mesh.vert';
+import fragment from './webgl/mesh.frag';
 
 let meshProgram;
 
@@ -27,13 +27,12 @@ export default class Mesh extends RawMesh
 
         if (!meshProgram)
         {
-            meshProgram = new core.Program(readFileSync(join(__dirname, './webgl/mesh.vert'), 'utf8'),
-                                           readFileSync(join(__dirname, './webgl/mesh.frag'), 'utf8'));
+            meshProgram = new core.Program(vertex, fragment);
         }
 
         geometry.addAttribute('aVertexPosition', vertices)
-        .addAttribute('aTextureCoord', uvs)
-        .addIndex(indices);
+            .addAttribute('aTextureCoord', uvs)
+            .addIndex(indices);
 
         geometry.getAttribute('aVertexPosition').static = false;
 
@@ -57,7 +56,7 @@ export default class Mesh extends RawMesh
         this.blendMode = core.BLEND_MODES.NORMAL;
     }
 
-     /**
+    /**
      * The tint applied to the Rope. This is a hex value. A value of
      * 0xFFFFFF will remove any tint effect.
      *

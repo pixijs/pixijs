@@ -1,6 +1,6 @@
 import * as core from '../../core';
-import { readFileSync } from 'fs';
-import { join } from 'path';
+import vertex from './fxaa.vert';
+import fragment from './fxaa.frag';
 
 /**
  *
@@ -23,11 +23,6 @@ export default class FXAAFilter extends core.Filter
     constructor()
     {
         // TODO - needs work
-        super(
-            // vertex shader
-            readFileSync(join(__dirname, './fxaa.vert'), 'utf8'),
-            // fragment shader
-            readFileSync(join(__dirname, './fxaa.frag'), 'utf8')
-        );
+        super(vertex, fragment);
     }
 }

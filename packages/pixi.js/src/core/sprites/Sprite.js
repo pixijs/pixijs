@@ -228,7 +228,7 @@ export default class Sprite extends Container
         vertexData[2] = (a * w0) + (c * h1) + tx;
         vertexData[3] = (d * h1) + (b * w0) + ty;
 
-         // xy
+        // xy
         vertexData[4] = (a * w0) + (c * h0) + tx;
         vertexData[5] = (d * h0) + (b * w0) + ty;
 
@@ -236,8 +236,8 @@ export default class Sprite extends Container
         vertexData[6] = (a * w1) + (c * h0) + tx;
         vertexData[7] = (d * h0) + (b * w1) + ty;
 
-     //   console.log(orig.width)
-   //     console.log(vertexData, this.texture.baseTexture)
+        //   console.log(orig.width)
+        //     console.log(vertexData, this.texture.baseTexture)
     }
 
     /**

@@ -316,7 +316,6 @@ export default class BasePrepare
         this.limiter = null;
         this.uploadHookHelper = null;
     }
-
 }
 
 /**

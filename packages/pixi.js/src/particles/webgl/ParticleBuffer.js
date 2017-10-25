@@ -262,5 +262,4 @@ export default class ParticleBuffer
         this.staticData = null;
         this.staticBuffer.destroy();
     }
-
 }

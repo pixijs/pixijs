@@ -47,9 +47,9 @@ const shared = new Ticker();
 shared.autoStart = true;
 shared.destroy = () =>
 {
-	// protect destroying shared ticker
-	// this is used by other internal systems
-	// like AnimatedSprite and InteractionManager
+    // protect destroying shared ticker
+    // this is used by other internal systems
+    // like AnimatedSprite and InteractionManager
 };
 
 /**

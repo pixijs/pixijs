@@ -162,14 +162,14 @@ export default class VideoResource extends TextureResource
         {
             ticker.shared.remove(this.update, this);
         }
-/*
+        /*
         if (this.source && this.source._pixiId)
         {
             delete BaseTextureCache[this.source._pixiId];
             delete this.source._pixiId;
         }
 */
-  //      super.destroy();
+        //      super.destroy();
     }
 
     /**
@@ -238,7 +238,6 @@ export default class VideoResource extends TextureResource
 
         return new VideoResource(video, scaleMode);
     }
-
 }
 
 function createSource(path, type)

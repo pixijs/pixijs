@@ -58,7 +58,7 @@ const GLSL_TO_ARRAY_SETTERS = {
 
 /**
  * Extracts the attributes
- * @class
+ * @method generateUniformAccessObject
  * @memberof PIXI.glCore.shader
  * @param gl {WebGLRenderingContext} The current WebGL rendering context
  * @param uniforms {Array} @mat ?

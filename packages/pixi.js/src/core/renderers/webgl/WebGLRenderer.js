@@ -71,7 +71,7 @@ export default class WebGLRenderer extends SystemRenderer
          */
         this.type = RENDERER_TYPE.WEBGL;
 
-         // this will be set by the contextSystem (this.context)
+        // this will be set by the contextSystem (this.context)
         this.gl = null;
         this.CONTEXT_UID = 0;
         this.legacy = !!options.legacy;
@@ -94,18 +94,18 @@ export default class WebGLRenderer extends SystemRenderer
         }, true);
 
         this.addSystem(MaskSystem, 'mask')
-        .addSystem(ContextSystem, 'context')
-        .addSystem(StateSystem, 'state')
-        .addSystem(ShaderSystem, 'shader')
-        .addSystem(TextureSystem, 'texture')
-        .addSystem(GeometrySystem, 'geometry')
-        .addSystem(FramebufferSystem, 'framebuffer')
-        .addSystem(StencilSystem, 'stencil')
-        .addSystem(ProjectionSystem, 'projection')
+            .addSystem(ContextSystem, 'context')
+            .addSystem(StateSystem, 'state')
+            .addSystem(ShaderSystem, 'shader')
+            .addSystem(TextureSystem, 'texture')
+            .addSystem(GeometrySystem, 'geometry')
+            .addSystem(FramebufferSystem, 'framebuffer')
+            .addSystem(StencilSystem, 'stencil')
+            .addSystem(ProjectionSystem, 'projection')
         // .addSystem(TextureGCSystem)
-        .addSystem(FilterSystem, 'filter')
-        .addSystem(RenderTextureSystem, 'renderTexture')
-        .addSystem(BatchSystem, 'batch');
+            .addSystem(FilterSystem, 'filter')
+            .addSystem(RenderTextureSystem, 'renderTexture')
+            .addSystem(BatchSystem, 'batch');
 
         this.initPlugins();
         /**
@@ -224,7 +224,7 @@ export default class WebGLRenderer extends SystemRenderer
             displayObject.parent = this._tempDisplayObjectParent;
             displayObject.updateTransform();
             displayObject.parent = cacheParent;
-           // displayObject.hitArea = //TODO add a temp hit area
+            // displayObject.hitArea = //TODO add a temp hit area
         }
 
         this.renderTexture.bind(renderTexture);

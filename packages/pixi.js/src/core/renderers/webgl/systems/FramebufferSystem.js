@@ -144,20 +144,20 @@ export default class FramebufferSystem extends WebGLSystem
                 this.renderer.texture.bind(texture.texture, 0);
 
                 gl.framebufferTexture2D(gl.FRAMEBUFFER,
-                                        gl.COLOR_ATTACHMENT0 + i,
-                                        gl.TEXTURE_CUBE_MAP_NEGATIVE_X + texture.side,
-                                        texture.texture._glTextures[this.CONTEXT_UID].texture,
-                                        0);
+                    gl.COLOR_ATTACHMENT0 + i,
+                    gl.TEXTURE_CUBE_MAP_NEGATIVE_X + texture.side,
+                    texture.texture._glTextures[this.CONTEXT_UID].texture,
+                    0);
             }
             else
             {
                 this.renderer.texture.bind(texture, 0);
 
                 gl.framebufferTexture2D(gl.FRAMEBUFFER,
-                                        gl.COLOR_ATTACHMENT0 + i,
-                                        gl.TEXTURE_2D,
-                                        texture._glTextures[this.CONTEXT_UID].texture,
-                                        0);
+                    gl.COLOR_ATTACHMENT0 + i,
+                    gl.TEXTURE_2D,
+                    texture._glTextures[this.CONTEXT_UID].texture,
+                    0);
             }
 
             activeTextures.push(gl.COLOR_ATTACHMENT0 + i);
@@ -179,10 +179,10 @@ export default class FramebufferSystem extends WebGLSystem
                 this.renderer.texture.bind(depthTexture, 0);
 
                 gl.framebufferTexture2D(gl.FRAMEBUFFER,
-                                        gl.DEPTH_ATTACHMENT,
-                                        gl.TEXTURE_2D,
-                                        depthTexture._glTextures[this.CONTEXT_UID].texture,
-                                        0);
+                    gl.DEPTH_ATTACHMENT,
+                    gl.TEXTURE_2D,
+                    depthTexture._glTextures[this.CONTEXT_UID].texture,
+                    0);
             }
         }
 
@@ -198,5 +198,4 @@ export default class FramebufferSystem extends WebGLSystem
             // fbo.enableStencil();
         }
     }
-
 }

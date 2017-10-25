@@ -3,7 +3,7 @@ import mapSize from './mapSize';
 
 /**
  * Extracts the attributes
- * @class
+ * @method extractAttributes
  * @memberof PIXI.glCore.shader
  * @param gl {WebGLRenderingContext} The current WebGL rendering context
  * @param program {WebGLProgram} The shader program to get the attributes from
@@ -34,5 +34,5 @@ export default function extractAttributes(gl, program)
 
 function pointer()// type, normalized, stride, start)
 {
-   // gl.vertexAttribPointer(this.location, this.size, type || gl.FLOAT, normalized || false, stride || 0, start || 0);
+    // gl.vertexAttribPointer(this.location, this.size, type || gl.FLOAT, normalized || false, stride || 0, start || 0);
 }

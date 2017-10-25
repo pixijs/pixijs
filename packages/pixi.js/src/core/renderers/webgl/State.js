@@ -12,6 +12,7 @@ const WINDING = 4;
  * For example you may want different blend mode or to enable polygon offsets
  *
  * @class
+ * @memberof PIXI
  */
 export default class State
 {
@@ -26,7 +27,7 @@ export default class State
         this.polygonOffset = 0;
 
         this.blend = true;
-      //  this.depthTest = true;
+        //  this.depthTest = true;
     }
 
     /**

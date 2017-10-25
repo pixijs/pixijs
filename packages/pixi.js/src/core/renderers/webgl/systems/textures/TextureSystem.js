@@ -163,7 +163,7 @@ export default class TextureSystem extends WebGLSystem
         // Cube / 2D and later 3d. (the latter is WebGL2, we will get to that soon!)
         if (texture.target === gl.TEXTURE_CUBE_MAP)
         {
-           // console.log( gl.UNSIGNED_BYTE)
+            // console.log( gl.UNSIGNED_BYTE)
             for (i = 0; i < texture.sides.length; i++)
             {
                 // TODO - we should only upload what changed..
@@ -175,51 +175,51 @@ export default class TextureSystem extends WebGLSystem
                     if (texturePart.resource.uploadable)
                     {
                         gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + texturePart.side,
-                                      0,
-                                      texture.format,
-                                      texture.format,
-                                      texture.type,
-                                      texturePart.resource.source);
+                            0,
+                            texture.format,
+                            texture.format,
+                            texture.type,
+                            texturePart.resource.source);
                     }
                     else
                     {
                         gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + texturePart.side,
-                                  0,
-                                  texture.format,
-                                  texture.width,
-                                  texture.height,
-                                  0,
-                                  texture.format,
-                                  texture.type,
-                                  texturePart.resource.source);
+                            0,
+                            texture.format,
+                            texture.width,
+                            texture.height,
+                            0,
+                            texture.format,
+                            texture.type,
+                            texturePart.resource.source);
                     }
                 }
                 else
                 {
                     gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + texturePart.side,
-                                  0,
-                                  texture.format,
-                                  texture.width,
-                                  texture.height,
-                                  0,
-                                  texture.format,
-                                  texture.type,
-                                  null);
+                        0,
+                        texture.format,
+                        texture.width,
+                        texture.height,
+                        0,
+                        texture.format,
+                        texture.type,
+                        null);
                 }
             }
         }
         else if (texture.target === gl.TEXTURE_2D_ARRAY)
         {
             gl.texImage3D(gl.TEXTURE_2D_ARRAY,
-                              0,
-                              texture.format,
-                              texture.width,
-                              texture.height,
-                              6,
-                              0,
-                              texture.format,
-                              texture.type,
-                              null);
+                0,
+                texture.format,
+                texture.width,
+                texture.height,
+                6,
+                0,
+                texture.format,
+                texture.type,
+                null);
 
             for (i = 0; i < texture.array.length; i++)
             {
@@ -232,34 +232,34 @@ export default class TextureSystem extends WebGLSystem
                     if (texturePart.resource.loaded)
                     {
                         gl.texSubImage3D(gl.TEXTURE_2D_ARRAY,
-                                  0,
-                                  0, // xoffset
-                                  0, // yoffset
-                                  i, // zoffset
-                                  texturePart.resource.width,
-                                  texturePart.resource.height,
-                                  1,
-                                  texture.format,
-                                  texture.type,
-                                  texturePart.resource.source);
+                            0,
+                            0, // xoffset
+                            0, // yoffset
+                            i, // zoffset
+                            texturePart.resource.width,
+                            texturePart.resource.height,
+                            1,
+                            texture.format,
+                            texture.type,
+                            texturePart.resource.source);
                     }
                 }
             }
         }
         else
         if (texture.resource)
-            {
+        {
             if (texture.resource.uploadable)
-                {
+            {
                 glTexture.upload(texture.resource.source);
             }
             else
-                {
+            {
                 glTexture.uploadData(texture.resource.source, texture.width, texture.height);
             }
         }
-            else
-            {
+        else
+        {
             glTexture.uploadData(null, texture.width, texture.height);
         }
 

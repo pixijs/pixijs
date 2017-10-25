@@ -88,7 +88,7 @@ export default class AnimatedSprite extends core.Sprite
          */
         this.onFrameChange = null;
 
-         /**
+        /**
          * Function to call when 'loop' is true, and an AnimatedSprite is played and loops around to start again
          *
          * @member {Function}
