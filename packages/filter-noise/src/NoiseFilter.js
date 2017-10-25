@@ -1,5 +1,5 @@
 import { Filter } from '@pixi/core';
-import { default as vertex } from '@pixi/fragments';
+import { defaultVertex } from '@pixi/fragments';
 import fragment from './noise.frag';
 
 /**
@@ -22,7 +22,7 @@ export default class NoiseFilter extends Filter
      */
     constructor(noise = 0.5, seed = Math.random())
     {
-        super(vertex, fragment);
+        super(defaultVertex, fragment);
 
         this.noise = noise;
         this.seed = seed;

@@ -1,0 +1,40 @@
+{
+  "name": "@pixi/interaction",
+  "version": "5.0.0-alpha",
+  "main": "lib/interaction.js",
+  "module": "lib/interaction.es.js",
+  "description": "Support for legacy browser JavaScript environments",
+  "author": "Mat Groves",
+  "contributors": [
+    "Matt Karl <matt@mattkarl.com>"
+  ],
+  "homepage": "http://pixijs.com/",
+  "bugs": "https://github.com/pixijs/pixi.js/issues",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pixijs/pixi.js.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build:dev": "rollup -c && rollup -c -f cjs",
+    "build": "rollup -cp && rollup -cp -f cjs",
+    "watch": "rollup -cw",
+    "postversion": "npm run build",
+    "test": "npm run build"
+  },
+  "files": [
+    "lib"
+  ],
+  "dependencies": {
+    "@pixi/core": "^5.0.0-alpha",
+    "eventemitter3": "^2.0.0"
+  },
+  "devDependencies": {
+    "@tools/build": "^5.0.0-alpha",
+    "rollup": "^0.50.0",
+    "rollup-watch": "^4.3.1"
+  }
+}

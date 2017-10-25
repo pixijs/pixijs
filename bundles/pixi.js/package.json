@@ -60,12 +60,8 @@
     "@pixi/text-bitmap": "^5.0.0-alpha",
     "@tools/build": "^5.0.0-alpha",
     "electron": "^1.7.9",
-    "eventemitter3": "^2.0.0",
     "floss": "^2.1.2",
-    "ismobilejs": "^0.4.0",
     "js-md5": "^0.6.1",
-    "pixi-gl-core": "^1.0.3",
-    "resource-loader": "^2.0.9",
     "rimraf": "^2.6.2",
     "rollup": "^0.50.0",
     "rollup-watch": "^4.3.1"

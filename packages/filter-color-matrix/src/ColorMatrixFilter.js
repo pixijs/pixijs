@@ -1,5 +1,5 @@
 import { Filter } from '@pixi/core';
-import { default as vertex } from '@pixi/fragments';
+import { defaultVertex } from '@pixi/fragments';
 import fragment from './colorMatrix.frag';
 
 /**
@@ -24,7 +24,7 @@ export default class ColorMatrixFilter extends Filter
      */
     constructor()
     {
-        super(vertex, fragment);
+        super(defaultVertex, fragment);
 
         this.uniforms.m = [
             1, 0, 0, 0, 0,

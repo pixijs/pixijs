@@ -1,5 +1,5 @@
 import { Filter } from '@pixi/core';
-import { default as vertex } from '@pixi/fragments';
+import { defaultVertex } from '@pixi/fragments';
 import fragment from './alpha.frag';
 
 /**
@@ -26,7 +26,7 @@ export default class AlphaFilter extends Filter
      */
     constructor()
     {
-        super(vertex, fragment);
+        super(defaultVertex, fragment);
 
         this.alpha = 1.0;
         this.glShaderKey = 'alpha';
