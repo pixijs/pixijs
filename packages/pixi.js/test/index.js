@@ -1,7 +1,7 @@
 'use strict';
 
 /* eslint-disable global-require */
-require('../dist/pixi');
+require('../lib/pixi');
 
 PIXI.utils.skipHello(); // hide banner
 

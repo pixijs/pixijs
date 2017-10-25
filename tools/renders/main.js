@@ -1,8 +1,8 @@
 'use strict';
 
 const electron = require('electron');
-const app = electron.app;  // Control application life
-const BrowserWindow = electron.BrowserWindow;  // Native browser window
+const app = electron.app; // Control application life
+const BrowserWindow = electron.BrowserWindow; // Native browser window
 
 // Keep a global reference of the window object
 let mainWindow = null;
