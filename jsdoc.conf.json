@@ -4,7 +4,8 @@
     },
     "source": {
         "include": [
-            "packages"
+            "bundles",
+            "plugins"
         ],
         "excludePattern": "(node_modules|lib|dist|test)"
     },
