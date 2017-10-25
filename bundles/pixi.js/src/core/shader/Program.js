@@ -2,6 +2,8 @@ import extractUniformsFromSrc from './extractUniformsFromSrc';
 import * as shaderUtils from '../renderers/webgl/systems/shader/shader';
 import { ProgramCache } from '../utils';
 import getTestContext from '../utils/getTestContext';
+import defaultFragment from './defaultProgram.frag';
+import defaultVertex from './defaultProgram.vert';
 
 let UID = 0;
 
@@ -166,19 +168,7 @@ class Program
      */
     static get defaultVertexSrc()
     {
-        return [
-            'attribute vec2 aVertexPosition;',
-            'attribute vec2 aTextureCoord;',
-
-            'uniform mat3 projectionMatrix;',
-
-            'varying vec2 vTextureCoord;',
-
-            'void main(void){',
-            '   gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);',
-            '   vTextureCoord = aTextureCoord ;',
-            '}',
-        ].join('\n');
+        return defaultVertex;
     }
 
     /**
@@ -189,15 +179,7 @@ class Program
      */
     static get defaultFragmentSrc()
     {
-        return [
-            'varying vec2 vTextureCoord;',
-
-            'uniform sampler2D uSampler;',
-
-            'void main(void){',
-            '   gl_FragColor *= texture2D(uSampler, vTextureCoord);',
-            '}',
-        ].join('\n');
+        return defaultFragment;
     }
 
     /**
