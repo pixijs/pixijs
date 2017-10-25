@@ -1,5 +1,5 @@
 // import polyfills. Done as an export to make sure polyfills are imported first
-export * from './polyfill';
+import '@pixi/polyfill';
 
 // export core
 export * from './core';
