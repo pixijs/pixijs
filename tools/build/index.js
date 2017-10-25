@@ -29,8 +29,8 @@ const { prod, format, output } = minimist(process.argv.slice(2), {
     },
 });
 
-const formatSuffix = format === 'es' ? `.${format}` : '';
-const dest = output || `lib/${name}${formatSuffix}.js`;
+// Allow overriding output, but default to "module" and "main" fields
+const dest = output || (format === 'es' ? pkg.module : pkg.main);
 
 const plugins = [
     resolve({

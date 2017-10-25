@@ -8,7 +8,6 @@
     "Matt Karl <matt@mattkarl.com>"
   ],
   "module": "lib/polyfill.es.js",
-  "types": "types.d.ts",
   "homepage": "http://pixijs.com/",
   "bugs": "https://github.com/pixijs/pixi.js/issues",
   "license": "MIT",
@@ -24,7 +23,7 @@
     "build": "rollup -cp && rollup -cp -f umd",
     "watch": "rollup -cw",
     "postversion": "npm run build",
-    "test": "exit 0"
+    "test": "npm run build"
   },
   "files": [
     "lib"
