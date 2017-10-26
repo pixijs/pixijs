@@ -56,19 +56,19 @@ deploy:
     on:
         all_branches: true
         condition: -z $TRAVIS_TAG
-  - provider: s3
-    access_key_id: $S3_ACCESS_KEY_ID
-    secret_access_key: $S3_SECRET_ACCESS_KEY
-    bucket: "pixi.js"
-    skip_cleanup: true
-    acl: public_read
-    region: eu-west-1
-    cache_control: "max-age=60"
-    local_dir: bundles/pixi.js/coverage
-    upload-dir: "$TRAVIS_BRANCH/coverage"
-    on:
-        all_branches: true
-        condition: -z $TRAVIS_TAG
+  # - provider: s3
+  #   access_key_id: $S3_ACCESS_KEY_ID
+  #   secret_access_key: $S3_SECRET_ACCESS_KEY
+  #   bucket: "pixi.js"
+  #   skip_cleanup: true
+  #   acl: public_read
+  #   region: eu-west-1
+  #   cache_control: "max-age=60"
+  #   local_dir: bundles/pixi.js/coverage
+  #   upload-dir: "$TRAVIS_BRANCH/coverage"
+  #   on:
+  #       all_branches: true
+  #       condition: -z $TRAVIS_TAG
   # Deploy config for tagged releases
   - provider: s3
     access_key_id: $S3_ACCESS_KEY_ID
@@ -96,19 +96,19 @@ deploy:
     on:
         all_branches: true
         condition: $TRAVIS_TAG
-  - provider: s3
-    access_key_id: $S3_ACCESS_KEY_ID
-    secret_access_key: $S3_SECRET_ACCESS_KEY
-    bucket: "pixi.js"
-    skip_cleanup: true
-    acl: public_read
-    region: eu-west-1
-    cache_control: "max-age=2592000"
-    local_dir: bundles/pixi.js/coverage
-    upload-dir: "$TRAVIS_BRANCH/coverage"
-    on:
-        all_branches: true
-        condition: $TRAVIS_TAG
+  # - provider: s3
+  #   access_key_id: $S3_ACCESS_KEY_ID
+  #   secret_access_key: $S3_SECRET_ACCESS_KEY
+  #   bucket: "pixi.js"
+  #   skip_cleanup: true
+  #   acl: public_read
+  #   region: eu-west-1
+  #   cache_control: "max-age=2592000"
+  #   local_dir: bundles/pixi.js/coverage
+  #   upload-dir: "$TRAVIS_BRANCH/coverage"
+  #   on:
+  #       all_branches: true
+  #       condition: $TRAVIS_TAG
   # Deploy config for latest release
   - provider: s3
     access_key_id: $S3_ACCESS_KEY_ID
@@ -136,16 +136,16 @@ deploy:
     on:
         all_branches: true
         condition: $TRAVIS_TAG
-  - provider: s3
-    access_key_id: $S3_ACCESS_KEY_ID
-    secret_access_key: $S3_SECRET_ACCESS_KEY
-    bucket: "pixi.js"
-    skip_cleanup: true
-    acl: public_read
-    region: eu-west-1
-    cache_control: "max-age=1209600"
-    local_dir: bundles/pixi.js/coverage
-    upload-dir: "release/coverage"
-    on:
-        all_branches: true
-        condition: $TRAVIS_TAG
+  # - provider: s3
+  #   access_key_id: $S3_ACCESS_KEY_ID
+  #   secret_access_key: $S3_SECRET_ACCESS_KEY
+  #   bucket: "pixi.js"
+  #   skip_cleanup: true
+  #   acl: public_read
+  #   region: eu-west-1
+  #   cache_control: "max-age=1209600"
+  #   local_dir: bundles/pixi.js/coverage
+  #   upload-dir: "release/coverage"
+  #   on:
+  #       all_branches: true
+  #       condition: $TRAVIS_TAG

@@ -23,7 +23,7 @@
     "build:dev": "rollup -c && rollup -c -f umd",
     "watch": "rollup -cw -f umd",
     "postversion": "npm run build",
-    "test": "npm run build && npm run coverage",
+    "test": "npm run build && npm run unit-test",
     "unit-test": "floss --path test",
     "precoverage": "rimraf coverage/*",
     "coverage": "npm run unit-test -- -c lib/pixi.js -s -h"
