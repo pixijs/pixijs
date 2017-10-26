@@ -51,5 +51,5 @@ export { default as SpriteMaskFilter } from './renderers/webgl/filters/spriteMas
 export { default as Filter } from './renderers/webgl/filters/Filter';
 export { autoDetectRenderer } from './autoDetectRenderer';
 export { default as Attribute } from './geometry/Attribute';
-export { default as GeometryBuffer } from './geometry/GeometryBuffer';
+export { default as Buffer } from './geometry/Buffer';
 export { default as Geometry } from './geometry/Geometry';

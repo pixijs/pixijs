@@ -7,7 +7,7 @@ let UID = 0;
  * @class
  * @memberof PIXI
  */
-export default class GeometryBuffer
+export default class Buffer
 {
     /**
      * @param {ArrayBuffer| SharedArrayBuffer|ArrayBufferView} data the data to store in the buffer.

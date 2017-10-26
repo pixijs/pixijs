@@ -1,5 +1,5 @@
 import { Geometry,
-    GeometryBuffer,
+    Buffer,
     ObjectRenderer,
     WebGLRenderer,
     checkMaxIfStatmentsInShader } from '@pixi/core';
@@ -66,7 +66,7 @@ export default class SpriteRenderer extends ObjectRenderer
          * @member {Uint16Array}
          */
         this.indices = createIndicesForQuads(this.size);
-        this.indexBuffer = new GeometryBuffer(this.indices, true, true);
+        this.indexBuffer = new Buffer(this.indices, true, true);
 
         /**
          * The default shaders that is used if a sprite doesn't have a more specific one.
@@ -124,7 +124,7 @@ export default class SpriteRenderer extends ObjectRenderer
         // as it is not used by the shader so is optimized out.
         for (let i = 0; i < this.vaoMax; i++)
         {
-            const buffer = new GeometryBuffer(null, false);
+            const buffer = new Buffer(null, false);
 
             /* eslint-disable max-len */
             this.vaos[i] = new Geometry()
@@ -343,7 +343,7 @@ export default class SpriteRenderer extends ObjectRenderer
             {
                 this.vaoMax++;
 
-                const buffer = new GeometryBuffer(null, false);
+                const buffer = new Buffer(null, false);
 
                 /* eslint-disable max-len */
                 this.vaos[this.vertexCount] = new Geometry()
