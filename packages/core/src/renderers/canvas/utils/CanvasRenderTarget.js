@@ -1,4 +1,4 @@
-import settings from '../../../settings';
+import { settings } from '@pixi/settings';
 
 /**
  * Creates a Canvas element of the given size.

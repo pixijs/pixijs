@@ -1,6 +1,6 @@
 import WebGLSystem from '../WebGLSystem';
 import GLShader from './GLShader';
-import settings from '../../../../settings';
+import { settings } from '@pixi/settings';
 import generateUniformsSync from '../../../../shader/generateUniformsSync';
 
 let UID = 0;

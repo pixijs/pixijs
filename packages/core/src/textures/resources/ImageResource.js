@@ -1,4 +1,4 @@
-import determineCrossOrigin from '../../utils/determineCrossOrigin';
+import { determineCrossOrigin } from '@pixi/utils';
 import TextureResource from './TextureResource';
 
 export default class ImageResource extends TextureResource

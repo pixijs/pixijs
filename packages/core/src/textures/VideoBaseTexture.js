@@ -1,8 +1,6 @@
 import BaseTexture from './BaseTexture';
-import { uid, BaseTextureCache } from '../utils';
-import { shared } from '../ticker';
-import { UPDATE_PRIORITY } from '../const';
-import determineCrossOrigin from '../utils/determineCrossOrigin';
+import { uid, BaseTextureCache, determineCrossOrigin } from '@pixi/utils';
+import { shared, UPDATE_PRIORITY } from '@pixi/ticker';
 
 /**
  * A texture of a [playing] Video.

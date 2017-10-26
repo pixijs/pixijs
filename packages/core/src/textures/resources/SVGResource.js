@@ -1,6 +1,4 @@
-import {
-    decomposeDataUri, getSvgSize, uid,
-} from '../../utils';
+import { decomposeDataUri, getSvgSize, uid } from '@pixi/utils';
 import TextureResource from './TextureResource';
 
 export default class SVGResource extends TextureResource

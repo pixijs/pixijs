@@ -1,12 +1,10 @@
-import {
-    uid, BaseTextureCache, TextureCache,
-} from '../utils';
+import { uid, BaseTextureCache, TextureCache } from '@pixi/utils';
 
-import { FORMATS, TARGETS, TYPES, SCALE_MODES } from '../const';
+import { FORMATS, TARGETS, TYPES, SCALE_MODES } from '@pixi/constants';
 import BufferResource from './resources/BufferResource';
 import createResource from './resources/createResource';
 
-import settings from '../settings';
+import { settings } from '@pixi/settings';
 import EventEmitter from 'eventemitter3';
 import bitTwiddle from 'bit-twiddle';
 

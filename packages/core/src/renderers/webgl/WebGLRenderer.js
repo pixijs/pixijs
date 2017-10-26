@@ -1,5 +1,5 @@
 import SystemRenderer from '../SystemRenderer';
-import { sayHello, pluginTarget } from '../../utils';
+import { sayHello, pluginTarget } from '@pixi/utils';
 import MaskSystem from './systems/MaskSystem';
 import StencilSystem from './systems/StencilSystem';
 import FilterSystem from './systems/FilterSystem';
@@ -13,9 +13,9 @@ import ShaderSystem from './systems/shader/ShaderSystem';
 import ContextSystem from './systems/ContextSystem';
 import BatchSystem from './systems/BatchSystem';
 // import TextureGCSystem from './systems/textures/TextureGCSystem';
-import { RENDERER_TYPE } from '../../const';
+import { RENDERER_TYPE } from '@pixi/constants';
 import UniformGroup from '../../shader/UniformGroup';
-import { Matrix } from '../../math';
+import { Matrix } from '@pixi/math';
 import Runner from 'mini-runner';
 
 /**

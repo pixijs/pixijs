@@ -1,7 +1,7 @@
 import { GLTexture } from 'pixi-gl-core';
-import { WRAP_MODES, SCALE_MODES } from '../../const';
+import { WRAP_MODES, SCALE_MODES } from '@pixi/constants';
 import RenderTarget from './utils/RenderTarget';
-import { removeItems } from '../../utils';
+import { removeItems } from '@pixi/utils';
 
 /**
  * Helper class to create a webGL Texture

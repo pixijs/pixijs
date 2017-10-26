@@ -1,7 +1,7 @@
 import WebGLSystem from './WebGLSystem';
 import RenderTarget from '../utils/RenderTarget';
 import Quad from '../utils/Quad';
-import { Rectangle } from '../../../math';
+import { Rectangle } from '@pixi/math';
 import Shader from '../../../shader/Shader';
 import * as filterTransforms from '../filters/filterTransforms';
 import bitTwiddle from 'bit-twiddle';

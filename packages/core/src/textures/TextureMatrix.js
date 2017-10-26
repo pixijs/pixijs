@@ -1,4 +1,4 @@
-import { default as Matrix } from '../math/Matrix';
+import { Matrix } from '@pixi/math';
 
 const tempMat = new Matrix();
 

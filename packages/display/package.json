@@ -29,7 +29,6 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/core": "^5.0.0-alpha",
     "@pixi/settings": "^5.0.0-alpha",
     "@pixi/math": "^5.0.0-alpha",
     "@pixi/utils": "^5.0.0-alpha",

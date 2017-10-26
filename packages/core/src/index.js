@@ -13,13 +13,14 @@
  */
 export const VERSION = '__VERSION__';
 
-// import * as utils from './utils';
-// import * as ticker from './ticker';
-import settings from './settings';
+export * from '@pixi/math';
+import * as utils from '@pixi/utils';
+import * as ticker from '@pixi/ticker';
+import { settings } from '@pixi/settings';
 import CanvasRenderer from './renderers/canvas/CanvasRenderer';
 import WebGLRenderer from './renderers/webgl/WebGLRenderer';
 
-export { settings, /* utils,*/ /* ticker,*/ CanvasRenderer, WebGLRenderer };
+export { settings, utils, ticker, CanvasRenderer, WebGLRenderer };
 
 export { default as FrameBuffer } from './textures/FrameBuffer';
 export { default as CubeTexture } from './textures/CubeTexture';

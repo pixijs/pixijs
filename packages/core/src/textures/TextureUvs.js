@@ -1,4 +1,4 @@
-import GroupD8 from '../math/GroupD8';
+import { GroupD8 } from '@pixi/math';
 
 /**
  * A standard object to store the Uvs of a texture

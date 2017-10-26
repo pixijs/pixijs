@@ -1,4 +1,4 @@
-import createIndicesForQuads from '../../../utils/createIndicesForQuads';
+import { createIndicesForQuads } from '@pixi/utils';
 import Geometry from '../../../geometry/Geometry';
 
 /**

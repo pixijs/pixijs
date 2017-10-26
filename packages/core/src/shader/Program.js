@@ -1,7 +1,6 @@
 import extractUniformsFromSrc from './extractUniformsFromSrc';
 import * as shaderUtils from '../renderers/webgl/systems/shader/shader';
-import { ProgramCache } from '../utils';
-import getTestContext from '../utils/getTestContext';
+import { ProgramCache, getTestContext } from '@pixi/utils';
 import defaultFragment from './defaultProgram.frag';
 import defaultVertex from './defaultProgram.vert';
 

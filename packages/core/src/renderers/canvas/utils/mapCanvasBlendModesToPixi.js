@@ -1,4 +1,4 @@
-import { BLEND_MODES } from '../../../const';
+import { BLEND_MODES } from '@pixi/constants';
 import canUseNewCanvasBlendModes from './canUseNewCanvasBlendModes';
 
 /**

@@ -1,8 +1,8 @@
 {
-  "name": "@pixi/application",
+  "name": "@pixi/text",
   "version": "5.0.0-alpha",
-  "main": "lib/application.js",
-  "module": "lib/application.es.js",
+  "main": "lib/text.js",
+  "module": "lib/text.es.js",
   "description": "PixiJS Application",
   "author": "Mat Groves",
   "contributors": [

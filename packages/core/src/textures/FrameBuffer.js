@@ -1,5 +1,5 @@
 import Texture from './BaseTexture';
-import { FORMATS, TYPES } from './../const';
+import { FORMATS, TYPES } from '@pixi/constants';
 
 export default class FrameBuffer
 {

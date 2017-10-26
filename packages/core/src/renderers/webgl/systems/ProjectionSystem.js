@@ -1,5 +1,5 @@
 import WebGLSystem from './WebGLSystem';
-import { Matrix } from '../../../math';
+import { Matrix } from '@pixi/math';
 
 /**
  * @class

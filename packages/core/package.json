@@ -35,7 +35,12 @@
     "ismobilejs": "^0.4.0",
     "pixi-gl-core": "^1.0.3",
     "mini-runner": "^1.0.1",
-    "@pixi/math": "^5.0.0-alpha"
+    "@pixi/math": "^5.0.0-alpha",
+    "@pixi/constants": "^5.0.0-alpha",
+    "@pixi/settings": "^5.0.0-alpha",
+    "@pixi/utils": "^5.0.0-alpha",
+    "@pixi/ticker": "^5.0.0-alpha",
+    "@pixi/display": "^5.0.0-alpha"
   },
   "devDependencies": {
     "@tools/build": "^5.0.0-alpha",

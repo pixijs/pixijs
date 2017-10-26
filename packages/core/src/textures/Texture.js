@@ -3,9 +3,9 @@ import ImageResource from './resources/ImageResource';
 import CanvasResource from './resources/CanvasResource';
 import TextureUvs from './TextureUvs';
 import EventEmitter from 'eventemitter3';
-import settings from '../settings';
-import { Rectangle } from '../math';
-import { uid, TextureCache, getResolutionOfUrl } from '../utils';
+import { settings } from '@pixi/settings';
+import { Rectangle } from '@pixi/math';
+import { uid, TextureCache, getResolutionOfUrl } from '@pixi/utils';
 
 /**
  * A texture stores the information that represents an image or part of an image. It cannot be added

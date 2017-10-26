@@ -1,13 +1,13 @@
-# @pixi/application
+# @pixi/text
 
 ## Installation
 
 ```bash
-npm install @pixi/application
+npm install @pixi/text
 ```
 
 ## Usage
 
 ```js
-import * as application from '@pixi/application';
+import * as text from '@pixi/text';
 ```

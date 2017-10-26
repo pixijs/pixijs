@@ -1,6 +1,6 @@
 import WebGLSystem from '../WebGLSystem';
 import GLTexture from './GLTexture';
-import { removeItems } from '../../../../utils';
+import { removeItems } from '@pixi/utils';
 
 /**
  * @class

@@ -1,6 +1,6 @@
 import Texture from './BaseTexture';
 import ImageResource from './resources/ImageResource';
-import { TARGETS } from './../const';
+import { TARGETS } from '@pixi/constants';
 
 export default class CubeTexture extends Texture
 {

@@ -1,8 +1,8 @@
-import { hex2string, hex2rgb } from '../utils';
+import { hex2string, hex2rgb } from '@pixi/utils';
 import { Matrix, Rectangle } from '@math/math';
-import { RENDERER_TYPE } from '../const';
-import settings from '../settings';
-import Container from '../display/Container';
+import { RENDERER_TYPE } from '@pixi/constants';
+import { settings } from '@pixi/settings';
+import { Container } from '@pixi/display';
 import RenderTexture from '../textures/RenderTexture';
 import EventEmitter from 'eventemitter3';
 

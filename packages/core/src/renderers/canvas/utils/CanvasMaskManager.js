@@ -1,4 +1,4 @@
-import { SHAPES } from '../../../const';
+import { SHAPES } from '@pixi/math';
 
 /**
  * A set of functions used to handle masking.

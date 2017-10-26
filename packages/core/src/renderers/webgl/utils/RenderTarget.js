@@ -1,6 +1,6 @@
-import { Rectangle, Matrix } from '../../../math';
-import { SCALE_MODES } from '../../../const';
-import settings from '../../../settings';
+import { Rectangle, Matrix } from '@pixi/math';
+import { SCALE_MODES } from '@pixi/constants';
+import { settings } from '@pixi/settings';
 import { GLFramebuffer } from 'pixi-gl-core';
 
 /**

@@ -2,9 +2,9 @@ import SystemRenderer from '../SystemRenderer';
 import CanvasMaskManager from './utils/CanvasMaskManager';
 import CanvasRenderTarget from './utils/CanvasRenderTarget';
 import mapCanvasBlendModesToPixi from './utils/mapCanvasBlendModesToPixi';
-import { pluginTarget } from '../../utils';
-import { RENDERER_TYPE, SCALE_MODES, BLEND_MODES } from '../../const';
-import settings from '../../settings';
+import { pluginTarget } from '@pixi/utils';
+import { RENDERER_TYPE, SCALE_MODES, BLEND_MODES } from '@pixi/constants';
+import { settings } from '@pixi/settings';
 
 /**
  * The CanvasRenderer draws the scene and all its content onto a 2d canvas. This renderer should
