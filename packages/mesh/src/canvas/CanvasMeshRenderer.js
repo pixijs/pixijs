@@ -1,4 +1,5 @@
-import { DRAW_MODES, CanvasRenderer } from '@pixi/core';
+import { CanvasRenderer } from '@pixi/core';
+import { DRAW_MODES } from '@pixi/constants';
 
 /**
  * Renderer dedicated to meshes.

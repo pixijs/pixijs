@@ -1,13 +1,8 @@
-import {
-    ticker,
-    settings,
-    UPDATE_PRIORITY,
-    Container,
-    Texture,
-    BaseTexture,
-    Text,
-    TextStyle,
-    TextMetrics } from '@pixi/core';
+import { Texture, BaseTexture } from '@pixi/core';
+import { ticker, UPDATE_PRIORITY } from '@pixi/ticker';
+import { settings } from '@pixi/settings';
+import { Container } from '@pixi/display';
+import { Text, TextStyle, TextMetrics } from '@pixi/text';
 import CountLimiter from './limiters/CountLimiter';
 
 /**

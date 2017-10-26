@@ -1,4 +1,4 @@
-import { DisplayObject, Container } from '@pixi/core';
+import { DisplayObject, Container } from '@pixi/display';
 
 /**
  * The instance name of the object.

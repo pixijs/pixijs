@@ -1,4 +1,8 @@
-import { WRAP_MODES, Matrix, ObjectRenderer, Shader, Quad, utils, WebGLRenderer } from '@pixi/core';
+import { ObjectRenderer, Shader, WebGLRenderer } from '@pixi/core';
+import { WRAP_MODES } from '@pixi/constants';
+import { Matrix, Quad } from '@pixi/math';
+import { premultiplyTintToRgba, correctBlendMode } from '@pixi/utils';
+
 import vertex from './tilingSprite.vert';
 import fragment from './tilingSprite.frag';
 import fragmentSimple from './tilingSprite_simple.frag';
@@ -116,7 +120,7 @@ export default class TilingSpriteRenderer extends ObjectRenderer
         }
 
         shader.uniforms.uTransform = tempMat.toArray(true);
-        shader.uniforms.uColor = utils.premultiplyTintToRgba(ts.tint, ts.worldAlpha,
+        shader.uniforms.uColor = premultiplyTintToRgba(ts.tint, ts.worldAlpha,
             shader.uniforms.uColor, baseTex.premultiplyAlpha);
         shader.uniforms.translationMatrix = ts.transform.worldTransform.toArray(true);
         shader.uniforms.uSampler = tex;
@@ -124,7 +128,7 @@ export default class TilingSpriteRenderer extends ObjectRenderer
         renderer.shader.bind(shader);
         renderer.geometry.bind(quad);// , renderer.shader.getGLShader());
 
-        renderer.setBlendMode(utils.correctBlendMode(ts.blendMode, baseTex.premultiplyAlpha));
+        renderer.setBlendMode(correctBlendMode(ts.blendMode, baseTex.premultiplyAlpha));
         renderer.geometry.draw(this.renderer.gl.TRIANGLES, 6, 0);
     }
 }

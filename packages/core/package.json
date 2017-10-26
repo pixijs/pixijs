@@ -35,7 +35,7 @@
     "ismobilejs": "^0.4.0",
     "pixi-gl-core": "^1.0.3",
     "mini-runner": "^1.0.1",
-    "remove-array-items": "^1.0.0"
+    "@pixi/math": "^5.0.0-alpha"
   },
   "devDependencies": {
     "@tools/build": "^5.0.0-alpha",

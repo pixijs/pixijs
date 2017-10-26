@@ -1,4 +1,9 @@
-import { Container, ObservablePoint, Point, utils, Sprite, settings, Rectangle, Texture } from '@pixi/core';
+import { Texture } from '@pixi/core';
+import { Container } from '@pixi/display';
+import { ObservablePoint, Point, Rectangle } from '@pixi/math';
+import { settings } from '@pixi/settings';
+import { Sprite } from '@pixi/sprite';
+import { removeItems, getResolutionOfUrl } from '@pixi/utils';
 
 /**
  * A BitmapText object will create a line or multiple lines of text using bitmap font. To
@@ -171,7 +176,7 @@ export default class BitmapText extends Container
 
             if (lastSpace !== -1 && this._maxWidth > 0 && pos.x * scale > this._maxWidth)
             {
-                utils.removeItems(chars, lastSpace - spacesRemoved, i - lastSpace);
+                removeItems(chars, lastSpace - spacesRemoved, i - lastSpace);
                 i = lastSpace;
                 lastSpace = -1;
                 ++spacesRemoved;
@@ -509,7 +514,7 @@ export default class BitmapText extends Container
         const info = xml.getElementsByTagName('info')[0];
         const common = xml.getElementsByTagName('common')[0];
         const fileName = xml.getElementsByTagName('page')[0].getAttribute('file');
-        const res = utils.getResolutionOfUrl(fileName, settings.RESOLUTION);
+        const res = getResolutionOfUrl(fileName, settings.RESOLUTION);
 
         data.font = info.getAttribute('face');
         data.size = parseInt(info.getAttribute('size'), 10);

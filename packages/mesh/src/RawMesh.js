@@ -1,4 +1,7 @@
-import { Point, Polygon, Container, DRAW_MODES, State } from '@pixi/core';
+import { State } from '@pixi/core';
+import { DRAW_MODES } from '@pixi/constants';
+import { Point, Polygon } from '@pixi/math';
+import { Container } from '@pixi/display';
 
 const tempPoint = new Point();
 const tempPolygon = new Polygon();

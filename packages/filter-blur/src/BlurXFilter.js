@@ -1,4 +1,5 @@
-import { Filter, settings } from '@pixi/core';
+import { Filter } from '@pixi/core';
+import { settings } from '@pixi/settings';
 import generateBlurVertSource from './generateBlurVertSource';
 import generateBlurFragSource from './generateBlurFragSource';
 import getMaxBlurKernelSize from './getMaxBlurKernelSize';

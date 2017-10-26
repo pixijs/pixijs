@@ -29,7 +29,9 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/core": "^5.0.0-alpha"
+    "@pixi/core": "^5.0.0-alpha",
+    "@pixi/sprite": "^5.0.0-alpha",
+    "@pixi/ticker": "^5.0.0-alpha"
   },
   "devDependencies": {
     "@tools/build": "^5.0.0-alpha",

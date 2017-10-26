@@ -1,4 +1,5 @@
-import { Filter, settings } from '@pixi/core';
+import { Filter } from '@pixi/core';
+import { settings } from '@pixi/settings';
 import BlurXFilter from './BlurXFilter';
 import BlurYFilter from './BlurYFilter';
 

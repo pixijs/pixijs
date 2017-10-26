@@ -1,13 +1,8 @@
-import {
-    Point,
-    CanvasTinter,
-    Sprite,
-    TransformStatic,
-    TextureMatrix,
-    CanvasRenderTarget,
-    Rectangle,
-    Texture,
-    utils } from '@pixi/core';
+import { CanvasTinter, TextureMatrix, CanvasRenderTarget, Texture } from '@pixi/core';
+import { Point, Rectangle } from '@pixi/math';
+import { TextureCache } from '@pixi/utils';
+import { Sprite } from '@pixi/sprite';
+import { TransformStatic } from '@pixi/display';
 
 const tempPoint = new Point();
 
@@ -373,7 +368,7 @@ export default class TilingSprite extends Sprite
      */
     static fromFrame(frameId, width, height)
     {
-        const texture = utils.TextureCache[frameId];
+        const texture = TextureCache[frameId];
 
         if (!texture)
         {

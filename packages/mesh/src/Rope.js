@@ -1,5 +1,5 @@
 import Mesh from './Mesh';
-import { Point } from '@pixi/core';
+import { Point } from '@pixi/math';
 
 /**
  * The rope allows you to draw a texture across several points and them manipulate these points

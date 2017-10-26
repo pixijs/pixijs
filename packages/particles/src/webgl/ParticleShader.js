@@ -1,5 +1,5 @@
 import { GLShader } from 'pixi-gl-core';
-import { PRECISION } from '@pixi/core';
+import { PRECISION } from '@pixi/constants';
 
 /**
  * @class

@@ -1,4 +1,8 @@
-import { utils, DisplayObject, Point, ticker, UPDATE_PRIORITY, WebGLRenderer, CanvasRenderer } from '@pixi/core';
+import { WebGLRenderer, CanvasRenderer } from '@pixi/core';
+import { ticker, UPDATE_PRIORITY } from '@pixi/ticker';
+import { Point } from '@pixi/math';
+import { DisplayObject } from '@pixi/display';
+import { mixins } from '@pixi/utils';
 import InteractionData from './InteractionData';
 import InteractionEvent from './InteractionEvent';
 import InteractionTrackingData from './InteractionTrackingData';
@@ -6,7 +10,7 @@ import EventEmitter from 'eventemitter3';
 import interactiveTarget from './interactiveTarget';
 
 // Mix interactiveTarget into DisplayObject.prototype, after deprecation has been handled
-utils.mixins.delayMixin(
+mixins.delayMixin(
     DisplayObject.prototype,
     interactiveTarget
 );

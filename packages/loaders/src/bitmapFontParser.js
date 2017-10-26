@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { utils } from '@pixi/core';
+import { TextureCache } from '@pixi/utils';
 import { Resource } from 'resource-loader';
 import { BitmapText } from '@pixi/text-bitmap';
 
@@ -69,10 +69,10 @@ export default function ()
 
         const textureUrl = xmlUrl + resource.data.getElementsByTagName('page')[0].getAttribute('file');
 
-        if (utils.TextureCache[textureUrl])
+        if (TextureCache[textureUrl])
         {
             // reuse existing texture
-            parse(resource, utils.TextureCache[textureUrl]);
+            parse(resource, TextureCache[textureUrl]);
             next();
         }
         else

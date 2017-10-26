@@ -1,4 +1,5 @@
-import { WebGLRenderer, BaseTexture, Graphics } from '@pixi/core';
+import { WebGLRenderer, BaseTexture } from '@pixi/core';
+import { Graphics } from '@pixi/graphics';
 import BasePrepare from '../BasePrepare';
 
 /**

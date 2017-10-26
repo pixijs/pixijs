@@ -30,6 +30,10 @@
   ],
   "dependencies": {
     "@pixi/core": "^5.0.0-alpha",
+    "@pixi/constants": "^5.0.0-alpha",
+    "@pixi/utils": "^5.0.0-alpha",
+    "@pixi/display": "^5.0.0-alpha",
+    "@pixi/math": "^5.0.0-alpha",
     "pixi-gl-core": "^1.0.3"
   },
   "devDependencies": {

@@ -1,4 +1,5 @@
-import { Rectangle, RenderTexture, CanvasRenderTarget, WebGLRenderer } from '@pixi/core';
+import { RenderTexture, CanvasRenderTarget, WebGLRenderer } from '@pixi/core';
+import { Rectangle } from '@pixi/math';
 
 const TEMP_RECT = new Rectangle();
 const BYTES_PER_PIXEL = 4;

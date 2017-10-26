@@ -1,5 +1,5 @@
 import { hex2string, hex2rgb } from '../utils';
-import { Matrix, Rectangle } from '../math';
+import { Matrix, Rectangle } from '@math/math';
 import { RENDERER_TYPE } from '../const';
 import settings from '../settings';
 import Container from '../display/Container';

@@ -1,4 +1,6 @@
-import { utils, Container, BLEND_MODES } from '@pixi/core';
+import { BLEND_MODES } from '@pixi/constants';
+import { hex2rgb } from '@pixi/utils';
+import { Container } from '@pixi/display';
 
 /**
  * The ParticleContainer class is a really fast version of the Container built solely for speed,
@@ -190,7 +192,7 @@ export default class ParticleContainer extends Container
     set tint(value) // eslint-disable-line require-jsdoc
     {
         this._tint = value;
-        utils.hex2rgb(value, this.tintRgb);
+        hex2rgb(value, this.tintRgb);
     }
 
     /**

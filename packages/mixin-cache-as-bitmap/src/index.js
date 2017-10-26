@@ -1,4 +1,8 @@
-import { Sprite, Texture, BaseTexture, RenderTexture, utils, DisplayObject, Matrix } from '@pixi/core';
+import { Texture, BaseTexture, RenderTexture } from '@pixi/core';
+import { Sprite } from '@pixi/sprite';
+import { DisplayObject } from '@pixi/display';
+import { Matrix } from '@pixi/math';
+import { uid } from '@pixi/utils';
 
 const _tempMatrix = new Matrix();
 
@@ -186,7 +190,7 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
 
     const renderTexture = RenderTexture.create(bounds.width | 0, bounds.height | 0);
 
-    const textureCacheId = `cacheAsBitmap_${utils.uid()}`;
+    const textureCacheId = `cacheAsBitmap_${uid()}`;
 
     this._cacheData.textureCacheId = textureCacheId;
 
@@ -297,7 +301,7 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
 
     const renderTexture = RenderTexture.create(bounds.width | 0, bounds.height | 0);
 
-    const textureCacheId = `cacheAsBitmap_${utils.uid()}`;
+    const textureCacheId = `cacheAsBitmap_${uid()}`;
 
     this._cacheData.textureCacheId = textureCacheId;
 

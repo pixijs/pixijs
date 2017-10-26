@@ -1,5 +1,7 @@
 import RawMesh from './RawMesh';
-import { Geometry, Program, Shader, BLEND_MODES, utils } from '@pixi/core';
+import { Geometry, Program, Shader } from '@pixi/core';
+import { BLEND_MODES } from '@pixi/constants';
+import { hex2rgb } from '@pixi/utils';
 import vertex from './webgl/mesh.vert';
 import fragment from './webgl/mesh.frag';
 
@@ -76,7 +78,7 @@ export default class Mesh extends RawMesh
     set tint(value)
     {
         this._tint = value;
-        utils.hex2rgb(this._tint, this.uniforms.tint);
+        hex2rgb(this._tint, this.uniforms.tint);
     }
 
     /**

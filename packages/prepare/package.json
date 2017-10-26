@@ -29,7 +29,12 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/core": "^5.0.0-alpha"
+    "@pixi/core": "^5.0.0-alpha",
+    "@pixi/graphics": "^5.0.0-alpha",
+    "@pixi/ticker": "^5.0.0-alpha",
+    "@pixi/settings": "^5.0.0-alpha",
+    "@pixi/display": "^5.0.0-alpha",
+    "@pixi/text": "^5.0.0-alpha"
   },
   "devDependencies": {
     "@tools/build": "^5.0.0-alpha",

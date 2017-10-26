@@ -1,5 +1,5 @@
 // import { VertexArrayObject } from 'pixi-gl-core';
-import { utils } from '@pixi/core';
+import { createIndicesForQuads } from '@pixi/utils';
 import { GLBuffer } from 'pixi-gl-core';
 
 /**
@@ -111,7 +111,7 @@ export default class ParticleBuffer
          *
          * @member {Uint16Array}
          */
-        this.indices = utils.createIndicesForQuads(this.size);
+        this.indices = createIndicesForQuads(this.size);
         this.indexBuffer = GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW);
 
         this.dynamicStride = 0;

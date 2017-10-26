@@ -1,0 +1,45 @@
+{
+  "name": "@pixi/graphics",
+  "version": "5.0.0-alpha",
+  "main": "lib/graphics.js",
+  "module": "lib/graphics.es.js",
+  "description": "PixiJS Application",
+  "author": "Mat Groves",
+  "contributors": [
+    "Matt Karl <matt@mattkarl.com>"
+  ],
+  "homepage": "http://pixijs.com/",
+  "bugs": "https://github.com/pixijs/pixi.js/issues",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pixijs/pixi.js.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build:dev": "rollup -c && rollup -c -f cjs",
+    "build": "rollup -cp && rollup -cp -f cjs",
+    "watch": "rollup -cw",
+    "postversion": "npm run build",
+    "test": "npm run build"
+  },
+  "files": [
+    "lib"
+  ],
+  "dependencies": {
+    "@pixi/constants": "^5.0.0-alpha",
+    "@pixi/core": "^5.0.0-alpha",
+    "@pixi/display": "^5.0.0-alpha",
+    "@pixi/sprite": "^5.0.0-alpha",
+    "@pixi/utils": "^5.0.0-alpha",
+    "@pixi/math": "^5.0.0-alpha",
+    "earcut": "^2.0.7"
+  },
+  "devDependencies": {
+    "@tools/build": "^5.0.0-alpha",
+    "rollup": "^0.50.0",
+    "rollup-watch": "^4.3.1"
+  }
+}

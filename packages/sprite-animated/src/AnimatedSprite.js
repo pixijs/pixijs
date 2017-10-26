@@ -1,4 +1,6 @@
-import { Sprite, Texture, ticker, UPDATE_PRIORITY } from '@pixi/core';
+import { Texture } from '@pixi/core';
+import { Sprite } from '@pixi/sprite';
+import { ticker, UPDATE_PRIORITY } from '@pixi/ticker';
 
 /**
  * @typedef FrameObject

@@ -30,6 +30,8 @@
   ],
   "dependencies": {
     "@pixi/core": "^5.0.0-alpha",
+    "@pixi/utils": "^5.0.0-alpha",
+    "@pixi/display": "^5.0.0-alpha",
     "ismobilejs": "^0.4.0"
   },
   "devDependencies": {
