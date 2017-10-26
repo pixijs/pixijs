@@ -1,16 +1,16 @@
-'use strict';
+const { Circle } = require('../');
 
 describe('PIXI.Circle', function ()
 {
     it('should create a new circle', function ()
     {
-        const circ1 = new PIXI.Circle();
+        const circ1 = new Circle();
 
         expect(circ1.x).to.equal(0);
         expect(circ1.y).to.equal(0);
         expect(circ1.radius).to.equal(0);
 
-        const circ2 = new PIXI.Circle(10, 10, 5);
+        const circ2 = new Circle(10, 10, 5);
 
         expect(circ2.x).to.equal(10);
         expect(circ2.y).to.equal(10);
@@ -19,7 +19,7 @@ describe('PIXI.Circle', function ()
 
     it('should clone a new circle', function ()
     {
-        const circ1 = new PIXI.Circle(10, 10, 5);
+        const circ1 = new Circle(10, 10, 5);
 
         expect(circ1.x).to.equal(10);
         expect(circ1.y).to.equal(10);
@@ -35,7 +35,7 @@ describe('PIXI.Circle', function ()
 
     it('should check if point is within circle', function ()
     {
-        const circ1 = new PIXI.Circle(10, 10, 5);
+        const circ1 = new Circle(10, 10, 5);
 
         expect(circ1.contains(10, 10)).to.be.true;
         expect(circ1.contains(10, 15)).to.be.true;
@@ -54,14 +54,14 @@ describe('PIXI.Circle', function ()
         expect(circ1.contains(11, 15)).to.be.false;
         expect(circ1.contains(0, 0)).to.be.false;
 
-        const circ2 = new PIXI.Circle(10, 10, 0);
+        const circ2 = new Circle(10, 10, 0);
 
         expect(circ2.contains(10, 10)).to.be.false;
     });
 
     it('should return framing rectangle', function ()
     {
-        const circ1 = new PIXI.Circle(10, 10, 5);
+        const circ1 = new Circle(10, 10, 5);
         const rect1 = circ1.getBounds();
 
         expect(rect1.left).to.equal(5);

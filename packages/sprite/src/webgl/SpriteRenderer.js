@@ -6,7 +6,7 @@ import { Geometry,
 import { settings } from '@pixi/settings';
 import { createIndicesForQuads, premultiplyBlendMode, premultiplyTint } from '@pixi/utils';
 import bitTwiddle from 'bit-twiddle';
-import Buffer from './BatchBuffer';
+import BatchBuffer from './BatchBuffer';
 import generateMultiTextureShader from './generateMultiTextureShader';
 
 let TICK = 0;
@@ -57,7 +57,7 @@ export default class SpriteRenderer extends ObjectRenderer
         this.buffers = [];
         for (let i = 1; i <= bitTwiddle.nextPow2(this.size); i *= 2)
         {
-            this.buffers.push(new Buffer(i * 4 * this.vertByteSize));
+            this.buffers.push(new BatchBuffer(i * 4 * this.vertByteSize));
         }
 
         /**

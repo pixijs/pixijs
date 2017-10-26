@@ -1,5 +1,3 @@
-'use strict';
-
 describe('PIXI.mesh.Plane', function ()
 {
     // Planes currently require a GPU to work..
@@ -7,7 +5,7 @@ describe('PIXI.mesh.Plane', function ()
     /*
     it('should create a plane from an external image', function (done)
     {
-        PIXI.loader.add('testBitmap', `file://${__dirname}/../renders/tests/assets/bitmap-1.png`)
+        PIXI.loader.add('testBitmap', `file://${__dirname}/resources/bitmap-1.png`)
             .load(function (loader, resources)
             {
                 const plane = new PIXI.mesh.Plane(resources.testBitmap.texture, 100, 100);
@@ -46,5 +44,5 @@ describe('PIXI.mesh.Plane', function ()
             expect(plane.containsPoint(point)).to.be.false;
         });
     });
-     */
+    */
 });

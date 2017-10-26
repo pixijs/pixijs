@@ -1,5 +1,3 @@
-'use strict';
-
 module.exports.async = function (done)
 {
     const url = `file://${__dirname}/assets/bitmap-1.png`;

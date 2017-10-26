@@ -1,10 +1,10 @@
-'use strict';
+const { TextStyle } = require('../');
 
 describe('PIXI.TextStyle', function ()
 {
     it('reset reverts style to default', function ()
     {
-        const textStyle = new PIXI.TextStyle();
+        const textStyle = new TextStyle();
         const defaultFontSize = textStyle.fontSize;
 
         textStyle.fontSize = 1000;
@@ -16,7 +16,7 @@ describe('PIXI.TextStyle', function ()
 
     it('should clone correctly', function ()
     {
-        const textStyle = new PIXI.TextStyle({ fontSize: 1000 });
+        const textStyle = new TextStyle({ fontSize: 1000 });
 
         const clonedTextStyle = textStyle.clone();
 
@@ -26,7 +26,7 @@ describe('PIXI.TextStyle', function ()
 
     it('should assume pixel fonts', function ()
     {
-        const style = new PIXI.TextStyle({ fontSize: 72 });
+        const style = new TextStyle({ fontSize: 72 });
         const font = style.toFontString();
 
         expect(font).to.be.a.string;
@@ -35,7 +35,7 @@ describe('PIXI.TextStyle', function ()
 
     it('should handle multiple fonts as array', function ()
     {
-        const style = new PIXI.TextStyle({
+        const style = new TextStyle({
             fontFamily: ['Georgia', 'Arial', 'sans-serif'],
         });
 
@@ -44,7 +44,7 @@ describe('PIXI.TextStyle', function ()
 
     it('should handle multiple fonts as string', function ()
     {
-        const style = new PIXI.TextStyle({
+        const style = new TextStyle({
             fontFamily: 'Georgia, "Arial", sans-serif',
         });
 

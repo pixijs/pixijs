@@ -1,4 +1,4 @@
-'use strict';
+const { TransformStatic } = require('../');
 
 describe('PIXI.TransformStatic', function ()
 {
@@ -8,9 +8,9 @@ describe('PIXI.TransformStatic', function ()
         {
             const eps = 1e-3;
 
-            const transform = new PIXI.TransformStatic();
-            const parent = new PIXI.TransformStatic();
-            const otherTransform = new PIXI.TransformStatic();
+            const transform = new TransformStatic();
+            const parent = new TransformStatic();
+            const otherTransform = new TransformStatic();
 
             transform.position.set(20, 10);
             transform.scale.set(-2, -3);
@@ -36,9 +36,9 @@ describe('PIXI.TransformStatic', function ()
         {
             const eps = 1e-3;
 
-            const transform = new PIXI.TransformStatic();
-            const parent = new PIXI.TransformStatic();
-            const otherTransform = new PIXI.TransformStatic();
+            const transform = new TransformStatic();
+            const parent = new TransformStatic();
+            const otherTransform = new TransformStatic();
 
             transform.position.set(20, 10);
             transform.scale.set(2, -3);
@@ -66,9 +66,9 @@ describe('PIXI.TransformStatic', function ()
 
             const eps = 1e-3;
 
-            const transform = new PIXI.TransformStatic();
-            const parent = new PIXI.TransformStatic();
-            const otherTransform = new PIXI.TransformStatic();
+            const transform = new TransformStatic();
+            const parent = new TransformStatic();
+            const otherTransform = new TransformStatic();
 
             transform.position.set(387.8, 313.95);
             transform.scale.set(0.572, 4.101);

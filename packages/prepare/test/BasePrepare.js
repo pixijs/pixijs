@@ -1,11 +1,11 @@
-'use strict';
+const { BasePrepare } = require('../');
 
 describe('PIXI.prepare.BasePrepare', function ()
 {
     it('should create a new, empty, BasePrepare', function ()
     {
         const renderer = {};
-        const prep = new PIXI.prepare.BasePrepare(renderer);
+        const prep = new BasePrepare(renderer);
 
         expect(prep.renderer).to.equal(renderer);
         expect(prep.uploadHookHelper).to.be.null;
@@ -21,7 +21,7 @@ describe('PIXI.prepare.BasePrepare', function ()
     {
         function addHook() { /* empty */ }
         function uploadHook() { /* empty */ }
-        const prep = new PIXI.prepare.BasePrepare();
+        const prep = new BasePrepare();
 
         prep.registerFindHook(addHook);
         prep.registerUploadHook(uploadHook);
@@ -36,7 +36,7 @@ describe('PIXI.prepare.BasePrepare', function ()
 
     it('should call hooks and complete', function ()
     {
-        const prep = new PIXI.prepare.BasePrepare();
+        const prep = new BasePrepare();
         const uploadItem = {};
         const uploadHelper = {};
 
@@ -76,7 +76,7 @@ describe('PIXI.prepare.BasePrepare', function ()
 
     it('should call complete if no queue', function ()
     {
-        const prep = new PIXI.prepare.BasePrepare();
+        const prep = new BasePrepare();
 
         function addHook()
         {
@@ -94,7 +94,7 @@ describe('PIXI.prepare.BasePrepare', function ()
 
     it('should remove un-preparable items from queue', function ()
     {
-        const prep = new PIXI.prepare.BasePrepare();
+        const prep = new BasePrepare();
 
         const addHook = sinon.spy(function (item, queue)
         {
@@ -126,7 +126,7 @@ describe('PIXI.prepare.BasePrepare', function ()
 
     it('should remove destroyed items from queue', function ()
     {
-        const prep = new PIXI.prepare.BasePrepare();
+        const prep = new BasePrepare();
 
         const addHook = sinon.spy(function (item, queue)
         {
@@ -161,7 +161,7 @@ describe('PIXI.prepare.BasePrepare', function ()
 
     it('should attach to SharedTicker', function (done)
     {
-        const prep = new PIXI.prepare.BasePrepare();
+        const prep = new BasePrepare();
 
         const addHook = sinon.spy(function (item, queue)
         {

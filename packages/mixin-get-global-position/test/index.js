@@ -1,12 +1,14 @@
-'use strict';
+const { Container } = require('@pixi/display');
+
+require('../');
 
 describe('getGlobalPosition', function ()
 {
     it('should return correct global coordinates of a displayObject, without depending on its pivot', function ()
     {
-        const parent = new PIXI.Container();
+        const parent = new Container();
 
-        const container = new PIXI.Container();
+        const container = new Container();
 
         parent.addChild(container);
 

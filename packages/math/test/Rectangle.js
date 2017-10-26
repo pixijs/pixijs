@@ -1,10 +1,10 @@
-'use strict';
+const { Rectangle } = require('../');
 
 describe('PIXI.Rectangle', function ()
 {
     it('should create a new rectangle', function ()
     {
-        const rect = new PIXI.Rectangle(5, 5, 1, 1);
+        const rect = new Rectangle(5, 5, 1, 1);
 
         expect(rect.left).to.equal(5);
         expect(rect.top).to.equal(5);
@@ -14,7 +14,7 @@ describe('PIXI.Rectangle', function ()
 
     it('should cast quantities to number types', function ()
     {
-        const rect = new PIXI.Rectangle('5', '5', '1', '1');
+        const rect = new Rectangle('5', '5', '1', '1');
 
         expect(rect.left).to.equal(5);
         expect(rect.top).to.equal(5);
@@ -24,7 +24,7 @@ describe('PIXI.Rectangle', function ()
 
     it('should clone a new rectangle', function ()
     {
-        const rect1 = new PIXI.Rectangle(10, 10, 10, 10);
+        const rect1 = new Rectangle(10, 10, 10, 10);
 
         expect(rect1.x).to.equal(10);
         expect(rect1.y).to.equal(10);
@@ -42,8 +42,8 @@ describe('PIXI.Rectangle', function ()
 
     it('should copy from one rectangle to another', function ()
     {
-        const rect1 = new PIXI.Rectangle(10, 10, 10, 10);
-        const rect2 = new PIXI.Rectangle(2, 2, 5, 5);
+        const rect1 = new Rectangle(10, 10, 10, 10);
+        const rect2 = new Rectangle(2, 2, 5, 5);
 
         rect1.copy(rect2);
 
@@ -55,7 +55,7 @@ describe('PIXI.Rectangle', function ()
 
     it('should check if point is within rectangle', function ()
     {
-        const rect1 = new PIXI.Rectangle(10, 10, 10, 10);
+        const rect1 = new Rectangle(10, 10, 10, 10);
 
         expect(rect1.contains(10, 10)).to.be.true;
         expect(rect1.contains(10, 19)).to.be.true;
@@ -67,7 +67,7 @@ describe('PIXI.Rectangle', function ()
         expect(rect1.contains(20, 10)).to.be.false;
         expect(rect1.contains(21, 21)).to.be.false;
 
-        const rect2 = new PIXI.Rectangle(10, 10, 10, 0);
+        const rect2 = new Rectangle(10, 10, 10, 0);
 
         expect(rect2.contains(10, 10)).to.be.false;
         expect(rect2.contains(20, 20)).to.be.false;
@@ -79,8 +79,8 @@ describe('PIXI.Rectangle', function ()
 
     it('should enlarge rectangle', function ()
     {
-        const rect1 = new PIXI.Rectangle(10, 10, 10, 10);
-        const rect2 = new PIXI.Rectangle(15, 15, 10, 10);
+        const rect1 = new Rectangle(10, 10, 10, 10);
+        const rect2 = new Rectangle(15, 15, 10, 10);
 
         rect1.enlarge(rect2);
 
@@ -89,8 +89,8 @@ describe('PIXI.Rectangle', function ()
         expect(rect1.right).to.equal(25);
         expect(rect1.bottom).to.equal(25);
 
-        const rect3 = new PIXI.Rectangle(0, 0, 0, 0);
-        const rect4 = new PIXI.Rectangle(10, 10, 10, 10);
+        const rect3 = new Rectangle(0, 0, 0, 0);
+        const rect4 = new Rectangle(10, 10, 10, 10);
 
         rect4.enlarge(rect3);
 
@@ -103,7 +103,7 @@ describe('PIXI.Rectangle', function ()
     it('should pad a rectangle', function ()
     {
         // Pad with X & Y
-        const rect = new PIXI.Rectangle(10, 10, 10, 10);
+        const rect = new Rectangle(10, 10, 10, 10);
 
         rect.pad(10, 10);
 
@@ -113,7 +113,7 @@ describe('PIXI.Rectangle', function ()
         expect(rect.bottom).to.equal(30);
 
         // Pad with X
-        const rect1 = new PIXI.Rectangle(10, 10, 10, 10);
+        const rect1 = new Rectangle(10, 10, 10, 10);
 
         rect1.pad(10);
 
@@ -123,7 +123,7 @@ describe('PIXI.Rectangle', function ()
         expect(rect1.bottom).to.equal(30);
 
         // Pad with nothing
-        const rect2 = new PIXI.Rectangle(10, 10, 10, 10);
+        const rect2 = new Rectangle(10, 10, 10, 10);
 
         rect2.pad();
 
@@ -133,7 +133,7 @@ describe('PIXI.Rectangle', function ()
         expect(rect2.bottom).to.equal(20);
 
         // Pad with Y
-        const rect3 = new PIXI.Rectangle(10, 10, 10, 10);
+        const rect3 = new Rectangle(10, 10, 10, 10);
 
         rect3.pad(null, 10);
 
@@ -145,8 +145,8 @@ describe('PIXI.Rectangle', function ()
 
     it('should fit a rectangle', function ()
     {
-        const rect1 = new PIXI.Rectangle(0, 0, 10, 10);
-        const rect2 = new PIXI.Rectangle(-10, -10, 5, 5);
+        const rect1 = new Rectangle(0, 0, 10, 10);
+        const rect2 = new Rectangle(-10, -10, 5, 5);
 
         rect2.fit(rect1);
 
@@ -155,8 +155,8 @@ describe('PIXI.Rectangle', function ()
         expect(rect2.right).to.equal(0);
         expect(rect2.bottom).to.equal(0);
 
-        const rect3 = new PIXI.Rectangle(0, 0, 20, 20);
-        const rect4 = new PIXI.Rectangle(10, 0, 20, 20);
+        const rect3 = new Rectangle(0, 0, 20, 20);
+        const rect4 = new Rectangle(10, 0, 20, 20);
 
         rect3.fit(rect4);
 
@@ -168,7 +168,7 @@ describe('PIXI.Rectangle', function ()
 
     it('should generate an empty rectangle', function ()
     {
-        const rect = PIXI.Rectangle.EMPTY;
+        const rect = Rectangle.EMPTY;
 
         expect(rect.left).to.equal(0);
         expect(rect.top).to.equal(0);

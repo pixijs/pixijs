@@ -1,14 +1,17 @@
-'use strict';
+const { Container } = require('@pixi/display');
+const { Texture, BaseTexture } = require('@pixi/core');
+const { Point } = require('@pixi/math');
+const { TilingSprite } = require('../');
 
-describe('PIXI.TilingSprite', function ()
+describe('PIXI.extras.TilingSprite', function ()
 {
     describe('getBounds()', function ()
     {
         it('must have correct value according to _width, _height and anchor', function ()
         {
-            const parent = new PIXI.Container();
-            const texture = new PIXI.Texture(new PIXI.BaseTexture());
-            const tilingSprite = new PIXI.extras.TilingSprite(texture, 200, 300);
+            const parent = new Container();
+            const texture = new Texture(new BaseTexture());
+            const tilingSprite = new TilingSprite(texture, 200, 300);
 
             parent.addChild(tilingSprite);
 
@@ -27,19 +30,19 @@ describe('PIXI.TilingSprite', function ()
 
     it('checks if tilingSprite contains a point', function ()
     {
-        const texture = new PIXI.Texture(new PIXI.BaseTexture());
-        const tilingSprite = new PIXI.extras.TilingSprite(texture, 200, 300);
+        const texture = new Texture(new BaseTexture());
+        const tilingSprite = new TilingSprite(texture, 200, 300);
 
-        expect(tilingSprite.containsPoint(new PIXI.Point(0, 0))).to.equal(true);
-        expect(tilingSprite.containsPoint(new PIXI.Point(10, 10))).to.equal(true);
-        expect(tilingSprite.containsPoint(new PIXI.Point(200, 300))).to.equal(false);
-        expect(tilingSprite.containsPoint(new PIXI.Point(300, 400))).to.equal(false);
+        expect(tilingSprite.containsPoint(new Point(0, 0))).to.equal(true);
+        expect(tilingSprite.containsPoint(new Point(10, 10))).to.equal(true);
+        expect(tilingSprite.containsPoint(new Point(200, 300))).to.equal(false);
+        expect(tilingSprite.containsPoint(new Point(300, 400))).to.equal(false);
     });
 
     it('gets and sets height and width correctly', function ()
     {
-        const texture = new PIXI.Texture(new PIXI.BaseTexture());
-        const tilingSprite = new PIXI.extras.TilingSprite(texture, 200, 300);
+        const texture = new Texture(new BaseTexture());
+        const tilingSprite = new TilingSprite(texture, 200, 300);
 
         tilingSprite.width = 400;
         tilingSprite.height = 600;

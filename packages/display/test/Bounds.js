@@ -1,13 +1,19 @@
-'use strict';
+const { Container } = require('../');
+const { RenderTexture, BaseRenderTexture, Texture } = require('@pixi/core');
+const { Sprite } = require('@pixi/sprite');
+const { Rectangle } = require('@pixi/math');
+const { Graphics } = require('@pixi/graphics');
+const { Text } = require('@pixi/text');
+// const { Plane } = require('@pixi/mesh');
 
 describe('getBounds', function ()
 {
     it('should register correct width/height with a LOADED Sprite', function ()
     {
-        const parent = new PIXI.Container();
-        const texture = PIXI.RenderTexture.create(10, 10);
+        const parent = new Container();
+        const texture = RenderTexture.create(10, 10);
 
-        const sprite = new PIXI.Sprite(texture);
+        const sprite = new Sprite(texture);
 
         parent.addChild(sprite);
 
@@ -41,8 +47,8 @@ describe('getBounds', function ()
 
     it('should register correct width/height with Graphics', function ()
     {
-        const parent = new PIXI.Container();
-        const graphics = new PIXI.Graphics();
+        const parent = new Container();
+        const graphics = new Graphics();
 
         let bounds = graphics.getBounds();
 
@@ -85,9 +91,9 @@ describe('getBounds', function ()
 
     it('should register correct width/height with an empty Container', function ()
     {
-        const parent = new PIXI.Container();
+        const parent = new Container();
 
-        const container = new PIXI.Container();
+        const container = new Container();
 
         parent.addChild(container);
 
@@ -114,14 +120,14 @@ describe('getBounds', function ()
 
     it('should register correct width/height with a Container', function ()
     {
-        const parent = new PIXI.Container();
+        const parent = new Container();
 
-        const container = new PIXI.Container();
+        const container = new Container();
 
-        const graphics = new PIXI.Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);
+        const graphics = new Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);
 
-        const texture = PIXI.RenderTexture.create(10, 10);
-        const sprite = new PIXI.Sprite(texture);
+        const texture = RenderTexture.create(10, 10);
+        const sprite = new Sprite(texture);
 
         container.addChild(sprite);
         container.addChild(graphics);
@@ -159,11 +165,11 @@ describe('getBounds', function ()
 
     it('should register correct width/height with an item that has already had its parent Container transformed', function ()
     {
-        const parent = new PIXI.Container();
+        const parent = new Container();
 
-        const container = new PIXI.Container();
+        const container = new Container();
 
-        const graphics = new PIXI.Graphics().beginFill(0xFF0000).drawRect(0, 0, 10, 10);
+        const graphics = new Graphics().beginFill(0xFF0000).drawRect(0, 0, 10, 10);
 
         parent.addChild(container);
         container.addChild(graphics);
@@ -189,11 +195,11 @@ describe('getBounds', function ()
     /*
     it('should register correct width/height with a Mesh', function ()
     {
-        const parent = new PIXI.Container();
+        const parent = new Container();
 
-        const texture = PIXI.RenderTexture.create(10, 10);
+        const texture = RenderTexture.create(10, 10);
 
-        const plane = new PIXI.mesh.Plane(texture);
+        const plane = new Plane(texture);
 
         parent.addChild(plane);
 
@@ -221,14 +227,14 @@ describe('getBounds', function ()
 
     it('should register correct width/height with an a DisplayObject is visible false', function ()
     {
-        const parent = new PIXI.Container();
+        const parent = new Container();
 
-        const container = new PIXI.Container();
+        const container = new Container();
 
-        const graphics = new PIXI.Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);
+        const graphics = new Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);
 
-        const texture = PIXI.RenderTexture.create(10, 10);
-        const sprite = new PIXI.Sprite(texture);
+        const texture = RenderTexture.create(10, 10);
+        const sprite = new Sprite(texture);
 
         container.addChild(sprite);
         container.addChild(graphics);
@@ -268,12 +274,12 @@ describe('getBounds', function ()
 
     it('should register correct bounds of invisible Container', function ()
     {
-        const parent = new PIXI.Container();
+        const parent = new Container();
 
-        const container = new PIXI.Container();
+        const container = new Container();
 
-        const texture = PIXI.RenderTexture.create(10, 10);
-        const sprite = new PIXI.Sprite(texture);
+        const texture = RenderTexture.create(10, 10);
+        const sprite = new Sprite(texture);
 
         container.addChild(sprite);
         parent.addChild(container);
@@ -292,14 +298,14 @@ describe('getBounds', function ()
 
     it('should register correct width/height with Container masked child', function ()
     {
-        const parent = new PIXI.Container();
+        const parent = new Container();
 
-        const container = new PIXI.Container();
+        const container = new Container();
 
-        const graphics = new PIXI.Graphics().beginFill(0xFF0000).drawRect(0, 0, 10, 10);
+        const graphics = new Graphics().beginFill(0xFF0000).drawRect(0, 0, 10, 10);
 
-        const texture = PIXI.RenderTexture.create(10, 10);
-        const sprite = new PIXI.Sprite(texture);
+        const texture = RenderTexture.create(10, 10);
+        const sprite = new Sprite(texture);
 
         container.addChild(sprite);
         container.addChild(graphics);
@@ -329,11 +335,11 @@ describe('getBounds', function ()
 
     it('should register correct width/height with an a DisplayObject parent has moved', function ()
     {
-        const parent = new PIXI.Container();
+        const parent = new Container();
 
-        const container = new PIXI.Container();
+        const container = new Container();
 
-        const graphics = new PIXI.Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10);
+        const graphics = new Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10);
 
         container.addChild(graphics);
 
@@ -354,11 +360,11 @@ describe('getBounds', function ()
 
     it('should register correct width/height with a Text Object', function ()
     {
-        const parent = new PIXI.Container();
+        const parent = new Container();
 
-        const container = new PIXI.Container();
+        const container = new Container();
 
-        const text = new PIXI.Text('i am some text');
+        const text = new Text('i am some text');
 
         container.addChild(text);
 
@@ -382,9 +388,9 @@ describe('getBounds', function ()
 
     it('should return a different rectangle if getting local bounds after global bounds ', function ()
     {
-        const parent = new PIXI.Container();
-        const texture = PIXI.RenderTexture.create(10, 10);
-        const sprite = new PIXI.Sprite(texture);
+        const parent = new Container();
+        const texture = RenderTexture.create(10, 10);
+        const sprite = new Sprite(texture);
 
         sprite.position.x = 20;
         sprite.position.y = 20;
@@ -411,16 +417,16 @@ describe('getBounds', function ()
 
     it('should ensure bounds respect the trim of a texture ', function ()
     {
-        const parent = new PIXI.Container();
-        const baseTexture = new PIXI.BaseRenderTexture(100, 100);
+        const parent = new Container();
+        const baseTexture = new BaseRenderTexture(100, 100);
 
-        const orig = new PIXI.Rectangle(0, 0, 100, 50);
-        const frame = new PIXI.Rectangle(2, 2, 50, 50);
-        const trim = new PIXI.Rectangle(25, 0, 50, 50);
+        const orig = new Rectangle(0, 0, 100, 50);
+        const frame = new Rectangle(2, 2, 50, 50);
+        const trim = new Rectangle(25, 0, 50, 50);
 
-        const trimmedTexture = new PIXI.Texture(baseTexture, frame, orig, trim);
+        const trimmedTexture = new Texture(baseTexture, frame, orig, trim);
 
-        const sprite = new PIXI.Sprite(trimmedTexture);
+        const sprite = new Sprite(trimmedTexture);
 
         sprite.position.x = 20;
         sprite.position.y = 20;

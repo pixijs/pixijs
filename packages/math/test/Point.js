@@ -1,10 +1,10 @@
-'use strict';
+const { Point } = require('../');
 
 describe('PIXI.Point', function ()
 {
     it('should create a new point', function ()
     {
-        const pt = new PIXI.Point();
+        const pt = new Point();
 
         expect(pt.x).to.equal(0);
         expect(pt.y).to.equal(0);
@@ -12,7 +12,7 @@ describe('PIXI.Point', function ()
 
     it('should clone a new point', function ()
     {
-        const p1 = new PIXI.Point(10, 20);
+        const p1 = new Point(10, 20);
 
         expect(p1.x).to.equal(10);
         expect(p1.y).to.equal(20);
@@ -27,8 +27,8 @@ describe('PIXI.Point', function ()
 
     it('should copy from one point to another', function ()
     {
-        const p1 = new PIXI.Point(10, 20);
-        const p2 = new PIXI.Point(2, 5);
+        const p1 = new Point(10, 20);
+        const p2 = new Point(2, 5);
 
         p1.copy(p2);
 
@@ -38,7 +38,7 @@ describe('PIXI.Point', function ()
 
     it('should set a new value', function ()
     {
-        const p1 = new PIXI.Point(10, 20);
+        const p1 = new Point(10, 20);
 
         p1.set();
         expect(p1.x).to.equal(0);

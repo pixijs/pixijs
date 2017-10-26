@@ -1,5 +1,4 @@
-'use strict';
-
+/* global PIXI */
 require('pixi.js');
 PIXI.utils.skipHello();
 
@@ -9,7 +8,7 @@ const electron = require('electron');
 const remote = electron.remote;
 const clipboard = electron.clipboard;
 const dialog = remote.dialog;
-const Renderer = require('pixi.js/test/renders/lib/Renderer');
+const Renderer = require('./test/lib/Renderer');
 const Droppable = require('./droppable');
 const $ = document.querySelector.bind(document);
 

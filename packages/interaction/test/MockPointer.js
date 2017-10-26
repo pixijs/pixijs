@@ -1,4 +1,6 @@
-'use strict';
+const { shared } = require('@pixi/ticker');
+const { CanvasRenderer } = require('@pixi/core');
+const { Rectangle } = require('@pixi/math');
 
 /**
  * Use this to mock mouse/touch/pointer events
@@ -20,7 +22,7 @@ class MockPointer
         {
             window.PointerEvent = class PointerEvent extends MouseEvent
             {
-                //eslint-disable-next-line
+                // eslint-disable-next-line
                 constructor(type, opts)
                 {
                     super(type, opts);
@@ -32,11 +34,11 @@ class MockPointer
 
         this.activeTouches = [];
         this.stage = stage;
-        this.renderer = new PIXI.CanvasRenderer(width || 100, height || 100);
+        this.renderer = new CanvasRenderer(width || 100, height || 100);
         this.renderer.sayHello = () => { /* empty */ };
         this.interaction = this.renderer.plugins.interaction;
         this.interaction.supportsTouchEvents = true;
-        PIXI.ticker.shared.remove(this.interaction.update, this.interaction);
+        shared.remove(this.interaction.update, this.interaction);
     }
 
     /**
@@ -179,7 +181,7 @@ class MockPointer
     mousemove(x, y, asPointer)
     {
         // mouseOverRenderer state should be correct, so mouse position to view rect
-        const rect = new PIXI.Rectangle(0, 0, this.renderer.width, this.renderer.height);
+        const rect = new Rectangle(0, 0, this.renderer.width, this.renderer.height);
 
         if (rect.contains(x, y))
         {

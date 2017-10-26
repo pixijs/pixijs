@@ -1,13 +1,13 @@
-'use strict';
-
 const path = require('path');
+const { spritesheetParser, Resource, Loader, getResourcePath } = require('../');
+const { Texture, BaseTexture } = require('@pixi/core');
 
 describe('PIXI.loaders.spritesheetParser', function ()
 {
     it('should exist and return a function', function ()
     {
-        expect(PIXI.loaders.spritesheetParser).to.be.a('function');
-        expect(PIXI.loaders.spritesheetParser()).to.be.a('function');
+        expect(spritesheetParser).to.be.a('function');
+        expect(spritesheetParser()).to.be.a('function');
     });
 
     it('should do nothing if the resource is not JSON', function ()
@@ -15,7 +15,7 @@ describe('PIXI.loaders.spritesheetParser', function ()
         const spy = sinon.spy();
         const res = {};
 
-        PIXI.loaders.spritesheetParser()(res, spy);
+        spritesheetParser()(res, spy);
 
         expect(spy).to.have.been.calledOnce;
         expect(res.textures).to.be.undefined;
@@ -24,9 +24,9 @@ describe('PIXI.loaders.spritesheetParser', function ()
     it('should do nothing if the resource is JSON, but improper format', function ()
     {
         const spy = sinon.spy();
-        const res = createMockResource(PIXI.loaders.Resource.TYPE.JSON, {});
+        const res = createMockResource(Resource.TYPE.JSON, {});
 
-        PIXI.loaders.spritesheetParser()(res, spy);
+        spritesheetParser()(res, spy);
 
         expect(spy).to.have.been.calledOnce;
         expect(res.textures).to.be.undefined;
@@ -35,16 +35,16 @@ describe('PIXI.loaders.spritesheetParser', function ()
     it('should load the image & create textures if json is properly formatted', function ()
     {
         const spy = sinon.spy();
-        const res = createMockResource(PIXI.loaders.Resource.TYPE.JSON, getJsonSpritesheet());
-        const loader = new PIXI.loaders.Loader();
+        const res = createMockResource(Resource.TYPE.JSON, getJsonSpritesheet());
+        const loader = new Loader();
         const addStub = sinon.stub(loader, 'add');
-        const imgRes = createMockResource(PIXI.loaders.Resource.TYPE.IMAGE, new Image());
+        const imgRes = createMockResource(Resource.TYPE.IMAGE, new Image());
 
-        imgRes.texture = new PIXI.Texture(new PIXI.BaseTexture(imgRes.data));
+        imgRes.texture = new Texture(new BaseTexture(imgRes.data));
 
         addStub.yields(imgRes);
 
-        PIXI.loaders.spritesheetParser().call(loader, res, spy);
+        spritesheetParser().call(loader, res, spy);
 
         addStub.restore();
 
@@ -57,42 +57,42 @@ describe('PIXI.loaders.spritesheetParser', function ()
             .that.is.an('object')
             .with.keys(Object.keys(getJsonSpritesheet().frames))
             .and.has.property('0.png')
-                .that.is.an.instanceof(PIXI.Texture);
+            .that.is.an.instanceof(Texture);
     });
 
     it('should build the image url', function ()
     {
-        function getResourcePath(url, image)
+        function getPath(url, image)
         {
-            return PIXI.loaders.getResourcePath({
+            return getResourcePath({
                 url,
                 data: { meta: { image } },
             });
         }
 
-        let result = getResourcePath('http://some.com/spritesheet.json', 'img.png');
+        let result = getPath('http://some.com/spritesheet.json', 'img.png');
 
         expect(result).to.be.equals('http://some.com/img.png');
 
-        result = getResourcePath('http://some.com/some/dir/spritesheet.json', 'img.png');
+        result = getPath('http://some.com/some/dir/spritesheet.json', 'img.png');
         expect(result).to.be.equals('http://some.com/some/dir/img.png');
 
-        result = getResourcePath('http://some.com/some/dir/spritesheet.json', './img.png');
+        result = getPath('http://some.com/some/dir/spritesheet.json', './img.png');
         expect(result).to.be.equals('http://some.com/some/dir/img.png');
 
-        result = getResourcePath('http://some.com/some/dir/spritesheet.json', '../img.png');
+        result = getPath('http://some.com/some/dir/spritesheet.json', '../img.png');
         expect(result).to.be.equals('http://some.com/some/img.png');
 
-        result = getResourcePath('/spritesheet.json', 'img.png');
+        result = getPath('/spritesheet.json', 'img.png');
         expect(result).to.be.equals('/img.png');
 
-        result = getResourcePath('/some/dir/spritesheet.json', 'img.png');
+        result = getPath('/some/dir/spritesheet.json', 'img.png');
         expect(result).to.be.equals('/some/dir/img.png');
 
-        result = getResourcePath('/some/dir/spritesheet.json', './img.png');
+        result = getPath('/some/dir/spritesheet.json', './img.png');
         expect(result).to.be.equals('/some/dir/img.png');
 
-        result = getResourcePath('/some/dir/spritesheet.json', '../img.png');
+        result = getPath('/some/dir/spritesheet.json', '../img.png');
         expect(result).to.be.equals('/some/img.png');
     });
 

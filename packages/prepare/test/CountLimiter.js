@@ -1,10 +1,10 @@
-'use strict';
+const { CountLimiter } = require('../');
 
 describe('PIXI.prepare.CountLimiter', function ()
 {
     it('should limit to specified number per beginFrame()', function ()
     {
-        const limit = new PIXI.prepare.CountLimiter(3);
+        const limit = new CountLimiter(3);
 
         limit.beginFrame();
         expect(limit.allowedToUpload()).to.be.true;

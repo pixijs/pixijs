@@ -1,4 +1,4 @@
-'use strict';
+const { SpriteRenderer } = require('../');
 
 const mockrunner = {
     contextChange: {
@@ -17,7 +17,7 @@ describe('SpriteRenderer', function ()
             runners: mockrunner,
             off: sinon.stub(),
         };
-        const renderer = new PIXI.SpriteRenderer(webgl);
+        const renderer = new SpriteRenderer(webgl);
 
         // simulate onContextChange
         renderer.vertexBuffers = [destroyable, destroyable];
@@ -36,7 +36,7 @@ describe('SpriteRenderer', function ()
             off: sinon.stub(),
         };
 
-        const renderer = new PIXI.SpriteRenderer(webgl);
+        const renderer = new SpriteRenderer(webgl);
 
         expect(() => renderer.destroy()).to.not.throw();
     });

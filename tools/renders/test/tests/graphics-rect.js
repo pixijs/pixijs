@@ -1,5 +1,3 @@
-'use strict';
-
 module.exports = function ()
 {
     const graphic = new PIXI.Graphics()

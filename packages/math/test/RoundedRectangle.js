@@ -1,10 +1,10 @@
-'use strict';
+const { RoundedRectangle } = require('../');
 
 describe('PIXI.RoundedRectangle', function ()
 {
     it('should create a new rounded rectangle', function ()
     {
-        const rrect = new PIXI.RoundedRectangle(5, 5, 1, 1);
+        const rrect = new RoundedRectangle(5, 5, 1, 1);
 
         expect(rrect.x).to.equal(5);
         expect(rrect.y).to.equal(5);
@@ -15,7 +15,7 @@ describe('PIXI.RoundedRectangle', function ()
 
     it('should clone a new rounded rectangle', function ()
     {
-        const rrect1 = new PIXI.RoundedRectangle(0, 0, 100, 100, 40);
+        const rrect1 = new RoundedRectangle(0, 0, 100, 100, 40);
 
         expect(rrect1.x).to.equal(0);
         expect(rrect1.y).to.equal(0);
@@ -35,7 +35,7 @@ describe('PIXI.RoundedRectangle', function ()
 
     it('should check if point is within rounded rectangle', function ()
     {
-        const rrect1 = new PIXI.RoundedRectangle(0, 0, 200, 200, 50);
+        const rrect1 = new RoundedRectangle(0, 0, 200, 200, 50);
 
         expect(rrect1.contains(50, 50)).to.be.true;
         expect(rrect1.contains(5, 100)).to.be.true;
@@ -51,11 +51,11 @@ describe('PIXI.RoundedRectangle', function ()
         expect(rrect1.contains(190, 190)).to.be.false;
         expect(rrect1.contains(10, 190)).to.be.false;
 
-        const rrect2 = new PIXI.RoundedRectangle(0, 0, 10, 0, 1);
+        const rrect2 = new RoundedRectangle(0, 0, 10, 0, 1);
 
         expect(rrect2.contains(0, 0)).to.be.false;
 
-        const rrect3 = new PIXI.RoundedRectangle(0, 0, 0, 10, 1);
+        const rrect3 = new RoundedRectangle(0, 0, 0, 10, 1);
 
         expect(rrect3.contains(0, 0)).to.be.false;
     });

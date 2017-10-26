@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * Add drag-n-drop handling
  * @class Droppable

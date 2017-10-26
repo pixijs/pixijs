@@ -8,9 +8,12 @@
     "electron": "^1.7.9",
     "sinon": "^1.17.6",
     "sinon-chai": "^2.8.0",
-    "pixi.js": "5.0.0-alpha"
+    "pixi.js": "5.0.0-alpha",
+    "@tools/tester": "5.0.0-alpha",
+    "js-md5": "^0.6.1"
   },
   "scripts": {
-  	"app": "electron ."
+  	"app": "electron .",
+    "test": "tester"
   }
 }

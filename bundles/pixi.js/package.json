@@ -23,10 +23,7 @@
     "build:dev": "rollup -c && rollup -c -f umd",
     "watch": "rollup -cw -f umd",
     "postversion": "npm run build",
-    "test": "npm run build && npm run unit-test",
-    "unit-test": "floss --path test",
-    "precoverage": "rimraf coverage/*",
-    "coverage": "npm run unit-test -- -c lib/pixi.js -s -h"
+    "test": "tester"
   },
   "files": [
     "lib/",
@@ -64,9 +61,7 @@
     "@pixi/ticker": "^5.0.0-alpha",
     "@pixi/utils": "^5.0.0-alpha",
     "@tools/build": "^5.0.0-alpha",
-    "electron": "^1.7.9",
-    "floss": "^2.1.2",
-    "js-md5": "^0.6.1",
+    "@tools/tester": "^5.0.0-alpha",
     "rimraf": "^2.6.2",
     "rollup": "^0.50.0",
     "rollup-watch": "^4.3.1"

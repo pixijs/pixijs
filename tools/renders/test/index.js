@@ -1,5 +1,3 @@
-'use strict';
-
 const Renderer = require('./lib/Renderer');
 const path = require('path');
 

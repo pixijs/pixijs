@@ -1,7 +1,14 @@
-'use strict';
-
 // const MockPointer = require('../interaction/MockPointer');
-const withGL = require('../withGL');
+const { Graphics } = require('../');
+const { BLEND_MODES } = require('@pixi/constants');
+const { Point } = require('@pixi/math');
+const { isWebGLSupported } = require('@pixi/utils');
+const { WebGLRenderer } = require('@pixi/core');
+
+function withGL(fn)
+{
+    return isWebGLSupported() ? fn : undefined;
+}
 
 describe('PIXI.Graphics', function ()
 {
@@ -9,13 +16,13 @@ describe('PIXI.Graphics', function ()
     {
         it('should set defaults', function ()
         {
-            const graphics = new PIXI.Graphics();
+            const graphics = new Graphics();
 
             expect(graphics.fillAlpha).to.be.equals(1);
             expect(graphics.lineWidth).to.be.equals(0);
             expect(graphics.lineColor).to.be.equals(0);
             expect(graphics.tint).to.be.equals(0xFFFFFF);
-            expect(graphics.blendMode).to.be.equals(PIXI.BLEND_MODES.NORMAL);
+            expect(graphics.blendMode).to.be.equals(BLEND_MODES.NORMAL);
         });
     });
 
@@ -23,7 +30,7 @@ describe('PIXI.Graphics', function ()
     {
         it('should return correct bounds - north', function ()
         {
-            const graphics = new PIXI.Graphics();
+            const graphics = new Graphics();
 
             graphics.moveTo(0, 0);
             graphics.lineStyle(1);
@@ -36,7 +43,7 @@ describe('PIXI.Graphics', function ()
 
         it('should return correct bounds - south', function ()
         {
-            const graphics = new PIXI.Graphics();
+            const graphics = new Graphics();
 
             graphics.moveTo(0, 0);
             graphics.lineStyle(1);
@@ -49,7 +56,7 @@ describe('PIXI.Graphics', function ()
 
         it('should return correct bounds - east', function ()
         {
-            const graphics = new PIXI.Graphics();
+            const graphics = new Graphics();
 
             graphics.moveTo(0, 0);
             graphics.lineStyle(1);
@@ -61,7 +68,7 @@ describe('PIXI.Graphics', function ()
 
         it('should return correct bounds - west', function ()
         {
-            const graphics = new PIXI.Graphics();
+            const graphics = new Graphics();
 
             graphics.moveTo(0, 0);
             graphics.lineStyle(1);
@@ -74,7 +81,7 @@ describe('PIXI.Graphics', function ()
 
         it('should return correct bounds when stacked with circle', function ()
         {
-            const graphics = new PIXI.Graphics();
+            const graphics = new Graphics();
 
             graphics.beginFill(0xFF0000);
             graphics.drawCircle(50, 50, 50);
@@ -93,7 +100,7 @@ describe('PIXI.Graphics', function ()
 
         it('should return correct bounds when square', function ()
         {
-            const graphics = new PIXI.Graphics();
+            const graphics = new Graphics();
 
             graphics.lineStyle(20, 0, 0.5);
             graphics.moveTo(0, 0);
@@ -111,8 +118,8 @@ describe('PIXI.Graphics', function ()
     {
         it('should return true when point inside', function ()
         {
-            const point = new PIXI.Point(1, 1);
-            const graphics = new PIXI.Graphics();
+            const point = new Point(1, 1);
+            const graphics = new Graphics();
 
             graphics.beginFill(0);
             graphics.drawRect(0, 0, 10, 10);
@@ -122,8 +129,8 @@ describe('PIXI.Graphics', function ()
 
         it('should return false when point outside', function ()
         {
-            const point = new PIXI.Point(20, 20);
-            const graphics = new PIXI.Graphics();
+            const point = new Point(20, 20);
+            const graphics = new Graphics();
 
             graphics.beginFill(0);
             graphics.drawRect(0, 0, 10, 10);
@@ -133,8 +140,8 @@ describe('PIXI.Graphics', function ()
 
         it('should return false when no fill', function ()
         {
-            const point = new PIXI.Point(1, 1);
-            const graphics = new PIXI.Graphics();
+            const point = new Point(1, 1);
+            const graphics = new Graphics();
 
             graphics.drawRect(0, 0, 10, 10);
 
@@ -143,9 +150,9 @@ describe('PIXI.Graphics', function ()
 
         it('should return false with hole', function ()
         {
-            const point1 = new PIXI.Point(1, 1);
-            const point2 = new PIXI.Point(5, 5);
-            const graphics = new PIXI.Graphics();
+            const point1 = new Point(1, 1);
+            const point2 = new Point(5, 5);
+            const graphics = new Graphics();
 
             graphics.beginFill(0)
                 .moveTo(0, 0)
@@ -168,7 +175,7 @@ describe('PIXI.Graphics', function ()
     {
         it('should draw an arc', function ()
         {
-            const graphics = new PIXI.Graphics();
+            const graphics = new Graphics();
 
             expect(graphics.currentPath).to.be.null;
 
@@ -180,7 +187,7 @@ describe('PIXI.Graphics', function ()
         it('should not throw with other shapes', function ()
         {
             // complex drawing #1: draw triangle, rounder rect and an arc (issue #3433)
-            const graphics = new PIXI.Graphics();
+            const graphics = new Graphics();
 
             // set a fill and line style
             graphics.beginFill(0xFF3300);
@@ -206,7 +213,7 @@ describe('PIXI.Graphics', function ()
 
         it('should do nothing when startAngle and endAngle are equal', function ()
         {
-            const graphics = new PIXI.Graphics();
+            const graphics = new Graphics();
 
             expect(graphics.currentPath).to.be.null;
 
@@ -217,7 +224,7 @@ describe('PIXI.Graphics', function ()
 
         it('should do nothing if sweep equals zero', function ()
         {
-            const graphics = new PIXI.Graphics();
+            const graphics = new Graphics();
 
             expect(graphics.currentPath).to.be.null;
 
@@ -231,7 +238,7 @@ describe('PIXI.Graphics', function ()
     {
         it('should only call updateLocalBounds once', function ()
         {
-            const graphics = new PIXI.Graphics();
+            const graphics = new Graphics();
             const spy = sinon.spy(graphics, 'updateLocalBounds');
 
             graphics._calculateBounds();
@@ -250,10 +257,10 @@ describe('PIXI.Graphics', function ()
         /*
         it('should trigger interaction callback when no mask present', function ()
         {
-            const stage = new PIXI.Container();
+            const stage = new Container();
             const pointer = new MockPointer(stage);
-            const graphics = new PIXI.Graphics();
-            const mask = new PIXI.Graphics();
+            const graphics = new Graphics();
+            const mask = new Graphics();
             const spy = sinon.spy();
 
             graphics.interactive = true;
@@ -270,13 +277,13 @@ describe('PIXI.Graphics', function ()
             expect(spy).to.have.been.calledOnce;
         });
         */
-       /*
+        /*
         it('should trigger interaction callback when mask uses beginFill', function ()
         {
-            const stage = new PIXI.Container();
+            const stage = new Container();
             const pointer = new MockPointer(stage);
-            const graphics = new PIXI.Graphics();
-            const mask = new PIXI.Graphics();
+            const graphics = new Graphics();
+            const mask = new Graphics();
             const spy = sinon.spy();
 
             graphics.interactive = true;
@@ -294,10 +301,10 @@ describe('PIXI.Graphics', function ()
         });
         it('should not trigger interaction callback when mask doesn\'t use beginFill', function ()
         {
-            const stage = new PIXI.Container();
+            const stage = new Container();
             const pointer = new MockPointer(stage);
-            const graphics = new PIXI.Graphics();
-            const mask = new PIXI.Graphics();
+            const graphics = new Graphics();
+            const mask = new Graphics();
             const spy = sinon.spy();
 
             graphics.interactive = true;
@@ -315,15 +322,15 @@ describe('PIXI.Graphics', function ()
 
         it('should trigger interaction callback when mask doesn\'t use beginFill but hitArea is defined', function ()
         {
-            const stage = new PIXI.Container();
+            const stage = new Container();
             const pointer = new MockPointer(stage);
-            const graphics = new PIXI.Graphics();
-            const mask = new PIXI.Graphics();
+            const graphics = new Graphics();
+            const mask = new Graphics();
             const spy = sinon.spy();
 
             graphics.interactive = true;
             graphics.beginFill(0xFF0000);
-            graphics.hitArea = new PIXI.Rectangle(0, 0, 50, 50);
+            graphics.hitArea = new Rectangle(0, 0, 50, 50);
             graphics.drawRect(0, 0, 50, 50);
             graphics.on('click', spy);
             stage.addChild(graphics);
@@ -337,10 +344,10 @@ describe('PIXI.Graphics', function ()
 
         it('should trigger interaction callback when mask is a sprite', function ()
         {
-            const stage = new PIXI.Container();
+            const stage = new Container();
             const pointer = new MockPointer(stage);
-            const graphics = new PIXI.Graphics();
-            const mask = new PIXI.Graphics();
+            const graphics = new Graphics();
+            const mask = new Graphics();
             const spy = sinon.spy();
 
             graphics.interactive = true;
@@ -349,7 +356,7 @@ describe('PIXI.Graphics', function ()
             graphics.on('click', spy);
             stage.addChild(graphics);
             mask.drawRect(0, 0, 50, 50);
-            graphics.mask = new PIXI.Sprite(mask.generateCanvasTexture());
+            graphics.mask = new Sprite(mask.generateCanvasTexture());
 
             pointer.click(10, 10);
 
@@ -359,11 +366,11 @@ describe('PIXI.Graphics', function ()
 
         it('should calculate tint, alpha and blendMode of fastRect correctly', withGL(function ()
         {
-            const renderer = new PIXI.WebGLRenderer(200, 200, {});
+            const renderer = new WebGLRenderer(200, 200, {});
 
             try
             {
-                const graphics = new PIXI.Graphics();
+                const graphics = new Graphics();
 
                 graphics.beginFill(0x102030, 0.6);
                 graphics.drawRect(2, 3, 100, 100);

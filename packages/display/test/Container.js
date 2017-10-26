@@ -1,4 +1,5 @@
-'use strict';
+const { Container, DisplayObject } = require('../');
+const { Graphics } = require('@pixi/graphics');
 
 function testAddChild(fn)
 {
@@ -40,8 +41,8 @@ describe('PIXI.Container', function ()
     {
         it('should be present when adding children to Container', function ()
         {
-            const container = new PIXI.Container();
-            const child = new PIXI.DisplayObject();
+            const container = new Container();
+            const child = new DisplayObject();
 
             expect(container.children.length).to.be.equals(0);
             container.addChild(child);
@@ -54,8 +55,8 @@ describe('PIXI.Container', function ()
     {
         it('should trigger "added" and "removed" events on its children', function ()
         {
-            const container = new PIXI.Container();
-            const child = new PIXI.DisplayObject();
+            const container = new Container();
+            const child = new DisplayObject();
             let triggeredAdded = false;
             let triggeredRemoved = false;
 
@@ -86,17 +87,17 @@ describe('PIXI.Container', function ()
     {
         it('should remove from current parent', function ()
         {
-            const parent = new PIXI.Container();
-            const container = new PIXI.Container();
-            const child = new PIXI.DisplayObject();
+            const parent = new Container();
+            const container = new Container();
+            const child = new DisplayObject();
 
             assertRemovedFromParent(parent, container, child, () => { container.addChild(child); });
         });
 
         it('should call onChildrenChange', function ()
         {
-            const container = new PIXI.Container();
-            const child = new PIXI.DisplayObject();
+            const container = new Container();
+            const child = new DisplayObject();
             const spy = sinon.spy(container, 'onChildrenChange');
 
             container.addChild(child);
@@ -107,8 +108,8 @@ describe('PIXI.Container', function ()
 
         it('should flag child transform and container bounds for recalculation', testAddChild(function (mockAddChild)
         {
-            const container = new PIXI.Container();
-            const child = new PIXI.Container();
+            const container = new Container();
+            const child = new Container();
 
             container.getBounds();
             child.getBounds();
@@ -124,9 +125,9 @@ describe('PIXI.Container', function ()
 
         it('should recalculate added child correctly', testAddChild(function (mockAddChild)
         {
-            const parent = new PIXI.Container();
-            const container = new PIXI.Container();
-            const graphics = new PIXI.Graphics();
+            const parent = new Container();
+            const container = new Container();
+            const graphics = new Graphics();
 
             parent.addChild(container);
 
@@ -153,16 +154,16 @@ describe('PIXI.Container', function ()
     {
         it('should remove from current parent', function ()
         {
-            const parent = new PIXI.Container();
-            const child = new PIXI.DisplayObject();
+            const parent = new Container();
+            const child = new DisplayObject();
 
             assertRemovedFromParent(parent, null, child, () => { parent.removeChildAt(0); });
         });
 
         it('should call onChildrenChange', function ()
         {
-            const container = new PIXI.Container();
-            const child = new PIXI.DisplayObject();
+            const container = new Container();
+            const child = new DisplayObject();
 
             container.addChild(child);
 
@@ -178,10 +179,10 @@ describe('PIXI.Container', function ()
     {
         it('should allow placements at start', function ()
         {
-            const container = new PIXI.Container();
-            const child = new PIXI.DisplayObject();
+            const container = new Container();
+            const child = new DisplayObject();
 
-            container.addChild(new PIXI.DisplayObject());
+            container.addChild(new DisplayObject());
             container.addChildAt(child, 0);
 
             expect(container.children.length).to.be.equals(2);
@@ -190,10 +191,10 @@ describe('PIXI.Container', function ()
 
         it('should allow placements at end', function ()
         {
-            const container = new PIXI.Container();
-            const child = new PIXI.DisplayObject();
+            const container = new Container();
+            const child = new DisplayObject();
 
-            container.addChild(new PIXI.DisplayObject());
+            container.addChild(new DisplayObject());
             container.addChildAt(child, 1);
 
             expect(container.children.length).to.be.equals(2);
@@ -202,10 +203,10 @@ describe('PIXI.Container', function ()
 
         it('should throw on out-of-bounds', function ()
         {
-            const container = new PIXI.Container();
-            const child = new PIXI.DisplayObject();
+            const container = new Container();
+            const child = new DisplayObject();
 
-            container.addChild(new PIXI.DisplayObject());
+            container.addChild(new DisplayObject());
 
             expect(() => container.addChildAt(child, -1)).to.throw('The index -1 supplied is out of bounds 1');
             expect(() => container.addChildAt(child, 2)).to.throw('The index 2 supplied is out of bounds 1');
@@ -213,19 +214,19 @@ describe('PIXI.Container', function ()
 
         it('should remove from current parent', function ()
         {
-            const parent = new PIXI.Container();
-            const container = new PIXI.Container();
-            const child = new PIXI.DisplayObject();
+            const parent = new Container();
+            const container = new Container();
+            const child = new DisplayObject();
 
             assertRemovedFromParent(parent, container, child, () => { container.addChildAt(child, 0); });
         });
 
         it('should call onChildrenChange', function ()
         {
-            const container = new PIXI.Container();
-            const child = new PIXI.DisplayObject();
+            const container = new Container();
+            const child = new DisplayObject();
 
-            container.addChild(new PIXI.DisplayObject());
+            container.addChild(new DisplayObject());
 
             const spy = sinon.spy(container, 'onChildrenChange');
 
@@ -240,21 +241,21 @@ describe('PIXI.Container', function ()
     {
         it('should ignore non-children', function ()
         {
-            const container = new PIXI.Container();
-            const child = new PIXI.DisplayObject();
+            const container = new Container();
+            const child = new DisplayObject();
 
             container.addChild(child);
 
-            container.removeChild(new PIXI.DisplayObject());
+            container.removeChild(new DisplayObject());
 
             expect(container.children.length).to.be.equals(1);
         });
 
         it('should remove all children supplied', function ()
         {
-            const container = new PIXI.Container();
-            const child1 = new PIXI.DisplayObject();
-            const child2 = new PIXI.DisplayObject();
+            const container = new Container();
+            const child1 = new DisplayObject();
+            const child2 = new DisplayObject();
 
             container.addChild(child1, child2);
 
@@ -267,8 +268,8 @@ describe('PIXI.Container', function ()
 
         it('should call onChildrenChange', function ()
         {
-            const container = new PIXI.Container();
-            const child = new PIXI.DisplayObject();
+            const container = new Container();
+            const child = new DisplayObject();
 
             container.addChild(child);
 
@@ -282,8 +283,8 @@ describe('PIXI.Container', function ()
 
         it('should flag transform for recalculation', testRemoveChild(function (mockRemoveChild)
         {
-            const container = new PIXI.Container();
-            const child = new PIXI.Container();
+            const container = new Container();
+            const child = new Container();
 
             container.addChild(child);
             container.getBounds();
@@ -299,9 +300,9 @@ describe('PIXI.Container', function ()
 
         it('should recalculate removed child correctly', testRemoveChild(function (mockRemoveChild)
         {
-            const parent = new PIXI.Container();
-            const container = new PIXI.Container();
-            const graphics = new PIXI.Graphics();
+            const parent = new Container();
+            const container = new Container();
+            const graphics = new Graphics();
 
             parent.addChild(container);
 
@@ -323,18 +324,18 @@ describe('PIXI.Container', function ()
     {
         it('should return the correct index', function ()
         {
-            const container = new PIXI.Container();
-            const child = new PIXI.DisplayObject();
+            const container = new Container();
+            const child = new DisplayObject();
 
-            container.addChild(new PIXI.DisplayObject(), child, new PIXI.DisplayObject());
+            container.addChild(new DisplayObject(), child, new DisplayObject());
 
             expect(container.getChildIndex(child)).to.be.equals(1);
         });
 
         it('should throw when child does not exist', function ()
         {
-            const container = new PIXI.Container();
-            const child = new PIXI.DisplayObject();
+            const container = new Container();
+            const child = new DisplayObject();
 
             expect(() => container.getChildIndex(child))
                 .to.throw('The supplied DisplayObject must be a child of the caller');
@@ -345,7 +346,7 @@ describe('PIXI.Container', function ()
     {
         it('should throw when out-of-bounds', function ()
         {
-            const container = new PIXI.Container();
+            const container = new Container();
 
             expect(() => container.getChildAt(-1)).to.throw('getChildAt: Index (-1) does not exist.');
             expect(() => container.getChildAt(1)).to.throw('getChildAt: Index (1) does not exist.');
@@ -356,8 +357,8 @@ describe('PIXI.Container', function ()
     {
         it('should throw on out-of-bounds', function ()
         {
-            const container = new PIXI.Container();
-            const child = new PIXI.DisplayObject();
+            const container = new Container();
+            const child = new DisplayObject();
 
             container.addChild(child);
 
@@ -367,10 +368,10 @@ describe('PIXI.Container', function ()
 
         it('should throw when child does not belong', function ()
         {
-            const container = new PIXI.Container();
-            const child = new PIXI.DisplayObject();
+            const container = new Container();
+            const child = new DisplayObject();
 
-            container.addChild(new PIXI.DisplayObject());
+            container.addChild(new DisplayObject());
 
             expect(() => container.setChildIndex(child, 0))
                 .to.throw('The supplied DisplayObject must be a child of the caller');
@@ -378,10 +379,10 @@ describe('PIXI.Container', function ()
 
         it('should set index', function ()
         {
-            const container = new PIXI.Container();
-            const child = new PIXI.DisplayObject();
+            const container = new Container();
+            const child = new DisplayObject();
 
-            container.addChild(child, new PIXI.DisplayObject(), new PIXI.DisplayObject());
+            container.addChild(child, new DisplayObject(), new DisplayObject());
             expect(container.children.indexOf(child)).to.be.equals(0);
 
             container.setChildIndex(child, 1);
@@ -396,10 +397,10 @@ describe('PIXI.Container', function ()
 
         it('should call onChildrenChange', function ()
         {
-            const container = new PIXI.Container();
-            const child = new PIXI.DisplayObject();
+            const container = new Container();
+            const child = new DisplayObject();
 
-            container.addChild(child, new PIXI.DisplayObject());
+            container.addChild(child, new DisplayObject());
 
             const spy = sinon.spy(container, 'onChildrenChange');
 
@@ -414,9 +415,9 @@ describe('PIXI.Container', function ()
     {
         it('should call onChildrenChange', function ()
         {
-            const container = new PIXI.Container();
-            const child1 = new PIXI.DisplayObject();
-            const child2 = new PIXI.DisplayObject();
+            const container = new Container();
+            const child1 = new DisplayObject();
+            const child2 = new DisplayObject();
 
             container.addChild(child1, child2);
 
@@ -434,10 +435,10 @@ describe('PIXI.Container', function ()
 
         it('should not call onChildrenChange if supplied children are equal', function ()
         {
-            const container = new PIXI.Container();
-            const child = new PIXI.DisplayObject();
+            const container = new Container();
+            const child = new DisplayObject();
 
-            container.addChild(child, new PIXI.DisplayObject());
+            container.addChild(child, new DisplayObject());
 
             const spy = sinon.spy(container, 'onChildrenChange');
 
@@ -448,22 +449,22 @@ describe('PIXI.Container', function ()
 
         it('should throw if children do not belong', function ()
         {
-            const container = new PIXI.Container();
-            const child = new PIXI.Container();
+            const container = new Container();
+            const child = new Container();
 
-            container.addChild(child, new PIXI.DisplayObject());
+            container.addChild(child, new DisplayObject());
 
-            expect(() => container.swapChildren(child, new PIXI.DisplayObject()))
+            expect(() => container.swapChildren(child, new DisplayObject()))
                 .to.throw('The supplied DisplayObject must be a child of the caller');
-            expect(() => container.swapChildren(new PIXI.DisplayObject(), child))
+            expect(() => container.swapChildren(new DisplayObject(), child))
                 .to.throw('The supplied DisplayObject must be a child of the caller');
         });
 
         it('should result in swapped child positions', function ()
         {
-            const container = new PIXI.Container();
-            const child1 = new PIXI.DisplayObject();
-            const child2 = new PIXI.DisplayObject();
+            const container = new Container();
+            const child1 = new DisplayObject();
+            const child2 = new DisplayObject();
 
             container.addChild(child1, child2);
 
@@ -481,7 +482,7 @@ describe('PIXI.Container', function ()
     {
         it('should not render when object not visible', function ()
         {
-            const container = new PIXI.Container();
+            const container = new Container();
             const webGLSpy = sinon.spy(container._renderWebGL);
             const canvasSpy = sinon.spy(container._renderCanvas);
 
@@ -496,7 +497,7 @@ describe('PIXI.Container', function ()
 
         it('should not render when alpha is zero', function ()
         {
-            const container = new PIXI.Container();
+            const container = new Container();
             const webGLSpy = sinon.spy(container._renderWebGL);
             const canvasSpy = sinon.spy(container._renderCanvas);
 
@@ -511,7 +512,7 @@ describe('PIXI.Container', function ()
 
         it('should not render when object not renderable', function ()
         {
-            const container = new PIXI.Container();
+            const container = new Container();
             const webGLSpy = sinon.spy(container._renderWebGL);
             const canvasSpy = sinon.spy(container._renderCanvas);
 
@@ -526,8 +527,8 @@ describe('PIXI.Container', function ()
 
         it('should render children', function ()
         {
-            const container = new PIXI.Container();
-            const child = new PIXI.Container();
+            const container = new Container();
+            const child = new Container();
             const webGLSpy = sinon.spy(child, '_renderWebGL');
             const canvasSpy = sinon.spy(child, '_renderCanvas');
 
@@ -545,10 +546,10 @@ describe('PIXI.Container', function ()
     {
         it('should remove all children when no arguments supplied', function ()
         {
-            const container = new PIXI.Container();
+            const container = new Container();
             let removed = [];
 
-            container.addChild(new PIXI.DisplayObject(), new PIXI.DisplayObject(), new PIXI.DisplayObject());
+            container.addChild(new DisplayObject(), new DisplayObject(), new DisplayObject());
 
             expect(container.children.length).to.be.equals(3);
 
@@ -560,7 +561,7 @@ describe('PIXI.Container', function ()
 
         it('should return empty array if no children', function ()
         {
-            const container = new PIXI.Container();
+            const container = new Container();
             const removed = container.removeChildren();
 
             expect(removed.length).to.be.equals(0);
@@ -568,10 +569,10 @@ describe('PIXI.Container', function ()
 
         it('should handle a range greater than length', function ()
         {
-            const container = new PIXI.Container();
+            const container = new Container();
             let removed = [];
 
-            container.addChild(new PIXI.DisplayObject());
+            container.addChild(new DisplayObject());
 
             removed = container.removeChildren(0, 2);
             expect(removed.length).to.be.equals(1);
@@ -579,9 +580,9 @@ describe('PIXI.Container', function ()
 
         it('should throw outside acceptable range', function ()
         {
-            const container = new PIXI.Container();
+            const container = new Container();
 
-            container.addChild(new PIXI.DisplayObject());
+            container.addChild(new DisplayObject());
 
             expect(() => container.removeChildren(2))
                 .to.throw('removeChildren: numeric values are outside the acceptable range.');
@@ -596,8 +597,8 @@ describe('PIXI.Container', function ()
     {
         it('should not destroy children by default', function ()
         {
-            const container = new PIXI.Container();
-            const child = new PIXI.DisplayObject();
+            const container = new Container();
+            const child = new DisplayObject();
 
             container.addChild(child);
             container.destroy();
@@ -608,8 +609,8 @@ describe('PIXI.Container', function ()
 
         it('should allow children destroy', function ()
         {
-            let container = new PIXI.Container();
-            let child = new PIXI.DisplayObject();
+            let container = new Container();
+            let child = new DisplayObject();
 
             container.addChild(child);
             container.destroy({ children: true });
@@ -618,8 +619,8 @@ describe('PIXI.Container', function ()
             expect(container.transform).to.be.null;
             expect(child.transform).to.be.null;
 
-            container = new PIXI.Container();
-            child = new PIXI.DisplayObject();
+            container = new Container();
+            child = new DisplayObject();
 
             container.addChild(child);
             container.destroy(true);
@@ -634,8 +635,8 @@ describe('PIXI.Container', function ()
     {
         it('should reflect scale', function ()
         {
-            const container = new PIXI.Container();
-            const graphics = new PIXI.Graphics();
+            const container = new Container();
+            const graphics = new Graphics();
 
             graphics.drawRect(0, 0, 10, 10);
             container.addChild(graphics);
@@ -646,8 +647,8 @@ describe('PIXI.Container', function ()
 
         it('should adjust scale', function ()
         {
-            const container = new PIXI.Container();
-            const graphics = new PIXI.Graphics();
+            const container = new Container();
+            const graphics = new Graphics();
 
             graphics.drawRect(0, 0, 10, 10);
             container.addChild(graphics);
@@ -660,7 +661,7 @@ describe('PIXI.Container', function ()
 
         it('should reset scale', function ()
         {
-            const container = new PIXI.Container();
+            const container = new Container();
 
             container.scale.x = 2;
             container.width = 5;
@@ -674,8 +675,8 @@ describe('PIXI.Container', function ()
     {
         it('should reflect scale', function ()
         {
-            const container = new PIXI.Container();
-            const graphics = new PIXI.Graphics();
+            const container = new Container();
+            const graphics = new Graphics();
 
             graphics.drawRect(0, 0, 10, 10);
             container.addChild(graphics);
@@ -686,8 +687,8 @@ describe('PIXI.Container', function ()
 
         it('should adjust scale', function ()
         {
-            const container = new PIXI.Container();
-            const graphics = new PIXI.Graphics();
+            const container = new Container();
+            const graphics = new Graphics();
 
             graphics.drawRect(0, 0, 10, 10);
             container.addChild(graphics);
@@ -700,7 +701,7 @@ describe('PIXI.Container', function ()
 
         it('should reset scale', function ()
         {
-            const container = new PIXI.Container();
+            const container = new Container();
 
             container.scale.y = 2;
             container.height = 5;

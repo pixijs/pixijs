@@ -1,11 +1,13 @@
-'use strict';
+const { textureParser, Resource } = require('../');
+const { Texture } = require('@pixi/core');
+const { BaseTextureCache, TextureCache } = require('@pixi/utils');
 
 describe('PIXI.loaders.textureParser', function ()
 {
     it('should exist and return a function', function ()
     {
-        expect(PIXI.loaders.textureParser).to.be.a('function');
-        expect(PIXI.loaders.textureParser()).to.be.a('function');
+        expect(textureParser).to.be.a('function');
+        expect(textureParser()).to.be.a('function');
     });
 
     it('should do nothing if the resource is not an image', function ()
@@ -13,7 +15,7 @@ describe('PIXI.loaders.textureParser', function ()
         const spy = sinon.spy();
         const res = {};
 
-        PIXI.loaders.textureParser()(res, spy);
+        textureParser()(res, spy);
 
         expect(spy).to.have.been.calledOnce;
         expect(res.texture).to.be.undefined;
@@ -22,18 +24,18 @@ describe('PIXI.loaders.textureParser', function ()
     it('should create a texture if resource is an image', function ()
     {
         const spy = sinon.spy();
-        const res = createMockResource(PIXI.loaders.Resource.TYPE.IMAGE, new Image());
+        const res = createMockResource(Resource.TYPE.IMAGE, new Image());
 
-        PIXI.loaders.textureParser()(res, spy);
+        textureParser()(res, spy);
 
         expect(spy).to.have.been.calledOnce;
-        expect(res.texture).to.be.an.instanceof(PIXI.Texture);
+        expect(res.texture).to.be.an.instanceof(Texture);
 
-        expect(PIXI.utils.BaseTextureCache).to.have.property(res.name, res.texture.baseTexture);
-        expect(PIXI.utils.BaseTextureCache).to.have.property(res.url, res.texture.baseTexture);
+        expect(BaseTextureCache).to.have.property(res.name, res.texture.baseTexture);
+        expect(BaseTextureCache).to.have.property(res.url, res.texture.baseTexture);
 
-        expect(PIXI.utils.TextureCache).to.have.property(res.name, res.texture);
-        expect(PIXI.utils.TextureCache).to.have.property(res.url, res.texture);
+        expect(TextureCache).to.have.property(res.name, res.texture);
+        expect(TextureCache).to.have.property(res.url, res.texture);
     });
 });
 

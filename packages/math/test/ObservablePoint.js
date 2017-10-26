@@ -1,11 +1,11 @@
-'use strict';
+const { ObservablePoint } = require('../');
 
 describe('PIXI.ObservablePoint', function ()
 {
     it('should create a new observable point', function ()
     {
         const cb = sinon.spy();
-        const pt = new PIXI.ObservablePoint(cb, this);
+        const pt = new ObservablePoint(cb, this);
 
         expect(pt.x).to.equal(0);
         expect(pt.y).to.equal(0);
@@ -38,9 +38,9 @@ describe('PIXI.ObservablePoint', function ()
             // do nothing
         }
 
-        const p1 = new PIXI.ObservablePoint(cb, this, 10, 20);
-        const p2 = new PIXI.ObservablePoint(cb, this, 5, 2);
-        const p3 = new PIXI.ObservablePoint(cb, this, 5, 6);
+        const p1 = new ObservablePoint(cb, this, 10, 20);
+        const p2 = new ObservablePoint(cb, this, 5, 2);
+        const p3 = new ObservablePoint(cb, this, 5, 6);
 
         p1.copy(p2);
         expect(p1.x).to.equal(p2.x);

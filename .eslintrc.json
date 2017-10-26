@@ -2,11 +2,11 @@
     "env": {
         "es6": true,
         "browser": true,
-        "node": true
+        "node": true,
+        "mocha": true
     },
     "globals": {
-        "global": false,
-        "__VERSION__": false
+        "global": false
     },
     "parserOptions": {
         "ecmaVersion": 6,

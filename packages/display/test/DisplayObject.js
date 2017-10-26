@@ -1,4 +1,5 @@
-'use strict';
+const { DisplayObject, Container, TRANSFORM_MODE, Transform, TransformStatic } = require('../');
+const { settings } = require('@pixi/settings');
 
 describe('PIXI.DisplayObject', function ()
 {
@@ -6,7 +7,7 @@ describe('PIXI.DisplayObject', function ()
     {
         it('should initialise properties', function ()
         {
-            const object = new PIXI.DisplayObject();
+            const object = new DisplayObject();
 
             expect(object.alpha).to.equal(1);
             expect(object.worldAlpha).to.equal(1);
@@ -16,17 +17,17 @@ describe('PIXI.DisplayObject', function ()
 
         it('should set the correct Transform', function ()
         {
-            PIXI.settings.TRANSFORM_MODE = PIXI.TRANSFORM_MODE.DYNAMIC;
+            settings.TRANSFORM_MODE = TRANSFORM_MODE.DYNAMIC;
 
-            const dynamicTransform = new PIXI.DisplayObject();
+            const dynamicTransform = new DisplayObject();
 
-            expect(dynamicTransform.transform).to.be.instanceof(PIXI.Transform);
+            expect(dynamicTransform.transform).to.be.instanceof(Transform);
 
-            PIXI.settings.TRANSFORM_MODE = PIXI.TRANSFORM_MODE.STATIC;
+            settings.TRANSFORM_MODE = TRANSFORM_MODE.STATIC;
 
-            const staticTransform = new PIXI.DisplayObject();
+            const staticTransform = new DisplayObject();
 
-            expect(staticTransform.transform).to.be.instanceof(PIXI.TransformStatic);
+            expect(staticTransform.transform).to.be.instanceof(TransformStatic);
         });
     });
 
@@ -34,8 +35,8 @@ describe('PIXI.DisplayObject', function ()
     {
         it('should add itself to a Container', function ()
         {
-            const child = new PIXI.DisplayObject();
-            const container = new PIXI.Container();
+            const child = new DisplayObject();
+            const container = new Container();
 
             expect(container.children.length).to.equal(0);
             child.setParent(container);
@@ -45,7 +46,7 @@ describe('PIXI.DisplayObject', function ()
 
         it('should throw if not Container', function ()
         {
-            const child = new PIXI.DisplayObject();
+            const child = new DisplayObject();
             const notAContainer = {};
 
             expect(() => child.setParent()).to.throw('setParent: Argument must be a Container');
@@ -57,7 +58,7 @@ describe('PIXI.DisplayObject', function ()
     {
         it('should set correct properties', function ()
         {
-            const object = new PIXI.DisplayObject();
+            const object = new DisplayObject();
 
             object.setTransform(1, 2, 3, 4, 5, 6, 7, 8, 9);
 
@@ -74,7 +75,7 @@ describe('PIXI.DisplayObject', function ()
 
         it('should convert zero scale to one', function ()
         {
-            const object = new PIXI.DisplayObject();
+            const object = new DisplayObject();
 
             object.setTransform(1, 1, 0, 0, 1, 1, 1, 1, 1);
 
@@ -87,9 +88,9 @@ describe('PIXI.DisplayObject', function ()
     {
         it('should traverse parents', function ()
         {
-            const grandParent = new PIXI.Container();
-            const parent = new PIXI.Container();
-            const child = new PIXI.DisplayObject();
+            const grandParent = new Container();
+            const parent = new Container();
+            const child = new DisplayObject();
 
             grandParent.addChild(parent);
             parent.addChild(child);

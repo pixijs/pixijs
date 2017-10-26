@@ -1,4 +1,6 @@
-'use strict';
+const { InteractionData } = require('../');
+const { DisplayObject } = require('@pixi/display');
+const { Point } = require('@pixi/math');
 
 describe('PIXI.interaction.InteractionData', function ()
 {
@@ -6,10 +8,10 @@ describe('PIXI.interaction.InteractionData', function ()
     {
         it('should populate second parameter with result', function ()
         {
-            const data = new PIXI.interaction.InteractionData();
-            const stage = new PIXI.DisplayObject();
-            const displayObject = new PIXI.DisplayObject();
-            const point = new PIXI.Point();
+            const data = new InteractionData();
+            const stage = new DisplayObject();
+            const displayObject = new DisplayObject();
+            const point = new Point();
 
             data.global.set(10, 10);
             displayObject.position.set(5, 3);

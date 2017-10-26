@@ -1,10 +1,10 @@
-'use strict';
+const { Matrix } = require('../');
 
 describe('PIXI.Matrix', function ()
 {
     it('should create a new matrix', function ()
     {
-        const matrix = new PIXI.Matrix();
+        const matrix = new Matrix();
 
         expect(matrix.a).to.equal(1);
         expect(matrix.b).to.equal(0);
@@ -47,7 +47,7 @@ describe('PIXI.Matrix', function ()
 
     it('should apply different transforms', function ()
     {
-        const matrix = new PIXI.Matrix();
+        const matrix = new Matrix();
 
         matrix.translate(10, 20);
         matrix.translate(1, 2);
@@ -83,7 +83,7 @@ describe('PIXI.Matrix', function ()
 
     it('should allow rotatation', function ()
     {
-        const matrix = new PIXI.Matrix();
+        const matrix = new Matrix();
 
         matrix.rotate(Math.PI);
 
@@ -95,8 +95,8 @@ describe('PIXI.Matrix', function ()
 
     it('should append matrix', function ()
     {
-        const m1 = new PIXI.Matrix();
-        const m2 = new PIXI.Matrix();
+        const m1 = new Matrix();
+        const m2 = new Matrix();
 
         m2.tx = 100;
         m2.ty = 200;
@@ -109,8 +109,8 @@ describe('PIXI.Matrix', function ()
 
     it('should prepend matrix', function ()
     {
-        const m1 = new PIXI.Matrix();
-        const m2 = new PIXI.Matrix();
+        const m1 = new Matrix();
+        const m2 = new Matrix();
 
         m2.set(2, 3, 4, 5, 100, 200);
         m1.prepend(m2);
@@ -122,8 +122,8 @@ describe('PIXI.Matrix', function ()
         expect(m1.tx).to.equal(m2.tx);
         expect(m1.ty).to.equal(m2.ty);
 
-        const m3 = new PIXI.Matrix();
-        const m4 = new PIXI.Matrix();
+        const m3 = new Matrix();
+        const m4 = new Matrix();
 
         m3.prepend(m4);
 
@@ -137,13 +137,13 @@ describe('PIXI.Matrix', function ()
 
     it('should get IDENTITY and TEMP_MATRIX', function ()
     {
-        expect(PIXI.Matrix.IDENTITY instanceof PIXI.Matrix).to.be.true;
-        expect(PIXI.Matrix.TEMP_MATRIX instanceof PIXI.Matrix).to.be.true;
+        expect(Matrix.IDENTITY instanceof Matrix).to.be.true;
+        expect(Matrix.TEMP_MATRIX instanceof Matrix).to.be.true;
     });
 
     it('should reset matrix to default when identity() is called', function ()
     {
-        const matrix = new PIXI.Matrix();
+        const matrix = new Matrix();
 
         matrix.set(2, 3, 4, 5, 100, 200);
 

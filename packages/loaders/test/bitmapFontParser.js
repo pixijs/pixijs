@@ -1,23 +1,26 @@
-'use strict';
-
 const path = require('path');
 const fs = require('fs');
+const { BitmapText } = require('@pixi/text-bitmap');
+const { BaseTextureCache, TextureCache } = require('@pixi/utils');
+const { Texture, BaseTexture } = require('@pixi/core');
+const { Spritesheet } = require('@pixi/spritesheet');
+const { bitmapFontParser, parseBitmapFontData } = require('../');
 
 describe('PIXI.loaders.bitmapFontParser', function ()
 {
     afterEach(function ()
     {
-        for (var font in PIXI.extras.BitmapText.fonts)
+        for (const font in BitmapText.fonts)
         {
-            delete PIXI.extras.BitmapText.fonts[font];
+            delete BitmapText.fonts[font];
         }
-        for (var baseTexture in PIXI.utils.BaseTextureCache)
+        for (const baseTexture in BaseTextureCache)
         {
-            delete PIXI.utils.BaseTextureCache[baseTexture];
+            delete BaseTextureCache[baseTexture];
         }
-        for (var texture in PIXI.utils.TextureCache)
+        for (const texture in TextureCache)
         {
-            delete PIXI.utils.TextureCache[texture];
+            delete TextureCache[texture];
         }
     });
 
@@ -78,8 +81,8 @@ describe('PIXI.loaders.bitmapFontParser', function ()
 
     it('should exist and return a function', function ()
     {
-        expect(PIXI.loaders.bitmapFontParser).to.be.a('function');
-        expect(PIXI.loaders.bitmapFontParser()).to.be.a('function');
+        expect(bitmapFontParser).to.be.a('function');
+        expect(bitmapFontParser()).to.be.a('function');
     });
 
     it('should do nothing if the resource is not XML', function ()
@@ -87,7 +90,7 @@ describe('PIXI.loaders.bitmapFontParser', function ()
         const spy = sinon.spy();
         const res = {};
 
-        PIXI.loaders.bitmapFontParser()(res, spy);
+        bitmapFontParser()(res, spy);
 
         expect(spy).to.have.been.calledOnce;
         expect(res.textures).to.be.undefined;
@@ -98,7 +101,7 @@ describe('PIXI.loaders.bitmapFontParser', function ()
         const spy = sinon.spy();
         const res = { data: document.createDocumentFragment() };
 
-        PIXI.loaders.bitmapFontParser()(res, spy);
+        bitmapFontParser()(res, spy);
 
         expect(spy).to.have.been.calledOnce;
         expect(res.textures).to.be.undefined;
@@ -110,11 +113,11 @@ describe('PIXI.loaders.bitmapFontParser', function ()
 
     it('should properly register bitmap font', function (done)
     {
-        const texture = new PIXI.Texture(new PIXI.BaseTexture(this.fontImage, null, 1));
-        const font = PIXI.extras.BitmapText.registerFont(this.fontXML, texture);
+        const texture = new Texture(new BaseTexture(this.fontImage, null, 1));
+        const font = BitmapText.registerFont(this.fontXML, texture);
 
         expect(font).to.be.an.object;
-        expect(PIXI.extras.BitmapText.fonts.font).to.equal(font);
+        expect(BitmapText.fonts.font).to.equal(font);
         expect(font).to.have.property('chars');
         const charA = font.chars['A'.charCodeAt(0) || 65];
 
@@ -156,11 +159,11 @@ describe('PIXI.loaders.bitmapFontParser', function ()
 
     it('should properly register SCALED bitmap font', function (done)
     {
-        const texture = new PIXI.Texture(new PIXI.BaseTexture(this.fontScaledImage, null, 0.5));
-        const font = PIXI.extras.BitmapText.registerFont(this.fontScaledXML, texture);
+        const texture = new Texture(new BaseTexture(this.fontScaledImage, null, 0.5));
+        const font = BitmapText.registerFont(this.fontScaledXML, texture);
 
         expect(font).to.be.an.object;
-        expect(PIXI.extras.BitmapText.fonts.font).to.equal(font);
+        expect(BitmapText.fonts.font).to.equal(font);
         expect(font).to.have.property('chars');
         const charA = font.chars['A'.charCodeAt(0) || 65];
 
@@ -202,18 +205,18 @@ describe('PIXI.loaders.bitmapFontParser', function ()
 
     it('should properly register bitmap font NESTED into spritesheet', function (done)
     {
-        const baseTexture = new PIXI.BaseTexture(this.atlasImage, null, 1);
-        const spritesheet = new PIXI.Spritesheet(baseTexture, this.atlasJSON);
+        const baseTexture = new BaseTexture(this.atlasImage, null, 1);
+        const spritesheet = new Spritesheet(baseTexture, this.atlasJSON);
 
         spritesheet.parse(() =>
         {
-            const fontTexture  = PIXI.Texture.fromFrame('resources/font.png');
-            const font =  PIXI.extras.BitmapText.registerFont(this.fontXML, fontTexture);
+            const fontTexture  = Texture.fromFrame('resources/font.png');
+            const font =  BitmapText.registerFont(this.fontXML, fontTexture);
             const fontX = 158; // bare value from spritesheet frame
             const fontY = 2; // bare value from spritesheet frame
 
             expect(font).to.be.an.object;
-            expect(PIXI.extras.BitmapText.fonts.font).to.equal(font);
+            expect(BitmapText.fonts.font).to.equal(font);
             expect(font).to.have.property('chars');
             const charA = font.chars['A'.charCodeAt(0) || 65];
 
@@ -256,20 +259,20 @@ describe('PIXI.loaders.bitmapFontParser', function ()
 
     it('should properly register bitmap font NESTED into SCALED spritesheet', function (done)
     {
-        const baseTexture = new PIXI.BaseTexture(this.atlasScaledImage, null, 1);
-        const spritesheet = new PIXI.Spritesheet(baseTexture, this.atlasScaledJSON);
+        const baseTexture = new BaseTexture(this.atlasScaledImage, null, 1);
+        const spritesheet = new Spritesheet(baseTexture, this.atlasScaledJSON);
 
         spritesheet.resolution = 1;
 
         spritesheet.parse(() =>
         {
-            const fontTexture  = PIXI.Texture.fromFrame('resources/font.png');
-            const font =  PIXI.extras.BitmapText.registerFont(this.fontXML, fontTexture);
+            const fontTexture  = Texture.fromFrame('resources/font.png');
+            const font =  BitmapText.registerFont(this.fontXML, fontTexture);
             const fontX = 158; // bare value from spritesheet frame
             const fontY = 2; // bare value from spritesheet frame
 
             expect(font).to.be.an.object;
-            expect(PIXI.extras.BitmapText.fonts.font).to.equal(font);
+            expect(BitmapText.fonts.font).to.equal(font);
             expect(font).to.have.property('chars');
             const charA = font.chars['A'.charCodeAt(0) || 65];
 
@@ -315,7 +318,7 @@ describe('PIXI.loaders.parseBitmapFontData', function ()
 {
     it('should exist', function ()
     {
-        expect(PIXI.loaders.parseBitmapFontData).to.be.a('function');
+        expect(parseBitmapFontData).to.be.a('function');
     });
 
     // TODO: Test the parser code.

@@ -1,6 +1,11 @@
-'use strict';
-
 const MockPointer = require('./MockPointer');
+const { Container } = require('@pixi/display');
+const { Graphics } = require('@pixi/graphics');
+const { Point } = require('@pixi/math');
+const { mixins } = require('@pixi/utils');
+const { InteractionManager } = require('../');
+
+mixins.performMixins();
 
 describe('PIXI.interaction.InteractionManager', function ()
 {
@@ -18,8 +23,8 @@ describe('PIXI.interaction.InteractionManager', function ()
     {
         it('should call mousedown handler', function ()
         {
-            const stage = new PIXI.Container();
-            const graphics = new PIXI.Graphics();
+            const stage = new Container();
+            const graphics = new Graphics();
             const eventSpy = sinon.spy();
             const pointer = this.pointer = new MockPointer(stage);
 
@@ -36,8 +41,8 @@ describe('PIXI.interaction.InteractionManager', function ()
 
         it('should call mouseup handler', function ()
         {
-            const stage = new PIXI.Container();
-            const graphics = new PIXI.Graphics();
+            const stage = new Container();
+            const graphics = new Graphics();
             const eventSpy = sinon.spy();
             const pointer = this.pointer = new MockPointer(stage);
 
@@ -54,8 +59,8 @@ describe('PIXI.interaction.InteractionManager', function ()
 
         it('should call mouseupoutside handler', function ()
         {
-            const stage = new PIXI.Container();
-            const graphics = new PIXI.Graphics();
+            const stage = new Container();
+            const graphics = new Graphics();
             const eventSpy = sinon.spy();
             const pointer = this.pointer = new MockPointer(stage);
 
@@ -73,8 +78,8 @@ describe('PIXI.interaction.InteractionManager', function ()
 
         it('should call mouseupoutside handler on mouseup on different elements', function ()
         {
-            const stage = new PIXI.Container();
-            const graphics = new PIXI.Graphics();
+            const stage = new Container();
+            const graphics = new Graphics();
             const eventSpy = sinon.spy();
             const pointer = this.pointer = new MockPointer(stage);
 
@@ -92,8 +97,8 @@ describe('PIXI.interaction.InteractionManager', function ()
 
         it('should call mouseover handler', function ()
         {
-            const stage = new PIXI.Container();
-            const graphics = new PIXI.Graphics();
+            const stage = new Container();
+            const graphics = new Graphics();
             const eventSpy = sinon.spy();
             const pointer = this.pointer = new MockPointer(stage);
 
@@ -110,8 +115,8 @@ describe('PIXI.interaction.InteractionManager', function ()
 
         it('should call mouseout handler', function ()
         {
-            const stage = new PIXI.Container();
-            const graphics = new PIXI.Graphics();
+            const stage = new Container();
+            const graphics = new Graphics();
             const eventSpy = sinon.spy();
             const pointer = this.pointer = new MockPointer(stage);
 
@@ -132,8 +137,8 @@ describe('PIXI.interaction.InteractionManager', function ()
     {
         it('should call touchstart and pointerdown when touch event and pointer supported', function ()
         {
-            const stage = new PIXI.Container();
-            const graphics = new PIXI.Graphics();
+            const stage = new Container();
+            const graphics = new Graphics();
             const touchSpy = sinon.spy(function touchListen() { /* noop */ });
             const pointerSpy = sinon.spy(function pointerListen() { /* noop */ });
             const pointer = this.pointer = new MockPointer(stage, null, null, true);
@@ -153,8 +158,8 @@ describe('PIXI.interaction.InteractionManager', function ()
 
         it('should not call touchstart or pointerdown when pointer event and touch supported', function ()
         {
-            const stage = new PIXI.Container();
-            const graphics = new PIXI.Graphics();
+            const stage = new Container();
+            const graphics = new Graphics();
             const touchSpy = sinon.spy(function touchListen() { /* noop */ });
             const pointerSpy = sinon.spy(function pointerListen() { /* noop */ });
             const pointer = this.pointer = new MockPointer(stage, null, null, true);
@@ -174,8 +179,8 @@ describe('PIXI.interaction.InteractionManager', function ()
 
         it('should call touchstart and pointerdown when touch event and pointer not supported', function ()
         {
-            const stage = new PIXI.Container();
-            const graphics = new PIXI.Graphics();
+            const stage = new Container();
+            const graphics = new Graphics();
             const touchSpy = sinon.spy(function touchListen() { /* noop */ });
             const pointerSpy = sinon.spy(function pointerListen() { /* noop */ });
             const pointer = this.pointer = new MockPointer(stage, null, null, false);
@@ -195,8 +200,8 @@ describe('PIXI.interaction.InteractionManager', function ()
 
         it('should call touchstart and pointerdown when pointer event and touch not supported', function ()
         {
-            const stage = new PIXI.Container();
-            const graphics = new PIXI.Graphics();
+            const stage = new Container();
+            const graphics = new Graphics();
             const touchSpy = sinon.spy(function touchListen() { /* noop */ });
             const pointerSpy = sinon.spy(function pointerListen() { /* noop */ });
             const pointer = this.pointer = new MockPointer(stage, null, null, true);
@@ -223,7 +228,7 @@ describe('PIXI.interaction.InteractionManager', function ()
 
         before(function ()
         {
-            stub = sinon.stub(PIXI.interaction.InteractionManager.prototype, 'setTargetElement');
+            stub = sinon.stub(InteractionManager.prototype, 'setTargetElement');
         });
 
         after(function ()
@@ -233,7 +238,7 @@ describe('PIXI.interaction.InteractionManager', function ()
 
         it('should add and remove pointer events to document', function ()
         {
-            const manager = new PIXI.interaction.InteractionManager(sinon.stub());
+            const manager = new InteractionManager(sinon.stub());
             const addSpy = sinon.spy(window.document, 'addEventListener');
             const removeSpy = sinon.spy(window.document, 'removeEventListener');
 
@@ -256,7 +261,7 @@ describe('PIXI.interaction.InteractionManager', function ()
 
         it('should add and remove pointer events to window', function ()
         {
-            const manager = new PIXI.interaction.InteractionManager(sinon.stub());
+            const manager = new InteractionManager(sinon.stub());
             const addSpy = sinon.spy(window, 'addEventListener');
             const removeSpy = sinon.spy(window, 'removeEventListener');
 
@@ -281,7 +286,7 @@ describe('PIXI.interaction.InteractionManager', function ()
 
         it('should add and remove pointer events to element seven times when touch events are supported', function ()
         {
-            const manager = new PIXI.interaction.InteractionManager(sinon.stub());
+            const manager = new InteractionManager(sinon.stub());
             const element = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
 
             manager.interactionDOMElement = element;
@@ -315,7 +320,7 @@ describe('PIXI.interaction.InteractionManager', function ()
 
         it('should add and remove pointer events to element three times when touch events are not supported', function ()
         {
-            const manager = new PIXI.interaction.InteractionManager(sinon.stub());
+            const manager = new InteractionManager(sinon.stub());
             const element = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
 
             manager.interactionDOMElement = element;
@@ -339,7 +344,7 @@ describe('PIXI.interaction.InteractionManager', function ()
 
         it('should add and remove mouse events to document', function ()
         {
-            const manager = new PIXI.interaction.InteractionManager(sinon.stub());
+            const manager = new InteractionManager(sinon.stub());
             const addSpy = sinon.spy(window.document, 'addEventListener');
             const removeSpy = sinon.spy(window.document, 'removeEventListener');
 
@@ -362,7 +367,7 @@ describe('PIXI.interaction.InteractionManager', function ()
 
         it('should add and remove mouse events to window', function ()
         {
-            const manager = new PIXI.interaction.InteractionManager(sinon.stub());
+            const manager = new InteractionManager(sinon.stub());
             const addSpy = sinon.spy(window, 'addEventListener');
             const removeSpy = sinon.spy(window, 'removeEventListener');
 
@@ -385,7 +390,7 @@ describe('PIXI.interaction.InteractionManager', function ()
 
         it('should add and remove mouse events to element', function ()
         {
-            const manager = new PIXI.interaction.InteractionManager(sinon.stub());
+            const manager = new InteractionManager(sinon.stub());
             const element = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
 
             manager.interactionDOMElement = element;
@@ -409,7 +414,7 @@ describe('PIXI.interaction.InteractionManager', function ()
 
         it('should add and remove touch events to element without pointer events', function ()
         {
-            const manager = new PIXI.interaction.InteractionManager(sinon.stub());
+            const manager = new InteractionManager(sinon.stub());
             const element = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
 
             manager.interactionDOMElement = element;
@@ -433,7 +438,7 @@ describe('PIXI.interaction.InteractionManager', function ()
 
         it('should add and remove touch events to element with pointer events', function ()
         {
-            const manager = new PIXI.interaction.InteractionManager(sinon.stub());
+            const manager = new InteractionManager(sinon.stub());
             const element = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
 
             manager.interactionDOMElement = element;
@@ -460,8 +465,8 @@ describe('PIXI.interaction.InteractionManager', function ()
     {
         it('should call handler when inside', function ()
         {
-            const stage = new PIXI.Container();
-            const graphics = new PIXI.Graphics();
+            const stage = new Container();
+            const graphics = new Graphics();
             const clickSpy = sinon.spy();
             const pointer = this.pointer = new MockPointer(stage);
 
@@ -478,8 +483,8 @@ describe('PIXI.interaction.InteractionManager', function ()
 
         it('should not call handler when outside', function ()
         {
-            const stage = new PIXI.Container();
-            const graphics = new PIXI.Graphics();
+            const stage = new Container();
+            const graphics = new Graphics();
             const clickSpy = sinon.spy();
             const pointer = this.pointer = new MockPointer(stage);
 
@@ -496,8 +501,8 @@ describe('PIXI.interaction.InteractionManager', function ()
 
         it('should not call handler when mousedown not received', function ()
         {
-            const stage = new PIXI.Container();
-            const graphics = new PIXI.Graphics();
+            const stage = new Container();
+            const graphics = new Graphics();
             const clickSpy = sinon.spy();
             const pointer = new MockPointer(stage);
 
@@ -522,8 +527,8 @@ describe('PIXI.interaction.InteractionManager', function ()
     {
         it('should call handler when inside', function ()
         {
-            const stage = new PIXI.Container();
-            const graphics = new PIXI.Graphics();
+            const stage = new Container();
+            const graphics = new Graphics();
             const clickSpy = sinon.spy();
             const pointer = this.pointer = new MockPointer(stage);
 
@@ -540,8 +545,8 @@ describe('PIXI.interaction.InteractionManager', function ()
 
         it('should not call handler when outside', function ()
         {
-            const stage = new PIXI.Container();
-            const graphics = new PIXI.Graphics();
+            const stage = new Container();
+            const graphics = new Graphics();
             const clickSpy = sinon.spy();
             const pointer = this.pointer = new MockPointer(stage);
 
@@ -561,9 +566,9 @@ describe('PIXI.interaction.InteractionManager', function ()
     {
         function getScene(callbackEventName, splitParents)
         {
-            const behindChild = new PIXI.Graphics();
-            const frontChild = new PIXI.Graphics();
-            const parent = new PIXI.Container();
+            const behindChild = new Graphics();
+            const frontChild = new Graphics();
+            const parent = new Container();
             const behindChildCallback = sinon.spy(function behindSpy() { /* no op*/ });
             const frontChildCallback = sinon.spy(function frontSpy() { /* no op*/ });
             const parentCallback = sinon.spy(function parentSpy() { /* no op*/ });
@@ -584,9 +589,9 @@ describe('PIXI.interaction.InteractionManager', function ()
 
             if (splitParents)
             {
-                behindParent = new PIXI.Container();
+                behindParent = new Container();
                 behindParent.name = 'behindParent';
-                frontParent = new PIXI.Container();
+                frontParent = new Container();
                 frontParent.name = 'frontParent';
                 behindParentCallback = sinon.spy(function behindParentSpy() { /* no op*/ });
                 frontParentCallback = sinon.spy(function frontParentSpy() { /* no op*/ });
@@ -625,7 +630,7 @@ describe('PIXI.interaction.InteractionManager', function ()
             {
                 it('should callback front child when clicking front child', function ()
                 {
-                    const stage = new PIXI.Container();
+                    const stage = new Container();
                     const pointer = this.pointer = new MockPointer(stage);
                     const scene = getScene('click');
 
@@ -643,7 +648,7 @@ describe('PIXI.interaction.InteractionManager', function ()
 
                 it('should callback front child when clicking overlap', function ()
                 {
-                    const stage = new PIXI.Container();
+                    const stage = new Container();
                     const pointer = this.pointer = new MockPointer(stage);
                     const scene = getScene('click');
 
@@ -661,7 +666,7 @@ describe('PIXI.interaction.InteractionManager', function ()
 
                 it('should callback behind child when clicking behind child', function ()
                 {
-                    const stage = new PIXI.Container();
+                    const stage = new Container();
                     const pointer = this.pointer = new MockPointer(stage);
                     const scene = getScene('click');
 
@@ -679,7 +684,7 @@ describe('PIXI.interaction.InteractionManager', function ()
 
                 it('should callback front child of different non-interactive parents when clicking overlap', function ()
                 {
-                    const stage = new PIXI.Container();
+                    const stage = new Container();
                     const pointer = this.pointer = new MockPointer(stage);
                     const scene = getScene('click', true);
 
@@ -699,7 +704,7 @@ describe('PIXI.interaction.InteractionManager', function ()
 
                 it('should callback front child of different interactive parents when clicking overlap', function ()
                 {
-                    const stage = new PIXI.Container();
+                    const stage = new Container();
                     const pointer = this.pointer = new MockPointer(stage);
                     const scene = getScene('click', true);
 
@@ -724,7 +729,7 @@ describe('PIXI.interaction.InteractionManager', function ()
             {
                 it('should not callback when clicking front child', function ()
                 {
-                    const stage = new PIXI.Container();
+                    const stage = new Container();
                     const pointer = this.pointer = new MockPointer(stage);
                     const scene = getScene('click');
 
@@ -741,7 +746,7 @@ describe('PIXI.interaction.InteractionManager', function ()
 
                 it('should callback behind child when clicking overlap', function ()
                 {
-                    const stage = new PIXI.Container();
+                    const stage = new Container();
                     const pointer = this.pointer = new MockPointer(stage);
                     const scene = getScene('click');
 
@@ -758,7 +763,7 @@ describe('PIXI.interaction.InteractionManager', function ()
 
                 it('should callback behind child when clicking behind child', function ()
                 {
-                    const stage = new PIXI.Container();
+                    const stage = new Container();
                     const pointer = this.pointer = new MockPointer(stage);
                     const scene = getScene('click');
 
@@ -778,7 +783,7 @@ describe('PIXI.interaction.InteractionManager', function ()
             {
                 it('should callback front child when clicking front child', function ()
                 {
-                    const stage = new PIXI.Container();
+                    const stage = new Container();
                     const pointer = this.pointer = new MockPointer(stage);
                     const scene = getScene('click');
 
@@ -795,7 +800,7 @@ describe('PIXI.interaction.InteractionManager', function ()
 
                 it('should callback front child when clicking overlap', function ()
                 {
-                    const stage = new PIXI.Container();
+                    const stage = new Container();
                     const pointer = this.pointer = new MockPointer(stage);
                     const scene = getScene('click');
 
@@ -812,7 +817,7 @@ describe('PIXI.interaction.InteractionManager', function ()
 
                 it('should not callback when clicking behind child', function ()
                 {
-                    const stage = new PIXI.Container();
+                    const stage = new Container();
                     const pointer = this.pointer = new MockPointer(stage);
                     const scene = getScene('click');
 
@@ -835,7 +840,7 @@ describe('PIXI.interaction.InteractionManager', function ()
             {
                 it('should callback parent and front child when clicking front child', function ()
                 {
-                    const stage = new PIXI.Container();
+                    const stage = new Container();
                     const pointer = this.pointer = new MockPointer(stage);
                     const scene = getScene('click');
 
@@ -854,7 +859,7 @@ describe('PIXI.interaction.InteractionManager', function ()
 
                 it('should callback parent and front child when clicking overlap', function ()
                 {
-                    const stage = new PIXI.Container();
+                    const stage = new Container();
                     const pointer = this.pointer = new MockPointer(stage);
                     const scene = getScene('click');
 
@@ -873,7 +878,7 @@ describe('PIXI.interaction.InteractionManager', function ()
 
                 it('should callback parent and behind child when clicking behind child', function ()
                 {
-                    const stage = new PIXI.Container();
+                    const stage = new Container();
                     const pointer = this.pointer = new MockPointer(stage);
                     const scene = getScene('click');
 
@@ -892,7 +897,7 @@ describe('PIXI.interaction.InteractionManager', function ()
 
                 it('should callback front child of different non-interactive parents when clicking overlap', function ()
                 {
-                    const stage = new PIXI.Container();
+                    const stage = new Container();
                     const pointer = this.pointer = new MockPointer(stage);
                     const scene = getScene('click', true);
 
@@ -913,7 +918,7 @@ describe('PIXI.interaction.InteractionManager', function ()
 
                 it('should callback front child of different interactive parents when clicking overlap', function ()
                 {
-                    const stage = new PIXI.Container();
+                    const stage = new Container();
                     const pointer = this.pointer = new MockPointer(stage);
                     const scene = getScene('click', true);
 
@@ -939,7 +944,7 @@ describe('PIXI.interaction.InteractionManager', function ()
             {
                 it('should callback parent when clicking front child', function ()
                 {
-                    const stage = new PIXI.Container();
+                    const stage = new Container();
                     const pointer = this.pointer = new MockPointer(stage);
                     const scene = getScene('click');
 
@@ -957,7 +962,7 @@ describe('PIXI.interaction.InteractionManager', function ()
 
                 it('should callback parent and behind child when clicking overlap', function ()
                 {
-                    const stage = new PIXI.Container();
+                    const stage = new Container();
                     const pointer = this.pointer = new MockPointer(stage);
                     const scene = getScene('click');
 
@@ -975,7 +980,7 @@ describe('PIXI.interaction.InteractionManager', function ()
 
                 it('should callback parent and behind child when clicking behind child', function ()
                 {
-                    const stage = new PIXI.Container();
+                    const stage = new Container();
                     const pointer = this.pointer = new MockPointer(stage);
                     const scene = getScene('click');
 
@@ -996,7 +1001,7 @@ describe('PIXI.interaction.InteractionManager', function ()
             {
                 it('should callback parent and front child when clicking front child', function ()
                 {
-                    const stage = new PIXI.Container();
+                    const stage = new Container();
                     const pointer = this.pointer = new MockPointer(stage);
                     const scene = getScene('click');
 
@@ -1014,7 +1019,7 @@ describe('PIXI.interaction.InteractionManager', function ()
 
                 it('should callback parent and front child when clicking overlap', function ()
                 {
-                    const stage = new PIXI.Container();
+                    const stage = new Container();
                     const pointer = this.pointer = new MockPointer(stage);
                     const scene = getScene('click');
 
@@ -1032,7 +1037,7 @@ describe('PIXI.interaction.InteractionManager', function ()
 
                 it('should callback parent when clicking behind child', function ()
                 {
-                    const stage = new PIXI.Container();
+                    const stage = new Container();
                     const pointer = this.pointer = new MockPointer(stage);
                     const scene = getScene('click');
 
@@ -1052,12 +1057,12 @@ describe('PIXI.interaction.InteractionManager', function ()
 
         it('Semi-complicated nesting with overlap, should not call behind callback', function ()
         {
-            const stage = new PIXI.Container();
-            const frontParent = new PIXI.Container();
-            const frontChild = new PIXI.Graphics();
-            const behindParent = new PIXI.Container();
-            const subParent = new PIXI.Container();
-            const behindChild = new PIXI.Graphics();
+            const stage = new Container();
+            const frontParent = new Container();
+            const frontChild = new Graphics();
+            const behindParent = new Container();
+            const subParent = new Container();
+            const behindChild = new Graphics();
             const behindCallback = sinon.spy(function behindSpy() { /* no op*/ });
             const frontCallback = sinon.spy(function frontSpy() { /* no op*/ });
 
@@ -1091,8 +1096,8 @@ describe('PIXI.interaction.InteractionManager', function ()
     {
         it('cursor should be the cursor of interactive item', function ()
         {
-            const stage = new PIXI.Container();
-            const graphics = new PIXI.Graphics();
+            const stage = new Container();
+            const graphics = new Graphics();
             const pointer = this.pointer = new MockPointer(stage);
 
             stage.addChild(graphics);
@@ -1109,8 +1114,8 @@ describe('PIXI.interaction.InteractionManager', function ()
 
         it('should return cursor to default on mouseout', function ()
         {
-            const stage = new PIXI.Container();
-            const graphics = new PIXI.Graphics();
+            const stage = new Container();
+            const graphics = new Graphics();
             const pointer = this.pointer = new MockPointer(stage);
 
             stage.addChild(graphics);
@@ -1128,8 +1133,8 @@ describe('PIXI.interaction.InteractionManager', function ()
 
         it('should still be the over cursor after a click', function ()
         {
-            const stage = new PIXI.Container();
-            const graphics = new PIXI.Graphics();
+            const stage = new Container();
+            const graphics = new Graphics();
             const pointer = this.pointer = new MockPointer(stage);
 
             stage.addChild(graphics);
@@ -1147,8 +1152,8 @@ describe('PIXI.interaction.InteractionManager', function ()
 
         it('should return cursor to default when mouse leaves renderer', function ()
         {
-            const stage = new PIXI.Container();
-            const graphics = new PIXI.Graphics();
+            const stage = new Container();
+            const graphics = new Graphics();
             const pointer = this.pointer = new MockPointer(stage);
 
             stage.addChild(graphics);
@@ -1166,8 +1171,8 @@ describe('PIXI.interaction.InteractionManager', function ()
 
         it('cursor callback should be called', function ()
         {
-            const stage = new PIXI.Container();
-            const graphics = new PIXI.Graphics();
+            const stage = new Container();
+            const graphics = new Graphics();
             const overSpy = sinon.spy();
             const defaultSpy = sinon.spy();
             const pointer = this.pointer = new MockPointer(stage);
@@ -1189,8 +1194,8 @@ describe('PIXI.interaction.InteractionManager', function ()
 
         it('cursor callback should only be called if the cursor actually changed', function ()
         {
-            const stage = new PIXI.Container();
-            const graphics = new PIXI.Graphics();
+            const stage = new Container();
+            const graphics = new Graphics();
             const defaultSpy = sinon.spy();
             const pointer = this.pointer = new MockPointer(stage);
 
@@ -1209,8 +1214,8 @@ describe('PIXI.interaction.InteractionManager', function ()
 
         it('cursor style object should be fully applied', function ()
         {
-            const stage = new PIXI.Container();
-            const graphics = new PIXI.Graphics();
+            const stage = new Container();
+            const graphics = new Graphics();
             const pointer = this.pointer = new MockPointer(stage);
 
             stage.addChild(graphics);
@@ -1231,8 +1236,8 @@ describe('PIXI.interaction.InteractionManager', function ()
 
         it('should not change cursor style if null cursor style provided', function ()
         {
-            const stage = new PIXI.Container();
-            const graphics = new PIXI.Graphics();
+            const stage = new Container();
+            const graphics = new Graphics();
             const pointer = this.pointer = new MockPointer(stage);
 
             stage.addChild(graphics);
@@ -1252,8 +1257,8 @@ describe('PIXI.interaction.InteractionManager', function ()
 
         it('should use cursor property as css if no style entry', function ()
         {
-            const stage = new PIXI.Container();
-            const graphics = new PIXI.Graphics();
+            const stage = new Container();
+            const graphics = new Graphics();
             const pointer = this.pointer = new MockPointer(stage);
 
             stage.addChild(graphics);
@@ -1271,10 +1276,10 @@ describe('PIXI.interaction.InteractionManager', function ()
     {
         function getScene()
         {
-            const stage = new PIXI.Container();
-            const behindChild = new PIXI.Graphics();
-            const middleChild = new PIXI.Graphics();
-            const frontChild = new PIXI.Graphics();
+            const stage = new Container();
+            const behindChild = new Graphics();
+            const middleChild = new Graphics();
+            const frontChild = new Graphics();
 
             behindChild.beginFill(0xFF);
             behindChild.drawRect(0, 0, 50, 50);
@@ -1344,8 +1349,8 @@ describe('PIXI.interaction.InteractionManager', function ()
     {
         it('pointer event from mouse should use single mouse data', function ()
         {
-            const stage = new PIXI.Container();
-            const graphics = new PIXI.Graphics();
+            const stage = new Container();
+            const graphics = new Graphics();
             const pointer = this.pointer = new MockPointer(stage, 100, 100, true);
 
             stage.addChild(graphics);
@@ -1364,8 +1369,8 @@ describe('PIXI.interaction.InteractionManager', function ()
     {
         it('touchleave after touchout should not orphan data', function ()
         {
-            const stage = new PIXI.Container();
-            const graphics = new PIXI.Graphics();
+            const stage = new Container();
+            const graphics = new Graphics();
             const pointer = this.pointer = new MockPointer(stage);
 
             stage.addChild(graphics);
@@ -1386,8 +1391,8 @@ describe('PIXI.interaction.InteractionManager', function ()
     {
         it('should return hit', function ()
         {
-            const stage = new PIXI.Container();
-            const graphics = new PIXI.Graphics();
+            const stage = new Container();
+            const graphics = new Graphics();
             const pointer = this.pointer = new MockPointer(stage);
 
             stage.addChild(graphics);
@@ -1396,15 +1401,15 @@ describe('PIXI.interaction.InteractionManager', function ()
             graphics.interactive = true;
 
             pointer.render();
-            const hit = pointer.interaction.hitTest(new PIXI.Point(10, 10));
+            const hit = pointer.interaction.hitTest(new Point(10, 10));
 
             expect(hit).to.equal(graphics);
         });
 
         it('should return null if not hit', function ()
         {
-            const stage = new PIXI.Container();
-            const graphics = new PIXI.Graphics();
+            const stage = new Container();
+            const graphics = new Graphics();
             const pointer = this.pointer = new MockPointer(stage);
 
             stage.addChild(graphics);
@@ -1413,16 +1418,16 @@ describe('PIXI.interaction.InteractionManager', function ()
             graphics.interactive = true;
 
             pointer.render();
-            const hit = pointer.interaction.hitTest(new PIXI.Point(60, 60));
+            const hit = pointer.interaction.hitTest(new Point(60, 60));
 
             expect(hit).to.be.null;
         });
 
         it('should return top thing that was hit', function ()
         {
-            const stage = new PIXI.Container();
-            const graphics = new PIXI.Graphics();
-            const behind = new PIXI.Graphics();
+            const stage = new Container();
+            const graphics = new Graphics();
+            const behind = new Graphics();
             const pointer = this.pointer = new MockPointer(stage);
 
             stage.addChild(behind);
@@ -1435,16 +1440,16 @@ describe('PIXI.interaction.InteractionManager', function ()
             behind.interactive = true;
 
             pointer.render();
-            const hit = pointer.interaction.hitTest(new PIXI.Point(10, 10));
+            const hit = pointer.interaction.hitTest(new Point(10, 10));
 
             expect(hit).to.equal(graphics);
         });
 
         it('should return hit when passing in root', function ()
         {
-            const stage = new PIXI.Container();
-            const graphics = new PIXI.Graphics();
-            const behind = new PIXI.Graphics();
+            const stage = new Container();
+            const graphics = new Graphics();
+            const behind = new Graphics();
             const pointer = this.pointer = new MockPointer(stage);
 
             stage.addChild(behind);
@@ -1457,7 +1462,7 @@ describe('PIXI.interaction.InteractionManager', function ()
             behind.interactive = true;
 
             pointer.render();
-            const hit = pointer.interaction.hitTest(new PIXI.Point(10, 10), behind);
+            const hit = pointer.interaction.hitTest(new Point(10, 10), behind);
 
             expect(hit).to.equal(behind);
         });
@@ -1467,8 +1472,8 @@ describe('PIXI.interaction.InteractionManager', function ()
     {
         it('isPrimary should be set for first touch only', function ()
         {
-            const stage = new PIXI.Container();
-            const graphics = new PIXI.Graphics();
+            const stage = new Container();
+            const graphics = new Graphics();
             const pointer = this.pointer = new MockPointer(stage);
 
             stage.addChild(graphics);
@@ -1479,17 +1484,17 @@ describe('PIXI.interaction.InteractionManager', function ()
             pointer.touchstart(10, 10, 1);
             expect(pointer.interaction.activeInteractionData[1]).to.exist;
             expect(pointer.interaction.activeInteractionData[1].isPrimary,
-                    'first touch should be primary on touch start').to.be.true;
+                'first touch should be primary on touch start').to.be.true;
             pointer.touchstart(13, 9, 2);
             expect(pointer.interaction.activeInteractionData[2].isPrimary,
-                    'second touch should not be primary').to.be.false;
+                'second touch should not be primary').to.be.false;
             pointer.touchmove(10, 20, 1);
             expect(pointer.interaction.activeInteractionData[1].isPrimary,
-                    'first touch should still be primary after move').to.be.true;
+                'first touch should still be primary after move').to.be.true;
             pointer.touchend(10, 10, 1);
             pointer.touchmove(13, 29, 2);
             expect(pointer.interaction.activeInteractionData[2].isPrimary,
-                    'second touch should still not be primary after first is done').to.be.false;
+                'second touch should still not be primary after first is done').to.be.false;
         });
     });
 
@@ -1497,8 +1502,8 @@ describe('PIXI.interaction.InteractionManager', function ()
     {
         it('should call mousedown handler', function ()
         {
-            const stage = new PIXI.Container();
-            const graphics = new PIXI.Graphics();
+            const stage = new Container();
+            const graphics = new Graphics();
             const eventSpy = sinon.spy();
             const pointer = this.pointer = new MockPointer(stage, null, null, true);
 
@@ -1515,8 +1520,8 @@ describe('PIXI.interaction.InteractionManager', function ()
 
         it('should call mousemove handler', function ()
         {
-            const stage = new PIXI.Container();
-            const graphics = new PIXI.Graphics();
+            const stage = new Container();
+            const graphics = new Graphics();
             const eventSpy = sinon.spy();
             const pointer = this.pointer = new MockPointer(stage, null, null, true);
 
@@ -1533,8 +1538,8 @@ describe('PIXI.interaction.InteractionManager', function ()
 
         it('should call mouseup handler', function ()
         {
-            const stage = new PIXI.Container();
-            const graphics = new PIXI.Graphics();
+            const stage = new Container();
+            const graphics = new Graphics();
             const eventSpy = sinon.spy();
             const pointer = this.pointer = new MockPointer(stage, null, null, true);
 

@@ -1,5 +1,3 @@
-'use strict';
-
 /* eslint-disable global-require */
 require('../');
 

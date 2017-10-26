@@ -1,17 +1,17 @@
-'use strict';
+const { Ellipse } = require('../');
 
 describe('PIXI.Ellipse', function ()
 {
     it('should create a new ellipse', function ()
     {
-        const ellipse1 = new PIXI.Ellipse();
+        const ellipse1 = new Ellipse();
 
         expect(ellipse1.x).to.equal(0);
         expect(ellipse1.y).to.equal(0);
         expect(ellipse1.width).to.equal(0);
         expect(ellipse1.height).to.equal(0);
 
-        const ellipse2 = new PIXI.Ellipse(10, 10, 5, 5);
+        const ellipse2 = new Ellipse(10, 10, 5, 5);
 
         expect(ellipse2.x).to.equal(10);
         expect(ellipse2.y).to.equal(10);
@@ -21,7 +21,7 @@ describe('PIXI.Ellipse', function ()
 
     it('should clone a new ellipse', function ()
     {
-        const ellipse1 = new PIXI.Ellipse(10, 10, 5, 5);
+        const ellipse1 = new Ellipse(10, 10, 5, 5);
 
         expect(ellipse1.x).to.equal(10);
         expect(ellipse1.y).to.equal(10);
@@ -38,7 +38,7 @@ describe('PIXI.Ellipse', function ()
 
     it('should check if point is within ellipse', function ()
     {
-        const ellipse1 = new PIXI.Ellipse(10, 10, 5, 5);
+        const ellipse1 = new Ellipse(10, 10, 5, 5);
 
         expect(ellipse1.contains(10, 10)).to.be.true;
         expect(ellipse1.contains(10, 15)).to.be.true;
@@ -57,14 +57,14 @@ describe('PIXI.Ellipse', function ()
         expect(ellipse1.contains(11, 15)).to.be.false;
         expect(ellipse1.contains(0, 0)).to.be.false;
 
-        const ellipse2 = new PIXI.Ellipse(10, 10, 0, 0);
+        const ellipse2 = new Ellipse(10, 10, 0, 0);
 
         expect(ellipse2.contains(10, 10)).to.be.false;
     });
 
     it('should return framing rectangle', function ()
     {
-        const ellipse1 = new PIXI.Ellipse(10, 10, 5, 5);
+        const ellipse1 = new Ellipse(10, 10, 5, 5);
         const rect1 = ellipse1.getBounds();
 
         expect(rect1.left).to.equal(5);

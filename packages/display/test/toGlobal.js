@@ -1,16 +1,17 @@
-'use strict';
+const { Container } = require('../');
+const { Point } = require('@pixi/math');
 
 describe('toGlobal', function ()
 {
     it('should return correct global cordinates of a point from within a displayObject', function ()
     {
-        const parent = new PIXI.Container();
+        const parent = new Container();
 
-        const container = new PIXI.Container();
+        const container = new Container();
 
         parent.addChild(container);
 
-        const point = new PIXI.Point(100, 100);
+        const point = new Point(100, 100);
 
         let globalPoint = container.toGlobal(point);
 

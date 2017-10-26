@@ -1,16 +1,17 @@
-'use strict';
+const { Container } = require('../');
+const { Point } = require('@pixi/math');
 
 describe('toLocal', function ()
 {
     it('should return correct local cordinates of a displayObject', function ()
     {
-        const parent = new PIXI.Container();
+        const parent = new Container();
 
-        const container = new PIXI.Container();
+        const container = new Container();
 
         parent.addChild(container);
 
-        const point = new PIXI.Point(100, 100);
+        const point = new Point(100, 100);
 
         let localPoint = container.toLocal(point);
 
@@ -31,10 +32,10 @@ describe('toLocal', function ()
 
     it('should map the correct local cordinates of a displayObject to another', function ()
     {
-        const parent = new PIXI.Container();
+        const parent = new Container();
 
-        const container = new PIXI.Container();
-        const container2 = new PIXI.Container();
+        const container = new Container();
+        const container2 = new Container();
 
         parent.addChild(container);
         parent.addChild(container2);
@@ -42,7 +43,7 @@ describe('toLocal', function ()
         container2.position.x = 100;
         container2.position.y = 100;
 
-        const point = new PIXI.Point(100, 100);
+        const point = new Point(100, 100);
 
         container.scale.x = 2;
         container.scale.y = 2;

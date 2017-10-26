@@ -1,14 +1,16 @@
-'use strict';
+const { Application } = require('../');
+const { Container } = require('@pixi/display');
+const { Ticker } = require('@pixi/ticker');
 
 describe('PIXI.Application', function ()
 {
     it('should generate application', function (done)
     {
-        expect(PIXI.Application).to.be.a.function;
-        const app = new PIXI.Application();
+        expect(Application).to.be.a.function;
+        const app = new Application();
 
-        expect(app.stage).to.be.instanceof(PIXI.Container);
-        expect(app.ticker).to.be.instanceof(PIXI.ticker.Ticker);
+        expect(app.stage).to.be.instanceof(Container);
+        expect(app.ticker).to.be.instanceof(Ticker);
         expect(app.renderer).to.be.ok;
 
         app.ticker.addOnce(() =>
@@ -20,7 +22,7 @@ describe('PIXI.Application', function ()
 
     it('should remove canvas when destroyed', function (done)
     {
-        const app = new PIXI.Application();
+        const app = new Application();
         const view = app.view;
 
         expect(view).to.be.instanceof(HTMLCanvasElement);
@@ -37,7 +39,7 @@ describe('PIXI.Application', function ()
 
     it('should not start application before calling start method if options.autoStart is false', function (done)
     {
-        const app = new PIXI.Application({ autoStart: false });
+        const app = new Application({ autoStart: false });
 
         expect(app.ticker.started).to.be.false;
         app.start();

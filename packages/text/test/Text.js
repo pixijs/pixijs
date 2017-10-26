@@ -1,4 +1,5 @@
-'use strict';
+const { Text } = require('../');
+const { DisplayObject } = require('@pixi/display');
 
 describe('PIXI.Text', function ()
 {
@@ -6,7 +7,7 @@ describe('PIXI.Text', function ()
     {
         it('should call through to Sprite.destroy', function ()
         {
-            const text = new PIXI.Text('foo');
+            const text = new Text('foo');
 
             expect(text.anchor).to.not.equal(null);
             text.destroy();
@@ -15,7 +16,7 @@ describe('PIXI.Text', function ()
 
         it('should set context to null', function ()
         {
-            const text = new PIXI.Text('foo');
+            const text = new Text('foo');
 
             expect(text.style).to.not.equal(null);
             text.destroy();
@@ -24,8 +25,8 @@ describe('PIXI.Text', function ()
 
         it('should destroy children if children flag is set', function ()
         {
-            const text = new PIXI.Text('foo');
-            const child = new PIXI.DisplayObject();
+            const text = new Text('foo');
+            const child = new DisplayObject();
 
             text.addChild(child);
             text.destroy({ children: true });
@@ -35,8 +36,8 @@ describe('PIXI.Text', function ()
 
         it('should accept options correctly', function ()
         {
-            const text = new PIXI.Text('foo');
-            const child = new PIXI.DisplayObject();
+            const text = new Text('foo');
+            const child = new DisplayObject();
 
             text.addChild(child);
             text.destroy(true);
@@ -46,9 +47,9 @@ describe('PIXI.Text', function ()
 
         it('should pass opts on to children if children flag is set', function ()
         {
-            const text = new PIXI.Text('foo');
-            const child = new PIXI.DisplayObject();
-            var childDestroyOpts;
+            const text = new Text('foo');
+            const child = new DisplayObject();
+            let childDestroyOpts;
 
             child.destroy = function (opts)
             {
@@ -62,7 +63,7 @@ describe('PIXI.Text', function ()
 
         it('should modify the height of the object when setting height', function ()
         {
-            const text = new PIXI.Text('foo');
+            const text = new Text('foo');
 
             text.height = 300;
 
@@ -71,7 +72,7 @@ describe('PIXI.Text', function ()
 
         it('should modify the width of the object when setting width', function ()
         {
-            const text = new PIXI.Text('foo');
+            const text = new Text('foo');
 
             text.width = 300;
 
@@ -83,35 +84,35 @@ describe('PIXI.Text', function ()
     {
         it('should convert numbers into strings', function ()
         {
-            const text = new PIXI.Text(2);
+            const text = new Text(2);
 
             expect(text.text).to.equal('2');
         });
 
         it('should not change 0 to \'\'', function ()
         {
-            const text = new PIXI.Text(0);
+            const text = new Text(0);
 
             expect(text.text).to.equal('0');
         });
 
         it('should prevent setting null', function ()
         {
-            const text = new PIXI.Text(null);
+            const text = new Text(null);
 
             expect(text.text).to.equal(' ');
         });
 
         it('should prevent setting undefined', function ()
         {
-            const text = new PIXI.Text();
+            const text = new Text();
 
             expect(text.text).to.equal(' ');
         });
 
         it('should prevent setting \'\'', function ()
         {
-            const text = new PIXI.Text('');
+            const text = new Text('');
 
             expect(text.text).to.equal(' ');
         });

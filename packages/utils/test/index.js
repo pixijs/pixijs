@@ -1,4 +1,4 @@
-'use strict';
+const utils = require('../');
 
 describe('PIXI.utils', function ()
 {
@@ -6,13 +6,13 @@ describe('PIXI.utils', function ()
     {
         it('should exist', function ()
         {
-            expect(PIXI.utils.uid)
+            expect(utils.uid)
                 .to.be.a('function');
         });
 
         it('should return a number', function ()
         {
-            expect(PIXI.utils.uid())
+            expect(utils.uid())
                 .to.be.a('number');
         });
     });
@@ -21,7 +21,7 @@ describe('PIXI.utils', function ()
     {
         it('should exist', function ()
         {
-            expect(PIXI.utils.hex2rgb)
+            expect(utils.hex2rgb)
                 .to.be.a('function');
         });
 
@@ -32,7 +32,7 @@ describe('PIXI.utils', function ()
     {
         it('should exist', function ()
         {
-            expect(PIXI.utils.hex2string)
+            expect(utils.hex2string)
                 .to.be.a('function');
         });
 
@@ -43,13 +43,13 @@ describe('PIXI.utils', function ()
     {
         it('should exist', function ()
         {
-            expect(PIXI.utils.rgb2hex)
+            expect(utils.rgb2hex)
                 .to.be.a('function');
         });
 
         it('should calculate correctly', function ()
         {
-            expect(PIXI.utils.rgb2hex([0.3, 0.2, 0.1])).to.equals(0x4c3319);
+            expect(utils.rgb2hex([0.3, 0.2, 0.1])).to.equals(0x4c3319);
         });
 
         // it('should properly convert rgb array to hex color string');
@@ -59,7 +59,7 @@ describe('PIXI.utils', function ()
     {
         it('should exist', function ()
         {
-            expect(PIXI.utils.getResolutionOfUrl)
+            expect(utils.getResolutionOfUrl)
                 .to.be.a('function');
         });
 
@@ -70,13 +70,13 @@ describe('PIXI.utils', function ()
     {
         it('should exist', function ()
         {
-            expect(PIXI.utils.decomposeDataUri)
+            expect(utils.decomposeDataUri)
                 .to.be.a('function');
         });
 
         it('should decompose a data URI', function ()
         {
-            const dataUri = PIXI.utils.decomposeDataUri('data:image/png;base64,94Z9RWUN77ZW');
+            const dataUri = utils.decomposeDataUri('data:image/png;base64,94Z9RWUN77ZW');
 
             expect(dataUri)
                 .to.be.an('object');
@@ -92,7 +92,7 @@ describe('PIXI.utils', function ()
 
         it('should return undefined for anything else', function ()
         {
-            const dataUri = PIXI.utils.decomposeDataUri('foo');
+            const dataUri = utils.decomposeDataUri('foo');
 
             expect(dataUri)
                 .to.be.an('undefined');
@@ -103,13 +103,13 @@ describe('PIXI.utils', function ()
     {
         it('should exist', function ()
         {
-            expect(PIXI.utils.getUrlFileExtension)
+            expect(utils.getUrlFileExtension)
                 .to.be.a('function');
         });
 
         it('should return extension of URL in lower case', function ()
         {
-            const imageType = PIXI.utils.getUrlFileExtension('http://foo.bar/baz.PNG');
+            const imageType = utils.getUrlFileExtension('http://foo.bar/baz.PNG');
 
             expect(imageType)
                 .to.equal('png');
@@ -117,7 +117,7 @@ describe('PIXI.utils', function ()
 
         it('should return extension of URL when absolute', function ()
         {
-            const imageType = PIXI.utils.getUrlFileExtension('/you/baz.PNG');
+            const imageType = utils.getUrlFileExtension('/you/baz.PNG');
 
             expect(imageType)
                 .to.equal('png');
@@ -125,7 +125,7 @@ describe('PIXI.utils', function ()
 
         it('should return extension of URL when relative', function ()
         {
-            const imageType = PIXI.utils.getUrlFileExtension('me/baz.PNG');
+            const imageType = utils.getUrlFileExtension('me/baz.PNG');
 
             expect(imageType)
                 .to.equal('png');
@@ -133,7 +133,7 @@ describe('PIXI.utils', function ()
 
         it('should return extension of URL when just an extension', function ()
         {
-            const imageType = PIXI.utils.getUrlFileExtension('.PNG');
+            const imageType = utils.getUrlFileExtension('.PNG');
 
             expect(imageType)
                 .to.equal('png');
@@ -141,7 +141,7 @@ describe('PIXI.utils', function ()
 
         it('should work with a hash on the url', function ()
         {
-            const imageType = PIXI.utils.getUrlFileExtension('http://foo.bar/baz.PNG#derp');
+            const imageType = utils.getUrlFileExtension('http://foo.bar/baz.PNG#derp');
 
             expect(imageType)
                 .to.equal('png');
@@ -149,7 +149,7 @@ describe('PIXI.utils', function ()
 
         it('should work with a hash path on the url', function ()
         {
-            const imageType = PIXI.utils.getUrlFileExtension('http://foo.bar/baz.PNG#derp/this/is/a/path/me.jpg');
+            const imageType = utils.getUrlFileExtension('http://foo.bar/baz.PNG#derp/this/is/a/path/me.jpg');
 
             expect(imageType)
                 .to.equal('png');
@@ -157,7 +157,7 @@ describe('PIXI.utils', function ()
 
         it('should work with a query string on the url', function ()
         {
-            const imageType = PIXI.utils.getUrlFileExtension('http://foo.bar/baz.PNG?v=1&file=me.jpg');
+            const imageType = utils.getUrlFileExtension('http://foo.bar/baz.PNG?v=1&file=me.jpg');
 
             expect(imageType)
                 .to.equal('png');
@@ -165,7 +165,7 @@ describe('PIXI.utils', function ()
 
         it('should work with a hash and query string on the url', function ()
         {
-            const imageType = PIXI.utils.getUrlFileExtension('http://foo.bar/baz.PNG?v=1&file=me.jpg#not-today');
+            const imageType = utils.getUrlFileExtension('http://foo.bar/baz.PNG?v=1&file=me.jpg#not-today');
 
             expect(imageType)
                 .to.equal('png');
@@ -173,7 +173,7 @@ describe('PIXI.utils', function ()
 
         it('should work with a hash path and query string on the url', function ()
         {
-            const imageType = PIXI.utils.getUrlFileExtension('http://foo.bar/baz.PNG?v=1&file=me.jpg#path/s/not-today.svg');
+            const imageType = utils.getUrlFileExtension('http://foo.bar/baz.PNG?v=1&file=me.jpg#path/s/not-today.svg');
 
             expect(imageType)
                 .to.equal('png');
@@ -184,13 +184,13 @@ describe('PIXI.utils', function ()
     {
         it('should exist', function ()
         {
-            expect(PIXI.utils.getSvgSize)
+            expect(utils.getSvgSize)
                 .to.be.a('function');
         });
 
         it('should return a size object with width and height from an SVG string', function ()
         {
-            const svgSize = PIXI.utils.getSvgSize('<svg height="32" width="64"></svg>');
+            const svgSize = utils.getSvgSize('<svg height="32" width="64"></svg>');
 
             expect(svgSize)
                 .to.be.an('object');
@@ -202,7 +202,7 @@ describe('PIXI.utils', function ()
 
         it('should return a size object from an SVG string with inverted quotes', function ()
         {
-            var svgSize = PIXI.utils.getSvgSize("<svg height='32' width='64'></svg>"); // eslint-disable-line quotes
+            const svgSize = utils.getSvgSize("<svg height='32' width='64'></svg>"); // eslint-disable-line quotes
 
             expect(svgSize)
                 .to.be.an('object');
@@ -214,7 +214,7 @@ describe('PIXI.utils', function ()
 
         it('should work with px values', function ()
         {
-            const svgSize = PIXI.utils.getSvgSize('<svg height="32px" width="64px"></svg>');
+            const svgSize = utils.getSvgSize('<svg height="32px" width="64px"></svg>');
 
             expect(svgSize)
                 .to.be.an('object');
@@ -226,7 +226,7 @@ describe('PIXI.utils', function ()
 
         it('should return an empty object when width and/or height is missing', function ()
         {
-            const svgSize = PIXI.utils.getSvgSize('<svg width="64"></svg>');
+            const svgSize = utils.getSvgSize('<svg width="64"></svg>');
 
             expect(Object.keys(svgSize).length)
                 .to.equal(0);
@@ -237,7 +237,7 @@ describe('PIXI.utils', function ()
     {
         it('should exist', function ()
         {
-            expect(PIXI.utils.sayHello)
+            expect(utils.sayHello)
                 .to.be.a('function');
         });
     });
@@ -246,7 +246,7 @@ describe('PIXI.utils', function ()
     {
         it('should exist', function ()
         {
-            expect(PIXI.utils.isWebGLSupported)
+            expect(utils.isWebGLSupported)
                 .to.be.a('function');
         });
     });
@@ -255,7 +255,7 @@ describe('PIXI.utils', function ()
     {
         it('should return 0 for 0', function ()
         {
-            expect(PIXI.utils.sign(0))
+            expect(utils.sign(0))
                 .to.be.equal(0);
         });
 
@@ -263,7 +263,7 @@ describe('PIXI.utils', function ()
         {
             for (let i = 0; i < 10; i += 1)
             {
-                expect(PIXI.utils.sign(-Math.random()))
+                expect(utils.sign(-Math.random()))
                     .to.be.equal(-1);
             }
         });
@@ -272,7 +272,7 @@ describe('PIXI.utils', function ()
         {
             for (let i = 0; i < 10; i += 1)
             {
-                expect(PIXI.utils.sign(Math.random() + 0.000001))
+                expect(utils.sign(Math.random() + 0.000001))
                     .to.be.equal(1);
             }
         });
@@ -282,7 +282,7 @@ describe('PIXI.utils', function ()
     {
         it('should exist', function ()
         {
-            expect(PIXI.utils.removeItems).to.be.a('function');
+            expect(utils.removeItems).to.be.a('function');
         });
     });
 
@@ -290,7 +290,7 @@ describe('PIXI.utils', function ()
     {
         it('should exist', function ()
         {
-            expect(PIXI.utils.EventEmitter).to.be.a('function');
+            expect(utils.EventEmitter).to.be.a('function');
         });
     });
 
@@ -298,12 +298,12 @@ describe('PIXI.utils', function ()
     {
         it('should exist', function ()
         {
-            expect(PIXI.utils.isMobile).to.be.an('object');
+            expect(utils.isMobile).to.be.an('object');
         });
 
         it('should return a boolean for .any', function ()
         {
-            expect(PIXI.utils.isMobile.any).to.be.a('boolean');
+            expect(utils.isMobile.any).to.be.a('boolean');
         });
     });
 });
