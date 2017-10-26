@@ -1,4 +1,4 @@
-import getBufferType from './getBufferType';
+import { getBufferType } from './getBufferType';
 
 /* eslint-disable object-shorthand */
 const map = { Float32Array: Float32Array, Uint32Array: Uint32Array, Int32Array: Int32Array, Uint8Array: Uint8Array };

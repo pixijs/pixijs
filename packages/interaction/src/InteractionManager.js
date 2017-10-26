@@ -1,5 +1,5 @@
 import { WebGLRenderer, CanvasRenderer } from '@pixi/core';
-import { ticker, UPDATE_PRIORITY } from '@pixi/ticker';
+import { shared, UPDATE_PRIORITY } from '@pixi/ticker';
 import { Point } from '@pixi/math';
 import { DisplayObject } from '@pixi/display';
 import { mixins } from '@pixi/utils';
@@ -708,7 +708,7 @@ export default class InteractionManager extends EventEmitter
             return;
         }
 
-        ticker.shared.add(this.update, this, UPDATE_PRIORITY.INTERACTION);
+        shared.add(this.update, this, UPDATE_PRIORITY.INTERACTION);
 
         if (window.navigator.msPointerEnabled)
         {
@@ -771,7 +771,7 @@ export default class InteractionManager extends EventEmitter
             return;
         }
 
-        ticker.shared.remove(this.update, this);
+        shared.remove(this.update, this);
 
         if (window.navigator.msPointerEnabled)
         {

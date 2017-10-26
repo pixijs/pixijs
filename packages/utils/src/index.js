@@ -24,7 +24,8 @@
  * @function isMobile
  * @type {Object}
  */
-export { default as isMobile } from 'ismobilejs';
+import isMobile from 'ismobilejs';
+export { isMobile };
 
 /**
  * @see {@link https://github.com/mreinstein/remove-array-items}
@@ -33,7 +34,8 @@ export { default as isMobile } from 'ismobilejs';
  * @function removeItems
  * @type {Object}
  */
-export { default as removeItems } from 'remove-array-items';
+import removeItems from 'remove-array-items';
+export { removeItems };
 
 /**
  * @see {@link https://github.com/primus/eventemitter3}
@@ -42,7 +44,8 @@ export { default as removeItems } from 'remove-array-items';
  * @class EventEmitter
  * @type {EventEmitter}
  */
-export { default as EventEmitter } from 'eventemitter3';
+import EventEmitter from 'eventemitter3';
+export { EventEmitter };
 
 export * from './browser';
 export * from './color';

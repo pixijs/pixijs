@@ -1,6 +1,6 @@
 import { Texture } from '@pixi/core';
 import { Sprite } from '@pixi/sprite';
-import { ticker, UPDATE_PRIORITY } from '@pixi/ticker';
+import { shared, UPDATE_PRIORITY } from '@pixi/ticker';
 
 /**
  * @typedef FrameObject
@@ -128,7 +128,7 @@ export default class AnimatedSprite extends Sprite
         this.playing = false;
         if (this._autoUpdate)
         {
-            ticker.shared.remove(this.update, this);
+            shared.remove(this.update, this);
         }
     }
 
@@ -146,7 +146,7 @@ export default class AnimatedSprite extends Sprite
         this.playing = true;
         if (this._autoUpdate)
         {
-            ticker.shared.add(this.update, this, UPDATE_PRIORITY.HIGH);
+            shared.add(this.update, this, UPDATE_PRIORITY.HIGH);
         }
     }
 

@@ -1,4 +1,4 @@
-import { RETINA_PREFIX } from '../const';
+import { settings } from '../settings';
 
 /**
  * get the resolution / device pixel ratio of an asset by looking for the prefix
@@ -12,7 +12,7 @@ import { RETINA_PREFIX } from '../const';
  */
 export function getResolutionOfUrl(url, defaultValue)
 {
-    const resolution = RETINA_PREFIX.exec(url);
+    const resolution = settings.RETINA_PREFIX.exec(url);
 
     if (resolution)
     {

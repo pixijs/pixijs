@@ -1,6 +1,6 @@
-import { ObjectRenderer, Shader, WebGLRenderer } from '@pixi/core';
+import { ObjectRenderer, Shader, WebGLRenderer, Quad } from '@pixi/core';
 import { WRAP_MODES } from '@pixi/constants';
-import { Matrix, Quad } from '@pixi/math';
+import { Matrix } from '@pixi/math';
 import { premultiplyTintToRgba, correctBlendMode } from '@pixi/utils';
 
 import vertex from './tilingSprite.vert';

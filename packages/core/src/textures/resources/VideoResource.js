@@ -1,5 +1,5 @@
 import TextureResource from './TextureResource';
-import * as ticker from '../../ticker';
+import { shared } from '@pixi/ticker';
 
 export default class VideoResource extends TextureResource
 {
@@ -97,7 +97,7 @@ export default class VideoResource extends TextureResource
 
         if (!this._isAutoUpdating && this.autoUpdate)
         {
-            ticker.shared.add(this.update, this);
+            shared.add(this.update, this);
             this._isAutoUpdating = true;
         }
     }
@@ -111,7 +111,7 @@ export default class VideoResource extends TextureResource
     {
         if (this._isAutoUpdating)
         {
-            ticker.shared.remove(this.update, this);
+            shared.remove(this.update, this);
             this._isAutoUpdating = false;
         }
     }
@@ -160,7 +160,7 @@ export default class VideoResource extends TextureResource
     {
         if (this._isAutoUpdating)
         {
-            ticker.shared.remove(this.update, this);
+            shared.remove(this.update, this);
         }
         /*
         if (this.source && this.source._pixiId)
@@ -190,12 +190,12 @@ export default class VideoResource extends TextureResource
 
             if (!this._autoUpdate && this._isAutoUpdating)
             {
-                ticker.shared.remove(this.update, this);
+                shared.remove(this.update, this);
                 this._isAutoUpdating = false;
             }
             else if (this._autoUpdate && !this._isAutoUpdating)
             {
-                ticker.shared.add(this.update, this);
+                shared.add(this.update, this);
                 this._isAutoUpdating = true;
             }
         }

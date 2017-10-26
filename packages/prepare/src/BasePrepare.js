@@ -1,5 +1,5 @@
 import { Texture, BaseTexture } from '@pixi/core';
-import { ticker, UPDATE_PRIORITY } from '@pixi/ticker';
+import { shared, UPDATE_PRIORITY } from '@pixi/ticker';
 import { settings } from '@pixi/settings';
 import { Container } from '@pixi/display';
 import { Text, TextStyle, TextMetrics } from '@pixi/text';
@@ -161,7 +161,7 @@ export default class BasePrepare
             if (!this.ticking)
             {
                 this.ticking = true;
-                ticker.shared.addOnce(this.tick, this, UPDATE_PRIORITY.UTILITY);
+                shared.addOnce(this.tick, this, UPDATE_PRIORITY.UTILITY);
             }
         }
         else if (done)
@@ -231,7 +231,7 @@ export default class BasePrepare
         else
         {
             // if we are not finished, on the next rAF do this again
-            ticker.shared.addOnce(this.tick, this, UPDATE_PRIORITY.UTILITY);
+            shared.addOnce(this.tick, this, UPDATE_PRIORITY.UTILITY);
         }
     }
 
@@ -308,7 +308,7 @@ export default class BasePrepare
     {
         if (this.ticking)
         {
-            ticker.shared.remove(this.tick, this);
+            shared.remove(this.tick, this);
         }
         this.ticking = false;
         this.addHooks = null;

@@ -14,6 +14,9 @@
 export const VERSION = '__VERSION__';
 
 export * from '@pixi/math';
+export * from '@pixi/constants';
+export * from '@pixi/display';
+
 import * as utils from '@pixi/utils';
 import * as ticker from '@pixi/ticker';
 import { settings } from '@pixi/settings';
@@ -46,8 +49,7 @@ export { default as Program } from './shader/Program';
 export { default as UniformGroup } from './shader/UniformGroup';
 export { default as SpriteMaskFilter } from './renderers/webgl/filters/spriteMask/SpriteMaskFilter';
 export { default as Filter } from './renderers/webgl/filters/Filter';
-export { default as Application } from './Application';
 export { autoDetectRenderer } from './autoDetectRenderer';
 export { default as Attribute } from './geometry/Attribute';
-export { default as Buffer } from './geometry/Buffer';
+export { default as GeometryBuffer } from './geometry/GeometryBuffer';
 export { default as Geometry } from './geometry/Geometry';

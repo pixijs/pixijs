@@ -2,7 +2,8 @@ import { Container, Bounds } from '@pixi/display';
 import { BLEND_MODES } from '@pixi/constants';
 import { RenderTexture, Texture, CanvasRenderer } from '@pixi/core';
 import { Matrix, Point, Rectangle, RoundedRectangle, Ellipse, Polygon, Circle, SHAPES } from '@pixi/math';
-import { hex2rgb, rgb2hex, bezierCurveTo } from '@pixi/utils';
+import { hex2rgb, rgb2hex } from '@pixi/utils';
+import bezierCurveTo from './utils/bezierCurveTo';
 import { Sprite } from '@pixi/sprite';
 import GraphicsData from './GraphicsData';
 

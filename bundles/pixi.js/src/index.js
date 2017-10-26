@@ -3,6 +3,12 @@ import '@pixi/polyfill';
 
 // export core
 export * from '@pixi/core';
+export * from '@pixi/app';
+export * from '@pixi/sprite';
+export * from '@pixi/spritesheet';
+export * from '@pixi/text';
+export * from '@pixi/text-bitmap';
+export * from '@pixi/graphics';
 
 // export libs
 import * as accessibility from '@pixi/accessibility';
@@ -14,10 +20,11 @@ import * as prepare from '@pixi/prepare';
 // import * as particles from '@pixi/particles';
 import * as extras from './extras';
 import * as filters from './filters';
+import { deprecation } from './deprecation';
 
 // handle mixins now, after all code has been added
-import { utils } from '@pixi/core';
-utils.mixins.performMixins();
+import { mixins } from '@pixi/utils';
+mixins.performMixins();
 
 /**
  * Alias for {@link PIXI.loaders.shared}.
@@ -43,3 +50,5 @@ export {
 // Always export PixiJS globally.
 global.PIXI = exports; // eslint-disable-line
 
+// Apply deprecations
+deprecation(global.PIXI);

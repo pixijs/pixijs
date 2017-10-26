@@ -1,4 +1,4 @@
-import { Geometry, Buffer } from '@pixi/core';
+import { Geometry, GeometryBuffer } from '@pixi/core';
 
 /**
  * An object containing WebGL specific properties to be used by the WebGL renderer
@@ -44,13 +44,13 @@ export default class WebGLGraphicsData
          * The main buffer
          * @member {WebGLBuffer}
          */
-        this.buffer = new Buffer();
+        this.buffer = new GeometryBuffer();
 
         /**
          * The index buffer
          * @member {WebGLBuffer}
          */
-        this.indexBuffer = new Buffer();
+        this.indexBuffer = new GeometryBuffer();
 
         /**
          * Whether this graphics is dirty or not

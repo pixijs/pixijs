@@ -1,5 +1,5 @@
 import { hex2string, hex2rgb } from '@pixi/utils';
-import { Matrix, Rectangle } from '@math/math';
+import { Matrix, Rectangle } from '@pixi/math';
 import { RENDERER_TYPE } from '@pixi/constants';
 import { settings } from '@pixi/settings';
 import { Container } from '@pixi/display';

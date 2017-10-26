@@ -1,7 +1,7 @@
-import { CanvasTinter, TextureMatrix, CanvasRenderTarget, Texture } from '@pixi/core';
+import { TextureMatrix, CanvasRenderTarget, Texture } from '@pixi/core';
 import { Point, Rectangle } from '@pixi/math';
 import { TextureCache } from '@pixi/utils';
-import { Sprite } from '@pixi/sprite';
+import { Sprite, CanvasTinter } from '@pixi/sprite';
 import { TransformStatic } from '@pixi/display';
 
 const tempPoint = new Point();

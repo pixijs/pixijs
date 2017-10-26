@@ -6,7 +6,7 @@
  * @static
  * @constant
  * @name UPDATE_PRIORITY
- * @memberof PIXI
+ * @memberof PIXI.ticker
  * @type {object}
  * @property {number} INTERACTION=50 Highest priority, used for {@link PIXI.interaction.InteractionManager}
  * @property {number} HIGH=25 High priority updating, {@link PIXI.VideoBaseTexture} and {@link PIXI.extras.AnimatedSprite}
