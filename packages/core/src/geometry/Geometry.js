@@ -97,7 +97,7 @@ export default class Geometry
                 buffer = new Float32Array(buffer);
             }
 
-            buffer = new Buffer(buffer);
+            buffer = new GeometryBuffer(buffer);
         }
 
         const ids = id.split('|');
@@ -157,7 +157,7 @@ export default class Geometry
                 buffer = new Uint16Array(buffer);
             }
 
-            buffer = new Buffer(buffer);
+            buffer = new GeometryBuffer(buffer);
         }
 
         buffer.index = true;
@@ -195,7 +195,7 @@ export default class Geometry
         // assume already that no buffers are interleaved
         const arrays = [];
         const sizes = [];
-        const interleavedBuffer = new Buffer();
+        const interleavedBuffer = new GeometryBuffer();
         let i;
 
         for (i in this.attributes)
@@ -278,7 +278,7 @@ export default class Geometry
 
         for (let i = 0; i < this.buffers.length; i++)
         {
-            geometry.buffers[i] = new Buffer(this.buffers[i].data.slice());
+            geometry.buffers[i] = new GeometryBuffer(this.buffers[i].data.slice());
         }
 
         for (const i in this.attributes)
@@ -343,7 +343,7 @@ export default class Geometry
         {
             // TODO types!
             arrays[i] = new map[getBufferType(geometry.buffers[i].data)](sizes[i]);
-            geometryOut.buffers[i] = new Buffer(arrays[i]);
+            geometryOut.buffers[i] = new GeometryBuffer(arrays[i]);
         }
 
         // pass to set data..
