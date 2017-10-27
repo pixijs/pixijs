@@ -60,8 +60,8 @@
     "@pixi/text-bitmap": "^5.0.0-alpha",
     "@pixi/ticker": "^5.0.0-alpha",
     "@pixi/utils": "^5.0.0-alpha",
-    "@tools/build": "^5.0.0-alpha",
-    "@tools/tester": "^5.0.0-alpha",
+    "@internal/builder": "^5.0.0-alpha",
+    "@internal/tester": "^5.0.0-alpha",
     "rimraf": "^2.6.2",
     "rollup": "^0.50.0",
     "rollup-watch": "^4.3.1"

@@ -1,5 +1,4 @@
-'use strict';
-
+/* global PIXI */
 const md5 = require('js-md5');
 const path = require('path');
 const ImageDiff = require('./ImageDiff');
@@ -112,7 +111,7 @@ class Renderer
      */
     clear()
     {
-        this.stage.children.forEach(function (child)
+        this.stage.children.forEach((child) =>
         {
             child.destroy(true);
         });

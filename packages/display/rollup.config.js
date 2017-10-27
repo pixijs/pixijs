@@ -1,1 +1,1 @@
-export * from '@tools/build';
+export * from '@internal/builder';

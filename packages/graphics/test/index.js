@@ -2,8 +2,10 @@
 const { Graphics } = require('../');
 const { BLEND_MODES } = require('@pixi/constants');
 const { Point } = require('@pixi/math');
-const { isWebGLSupported } = require('@pixi/utils');
+const { isWebGLSupported, skipHello } = require('@pixi/utils');
 const { WebGLRenderer } = require('@pixi/core');
+
+skipHello();
 
 function withGL(fn)
 {

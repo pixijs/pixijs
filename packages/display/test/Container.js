@@ -1,5 +1,4 @@
 const { Container, DisplayObject } = require('../');
-const { Graphics } = require('@pixi/graphics');
 
 function testAddChild(fn)
 {
@@ -121,32 +120,6 @@ describe('PIXI.Container', function ()
 
             expect(boundsID).to.not.be.equals(container._boundsID);
             expect(childParentID).to.not.be.equals(child.transform._parentID);
-        }));
-
-        it('should recalculate added child correctly', testAddChild(function (mockAddChild)
-        {
-            const parent = new Container();
-            const container = new Container();
-            const graphics = new Graphics();
-
-            parent.addChild(container);
-
-            graphics.drawRect(0, 0, 10, 10);
-            container.position.set(100, 200);
-            container.updateTransform();
-
-            graphics.getBounds();
-            // Oops, that can happen sometimes!
-            graphics.transform._parentID = container.transform._worldID + 1;
-
-            mockAddChild(container, graphics);
-
-            const bounds = graphics.getBounds();
-
-            expect(bounds.x).to.be.equal(100);
-            expect(bounds.y).to.be.equal(200);
-            expect(bounds.width).to.be.equal(10);
-            expect(bounds.height).to.be.equal(10);
         }));
     });
 
@@ -296,27 +269,6 @@ describe('PIXI.Container', function ()
 
             expect(childParentID).to.not.be.equals(child.transform._parentID);
             expect(boundsID).to.not.be.equals(container._boundsID);
-        }));
-
-        it('should recalculate removed child correctly', testRemoveChild(function (mockRemoveChild)
-        {
-            const parent = new Container();
-            const container = new Container();
-            const graphics = new Graphics();
-
-            parent.addChild(container);
-
-            graphics.drawRect(0, 0, 10, 10);
-            container.position.set(100, 200);
-            container.addChild(graphics);
-            graphics.getBounds();
-
-            mockRemoveChild(container, graphics);
-
-            const bounds = graphics.getBounds();
-
-            expect(bounds.x).to.be.equal(0);
-            expect(bounds.y).to.be.equal(0);
         }));
     });
 
@@ -633,32 +585,6 @@ describe('PIXI.Container', function ()
 
     describe('width', function ()
     {
-        it('should reflect scale', function ()
-        {
-            const container = new Container();
-            const graphics = new Graphics();
-
-            graphics.drawRect(0, 0, 10, 10);
-            container.addChild(graphics);
-            container.scale.x = 2;
-
-            expect(container.width).to.be.equals(20);
-        });
-
-        it('should adjust scale', function ()
-        {
-            const container = new Container();
-            const graphics = new Graphics();
-
-            graphics.drawRect(0, 0, 10, 10);
-            container.addChild(graphics);
-
-            container.width = 20;
-
-            expect(container.width).to.be.equals(20);
-            expect(container.scale.x).to.be.equals(2);
-        });
-
         it('should reset scale', function ()
         {
             const container = new Container();
@@ -673,32 +599,6 @@ describe('PIXI.Container', function ()
 
     describe('height', function ()
     {
-        it('should reflect scale', function ()
-        {
-            const container = new Container();
-            const graphics = new Graphics();
-
-            graphics.drawRect(0, 0, 10, 10);
-            container.addChild(graphics);
-            container.scale.y = 2;
-
-            expect(container.height).to.be.equals(20);
-        });
-
-        it('should adjust scale', function ()
-        {
-            const container = new Container();
-            const graphics = new Graphics();
-
-            graphics.drawRect(0, 0, 10, 10);
-            container.addChild(graphics);
-
-            container.height = 20;
-
-            expect(container.height).to.be.equals(20);
-            expect(container.scale.y).to.be.equals(2);
-        });
-
         it('should reset scale', function ()
         {
             const container = new Container();

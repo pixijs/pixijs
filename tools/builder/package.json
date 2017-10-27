@@ -1,5 +1,5 @@
 {
-  "name": "@tools/build",
+  "name": "@internal/builder",
   "version": "5.0.0-alpha",
   "private": true,
   "module": "index.js",

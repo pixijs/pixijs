@@ -1,5 +1,5 @@
 const { Text } = require('../');
-const { DisplayObject } = require('@pixi/display');
+const { Sprite } = require('@pixi/sprite');
 
 describe('PIXI.Text', function ()
 {
@@ -26,7 +26,7 @@ describe('PIXI.Text', function ()
         it('should destroy children if children flag is set', function ()
         {
             const text = new Text('foo');
-            const child = new DisplayObject();
+            const child = new Sprite();
 
             text.addChild(child);
             text.destroy({ children: true });
@@ -37,7 +37,7 @@ describe('PIXI.Text', function ()
         it('should accept options correctly', function ()
         {
             const text = new Text('foo');
-            const child = new DisplayObject();
+            const child = new Sprite();
 
             text.addChild(child);
             text.destroy(true);
@@ -48,7 +48,7 @@ describe('PIXI.Text', function ()
         it('should pass opts on to children if children flag is set', function ()
         {
             const text = new Text('foo');
-            const child = new DisplayObject();
+            const child = new Sprite();
             let childDestroyOpts;
 
             child.destroy = function (opts)

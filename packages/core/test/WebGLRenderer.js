@@ -1,5 +1,7 @@
 const { WebGLRenderer } = require('../');
-const { isWebGLSupported } = require('@pixi/utils');
+const { isWebGLSupported, skipHello } = require('@pixi/utils');
+
+skipHello();
 
 function withGL(fn)
 {

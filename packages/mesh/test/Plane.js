@@ -1,48 +1,60 @@
-describe('PIXI.mesh.Plane', function ()
-{
-    // Planes currently require a GPU to work..
+const { Plane } = require('../');
+const { isWebGLSupported, skipHello } = require('@pixi/utils');
+const { Loader } = require('@pixi/loaders');
+const { Point } = require('@pixi/math');
+const { RenderTexture, Texture } = require('@pixi/core');
 
-    /*
-    it('should create a plane from an external image', function (done)
+skipHello();
+
+function withGL(fn)
+{
+    return isWebGLSupported() ? fn : undefined;
+}
+
+// TODO: fix with webglrenderer
+describe.skip('PIXI.mesh.Plane', function ()
+{
+    it('should create a plane from an external image', withGL(function (done)
     {
-        PIXI.loader.add('testBitmap', `file://${__dirname}/resources/bitmap-1.png`)
+        const loader = new Loader();
+
+        loader.add('testBitmap', `file://${__dirname}/resources/bitmap-1.png`)
             .load(function (loader, resources)
             {
-                const plane = new PIXI.mesh.Plane(resources.testBitmap.texture, 100, 100);
+                const plane = new Plane(resources.testBitmap.texture, 100, 100);
 
                 expect(plane.verticesX).to.equal(100);
                 expect(plane.verticesY).to.equal(100);
                 done();
             });
-    });
+    }));
 
-    it('should create a new empty textured Plane', function ()
+    it('should create a new empty textured Plane', withGL(function ()
     {
-        const plane = new PIXI.mesh.Plane(PIXI.Texture.EMPTY, 100, 100);
+        const plane = new Plane(Texture.EMPTY, 100, 100);
 
         expect(plane.verticesX).to.equal(100);
         expect(plane.verticesY).to.equal(100);
-    });
+    }));
 
-    describe('containsPoint', function ()
+    describe('containsPoint', withGL(function ()
     {
         it('should return true when point inside', function ()
         {
-            const point = new PIXI.Point(10, 10);
-            const texture = new PIXI.RenderTexture.create(20, 30);
-            const plane = new PIXI.mesh.Plane(texture, 100, 100);
+            const point = new Point(10, 10);
+            const texture = new RenderTexture.create(20, 30);
+            const plane = new Plane(texture, 100, 100);
 
             expect(plane.containsPoint(point)).to.be.true;
         });
 
         it('should return false when point outside', function ()
         {
-            const point = new PIXI.Point(100, 100);
-            const texture = new PIXI.RenderTexture.create(20, 30);
-            const plane = new PIXI.mesh.Plane(texture, 100, 100);
+            const point = new Point(100, 100);
+            const texture = new RenderTexture.create(20, 30);
+            const plane = new Plane(texture, 100, 100);
 
             expect(plane.containsPoint(point)).to.be.false;
         });
-    });
-    */
+    }));
 });

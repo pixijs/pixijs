@@ -1,5 +1,5 @@
 {
-  "name": "@tools/tester",
+  "name": "@internal/tester",
   "private": true,
   "version": "5.0.0-alpha",
   "bin": {

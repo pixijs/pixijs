@@ -8,7 +8,7 @@ const electron = require('electron');
 const remote = electron.remote;
 const clipboard = electron.clipboard;
 const dialog = remote.dialog;
-const Renderer = require('./test/lib/Renderer');
+const { Renderer } = require('../');
 const Droppable = require('./droppable');
 const $ = document.querySelector.bind(document);
 

@@ -1,6 +1,9 @@
 const { Application } = require('../');
 const { Container } = require('@pixi/display');
 const { Ticker } = require('@pixi/ticker');
+const { skipHello } = require('@pixi/utils');
+
+skipHello();
 
 describe('PIXI.Application', function ()
 {

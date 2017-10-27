@@ -1,9 +1,17 @@
-const { Container } = require('@pixi/display');
+const { Container, DisplayObject } = require('@pixi/display');
 
 require('../');
 
-describe('getGlobalPosition', function ()
+describe('PIXI.DisplayObject#getGlobalPosition', function ()
 {
+    it('should exist', function ()
+    {
+        const obj = new DisplayObject();
+
+        expect(obj.getGlobalPosition).to.be.not.undefined;
+        expect(obj.getGlobalPosition).to.be.function;
+    });
+
     it('should return correct global coordinates of a displayObject, without depending on its pivot', function ()
     {
         const parent = new Container();

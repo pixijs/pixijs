@@ -1,4 +1,4 @@
-const { Container } = require('../');
+const { Container } = require('@pixi/display');
 const { RenderTexture, CanvasRenderer } = require('@pixi/core');
 const { Sprite } = require('@pixi/sprite');
 const { Graphics } = require('@pixi/graphics');

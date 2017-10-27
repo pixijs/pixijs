@@ -34,8 +34,8 @@
     "@pixi/utils": "^5.0.0-alpha"
   },
   "devDependencies": {
-    "@tools/build": "^5.0.0-alpha",
-    "@tools/tester": "^5.0.0-alpha",
+    "@internal/builder": "^5.0.0-alpha",
+    "@internal/tester": "^5.0.0-alpha",
     "rollup": "^0.50.0",
     "rollup-watch": "^4.3.1"
   }

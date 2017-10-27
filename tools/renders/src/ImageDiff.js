@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * Compare images
  * @class ImageDiff
@@ -42,10 +40,8 @@ class ImageDiff
         const len = a.length;
         const tolerance = this.tolerance;
 
-        const diff = a.filter(function (val, i)
-        {
-            return Math.abs(val - b[i]) / 255 > tolerance;
-        });
+        const diff = a.filter((val, i) =>
+            Math.abs(val - b[i]) / 255 > tolerance);
 
         if (diff.length / len > tolerance)
         {

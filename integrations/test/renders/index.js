@@ -1,7 +1,8 @@
-const Renderer = require('./lib/Renderer');
+const { Renderer } = require('@internal/renders');
 const path = require('path');
 
-describe('renders', function ()
+// TODO: disable for now until we get the canvas version up and running again!
+describe.skip('renders', function ()
 {
     before(function ()
     {
@@ -35,8 +36,6 @@ describe('renders', function ()
         this.validate = null;
     });
 
-    // disable for now until we get the canvas version up and running again!
-    /*
     it('should draw a rectangle', function (done)
     {
         this.validate('graphics-rect', done);
@@ -46,5 +45,4 @@ describe('renders', function ()
     {
         this.validate('sprite-new', done);
     });
-    */
 });
