@@ -93,7 +93,15 @@ export default class TextStyle
     {
         this.styleID = 0;
 
-        Object.assign(this, defaultStyle, style);
+        for (const key in defaultStyle)
+        {
+            deepCopyProperty(this, defaultStyle, key);
+        }
+
+        for (const key in style)
+        {
+            deepCopyProperty(this, style, key);
+        }
     }
 
     /**
@@ -108,7 +116,7 @@ export default class TextStyle
 
         for (const key in defaultStyle)
         {
-            clonedProperties[key] = this[key];
+            deepCopyProperty(clonedProperties, this, key);
         }
 
         return new TextStyle(clonedProperties);
@@ -119,7 +127,10 @@ export default class TextStyle
      */
     reset()
     {
-        Object.assign(this, defaultStyle);
+        for (const key in defaultStyle)
+        {
+            deepCopyProperty(this, defaultStyle, key);
+        }
     }
 
     /**
@@ -754,4 +765,21 @@ function areArraysEqual(array1, array2)
     }
 
     return true;
+}
+
+/**
+ * Utility function to ensure that object properties are copied by value, and not by reference
+ *
+ * @param {Object} target Target object to copy property into
+ * @param {Object} source Source object for the proporty to copy
+ * @param {string} prop Property name to copy
+ */
+function deepCopyProperty(target, source, prop) {
+    if (Array.isArray(source[prop])) {
+        target[prop] = source[prop].slice();
+    } else if (source[prop] && typeof source[prop] === 'object') {
+        Object.assign(target[prop], source[prop]);
+    } else {
+        target[prop] = source[prop];
+    }
 }
