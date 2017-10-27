@@ -11,7 +11,6 @@
     "docs": "jsdoc -c jsdoc.conf.json -R README.md",
     "lint": "eslint bundles packages tools --ignore-path .gitignore --max-warnings 0",
     "lintfix": "npm run lint -- --fix",
-    "prebuild": "npm run lint",
     "build": "lerna run build",
     "build:dev": "lerna run build:dev",
     "watch": "lerna run --parallel watch",
