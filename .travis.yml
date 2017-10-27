@@ -25,7 +25,7 @@ before_script:
   - Xvfb :99 -screen 0 1024x768x24 -extension RANDR &
 
 script:
-  - xvfb-maybe npm test -- --concurrency 1
+  - xvfb-maybe npm test
   - npm run docs
 
 deploy:
