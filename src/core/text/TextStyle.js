@@ -93,10 +93,7 @@ export default class TextStyle
     {
         this.styleID = 0;
 
-        for (const key in defaultStyle)
-        {
-            deepCopyProperty(this, defaultStyle, key);
-        }
+        this.reset();
 
         for (const key in style)
         {
