@@ -95,10 +95,7 @@ export default class TextStyle
 
         this.reset();
 
-        for (const key in style)
-        {
-            deepCopyProperty(this, style, key);
-        }
+        deepCopyProperties(this, style, style);
     }
 
     /**
@@ -111,10 +108,7 @@ export default class TextStyle
     {
         const clonedProperties = {};
 
-        for (const key in defaultStyle)
-        {
-            deepCopyProperty(clonedProperties, this, key);
-        }
+        deepCopyProperties(clonedProperties, this, defaultStyle);
 
         return new TextStyle(clonedProperties);
     }
@@ -124,10 +118,7 @@ export default class TextStyle
      */
     reset()
     {
-        for (const key in defaultStyle)
-        {
-            deepCopyProperty(this, defaultStyle, key);
-        }
+        deepCopyProperties(this, defaultStyle, defaultStyle);
     }
 
     /**
@@ -767,16 +758,16 @@ function areArraysEqual(array1, array2)
 /**
  * Utility function to ensure that object properties are copied by value, and not by reference
  *
- * @param {Object} target Target object to copy property into
- * @param {Object} source Source object for the proporty to copy
- * @param {string} prop Property name to copy
+ * @param {Object} target Target object to copy properties into
+ * @param {Object} source Source object for the proporties to copy
+ * @param {string} propertyObj Object containing properties names we want to loop over
  */
-function deepCopyProperty(target, source, prop) {
-    if (Array.isArray(source[prop])) {
-        target[prop] = source[prop].slice();
-    } else if (source[prop] && typeof source[prop] === 'object') {
-        Object.assign(target[prop], source[prop]);
-    } else {
-        target[prop] = source[prop];
+function deepCopyProperties(target, source, propertyObj) {
+    for (const prop in propertyObj) {
+        if (Array.isArray(source[prop])) {
+            target[prop] = source[prop].slice();
+        } else {
+            target[prop] = source[prop];
+        }
     }
 }
