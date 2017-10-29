@@ -50,6 +50,10 @@ export default class Filter
         for (const i in this.uniformData)
         {
             this.uniforms[i] = this.uniformData[i].value;
+            if (this.uniformData[i].type)
+            {
+                this.uniformData[i].type = this.uniformData[i].type.toLowerCase();
+            }
         }
 
         // this is where we store shader references..

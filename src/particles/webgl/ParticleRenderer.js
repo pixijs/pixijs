@@ -1,6 +1,7 @@
 import * as core from '../../core';
 import ParticleShader from './ParticleShader';
 import ParticleBuffer from './ParticleBuffer';
+import { premultiplyTint } from '../../core/utils';
 
 /**
  * @author Mat Groves
@@ -94,11 +95,12 @@ export default class ParticleRenderer extends core.ObjectRenderer
                 uploadFunction: this.uploadUvs,
                 offset: 0,
             },
-            // alphaData
+            // tintData
             {
                 attribute: this.shader.attributes.aColor,
                 size: 1,
-                uploadFunction: this.uploadAlpha,
+                unsignedByte: true,
+                uploadFunction: this.uploadTint,
                 offset: 0,
             },
         ];
@@ -171,6 +173,15 @@ export default class ParticleRenderer extends core.ObjectRenderer
                 amount = batchSize;
             }
 
+            if (j >= buffers.length)
+            {
+                if (!container.autoResize)
+                {
+                    break;
+                }
+                buffers.push(this._generateOneMoreBuffer(container));
+            }
+
             const buffer = buffers[j];
 
             // we always upload the dynamic
@@ -209,6 +220,22 @@ export default class ParticleRenderer extends core.ObjectRenderer
         }
 
         return buffers;
+    }
+
+    /**
+     * Creates one more particle buffer, because container has autoResize feature
+     *
+     * @param {PIXI.ParticleContainer} container - The container to render using this ParticleRenderer
+     * @return {PIXI.ParticleBuffer} generated buffer
+     * @private
+     */
+    _generateOneMoreBuffer(container)
+    {
+        const gl = this.renderer.gl;
+        const batchSize = container._batchSize;
+        const dynamicPropertyFlags = container._properties;
+
+        return new ParticleBuffer(gl, this.properties, dynamicPropertyFlags, batchSize);
     }
 
     /**
@@ -387,16 +414,21 @@ export default class ParticleRenderer extends core.ObjectRenderer
      * @param {number} stride - Stride to use for iteration.
      * @param {number} offset - Offset to start at.
      */
-    uploadAlpha(children, startIndex, amount, array, stride, offset)
+    uploadTint(children, startIndex, amount, array, stride, offset)
     {
-        for (let i = 0; i < amount; i++)
+        for (let i = 0; i < amount; ++i)
         {
-            const spriteAlpha = children[startIndex + i].alpha;
+            const sprite = children[startIndex + i];
+            const premultiplied = sprite._texture.baseTexture.premultipliedAlpha;
+            const alpha = sprite.alpha;
+            // we dont call extra function if alpha is 1.0, that's faster
+            const argb = alpha < 1.0 && premultiplied ? premultiplyTint(sprite._tintRGB, alpha)
+                : sprite._tintRGB + (alpha * 255 << 24);
 
-            array[offset] = spriteAlpha;
-            array[offset + stride] = spriteAlpha;
-            array[offset + (stride * 2)] = spriteAlpha;
-            array[offset + (stride * 3)] = spriteAlpha;
+            array[offset] = argb;
+            array[offset + stride] = argb;
+            array[offset + (stride * 2)] = argb;
+            array[offset + (stride * 3)] = argb;
 
             offset += stride * 4;
         }

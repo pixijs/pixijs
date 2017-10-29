@@ -54,8 +54,8 @@ export default class BaseRenderTexture extends BaseTexture
 
         this.resolution = resolution || settings.RESOLUTION;
 
-        this.width = width;
-        this.height = height;
+        this.width = Math.ceil(width);
+        this.height = Math.ceil(height);
 
         this.realWidth = this.width * this.resolution;
         this.realHeight = this.height * this.resolution;
@@ -95,6 +95,9 @@ export default class BaseRenderTexture extends BaseTexture
      */
     resize(width, height)
     {
+        width = Math.ceil(width);
+        height = Math.ceil(height);
+
         if (width === this.width && height === this.height)
         {
             return;

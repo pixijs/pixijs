@@ -271,6 +271,7 @@ export default class AnimatedSprite extends core.Sprite
     {
         this._texture = this._textures[this.currentFrame];
         this._textureID = -1;
+        this.cachedTint = 0xFFFFFF;
 
         if (this.onFrameChange)
         {
