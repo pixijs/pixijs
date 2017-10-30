@@ -2,7 +2,7 @@ import BaseTexture from './BaseTexture';
 import FrameBuffer from './FrameBuffer';
 
 /**
- * A BaseRenderTexture is a special texture that allows any Pixi display object to be rendered to it.
+ * A BaseRenderTexture is a special texture that allows any PixiJS display object to be rendered to it.
  *
  * __Hint__: All DisplayObjects (i.e. Sprites) that render to a BaseRenderTexture should be preloaded
  * otherwise black rectangles will be drawn instead.
@@ -73,9 +73,10 @@ export default class BaseRenderTexture extends BaseTexture
         this.clearColor = [0, 0, 0, 0];
 
         this.frameBuffer = new FrameBuffer(width, height)
-        .addColorTexture(0, this);
-
-        // TODO - could this be added the systems?
+        .addColorTexture(0, this)
+        // TODO this shoul dreally only be enabled if its required
+        // at the point of a mask being rendered.
+        .enableStencil();
 
         /**
          * The data structure for the stencil masks
