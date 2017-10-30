@@ -50,4 +50,14 @@ describe('PIXI.TextStyle', function ()
 
         expect(style.toFontString()).to.have.string('"Georgia","Arial","sans-serif"');
     });
+
+    it('should not shared array / object references between different instances', function ()
+    {
+        const defaultStyle = new PIXI.TextStyle();
+        const style = new PIXI.TextStyle();
+
+        expect(defaultStyle.fillGradientStops.length).to.equal(style.fillGradientStops.length);
+        style.fillGradientStops.push(0);
+        expect(defaultStyle.fillGradientStops.length).to.not.equal(style.fillGradientStops.length);
+    });
 });
