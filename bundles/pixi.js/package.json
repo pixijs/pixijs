@@ -1,0 +1,69 @@
+{
+  "name": "pixi.js",
+  "version": "5.0.0-alpha",
+  "description": "The HTML5 Creation Engine: Create beautiful digital content with the fastest, most flexible 2D WebGL renderer.",
+  "author": "Mat Groves",
+  "contributors": [
+    "Ivan Popelyshev <ivan.popelyshev@gmail.com>",
+    "Matt Karl <matt@mattkarl.com>",
+    "Chad Engler <chad@pantherdev.com>",
+    "Richard Davey <rdavey@gmail.com>"
+  ],
+  "main": "lib/pixi.js",
+  "module": "lib/pixi.es.js",
+  "homepage": "http://www.pixijs.com/",
+  "bugs": "https://github.com/pixijs/pixi.js/issues",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pixijs/pixi.js.git"
+  },
+  "scripts": {
+    "build": "rollup -cp && rollup -cp -f umd",
+    "build:dev": "rollup -c && rollup -c -f umd",
+    "watch": "rollup -cw -f umd",
+    "postversion": "npm run build",
+    "test": "tester"
+  },
+  "files": [
+    "lib/",
+    "LICENSE",
+    "package.json",
+    "README.md"
+  ],
+  "devDependencies": {
+    "@pixi/app": "^5.0.0-alpha",
+    "@pixi/core": "^5.0.0-alpha",
+    "@pixi/accessibility": "^5.0.0-alpha",
+    "@pixi/extract": "^5.0.0-alpha",
+    "@pixi/filter-alpha": "^5.0.0-alpha",
+    "@pixi/filter-blur": "^5.0.0-alpha",
+    "@pixi/filter-color-matrix": "^5.0.0-alpha",
+    "@pixi/filter-displacement": "^5.0.0-alpha",
+    "@pixi/filter-fxaa": "^5.0.0-alpha",
+    "@pixi/filter-noise": "^5.0.0-alpha",
+    "@pixi/graphics": "^5.0.0-alpha",
+    "@pixi/interaction": "^5.0.0-alpha",
+    "@pixi/loaders": "^5.0.0-alpha",
+    "@pixi/mesh": "^5.0.0-alpha",
+    "@pixi/mixin-cache-as-bitmap": "^5.0.0-alpha",
+    "@pixi/mixin-get-child-by-name": "^5.0.0-alpha",
+    "@pixi/mixin-get-global-position": "^5.0.0-alpha",
+    "@pixi/particles": "^5.0.0-alpha",
+    "@pixi/polyfill": "^5.0.0-alpha",
+    "@pixi/prepare": "^5.0.0-alpha",
+    "@pixi/sprite": "^5.0.0-alpha",
+    "@pixi/spritesheet": "^5.0.0-alpha",
+    "@pixi/sprite-animated": "^5.0.0-alpha",
+    "@pixi/sprite-tiling": "^5.0.0-alpha",
+    "@pixi/text": "^5.0.0-alpha",
+    "@pixi/text-bitmap": "^5.0.0-alpha",
+    "@pixi/ticker": "^5.0.0-alpha",
+    "@pixi/utils": "^5.0.0-alpha",
+    "@internal/builder": "^5.0.0-alpha",
+    "@internal/tester": "^5.0.0-alpha",
+    "rimraf": "^2.6.2",
+    "rollup": "^0.50.0",
+    "rollup-watch": "^4.3.1"
+  }
+}

@@ -1,6 +1,0 @@
-{
-	"globals": {
-		"document": false,
-		"PIXI": false
-	}
-}

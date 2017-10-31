@@ -1,0 +1,45 @@
+{
+  "name": "@pixi/sprite-tiling",
+  "version": "5.0.0-alpha",
+  "main": "lib/sprite-tiling.js",
+  "module": "lib/sprite-tiling.es.js",
+  "description": "Support for legacy browser JavaScript environments",
+  "author": "Mat Groves",
+  "contributors": [
+    "Matt Karl <matt@mattkarl.com>"
+  ],
+  "homepage": "http://pixijs.com/",
+  "bugs": "https://github.com/pixijs/pixi.js/issues",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pixijs/pixi.js.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build:dev": "rollup -c && rollup -c -f cjs",
+    "build": "rollup -cp && rollup -cp -f cjs",
+    "watch": "rollup -cw",
+    "postversion": "npm run build",
+    "test": "tester"
+  },
+  "files": [
+    "lib"
+  ],
+  "dependencies": {
+    "@pixi/core": "^5.0.0-alpha",
+    "@pixi/math": "^5.0.0-alpha",
+    "@pixi/utils": "^5.0.0-alpha",
+    "@pixi/sprite": "^5.0.0-alpha",
+    "@pixi/display": "^5.0.0-alpha",
+    "@pixi/constants": "^5.0.0-alpha"
+  },
+  "devDependencies": {
+    "@internal/builder": "^5.0.0-alpha",
+    "@internal/tester": "^5.0.0-alpha",
+    "rollup": "^0.50.0",
+    "rollup-watch": "^4.3.1"
+  }
+}
