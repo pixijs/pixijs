@@ -26,7 +26,7 @@ const map = {
  * Geometry can be defined without passing in a style or data if required (thats how I prefer!)
  *
  * ```js
- * let geometry = new PIXI.mesh.Geometry();
+ * let geometry = new PIXI.Geometry();
  *
  * geometry.addAttribute('positions', [0, 0, 100, 0, 100, 100, 0, 100], 2);
  * geometry.addAttribute('uvs', [0,0,1,0,1,1,0,1],2)
@@ -34,7 +34,7 @@ const map = {
  *
  * ```
  * @class
- * @memberof PIXI.mesh.Geometry
+ * @memberof PIXI
  */
 export default class Geometry
 {
@@ -72,14 +72,14 @@ export default class Geometry
     * Adds an attribute to the geometry
     *
     * @param {String} id - the name of the attribute (matching up to a shader)
-    * @param {PIXI.mesh.Buffer} [buffer] the buffer that holds the data of the attribute . You can also provide an Array and a buffer will be created from it.
+    * @param {PIXI.Buffer} [buffer] the buffer that holds the data of the attribute . You can also provide an Array and a buffer will be created from it.
     * @param {Number} [size=0] the size of the attribute. If you hava 2 floats per vertex (eg position x and y) this would be 2
     * @param {Boolean} [normalised=false] should the data be normalised.
     * @param {Number} [type=PIXI.TYPES.FLOAT] what type of numbe is the attribute. Check {PIXI.TYPES} to see the ones available
     * @param {Number} [stride=0] How far apart (in floats) the start of each value is. (used for interleaving data)
     * @param {Number} [start=0] How far into the array to start reading values (used for interleaving data)
     *
-    * @return {PIXI.mesh.Geometry} returns self, useful for chaining.
+    * @return {PIXI.Geometry} returns self, useful for chaining.
     */
     addAttribute(id, buffer, size, normalised = false, type, stride, start, instance = false)
     {
@@ -132,7 +132,7 @@ export default class Geometry
      * returns the requested attribute
      *
      * @param {String} id  the name of the attribute required
-     * @return {PIXI.mesh.Attribute} the attribute requested.
+     * @return {PIXI.Attribute} the attribute requested.
      */
     getAttribute(id)
     {
@@ -144,8 +144,8 @@ export default class Geometry
     * Adds an index buffer to the geometry
     * The index buffer contains integers, three for each triangle in the geometry, which reference the various attribute buffers (position, colour, UV coordinates, other UV coordinates, normal, …). There is only ONE index buffer.
     *
-    * @param {PIXI.mesh.Buffer} [buffer] the buffer that holds the data of the index buffer. You can also provide an Array and a buffer will be created from it.
-    * @return {PIXI.mesh.Geometry} returns self, useful for chaining.
+    * @param {PIXI.Buffer} [buffer] the buffer that holds the data of the index buffer. You can also provide an Array and a buffer will be created from it.
+    * @return {PIXI.Geometry} returns self, useful for chaining.
     */
     addIndex(buffer)
     {
@@ -174,7 +174,7 @@ export default class Geometry
     /**
      * returns the index buffer
      *
-     * @return {PIXI.mesh.Buffer} the index buffer.
+     * @return {PIXI.Buffer} the index buffer.
      */
     getIndex()
     {
@@ -185,7 +185,7 @@ export default class Geometry
      * this function modifies the structure so that all current attributes become interleaved into a single buffer
      * This can be useful if your model remains static as it offers a little performance boost
      *
-     * @return {PIXI.mesh.Geometry} returns self, useful for chaining.
+     * @return {PIXI.Geometry} returns self, useful for chaining.
      */
     interleave()
     {
@@ -270,7 +270,7 @@ export default class Geometry
     /**
      * returns a clone of the geometry
      *
-     * @returns {PIXI.mesh.Geometry} a new clone of this geometry
+     * @returns {PIXI.Geometry} a new clone of this geometry
      */
     clone()
     {
@@ -309,8 +309,8 @@ export default class Geometry
      * merges an array of geometries into a new single one
      * geometry attribute styles must match for this operation to work
      *
-     * @param {array|PIXI.mesh.Geometry} geometries array of geometries to merge
-     * @returns {PIXI.mesh.Geometry} shiney new geometry
+     * @param {array|PIXI.Geometry} geometries array of geometries to merge
+     * @returns {PIXI.Geometry} shiney new geometry
      */
     static merge(geometries)
     {

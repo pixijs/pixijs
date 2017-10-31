@@ -2,7 +2,7 @@
  * @class
  * @memberof PIXI
  */
-export default class Buffer
+export default class BatchBuffer
 {
     /**
      * @param {number} size - The size of the buffer in bytes.

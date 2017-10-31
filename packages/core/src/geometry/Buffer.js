@@ -66,7 +66,7 @@ export default class Buffer
      *
      * @static
      * @param {TypedArray| Array} data the TypedArray that the buffer will store. If this is a regular Array it will be converted to a Float32Array.
-     * @return {PIXI.mesh.Buffer} A new Buffer based on the data provided.
+     * @return {PIXI.Buffer} A new Buffer based on the data provided.
      */
     static from(data)
     {

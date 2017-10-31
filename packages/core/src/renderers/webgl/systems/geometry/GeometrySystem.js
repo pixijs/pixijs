@@ -111,7 +111,7 @@ export default class GeometrySystem extends WebGLSystem
     /**
      * Binds geometry so that is can be drawn. Creating a Vao if required
      * @private
-     * @param {PIXI.mesh.Geometry} geometry instance of geometry to bind
+     * @param {PIXI.Geometry} geometry instance of geometry to bind
      */
     bind(geometry, shader)
     {
@@ -206,7 +206,7 @@ export default class GeometrySystem extends WebGLSystem
     /**
      * Creates a Vao with the same structure as the geometry and stores it on the geometry.
      * @private
-     * @param {PIXI.mesh.Geometry} geometry instance of geometry to to generate Vao for
+     * @param {PIXI.Geometry} geometry instance of geometry to to generate Vao for
      */
     initGeometryVao(geometry, program)
     {
