@@ -4,7 +4,9 @@ describe('PIXI.prepare.TimeLimiter', function ()
 {
     it('should limit to stop after time from beginFrame()', function (done)
     {
-        const limit = new TimeLimiter(3);
+        this.slow(500);
+
+        const limit = new TimeLimiter(100);
 
         limit.beginFrame();
         for (let i = 0; i < 20; ++i)
@@ -21,6 +23,6 @@ describe('PIXI.prepare.TimeLimiter', function ()
             expect(limit.allowedToUpload()).to.be.true;
 
             done();
-        }, 4);
+        }, 200);
     });
 });
