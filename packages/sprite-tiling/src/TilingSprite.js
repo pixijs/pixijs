@@ -11,7 +11,7 @@ const tempPoint = new Point();
  *
  * @class
  * @extends PIXI.Sprite
- * @memberof PIXI.extras
+ * @memberof PIXI
  */
 export default class TilingSprite extends Sprite
 {
@@ -364,7 +364,7 @@ export default class TilingSprite extends Sprite
      * @param {string} frameId - The frame Id of the texture in the cache
      * @param {number} width - the width of the tiling sprite
      * @param {number} height - the height of the tiling sprite
-     * @return {PIXI.extras.TilingSprite} A new TilingSprite using a texture from the texture cache matching the frameId
+     * @return {PIXI.TilingSprite} A new TilingSprite using a texture from the texture cache matching the frameId
      */
     static fromFrame(frameId, width, height)
     {
@@ -389,7 +389,7 @@ export default class TilingSprite extends Sprite
      * @param {boolean} [crossorigin] - if you want to specify the cross-origin parameter
      * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - if you want to specify the scale mode,
      *  see {@link PIXI.SCALE_MODES} for possible values
-     * @return {PIXI.extras.TilingSprite} A new TilingSprite using a texture from the texture cache matching the image id
+     * @return {PIXI.TilingSprite} A new TilingSprite using a texture from the texture cache matching the image id
      */
     static fromImage(imageId, width, height, crossorigin, scaleMode)
     {

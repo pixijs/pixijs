@@ -27,7 +27,7 @@ import { shared, UPDATE_PRIORITY } from '@pixi/ticker';
  *
  * @class
  * @extends PIXI.Sprite
- * @memberof PIXI.extras
+ * @memberof PIXI
  */
 export default class AnimatedSprite extends Sprite
 {

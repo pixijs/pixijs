@@ -9,7 +9,7 @@ const tempMat = new Matrix();
  *
  * @see PIXI.Texture
  * @see PIXI.mesh.Mesh
- * @see PIXI.extras.TilingSprite
+ * @see PIXI.TilingSprite
  * @class
  * @memberof PIXI
  */

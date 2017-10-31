@@ -3,7 +3,7 @@ const { Texture, BaseTexture } = require('@pixi/core');
 const { Point } = require('@pixi/math');
 const { TilingSprite } = require('../');
 
-describe('PIXI.extras.TilingSprite', function ()
+describe('PIXI.TilingSprite', function ()
 {
     describe('getBounds()', function ()
     {

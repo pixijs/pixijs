@@ -926,7 +926,7 @@ export default class InteractionManager extends EventEmitter
     /**
      * Dispatches an event on the display object that was interacted with
      *
-     * @param {PIXI.Container|PIXI.Sprite|PIXI.extras.TilingSprite} displayObject - the display object in question
+     * @param {PIXI.Container|PIXI.Sprite|PIXI.TilingSprite} displayObject - the display object in question
      * @param {string} eventString - the name of the event (e.g, mousedown)
      * @param {object} eventData - the event data object
      * @private
@@ -984,7 +984,7 @@ export default class InteractionManager extends EventEmitter
      * @private
      * @param {PIXI.interaction.InteractionEvent} interactionEvent - event containing the point that
      *  is tested for collision
-     * @param {PIXI.Container|PIXI.Sprite|PIXI.extras.TilingSprite} displayObject - the displayObject
+     * @param {PIXI.Container|PIXI.Sprite|PIXI.TilingSprite} displayObject - the displayObject
      *  that will be hit test (recursively crawls its children)
      * @param {Function} [func] - the function that will be called on each interactive object. The
      *  interactionEvent, displayObject and hit will be passed to the function
@@ -1180,7 +1180,7 @@ export default class InteractionManager extends EventEmitter
      *
      * @private
      * @param {PIXI.interaction.InteractionEvent} interactionEvent - The interaction event wrapping the DOM event
-     * @param {PIXI.Container|PIXI.Sprite|PIXI.extras.TilingSprite} displayObject - The display object that was tested
+     * @param {PIXI.Container|PIXI.Sprite|PIXI.TilingSprite} displayObject - The display object that was tested
      * @param {boolean} hit - the result of the hit test on the display object
      */
     processPointerDown(interactionEvent, displayObject, hit)
@@ -1284,7 +1284,7 @@ export default class InteractionManager extends EventEmitter
      *
      * @private
      * @param {PIXI.interaction.InteractionEvent} interactionEvent - The interaction event wrapping the DOM event
-     * @param {PIXI.Container|PIXI.Sprite|PIXI.extras.TilingSprite} displayObject - The display object that was tested
+     * @param {PIXI.Container|PIXI.Sprite|PIXI.TilingSprite} displayObject - The display object that was tested
      */
     processPointerCancel(interactionEvent, displayObject)
     {
@@ -1323,7 +1323,7 @@ export default class InteractionManager extends EventEmitter
      *
      * @private
      * @param {PIXI.interaction.InteractionEvent} interactionEvent - The interaction event wrapping the DOM event
-     * @param {PIXI.Container|PIXI.Sprite|PIXI.extras.TilingSprite} displayObject - The display object that was tested
+     * @param {PIXI.Container|PIXI.Sprite|PIXI.TilingSprite} displayObject - The display object that was tested
      * @param {boolean} hit - the result of the hit test on the display object
      */
     processPointerUp(interactionEvent, displayObject, hit)
@@ -1464,7 +1464,7 @@ export default class InteractionManager extends EventEmitter
      *
      * @private
      * @param {PIXI.interaction.InteractionEvent} interactionEvent - The interaction event wrapping the DOM event
-     * @param {PIXI.Container|PIXI.Sprite|PIXI.extras.TilingSprite} displayObject - The display object that was tested
+     * @param {PIXI.Container|PIXI.Sprite|PIXI.TilingSprite} displayObject - The display object that was tested
      * @param {boolean} hit - the result of the hit test on the display object
      */
     processPointerMove(interactionEvent, displayObject, hit)
@@ -1536,7 +1536,7 @@ export default class InteractionManager extends EventEmitter
      *
      * @private
      * @param {PIXI.interaction.InteractionEvent} interactionEvent - The interaction event wrapping the DOM event
-     * @param {PIXI.Container|PIXI.Sprite|PIXI.extras.TilingSprite} displayObject - The display object that was tested
+     * @param {PIXI.Container|PIXI.Sprite|PIXI.TilingSprite} displayObject - The display object that was tested
      * @param {boolean} hit - the result of the hit test on the display object
      */
     processPointerOverOut(interactionEvent, displayObject, hit)

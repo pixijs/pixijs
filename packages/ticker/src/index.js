@@ -1,7 +1,7 @@
 import Ticker from './Ticker';
 
 /**
- * The shared ticker instance used by {@link PIXI.extras.AnimatedSprite}.
+ * The shared ticker instance used by {@link PIXI.AnimatedSprite}.
  * and by {@link PIXI.interaction.InteractionManager}.
  * The property {@link PIXI.ticker.Ticker#autoStart} is set to `true`
  * for this instance. Please follow the examples for usage, including
@@ -55,7 +55,7 @@ shared.destroy = () =>
 /**
  * This namespace contains an API for interacting with PIXI's internal global update loop.
  *
- * This ticker is used for rendering, {@link PIXI.extras.AnimatedSprite AnimatedSprite},
+ * This ticker is used for rendering, {@link PIXI.AnimatedSprite AnimatedSprite},
  * {@link PIXI.interaction.InteractionManager InteractionManager} and many other time-based PIXI systems.
  * @example
  * const ticker = new PIXI.ticker.Ticker();

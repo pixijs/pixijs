@@ -13,7 +13,7 @@ import { removeItems, getResolutionOfUrl } from '@pixi/utils';
  *
  * ```js
  * // in this case the font is in a file called 'desyrel.fnt'
- * let bitmapText = new PIXI.extras.BitmapText("text using a fancy font!", {font: "35px Desyrel", align: "right"});
+ * let bitmapText = new PIXI.BitmapText("text using a fancy font!", {font: "35px Desyrel", align: "right"});
  * ```
  *
  * http://www.angelcode.com/products/bmfont/ for windows or
@@ -21,7 +21,7 @@ import { removeItems, getResolutionOfUrl } from '@pixi/utils';
  *
  * @class
  * @extends PIXI.Container
- * @memberof PIXI.extras
+ * @memberof PIXI
  */
 export default class BitmapText extends Container
 {
