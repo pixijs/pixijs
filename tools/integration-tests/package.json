@@ -1,5 +1,5 @@
 {
-  "name": "@internal/test",
+  "name": "@internal/integration-tests",
   "private": true,
   "version": "5.0.0-alpha",
   "description": "Integration tests for PixiJS packages",

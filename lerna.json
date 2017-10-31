@@ -4,8 +4,7 @@
     "bundles/*",
     "packages/*",
     "filters/*",
-    "tools/*",
-    "integrations"
+    "tools/*"
   ],
   "version": "5.0.0-alpha"
 }

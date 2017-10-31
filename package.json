@@ -9,7 +9,7 @@
     "pretest": "npm run lint && npm run build:dev",
     "test": "lerna run test",
     "docs": "jsdoc -c jsdoc.conf.json -R README.md",
-    "lint": "eslint filters bundles packages tools integrations --ignore-path .gitignore --max-warnings 0",
+    "lint": "eslint filters bundles packages tools --ignore-path .gitignore --max-warnings 0",
     "lintfix": "npm run lint -- --fix",
     "build": "lerna run build",
     "build:dev": "lerna run build:dev",
