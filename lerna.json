@@ -3,6 +3,7 @@
   "packages": [
     "bundles/*",
     "packages/*",
+    "filters/*",
     "tools/*",
     "integrations"
   ],
