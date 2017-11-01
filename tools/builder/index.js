@@ -11,7 +11,6 @@ const replace = require('rollup-plugin-replace');
 const preprocess = require('rollup-plugin-preprocess').default;
 
 const pkg = require(path.resolve('./package'));
-const safeName = path.basename(pkg.name);
 const input = 'src/index.js';
 
 const { prod, format, output } = minimist(process.argv.slice(2), {
@@ -99,11 +98,9 @@ const banner = `/*!
  * http://www.opensource.org/licenses/mit-license
  */\n`;
 
-const name = `__${safeName.replace(/-/g, '_')}`;
-
 module.exports = {
     banner,
-    name,
+    name: 'PIXI',
     input,
     output: {
         file,

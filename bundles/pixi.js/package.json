@@ -52,6 +52,7 @@
     "@pixi/particles": "^5.0.0-alpha",
     "@pixi/polyfill": "^5.0.0-alpha",
     "@pixi/prepare": "^5.0.0-alpha",
+    "@pixi/settings": "^5.0.0-alpha",
     "@pixi/sprite": "^5.0.0-alpha",
     "@pixi/spritesheet": "^5.0.0-alpha",
     "@pixi/sprite-animated": "^5.0.0-alpha",

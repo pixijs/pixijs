@@ -1,3 +1,4 @@
+/* global PIXI */
 import { deprecationWarn as warn } from '@pixi/utils';
 import { UPDATE_PRIORITY } from '@pixi/ticker';
 
@@ -5,8 +6,11 @@ import { UPDATE_PRIORITY } from '@pixi/ticker';
  * Internal deprecations
  * @private
  */
-export function deprecation(PIXI)
+export default function deprecation()
 {
+    // Remove from exports
+    delete PIXI.deprecation;
+
     /**
      * @deprecated since 5.0.0
      * @see PIXI.ticker.UPDATE_PRIORITY
