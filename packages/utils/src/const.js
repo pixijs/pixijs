@@ -1,15 +1,4 @@
 /**
- * Regexp for image type by extension.
- *
- * @static
- * @constant
- * @memberof PIXI
- * @type {RegExp|string}
- * @example `image.png`
- */
-export const URL_FILE_EXTENSION = /\.(\w{3,4})(?:$|\?|#)/i;
-
-/**
  * Regexp for data URI.
  * Based on: {@link https://github.com/ragingwind/data-uri-regex}
  *
