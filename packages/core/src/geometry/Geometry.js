@@ -1,6 +1,7 @@
 import Attribute from './Attribute';
 import Buffer from './Buffer';
-import { interleaveTypedArrays, getBufferType } from '@pixi/utils';
+import interleaveTypedArrays from './utils/interleaveTypedArrays';
+import getBufferType from './utils/getBufferType';
 
 const byteSizeMap = { 5126: 4, 5123: 2, 5121: 1 };
 let UID = 0;
