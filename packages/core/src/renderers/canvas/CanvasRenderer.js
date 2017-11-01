@@ -2,7 +2,6 @@ import SystemRenderer from '../SystemRenderer';
 import CanvasMaskManager from './utils/CanvasMaskManager';
 import CanvasRenderTarget from './utils/CanvasRenderTarget';
 import mapCanvasBlendModesToPixi from './utils/mapCanvasBlendModesToPixi';
-import { pluginTarget } from '@pixi/utils';
 import { RENDERER_TYPE, SCALE_MODES, BLEND_MODES } from '@pixi/constants';
 import { settings } from '@pixi/settings';
 
@@ -98,7 +97,7 @@ export default class CanvasRenderer extends SystemRenderer
             }
         }
 
-        this.initPlugins();
+        this.initPlugins(CanvasRenderer.__plugins);
 
         this.blendModes = mapCanvasBlendModesToPixi();
         this._activeBlendMode = null;
@@ -288,8 +287,6 @@ export default class CanvasRenderer extends SystemRenderer
      */
     destroy(removeView)
     {
-        this.destroyPlugins();
-
         // call the base destroy
         super.destroy(removeView);
 
@@ -330,27 +327,30 @@ export default class CanvasRenderer extends SystemRenderer
     {
         this._activeBlendMode = this.blendModes.indexOf(this.context.globalCompositeOperation);
     }
+
+    /**
+     * Collection of installed plugins. These are included by default in PIXI, but can be excluded
+     * by creating a custom build. Consult the README for more information about creating custom
+     * builds and excluding plugins.
+     * @name PIXI.CanvasRenderer#plugins
+     * @type {object}
+     * @readonly
+     * @property {PIXI.accessibility.AccessibilityManager} accessibility Support tabbing interactive elements.
+     * @property {PIXI.extract.CanvasExtract} extract Extract image data from renderer.
+     * @property {PIXI.interaction.InteractionManager} interaction Handles mouse, touch and pointer events.
+     * @property {PIXI.prepare.CanvasPrepare} prepare Pre-render display objects.
+     */
+
+    /**
+     * Adds a plugin to the renderer.
+     *
+     * @method
+     * @param {string} pluginName - The name of the plugin.
+     * @param {Function} ctor - The constructor function or class for the plugin.
+     */
+    static registerPlugin(pluginName, ctor)
+    {
+        CanvasRenderer.__plugins = CanvasRenderer.__plugins || {};
+        CanvasRenderer.__plugins[pluginName] = ctor;
+    }
 }
-
-/**
- * Collection of installed plugins. These are included by default in PIXI, but can be excluded
- * by creating a custom build. Consult the README for more information about creating custom
- * builds and excluding plugins.
- * @name PIXI.CanvasRenderer#plugins
- * @type {object}
- * @readonly
- * @property {PIXI.accessibility.AccessibilityManager} accessibility Support tabbing interactive elements.
- * @property {PIXI.extract.CanvasExtract} extract Extract image data from renderer.
- * @property {PIXI.interaction.InteractionManager} interaction Handles mouse, touch and pointer events.
- * @property {PIXI.prepare.CanvasPrepare} prepare Pre-render display objects.
- */
-
-/**
- * Adds a plugin to the renderer.
- *
- * @method PIXI.CanvasRenderer#registerPlugin
- * @param {string} pluginName - The name of the plugin.
- * @param {Function} ctor - The constructor function or class for the plugin.
- */
-
-pluginTarget.mixin(CanvasRenderer);
