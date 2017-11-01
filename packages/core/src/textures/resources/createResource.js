@@ -3,22 +3,28 @@ import SVGResource from './SVGResource';
 import CanvasResource from './CanvasResource';
 import VideoResource from './VideoResource';
 
+const videosTypes = ['mp4', 'm4v', 'webm', 'ogg', 'ogv', 'h264', 'avi', 'mov'];
+
 export default function createResource(source)
 {
     if (typeof source === 'string')
     {
-        // check if its a video..
-        if (source.match(/\.(mp4|webm|ogg|h264|avi|mov)$/))
+        // search for file extension: period, 3-4 chars, then ?, # or EOL
+        const result = (/\.(\w{3,4})(?:$|\?|#)/i).exec(source);
+
+        if (result)
         {
-            return new VideoResource.fromUrl(source);
-            // video!
-            // return Texture.fromVideoUrl(source);
-            // return SVGResource.from(url);
-        }
-        else if (source.match(/\.(svg)$/))
-        {
-            // SVG
-            return SVGResource.from(source);
+            const extension = result[1].toLowerCase();
+
+            // check if its a video..
+            if (videosTypes.indexOf(extension) > -1)
+            {
+                return new VideoResource.fromUrl(source);
+            }
+            else if (extension === 'svg')
+            {
+                return SVGResource.from(source);
+            }
         }
 
         // probably an image!
