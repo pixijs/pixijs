@@ -53,7 +53,7 @@ export * from './data';
 export * from './media';
 export * from './network';
 export * from './plugin';
-
 export * from './const';
+export * from './deprecation';
 
 import './settings';
