@@ -7,6 +7,7 @@
 Thumbs.db
 Desktop.ini
 npm-debug.log
+lerna-debug.log
 
 # project files
 .project
@@ -22,12 +23,9 @@ npm-debug.log
 !.gitkeep
 *__temp
 node_modules
-/docs
-/examples_old
-/bin
-/coverage
-/lib
-/dist
+docs
+coverage
+lib
 
 # jetBrains IDE ignores
 .idea

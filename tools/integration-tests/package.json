@@ -1,0 +1,20 @@
+{
+  "name": "@internal/integration-tests",
+  "private": true,
+  "version": "5.0.0-alpha",
+  "description": "Integration tests for PixiJS packages",
+  "scripts": {
+    "test": "tester"
+  },
+  "devDependencies": {
+    "@pixi/graphics": "^5.0.0-alpha",
+    "@pixi/core": "^5.0.0-alpha",
+    "@pixi/sprite": "^5.0.0-alpha",
+    "@pixi/mesh": "^5.0.0-alpha",
+    "@pixi/text": "^5.0.0-alpha",
+    "@pixi/math": "^5.0.0-alpha",
+    "@pixi/display": "^5.0.0-alpha",
+    "@internal/tester": "^5.0.0-alpha",
+    "@internal/renders": "^5.0.0-alpha"
+  }
+}

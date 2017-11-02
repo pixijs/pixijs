@@ -1,0 +1,18 @@
+{
+  "name": "@internal/builder",
+  "version": "5.0.0-alpha",
+  "private": true,
+  "module": "index.js",
+  "devDependencies": {
+    "minimist": "^1.2.0",
+    "rollup-plugin-buble": "^0.15.0",
+    "rollup-plugin-commonjs": "^8.2.4",
+    "rollup-plugin-node-builtins": "^2.1.2",
+    "rollup-plugin-node-resolve": "^3.0.0",
+    "rollup-plugin-preprocess": "0.0.4",
+    "rollup-plugin-replace": "^2.0.0",
+    "rollup-plugin-string": "^2.0.2",
+    "rollup-plugin-uglify": "^2.0.1",
+    "uglify-es": "^3.0.25"
+  }
+}

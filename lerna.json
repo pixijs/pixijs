@@ -1,0 +1,10 @@
+{
+  "lerna": "2.4.0",
+  "packages": [
+    "bundles/*",
+    "packages/*",
+    "filters/*",
+    "tools/*"
+  ],
+  "version": "5.0.0-alpha"
+}
