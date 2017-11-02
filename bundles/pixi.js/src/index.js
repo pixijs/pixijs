@@ -11,7 +11,6 @@ export * from '@pixi/text-bitmap';
 export * from '@pixi/graphics';
 export * from '@pixi/sprite-animated';
 export * from '@pixi/sprite-tiling';
-export * from '@pixi/text-bitmap';
 
 // export libs
 import * as accessibility from '@pixi/accessibility';
