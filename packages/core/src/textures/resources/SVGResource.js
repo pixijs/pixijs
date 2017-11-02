@@ -167,6 +167,15 @@ export default class SVGResource extends TextureResource
 }
 
 /**
+ * List of common SVG file extensions supported by SVGResource.
+ * @constant
+ * @member {Array<string>}
+ * @static
+ * @readonly
+ */
+SVGResource.TYPES = ['svg'];
+
+/**
  * RegExp for SVG size.
  *
  * @static
@@ -177,4 +186,3 @@ export default class SVGResource extends TextureResource
  * @example &lt;svg width="100" height="100"&gt;&lt;/svg&gt;
  */
 SVGResource.SVG_SIZE = /<svg[^>]*(?:\s(width|height)=('|")(\d*(?:\.\d+)?)(?:px)?('|"))[^>]*(?:\s(width|height)=('|")(\d*(?:\.\d+)?)(?:px)?('|"))[^>]*>/i; // eslint-disable-line max-len
-
