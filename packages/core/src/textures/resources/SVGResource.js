@@ -123,3 +123,12 @@ export default class SVGResource extends TextureResource
         return new SVGResource(url);
     }
 }
+
+/**
+ * List of common SVG file extensions supported by SVGResource.
+ * @constant
+ * @member {Array<string>}
+ * @static
+ * @readonly
+ */
+SVGResource.TYPES = ['svg'];

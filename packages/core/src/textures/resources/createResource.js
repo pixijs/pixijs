@@ -3,8 +3,6 @@ import SVGResource from './SVGResource';
 import CanvasResource from './CanvasResource';
 import VideoResource from './VideoResource';
 
-const videosTypes = ['mp4', 'm4v', 'webm', 'ogg', 'ogv', 'h264', 'avi', 'mov'];
-
 export default function createResource(source)
 {
     if (typeof source === 'string')
@@ -16,12 +14,11 @@ export default function createResource(source)
         {
             const extension = result[1].toLowerCase();
 
-            // check if its a video..
-            if (videosTypes.indexOf(extension) > -1)
+            if (VideoResource.TYPES.indexOf(extension) > -1)
             {
                 return new VideoResource.fromUrl(source);
             }
-            else if (extension === 'svg')
+            else if (SVGResource.TYPES.indexOf(extension) > -1)
             {
                 return SVGResource.from(source);
             }
