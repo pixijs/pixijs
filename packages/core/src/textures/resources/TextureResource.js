@@ -1,5 +1,11 @@
 import Runner from 'mini-runner';
 
+/**
+ * Base Texture resource class.
+ * @class
+ * @memberof PIXI
+ * @param {any} source - Source element to use.
+ */
 export default class TextureResource
 {
     constructor(source)
