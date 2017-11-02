@@ -31,8 +31,6 @@
   "dependencies": {
     "@pixi/core": "^5.0.0-alpha",
     "@pixi/utils": "^5.0.0-alpha",
-    "@pixi/spritesheet": "^5.0.0-alpha",
-    "@pixi/text-bitmap": "^5.0.0-alpha",
     "resource-loader": "^2.0.9",
     "eventemitter3": "^2.0.0"
   },

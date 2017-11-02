@@ -23,7 +23,7 @@
     "build": "rollup -cp && rollup -cp -f cjs",
     "watch": "rollup -cw",
     "postversion": "npm run build",
-    "test": "exit 0"
+    "test": "tester"
   },
   "files": [
     "lib"
@@ -31,12 +31,15 @@
   "dependencies": {
     "@pixi/core": "^5.0.0-alpha",
     "@pixi/utils": "^5.0.0-alpha",
+    "@pixi/loaders": "^5.0.0-alpha",
     "@pixi/sprite": "^5.0.0-alpha",
     "@pixi/settings": "^5.0.0-alpha",
     "@pixi/math": "^5.0.0-alpha",
     "@pixi/display": "^5.0.0-alpha"
   },
   "devDependencies": {
+    "@pixi/spritesheet": "^5.0.0-alpha",
+    "@internal/tester": "^5.0.0-alpha",
     "@internal/builder": "^5.0.0-alpha",
     "rollup": "^0.50.0",
     "rollup-watch": "^4.3.1"
