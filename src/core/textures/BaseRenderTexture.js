@@ -73,9 +73,10 @@ export default class BaseRenderTexture extends BaseTexture
         this.clearColor = [0, 0, 0, 0];
 
         this.frameBuffer = new FrameBuffer(width, height)
-        .addColorTexture(0, this);
-
-        // TODO - could this be added the systems?
+        .addColorTexture(0, this)
+        // TODO this shoul dreally only be enabled if its required
+        // at the point of a mask being rendered.
+        .enableStencil();
 
         /**
          * The data structure for the stencil masks

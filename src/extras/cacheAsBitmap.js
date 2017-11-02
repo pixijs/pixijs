@@ -163,7 +163,7 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
     this.alpha = 1;
 
     // first we flush anything left in the renderer (otherwise it would get rendered to the cached texture)
-    renderer.currentRenderer.flush();
+    renderer.batch.flush();
     // this.filters= [];
 
     // next we find the dimensions of the untransformed object
@@ -184,7 +184,7 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
     // this could be more elegent..
     const cachedRenderTarget = renderer._activeRenderTarget;
     // We also store the filter stack - I will definitely look to change how this works a little later down the line.
-    const stack = renderer.filterManager.filterStack;
+    //const stack = renderer.filterManager.filterStack;
 
     // this renderTexture will be used to store the cached DisplayObject
 
@@ -212,9 +212,9 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
     renderer.render(this, renderTexture, true, m, true);
     // now restore the state be setting the new properties
 
-    renderer.bindRenderTarget(cachedRenderTarget);
+    renderer.renderTexture.bind(cachedRenderTarget);
 
-    renderer.filterManager.filterStack = stack;
+    //renderer.filterManager.filterStack = stack;
 
     this.renderWebGL = this._renderCachedWebGL;
     this.updateTransform = this.displayObjectUpdateTransform;
