@@ -1,4 +1,3 @@
-import { Application } from '@pixi/app';
 import Loader from './loader';
 
 /**
@@ -41,40 +40,3 @@ shared.destroy = () =>
 };
 
 export { shared };
-
-// Mixin the loader construction
-const AppPrototype = Application.prototype;
-
-AppPrototype._loader = null;
-
-/**
- * Loader instance to help with asset loading.
- * @name PIXI.Application#loader
- * @type {PIXI.loaders.Loader}
- */
-Object.defineProperty(AppPrototype, 'loader', {
-    get()
-    {
-        if (!this._loader)
-        {
-            const sharedLoader = this._options.sharedLoader;
-
-            this._loader = sharedLoader ? shared : new Loader();
-        }
-
-        return this._loader;
-    },
-});
-
-// Override the destroy function
-// making sure to destroy the current Loader
-AppPrototype._parentDestroy = AppPrototype.destroy;
-AppPrototype.destroy = function destroy(removeView)
-{
-    if (this._loader)
-    {
-        this._loader.destroy();
-        this._loader = null;
-    }
-    this._parentDestroy(removeView);
-};

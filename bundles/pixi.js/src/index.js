@@ -26,6 +26,7 @@ import * as filters from './filters';
 import '@pixi/mixin-cache-as-bitmap';
 import '@pixi/mixin-get-child-by-name';
 import '@pixi/mixin-get-global-position';
+import '@pixi/mixin-app-loader';
 
 import { deprecation } from './deprecation';
 

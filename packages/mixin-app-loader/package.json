@@ -1,9 +1,9 @@
 {
-  "name": "@pixi/loaders",
+  "name": "@pixi/mixin-app-loader",
   "version": "5.0.0-alpha",
-  "main": "lib/loaders.js",
-  "module": "lib/loaders.es.js",
-  "description": "Support for legacy browser JavaScript environments",
+  "main": "lib/mixin-app-loader.js",
+  "module": "lib/mixin-app-loader.es.js",
+  "description": "Support for loader in Application",
   "author": "Mat Groves",
   "contributors": [
     "Matt Karl <matt@mattkarl.com>"
@@ -29,16 +29,13 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/core": "^5.0.0-alpha",
-    "@pixi/utils": "^5.0.0-alpha",
-    "@pixi/spritesheet": "^5.0.0-alpha",
-    "@pixi/text-bitmap": "^5.0.0-alpha",
-    "resource-loader": "^2.0.9",
-    "eventemitter3": "^2.0.0"
+    "@pixi/app": "^5.0.0-alpha",
+    "@pixi/loaders": "^5.0.0-alpha"
   },
   "devDependencies": {
-    "@internal/builder": "^5.0.0-alpha",
+    "@pixi/utils": "^5.0.0-alpha",
     "@internal/tester": "^5.0.0-alpha",
+    "@internal/builder": "^5.0.0-alpha",
     "rollup": "^0.50.0",
     "rollup-watch": "^4.3.1"
   }
