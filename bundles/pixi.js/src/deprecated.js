@@ -38,23 +38,38 @@ function warn(msg)
     /* eslint-enable no-console */
 }
 
-
-/**
- * @deprecated since 5.0.0
- * @see PIXI.ticker.UPDATE_PRIORITY
- * @static
- * @constant
- * @name UPDATE_PRIORITY
- * @memberof PIXI
- * @type {object}
- */
 Object.defineProperties(PIXI, {
+    /**
+     * @deprecated since 5.0.0
+     * @see PIXI.ticker.UPDATE_PRIORITY
+     * @static
+     * @constant
+     * @name UPDATE_PRIORITY
+     * @memberof PIXI
+     * @type {object}
+     */
     UPDATE_PRIORITY: {
         get()
         {
             warn('PIXI.UPDATE_PRIORITY has moved to PIXI.ticker.UPDATE_PRIORITY');
 
             return PIXI.ticker.UPDATE_PRIORITY;
+        },
+    },
+
+    /**
+     * @constant
+     * @name SVG_SIZE
+     * @memberof PIXI
+     * @see PIXI.SVGResource.SVG_SIZE
+     * @deprecated since 5.0.0
+     */
+    SVG_SIZE: {
+        get()
+        {
+            warn('PIXI.utils.SVG_SIZE has moved to PIXI.SVGResource.SVG_SIZE');
+
+            return PIXI.SVGResource.SVG_SIZE;
         },
     },
 });
@@ -132,24 +147,8 @@ Object.defineProperties(PIXI.utils, {
         get()
         {
             warn('PIXI.utils.getSvgSize has moved to PIXI.SVGResource.getSize');
-            
+
             return PIXI.SVGResource.getSize;
-        },
-    },
-
-    SVG_SIZE: {
-        /**
-         * @constant
-         * @name SVG_SIZE
-         * @memberof PIXI.utils
-         * @see PIXI.SVGResource.SVG_SIZE
-         * @deprecated since 5.0.0
-         */
-        get()
-        {
-            warn('PIXI.utils.SVG_SIZE has moved to PIXI.SVGResource.SVG_SIZE');
-
-            return PIXI.SVGResource.SVG_SIZE;
         },
     },
 });

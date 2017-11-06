@@ -6,7 +6,7 @@ import * as fs from 'fs';
 // will not receive deprecations.
 if (config.output.format === 'umd')
 {
-    // Rollup exports all the namespaces/classes, in order to 
+    // Rollup exports all the namespaces/classes, in order to
     // deprecates exported classes, we need to add deprecate.js
     // as the outro for the build.
     config.outro = fs.readFileSync('./src/deprecated.js', 'utf8');
