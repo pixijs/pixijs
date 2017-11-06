@@ -1,4 +1,4 @@
-/* global PIXI */
+/* global exports */
 
 // provide method to give a stack track for warnings
 // useful for tracking-down where deprecated methods/properties/classes
@@ -37,6 +37,9 @@ function warn(msg)
     }
     /* eslint-enable no-console */
 }
+
+// Define via the exports
+const PIXI = exports;
 
 Object.defineProperties(PIXI, {
     /**
