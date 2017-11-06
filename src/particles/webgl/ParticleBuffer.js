@@ -269,7 +269,6 @@ export default class ParticleBuffer
         this.staticBuffer = null;
         this.staticData = null;
         this.staticDataUint32 = null;
-
     }
 
 }
