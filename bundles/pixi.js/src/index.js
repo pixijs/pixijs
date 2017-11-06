@@ -217,11 +217,3 @@ export const utils = {
     mixins,
     DATA_URI,
 };
-
-// Export to window object
-global.PIXI = exports; // eslint-disable-line
-
-// Import deprecations, these are excuted in
-// the Rollup outro, see rollup.config.js
-import deprecation from './deprecation';
-export { deprecation };
