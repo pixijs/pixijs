@@ -47,13 +47,18 @@ export { removeItems };
 import EventEmitter from 'eventemitter3';
 export { EventEmitter };
 
+/**
+ * @namespace PIXI.utils.mixins
+ */
+import { mixin, delayMixin, performMixins } from './mixins';
+export const mixins = { mixin, delayMixin, performMixins };
+
 export * from './browser';
 export * from './color';
 export * from './data';
 export * from './media';
 export * from './network';
-export * from './plugin';
-
 export * from './const';
+export * from './deprecation';
 
 import './settings';

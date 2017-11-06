@@ -33,7 +33,6 @@ const mixins = [];
  *
  * @memberof PIXI.utils.mixins
  * @function delayMixin
- * @private
  * @param {object} target The prototype or instance that properties and methods should be added to.
  * @param {object} source The source of properties and methods to mix in.
  */
@@ -47,7 +46,6 @@ export function delayMixin(target, source)
  *
  * @memberof PIXI.utils.mixins
  * @function performMixins
- * @private
  */
 export function performMixins()
 {

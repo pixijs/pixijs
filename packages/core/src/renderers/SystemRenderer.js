@@ -187,6 +187,27 @@ export default class SystemRenderer extends EventEmitter
          * @private
          */
         this._lastObjectRendered = this._tempDisplayObjectParent;
+
+        /**
+         * Collection of plugins.
+         * @readonly
+         * @member {object}
+         */
+        this.plugins = {};
+    }
+
+    /**
+     * Initialize the plugins.
+     *
+     * @protected
+     * @param {object} staticMap - The dictionary of staticly saved plugins.
+     */
+    initPlugins(staticMap)
+    {
+        for (const o in staticMap)
+        {
+            this.plugins[o] = new (staticMap[o])(this);
+        }
     }
 
     /**
@@ -265,10 +286,18 @@ export default class SystemRenderer extends EventEmitter
      */
     destroy(removeView)
     {
+        for (const o in this.plugins)
+        {
+            this.plugins[o].destroy();
+            this.plugins[o] = null;
+        }
+
         if (removeView && this.view.parentNode)
         {
             this.view.parentNode.removeChild(this.view);
         }
+
+        this.plugins = null;
 
         this.type = RENDERER_TYPE.UNKNOWN;
 
