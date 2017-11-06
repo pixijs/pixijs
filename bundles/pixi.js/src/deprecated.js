@@ -1,5 +1,43 @@
 /* global PIXI */
-import { deprecationWarn as warn } from '@pixi/utils';
+
+// provide method to give a stack track for warnings
+// useful for tracking-down where deprecated methods/properties/classes
+// are being used within the code
+function warn(msg)
+{
+    /* eslint-disable no-console */
+    let stack = new Error().stack;
+
+    // Handle IE < 10 and Safari < 6
+    if (typeof stack === 'undefined')
+    {
+        console.warn('Deprecated Warning: ', msg);
+    }
+    else
+    {
+        // chop off the stack trace which includes pixi.js internal calls
+        stack = stack.split('\n').splice(3).join('\n');
+
+        if (console.groupCollapsed)
+        {
+            console.groupCollapsed(
+                '%cDeprecated Warning: %c%s',
+                'color:#614108;background:#fffbe6',
+                'font-weight:normal;color:#614108;background:#fffbe6',
+                msg
+            );
+            console.warn(stack);
+            console.groupEnd();
+        }
+        else
+        {
+            console.warn('Deprecated Warning: ', msg);
+            console.warn(stack);
+        }
+    }
+    /* eslint-enable no-console */
+}
+
 
 /**
  * @deprecated since 5.0.0
@@ -80,6 +118,38 @@ Object.defineProperties(PIXI.extras, {
             warn('PIXI.extras.BitmapText has moved to PIXI.BitmapText');
 
             return PIXI.BitmapText;
+        },
+    },
+});
+
+Object.defineProperties(PIXI.utils, {
+    /**
+     * @function PIXI.utils.getSvgSize
+     * @see PIXI.SVGResource.getSize
+     * @deprecated since 5.0.0
+     */
+    getSvgSize: {
+        get()
+        {
+            warn('PIXI.utils.getSvgSize has moved to PIXI.SVGResource.getSize');
+            
+            return PIXI.SVGResource.getSize;
+        },
+    },
+
+    SVG_SIZE: {
+        /**
+         * @constant
+         * @name SVG_SIZE
+         * @memberof PIXI.utils
+         * @see PIXI.SVGResource.SVG_SIZE
+         * @deprecated since 5.0.0
+         */
+        get()
+        {
+            warn('PIXI.utils.SVG_SIZE has moved to PIXI.SVGResource.SVG_SIZE');
+
+            return PIXI.SVGResource.SVG_SIZE;
         },
     },
 });
