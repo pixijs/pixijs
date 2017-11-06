@@ -1,5 +1,3 @@
-/* global exports */
-
 // provide method to give a stack track for warnings
 // useful for tracking-down where deprecated methods/properties/classes
 // are being used within the code
