@@ -50,8 +50,8 @@ export { EventEmitter };
 /**
  * @namespace PIXI.utils.mixins
  */
-import * as mixins from './mixins';
-export { mixins };
+import { mixin, delayMixin, performMixins } from './mixins';
+export const mixins = { mixin, delayMixin, performMixins };
 
 export * from './browser';
 export * from './color';
@@ -59,6 +59,5 @@ export * from './data';
 export * from './media';
 export * from './network';
 export * from './const';
-export * from './deprecation';
 
 import './settings';
