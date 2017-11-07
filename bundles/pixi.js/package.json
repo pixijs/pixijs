@@ -19,9 +19,9 @@
     "url": "https://github.com/pixijs/pixi.js.git"
   },
   "scripts": {
-    "build": "rollup -cp && rollup -cp -f umd",
-    "build:dev": "rollup -c && rollup -c -f umd",
-    "watch": "rollup -cw -f umd",
+    "build": "rollup -cp --main-format umd",
+    "build:dev": "rollup -c --main-format umd",
+    "watch": "rollup -cw --main-format umd",
     "postversion": "npm run build",
     "test": "tester"
   },
