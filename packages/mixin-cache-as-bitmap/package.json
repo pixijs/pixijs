@@ -38,7 +38,6 @@
   "devDependencies": {
     "@internal/tester": "^5.0.0-alpha",
     "@internal/builder": "^5.0.0-alpha",
-    "rollup": "^0.50.0",
-    "rollup-watch": "^4.3.1"
+    "rollup": "^0.50.0"
   }
 }

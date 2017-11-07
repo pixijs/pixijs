@@ -68,7 +68,6 @@
     "@internal/tester": "^5.0.0-alpha",
     "buble": "^0.17.0",
     "rimraf": "^2.6.2",
-    "rollup": "^0.50.0",
-    "rollup-watch": "^4.3.1"
+    "rollup": "^0.50.0"
   }
 }
