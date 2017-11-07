@@ -34,7 +34,7 @@
     "@pixi/utils": "^5.0.0-alpha",
     "@pixi/display": "^5.0.0-alpha",
     "@pixi/math": "^5.0.0-alpha",
-    "pixi-gl-core": "^1.0.3"
+    "pixi-gl-core": "^2.0.0-alpha"
   },
   "devDependencies": {
     "@internal/builder": "^5.0.0-alpha",

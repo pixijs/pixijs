@@ -11,7 +11,6 @@ const replace = require('rollup-plugin-replace');
 const preprocess = require('rollup-plugin-preprocess').default;
 
 const pkg = require(path.resolve('./package'));
-const safeName = path.basename(pkg.name);
 const input = 'src/index.js';
 
 const { prod, format, output } = minimist(process.argv.slice(2), {
@@ -62,6 +61,19 @@ const plugins = [
         },
     }),
     buble(),
+    // This workaround plugin removes Object.freeze usage with Rollup
+    // because there is no way to disable and we need it to
+    // properly add deprecated methods/classes on namespaces
+    // such as PIXI.utils or PIXI.loaders, code was borrowed
+    // from 'rollup-plugin-es3'
+    // TODO: Removes this when opt-out option for Rollup is available
+    {
+        name: 'thaw',
+        transformBundle: function(code) {
+            code = code.replace(/Object.freeze\s*\(\s*([^)]*)\)/g, '$1');
+            return { code, map: { mappings: '' } };
+        },
+    },
 ];
 
 if (prod)
@@ -99,11 +111,9 @@ const banner = `/*!
  * http://www.opensource.org/licenses/mit-license
  */\n`;
 
-const name = `__${safeName.replace(/-/g, '_')}`;
-
 module.exports = {
     banner,
-    name,
+    name: 'PIXI',
     input,
     output: {
         file,
