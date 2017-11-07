@@ -13,16 +13,15 @@ const preprocess = require('rollup-plugin-preprocess').default;
 const pkg = require(path.resolve('./package'));
 const input = 'src/index.js';
 
-const { prod, format } = minimist(process.argv.slice(2), {
-    string: ['main-format'],
-    boolean: ['prod'],
+const { prod, bundle } = minimist(process.argv.slice(2), {
+    boolean: ['prod', 'bundle'],
     default: {
-        'main-format': 'cjs',
         prod: false,
+        bundle: false,
     },
     alias: {
         p: 'prod',
-        format: 'main-format',
+        b: 'bundle',
     },
 });
 
@@ -117,7 +116,7 @@ exports.default = [
         input,
         output: {
             file: pkg.main,
-            format,
+            format: bundle ? 'umd' : 'cjs',
         },
         external,
         sourcemap,
