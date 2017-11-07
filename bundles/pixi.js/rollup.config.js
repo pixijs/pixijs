@@ -11,6 +11,7 @@ if (config.output.format === 'umd')
     // deprecates exported classes, we need to add deprecate.js
     // as the outro for the build.
     const buffer = fs.readFileSync('./src/deprecated.js', 'utf8');
+
     config.outro = buble.transform(buffer).code;
 }
 

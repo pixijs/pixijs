@@ -69,8 +69,10 @@ const plugins = [
     // TODO: Removes this when opt-out option for Rollup is available
     {
         name: 'thaw',
-        transformBundle: function(code) {
+        transformBundle(code)
+        {
             code = code.replace(/Object.freeze\s*\(\s*([^)]*)\)/g, '$1');
+
             return { code, map: { mappings: '' } };
         },
     },
