@@ -153,3 +153,74 @@ Object.defineProperties(PIXI.utils, {
         },
     },
 });
+
+Object.defineProperties(PIXI.loaders.Loader, {
+    /**
+     * @function PIXI.loaders.Loader.addPixiMiddleware
+     * @see PIXI.loaders.Loader.useMiddleware
+     * @deprecated since 5.0.0
+     */
+    addPixiMiddleware: {
+        get()
+        {
+            warn('PIXI.loaders.Loader.addPixiMiddleware has moved to PIXI.loaders.Loader.useMiddleware');
+
+            return PIXI.loaders.Loader.useMiddleware;
+        },
+    },
+});
+
+Object.defineProperties(PIXI.loaders, {
+    /**
+     * @function PIXI.loaders.bitmapFontParser
+     * @see PIXI.BitmapFontLoader.middleware
+     * @deprecated since 5.0.0
+     */
+    bitmapFontParser: {
+        get()
+        {
+            warn('PIXI.loaders.bitmapFontParser has moved to PIXI.BitmapFontLoader.middleware');
+
+            return PIXI.BitmapFontLoader.middleware;
+        },
+    },
+    /**
+     * @function PIXI.loaders.parseBitmapFontData
+     * @see PIXI.BitmapFontLoader.parse
+     * @deprecated since 5.0.0
+     */
+    parseBitmapFontData: {
+        get()
+        {
+            warn('PIXI.loaders.parseBitmapFontData has moved to PIXI.BitmapFontLoader.parse');
+
+            return PIXI.BitmapFontLoader.parse;
+        },
+    },
+    /**
+     * @function PIXI.loaders.spritesheetParser
+     * @see PIXI.SpritesheetLoader.middleware
+     * @deprecated since 5.0.0
+     */
+    spritesheetParser: {
+        get()
+        {
+            warn('PIXI.loaders.spritesheetParser has moved to PIXI.SpritesheetLoader.middleware');
+
+            return PIXI.SpritesheetLoader.middleware;
+        },
+    },
+    /**
+     * @function PIXI.loaders.getResourcePath
+     * @see PIXI.SpritesheetLoader.getResourcePath
+     * @deprecated since 5.0.0
+     */
+    getResourcePath: {
+        get()
+        {
+            warn('PIXI.loaders.getResourcePath has moved to PIXI.SpritesheetLoader.getResourcePath');
+
+            return PIXI.SpritesheetLoader.getResourcePath;
+        },
+    },
+});

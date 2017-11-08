@@ -3,7 +3,10 @@ import { Resource, Loader } from '@pixi/loaders';
 import Spritesheet from './Spritesheet';
 
 /**
- * Loader middleware for {@link PIXI.loaders.Loader Loader}
+ * {@link PIXI.loaders.Loader Loader} middleware for loading
+ * texture atlases that have been created with TexturePacker or
+ * similar JSON-based spritesheet. This automatically generates
+ * Texture resources.
  * @class
  * @memberof PIXI
  */

@@ -53,13 +53,11 @@ import textureParser from './textureParser';
  * @class Loader
  * @extends module:resource-loader.ResourceLoader
  * @memberof PIXI.loaders
+ * @param {string} [baseUrl=''] - The base url for all resources loaded by this loader.
+ * @param {number} [concurrency=10] - The number of resources to load concurrently.
  */
 export class Loader extends ResourceLoader
 {
-    /**
-     * @param {string} [baseUrl=''] - The base url for all resources loaded by this loader.
-     * @param {number} [concurrency=10] - The number of resources to load concurrently.
-     */
     constructor(baseUrl, concurrency)
     {
         super(baseUrl, concurrency);

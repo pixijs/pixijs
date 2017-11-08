@@ -4,7 +4,8 @@ import { Resource, Loader } from '@pixi/loaders';
 import BitmapText from './BitmapText';
 
 /**
- * Loader middleware for {@link PIXI.loaders.Loader Loader}
+ * {@link PIXI.loaders.Loader Loader} middleware for loading
+ * bitmap-based fonts suitable for using with {@link PIXI.BitmapText}.
  * @class
  * @memberof PIXI
  */
