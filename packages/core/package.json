@@ -19,8 +19,8 @@
     "access": "public"
   },
   "scripts": {
-    "build:dev": "rollup -c && rollup -c -f cjs",
-    "build": "rollup -cp && rollup -cp -f cjs",
+    "build:dev": "rollup -c",
+    "build": "rollup -cp",
     "watch": "rollup -cw",
     "postversion": "npm run build",
     "test": "tester"
@@ -33,7 +33,7 @@
     "earcut": "^2.0.7",
     "eventemitter3": "^2.0.0",
     "ismobilejs": "^0.4.0",
-    "pixi-gl-core": "^1.0.3",
+    "pixi-gl-core": "^2.0.0-alpha",
     "mini-runner": "^1.0.1",
     "@pixi/math": "^5.0.0-alpha",
     "@pixi/constants": "^5.0.0-alpha",
@@ -45,7 +45,6 @@
   "devDependencies": {
     "@internal/builder": "^5.0.0-alpha",
     "@internal/tester": "^5.0.0-alpha",
-    "rollup": "^0.50.0",
-    "rollup-watch": "^4.3.1"
+    "rollup": "^0.50.0"
   }
 }

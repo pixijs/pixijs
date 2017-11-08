@@ -19,8 +19,8 @@
     "access": "public"
   },
   "scripts": {
-    "build:dev": "rollup -c && rollup -c -f cjs",
-    "build": "rollup -cp && rollup -cp -f cjs",
+    "build:dev": "rollup -c",
+    "build": "rollup -cp",
     "watch": "rollup -cw",
     "postversion": "npm run build",
     "test": "exit 0"
@@ -34,11 +34,10 @@
     "@pixi/utils": "^5.0.0-alpha",
     "@pixi/display": "^5.0.0-alpha",
     "@pixi/math": "^5.0.0-alpha",
-    "pixi-gl-core": "^1.0.3"
+    "pixi-gl-core": "^2.0.0-alpha"
   },
   "devDependencies": {
     "@internal/builder": "^5.0.0-alpha",
-    "rollup": "^0.50.0",
-    "rollup-watch": "^4.3.1"
+    "rollup": "^0.50.0"
   }
 }

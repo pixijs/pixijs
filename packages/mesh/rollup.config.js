@@ -1,1 +1,1 @@
-export * from '@internal/builder';
+export { default } from '@internal/builder';
