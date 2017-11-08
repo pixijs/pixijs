@@ -1,6 +1,7 @@
-const { Ticker, shared, UPDATE_PRIORITY } = require('../');
+const { Ticker, UPDATE_PRIORITY } = require('../');
+const { shared } = Ticker;
 
-describe('PIXI.ticker.Ticker', function ()
+describe('PIXI.Ticker', function ()
 {
     before(function ()
     {

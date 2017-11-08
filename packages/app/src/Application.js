@@ -1,7 +1,7 @@
 import { autoDetectRenderer } from '@pixi/core';
 import { settings } from '@pixi/settings';
 import { Container } from '@pixi/display';
-import { shared, Ticker, UPDATE_PRIORITY } from '@pixi/ticker';
+import { Ticker, UPDATE_PRIORITY } from '@pixi/ticker';
 
 /**
  * Convenience class to create a new PIXI application.
@@ -50,7 +50,7 @@ export default class Application
      *  If you experience unexplained flickering try setting this to true. **webgl only**
      * @param {string} [options.powerPreference] - Parameter passed to webgl context, set to "high-performance"
      *  for devices with dual graphics card **webgl only**
-     * @param {boolean} [options.sharedTicker=false] - `true` to use PIXI.ticker.shared, `false` to create new ticker.
+     * @param {boolean} [options.sharedTicker=false] - `true` to use PIXI.Ticker.shared, `false` to create new ticker.
      * @param {boolean} [options.sharedLoader=false] - `true` to use PIXI.loaders.shared, `false` to create new Loader.
      */
     constructor(options, arg2, arg3, arg4, arg5)
@@ -92,17 +92,17 @@ export default class Application
 
         /**
          * Internal reference to the ticker
-         * @member {PIXI.ticker.Ticker}
+         * @member {PIXI.Ticker}
          * @private
          */
         this._ticker = null;
 
         /**
          * Ticker for doing render updates.
-         * @member {PIXI.ticker.Ticker}
-         * @default PIXI.ticker.shared
+         * @member {PIXI.Ticker}
+         * @default PIXI.Ticker.shared
          */
-        this.ticker = options.sharedTicker ? shared : new Ticker();
+        this.ticker = options.sharedTicker ? Ticker.shared : new Ticker();
 
         // Start the rendering
         if (options.autoStart)
