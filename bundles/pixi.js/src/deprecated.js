@@ -139,7 +139,7 @@ Object.defineProperties(PIXI.utils, {
 /**
  * This namespace has been removed and items have been moved to
  * the top-level `PIXI` object.
- * @namespace PIXI.Ticker
+ * @namespace PIXI.ticker
  * @deprecated since 5.0.0
  */
 PIXI.ticker = {};
