@@ -1,0 +1,18 @@
+<font>
+  <info face="font" size="24" bold="0" italic="0" charset="" unicode="" stretchH="100" smooth="1" aa="1" padding="2,2,2,2" spacing="0,0" outline="0"/>
+  <common lineHeight="27" base="18" scaleW="64" scaleH="64" pages="1" packed="0"/>
+  <pages>
+    <page id="0" file="font.png"/>
+  </pages>
+  <chars count="4">
+    <char id="65" x="2" y="2" width="19" height="20" xoffset="0" yoffset="0" xadvance="16" page="0" chnl="15"/>
+    <char id="66" x="2" y="24" width="15" height="20" xoffset="2" yoffset="0" xadvance="16" page="0" chnl="15"/>
+    <char id="67" x="23" y="2" width="18" height="20" xoffset="1" yoffset="0" xadvance="17" page="0" chnl="15"/>
+    <char id="68" x="19" y="24" width="17" height="20" xoffset="2" yoffset="0" xadvance="17" page="0" chnl="15"/>
+    <char id="32" x="0" y="0" width="0" height="0" xoffset="2" yoffset="0" xadvance="7" page="0" chnl="15"/>
+  </chars>
+  <kernings count="2">
+    <kerning first="32" second="65" amount="-1"/>
+    <kerning first="65" second="32" amount="-1"/>
+  </kernings>
+</font>
