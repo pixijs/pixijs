@@ -11,26 +11,19 @@ const replace = require('rollup-plugin-replace');
 const preprocess = require('rollup-plugin-preprocess').default;
 
 const pkg = require(path.resolve('./package'));
-const safeName = path.basename(pkg.name);
 const input = 'src/index.js';
 
-const { prod, format, output } = minimist(process.argv.slice(2), {
-    string: ['format', 'output'],
-    boolean: ['prod'],
+const { prod, bundle } = minimist(process.argv.slice(2), {
+    boolean: ['prod', 'bundle'],
     default: {
-        format: 'es',
         prod: false,
-        output: '',
+        bundle: false,
     },
     alias: {
-        f: 'format',
         p: 'prod',
-        o: 'output',
+        b: 'bundle',
     },
 });
-
-// Allow overriding output, but default to "module" and "main" fields
-const file = output || (format === 'es' ? pkg.module : pkg.main);
 
 const plugins = [
     resolve({
@@ -41,7 +34,7 @@ const plugins = [
     commonjs({
         namedExports: {
             'resource-loader': ['Resource'],
-            'pixi-gl-core': ['GLFramebuffer'],
+            'pixi-gl-core': ['GLFramebuffer'], // TODO: remove pixi-gl-core
         },
     }),
     string({
@@ -62,6 +55,21 @@ const plugins = [
         },
     }),
     buble(),
+    // This workaround plugin removes Object.freeze usage with Rollup
+    // because there is no way to disable and we need it to
+    // properly add deprecated methods/classes on namespaces
+    // such as PIXI.utils or PIXI.loaders, code was borrowed
+    // from 'rollup-plugin-es3'
+    // TODO: Removes this when opt-out option for Rollup is available
+    {
+        name: 'thaw',
+        transformBundle(code)
+        {
+            code = code.replace(/Object.freeze\s*\(\s*([^)]*)\)/g, '$1');
+
+            return { code, map: { mappings: '' } };
+        },
+    },
 ];
 
 if (prod)
@@ -90,7 +98,9 @@ if (prod)
 }
 
 const compiled = (new Date()).toUTCString().replace(/GMT/g, 'UTC');
-
+const external = Object.keys(pkg.dependencies || []);
+const sourcemap = true;
+const name = 'PIXI';
 const banner = `/*!
  * ${pkg.name} - v${pkg.version}
  * Compiled ${compiled}
@@ -99,17 +109,28 @@ const banner = `/*!
  * http://www.opensource.org/licenses/mit-license
  */\n`;
 
-const name = `__${safeName.replace(/-/g, '_')}`;
-
-module.exports = {
-    banner,
-    name,
-    input,
-    output: {
-        file,
-        format,
+exports.default = [
+    {
+        banner,
+        name,
+        input,
+        output: {
+            file: pkg.main,
+            format: bundle ? 'umd' : 'cjs',
+        },
+        external,
+        sourcemap,
+        plugins,
     },
-    external: Object.keys(pkg.dependencies || []),
-    sourcemap: true,
-    plugins,
-};
+    {
+        banner,
+        input,
+        output: {
+            file: pkg.module,
+            format: 'es',
+        },
+        external,
+        sourcemap,
+        plugins,
+    },
+];

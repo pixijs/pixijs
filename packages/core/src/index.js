@@ -13,18 +13,8 @@
  */
 export const VERSION = '__VERSION__';
 
-export * from '@pixi/math';
-export * from '@pixi/constants';
-export * from '@pixi/display';
-
-import * as utils from '@pixi/utils';
-import * as ticker from '@pixi/ticker';
-import { settings } from '@pixi/settings';
-import CanvasRenderer from './renderers/canvas/CanvasRenderer';
-import WebGLRenderer from './renderers/webgl/WebGLRenderer';
-
-export { settings, utils, ticker, CanvasRenderer, WebGLRenderer };
-
+export { default as CanvasRenderer } from './renderers/canvas/CanvasRenderer';
+export { default as WebGLRenderer } from './renderers/webgl/WebGLRenderer';
 export { default as FrameBuffer } from './textures/FrameBuffer';
 export { default as CubeTexture } from './textures/CubeTexture';
 export { default as BaseTexture } from './textures/BaseTexture';
