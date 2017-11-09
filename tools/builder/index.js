@@ -105,7 +105,7 @@ const banner = `/*!
  * ${pkg.name} - v${pkg.version}
  * Compiled ${compiled}
  *
- * pixi-filters is licensed under the MIT License.
+ * ${pkg.name} is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license
  */\n`;
 
