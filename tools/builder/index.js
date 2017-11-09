@@ -1,7 +1,9 @@
 const path = require('path');
+const thaw = require('./thaw');
 const buble = require('rollup-plugin-buble');
 const resolve = require('rollup-plugin-node-resolve');
 const string = require('rollup-plugin-string');
+const sourcemaps = require('rollup-plugin-sourcemaps');
 const uglify = require('rollup-plugin-uglify');
 const { minify } = require('uglify-es');
 const minimist = require('minimist');
@@ -26,6 +28,7 @@ const { prod, bundle } = minimist(process.argv.slice(2), {
 });
 
 const plugins = [
+    sourcemaps(),
     resolve({
         browser: true,
         preferBuiltins: true,
@@ -55,27 +58,11 @@ const plugins = [
         },
     }),
     buble(),
-    // This workaround plugin removes Object.freeze usage with Rollup
-    // because there is no way to disable and we need it to
-    // properly add deprecated methods/classes on namespaces
-    // such as PIXI.utils or PIXI.loaders, code was borrowed
-    // from 'rollup-plugin-es3'
-    // TODO: Removes this when opt-out option for Rollup is available
-    {
-        name: 'thaw',
-        transformBundle(code)
-        {
-            code = code.replace(/Object.freeze\s*\(\s*([^)]*)\)/g, '$1');
-
-            return { code, map: { mappings: '' } };
-        },
-    },
+    thaw(),
 ];
 
 if (prod)
 {
-    let first = true;
-
     plugins.push(uglify({
         mangle: true,
         compress: true,
@@ -84,14 +71,7 @@ if (prod)
             {
                 const { value, type } = comment;
 
-                if (type === 'comment2' && first)
-                {
-                    first = false;
-
-                    return value[0] === '!';
-                }
-
-                return false;
+                return type === 'comment2' && value.indexOf(pkg.name) > -1;
             },
         },
     }, minify));
