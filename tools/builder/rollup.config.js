@@ -1,19 +1,24 @@
-const path = require('path');
-const buble = require('rollup-plugin-buble');
-const resolve = require('rollup-plugin-node-resolve');
-const string = require('rollup-plugin-string');
-const uglify = require('rollup-plugin-uglify');
-const { minify } = require('uglify-es');
-const minimist = require('minimist');
-const commonjs = require('rollup-plugin-commonjs');
-const builtins = require('rollup-plugin-node-builtins');
-const replace = require('rollup-plugin-replace');
-const preprocess = require('rollup-plugin-preprocess').default;
+import path from 'path';
+import fs from 'fs';
+import buble from 'buble';
+import thaw from './thaw';
+import transpile from 'rollup-plugin-buble';
+import resolve from 'rollup-plugin-node-resolve';
+import string from 'rollup-plugin-string';
+import sourcemaps from 'rollup-plugin-sourcemaps';
+import uglify from 'rollup-plugin-uglify';
+import { minify } from 'uglify-es';
+import minimist from 'minimist';
+import commonjs from 'rollup-plugin-commonjs';
+import builtins from 'rollup-plugin-node-builtins';
+import replace from 'rollup-plugin-replace';
+import preprocess from 'rollup-plugin-preprocess';
 
 const pkg = require(path.resolve('./package'));
 const input = 'src/index.js';
 
-const { prod, bundle } = minimist(process.argv.slice(2), {
+const { prod, bundle, deprecated } = minimist(process.argv.slice(2), {
+    string: ['deprecated'],
     boolean: ['prod', 'bundle'],
     default: {
         prod: false,
@@ -22,10 +27,12 @@ const { prod, bundle } = minimist(process.argv.slice(2), {
     alias: {
         p: 'prod',
         b: 'bundle',
+        r: 'deprecated',
     },
 });
 
 const plugins = [
+    sourcemaps(),
     resolve({
         browser: true,
         preferBuiltins: true,
@@ -54,28 +61,12 @@ const plugins = [
             PRODUCTION: prod,
         },
     }),
-    buble(),
-    // This workaround plugin removes Object.freeze usage with Rollup
-    // because there is no way to disable and we need it to
-    // properly add deprecated methods/classes on namespaces
-    // such as PIXI.utils or PIXI.loaders, code was borrowed
-    // from 'rollup-plugin-es3'
-    // TODO: Removes this when opt-out option for Rollup is available
-    {
-        name: 'thaw',
-        transformBundle(code)
-        {
-            code = code.replace(/Object.freeze\s*\(\s*([^)]*)\)/g, '$1');
-
-            return { code, map: { mappings: '' } };
-        },
-    },
+    transpile(),
+    thaw(),
 ];
 
 if (prod)
 {
-    let first = true;
-
     plugins.push(uglify({
         mangle: true,
         compress: true,
@@ -84,17 +75,19 @@ if (prod)
             {
                 const { value, type } = comment;
 
-                if (type === 'comment2' && first)
-                {
-                    first = false;
-
-                    return value[0] === '!';
-                }
-
-                return false;
+                return type === 'comment2' && value.indexOf(pkg.name) > -1;
             },
         },
     }, minify));
+}
+
+let outro = '';
+
+if (deprecated)
+{
+    const buffer = fs.readFileSync(path.resolve(deprecated), 'utf8');
+
+    outro = buble.transform(buffer).code;
 }
 
 const compiled = (new Date()).toUTCString().replace(/GMT/g, 'UTC');
@@ -109,9 +102,10 @@ const banner = `/*!
  * http://www.opensource.org/licenses/mit-license
  */\n`;
 
-exports.default = [
+export default [
     {
         banner,
+        outro,
         name,
         input,
         output: {
