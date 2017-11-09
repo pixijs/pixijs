@@ -1,12 +1,11 @@
 const path = require('path');
 const fs = require('fs');
-const { BitmapText } = require('@pixi/text-bitmap');
 const { BaseTextureCache, TextureCache } = require('@pixi/utils');
 const { Texture, BaseTexture } = require('@pixi/core');
 const { Spritesheet } = require('@pixi/spritesheet');
-const { bitmapFontParser, parseBitmapFontData } = require('../');
+const { BitmapText, BitmapFontLoader } = require('../');
 
-describe('PIXI.loaders.bitmapFontParser', function ()
+describe('PIXI.BitmapFontLoader', function ()
 {
     afterEach(function ()
     {
@@ -81,8 +80,8 @@ describe('PIXI.loaders.bitmapFontParser', function ()
 
     it('should exist and return a function', function ()
     {
-        expect(bitmapFontParser).to.be.a('function');
-        expect(bitmapFontParser()).to.be.a('function');
+        expect(BitmapFontLoader.middleware).to.be.a('function');
+        expect(BitmapFontLoader.middleware()).to.be.a('function');
     });
 
     it('should do nothing if the resource is not XML', function ()
@@ -90,7 +89,7 @@ describe('PIXI.loaders.bitmapFontParser', function ()
         const spy = sinon.spy();
         const res = {};
 
-        bitmapFontParser()(res, spy);
+        BitmapFontLoader.middleware()(res, spy);
 
         expect(spy).to.have.been.calledOnce;
         expect(res.textures).to.be.undefined;
@@ -101,7 +100,7 @@ describe('PIXI.loaders.bitmapFontParser', function ()
         const spy = sinon.spy();
         const res = { data: document.createDocumentFragment() };
 
-        bitmapFontParser()(res, spy);
+        BitmapFontLoader.middleware()(res, spy);
 
         expect(spy).to.have.been.calledOnce;
         expect(res.textures).to.be.undefined;
@@ -312,14 +311,9 @@ describe('PIXI.loaders.bitmapFontParser', function ()
             done();
         });
     });
-});
 
-describe('PIXI.loaders.parseBitmapFontData', function ()
-{
-    it('should exist', function ()
+    it('should parse exist', function ()
     {
-        expect(parseBitmapFontData).to.be.a('function');
+        expect(BitmapFontLoader.parse).to.be.a('function');
     });
-
-    // TODO: Test the parser code.
 });
