@@ -1,11 +1,14 @@
 const MagicString = require('magic-string');
 
-// This workaround plugin removes Object.freeze usage with Rollup
-// because there is no way to disable and we need it to
-// properly add deprecated methods/classes on namespaces
-// such as PIXI.utils or PIXI.loaders, code was borrowed
-// from 'rollup-plugin-es3'
-// TODO: Removes this when opt-out option for Rollup is available
+/**
+ * This workaround plugin removes `Object.freeze` usage with Rollup
+ * because there is no way to disable and we need it to
+ * properly add deprecated methods/classes on namespaces
+ * such as `PIXI.utils` or `PIXI.loaders`, code was borrowed
+ * from 'rollup-plugin-replace'.
+ * @todo Remove this when opt-out option for Rollup is available
+ * @private
+ */
 module.exports = function thaw()
 {
     const pattern = /Object.freeze\s*\(\s*([^)]*)\)/g;
