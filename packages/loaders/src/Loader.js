@@ -1,9 +1,7 @@
 import ResourceLoader from 'resource-loader';
-import { blobMiddlewareFactory } from 'resource-loader/lib/middlewares/parsing/blob';
 import EventEmitter from 'eventemitter3';
+import { blobMiddlewareFactory } from 'resource-loader/lib/middlewares/parsing/blob';
 import textureParser from './textureParser';
-import spritesheetParser from './spritesheetParser';
-import bitmapFontParser from './bitmapFontParser';
 
 /**
  *
@@ -52,24 +50,22 @@ import bitmapFontParser from './bitmapFontParser';
  *
  * @see https://github.com/englercj/resource-loader
  *
- * @class
+ * @class Loader
  * @extends module:resource-loader.ResourceLoader
  * @memberof PIXI.loaders
+ * @param {string} [baseUrl=''] - The base url for all resources loaded by this loader.
+ * @param {number} [concurrency=10] - The number of resources to load concurrently.
  */
-export default class Loader extends ResourceLoader
+export class Loader extends ResourceLoader
 {
-    /**
-     * @param {string} [baseUrl=''] - The base url for all resources loaded by this loader.
-     * @param {number} [concurrency=10] - The number of resources to load concurrently.
-     */
     constructor(baseUrl, concurrency)
     {
         super(baseUrl, concurrency);
         EventEmitter.call(this);
 
-        for (let i = 0; i < Loader._pixiMiddleware.length; ++i)
+        for (let i = 0; i < Loader._middleware.length; ++i)
         {
-            this.use(Loader._pixiMiddleware[i]());
+            this.use(Loader._middleware[i]());
         }
 
         // Compat layer, translate the new v2 signals into old v1 events.
@@ -78,17 +74,14 @@ export default class Loader extends ResourceLoader
         this.onError.add((e, l, r) => this.emit('error', e, l, r));
         this.onLoad.add((l, r) => this.emit('load', l, r));
         this.onComplete.add((l, r) => this.emit('complete', l, r));
-    }
 
-    /**
-     * Adds a default middleware to the PixiJS loader.
-     *
-     * @static
-     * @param {Function} fn - The middleware to add.
-     */
-    static addPixiMiddleware(fn)
-    {
-        Loader._pixiMiddleware.push(fn);
+        /**
+         * If this loader cannot be destroyed.
+         * @member {boolean}
+         * @default false
+         * @private
+         */
+        this._protected = false;
     }
 
     /**
@@ -96,29 +89,56 @@ export default class Loader extends ResourceLoader
      */
     destroy()
     {
-        this.removeAllListeners();
-        this.reset();
+        if (!this._protected)
+        {
+            this.removeAllListeners();
+            this.reset();
+        }
     }
 }
 
 // Copy EE3 prototype (mixin)
-for (const k in EventEmitter.prototype)
+Object.assign(Loader.prototype, EventEmitter.prototype);
+
+/**
+ * Collection of all installed middleware for Loader.
+ *
+ * @static
+ * @member {Array<function>}
+ * @memberof PIXI.loaders.Loader
+ * @private
+ */
+Loader._middleware = [];
+
+/**
+ * A premade instance of the loader that can be used to load resources.
+ * @name shared
+ * @memberof PIXI.loaders
+ * @type {PIXI.loaders.Loader}
+ */
+export const shared = new Loader();
+shared._protected = true;
+
+/**
+ * Adds a middleware for the global shared loader and all
+ * new Loader instances created.
+ *
+ * @static
+ * @method useMiddleware
+ * @memberof PIXI.loaders.Loader
+ * @param {Function} fn - The middleware to add.
+ */
+Loader.useMiddleware = function useMiddleware(fn)
 {
-    Loader.prototype[k] = EventEmitter.prototype[k];
-}
+    // Install for current shared loader
+    shared.use(fn);
 
-Loader._pixiMiddleware = [
-    // parse any blob into more usable objects (e.g. Image)
-    blobMiddlewareFactory,
-    // parse any Image objects into textures
-    textureParser,
-    // parse any spritesheet data into multiple textures
-    spritesheetParser,
-    // parse bitmap font data into multiple textures
-    bitmapFontParser,
-];
+    // Install for all future loaders
+    Loader._middleware.push(fn);
+};
 
-// Add custom extentions
-const Resource = ResourceLoader.Resource;
+// parse any blob into more usable objects (e.g. Image)
+Loader.useMiddleware(blobMiddlewareFactory);
 
-Resource.setExtensionXhrType('fnt', Resource.XHR_RESPONSE_TYPE.DOCUMENT);
+// parse any Image objects into textures
+Loader.useMiddleware(textureParser);

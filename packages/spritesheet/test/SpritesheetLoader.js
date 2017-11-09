@@ -1,13 +1,14 @@
 const path = require('path');
-const { spritesheetParser, Resource, Loader, getResourcePath } = require('../');
+const { Loader, Resource } = require('@pixi/loaders');
 const { Texture, BaseTexture } = require('@pixi/core');
+const { SpritesheetLoader } = require('../');
 
-describe('PIXI.loaders.spritesheetParser', function ()
+describe('PIXI.SpritesheetLoader', function ()
 {
     it('should exist and return a function', function ()
     {
-        expect(spritesheetParser).to.be.a('function');
-        expect(spritesheetParser()).to.be.a('function');
+        expect(SpritesheetLoader.middleware).to.be.a('function');
+        expect(SpritesheetLoader.middleware()).to.be.a('function');
     });
 
     it('should do nothing if the resource is not JSON', function ()
@@ -15,7 +16,7 @@ describe('PIXI.loaders.spritesheetParser', function ()
         const spy = sinon.spy();
         const res = {};
 
-        spritesheetParser()(res, spy);
+        SpritesheetLoader.middleware()(res, spy);
 
         expect(spy).to.have.been.calledOnce;
         expect(res.textures).to.be.undefined;
@@ -26,7 +27,7 @@ describe('PIXI.loaders.spritesheetParser', function ()
         const spy = sinon.spy();
         const res = createMockResource(Resource.TYPE.JSON, {});
 
-        spritesheetParser()(res, spy);
+        SpritesheetLoader.middleware()(res, spy);
 
         expect(spy).to.have.been.calledOnce;
         expect(res.textures).to.be.undefined;
@@ -44,7 +45,7 @@ describe('PIXI.loaders.spritesheetParser', function ()
 
         addStub.yields(imgRes);
 
-        spritesheetParser().call(loader, res, spy);
+        SpritesheetLoader.middleware().call(loader, res, spy);
 
         addStub.restore();
 
@@ -64,7 +65,7 @@ describe('PIXI.loaders.spritesheetParser', function ()
     {
         function getPath(url, image)
         {
-            return getResourcePath({
+            return SpritesheetLoader.getResourcePath({
                 url,
                 data: { meta: { image } },
             });

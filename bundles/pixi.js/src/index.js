@@ -32,6 +32,7 @@ import { settings } from '@pixi/settings';
 import '@pixi/mixin-cache-as-bitmap';
 import '@pixi/mixin-get-child-by-name';
 import '@pixi/mixin-get-global-position';
+import '@pixi/mixin-app-loader';
 
 // handle mixins now, after all code has been added
 utils.mixins.performMixins();
