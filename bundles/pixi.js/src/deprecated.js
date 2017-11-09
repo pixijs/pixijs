@@ -157,6 +157,7 @@ Object.defineProperties(PIXI.utils, {
 /**
  * All classes on this namespace have moved to the high-level `PIXI` object.
  * @namespace PIXI.mesh
+ * @deprecated since 5.0.0
  */
 PIXI.mesh = {};
 
