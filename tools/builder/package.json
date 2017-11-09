@@ -2,8 +2,11 @@
   "name": "@internal/builder",
   "version": "5.0.0-alpha",
   "private": true,
-  "module": "index.js",
-  "devDependencies": {
+  "bin": {
+    "config": "./rollup.config.js"
+  },
+  "dependencies": {
+    "buble": "^0.17.0",
     "magic-string": "^0.22.4",
     "minimist": "^1.2.0",
     "rollup-plugin-buble": "^0.15.0",

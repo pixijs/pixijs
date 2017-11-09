@@ -9,7 +9,7 @@ const MagicString = require('magic-string');
  * @todo Remove this when opt-out option for Rollup is available
  * @private
  */
-module.exports = function thaw()
+export default function thaw()
 {
     const pattern = /Object.freeze\s*\(\s*([^)]*)\)/g;
 
@@ -44,4 +44,4 @@ module.exports = function thaw()
             };
         },
     };
-};
+}
