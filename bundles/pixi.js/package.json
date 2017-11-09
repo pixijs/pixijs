@@ -52,6 +52,7 @@
     "@pixi/mixin-cache-as-bitmap": "^5.0.0-alpha",
     "@pixi/mixin-get-child-by-name": "^5.0.0-alpha",
     "@pixi/mixin-get-global-position": "^5.0.0-alpha",
+    "@pixi/mixin-app-loader": "^5.0.0-alpha",
     "@pixi/particles": "^5.0.0-alpha",
     "@pixi/polyfill": "^5.0.0-alpha",
     "@pixi/prepare": "^5.0.0-alpha",
