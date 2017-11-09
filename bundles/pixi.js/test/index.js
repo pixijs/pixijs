@@ -1,5 +1,5 @@
 /* eslint-disable global-require */
-const PIXI = require('../');
+const PIXI = global.PIXI = require('../');
 
 describe('PIXI', function ()
 {
@@ -11,7 +11,6 @@ describe('PIXI', function ()
         expect(PIXI.ticker).to.not.be.undefined;
         expect(PIXI.loaders).to.not.be.undefined;
         expect(PIXI.extract).to.not.be.undefined;
-        expect(PIXI.mesh).to.not.be.undefined;
         expect(PIXI.prepare).to.not.be.undefined;
         expect(PIXI.utils).to.not.be.undefined;
     });

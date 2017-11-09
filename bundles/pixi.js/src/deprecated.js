@@ -153,3 +153,103 @@ Object.defineProperties(PIXI.utils, {
         },
     },
 });
+
+/**
+ * All classes on this namespace have moved to the high-level `PIXI` object.
+ * @namespace PIXI.mesh
+ */
+PIXI.mesh = {};
+
+Object.defineProperties(PIXI.mesh, {
+    /**
+     * @class PIXI.mesh.Mesh
+     * @see PIXI.Mesh
+     * @deprecated since 5.0.0
+     */
+    Mesh: {
+        get()
+        {
+            warn('PIXI.mesh.Mesh has moved to PIXI.Mesh');
+
+            return PIXI.Mesh;
+        },
+    },
+    /**
+     * @class PIXI.mesh.NineSlicePlane
+     * @see PIXI.NineSlicePlane
+     * @deprecated since 5.0.0
+     */
+    NineSlicePlane: {
+        get()
+        {
+            warn('PIXI.mesh.NineSlicePlane has moved to PIXI.NineSlicePlane');
+
+            return PIXI.NineSlicePlane;
+        },
+    },
+    /**
+     * @class PIXI.mesh.Plane
+     * @see PIXI.Plane
+     * @deprecated since 5.0.0
+     */
+    Plane: {
+        get()
+        {
+            warn('PIXI.mesh.Plane has moved to PIXI.Plane');
+
+            return PIXI.Plane;
+        },
+    },
+    /**
+     * @class PIXI.mesh.Rope
+     * @see PIXI.Rope
+     * @deprecated since 5.0.0
+     */
+    Rope: {
+        get()
+        {
+            warn('PIXI.mesh.Rope has moved to PIXI.Rope');
+
+            return PIXI.Rope;
+        },
+    },
+    /**
+     * @class PIXI.mesh.RawMesh
+     * @see PIXI.RawMesh
+     * @deprecated since 5.0.0
+     */
+    RawMesh: {
+        get()
+        {
+            warn('PIXI.mesh.RawMesh has moved to PIXI.RawMesh');
+
+            return PIXI.RawMesh;
+        },
+    },
+    /**
+     * @class PIXI.mesh.CanvasMeshRenderer
+     * @see PIXI.CanvasMeshRenderer
+     * @deprecated since 5.0.0
+     */
+    CanvasMeshRenderer: {
+        get()
+        {
+            warn('PIXI.mesh.CanvasMeshRenderer has moved to PIXI.CanvasMeshRenderer');
+
+            return PIXI.CanvasMeshRenderer;
+        },
+    },
+    /**
+     * @class PIXI.mesh.MeshRenderer
+     * @see PIXI.MeshRenderer
+     * @deprecated since 5.0.0
+     */
+    MeshRenderer: {
+        get()
+        {
+            warn('PIXI.mesh.MeshRenderer has moved to PIXI.MeshRenderer');
+
+            return PIXI.MeshRenderer;
+        },
+    },
+});
