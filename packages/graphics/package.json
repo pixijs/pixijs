@@ -19,9 +19,9 @@
     "access": "public"
   },
   "scripts": {
-    "build:dev": "rollup -c",
-    "build": "rollup -cp",
-    "watch": "rollup -cw",
+    "build:dev": "rollup -c node_modules/.bin/config",
+    "build": "rollup -p -c node_modules/.bin/config",
+    "watch": "rollup -w -c node_modules/.bin/config",
     "postversion": "npm run build",
     "test": "tester"
   },
