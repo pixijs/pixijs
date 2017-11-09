@@ -1,6 +1,7 @@
 /**
- * Reference to **resource-loader**'s Resource class.
- * See https://github.com/englercj/resource-loader
+ * Reference to **{@link https://github.com/englercj/resource-loader 
+ * resource-loader}**'s Resource class.
+ * @see http://englercj.github.io/resource-loader/Resource.html
  * @class Resource
  * @memberof PIXI.loaders
  */

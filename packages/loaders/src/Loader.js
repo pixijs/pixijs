@@ -78,10 +78,10 @@ export class Loader extends ResourceLoader
         /**
          * If this loader cannot be destroyed.
          * @member {boolean}
-         * @default true
+         * @default false
          * @private
          */
-        this.protected = false;
+        this._protected = false;
     }
 
     /**
@@ -89,7 +89,7 @@ export class Loader extends ResourceLoader
      */
     destroy()
     {
-        if (!this.protected)
+        if (!this._protected)
         {
             this.removeAllListeners();
             this.reset();
@@ -117,7 +117,7 @@ Loader._middleware = [];
  * @type {PIXI.loaders.Loader}
  */
 export const shared = new Loader();
-shared.protected = true;
+shared._protected = true;
 
 /**
  * Adds a middleware for the global shared loader and all
