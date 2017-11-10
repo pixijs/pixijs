@@ -38,9 +38,9 @@ export default class Mesh extends RawMesh
         geometry.getAttribute('aVertexPosition').static = false;
 
         const uniforms = {
-            uSampler2: texture,
+            uSampler: texture,
             alpha: 1,
-            tint: new Float32Array([1, 1, 1]),
+            uColor: new Float32Array([1, 1, 1, 1]),
         };
 
         super(geometry, new Shader(meshProgram, uniforms), null, drawMode);
@@ -51,6 +51,7 @@ export default class Mesh extends RawMesh
         this.uniforms = uniforms;
         this.texture = texture;
 
+        this._tintRGB = new Float32Array([1, 1, 1])
         this._tint = 0xFFFFFF;
         this.tint = 0xFFFFFF;
 
@@ -78,7 +79,8 @@ export default class Mesh extends RawMesh
     set tint(value)
     {
         this._tint = value;
-        hex2rgb(this._tint, this.uniforms.tint);
+
+        hex2rgb(this._tint, this._tintRGB);
     }
 
     /**
@@ -116,7 +118,8 @@ export default class Mesh extends RawMesh
         }
 
         this._texture = value;
-        this.uniforms.uSampler2 = this.texture;
+        this.uniforms.uSampler = this.texture;
+
 
         if (value)
         {
@@ -132,6 +135,20 @@ export default class Mesh extends RawMesh
         }
     }
 
+    _renderWebGL(renderer)
+    {
+
+        const uColor = this.uniforms.uColor;
+        const tintRGB = this._tintRGB;
+        const alpha = this.alpha;
+
+        uColor[0] = tintRGB[0] * alpha;
+        uColor[1] = tintRGB[1] * alpha;
+        uColor[2] = tintRGB[2] * alpha;
+        uColor[3] = alpha;
+
+        super._renderWebGL(renderer);
+    }
     /**
      * When the texture is updated, this event will fire to update the scale and frame
      *
