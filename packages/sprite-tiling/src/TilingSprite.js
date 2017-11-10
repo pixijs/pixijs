@@ -1,4 +1,5 @@
-import { TextureMatrix, CanvasRenderTarget, Texture } from '@pixi/core';
+import { TextureMatrix, Texture } from '@pixi/core';
+import { CanvasRenderTarget } from '@pixi/canvas-renderer';
 import { Point, Rectangle } from '@pixi/math';
 import { TextureCache } from '@pixi/utils';
 import { Sprite, CanvasTinter } from '@pixi/sprite';

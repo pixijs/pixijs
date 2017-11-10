@@ -1,4 +1,4 @@
-import { CanvasRenderer } from '@pixi/core';
+import { CanvasRenderer } from '@pixi/canvas-renderer';
 import { SHAPES } from '@pixi/math';
 
 /**

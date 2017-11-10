@@ -2,7 +2,7 @@ import Filter from '../Filter';
 import { Matrix } from '@pixi/math';
 import vertex from './spriteMaskFilter.vert';
 import fragment from './spriteMaskFilter.frag';
-import { default as TextureMatrix } from '../../../../textures/TextureMatrix';
+import { default as TextureMatrix } from '../../../textures/TextureMatrix';
 
 /**
  * The SpriteMaskFilter class

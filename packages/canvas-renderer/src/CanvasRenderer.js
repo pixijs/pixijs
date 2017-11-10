@@ -1,4 +1,4 @@
-import SystemRenderer from '../SystemRenderer';
+import { SystemRenderer } from '@pixi/core';
 import CanvasMaskManager from './utils/CanvasMaskManager';
 import CanvasRenderTarget from './utils/CanvasRenderTarget';
 import mapCanvasBlendModesToPixi from './utils/mapCanvasBlendModesToPixi';

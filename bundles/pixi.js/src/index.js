@@ -14,6 +14,7 @@ export * from '@pixi/sprite-tiling';
 export * from '@pixi/math';
 export * from '@pixi/constants';
 export * from '@pixi/display';
+export * from '@pixi/canvas-renderer';
 
 // export libs
 import * as accessibility from '@pixi/accessibility';

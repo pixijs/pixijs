@@ -1,4 +1,4 @@
-import { autoDetectRenderer } from '@pixi/core';
+import { autoDetectRenderer } from '@pixi/canvas-renderer';
 import { settings } from '@pixi/settings';
 import { Container } from '@pixi/display';
 import { shared, Ticker, UPDATE_PRIORITY } from '@pixi/ticker';

@@ -33,6 +33,7 @@
   ],
   "devDependencies": {
     "@pixi/app": "^5.0.0-alpha",
+    "@pixi/canvas-renderer": "^5.0.0-alpha",
     "@pixi/core": "^5.0.0-alpha",
     "@pixi/accessibility": "^5.0.0-alpha",
     "@pixi/constants": "^5.0.0-alpha",

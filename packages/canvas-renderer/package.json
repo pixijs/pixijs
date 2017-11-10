@@ -1,8 +1,8 @@
 {
-  "name": "@pixi/graphics",
+  "name": "@pixi/canvas-renderer",
   "version": "5.0.0-alpha",
-  "main": "lib/graphics.js",
-  "module": "lib/graphics.es.js",
+  "main": "lib/canvas-renderer.js",
+  "module": "lib/canvas-renderer.es.js",
   "description": "PixiJS Application",
   "author": "Mat Groves",
   "contributors": [
@@ -29,14 +29,11 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/canvas-renderer": "^5.0.0-alpha",
     "@pixi/constants": "^5.0.0-alpha",
     "@pixi/core": "^5.0.0-alpha",
-    "@pixi/display": "^5.0.0-alpha",
-    "@pixi/sprite": "^5.0.0-alpha",
     "@pixi/utils": "^5.0.0-alpha",
     "@pixi/math": "^5.0.0-alpha",
-    "earcut": "^2.0.7"
+    "@pixi/settings": "^5.0.0-alpha"
   },
   "devDependencies": {
     "@internal/builder": "^5.0.0-alpha",

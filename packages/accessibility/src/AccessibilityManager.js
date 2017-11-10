@@ -1,4 +1,5 @@
-import { CanvasRenderer, WebGLRenderer } from '@pixi/core';
+import { WebGLRenderer } from '@pixi/core';
+import { CanvasRenderer } from '@pixi/canvas-renderer';
 import Device from 'ismobilejs';
 import accessibleTarget from './accessibleTarget';
 import { removeItems, mixins } from '@pixi/utils';

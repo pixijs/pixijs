@@ -1,6 +1,6 @@
 import { isWebGLSupported } from '@pixi/utils';
-import CanvasRenderer from './renderers/canvas/CanvasRenderer';
-import WebGLRenderer from './renderers/webgl/WebGLRenderer';
+import { WebGLRenderer } from '@pixi/core';
+import CanvasRenderer from './CanvasRenderer';
 
 // eslint-disable-next-line valid-jsdoc
 /**

@@ -1,5 +1,6 @@
 const { Container } = require('@pixi/display');
-const { RenderTexture, CanvasRenderer } = require('@pixi/core');
+const { RenderTexture } = require('@pixi/core');
+const { CanvasRenderer } = require('@pixi/canvas-renderer');
 const { Sprite } = require('@pixi/sprite');
 const { Graphics } = require('@pixi/graphics');
 const { Text } = require('@pixi/text');

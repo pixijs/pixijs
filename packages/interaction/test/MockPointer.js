@@ -1,5 +1,5 @@
 const { shared } = require('@pixi/ticker');
-const { CanvasRenderer } = require('@pixi/core');
+const { CanvasRenderer } = require('@pixi/canvas-renderer');
 const { Rectangle } = require('@pixi/math');
 
 /**

@@ -1,4 +1,4 @@
-import { CanvasRenderer } from '@pixi/core';
+import { CanvasRenderer } from '@pixi/canvas-renderer';
 import { SCALE_MODES } from '@pixi/constants';
 import { Matrix, GroupD8 } from '@pixi/math';
 import CanvasTinter from './CanvasTinter';

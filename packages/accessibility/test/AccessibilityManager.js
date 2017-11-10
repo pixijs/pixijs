@@ -1,5 +1,5 @@
 const { AccessibilityManager } = require('../');
-const { CanvasRenderer } = require('@pixi/core');
+const { CanvasRenderer } = require('@pixi/canvas-renderer');
 
 describe('PIXI.accessibility.AccessibilityManager', function ()
 {

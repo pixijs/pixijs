@@ -1,4 +1,5 @@
-import { WebGLRenderer, CanvasRenderer } from '@pixi/core';
+import { WebGLRenderer } from '@pixi/core';
+import { CanvasRenderer } from '@pixi/canvas-renderer';
 import { shared, UPDATE_PRIORITY } from '@pixi/ticker';
 import { Point } from '@pixi/math';
 import { DisplayObject } from '@pixi/display';

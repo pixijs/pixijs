@@ -1,4 +1,5 @@
-import { BaseTexture, CanvasRenderer } from '@pixi/core';
+import { BaseTexture } from '@pixi/core';
+import { CanvasRenderer } from '@pixi/canvas-renderer';
 import BasePrepare from '../BasePrepare';
 
 const CANVAS_START_SIZE = 16;

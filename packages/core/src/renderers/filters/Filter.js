@@ -1,5 +1,5 @@
-import Shader from '../../../shader/Shader';
-import Program from '../../../shader/Program';
+import Shader from '../../shader/Shader';
+import Program from '../../shader/Program';
 import { BLEND_MODES } from '@pixi/constants';
 import { settings } from '@pixi/settings';
 import { uid } from '@pixi/utils';
@@ -7,7 +7,7 @@ import extractUniformsFromSrc from './extractUniformsFromSrc';
 import defaultVertex from './defaultFilter.vert';
 import defaultFragment from './defaultFilter.frag';
 
-// let math = require('../../../math');
+// let math = require('../../math');
 /**
  * @class
  * @memberof PIXI
