@@ -1,21 +1,32 @@
-import { ObservablePoint } from '@pixi/math';
-import TransformBase from './TransformBase';
+import ObservablePoint from './ObservablePoint';
+import Matrix from './Matrix';
 
 /**
  * Transform that takes care about its versions
  *
  * @class
- * @extends PIXI.TransformBase
  * @memberof PIXI
  */
-export default class TransformStatic extends TransformBase
+export default class Transform
 {
     /**
      *
      */
     constructor()
     {
-        super();
+        /**
+         * The global matrix transform. It can be swapped temporarily by some functions like getLocalBounds()
+         *
+         * @member {PIXI.Matrix}
+         */
+        this.worldTransform = new Matrix();
+
+        /**
+         * The local matrix transform
+         *
+         * @member {PIXI.Matrix}
+         */
+        this.localTransform = new Matrix();
 
         /**
          * The coordinate of the object relative to the local coordinates of the parent.
@@ -54,6 +65,9 @@ export default class TransformStatic extends TransformBase
 
         this._localID = 0;
         this._currentLocalID = 0;
+
+        this._worldID = 0;
+        this._parentID = 0;
     }
 
     /**
@@ -177,3 +191,5 @@ export default class TransformStatic extends TransformBase
         this.updateSkew();
     }
 }
+
+Transform.IDENTITY = new Transform();

@@ -1,9 +1,5 @@
 import EventEmitter from 'eventemitter3';
-import { settings } from './settings';
-import { Rectangle } from '@pixi/math';
-import { TRANSFORM_MODE } from './const';
-import TransformStatic from './TransformStatic';
-import Transform from './Transform';
+import { Rectangle, Transform } from '@pixi/math';
 import Bounds from './Bounds';
 // _tempDisplayObjectParent = new DisplayObject();
 
@@ -24,8 +20,6 @@ export default class DisplayObject extends EventEmitter
     {
         super();
 
-        const TransformClass = settings.TRANSFORM_MODE === TRANSFORM_MODE.STATIC ? TransformStatic : Transform;
-
         this.tempDisplayObjectParent = null;
 
         // TODO: need to create Transform from factory
@@ -35,7 +29,7 @@ export default class DisplayObject extends EventEmitter
          *
          * @member {PIXI.TransformBase}
          */
-        this.transform = new TransformClass();
+        this.transform = new Transform();
 
         /**
          * The opacity of the object.

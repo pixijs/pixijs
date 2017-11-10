@@ -347,8 +347,8 @@ export default class Matrix
     /**
      * Decomposes the matrix (x, y, scaleX, scaleY, and rotation) and sets the properties on to a transform.
      *
-     * @param {PIXI.Transform|PIXI.TransformStatic} transform - The transform to apply the properties to.
-     * @return {PIXI.Transform|PIXI.TransformStatic} The transform with the newly applied properties
+     * @param {PIXI.Transform} transform - The transform to apply the properties to.
+     * @return {PIXI.Transform} The transform with the newly applied properties
      */
     decompose(transform)
     {

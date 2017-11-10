@@ -73,6 +73,55 @@ Object.defineProperties(PIXI, {
             return PIXI.SVGResource.SVG_SIZE;
         },
     },
+
+    /**
+     * @class PIXI.TransformStatic
+     * @deprecated since 5.0.0
+     * @see PIXI.Transform
+     */
+    TransformStatic: {
+        get()
+        {
+            warn('PIXI.TransformStatic has been removed, use PIXI.Transform');
+
+            return PIXI.Transform;
+        },
+    },
+
+    /**
+     * @class PIXI.TransformBase
+     * @deprecated since 5.0.0
+     * @see PIXI.Transform
+     */
+    TransformBase: {
+        get()
+        {
+            warn('PIXI.TransformBase has been removed, use PIXI.Transform');
+
+            return PIXI.Transform;
+        },
+    },
+
+    /**
+     * Constants that specify the transform type.
+     *
+     * @static
+     * @constant
+     * @name TRANSFORM_MODE
+     * @memberof PIXI
+     * @type {object}
+     * @deprecated since 5.0.0
+     * @property {number} STATIC
+     * @property {number} DYNAMIC
+     */
+    TRANSFORM_MODE: {
+        get()
+        {
+            warn('PIXI.TRANSFORM_MODE has been removed');
+
+            return { STATIC: 0, DYNAMIC: 1 };
+        },
+    },
 });
 
 /**
@@ -224,3 +273,28 @@ Object.defineProperties(PIXI.loaders, {
         },
     },
 });
+
+Object.defineProperties(PIXI.settings, {
+    /**
+     * Default transform type.
+     *
+     * @static
+     * @deprecated since 5.0.0
+     * @memberof PIXI.settings
+     * @type {PIXI.TRANSFORM_MODE}
+     * @default PIXI.TRANSFORM_MODE.STATIC
+     */
+    TRANSFORM_MODE: {
+        get()
+        {
+            warn('PIXI.settings.TRANSFORM_MODE has been removed.');
+
+            return 0;
+        },
+        set()
+        {
+            warn('PIXI.settings.TRANSFORM_MODE has been removed.');
+        },
+    },
+});
+
