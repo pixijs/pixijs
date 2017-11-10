@@ -389,7 +389,7 @@ export default class Container extends DisplayObject
     /**
      * Renders the object using the WebGL renderer
      *
-     * @param {PIXI.WebGLRenderer} renderer - The renderer
+     * @param {PIXI.Renderer} renderer - The renderer
      */
     renderWebGL(renderer)
     {
@@ -420,7 +420,7 @@ export default class Container extends DisplayObject
      * Render the object using the WebGL renderer and advanced features.
      *
      * @private
-     * @param {PIXI.WebGLRenderer} renderer - The renderer
+     * @param {PIXI.Renderer} renderer - The renderer
      */
     renderAdvancedWebGL(renderer)
     {
@@ -484,7 +484,7 @@ export default class Container extends DisplayObject
      * To be overridden by the subclasses.
      *
      * @private
-     * @param {PIXI.WebGLRenderer} renderer - The renderer
+     * @param {PIXI.Renderer} renderer - The renderer
      */
     _renderWebGL(renderer) // eslint-disable-line no-unused-vars
     {

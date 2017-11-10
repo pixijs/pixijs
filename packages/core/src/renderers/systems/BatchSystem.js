@@ -10,7 +10,7 @@ import ObjectRenderer from '../utils/ObjectRenderer';
 export default class BatchSystem extends WebGLSystem
 {
     /**
-     * @param {PIXI.WebGLRenderer} renderer - The renderer this manager works for.
+     * @param {PIXI.Renderer} renderer - The renderer this manager works for.
      */
     constructor(renderer)
     {

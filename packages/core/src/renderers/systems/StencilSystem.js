@@ -8,7 +8,7 @@ import WebGLSystem from './WebGLSystem';
 export default class StencilSystem extends WebGLSystem
 {
     /**
-     * @param {PIXI.WebGLRenderer} renderer - The renderer this System works for.
+     * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
     constructor(renderer)
     {

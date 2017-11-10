@@ -9,5 +9,8 @@ npm install @pixi/accessibility
 ## Usage
 
 ```js
-import '@pixi/accessibility';
+import { AccessibilityManager } from '@pixi/accessibility';
+import { Renderer } from '@pixi/core';
+
+Renderer.registerPlugin('accessibility', AccessibilityManager);
 ```

@@ -1,6 +1,6 @@
-import { autoDetectRenderer } from '@pixi/canvas-renderer';
 import { settings } from '@pixi/settings';
 import { Container } from '@pixi/display';
+import { Renderer } from '@pixi/core';
 import { shared, Ticker, UPDATE_PRIORITY } from '@pixi/ticker';
 
 /**
@@ -80,9 +80,9 @@ export default class Application
 
         /**
          * WebGL renderer if available, otherwise CanvasRenderer
-         * @member {PIXI.WebGLRenderer|PIXI.CanvasRenderer}
+         * @member {PIXI.Renderer|PIXI.CanvasRenderer}
          */
-        this.renderer = autoDetectRenderer(options);
+        this.renderer = this.createRenderer(options);
 
         /**
          * The root display container that's rendered.
@@ -109,6 +109,17 @@ export default class Application
         {
             this.start();
         }
+    }
+
+    /**
+     * Create the new renderer, this is here to overridden to support Canvas.
+     *
+     * @protected
+     * @param {Object} [options] See constructor for complete arguments
+     */
+    createRenderer(options)
+    {
+        return new Renderer(options);
     }
 
     set ticker(ticker) // eslint-disable-line require-jsdoc

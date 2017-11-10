@@ -26,14 +26,16 @@
     "test": "tester"
   },
   "files": [
-    "lib/",
-    "LICENSE",
-    "package.json",
-    "README.md"
+    "lib/"
   ],
   "devDependencies": {
     "@pixi/app": "^5.0.0-alpha",
+    "@pixi/canvas-extract": "^5.0.0-alpha",
+    "@pixi/canvas-graphics": "^5.0.0-alpha",
+    "@pixi/canvas-mesh": "^5.0.0-alpha",
+    "@pixi/canvas-prepare": "^5.0.0-alpha",
     "@pixi/canvas-renderer": "^5.0.0-alpha",
+    "@pixi/canvas-sprite": "^5.0.0-alpha",
     "@pixi/core": "^5.0.0-alpha",
     "@pixi/accessibility": "^5.0.0-alpha",
     "@pixi/constants": "^5.0.0-alpha",

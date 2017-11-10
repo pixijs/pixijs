@@ -1,4 +1,4 @@
-import { ObjectRenderer, Shader, WebGLRenderer, Quad } from '@pixi/core';
+import { ObjectRenderer, Shader, Quad } from '@pixi/core';
 import { WRAP_MODES } from '@pixi/constants';
 import { Matrix } from '@pixi/math';
 import { premultiplyTintToRgba, correctBlendMode } from '@pixi/utils';
@@ -21,7 +21,7 @@ export default class TilingSpriteRenderer extends ObjectRenderer
     /**
      * constructor for renderer
      *
-     * @param {WebGLRenderer} renderer The renderer this tiling awesomeness works for.
+     * @param {Renderer} renderer The renderer this tiling awesomeness works for.
      */
     constructor(renderer)
     {
@@ -132,5 +132,3 @@ export default class TilingSpriteRenderer extends ObjectRenderer
         renderer.geometry.draw(this.renderer.gl.TRIANGLES, 6, 0);
     }
 }
-
-WebGLRenderer.registerPlugin('tilingSprite', TilingSpriteRenderer);

@@ -12,7 +12,7 @@ import { settings } from '@pixi/settings';
 export default class TextureGCSystem extends WebGLSystem
 {
     /**
-     * @param {PIXI.WebGLRenderer} renderer - The renderer this System works for.
+     * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
     constructor(renderer)
     {

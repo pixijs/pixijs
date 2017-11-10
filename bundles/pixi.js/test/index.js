@@ -1,5 +1,5 @@
 /* eslint-disable global-require */
-const PIXI = require('../');
+const PIXI = global.PIXI = require('../');
 
 describe('PIXI', function ()
 {

@@ -10,7 +10,7 @@ import { Matrix } from '@pixi/math';
 export default class ProjectionSystem extends WebGLSystem
 {
     /**
-     * @param {PIXI.WebGLRenderer} renderer - The renderer this System works for.
+     * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
     constructor(renderer)
     {

@@ -1,5 +1,5 @@
 import { isWebGLSupported } from '@pixi/utils';
-import { WebGLRenderer } from '@pixi/core';
+import { Renderer } from '@pixi/core';
 import CanvasRenderer from './CanvasRenderer';
 
 // eslint-disable-next-line valid-jsdoc
@@ -32,7 +32,7 @@ import CanvasRenderer from './CanvasRenderer';
  *  If you experience unexplained flickering try setting this to true. **webgl only**
  * @param {string} [options.powerPreference] - Parameter passed to webgl context, set to "high-performance"
  *  for devices with dual graphics card **webgl only**
- * @return {PIXI.WebGLRenderer|PIXI.CanvasRenderer} Returns WebGL renderer if available, otherwise CanvasRenderer
+ * @return {PIXI.Renderer|PIXI.CanvasRenderer} Returns WebGL renderer if available, otherwise CanvasRenderer
  */
 export function autoDetectRenderer(options, arg1, arg2, arg3)
 {
@@ -46,7 +46,7 @@ export function autoDetectRenderer(options, arg1, arg2, arg3)
 
     if (!forceCanvas && isWebGLSupported())
     {
-        return new WebGLRenderer(options, arg1, arg2);
+        return new Renderer(options, arg1, arg2);
     }
 
     return new CanvasRenderer(options, arg1, arg2);

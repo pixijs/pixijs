@@ -15,8 +15,14 @@ export * from '@pixi/math';
 export * from '@pixi/constants';
 export * from '@pixi/display';
 export * from '@pixi/canvas-renderer';
+export * from '@pixi/canvas-graphics';
+export * from '@pixi/canvas-mesh';
+export * from '@pixi/canvas-sprite';
 
-// export libs
+// Setup renderer plugins
+import './plugins';
+import './plugins-canvas';
+
 import * as accessibility from '@pixi/accessibility';
 import * as interaction from '@pixi/interaction';
 import * as extract from '@pixi/extract';
@@ -28,6 +34,16 @@ import * as filters from './filters';
 import * as utils from '@pixi/utils';
 import * as ticker from '@pixi/ticker';
 import { settings } from '@pixi/settings';
+import * as canvasPrepare from '@pixi/canvas-prepare';
+import * as extractExtract from '@pixi/canvas-extract';
+
+Object.assign(prepare, canvasPrepare);
+Object.assign(extract, extractExtract);
+
+// Support canvas fallback for Application renderer
+import { autoDetectRenderer } from '@pixi/canvas-renderer';
+import { Application } from '@pixi/app';
+Application.prototype.createRenderer = autoDetectRenderer;
 
 // imported for side effect of extending the prototype only, contains no exports
 import '@pixi/mixin-cache-as-bitmap';

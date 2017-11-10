@@ -13,8 +13,8 @@
  */
 export const VERSION = '__VERSION__';
 
-export { default as WebGLRenderer } from './renderers/WebGLRenderer';
-export { default as SystemRenderer } from './renderers/SystemRenderer';
+export { default as Renderer } from './renderers/Renderer';
+export { default as AbstractRenderer } from './renderers/AbstractRenderer';
 export { default as FrameBuffer } from './textures/FrameBuffer';
 export { default as CubeTexture } from './textures/CubeTexture';
 export { default as BaseTexture } from './textures/BaseTexture';

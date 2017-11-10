@@ -10,7 +10,7 @@ import { removeItems } from '@pixi/utils';
 export default class TextureSystem extends WebGLSystem
 {
     /**
-     * @param {PIXI.WebGLRenderer} renderer - The renderer this System works for.
+     * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
     constructor(renderer)
     {

@@ -11,7 +11,7 @@ let CONTEXT_UID = 0;
 export default class ContextSystem extends WebGLSystem
 {
     /**
-     * @param {PIXI.WebGLRenderer} renderer - The renderer this System works for.
+     * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
     constructor(renderer)
     {

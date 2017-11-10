@@ -90,7 +90,7 @@ export default class RawMesh extends Container
     /**
      * Renders the object using the WebGL renderer
      *
-     * @param {PIXI.WebGLRenderer} renderer a reference to the WebGL renderer
+     * @param {PIXI.Renderer} renderer a reference to the WebGL renderer
      * @private
      */
     _renderWebGL(renderer)

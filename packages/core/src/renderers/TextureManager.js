@@ -12,14 +12,14 @@ import { removeItems } from '@pixi/utils';
 export default class TextureManager
 {
     /**
-     * @param {PIXI.WebGLRenderer} renderer - A reference to the current renderer
+     * @param {PIXI.Renderer} renderer - A reference to the current renderer
      */
     constructor(renderer)
     {
         /**
          * A reference to the current renderer
          *
-         * @member {PIXI.WebGLRenderer}
+         * @member {PIXI.Renderer}
          */
         this.renderer = renderer;
 

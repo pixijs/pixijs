@@ -73,6 +73,20 @@ Object.defineProperties(PIXI, {
             return PIXI.SVGResource.SVG_SIZE;
         },
     },
+
+    /**
+     * @class PIXI.WebGLRenderer
+     * @see PIXI.Renderer
+     * @deprecated since 5.0.0
+     */
+    WebGLRenderer: {
+        get()
+        {
+            warn('PIXI.WebGLRenderer has moved to PIXI.Renderer');
+
+            return PIXI.Renderer;
+        },
+    },
 });
 
 /**
@@ -222,5 +236,33 @@ Object.defineProperties(PIXI.loaders, {
 
             return PIXI.SpritesheetLoader.getResourcePath;
         },
+    },
+});
+
+/**
+ * @class PIXI.extract.WebGLExtract
+ * @deprecated since 5.0.0
+ * @see PIXI.extract.Prepare
+ */
+Object.defineProperty(PIXI.extract, 'WebGLExtract', {
+    get()
+    {
+        warn('PIXI.extract.WebGLExtract has moved to PIXI.extract.Extract');
+
+        return PIXI.extract.Extract;
+    },
+});
+
+/**
+ * @class PIXI.prepare.WebGLPrepare
+ * @deprecated since 5.0.0
+ * @see PIXI.prepare.Prepare
+ */
+Object.defineProperty(PIXI.prepare, 'WebGLPrepare', {
+    get()
+    {
+        warn('PIXI.prepare.WebGLPrepare has moved to PIXI.prepare.Prepare');
+
+        return PIXI.prepare.Prepare;
     },
 });

@@ -1,4 +1,4 @@
-import { SystemRenderer } from '@pixi/core';
+import { AbstractRenderer } from '@pixi/core';
 import CanvasMaskManager from './utils/CanvasMaskManager';
 import CanvasRenderTarget from './utils/CanvasRenderTarget';
 import mapCanvasBlendModesToPixi from './utils/mapCanvasBlendModesToPixi';
@@ -12,9 +12,9 @@ import { settings } from '@pixi/settings';
  *
  * @class
  * @memberof PIXI
- * @extends PIXI.SystemRenderer
+ * @extends PIXI.AbstractRenderer
  */
-export default class CanvasRenderer extends SystemRenderer
+export default class CanvasRenderer extends AbstractRenderer
 {
     // eslint-disable-next-line valid-jsdoc
     /**
@@ -303,7 +303,7 @@ export default class CanvasRenderer extends SystemRenderer
     /**
      * Resizes the canvas view to the specified width and height.
      *
-     * @extends PIXI.SystemRenderer#resize
+     * @extends PIXI.AbstractRenderer#resize
      *
      * @param {number} screenWidth - the new width of the screen
      * @param {number} screenHeight - the new height of the screen

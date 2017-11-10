@@ -127,7 +127,7 @@ Object.defineProperties(DisplayObject.prototype, {
  *
  * @private
  * @memberof PIXI.DisplayObject#
- * @param {PIXI.WebGLRenderer} renderer - the WebGL renderer
+ * @param {PIXI.Renderer} renderer - the WebGL renderer
  */
 DisplayObject.prototype._renderCachedWebGL = function _renderCachedWebGL(renderer)
 {
@@ -148,7 +148,7 @@ DisplayObject.prototype._renderCachedWebGL = function _renderCachedWebGL(rendere
  *
  * @private
  * @memberof PIXI.DisplayObject#
- * @param {PIXI.WebGLRenderer} renderer - the WebGL renderer
+ * @param {PIXI.Renderer} renderer - the WebGL renderer
  */
 DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayObject(renderer)
 {
@@ -259,7 +259,7 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
  *
  * @private
  * @memberof PIXI.DisplayObject#
- * @param {PIXI.WebGLRenderer} renderer - the WebGL renderer
+ * @param {PIXI.Renderer} renderer - the WebGL renderer
  */
 DisplayObject.prototype._renderCachedCanvas = function _renderCachedCanvas(renderer)
 {
@@ -281,7 +281,7 @@ DisplayObject.prototype._renderCachedCanvas = function _renderCachedCanvas(rende
  *
  * @private
  * @memberof PIXI.DisplayObject#
- * @param {PIXI.WebGLRenderer} renderer - the WebGL renderer
+ * @param {PIXI.Renderer} renderer - the WebGL renderer
  */
 DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDisplayObjectCanvas(renderer)
 {

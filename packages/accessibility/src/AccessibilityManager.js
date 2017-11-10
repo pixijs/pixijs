@@ -1,5 +1,3 @@
-import { WebGLRenderer } from '@pixi/core';
-import { CanvasRenderer } from '@pixi/canvas-renderer';
 import Device from 'ismobilejs';
 import accessibleTarget from './accessibleTarget';
 import { removeItems, mixins } from '@pixi/utils';
@@ -39,7 +37,7 @@ const DIV_HOOK_ZINDEX = 2;
 export default class AccessibilityManager
 {
     /**
-     * @param {PIXI.CanvasRenderer|PIXI.WebGLRenderer} renderer - A reference to the current renderer
+     * @param {PIXI.CanvasRenderer|PIXI.Renderer} renderer - A reference to the current renderer
      */
     constructor(renderer)
     {
@@ -92,7 +90,7 @@ export default class AccessibilityManager
         /**
          * The renderer this accessibility manager works for.
          *
-         * @member {PIXI.SystemRenderer}
+         * @member {PIXI.AbstractRenderer}
          */
         this.renderer = renderer;
 
@@ -484,6 +482,3 @@ export default class AccessibilityManager
         this.renderer = null;
     }
 }
-
-WebGLRenderer.registerPlugin('accessibility', AccessibilityManager);
-CanvasRenderer.registerPlugin('accessibility', AccessibilityManager);

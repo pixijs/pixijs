@@ -12,7 +12,7 @@ const tempRect = new Rectangle();
 export default class RenderTextureSystem extends WebGLSystem
 {
     /**
-     * @param {PIXI.WebGLRenderer} renderer - The renderer this System works for.
+     * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
     constructor(renderer)
     {
@@ -60,7 +60,7 @@ export default class RenderTextureSystem extends WebGLSystem
      * Erases the render texture and fills the drawing area with a colour
      *
      * @param {number} [clearColor] - The colour
-     * @return {PIXI.WebGLRenderer} Returns itself.
+     * @return {PIXI.Renderer} Returns itself.
      */
     clear(clearColor)
     {

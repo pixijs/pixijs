@@ -301,7 +301,7 @@ export default class Sprite extends Container
     * Renders the object using the WebGL renderer
     *
     * @private
-    * @param {PIXI.WebGLRenderer} renderer - The webgl renderer to use.
+    * @param {PIXI.Renderer} renderer - The webgl renderer to use.
     */
     _renderWebGL(renderer)
     {

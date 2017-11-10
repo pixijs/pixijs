@@ -9,7 +9,7 @@ import AlphaMaskFilter from '../filters/spriteMask/SpriteMaskFilter';
 export default class MaskSystem extends WebGLSystem
 {
     /**
-     * @param {PIXI.WebGLRenderer} renderer - The renderer this System works for.
+     * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
     constructor(renderer)
     {

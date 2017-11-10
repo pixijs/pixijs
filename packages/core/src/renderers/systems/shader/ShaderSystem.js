@@ -14,7 +14,7 @@ let UID = 0;
 export default class ShaderSystem extends WebGLSystem
 {
     /**
-     * @param {PIXI.WebGLRenderer} renderer - A reference to the current renderer
+     * @param {PIXI.Renderer} renderer - A reference to the current renderer
      */
     constructor(renderer)
     {

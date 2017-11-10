@@ -2,7 +2,8 @@ import { TextureMatrix, Texture } from '@pixi/core';
 import { CanvasRenderTarget } from '@pixi/canvas-renderer';
 import { Point, Rectangle } from '@pixi/math';
 import { TextureCache } from '@pixi/utils';
-import { Sprite, CanvasTinter } from '@pixi/sprite';
+import { Sprite } from '@pixi/sprite';
+import { CanvasTinter } from '@pixi/canvas-sprite';
 import { TransformStatic } from '@pixi/display';
 
 const tempPoint = new Point();
@@ -146,7 +147,7 @@ export default class TilingSprite extends Sprite
      * Renders the object using the WebGL renderer
      *
      * @private
-     * @param {PIXI.WebGLRenderer} renderer - The renderer
+     * @param {PIXI.Renderer} renderer - The renderer
      */
     _renderWebGL(renderer)
     {

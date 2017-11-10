@@ -1,4 +1,4 @@
 require('./BaseTexture');
 require('./Texture');
-require('./WebGLRenderer');
+require('./Renderer');
 require('./SVGResource');

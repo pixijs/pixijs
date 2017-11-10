@@ -2,8 +2,8 @@ import RawMesh from './RawMesh';
 import { Geometry, Program, Shader } from '@pixi/core';
 import { BLEND_MODES } from '@pixi/constants';
 import { hex2rgb } from '@pixi/utils';
-import vertex from './webgl/mesh.vert';
-import fragment from './webgl/mesh.frag';
+import vertex from './mesh.vert';
+import fragment from './mesh.frag';
 
 let meshProgram;
 

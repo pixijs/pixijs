@@ -1,11 +1,15 @@
 // const MockPointer = require('../interaction/MockPointer');
-const { Graphics } = require('../');
+const { Graphics, GraphicsRenderer } = require('../');
 const { BLEND_MODES } = require('@pixi/constants');
 const { Point } = require('@pixi/math');
 const { isWebGLSupported, skipHello } = require('@pixi/utils');
-const { WebGLRenderer } = require('@pixi/core');
+const { Renderer } = require('@pixi/core');
+const { SpriteRenderer } = require('@pixi/sprite');
 
 skipHello();
+
+Renderer.registerPlugin('graphics', GraphicsRenderer);
+Renderer.registerPlugin('sprite', SpriteRenderer);
 
 function withGL(fn)
 {
@@ -368,7 +372,7 @@ describe('PIXI.Graphics', function ()
 
         it('should calculate tint, alpha and blendMode of fastRect correctly', withGL(function ()
         {
-            const renderer = new WebGLRenderer(200, 200, {});
+            const renderer = new Renderer(200, 200, {});
 
             try
             {

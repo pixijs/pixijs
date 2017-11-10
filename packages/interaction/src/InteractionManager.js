@@ -1,5 +1,3 @@
-import { WebGLRenderer } from '@pixi/core';
-import { CanvasRenderer } from '@pixi/canvas-renderer';
 import { shared, UPDATE_PRIORITY } from '@pixi/ticker';
 import { Point } from '@pixi/math';
 import { DisplayObject } from '@pixi/display';
@@ -40,7 +38,7 @@ const hitTestEvent = {
 export default class InteractionManager extends EventEmitter
 {
     /**
-     * @param {PIXI.CanvasRenderer|PIXI.WebGLRenderer} renderer - A reference to the current renderer
+     * @param {PIXI.CanvasRenderer|PIXI.Renderer} renderer - A reference to the current renderer
      * @param {object} [options] - The options for the manager.
      * @param {boolean} [options.autoPreventDefault=true] - Should the manager automatically prevent default browser actions.
      * @param {number} [options.interactionFrequency=10] - Frequency increases the interaction events will be checked.
@@ -54,7 +52,7 @@ export default class InteractionManager extends EventEmitter
         /**
          * The renderer this interaction manager works for.
          *
-         * @member {PIXI.SystemRenderer}
+         * @member {PIXI.AbstractRenderer}
          */
         this.renderer = renderer;
 
@@ -1825,6 +1823,3 @@ export default class InteractionManager extends EventEmitter
         this._tempPoint = null;
     }
 }
-
-WebGLRenderer.registerPlugin('interaction', InteractionManager);
-CanvasRenderer.registerPlugin('interaction', InteractionManager);

@@ -352,7 +352,7 @@ export default class Text extends Sprite
     /**
      * Renders the object using the WebGL renderer
      *
-     * @param {PIXI.WebGLRenderer} renderer - The renderer
+     * @param {PIXI.Renderer} renderer - The renderer
      */
     renderWebGL(renderer)
     {

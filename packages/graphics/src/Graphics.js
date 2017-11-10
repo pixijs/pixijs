@@ -728,7 +728,7 @@ export default class Graphics extends Container
      * Renders the object using the WebGL renderer
      *
      * @private
-     * @param {PIXI.WebGLRenderer} renderer - The renderer
+     * @param {PIXI.Renderer} renderer - The renderer
      */
     _renderWebGL(renderer)
     {
@@ -755,7 +755,7 @@ export default class Graphics extends Container
      * Renders a sprite rectangle.
      *
      * @private
-     * @param {PIXI.WebGLRenderer} renderer - The renderer
+     * @param {PIXI.Renderer} renderer - The renderer
      */
     _renderSpriteRect(renderer)
     {

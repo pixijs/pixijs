@@ -8,7 +8,7 @@ import WebGLManager from './WebGLManager';
 export default class BlendModeManager extends WebGLManager
 {
     /**
-     * @param {PIXI.WebGLRenderer} renderer - The renderer this manager works for.
+     * @param {PIXI.Renderer} renderer - The renderer this manager works for.
      */
     constructor(renderer)
     {

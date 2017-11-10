@@ -3,7 +3,7 @@ import { shared, UPDATE_PRIORITY } from '@pixi/ticker';
 import { settings } from '@pixi/settings';
 import { Container } from '@pixi/display';
 import { Text, TextStyle, TextMetrics } from '@pixi/text';
-import CountLimiter from './limiters/CountLimiter';
+import CountLimiter from './CountLimiter';
 
 /**
  * Default number of uploads per frame using prepare plugin.
@@ -40,7 +40,7 @@ settings.UPLOADS_PER_FRAME = 4;
 export default class BasePrepare
 {
     /**
-     * @param {PIXI.SystemRenderer} renderer - A reference to the current renderer
+     * @param {PIXI.AbstractRenderer} renderer - A reference to the current renderer
      */
     constructor(renderer)
     {
@@ -52,7 +52,7 @@ export default class BasePrepare
 
         /**
          * Reference to the renderer.
-         * @type {PIXI.SystemRenderer}
+         * @type {PIXI.AbstractRenderer}
          * @protected
          */
         this.renderer = renderer;
@@ -60,7 +60,7 @@ export default class BasePrepare
         /**
          * The only real difference between CanvasPrepare and WebGLPrepare is what they pass
          * to upload hooks. That different parameter is stored here.
-         * @type {PIXI.prepare.CanvasPrepare|PIXI.WebGLRenderer}
+         * @type {PIXI.prepare.CanvasPrepare|PIXI.Renderer}
          * @protected
          */
         this.uploadHookHelper = null;
@@ -407,7 +407,7 @@ function findTexture(item, queue)
  * Built-in hook to draw PIXI.Text to its texture.
  *
  * @private
- * @param {PIXI.WebGLRenderer|PIXI.CanvasPrepare} helper - Not used by this upload handler
+ * @param {PIXI.Renderer|PIXI.CanvasPrepare} helper - Not used by this upload handler
  * @param {PIXI.DisplayObject} item - Item to check
  * @return {boolean} If item was uploaded.
  */
@@ -428,7 +428,7 @@ function drawText(helper, item)
  * Built-in hook to calculate a text style for a PIXI.Text object.
  *
  * @private
- * @param {PIXI.WebGLRenderer|PIXI.CanvasPrepare} helper - Not used by this upload handler
+ * @param {PIXI.Renderer|PIXI.CanvasPrepare} helper - Not used by this upload handler
  * @param {PIXI.DisplayObject} item - Item to check
  * @return {boolean} If item was uploaded.
  */
