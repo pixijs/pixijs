@@ -1,8 +1,8 @@
 'use strict';
 
-function isWebGLSupported(fn)
+function withGL(fn)
 {
     return PIXI.utils.isWebGLSupported() ? fn : undefined;
 }
 
-module.exports = isWebGLSupported;
+module.exports = withGL;

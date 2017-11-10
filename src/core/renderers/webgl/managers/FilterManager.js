@@ -49,6 +49,8 @@ export default class FilterManager extends WebGLManager
         this.pool = {};
 
         this.filterData = null;
+
+        this.managedFilters = [];
     }
 
     /**
@@ -106,7 +108,7 @@ export default class FilterManager extends WebGLManager
 
             // TODO we should fit the rect around the transform..
         }
-        else
+        else if (filters[0].autoFit)
         {
             sourceFrame.fit(filterData.stack[0].destinationFrame);
         }
@@ -154,7 +156,7 @@ export default class FilterManager extends WebGLManager
 
         if (filters.length === 1)
         {
-            filters[0].apply(this, currentState.renderTarget, lastState.renderTarget, false);
+            filters[0].apply(this, currentState.renderTarget, lastState.renderTarget, false, currentState);
             this.freePotRenderTarget(currentState.renderTarget);
         }
         else
@@ -176,7 +178,7 @@ export default class FilterManager extends WebGLManager
 
             for (i = 0; i < filters.length - 1; ++i)
             {
-                filters[i].apply(this, flip, flop, true);
+                filters[i].apply(this, flip, flop, true, currentState);
 
                 const t = flip;
 
@@ -184,7 +186,7 @@ export default class FilterManager extends WebGLManager
                 flop = t;
             }
 
-            filters[i].apply(this, flip, lastState.renderTarget, false);
+            filters[i].apply(this, flip, lastState.renderTarget, false, currentState);
 
             this.freePotRenderTarget(flip);
             this.freePotRenderTarget(flop);
@@ -232,6 +234,8 @@ export default class FilterManager extends WebGLManager
                 shader = filter.glShaders[renderer.CONTEXT_UID] = new Shader(this.gl, filter.vertexSrc, filter.fragmentSrc);
             }
 
+            this.managedFilters.push(filter);
+
             // TODO - this only needs to be done once?
             renderer.bindVao(null);
 
@@ -263,7 +267,7 @@ export default class FilterManager extends WebGLManager
         const tex = this.renderer.emptyTextures[0];
 
         this.renderer.boundTextures[0] = tex;
-        // this syncs the pixi filters  uniforms with glsl uniforms
+        // this syncs the PixiJS filters  uniforms with glsl uniforms
         this.syncUniforms(shader, filter);
 
         renderer.state.setBlendMode(filter.blendMode);
@@ -287,15 +291,18 @@ export default class FilterManager extends WebGLManager
         const uniformData = filter.uniformData;
         const uniforms = filter.uniforms;
 
-        // 0 is reserved for the pixi texture so we start at 1!
+        // 0 is reserved for the PixiJS texture so we start at 1!
         let textureCount = 1;
         let currentState;
 
-        if (uniforms.filterArea)
+        // filterArea and filterClamp that are handled by FilterManager directly
+        // they must not appear in uniformData
+
+        if (shader.uniforms.filterArea)
         {
             currentState = this.filterData.stack[this.filterData.index];
 
-            const filterArea = uniforms.filterArea;
+            const filterArea = shader.uniforms.filterArea;
 
             filterArea[0] = currentState.renderTarget.size.width;
             filterArea[1] = currentState.renderTarget.size.height;
@@ -307,11 +314,11 @@ export default class FilterManager extends WebGLManager
 
         // use this to clamp displaced texture coords so they belong to filterArea
         // see displacementFilter fragment shader for an example
-        if (uniforms.filterClamp)
+        if (shader.uniforms.filterClamp)
         {
-            currentState = this.filterData.stack[this.filterData.index];
+            currentState = currentState || this.filterData.stack[this.filterData.index];
 
-            const filterClamp = uniforms.filterClamp;
+            const filterClamp = shader.uniforms.filterClamp;
 
             filterClamp[0] = 0;
             filterClamp[1] = 0;
@@ -324,7 +331,9 @@ export default class FilterManager extends WebGLManager
         // TODO Cacheing layer..
         for (const i in uniformData)
         {
-            if (uniformData[i].type === 'sampler2D' && uniforms[i] !== 0)
+            const type = uniformData[i].type;
+
+            if (type === 'sampler2d' && uniforms[i] !== 0)
             {
                 if (uniforms[i].baseTexture)
                 {
@@ -349,9 +358,9 @@ export default class FilterManager extends WebGLManager
 
                 textureCount++;
             }
-            else if (uniformData[i].type === 'mat3')
+            else if (type === 'mat3')
             {
-                // check if its pixi matrix..
+                // check if its PixiJS matrix..
                 if (uniforms[i].a !== undefined)
                 {
                     shader.uniforms[i] = uniforms[i].toArray(true);
@@ -361,7 +370,7 @@ export default class FilterManager extends WebGLManager
                     shader.uniforms[i] = uniforms[i];
                 }
             }
-            else if (uniformData[i].type === 'vec2')
+            else if (type === 'vec2')
             {
                 // check if its a point..
                 if (uniforms[i].x !== undefined)
@@ -377,7 +386,7 @@ export default class FilterManager extends WebGLManager
                     shader.uniforms[i] = uniforms[i];
                 }
             }
-            else if (uniformData[i].type === 'float')
+            else if (type === 'float')
             {
                 if (shader.uniforms.data[i].value !== uniformData[i])
                 {
@@ -483,11 +492,32 @@ export default class FilterManager extends WebGLManager
     /**
      * Destroys this Filter Manager.
      *
+     * @param {boolean} [contextLost=false] context was lost, do not free shaders
+     *
      */
-    destroy()
+    destroy(contextLost = false)
     {
+        const renderer = this.renderer;
+        const filters = this.managedFilters;
+
+        for (let i = 0; i < filters.length; i++)
+        {
+            if (!contextLost)
+            {
+                filters[i].glShaders[renderer.CONTEXT_UID].destroy();
+            }
+            delete filters[i].glShaders[renderer.CONTEXT_UID];
+        }
+
         this.shaderCache = {};
-        this.emptyPool();
+        if (!contextLost)
+        {
+            this.emptyPool();
+        }
+        else
+        {
+            this.pool = {};
+        }
     }
 
     /**

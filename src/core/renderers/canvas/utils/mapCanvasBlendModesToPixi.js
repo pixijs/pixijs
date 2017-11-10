@@ -53,6 +53,10 @@ export default function mapCanvasBlendModesToPixi(array = [])
         array[BLEND_MODES.COLOR] = 'source-over';
         array[BLEND_MODES.LUMINOSITY] = 'source-over';
     }
+    // not-premultiplied, only for webgl
+    array[BLEND_MODES.NORMAL_NPM] = array[BLEND_MODES.NORMAL];
+    array[BLEND_MODES.ADD_NPM] = array[BLEND_MODES.ADD];
+    array[BLEND_MODES.SCREEN_NPM] = array[BLEND_MODES.SCREEN];
 
     return array;
 }

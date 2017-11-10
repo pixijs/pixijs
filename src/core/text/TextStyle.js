@@ -11,7 +11,7 @@ const defaultStyle = {
     dropShadowAlpha: 1,
     dropShadowAngle: Math.PI / 6,
     dropShadowBlur: 0,
-    dropShadowColor: '#000000',
+    dropShadowColor: 'black',
     dropShadowDistance: 5,
     fill: 'black',
     fillGradientType: TEXT_GRADIENT.LINEAR_VERTICAL,
@@ -32,6 +32,7 @@ const defaultStyle = {
     trim: false,
     wordWrap: false,
     wordWrapWidth: 100,
+    leading: 0,
 };
 
 /**
@@ -53,7 +54,7 @@ export default class TextStyle
      * @param {number} [style.dropShadowAlpha=1] - Set alpha for the drop shadow
      * @param {number} [style.dropShadowAngle=Math.PI/6] - Set a angle of the drop shadow
      * @param {number} [style.dropShadowBlur=0] - Set a shadow blur radius
-     * @param {string} [style.dropShadowColor='#000000'] - A fill style to be used on the dropshadow e.g 'red', '#00FF00'
+     * @param {string|number} [style.dropShadowColor='black'] - A fill style to be used on the dropshadow e.g 'red', '#00FF00'
      * @param {number} [style.dropShadowDistance=5] - Set a distance of the drop shadow
      * @param {string|string[]|number|number[]|CanvasGradient|CanvasPattern} [style.fill='black'] - A canvas
      *  fillstyle that will be used on the text e.g 'red', '#00FF00'. Can be an array to create a gradient
@@ -70,10 +71,12 @@ export default class TextStyle
      * @param {string} [style.fontVariant='normal'] - The font variant ('normal' or 'small-caps')
      * @param {string} [style.fontWeight='normal'] - The font weight ('normal', 'bold', 'bolder', 'lighter' and '100',
      *  '200', '300', '400', '500', '600', '700', 800' or '900')
+     * @param {number} [style.leading=0] - The space between lines
      * @param {number} [style.letterSpacing=0] - The amount of spacing between letters, default is 0
      * @param {number} [style.lineHeight] - The line height, a number that represents the vertical space that a letter uses
      * @param {string} [style.lineJoin='miter'] - The lineJoin property sets the type of corner created, it can resolve
-     *      spiked text issues. Default is 'miter' (creates a sharp corner).
+     *      spiked text issues. Possible values "miter" (creates a sharp corner), "round" (creates a round corner) or "bevel"
+     *      (creates a squared corner).
      * @param {number} [style.miterLimit=10] - The miter limit to use when using the 'miter' lineJoin mode. This can reduce
      *      or increase the spikiness of rendered text.
      * @param {number} [style.padding=0] - Occasionally some fonts are cropped. Adding some padding will prevent this from
@@ -91,7 +94,9 @@ export default class TextStyle
     {
         this.styleID = 0;
 
-        Object.assign(this, defaultStyle, style);
+        this.reset();
+
+        deepCopyProperties(this, style, style);
     }
 
     /**
@@ -104,10 +109,7 @@ export default class TextStyle
     {
         const clonedProperties = {};
 
-        for (const key in defaultStyle)
-        {
-            clonedProperties[key] = this[key];
-        }
+        deepCopyProperties(clonedProperties, this, defaultStyle);
 
         return new TextStyle(clonedProperties);
     }
@@ -117,14 +119,19 @@ export default class TextStyle
      */
     reset()
     {
-        Object.assign(this, defaultStyle);
+        deepCopyProperties(this, defaultStyle, defaultStyle);
     }
 
+    /**
+     * Alignment for multiline text ('left', 'center' or 'right'), does not affect single line text
+     *
+     * @member {string}
+     */
     get align()
     {
         return this._align;
     }
-    set align(align)
+    set align(align) // eslint-disable-line require-jsdoc
     {
         if (this._align !== align)
         {
@@ -133,11 +140,16 @@ export default class TextStyle
         }
     }
 
+    /**
+     * Indicates if lines can be wrapped within words, it needs wordWrap to be set to true
+     *
+     * @member {boolean}
+     */
     get breakWords()
     {
         return this._breakWords;
     }
-    set breakWords(breakWords)
+    set breakWords(breakWords) // eslint-disable-line require-jsdoc
     {
         if (this._breakWords !== breakWords)
         {
@@ -146,11 +158,16 @@ export default class TextStyle
         }
     }
 
+    /**
+     * Set a drop shadow for the text
+     *
+     * @member {boolean}
+     */
     get dropShadow()
     {
         return this._dropShadow;
     }
-    set dropShadow(dropShadow)
+    set dropShadow(dropShadow) // eslint-disable-line require-jsdoc
     {
         if (this._dropShadow !== dropShadow)
         {
@@ -159,11 +176,16 @@ export default class TextStyle
         }
     }
 
+    /**
+     * Set alpha for the drop shadow
+     *
+     * @member {number}
+     */
     get dropShadowAlpha()
     {
         return this._dropShadowAlpha;
     }
-    set dropShadowAlpha(dropShadowAlpha)
+    set dropShadowAlpha(dropShadowAlpha) // eslint-disable-line require-jsdoc
     {
         if (this._dropShadowAlpha !== dropShadowAlpha)
         {
@@ -172,11 +194,16 @@ export default class TextStyle
         }
     }
 
+    /**
+     * Set a angle of the drop shadow
+     *
+     * @member {number}
+     */
     get dropShadowAngle()
     {
         return this._dropShadowAngle;
     }
-    set dropShadowAngle(dropShadowAngle)
+    set dropShadowAngle(dropShadowAngle) // eslint-disable-line require-jsdoc
     {
         if (this._dropShadowAngle !== dropShadowAngle)
         {
@@ -185,11 +212,16 @@ export default class TextStyle
         }
     }
 
+    /**
+     * Set a shadow blur radius
+     *
+     * @member {number}
+     */
     get dropShadowBlur()
     {
         return this._dropShadowBlur;
     }
-    set dropShadowBlur(dropShadowBlur)
+    set dropShadowBlur(dropShadowBlur) // eslint-disable-line require-jsdoc
     {
         if (this._dropShadowBlur !== dropShadowBlur)
         {
@@ -198,11 +230,16 @@ export default class TextStyle
         }
     }
 
+    /**
+     * A fill style to be used on the dropshadow e.g 'red', '#00FF00'
+     *
+     * @member {string|number}
+     */
     get dropShadowColor()
     {
         return this._dropShadowColor;
     }
-    set dropShadowColor(dropShadowColor)
+    set dropShadowColor(dropShadowColor) // eslint-disable-line require-jsdoc
     {
         const outputColor = getColor(dropShadowColor);
         if (this._dropShadowColor !== outputColor)
@@ -212,11 +249,16 @@ export default class TextStyle
         }
     }
 
+    /**
+     * Set a distance of the drop shadow
+     *
+     * @member {number}
+     */
     get dropShadowDistance()
     {
         return this._dropShadowDistance;
     }
-    set dropShadowDistance(dropShadowDistance)
+    set dropShadowDistance(dropShadowDistance) // eslint-disable-line require-jsdoc
     {
         if (this._dropShadowDistance !== dropShadowDistance)
         {
@@ -225,11 +267,18 @@ export default class TextStyle
         }
     }
 
+    /**
+     * A canvas fillstyle that will be used on the text e.g 'red', '#00FF00'.
+     * Can be an array to create a gradient eg ['#000000','#FFFFFF']
+     * {@link https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillStyle|MDN}
+     *
+     * @member {string|string[]|number|number[]|CanvasGradient|CanvasPattern}
+     */
     get fill()
     {
         return this._fill;
     }
-    set fill(fill)
+    set fill(fill) // eslint-disable-line require-jsdoc
     {
         const outputColor = getColor(fill);
         if (this._fill !== outputColor)
@@ -239,11 +288,17 @@ export default class TextStyle
         }
     }
 
+    /**
+     * If fill is an array of colours to create a gradient, this can change the type/direction of the gradient.
+     * See {@link PIXI.TEXT_GRADIENT}
+     *
+     * @member {number}
+     */
     get fillGradientType()
     {
         return this._fillGradientType;
     }
-    set fillGradientType(fillGradientType)
+    set fillGradientType(fillGradientType) // eslint-disable-line require-jsdoc
     {
         if (this._fillGradientType !== fillGradientType)
         {
@@ -252,11 +307,17 @@ export default class TextStyle
         }
     }
 
+    /**
+     * If fill is an array of colours to create a gradient, this array can set the stop points
+     * (numbers between 0 and 1) for the color, overriding the default behaviour of evenly spacing them.
+     *
+     * @member {number[]}
+     */
     get fillGradientStops()
     {
         return this._fillGradientStops;
     }
-    set fillGradientStops(fillGradientStops)
+    set fillGradientStops(fillGradientStops) // eslint-disable-line require-jsdoc
     {
         if (!areArraysEqual(this._fillGradientStops,fillGradientStops))
         {
@@ -265,11 +326,16 @@ export default class TextStyle
         }
     }
 
+    /**
+     * The font family
+     *
+     * @member {string|string[]}
+     */
     get fontFamily()
     {
         return this._fontFamily;
     }
-    set fontFamily(fontFamily)
+    set fontFamily(fontFamily) // eslint-disable-line require-jsdoc
     {
         if (this.fontFamily !== fontFamily)
         {
@@ -278,11 +344,17 @@ export default class TextStyle
         }
     }
 
+    /**
+     * The font size
+     * (as a number it converts to px, but as a string, equivalents are '26px','20pt','160%' or '1.6em')
+     *
+     * @member {number|string}
+     */
     get fontSize()
     {
         return this._fontSize;
     }
-    set fontSize(fontSize)
+    set fontSize(fontSize) // eslint-disable-line require-jsdoc
     {
         if (this._fontSize !== fontSize)
         {
@@ -291,11 +363,17 @@ export default class TextStyle
         }
     }
 
+    /**
+     * The font style
+     * ('normal', 'italic' or 'oblique')
+     *
+     * @member {string}
+     */
     get fontStyle()
     {
         return this._fontStyle;
     }
-    set fontStyle(fontStyle)
+    set fontStyle(fontStyle) // eslint-disable-line require-jsdoc
     {
         if (this._fontStyle !== fontStyle)
         {
@@ -304,11 +382,17 @@ export default class TextStyle
         }
     }
 
+    /**
+     * The font variant
+     * ('normal' or 'small-caps')
+     *
+     * @member {string}
+     */
     get fontVariant()
     {
         return this._fontVariant;
     }
-    set fontVariant(fontVariant)
+    set fontVariant(fontVariant) // eslint-disable-line require-jsdoc
     {
         if (this._fontVariant !== fontVariant)
         {
@@ -317,11 +401,17 @@ export default class TextStyle
         }
     }
 
+    /**
+     * The font weight
+     * ('normal', 'bold', 'bolder', 'lighter' and '100', '200', '300', '400', '500', '600', '700', 800' or '900')
+     *
+     * @member {string}
+     */
     get fontWeight()
     {
         return this._fontWeight;
     }
-    set fontWeight(fontWeight)
+    set fontWeight(fontWeight) // eslint-disable-line require-jsdoc
     {
         if (this._fontWeight !== fontWeight)
         {
@@ -330,11 +420,16 @@ export default class TextStyle
         }
     }
 
+    /**
+     * The amount of spacing between letters, default is 0
+     *
+     * @member {number}
+     */
     get letterSpacing()
     {
         return this._letterSpacing;
     }
-    set letterSpacing(letterSpacing)
+    set letterSpacing(letterSpacing) // eslint-disable-line require-jsdoc
     {
         if (this._letterSpacing !== letterSpacing)
         {
@@ -343,11 +438,16 @@ export default class TextStyle
         }
     }
 
+    /**
+     * The line height, a number that represents the vertical space that a letter uses
+     *
+     * @member {number}
+     */
     get lineHeight()
     {
         return this._lineHeight;
     }
-    set lineHeight(lineHeight)
+    set lineHeight(lineHeight) // eslint-disable-line require-jsdoc
     {
         if (this._lineHeight !== lineHeight)
         {
@@ -356,11 +456,35 @@ export default class TextStyle
         }
     }
 
+    /**
+     * The space between lines
+     *
+     * @member {number}
+     */
+    get leading()
+    {
+        return this._leading;
+    }
+    set leading(leading) // eslint-disable-line require-jsdoc
+    {
+        if (this._leading !== leading)
+        {
+            this._leading = leading;
+            this.styleID++;
+        }
+    }
+
+    /**
+     * The lineJoin property sets the type of corner created, it can resolve spiked text issues.
+     * Default is 'miter' (creates a sharp corner).
+     *
+     * @member {string}
+     */
     get lineJoin()
     {
         return this._lineJoin;
     }
-    set lineJoin(lineJoin)
+    set lineJoin(lineJoin) // eslint-disable-line require-jsdoc
     {
         if (this._lineJoin !== lineJoin)
         {
@@ -369,11 +493,17 @@ export default class TextStyle
         }
     }
 
+    /**
+     * The miter limit to use when using the 'miter' lineJoin mode
+     * This can reduce or increase the spikiness of rendered text.
+     *
+     * @member {number}
+     */
     get miterLimit()
     {
         return this._miterLimit;
     }
-    set miterLimit(miterLimit)
+    set miterLimit(miterLimit) // eslint-disable-line require-jsdoc
     {
         if (this._miterLimit !== miterLimit)
         {
@@ -382,11 +512,17 @@ export default class TextStyle
         }
     }
 
+    /**
+     * Occasionally some fonts are cropped. Adding some padding will prevent this from happening
+     * by adding padding to all sides of the text.
+     *
+     * @member {number}
+     */
     get padding()
     {
         return this._padding;
     }
-    set padding(padding)
+    set padding(padding) // eslint-disable-line require-jsdoc
     {
         if (this._padding !== padding)
         {
@@ -395,11 +531,17 @@ export default class TextStyle
         }
     }
 
+    /**
+     * A canvas fillstyle that will be used on the text stroke
+     * e.g 'blue', '#FCFF00'
+     *
+     * @member {string|number}
+     */
     get stroke()
     {
         return this._stroke;
     }
-    set stroke(stroke)
+    set stroke(stroke) // eslint-disable-line require-jsdoc
     {
         const outputColor = getColor(stroke);
         if (this._stroke !== outputColor)
@@ -409,11 +551,17 @@ export default class TextStyle
         }
     }
 
+    /**
+     * A number that represents the thickness of the stroke.
+     * Default is 0 (no stroke)
+     *
+     * @member {number}
+     */
     get strokeThickness()
     {
         return this._strokeThickness;
     }
-    set strokeThickness(strokeThickness)
+    set strokeThickness(strokeThickness) // eslint-disable-line require-jsdoc
     {
         if (this._strokeThickness !== strokeThickness)
         {
@@ -422,11 +570,16 @@ export default class TextStyle
         }
     }
 
+    /**
+     * The baseline of the text that is rendered.
+     *
+     * @member {string}
+     */
     get textBaseline()
     {
         return this._textBaseline;
     }
-    set textBaseline(textBaseline)
+    set textBaseline(textBaseline) // eslint-disable-line require-jsdoc
     {
         if (this._textBaseline !== textBaseline)
         {
@@ -435,11 +588,16 @@ export default class TextStyle
         }
     }
 
+    /**
+     * Trim transparent borders
+     *
+     * @member {boolean}
+     */
     get trim()
     {
         return this._trim;
     }
-    set trim(trim)
+    set trim(trim) // eslint-disable-line require-jsdoc
     {
         if (this._trim !== trim)
         {
@@ -448,11 +606,16 @@ export default class TextStyle
         }
     }
 
+    /**
+     * Indicates if word wrap should be used
+     *
+     * @member {boolean}
+     */
     get wordWrap()
     {
         return this._wordWrap;
     }
-    set wordWrap(wordWrap)
+    set wordWrap(wordWrap) // eslint-disable-line require-jsdoc
     {
         if (this._wordWrap !== wordWrap)
         {
@@ -461,17 +624,57 @@ export default class TextStyle
         }
     }
 
+    /**
+     * The width at which text will wrap, it needs wordWrap to be set to true
+     *
+     * @member {number}
+     */
     get wordWrapWidth()
     {
         return this._wordWrapWidth;
     }
-    set wordWrapWidth(wordWrapWidth)
+    set wordWrapWidth(wordWrapWidth) // eslint-disable-line require-jsdoc
     {
         if (this._wordWrapWidth !== wordWrapWidth)
         {
             this._wordWrapWidth = wordWrapWidth;
             this.styleID++;
         }
+    }
+
+    /**
+     * Generates a font style string to use for `TextMetrics.measureFont()`.
+     *
+     * @return {string} Font style string, for passing to `TextMetrics.measureFont()`
+     */
+    toFontString()
+    {
+        // build canvas api font setting from individual components. Convert a numeric this.fontSize to px
+        const fontSizeString = (typeof this.fontSize === 'number') ? `${this.fontSize}px` : this.fontSize;
+
+        // Clean-up fontFamily property by quoting each font name
+        // this will support font names with spaces
+        let fontFamilies = this.fontFamily;
+
+        if (!Array.isArray(this.fontFamily))
+        {
+            fontFamilies = this.fontFamily.split(',');
+        }
+
+        for (let i = fontFamilies.length - 1; i >= 0; i--)
+        {
+            // Trim any extra white-space
+            let fontFamily = fontFamilies[i].trim();
+
+            // Check if font already contains strings
+            if (!(/([\"\'])[^\'\"]+\1/).test(fontFamily))
+            {
+                fontFamily = `"${fontFamily}"`;
+            }
+            fontFamilies[i] = fontFamily;
+        }
+
+        return `${this.fontStyle} ${this.fontVariant} ${this.fontWeight} ${fontSizeString} ${fontFamilies.join(',')}`;
     }
 }
 
@@ -551,4 +754,21 @@ function areArraysEqual(array1, array2)
     }
 
     return true;
+}
+
+/**
+ * Utility function to ensure that object properties are copied by value, and not by reference
+ *
+ * @param {Object} target Target object to copy properties into
+ * @param {Object} source Source object for the proporties to copy
+ * @param {string} propertyObj Object containing properties names we want to loop over
+ */
+function deepCopyProperties(target, source, propertyObj) {
+    for (const prop in propertyObj) {
+        if (Array.isArray(source[prop])) {
+            target[prop] = source[prop].slice();
+        } else {
+            target[prop] = source[prop];
+        }
+    }
 }

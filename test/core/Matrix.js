@@ -107,10 +107,60 @@ describe('PIXI.Matrix', function ()
         expect(m1.ty).to.equal(m2.ty);
     });
 
+    it('should prepend matrix', function ()
+    {
+        const m1 = new PIXI.Matrix();
+        const m2 = new PIXI.Matrix();
+
+        m2.set(2, 3, 4, 5, 100, 200);
+        m1.prepend(m2);
+
+        expect(m1.a).to.equal(m2.a);
+        expect(m1.b).to.equal(m2.b);
+        expect(m1.c).to.equal(m2.c);
+        expect(m1.d).to.equal(m2.d);
+        expect(m1.tx).to.equal(m2.tx);
+        expect(m1.ty).to.equal(m2.ty);
+
+        const m3 = new PIXI.Matrix();
+        const m4 = new PIXI.Matrix();
+
+        m3.prepend(m4);
+
+        expect(m3.a).to.equal(m4.a);
+        expect(m3.b).to.equal(m4.b);
+        expect(m3.c).to.equal(m4.c);
+        expect(m3.d).to.equal(m4.d);
+        expect(m3.tx).to.equal(m4.tx);
+        expect(m3.ty).to.equal(m4.ty);
+    });
+
     it('should get IDENTITY and TEMP_MATRIX', function ()
     {
         expect(PIXI.Matrix.IDENTITY instanceof PIXI.Matrix).to.be.true;
         expect(PIXI.Matrix.TEMP_MATRIX instanceof PIXI.Matrix).to.be.true;
     });
-});
 
+    it('should reset matrix to default when identity() is called', function ()
+    {
+        const matrix = new PIXI.Matrix();
+
+        matrix.set(2, 3, 4, 5, 100, 200);
+
+        expect(matrix.a).to.equal(2);
+        expect(matrix.b).to.equal(3);
+        expect(matrix.c).to.equal(4);
+        expect(matrix.d).to.equal(5);
+        expect(matrix.tx).to.equal(100);
+        expect(matrix.ty).to.equal(200);
+
+        matrix.identity();
+
+        expect(matrix.a).to.equal(1);
+        expect(matrix.b).to.equal(0);
+        expect(matrix.c).to.equal(0);
+        expect(matrix.d).to.equal(1);
+        expect(matrix.tx).to.equal(0);
+        expect(matrix.ty).to.equal(0);
+    });
+});

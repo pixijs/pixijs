@@ -9,8 +9,8 @@ import EventEmitter from 'eventemitter3';
 const tempMatrix = new Matrix();
 
 /**
- * The SystemRenderer is the base for a Pixi Renderer. It is extended by the {@link PIXI.CanvasRenderer}
- * and {@link PIXI.WebGLRenderer} which can be used for rendering a Pixi scene.
+ * The SystemRenderer is the base for a PixiJS Renderer. It is extended by the {@link PIXI.CanvasRenderer}
+ * and {@link PIXI.WebGLRenderer} which can be used for rendering a PixiJS scene.
  *
  * @abstract
  * @class
@@ -19,45 +19,52 @@ const tempMatrix = new Matrix();
  */
 export default class SystemRenderer extends EventEmitter
 {
+    // eslint-disable-next-line valid-jsdoc
     /**
      * @param {string} system - The name of the system this renderer is for.
-     * @param {number} [screenWidth=800] - the width of the screen
-     * @param {number} [screenHeight=600] - the height of the screen
      * @param {object} [options] - The optional renderer parameters
+     * @param {number} [options.width=800] - the width of the screen
+     * @param {number} [options.height=600] - the height of the screen
      * @param {HTMLCanvasElement} [options.view] - the canvas to use as a view, optional
      * @param {boolean} [options.transparent=false] - If the render view is transparent, default false
      * @param {boolean} [options.autoResize=false] - If the render view is automatically resized, default false
      * @param {boolean} [options.antialias=false] - sets antialias (only applicable in chrome at the moment)
      * @param {number} [options.resolution=1] - The resolution / device pixel ratio of the renderer. The
      *  resolution of the renderer retina would be 2.
-     * @param {boolean} [options.clearBeforeRender=true] - This sets if the CanvasRenderer will clear the canvas or
+     * @param {boolean} [options.preserveDrawingBuffer=false] - enables drawing buffer preservation,
+     *  enable this if you need to call toDataUrl on the webgl context.
+     * @param {boolean} [options.clearBeforeRender=true] - This sets if the renderer will clear the canvas or
      *      not before the new render pass.
      * @param {number} [options.backgroundColor=0x000000] - The background color of the rendered area
      *  (shown if not transparent).
-     * @param {boolean} [options.roundPixels=false] - If true Pixi will Math.floor() x/y values when rendering,
+     * @param {boolean} [options.roundPixels=false] - If true PixiJS will Math.floor() x/y values when rendering,
      *  stopping pixel interpolation.
      */
-    constructor(system, screenWidth, screenHeight, options)
+    constructor(system, options, arg2, arg3)
     {
         super();
 
         sayHello(system);
 
-        // prepare options
-        if (options)
+        // Support for constructor(system, screenWidth, screenHeight, options)
+        if (typeof options === 'number')
         {
-            for (const i in settings.RENDER_OPTIONS)
-            {
-                if (typeof options[i] === 'undefined')
-                {
-                    options[i] = settings.RENDER_OPTIONS[i];
-                }
-            }
+            options = Object.assign({
+                width: options,
+                height: arg2 || settings.RENDER_OPTIONS.height,
+            }, arg3);
         }
-        else
-        {
-            options = settings.RENDER_OPTIONS;
-        }
+
+        // Add the default render options
+        options = Object.assign({}, settings.RENDER_OPTIONS, options);
+
+        /**
+         * The supplied constructor options.
+         *
+         * @member {Object}
+         * @readOnly
+         */
+        this.options = options;
 
         /**
          * The type of the renderer.
@@ -75,7 +82,7 @@ export default class SystemRenderer extends EventEmitter
          *
          * @member {PIXI.Rectangle}
          */
-        this.screen = new Rectangle(0, 0, screenWidth || 800, screenHeight || 600);
+        this.screen = new Rectangle(0, 0, options.width, options.height);
 
         /**
          * The canvas element that everything is drawn to
@@ -123,8 +130,8 @@ export default class SystemRenderer extends EventEmitter
 
         /**
          * This sets if the CanvasRenderer will clear the canvas or not before the new render pass.
-         * If the scene is NOT transparent Pixi will use a canvas sized fillRect operation every
-         * frame to set the canvas background color. If the scene is transparent Pixi will use clearRect
+         * If the scene is NOT transparent PixiJS will use a canvas sized fillRect operation every
+         * frame to set the canvas background color. If the scene is transparent PixiJS will use clearRect
          * to clear the canvas every frame. Disable this by setting this to false. For example if
          * your game has a canvas filling background image you often don't need this set.
          *
@@ -134,7 +141,7 @@ export default class SystemRenderer extends EventEmitter
         this.clearBeforeRender = options.clearBeforeRender;
 
         /**
-         * If true Pixi will Math.floor() x/y values when rendering, stopping pixel interpolation.
+         * If true PixiJS will Math.floor() x/y values when rendering, stopping pixel interpolation.
          * Handy for crisp pixel art and speed on legacy devices.
          *
          * @member {boolean}
@@ -279,6 +286,8 @@ export default class SystemRenderer extends EventEmitter
 
         this.blendModes = null;
 
+        this.options = null;
+
         this.preserveDrawingBuffer = false;
         this.clearBeforeRender = false;
 
@@ -288,7 +297,6 @@ export default class SystemRenderer extends EventEmitter
         this._backgroundColorRgba = null;
         this._backgroundColorString = null;
 
-        this.backgroundColor = 0;
         this._tempDisplayObjectParent = null;
         this._lastObjectRendered = null;
     }

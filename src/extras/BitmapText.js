@@ -1,5 +1,7 @@
 import * as core from '../core';
 import ObservablePoint from '../core/math/ObservablePoint';
+import { getResolutionOfUrl } from '../core/utils';
+import settings from '../core/settings';
 
 /**
  * A BitmapText object will create a line or multiple lines of text using bitmap font. To
@@ -95,16 +97,18 @@ export default class BitmapText extends core.Container
          * Disable by setting value to 0
          *
          * @member {number}
+         * @private
          */
-        this.maxWidth = 0;
+        this._maxWidth = 0;
 
         /**
          * The max line height. This is useful when trying to use the total height of the Text,
          * ie: when trying to vertically align.
          *
          * @member {number}
+         * @private
          */
-        this.maxLineHeight = 0;
+        this._maxLineHeight = 0;
 
         /**
          * Text anchor. read-only
@@ -143,6 +147,7 @@ export default class BitmapText extends core.Container
         let line = 0;
         let lastSpace = -1;
         let lastSpaceWidth = 0;
+        let spacesRemoved = 0;
         let maxLineHeight = 0;
 
         for (let i = 0; i < this.text.length; i++)
@@ -167,11 +172,12 @@ export default class BitmapText extends core.Container
                 continue;
             }
 
-            if (lastSpace !== -1 && this.maxWidth > 0 && pos.x * scale > this.maxWidth)
+            if (lastSpace !== -1 && this._maxWidth > 0 && pos.x * scale > this._maxWidth)
             {
-                core.utils.removeItems(chars, lastSpace, i - lastSpace);
+                core.utils.removeItems(chars, lastSpace - spacesRemoved, i - lastSpace);
                 i = lastSpace;
                 lastSpace = -1;
+                ++spacesRemoved;
 
                 lineWidths.push(lastSpaceWidth);
                 maxLineWidth = Math.max(maxLineWidth, lastSpaceWidth);
@@ -274,7 +280,7 @@ export default class BitmapText extends core.Container
                 this._glyphs[i].y -= this._textHeight * this.anchor.y;
             }
         }
-        this.maxLineHeight = maxLineHeight * scale;
+        this._maxLineHeight = maxLineHeight * scale;
     }
 
     /**
@@ -429,6 +435,42 @@ export default class BitmapText extends core.Container
     }
 
     /**
+     * The max width of this bitmap text in pixels. If the text provided is longer than the
+     * value provided, line breaks will be automatically inserted in the last whitespace.
+     * Disable by setting value to 0
+     *
+     * @member {number}
+     */
+    get maxWidth()
+    {
+        return this._maxWidth;
+    }
+
+    set maxWidth(value) // eslint-disable-line require-jsdoc
+    {
+        if (this._maxWidth === value)
+        {
+            return;
+        }
+        this._maxWidth = value;
+        this.dirty = true;
+    }
+
+    /**
+     * The max line height. This is useful when trying to use the total height of the Text,
+     * ie: when trying to vertically align.
+     *
+     * @member {number}
+     * @readonly
+     */
+    get maxLineHeight()
+    {
+        this.validate();
+
+        return this._maxLineHeight;
+    }
+
+    /**
      * The width of the overall text, different from fontSize,
      * which is defined in the style object
      *
@@ -469,10 +511,12 @@ export default class BitmapText extends core.Container
         const data = {};
         const info = xml.getElementsByTagName('info')[0];
         const common = xml.getElementsByTagName('common')[0];
+        const fileName = xml.getElementsByTagName('page')[0].getAttribute('file');
+        const res = getResolutionOfUrl(fileName, settings.RESOLUTION);
 
         data.font = info.getAttribute('face');
         data.size = parseInt(info.getAttribute('size'), 10);
-        data.lineHeight = parseInt(common.getAttribute('lineHeight'), 10);
+        data.lineHeight = parseInt(common.getAttribute('lineHeight'), 10) / res;
         data.chars = {};
 
         // parse letters
@@ -484,16 +528,16 @@ export default class BitmapText extends core.Container
             const charCode = parseInt(letter.getAttribute('id'), 10);
 
             const textureRect = new core.Rectangle(
-                parseInt(letter.getAttribute('x'), 10) + texture.frame.x,
-                parseInt(letter.getAttribute('y'), 10) + texture.frame.y,
-                parseInt(letter.getAttribute('width'), 10),
-                parseInt(letter.getAttribute('height'), 10)
+                (parseInt(letter.getAttribute('x'), 10) / res) + (texture.frame.x / res),
+                (parseInt(letter.getAttribute('y'), 10) / res) + (texture.frame.y / res),
+                parseInt(letter.getAttribute('width'), 10) / res,
+                parseInt(letter.getAttribute('height'), 10) / res
             );
 
             data.chars[charCode] = {
-                xOffset: parseInt(letter.getAttribute('xoffset'), 10),
-                yOffset: parseInt(letter.getAttribute('yoffset'), 10),
-                xAdvance: parseInt(letter.getAttribute('xadvance'), 10),
+                xOffset: parseInt(letter.getAttribute('xoffset'), 10) / res,
+                yOffset: parseInt(letter.getAttribute('yoffset'), 10) / res,
+                xAdvance: parseInt(letter.getAttribute('xadvance'), 10) / res,
                 kerning: {},
                 texture: new core.Texture(texture.baseTexture, textureRect),
 
@@ -506,9 +550,9 @@ export default class BitmapText extends core.Container
         for (let i = 0; i < kernings.length; i++)
         {
             const kerning = kernings[i];
-            const first = parseInt(kerning.getAttribute('first'), 10);
-            const second = parseInt(kerning.getAttribute('second'), 10);
-            const amount = parseInt(kerning.getAttribute('amount'), 10);
+            const first = parseInt(kerning.getAttribute('first'), 10) / res;
+            const second = parseInt(kerning.getAttribute('second'), 10) / res;
+            const amount = parseInt(kerning.getAttribute('amount'), 10) / res;
 
             if (data.chars[second])
             {
