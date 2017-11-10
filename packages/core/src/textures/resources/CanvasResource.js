@@ -1,5 +1,12 @@
 import TextureResource from './TextureResource';
 
+/**
+ * Resource type for HTMLCanvasElement.
+ * @class
+ * @extends PIXI.TextureResource
+ * @memberof PIXI
+ * @param {HTMLCanvasElement} source - Canvas element to use
+ */
 export default class CanvasResource extends TextureResource
 {
     constructor(source)

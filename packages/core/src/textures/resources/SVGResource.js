@@ -1,14 +1,22 @@
-import { decomposeDataUri, getSvgSize, uid } from '@pixi/utils';
+import { decomposeDataUri, uid } from '@pixi/utils';
 import TextureResource from './TextureResource';
 
+/**
+ * Resource type for SVG elements and graphics.
+ * @class
+ * @extends PIXI.TextureResource
+ * @memberof PIXI
+ * @param {SVGResource} svgSource - Source SVG element.
+ * @param {number} [scale=1] Scale to apply to SVG.
+ */
 export default class SVGResource extends TextureResource
 {
-    constructor(svgSource, scale)
+    constructor(svgSource, scale = 1)
     {
         super();
 
         this.svgSource = svgSource;
-        this.scale = 1 || scale;
+        this.scale = scale;
         this.uploadable = true;
 
         this.resolve = null;
@@ -23,6 +31,8 @@ export default class SVGResource extends TextureResource
     /**
      * Checks if `source` is an SVG image and whether it's loaded via a URL or a data URI. Then calls
      * `_loadSvgSourceUsingDataUri` or `_loadSvgSourceUsingXhr`.
+     *
+     * @private
      */
     _loadSvgSource()
     {
@@ -41,6 +51,8 @@ export default class SVGResource extends TextureResource
 
     /**
      * Loads an SVG string from `imageUrl` using XHR and then calls `_loadSvgSourceUsingString`.
+     *
+     * @private
      */
     _loadSvgSourceUsingXhr()
     {
@@ -74,13 +86,14 @@ export default class SVGResource extends TextureResource
      * created canvas is the new `source`. The SVG is scaled using `sourceScale`. Called by
      * `_loadSvgSourceUsingXhr` or `_loadSvgSourceUsingDataUri`.
      *
+     * @private
      * @param  {string} svgString SVG source as string
      *
      * @fires loaded
      */
     _loadSvgSourceUsingString(svgString)
     {
-        const svgSize = getSvgSize(svgString);
+        const svgSize = SVGResource.getSize(svgString);
 
         // TODO do we need to wait for this to load?
         // seems instant!
@@ -118,8 +131,58 @@ export default class SVGResource extends TextureResource
         this.resolve(this);
     }
 
+    /**
+     * Typedef for Size object.
+     *
+     * @typedef {object} PIXI.SVGResource~Size
+     * @property {number} width - Width component
+     * @property {number} height - Height component
+     */
+
+    /**
+     * Get size from an svg string using regexp.
+     *
+     * @method
+     * @param {string} svgString - a serialized svg element
+     * @return {PIXI.SVGResource~Size} image extension
+     */
+    static getSize(svgString)
+    {
+        const sizeMatch = SVGResource.SVG_SIZE.exec(svgString);
+        const size = {};
+
+        if (sizeMatch)
+        {
+            size[sizeMatch[1]] = Math.round(parseFloat(sizeMatch[3]));
+            size[sizeMatch[5]] = Math.round(parseFloat(sizeMatch[7]));
+        }
+
+        return size;
+    }
+
     static from(url)
     {
         return new SVGResource(url);
     }
 }
+
+/**
+ * List of common SVG file extensions supported by SVGResource.
+ * @constant
+ * @member {Array<string>}
+ * @static
+ * @readonly
+ */
+SVGResource.TYPES = ['svg'];
+
+/**
+ * RegExp for SVG size.
+ *
+ * @static
+ * @constant
+ * @name SVG_SIZE
+ * @memberof PIXI.SVGResource
+ * @type {RegExp|string}
+ * @example &lt;svg width="100" height="100"&gt;&lt;/svg&gt;
+ */
+SVGResource.SVG_SIZE = /<svg[^>]*(?:\s(width|height)=('|")(\d*(?:\.\d+)?)(?:px)?('|"))[^>]*(?:\s(width|height)=('|")(\d*(?:\.\d+)?)(?:px)?('|"))[^>]*>/i; // eslint-disable-line max-len

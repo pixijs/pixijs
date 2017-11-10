@@ -19,9 +19,9 @@
     "url": "https://github.com/pixijs/pixi.js.git"
   },
   "scripts": {
-    "build": "rollup -cp && rollup -cp -f umd",
-    "build:dev": "rollup -c && rollup -c -f umd",
-    "watch": "rollup -cw -f umd",
+    "build": "rollup -p -b -c node_modules/.bin/config -r src/deprecated.js",
+    "build:dev": "rollup -b -c node_modules/.bin/config -r src/deprecated.js",
+    "watch": "rollup -w -b -c node_modules/.bin/config -r src/deprecated.js",
     "postversion": "npm run build",
     "test": "tester"
   },
@@ -35,6 +35,8 @@
     "@pixi/app": "^5.0.0-alpha",
     "@pixi/core": "^5.0.0-alpha",
     "@pixi/accessibility": "^5.0.0-alpha",
+    "@pixi/constants": "^5.0.0-alpha",
+    "@pixi/display": "^5.0.0-alpha",
     "@pixi/extract": "^5.0.0-alpha",
     "@pixi/filter-alpha": "^5.0.0-alpha",
     "@pixi/filter-blur": "^5.0.0-alpha",
@@ -45,13 +47,16 @@
     "@pixi/graphics": "^5.0.0-alpha",
     "@pixi/interaction": "^5.0.0-alpha",
     "@pixi/loaders": "^5.0.0-alpha",
+    "@pixi/math": "^5.0.0-alpha",
     "@pixi/mesh": "^5.0.0-alpha",
     "@pixi/mixin-cache-as-bitmap": "^5.0.0-alpha",
     "@pixi/mixin-get-child-by-name": "^5.0.0-alpha",
     "@pixi/mixin-get-global-position": "^5.0.0-alpha",
+    "@pixi/mixin-app-loader": "^5.0.0-alpha",
     "@pixi/particles": "^5.0.0-alpha",
     "@pixi/polyfill": "^5.0.0-alpha",
     "@pixi/prepare": "^5.0.0-alpha",
+    "@pixi/settings": "^5.0.0-alpha",
     "@pixi/sprite": "^5.0.0-alpha",
     "@pixi/spritesheet": "^5.0.0-alpha",
     "@pixi/sprite-animated": "^5.0.0-alpha",
@@ -62,8 +67,6 @@
     "@pixi/utils": "^5.0.0-alpha",
     "@internal/builder": "^5.0.0-alpha",
     "@internal/tester": "^5.0.0-alpha",
-    "rimraf": "^2.6.2",
-    "rollup": "^0.50.0",
-    "rollup-watch": "^4.3.1"
+    "rollup": "^0.50.0"
   }
 }

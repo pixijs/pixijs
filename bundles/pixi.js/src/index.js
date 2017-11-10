@@ -11,6 +11,9 @@ export * from '@pixi/text-bitmap';
 export * from '@pixi/graphics';
 export * from '@pixi/sprite-animated';
 export * from '@pixi/sprite-tiling';
+export * from '@pixi/math';
+export * from '@pixi/constants';
+export * from '@pixi/display';
 
 // export libs
 import * as accessibility from '@pixi/accessibility';
@@ -21,17 +24,18 @@ import * as mesh from '@pixi/mesh';
 import * as prepare from '@pixi/prepare';
 // import * as particles from '@pixi/particles';
 import * as filters from './filters';
+import * as utils from '@pixi/utils';
+import * as ticker from '@pixi/ticker';
+import { settings } from '@pixi/settings';
 
 // imported for side effect of extending the prototype only, contains no exports
 import '@pixi/mixin-cache-as-bitmap';
 import '@pixi/mixin-get-child-by-name';
 import '@pixi/mixin-get-global-position';
-
-import { deprecation } from './deprecation';
+import '@pixi/mixin-app-loader';
 
 // handle mixins now, after all code has been added
-import { mixins } from '@pixi/utils';
-mixins.performMixins();
+utils.mixins.performMixins();
 
 /**
  * Alias for {@link PIXI.loaders.shared}.
@@ -39,7 +43,7 @@ mixins.performMixins();
  * @memberof PIXI
  * @type {PIXI.loader.Loader}
  */
-const loader = loaders.shared || null;
+export const loader = loaders.shared;
 
 export {
     accessibility,
@@ -50,11 +54,7 @@ export {
     mesh,
     // particles,
     prepare,
-    loader,
+    utils,
+    ticker,
+    settings,
 };
-
-// Always export PixiJS globally.
-global.PIXI = exports; // eslint-disable-line
-
-// Apply deprecations
-deprecation(global.PIXI);
