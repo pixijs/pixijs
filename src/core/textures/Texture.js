@@ -113,7 +113,7 @@ export default class Texture extends EventEmitter
          *
          * @member {PIXI.Rectangle}
          */
-        this.orig = orig || frame;// new Rectangle(0, 0, 1, 1);
+        this.orig = orig || new Rectangle(0, 0, frame.width, frame.height);
 
         this._rotate = Number(rotate || 0);
 
