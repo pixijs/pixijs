@@ -4,7 +4,7 @@ import { settings } from '@pixi/settings';
  * Creates a Canvas element of the given size.
  *
  * @class
- * @memberof PIXI
+ * @memberof PIXI.utils
  */
 export default class CanvasRenderTarget
 {

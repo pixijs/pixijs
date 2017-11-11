@@ -260,8 +260,7 @@ describe('PIXI.Graphics', function ()
     describe('mask', function ()
     {
         // disabled as canvas renderer is not working on next branch yet
-        /*
-        it('should trigger interaction callback when no mask present', function ()
+        /* it.skip('should trigger interaction callback when no mask present', function ()
         {
             const stage = new Container();
             const pointer = new MockPointer(stage);
@@ -282,9 +281,8 @@ describe('PIXI.Graphics', function ()
 
             expect(spy).to.have.been.calledOnce;
         });
-        */
-        /*
-        it('should trigger interaction callback when mask uses beginFill', function ()
+
+        it.skip('should trigger interaction callback when mask uses beginFill', function ()
         {
             const stage = new Container();
             const pointer = new MockPointer(stage);
@@ -305,7 +303,8 @@ describe('PIXI.Graphics', function ()
 
             expect(spy).to.have.been.calledOnce;
         });
-        it('should not trigger interaction callback when mask doesn\'t use beginFill', function ()
+
+        it.skip('should not trigger interaction callback when mask doesn\'t use beginFill', function ()
         {
             const stage = new Container();
             const pointer = new MockPointer(stage);
@@ -326,7 +325,7 @@ describe('PIXI.Graphics', function ()
             expect(spy).to.have.not.been.called;
         });
 
-        it('should trigger interaction callback when mask doesn\'t use beginFill but hitArea is defined', function ()
+        it.skip('should trigger interaction callback when mask doesn\'t use beginFill but hitArea is defined', function ()
         {
             const stage = new Container();
             const pointer = new MockPointer(stage);
@@ -348,7 +347,7 @@ describe('PIXI.Graphics', function ()
             expect(spy).to.have.been.calledOnce;
         });
 
-        it('should trigger interaction callback when mask is a sprite', function ()
+        it.skip('should trigger interaction callback when mask is a sprite', function ()
         {
             const stage = new Container();
             const pointer = new MockPointer(stage);
@@ -367,8 +366,7 @@ describe('PIXI.Graphics', function ()
             pointer.click(10, 10);
 
             expect(spy).to.have.been.calledOnce;
-        });
-        */
+        });*/
 
         it('should calculate tint, alpha and blendMode of fastRect correctly', withGL(function ()
         {

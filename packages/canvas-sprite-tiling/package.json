@@ -1,9 +1,9 @@
 {
-  "name": "@pixi/canvas-mesh",
+  "name": "@pixi/canvas-sprite-tiling",
   "version": "5.0.0-alpha",
-  "main": "lib/canvas-mesh.js",
-  "module": "lib/canvas-mesh.es.js",
-  "description": "PixiJS Application",
+  "main": "lib/canvas-sprite-tiling.js",
+  "module": "lib/canvas-sprite-tiling.es.js",
+  "description": "Support for legacy browser JavaScript environments",
   "author": "Mat Groves",
   "contributors": [
     "Matt Karl <matt@mattkarl.com>"
@@ -29,8 +29,9 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/constants": "^5.0.0-alpha",
-    "@pixi/mesh": "^5.0.0-alpha"
+    "@pixi/canvas-sprite": "^5.0.0-alpha",
+    "@pixi/utils": "^5.0.0-alpha",
+    "@pixi/sprite-tiling": "^5.0.0-alpha"
   },
   "devDependencies": {
     "@internal/builder": "^5.0.0-alpha",

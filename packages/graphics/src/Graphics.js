@@ -1,15 +1,12 @@
 import { Container, Bounds } from '@pixi/display';
 import { BLEND_MODES } from '@pixi/constants';
-import { CanvasRenderer } from '@pixi/canvas-renderer';
-import { RenderTexture, Texture } from '@pixi/core';
-import { Matrix, Point, Rectangle, RoundedRectangle, Ellipse, Polygon, Circle, SHAPES } from '@pixi/math';
+import { Texture } from '@pixi/core';
+import { Point, Rectangle, RoundedRectangle, Ellipse, Polygon, Circle, SHAPES } from '@pixi/math';
 import { hex2rgb, rgb2hex } from '@pixi/utils';
 import bezierCurveTo from './utils/bezierCurveTo';
 import { Sprite } from '@pixi/sprite';
 import GraphicsData from './GraphicsData';
 
-let canvasRenderer;
-const tempMatrix = new Matrix();
 const tempPoint = new Point();
 const tempColor1 = new Float32Array(4);
 const tempColor2 = new Float32Array(4);
@@ -802,22 +799,6 @@ export default class Graphics extends Container
     }
 
     /**
-     * Renders the object using the Canvas renderer
-     *
-     * @private
-     * @param {PIXI.CanvasRenderer} renderer - The renderer
-     */
-    _renderCanvas(renderer)
-    {
-        if (this.isMask === true)
-        {
-            return;
-        }
-
-        renderer.plugins.graphics.render(this);
-    }
-
-    /**
      * Retrieves the bounds of the graphic shape as a rectangle object
      *
      * @private
@@ -1052,42 +1033,6 @@ export default class Graphics extends Container
         this.dirty++;
 
         return data;
-    }
-
-    /**
-     * Generates a canvas texture.
-     *
-     * @param {number} scaleMode - The scale mode of the texture.
-     * @param {number} resolution - The resolution of the texture.
-     * @return {PIXI.Texture} The new texture.
-     */
-    generateCanvasTexture(scaleMode, resolution = 1)
-    {
-        const bounds = this.getLocalBounds();
-
-        const canvasBuffer = RenderTexture.create(bounds.width, bounds.height, scaleMode, resolution);
-
-        if (!canvasRenderer)
-        {
-            canvasRenderer = new CanvasRenderer();
-        }
-
-        this.transform.updateLocalTransform();
-        this.transform.localTransform.copy(tempMatrix);
-
-        tempMatrix.invert();
-
-        tempMatrix.tx -= bounds.x;
-        tempMatrix.ty -= bounds.y;
-
-        canvasRenderer.render(this, canvasBuffer, true, tempMatrix);
-
-        const texture = Texture.fromCanvas(canvasBuffer.baseTexture._canvasRenderTarget.canvas, scaleMode, 'graphics');
-
-        texture.baseTexture.resolution = resolution;
-        texture.baseTexture.update();
-
-        return texture;
     }
 
     /**

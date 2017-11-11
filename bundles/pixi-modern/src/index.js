@@ -11,18 +11,29 @@ export * from '@pixi/math';
 export * from '@pixi/constants';
 export * from '@pixi/display';
 
-import './plugins';
-
-import * as accessibility from '@pixi/accessibility';
+import { Renderer } from '@pixi/core';
 import * as interaction from '@pixi/interaction';
 import * as extract from '@pixi/extract';
-import * as loaders from '@pixi/loaders';
-import * as mesh from '@pixi/mesh';
 import * as prepare from '@pixi/prepare';
+import * as mesh from '@pixi/mesh';
+import { SpriteRenderer } from '@pixi/sprite';
+import { TilingSpriteRenderer } from '@pixi/sprite-tiling';
+import { GraphicsRenderer } from '@pixi/graphics';
+import * as accessibility from '@pixi/accessibility';
+import * as loaders from '@pixi/loaders';
 import * as filters from './filters';
 import * as utils from '@pixi/utils';
 import * as ticker from '@pixi/ticker';
 import { settings } from '@pixi/settings';
+
+Renderer.registerPlugin('accessibility', accessibility.AccessibilityManager);
+Renderer.registerPlugin('extract', extract.Extract);
+Renderer.registerPlugin('graphics', GraphicsRenderer);
+Renderer.registerPlugin('interaction', interaction.InteractionManager);
+Renderer.registerPlugin('mesh', mesh.MeshRenderer);
+Renderer.registerPlugin('prepare', prepare.Prepare);
+Renderer.registerPlugin('sprite', SpriteRenderer);
+Renderer.registerPlugin('tilingSprite', TilingSpriteRenderer);
 
 import '@pixi/mixin-cache-as-bitmap';
 import '@pixi/mixin-get-child-by-name';
@@ -31,6 +42,12 @@ import '@pixi/mixin-app-loader';
 
 utils.mixins.performMixins();
 
+/**
+ * Alias for {@link PIXI.loaders.shared}.
+ * @name loader
+ * @memberof PIXI
+ * @type {PIXI.loader.Loader}
+ */
 export const loader = loaders.shared;
 
 export {

@@ -1,5 +1,5 @@
 import { RenderTexture } from '@pixi/core';
-import { CanvasRenderTarget } from '@pixi/canvas-renderer';
+import { CanvasRenderTarget } from '@pixi/utils';
 import { Rectangle } from '@pixi/math';
 
 const TEMP_RECT = new Rectangle();

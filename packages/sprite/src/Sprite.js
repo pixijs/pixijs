@@ -312,17 +312,6 @@ export default class Sprite extends Container
     }
 
     /**
-    * Renders the object using the Canvas renderer
-    *
-    * @private
-    * @param {PIXI.CanvasRenderer} renderer - The renderer
-    */
-    _renderCanvas(renderer)
-    {
-        renderer.plugins[this.pluginName].render(this);
-    }
-
-    /**
      * Updates the bounds of the sprite.
      *
      * @private

@@ -29,7 +29,10 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/math": "^5.0.0-alpha"
+    "@pixi/core": "^5.0.0-alpha",
+    "@pixi/math": "^5.0.0-alpha",
+    "@pixi/graphics": "^5.0.0-alpha",
+    "@pixi/canvas-renderer": "^5.0.0-alpha"
   },
   "devDependencies": {
     "@internal/builder": "^5.0.0-alpha",

@@ -87,6 +87,20 @@ Object.defineProperties(PIXI, {
             return PIXI.Renderer;
         },
     },
+
+    /**
+     * @class PIXI.CanvasRenderTarget
+     * @see PIXI.utils.CanvasRenderTarget
+     * @deprecated since 5.0.0
+     */
+    CanvasRenderTarget: {
+        get()
+        {
+            warn('PIXI.CanvasRenderTarget has moved to PIXI.utils.CanvasRenderTarget');
+
+            return PIXI.utils.CanvasRenderTarget;
+        },
+    },
 });
 
 /**

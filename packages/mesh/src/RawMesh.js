@@ -100,17 +100,6 @@ export default class RawMesh extends Container
     }
 
     /**
-     * Renders the object using the Canvas renderer
-     *
-     * @private
-     * @param {PIXI.CanvasRenderer} renderer - The canvas renderer.
-     */
-    _renderCanvas(renderer)
-    {
-        renderer.plugins[this.pluginName].render(this);
-    }
-
-    /**
      * Updates the bounds of the mesh as a rectangle. The bounds calculation takes the worldTransform into account.
      * there must be a aVertexPosition attribute present in the geometry for bounds to be calcualted correctly.
      *
