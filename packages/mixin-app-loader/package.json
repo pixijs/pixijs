@@ -1,0 +1,41 @@
+{
+  "name": "@pixi/mixin-app-loader",
+  "version": "5.0.0-alpha",
+  "main": "lib/mixin-app-loader.js",
+  "module": "lib/mixin-app-loader.es.js",
+  "description": "Support for loader in Application",
+  "author": "Mat Groves",
+  "contributors": [
+    "Matt Karl <matt@mattkarl.com>"
+  ],
+  "homepage": "http://pixijs.com/",
+  "bugs": "https://github.com/pixijs/pixi.js/issues",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pixijs/pixi.js.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build:dev": "rollup -c node_modules/.bin/config",
+    "build": "rollup -p -c node_modules/.bin/config",
+    "watch": "rollup -w -c node_modules/.bin/config",
+    "postversion": "npm run build",
+    "test": "tester"
+  },
+  "files": [
+    "lib"
+  ],
+  "dependencies": {
+    "@pixi/app": "^5.0.0-alpha",
+    "@pixi/loaders": "^5.0.0-alpha"
+  },
+  "devDependencies": {
+    "@pixi/utils": "^5.0.0-alpha",
+    "@internal/tester": "^5.0.0-alpha",
+    "@internal/builder": "^5.0.0-alpha",
+    "rollup": "^0.50.0"
+  }
+}

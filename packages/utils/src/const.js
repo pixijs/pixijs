@@ -1,15 +1,4 @@
 /**
- * Regexp for image type by extension.
- *
- * @static
- * @constant
- * @memberof PIXI
- * @type {RegExp|string}
- * @example `image.png`
- */
-export const URL_FILE_EXTENSION = /\.(\w{3,4})(?:$|\?|#)/i;
-
-/**
  * Regexp for data URI.
  * Based on: {@link https://github.com/ragingwind/data-uri-regex}
  *
@@ -21,15 +10,3 @@ export const URL_FILE_EXTENSION = /\.(\w{3,4})(?:$|\?|#)/i;
  * @example data:image/png;base64
  */
 export const DATA_URI = /^\s*data:(?:([\w-]+)\/([\w+.-]+))?(?:;(charset=[\w-]+|base64))?,(.*)/i;
-
-/**
- * Regexp for SVG size.
- *
- * @static
- * @constant
- * @name SVG_SIZE
- * @memberof PIXI
- * @type {RegExp|string}
- * @example &lt;svg width="100" height="100"&gt;&lt;/svg&gt;
- */
-export const SVG_SIZE = /<svg[^>]*(?:\s(width|height)=('|")(\d*(?:\.\d+)?)(?:px)?('|"))[^>]*(?:\s(width|height)=('|")(\d*(?:\.\d+)?)(?:px)?('|"))[^>]*>/i; // eslint-disable-line max-len
