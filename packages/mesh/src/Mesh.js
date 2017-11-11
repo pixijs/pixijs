@@ -51,7 +51,7 @@ export default class Mesh extends RawMesh
         this.uniforms = uniforms;
         this.texture = texture;
 
-        this._tintRGB = new Float32Array([1, 1, 1])
+        this._tintRGB = new Float32Array([1, 1, 1]);
         this._tint = 0xFFFFFF;
         this.tint = 0xFFFFFF;
 
@@ -120,7 +120,6 @@ export default class Mesh extends RawMesh
         this._texture = value;
         this.uniforms.uSampler = this.texture;
 
-
         if (value)
         {
             // wait for the texture to load
@@ -137,7 +136,6 @@ export default class Mesh extends RawMesh
 
     _renderWebGL(renderer)
     {
-
         const uColor = this.uniforms.uColor;
         const tintRGB = this._tintRGB;
         const alpha = this.alpha;
