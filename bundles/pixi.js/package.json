@@ -37,6 +37,7 @@
     "@pixi/canvas-renderer": "^5.0.0-alpha",
     "@pixi/canvas-sprite": "^5.0.0-alpha",
     "@pixi/canvas-sprite-tiling": "^5.0.0-alpha",
+    "@pixi/polyfill": "^5.0.0-alpha",
     "@internal/builder": "^5.0.0-alpha",
     "@internal/tester": "^5.0.0-alpha",
     "pixi-modern": "^5.0.0-alpha",
