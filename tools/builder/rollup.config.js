@@ -75,7 +75,7 @@ if (prod)
             {
                 const { value, type } = comment;
 
-                return type === 'comment2' && value.indexOf(pkg.name) > -1;
+                return type === 'comment2' && value.indexOf(` * ${pkg.name} `) > -1;
             },
         },
     }, minify));
