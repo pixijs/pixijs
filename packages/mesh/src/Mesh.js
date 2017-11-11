@@ -1,7 +1,7 @@
 import RawMesh from './RawMesh';
 import { Geometry, Program, Shader } from '@pixi/core';
 import { BLEND_MODES } from '@pixi/constants';
-import { hex2rgb } from '@pixi/utils';
+import { hex2rgb, premultiplyRgba } from '@pixi/utils';
 import vertex from './webgl/mesh.vert';
 import fragment from './webgl/mesh.frag';
 
@@ -136,15 +136,9 @@ export default class Mesh extends RawMesh
 
     _renderWebGL(renderer)
     {
-        const uColor = this.uniforms.uColor;
-        const tintRGB = this._tintRGB;
-        const alpha = this.alpha;
+        const baseTex = this._texture.baseTexture;
 
-        uColor[0] = tintRGB[0] * alpha;
-        uColor[1] = tintRGB[1] * alpha;
-        uColor[2] = tintRGB[2] * alpha;
-        uColor[3] = alpha;
-
+        premultiplyRgba(this._tintRGB, this.worldAlpha, this.uniforms.uColor, baseTex.premultiplyAlpha);
         super._renderWebGL(renderer);
     }
     /**
