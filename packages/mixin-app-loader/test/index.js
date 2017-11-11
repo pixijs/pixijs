@@ -1,10 +1,14 @@
 const { Application } = require('@pixi/app');
 const { Loader, shared } = require('@pixi/loaders');
 const { skipHello } = require('@pixi/utils');
+const { autoDetectRenderer } = require('@pixi/canvas-renderer');
 
 require('../');
 
 skipHello();
+
+// Use fallback if no webgl
+Application.prototype.createRenderer = autoDetectRenderer;
 
 describe('PIXI.Application#loader', function ()
 {
