@@ -21,12 +21,12 @@ const tempPolygon = new Polygon();
  *
  * @class
  * @extends PIXI.Container
- * @memberof PIXI.mesh
+ * @memberof PIXI
  */
 export default class RawMesh extends Container
 {
     /**
-     * @param {PIXI.mesh.Geometry} geometry  the geometry the mesh will use
+     * @param {PIXI.Geometry} geometry  the geometry the mesh will use
      * @param {PIXI.Shader} shader  the shader the mesh will use
      * @param {PIXI.State} state  the state that the webGL context is required to be in to render the mesh
      * @param {number} drawMode  the drawMode, can be any of the PIXI.DRAW_MODES consts
@@ -37,7 +37,7 @@ export default class RawMesh extends Container
 
         /**
          * the geometry the mesh will use
-         * @type {PIXI.mesh.Geometry}
+         * @type {PIXI.Geometry}
          */
         this.geometry = geometry;
 
@@ -54,10 +54,10 @@ export default class RawMesh extends Container
         this.state = state || new State();
 
         /**
-         * The way the Mesh should be drawn, can be any of the {@link PIXI.mesh.RawMesh.DRAW_MODES} consts
+         * The way the Mesh should be drawn, can be any of the {@link PIXI.RawMesh.DRAW_MODES} consts
          *
          * @member {number}
-         * @see PIXI.mesh.RawMesh.DRAW_MODES
+         * @see PIXI.RawMesh.DRAW_MODES
          */
         this.drawMode = drawMode;
 

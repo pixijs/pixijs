@@ -41,24 +41,6 @@ const PIXI = exports;
 
 Object.defineProperties(PIXI, {
     /**
-     * @deprecated since 5.0.0
-     * @see PIXI.ticker.UPDATE_PRIORITY
-     * @static
-     * @constant
-     * @name UPDATE_PRIORITY
-     * @memberof PIXI
-     * @type {object}
-     */
-    UPDATE_PRIORITY: {
-        get()
-        {
-            warn('PIXI.UPDATE_PRIORITY has moved to PIXI.ticker.UPDATE_PRIORITY');
-
-            return PIXI.ticker.UPDATE_PRIORITY;
-        },
-    },
-
-    /**
      * @constant
      * @name SVG_SIZE
      * @memberof PIXI
@@ -199,6 +181,145 @@ Object.defineProperties(PIXI.utils, {
             warn('PIXI.utils.getSvgSize has moved to PIXI.SVGResource.getSize');
 
             return PIXI.SVGResource.getSize;
+        },
+    },
+});
+
+/**
+ * All classes on this namespace have moved to the high-level `PIXI` object.
+ * @namespace PIXI.mesh
+ * @deprecated since 5.0.0
+ */
+PIXI.mesh = {};
+
+Object.defineProperties(PIXI.mesh, {
+    /**
+     * @class PIXI.mesh.Mesh
+     * @see PIXI.Mesh
+     * @deprecated since 5.0.0
+     */
+    Mesh: {
+        get()
+        {
+            warn('PIXI.mesh.Mesh has moved to PIXI.Mesh');
+
+            return PIXI.Mesh;
+        },
+    },
+    /**
+     * @class PIXI.mesh.NineSlicePlane
+     * @see PIXI.NineSlicePlane
+     * @deprecated since 5.0.0
+     */
+    NineSlicePlane: {
+        get()
+        {
+            warn('PIXI.mesh.NineSlicePlane has moved to PIXI.NineSlicePlane');
+
+            return PIXI.NineSlicePlane;
+        },
+    },
+    /**
+     * @class PIXI.mesh.Plane
+     * @see PIXI.Plane
+     * @deprecated since 5.0.0
+     */
+    Plane: {
+        get()
+        {
+            warn('PIXI.mesh.Plane has moved to PIXI.Plane');
+
+            return PIXI.Plane;
+        },
+    },
+    /**
+     * @class PIXI.mesh.Rope
+     * @see PIXI.Rope
+     * @deprecated since 5.0.0
+     */
+    Rope: {
+        get()
+        {
+            warn('PIXI.mesh.Rope has moved to PIXI.Rope');
+
+            return PIXI.Rope;
+        },
+    },
+    /**
+     * @class PIXI.mesh.RawMesh
+     * @see PIXI.RawMesh
+     * @deprecated since 5.0.0
+     */
+    RawMesh: {
+        get()
+        {
+            warn('PIXI.mesh.RawMesh has moved to PIXI.RawMesh');
+
+            return PIXI.RawMesh;
+        },
+    },
+    /**
+     * @class PIXI.mesh.CanvasMeshRenderer
+     * @see PIXI.CanvasMeshRenderer
+     * @deprecated since 5.0.0
+     */
+    CanvasMeshRenderer: {
+        get()
+        {
+            warn('PIXI.mesh.CanvasMeshRenderer has moved to PIXI.CanvasMeshRenderer');
+
+            return PIXI.CanvasMeshRenderer;
+        },
+    },
+    /**
+     * @class PIXI.mesh.MeshRenderer
+     * @see PIXI.MeshRenderer
+     * @deprecated since 5.0.0
+     */
+    MeshRenderer: {
+        get()
+        {
+            warn('PIXI.mesh.MeshRenderer has moved to PIXI.MeshRenderer');
+
+            return PIXI.MeshRenderer;
+        },
+    },
+});
+
+/*
+ * This namespace has been removed and items have been moved to
+ * the top-level `PIXI` object.
+ * @namespace PIXI.ticker
+ * @deprecated since 5.0.0
+ */
+PIXI.ticker = {};
+
+Object.defineProperties(PIXI.ticker, {
+    /**
+     * @class PIXI.ticker.Ticker
+     * @deprecated since 5.0.0
+     * @see PIXI.Ticker
+     */
+    Ticker: {
+        get()
+        {
+            warn('PIXI.ticker.Ticker has moved to PIXI.Ticker');
+
+            return PIXI.Ticker;
+        },
+    },
+    /**
+     * @name PIXI.ticker.shared
+     * @type {PIXI.Ticker}
+     * @deprecated since 5.0.0
+     * @see PIXI.Ticker.shared
+     */
+    shared: {
+        get()
+        {
+            warn('PIXI.ticker.shared has moved to PIXI.Ticker.shared');
+
+            return PIXI.Ticker.shared;
         },
     },
 });

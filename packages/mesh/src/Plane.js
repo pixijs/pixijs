@@ -11,8 +11,8 @@ import Mesh from './Mesh';
  *  ```
  *
  * @class
- * @extends PIXI.mesh.Mesh
- * @memberof PIXI.mesh
+ * @extends PIXI.Mesh
+ * @memberof PIXI
  *
  */
 export default class Plane extends Mesh

@@ -1,5 +1,5 @@
 import TextureResource from './TextureResource';
-import { shared } from '@pixi/ticker';
+import { Ticker } from '@pixi/ticker';
 
 /**
  * Resource type for HTMLVideoElement.
@@ -104,7 +104,7 @@ export default class VideoResource extends TextureResource
 
         if (!this._isAutoUpdating && this.autoUpdate)
         {
-            shared.add(this.update, this);
+            Ticker.shared.add(this.update, this);
             this._isAutoUpdating = true;
         }
     }
@@ -118,7 +118,7 @@ export default class VideoResource extends TextureResource
     {
         if (this._isAutoUpdating)
         {
-            shared.remove(this.update, this);
+            Ticker.shared.remove(this.update, this);
             this._isAutoUpdating = false;
         }
     }
@@ -167,7 +167,7 @@ export default class VideoResource extends TextureResource
     {
         if (this._isAutoUpdating)
         {
-            shared.remove(this.update, this);
+            Ticker.shared.remove(this.update, this);
         }
         /*
         if (this.source && this.source._pixiId)
@@ -197,12 +197,12 @@ export default class VideoResource extends TextureResource
 
             if (!this._autoUpdate && this._isAutoUpdating)
             {
-                shared.remove(this.update, this);
+                Ticker.shared.remove(this.update, this);
                 this._isAutoUpdating = false;
             }
             else if (this._autoUpdate && !this._isAutoUpdating)
             {
-                shared.add(this.update, this);
+                Ticker.shared.add(this.update, this);
                 this._isAutoUpdating = true;
             }
         }

@@ -3,7 +3,7 @@
  *
  * @private
  * @class
- * @memberof PIXI.ticker
+ * @memberof PIXI
  */
 export default class TickerListener
 {

@@ -1,6 +1,6 @@
 import { Texture } from '@pixi/core';
 import { Sprite } from '@pixi/sprite';
-import { shared, UPDATE_PRIORITY } from '@pixi/ticker';
+import { Ticker, UPDATE_PRIORITY } from '@pixi/ticker';
 
 /**
  * @typedef FrameObject
@@ -34,7 +34,7 @@ export default class AnimatedSprite extends Sprite
     /**
      * @param {PIXI.Texture[]|FrameObject[]} textures - an array of {@link PIXI.Texture} or frame
      *  objects that make up the animation
-     * @param {boolean} [autoUpdate=true] - Whether to use PIXI.ticker.shared to auto update animation time.
+     * @param {boolean} [autoUpdate=true] - Whether to use PIXI.Ticker.shared to auto update animation time.
      */
     constructor(textures, autoUpdate)
     {
@@ -53,7 +53,7 @@ export default class AnimatedSprite extends Sprite
         this.textures = textures;
 
         /**
-         * `true` uses PIXI.ticker.shared to auto update animation time.
+         * `true` uses PIXI.Ticker.shared to auto update animation time.
          * @type {boolean}
          * @default true
          * @private
@@ -128,7 +128,7 @@ export default class AnimatedSprite extends Sprite
         this.playing = false;
         if (this._autoUpdate)
         {
-            shared.remove(this.update, this);
+            Ticker.shared.remove(this.update, this);
         }
     }
 
@@ -146,7 +146,7 @@ export default class AnimatedSprite extends Sprite
         this.playing = true;
         if (this._autoUpdate)
         {
-            shared.add(this.update, this, UPDATE_PRIORITY.HIGH);
+            Ticker.shared.add(this.update, this, UPDATE_PRIORITY.HIGH);
         }
     }
 
