@@ -41,24 +41,6 @@ const PIXI = exports;
 
 Object.defineProperties(PIXI, {
     /**
-     * @deprecated since 5.0.0
-     * @see PIXI.ticker.UPDATE_PRIORITY
-     * @static
-     * @constant
-     * @name UPDATE_PRIORITY
-     * @memberof PIXI
-     * @type {object}
-     */
-    UPDATE_PRIORITY: {
-        get()
-        {
-            warn('PIXI.UPDATE_PRIORITY has moved to PIXI.ticker.UPDATE_PRIORITY');
-
-            return PIXI.ticker.UPDATE_PRIORITY;
-        },
-    },
-
-    /**
      * @constant
      * @name SVG_SIZE
      * @memberof PIXI
@@ -251,6 +233,44 @@ Object.defineProperties(PIXI.mesh, {
             warn('PIXI.mesh.MeshRenderer has moved to PIXI.MeshRenderer');
 
             return PIXI.MeshRenderer;
+        },
+    },
+});
+
+/*
+ * This namespace has been removed and items have been moved to
+ * the top-level `PIXI` object.
+ * @namespace PIXI.ticker
+ * @deprecated since 5.0.0
+ */
+PIXI.ticker = {};
+
+Object.defineProperties(PIXI.ticker, {
+    /**
+     * @class PIXI.ticker.Ticker
+     * @deprecated since 5.0.0
+     * @see PIXI.Ticker
+     */
+    Ticker: {
+        get()
+        {
+            warn('PIXI.ticker.Ticker has moved to PIXI.Ticker');
+
+            return PIXI.Ticker;
+        },
+    },
+    /**
+     * @name PIXI.ticker.shared
+     * @type {PIXI.Ticker}
+     * @deprecated since 5.0.0
+     * @see PIXI.Ticker.shared
+     */
+    shared: {
+        get()
+        {
+            warn('PIXI.ticker.shared has moved to PIXI.Ticker.shared');
+
+            return PIXI.Ticker.shared;
         },
     },
 });

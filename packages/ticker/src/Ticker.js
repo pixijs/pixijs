@@ -10,7 +10,7 @@ import TickerListener from './TickerListener';
  * e.g. When the ticker is started and the emitter has listeners.
  *
  * @class
- * @memberof PIXI.ticker
+ * @memberof PIXI
  */
 export default class Ticker
 {
@@ -41,7 +41,7 @@ export default class Ticker
 
         /**
          * Whether or not this ticker should invoke the method
-         * {@link PIXI.ticker.Ticker#start} automatically
+         * {@link PIXI.Ticker#start} automatically
          * when a listener is added.
          *
          * @member {boolean}
@@ -51,8 +51,8 @@ export default class Ticker
 
         /**
          * Scalar time value from last frame to this frame.
-         * This value is capped by setting {@link PIXI.ticker.Ticker#minFPS}
-         * and is scaled with {@link PIXI.ticker.Ticker#speed}.
+         * This value is capped by setting {@link PIXI.Ticker#minFPS}
+         * and is scaled with {@link PIXI.Ticker#speed}.
          * **Note:** The cap may be exceeded by scaling.
          *
          * @member {number}
@@ -62,7 +62,7 @@ export default class Ticker
 
         /**
          * Time elapsed in milliseconds from last frame to this frame.
-         * Opposed to what the scalar {@link PIXI.ticker.Ticker#deltaTime}
+         * Opposed to what the scalar {@link PIXI.Ticker#deltaTime}
          * is based, this value is neither capped nor scaled.
          * If the platform supports DOMHighResTimeStamp,
          * this value will have a precision of 1 µs.
@@ -74,7 +74,7 @@ export default class Ticker
         this.elapsedMS = 1 / settings.TARGET_FPMS;
 
         /**
-         * The last time {@link PIXI.ticker.Ticker#update} was invoked.
+         * The last time {@link PIXI.Ticker#update} was invoked.
          * This value is also reset internally outside of invoking
          * update, but only when a new animation frame is requested.
          * If the platform supports DOMHighResTimeStamp,
@@ -86,7 +86,7 @@ export default class Ticker
         this.lastTime = -1;
 
         /**
-         * Factor of current {@link PIXI.ticker.Ticker#deltaTime}.
+         * Factor of current {@link PIXI.Ticker#deltaTime}.
          * @example
          * // Scales ticker.deltaTime to what would be
          * // the equivalent of approximately 120 FPS
@@ -99,16 +99,24 @@ export default class Ticker
 
         /**
          * Whether or not this ticker has been started.
-         * `true` if {@link PIXI.ticker.Ticker#start} has been called.
-         * `false` if {@link PIXI.ticker.Ticker#stop} has been called.
+         * `true` if {@link PIXI.Ticker#start} has been called.
+         * `false` if {@link PIXI.Ticker#stop} has been called.
          * While `false`, this value may change to `true` in the
-         * event of {@link PIXI.ticker.Ticker#autoStart} being `true`
+         * event of {@link PIXI.Ticker#autoStart} being `true`
          * and a listener is added.
          *
          * @member {boolean}
          * @default false
          */
         this.started = false;
+
+        /**
+         * If enabled, deleting is disabled.
+         * @member {boolean}
+         * @default false
+         * @private
+         */
+        this._protected = false;
 
         /**
          * Internal tick method bound to ticker instance.
@@ -198,7 +206,7 @@ export default class Ticker
      * @param {Function} fn - The listener function to be added for updates
      * @param {Function} [context] - The listener context
      * @param {number} [priority=PIXI.UPDATE_PRIORITY.NORMAL] - The priority for emitting
-     * @returns {PIXI.ticker.Ticker} This instance of a ticker
+     * @returns {PIXI.Ticker} This instance of a ticker
      */
     add(fn, context, priority = UPDATE_PRIORITY.NORMAL)
     {
@@ -211,7 +219,7 @@ export default class Ticker
      * @param {Function} fn - The listener function to be added for one update
      * @param {Function} [context] - The listener context
      * @param {number} [priority=PIXI.UPDATE_PRIORITY.NORMAL] - The priority for emitting
-     * @returns {PIXI.ticker.Ticker} This instance of a ticker
+     * @returns {PIXI.Ticker} This instance of a ticker
      */
     addOnce(fn, context, priority = UPDATE_PRIORITY.NORMAL)
     {
@@ -225,7 +233,7 @@ export default class Ticker
      *
      * @private
      * @param {TickerListener} listener - Current listener being added.
-     * @returns {PIXI.ticker.Ticker} This instance of a ticker
+     * @returns {PIXI.Ticker} This instance of a ticker
      */
     _addListener(listener)
     {
@@ -270,7 +278,7 @@ export default class Ticker
      *
      * @param {Function} fn - The listener function to be removed
      * @param {Function} [context] - The listener context to be removed
-     * @returns {PIXI.ticker.Ticker} This instance of a ticker
+     * @returns {PIXI.Ticker} This instance of a ticker
      */
     remove(fn, context)
     {
@@ -331,25 +339,28 @@ export default class Ticker
      */
     destroy()
     {
-        this.stop();
-
-        let listener = this._head.next;
-
-        while (listener)
+        if (!this._protected)
         {
-            listener = listener.destroy(true);
-        }
+            this.stop();
 
-        this._head.destroy();
-        this._head = null;
+            let listener = this._head.next;
+
+            while (listener)
+            {
+                listener = listener.destroy(true);
+            }
+
+            this._head.destroy();
+            this._head = null;
+        }
     }
 
     /**
      * Triggers an update. An update entails setting the
-     * current {@link PIXI.ticker.Ticker#elapsedMS},
-     * the current {@link PIXI.ticker.Ticker#deltaTime},
+     * current {@link PIXI.Ticker#elapsedMS},
+     * the current {@link PIXI.Ticker#deltaTime},
      * invoking all listeners with current deltaTime,
-     * and then finally setting {@link PIXI.ticker.Ticker#lastTime}
+     * and then finally setting {@link PIXI.Ticker#lastTime}
      * with the value of currentTime that was provided.
      * This method will be called automatically by animation
      * frame callbacks if the ticker instance has been started
@@ -418,8 +429,8 @@ export default class Ticker
      * The frames per second at which this ticker is running.
      * The default is approximately 60 in most modern browsers.
      * **Note:** This does not factor in the value of
-     * {@link PIXI.ticker.Ticker#speed}, which is specific
-     * to scaling {@link PIXI.ticker.Ticker#deltaTime}.
+     * {@link PIXI.Ticker#speed}, which is specific
+     * to scaling {@link PIXI.Ticker#deltaTime}.
      *
      * @member {number}
      * @readonly
@@ -431,9 +442,9 @@ export default class Ticker
 
     /**
      * Manages the maximum amount of milliseconds allowed to
-     * elapse between invoking {@link PIXI.ticker.Ticker#update}.
-     * This value is used to cap {@link PIXI.ticker.Ticker#deltaTime},
-     * but does not effect the measured value of {@link PIXI.ticker.Ticker#FPS}.
+     * elapse between invoking {@link PIXI.Ticker#update}.
+     * This value is used to cap {@link PIXI.Ticker#deltaTime},
+     * but does not effect the measured value of {@link PIXI.Ticker#FPS}.
      * When setting this property it is clamped to a value between
      * `0` and `PIXI.settings.TARGET_FPMS * 1000`.
      *
@@ -451,5 +462,60 @@ export default class Ticker
         const minFPMS = Math.min(Math.max(0, fps) / 1000, settings.TARGET_FPMS);
 
         this._maxElapsedMS = 1 / minFPMS;
+    }
+
+    /**
+     * The shared ticker instance used by {@link PIXI.AnimatedSprite}.
+     * and by {@link PIXI.interaction.InteractionManager}.
+     * The property {@link PIXI.Ticker#autoStart} is set to `true`
+     * for this instance. Please follow the examples for usage, including
+     * how to opt-out of auto-starting the shared ticker.
+     *
+     * @example
+     * let ticker = PIXI.Ticker.shared;
+     * // Set this to prevent starting this ticker when listeners are added.
+     * // By default this is true only for the PIXI.Ticker.shared instance.
+     * ticker.autoStart = false;
+     * // FYI, call this to ensure the ticker is stopped. It should be stopped
+     * // if you have not attempted to render anything yet.
+     * ticker.stop();
+     * // Call this when you are ready for a running shared ticker.
+     * ticker.start();
+     *
+     * @example
+     * // You may use the shared ticker to render...
+     * let renderer = PIXI.autoDetectRenderer(800, 600);
+     * let stage = new PIXI.Container();
+     * let interactionManager = PIXI.interaction.InteractionManager(renderer);
+     * document.body.appendChild(renderer.view);
+     * ticker.add(function (time) {
+     *     renderer.render(stage);
+     * });
+     *
+     * @example
+     * // Or you can just update it manually.
+     * ticker.autoStart = false;
+     * ticker.stop();
+     * function animate(time) {
+     *     ticker.update(time);
+     *     renderer.render(stage);
+     *     requestAnimationFrame(animate);
+     * }
+     * animate(performance.now());
+     *
+     * @member {PIXI.Ticker}
+     * @static
+     */
+    static get shared()
+    {
+        if (!Ticker._shared)
+        {
+            const shared = Ticker._shared = new Ticker();
+
+            shared.autoStart = true;
+            shared._protected = true;
+        }
+
+        return Ticker._shared;
     }
 }
