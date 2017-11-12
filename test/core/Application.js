@@ -48,4 +48,44 @@ describe('PIXI.Application', function ()
             done();
         });
     });
+
+    it('should be able to destroy filter manager gracefully', function (done)
+    {
+        const app = new PIXI.Application();
+
+        document.body.appendChild(app.view);
+
+        const sprite = new PIXI.Sprite(PIXI.Texture.WHITE);
+
+        sprite.position.x = 60;
+        sprite.position.y = 60;
+
+        app.stage.addChild(sprite);
+
+        let iterations = 3;
+
+        const iterate = () =>
+        {
+            const filter = new PIXI.filters.AlphaFilter();
+
+            sprite.filters = [filter];
+
+            iterations--;
+
+            if (iterations !== 0)
+            {
+                setTimeout(() =>
+                {
+                    iterate();
+                }, 200);
+            }
+            else
+            {
+                app.destroy(true);
+                done();
+            }
+        };
+
+        iterate();
+    });
 });
