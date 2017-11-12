@@ -12,6 +12,7 @@ export * from '@pixi/graphics';
 export * from '@pixi/sprite-animated';
 export * from '@pixi/sprite-tiling';
 export * from '@pixi/math';
+export * from '@pixi/mesh';
 export * from '@pixi/constants';
 export * from '@pixi/display';
 export * from '@pixi/ticker';
@@ -21,7 +22,6 @@ import * as accessibility from '@pixi/accessibility';
 import * as interaction from '@pixi/interaction';
 import * as extract from '@pixi/extract';
 import * as loaders from '@pixi/loaders';
-import * as mesh from '@pixi/mesh';
 import * as prepare from '@pixi/prepare';
 // import * as particles from '@pixi/particles';
 import * as filters from './filters';
@@ -51,7 +51,6 @@ export {
     filters,
     interaction,
     loaders,
-    mesh,
     // particles,
     prepare,
     utils,

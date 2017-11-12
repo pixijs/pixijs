@@ -10,7 +10,6 @@ describe('PIXI', function ()
         expect(PIXI.settings).to.not.be.undefined;
         expect(PIXI.loaders).to.not.be.undefined;
         expect(PIXI.extract).to.not.be.undefined;
-        expect(PIXI.mesh).to.not.be.undefined;
         expect(PIXI.prepare).to.not.be.undefined;
         expect(PIXI.utils).to.not.be.undefined;
     });

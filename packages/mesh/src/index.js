@@ -1,6 +1,3 @@
-/**
- * @namespace PIXI.mesh
- */
 export { default as Mesh } from './Mesh';
 export { default as RawMesh } from './RawMesh';
 export { default as MeshRenderer } from './webgl/MeshRenderer';

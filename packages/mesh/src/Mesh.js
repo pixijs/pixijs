@@ -11,7 +11,7 @@ let meshProgram;
  * Base mesh class
  * @class
  * @extends PIXI.Container
- * @memberof PIXI.mesh
+ * @memberof PIXI
  */
 export default class Mesh extends RawMesh
 {
