@@ -14,6 +14,7 @@ export * from '@pixi/sprite-tiling';
 export * from '@pixi/math';
 export * from '@pixi/constants';
 export * from '@pixi/display';
+export * from '@pixi/ticker';
 
 // export libs
 import * as accessibility from '@pixi/accessibility';
@@ -25,7 +26,6 @@ import * as prepare from '@pixi/prepare';
 // import * as particles from '@pixi/particles';
 import * as filters from './filters';
 import * as utils from '@pixi/utils';
-import * as ticker from '@pixi/ticker';
 import { settings } from '@pixi/settings';
 
 // imported for side effect of extending the prototype only, contains no exports
@@ -55,6 +55,5 @@ export {
     // particles,
     prepare,
     utils,
-    ticker,
     settings,
 };
