@@ -1,6 +1,6 @@
 import BaseTexture from './BaseTexture';
 import { uid, BaseTextureCache, determineCrossOrigin } from '@pixi/utils';
-import { shared, UPDATE_PRIORITY } from '@pixi/ticker';
+import { Ticker, UPDATE_PRIORITY } from '@pixi/ticker';
 
 /**
  * A texture of a [playing] Video.
@@ -125,7 +125,7 @@ export default class VideoBaseTexture extends BaseTexture
 
         if (!this._isAutoUpdating && this.autoUpdate)
         {
-            shared.add(this.update, this, UPDATE_PRIORITY.HIGH);
+            Ticker.shared.add(this.update, this, UPDATE_PRIORITY.HIGH);
             this._isAutoUpdating = true;
         }
     }
@@ -139,7 +139,7 @@ export default class VideoBaseTexture extends BaseTexture
     {
         if (this._isAutoUpdating)
         {
-            shared.remove(this.update, this);
+            Ticker.shared.remove(this.update, this);
             this._isAutoUpdating = false;
         }
     }
@@ -187,7 +187,7 @@ export default class VideoBaseTexture extends BaseTexture
     {
         if (this._isAutoUpdating)
         {
-            shared.remove(this.update, this);
+            Ticker.shared.remove(this.update, this);
         }
 
         if (this.source && this.source._pixiId)
@@ -293,12 +293,12 @@ export default class VideoBaseTexture extends BaseTexture
 
             if (!this._autoUpdate && this._isAutoUpdating)
             {
-                shared.remove(this.update, this);
+                Ticker.shared.remove(this.update, this);
                 this._isAutoUpdating = false;
             }
             else if (this._autoUpdate && !this._isAutoUpdating)
             {
-                shared.add(this.update, this, UPDATE_PRIORITY.HIGH);
+                Ticker.shared.add(this.update, this, UPDATE_PRIORITY.HIGH);
                 this._isAutoUpdating = true;
             }
         }

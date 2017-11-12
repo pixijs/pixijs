@@ -12,8 +12,8 @@ import { Point } from '@pixi/math';
  *  ```
  *
  * @class
- * @extends PIXI.mesh.Mesh
- * @memberof PIXI.mesh
+ * @extends PIXI.Mesh
+ * @memberof PIXI
  *
  */
 export default class Rope extends Mesh

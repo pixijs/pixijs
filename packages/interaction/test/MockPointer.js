@@ -1,6 +1,7 @@
-const { shared } = require('@pixi/ticker');
 const { CanvasRenderer } = require('@pixi/canvas-renderer');
+const { Ticker } = require('@pixi/ticker');
 const { Rectangle } = require('@pixi/math');
+const { shared } = Ticker;
 
 /**
  * Use this to mock mouse/touch/pointer events

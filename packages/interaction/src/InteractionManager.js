@@ -1,4 +1,4 @@
-import { shared, UPDATE_PRIORITY } from '@pixi/ticker';
+import { Ticker, UPDATE_PRIORITY } from '@pixi/ticker';
 import { Point } from '@pixi/math';
 import { DisplayObject } from '@pixi/display';
 import { mixins } from '@pixi/utils';
@@ -707,7 +707,7 @@ export default class InteractionManager extends EventEmitter
             return;
         }
 
-        shared.add(this.update, this, UPDATE_PRIORITY.INTERACTION);
+        Ticker.shared.add(this.update, this, UPDATE_PRIORITY.INTERACTION);
 
         if (window.navigator.msPointerEnabled)
         {
@@ -770,7 +770,7 @@ export default class InteractionManager extends EventEmitter
             return;
         }
 
-        shared.remove(this.update, this);
+        Ticker.shared.remove(this.update, this);
 
         if (window.navigator.msPointerEnabled)
         {
@@ -815,7 +815,7 @@ export default class InteractionManager extends EventEmitter
 
     /**
      * Updates the state of interactive objects.
-     * Invoked by a throttled ticker update from {@link PIXI.ticker.shared}.
+     * Invoked by a throttled ticker update from {@link PIXI.Ticker.shared}.
      *
      * @param {number} deltaTime - time delta since last tick
      */

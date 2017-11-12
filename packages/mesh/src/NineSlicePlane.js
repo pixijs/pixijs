@@ -29,8 +29,8 @@ const DEFAULT_BORDER_SIZE = 10;
  * </pre>
  *
  * @class
- * @extends PIXI.mesh.Plane
- * @memberof PIXI.mesh
+ * @extends PIXI.Plane
+ * @memberof PIXI
  *
  */
 export default class NineSlicePlane extends Plane
