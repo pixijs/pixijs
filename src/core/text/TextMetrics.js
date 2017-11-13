@@ -106,7 +106,7 @@ export default class TextMetrics
         // Greedy wrapping algorithm that will wrap words as the line grows longer
         // than its horizontal bounds.
         let result = '';
-        let firstChar = text.charAt(0);
+        const firstChar = text.charAt(0);
         const lines = text.split('\n');
         const wordWrapWidth = style.wordWrapWidth;
         const characterCache = {};
@@ -143,7 +143,7 @@ export default class TextMetrics
                         }
                         else
                         {
-                            if (c === 0 && (j > 0 || firstChar == ' ')) {
+                            if (c === 0 && (j > 0 || firstChar === ' ')) {
                                 result += ' ';
                             }
 
