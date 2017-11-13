@@ -454,9 +454,15 @@ export default class AccessibilityManager
      * Is called when the mouse moves across the renderer element
      *
      * @private
+     * @param {MouseEvent} e - The mouse event.
      */
-    _onMouseMove()
+    _onMouseMove(e)
     {
+        if (e.movementX === 0 && e.movementY === 0)
+        {
+            return;
+        }
+
         this.deactivate();
     }
 
