@@ -269,10 +269,9 @@ export default class SystemRenderer extends EventEmitter
     {
         const bounds = displayObject.getLocalBounds();
 
-
         // minimum texture size is 1x1, 0x0 will throw an error
-        if(bounds.width === 0)bounds.width = 1;
-        if(bounds.height === 0)bounds.height = 1;
+        if (bounds.width === 0)bounds.width = 1;
+        if (bounds.height === 0)bounds.height = 1;
 
         const renderTexture = RenderTexture.create(bounds.width | 0, bounds.height | 0, scaleMode, resolution);
 

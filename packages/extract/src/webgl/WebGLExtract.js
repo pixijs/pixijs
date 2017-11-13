@@ -69,7 +69,6 @@ export default class WebGLExtract
     canvas(target)
     {
         const renderer = this.renderer;
-        let textureBuffer;
         let resolution;
         let frame;
         let flipY = false;
@@ -96,7 +95,7 @@ export default class WebGLExtract
         }
         else
         {
-            resolution =  this.renderer.resolution;
+            resolution = this.renderer.resolution;
 
             flipY = true;
 
@@ -127,7 +126,6 @@ export default class WebGLExtract
             webglPixels
         );
 
-        console.log(webglPixels)
         // add the pixels to the canvas
         const canvasData = canvasBuffer.context.getImageData(0, 0, width, height);
 
@@ -142,7 +140,7 @@ export default class WebGLExtract
             canvasBuffer.context.drawImage(canvasBuffer.canvas, 0, -height);
         }
 
-         // send the canvas back..
+        // send the canvas back..
         return canvasBuffer.canvas;
     }
 
@@ -176,7 +174,7 @@ export default class WebGLExtract
 
         if (renderTexture)
         {
-            //textureBuffer = renderTexture.baseTexture;//._glRenderTargets[this.renderer.CONTEXT_UID];
+            // textureBuffer = renderTexture.baseTexture;//._glRenderTargets[this.renderer.CONTEXT_UID];
             resolution = textureBuffer.resolution;
             frame = renderTexture.frame;
 
