@@ -47,7 +47,7 @@
         "recurse"       : true,
         "private"       : false,
         "lenient"       : true,
-        "destination"   : "./docs",
+        "destination"   : "./dist/docs",
         "template"      : "./node_modules/@pixi/jsdoc-template"
     }
 }

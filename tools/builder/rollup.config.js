@@ -10,7 +10,6 @@ import minimist from 'minimist';
 import commonjs from 'rollup-plugin-commonjs';
 import builtins from 'rollup-plugin-node-builtins';
 import replace from 'rollup-plugin-replace';
-import preprocess from 'rollup-plugin-preprocess';
 
 const pkg = require(path.resolve('./package'));
 const input = 'src/index.js';
@@ -48,14 +47,6 @@ const plugins = [
     }),
     replace({
         __VERSION__: pkg.version,
-    }),
-    preprocess({
-        context: {
-            DEV: !prod,
-            DEVELOPMENT: !prod,
-            PROD: prod,
-            PRODUCTION: prod,
-        },
     }),
     transpile(),
     thaw(),
