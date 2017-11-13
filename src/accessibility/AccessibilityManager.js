@@ -370,16 +370,20 @@ export default class AccessibilityManager
             div.addEventListener('focusout', this._onFocusOut.bind(this));
         }
 
-        if (displayObject.accessibleTitle)
+        if (displayObject.accessibleTitle && displayObject.accessibleTitle !== null)
         {
             div.title = displayObject.accessibleTitle;
         }
-        else if (!displayObject.accessibleTitle && !displayObject.accessibleHint)
+        else if (!displayObject.accessibleHint
+                 || displayObject.accessibleHint === null
+                 || displayObject.accessibleHint === undefined)
         {
-            div.title = `displayObject ${this.tabIndex}`;
+            div.title = `displayObject ${displayObject.tabIndex}`;
         }
 
-        if (displayObject.accessibleHint)
+        if (displayObject.accessibleHint
+            && displayObject.accessibleHint !== null
+            && displayObject.accessibleHint !== undefined)
         {
             div.setAttribute('aria-label', displayObject.accessibleHint);
         }
