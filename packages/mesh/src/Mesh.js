@@ -134,12 +134,12 @@ export default class Mesh extends RawMesh
         }
     }
 
-    _renderWebGL(renderer)
+    _render(renderer)
     {
         const baseTex = this._texture.baseTexture;
 
         premultiplyRgba(this._tintRGB, this.worldAlpha, this.uniforms.uColor, baseTex.premultiplyAlpha);
-        super._renderWebGL(renderer);
+        super._render(renderer);
     }
     /**
      * When the texture is updated, this event will fire to update the scale and frame

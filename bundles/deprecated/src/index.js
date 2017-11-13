@@ -400,4 +400,57 @@ export default function deprecated(PIXI)
             return PIXI.prepare.Prepare;
         },
     });
+
+    /**
+     * @method PIXI.Container#_renderWebGL
+     * @private
+     * @deprecated since 5.0.0
+     * @see PIXI.Container#render
+     * @param {PIXI.Renderer} renderer Instance of renderer
+     */
+    PIXI.Container.prototype._renderWebGL = function _renderWebGL(renderer)
+    {
+        warn('PIXI.Container#_renderWebGL has moved to PIXI.Container#_render');
+
+        this._render(renderer);
+    };
+
+    /**
+     * @method PIXI.Container#renderWebGL
+     * @deprecated since 5.0.0
+     * @see PIXI.Container#render
+     * @param {PIXI.Renderer} renderer Instance of renderer
+     */
+    PIXI.Container.prototype.renderWebGL = function renderWebGL(renderer)
+    {
+        warn('PIXI.Container#renderWebGL has moved to PIXI.Container#render');
+
+        this.render(renderer);
+    };
+
+    /**
+     * @method PIXI.DisplayObject#renderWebGL
+     * @deprecated since 5.0.0
+     * @see PIXI.DisplayObject#render
+     * @param {PIXI.Renderer} renderer Instance of renderer
+     */
+    PIXI.DisplayObject.prototype.renderWebGL = function renderWebGL(renderer)
+    {
+        warn('PIXI.DisplayObject#renderWebGL has moved to PIXI.DisplayObject#render');
+
+        this.render(renderer);
+    };
+
+    /**
+     * @method PIXI.Container#renderAdvancedWebGL
+     * @deprecated since 5.0.0
+     * @see PIXI.Container#renderAdvanced
+     * @param {PIXI.Renderer} renderer Instance of renderer
+     */
+    PIXI.Container.prototype.renderAdvancedWebGL = function renderAdvancedWebGL(renderer)
+    {
+        warn('PIXI.Container#renderAdvancedWebGL has moved to PIXI.Container#renderAdvanced');
+
+        this.renderAdvanced(renderer);
+    };
 }

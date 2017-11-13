@@ -354,7 +354,7 @@ export default class Text extends Sprite
      *
      * @param {PIXI.Renderer} renderer - The renderer
      */
-    renderWebGL(renderer)
+    render(renderer)
     {
         if (this.resolution !== renderer.resolution)
         {
@@ -364,7 +364,7 @@ export default class Text extends Sprite
 
         this.updateText(true);
 
-        super.renderWebGL(renderer);
+        super.render(renderer);
     }
 
     /**

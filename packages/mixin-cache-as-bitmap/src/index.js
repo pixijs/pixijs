@@ -25,7 +25,7 @@ class CacheData
     {
         this.textureCacheId = null;
 
-        this.originalRenderWebGL = null;
+        this.originalRender = null;
         this.originalRenderCanvas = null;
         this.originalCalculateBounds = null;
         this.originalGetLocalBounds = null;
@@ -77,7 +77,7 @@ Object.defineProperties(DisplayObject.prototype, {
 
                 data = this._cacheData;
 
-                data.originalRenderWebGL = this.renderWebGL;
+                data.originalRender = this.render;
                 data.originalRenderCanvas = this.renderCanvas;
 
                 data.originalUpdateTransform = this.updateTransform;
@@ -91,7 +91,7 @@ Object.defineProperties(DisplayObject.prototype, {
                 data.originalMask = this._mask;
                 data.originalFilterArea = this.filterArea;
 
-                this.renderWebGL = this._renderCachedWebGL;
+                this.render = this._renderCached;
                 this.renderCanvas = this._renderCachedCanvas;
 
                 this.destroy = this._cacheAsBitmapDestroy;
@@ -105,7 +105,7 @@ Object.defineProperties(DisplayObject.prototype, {
                     this._destroyCachedDisplayObject();
                 }
 
-                this.renderWebGL = data.originalRenderWebGL;
+                this.render = data.originalRender;
                 this.renderCanvas = data.originalRenderCanvas;
                 this._calculateBounds = data.originalCalculateBounds;
                 this.getLocalBounds = data.originalGetLocalBounds;
@@ -129,7 +129,7 @@ Object.defineProperties(DisplayObject.prototype, {
  * @memberof PIXI.DisplayObject#
  * @param {PIXI.Renderer} renderer - the WebGL renderer
  */
-DisplayObject.prototype._renderCachedWebGL = function _renderCachedWebGL(renderer)
+DisplayObject.prototype._renderCached = function _renderCached(renderer)
 {
     if (!this.visible || this.worldAlpha <= 0 || !this.renderable)
     {
@@ -140,7 +140,7 @@ DisplayObject.prototype._renderCachedWebGL = function _renderCachedWebGL(rendere
 
     this._cacheData.sprite._transformID = -1;
     this._cacheData.sprite.worldAlpha = this.worldAlpha;
-    this._cacheData.sprite._renderWebGL(renderer);
+    this._cacheData.sprite._render(renderer);
 };
 
 /**
@@ -207,7 +207,7 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
     this.transform.worldTransform.identity();
 
     // set all properties to there original so we can render to a texture
-    this.renderWebGL = this._cacheData.originalRenderWebGL;
+    this.render = this._cacheData.originalRender;
 
     renderer.render(this, renderTexture, true, m, true);
     // now restore the state be setting the new properties
@@ -216,7 +216,7 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
 
     // renderer.filterManager.filterStack = stack;
 
-    this.renderWebGL = this._renderCachedWebGL;
+    this.render = this._renderCached;
     this.updateTransform = this.displayObjectUpdateTransform;
 
     this._mask = null;

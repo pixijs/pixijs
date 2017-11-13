@@ -126,7 +126,7 @@ export default class Sprite extends Container
 
         /**
          * Plugin that is responsible for rendering this element.
-         * Allows to customize the rendering process without overriding '_renderWebGL' & '_renderCanvas' methods.
+         * Allows to customize the rendering process without overriding '_render' & '_renderCanvas' methods.
          *
          * @member {string}
          * @default 'sprite'
@@ -303,7 +303,7 @@ export default class Sprite extends Container
     * @private
     * @param {PIXI.Renderer} renderer - The webgl renderer to use.
     */
-    _renderWebGL(renderer)
+    _render(renderer)
     {
         this.calculateVertices();
 

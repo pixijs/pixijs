@@ -727,7 +727,7 @@ export default class Graphics extends Container
      * @private
      * @param {PIXI.Renderer} renderer - The renderer
      */
-    _renderWebGL(renderer)
+    _render(renderer)
     {
         // if the sprite is not visible or the alpha is 0 then no need to render this element
         if (this.dirty !== this.fastRectDirty)
@@ -795,7 +795,7 @@ export default class Graphics extends Container
         sprite.anchor.set(-rect.x / rect.width, -rect.y / rect.height);
         sprite._onAnchorUpdate();
 
-        sprite._renderWebGL(renderer);
+        sprite._render(renderer);
     }
 
     /**

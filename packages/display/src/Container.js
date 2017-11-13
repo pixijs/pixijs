@@ -391,7 +391,7 @@ export default class Container extends DisplayObject
      *
      * @param {PIXI.Renderer} renderer - The renderer
      */
-    renderWebGL(renderer)
+    render(renderer)
     {
         // if the object is not visible or the alpha is 0 then no need to render this element
         if (!this.visible || this.worldAlpha <= 0 || !this.renderable)
@@ -402,16 +402,16 @@ export default class Container extends DisplayObject
         // do a quick check to see if this element has a mask or a filter.
         if (this._mask || this._filters)
         {
-            this.renderAdvancedWebGL(renderer);
+            this.renderAdvanced(renderer);
         }
         else
         {
-            this._renderWebGL(renderer);
+            this._render(renderer);
 
             // simple render children!
             for (let i = 0, j = this.children.length; i < j; ++i)
             {
-                this.children[i].renderWebGL(renderer);
+                this.children[i].render(renderer);
             }
         }
     }
@@ -422,7 +422,7 @@ export default class Container extends DisplayObject
      * @private
      * @param {PIXI.Renderer} renderer - The renderer
      */
-    renderAdvancedWebGL(renderer)
+    renderAdvanced(renderer)
     {
         renderer.batch.flush();
 
@@ -459,12 +459,12 @@ export default class Container extends DisplayObject
         }
 
         // add this object to the batch, only rendered if it has a texture.
-        this._renderWebGL(renderer);
+        this._render(renderer);
 
         // now loop through the children and make sure they get rendered
         for (let i = 0, j = this.children.length; i < j; i++)
         {
-            this.children[i].renderWebGL(renderer);
+            this.children[i].render(renderer);
         }
 
         renderer.batch.flush();
@@ -486,7 +486,7 @@ export default class Container extends DisplayObject
      * @private
      * @param {PIXI.Renderer} renderer - The renderer
      */
-    _renderWebGL(renderer) // eslint-disable-line no-unused-vars
+    _render(renderer) // eslint-disable-line no-unused-vars
     {
         // this is where content itself gets rendered...
     }

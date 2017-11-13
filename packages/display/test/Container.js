@@ -435,12 +435,12 @@ describe('PIXI.Container', function ()
         it('should not render when object not visible', function ()
         {
             const container = new Container();
-            const webGLSpy = sinon.spy(container._renderWebGL);
+            const webGLSpy = sinon.spy(container._render);
             const canvasSpy = sinon.spy(container._renderCanvas);
 
             container.visible = false;
 
-            container.renderWebGL();
+            container.render();
             expect(webGLSpy).to.not.have.been.called;
 
             container.renderCanvas();
@@ -450,12 +450,12 @@ describe('PIXI.Container', function ()
         it('should not render when alpha is zero', function ()
         {
             const container = new Container();
-            const webGLSpy = sinon.spy(container._renderWebGL);
+            const webGLSpy = sinon.spy(container._render);
             const canvasSpy = sinon.spy(container._renderCanvas);
 
             container.worldAlpha = 0;
 
-            container.renderWebGL();
+            container.render();
             expect(webGLSpy).to.not.have.been.called;
 
             container.renderCanvas();
@@ -465,12 +465,12 @@ describe('PIXI.Container', function ()
         it('should not render when object not renderable', function ()
         {
             const container = new Container();
-            const webGLSpy = sinon.spy(container._renderWebGL);
+            const webGLSpy = sinon.spy(container._render);
             const canvasSpy = sinon.spy(container._renderCanvas);
 
             container.renderable = false;
 
-            container.renderWebGL();
+            container.render();
             expect(webGLSpy).to.not.have.been.called;
 
             container.renderCanvas();
@@ -481,12 +481,12 @@ describe('PIXI.Container', function ()
         {
             const container = new Container();
             const child = new Container();
-            const webGLSpy = sinon.spy(child, '_renderWebGL');
+            const webGLSpy = sinon.spy(child, '_render');
             const canvasSpy = sinon.spy(child, '_renderCanvas');
 
             container.addChild(child);
 
-            container.renderWebGL();
+            container.render();
             expect(webGLSpy).to.have.been.called;
 
             container.renderCanvas();

@@ -236,7 +236,7 @@ export default class Renderer extends AbstractRenderer
             this.renderTexture.clear();
         }
 
-        displayObject.renderWebGL(this);
+        displayObject.render(this);
 
         // apply transform..
         this.batch.currentRenderer.flush();

@@ -76,7 +76,7 @@ export default class RawMesh extends Container
 
         /**
          * Plugin that is responsible for rendering this element.
-         * Allows to customize the rendering process without overriding '_renderWebGL' & '_renderCanvas' methods.
+         * Allows to customize the rendering process without overriding '_render' & '_renderCanvas' methods.
          *
          * @member {string}
          * @default 'mesh'
@@ -93,7 +93,7 @@ export default class RawMesh extends Container
      * @param {PIXI.Renderer} renderer a reference to the WebGL renderer
      * @private
      */
-    _renderWebGL(renderer)
+    _render(renderer)
     {
         renderer.batch.setObjectRenderer(renderer.plugins[this.pluginName]);
         renderer.plugins[this.pluginName].render(this);

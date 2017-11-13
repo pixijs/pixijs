@@ -66,7 +66,7 @@ export default class TilingSprite extends Sprite
 
         /**
          * Plugin that is responsible for rendering this element.
-         * Allows to customize the rendering process without overriding '_renderWebGL' method.
+         * Allows to customize the rendering process without overriding '_render' method.
          *
          * @member {string}
          * @default 'tilingSprite'
@@ -147,7 +147,7 @@ export default class TilingSprite extends Sprite
      * @private
      * @param {PIXI.Renderer} renderer - The renderer
      */
-    _renderWebGL(renderer)
+    _render(renderer)
     {
         // tweak our texture temporarily..
         const texture = this._texture;
