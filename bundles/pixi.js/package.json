@@ -23,7 +23,7 @@
     "build:dev": "rollup -b -c node_modules/.bin/config",
     "watch": "rollup -w -b -c node_modules/.bin/config",
     "postversion": "npm run build",
-    "test": "exit 0"
+    "test": "tester"
   },
   "files": [
     "lib/"
@@ -63,6 +63,7 @@
     "@pixi/ticker": "^5.0.0-alpha",
     "@pixi/utils": "^5.0.0-alpha",
     "@internal/builder": "^5.0.0-alpha",
+    "@internal/tester": "^5.0.0-alpha",
     "rollup": "^0.50.0"
   }
 }
