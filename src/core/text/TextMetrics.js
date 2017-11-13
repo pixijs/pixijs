@@ -143,7 +143,8 @@ export default class TextMetrics
                         }
                         else
                         {
-                            if (c === 0 && (j > 0 || firstChar === ' ')) {
+                            if (c === 0 && (j > 0 || firstChar === ' '))
+                            {
                                 result += ' ';
                             }
 
