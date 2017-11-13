@@ -9,8 +9,6 @@ hardware acceleration without prior knowledge of WebGL. Also, it's fast. Really 
 
 **Your support helps us make PixiJS even better. Make your pledge on [Patreon](https://www.patreon.com/user?u=2384552&ty=h&u=2384552) and we'll love you forever!**
 
-This package is the same as **pixi.js**, but provides fallback support for browsers that do not support WebGL or more modern JavaScript features.
-
 ### Setup
 
 PixiJS can be installed with [npm](https://docs.npmjs.com/getting-started/what-is-npm) to integration with [Webpack](https://webpack.js.org/), [Browserify](http://browserify.org/), [Rollup](https://rollupjs.org/), [Electron](https://electron.atom.io/), [NW.js](https://nwjs.io/) or other module backed environments.
@@ -18,7 +16,7 @@ PixiJS can be installed with [npm](https://docs.npmjs.com/getting-started/what-i
 #### Install
 
 ```
-$> npm install pixi.js-legacy
+$> npm install pixi.js
 ```
 
 ### Basic Usage Example

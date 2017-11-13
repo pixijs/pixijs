@@ -1,5 +1,5 @@
 {
-  "name": "pixi-modern",
+  "name": "pixi.js",
   "version": "5.0.0-alpha",
   "description": "PixiJS without the CanvasRenderer fallback, modern browsers only",
   "author": "Mat Groves",
@@ -9,8 +9,8 @@
     "Chad Engler <chad@pantherdev.com>",
     "Richard Davey <rdavey@gmail.com>"
   ],
-  "main": "lib/pixi-modern.js",
-  "module": "lib/pixi-modern.es.js",
+  "main": "lib/pixi.js",
+  "module": "lib/pixi.es.js",
   "homepage": "http://www.pixijs.com/",
   "bugs": "https://github.com/pixijs/pixi.js/issues",
   "license": "MIT",
