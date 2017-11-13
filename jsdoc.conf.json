@@ -5,8 +5,7 @@
     "source": {
         "include": [
             "bundles",
-            "packages",
-            "filters"
+            "packages"
         ],
         "excludePattern": "(node_modules|lib|dist|test)"
     },

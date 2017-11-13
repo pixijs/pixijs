@@ -3,7 +3,8 @@
   "packages": [
     "bundles/*",
     "packages/*",
-    "filters/*",
+    "packages/canvas/*",
+    "packages/filters/*",
     "tools/*"
   ],
   "version": "5.0.0-alpha"
