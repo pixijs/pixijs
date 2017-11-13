@@ -9,6 +9,8 @@ const { Text } = require('@pixi/text');
 const { Plane } = require('@pixi/mesh');
 const { CanvasMeshRenderer } = require('@pixi/canvas-mesh');
 
+require('@pixi/canvas-display');
+
 CanvasRenderer.registerPlugin('sprite', CanvasSpriteRenderer);
 CanvasRenderer.registerPlugin('graphics', CanvasGraphicsRenderer);
 CanvasRenderer.registerPlugin('mesh', CanvasMeshRenderer);

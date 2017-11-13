@@ -8,6 +8,7 @@
   },
   "devDependencies": {
     "@pixi/graphics": "^5.0.0-alpha",
+    "@pixi/canvas-display": "^5.0.0-alpha",
     "@pixi/canvas-renderer": "^5.0.0-alpha",
     "@pixi/canvas-graphics": "^5.0.0-alpha",
     "@pixi/canvas-sprite": "^5.0.0-alpha",

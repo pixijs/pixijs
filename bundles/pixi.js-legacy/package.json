@@ -62,6 +62,7 @@
     "@pixi/text-bitmap": "^5.0.0-alpha",
     "@pixi/ticker": "^5.0.0-alpha",
     "@pixi/utils": "^5.0.0-alpha",
+    "@pixi/canvas-display": "^5.0.0-alpha",
     "@pixi/canvas-extract": "^5.0.0-alpha",
     "@pixi/canvas-graphics": "^5.0.0-alpha",
     "@pixi/canvas-mesh": "^5.0.0-alpha",

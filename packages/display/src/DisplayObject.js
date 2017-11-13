@@ -343,16 +343,6 @@ export default class DisplayObject extends EventEmitter
     }
 
     /**
-     * Renders the object using the Canvas renderer
-     *
-     * @param {PIXI.CanvasRenderer} renderer - The renderer
-     */
-    renderCanvas(renderer) // eslint-disable-line no-unused-vars
-    {
-        // OVERWRITE;
-    }
-
-    /**
      * Set the parent Container of this DisplayObject
      *
      * @param {PIXI.Container} container - The Container to add this DisplayObject to

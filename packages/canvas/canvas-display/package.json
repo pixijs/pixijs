@@ -1,9 +1,9 @@
 {
-  "name": "@pixi/interaction",
+  "name": "@pixi/canvas-display",
   "version": "5.0.0-alpha",
-  "main": "lib/interaction.js",
-  "module": "lib/interaction.es.js",
-  "description": "Support for legacy browser JavaScript environments",
+  "main": "lib/canvas-display.js",
+  "module": "lib/canvas-display.es.js",
+  "description": "PixiJS Application",
   "author": "Mat Groves",
   "contributors": [
     "Matt Karl <matt@mattkarl.com>"
@@ -29,19 +29,9 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/core": "^5.0.0-alpha",
-    "@pixi/utils": "^5.0.0-alpha",
-    "@pixi/display": "^5.0.0-alpha",
-    "@pixi/math": "^5.0.0-alpha",
-    "@pixi/ticker": "^5.0.0-alpha",
-    "eventemitter3": "^2.0.0"
+    "@pixi/display": "^5.0.0-alpha"
   },
   "devDependencies": {
-    "@pixi/canvas-renderer": "^5.0.0-alpha",
-    "@pixi/canvas-display": "^5.0.0-alpha",
-    "@pixi/canvas-graphics": "^5.0.0-alpha",
-    "@pixi/canvas-sprite": "^5.0.0-alpha",
-    "@pixi/graphics": "^5.0.0-alpha",
     "@internal/builder": "^5.0.0-alpha",
     "@internal/tester": "^5.0.0-alpha",
     "rollup": "^0.50.0"

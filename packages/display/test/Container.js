@@ -436,45 +436,33 @@ describe('PIXI.Container', function ()
         {
             const container = new Container();
             const webGLSpy = sinon.spy(container._render);
-            const canvasSpy = sinon.spy(container._renderCanvas);
 
             container.visible = false;
 
             container.render();
             expect(webGLSpy).to.not.have.been.called;
-
-            container.renderCanvas();
-            expect(canvasSpy).to.not.have.been.called;
         });
 
         it('should not render when alpha is zero', function ()
         {
             const container = new Container();
             const webGLSpy = sinon.spy(container._render);
-            const canvasSpy = sinon.spy(container._renderCanvas);
 
             container.worldAlpha = 0;
 
             container.render();
             expect(webGLSpy).to.not.have.been.called;
-
-            container.renderCanvas();
-            expect(canvasSpy).to.not.have.been.called;
         });
 
         it('should not render when object not renderable', function ()
         {
             const container = new Container();
             const webGLSpy = sinon.spy(container._render);
-            const canvasSpy = sinon.spy(container._renderCanvas);
 
             container.renderable = false;
 
             container.render();
             expect(webGLSpy).to.not.have.been.called;
-
-            container.renderCanvas();
-            expect(canvasSpy).to.not.have.been.called;
         });
 
         it('should render children', function ()
@@ -482,15 +470,11 @@ describe('PIXI.Container', function ()
             const container = new Container();
             const child = new Container();
             const webGLSpy = sinon.spy(child, '_render');
-            const canvasSpy = sinon.spy(child, '_renderCanvas');
 
             container.addChild(child);
 
             container.render();
             expect(webGLSpy).to.have.been.called;
-
-            container.renderCanvas();
-            expect(canvasSpy).to.have.been.called;
         });
     });
 

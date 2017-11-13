@@ -92,3 +92,4 @@ Object.assign(extract, canvasExtract);
 Application.prototype.createRenderer = autoDetectRenderer;
 
 import '@pixi/canvas-sprite-tiling';
+import '@pixi/canvas-display';

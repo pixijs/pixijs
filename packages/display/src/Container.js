@@ -492,47 +492,6 @@ export default class Container extends DisplayObject
     }
 
     /**
-     * To be overridden by the subclass
-     *
-     * @private
-     * @param {PIXI.CanvasRenderer} renderer - The renderer
-     */
-    _renderCanvas(renderer) // eslint-disable-line no-unused-vars
-    {
-        // this is where content itself gets rendered...
-    }
-
-    /**
-     * Renders the object using the Canvas renderer
-     *
-     * @param {PIXI.CanvasRenderer} renderer - The renderer
-     */
-    renderCanvas(renderer)
-    {
-        // if not visible or the alpha is 0 then no need to render this
-        if (!this.visible || this.worldAlpha <= 0 || !this.renderable)
-        {
-            return;
-        }
-
-        if (this._mask)
-        {
-            renderer.mask.pushMask(this._mask);
-        }
-
-        this._renderCanvas(renderer);
-        for (let i = 0, j = this.children.length; i < j; ++i)
-        {
-            this.children[i].renderCanvas(renderer);
-        }
-
-        if (this._mask)
-        {
-            renderer.mask.popMask(renderer);
-        }
-    }
-
-    /**
      * Removes all internal references and listeners as well as removes children from the display list.
      * Do not use a Container after calling `destroy`.
      *
