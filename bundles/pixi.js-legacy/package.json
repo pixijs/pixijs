@@ -19,9 +19,9 @@
     "url": "https://github.com/pixijs/pixi.js.git"
   },
   "scripts": {
-    "build": "rollup -p -b -c node_modules/.bin/config -r src/deprecated.js",
-    "build:dev": "rollup -b -c node_modules/.bin/config -r src/deprecated.js",
-    "watch": "rollup -w -b -c node_modules/.bin/config -r src/deprecated.js",
+    "build": "rollup -p -b -c node_modules/.bin/config",
+    "build:dev": "rollup -b -c node_modules/.bin/config",
+    "watch": "rollup -w -b -c node_modules/.bin/config",
     "postversion": "npm run build",
     "test": "tester"
   },
@@ -33,6 +33,7 @@
     "@pixi/core": "^5.0.0-alpha",
     "@pixi/accessibility": "^5.0.0-alpha",
     "@pixi/constants": "^5.0.0-alpha",
+    "@pixi/deprecated": "^5.0.0-alpha",
     "@pixi/display": "^5.0.0-alpha",
     "@pixi/extract": "^5.0.0-alpha",
     "@pixi/filter-alpha": "^5.0.0-alpha",

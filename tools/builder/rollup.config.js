@@ -1,6 +1,4 @@
 import path from 'path';
-import fs from 'fs';
-import buble from 'buble';
 import thaw from './thaw';
 import transpile from 'rollup-plugin-buble';
 import resolve from 'rollup-plugin-node-resolve';
@@ -17,8 +15,7 @@ import preprocess from 'rollup-plugin-preprocess';
 const pkg = require(path.resolve('./package'));
 const input = 'src/index.js';
 
-const { prod, bundle, deprecated } = minimist(process.argv.slice(2), {
-    string: ['deprecated'],
+const { prod, bundle } = minimist(process.argv.slice(2), {
     boolean: ['prod', 'bundle'],
     default: {
         prod: false,
@@ -27,7 +24,6 @@ const { prod, bundle, deprecated } = minimist(process.argv.slice(2), {
     alias: {
         p: 'prod',
         b: 'bundle',
-        r: 'deprecated',
     },
 });
 
@@ -81,15 +77,6 @@ if (prod)
     }, minify));
 }
 
-let outro = '';
-
-if (deprecated)
-{
-    const buffer = fs.readFileSync(path.resolve(deprecated), 'utf8');
-
-    outro = buble.transform(buffer).code;
-}
-
 const compiled = (new Date()).toUTCString().replace(/GMT/g, 'UTC');
 const external = Object.keys(pkg.dependencies || []);
 const sourcemap = true;
@@ -105,7 +92,6 @@ const banner = `/*!
 export default [
     {
         banner,
-        outro,
         name,
         input,
         output: {

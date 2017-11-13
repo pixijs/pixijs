@@ -1,0 +1,6 @@
+{
+    "name": "@pixi/deprecated",
+    "private": true,
+    "version": "5.0.0-alpha",
+    "module": "src/index.js"
+}
