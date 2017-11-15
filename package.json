@@ -1,7 +1,7 @@
 {
-  "name": "pixi.js",
+  "name": "pixi.kcj.js",
   "version": "4.6.0",
-  "description": "The HTML5 Creation Engine: Create beautiful digital content with the fastest, most flexible 2D WebGL renderer.",
+  "description": "The HTML5 Creation Engine: Create beautiful digital content with the fastest, most flexible 2D WebGL renderer. With KCJ word-wrapping.",
   "author": "Mat Groves",
   "contributors": [
     "Ivan Popelyshev <ivan.popelyshev@gmail.com>",
@@ -11,11 +11,11 @@
   ],
   "main": "./lib/index.js",
   "homepage": "http://goodboydigital.com/",
-  "bugs": "https://github.com/pixijs/pixi.js/issues",
+  "bugs": "https://github.com/branch-henderson/pixi.js/issues",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/pixijs/pixi.js.git"
+    "url": "https://github.com/branch-henderson/pixi.js.git"
   },
   "scripts": {
     "clean": "rimraf dist lib && mkdirp dist && mkdir lib",
