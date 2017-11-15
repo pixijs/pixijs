@@ -6,5 +6,5 @@ if (typeof window !== 'undefined')
     window.PIXI = PIXI;
 }
 
-import deprecated from '@pixi/deprecated';
+import deprecated from 'pixi.js/src/deprecated';
 deprecated(PIXI);

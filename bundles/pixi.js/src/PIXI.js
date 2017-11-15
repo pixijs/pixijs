@@ -43,6 +43,12 @@ import '@pixi/mixin-app-loader';
 
 utils.mixins.performMixins();
 
+/**
+ * Alias for {@link PIXI.loaders.shared}.
+ * @name loader
+ * @memberof PIXI
+ * @type {PIXI.loader.Loader}
+ */
 export const loader = loaders.shared;
 
 export {

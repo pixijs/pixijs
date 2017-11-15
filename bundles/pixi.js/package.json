@@ -33,7 +33,6 @@
     "@pixi/core": "^5.0.0-alpha",
     "@pixi/accessibility": "^5.0.0-alpha",
     "@pixi/constants": "^5.0.0-alpha",
-    "@pixi/deprecated": "^5.0.0-alpha",
     "@pixi/display": "^5.0.0-alpha",
     "@pixi/extract": "^5.0.0-alpha",
     "@pixi/filter-alpha": "^5.0.0-alpha",
