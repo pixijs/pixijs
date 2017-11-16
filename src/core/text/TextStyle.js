@@ -75,7 +75,8 @@ export default class TextStyle
      * @param {number} [style.letterSpacing=0] - The amount of spacing between letters, default is 0
      * @param {number} [style.lineHeight] - The line height, a number that represents the vertical space that a letter uses
      * @param {string} [style.lineJoin='miter'] - The lineJoin property sets the type of corner created, it can resolve
-     *      spiked text issues. Default is 'miter' (creates a sharp corner).
+     *      spiked text issues. Possible values "miter" (creates a sharp corner), "round" (creates a round corner) or "bevel"
+     *      (creates a squared corner).
      * @param {number} [style.miterLimit=10] - The miter limit to use when using the 'miter' lineJoin mode. This can reduce
      *      or increase the spikiness of rendered text.
      * @param {number} [style.padding=0] - Occasionally some fonts are cropped. Adding some padding will prevent this from
@@ -93,7 +94,9 @@ export default class TextStyle
     {
         this.styleID = 0;
 
-        Object.assign(this, defaultStyle, style);
+        this.reset();
+
+        deepCopyProperties(this, style, style);
     }
 
     /**
@@ -106,10 +109,7 @@ export default class TextStyle
     {
         const clonedProperties = {};
 
-        for (const key in defaultStyle)
-        {
-            clonedProperties[key] = this[key];
-        }
+        deepCopyProperties(clonedProperties, this, defaultStyle);
 
         return new TextStyle(clonedProperties);
     }
@@ -119,7 +119,7 @@ export default class TextStyle
      */
     reset()
     {
-        Object.assign(this, defaultStyle);
+        deepCopyProperties(this, defaultStyle, defaultStyle);
     }
 
     /**
@@ -754,4 +754,21 @@ function areArraysEqual(array1, array2)
     }
 
     return true;
+}
+
+/**
+ * Utility function to ensure that object properties are copied by value, and not by reference
+ *
+ * @param {Object} target Target object to copy properties into
+ * @param {Object} source Source object for the proporties to copy
+ * @param {string} propertyObj Object containing properties names we want to loop over
+ */
+function deepCopyProperties(target, source, propertyObj) {
+    for (const prop in propertyObj) {
+        if (Array.isArray(source[prop])) {
+            target[prop] = source[prop].slice();
+        } else {
+            target[prop] = source[prop];
+        }
+    }
 }

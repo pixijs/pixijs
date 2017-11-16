@@ -22,9 +22,9 @@ import { join } from 'path';
 export default class AlphaFilter extends core.Filter
 {
     /**
-     *
+     * @param {number} [alpha=1] Amount of alpha from 0 to 1, where 0 is transparent
      */
-    constructor()
+    constructor(alpha = 1.0)
     {
         super(
             // vertex shader
@@ -33,7 +33,7 @@ export default class AlphaFilter extends core.Filter
             readFileSync(join(__dirname, './alpha.frag'), 'utf8')
         );
 
-        this.alpha = 1.0;
+        this.alpha = alpha;
         this.glShaderKey = 'alpha';
     }
 

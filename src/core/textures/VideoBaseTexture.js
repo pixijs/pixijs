@@ -196,6 +196,10 @@ export default class VideoBaseTexture extends BaseTexture
         {
             BaseTexture.removeFromCache(this.source._pixiId);
             delete this.source._pixiId;
+
+            this.source.pause();
+            this.source.src = '';
+            this.source.load();
         }
 
         super.destroy();

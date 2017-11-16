@@ -227,14 +227,14 @@ export default class FilterManager extends WebGLManager
                     shader = new Shader(this.gl, filter.vertexSrc, filter.fragmentSrc);
 
                     filter.glShaders[renderer.CONTEXT_UID] = this.shaderCache[filter.glShaderKey] = shader;
+                    this.managedFilters.push(filter);
                 }
             }
             else
             {
                 shader = filter.glShaders[renderer.CONTEXT_UID] = new Shader(this.gl, filter.vertexSrc, filter.fragmentSrc);
+                this.managedFilters.push(filter);
             }
-
-            this.managedFilters.push(filter);
 
             // TODO - this only needs to be done once?
             renderer.bindVao(null);
