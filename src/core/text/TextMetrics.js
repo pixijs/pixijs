@@ -364,7 +364,17 @@ export default class TextMetrics
             }
             result += word.substring(startIndex, lineBreakIndex);
             result += `\n${characters[lineBreakIndex]}`;
-            totalCharacterWidth = this.context.measureText(characters[lineBreakIndex]).width;
+
+            const character = characters[lineBreakIndex];
+            let characterWidth = characterCache[character];
+
+            if (characterWidth === undefined)
+            {
+                characterWidth = measureText(character).width;
+                characterCache[character] = characterWidth;
+            }
+
+            totalCharacterWidth = characterWidth;
             startIndex = lineBreakIndex + 1;
         }
 
@@ -435,8 +445,8 @@ export default class TextMetrics
                     }
                     else
                     {
-                        result += TextMetrics.CJKWordWrap(words[j], wordLanguage,
-                            context.measureText, characterCache, wordWrapWidth);
+                        result += TextMetrics.CJKWordWrap(words[j], context.measureText.bind(context),
+                            characterCache, wordWrapWidth);
                     }
                 }
                 else
