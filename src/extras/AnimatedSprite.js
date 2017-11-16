@@ -30,13 +30,61 @@ import * as core from '../core';
 export default class AnimatedSprite extends core.Sprite
 {
     /**
-     * @param {PIXI.Texture[]|FrameObject[]} textures - an array of {@link PIXI.Texture} or frame
-     *  objects that make up the animation
+     * @param {PIXI.Texture[]|FrameObject[]|object} textures - an array of {@link PIXI.Texture} or frame
+     * objects that make up the animation. it also can be a series of 'named animations', an object containing
+     * arrays of textures or frames.
+     * @param {string} initialAnimation - name of the initial animation. must exists inside the textures if textures
+     * is an object containing named animations. this param must be ommited if textures is an Array.
      * @param {boolean} [autoUpdate=true] - Whether to use PIXI.ticker.shared to auto update animation time.
      */
-    constructor(textures, autoUpdate)
+    constructor(textures, initialAnimation, autoUpdate)
     {
-        super(textures[0] instanceof core.Texture ? textures[0] : textures[0].texture);
+        if (textures instanceof Array)
+        {
+            super(textures[0] instanceof core.Texture ? textures[0] : textures[0].texture);
+
+            this.animationMap = { default: textures };
+
+            /**
+             * current animation name executing
+             *
+             * @member {string}
+             */
+            this.currentAnimation = 'default';
+
+            /**
+             * the initial animation name
+             *
+             * @member {string}
+             */
+            this.initialAnimation = 'default';
+        }
+        else
+        {
+            super(textures[initialAnimation][0] instanceof core.Texture
+                ? textures[initialAnimation][0] : textures[initialAnimation][0].texture);
+
+            /**
+             * map containing named animations. each key is a list of textures or images
+             *
+             * @member {object}
+             */
+            this.animationMap = textures;
+
+            /**
+             * current animation name executing
+             *
+             * @member {string}
+             */
+            this.currentAnimation = initialAnimation;
+
+            /**
+             * the initial animation name
+             *
+             * @member {string}
+             */
+            this.initialAnimation = initialAnimation;
+        }
 
         /**
          * @private
@@ -48,7 +96,7 @@ export default class AnimatedSprite extends core.Sprite
          */
         this._durations = null;
 
-        this.textures = textures;
+        this.textures = this.animationMap[this.initialAnimation];
 
         /**
          * `true` uses PIXI.ticker.shared to auto update animation time.
@@ -56,7 +104,7 @@ export default class AnimatedSprite extends core.Sprite
          * @default true
          * @private
          */
-        this._autoUpdate = autoUpdate !== false;
+        this._autoUpdate = textures instanceof Array ? autoUpdate !== false : initialAnimation !== false;
 
         /**
          * The speed that the AnimatedSprite will play at. Higher is faster, lower is slower
@@ -133,13 +181,15 @@ export default class AnimatedSprite extends core.Sprite
     /**
      * Plays the AnimatedSprite
      *
+     * @param {string} namedAnimation - if provided and if we have an animationMap,
+     * it will try to change the current animation
+     *
      */
-    play()
+    play(namedAnimation)
     {
-        if (this.playing)
-        {
-            return;
-        }
+        // need the fallback so the animatedSprite does not break the api there
+        this.currentAnimation = namedAnimation ? namedAnimation : this.initialAnimation;
+        this.textures = this.animationMap[this.currentAnimation];
 
         this.playing = true;
         if (this._autoUpdate)
