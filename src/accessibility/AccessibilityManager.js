@@ -226,7 +226,7 @@ export default class AccessibilityManager
 
         const children = displayObject.children;
 
-        for (let i = children.length - 1; i >= 0; i--)
+        for (let i = 0; i < children.length; i++)
         {
             this.updateAccessibleObjects(children[i]);
         }
