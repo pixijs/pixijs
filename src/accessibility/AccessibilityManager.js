@@ -311,8 +311,7 @@ export default class AccessibilityManager
                         div.title = child.accessibleTitle;
                     }
                     if (div.getAttribute('aria-label') !== child.accessibleHint
-                        && child.accessibleHint !== null
-                        && child.accessibleHint !== undefined)
+                        && child.accessibleHint !== null)
                     {
                         div.setAttribute('aria-label', child.accessibleHint);
                     }
@@ -409,15 +408,13 @@ export default class AccessibilityManager
             div.title = displayObject.accessibleTitle;
         }
         else if (!displayObject.accessibleHint
-                 || displayObject.accessibleHint === null
-                 || displayObject.accessibleHint === undefined)
+                 || displayObject.accessibleHint === null)
         {
             div.title = `displayObject ${displayObject.tabIndex}`;
         }
 
         if (displayObject.accessibleHint
-            && displayObject.accessibleHint !== null
-            && displayObject.accessibleHint !== undefined)
+            && displayObject.accessibleHint !== null)
         {
             div.setAttribute('aria-label', displayObject.accessibleHint);
         }
