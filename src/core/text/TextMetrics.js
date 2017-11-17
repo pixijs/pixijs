@@ -306,10 +306,26 @@ export default class TextMetrics
     }
 
     /**
+     * @param {string} character The character to get the width of
+     * @param {string[]} characterCache A cache of pre-measured character widths
+     * @param {function} measureText A function for determining character widths
+     * @return {number} The width of the character according to cache / measureText
+     */
+    static getCharacterWidth(character, characterCache, measureText)
+    {
+        if (characterCache[character] === undefined)
+        {
+            characterCache[character] = measureText(character).width;
+        }
+
+        return characterCache[character];
+    }
+
+    /**
      *
      * @param {string} word The word which we are wrapping
      * @param {function} measureText The function used to measure character widths
-     * @param {Array} characterCache Mapping of characters to their widths already computed
+     * @param {string[]} characterCache Mapping of characters to their widths already computed
      * @param {number} wordWrapWidth The maximum width a line can be
      * @return {string} The resulting CJK-word-wrapped string with line breaks
      */
@@ -325,15 +341,9 @@ export default class TextMetrics
         {
             for (tooWideIndex = startIndex; tooWideIndex < characters.length; tooWideIndex++)
             {
-                const character = characters[tooWideIndex];
-                let characterWidth = characterCache[character];
+                totalCharacterWidth += TextMetrics.getCharacterWidth(characters[tooWideIndex],
+                    characterCache, measureText);
 
-                if (characterWidth === undefined)
-                {
-                    characterWidth = measureText(character).width;
-                    characterCache[character] = characterWidth;
-                }
-                totalCharacterWidth += characterWidth;
                 if (totalCharacterWidth > wordWrapWidth)
                 {
                     break;
@@ -374,16 +384,9 @@ export default class TextMetrics
             result += word.substring(startIndex, lineBreakIndex);
             result += `\n${characters[lineBreakIndex]}`;
 
-            const character = characters[lineBreakIndex];
-            let characterWidth = characterCache[character];
+            totalCharacterWidth = TextMetrics.getCharacterWidth(characters[lineBreakIndex],
+                characterCache, measureText);
 
-            if (characterWidth === undefined)
-            {
-                characterWidth = measureText(character).width;
-                characterCache[character] = characterWidth;
-            }
-
-            totalCharacterWidth = characterWidth;
             startIndex = lineBreakIndex + 1;
         }
 
@@ -432,13 +435,9 @@ export default class TextMetrics
                         for (let c = 0; c < characters.length; c++)
                         {
                             const character = characters[c];
-                            let characterWidth = characterCache[character];
 
-                            if (characterWidth === undefined)
-                            {
-                                characterWidth = context.measureText(character).width;
-                                characterCache[character] = characterWidth;
-                            }
+                            const characterWidth = TextMetrics.getCharacterWidth(character, characterCache,
+                                context.measureText.bind(context));
 
                             if (characterWidth > spaceLeft)
                             {
