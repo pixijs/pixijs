@@ -10,6 +10,7 @@ require('./Sprite');
 require('./Spritesheet');
 require('./TilingSprite');
 require('./TextStyle');
+require('./TextMetrics');
 require('./Text');
 require('./toGlobal');
 require('./toLocal');
