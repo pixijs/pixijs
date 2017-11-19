@@ -155,7 +155,6 @@ export default class WebGLExtract
     pixels(target)
     {
         const renderer = this.renderer;
-        let textureBuffer;
         let resolution;
         let frame;
         let renderTexture;
@@ -174,8 +173,7 @@ export default class WebGLExtract
 
         if (renderTexture)
         {
-            // textureBuffer = renderTexture.baseTexture;//._glRenderTargets[this.renderer.CONTEXT_UID];
-            resolution = textureBuffer.resolution;
+            resolution = renderTexture.baseTexture.resolution;
             frame = renderTexture.frame;
 
             // bind the buffer
@@ -183,12 +181,13 @@ export default class WebGLExtract
         }
         else
         {
-            textureBuffer = this.renderer.rootRenderTarget;
-            resolution = textureBuffer.resolution;
+            resolution = renderer.resolution;
 
             frame = TEMP_RECT;
-            frame.width = textureBuffer.size.width;
-            frame.height = textureBuffer.size.height;
+            frame.width = renderer.width;
+            frame.height = renderer.height;
+
+            renderer.renderTexture.bind(null);
         }
 
         const width = frame.width * resolution;
