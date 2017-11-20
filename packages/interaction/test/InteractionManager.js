@@ -3,7 +3,16 @@ const { Container } = require('@pixi/display');
 const { Graphics } = require('@pixi/graphics');
 const { Point } = require('@pixi/math');
 const { mixins } = require('@pixi/utils');
+const { CanvasRenderer } = require('@pixi/canvas-renderer');
 const { InteractionManager } = require('../');
+const { CanvasGraphicsRenderer } = require('@pixi/canvas-graphics');
+const { CanvasSpriteRenderer } = require('@pixi/canvas-sprite');
+
+require('@pixi/canvas-display');
+
+CanvasRenderer.registerPlugin('interaction', InteractionManager);
+CanvasRenderer.registerPlugin('graphics', CanvasGraphicsRenderer);
+CanvasRenderer.registerPlugin('sprite', CanvasSpriteRenderer);
 
 mixins.performMixins();
 

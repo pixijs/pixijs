@@ -2,8 +2,8 @@ import RawMesh from './RawMesh';
 import { Geometry, Program, Shader } from '@pixi/core';
 import { BLEND_MODES } from '@pixi/constants';
 import { hex2rgb, premultiplyRgba } from '@pixi/utils';
-import vertex from './webgl/mesh.vert';
-import fragment from './webgl/mesh.frag';
+import vertex from './mesh.vert';
+import fragment from './mesh.frag';
 
 let meshProgram;
 
@@ -134,12 +134,12 @@ export default class Mesh extends RawMesh
         }
     }
 
-    _renderWebGL(renderer)
+    _render(renderer)
     {
         const baseTex = this._texture.baseTexture;
 
         premultiplyRgba(this._tintRGB, this.worldAlpha, this.uniforms.uColor, baseTex.premultiplyAlpha);
-        super._renderWebGL(renderer);
+        super._render(renderer);
     }
     /**
      * When the texture is updated, this event will fire to update the scale and frame

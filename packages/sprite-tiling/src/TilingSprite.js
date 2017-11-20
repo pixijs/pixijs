@@ -1,7 +1,7 @@
-import { TextureMatrix, CanvasRenderTarget, Texture } from '@pixi/core';
+import { TextureMatrix, Texture } from '@pixi/core';
 import { Point, Rectangle } from '@pixi/math';
 import { TextureCache } from '@pixi/utils';
-import { Sprite, CanvasTinter } from '@pixi/sprite';
+import { Sprite } from '@pixi/sprite';
 import { TransformStatic } from '@pixi/display';
 
 const tempPoint = new Point();
@@ -66,7 +66,7 @@ export default class TilingSprite extends Sprite
 
         /**
          * Plugin that is responsible for rendering this element.
-         * Allows to customize the rendering process without overriding '_renderWebGL' method.
+         * Allows to customize the rendering process without overriding '_render' method.
          *
          * @member {string}
          * @default 'tilingSprite'
@@ -145,9 +145,9 @@ export default class TilingSprite extends Sprite
      * Renders the object using the WebGL renderer
      *
      * @private
-     * @param {PIXI.WebGLRenderer} renderer - The renderer
+     * @param {PIXI.Renderer} renderer - The renderer
      */
-    _renderWebGL(renderer)
+    _render(renderer)
     {
         // tweak our texture temporarily..
         const texture = this._texture;
@@ -162,91 +162,6 @@ export default class TilingSprite extends Sprite
 
         renderer.batch.setObjectRenderer(renderer.plugins[this.pluginName]);
         renderer.plugins[this.pluginName].render(this);
-    }
-
-    /**
-     * Renders the object using the Canvas renderer
-     *
-     * @private
-     * @param {PIXI.CanvasRenderer} renderer - a reference to the canvas renderer
-     */
-    _renderCanvas(renderer)
-    {
-        const texture = this._texture;
-
-        if (!texture.baseTexture.hasLoaded)
-        {
-            return;
-        }
-
-        const context = renderer.context;
-        const transform = this.worldTransform;
-        const resolution = renderer.resolution;
-        const baseTexture = texture.baseTexture;
-        const baseTextureResolution = baseTexture.resolution;
-        const modX = ((this.tilePosition.x / this.tileScale.x) % texture._frame.width) * baseTextureResolution;
-        const modY = ((this.tilePosition.y / this.tileScale.y) % texture._frame.height) * baseTextureResolution;
-
-        // create a nice shiny pattern!
-        if (this._textureID !== this._texture._updateID || this.cachedTint !== this.tint)
-        {
-            this._textureID = this._texture._updateID;
-            // cut an object from a spritesheet..
-            const tempCanvas = new CanvasRenderTarget(texture._frame.width,
-                texture._frame.height,
-                baseTextureResolution);
-
-            // Tint the tiling sprite
-            if (this.tint !== 0xFFFFFF)
-            {
-                this.tintedTexture = CanvasTinter.getTintedTexture(this, this.tint);
-                tempCanvas.context.drawImage(this.tintedTexture, 0, 0);
-            }
-            else
-            {
-                tempCanvas.context.drawImage(baseTexture.source,
-                    -texture._frame.x * baseTextureResolution, -texture._frame.y * baseTextureResolution);
-            }
-            this.cachedTint = this.tint;
-            this._canvasPattern = tempCanvas.context.createPattern(tempCanvas.canvas, 'repeat');
-        }
-
-        // set context state..
-        context.globalAlpha = this.worldAlpha;
-        context.setTransform(transform.a * resolution,
-            transform.b * resolution,
-            transform.c * resolution,
-            transform.d * resolution,
-            transform.tx * resolution,
-            transform.ty * resolution);
-
-        renderer.setBlendMode(this.blendMode);
-
-        // fill the pattern!
-        context.fillStyle = this._canvasPattern;
-
-        // TODO - this should be rolled into the setTransform above..
-        context.scale(this.tileScale.x / baseTextureResolution, this.tileScale.y / baseTextureResolution);
-
-        const anchorX = this.anchor.x * -this._width;
-        const anchorY = this.anchor.y * -this._height;
-
-        if (this.uvRespectAnchor)
-        {
-            context.translate(modX, modY);
-
-            context.fillRect(-modX + anchorX, -modY + anchorY,
-                this._width / this.tileScale.x * baseTextureResolution,
-                this._height / this.tileScale.y * baseTextureResolution);
-        }
-        else
-        {
-            context.translate(modX + anchorX, modY + anchorY);
-
-            context.fillRect(-modX, -modY,
-                this._width / this.tileScale.x * baseTextureResolution,
-                this._height / this.tileScale.y * baseTextureResolution);
-        }
     }
 
     /**

@@ -9,5 +9,8 @@ npm install @pixi/sprite-tiling
 ## Usage
 
 ```js
-import '@pixi/sprite-tiling';
+import { TilingSpriteRenderer } from '@pixi/sprite-tiling';
+import { Renderer } from '@pixi/core';
+
+Renderer.registerPlugin('tilingSprite', TilingSpriteRenderer);
 ```

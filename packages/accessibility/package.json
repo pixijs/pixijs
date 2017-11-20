@@ -35,6 +35,7 @@
     "ismobilejs": "^0.4.0"
   },
   "devDependencies": {
+    "@pixi/canvas-renderer": "^5.0.0-alpha",
     "@internal/builder": "^5.0.0-alpha",
     "@internal/tester": "^5.0.0-alpha",
     "rollup": "^0.50.0"

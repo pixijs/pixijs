@@ -1,4 +1,4 @@
-import { ObjectRenderer, WebGLRenderer } from '@pixi/core';
+import { ObjectRenderer, Renderer } from '@pixi/core';
 import { correctBlendMode, premultiplyRgba, premultiplyTint } from '@pixi/utils';
 import { Matrix } from '@pixi/math';
 import ParticleShader from './ParticleShader';
@@ -25,7 +25,7 @@ import ParticleBuffer from './ParticleBuffer';
 export default class ParticleRenderer extends ObjectRenderer
 {
     /**
-     * @param {PIXI.WebGLRenderer} renderer - The renderer this sprite batch works for.
+     * @param {PIXI.Renderer} renderer - The renderer this sprite batch works for.
      */
     constructor(renderer)
     {
@@ -455,4 +455,4 @@ export default class ParticleRenderer extends ObjectRenderer
     }
 }
 
-WebGLRenderer.registerPlugin('particle', ParticleRenderer);
+Renderer.registerPlugin('particle', ParticleRenderer);

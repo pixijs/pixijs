@@ -199,9 +199,9 @@ export default class ParticleContainer extends Container
      * Renders the container using the WebGL renderer
      *
      * @private
-     * @param {PIXI.WebGLRenderer} renderer - The webgl renderer
+     * @param {PIXI.Renderer} renderer - The webgl renderer
      */
-    renderWebGL(renderer)
+    render(renderer)
     {
         if (!this.visible || this.worldAlpha <= 0 || !this.children.length || !this.renderable)
         {

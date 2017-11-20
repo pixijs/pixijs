@@ -9,5 +9,8 @@ npm install @pixi/extract
 ## Usage
 
 ```js
-import '@pixi/extract';
+import { Extract } from '@pixi/canvas-extract';
+import { Renderer } from '@pixi/core';
+
+Renderer.registerPlugin('extract', Extract);
 ```
