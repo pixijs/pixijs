@@ -71,6 +71,7 @@ if (prod)
 const compiled = (new Date()).toUTCString().replace(/GMT/g, 'UTC');
 const external = Object.keys(pkg.dependencies || []);
 const sourcemap = true;
+const treeshake = !bundle;
 const name = 'PIXI';
 const banner = `/*!
  * ${pkg.name} - v${pkg.version}
@@ -85,6 +86,7 @@ export default [
         banner,
         name,
         input,
+        treeshake,
         output: {
             file: pkg.main,
             format: bundle ? 'umd' : 'cjs',
@@ -96,6 +98,7 @@ export default [
     {
         banner,
         input,
+        treeshake,
         output: {
             file: pkg.module,
             format: 'es',

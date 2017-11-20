@@ -9,6 +9,6 @@
   "license": "MIT",
   "dependencies": {
     "electron": "^1.7.9",
-    "floss": "^2.1.2"
+    "floss": "^2.1.3"
   }
 }

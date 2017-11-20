@@ -13,15 +13,6 @@ describe('PIXI.accessibility.accessibleTarget', function ()
         expect(accessibleTarget.tabIndex).to.equal(0);
     });
 
-    it('should not have properties before mixin', function ()
-    {
-        const obj = new DisplayObject();
-
-        expect(obj.accessible).to.be.undefined;
-        expect(obj.accessibleTitle).to.be.undefined;
-        expect(obj.tabIndex).to.be.undefined;
-    });
-
     it('should add properties after mixin', function ()
     {
         mixins.performMixins();
