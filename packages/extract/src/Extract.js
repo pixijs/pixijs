@@ -70,7 +70,6 @@ export default class Extract
     canvas(target)
     {
         const renderer = this.renderer;
-        let textureBuffer;
         let resolution;
         let frame;
         let flipY = false;
@@ -90,20 +89,22 @@ export default class Extract
 
         if (renderTexture)
         {
-            textureBuffer = renderTexture.baseTexture._glRenderTargets[this.renderer.CONTEXT_UID];
-            resolution = textureBuffer.resolution;
+            resolution = renderTexture.baseTexture.resolution;
             frame = renderTexture.frame;
             flipY = false;
+            renderer.renderTexture.bind(renderTexture);
         }
         else
         {
-            textureBuffer = this.renderer.rootRenderTarget;
-            resolution = textureBuffer.resolution;
+            resolution = this.renderer.resolution;
+
             flipY = true;
 
             frame = TEMP_RECT;
-            frame.width = textureBuffer.size.width;
-            frame.height = textureBuffer.size.height;
+            frame.width = this.renderer.width;
+            frame.height = this.renderer.height;
+
+            renderer.renderTexture.bind(null);
         }
 
         const width = frame.width * resolution;
@@ -111,40 +112,33 @@ export default class Extract
 
         const canvasBuffer = new CanvasRenderTarget(width, height);
 
-        if (textureBuffer)
+        const webglPixels = new Uint8Array(BYTES_PER_PIXEL * width * height);
+
+        // read pixels to the array
+        const gl = renderer.gl;
+
+        gl.readPixels(
+            frame.x * resolution,
+            frame.y * resolution,
+            width,
+            height,
+            gl.RGBA,
+            gl.UNSIGNED_BYTE,
+            webglPixels
+        );
+
+        // add the pixels to the canvas
+        const canvasData = canvasBuffer.context.getImageData(0, 0, width, height);
+
+        canvasData.data.set(webglPixels);
+
+        canvasBuffer.context.putImageData(canvasData, 0, 0);
+
+        // pulling pixels
+        if (flipY)
         {
-            // bind the buffer
-            renderer.bindRenderTarget(textureBuffer);
-
-            // set up an array of pixels
-            const webglPixels = new Uint8Array(BYTES_PER_PIXEL * width * height);
-
-            // read pixels to the array
-            const gl = renderer.gl;
-
-            gl.readPixels(
-                frame.x * resolution,
-                frame.y * resolution,
-                width,
-                height,
-                gl.RGBA,
-                gl.UNSIGNED_BYTE,
-                webglPixels
-            );
-
-            // add the pixels to the canvas
-            const canvasData = canvasBuffer.context.getImageData(0, 0, width, height);
-
-            canvasData.data.set(webglPixels);
-
-            canvasBuffer.context.putImageData(canvasData, 0, 0);
-
-            // pulling pixels
-            if (flipY)
-            {
-                canvasBuffer.context.scale(1, -1);
-                canvasBuffer.context.drawImage(canvasBuffer.canvas, 0, -height);
-            }
+            canvasBuffer.context.scale(1, -1);
+            canvasBuffer.context.drawImage(canvasBuffer.canvas, 0, -height);
         }
 
         // send the canvas back..
@@ -162,7 +156,6 @@ export default class Extract
     pixels(target)
     {
         const renderer = this.renderer;
-        let textureBuffer;
         let resolution;
         let frame;
         let renderTexture;
@@ -181,18 +174,21 @@ export default class Extract
 
         if (renderTexture)
         {
-            textureBuffer = renderTexture.baseTexture._glRenderTargets[this.renderer.CONTEXT_UID];
-            resolution = textureBuffer.resolution;
+            resolution = renderTexture.baseTexture.resolution;
             frame = renderTexture.frame;
+
+            // bind the buffer
+            renderer.renderTexture.bind(renderTexture);
         }
         else
         {
-            textureBuffer = this.renderer.rootRenderTarget;
-            resolution = textureBuffer.resolution;
+            resolution = renderer.resolution;
 
             frame = TEMP_RECT;
-            frame.width = textureBuffer.size.width;
-            frame.height = textureBuffer.size.height;
+            frame.width = renderer.width;
+            frame.height = renderer.height;
+
+            renderer.renderTexture.bind(null);
         }
 
         const width = frame.width * resolution;
@@ -200,23 +196,18 @@ export default class Extract
 
         const webglPixels = new Uint8Array(BYTES_PER_PIXEL * width * height);
 
-        if (textureBuffer)
-        {
-            // bind the buffer
-            renderer.bindRenderTarget(textureBuffer);
-            // read pixels to the array
-            const gl = renderer.gl;
+        // read pixels to the array
+        const gl = renderer.gl;
 
-            gl.readPixels(
-                frame.x * resolution,
-                frame.y * resolution,
-                width,
-                height,
-                gl.RGBA,
-                gl.UNSIGNED_BYTE,
-                webglPixels
-            );
-        }
+        gl.readPixels(
+            frame.x * resolution,
+            frame.y * resolution,
+            width,
+            height,
+            gl.RGBA,
+            gl.UNSIGNED_BYTE,
+            webglPixels
+        );
 
         return webglPixels;
     }
