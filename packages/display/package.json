@@ -29,7 +29,6 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/settings": "^5.0.0-alpha",
     "@pixi/math": "^5.0.0-alpha",
     "@pixi/utils": "^5.0.0-alpha",
     "eventemitter3": "^2.0.0",
