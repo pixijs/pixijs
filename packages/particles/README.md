@@ -9,5 +9,8 @@ npm install @pixi/particles
 ## Usage
 
 ```js
-import '@pixi/particles';
+import {ParticleRenderer} from '@pixi/particles';
+import {Renderer} from '@pixi/core';
+
+Renderer.registerPlugin('particle', ParticleRenderer);
 ```
