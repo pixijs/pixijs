@@ -3,7 +3,7 @@
   "scripts": {
     "postinstall": "npm run bootstrap",
     "bootstrap": "lerna bootstrap --hoist",
-    "preclean": "rimraf \"{filters,bundles,packages}/*/lib\"",
+    "preclean": "rimraf \"{bundles,packages,packages/canvas,packages/filters}/*/lib\"",
     "clean": "lerna clean",
     "predeploy": "npm run docs",
     "pretest": "npm run lint && npm run build:dev",
@@ -15,11 +15,15 @@
     "build:dev": "lerna run build:dev",
     "watch": "lerna run --parallel watch",
     "lerna": "lerna",
+    "predist": "rimraf dist/*",
+    "dist": "npm run docs && lerna run build --scope \"pixi.js*\"",
+    "postdist": "copyfiles -f \"bundles/*/lib/pixi?(-legacy).js*\" dist",
     "prepub": "npm run build",
     "pub": "lerna publish"
   },
   "devDependencies": {
     "@pixi/jsdoc-template": "^2.2.0",
+    "copyfiles": "^1.2.0",
     "eslint": "^4.6.1",
     "jsdoc": "^3.4.0",
     "lerna": "^2.4.0",

@@ -36,6 +36,7 @@
   },
   "devDependencies": {
     "@pixi/utils": "^5.0.0-alpha",
+    "@pixi/canvas-renderer": "^5.0.0-alpha",
     "@internal/builder": "^5.0.0-alpha",
     "@internal/tester": "^5.0.0-alpha",
     "rollup": "^0.50.0"

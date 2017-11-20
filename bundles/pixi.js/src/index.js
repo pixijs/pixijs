@@ -5,3 +5,6 @@ if (typeof window !== 'undefined')
 {
     window.PIXI = PIXI;
 }
+
+import deprecated from './deprecated';
+deprecated(PIXI);

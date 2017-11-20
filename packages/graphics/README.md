@@ -9,5 +9,8 @@ npm install @pixi/graphics
 ## Usage
 
 ```js
-import * as graphics from '@pixi/graphics';
+import { GraphicsRenderer } from '@pixi/graphics';
+import { Renderer } from '@pixi/core';
+
+Renderer.registerPlugin('graphics', GraphicsRenderer);
 ```

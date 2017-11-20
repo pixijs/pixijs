@@ -396,14 +396,11 @@ export default class BaseTexture extends EventEmitter
                 baseTexture.textureCacheIds.push(id);
             }
 
-            // @if DEV
-            /* eslint-disable no-console */
             if (BaseTextureCache[id])
             {
+                // eslint-disable-next-line no-console
                 console.warn(`BaseTexture added to the cache with an id [${id}] that already had an entry`);
             }
-            /* eslint-enable no-console */
-            // @endif
 
             BaseTextureCache[id] = baseTexture;
         }
