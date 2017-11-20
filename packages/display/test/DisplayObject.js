@@ -1,5 +1,4 @@
-const { DisplayObject, Container, TRANSFORM_MODE, Transform, TransformStatic } = require('../');
-const { settings } = require('@pixi/settings');
+const { DisplayObject, Container } = require('../');
 
 describe('PIXI.DisplayObject', function ()
 {
@@ -13,21 +12,6 @@ describe('PIXI.DisplayObject', function ()
             expect(object.worldAlpha).to.equal(1);
             expect(object.renderable).to.be.true;
             expect(object.visible).to.be.true;
-        });
-
-        it('should set the correct Transform', function ()
-        {
-            settings.TRANSFORM_MODE = TRANSFORM_MODE.DYNAMIC;
-
-            const dynamicTransform = new DisplayObject();
-
-            expect(dynamicTransform.transform).to.be.instanceof(Transform);
-
-            settings.TRANSFORM_MODE = TRANSFORM_MODE.STATIC;
-
-            const staticTransform = new DisplayObject();
-
-            expect(staticTransform.transform).to.be.instanceof(TransformStatic);
         });
     });
 

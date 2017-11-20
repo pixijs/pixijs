@@ -1,6 +1,6 @@
-const { TransformStatic } = require('../');
+const { Transform } = require('../');
 
-describe('PIXI.TransformStatic', function ()
+describe('PIXI.Transform', function ()
 {
     describe('setFromMatrix', function ()
     {
@@ -8,9 +8,9 @@ describe('PIXI.TransformStatic', function ()
         {
             const eps = 1e-3;
 
-            const transform = new TransformStatic();
-            const parent = new TransformStatic();
-            const otherTransform = new TransformStatic();
+            const transform = new Transform();
+            const parent = new Transform();
+            const otherTransform = new Transform();
 
             transform.position.set(20, 10);
             transform.scale.set(-2, -3);
@@ -36,9 +36,9 @@ describe('PIXI.TransformStatic', function ()
         {
             const eps = 1e-3;
 
-            const transform = new TransformStatic();
-            const parent = new TransformStatic();
-            const otherTransform = new TransformStatic();
+            const transform = new Transform();
+            const parent = new Transform();
+            const otherTransform = new Transform();
 
             transform.position.set(20, 10);
             transform.scale.set(2, -3);
@@ -66,9 +66,9 @@ describe('PIXI.TransformStatic', function ()
 
             const eps = 1e-3;
 
-            const transform = new TransformStatic();
-            const parent = new TransformStatic();
-            const otherTransform = new TransformStatic();
+            const transform = new Transform();
+            const parent = new Transform();
+            const otherTransform = new Transform();
 
             transform.position.set(387.8, 313.95);
             transform.scale.set(0.572, 4.101);

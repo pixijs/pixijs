@@ -1,8 +1,7 @@
 import { TextureMatrix, Texture } from '@pixi/core';
-import { Point, Rectangle } from '@pixi/math';
+import { Point, Rectangle, Transform } from '@pixi/math';
 import { TextureCache } from '@pixi/utils';
 import { Sprite } from '@pixi/sprite';
-import { TransformStatic } from '@pixi/display';
 
 const tempPoint = new Point();
 
@@ -27,9 +26,9 @@ export default class TilingSprite extends Sprite
         /**
          * Tile transform
          *
-         * @member {PIXI.TransformStatic}
+         * @member {PIXI.Transform}
          */
-        this.tileTransform = new TransformStatic();
+        this.tileTransform = new Transform();
 
         // /// private
 

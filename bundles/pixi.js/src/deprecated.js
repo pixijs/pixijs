@@ -56,6 +56,55 @@ export default function deprecated(PIXI)
         },
 
         /**
+         * @class PIXI.TransformStatic
+         * @deprecated since 5.0.0
+         * @see PIXI.Transform
+         */
+        TransformStatic: {
+            get()
+            {
+                warn('PIXI.TransformStatic has been removed, use PIXI.Transform');
+
+                return PIXI.Transform;
+            },
+        },
+
+        /**
+         * @class PIXI.TransformBase
+         * @deprecated since 5.0.0
+         * @see PIXI.Transform
+         */
+        TransformBase: {
+            get()
+            {
+                warn('PIXI.TransformBase has been removed, use PIXI.Transform');
+
+                return PIXI.Transform;
+            },
+        },
+
+        /**
+         * Constants that specify the transform type.
+         *
+         * @static
+         * @constant
+         * @name TRANSFORM_MODE
+         * @memberof PIXI
+         * @type {object}
+         * @deprecated since 5.0.0
+         * @property {number} STATIC
+         * @property {number} DYNAMIC
+         */
+        TRANSFORM_MODE: {
+            get()
+            {
+                warn('PIXI.TRANSFORM_MODE has been removed');
+
+                return { STATIC: 0, DYNAMIC: 1 };
+            },
+        },
+
+        /**
          * @class PIXI.WebGLRenderer
          * @see PIXI.Renderer
          * @deprecated since 5.0.0
@@ -453,4 +502,28 @@ export default function deprecated(PIXI)
 
         this.renderAdvanced(renderer);
     };
+
+    Object.defineProperties(PIXI.settings, {
+        /**
+         * Default transform type.
+         *
+         * @static
+         * @deprecated since 5.0.0
+         * @memberof PIXI.settings
+         * @type {PIXI.TRANSFORM_MODE}
+         * @default PIXI.TRANSFORM_MODE.STATIC
+         */
+        TRANSFORM_MODE: {
+            get()
+            {
+                warn('PIXI.settings.TRANSFORM_MODE has been removed.');
+
+                return 0;
+            },
+            set()
+            {
+                warn('PIXI.settings.TRANSFORM_MODE has been removed.');
+            },
+        },
+    });
 }

@@ -6,3 +6,4 @@ require('./Point');
 require('./Polygon');
 require('./Rectangle');
 require('./RoundedRectangle');
+require('./Transform');
