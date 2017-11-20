@@ -9,5 +9,8 @@ npm install @pixi/mesh
 ## Usage
 
 ```js
-import '@pixi/mesh';
+import { MeshRenderer } from '@pixi/mesh';
+import { Renderer } from '@pixi/core';
+
+Renderer.registerPlugin('mesh', MeshRenderer);
 ```

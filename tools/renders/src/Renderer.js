@@ -55,9 +55,9 @@ class Renderer
             /**
              * The WebGL PIXI renderer.
              * @name webgl
-             * @type {PIXI.WebGLRenderer}
+             * @type {PIXI.Renderer}
              */
-            this.webgl = new PIXI.WebGLRenderer(Renderer.WIDTH, Renderer.HEIGHT, {
+            this.webgl = new PIXI.Renderer(Renderer.WIDTH, Renderer.HEIGHT, {
                 view: viewWebGL,
                 backgroundColor: 0xffffff,
                 antialias: false,
@@ -68,7 +68,7 @@ class Renderer
         /**
          * The Canvas PIXI renderer.
          * @name webgl
-         * @type {PIXI.WebGLRenderer}
+         * @type {PIXI.Renderer}
          */
         this.canvas = new PIXI.CanvasRenderer(Renderer.WIDTH, Renderer.HEIGHT, {
             view: viewContext2d,

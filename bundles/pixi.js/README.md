@@ -1,10 +1,7 @@
 PixiJS — The HTML5 Creation Engine
 =============
 
-![pixi.js logo](http://www.goodboydigital.com/pixijs/pixiV4_wide_full.jpg)
-
-[![Inline docs](http://inch-ci.org/github/pixijs/pixi.js.svg?branch=dev)](http://inch-ci.org/github/pixijs/pixi.js)
-[![Build Status](https://travis-ci.org/pixijs/pixi.js.svg?branch=dev)](https://travis-ci.org/pixijs/pixi.js)
+![pixi.js logo](https://pixijs.download/pixijs-banner.png)
 
 The aim of this project is to provide a fast lightweight 2D library that works
 across all devices. The PixiJS renderer allows everyone to enjoy the power of

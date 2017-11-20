@@ -5,8 +5,7 @@
     "source": {
         "include": [
             "bundles",
-            "packages",
-            "filters"
+            "packages"
         ],
         "excludePattern": "(node_modules|lib|dist|test)"
     },
@@ -48,7 +47,7 @@
         "recurse"       : true,
         "private"       : false,
         "lenient"       : true,
-        "destination"   : "./docs",
+        "destination"   : "./dist/docs",
         "template"      : "./node_modules/@pixi/jsdoc-template"
     }
 }

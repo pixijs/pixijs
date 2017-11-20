@@ -1,7 +1,7 @@
 {
   "name": "pixi.js",
   "version": "5.0.0-alpha",
-  "description": "The HTML5 Creation Engine: Create beautiful digital content with the fastest, most flexible 2D WebGL renderer.",
+  "description": "PixiJS without the CanvasRenderer fallback, modern browsers only",
   "author": "Mat Groves",
   "contributors": [
     "Ivan Popelyshev <ivan.popelyshev@gmail.com>",
@@ -19,17 +19,14 @@
     "url": "https://github.com/pixijs/pixi.js.git"
   },
   "scripts": {
-    "build": "rollup -p -b -c node_modules/.bin/config -r src/deprecated.js",
-    "build:dev": "rollup -b -c node_modules/.bin/config -r src/deprecated.js",
-    "watch": "rollup -w -b -c node_modules/.bin/config -r src/deprecated.js",
+    "build": "rollup -p -b -c node_modules/.bin/config",
+    "build:dev": "rollup -b -c node_modules/.bin/config",
+    "watch": "rollup -w -b -c node_modules/.bin/config",
     "postversion": "npm run build",
     "test": "tester"
   },
   "files": [
-    "lib/",
-    "LICENSE",
-    "package.json",
-    "README.md"
+    "lib/"
   ],
   "devDependencies": {
     "@pixi/app": "^5.0.0-alpha",
@@ -54,7 +51,6 @@
     "@pixi/mixin-get-global-position": "^5.0.0-alpha",
     "@pixi/mixin-app-loader": "^5.0.0-alpha",
     "@pixi/particles": "^5.0.0-alpha",
-    "@pixi/polyfill": "^5.0.0-alpha",
     "@pixi/prepare": "^5.0.0-alpha",
     "@pixi/settings": "^5.0.0-alpha",
     "@pixi/sprite": "^5.0.0-alpha",

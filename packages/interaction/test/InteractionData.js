@@ -2,6 +2,8 @@ const { InteractionData } = require('../');
 const { DisplayObject } = require('@pixi/display');
 const { Point } = require('@pixi/math');
 
+require('@pixi/canvas-display');
+
 describe('PIXI.interaction.InteractionData', function ()
 {
     describe('getLocalPosition', function ()

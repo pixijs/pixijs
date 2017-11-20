@@ -370,14 +370,11 @@ export default class Texture extends EventEmitter
                 texture.textureCacheIds.push(id);
             }
 
-            // @if DEV
-            /* eslint-disable no-console */
             if (TextureCache[id])
             {
+                // eslint-disable-next-line no-console
                 console.warn(`Texture added to the cache with an id [${id}] that already had an entry`);
             }
-            /* eslint-enable no-console */
-            // @endif
 
             TextureCache[id] = texture;
         }

@@ -1,6 +1,4 @@
 import path from 'path';
-import fs from 'fs';
-import buble from 'buble';
 import thaw from './thaw';
 import transpile from 'rollup-plugin-buble';
 import resolve from 'rollup-plugin-node-resolve';
@@ -12,13 +10,11 @@ import minimist from 'minimist';
 import commonjs from 'rollup-plugin-commonjs';
 import builtins from 'rollup-plugin-node-builtins';
 import replace from 'rollup-plugin-replace';
-import preprocess from 'rollup-plugin-preprocess';
 
 const pkg = require(path.resolve('./package'));
 const input = 'src/index.js';
 
-const { prod, bundle, deprecated } = minimist(process.argv.slice(2), {
-    string: ['deprecated'],
+const { prod, bundle } = minimist(process.argv.slice(2), {
     boolean: ['prod', 'bundle'],
     default: {
         prod: false,
@@ -27,7 +23,6 @@ const { prod, bundle, deprecated } = minimist(process.argv.slice(2), {
     alias: {
         p: 'prod',
         b: 'bundle',
-        r: 'deprecated',
     },
 });
 
@@ -53,14 +48,6 @@ const plugins = [
     replace({
         __VERSION__: pkg.version,
     }),
-    preprocess({
-        context: {
-            DEV: !prod,
-            DEVELOPMENT: !prod,
-            PROD: prod,
-            PRODUCTION: prod,
-        },
-    }),
     transpile(),
     thaw(),
 ];
@@ -75,19 +62,10 @@ if (prod)
             {
                 const { value, type } = comment;
 
-                return type === 'comment2' && value.indexOf(pkg.name) > -1;
+                return type === 'comment2' && value.indexOf(` * ${pkg.name} `) > -1;
             },
         },
     }, minify));
-}
-
-let outro = '';
-
-if (deprecated)
-{
-    const buffer = fs.readFileSync(path.resolve(deprecated), 'utf8');
-
-    outro = buble.transform(buffer).code;
 }
 
 const compiled = (new Date()).toUTCString().replace(/GMT/g, 'UTC');
@@ -105,7 +83,6 @@ const banner = `/*!
 export default [
     {
         banner,
-        outro,
         name,
         input,
         output: {

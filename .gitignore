@@ -26,6 +26,7 @@ node_modules
 docs
 coverage
 lib
+dist
 
 # jetBrains IDE ignores
 .idea

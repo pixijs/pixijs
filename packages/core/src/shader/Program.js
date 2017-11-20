@@ -1,5 +1,5 @@
 import extractUniformsFromSrc from './extractUniformsFromSrc';
-import * as shaderUtils from '../renderers/webgl/systems/shader/shader';
+import * as shaderUtils from '../renderers/systems/shader/shader';
 import { ProgramCache } from '@pixi/utils';
 import getTestContext from './getTestContext';
 import defaultFragment from './defaultProgram.frag';

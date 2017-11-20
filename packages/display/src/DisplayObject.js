@@ -335,19 +335,9 @@ export default class DisplayObject extends EventEmitter
     /**
      * Renders the object using the WebGL renderer
      *
-     * @param {PIXI.WebGLRenderer} renderer - The renderer
+     * @param {PIXI.Renderer} renderer - The renderer
      */
-    renderWebGL(renderer) // eslint-disable-line no-unused-vars
-    {
-        // OVERWRITE;
-    }
-
-    /**
-     * Renders the object using the Canvas renderer
-     *
-     * @param {PIXI.CanvasRenderer} renderer - The renderer
-     */
-    renderCanvas(renderer) // eslint-disable-line no-unused-vars
+    render(renderer) // eslint-disable-line no-unused-vars
     {
         // OVERWRITE;
     }

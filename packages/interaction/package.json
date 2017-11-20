@@ -37,6 +37,10 @@
     "eventemitter3": "^2.0.0"
   },
   "devDependencies": {
+    "@pixi/canvas-renderer": "^5.0.0-alpha",
+    "@pixi/canvas-display": "^5.0.0-alpha",
+    "@pixi/canvas-graphics": "^5.0.0-alpha",
+    "@pixi/canvas-sprite": "^5.0.0-alpha",
     "@pixi/graphics": "^5.0.0-alpha",
     "@internal/builder": "^5.0.0-alpha",
     "@internal/tester": "^5.0.0-alpha",

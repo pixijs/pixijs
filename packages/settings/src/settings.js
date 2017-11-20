@@ -74,7 +74,7 @@ export default {
     SPRITE_BATCH_SIZE: 4096,
 
     /**
-     * The default render options if none are supplied to {@link PIXI.WebGLRenderer}
+     * The default render options if none are supplied to {@link PIXI.Renderer}
      * or {@link PIXI.CanvasRenderer}.
      *
      * @static

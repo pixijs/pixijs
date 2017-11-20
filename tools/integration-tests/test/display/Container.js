@@ -1,6 +1,8 @@
 const { Container } = require('@pixi/display');
 const { Graphics } = require('@pixi/graphics');
 
+require('@pixi/canvas-display');
+
 describe('PIXI.Container', function ()
 {
     describe('addChild', function ()

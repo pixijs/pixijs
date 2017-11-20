@@ -3,7 +3,7 @@
  * asynchronously preparing assets, textures, graphics waiting to be displayed.
  *
  * Do not instantiate these plugins directly. It is available from the `renderer.plugins` property.
- * See {@link PIXI.CanvasRenderer#plugins} or {@link PIXI.WebGLRenderer#plugins}.
+ * See {@link PIXI.CanvasRenderer#plugins} or {@link PIXI.Renderer#plugins}.
  * @example
  * // Create a new application
  * const app = new PIXI.Application();
@@ -26,8 +26,7 @@
  * });
  * @namespace PIXI.prepare
  */
-export { default as webgl } from './webgl/WebGLPrepare';
-export { default as canvas } from './canvas/CanvasPrepare';
+export { default as Prepare } from './Prepare';
 export { default as BasePrepare } from './BasePrepare';
-export { default as CountLimiter } from './limiters/CountLimiter';
-export { default as TimeLimiter } from './limiters/TimeLimiter';
+export { default as CountLimiter } from './CountLimiter';
+export { default as TimeLimiter } from './TimeLimiter';
