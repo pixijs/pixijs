@@ -103,30 +103,6 @@ export default function deprecated(PIXI)
                 return { STATIC: 0, DYNAMIC: 1 };
             },
         },
-    });
-
-    /**
-     * This namespace has been removed. All classes previous nested
-     * under this namespace have been moved to the top-level `PIXI` object.
-     * @namespace PIXI.extras
-     * @deprecated since 5.0.0
-     */
-    PIXI.extras = {};
-
-    Object.defineProperties(PIXI.extras, {
-        /**
-         * @class PIXI.extras.TilingSprite
-         * @see PIXI.TilingSprite
-         * @deprecated since 5.0.0
-         */
-        TilingSprite: {
-            get()
-            {
-                warn('PIXI.extras.TilingSprite has moved to PIXI.TilingSprite');
-
-                return PIXI.TilingSprite;
-            },
-        },
 
         /**
          * @class PIXI.WebGLRenderer
@@ -551,4 +527,3 @@ export default function deprecated(PIXI)
         },
     });
 }
-
