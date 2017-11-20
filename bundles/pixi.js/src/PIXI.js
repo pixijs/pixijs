@@ -12,6 +12,7 @@ export * from '@pixi/constants';
 export * from '@pixi/display';
 export * from '@pixi/mesh';
 export * from '@pixi/ticker';
+export * from '@pixi/particles';
 
 import { Renderer } from '@pixi/core';
 import * as interaction from '@pixi/interaction';
@@ -21,6 +22,7 @@ import { MeshRenderer } from '@pixi/mesh';
 import { SpriteRenderer } from '@pixi/sprite';
 import { TilingSpriteRenderer } from '@pixi/sprite-tiling';
 import { GraphicsRenderer } from '@pixi/graphics';
+import { ParticleRenderer } from '@pixi/particles';
 import * as accessibility from '@pixi/accessibility';
 import * as loaders from '@pixi/loaders';
 import * as filters from './filters';
@@ -35,6 +37,7 @@ Renderer.registerPlugin('mesh', MeshRenderer);
 Renderer.registerPlugin('prepare', prepare.Prepare);
 Renderer.registerPlugin('sprite', SpriteRenderer);
 Renderer.registerPlugin('tilingSprite', TilingSpriteRenderer);
+Renderer.registerPlugin('particle', ParticleRenderer);
 
 import '@pixi/mixin-cache-as-bitmap';
 import '@pixi/mixin-get-child-by-name';
