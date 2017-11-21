@@ -81,30 +81,22 @@ const banner = `/*!
  * http://www.opensource.org/licenses/mit-license
  */\n`;
 
-export default [
-    {
-        banner,
-        name,
-        input,
-        treeshake,
-        output: {
+export default {
+    banner,
+    name,
+    input,
+    treeshake,
+    output: [
+        {
             file: pkg.main,
             format: bundle ? 'umd' : 'cjs',
         },
-        external,
-        sourcemap,
-        plugins,
-    },
-    {
-        banner,
-        input,
-        treeshake,
-        output: {
+        {
             file: pkg.module,
             format: 'es',
         },
-        external,
-        sourcemap,
-        plugins,
-    },
-];
+    ],
+    external,
+    sourcemap,
+    plugins,
+};
