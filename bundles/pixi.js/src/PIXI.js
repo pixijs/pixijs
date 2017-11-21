@@ -12,6 +12,7 @@ export * from '@pixi/constants';
 export * from '@pixi/display';
 export * from '@pixi/mesh';
 export * from '@pixi/ticker';
+export * from '@pixi/loaders';
 
 import { Renderer } from '@pixi/core';
 import * as interaction from '@pixi/interaction';
@@ -22,7 +23,7 @@ import { SpriteRenderer } from '@pixi/sprite';
 import { TilingSpriteRenderer } from '@pixi/sprite-tiling';
 import { GraphicsRenderer } from '@pixi/graphics';
 import * as accessibility from '@pixi/accessibility';
-import * as loaders from '@pixi/loaders';
+import { Loader } from '@pixi/loaders';
 import * as filters from './filters';
 import * as utils from '@pixi/utils';
 import { settings } from '@pixi/settings';
@@ -38,8 +39,8 @@ Renderer.registerPlugin('prepare', prepare.Prepare);
 Renderer.registerPlugin('sprite', SpriteRenderer);
 Renderer.registerPlugin('tilingSprite', TilingSpriteRenderer);
 
-loaders.Loader.useMiddleware(SpritesheetLoader.middleware);
-loaders.Loader.useMiddleware(BitmapFontLoader.middleware);
+Loader.registerPlugin(SpritesheetLoader);
+Loader.registerPlugin(BitmapFontLoader);
 
 import '@pixi/mixin-cache-as-bitmap';
 import '@pixi/mixin-get-child-by-name';
@@ -48,20 +49,11 @@ import '@pixi/mixin-app-loader';
 
 utils.mixins.performMixins();
 
-/**
- * Alias for {@link PIXI.loaders.shared}.
- * @name loader
- * @memberof PIXI
- * @type {PIXI.loader.Loader}
- */
-export const loader = loaders.shared;
-
 export {
     accessibility,
     extract,
     filters,
     interaction,
-    loaders,
     prepare,
     utils,
     settings,
