@@ -26,6 +26,8 @@ import * as loaders from '@pixi/loaders';
 import * as filters from './filters';
 import * as utils from '@pixi/utils';
 import { settings } from '@pixi/settings';
+import { SpritesheetLoader } from '@pixi/spritesheet';
+import { BitmapFontLoader } from '@pixi/text-bitmap';
 
 Renderer.registerPlugin('accessibility', accessibility.AccessibilityManager);
 Renderer.registerPlugin('extract', extract.Extract);
@@ -35,6 +37,9 @@ Renderer.registerPlugin('mesh', MeshRenderer);
 Renderer.registerPlugin('prepare', prepare.Prepare);
 Renderer.registerPlugin('sprite', SpriteRenderer);
 Renderer.registerPlugin('tilingSprite', TilingSpriteRenderer);
+
+loaders.Loader.useMiddleware(SpritesheetLoader.middleware);
+loaders.Loader.useMiddleware(BitmapFontLoader.middleware);
 
 import '@pixi/mixin-cache-as-bitmap';
 import '@pixi/mixin-get-child-by-name';

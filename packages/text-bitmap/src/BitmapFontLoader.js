@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { TextureCache } from '@pixi/utils';
-import { Resource, Loader } from '@pixi/loaders';
+import { Resource } from '@pixi/loaders';
 import BitmapText from './BitmapText';
 
 /**
@@ -107,6 +107,3 @@ export default class BitmapFontLoader
 
 // Add custom add support for loading fnt files as XML
 Resource.setExtensionXhrType('fnt', Resource.XHR_RESPONSE_TYPE.DOCUMENT);
-
-// Install loader support for BitmapText
-Loader.useMiddleware(BitmapFontLoader.middleware);

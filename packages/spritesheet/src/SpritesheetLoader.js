@@ -1,5 +1,5 @@
 import url from 'url';
-import { Resource, Loader } from '@pixi/loaders';
+import { Resource } from '@pixi/loaders';
 import Spritesheet from './Spritesheet';
 
 /**
@@ -78,6 +78,3 @@ export default class SpritesheetLoader
         return url.resolve(resource.url.replace(baseUrl, ''), resource.data.meta.image);
     }
 }
-
-// Install loader support for Spritesheet objects
-Loader.useMiddleware(SpritesheetLoader.middleware);

@@ -11,6 +11,11 @@ describe('PIXI.SpritesheetLoader', function ()
         expect(SpritesheetLoader.middleware()).to.be.a('function');
     });
 
+    it('should install middleware', function ()
+    {
+        Loader.useMiddleware(SpritesheetLoader.middleware);
+    });
+
     it('should do nothing if the resource is not JSON', function ()
     {
         const spy = sinon.spy();
