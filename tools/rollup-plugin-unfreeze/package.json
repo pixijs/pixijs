@@ -1,14 +1,11 @@
 {
-  "name": "@internal/tester",
+  "name": "@internal/rollup-plugin-unfreeze",
   "private": true,
   "version": "5.0.0-alpha",
-  "bin": {
-    "tester": "index.js"
-  },
+  "module": "index.js",
   "author": "Matt Karl <matt@mattkarl.com>",
   "license": "MIT",
   "dependencies": {
-    "electron": "^1.7.9",
-    "floss": "^2.1.3"
+    "magic-string": "^0.22.4"
   }
 }

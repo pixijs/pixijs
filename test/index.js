@@ -1,17 +1,14 @@
-const lerna = require('../lerna');
-const glob = require('glob');
+const PackageUtilities = require('lerna/lib/PackageUtilities');
+const Repository = require('lerna/lib/Repository');
 const path = require('path');
 
-let tests = [];
+// Standard Lerna plumbing getting packages
+const repo = new Repository(path.dirname(__dirname));
+const packages = PackageUtilities.getPackages(repo);
 
-// Locate all test files and convert to paths
-lerna.packages.forEach((p) =>
+// Look for tests in the packages
+packages.filter((pkg) => !!pkg.scripts.test).forEach((pkg) =>
 {
-    tests = tests.concat(glob.sync(`${p}/test/index.js`).map((f) =>
-        path.join(__dirname, '..', f)
-    ));
+    // eslint-disable-next-line global-require
+    require(`${pkg.location}/test`);
 });
-
-// Import tests
-// eslint-disable-next-line global-require
-tests.forEach((test) => require(test));

@@ -19,11 +19,7 @@
     "url": "https://github.com/pixijs/pixi.js.git"
   },
   "scripts": {
-    "build": "rollup -p -b -c node_modules/.bin/config",
-    "build:dev": "rollup -b -c node_modules/.bin/config",
-    "watch": "rollup -w -b -c node_modules/.bin/config",
-    "postversion": "npm run build",
-    "test": "tester"
+    "test": "floss --path test"
   },
   "files": [
     "lib/"
@@ -61,8 +57,6 @@
     "@pixi/text-bitmap": "^5.0.0-alpha",
     "@pixi/ticker": "^5.0.0-alpha",
     "@pixi/utils": "^5.0.0-alpha",
-    "@internal/builder": "^5.0.0-alpha",
-    "@internal/tester": "^5.0.0-alpha",
-    "rollup": "^0.50.0"
+    "floss": "^2.1.3"
   }
 }

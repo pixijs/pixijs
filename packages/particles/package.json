@@ -18,13 +18,6 @@
   "publishConfig": {
     "access": "public"
   },
-  "scripts": {
-    "build:dev": "rollup -c node_modules/.bin/config",
-    "build": "rollup -p -c node_modules/.bin/config",
-    "watch": "rollup -w -c node_modules/.bin/config",
-    "postversion": "npm run build",
-    "test": "exit 0"
-  },
   "files": [
     "lib"
   ],
@@ -37,7 +30,6 @@
     "pixi-gl-core": "^2.0.0-alpha"
   },
   "devDependencies": {
-    "@internal/builder": "^5.0.0-alpha",
-    "rollup": "^0.50.0"
+    "floss": "^2.1.3"
   }
 }
