@@ -4,7 +4,7 @@
   "version": "5.0.0-alpha",
   "description": "Integration tests for PixiJS packages",
   "scripts": {
-    "test": "tester"
+    "test": "floss --path test"
   },
   "devDependencies": {
     "@pixi/graphics": "^5.0.0-alpha",
@@ -19,7 +19,7 @@
     "@pixi/text": "^5.0.0-alpha",
     "@pixi/math": "^5.0.0-alpha",
     "@pixi/display": "^5.0.0-alpha",
-    "@internal/tester": "^5.0.0-alpha",
-    "@internal/renders": "^5.0.0-alpha"
+    "@internal/renders": "^5.0.0-alpha",
+    "floss": "^2.1.3"
   }
 }
