@@ -16,7 +16,7 @@
     "watch": "rollup -cw",
     "lerna": "lerna",
     "predist": "rimraf dist/*",
-    "dist": "npm run docs && lerna run build --scope \"pixi.js*\"",
+    "dist": "npm run docs && npm run build -- --scope \"pixi.js*\"",
     "postdist": "copyfiles -f \"bundles/*/lib/pixi?(-legacy).js*\" dist",
     "prepub": "npm run build && floss --path test",
     "pub": "lerna publish"
