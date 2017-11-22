@@ -98,17 +98,18 @@ sorted.forEach((group) =>
         const external = Object.keys(pkg.dependencies || []);
         const basePath = path.relative(__dirname, pkg.location);
         const input = path.join(basePath, 'src/index.js');
+        const { main, module, bundle } = pkg._package;
 
         results.push({
             banner,
             input,
             output: [
                 {
-                    file: path.join(basePath, pkg._package.main),
+                    file: path.join(basePath, main),
                     format: 'cjs',
                 },
                 {
-                    file: path.join(basePath, pkg._package.module),
+                    file: path.join(basePath, module),
                     format: 'es',
                 },
             ],
@@ -120,13 +121,13 @@ sorted.forEach((group) =>
         // The package.json file has a bundle field
         // we'll use this to generate the bundle file
         // this will package all dependencies
-        if (args.bundles && pkg._package.bundle)
+        if (args.bundles && bundle)
         {
             results.push({
                 banner,
                 input,
                 output: {
-                    file: path.join(basePath, pkg._package.bundle),
+                    file: path.join(basePath, bundle),
                     format: 'umd',
                 },
                 name: 'PIXI',
