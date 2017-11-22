@@ -1,12 +1,12 @@
 import { Application } from '@pixi/app';
-import { Loader, shared } from '@pixi/loaders';
+import { Loader } from '@pixi/loaders';
 
 Application.prototype._loader = null;
 
 /**
  * Loader instance to help with asset loading.
  * @name PIXI.Application#loader
- * @type {PIXI.loaders.Loader}
+ * @type {PIXI.Loader}
  */
 Object.defineProperties(Application.prototype, {
     loader: {
@@ -16,7 +16,7 @@ Object.defineProperties(Application.prototype, {
             {
                 const { sharedLoader } = this._options;
 
-                this._loader = sharedLoader ? shared : new Loader();
+                this._loader = sharedLoader ? Loader.shared : new Loader();
             }
 
             return this._loader;

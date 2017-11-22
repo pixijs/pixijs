@@ -1,2 +1,2 @@
-require('./loader');
-require('./textureParser');
+require('./Loader');
+require('./TextureLoader');
