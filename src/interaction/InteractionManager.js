@@ -678,7 +678,7 @@ export default class InteractionManager extends EventEmitter
      * another DOM element to receive those events.
      *
      * @param {HTMLCanvasElement} element - the DOM element which will receive mouse and touch events.
-     * @param {number} [resolution=1] - The resolution / device pixel ratio of the new element (relative to the canvas).     
+     * @param {number} [resolution=1] - The resolution / device pixel ratio of the new element (relative to the canvas).
      */
     setTargetElement(element, resolution = 1)
     {
