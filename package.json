@@ -8,6 +8,7 @@
     "predeploy": "npm run docs",
     "pretest": "npm run lint && npm run build:dev",
     "test": "floss --path test",
+    "unit-test": "floss --path test",
     "docs": "jsdoc -c jsdoc.conf.json -R README.md",
     "lint": "eslint *.js test bundles packages tools --ignore-path .gitignore --max-warnings 0",
     "lintfix": "npm run lint -- --fix",
@@ -17,8 +18,8 @@
     "lerna": "lerna",
     "predist": "rimraf dist/*",
     "dist": "npm run docs && npm run build -- --scope \"pixi.js*\"",
-    "postdist": "copyfiles -f \"bundles/*/lib/pixi?(-legacy).js*\" dist",
-    "prepub": "npm run build && floss --path test",
+    "postdist": "copyfiles -f \"bundles/*/dist/*\" dist",
+    "prepub": "npm run build && npm run unit-test",
     "pub": "lerna publish"
   },
   "devDependencies": {
