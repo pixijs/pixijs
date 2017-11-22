@@ -131,6 +131,22 @@ export default function deprecated(PIXI)
                 return PIXI.utils.CanvasRenderTarget;
             },
         },
+
+        /**
+         * @memberof PIXI
+         * @name loader
+         * @type {PIXI.Loader}
+         * @see PIXI.Loader.shared
+         * @deprecated since 5.0.0
+         */
+        loader: {
+            get()
+            {
+                warn('PIXI.loader has moved to PIXI.Loader.shared');
+
+                return PIXI.Loader.shared;
+            },
+        },
     });
 
     /**
@@ -388,34 +404,51 @@ export default function deprecated(PIXI)
         },
     });
 
-    Object.defineProperties(PIXI.loaders.Loader, {
-        /**
-         * @function PIXI.loaders.Loader.addPixiMiddleware
-         * @see PIXI.loaders.Loader.useMiddleware
-         * @deprecated since 5.0.0
-         */
-        addPixiMiddleware: {
-            get()
-            {
-                warn('PIXI.loaders.Loader.addPixiMiddleware has moved to PIXI.loaders.Loader.useMiddleware');
-
-                return PIXI.loaders.Loader.useMiddleware;
-            },
-        },
-    });
+    /**
+     * All classes on this namespace have moved to the high-level `PIXI` object.
+     * @namespace PIXI.loaders
+     * @deprecated since 5.0.0
+     */
+    PIXI.loaders = {};
 
     Object.defineProperties(PIXI.loaders, {
         /**
+         * @class PIXI.loaders.Loader
+         * @see PIXI.Loader
+         * @deprecated since 5.0.0
+         */
+        Loader: {
+            get()
+            {
+                warn('PIXI.loaders.Loader has moved to PIXI.Loader');
+
+                return PIXI.Loader;
+            },
+        },
+        /**
+         * @class PIXI.loaders.Resource
+         * @see PIXI.LoaderResource
+         * @deprecated since 5.0.0
+         */
+        Resource: {
+            get()
+            {
+                warn('PIXI.loaders.Resource has moved to PIXI.LoaderResource');
+
+                return PIXI.LoaderResource;
+            },
+        },
+        /**
          * @function PIXI.loaders.bitmapFontParser
-         * @see PIXI.BitmapFontLoader.middleware
+         * @see PIXI.BitmapFontLoader.use
          * @deprecated since 5.0.0
          */
         bitmapFontParser: {
             get()
             {
-                warn('PIXI.loaders.bitmapFontParser has moved to PIXI.BitmapFontLoader.middleware');
+                warn('PIXI.loaders.bitmapFontParser has moved to PIXI.BitmapFontLoader.use');
 
-                return PIXI.BitmapFontLoader.middleware;
+                return PIXI.BitmapFontLoader.use;
             },
         },
         /**
@@ -433,15 +466,15 @@ export default function deprecated(PIXI)
         },
         /**
          * @function PIXI.loaders.spritesheetParser
-         * @see PIXI.SpritesheetLoader.middleware
+         * @see PIXI.SpritesheetLoader.use
          * @deprecated since 5.0.0
          */
         spritesheetParser: {
             get()
             {
-                warn('PIXI.loaders.spritesheetParser has moved to PIXI.SpritesheetLoader.middleware');
+                warn('PIXI.loaders.spritesheetParser has moved to PIXI.SpritesheetLoader.use');
 
-                return PIXI.SpritesheetLoader.middleware;
+                return PIXI.SpritesheetLoader.use;
             },
         },
         /**
@@ -458,6 +491,19 @@ export default function deprecated(PIXI)
             },
         },
     });
+
+    /**
+     * @function PIXI.loaders.Loader.addPixiMiddleware
+     * @see PIXI.Loader.registerPlugin
+     * @deprecated since 5.0.0
+     * @param {function} middleware
+     */
+    PIXI.Loader.addPixiMiddleware = function addPixiMiddleware(middleware)
+    {
+        warn('PIXI.loaders.Loader.addPixiMiddleware is deprecated, use PIXI.loaders.Loader.registerPlugin');
+
+        return PIXI.loaders.Loader.registerPlugin({ use: middleware() });
+    };
 
     /**
      * @class PIXI.extract.WebGLExtract

@@ -1,16 +1,16 @@
 import ResourceLoader from 'resource-loader';
 import EventEmitter from 'eventemitter3';
 import { blobMiddlewareFactory } from 'resource-loader/lib/middlewares/parsing/blob';
-import textureParser from './textureParser';
+import TextureLoader from './TextureLoader';
 
 /**
  *
  * The new loader, extends Resource Loader by Chad Engler: https://github.com/englercj/resource-loader
  *
  * ```js
- * const loader = PIXI.loader; // PixiJS exposes a premade instance for you to use.
+ * const loader = PIXI.Loader.shared; // PixiJS exposes a premade instance for you to use.
  * //or
- * const loader = new PIXI.loaders.Loader(); // you can also create your own if you want
+ * const loader = new PIXI.Loader(); // you can also create your own if you want
  *
  * const sprites = {};
  *
@@ -52,20 +52,31 @@ import textureParser from './textureParser';
  *
  * @class Loader
  * @extends module:resource-loader.ResourceLoader
- * @memberof PIXI.loaders
+ * @memberof PIXI
  * @param {string} [baseUrl=''] - The base url for all resources loaded by this loader.
  * @param {number} [concurrency=10] - The number of resources to load concurrently.
  */
-export class Loader extends ResourceLoader
+export default class Loader extends ResourceLoader
 {
     constructor(baseUrl, concurrency)
     {
         super(baseUrl, concurrency);
         EventEmitter.call(this);
 
-        for (let i = 0; i < Loader._middleware.length; ++i)
+        for (let i = 0; i < Loader._plugins.length; ++i)
         {
-            this.use(Loader._middleware[i]());
+            const plugin = Loader._plugins[i];
+            const { pre, use } = plugin;
+
+            if (pre)
+            {
+                this.pre(pre.bind(plugin));
+            }
+
+            if (use)
+            {
+                this.use(use.bind(plugin));
+            }
         }
 
         // Compat layer, translate the new v2 signals into old v1 events.
@@ -95,50 +106,82 @@ export class Loader extends ResourceLoader
             this.reset();
         }
     }
+
+    /**
+     * A premade instance of the loader that can be used to load resources.
+     * @name shared
+     * @type {PIXI.Loader}
+     * @static
+     * @memberof PIXI.Loader
+     */
+    static get shared()
+    {
+        let shared = Loader._shared;
+
+        if (!shared)
+        {
+            shared = new Loader();
+            shared._protected = true;
+            Loader._shared = shared;
+        }
+
+        return shared;
+    }
 }
 
 // Copy EE3 prototype (mixin)
 Object.assign(Loader.prototype, EventEmitter.prototype);
 
 /**
- * Collection of all installed middleware for Loader.
+ * Collection of all installed `use` middleware for Loader.
  *
  * @static
- * @member {Array<function>}
- * @memberof PIXI.loaders.Loader
+ * @member {Array<PIXI.Loader~LoaderPlugin>}
+ * @memberof PIXI.Loader
  * @private
  */
-Loader._middleware = [];
+Loader._plugins = [];
 
 /**
- * A premade instance of the loader that can be used to load resources.
- * @name shared
- * @memberof PIXI.loaders
- * @type {PIXI.loaders.Loader}
- */
-export const shared = new Loader();
-shared._protected = true;
-
-/**
- * Adds a middleware for the global shared loader and all
+ * Adds a Loader plugin for the global shared loader and all
  * new Loader instances created.
  *
  * @static
- * @method useMiddleware
- * @memberof PIXI.loaders.Loader
- * @param {Function} fn - The middleware to add.
+ * @method registerPlugin
+ * @memberof PIXI.Loader
+ * @param {PIXI.Loader~LoaderPlugin} plugin - The plugin to add
+ * @return {PIXI.Loader} Reference to PIXI.Loader for chaining
  */
-Loader.useMiddleware = function useMiddleware(fn)
+Loader.registerPlugin = function registerPlugin(plugin)
 {
-    // Install for current shared loader
-    shared.use(fn);
+    Loader._plugins.push(plugin);
 
-    // Install for all future loaders
-    Loader._middleware.push(fn);
+    if (plugin.add)
+    {
+        plugin.add();
+    }
+
+    return Loader;
 };
 
 // parse any blob into more usable objects (e.g. Image)
-Loader.useMiddleware(blobMiddlewareFactory);
+Loader.registerPlugin({ use: blobMiddlewareFactory() });
 
 // parse any Image objects into textures
-Loader.useMiddleware(textureParser);
+Loader.registerPlugin(TextureLoader);
+
+/**
+ * Plugin to be installed for handling specific Loader resources.
+ * @typedef {object} PIXI.Loader~LoaderPlugin
+ * @property {function} [plugin.add] - Function to call immediate after registering plugin.
+ * @property {PIXI.Loader~loaderMiddleware} [plugin.pre] - Middleware function to run before load, the
+ *           arguments for this are `(resource, next)`
+ * @property {PIXI.Loader~loaderMiddleware} [plugin.use] - Middleware function to run after load, the
+ *           arguments for this are `(resource, next)`
+ */
+
+/**
+ * @callback PIXI.Loader~loaderMiddleware
+ * @param {PIXI.LoaderResource} resource
+ * @param {function} next
+ */

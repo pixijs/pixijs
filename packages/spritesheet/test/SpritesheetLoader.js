@@ -1,5 +1,5 @@
 const path = require('path');
-const { Loader, Resource } = require('@pixi/loaders');
+const { Loader, LoaderResource } = require('@pixi/loaders');
 const { Texture, BaseTexture } = require('@pixi/core');
 const { SpritesheetLoader } = require('../');
 
@@ -7,8 +7,13 @@ describe('PIXI.SpritesheetLoader', function ()
 {
     it('should exist and return a function', function ()
     {
-        expect(SpritesheetLoader.middleware).to.be.a('function');
-        expect(SpritesheetLoader.middleware()).to.be.a('function');
+        expect(SpritesheetLoader).to.not.be.undefined;
+        expect(SpritesheetLoader.use).to.be.a('function');
+    });
+
+    it('should install middleware', function ()
+    {
+        Loader.registerPlugin(SpritesheetLoader);
     });
 
     it('should do nothing if the resource is not JSON', function ()
@@ -16,7 +21,7 @@ describe('PIXI.SpritesheetLoader', function ()
         const spy = sinon.spy();
         const res = {};
 
-        SpritesheetLoader.middleware()(res, spy);
+        SpritesheetLoader.use(res, spy);
 
         expect(spy).to.have.been.calledOnce;
         expect(res.textures).to.be.undefined;
@@ -25,9 +30,9 @@ describe('PIXI.SpritesheetLoader', function ()
     it('should do nothing if the resource is JSON, but improper format', function ()
     {
         const spy = sinon.spy();
-        const res = createMockResource(Resource.TYPE.JSON, {});
+        const res = createMockResource(LoaderResource.TYPE.JSON, {});
 
-        SpritesheetLoader.middleware()(res, spy);
+        SpritesheetLoader.use(res, spy);
 
         expect(spy).to.have.been.calledOnce;
         expect(res.textures).to.be.undefined;
@@ -36,16 +41,16 @@ describe('PIXI.SpritesheetLoader', function ()
     it('should load the image & create textures if json is properly formatted', function ()
     {
         const spy = sinon.spy();
-        const res = createMockResource(Resource.TYPE.JSON, getJsonSpritesheet());
+        const res = createMockResource(LoaderResource.TYPE.JSON, getJsonSpritesheet());
         const loader = new Loader();
         const addStub = sinon.stub(loader, 'add');
-        const imgRes = createMockResource(Resource.TYPE.IMAGE, new Image());
+        const imgRes = createMockResource(LoaderResource.TYPE.IMAGE, new Image());
 
         imgRes.texture = new Texture(new BaseTexture(imgRes.data));
 
         addStub.yields(imgRes);
 
-        SpritesheetLoader.middleware().call(loader, res, spy);
+        SpritesheetLoader.use.call(loader, res, spy);
 
         addStub.restore();
 

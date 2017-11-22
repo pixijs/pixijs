@@ -80,8 +80,8 @@ describe('PIXI.BitmapFontLoader', function ()
 
     it('should exist and return a function', function ()
     {
-        expect(BitmapFontLoader.middleware).to.be.a('function');
-        expect(BitmapFontLoader.middleware()).to.be.a('function');
+        expect(BitmapFontLoader).to.not.be.undefined;
+        expect(BitmapFontLoader.use).to.be.a('function');
     });
 
     it('should do nothing if the resource is not XML', function ()
@@ -89,7 +89,7 @@ describe('PIXI.BitmapFontLoader', function ()
         const spy = sinon.spy();
         const res = {};
 
-        BitmapFontLoader.middleware()(res, spy);
+        BitmapFontLoader.use(res, spy);
 
         expect(spy).to.have.been.calledOnce;
         expect(res.textures).to.be.undefined;
@@ -100,7 +100,7 @@ describe('PIXI.BitmapFontLoader', function ()
         const spy = sinon.spy();
         const res = { data: document.createDocumentFragment() };
 
-        BitmapFontLoader.middleware()(res, spy);
+        BitmapFontLoader.use(res, spy);
 
         expect(spy).to.have.been.calledOnce;
         expect(res.textures).to.be.undefined;

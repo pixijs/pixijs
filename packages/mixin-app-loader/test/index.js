@@ -1,5 +1,5 @@
 const { Application } = require('@pixi/app');
-const { Loader, shared } = require('@pixi/loaders');
+const { Loader } = require('@pixi/loaders');
 const { skipHello } = require('@pixi/utils');
 const { autoDetectRenderer } = require('@pixi/canvas-renderer');
 
@@ -30,7 +30,7 @@ describe('PIXI.Application#loader', function ()
 
         expect(obj.loader).to.be.not.undefined;
         expect(obj.loader).to.be.instanceof(Loader);
-        expect(obj.loader).to.equal(shared);
+        expect(obj.loader).to.equal(Loader.shared);
 
         obj.destroy();
 
