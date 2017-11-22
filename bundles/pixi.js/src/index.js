@@ -116,7 +116,7 @@ if (typeof window !== 'undefined')
 
     window.PIXI = Object.assign(
         PIXI,
-        namespaces, 
+        namespaces,
         core,
         math,
         constants,
@@ -130,7 +130,7 @@ if (typeof window !== 'undefined')
         spriteTiling,
         display,
         mesh,
-        ticker,
+        ticker
     );
 
     // Deprecations only apply to Window object
