@@ -41,6 +41,9 @@ core.Renderer.registerPlugin('prepare', prepare.Prepare);
 core.Renderer.registerPlugin('sprite', sprite.SpriteRenderer);
 core.Renderer.registerPlugin('tilingSprite', spriteTiling.TilingSpriteRenderer);
 
+loaders.Loader.registerPlugin(spritesheet.SpritesheetLoader);
+loaders.Loader.registerPlugin(textBitmap.BitmapFontLoader);
+
 // Apply deplayed mixins
 utils.mixins.performMixins();
 
@@ -54,14 +57,6 @@ utils.mixins.performMixins();
  * @type {string}
  */
 const VERSION = '__VERSION__';
-
-/**
- * Alias for {@link PIXI.loaders.shared}.
- * @name loader
- * @memberof PIXI
- * @type {PIXI.loader.Loader}
- */
-const loader = loaders.shared;
 
 /**
  * @namespace PIXI
@@ -106,30 +101,29 @@ if (typeof window !== 'undefined')
         accessibility,
         extract,
         interaction,
-        loaders,
         prepare,
         filters,
         utils,
         settings,
-        loader,
     };
 
     window.PIXI = Object.assign(
         PIXI,
         namespaces,
-        core,
-        math,
-        constants,
         app,
+        constants,
+        core,
+        display,
+        graphics,
+        loaders,
+        math,
+        mesh,
         sprite,
+        spriteAnimated,
         spritesheet,
+        spriteTiling,
         text,
         textBitmap,
-        graphics,
-        spriteAnimated,
-        spriteTiling,
-        display,
-        mesh,
         ticker
     );
 
@@ -153,14 +147,13 @@ export * from '@pixi/sprite-tiling';
 export * from '@pixi/display';
 export * from '@pixi/mesh';
 export * from '@pixi/ticker';
+export * from '@pixi/loaders';
 export {
     accessibility,
     extract,
     interaction,
-    loaders,
     prepare,
     filters,
-    loader,
     utils,
     settings,
     VERSION,

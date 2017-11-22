@@ -1,13 +1,13 @@
-const { textureParser, Resource } = require('../');
+const { TextureLoader, LoaderResource } = require('../');
 const { Texture } = require('@pixi/core');
 const { BaseTextureCache, TextureCache } = require('@pixi/utils');
 
-describe('PIXI.loaders.textureParser', function ()
+describe('PIXI.TextureLoader', function ()
 {
     it('should exist and return a function', function ()
     {
-        expect(textureParser).to.be.a('function');
-        expect(textureParser()).to.be.a('function');
+        expect(TextureLoader).to.not.be.undefined;
+        expect(TextureLoader.use).to.be.a('function');
     });
 
     it('should do nothing if the resource is not an image', function ()
@@ -15,7 +15,7 @@ describe('PIXI.loaders.textureParser', function ()
         const spy = sinon.spy();
         const res = {};
 
-        textureParser()(res, spy);
+        TextureLoader.use(res, spy);
 
         expect(spy).to.have.been.calledOnce;
         expect(res.texture).to.be.undefined;
@@ -24,9 +24,9 @@ describe('PIXI.loaders.textureParser', function ()
     it('should create a texture if resource is an image', function ()
     {
         const spy = sinon.spy();
-        const res = createMockResource(Resource.TYPE.IMAGE, new Image());
+        const res = createMockResource(LoaderResource.TYPE.IMAGE, new Image());
 
-        textureParser()(res, spy);
+        TextureLoader.use(res, spy);
 
         expect(spy).to.have.been.calledOnce;
         expect(res.texture).to.be.an.instanceof(Texture);

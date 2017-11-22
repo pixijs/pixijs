@@ -1,20 +1,21 @@
 import * as path from 'path';
 import { TextureCache } from '@pixi/utils';
-import { Resource, Loader } from '@pixi/loaders';
+import { LoaderResource } from '@pixi/loaders';
 import BitmapText from './BitmapText';
 
 /**
- * {@link PIXI.loaders.Loader Loader} middleware for loading
+ * {@link PIXI.Loader Loader} middleware for loading
  * bitmap-based fonts suitable for using with {@link PIXI.BitmapText}.
  * @class
  * @memberof PIXI
+ * @extends PIXI.Loader~LoaderPlugin
  */
 export default class BitmapFontLoader
 {
     /**
      * Register a BitmapText font from loader resource.
      *
-     * @param {PIXI.loaders.Resource} resource - Loader resource.
+     * @param {PIXI.LoaderResource} resource - Loader resource.
      * @param {PIXI.Texture} texture - Reference to texture.
      */
     static parse(resource, texture)
@@ -23,90 +24,93 @@ export default class BitmapFontLoader
     }
 
     /**
-     * Middleware function to support BitmapText fonts, this is automatically installed.
-     * @see PIXI.loaders.Loader.useMiddleware
+     * Called when the plugin is installed.
+     *
+     * @see PIXI.Loader.registerPlugin
      */
-    static middleware()
+    static add()
     {
-        return function bitmapFontLoader(resource, next)
+        LoaderResource.setExtensionXhrType('fnt', LoaderResource.XHR_RESPONSE_TYPE.DOCUMENT);
+    }
+
+    /**
+     * Called after a resource is loaded.
+     * @see PIXI.Loader~loaderMiddleware
+     * @param {PIXI.LoaderResource} resource
+     * @param {function} next
+     */
+    static use(resource, next)
+    {
+        // skip if no data or not xml data
+        if (!resource.data || resource.type !== LoaderResource.TYPE.XML)
         {
-            // skip if no data or not xml data
-            if (!resource.data || resource.type !== Resource.TYPE.XML)
-            {
-                next();
+            next();
 
-                return;
+            return;
+        }
+
+        // skip if not bitmap font data, using some silly duck-typing
+        if (resource.data.getElementsByTagName('page').length === 0
+            || resource.data.getElementsByTagName('info').length === 0
+            || resource.data.getElementsByTagName('info')[0].getAttribute('face') === null
+        )
+        {
+            next();
+
+            return;
+        }
+
+        let xmlUrl = !resource.isDataUrl ? path.dirname(resource.url) : '';
+
+        if (resource.isDataUrl)
+        {
+            if (xmlUrl === '.')
+            {
+                xmlUrl = '';
             }
 
-            // skip if not bitmap font data, using some silly duck-typing
-            if (resource.data.getElementsByTagName('page').length === 0
-                || resource.data.getElementsByTagName('info').length === 0
-                || resource.data.getElementsByTagName('info')[0].getAttribute('face') === null
-            )
+            if (this.baseUrl && xmlUrl)
             {
-                next();
-
-                return;
-            }
-
-            let xmlUrl = !resource.isDataUrl ? path.dirname(resource.url) : '';
-
-            if (resource.isDataUrl)
-            {
-                if (xmlUrl === '.')
+                // if baseurl has a trailing slash then add one to xmlUrl so the replace works below
+                if (this.baseUrl.charAt(this.baseUrl.length - 1) === '/')
                 {
-                    xmlUrl = '';
-                }
-
-                if (this.baseUrl && xmlUrl)
-                {
-                    // if baseurl has a trailing slash then add one to xmlUrl so the replace works below
-                    if (this.baseUrl.charAt(this.baseUrl.length - 1) === '/')
-                    {
-                        xmlUrl += '/';
-                    }
+                    xmlUrl += '/';
                 }
             }
+        }
 
-            // remove baseUrl from xmlUrl
-            xmlUrl = xmlUrl.replace(this.baseUrl, '');
+        // remove baseUrl from xmlUrl
+        xmlUrl = xmlUrl.replace(this.baseUrl, '');
 
-            // if there is an xmlUrl now, it needs a trailing slash. Ensure that it does if the string isn't empty.
-            if (xmlUrl && xmlUrl.charAt(xmlUrl.length - 1) !== '/')
+        // if there is an xmlUrl now, it needs a trailing slash. Ensure that it does if the string isn't empty.
+        if (xmlUrl && xmlUrl.charAt(xmlUrl.length - 1) !== '/')
+        {
+            xmlUrl += '/';
+        }
+
+        const textureUrl = xmlUrl + resource.data.getElementsByTagName('page')[0].getAttribute('file');
+
+        if (TextureCache[textureUrl])
+        {
+            // reuse existing texture
+            BitmapFontLoader.parse(resource, TextureCache[textureUrl]);
+            next();
+        }
+        else
+        {
+            const loadOptions = {
+                crossOrigin: resource.crossOrigin,
+                loadType: LoaderResource.LOAD_TYPE.IMAGE,
+                metadata: resource.metadata.imageMetadata,
+                parentResource: resource,
+            };
+
+            // load the texture for the font
+            this.add(`${resource.name}_image`, textureUrl, loadOptions, (res) =>
             {
-                xmlUrl += '/';
-            }
-
-            const textureUrl = xmlUrl + resource.data.getElementsByTagName('page')[0].getAttribute('file');
-
-            if (TextureCache[textureUrl])
-            {
-                // reuse existing texture
-                BitmapFontLoader.parse(resource, TextureCache[textureUrl]);
+                BitmapFontLoader.parse(resource, res.texture);
                 next();
-            }
-            else
-            {
-                const loadOptions = {
-                    crossOrigin: resource.crossOrigin,
-                    loadType: Resource.LOAD_TYPE.IMAGE,
-                    metadata: resource.metadata.imageMetadata,
-                    parentResource: resource,
-                };
-
-                // load the texture for the font
-                this.add(`${resource.name}_image`, textureUrl, loadOptions, (res) =>
-                {
-                    BitmapFontLoader.parse(resource, res.texture);
-                    next();
-                });
-            }
-        };
+            });
+        }
     }
 }
-
-// Add custom add support for loading fnt files as XML
-Resource.setExtensionXhrType('fnt', Resource.XHR_RESPONSE_TYPE.DOCUMENT);
-
-// Install loader support for BitmapText
-Loader.useMiddleware(BitmapFontLoader.middleware);
