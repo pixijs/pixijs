@@ -4,9 +4,9 @@ import { TARGETS } from './../const';
 
 export default class CubeTexture extends Texture
 {
-    constructor(width, height, format)
+    constructor(width, height, format, type)
     {
-        super(null, 0, 1, width, height, format);
+        super(null, 0, 1, width, height, format, type);
 
         this.target = TARGETS.TEXTURE_CUBE_MAP; // gl.TEXTURE_CUBE_MAP
 
