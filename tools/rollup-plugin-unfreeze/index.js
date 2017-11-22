@@ -9,12 +9,12 @@ const MagicString = require('magic-string');
  * @todo Remove this when opt-out option for Rollup is available
  * @private
  */
-export default function thaw()
+export default function unfreeze()
 {
     const pattern = /Object.freeze\s*\(\s*([^)]*)\)/g;
 
     return {
-        name: 'thaw',
+        name: 'unfreeze',
         transformBundle(code)
         {
             const str = new MagicString(code);
