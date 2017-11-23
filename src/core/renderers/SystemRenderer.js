@@ -249,17 +249,12 @@ export default class SystemRenderer extends EventEmitter
      */
     generateTexture(displayObject, scaleMode, resolution, region)
     {
-        let bounds = displayObject.getLocalBounds();
+        region = region || displayObject.getLocalBounds();
 
-        if (region)
-        {
-            bounds = region;
-        }
+        const renderTexture = RenderTexture.create(region.width | 0, region.height | 0, scaleMode, resolution);
 
-        const renderTexture = RenderTexture.create(bounds.width | 0, bounds.height | 0, scaleMode, resolution);
-
-        tempMatrix.tx = -bounds.x;
-        tempMatrix.ty = -bounds.y;
+        tempMatrix.tx = -region.x;
+        tempMatrix.ty = -region.y;
 
         this.render(displayObject, renderTexture, false, tempMatrix, true);
 
