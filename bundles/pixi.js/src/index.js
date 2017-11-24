@@ -1,34 +1,34 @@
-import * as core from '@pixi/core';
-import * as math from '@pixi/math';
-import * as constants from '@pixi/constants';
+import * as accessibility from '@pixi/accessibility';
 import * as app from '@pixi/app';
+import * as constants from '@pixi/constants';
+import * as core from '@pixi/core';
+import * as display from '@pixi/display';
+import * as extract from '@pixi/extract';
+import * as graphics from '@pixi/graphics';
+import * as interaction from '@pixi/interaction';
+import * as loaders from '@pixi/loaders';
+import * as math from '@pixi/math';
+import * as mesh from '@pixi/mesh';
+import * as prepare from '@pixi/prepare';
 import * as sprite from '@pixi/sprite';
+import * as spriteAnimated from '@pixi/sprite-animated';
 import * as spritesheet from '@pixi/spritesheet';
+import * as spriteTiling from '@pixi/sprite-tiling';
 import * as text from '@pixi/text';
 import * as textBitmap from '@pixi/text-bitmap';
-import * as graphics from '@pixi/graphics';
-import * as spriteAnimated from '@pixi/sprite-animated';
-import * as spriteTiling from '@pixi/sprite-tiling';
-import * as display from '@pixi/display';
-import * as mesh from '@pixi/mesh';
 import * as ticker from '@pixi/ticker';
-import * as interaction from '@pixi/interaction';
-import * as extract from '@pixi/extract';
-import * as prepare from '@pixi/prepare';
-import * as accessibility from '@pixi/accessibility';
-import * as loaders from '@pixi/loaders';
 import * as utils from '@pixi/utils';
 import { settings } from '@pixi/settings';
-import { FXAAFilter } from '@pixi/filter-fxaa';
-import { NoiseFilter } from '@pixi/filter-noise';
-import { DisplacementFilter } from '@pixi/filter-displacement';
+import { AlphaFilter } from '@pixi/filter-alpha';
 import { BlurFilter, BlurXFilter, BlurYFilter } from '@pixi/filter-blur';
 import { ColorMatrixFilter } from '@pixi/filter-color-matrix';
-import { AlphaFilter } from '@pixi/filter-alpha';
+import { DisplacementFilter } from '@pixi/filter-displacement';
+import { FXAAFilter } from '@pixi/filter-fxaa';
+import { NoiseFilter } from '@pixi/filter-noise';
+import '@pixi/mixin-app-loader';
 import '@pixi/mixin-cache-as-bitmap';
 import '@pixi/mixin-get-child-by-name';
 import '@pixi/mixin-get-global-position';
-import '@pixi/mixin-app-loader';
 import deprecated from './deprecated';
 
 // Install renderer plugins
@@ -41,8 +41,8 @@ core.Renderer.registerPlugin('prepare', prepare.Prepare);
 core.Renderer.registerPlugin('sprite', sprite.SpriteRenderer);
 core.Renderer.registerPlugin('tilingSprite', spriteTiling.TilingSpriteRenderer);
 
-loaders.Loader.registerPlugin(spritesheet.SpritesheetLoader);
 loaders.Loader.registerPlugin(textBitmap.BitmapFontLoader);
+loaders.Loader.registerPlugin(spritesheet.SpritesheetLoader);
 
 // Apply deplayed mixins
 utils.mixins.performMixins();
@@ -61,7 +61,7 @@ const VERSION = '__VERSION__';
 /**
  * @namespace PIXI
  */
-const PIXI = {};
+const PIXI = { VERSION };
 
 /**
  * This namespace contains WebGL-only display filters that can be applied
@@ -84,14 +84,14 @@ const PIXI = {};
  * @namespace PIXI.filters
  */
 const filters = {
-    FXAAFilter,
-    NoiseFilter,
-    DisplacementFilter,
+    AlphaFilter,
     BlurFilter,
     BlurXFilter,
     BlurYFilter,
     ColorMatrixFilter,
-    AlphaFilter,
+    DisplacementFilter,
+    FXAAFilter,
+    NoiseFilter,
 };
 
 // Add to namespace window object for people doing `import 'pixi.js'`
@@ -100,11 +100,11 @@ if (typeof window !== 'undefined')
     const namespaces = {
         accessibility,
         extract,
+        filters,
         interaction,
         prepare,
-        filters,
-        utils,
         settings,
+        utils,
     };
 
     window.PIXI = Object.assign(
@@ -133,29 +133,29 @@ if (typeof window !== 'undefined')
 
 // Export ES for those importing specifically by name,
 // e.g., `import {autoDetectRenderer} from 'pixi.js'`
-export * from '@pixi/core';
-export * from '@pixi/math';
-export * from '@pixi/constants';
 export * from '@pixi/app';
+export * from '@pixi/constants';
+export * from '@pixi/core';
+export * from '@pixi/display';
+export * from '@pixi/graphics';
+export * from '@pixi/loaders';
+export * from '@pixi/math';
+export * from '@pixi/mesh';
 export * from '@pixi/sprite';
 export * from '@pixi/spritesheet';
-export * from '@pixi/text';
-export * from '@pixi/text-bitmap';
-export * from '@pixi/graphics';
 export * from '@pixi/sprite-animated';
 export * from '@pixi/sprite-tiling';
-export * from '@pixi/display';
-export * from '@pixi/mesh';
+export * from '@pixi/text';
+export * from '@pixi/text-bitmap';
 export * from '@pixi/ticker';
-export * from '@pixi/loaders';
 export {
+    PIXI,
+    VERSION,
     accessibility,
     extract,
+    filters,
     interaction,
     prepare,
-    filters,
-    utils,
     settings,
-    VERSION,
-    PIXI,
+    utils,
 };
