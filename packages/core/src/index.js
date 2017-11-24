@@ -1,18 +1,3 @@
-/**
- * @namespace PIXI
- */
-
-/**
- * String of the current PIXI version.
- *
- * @static
- * @constant
- * @memberof PIXI
- * @name VERSION
- * @type {string}
- */
-export const VERSION = '__VERSION__';
-
 export { default as Renderer } from './renderers/Renderer';
 export { default as AbstractRenderer } from './renderers/AbstractRenderer';
 export { default as FrameBuffer } from './textures/FrameBuffer';
