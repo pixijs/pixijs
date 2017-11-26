@@ -244,7 +244,8 @@ export default class SystemRenderer extends EventEmitter
      * @param {PIXI.DisplayObject} displayObject - The displayObject the object will be generated from
      * @param {number} scaleMode - Should be one of the scaleMode consts
      * @param {number} resolution - The resolution / device pixel ratio of the texture being generated
-	 * @param {PIXI.Rectangle} region - The region of the displayObject, that shall be rendered
+     * @param {PIXI.Rectangle} [region] - The region of the displayObject, that shall be rendered,
+     *        if no region is specified, defaults to the local bounds of the displayObject.
      * @return {PIXI.Texture} a texture of the graphics object
      */
     generateTexture(displayObject, scaleMode, resolution, region)
