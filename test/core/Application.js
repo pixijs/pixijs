@@ -49,7 +49,7 @@ describe('PIXI.Application', function ()
         });
     });
 
-    it('should be able to destroy filter manager gracefully', function (done)
+    it('should be able to destroy filter manager gracefully', function ()
     {
         const app = new PIXI.Application();
 
@@ -57,35 +57,13 @@ describe('PIXI.Application', function ()
 
         const sprite = new PIXI.Sprite(PIXI.Texture.WHITE);
 
-        sprite.position.x = 60;
-        sprite.position.y = 60;
-
         app.stage.addChild(sprite);
 
-        let iterations = 3;
+        const filter = new PIXI.filters.AlphaFilter();
 
-        const iterate = () =>
-        {
-            const filter = new PIXI.filters.AlphaFilter();
+        sprite.filters = [filter];
+        app.render();
 
-            sprite.filters = [filter];
-
-            iterations--;
-
-            if (iterations !== 0)
-            {
-                setTimeout(() =>
-                {
-                    iterate();
-                }, 200);
-            }
-            else
-            {
-                app.destroy(true);
-                done();
-            }
-        };
-
-        iterate();
+        app.destroy(true);
     });
 });
