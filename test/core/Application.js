@@ -64,6 +64,12 @@ describe('PIXI.Application', function ()
         sprite.filters = [filter];
         app.render();
 
+        sprite.filters = [filter];
+        app.render();
+
+        sprite.filters = [filter];
+        app.render();
+
         app.destroy(true);
     });
 });
