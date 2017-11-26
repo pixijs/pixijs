@@ -15,12 +15,14 @@ import replace from 'rollup-plugin-replace';
 
 // Support --scope and --ignore globs
 const args = minimist(process.argv.slice(2), {
-    boolean: ['prod'],
+    boolean: ['prod', 'bundles'],
     default: {
         prod: false,
+        bundles: true,
     },
     alias: {
         p: 'prod',
+        b: 'bundles',
     },
 });
 
@@ -82,7 +84,6 @@ sorted.forEach((group) =>
         {
             return;
         }
-        const external = Object.keys(pkg.dependencies || []);
         const banner = [
             `/*!`,
             ` * ${pkg.name} - v${pkg.version}`,
@@ -91,24 +92,24 @@ sorted.forEach((group) =>
             ` * ${pkg.name} is licensed under the MIT License.`,
             ` * http://www.opensource.org/licenses/mit-license`,
             ` */`,
-        ];
+        ].join('\n');
 
         // Check for bundle folder
+        const external = Object.keys(pkg.dependencies || []);
         const basePath = path.relative(__dirname, pkg.location);
-        const bundle = basePath.indexOf('bundles/') === 0;
+        const input = path.join(basePath, 'src/index.js');
+        const { main, module, bundle } = pkg._package;
 
         results.push({
-            banner: banner.join('\n'),
-            name: 'PIXI',
-            input: path.join(basePath, 'src/index.js'),
-            treeshake: !bundle,
+            banner,
+            input,
             output: [
                 {
-                    file: path.join(basePath, pkg._package.main),
-                    format: bundle ? 'umd' : 'cjs',
+                    file: path.join(basePath, main),
+                    format: 'cjs',
                 },
                 {
-                    file: path.join(basePath, pkg._package.module),
+                    file: path.join(basePath, module),
                     format: 'es',
                 },
             ],
@@ -116,6 +117,25 @@ sorted.forEach((group) =>
             sourcemap,
             plugins,
         });
+
+        // The package.json file has a bundle field
+        // we'll use this to generate the bundle file
+        // this will package all dependencies
+        if (args.bundles && bundle)
+        {
+            results.push({
+                banner,
+                input,
+                output: {
+                    file: path.join(basePath, bundle),
+                    format: 'umd',
+                },
+                name: 'PIXI',
+                treeshake: false,
+                sourcemap,
+                plugins,
+            });
+        }
     });
 });
 
