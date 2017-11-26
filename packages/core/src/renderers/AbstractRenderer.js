@@ -263,20 +263,22 @@ export default class AbstractRenderer extends EventEmitter
      * @param {PIXI.DisplayObject} displayObject - The displayObject the object will be generated from
      * @param {number} scaleMode - Should be one of the scaleMode consts
      * @param {number} resolution - The resolution / device pixel ratio of the texture being generated
+     * @param {PIXI.Rectangle} [region] - The region of the displayObject, that shall be rendered,
+     *        if no region is specified, defaults to the local bounds of the displayObject.
      * @return {PIXI.Texture} a texture of the graphics object
      */
-    generateTexture(displayObject, scaleMode, resolution)
+    generateTexture(displayObject, scaleMode, resolution, region)
     {
-        const bounds = displayObject.getLocalBounds();
+        region = region || displayObject.getLocalBounds();
 
         // minimum texture size is 1x1, 0x0 will throw an error
-        if (bounds.width === 0)bounds.width = 1;
-        if (bounds.height === 0)bounds.height = 1;
+        if (region.width === 0) region.width = 1;
+        if (region.height === 0) region.height = 1;
 
-        const renderTexture = RenderTexture.create(bounds.width | 0, bounds.height | 0, scaleMode, resolution);
+        const renderTexture = RenderTexture.create(region.width | 0, region.height | 0, scaleMode, resolution);
 
-        tempMatrix.tx = -bounds.x;
-        tempMatrix.ty = -bounds.y;
+        tempMatrix.tx = -region.x;
+        tempMatrix.ty = -region.y;
 
         this.render(displayObject, renderTexture, false, tempMatrix, true);
 
