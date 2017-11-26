@@ -33,7 +33,7 @@
     "lerna": "^2.4.0",
     "minimist": "^1.2.0",
     "rimraf": "^2.6.2",
-    "rollup": "^0.51.8",
+    "rollup": "^0.52.0",
     "rollup-plugin-buble": "^0.18.0",
     "rollup-plugin-commonjs": "^8.2.4",
     "rollup-plugin-node-builtins": "^2.1.2",

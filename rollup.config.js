@@ -1,7 +1,6 @@
 import PackageUtilities from 'lerna/lib/PackageUtilities';
 import Repository from 'lerna/lib/Repository';
 import path from 'path';
-import unfreeze from './tools/rollup-plugin-unfreeze/index';
 import transpile from 'rollup-plugin-buble';
 import resolve from 'rollup-plugin-node-resolve';
 import string from 'rollup-plugin-string';
@@ -55,7 +54,6 @@ const plugins = [
         __VERSION__: repo.version,
     }),
     transpile(),
-    unfreeze(),
 ];
 
 if (args.prod)
@@ -99,10 +97,12 @@ sorted.forEach((group) =>
         const basePath = path.relative(__dirname, pkg.location);
         const input = path.join(basePath, 'src/index.js');
         const { main, module, bundle } = pkg._package;
+        const freeze = false;
 
         results.push({
             banner,
             input,
+            freeze,
             output: [
                 {
                     file: path.join(basePath, main),
@@ -126,6 +126,7 @@ sorted.forEach((group) =>
             results.push({
                 banner,
                 input,
+                freeze,
                 output: {
                     file: path.join(basePath, bundle),
                     format: 'umd',
