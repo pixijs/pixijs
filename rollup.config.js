@@ -41,7 +41,7 @@ const plugins = [
     commonjs({
         namedExports: {
             'resource-loader': ['Resource'],
-            'pixi-gl-core': ['GLFramebuffer'], // TODO: remove pixi-gl-core
+            'pixi-gl-core': ['GLFramebuffer', 'GLShader', 'GLBuffer'], // TODO: remove pixi-gl-core
         },
     }),
     string({

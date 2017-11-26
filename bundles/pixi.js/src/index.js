@@ -9,6 +9,7 @@ import * as interaction from '@pixi/interaction';
 import * as loaders from '@pixi/loaders';
 import * as math from '@pixi/math';
 import * as mesh from '@pixi/mesh';
+import * as particles from '@pixi/particles';
 import * as prepare from '@pixi/prepare';
 import * as sprite from '@pixi/sprite';
 import * as spriteAnimated from '@pixi/sprite-animated';
@@ -37,6 +38,7 @@ core.Renderer.registerPlugin('extract', extract.Extract);
 core.Renderer.registerPlugin('graphics', graphics.GraphicsRenderer);
 core.Renderer.registerPlugin('interaction', interaction.InteractionManager);
 core.Renderer.registerPlugin('mesh', mesh.MeshRenderer);
+core.Renderer.registerPlugin('particle', particles.ParticleRenderer);
 core.Renderer.registerPlugin('prepare', prepare.Prepare);
 core.Renderer.registerPlugin('sprite', sprite.SpriteRenderer);
 core.Renderer.registerPlugin('tilingSprite', spriteTiling.TilingSpriteRenderer);
@@ -118,6 +120,7 @@ if (typeof window !== 'undefined')
         loaders,
         math,
         mesh,
+        particles,
         sprite,
         spriteAnimated,
         spritesheet,
@@ -141,6 +144,7 @@ export * from '@pixi/graphics';
 export * from '@pixi/loaders';
 export * from '@pixi/math';
 export * from '@pixi/mesh';
+export * from '@pixi/particles';
 export * from '@pixi/sprite';
 export * from '@pixi/spritesheet';
 export * from '@pixi/sprite-animated';

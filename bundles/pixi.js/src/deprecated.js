@@ -332,6 +332,43 @@ export default function deprecated(PIXI)
     /*
      * This namespace has been removed and items have been moved to
      * the top-level `PIXI` object.
+     * @namespace PIXI.particles
+     * @deprecated since 5.0.0
+     */
+    PIXI.particles = {};
+
+    Object.defineProperties(PIXI.particles, {
+        /**
+         * @class PIXI.particles.ParticleContainer
+         * @deprecated since 5.0.0
+         * @see PIXI.ParticleContainer
+         */
+        ParticleContainer: {
+            get()
+            {
+                warn('PIXI.particles.ParticleContainer has moved to PIXI.ParticleContainer');
+
+                return PIXI.ParticleContainer;
+            },
+        },
+        /**
+         * @class PIXI.particles.ParticleRenderer
+         * @deprecated since 5.0.0
+         * @see PIXI.ParticleRenderer
+         */
+        ParticleRenderer: {
+            get()
+            {
+                warn('PIXI.particles.ParticleRenderer has moved to PIXI.ParticleRenderer');
+
+                return PIXI.ParticleRenderer;
+            },
+        },
+    });
+
+    /*
+     * This namespace has been removed and items have been moved to
+     * the top-level `PIXI` object.
      * @namespace PIXI.ticker
      * @deprecated since 5.0.0
      */

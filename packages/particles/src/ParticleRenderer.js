@@ -1,4 +1,4 @@
-import { ObjectRenderer, Renderer } from '@pixi/core';
+import { ObjectRenderer } from '@pixi/core';
 import { correctBlendMode, premultiplyRgba, premultiplyTint } from '@pixi/utils';
 import { Matrix } from '@pixi/math';
 import ParticleShader from './ParticleShader';
@@ -19,7 +19,6 @@ import ParticleBuffer from './ParticleBuffer';
 /**
  *
  * @class
- * @private
  * @memberof PIXI
  */
 export default class ParticleRenderer extends ObjectRenderer
@@ -454,5 +453,3 @@ export default class ParticleRenderer extends ObjectRenderer
         this.tempMatrix = null;
     }
 }
-
-Renderer.registerPlugin('particle', ParticleRenderer);

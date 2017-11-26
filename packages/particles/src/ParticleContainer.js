@@ -25,7 +25,7 @@ import { Container } from '@pixi/display';
  *
  * @class
  * @extends PIXI.Container
- * @memberof PIXI.particles
+ * @memberof PIXI
  */
 export default class ParticleContainer extends Container
 {
