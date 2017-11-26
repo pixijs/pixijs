@@ -661,8 +661,8 @@ export default class WebGLRenderer extends SystemRenderer
     {
         this.setObjectRenderer(this.emptyRenderer);
 
+        this.bindVao(null);
         this._activeShader = null;
-        this._activeVao = null;
         this._activeRenderTarget = this.rootRenderTarget;
 
         for (let i = 0; i < this.boundTextures.length; i++)
