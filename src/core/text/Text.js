@@ -149,7 +149,7 @@ export default class Text extends Sprite
 
         this.textWidth = Math.ceil(width + (style.padding * 2));
         this.textHeight = Math.ceil(height + (style.padding * 2));
-        this.sizeChanged = this.textWidth !== prevTextWidth || this.textHeight !== prevTextHeight;
+        this._sizeChanged = this.textWidth !== prevTextWidth || this.textHeight !== prevTextHeight;
 
         this.canvas.width = this.textWidth * this.resolution;
         this.canvas.height = this.textHeight * this.resolution;
@@ -450,7 +450,7 @@ export default class Text extends Sprite
             return style.fill[0];
         }
 
-        if (!this.sizeChanged && style._gradient)
+        if (!this._sizeChanged && style._gradient)
         {
             return style._gradient;
         }
