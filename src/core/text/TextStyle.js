@@ -284,6 +284,7 @@ export default class TextStyle
         if (this._fill !== outputColor)
         {
             this._fill = outputColor;
+            this._gradient = null;
             this.styleID++;
         }
     }
