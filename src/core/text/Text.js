@@ -151,8 +151,8 @@ export default class Text extends Sprite
         this.textHeight = Math.ceil(height + (style.padding * 2));
         this.sizeChanged = this.textWidth !== prevTextWidth || this.textHeight !== prevTextHeight;
 
-        this.canvas.width = this.textWidth * this.resolution);
-        this.canvas.height = this.textHeight * this.resolution);
+        this.canvas.width = this.textWidth * this.resolution;
+        this.canvas.height = this.textHeight * this.resolution;
 
         context.scale(this.resolution, this.resolution);
 
