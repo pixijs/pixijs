@@ -21,6 +21,10 @@ export default class ObservablePoint
 
         this.cb = cb;
         this.scope = scope;
+        this.set = this.set.bind(this);
+        this.runCallbacks = this.runCallbacks.bind(this);
+        this._listeners = [];
+        this._broadcasters = [];
     }
 
     /**
@@ -39,7 +43,7 @@ export default class ObservablePoint
         {
             this._x = _x;
             this._y = _y;
-            this.cb.call(this.scope);
+            this.runCallbacks();
         }
     }
 
@@ -54,7 +58,7 @@ export default class ObservablePoint
         {
             this._x = point.x;
             this._y = point.y;
-            this.cb.call(this.scope);
+            this.runCallbacks();
         }
     }
 
@@ -73,7 +77,7 @@ export default class ObservablePoint
         if (this._x !== value)
         {
             this._x = value;
-            this.cb.call(this.scope);
+            this.runCallbacks();
         }
     }
 
@@ -92,7 +96,143 @@ export default class ObservablePoint
         if (this._y !== value)
         {
             this._y = value;
-            this.cb.call(this.scope);
+            this.runCallbacks();
         }
+    }
+
+    /**
+     * Runs callback passed to the constructor, as well as publicly subscribed callbacks
+     */
+    runCallbacks()
+    {
+        this.cb.call(this.scope);
+        for (let i = 0, j = this._listeners.length; i < j; i++)
+        {
+            this._listeners[i](this._x, this._y);
+        }
+    }
+
+    /**
+     * Every time x | y is changed, subscribed callback will be executed.
+     * @param {Function} callback - executed with x and y arguments
+     * @returns {Number} of currently linked listeners (if unique) or {null} if already added.
+     */
+    addChangeListener(callback)
+    {
+        if (this._listeners.indexOf(callback) < 0)
+        {
+            return this._listeners.push(callback);
+        }
+
+        return null;
+    }
+
+    /**
+     * Stops instance from executing publicly subscribed, specific callback.
+     * @param {Function} callback - previously linked listener
+     * @returns {Number} of currently linked listeners (if succesfully removed)
+     * or {null} if callback wasn't on the list.
+     */
+    removeChangeListener(callback)
+    {
+        const i = this._listeners.indexOf(callback);
+
+        if (i > -1)
+        {
+            this._listeners.splice(i, 1);
+
+            return this._listeners.length;
+        }
+
+        return null;
+    }
+
+    /**
+     * Removes all publicly subscribed listeners. Main callback (passed to constructor) stays.
+     * @returns {ObservablePoint} self
+     */
+    purgeListeners()
+    {
+        this._listeners = [];
+
+        return this;
+    }
+
+    /**
+     * Makes connection opposite to addEventListener. Forces this instance to listen to changes broadcast by
+     * another instance of {ObservablePoint} (passed here as an argument).
+     *
+     * Every change in foreign instance makes this instance to update itself to the foreign instance values (x, y).
+     * E.g:  this.position < -- is - updated - by - (observablePoint) - every time - observablePoint - is - updated -
+     *
+     *
+     * @param {ObservablePoint} observablePoint - foreign instance
+     */
+    linkTo(observablePoint)
+    {
+        if (!(observablePoint instanceof ObservablePoint))
+        {
+            throw new Error('Linking to NOT an ObservablePoint instance');
+        }
+        else if (observablePoint.addChangeListener(this.set) > 0)
+        {
+            if (this._broadcasters.indexOf(observablePoint) < 0)
+            {
+                this._broadcasters.push(observablePoint);
+            }
+        }
+        this.copy(observablePoint);
+    }
+
+    /**
+     * Stops foreign instance of {ObservablePoint} updating this {ObservablePoint}.
+     * If bilateral connection was made, this instance will keep updating foreign instance.
+     * @param {ObservablePoint} observablePoint - foreign instance that
+     * has been passed to this instance through {Function} linkTo.
+     * @returns {ObservablePoint} foreign instance if successful, or {null} if it wasn't on the list.
+     */
+    unlink(observablePoint)
+    {
+        observablePoint.removeChangeListener(this.set);
+        const i = this._broadcasters.indexOf(observablePoint);
+
+        if (i > -1)
+        {
+            return this._broadcasters.splice(i, 1).pop();
+        }
+
+        return null;
+    }
+
+    /**
+     * Stops all foreign instances of {ObservablePoint} updating this object.
+     * Does not cancel bilateral connections.
+     * @returns {ObservablePoint} self
+     */
+    unlinkAll()
+    {
+        while (this._broadcasters.length)
+        {
+            this.unlink(this._broadcasters.pop());
+        }
+
+        return this;
+    }
+
+    /**
+     * Removes all publicly subscribed listeners AND unlinks all foreign instances.
+     * Cancels bilateral links unless foreign instance/s was/were unlinked before.
+     * @returns {ObservablePoint} self
+     */
+    detach()
+    {
+        for (let i = 0, j = this._broadcasters.length; i < j; i++)
+        {
+            this._broadcasters[i].unlink(this);
+        }
+        this.purgeListeners();
+        this.unlinkAll();
+
+        return this;
     }
 }
