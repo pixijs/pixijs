@@ -95,7 +95,7 @@ export default class TextMetrics
      * @param nextCharCode the possible second byte of the emoji
      * @returns 0 means not a emoji, 1 means single byte, 2 means double bytes
      */
-    static isEmojiChar(charCode:number, nextCharCode:number):number {
+    static isEmojiChar(charCode, nextCharCode) {
         const hs = charCode;
         const nextCharValid = typeof nextCharCode == "number" && !isNaN(nextCharCode) && nextCharCode > 0;
         if (0xd800 <= hs && hs <= 0xdbff) {
