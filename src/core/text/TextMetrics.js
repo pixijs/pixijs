@@ -101,13 +101,13 @@ export default class TextMetrics
         const hs = charCode;
         const nextCharValid = typeof nextCharCode === 'number' && !isNaN(nextCharCode) && nextCharCode > 0;
 
-        if (0xd800 <= hs && hs <= 0xdbff)
+        if (0xd800 <= hs && 0xdbff >= hs)
         {
             if (nextCharValid)
             {
                 const uc = ((hs - 0xd800) * 0x400) + (nextCharCode - 0xdc00) + 0x10000;
 
-                if (0x1d000 <= uc && uc <= 0x1f77f)
+                if (0x1d000 <= uc && 0x1f77f >= uc)
                 {
                     return 2;
                 }
@@ -122,29 +122,18 @@ export default class TextMetrics
         }
         else
         {
-            if (0x2100 <= hs && hs <= 0x27ff)
-            {
-                return 1;
-            }
-            else if (0x2B05 <= hs && hs <= 0x2b07)
-            {
-                return 1;
-            }
-            else if (0x2934 <= hs && hs <= 0x2935)
-            {
-                return 1;
-            }
-            else if (0x3297 <= hs && hs <= 0x3299)
-            {
-                return 1;
-            }
-            else if (hs === 0xa9 || hs === 0xae || hs === 0x303d || hs === 0x3030
-                    || hs === 0x2b55 || hs === 0x2b1c || hs === 0x2b1b
-                    || hs === 0x2b50)
+            if ((0x2100 <= hs && 0x27ff >= hs)
+                || (0x2B05 <= hs && 0x2b07 >= hs)
+                || (0x2934 <= hs && 0x2935 >= hs)
+                || (0x3297 <= hs && 0x3299 >= hs)
+                || hs === 0xa9 || hs === 0xae || hs === 0x303d || hs === 0x3030
+                || hs === 0x2b55 || hs === 0x2b1c || hs === 0x2b1b
+                || hs === 0x2b50)
             {
                 return 1;
             }
         }
+        
         return 0;
     }
 
