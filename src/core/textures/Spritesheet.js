@@ -162,9 +162,9 @@ export default class Spritesheet
             {
                 let frame = null;
                 let trim = null;
-                const sourceSize = this._frames[i].trimmed ?
-                    this._frames[i].sourceSize :
-                    this._frames[i].frame;
+                const sourceSize = this._frames[i].trimmed === true
+                    ? this._frames[i].sourceSize
+                    : this._frames[i].frame;
 
                 const orig = new Rectangle(
                     0,
