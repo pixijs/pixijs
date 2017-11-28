@@ -3,9 +3,10 @@ import { hex2rgb } from '../core/utils';
 
 /**
  * The ParticleContainer class is a really fast version of the Container built solely for speed,
- * so use when you need a lot of sprites or particles. The tradeoff of the ParticleContainer is that advanced
- * functionality will not work. ParticleContainer implements only the basic object transform (position, scale, rotation).
- * Any other functionality like tinting, masking, etc will not work on sprites in this batch.
+ * so use when you need a lot of sprites or particles. The tradeoff of the ParticleContainer is that most advanced
+ * functionality will not work. ParticleContainer implements the basic object transform (position, scale, rotation)
+ * and some advanced functionality like tint (as of v4.5.6).
+ * Other more advanced functionality like masking, children, filters, etc will not work on sprites in this batch.
  *
  * It's extremely easy to use :
  *
