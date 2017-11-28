@@ -70,12 +70,12 @@ export default class Loader extends ResourceLoader
 
             if (pre)
             {
-                this.pre(pre.bind(plugin));
+                this.pre(pre);
             }
 
             if (use)
             {
-                this.use(use.bind(plugin));
+                this.use(use);
             }
         }
 
