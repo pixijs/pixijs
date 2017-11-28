@@ -20,7 +20,8 @@
     "url": "https://github.com/pixijs/pixi.js.git"
   },
   "scripts": {
-    "test": "floss --path test"
+    "test": "floss --path test",
+    "postversion": "cd ../.. && npm run build"
   },
   "files": [
     "lib/"

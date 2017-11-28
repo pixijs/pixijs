@@ -447,7 +447,11 @@ export default class ParticleRenderer extends ObjectRenderer
 
         super.destroy();
 
-        this.shader.destroy();
+        if (this.shader)
+        {
+            this.shader.destroy();
+            this.shader = null;
+        }
 
         this.indices = null;
         this.tempMatrix = null;
