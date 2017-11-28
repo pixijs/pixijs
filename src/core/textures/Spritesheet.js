@@ -162,11 +162,15 @@ export default class Spritesheet
             {
                 let frame = null;
                 let trim = null;
+                const sourceSize = this._frames[i].trimmed ?
+                    this._frames[i].sourceSize :
+                    this._frames[i].frame;
+
                 const orig = new Rectangle(
                     0,
                     0,
-                    Math.floor(this._frames[i].sourceSize.w * sourceScale) / this.resolution,
-                    Math.floor(this._frames[i].sourceSize.h * sourceScale) / this.resolution
+                    Math.floor(sourceSize.w * sourceScale) / this.resolution,
+                    Math.floor(sourceSize.h * sourceScale) / this.resolution
                 );
 
                 if (this._frames[i].rotated)
