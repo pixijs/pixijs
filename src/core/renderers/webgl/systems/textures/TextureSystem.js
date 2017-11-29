@@ -71,7 +71,9 @@ export default class TextureSystem extends WebGLSystem
         gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
         gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 
-        for (i = 0; i < this.boundTextures.length; i++)
+        var maxTextures = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS)
+
+        for (i = 0; i < maxTextures; i++)
         {
             this.bind(null, i);
         }
