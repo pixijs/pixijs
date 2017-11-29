@@ -84,6 +84,17 @@ describe('PIXI.BitmapFontLoader', function ()
         expect(BitmapFontLoader.use).to.be.a('function');
     });
 
+    it('should process dirname correctly', function ()
+    {
+        const { dirname } = BitmapFontLoader;
+
+        expect(dirname('file.fnt')).to.equal('.');
+        expect(dirname('/file.fnt')).to.equal('/');
+        expect(dirname('foo/bar/file.fnt')).to.equal('foo/bar');
+        expect(dirname('/foo/bar/file.fnt')).to.equal('/foo/bar');
+        expect(dirname('../file.fnt')).to.equal('..');
+    });
+
     it('should do nothing if the resource is not XML', function ()
     {
         const spy = sinon.spy();
