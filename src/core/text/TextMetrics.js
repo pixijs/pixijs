@@ -101,13 +101,13 @@ export default class TextMetrics
         const hs = charCode;
         const nextCharValid = typeof nextCharCode === 'number' && !isNaN(nextCharCode) && nextCharCode > 0;
 
-        if (0xd800 <= hs && 0xdbff >= hs)
+        if (hs >= 0xd800 && hs <= 0xdbff)
         {
             if (nextCharValid)
             {
                 const uc = ((hs - 0xd800) * 0x400) + (nextCharCode - 0xdc00) + 0x10000;
 
-                if (0x1d000 <= uc && 0x1f77f >= uc)
+                if (uc >= 0x1d000 && uc <= 0x1f77f)
                 {
                     return 2;
                 }
@@ -122,10 +122,10 @@ export default class TextMetrics
         }
         else
         {
-            if ((0x2100 <= hs && 0x27ff >= hs)
-                || (0x2B05 <= hs && 0x2b07 >= hs)
-                || (0x2934 <= hs && 0x2935 >= hs)
-                || (0x3297 <= hs && 0x3299 >= hs)
+            if ((hs >= 0x2100 && hs <= 0x27ff)
+                || (hs >= 0x2b05 && hs <= 0x2b07)
+                || (hs >= 0x2934 && hs <= 0x2935)
+                || (hs >= 0x3297 && hs <= 0x3299)
                 || hs === 0xa9 || hs === 0xae || hs === 0x303d || hs === 0x3030
                 || hs === 0x2b55 || hs === 0x2b1c || hs === 0x2b1b
                 || hs === 0x2b50)
