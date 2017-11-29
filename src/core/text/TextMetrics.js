@@ -94,47 +94,44 @@ export default class TextMetrics
      *
      * @param {number} charCode - the byte to test.
      * @param {number} nextCharCode - the possible second byte of the emoji.
-     * @return {number} 0 means not a emoji, 1 means single byte, 2 means double bytes.
+     * @return {boolean} true if it's an emoji character, false otherwise.
      */
     static isEmojiChar(charCode, nextCharCode)
     {
-        const hs = charCode;
         const nextCharValid = typeof nextCharCode === 'number' && !isNaN(nextCharCode) && nextCharCode > 0;
 
-        if (hs >= 0xd800 && hs <= 0xdbff)
+        if (!nextCharValid)
         {
-            if (nextCharValid)
-            {
-                const uc = ((hs - 0xd800) * 0x400) + (nextCharCode - 0xdc00) + 0x10000;
+            return false;
+        }
 
-                if (uc >= 0x1d000 && uc <= 0x1f77f)
-                {
-                    return 2;
-                }
-            }
-        }
-        else if (nextCharValid)
+        const hs = charCode;
+
+        if (nextCharCode === 0x20e3 || nextCharCode === 0xfe0f || nextCharCode === 0xd83c)
         {
-            if (nextCharCode === 0x20e3)
-            {
-                return 2;
-            }
+            return true;
         }
-        else
+        else if (hs >= 0xd800 && hs <= 0xdbff)
         {
-            if ((hs >= 0x2100 && hs <= 0x27ff)
-                || (hs >= 0x2b05 && hs <= 0x2b07)
-                || (hs >= 0x2934 && hs <= 0x2935)
-                || (hs >= 0x3297 && hs <= 0x3299)
-                || hs === 0xa9 || hs === 0xae || hs === 0x303d || hs === 0x3030
-                || hs === 0x2b55 || hs === 0x2b1c || hs === 0x2b1b
-                || hs === 0x2b50)
+            const uc = ((hs - 0xd800) * 0x400) + (nextCharCode - 0xdc00) + 0x10000;
+
+            if (uc >= 0x1d000 && uc <= 0x1f77f)
             {
-                return 1;
+                return true;
             }
         }
-        
-        return 0;
+        else if ((hs >= 0x2100 && hs <= 0x27ff)
+            || (hs >= 0x2b05 && hs <= 0x2b07)
+            || (hs >= 0x2934 && hs <= 0x2935)
+            || (hs >= 0x3297 && hs <= 0x3299)
+            || hs === 0xa9 || hs === 0xae || hs === 0x303d || hs === 0x3030
+            || hs === 0x2b55 || hs === 0x2b1c || hs === 0x2b1b
+            || hs === 0x2b50)
+        {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -178,9 +175,9 @@ export default class TextMetrics
                         let character = characters[c];
                         const nextChar = characters[c + 1];
 
-                        const isEmoji = Text.isEmojiChar(character.charCodeAt(0), nextChar ? nextChar.charCodeAt(0) : 0);
+                        const isEmoji = nextChar ? Text.isEmojiChar(character.charCodeAt(0), nextChar.charCodeAt(0)) : false;
 
-                        if (isEmoji > 1)
+                        if (isEmoji)
                         {
                             c++;
                             character += nextChar;  // combine into 1 emoji
