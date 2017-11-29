@@ -94,44 +94,44 @@ export default class TextMetrics
      *
      * @param {number} charCode - the byte to test.
      * @param {number} nextCharCode - the possible second byte of the emoji.
-     * @return {boolean} true if it's an emoji character, false otherwise.
+     * @return {number} 0 means not a emoji, 1 means single byte, 2 means double bytes.
      */
     static isEmojiChar(charCode, nextCharCode)
     {
+        const hs = charCode;
         const nextCharValid = typeof nextCharCode === 'number' && !isNaN(nextCharCode) && nextCharCode > 0;
 
-        if (!nextCharValid)
+        if (hs >= 0xd800 && hs <= 0xdbff)
         {
-            return false;
-        }
-
-        const hs = charCode;
-
-        if (nextCharCode === 0x20e3 || nextCharCode === 0xfe0f || nextCharCode === 0xd83c)
-        {
-            return true;
-        }
-        else if (hs >= 0xd800 && hs <= 0xdbff)
-        {
-            const uc = ((hs - 0xd800) * 0x400) + (nextCharCode - 0xdc00) + 0x10000;
-
-            if (uc >= 0x1d000 && uc <= 0x1f77f)
+            if (nextCharValid)
             {
-                return true;
+                const uc = ((hs - 0xd800) * 0x400) + (nextCharCode - 0xdc00) + 0x10000;
+
+                if (uc >= 0x1d000 && uc <= 0x1f77f)
+                {
+                    return 2;
+                }
+            }
+        }
+        else if (nextCharValid)
+        {
+            if (nextCharCode === 0x20e3 || nextCharCode === 0xfe0f || nextCharCode === 0xd83c)
+            {
+                return 2;
             }
         }
         else if ((hs >= 0x2100 && hs <= 0x27ff)
-            || (hs >= 0x2b05 && hs <= 0x2b07)
+            || (hs >= 0x2B05 && hs <= 0x2b07)
             || (hs >= 0x2934 && hs <= 0x2935)
             || (hs >= 0x3297 && hs <= 0x3299)
             || hs === 0xa9 || hs === 0xae || hs === 0x303d || hs === 0x3030
             || hs === 0x2b55 || hs === 0x2b1c || hs === 0x2b1b
             || hs === 0x2b50)
         {
-            return true;
+            return 1;
         }
 
-        return false;
+        return 0;
     }
 
     /**
@@ -175,9 +175,9 @@ export default class TextMetrics
                         let character = characters[c];
                         const nextChar = characters[c + 1];
 
-                        const isEmoji = nextChar ? Text.isEmojiChar(character.charCodeAt(0), nextChar.charCodeAt(0)) : false;
+                        const isEmoji = Text.isEmojiChar(character.charCodeAt(0), nextChar ? nextChar.charCodeAt(0) : 0);
 
-                        if (isEmoji)
+                        if(isEmoji > 1) {
                         {
                             c++;
                             character += nextChar;  // combine into 1 emoji
