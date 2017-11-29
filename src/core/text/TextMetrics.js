@@ -114,26 +114,20 @@ export default class TextMetrics
                 }
             }
         }
-        else
+        // non surrogate
+        else if ((hs >= 0x2100 && hs <= 0x27ff)
+            || (hs >= 0x2B05 && hs <= 0x2b07)
+            || (hs >= 0x2934 && hs <= 0x2935)
+            || (hs >= 0x3297 && hs <= 0x3299)
+            || hs === 0xa9 || hs === 0xae || hs === 0x303d || hs === 0x3030
+            || hs === 0x2b55 || hs === 0x2b1c || hs === 0x2b1b
+            || hs === 0x2b50 || hs === 0x231a)
         {
-            // non surrogate
-            if ((hs >= 0x2100 && hs <= 0x27ff)
-                || (hs >= 0x2B05 && hs <= 0x2b07)
-                || (hs >= 0x2934 && hs <= 0x2935)
-                || (hs >= 0x3297 && hs <= 0x3299)
-                || hs === 0xa9 || hs === 0xae || hs === 0x303d || hs === 0x3030
-                || hs === 0x2b55 || hs === 0x2b1c || hs === 0x2b1b
-                || hs === 0x2b50 || hs === 0x231a)
-            {
-                return 1;
-            }
-            else
-            {
-                if (nextCharValid && (nextCharCode === 0x20e3 || nextCharCode === 0xfe0f || nextCharCode === 0xd83c))
-                {
-                    return 2;
-                }
-            }
+            return 1;
+        }
+        else if (nextCharValid && (nextCharCode === 0x20e3 || nextCharCode === 0xfe0f || nextCharCode === 0xd83c))
+        {
+            return 2;
         }
 
         return 0;
