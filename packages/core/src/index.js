@@ -16,7 +16,6 @@ export { default as Texture } from './textures/Texture';
 export { default as TextureMatrix } from './textures/TextureMatrix';
 export { default as RenderTexture } from './textures/RenderTexture';
 export { default as BaseRenderTexture } from './textures/BaseRenderTexture';
-export { default as VideoBaseTexture } from './textures/VideoBaseTexture';
 export { default as TextureUvs } from './textures/TextureUvs';
 export { default as WebGLSystem } from './renderers/systems/WebGLSystem';
 export { default as State } from './renderers/State';
