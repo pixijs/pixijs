@@ -51,7 +51,7 @@ export default class BaseRenderTexture extends BaseTexture
      */
     constructor(width = 100, height = 100, scaleMode, resolution)
     {
-        super(BaseRenderTexture.resource);
+        super(null);
         this.setSize(Math.ceil(width), Math.ceil(height), resolution);
         this.setStyle(scaleMode, false);
 
@@ -116,23 +116,3 @@ export default class BaseRenderTexture extends BaseTexture
         this.renderer = null;
     }
 }
-
-class RenderTextureStubResource extends IResource
-{
-    onTextureUpload(renderer, texture, glTexture)
-    {
-        // was render texture resized?
-        if (glTexture.width === texture.realWidth
-                && glTexture.height === texture.realHeight
-                && glTexture.dirtyId >= 0)
-        {
-            // dont call glStorage
-            return true;
-        }
-
-        // call glStorage
-        return false;
-    }
-}
-
-BaseRenderTexture.resource = new RenderTextureStubResource();

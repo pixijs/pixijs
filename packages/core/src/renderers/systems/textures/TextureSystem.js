@@ -153,109 +153,17 @@ export default class TextureSystem extends WebGLSystem
     updateTexture(texture)
     {
         const glTexture = texture._glTextures[this.CONTEXT_UID];
-        const gl = this.gl;
 
-        let i;
-        let texturePart;
-
-        // TODO there are only 3 textures as far as im aware?
-        // Cube / 2D and later 3d. (the latter is WebGL2, we will get to that soon!)
-        /*if (texture.target === gl.TEXTURE_CUBE_MAP)
-        {
-            // console.log( gl.UNSIGNED_BYTE)
-            for (i = 0; i < texture.sides.length; i++)
-            {
-                // TODO - we should only upload what changed..
-                // but im sure this is not  going to be a problem just yet!
-                texturePart = texture.sides[i];
-
-                if (texturePart.resource)
-                {
-                    if (texturePart.resource.uploadable)
-                    {
-                        gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + texturePart.side,
-                            0,
-                            texture.format,
-                            texture.format,
-                            texture.type,
-                            texturePart.resource.source);
-                    }
-                    else
-                    {
-                        gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + texturePart.side,
-                            0,
-                            texture.format,
-                            texture.width,
-                            texture.height,
-                            0,
-                            texture.format,
-                            texture.type,
-                            texturePart.resource.source);
-                    }
-                }
-                else
-                {
-                    gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + texturePart.side,
-                        0,
-                        texture.format,
-                        texture.width,
-                        texture.height,
-                        0,
-                        texture.format,
-                        texture.type,
-                        null);
-                }
-            }
-        }
-        else if (texture.target === gl.TEXTURE_2D_ARRAY)
-        {
-            gl.texImage3D(gl.TEXTURE_2D_ARRAY,
-                0,
-                texture.format,
-                texture.width,
-                texture.height,
-                6,
-                0,
-                texture.format,
-                texture.type,
-                null);
-
-            for (i = 0; i < texture.array.length; i++)
-            {
-                // TODO - we should only upload what changed..
-                // but im sure this is not  going to be a problem just yet!
-                texturePart = texture.array[i];
-
-                if (texturePart.resource)
-                {
-                    if (texturePart.resource.loaded)
-                    {
-                        gl.texSubImage3D(gl.TEXTURE_2D_ARRAY,
-                            0,
-                            0, // xoffset
-                            0, // yoffset
-                            i, // zoffset
-                            texturePart.resource.width,
-                            texturePart.resource.height,
-                            1,
-                            texture.format,
-                            texture.type,
-                            texturePart.resource.source);
-                    }
-                }
-            }
-        }
-        else*/
         if (texture.resource && texture.resource.onTextureUpload(this.renderer, texture, glTexture))
         {
             // texture is uploaded, dont do anything!
-            glTexture.mipmap = texture.mipmap && texture.isPowerOfTwo;
         }
-        else
+        else if (glTexture.width !== texture.realWidth
+            || glTexture.height !== texture.realHeight
+            || glTexture.dirtyId < 0)
         {
-            // just set its size
+            // default, renderTexture-like logic
             glTexture.uploadData(null, texture.realWidth, texture.realHeight);
-            glTexture.mipmap = false;
         }
 
         // lets only update what changes..
@@ -300,8 +208,8 @@ export default class TextureSystem extends WebGLSystem
     updateTextureStyle(texture)
     {
         const glTexture = texture._glTextures[this.CONTEXT_UID];
-        const gl = this.gl;
 
+        glTexture.mipmap = texture.mipmap && texture.isPowerOfTwo;
         if (!glTexture)
         {
             return;
