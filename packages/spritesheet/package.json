@@ -26,10 +26,10 @@
   ],
   "dependencies": {
     "@pixi/core": "^5.0.0-alpha",
+    "@pixi/loaders": "^5.0.0-alpha",
     "@pixi/math": "^5.0.0-alpha",
     "@pixi/utils": "^5.0.0-alpha",
-    "@pixi/loaders": "^5.0.0-alpha",
-    "url-resolve-browser": "^1.0.4"
+    "url": "^0.11.0"
   },
   "devDependencies": {
     "floss": "^2.1.3"

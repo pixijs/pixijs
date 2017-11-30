@@ -34,6 +34,7 @@ const plugins = [
     sourcemaps(),
     resolve({
         browser: true,
+        preferBuiltins: false,
     }),
     commonjs({
         namedExports: {

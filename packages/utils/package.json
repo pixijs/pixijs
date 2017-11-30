@@ -30,7 +30,7 @@
     "eventemitter3": "^2.0.0",
     "ismobilejs": "^0.4.0",
     "remove-array-items": "^1.0.0",
-    "url-parse": "^1.2.0"
+    "url": "^0.11.0"
   },
   "devDependencies": {
     "floss": "^2.1.3"

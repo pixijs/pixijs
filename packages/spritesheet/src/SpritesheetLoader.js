@@ -1,4 +1,4 @@
-import urlResolve from 'url-resolve-browser';
+import url from 'url';
 import { LoaderResource } from '@pixi/loaders';
 import Spritesheet from './Spritesheet';
 
@@ -75,6 +75,9 @@ export default class SpritesheetLoader
             return resource.data.meta.image;
         }
 
-        return urlResolve(resource.url.replace(baseUrl, ''), resource.data.meta.image);
+        return url.resolve(
+            resource.url.replace(baseUrl, ''),
+            resource.data.meta.image
+        );
     }
 }

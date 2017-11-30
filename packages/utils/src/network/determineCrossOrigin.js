@@ -1,4 +1,4 @@
-import urlParse from 'url-parse';
+import _url from 'url';
 
 let tempAnchor;
 
@@ -33,7 +33,7 @@ export function determineCrossOrigin(url, loc = window.location)
     // parse with the node url lib, we can't use the properties of the anchor element
     // because they don't work in IE9 :(
     tempAnchor.href = url;
-    url = urlParse.parse(tempAnchor.href);
+    url = _url.parse(tempAnchor.href);
 
     const samePort = (!url.port && loc.port === '') || (url.port === loc.port);
 
