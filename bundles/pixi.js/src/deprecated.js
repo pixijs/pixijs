@@ -609,4 +609,57 @@ export default function deprecated(PIXI)
             },
         },
     });
+
+    const { BaseTexture } = PIXI;
+
+    Object.defineProperties(BaseTexture, {
+        /**
+         * @method fromImage
+         * @static
+         * @memberof PIXI.BaseTexture
+         * @deprecated since 5.0.0
+         * @see PIXI.BaseTexture.from
+         */
+        fromImage:
+        {
+            get()
+            {
+                warn('PIXI.BaseTexture.fromImage has been replaced with PIXI.BaseTexture.from');
+
+                return BaseTexture.from;
+            },
+        },
+        /**
+         * @method fromCanvas
+         * @static
+         * @memberof PIXI.BaseTexture
+         * @deprecated since 5.0.0
+         * @see PIXI.BaseTexture.from
+         */
+        fromCanvas:
+        {
+            get()
+            {
+                warn('PIXI.BaseTexture.fromCanvas has been replaced with PIXI.BaseTexture.from');
+
+                return BaseTexture.from;
+            },
+        },
+        /**
+         * @method fromSVG
+         * @static
+         * @memberof PIXI.BaseTexture
+         * @deprecated since 5.0.0
+         * @see PIXI.BaseTexture.from
+         */
+        fromSVG:
+        {
+            get()
+            {
+                warn('PIXI.BaseTexture.fromSVG has been replaced with PIXI.BaseTexture.from');
+
+                return BaseTexture.from;
+            },
+        },
+    });
 }

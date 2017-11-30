@@ -1,6 +1,7 @@
-const { SVGResource } = require('../');
+const { resources } = require('../');
+const { SVGResource } = resources;
 
-describe('PIXI.SVGResource', function ()
+describe('PIXI.resources.SVGResource', function ()
 {
     describe('getSize', function ()
     {

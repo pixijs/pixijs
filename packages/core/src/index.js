@@ -1,17 +1,11 @@
+import * as resources from './textures/resources';
+export { resources };
+
 export { default as Renderer } from './renderers/Renderer';
 export { default as AbstractRenderer } from './renderers/AbstractRenderer';
 export { default as FrameBuffer } from './textures/FrameBuffer';
 export { default as CubeTexture } from './textures/CubeTexture';
 export { default as BaseTexture } from './textures/BaseTexture';
-export { default as IResource } from './textures/resources/IResource';
-export { default as TextureResource } from './textures/resources/TextureResource';
-export { default as BaseImageResource } from './textures/resources/BaseImageResource';
-export { default as ImageResource } from './textures/resources/ImageResource';
-export { default as CanvasResource } from './textures/resources/CanvasResource';
-export { default as CubeResource } from './textures/resources/CubeResource';
-export { default as SVGResource } from './textures/resources/SVGResource';
-export { default as VideoResource } from './textures/resources/VideoResource';
-export { default as ArrayResource } from './textures/resources/ArrayResource';
 export { default as Texture } from './textures/Texture';
 export { default as TextureMatrix } from './textures/TextureMatrix';
 export { default as RenderTexture } from './textures/RenderTexture';
@@ -31,3 +25,4 @@ export { default as Filter } from './renderers/filters/Filter';
 export { default as Attribute } from './geometry/Attribute';
 export { default as Buffer } from './geometry/Buffer';
 export { default as Geometry } from './geometry/Geometry';
+

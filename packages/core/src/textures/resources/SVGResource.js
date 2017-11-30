@@ -4,40 +4,26 @@ import BaseImageResource from './BaseImageResource';
 /**
  * Resource type for SVG elements and graphics.
  * @class
- * @extends PIXI.TextureResource
- * @memberof PIXI
+ * @extends PIXI.resources.TextureResource
+ * @memberof PIXI.resources
  * @param {SVGResource} svgSource - Source SVG element.
  * @param {number} [scale=1] Scale to apply to SVG.
+ * @param {boolean} [autoLoad=true] Start loading right away.
  */
 export default class SVGResource extends BaseImageResource
 {
-    constructor(svgSource, scale = 1, loadRightNow = true)
+    constructor(svgSource, scale = 1, autoLoad = true)
     {
         super(document.createElement('canvas'));
 
         this.svgSource = svgSource;
         this.scale = scale;
-
-        this._width = 0;
-        this._height = 0;
-        this._load = null;
         this._resolve = null;
-        this.loaded = false;
 
-        if (loadRightNow)
+        if (autoLoad)
         {
             this.load();
         }
-    }
-
-    get width()
-    {
-        return this._width;
-    }
-
-    get height()
-    {
-        return this._height;
     }
 
     load()
@@ -51,7 +37,7 @@ export default class SVGResource extends BaseImageResource
         {
             this._resolve = () =>
             {
-                if (this.baseTexture)
+                if (this.parent)
                 {
                     this._validate();
                 }
@@ -166,7 +152,7 @@ export default class SVGResource extends BaseImageResource
     /**
      * Typedef for Size object.
      *
-     * @typedef {object} PIXI.SVGResource~Size
+     * @typedef {object} PIXI.resources.SVGResource~Size
      * @property {number} width - Width component
      * @property {number} height - Height component
      */
@@ -176,7 +162,7 @@ export default class SVGResource extends BaseImageResource
      *
      * @method
      * @param {string} svgString - a serialized svg element
-     * @return {PIXI.SVGResource~Size} image extension
+     * @return {PIXI.resources.SVGResource~Size} image extension
      */
     static getSize(svgString)
     {
@@ -190,11 +176,6 @@ export default class SVGResource extends BaseImageResource
         }
 
         return size;
-    }
-
-    static from(url)
-    {
-        return new SVGResource(url);
     }
 }
 
@@ -213,7 +194,7 @@ SVGResource.TYPES = ['svg'];
  * @static
  * @constant
  * @name SVG_SIZE
- * @memberof PIXI.SVGResource
+ * @memberof PIXI.resources.SVGResource
  * @type {RegExp|string}
  * @example &lt;svg width="100" height="100"&gt;&lt;/svg&gt;
  */

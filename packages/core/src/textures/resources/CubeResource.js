@@ -1,4 +1,4 @@
-import TextureResource from './TextureResource';
+import Resource from './Resource';
 import ImageResource from './ImageResource';
 import BaseTexture from '../BaseTexture';
 import { TARGETS } from '@pixi/constants';
@@ -7,16 +7,15 @@ import { TARGETS } from '@pixi/constants';
  * Resource for a CubeTexture which contains six resources.
  *
  * @class
- * @extends PIXI.TextureResource
- * @memberof PIXI
+ * @extends PIXI.resources.Resource
+ * @memberof PIXI.resources
+ * @param {Array<string>} [urls] Collection of URLs to load as images.
  */
-export default class CubeResource extends TextureResource
+export default class CubeResource extends Resource
 {
-    constructor()
+    constructor(urls = null)
     {
         super();
-
-        this.baseTexture = null;
 
         this.sides = [];
         this.sideDirtyIds = [];
@@ -30,40 +29,44 @@ export default class CubeResource extends TextureResource
             this.sideDirtyIds.push(-1);
         }
 
-        this.loaded = false;
-        this._load = null;
-        this._width = 0;
-        this._height = 0;
+        if (urls)
+        {
+            for (let i = 0; i < 6; i++)
+            {
+                this.setResource(new ImageResource(urls[i]), i);
+            }
+        }
     }
 
-    get width()
-    {
-        return this._width;
-    }
-
-    get height()
-    {
-        return this._height;
-    }
-
+    /**
+     * Set a resource by index
+     *
+     * @param {PIXI.resources.IResource} resource - Resource to upload
+     * @param {number} index - Index to use, zero-based
+     */
     setResource(resource, index)
     {
         this.sides[index].setResource(resource);
     }
 
-    onTextureNew(baseTexture)
+    /**
+     * Set the parent base texture
+     * @member {PIXI.BaseTexture}
+     * @override
+     */
+    set parent(parent)
     {
-        baseTexture.target = TARGETS.TEXTURE_CUBE_MAP;
-        super.onTextureNew(baseTexture);
+        parent.target = TARGETS.TEXTURE_CUBE_MAP;
+        super.parent = parent;
     }
 
     _validate()
     {
-        const baseTexture = this.baseTexture;
+        const { parent } = this;
 
-        baseTexture.setRealSize(this.width, this.height);
+        parent.setRealSize(this.width, this.height);
 
-        const update = baseTexture.update.bind(baseTexture);
+        const update = parent.update.bind(parent);
 
         for (let i = 0; i < 6; i++)
         {
@@ -89,7 +92,7 @@ export default class CubeResource extends TextureResource
             this.loaded = true;
             this._width = resources[0].width;
             this._height = resources[0].height;
-            if (this.baseTexture)
+            if (this.parent)
             {
                 this._validate();
             }
@@ -98,7 +101,7 @@ export default class CubeResource extends TextureResource
         return this._load;
     }
 
-    onTextureUpload(renderer, baseTexture, glTexture)
+    upload(renderer, baseTexture, glTexture)
     {
         const dirty = this.sideDirtyIds;
 
@@ -111,7 +114,7 @@ export default class CubeResource extends TextureResource
                 dirty[i] = texturePart.dirtyId;
                 if (texturePart.valid)
                 {
-                    texturePart.resource.onTextureUpload(renderer, texturePart, glTexture);
+                    texturePart.resource.upload(renderer, texturePart, glTexture);
                 }
                 else
                 {
@@ -121,17 +124,5 @@ export default class CubeResource extends TextureResource
         }
 
         return true;
-    }
-
-    static from(...urls)
-    {
-        const cubeResource = new CubeResource();
-
-        for (let i = 0; i < 6; i++)
-        {
-            cubeResource.setResource(ImageResource.from(urls[i % urls.length]), i);
-        }
-
-        return cubeResource;
     }
 }
