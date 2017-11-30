@@ -149,7 +149,7 @@ export default class ArrayResource extends Resource
      * Upload the resources to the GPU.
      * @param {PIXI.Renderer} renderer
      * @param {PIXI.BaseTexture} texture
-     * @param {PIXI.glCore.GLTexture} glTexture
+     * @param {PIXI.glCore.Texture} glTexture
      */
     upload(renderer, texture, glTexture)
     {

@@ -133,7 +133,7 @@ export default class Resource
      *
      * @param {PIXI.Renderer} renderer - yeah, renderer!
      * @param {PIXI.BaseTexture} baseTexture - the texture
-     * @param {PIXI.glCore.GLTexture} glTexture - texture instance for this webgl context
+     * @param {PIXI.glCore.Texture} glTexture - texture instance for this webgl context
      * @returns {boolean} true is success
      */
     upload(/* renderer, baseTexture, glTexture*/)
@@ -147,7 +147,7 @@ export default class Resource
      *
      * @param {PIXI.Renderer} renderer - yeah, renderer!
      * @param {PIXI.BaseTexture} baseTexture - the texture
-     * @param {PIXI.glCore.GLTexture} glTexture - texture instance for this webgl context
+     * @param {PIXI.glCore.Texture} glTexture - texture instance for this webgl context
      * @returns {boolean} true is success
      */
     style(/* renderer, baseTexture, glTexture*/)
