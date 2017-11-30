@@ -4,7 +4,7 @@ import CanvasResource from './CanvasResource';
 import VideoResource from './VideoResource';
 
 /**
- * Create a resource element from a single source element. This 
+ * Create a resource element from a single source element. This
  * auto-detects which type of resource to create.
  * @private
  * @function
