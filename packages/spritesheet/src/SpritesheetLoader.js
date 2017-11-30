@@ -75,9 +75,6 @@ export default class SpritesheetLoader
             return resource.data.meta.image;
         }
 
-        return url.resolve(
-            resource.url.replace(baseUrl, ''),
-            resource.data.meta.image
-        );
+        return url.resolve(resource.url.replace(baseUrl, ''), resource.data.meta.image);
     }
 }
