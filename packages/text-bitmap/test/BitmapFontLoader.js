@@ -169,7 +169,9 @@ describe('PIXI.BitmapFontLoader', function ()
 
     it('should properly register SCALED bitmap font', function (done)
     {
-        const texture = new Texture(new BaseTexture(this.fontScaledImage, null, 0.5));
+        const baseTexture = new BaseTexture(this.fontScaledImage);
+        baseTexture.setResolution(0.5);
+        const texture = new Texture(baseTexture);
         const font = BitmapText.registerFont(this.fontScaledXML, texture);
 
         expect(font).to.be.an.object;
