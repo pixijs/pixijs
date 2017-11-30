@@ -11,7 +11,7 @@ export { default as CanvasResource } from './textures/resources/CanvasResource';
 export { default as CubeResource } from './textures/resources/CubeResource';
 export { default as SVGResource } from './textures/resources/SVGResource';
 export { default as VideoResource } from './textures/resources/VideoResource';
-export { default as ArrayTexture } from './textures/ArrayTexture';
+export { default as ArrayResource } from './textures/resources/ArrayResource';
 export { default as Texture } from './textures/Texture';
 export { default as TextureMatrix } from './textures/TextureMatrix';
 export { default as RenderTexture } from './textures/RenderTexture';
