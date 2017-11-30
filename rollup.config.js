@@ -9,7 +9,6 @@ import uglify from 'rollup-plugin-uglify';
 import { minify } from 'uglify-es';
 import minimist from 'minimist';
 import commonjs from 'rollup-plugin-commonjs';
-import builtins from 'rollup-plugin-node-builtins';
 import replace from 'rollup-plugin-replace';
 
 // Support --scope and --ignore globs
@@ -35,9 +34,8 @@ const plugins = [
     sourcemaps(),
     resolve({
         browser: true,
-        preferBuiltins: true,
+        preferBuiltins: false,
     }),
-    builtins(),
     commonjs({
         namedExports: {
             'resource-loader': ['Resource'],

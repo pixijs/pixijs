@@ -134,6 +134,8 @@ export default class Renderer extends AbstractRenderer
         this.renderingToScreen = true;
 
         sayHello(this.context.webGLVersion === 2 ? 'WebGL 2' : 'WebGL 1');
+
+        this.resize(this.options.width, this.options.height);
     }
 
     addSystem(_class, name)

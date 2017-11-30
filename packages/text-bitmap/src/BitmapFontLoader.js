@@ -1,4 +1,3 @@
-import * as path from 'path';
 import { TextureCache } from '@pixi/utils';
 import { LoaderResource } from '@pixi/loaders';
 import BitmapText from './BitmapText';
@@ -34,6 +33,31 @@ export default class BitmapFontLoader
     }
 
     /**
+     * Replacement for NodeJS's path.dirname
+     * @private
+     * @param {string} url Path to get directory for
+     */
+    static dirname(url)
+    {
+        const dir = url
+            .replace(/\/$/, '') // replace trailing slash
+            .replace(/\/[^\/]*$/, ''); // remove everything after the last
+
+        // File request is relative, use current directory
+        if (dir === url)
+        {
+            return '.';
+        }
+        // Started with a slash
+        else if (dir === '')
+        {
+            return '/';
+        }
+
+        return dir;
+    }
+
+    /**
      * Called after a resource is loaded.
      * @see PIXI.Loader~loaderMiddleware
      * @param {PIXI.LoaderResource} resource
@@ -60,7 +84,7 @@ export default class BitmapFontLoader
             return;
         }
 
-        let xmlUrl = !resource.isDataUrl ? path.dirname(resource.url) : '';
+        let xmlUrl = !resource.isDataUrl ? BitmapFontLoader.dirname(resource.url) : '';
 
         if (resource.isDataUrl)
         {
