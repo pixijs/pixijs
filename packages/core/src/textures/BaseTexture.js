@@ -8,6 +8,13 @@ import { settings } from '@pixi/settings';
 import EventEmitter from 'eventemitter3';
 import bitTwiddle from 'bit-twiddle';
 
+/**
+ * A texture stores the information that represents an image. All textures have a base texture.
+ *
+ * @class
+ * @extends PIXI.utils.EventEmitter
+ * @memberof PIXI
+ */
 export default class BaseTexture extends EventEmitter
 {
     constructor(resource)

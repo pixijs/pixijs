@@ -3,6 +3,14 @@ import SVGResource from './SVGResource';
 import CanvasResource from './CanvasResource';
 import VideoResource from './VideoResource';
 
+/**
+ * Create a resource element from a single source element. This 
+ * auto-detects which type of resource to create.
+ * @private
+ * @function
+ * @param {string|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement} source Resource source
+ * @return {PIXI.VideoResource|PIXI.SVGResource|PIXI.ImageResource|PIXI.CanvasResource|PIXI.VideoResource} Resource
+ */
 export default function createResource(source)
 {
     if (source.onTextureUpload)

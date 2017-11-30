@@ -3,6 +3,13 @@ import ImageResource from './ImageResource';
 import BaseTexture from '../BaseTexture';
 import { TARGETS } from '@pixi/constants';
 
+/**
+ * Resource for a CubeTexture which contains six resources.
+ *
+ * @class
+ * @extends PIXI.TextureResource
+ * @memberof PIXI
+ */
 export default class CubeResource extends TextureResource
 {
     constructor()

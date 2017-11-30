@@ -2,6 +2,9 @@ import TextureResource from './TextureResource';
 
 /**
  * Base for all the image/canvas resources
+ * @class
+ * @extends PIXI.TextureResource
+ * @memberof PIXI
  */
 export default class BaseImageResource extends TextureResource
 {

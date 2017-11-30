@@ -1,6 +1,11 @@
 import Texture from './BaseTexture';
 import { FORMATS, TYPES } from '@pixi/constants';
 
+/**
+ * Frame buffer
+ * @class
+ * @memberof PIXI
+ */
 export default class FrameBuffer
 {
     constructor(width, height)

@@ -1,5 +1,11 @@
 import TextureResource from './TextureResource';
 
+/**
+ * Buffer resource with data of typed array.
+ * @class
+ * @extends PIXI.TextureResource
+ * @memberof PIXI
+ */
 export default class BufferResource extends TextureResource
 {
     constructor(data, width, height)
