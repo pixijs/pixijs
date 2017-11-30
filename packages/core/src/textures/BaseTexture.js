@@ -10,7 +10,6 @@ import bitTwiddle from 'bit-twiddle';
 
 export default class BaseTexture extends EventEmitter
 {
-
     constructor(resource)
     {
         super();
@@ -204,9 +203,9 @@ export default class BaseTexture extends EventEmitter
      * @returns {BaseTexture} this
      */
     setStyle(scaleMode,
-             mipmap,
-             format,
-             type)
+        mipmap,
+        format,
+        type)
     {
         if (scaleMode !== undefined)
         {
@@ -265,7 +264,7 @@ export default class BaseTexture extends EventEmitter
      * @param {number} [resolution] res
      * @returns {BaseTexture} this
      */
-    setRealSize(realWidth, realHeight, resolution)
+    setRealSize(realWidth, realHeight/* , resolution*/)
     {
         this.width = realWidth / this.resolution;
         this.height = realHeight / this.resolution;
@@ -306,7 +305,7 @@ export default class BaseTexture extends EventEmitter
 
         if (this.resource)
         {
-            throw new Error("Resource can be set only once");
+            throw new Error('Resource can be set only once');
         }
 
         this.resource = resource;
@@ -435,7 +434,7 @@ export default class BaseTexture extends EventEmitter
         float32Array = float32Array || new Float32Array(width * height * 4);
 
         const texture = new BaseTexture(new BufferResource(float32Array, width, height))
-                .setStyle(SCALE_MODES.NEAREST, FORMATS.RGBA, TYPES.FLOAT);
+            .setStyle(SCALE_MODES.NEAREST, FORMATS.RGBA, TYPES.FLOAT);
 
         return texture;
     }

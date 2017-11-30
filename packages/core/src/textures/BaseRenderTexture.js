@@ -1,6 +1,5 @@
 import BaseTexture from './BaseTexture';
 import FrameBuffer from './FrameBuffer';
-import IResource from './resources/IResource';
 
 /**
  * A BaseRenderTexture is a special texture that allows any PixiJS display object to be rendered to it.

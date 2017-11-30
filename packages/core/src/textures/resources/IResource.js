@@ -15,7 +15,7 @@ export default class IResource
      * @param glTexture {PIXI.glCore.GLTexture} texture instance for this webgl context
      * @returns {boolean} true is success
      */
-    onTextureUpload(renderer, baseTexture, glTexture)
+    onTextureUpload(/* renderer, baseTexture, glTexture*/)
     {
         return false;
     }
