@@ -270,6 +270,35 @@ export default class BaseTexture extends EventEmitter
         this.height = realHeight / this.resolution;
         this.isPowerOfTwo = bitTwiddle.isPow2(this.realWidth) && bitTwiddle.isPow2(this.realHeight);
         this.update();
+
+        return this;
+    }
+
+    /**
+     * Changes resolution
+     *
+     * @param {number} [resolution] res
+     * @returns {BaseTexture} this
+     */
+    setResolution(resolution)
+    {
+        const oldResolution = this.resolution;
+
+        if (oldResolution === resolution)
+        {
+            return this;
+        }
+
+        this.resolution = resolution;
+
+        if (this.valid)
+        {
+            this.width = this.width * oldResolution / resolution;
+            this.height = this.height * oldResolution / resolution;
+            this.emit('update');
+        }
+
+        return this;
     }
 
     /**
