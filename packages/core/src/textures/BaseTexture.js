@@ -101,7 +101,7 @@ export default class BaseTexture extends EventEmitter
 
         /**
          * Tag is just a string that is used by some of texture resources.
-         * @type {null}
+         * @member {string}
          */
         this.tag = null;
 
@@ -123,10 +123,7 @@ export default class BaseTexture extends EventEmitter
         {
             // lets convert this to a resource..
             this.resource = createResource(resource);
-            if (this.resource.onTextureNew)
-            {
-                this.resource.onTextureNew(this);
-            }
+            this.resource.parent = this;
         }
 
         /**
@@ -203,16 +200,13 @@ export default class BaseTexture extends EventEmitter
     /**
      * Changes style of BaseTexture
      *
-     * @param {number} scaleMode pixi scalemode
-     * @param {number} format webgl pixel format
-     * @param {number} type webgl pixel type
-     * @param {boolean} mipmap enable mipmaps
+     * @param {number} scaleMode - pixi scalemode
+     * @param {number} format - webgl pixel format
+     * @param {number} type - webgl pixel type
+     * @param {boolean} mipmap - enable mipmaps
      * @returns {BaseTexture} this
      */
-    setStyle(scaleMode,
-        mipmap,
-        format,
-        type)
+    setStyle(scaleMode, mipmap, format, type)
     {
         if (scaleMode !== undefined)
         {
@@ -231,6 +225,8 @@ export default class BaseTexture extends EventEmitter
             this.type = type;
         }
         this.dirtyStyleId++;
+
+        return this;
     }
 
     /**
@@ -268,10 +264,9 @@ export default class BaseTexture extends EventEmitter
      *
      * @param {number} realWidth w
      * @param {number} realHeight h
-     * @param {number} [resolution] res
      * @returns {BaseTexture} this
      */
-    setRealSize(realWidth, realHeight/* , resolution*/)
+    setRealSize(realWidth, realHeight)
     {
         this.width = realWidth / this.resolution;
         this.height = realHeight / this.resolution;
@@ -318,9 +313,10 @@ export default class BaseTexture extends EventEmitter
     setTag(tag)
     {
         this.tag = tag;
-        if (this.resource && this.resource.onTextureTag)
+
+        if (this.resource)
         {
-            this.resource.onTextureTag(this);
+            this.resource.tag = tag;
         }
 
         return this;
@@ -329,7 +325,7 @@ export default class BaseTexture extends EventEmitter
     /**
      * Sets the resource if it wasnt set. Throws error if resource already present
      *
-     * @param resource resource that is managing this basetexture
+     * @param {PIXI.resources.Resource} resource - that is managing this BaseTexture
      * @returns {BaseTexture} this
      */
     setResource(resource)
@@ -345,9 +341,10 @@ export default class BaseTexture extends EventEmitter
         }
 
         this.resource = resource;
-        if (this.tag && this.resource.onTextureTag)
+
+        if (this.tag)
         {
-            this.resource.onTextureTag(this);
+            this.setTag(this.tag);
         }
 
         return this;
@@ -383,14 +380,9 @@ export default class BaseTexture extends EventEmitter
     destroy()
     {
         // remove and destroy the resource
-
         if (this.resource)
         {
-            if (this.resource.onTextureDestroy
-                && !this.resource.onTextureDestroy(this))
-            {
-                return;
-            }
+            this.resource.destroy(this);
             this.resource = null;
         }
 
@@ -465,29 +457,36 @@ export default class BaseTexture extends EventEmitter
         return baseTexture;
     }
 
+    /**
+     * Create a new BaseTexture with a BufferResource from a Float32Array.
+     * @static
+     * @param {number} width - Width of the resource
+     * @param {number} height - Height of the resource
+     * @param {Float32Array} [float32Array] The optional array to use
+     * @return {PIXI.BaseTexture} The resulting new BaseTexture
+     */
     static fromFloat32Array(width, height, float32Array)
     {
         float32Array = float32Array || new Float32Array(width * height * 4);
 
-        const texture = new BaseTexture(new BufferResource(float32Array, width, height))
+        return BaseTexture(new BufferResource(float32Array, width, height))
             .setStyle(SCALE_MODES.NEAREST, FORMATS.RGBA, TYPES.FLOAT);
-
-        return texture;
     }
 
+    /**
+     * Create a new BaseTexture with a BufferResource from a Uint8Array.
+     * @static
+     * @param {number} width - Width of the resource
+     * @param {number} height - Height of the resource
+     * @param {Uint8Array} [uint8Array] The optional array to use
+     * @return {PIXI.BaseTexture} The resulting new BaseTexture
+     */
     static fromUint8Array(width, height, uint8Array)
     {
         uint8Array = uint8Array || new Uint8Array(width * height * 4);
 
-        const texture = new BaseTexture(new BufferResource(uint8Array),
-            SCALE_MODES.NEAREST,
-            1,
-            width,
-            height,
-            FORMATS.RGBA,
-            TYPES.UNSIGNED_BYTE);
-
-        return texture;
+        return new BaseTexture(new BufferResource(uint8Array, width, height))
+            .setStyle(SCALE_MODES.NEAREST, FORMATS.RGBA, TYPES.UNSIGNED_BYTE);
     }
 
     /**
@@ -558,8 +557,3 @@ export default class BaseTexture extends EventEmitter
         return null;
     }
 }
-
-BaseTexture.fromFrame = BaseTexture.fromFrame;
-BaseTexture.fromImage = BaseTexture.from;
-BaseTexture.fromSVG = BaseTexture.from;
-BaseTexture.fromCanvas = BaseTexture.from;

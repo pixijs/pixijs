@@ -4,14 +4,44 @@ import { Ticker } from '@pixi/ticker';
 /**
  * Resource type for HTMLVideoElement.
  * @class
- * @extends PIXI.BaseImageResource
- * @memberof PIXI
- * @param {HTMLVideoElement} source - Video element to use.
+ * @extends PIXI.resources.BaseImageResource
+ * @memberof PIXI.resources
+ * @param {HTMLVideoElement|object|string|Array<string|object>} source - Video element to use.
+ * @param {boolean} [autoLoad=true] - Start loading the video immediately
  */
 export default class VideoResource extends BaseImageResource
 {
-    constructor(source, loadRightNow = true)
+    constructor(source, autoLoad = true)
     {
+        if (!(source instanceof HTMLVideoElement))
+        {
+            const videoElement = document.createElement('video');
+
+            videoElement.setAttribute('webkit-playsinline', '');
+            videoElement.setAttribute('playsinline', '');
+
+            if (typeof source === 'string')
+            {
+                source = [source];
+            }
+
+            // array of objects or strings
+            for (let i = 0; i < source.length; ++i)
+            {
+                const sourceElement = document.createElement('source');
+
+                const { src, mime } = source[i];
+
+                sourceElement.src = src || source[i];
+                sourceElement.type = mime || `video/${src.substr(src.lastIndexOf('.') + 1)}`;
+
+                videoElement.appendChild(sourceElement);
+            }
+
+            // Override the source
+            source = videoElement;
+        }
+
         super(source);
 
         this._autoUpdate = true;
@@ -26,13 +56,10 @@ export default class VideoResource extends BaseImageResource
          */
         this.autoPlay = true;
 
-        this.update = this.update.bind(this);
+        // Bind for listeners
         this._onCanPlay = this._onCanPlay.bind(this);
 
-        this._load = null;
-        this.loaded = false;
-
-        if (loadRightNow)
+        if (autoLoad)
         {
             this.load();
         }
@@ -79,11 +106,23 @@ export default class VideoResource extends BaseImageResource
         return this._load;
     }
 
+    /**
+     * Override the width getter
+     * @member {number}
+     * @override
+     * @readonly
+     */
     get width()
     {
         return this.source.videoWidth || 0;
     }
 
+    /**
+     * Override the height getter
+     * @member {number}
+     * @override
+     * @readonly
+     */
     get height()
     {
         return this.source.videoHeight || 0;
@@ -93,7 +132,7 @@ export default class VideoResource extends BaseImageResource
     {
         // TODO - slow down and base on the videos framerate
         // changes size and updates texture at the same time
-        this.baseTexture.update();
+        this.parent.update();
     }
 
     /**
@@ -164,9 +203,9 @@ export default class VideoResource extends BaseImageResource
         this.source.removeEventListener('canplay', this._onCanPlay);
         this.source.removeEventListener('canplaythrough', this._onCanPlay);
 
-        if (this.baseTexture)
+        if (this.parent)
         {
-            this.baseTexture.setSize(this.source.videoWidth, this.source.videoHeight);
+            this.parent.setSize(this.source.videoWidth, this.source.videoHeight);
         }
 
         // prevent multiple loaded dispatches..
@@ -193,20 +232,15 @@ export default class VideoResource extends BaseImageResource
      * Destroys this texture
      *
      */
-    destroy()
+    destroy(fromTexture)
     {
-        if (this._isAutoUpdating)
+        if (super.destroy(fromTexture))
         {
-            Ticker.shared.remove(this.update, this);
+            if (this._isAutoUpdating)
+            {
+                Ticker.shared.remove(this.update, this);
+            }
         }
-        /*
-        if (this.source && this.source._pixiId)
-        {
-            delete BaseTextureCache[this.source._pixiId];
-            delete this.source._pixiId;
-        }
-*/
-        //      super.destroy();
     }
 
     /**
@@ -218,7 +252,6 @@ export default class VideoResource extends BaseImageResource
     {
         return this._autoUpdate;
     }
-
     set autoUpdate(value) // eslint-disable-line require-jsdoc
     {
         if (value !== this._autoUpdate)
@@ -237,59 +270,6 @@ export default class VideoResource extends BaseImageResource
             }
         }
     }
-
-    /**
-     * Helper function that creates a new BaseTexture based on the given video element.
-     * This BaseTexture can then be used to create a texture
-     *
-     * @static
-     * @param {string|object|string[]|object[]} videoSrc - The URL(s) for the video.
-     * @param {string} [videoSrc.src] - One of the source urls for the video
-     * @param {string} [videoSrc.mime] - The mimetype of the video (e.g. 'video/mp4'). If not specified
-     *  the url's extension will be used as the second part of the mime type.
-     * @param {number} scaleMode - See {@link PIXI.SCALE_MODES} for possible values
-     * @return {PIXI.VideoResource} Newly created VideoBaseTexture
-     */
-    static fromUrl(videoSrc, scaleMode)
-    {
-        const video = document.createElement('video');
-
-        video.setAttribute('webkit-playsinline', '');
-        video.setAttribute('playsinline', '');
-
-        // array of objects or strings
-        if (Array.isArray(videoSrc))
-        {
-            for (let i = 0; i < videoSrc.length; ++i)
-            {
-                video.appendChild(createSource(videoSrc[i].src || videoSrc[i], videoSrc[i].mime));
-            }
-        }
-        // single object or string
-        else
-        {
-            video.appendChild(createSource(videoSrc.src || videoSrc, videoSrc.mime));
-        }
-
-        video.load();
-
-        return new VideoResource(video, scaleMode);
-    }
-}
-
-function createSource(path, type)
-{
-    if (!type)
-    {
-        type = `video/${path.substr(path.lastIndexOf('.') + 1)}`;
-    }
-
-    const source = document.createElement('source');
-
-    source.src = path;
-    source.type = type;
-
-    return source;
 }
 
 /**

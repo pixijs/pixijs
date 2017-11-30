@@ -154,7 +154,7 @@ export default class TextureSystem extends WebGLSystem
     {
         const glTexture = texture._glTextures[this.CONTEXT_UID];
 
-        if (texture.resource && texture.resource.onTextureUpload(this.renderer, texture, glTexture))
+        if (texture.resource && texture.resource.upload(this.renderer, texture, glTexture))
         {
             // texture is uploaded, dont do anything!
         }
@@ -214,9 +214,9 @@ export default class TextureSystem extends WebGLSystem
         {
             return;
         }
-        if (texture.resource && texture.resource.onTextureStyle)
+        if (texture.resource)
         {
-            texture.resource.onTextureStyle(this.renderer, texture, glTexture);
+            texture.resource.style(this.renderer, texture, glTexture);
         }
         else
         {

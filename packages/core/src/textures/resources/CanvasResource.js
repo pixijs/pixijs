@@ -3,8 +3,8 @@ import BaseImageResource from './BaseImageResource';
 /**
  * Resource type for HTMLCanvasElement.
  * @class
- * @extends PIXI.BaseImageResource
- * @memberof PIXI
+ * @extends PIXI.resources.BaseImageResource
+ * @memberof PIXI.resources
  * @param {HTMLCanvasElement} source - Canvas element to use
  */
 export default class CanvasResource extends BaseImageResource
@@ -13,13 +13,15 @@ export default class CanvasResource extends BaseImageResource
     {
         super(source);
 
-        this._width = 0;
-        this._height = 0;
+        this._canvasWidth = 0;
+        this._canvasHeight = 0;
+
+        this.loaded = true;
     }
 
     update()
     {
-        if (this.baseTexture)
+        if (this.parent)
         {
             this._validate();
         }
@@ -27,23 +29,17 @@ export default class CanvasResource extends BaseImageResource
 
     _validate()
     {
-        const source = this.source;
-        const baseTexture = this.baseTexture;
+        const { source, parent } = this;
 
-        if (this._width !== source.width || this._height !== source.height)
+        if (this._canvasWidth !== source.width || this._canvasHeight !== source.height)
         {
-            this._width = source.width;
-            this._height = source.height;
-            baseTexture.setRealSize(source.width, source.height);
+            this._canvasWidth = source.width;
+            this._canvasHeight = source.height;
+            parent.setRealSize(source.width, source.height);
         }
         else
         {
-            baseTexture.update();
+            parent.update();
         }
-    }
-
-    static from(canvas)
-    {
-        return new CanvasResource(canvas);
     }
 }

@@ -1,5 +1,6 @@
 const { BaseTextureCache, TextureCache } = require('@pixi/utils');
-const { BaseTexture, Texture, ImageResource } = require('../');
+const { BaseTexture, Texture, resources } = require('../');
+const { ImageResource } = resources;
 
 const URL = 'foo.png';
 const NAME = 'foo';
@@ -117,7 +118,7 @@ describe('BaseTexture', function ()
     {
         cleanCache();
 
-        const imageResource = ImageResource.from(URL, true);
+        const imageResource = new ImageResource(URL, true, true, true);
 
         const baseTexture = new BaseTexture(imageResource);
 

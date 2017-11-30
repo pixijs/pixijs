@@ -5,34 +5,69 @@ import { settings } from '@pixi/settings';
 /**
  * Resource type for HTMLImageElement.
  * @class
- * @extends PIXI.BaseImageResource
- * @memberof PIXI
- * @param {HTMLImageElement} source - Image element to use
+ * @extends PIXI.resources.BaseImageResource
+ * @memberof PIXI.resources
  */
 export default class ImageResource extends BaseImageResource
 {
     /**
-     *
-     * @param source image source
-     * @param loadRightNow start loading process
-     * @param createBitmap whether its required to create a bitmap before upload
+     * @param {HTMLImageElement|string} source - image source or URL
+     * @param {boolean} [autoLoad=true] start loading process
+     * @param {boolean} [createBitmap=true] whether its required to create
+     *        a bitmap before upload defaults true
+     * @param {boolean} [crossorigin=true] - Load image using cross origin
      */
-    constructor(source, loadRightNow = true, createBitmap)
+    constructor(source, autoLoad = true, createBitmap = true, crossorigin = false)
     {
+        if (!(source instanceof HTMLImageElement))
+        {
+            const imageElement = new Image();
+
+            if (crossorigin === undefined && source.indexOf('data:') !== 0)
+            {
+                imageElement.crossOrigin = determineCrossOrigin(source);
+            }
+            else if (crossorigin)
+            {
+                imageElement.crossOrigin = 'anonymous';
+            }
+
+            imageElement.src = source;
+            source = imageElement;
+        }
+
         super(source);
 
+        /**
+         * URL of the image source
+         * @member {string}
+         */
         this.url = source.src;
 
-        this._load = null;
         this._process = null;
 
-        this.loaded = false;
+        /**
+         * If the image should be disposed after upload
+         * @member {boolean}
+         * @default false
+         */
         this.preserveBitmap = false;
-        this.createBitmap = (createBitmap !== undefined) ? createBitmap
-            : (settings.CREATE_IMAGE_BITMAP && !!window.createImageBitmap);
+
+        /**
+         * If capable, convert the image using createImageBitmap API
+         * @member {boolean}
+         * @default PIXI.settings.CREATE_IMAGE_BITMAP
+         */
+        this.createBitmap = createBitmap && settings.CREATE_IMAGE_BITMAP && !!window.createImageBitmap;
+
+        /**
+         * The ImageBitmap element created for HTMLImageElement
+         * @member {ImageBitmap}
+         * @default null
+         */
         this.bitmap = null;
 
-        if (loadRightNow)
+        if (autoLoad)
         {
             this.load();
         }
@@ -67,7 +102,7 @@ export default class ImageResource extends BaseImageResource
                 source.onload = null;
                 source.onerror = null;
 
-                if (this.baseTexture)
+                if (this.parent)
                 {
                     this._validate();
                 }
@@ -132,19 +167,26 @@ export default class ImageResource extends BaseImageResource
         return window.createImageBitmap(this.source).then((imageBitmap) =>
         {
             this.bitmap = imageBitmap;
-            this.baseTexture.update();
+            this.parent.update();
 
             return this;
         });
     }
 
-    onTextureUpload(renderer, baseTexture, glTexture)
+    /**
+     * Upload the image resource to GPU.
+     *
+     * @param {PIXI.Renderer} renderer - Renderer to upload to
+     * @param {PIXI.BaseTexture} baseTexture - BaseTexture for this resource
+     * @param {PIXI.glCore.Texture} glTexture - GLTexture to use
+     */
+    upload(renderer, baseTexture, glTexture)
     {
         if (this.createBitmap)
         {
             if (!this.bitmap)
             {
-                // yeah, i ignore the output.
+                // yeah, ignore the output
                 this.process();
                 if (!this.bitmap)
                 {
@@ -168,23 +210,5 @@ export default class ImageResource extends BaseImageResource
         }
 
         return true;
-    }
-
-    static from(url, crossorigin)
-    {
-        const image = new Image();
-
-        if (crossorigin === undefined && url.indexOf('data:') !== 0)
-        {
-            image.crossOrigin = determineCrossOrigin(url);
-        }
-        else if (crossorigin)
-        {
-            image.crossOrigin = 'anonymous';
-        }
-
-        image.src = url;
-
-        return new ImageResource(image);
     }
 }

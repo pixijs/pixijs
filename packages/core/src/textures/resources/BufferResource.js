@@ -1,16 +1,16 @@
-import TextureResource from './TextureResource';
+import Resource from './Resource';
 
 /**
  * Buffer resource with data of typed array.
  * @class
- * @extends PIXI.TextureResource
- * @memberof PIXI
+ * @extends PIXI.resources.Resource
+ * @memberof PIXI.resources
  */
-export default class BufferResource extends TextureResource
+export default class BufferResource extends Resource
 {
     constructor(data, width, height)
     {
-        super();
+        super(width, height);
 
         /**
          * Source array
@@ -19,25 +19,19 @@ export default class BufferResource extends TextureResource
          * @member {Float32Array|Uint8Array|Uint32Array}
          */
         this.data = data;
-        this._width = width || 0;
-        this._height = height || 0;
+
+        this.loaded = true;
     }
 
-    get width()
+    /**
+     * Upload the texture to the GPU.
+     * @param {PIXI.Renderer} renderer Upload to the renderer
+     * @param {PIXI.BaseTexture} baseTexture Reference to parent texture
+     */
+    upload(renderer, baseTexture)
     {
-        return this._width;
-    }
-
-    get height()
-    {
-        return this._height;
-    }
-
-    onTextureUpload(renderer, baseTexture/* , glTexture*/)
-    {
-        const gl = renderer.gl;
-
-        gl.texImage2D(baseTexture.target,
+        renderer.gl.texImage2D(
+            baseTexture.target,
             0,
             baseTexture.format,
             baseTexture.width,
@@ -45,7 +39,8 @@ export default class BufferResource extends TextureResource
             0,
             baseTexture.format,
             baseTexture.type,
-            this.data);
+            this.data
+        );
 
         return true;
     }

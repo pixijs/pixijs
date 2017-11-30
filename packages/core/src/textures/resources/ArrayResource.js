@@ -1,4 +1,4 @@
-import TextureResource from './TextureResource';
+import Resource from './Resource';
 import ImageResource from './ImageResource';
 import BaseTexture from '../BaseTexture';
 import { TARGETS } from '@pixi/constants';
@@ -7,18 +7,39 @@ import { TARGETS } from '@pixi/constants';
  * Resource for a CubeTexture which contains six resources.
  *
  * @class
- * @extends PIXI.TextureResource
- * @memberof PIXI
+ * @extends PIXI.resources.Resource
+ * @memberof PIXI.resources
+ * @param {number} width - Width of the resource
+ * @param {number} height - Height of the resource
+ * @param {number|Array<string>} size - Number of items in array or the collection
+ *        of image URLs to use
  */
-export default class ArrayResource extends TextureResource
+export default class ArrayResource extends Resource
 {
     constructor(width, height, size)
     {
-        super();
+        let urls;
 
-        this.baseTexture = null;
+        if (typeof size !== 'number')
+        {
+            urls = size;
+            size = urls.length;
+        }
 
+        super(width, height);
+
+        /**
+         * Collection of resources.
+         * @member {Array<PIXI.BaseTexture>}
+         * @readonly
+         */
         this.parts = [];
+
+        /**
+         * Dirty IDs for each part
+         * @member {Array<number>}
+         * @readonly
+         */
         this.partDirtyIds = [];
 
         for (let i = 0; i < size; i++)
@@ -29,41 +50,66 @@ export default class ArrayResource extends TextureResource
             this.partDirtyIds.push(-1);
         }
 
-        this.loaded = false;
-        this._load = null;
-        this._width = width;
-        this._height = height;
         this.size = size;
+
+        if (urls)
+        {
+            for (let i = 0; i < size; i++)
+            {
+                this.setResource(new ImageResource(urls[i]), i);
+            }
+        }
     }
 
-    get width()
+    /**
+     * Destroy this BaseImageResource
+     * @override
+     * @param {PIXI.BaseTexture} [fromTexture] Optional base texture
+     */
+    destroy(fromTarget)
     {
-        return this._width;
+        if (super.destroy(fromTarget))
+        {
+            const size = this.size;
+
+            for (let i = 0; i < size; i++)
+            {
+                this.parts[i].destroy(fromTarget);
+            }
+            this.parts = null;
+            this.partDirtyIds = null;
+        }
     }
 
-    get height()
-    {
-        return this._height;
-    }
-
+    /**
+     * Set a resource by ID
+     *
+     * @param {PIXI.resources.Resource} resource
+     * @param {number} index - Zero-based index of resource to set
+     */
     setResource(resource, index)
     {
         this.parts[index].setResource(resource);
     }
 
-    onTextureNew(baseTexture)
+    /**
+     * Set the parent base texture
+     * @member {PIXI.BaseTexture}
+     * @override
+     */
+    set parent(parent)
     {
-        baseTexture.target = TARGETS.TEXTURE_2D_ARRAY;
-        super.onTextureNew(baseTexture);
+        parent.target = TARGETS.TEXTURE_2D_ARRAY;
+        super.parent = parent;
     }
 
     _validate()
     {
-        const baseTexture = this.baseTexture;
+        const { parent } = this;
 
-        baseTexture.setRealSize(this.width, this.height);
+        parent.setRealSize(this.width, this.height);
 
-        const update = baseTexture.update.bind(baseTexture);
+        const update = parent.update.bind(parent);
         const size = this.size;
 
         for (let i = 0; i < size; i++)
@@ -90,7 +136,7 @@ export default class ArrayResource extends TextureResource
             this.loaded = true;
             this._width = resources[0].width;
             this._height = resources[0].height;
-            if (this.baseTexture)
+            if (this.parent)
             {
                 this._validate();
             }
@@ -99,15 +145,21 @@ export default class ArrayResource extends TextureResource
         return this._load;
     }
 
-    onTextureUpload(renderer, texture, glTexture)
+    /**
+     * Upload the resources to the GPU.
+     * @param {PIXI.Renderer} renderer
+     * @param {PIXI.BaseTexture} texture
+     * @param {PIXI.glCore.Texture} glTexture
+     */
+    upload(renderer, texture, glTexture)
     {
-        const dirty = this.partDirtyIds;
-        const size = this.size;
-        const gl = renderer.gl;
+        const { size, partDirtyIds, parts } = this;
+        const { gl } = renderer;
 
         if (glTexture.dirtyId < 0)
         {
-            gl.texImage3D(gl.TEXTURE_2D_ARRAY,
+            gl.texImage3D(
+                gl.TEXTURE_2D_ARRAY,
                 0,
                 texture.format,
                 this._width,
@@ -116,16 +168,17 @@ export default class ArrayResource extends TextureResource
                 0,
                 texture.format,
                 texture.type,
-                null);
+                null
+            );
         }
 
         for (let i = 0; i < size; i++)
         {
-            const texturePart = this.parts[i];
+            const texturePart = parts[i];
 
-            if (dirty[i] < texturePart.dirtyId)
+            if (partDirtyIds[i] < texturePart.dirtyId)
             {
-                dirty[i] = texturePart.dirtyId;
+                partDirtyIds[i] = texturePart.dirtyId;
                 if (texturePart.valid)
                 {
                     gl.texSubImage3D(gl.TEXTURE_2D_ARRAY,
@@ -144,18 +197,5 @@ export default class ArrayResource extends TextureResource
         }
 
         return true;
-    }
-
-    static from(width, height, ...urls)
-    {
-        const size = urls.length;
-        const cubeResource = new ArrayResource(width, height, size);
-
-        for (let i = 0; i < size; i++)
-        {
-            cubeResource.setResource(ImageResource.from(urls[i % urls.length]), i);
-        }
-
-        return cubeResource;
     }
 }
