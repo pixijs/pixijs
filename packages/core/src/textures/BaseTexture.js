@@ -204,9 +204,9 @@ export default class BaseTexture extends EventEmitter
      * Changes style of BaseTexture
      *
      * @param {number} scaleMode pixi scalemode
+     * @param {boolean} mipmap enable mipmaps
      * @param {number} format webgl pixel format
      * @param {number} type webgl pixel type
-     * @param {boolean} mipmap enable mipmaps
      * @returns {BaseTexture} this
      */
     setStyle(scaleMode,
