@@ -216,6 +216,18 @@ export default class SVGResource extends BaseImageResource
 
         return size;
     }
+
+    /**
+     * Used to auto-detect the type of resource.
+     *
+     * @static
+     * @param {*} source - The source object
+     * @param {string} extension - The extension of source, if set
+     */
+    static test(source, extension)
+    {
+        return SVGResource.TYPES.indexOf(extension) > -1;
+    }
 }
 
 /**

@@ -3,10 +3,7 @@ import { FORMATS, TARGETS, TYPES, SCALE_MODES } from '@pixi/constants';
 
 import Resource from './resources/Resource';
 import BufferResource from './resources/BufferResource';
-import ImageResource from './resources/ImageResource';
-import VideoResource from './resources/VideoResource';
-import SVGResource from './resources/SVGResource';
-import CanvasResource from './resources/CanvasResource';
+import { autoDetectResource } from './resources/autoDetectResource';
 
 import { settings } from '@pixi/settings';
 import EventEmitter from 'eventemitter3';
@@ -42,7 +39,7 @@ export default class BaseTexture extends EventEmitter
         // Convert the resource to a Resource object
         if (resource && !(resource instanceof Resource))
         {
-            resource = BaseTexture.autoDetectResource(resource);
+            resource = autoDetectResource(resource);
         }
 
         /**
@@ -683,49 +680,5 @@ export default class BaseTexture extends EventEmitter
         }
 
         return null;
-    }
-
-    /**
-     * Create a resource element from a single source element. This
-     * auto-detects which type of resource to create.
-     * @static
-     * @param {string|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|PIXI.resources.Resource} source Resource source
-     * @return {PIXI.resources.Resource} resource
-     */
-    static autoDetectResource(source)
-    {
-        if (source instanceof HTMLImageElement)
-        {
-            return new ImageResource(source);
-        }
-        else if (source instanceof HTMLCanvasElement)
-        {
-            return new CanvasResource(source);
-        }
-        else if (source instanceof HTMLVideoElement)
-        {
-            return new VideoResource(source);
-        }
-        else if (typeof source === 'string')
-        {
-            // search for file extension: period, 3-4 chars, then ?, # or EOL
-            const result = (/\.(\w{3,4})(?:$|\?|#)/i).exec(source);
-
-            if (result)
-            {
-                const extension = result[1].toLowerCase();
-
-                if (VideoResource.TYPES.indexOf(extension) > -1)
-                {
-                    return new VideoResource(source);
-                }
-                else if (SVGResource.TYPES.indexOf(extension) > -1)
-                {
-                    return new SVGResource(source);
-                }
-            }
-        }
-
-        return new ImageResource(source);
     }
 }

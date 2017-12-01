@@ -259,6 +259,19 @@ export default class VideoResource extends BaseImageResource
             }
         }
     }
+
+    /**
+     * Used to auto-detect the type of resource.
+     *
+     * @static
+     * @param {*} source - The source object
+     * @param {string} extension - The extension of source, if set
+     * @return {boolean} `true` if video source
+     */
+    static test(source, extension)
+    {
+        return (source instanceof HTMLVideoElement) || VideoResource.TYPES.indexOf(extension) > -1;
+    }
 }
 
 /**

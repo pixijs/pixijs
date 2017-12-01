@@ -2,6 +2,7 @@
  * Collection of resource types
  * @namespace PIXI.resources
  */
+export * from './autoDetectResource';
 export { default as Resource } from './Resource';
 export { default as ArrayResource } from './ArrayResource';
 export { default as BaseImageResource } from './BaseImageResource';

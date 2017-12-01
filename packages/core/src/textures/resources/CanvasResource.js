@@ -15,4 +15,16 @@ export default class CanvasResource extends BaseImageResource
 
         this._loaded = true;
     }
+
+    /**
+     * Used to auto-detect the type of resource.
+     *
+     * @static
+     * @param {*} source - The source object
+     * @return {boolean} `true` if <canvas>
+     */
+    static test(source)
+    {
+        return (source instanceof HTMLCanvasElement);
+    }
 }
