@@ -14,7 +14,7 @@ export default class BaseImageResource extends TextureResource
         this.source = source;
     }
 
-    onTextureUpload(renderer, baseTexture/* , glTexture*/)
+    upload(renderer, baseTexture/* , glTexture*/)
     {
         const gl = renderer.gl;
 

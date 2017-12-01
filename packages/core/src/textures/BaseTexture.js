@@ -100,10 +100,10 @@ export default class BaseTexture extends EventEmitter
         this._glTextures = {};
 
         /**
-         * Tag is just a string that is used by some of texture resources.
-         * @type {null}
+         * Params are just an object that is used by some of texture resources.
+         * @type {object}
          */
-        this.tag = null;
+        this.params = null;
 
         this.dirtyId = 0;
 
@@ -310,17 +310,17 @@ export default class BaseTexture extends EventEmitter
 
     /**
      * Performs secondary initialization according to assigned tag.
-     * Tag is just a string that i used by some of texture resources.
+     * Params are object that is used by some of texture resources.
      *
-     * @param {string} tag
+     * @param {object} params
      * @returns {BaseTexture}
      */
-    setTag(tag)
+    setParams(params)
     {
-        this.tag = tag;
-        if (this.resource && this.resource.onTextureTag)
+        this.params = params;
+        if (this.resource && this.resource.onTextureParams)
         {
-            this.resource.onTextureTag(this);
+            this.resource.onTextureParams(this);
         }
 
         return this;
@@ -345,9 +345,9 @@ export default class BaseTexture extends EventEmitter
         }
 
         this.resource = resource;
-        if (this.tag && this.resource.onTextureTag)
+        if (this.tag && this.resource.onTextureParams)
         {
-            this.resource.onTextureTag(this);
+            this.resource.onTextureParams(this);
         }
 
         return this;

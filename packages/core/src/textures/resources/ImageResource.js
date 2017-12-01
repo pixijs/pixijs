@@ -138,7 +138,7 @@ export default class ImageResource extends BaseImageResource
         });
     }
 
-    onTextureUpload(renderer, baseTexture, glTexture)
+    upload(renderer, baseTexture, glTexture)
     {
         if (this.createBitmap)
         {

@@ -99,7 +99,7 @@ export default class ArrayResource extends TextureResource
         return this._load;
     }
 
-    onTextureUpload(renderer, texture, glTexture)
+    upload(renderer, texture, glTexture)
     {
         const dirty = this.partDirtyIds;
         const size = this.size;

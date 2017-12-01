@@ -98,7 +98,7 @@ export default class CubeResource extends TextureResource
         return this._load;
     }
 
-    onTextureUpload(renderer, baseTexture, glTexture)
+    upload(renderer, baseTexture, glTexture)
     {
         const dirty = this.sideDirtyIds;
 
@@ -111,7 +111,7 @@ export default class CubeResource extends TextureResource
                 dirty[i] = texturePart.dirtyId;
                 if (texturePart.valid)
                 {
-                    texturePart.resource.onTextureUpload(renderer, texturePart, glTexture);
+                    texturePart.resource.upload(renderer, texturePart, glTexture);
                 }
                 else
                 {

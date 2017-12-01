@@ -13,7 +13,7 @@ import VideoResource from './VideoResource';
  */
 export default function createResource(source)
 {
-    if (source.onTextureUpload)
+    if (source.upload)
     {
         return source;
     }

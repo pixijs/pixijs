@@ -33,7 +33,7 @@ export default class BufferResource extends TextureResource
         return this._height;
     }
 
-    onTextureUpload(renderer, baseTexture/* , glTexture*/)
+    upload(renderer, baseTexture/* , glTexture*/)
     {
         const gl = renderer.gl;
 
