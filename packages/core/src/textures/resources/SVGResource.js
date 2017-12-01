@@ -7,13 +7,19 @@ import BaseImageResource from './BaseImageResource';
  * @extends PIXI.resources.TextureResource
  * @memberof PIXI.resources
  * @param {SVGElement} svgSource - Source SVG element.
- * @param {number} [scale=1] Scale to apply to SVG.
- * @param {boolean} [autoLoad=true] Start loading right away.
+ * @param {object} [options] - Options to use
+ * @param {number} [options.scale=1] Scale to apply to SVG.
+ * @param {boolean} [options.autoLoad=true] Start loading right away.
  */
 export default class SVGResource extends BaseImageResource
 {
-    constructor(svg, scale = 1, autoLoad = true)
+    constructor(source, options)
     {
+        options = Object.assign({
+            scale: 1,
+            autoLoad: true,
+        }, options);
+
         super(document.createElement('canvas'));
 
         /**
@@ -21,14 +27,14 @@ export default class SVGResource extends BaseImageResource
          * @readonly
          * @member {string|SVGElement}
          */
-        this.svg = svg;
+        this.svg = source;
 
         /**
          * The source scale to apply to render
          * @readonly
          * @member {number}
          */
-        this.scale = scale;
+        this.scale = options.scale;
 
         /**
          * Call when completedly loaded
@@ -37,7 +43,7 @@ export default class SVGResource extends BaseImageResource
          */
         this._resolve = null;
 
-        if (autoLoad)
+        if (options.autoLoad)
         {
             this.load();
         }

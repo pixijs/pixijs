@@ -7,12 +7,17 @@ import { Ticker } from '@pixi/ticker';
  * @extends PIXI.resources.BaseImageResource
  * @memberof PIXI.resources
  * @param {HTMLVideoElement|object|string|Array<string|object>} source - Video element to use.
- * @param {boolean} [autoLoad=true] - Start loading the video immediately
+ * @param {object} [options] - Options to use
+ * @param {boolean} [options.autoLoad=true] - Start loading the video immediately
  */
 export default class VideoResource extends BaseImageResource
 {
-    constructor(source, autoLoad = true)
+    constructor(source, options)
     {
+        options = Object.assign({
+            autoLoad: true,
+        }, options);
+
         if (!(source instanceof HTMLVideoElement))
         {
             const videoElement = document.createElement('video');
@@ -30,10 +35,12 @@ export default class VideoResource extends BaseImageResource
             {
                 const sourceElement = document.createElement('source');
 
-                const { src, mime } = source[i];
+                let { src, mime } = source[i];
 
-                sourceElement.src = src || source[i];
-                sourceElement.type = mime || `video/${src.substr(src.lastIndexOf('.') + 1)}`;
+                src = src || source[i];
+                mime = mime || `video/${src.substr(src.lastIndexOf('.') + 1)}`;
+                sourceElement.src = src;
+                sourceElement.type = mime;
 
                 videoElement.appendChild(sourceElement);
             }
@@ -59,7 +66,7 @@ export default class VideoResource extends BaseImageResource
         // Bind for listeners
         this._onCanPlay = this._onCanPlay.bind(this);
 
-        if (autoLoad)
+        if (options.autoLoad)
         {
             this.load();
         }

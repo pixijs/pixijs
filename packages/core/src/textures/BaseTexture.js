@@ -36,10 +36,26 @@ export default class BaseTexture extends EventEmitter
     {
         super();
 
+        // Set all the properties above with the default
+        // or the optional user override
+        options = Object.assign({
+            mipmap: settings.MIPMAP_TEXTURES,
+            wrapMode: settings.WRAP_MODE,
+            resolution: settings.RESOLUTION,
+            scaleMode: settings.SCALE_MODE,
+            format: FORMATS.RGBA,
+            type: TYPES.UNSIGNED_BYTE,
+            target: TARGETS.TEXTURE_2D,
+            premultiplyAlpha: true,
+            height: 0,
+            width: 0,
+            // params: null,
+        }, options);
+
         // Convert the resource to a Resource object
         if (resource && !(resource instanceof Resource))
         {
-            resource = autoDetectResource(resource);
+            resource = autoDetectResource(resource, options);
         }
 
         /**
@@ -125,22 +141,6 @@ export default class BaseTexture extends EventEmitter
          * @default true
          */
         this.premultiplyAlpha = null;
-
-        // Set all the properties above with the default
-        // or the optional user override
-        Object.assign(this, {
-            mipmap: settings.MIPMAP_TEXTURES,
-            wrapMode: settings.WRAP_MODE,
-            resolution: settings.RESOLUTION,
-            scaleMode: settings.SCALE_MODE,
-            format: FORMATS.RGBA,
-            type: TYPES.UNSIGNED_BYTE,
-            target: TARGETS.TEXTURE_2D,
-            premultiplyAlpha: true,
-            height: 0,
-            width: 0,
-            // params: null,
-        }, options);
 
         /**
          * Global unique identifier for this BaseTexture
@@ -232,6 +232,9 @@ export default class BaseTexture extends EventEmitter
          * @readonly
          */
         this.resource = null;
+
+        // Set all the properties
+        Object.assign(this, options);
 
         // Set the resource
         this.setResource(resource);

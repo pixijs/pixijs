@@ -13,7 +13,7 @@ import { TARGETS } from '@pixi/constants';
  */
 export default class CubeResource extends Resource
 {
-    constructor(source)
+    constructor(source, options)
     {
         super();
 
@@ -33,7 +33,7 @@ export default class CubeResource extends Resource
         {
             for (let i = 0; i < CubeResource.SIDES; i++)
             {
-                this.addResourceAt(new ImageResource(source[i]), i);
+                this.addResourceAt(new ImageResource(source[i], options), i);
             }
         }
     }

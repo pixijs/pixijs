@@ -9,24 +9,26 @@ import { TARGETS } from '@pixi/constants';
  * @class
  * @extends PIXI.resources.Resource
  * @memberof PIXI.resources
- * @param {number} width - Width of the resource
- * @param {number} height - Height of the resource
- * @param {number|Array<string>} length - Number of items in array or the collection
+ * @param {number|Array<string>} source - Number of items in array or the collection
  *        of image URLs to use
+ * @param {object} options - Options
+ * @param {number} options.width - Width of the resource
+ * @param {number} options.height - Height of the resource
  */
 export default class ArrayResource extends Resource
 {
-    constructor(width, height, length)
+    constructor(source, options)
     {
         let urls;
+        let length = source;
 
-        if (Array.isArray(length))
+        if (Array.isArray(source))
         {
-            urls = length;
-            length = urls.length;
+            urls = source;
+            length = source.length;
         }
 
-        super(width, height);
+        super(options);
 
         /**
          * Collection of resources.
@@ -62,7 +64,7 @@ export default class ArrayResource extends Resource
         {
             for (let i = 0; i < length; i++)
             {
-                this.addResourceAt(new ImageResource(urls[i]), i);
+                this.addResourceAt(new ImageResource(urls[i], options), i);
             }
         }
     }

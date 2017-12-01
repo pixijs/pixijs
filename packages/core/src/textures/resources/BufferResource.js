@@ -8,9 +8,15 @@ import Resource from './Resource';
  */
 export default class BufferResource extends Resource
 {
-    constructor(data, width, height)
+    /**
+     * @param {Float32Array|Uint8Array|Uint32Array} source - Source buffer
+     * @param {object} options - Options
+     * @param {number} options.width - Width of the texture
+     * @param {number} options.height - Height of the texture
+     */
+    constructor(source, options)
     {
-        super(width, height);
+        super(options);
 
         /**
          * Source array
@@ -18,7 +24,7 @@ export default class BufferResource extends Resource
          *
          * @member {Float32Array|Uint8Array|Uint32Array}
          */
-        this.data = data;
+        this.data = source;
 
         // Already loaded!
         this._loaded = true;
@@ -53,5 +59,24 @@ export default class BufferResource extends Resource
     dispose()
     {
         this.data = null;
+    }
+
+    /**
+     * Used to auto-detect the type of resource.
+     *
+     * @static
+     * @param {*} source - The source object
+     * @return {boolean} `true` if <canvas>
+     */
+    static test(source)
+    {
+        // Ignore environments where we fallback to Array
+        // because we cannot properly test
+        if (Float32Array === Array)
+        {
+            return false;
+        }
+
+        return source instanceof Float32Array || source instanceof Uint8Array;
     }
 }

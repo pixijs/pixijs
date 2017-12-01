@@ -13,7 +13,10 @@ export default class BaseImageResource extends Resource
      */
     constructor(source)
     {
-        super(source.width, source.height);
+        super({
+            width: source.width,
+            height: source.height,
+        });
 
         /**
          * The source element

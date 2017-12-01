@@ -30,11 +30,17 @@ export const INSTALLED = [
  * auto-detects which type of resource to create.
  * @static
  * @function PIXI.resources.autoDetectResource
- * @param {string|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|PIXI.resources.Resource} source Resource source
+ * @param {string|*} source - Resource source
+ * @param {object} options - Pass-through options to use for Resource
  * @return {PIXI.resources.Resource} resource
  */
-export function autoDetectResource(source)
+export function autoDetectResource(source, options)
 {
+    if (!source)
+    {
+        return null;
+    }
+
     let extension = '';
 
     if (typeof source === 'string')
@@ -54,11 +60,11 @@ export function autoDetectResource(source)
 
         if (ResourcePlugin.test && ResourcePlugin.test(source, extension))
         {
-            return new ResourcePlugin(source);
+            return new ResourcePlugin(source, options);
         }
     }
 
     // When in doubt: probably an image
     // might be appropriate to throw an error or return null
-    return new ImageResource(source);
+    return new ImageResource(source, options);
 }
