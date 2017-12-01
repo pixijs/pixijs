@@ -9,31 +9,31 @@ import { TARGETS } from '@pixi/constants';
  * @class
  * @extends PIXI.resources.Resource
  * @memberof PIXI.resources
- * @param {Array<string>} [urls] Collection of URLs to load as images.
+ * @param {Array<string>} [source] Collection of URLs to load as images.
  */
 export default class CubeResource extends Resource
 {
-    constructor(urls = null)
+    constructor(source)
     {
         super();
 
         this.sides = [];
         this.sideDirtyIds = [];
 
-        for (let i = 0; i < 6; i++)
+        for (let i = 0; i < CubeResource.SIDES; i++)
         {
-            const partTexture = new BaseTexture();
+            const baseTexture = new BaseTexture();
 
-            partTexture.target = TARGETS.TEXTURE_CUBE_MAP + i;
-            this.sides.push(partTexture);
+            baseTexture.target = TARGETS.TEXTURE_CUBE_MAP + i;
+            this.sides.push(baseTexture);
             this.sideDirtyIds.push(-1);
         }
 
-        if (urls)
+        if (source)
         {
-            for (let i = 0; i < 6; i++)
+            for (let i = 0; i < CubeResource.SIDES; i++)
             {
-                this.setResource(new ImageResource(urls[i]), i);
+                this.addResourceAt(new ImageResource(source[i]), i);
             }
         }
     }
@@ -41,39 +41,63 @@ export default class CubeResource extends Resource
     /**
      * Set a resource by index
      *
-     * @param {PIXI.resources.IResource} resource - Resource to upload
+     * @param {PIXI.resources.Resource} resource - Resource to upload
      * @param {number} index - Index to use, zero-based
      */
-    setResource(resource, index)
+    addResourceAt(resource, index)
     {
         this.sides[index].setResource(resource);
     }
 
     /**
-     * Set the parent base texture
-     * @member {PIXI.BaseTexture}
+     * Add binding
      * @override
+     * @param {PIXI.BaseTexture} baseTexture - parent base texture
      */
-    set parent(parent)
+    bind(baseTexture)
     {
-        parent.target = TARGETS.TEXTURE_CUBE_MAP;
-        super.parent = parent;
-    }
+        super.bind(baseTexture);
+        baseTexture.target = TARGETS.TEXTURE_CUBE_MAP;
 
-    _validate()
-    {
-        const { parent } = this;
-
-        parent.setRealSize(this.width, this.height);
-
-        const update = parent.update.bind(parent);
-
-        for (let i = 0; i < 6; i++)
+        for (let i = 0; i < CubeResource.SIDES; i++)
         {
-            this.sides[i].on('update', update);
+            this.sides[i].on('update', baseTexture.update, baseTexture);
         }
     }
 
+    /**
+     * Remove binding
+     * @override
+     * @param {PIXI.BaseTexture} baseTexture - parent base texture
+     */
+    unbind(baseTexture)
+    {
+        super.unbind(baseTexture);
+
+        for (let i = 0; i < CubeResource.SIDES; i++)
+        {
+            this.sides[i].off('update', baseTexture.update, baseTexture);
+        }
+    }
+
+    /**
+     * Destroy this
+     * @override
+     * @return {boolean} if destroyed
+     */
+    dispose()
+    {
+        for (let i = 0; i < CubeResource.SIDES; i++)
+        {
+            this.sides[i].destroy();
+        }
+        this.sides = null;
+        this.sideDirtyIds = null;
+    }
+
+    /**
+     * Start loading the resources
+     */
     load()
     {
         if (this._load)
@@ -90,31 +114,29 @@ export default class CubeResource extends Resource
         )).then(() =>
         {
             this.loaded = true;
-            this._width = resources[0].width;
-            this._height = resources[0].height;
-            if (this.parent)
-            {
-                this._validate();
-            }
+            this.resize(resources[0].width, resources[0].height);
         });
 
         return this._load;
     }
 
+    /**
+     * Uploade the resource
+     */
     upload(renderer, baseTexture, glTexture)
     {
         const dirty = this.sideDirtyIds;
 
-        for (let i = 0; i < 6; i++)
+        for (let i = 0; i < CubeResource.SIDES; i++)
         {
-            const texturePart = this.sides[i];
+            const side = this.sides[i];
 
-            if (dirty[i] < texturePart.dirtyId)
+            if (dirty[i] < side.dirtyId)
             {
-                dirty[i] = texturePart.dirtyId;
-                if (texturePart.valid)
+                dirty[i] = side.dirtyId;
+                if (side.valid)
                 {
-                    texturePart.resource.upload(renderer, texturePart, glTexture);
+                    side.resource.upload(renderer, side, glTexture);
                 }
                 else
                 {
@@ -126,3 +148,12 @@ export default class CubeResource extends Resource
         return true;
     }
 }
+
+/**
+ * Number of texture sides to store for CubeResources
+ * @name PIXI.resources.CubeResource.SIDES
+ * @static
+ * @member {number}
+ * @default 6
+ */
+CubeResource.SIDES = 6;

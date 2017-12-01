@@ -13,7 +13,7 @@ export default class BaseImageResource extends Resource
      */
     constructor(source)
     {
-        super();
+        super(source.width, source.height);
 
         /**
          * The source element
@@ -46,34 +46,10 @@ export default class BaseImageResource extends Resource
      * Destroy this BaseImageResource
      * @override
      * @param {PIXI.BaseTexture} [fromTexture] Optional base texture
+     * @return {boolean} Destroy was successful
      */
-    destroy(fromTexture)
+    dispose()
     {
-        if (super.destroy(fromTexture))
-        {
-            this.source = null;
-        }
-    }
-
-    /**
-     * Override the width getter
-     * @member {number}
-     * @override
-     * @readonly
-     */
-    get width()
-    {
-        return this.source.width;
-    }
-
-    /**
-     * Override the height getter
-     * @member {number}
-     * @override
-     * @readonly
-     */
-    get height()
-    {
-        return this.source.height;
+        this.source = null;
     }
 }

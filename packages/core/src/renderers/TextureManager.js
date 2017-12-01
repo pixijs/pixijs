@@ -73,7 +73,7 @@ export default class TextureManager
 
         const isRenderTexture = !!texture._glRenderTargets;
 
-        if (!texture.hasLoaded)
+        if (!texture.valid)
         {
             return null;
         }
@@ -193,7 +193,7 @@ export default class TextureManager
     {
         texture = texture.baseTexture || texture;
 
-        if (!texture.hasLoaded)
+        if (!texture.valid)
         {
             return;
         }

@@ -63,7 +63,12 @@ export default class RenderTexture extends Texture
             /* eslint-enable prefer-rest-params, no-console */
 
             frame = null;
-            baseRenderTexture = new BaseRenderTexture(width, height, scaleMode, resolution);
+            baseRenderTexture = new BaseRenderTexture({
+                width,
+                height,
+                scaleMode,
+                resolution,
+            });
         }
 
         /**
@@ -71,10 +76,7 @@ export default class RenderTexture extends Texture
          *
          * @member {BaseTexture}
          */
-        super(
-            baseRenderTexture,
-            frame
-        );
+        super(baseRenderTexture, frame);
 
         this.legacyRenderer = _legacyRenderer;
 
@@ -117,14 +119,28 @@ export default class RenderTexture extends Texture
     /**
      * A short hand way of creating a render texture.
      *
-     * @param {number} [width=100] - The width of the render texture
-     * @param {number} [height=100] - The height of the render texture
-     * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES} for possible values
-     * @param {number} [resolution=1] - The resolution / device pixel ratio of the texture being generated
+     * @param {object} [options] - Options
+     * @param {number} [options.width=100] - The width of the render texture
+     * @param {number} [options.height=100] - The height of the render texture
+     * @param {number} [options.scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES} for possible values
+     * @param {number} [options.resolution=1] - The resolution / device pixel ratio of the texture being generated
      * @return {PIXI.RenderTexture} The new render texture
      */
-    static create(width, height, scaleMode, resolution)
+    static create(options)
     {
-        return new RenderTexture(new BaseRenderTexture(width, height, scaleMode, resolution));
+        // fallback, old-style: create(width, height, scaleMode, resolution)
+        if (typeof options === 'number')
+        {
+            /* eslint-disable prefer-rest-params */
+            options = {
+                width: options,
+                height: arguments[1],
+                scaleMode: arguments[2],
+                resolution: arguments[3],
+            };
+            /* eslint-enable prefer-rest-params */
+        }
+
+        return new RenderTexture(new BaseRenderTexture(options));
     }
 }

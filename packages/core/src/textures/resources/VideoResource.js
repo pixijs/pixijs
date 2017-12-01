@@ -128,13 +128,6 @@ export default class VideoResource extends BaseImageResource
         return this.source.videoHeight || 0;
     }
 
-    update()
-    {
-        // TODO - slow down and base on the videos framerate
-        // changes size and updates texture at the same time
-        this.parent.update();
-    }
-
     /**
      * Returns true if the underlying source is playing.
      *
@@ -200,13 +193,12 @@ export default class VideoResource extends BaseImageResource
      */
     _onCanPlay()
     {
-        this.source.removeEventListener('canplay', this._onCanPlay);
-        this.source.removeEventListener('canplaythrough', this._onCanPlay);
+        const { source } = this;
 
-        if (this.parent)
-        {
-            this.parent.setSize(this.source.videoWidth, this.source.videoHeight);
-        }
+        source.removeEventListener('canplay', this._onCanPlay);
+        source.removeEventListener('canplaythrough', this._onCanPlay);
+
+        this.resize(source.videoWidth, source.videoHeight);
 
         // prevent multiple loaded dispatches..
         if (!this.loaded)
@@ -224,22 +216,19 @@ export default class VideoResource extends BaseImageResource
         }
         else if (this.autoPlay)
         {
-            this.source.play();
+            source.play();
         }
     }
 
     /**
      * Destroys this texture
-     *
+     * @override
      */
-    destroy(fromTexture)
+    dispose()
     {
-        if (super.destroy(fromTexture))
+        if (this._isAutoUpdating)
         {
-            if (this._isAutoUpdating)
-            {
-                Ticker.shared.remove(this.update, this);
-            }
+            Ticker.shared.remove(this.update, this);
         }
     }
 

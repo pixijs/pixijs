@@ -41,7 +41,7 @@ describe('BaseTexture', function ()
         cleanCache();
 
         const canvas = document.createElement('canvas');
-        const baseTexture = BaseTexture.fromCanvas(canvas);
+        const baseTexture = BaseTexture.from(canvas);
         const _pixiId = canvas._pixiId;
 
         expect(baseTexture.textureCacheIds.indexOf(_pixiId)).to.equal(0);
@@ -112,6 +112,19 @@ describe('BaseTexture', function ()
 
         baseTexture.destroy();
         baseTexture.destroy();
+    });
+
+    it('should update width and height', function ()
+    {
+        const canvas = document.createElement('canvas');
+
+        canvas.width = 100;
+        canvas.height = 100;
+
+        const baseTexture = BaseTexture.from(canvas);
+
+        expect(baseTexture.width).to.equal(canvas.width);
+        expect(baseTexture.height).to.equal(canvas.height);
     });
 
     it('should set source.crossOrigin to anonymous if explicitly set', function ()

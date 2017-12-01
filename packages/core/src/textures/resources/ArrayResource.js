@@ -11,19 +11,19 @@ import { TARGETS } from '@pixi/constants';
  * @memberof PIXI.resources
  * @param {number} width - Width of the resource
  * @param {number} height - Height of the resource
- * @param {number|Array<string>} size - Number of items in array or the collection
+ * @param {number|Array<string>} length - Number of items in array or the collection
  *        of image URLs to use
  */
 export default class ArrayResource extends Resource
 {
-    constructor(width, height, size)
+    constructor(width, height, length)
     {
         let urls;
 
-        if (typeof size !== 'number')
+        if (Array.isArray(length))
         {
-            urls = size;
-            size = urls.length;
+            urls = length;
+            length = urls.length;
         }
 
         super(width, height);
@@ -33,30 +33,36 @@ export default class ArrayResource extends Resource
          * @member {Array<PIXI.BaseTexture>}
          * @readonly
          */
-        this.parts = [];
+        this.items = [];
 
         /**
          * Dirty IDs for each part
          * @member {Array<number>}
          * @readonly
          */
-        this.partDirtyIds = [];
+        this.itemDirtyIds = [];
 
-        for (let i = 0; i < size; i++)
+        for (let i = 0; i < length; i++)
         {
             const partTexture = new BaseTexture();
 
-            this.parts.push(partTexture);
-            this.partDirtyIds.push(-1);
+            this.items.push(partTexture);
+            this.itemDirtyIds.push(-1);
         }
 
-        this.size = size;
+        /**
+         * Number of elements in array
+         *
+         * @member {number}
+         * @readonly
+         */
+        this.length = length;
 
         if (urls)
         {
-            for (let i = 0; i < size; i++)
+            for (let i = 0; i < length; i++)
             {
-                this.setResource(new ImageResource(urls[i]), i);
+                this.addResourceAt(new ImageResource(urls[i]), i);
             }
         }
     }
@@ -64,21 +70,15 @@ export default class ArrayResource extends Resource
     /**
      * Destroy this BaseImageResource
      * @override
-     * @param {PIXI.BaseTexture} [fromTexture] Optional base texture
      */
-    destroy(fromTarget)
+    dispose()
     {
-        if (super.destroy(fromTarget))
+        for (let i = 0, len = this.length; i < len; i++)
         {
-            const size = this.size;
-
-            for (let i = 0; i < size; i++)
-            {
-                this.parts[i].destroy(fromTarget);
-            }
-            this.parts = null;
-            this.partDirtyIds = null;
+            this.items[i].destroy();
         }
+        this.items = null;
+        this.itemDirtyIds = null;
     }
 
     /**
@@ -87,9 +87,9 @@ export default class ArrayResource extends Resource
      * @param {PIXI.resources.Resource} resource
      * @param {number} index - Zero-based index of resource to set
      */
-    setResource(resource, index)
+    addResourceAt(resource, index)
     {
-        this.parts[index].setResource(resource);
+        this.items[index].setResource(resource);
     }
 
     /**
@@ -97,24 +97,25 @@ export default class ArrayResource extends Resource
      * @member {PIXI.BaseTexture}
      * @override
      */
-    set parent(parent)
+    bind(baseTexture)
     {
-        parent.target = TARGETS.TEXTURE_2D_ARRAY;
-        super.parent = parent;
+        super.bind(baseTexture);
+
+        baseTexture.target = TARGETS.TEXTURE_2D_ARRAY;
+
+        for (let i = 0; i < this.length; i++)
+        {
+            this.items[i].on('update', baseTexture.update, baseTexture);
+        }
     }
 
-    _validate()
+    unbind(baseTexture)
     {
-        const { parent } = this;
+        super.unbind(baseTexture);
 
-        parent.setRealSize(this.width, this.height);
-
-        const update = parent.update.bind(parent);
-        const size = this.size;
-
-        for (let i = 0; i < size; i++)
+        for (let i = 0; i < this.length; i++)
         {
-            this.parts[i].on('update', update);
+            this.items[i].off('update', baseTexture.update, baseTexture);
         }
     }
 
@@ -125,7 +126,7 @@ export default class ArrayResource extends Resource
             return this._load;
         }
 
-        const resources = this.parts.map((it) => it.resource);
+        const resources = this.items.map((it) => it.resource);
 
         // TODO: also implement load part-by-part strategy
 
@@ -134,12 +135,7 @@ export default class ArrayResource extends Resource
         )).then(() =>
         {
             this.loaded = true;
-            this._width = resources[0].width;
-            this._height = resources[0].height;
-            if (this.parent)
-            {
-                this._validate();
-            }
+            this.resize(resources[0].width, resources[0].height);
         });
 
         return this._load;
@@ -153,7 +149,7 @@ export default class ArrayResource extends Resource
      */
     upload(renderer, texture, glTexture)
     {
-        const { size, partDirtyIds, parts } = this;
+        const { length, itemDirtyIds, items } = this;
         const { gl } = renderer;
 
         if (glTexture.dirtyId < 0)
@@ -164,7 +160,7 @@ export default class ArrayResource extends Resource
                 texture.format,
                 this._width,
                 this._height,
-                size,
+                length,
                 0,
                 texture.format,
                 texture.type,
@@ -172,13 +168,13 @@ export default class ArrayResource extends Resource
             );
         }
 
-        for (let i = 0; i < size; i++)
+        for (let i = 0; i < length; i++)
         {
-            const texturePart = parts[i];
+            const texturePart = items[i];
 
-            if (partDirtyIds[i] < texturePart.dirtyId)
+            if (itemDirtyIds[i] < texturePart.dirtyId)
             {
-                partDirtyIds[i] = texturePart.dirtyId;
+                itemDirtyIds[i] = texturePart.dirtyId;
                 if (texturePart.valid)
                 {
                     gl.texSubImage3D(gl.TEXTURE_2D_ARRAY,

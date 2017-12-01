@@ -6,18 +6,35 @@ import BaseImageResource from './BaseImageResource';
  * @class
  * @extends PIXI.resources.TextureResource
  * @memberof PIXI.resources
- * @param {SVGResource} svgSource - Source SVG element.
+ * @param {SVGElement} svgSource - Source SVG element.
  * @param {number} [scale=1] Scale to apply to SVG.
  * @param {boolean} [autoLoad=true] Start loading right away.
  */
 export default class SVGResource extends BaseImageResource
 {
-    constructor(svgSource, scale = 1, autoLoad = true)
+    constructor(svg, scale = 1, autoLoad = true)
     {
         super(document.createElement('canvas'));
 
-        this.svgSource = svgSource;
+        /**
+         * The svg source, either data-uri, string or SVGElement
+         * @readonly
+         * @member {string|SVGElement}
+         */
+        this.svg = svg;
+
+        /**
+         * The source scale to apply to render
+         * @readonly
+         * @member {number}
+         */
         this.scale = scale;
+
+        /**
+         * Call when completedly loaded
+         * @private
+         * @member {function}
+         */
         this._resolve = null;
 
         if (autoLoad)
@@ -37,10 +54,7 @@ export default class SVGResource extends BaseImageResource
         {
             this._resolve = () =>
             {
-                if (this.parent)
-                {
-                    this._validate();
-                }
+                this.resize(this.source.width, this.source.height);
                 resolve(this);
             };
         });
@@ -49,32 +63,57 @@ export default class SVGResource extends BaseImageResource
     }
 
     /**
+     * Reads an SVG string from data URI and then calls `_loadString`.
+     *
+     * @param {string} dataUri - The data uri to load from.
+     */
+    _loadDataUri(dataUri)
+    {
+        let svgString;
+
+        if (dataUri.encoding === 'base64')
+        {
+            if (!atob)
+            {
+                throw new Error('Your browser doesn\'t support base64 conversions.');
+            }
+            svgString = atob(dataUri.data);
+        }
+        else
+        {
+            svgString = dataUri.data;
+        }
+
+        this._loadString(svgString);
+    }
+
+    /**
      * Checks if `source` is an SVG image and whether it's loaded via a URL or a data URI. Then calls
-     * `_loadSvgSourceUsingDataUri` or `_loadSvgSourceUsingXhr`.
+     * `_loadDataUri` or `_loadXhr`.
      *
      * @private
      */
     _loadSvgSource()
     {
-        const dataUri = decomposeDataUri(this.svgSource);
+        const dataUri = decomposeDataUri(this.svg);
 
         if (dataUri)
         {
-            this._loadSvgSourceUsingDataUri(dataUri);
+            this._loadDataUri(dataUri);
         }
         else
         {
             // We got an URL, so we need to do an XHR to check the svg size
-            this._loadSvgSourceUsingXhr();
+            this._loadXhr();
         }
     }
 
     /**
-     * Loads an SVG string from `imageUrl` using XHR and then calls `_loadSvgSourceUsingString`.
+     * Loads an SVG string from `imageUrl` using XHR and then calls `_loadString`.
      *
      * @private
      */
-    _loadSvgSourceUsingXhr()
+    _loadXhr()
     {
         const svgXhr = new XMLHttpRequest();
 
@@ -92,26 +131,26 @@ export default class SVGResource extends BaseImageResource
                 throw new Error('Failed to load SVG using XHR.');
             }
 
-            this._loadSvgSourceUsingString(svgXhr.response);
+            this._loadString(svgXhr.response);
         };
 
-        svgXhr.onerror = () => this.emit('error', this);
+        // svgXhr.onerror = () => this.emit('error', this);
 
-        svgXhr.open('GET', this.svgSource, true);
+        svgXhr.open('GET', this.svg, true);
         svgXhr.send();
     }
 
     /**
      * Loads texture using an SVG string. The original SVG Image is stored as `origSource` and the
      * created canvas is the new `source`. The SVG is scaled using `sourceScale`. Called by
-     * `_loadSvgSourceUsingXhr` or `_loadSvgSourceUsingDataUri`.
+     * `_loadXhr` or `_loadDataUri`.
      *
      * @private
      * @param  {string} svgString SVG source as string
      *
      * @fires loaded
      */
-    _loadSvgSourceUsingString(svgString)
+    _loadString(svgString)
     {
         const svgSize = SVGResource.getSize(svgString);
 

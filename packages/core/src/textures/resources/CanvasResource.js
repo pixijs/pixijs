@@ -13,33 +13,6 @@ export default class CanvasResource extends BaseImageResource
     {
         super(source);
 
-        this._canvasWidth = 0;
-        this._canvasHeight = 0;
-
-        this.loaded = true;
-    }
-
-    update()
-    {
-        if (this.parent)
-        {
-            this._validate();
-        }
-    }
-
-    _validate()
-    {
-        const { source, parent } = this;
-
-        if (this._canvasWidth !== source.width || this._canvasHeight !== source.height)
-        {
-            this._canvasWidth = source.width;
-            this._canvasHeight = source.height;
-            parent.setRealSize(source.width, source.height);
-        }
-        else
-        {
-            parent.update();
-        }
+        this._loaded = true;
     }
 }

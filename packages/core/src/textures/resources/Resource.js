@@ -1,3 +1,5 @@
+import Runner from 'mini-runner';
+
 /**
  * Base Texture resource class, manages validation and upload depends on its type.
  * upload is required.
@@ -10,21 +12,21 @@ export default class Resource
      * @param {number} [width=0] Width of the resource
      * @param {number} [height=0] Height of the resource
      */
-    constructor(width = 0, height = 0)
+    constructor(width, height)
     {
         /**
          * Internal width of the resource
          * @member {number}
          * @protected
          */
-        this._width = width;
+        this._width = width || 0;
 
         /**
          * Internal height of the resource
          * @member {number}
          * @protected
          */
-        this._height = height;
+        this._height = height || 0;
 
         /**
          * If resource has been destroyed
@@ -35,20 +37,13 @@ export default class Resource
         this.destroyed = false;
 
         /**
-         * Reference to the parent base texture
-         * @member {PIXI.BaseTexture}
-         * @default null
+         * Number of reference counts where this resource is used.
+         * @member {number}
+         * @readonly
+         * @default 0
          * @private
          */
-        this._parent = null;
-
-        /**
-         * If resource has loaded
-         * @member {boolean}
-         * @readonly
-         * @default false
-         */
-        this.loaded = false;
+        this.refs = 0;
 
         /**
          * Promise when loading
@@ -59,41 +54,121 @@ export default class Resource
         this._load = null;
 
         /**
-         * Optional string used to identify certain resources
-         * @member {string}
+         * Resource has been loaded already.
+         * @protected
+         * @default false
+         */
+        this._loaded = false;
+
+        /**
+         * Optional paramers used for dynamic or shared resources
+         * @member {object}
          * @default null
          */
-        this.tag = null;
+        // this.params = null;
+
+        /**
+         * Mini-runner for handling resize events
+         *
+         * @member {Runner}
+         */
+        this.onRealSize = new Runner('setRealSize', 2);
+
+        /**
+         * Mini-runner for handling update events
+         *
+         * @member {Runner}
+         */
+        this.onUpdate = new Runner('update');
+
+        /**
+         * Mini-runner for handling loaded events
+         *
+         * @member {Runner}
+         */
+        this.onLoaded = new Runner('loaded');
     }
 
     /**
-     * Reference to the parent base texture
-     * @member {PIXI.BaseTexture}
-     * @default null
-     * @readonly
+     * Bind to a parent BaseTexture
+     *
+     * @param {PIXI.BaseTexture} baseTexture - Parent texture
      */
-    get parent()
+    bind(baseTexture)
     {
-        return this._parent;
-    }
-    set parent(parent) // eslint-disable-line require-jsdoc
-    {
-        this._parent = parent;
+        this.ref++;
+        // this.params = baseTexture.params;
+        this.onRealSize.add(baseTexture);
+        this.onUpdate.add(baseTexture);
+        this.onLoaded.add(baseTexture);
 
-        if (this.loaded)
+        // Call a resize immediate if we already
+        // have the width and height of the resource
+        if (this._width || this._height)
         {
-            this._validate();
+            this.onRealSize.run(this._width, this._height);
+        }
+
+        // We are loaded or not
+        if (this._loaded)
+        {
+            this.onLoaded.run();
         }
     }
 
     /**
-     * Called when both BaseTexture and Resource are ready for work
+     * Unbind to a parent BaseTexture
      *
-     * @protected
+     * @param {PIXI.BaseTexture} baseTexture - Parent texture
      */
-    _validate()
+    unbind(baseTexture)
     {
-        this._parent.setRealSize(this.width, this.height);
+        this.ref--;
+        // this.params = null;
+        this.onRealSize.remove(baseTexture);
+        this.onUpdate.remove(baseTexture);
+        this.onLoaded.remove(baseTexture);
+    }
+
+    /**
+     * Trigger a resize event
+     */
+    resize(width, height)
+    {
+        if (width !== this._width || height !== this._height)
+        {
+            this._width = width;
+            this._height = height;
+            this.onRealSize.run(width, height);
+        }
+    }
+
+    /**
+     * Has been loaded
+     */
+    set loaded(loaded)
+    {
+        this._loaded = loaded;
+
+        if (!this.destroyed && loaded)
+        {
+            this.onLoaded.run();
+        }
+    }
+    get loaded()
+    {
+        return this._loaded;
+    }
+
+    /**
+     * Has been updated trigger event
+     */
+    update()
+    {
+        if (!this.destroyed)
+        {
+            this.onUpdate.run();
+        }
     }
 
     /**
@@ -156,21 +231,32 @@ export default class Resource
     }
 
     /**
-     * Call when destroying resource
+     * Clean up anything, this happens when destroying is ready.
      *
-     * @param {PIXI.BaseTexture} [fromTexture] Base texture destroying resource
-     * @return {boolean} `true` if the resource was destroyed
+     * @protected
      */
-    destroy(fromTexture)
+    dispose()
     {
-        if (this._parent === fromTexture && !this.destroyed)
+        // override
+    }
+
+    /**
+     * Call when destroying resource, unbind any BaseTexture object
+     * before calling this method, as reference counts are maintained
+     * internally.
+     */
+    destroy()
+    {
+        if (!this.refs)
         {
-            this._parent = null;
+            this.onRealSize.removeAll();
+            this.onRealSize = null;
+            this.onUpdate.removeAll();
+            this.onUpdate = null;
+            this.onLoaded.removeAll();
+            this.onLoaded = null;
             this.destroyed = true;
-
-            return true;
+            this.dispose();
         }
-
-        return false;
     }
 }

@@ -1,8 +1,12 @@
 import { uid, BaseTextureCache, TextureCache } from '@pixi/utils';
-
 import { FORMATS, TARGETS, TYPES, SCALE_MODES } from '@pixi/constants';
+
+import Resource from './resources/Resource';
 import BufferResource from './resources/BufferResource';
-import createResource from './resources/createResource';
+import ImageResource from './resources/ImageResource';
+import VideoResource from './resources/VideoResource';
+import SVGResource from './resources/SVGResource';
+import CanvasResource from './resources/CanvasResource';
 
 import { settings } from '@pixi/settings';
 import EventEmitter from 'eventemitter3';
@@ -14,16 +18,32 @@ import bitTwiddle from 'bit-twiddle';
  * @class
  * @extends PIXI.utils.EventEmitter
  * @memberof PIXI
+ * @param {PIXI.resources.Resource|string|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement} [resource=null]
+ *        The current resource to use, for things that are `Resource` objects already, will be converted
+ *        into a resource.
+ * @param {Object} [options] - Collection of options
+ * @param {boolean} [options.mipmap=PIXI.settings.MIPMAP_TEXTURES] - If mipmapping is enabled for texture
+ * @param {PIXI.WRAP_MODES} [options.wrapMode=PIXI.settings.WRAP_MODE] - Wrap mode for textures
+ * @param {PIXI.SCALE_MODES} [options.scaleMode=PIXI.settings.SCALE_MODE] - Default scale mode, linear, nearest
+ * @param {PIXI.FORMATS} [options.format=PIXI.FORMATS.RGBA] - GL format type
+ * @param {PIXI.TYPES} [options.type=PIXI.TYPES.UNSIGNED_BYTE] - GL data type
+ * @param {PIXI.TARGETS} [options.target=PIXI.TARGETS.TEXTURE_2D] - GL texture target
+ * @param {boolean} [options.premultiplyAlpha=true] - Pre multiply the image alpha
+ * @param {Object} [options.params] - Optional parameters for resource, use for shared/dynamic resources
+ * @param {number} [options.width=0] - Width of the texture
+ * @param {number} [options.height=0] - Height of the texture
  */
 export default class BaseTexture extends EventEmitter
 {
-    constructor(resource)
+    constructor(resource = null, options = null)
     {
         super();
 
-        this.uid = uid();
-
-        this.touched = 0;
+        // Convert the resource to a Resource object
+        if (resource && !(resource instanceof Resource))
+        {
+            resource = BaseTexture.autoDetectResource(resource);
+        }
 
         /**
          * The width of the base texture set when the image has loaded
@@ -31,7 +51,7 @@ export default class BaseTexture extends EventEmitter
          * @readonly
          * @member {number}
          */
-        this.width = 0;
+        this.width = null;
 
         /**
          * The height of the base texture set when the image has loaded
@@ -39,44 +59,28 @@ export default class BaseTexture extends EventEmitter
          * @readonly
          * @member {number}
          */
-        this.height = 0;
+        this.height = null;
 
         /**
          * The resolution / device pixel ratio of the texture
          *
          * @member {number}
-         * @default 1
+         * @default PIXI.settings.RESOLUTION
          */
-        this.resolution = settings.RESOLUTION;
-
-        /**
-         * Whether or not the texture is a power of two, try to use power of two textures as much
-         * as you can
-         *
-         * @private
-         * @member {boolean}
-         */
-        this.isPowerOfTwo = false;
+        this.resolution = null;
 
         /**
          * If mipmapping was used for this texture, enable and disable with enableMipmap()
          *
-         * @member {Boolean}
+         * @member {boolean}
          */
-        this.mipmap = settings.MIPMAP_TEXTURES;
+        this.mipmap = null;
 
         /**
-         * Set to true to enable pre-multiplied alpha
-         *
-         * @member {Boolean}
+         * How the texture wraps
+         * @member {number}
          */
-        this.premultiplyAlpha = true;
-
-        /**
-         * [wrapMode description]
-         * @type {number}
-         */
-        this.wrapMode = settings.WRAP_MODE;
+        this.wrapMode = null;
 
         /**
          * The scale mode to apply when scaling this texture
@@ -85,46 +89,158 @@ export default class BaseTexture extends EventEmitter
          * @default PIXI.settings.SCALE_MODE
          * @see PIXI.SCALE_MODES
          */
-        this.scaleMode = settings.SCALE_MODE;
+        this.scaleMode = null;
 
         /**
-         * The pixel format of the texture. defaults to gl.RGBA
+         * The pixel format of the texture
          *
-         * @member {Number}
+         * @member {PIXI.FORMATS}
+         * @default PIXI.FORMATS.RGBA
          */
-        this.format = FORMATS.RGBA;
-        this.type = TYPES.UNSIGNED_BYTE; // UNSIGNED_BYTE
+        this.format = null;
 
-        this.target = TARGETS.TEXTURE_2D; // gl.TEXTURE_2D
+        /**
+         * The type of resource data
+         *
+         * @member {PIXI.TYPES}
+         * @default PIXI.TYPES.UNSIGNED_BYTE
+         */
+        this.type = null;
 
-        this._glTextures = {};
+        /**
+         * The target type
+         *
+         * @member {PIXI.TARGETS}
+         * @default PIXI.TARGETS.TEXTURE_2D
+         */
+        this.target = null;
 
         /**
          * Params are just an object that is used by some of texture resources.
          * @member {object}
          */
-        this.params = null;
+        // this.params = null;
 
+        /**
+         * Set to true to enable pre-multiplied alpha
+         *
+         * @member {boolean}
+         * @default true
+         */
+        this.premultiplyAlpha = null;
+
+        // Set all the properties above with the default
+        // or the optional user override
+        Object.assign(this, {
+            mipmap: settings.MIPMAP_TEXTURES,
+            wrapMode: settings.WRAP_MODE,
+            resolution: settings.RESOLUTION,
+            scaleMode: settings.SCALE_MODE,
+            format: FORMATS.RGBA,
+            type: TYPES.UNSIGNED_BYTE,
+            target: TARGETS.TEXTURE_2D,
+            premultiplyAlpha: true,
+            height: 0,
+            width: 0,
+            // params: null,
+        }, options);
+
+        /**
+         * Global unique identifier for this BaseTexture
+         *
+         * @member {string}
+         * @private
+         */
+        this.uid = uid();
+
+        /**
+         * TODO: fill in description
+         *
+         * @member {number}
+         * @private
+         */
+        this.touched = 0;
+
+        /**
+         * Whether or not the texture is a power of two, try to use power of two textures as much
+         * as you can
+         *
+         * @readonly
+         * @member {boolean}
+         * @default false
+         */
+        this.isPowerOfTwo = false;
+
+        /**
+         * The map of render context textures where this is bound
+         *
+         * @member {Object}
+         * @private
+         */
+        this._glTextures = {};
+
+        /**
+         * Used by TextureSystem to only update texture to the GPU when needed.
+         *
+         * @private
+         * @member {number}
+         */
         this.dirtyId = 0;
 
+        /**
+         * Used by TextureSystem to only update texture style when needed.
+         *
+         * @private
+         * @member {number}
+         */
         this.dirtyStyleId = 0;
 
-        this.valid = false;
-
+        /**
+         * Currently default cache ID.
+         *
+         * @member {string}
+         */
         this.cacheId = null;
 
+        /**
+         * Generally speaking means when resource is loaded.
+         * @readonly
+         * @member {boolean}
+         */
+        this.valid = false;
+
+        /**
+         * The collection of alternative cache ids, since some BaseTextures
+         * can have more than one ID, short name and longer full URL
+         *
+         * @member {Array<string>}
+         * @readonly
+         */
         this.textureCacheIds = [];
 
+        /**
+         * Flag if BaseTexture has been destroyed.
+         *
+         * @member {boolean}
+         * @readonly
+         */
         this.destroyed = false;
 
+        /**
+         * The resource used by this BaseTexture, there can only
+         * be one resource per BaseTexture, but textures can share
+         * resources.
+         *
+         * @member {PIXI.resources.Resource}
+         * @readonly
+         */
         this.resource = null;
 
-        if (resource)
-        {
-            // lets convert this to a resource..
-            this.resource = createResource(resource);
-            this.resource.parent = this;
-        }
+        // Set the resource
+        this.setResource(resource);
+
+        // Update the size
+        this.setSize(this.height, this.width, this.resolution);
 
         /**
          * Fired when a not-immediately-available source finishes loading.
@@ -198,46 +314,35 @@ export default class BaseTexture extends EventEmitter
     }
 
     /**
-     * Changes style of BaseTexture
+     * Changes style options of BaseTexture
      *
-     * @param {number} scaleMode - pixi scalemode
-     * @param {boolean} mipmap - enable mipmaps
-     * @param {number} format - webgl pixel format
-     * @param {number} type - webgl pixel type
+     * @param {object} options
+     * @param {PIXI.SCALE_MODES} [scaleMode] - pixi scalemode
+     * @param {boolean} [mipmap] - enable mipmaps
+     * @param {PIXI.FORMATS} [format] - webgl pixel format
+     * @param {PIXI.TYPES} [type] - webgl pixel type
      * @returns {BaseTexture} this
      */
-    setStyle(scaleMode, mipmap, format, type)
+    setStyle(options)
     {
-        if (scaleMode !== undefined)
+        let dirty = false;
+
+        for (const field in options)
         {
-            this.scaleMode = scaleMode;
+            if (this[field] !== options[field])
+            {
+                // Update the property
+                this[field] = options[field];
+                dirty = true;
+            }
         }
-        if (mipmap !== undefined)
+
+        if (dirty)
         {
-            this.mipmap = mipmap;
+            this.dirtyStyleId++;
         }
-        if (format !== undefined)
-        {
-            this.format = format;
-        }
-        if (type !== undefined)
-        {
-            this.type = type;
-        }
-        this.dirtyStyleId++;
 
         return this;
-    }
-
-    /**
-     * same as `valid`
-     *
-     * @readonly
-     * @member {boolean}
-     */
-    get hasLoaded()
-    {
-        return this.valid;
     }
 
     /**
@@ -310,17 +415,17 @@ export default class BaseTexture extends EventEmitter
      * @param {object} params
      * @returns {BaseTexture}
      */
-    setParams(params)
-    {
-        this.params = params;
+    // setParams(params)
+    // {
+    //     this.params = params;
 
-        if (this.resource)
-        {
-            this.resource.params = params;
-        }
+    //     if (this.resource)
+    //     {
+    //         this.resource.params = params;
+    //     }
 
-        return this;
-    }
+    //     return this;
+    // }
 
     /**
      * Sets the resource if it wasnt set. Throws error if resource already present
@@ -340,14 +445,20 @@ export default class BaseTexture extends EventEmitter
             throw new Error('Resource can be set only once');
         }
 
+        resource.bind(this);
+
         this.resource = resource;
 
-        if (this.params)
-        {
-            this.setParams(this.params);
-        }
-
         return this;
+    }
+
+    /**
+     * Called when a resource has been loaded
+     * @private
+     */
+    loaded()
+    {
+        this.valid = true;
     }
 
     /**
@@ -382,7 +493,8 @@ export default class BaseTexture extends EventEmitter
         // remove and destroy the resource
         if (this.resource)
         {
-            this.resource.destroy(this);
+            this.resource.unbind(this);
+            this.resource.destroy();
             this.resource = null;
         }
 
@@ -422,12 +534,12 @@ export default class BaseTexture extends EventEmitter
      * cache, it will be created and loaded.
      *
      * @static
-     * @param {string|HTMLImageElement|HTMLCanvasElement} source - The source to create base texture from.
-     * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES} for possible values
-     * @param {number} [sourceScale=(auto)] - Scale for the original image, used with Svg images.
+     * @param {string|HTMLImageElement|HTMLCanvasElement|SVGElement|HTMLVideoElement} source - The
+     *        source to create base texture from.
+     * @param {object} [options] See constructor for options.
      * @return {PIXI.BaseTexture} The new base texture.
      */
-    static from(source, scaleMode)
+    static from(source, options)
     {
         let cacheId = null;
 
@@ -449,7 +561,7 @@ export default class BaseTexture extends EventEmitter
 
         if (!baseTexture)
         {
-            baseTexture = new BaseTexture(source, scaleMode);
+            baseTexture = new BaseTexture(source, options);
             baseTexture.cacheId = cacheId;
             BaseTexture.addToCache(baseTexture, cacheId);
         }
@@ -458,35 +570,51 @@ export default class BaseTexture extends EventEmitter
     }
 
     /**
-     * Create a new BaseTexture with a BufferResource from a Float32Array.
+     * Create a new BaseTexture with a BufferResource from a Uint8Array.
+     * RGBA values are uints from 0 to 255.
      * @static
      * @param {number} width - Width of the resource
      * @param {number} height - Height of the resource
-     * @param {Float32Array} [float32Array] The optional array to use
+     * @param {Uint8Array} [data] The optional array to use
      * @return {PIXI.BaseTexture} The resulting new BaseTexture
      */
-    static fromFloat32Array(width, height, float32Array)
+    static fromBuffer(width, height, data)
     {
-        float32Array = float32Array || new Float32Array(width * height * 4);
+        data = data || new Uint8Array(width * height * 4);
 
-        return BaseTexture(new BufferResource(float32Array, width, height))
-            .setStyle(SCALE_MODES.NEAREST, FORMATS.RGBA, TYPES.FLOAT);
+        const resource = new BufferResource(data, width, height);
+
+        return new BaseTexture(resource, {
+            scaleMode: SCALE_MODES.NEAREST,
+            format: FORMATS.RGBA,
+            type: TYPES.UNSIGNED_BYTE,
+            width,
+            height,
+        });
     }
 
     /**
-     * Create a new BaseTexture with a BufferResource from a Uint8Array.
+     * Create a new BaseTexture with a BufferResource from a Float32Array.
+     * RGBA values are floats from 0 to 1.
      * @static
      * @param {number} width - Width of the resource
      * @param {number} height - Height of the resource
-     * @param {Uint8Array} [uint8Array] The optional array to use
+     * @param {Float32Array} [data] The optional array to use
      * @return {PIXI.BaseTexture} The resulting new BaseTexture
      */
-    static fromUint8Array(width, height, uint8Array)
+    static fromBufferFloat(width, height, data)
     {
-        uint8Array = uint8Array || new Uint8Array(width * height * 4);
+        data = data || new Float32Array(width * height * 4);
 
-        return new BaseTexture(new BufferResource(uint8Array, width, height))
-            .setStyle(SCALE_MODES.NEAREST, FORMATS.RGBA, TYPES.UNSIGNED_BYTE);
+        const resource = new BufferResource(data, width, height);
+
+        return BaseTexture(resource, {
+            scaleMode: SCALE_MODES.NEAREST,
+            format: FORMATS.RGBA,
+            type: TYPES.FLOAT,
+            width,
+            height,
+        });
     }
 
     /**
@@ -555,5 +683,49 @@ export default class BaseTexture extends EventEmitter
         }
 
         return null;
+    }
+
+    /**
+     * Create a resource element from a single source element. This
+     * auto-detects which type of resource to create.
+     * @static
+     * @param {string|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|PIXI.resources.Resource} source Resource source
+     * @return {PIXI.resources.Resource} resource
+     */
+    static autoDetectResource(source)
+    {
+        if (source instanceof HTMLImageElement)
+        {
+            return new ImageResource(source);
+        }
+        else if (source instanceof HTMLCanvasElement)
+        {
+            return new CanvasResource(source);
+        }
+        else if (source instanceof HTMLVideoElement)
+        {
+            return new VideoResource(source);
+        }
+        else if (typeof source === 'string')
+        {
+            // search for file extension: period, 3-4 chars, then ?, # or EOL
+            const result = (/\.(\w{3,4})(?:$|\?|#)/i).exec(source);
+
+            if (result)
+            {
+                const extension = result[1].toLowerCase();
+
+                if (VideoResource.TYPES.indexOf(extension) > -1)
+                {
+                    return new VideoResource(source);
+                }
+                else if (SVGResource.TYPES.indexOf(extension) > -1)
+                {
+                    return new SVGResource(source);
+                }
+            }
+        }
+
+        return new ImageResource(source);
     }
 }

@@ -43,16 +43,25 @@ import FrameBuffer from './FrameBuffer';
 export default class BaseRenderTexture extends BaseTexture
 {
     /**
-     * @param {number} [width=100] - The width of the base render texture
-     * @param {number} [height=100] - The height of the base render texture
-     * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES} for possible values
-     * @param {number} [resolution=1] - The resolution / device pixel ratio of the texture being generated
+     * @param {object} [options]
+     * @param {number} [options.width=100] - The width of the base render texture
+     * @param {number} [options.height=100] - The height of the base render texture
+     * @param {PIXI.SCALE_MODES} [options.scaleMode] - See {@link PIXI.SCALE_MODES} for possible values
+     * @param {number} [options.resolution=1] - The resolution / device pixel ratio of the texture being generated
      */
-    constructor(width = 100, height = 100, scaleMode, resolution)
+    constructor(options)
     {
-        super(null);
-        this.setSize(Math.ceil(width), Math.ceil(height), resolution);
-        this.setStyle(scaleMode, false);
+        options = Object.assign({
+            mipmap: false,
+            width: 100,
+            height: 100,
+        }, options);
+
+        // No floats
+        options.width = Math.ceil(options.width);
+        options.height = Math.ceil(options.height);
+
+        super(null, options);
 
         /**
          * A map of renderer IDs to webgl renderTargets

@@ -20,7 +20,8 @@ export default class BufferResource extends Resource
          */
         this.data = data;
 
-        this.loaded = true;
+        // Already loaded!
+        this._loaded = true;
     }
 
     /**
@@ -43,5 +44,14 @@ export default class BufferResource extends Resource
         );
 
         return true;
+    }
+
+    /**
+     * Destroy and don't use after this
+     * @override
+     */
+    dispose()
+    {
+        this.data = null;
     }
 }

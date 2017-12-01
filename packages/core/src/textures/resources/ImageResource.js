@@ -12,22 +12,28 @@ export default class ImageResource extends BaseImageResource
 {
     /**
      * @param {HTMLImageElement|string} source - image source or URL
-     * @param {boolean} [autoLoad=true] start loading process
-     * @param {boolean} [createBitmap=true] whether its required to create
+     * @param {boolean} [options.autoLoad=true] start loading process
+     * @param {boolean} [options.createBitmap=true] whether its required to create
      *        a bitmap before upload defaults true
-     * @param {boolean} [crossorigin=true] - Load image using cross origin
+     * @param {boolean} [options.crossorigin=true] - Load image using cross origin
      */
-    constructor(source, autoLoad = true, createBitmap = true, crossorigin = false)
+    constructor(source, options)
     {
+        options = Object.assign({
+            autoLoad: true,
+            createBitmap: true,
+            crossorigin: true,
+        }, options);
+
         if (!(source instanceof HTMLImageElement))
         {
             const imageElement = new Image();
 
-            if (crossorigin === undefined && source.indexOf('data:') !== 0)
+            if (options.crossorigin === undefined && source.indexOf('data:') !== 0)
             {
                 imageElement.crossOrigin = determineCrossOrigin(source);
             }
-            else if (crossorigin)
+            else if (options.crossorigin)
             {
                 imageElement.crossOrigin = 'anonymous';
             }
@@ -58,7 +64,7 @@ export default class ImageResource extends BaseImageResource
          * @member {boolean}
          * @default PIXI.settings.CREATE_IMAGE_BITMAP
          */
-        this.createBitmap = createBitmap && settings.CREATE_IMAGE_BITMAP && !!window.createImageBitmap;
+        this.createBitmap = options.createBitmap && settings.CREATE_IMAGE_BITMAP && !!window.createImageBitmap;
 
         /**
          * The ImageBitmap element created for HTMLImageElement
@@ -67,7 +73,7 @@ export default class ImageResource extends BaseImageResource
          */
         this.bitmap = null;
 
-        if (autoLoad)
+        if (options.autoLoad)
         {
             this.load();
         }
@@ -102,10 +108,7 @@ export default class ImageResource extends BaseImageResource
                 source.onload = null;
                 source.onerror = null;
 
-                if (this.parent)
-                {
-                    this._validate();
-                }
+                this.resize(source.width, source.height);
 
                 if (this.createBitmap)
                 {
@@ -167,7 +170,7 @@ export default class ImageResource extends BaseImageResource
         return window.createImageBitmap(this.source).then((imageBitmap) =>
         {
             this.bitmap = imageBitmap;
-            this.parent.update();
+            this.update();
 
             return this;
         });
