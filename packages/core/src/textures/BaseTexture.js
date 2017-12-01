@@ -100,10 +100,10 @@ export default class BaseTexture extends EventEmitter
         this._glTextures = {};
 
         /**
-         * Tag is just a string that is used by some of texture resources.
-         * @member {string}
+         * Params are just an object that is used by some of texture resources.
+         * @member {object}
          */
-        this.tag = null;
+        this.params = null;
 
         this.dirtyId = 0;
 
@@ -201,9 +201,9 @@ export default class BaseTexture extends EventEmitter
      * Changes style of BaseTexture
      *
      * @param {number} scaleMode - pixi scalemode
+     * @param {boolean} mipmap - enable mipmaps
      * @param {number} format - webgl pixel format
      * @param {number} type - webgl pixel type
-     * @param {boolean} mipmap - enable mipmaps
      * @returns {BaseTexture} this
      */
     setStyle(scaleMode, mipmap, format, type)
@@ -305,18 +305,18 @@ export default class BaseTexture extends EventEmitter
 
     /**
      * Performs secondary initialization according to assigned tag.
-     * Tag is just a string that i used by some of texture resources.
+     * Params are object that is used by some of texture resources.
      *
-     * @param {string} tag
+     * @param {object} params
      * @returns {BaseTexture}
      */
-    setTag(tag)
+    setParams(params)
     {
-        this.tag = tag;
+        this.params = params;
 
         if (this.resource)
         {
-            this.resource.tag = tag;
+            this.resource.params = params;
         }
 
         return this;
@@ -342,9 +342,9 @@ export default class BaseTexture extends EventEmitter
 
         this.resource = resource;
 
-        if (this.tag)
+        if (this.params)
         {
-            this.setTag(this.tag);
+            this.setParams(this.params);
         }
 
         return this;
