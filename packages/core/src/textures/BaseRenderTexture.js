@@ -50,11 +50,9 @@ export default class BaseRenderTexture extends BaseTexture
      */
     constructor(width = 100, height = 100, scaleMode, resolution)
     {
-        super(null, scaleMode, resolution, width, height);
-
-        this.width = Math.ceil(width);
-        this.height = Math.ceil(height);
-        this.hasLoaded = true;
+        super(null);
+        this.setSize(Math.ceil(width), Math.ceil(height), resolution);
+        this.setStyle(scaleMode, false);
 
         /**
          * A map of renderer IDs to webgl renderTargets
@@ -74,7 +72,7 @@ export default class BaseRenderTexture extends BaseTexture
 
         this.clearColor = [0, 0, 0, 0];
 
-        this.frameBuffer = new FrameBuffer(width, height)
+        this.frameBuffer = new FrameBuffer(this.width, this.height)
             .addColorTexture(0, this);
 
         // TODO - could this be added the systems?
@@ -102,9 +100,8 @@ export default class BaseRenderTexture extends BaseTexture
      */
     resize(width, height)
     {
-        this.width = Math.ceil(width);
-        this.height = Math.ceil(height);
-        super.resize(width, height);
+        width = Math.ceil(width);
+        height = Math.ceil(height);
         this.frameBuffer.resize(width, height);
     }
 

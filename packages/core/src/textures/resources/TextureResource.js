@@ -1,32 +1,73 @@
-import Runner from 'mini-runner';
+import IResource from './IResource';
 
 /**
- * Base Texture resource class.
+ * Texture resource for single baseTexture that can be loaded and validated
+ *
  * @class
  * @memberof PIXI
- * @param {any} source - Source element to use.
  */
-export default class TextureResource
+export default class TextureResource extends IResource
 {
-    constructor(source)
+    constructor()
     {
-        this.source = source;
+        super();
+        this.baseTexture = null;
+        this.loaded = true;
+        this.destroyed = false;
+    }
 
-        this.loaded = false; // TODO rename to ready?
+    onTextureNew(baseTexture)
+    {
+        if (!this.baseTexture)
+        {
+            this.baseTexture = baseTexture;
+        }
 
-        this.width = -1;
-        this.height = -1;
+        if (this.loaded)
+        {
+            this._validate();
+        }
+    }
 
-        this.uploadable = true;
+    get width()
+    {
+        return 0;
+    }
 
-        this.resourceUpdated = new Runner('resourceUpdated');
+    get height()
+    {
+        return 0;
+    }
 
-        // create a prommise..
-        this.load = null;
+    /**
+     * called when both BaseTexture and Resource are ready for work
+     *
+     * @protected
+     */
+    _validate()
+    {
+        this.baseTexture.setRealSize(this.width, this.height);
     }
 
     destroy()
     {
-        // somthing
+        this.source = null;
+        this.baseTexture = null;
+        this.destroyed = true;
+    }
+
+    onTextureDestroy(baseTexture)
+    {
+        if (this.baseTexture === baseTexture && !this.destroyed)
+        {
+            this.destroy();
+        }
+
+        return true;
+    }
+
+    load()
+    {
+        return Promise.resolve();
     }
 }

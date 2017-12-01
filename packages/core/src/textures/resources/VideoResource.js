@@ -1,16 +1,16 @@
-import TextureResource from './TextureResource';
+import BaseImageResource from './BaseImageResource';
 import { Ticker } from '@pixi/ticker';
 
 /**
  * Resource type for HTMLVideoElement.
  * @class
- * @extends PIXI.TextureResource
+ * @extends PIXI.BaseImageResource
  * @memberof PIXI
  * @param {HTMLVideoElement} source - Video element to use.
  */
-export default class VideoResource extends TextureResource
+export default class VideoResource extends BaseImageResource
 {
-    constructor(source)
+    constructor(source, loadRightNow = true)
     {
         super(source);
 
@@ -29,8 +29,26 @@ export default class VideoResource extends TextureResource
         this.update = this.update.bind(this);
         this._onCanPlay = this._onCanPlay.bind(this);
 
+        this._load = null;
+        this.loaded = false;
+
+        if (loadRightNow)
+        {
+            this.load();
+        }
+    }
+
+    load()
+    {
+        if (this._load)
+        {
+            return this._load;
+        }
+
+        const source = this.source;
+
         if ((source.readyState === source.HAVE_ENOUGH_DATA || source.readyState === source.HAVE_FUTURE_DATA)
-        && source.width && source.height)
+            && source.width && source.height)
         {
             source.complete = true;
         }
@@ -48,7 +66,7 @@ export default class VideoResource extends TextureResource
             this._onCanPlay();
         }
 
-        this.load = new Promise((resolve) =>
+        this._load = new Promise((resolve) =>
         {
             this.resolve = resolve;
 
@@ -57,12 +75,25 @@ export default class VideoResource extends TextureResource
                 this.resolve(this);
             }
         });
+
+        return this._load;
+    }
+
+    get width()
+    {
+        return this.source.videoWidth || 0;
+    }
+
+    get height()
+    {
+        return this.source.videoHeight || 0;
     }
 
     update()
     {
         // TODO - slow down and base on the videos framerate
-        this.resourceUpdated.emit();
+        // changes size and updates texture at the same time
+        this.baseTexture.update();
     }
 
     /**
@@ -130,32 +161,31 @@ export default class VideoResource extends TextureResource
      */
     _onCanPlay()
     {
-        if (this.source)
+        this.source.removeEventListener('canplay', this._onCanPlay);
+        this.source.removeEventListener('canplaythrough', this._onCanPlay);
+
+        if (this.baseTexture)
         {
-            this.source.removeEventListener('canplay', this._onCanPlay);
-            this.source.removeEventListener('canplaythrough', this._onCanPlay);
+            this.baseTexture.setSize(this.source.videoWidth, this.source.videoHeight);
+        }
 
-            this.width = this.source.videoWidth;
-            this.height = this.source.videoHeight;
+        // prevent multiple loaded dispatches..
+        if (!this.loaded)
+        {
+            this.loaded = true;
+            if (this.resolve)
+            {
+                this.resolve(this);
+            }
+        }
 
-            // prevent multiple loaded dispatches..
-            if (!this.loaded)
-            {
-                this.loaded = true;
-                if (this.resolve)
-                {
-                    this.resolve(this);
-                }
-            }
-
-            if (this._isSourcePlaying())
-            {
-                this._onPlayStart();
-            }
-            else if (this.autoPlay)
-            {
-                this.source.play();
-            }
+        if (this._isSourcePlaying())
+        {
+            this._onPlayStart();
+        }
+        else if (this.autoPlay)
+        {
+            this.source.play();
         }
     }
 
@@ -218,7 +248,7 @@ export default class VideoResource extends TextureResource
      * @param {string} [videoSrc.mime] - The mimetype of the video (e.g. 'video/mp4'). If not specified
      *  the url's extension will be used as the second part of the mime type.
      * @param {number} scaleMode - See {@link PIXI.SCALE_MODES} for possible values
-     * @return {PIXI.VideoBaseTexture} Newly created VideoBaseTexture
+     * @return {PIXI.VideoResource} Newly created VideoBaseTexture
      */
     static fromUrl(videoSrc, scaleMode)
     {

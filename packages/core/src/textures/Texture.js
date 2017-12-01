@@ -30,7 +30,7 @@ import { uid, TextureCache, getResolutionOfUrl } from '@pixi/utils';
  * You can use a ticker or rAF to ensure your sprites load the finished textures after processing. See issue #3068.
  *
  * @class
- * @extends EventEmitter
+ * @extends PIXI.utils.EventEmitter
  * @memberof PIXI
  */
 export default class Texture extends EventEmitter
@@ -457,7 +457,6 @@ export default class Texture extends EventEmitter
                 + `${errorX} ${relationship} ${errorY}`);
         }
 
-        this.valid = frame && frame.width && frame.height && this.baseTexture.hasLoaded;
         this.valid = width && height && this.baseTexture.valid;
 
         if (!this.trim && !this.rotate)

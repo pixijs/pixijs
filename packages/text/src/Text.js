@@ -327,12 +327,6 @@ export default class Text extends Sprite
         const padding = style.trim ? 0 : style.padding;
         const baseTexture = texture.baseTexture;
 
-        baseTexture.hasLoaded = true;
-        baseTexture.resolution = this.resolution;
-
-        baseTexture.width = canvas.width / this.resolution;
-        baseTexture.height = canvas.height / this.resolution;
-
         texture.trim.width = texture._frame.width = canvas.width / this.resolution;
         texture.trim.height = texture._frame.height = canvas.height / this.resolution;
         texture.trim.x = -padding;
@@ -344,7 +338,7 @@ export default class Text extends Sprite
         // call sprite onTextureUpdate to update scale if _width or _height were set
         this._onTextureUpdate();
 
-        texture.baseTexture.update();// emit('update', texture.baseTexture);
+        baseTexture.setRealSize(canvas.width, canvas.height, this.resolution);
 
         this.dirty = false;
     }

@@ -3,9 +3,21 @@ import SVGResource from './SVGResource';
 import CanvasResource from './CanvasResource';
 import VideoResource from './VideoResource';
 
+/**
+ * Create a resource element from a single source element. This
+ * auto-detects which type of resource to create.
+ * @private
+ * @function
+ * @param {string|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement} source Resource source
+ * @return {PIXI.VideoResource|PIXI.SVGResource|PIXI.ImageResource|PIXI.CanvasResource|PIXI.VideoResource} Resource
+ */
 export default function createResource(source)
 {
-    if (typeof source === 'string')
+    if (source.upload)
+    {
+        return source;
+    }
+    else if (typeof source === 'string')
     {
         // search for file extension: period, 3-4 chars, then ?, # or EOL
         const result = (/\.(\w{3,4})(?:$|\?|#)/i).exec(source);
@@ -39,6 +51,8 @@ export default function createResource(source)
     {
         return new VideoResource(source);
     }
+
+    // resource that doesn't have onTextureUpload is invalid, shall we throw exception here?
 
     return source;
 }
