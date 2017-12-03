@@ -38,7 +38,7 @@ export default class ParticleContainer extends core.Container
      * @param {boolean} [properties.uvs=false] - When true, uvs be uploaded and applied.
      * @param {boolean} [properties.tint=false] - When true, alpha and tint be uploaded and applied.
      * @param {number} [batchSize=16384] - Number of particles per batch. If less than maxSize, it uses maxSize instead.
-     * @param {boolean} [autoResize=true] If true, container allocates more batches in case
+     * @param {boolean} [autoResize=false] If true, container allocates more batches in case
      *  there are more than `maxSize` particles.
      */
     constructor(maxSize = 1500, properties, batchSize = 16384, autoResize = false)
