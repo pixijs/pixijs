@@ -32,7 +32,7 @@ export default class ParticleContainer extends core.Container
      * @param {number} [maxSize=1500] - The maximum number of particles that can be rendered by the container.
      *  Affects size of allocated buffers.
      * @param {object} [properties] - The properties of children that should be uploaded to the gpu and applied.
-     * @param {boolean} [properties.vertex=false] - When true, vertex be uploaded and applied.
+     * @param {boolean} [properties.vertices=false] - When true, vertices be uploaded and applied.
      *                  if sprite's ` scale/anchor/trim/frame/orig` is dynamic, please set `true`.
      * @param {boolean} [properties.position=true] - When true, position be uploaded and applied.
      * @param {boolean} [properties.rotation=false] - When true, rotation be uploaded and applied.
@@ -157,8 +157,8 @@ export default class ParticleContainer extends core.Container
     {
         if (properties)
         {
-            this._properties[0] = 'vertex' in properties || 'scale' in properties
-                ? !!properties.vertex || !!properties.scale : this._properties[0];
+            this._properties[0] = 'vertices' in properties || 'scale' in properties
+                ? !!properties.vertices || !!properties.scale : this._properties[0];
             this._properties[1] = 'position' in properties ? !!properties.position : this._properties[1];
             this._properties[2] = 'rotation' in properties ? !!properties.rotation : this._properties[2];
             this._properties[3] = 'uvs' in properties ? !!properties.uvs : this._properties[3];
