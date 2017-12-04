@@ -37,10 +37,11 @@ export default class Shader extends GLShader
      * @param {WebGLRenderingContext} gl - The current WebGL rendering context
      * @param {string|string[]} vertexSrc - The vertex shader source as an array of strings.
      * @param {string|string[]} fragmentSrc - The fragment shader source as an array of strings.
+     * @param {object} attributeLocations - A key value pair showing which location eact attribute should sit, e.g. {position:0, uvs:1}.
      */
-    constructor(gl, vertexSrc, fragmentSrc)
+    constructor(gl, vertexSrc, fragmentSrc, attributeLocations)
     {
         super(gl, checkPrecision(vertexSrc, settings.PRECISION_VERTEX),
-            checkPrecision(fragmentSrc, settings.PRECISION_FRAGMENT));
+            checkPrecision(fragmentSrc, settings.PRECISION_FRAGMENT), null, attributeLocations);
     }
 }
