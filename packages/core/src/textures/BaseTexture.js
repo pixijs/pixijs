@@ -129,12 +129,6 @@ export default class BaseTexture extends EventEmitter
         this.target = null;
 
         /**
-         * Params are just an object that is used by some of texture resources.
-         * @member {object}
-         */
-        // this.params = null;
-
-        /**
          * Set to true to enable pre-multiplied alpha
          *
          * @member {boolean}
@@ -409,25 +403,6 @@ export default class BaseTexture extends EventEmitter
     }
 
     /**
-     * Performs secondary initialization according to assigned tag.
-     * Params are object that is used by some of texture resources.
-     *
-     * @param {object} params
-     * @returns {BaseTexture}
-     */
-    // setParams(params)
-    // {
-    //     this.params = params;
-
-    //     if (this.resource)
-    //     {
-    //         this.resource.params = params;
-    //     }
-
-    //     return this;
-    // }
-
-    /**
      * Sets the resource if it wasnt set. Throws error if resource already present
      *
      * @param {PIXI.resources.Resource} resource - that is managing this BaseTexture
@@ -570,48 +545,26 @@ export default class BaseTexture extends EventEmitter
     }
 
     /**
-     * Create a new BaseTexture with a BufferResource from a Uint8Array.
-     * RGBA values are uints from 0 to 255.
-     * @static
-     * @param {number} width - Width of the resource
-     * @param {number} height - Height of the resource
-     * @param {Uint8Array} [data] The optional array to use
-     * @return {PIXI.BaseTexture} The resulting new BaseTexture
-     */
-    static fromBuffer(width, height, data)
-    {
-        data = data || new Uint8Array(width * height * 4);
-
-        const resource = new BufferResource(data, width, height);
-
-        return new BaseTexture(resource, {
-            scaleMode: SCALE_MODES.NEAREST,
-            format: FORMATS.RGBA,
-            type: TYPES.UNSIGNED_BYTE,
-            width,
-            height,
-        });
-    }
-
-    /**
      * Create a new BaseTexture with a BufferResource from a Float32Array.
      * RGBA values are floats from 0 to 1.
      * @static
      * @param {number} width - Width of the resource
      * @param {number} height - Height of the resource
-     * @param {Float32Array} [data] The optional array to use
+     * @param {Float32Array|UintArray} [data] The optional array to use, if no data
+     *        is provided, the data type is a float.
      * @return {PIXI.BaseTexture} The resulting new BaseTexture
      */
-    static fromBufferFloat(width, height, data)
+    static fromBuffer(width, height, data)
     {
         data = data || new Float32Array(width * height * 4);
 
-        const resource = new BufferResource(data, width, height);
+        const resource = new BufferResource(data, { width, height });
+        const type = data instanceof Float32Array ? TYPES.FLOAT : TYPES.UNSIGNED_BYTE;
 
         return BaseTexture(resource, {
             scaleMode: SCALE_MODES.NEAREST,
             format: FORMATS.RGBA,
-            type: TYPES.FLOAT,
+            type,
             width,
             height,
         });

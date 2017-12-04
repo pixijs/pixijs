@@ -70,13 +70,6 @@ export default class BufferResource extends Resource
      */
     static test(source)
     {
-        // Ignore environments where we fallback to Array
-        // because we cannot properly test
-        if (Float32Array === Array)
-        {
-            return false;
-        }
-
         return source instanceof Float32Array || source instanceof Uint8Array;
     }
 }

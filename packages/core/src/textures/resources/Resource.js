@@ -67,13 +67,6 @@ export default class Resource
         this._loaded = false;
 
         /**
-         * Optional paramers used for dynamic or shared resources
-         * @member {object}
-         * @default null
-         */
-        // this.params = null;
-
-        /**
          * Mini-runner for handling resize events
          *
          * @member {Runner}
@@ -103,7 +96,6 @@ export default class Resource
     bind(baseTexture)
     {
         this.ref++;
-        // this.params = baseTexture.params;
         this.onRealSize.add(baseTexture);
         this.onUpdate.add(baseTexture);
         this.onLoaded.add(baseTexture);
@@ -130,7 +122,6 @@ export default class Resource
     unbind(baseTexture)
     {
         this.ref--;
-        // this.params = null;
         this.onRealSize.remove(baseTexture);
         this.onUpdate.remove(baseTexture);
         this.onLoaded.remove(baseTexture);
@@ -217,7 +208,7 @@ export default class Resource
      * @param {PIXI.glCore.Texture} glTexture - texture instance for this webgl context
      * @returns {boolean} true is success
      */
-    upload(/* renderer, baseTexture, glTexture*/)
+    upload(renderer, baseTexture, glTexture) // eslint-disable-line no-unused-vars
     {
         // override
         return false;
@@ -231,7 +222,7 @@ export default class Resource
      * @param {PIXI.glCore.Texture} glTexture - texture instance for this webgl context
      * @returns {boolean} true is success
      */
-    style(/* renderer, baseTexture, glTexture*/)
+    style(renderer, baseTexture, glTexture) // eslint-disable-line no-unused-vars
     {
         // override
     }
