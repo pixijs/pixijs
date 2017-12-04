@@ -6,7 +6,7 @@ import BaseImageResource from './BaseImageResource';
  * @class
  * @extends PIXI.resources.TextureResource
  * @memberof PIXI.resources
- * @param {SVGElement} svgSource - Source SVG element.
+ * @param {string} source - Base64 encoded SVG element or URL for SVG file.
  * @param {object} [options] - Options to use
  * @param {number} [options.scale=1] Scale to apply to SVG.
  * @param {boolean} [options.autoLoad=true] Start loading right away.
@@ -23,9 +23,9 @@ export default class SVGResource extends BaseImageResource
         super(document.createElement('canvas'));
 
         /**
-         * The svg source, either data-uri, string or SVGElement
+         * Base64 encoded SVG element or URL for SVG file
          * @readonly
-         * @member {string|SVGElement}
+         * @member {string}
          */
         this.svg = source;
 
@@ -58,11 +58,27 @@ export default class SVGResource extends BaseImageResource
 
         this._load = new Promise((resolve) =>
         {
+            // Save this until after load is finished
             this._resolve = () =>
             {
                 this.resize(this.source.width, this.source.height);
                 resolve(this);
             };
+
+            // Checks if `source` is an SVG image and whether it's
+            // loaded via a URL or a data URI. Then calls
+            // `_loadDataUri` or `_loadXhr`.
+            const dataUri = decomposeDataUri(this.svg);
+
+            if (dataUri)
+            {
+                this._loadDataUri(dataUri);
+            }
+            else
+            {
+                // We got an URL, so we need to do an XHR to check the svg size
+                this._loadXhr();
+            }
         });
 
         return this._load;
@@ -91,27 +107,6 @@ export default class SVGResource extends BaseImageResource
         }
 
         this._loadString(svgString);
-    }
-
-    /**
-     * Checks if `source` is an SVG image and whether it's loaded via a URL or a data URI. Then calls
-     * `_loadDataUri` or `_loadXhr`.
-     *
-     * @private
-     */
-    _loadSvgSource()
-    {
-        const dataUri = decomposeDataUri(this.svg);
-
-        if (dataUri)
-        {
-            this._loadDataUri(dataUri);
-        }
-        else
-        {
-            // We got an URL, so we need to do an XHR to check the svg size
-            this._loadXhr();
-        }
     }
 
     /**
@@ -163,7 +158,7 @@ export default class SVGResource extends BaseImageResource
         // TODO do we need to wait for this to load?
         // seems instant!
         //
-        const tempImage =  new Image();
+        const tempImage = new Image();
 
         tempImage.src = `data:image/svg+xml,${svgString}`;
 
