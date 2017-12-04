@@ -63,16 +63,24 @@ export default class VideoResource extends BaseImageResource
          */
         this.autoPlay = true;
 
+        /**
+         * Promise when loading
+         * @member {Promise}
+         * @private
+         * @default null
+         */
+        this._load = null;
+
         // Bind for listeners
         this._onCanPlay = this._onCanPlay.bind(this);
 
         if (options.autoLoad)
         {
-            this.load();
+            this.validate();
         }
     }
 
-    load()
+    validate()
     {
         if (this._load)
         {
@@ -104,7 +112,7 @@ export default class VideoResource extends BaseImageResource
         {
             this.resolve = resolve;
 
-            if (this.loaded)
+            if (this.valid)
             {
                 this.resolve(this);
             }
@@ -167,7 +175,7 @@ export default class VideoResource extends BaseImageResource
     _onPlayStart()
     {
         // Just in case the video has not received its can play even yet..
-        if (!this.loaded)
+        if (!this.valid)
         {
             this._onCanPlay();
         }
@@ -208,9 +216,9 @@ export default class VideoResource extends BaseImageResource
         this.resize(source.videoWidth, source.videoHeight);
 
         // prevent multiple loaded dispatches..
-        if (!this.loaded)
+        if (!this.valid)
         {
-            this.loaded = true;
+            this.valid = true;
             if (this.resolve)
             {
                 this.resolve(this);

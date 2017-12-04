@@ -73,9 +73,17 @@ export default class ImageResource extends BaseImageResource
          */
         this.bitmap = null;
 
+        /**
+         * Promise when loading
+         * @member {Promise}
+         * @private
+         * @default null
+         */
+        this._load = null;
+
         if (options.autoLoad)
         {
-            this.load();
+            this.validate();
         }
     }
 
@@ -104,7 +112,7 @@ export default class ImageResource extends BaseImageResource
 
             const stuff = () =>
             {
-                this.loaded = true;
+                this.valid = true;
                 source.onload = null;
                 source.onerror = null;
 

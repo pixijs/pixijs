@@ -13,7 +13,7 @@ export default class CanvasResource extends BaseImageResource
     {
         super(source);
 
-        this._loaded = true;
+        this._valid = true;
     }
 
     /**

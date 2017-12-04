@@ -43,13 +43,21 @@ export default class SVGResource extends BaseImageResource
          */
         this._resolve = null;
 
+        /**
+         * Promise when loading
+         * @member {Promise}
+         * @private
+         * @default null
+         */
+        this._load = null;
+
         if (options.autoLoad)
         {
-            this.load();
+            this.validate();
         }
     }
 
-    load()
+    validate()
     {
         if (this._load)
         {

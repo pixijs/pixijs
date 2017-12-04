@@ -431,7 +431,7 @@ export default class BaseTexture extends EventEmitter
      * Called when a resource has been loaded
      * @private
      */
-    loaded()
+    validated()
     {
         this.valid = true;
     }

@@ -43,28 +43,11 @@ export default class Resource
         this.destroyed = false;
 
         /**
-         * Number of reference counts where this resource is used.
-         * @member {number}
-         * @readonly
-         * @default 0
-         * @private
-         */
-        this.refs = 0;
-
-        /**
-         * Promise when loading
-         * @member {Promise}
-         * @protected
-         * @default null
-         */
-        this._load = null;
-
-        /**
-         * Resource has been loaded already.
+         * Resource has been valid already.
          * @protected
          * @default false
          */
-        this._loaded = false;
+        this._valid = false;
 
         /**
          * Mini-runner for handling resize events
@@ -81,11 +64,11 @@ export default class Resource
         this.onUpdate = new Runner('update');
 
         /**
-         * Mini-runner for handling loaded events
+         * Mini-runner for handling valid events
          *
          * @member {Runner}
          */
-        this.onLoaded = new Runner('loaded');
+        this.onValid = new Runner('validated');
     }
 
     /**
@@ -95,10 +78,9 @@ export default class Resource
      */
     bind(baseTexture)
     {
-        this.ref++;
         this.onRealSize.add(baseTexture);
         this.onUpdate.add(baseTexture);
-        this.onLoaded.add(baseTexture);
+        this.onValid.add(baseTexture);
 
         // Call a resize immediate if we already
         // have the width and height of the resource
@@ -107,10 +89,10 @@ export default class Resource
             this.onRealSize.run(this._width, this._height);
         }
 
-        // We are loaded or not
-        if (this._loaded)
+        // We are valid or not
+        if (this._valid)
         {
-            this.onLoaded.run();
+            this.onValid.run();
         }
     }
 
@@ -121,10 +103,9 @@ export default class Resource
      */
     unbind(baseTexture)
     {
-        this.ref--;
         this.onRealSize.remove(baseTexture);
         this.onUpdate.remove(baseTexture);
-        this.onLoaded.remove(baseTexture);
+        this.onValid.remove(baseTexture);
     }
 
     /**
@@ -141,20 +122,20 @@ export default class Resource
     }
 
     /**
-     * Has been loaded
+     * Has been validated
      */
-    set loaded(loaded)
+    set valid(valid)
     {
-        this._loaded = loaded;
+        this._valid = valid;
 
-        if (!this.destroyed && loaded)
+        if (!this.destroyed && valid)
         {
-            this.onLoaded.run();
+            this.onValid.run();
         }
     }
-    get loaded()
+    get valid()
     {
-        return this._loaded;
+        return this._valid;
     }
 
     /**
@@ -169,11 +150,12 @@ export default class Resource
     }
 
     /**
-     * Extending classes should override this, start loading.
-     *
-     * @return {Promise} Handle load
+     * This can be overriden to start preloading a resource
+     * or do any other prepare step.
+     * @protected
+     * @return {Promise} Handle the validate event
      */
-    load()
+    validate()
     {
         return Promise.resolve();
     }
@@ -244,16 +226,13 @@ export default class Resource
      */
     destroy()
     {
-        if (!this.refs)
-        {
-            this.onRealSize.removeAll();
-            this.onRealSize = null;
-            this.onUpdate.removeAll();
-            this.onUpdate = null;
-            this.onLoaded.removeAll();
-            this.onLoaded = null;
-            this.destroyed = true;
-            this.dispose();
-        }
+        this.onRealSize.removeAll();
+        this.onRealSize = null;
+        this.onUpdate.removeAll();
+        this.onUpdate = null;
+        this.onValid.removeAll();
+        this.onValid = null;
+        this.destroyed = true;
+        this.dispose();
     }
 }

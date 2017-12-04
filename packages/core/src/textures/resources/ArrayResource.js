@@ -60,6 +60,14 @@ export default class ArrayResource extends Resource
          */
         this.length = length;
 
+        /**
+         * Promise when loading
+         * @member {Promise}
+         * @private
+         * @default null
+         */
+        this._load = null;
+
         if (urls)
         {
             for (let i = 0; i < length; i++)
@@ -121,7 +129,7 @@ export default class ArrayResource extends Resource
         }
     }
 
-    load()
+    validate()
     {
         if (this._load)
         {
@@ -133,10 +141,10 @@ export default class ArrayResource extends Resource
         // TODO: also implement load part-by-part strategy
 
         this._load = Promise.all(resources.map(
-            (it) => it.load()
+            (it) => it.validate()
         )).then(() =>
         {
-            this.loaded = true;
+            this.valid = true;
             this.resize(resources[0].width, resources[0].height);
         });
 

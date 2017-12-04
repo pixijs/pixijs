@@ -26,8 +26,8 @@ export default class BufferResource extends Resource
          */
         this.data = source;
 
-        // Already loaded!
-        this._loaded = true;
+        // Already validated
+        this._valid = true;
     }
 
     /**
