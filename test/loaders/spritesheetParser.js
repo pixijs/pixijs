@@ -175,29 +175,24 @@ function getJsonSpritesheet()
         "spriteSourceSize": {"x":0,"y":0,"w":14,"h":14},
         "sourceSize": {"w":14,"h":14}
     },
-    "7.png":
+    "trimmed.png":
     {
         "frame": {"x":0,"y":28,"w":14,"h":14},
         "rotated": false,
-        "trimmed": false,
+        "trimmed": true,
         "spriteSourceSize": {"x":0,"y":0,"w":14,"h":14},
         "sourceSize": {"w":14,"h":14}
     },
-    "8.png":
+    "not-trimmed-no-sourceSize.png":
     {
         "frame": {"x":0,"y":14,"w":14,"h":14},
         "rotated": false,
         "trimmed": false,
         "spriteSourceSize": {"x":0,"y":0,"w":14,"h":14},
-        "sourceSize": {"w":14,"h":14}
     },
-    "9.png":
+    "minimal-frame-data.png":
     {
         "frame": {"x":0,"y":0,"w":14,"h":14},
-        "rotated": false,
-        "trimmed": false,
-        "spriteSourceSize": {"x":0,"y":0,"w":14,"h":14},
-        "sourceSize": {"w":14,"h":14}
     }},
     "meta": {
         "app": "http://www.texturepacker.com",
