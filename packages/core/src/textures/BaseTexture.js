@@ -36,21 +36,10 @@ export default class BaseTexture extends EventEmitter
     {
         super();
 
-        // Set all the properties above with the default
-        // or the optional user override
-        options = Object.assign({
-            mipmap: settings.MIPMAP_TEXTURES,
-            wrapMode: settings.WRAP_MODE,
-            resolution: settings.RESOLUTION,
-            scaleMode: settings.SCALE_MODE,
-            format: FORMATS.RGBA,
-            type: TYPES.UNSIGNED_BYTE,
-            target: TARGETS.TEXTURE_2D,
-            premultiplyAlpha: true,
-            height: 0,
-            width: 0,
-            // params: null,
-        }, options);
+        options = options || {};
+
+        const { premultiplyAlpha, mipmap, scaleMode, width, height,
+            wrapMode, format, type, target, resolution } = options;
 
         // Convert the resource to a Resource object
         if (resource && !(resource instanceof Resource))
@@ -64,7 +53,7 @@ export default class BaseTexture extends EventEmitter
          * @readonly
          * @member {number}
          */
-        this.width = null;
+        this.width = width || 0;
 
         /**
          * The height of the base texture set when the image has loaded
@@ -72,7 +61,7 @@ export default class BaseTexture extends EventEmitter
          * @readonly
          * @member {number}
          */
-        this.height = null;
+        this.height = height || 0;
 
         /**
          * The resolution / device pixel ratio of the texture
@@ -80,20 +69,20 @@ export default class BaseTexture extends EventEmitter
          * @member {number}
          * @default PIXI.settings.RESOLUTION
          */
-        this.resolution = null;
+        this.resolution = resolution || settings.RESOLUTION;
 
         /**
          * If mipmapping was used for this texture, enable and disable with enableMipmap()
          *
          * @member {boolean}
          */
-        this.mipmap = null;
+        this.mipmap = mipmap !== undefined ? mipmap : settings.MIPMAP_TEXTURES;
 
         /**
          * How the texture wraps
          * @member {number}
          */
-        this.wrapMode = null;
+        this.wrapMode = wrapMode || settings.WRAP_MODE;
 
         /**
          * The scale mode to apply when scaling this texture
@@ -102,7 +91,7 @@ export default class BaseTexture extends EventEmitter
          * @default PIXI.settings.SCALE_MODE
          * @see PIXI.SCALE_MODES
          */
-        this.scaleMode = null;
+        this.scaleMode = scaleMode !== undefined ? scaleMode : settings.SCALE_MODE;
 
         /**
          * The pixel format of the texture
@@ -110,7 +99,7 @@ export default class BaseTexture extends EventEmitter
          * @member {PIXI.FORMATS}
          * @default PIXI.FORMATS.RGBA
          */
-        this.format = null;
+        this.format = format || FORMATS.RGBA;
 
         /**
          * The type of resource data
@@ -118,7 +107,7 @@ export default class BaseTexture extends EventEmitter
          * @member {PIXI.TYPES}
          * @default PIXI.TYPES.UNSIGNED_BYTE
          */
-        this.type = null;
+        this.type = type || TYPES.UNSIGNED_BYTE;
 
         /**
          * The target type
@@ -126,7 +115,7 @@ export default class BaseTexture extends EventEmitter
          * @member {PIXI.TARGETS}
          * @default PIXI.TARGETS.TEXTURE_2D
          */
-        this.target = null;
+        this.target = target || TARGETS.TEXTURE_2D;
 
         /**
          * Set to true to enable pre-multiplied alpha
@@ -134,7 +123,7 @@ export default class BaseTexture extends EventEmitter
          * @member {boolean}
          * @default true
          */
-        this.premultiplyAlpha = null;
+        this.premultiplyAlpha = premultiplyAlpha !== false;
 
         /**
          * Global unique identifier for this BaseTexture
@@ -161,6 +150,7 @@ export default class BaseTexture extends EventEmitter
          * @default false
          */
         this.isPowerOfTwo = false;
+        this._refreshPOT();
 
         /**
          * The map of render context textures where this is bound
@@ -227,14 +217,8 @@ export default class BaseTexture extends EventEmitter
          */
         this.resource = null;
 
-        // Set all the properties
-        Object.assign(this, options);
-
         // Set the resource
         this.setResource(resource);
-
-        // Update the size
-        this.setSize(this.height, this.width, this.resolution);
 
         /**
          * Fired when a not-immediately-available source finishes loading.
@@ -313,22 +297,22 @@ export default class BaseTexture extends EventEmitter
      * @param {object} options
      * @param {PIXI.SCALE_MODES} [scaleMode] - pixi scalemode
      * @param {boolean} [mipmap] - enable mipmaps
-     * @param {PIXI.FORMATS} [format] - webgl pixel format
-     * @param {PIXI.TYPES} [type] - webgl pixel type
      * @returns {BaseTexture} this
      */
-    setStyle(options)
+    setStyle(scaleMode, mipmap)
     {
-        let dirty = false;
+        let dirty;
 
-        for (const field in options)
+        if (scaleMode !== undefined && scaleMode !== this.scaleMode)
         {
-            if (this[field] !== options[field])
-            {
-                // Update the property
-                this[field] = options[field];
-                dirty = true;
-            }
+            this.scaleMode = scaleMode;
+            dirty = true;
+        }
+
+        if (mipmap !== undefined && mipmap !== this.mipmap)
+        {
+            this.mipmap = mipmap;
+            dirty = true;
         }
 
         if (dirty)
@@ -342,9 +326,9 @@ export default class BaseTexture extends EventEmitter
     /**
      * Changes w/h/resolution. Texture becomes valid if width and height are greater than zero.
      *
-     * @param {number} width w
-     * @param {number} height h
-     * @param {number} [resolution] res
+     * @param {number} width Visual width
+     * @param {number} height Visual height
+     * @param {number} [resolution] Optionally set resolution
      * @returns {BaseTexture} this
      */
     setSize(width, height, resolution)
@@ -352,27 +336,39 @@ export default class BaseTexture extends EventEmitter
         this.resolution = resolution || this.resolution;
         this.width = width;
         this.height = height;
-        this.isPowerOfTwo = bitTwiddle.isPow2(this.realWidth) && bitTwiddle.isPow2(this.realHeight);
+        this._refreshPOT();
         this.update();
 
         return this;
     }
 
     /**
-     * Sets real size of baseTexture, preserves current resolution
+     * Sets real size of baseTexture, preserves current resolution.
      *
-     * @param {number} realWidth w
-     * @param {number} realHeight h
+     * @param {number} realWidth Full rendered width
+     * @param {number} realHeight Full rendered height
+     * @param {number} [resolution] Optionally set resolution
      * @returns {BaseTexture} this
      */
-    setRealSize(realWidth, realHeight)
+    setRealSize(realWidth, realHeight, resolution)
     {
+        this.resolution = resolution || this.resolution;
         this.width = realWidth / this.resolution;
         this.height = realHeight / this.resolution;
-        this.isPowerOfTwo = bitTwiddle.isPow2(this.realWidth) && bitTwiddle.isPow2(this.realHeight);
+        this._refreshPOT();
         this.update();
 
         return this;
+    }
+
+    /**
+     * Refresh check for isPowerOfTwo texture based on size
+     *
+     * @private
+     */
+    _refreshPOT()
+    {
+        this.isPowerOfTwo = bitTwiddle.isPow2(this.realWidth) && bitTwiddle.isPow2(this.realHeight);
     }
 
     /**
@@ -398,6 +394,8 @@ export default class BaseTexture extends EventEmitter
             this.height = this.height * oldResolution / resolution;
             this.emit('update');
         }
+
+        this._refreshPOT();
 
         return this;
     }

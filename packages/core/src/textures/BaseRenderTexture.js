@@ -51,17 +51,15 @@ export default class BaseRenderTexture extends BaseTexture
      */
     constructor(options)
     {
-        options = Object.assign({
-            mipmap: false,
-            width: 100,
-            height: 100,
-        }, options);
-
-        // No floats
-        options.width = Math.ceil(options.width);
-        options.height = Math.ceil(options.height);
-
         super(null, options);
+
+        const { width, height } = options || {};
+
+        // Set defaults
+        this.mipmap = false;
+        this.width = Math.ceil(width) || 100;
+        this.height = Math.ceil(height) || 100;
+        this.valid = true;
 
         /**
          * A map of renderer IDs to webgl renderTargets
@@ -81,7 +79,7 @@ export default class BaseRenderTexture extends BaseTexture
 
         this.clearColor = [0, 0, 0, 0];
 
-        this.frameBuffer = new FrameBuffer(this.width, this.height)
+        this.frameBuffer = new FrameBuffer(width, height)
             .addColorTexture(0, this);
 
         // TODO - could this be added the systems?
