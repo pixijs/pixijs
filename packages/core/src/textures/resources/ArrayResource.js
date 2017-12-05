@@ -97,10 +97,19 @@ export default class ArrayResource extends Resource
      *
      * @param {PIXI.resources.Resource} resource
      * @param {number} index - Zero-based index of resource to set
+     * @return {PIXI.resources.ArrayResource} Instance for chaining
      */
     addResourceAt(resource, index)
     {
+        const baseTexture = this.items[index];
+
+        if (!baseTexture)
+        {
+            throw new Error(`Index ${index} is out of bounds`);
+        }
         this.items[index].setResource(resource);
+
+        return this;
     }
 
     /**
@@ -120,6 +129,11 @@ export default class ArrayResource extends Resource
         }
     }
 
+    /**
+     * Unset the parent base texture
+     * @member {PIXI.BaseTexture}
+     * @override
+     */
     unbind(baseTexture)
     {
         super.unbind(baseTexture);
@@ -130,23 +144,33 @@ export default class ArrayResource extends Resource
         }
     }
 
-    validate()
+    /**
+     * Load all the resources simultaneously
+     * @override
+     * @return {Promise} When load is resolved
+     */
+    load()
     {
         if (this._load)
         {
             return this._load;
         }
 
-        const resources = this.items.map((it) => it.resource);
+        const resources = this.items.map((item) => item.resource);
 
         // TODO: also implement load part-by-part strategy
+        const promises = resources.map((item) => item.load());
 
-        this._load = Promise.all(resources.map(
-            (it) => it.validate()
-        )).then(() =>
-        {
-            this.resize(resources[0].width, resources[0].height);
-        });
+        this._load = Promise.all(promises)
+            .then(() =>
+            {
+                const { width, height } = resources[0];
+
+                this.resize(width, height);
+
+                return Promise.resolve(this);
+            }
+            );
 
         return this._load;
     }
@@ -180,24 +204,26 @@ export default class ArrayResource extends Resource
 
         for (let i = 0; i < length; i++)
         {
-            const texturePart = items[i];
+            const item = items[i];
 
-            if (itemDirtyIds[i] < texturePart.dirtyId)
+            if (itemDirtyIds[i] < item.dirtyId)
             {
-                itemDirtyIds[i] = texturePart.dirtyId;
-                if (texturePart.valid)
+                itemDirtyIds[i] = item.dirtyId;
+                if (item.valid)
                 {
-                    gl.texSubImage3D(gl.TEXTURE_2D_ARRAY,
+                    gl.texSubImage3D(
+                        gl.TEXTURE_2D_ARRAY,
                         0,
                         0, // xoffset
                         0, // yoffset
                         i, // zoffset
-                        texturePart.resource.width,
-                        texturePart.resource.height,
+                        item.resource.width,
+                        item.resource.height,
                         1,
                         texture.format,
                         texture.type,
-                        texturePart.resource.source);
+                        item.resource.source
+                    );
                 }
             }
         }

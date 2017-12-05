@@ -120,7 +120,7 @@ export default class Resource
      * @protected
      * @return {Promise} Handle the validate event
      */
-    validate()
+    load()
     {
         return Promise.resolve();
     }

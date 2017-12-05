@@ -17,12 +17,12 @@ export default class CubeResource extends ArrayResource
 {
     constructor(source, width, height, options)
     {
-        if (source.length !== CubeResource.SIDES)
-        {
-            throw new Error(`Invalid cube length. Got ${source.length}, expected 6`);
-        }
-
         super(source, width, height, options);
+
+        if (this.length !== CubeResource.SIDES)
+        {
+            throw new Error(`Invalid length. Got ${this.length}, expected 6`);
+        }
     }
 
     /**

@@ -5,4 +5,6 @@ require('./CanvasResource');
 require('./ImageResource');
 require('./SVGResource');
 require('./VideoResource');
+require('./ArrayResource');
 require('./autoDetectResource');
+require('./CubeResource');

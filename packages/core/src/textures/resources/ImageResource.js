@@ -204,7 +204,7 @@ export default class ImageResource extends BaseImageResource
         }
         else
         {
-            glTexture.upload(this.source);
+            super.upload(renderer, baseTexture, glTexture);
         }
 
         return true;
