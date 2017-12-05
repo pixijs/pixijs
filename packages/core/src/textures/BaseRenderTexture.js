@@ -51,6 +51,19 @@ export default class BaseRenderTexture extends BaseTexture
      */
     constructor(options)
     {
+        if (typeof options === 'number')
+        {
+            /* eslint-disable prefer-rest-params */
+            // Backward compatibility of signature
+            const width = arguments[0];
+            const height = arguments[1];
+            const scaleMode = arguments[2];
+            const resolution = arguments[3];
+
+            options = { width, height, scaleMode, resolution };
+            /* eslint-enable prefer-rest-params */
+        }
+
         super(null, options);
 
         const { width, height } = options || {};
