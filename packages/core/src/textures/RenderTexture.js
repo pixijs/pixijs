@@ -95,9 +95,9 @@ export default class RenderTexture extends Texture
      *
      * @param {number} width - The width to resize to.
      * @param {number} height - The height to resize to.
-     * @param {boolean} [resizeBaseTexture=false] - Should the baseTexture.width and height values be resized as well?
+     * @param {boolean} [resizeBaseTexture=true] - Should the baseTexture.width and height values be resized as well?
      */
-    resize(width, height, resizeBaseTexture = false)
+    resize(width, height, resizeBaseTexture = true)
     {
         width = Math.ceil(width);
         height = Math.ceil(height);
