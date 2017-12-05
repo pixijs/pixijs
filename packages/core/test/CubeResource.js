@@ -8,7 +8,7 @@ describe('PIXI.resources.CubeResource', function ()
         expect(() =>
         {
             // eslint-disable-next-line no-new
-            new CubeResource(8, 100, 100);
+            new CubeResource(8);
         }).to.throw(Error, /invalid length/i);
     });
 });

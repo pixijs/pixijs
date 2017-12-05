@@ -12,7 +12,7 @@ describe('PIXI.resources.ArrayResource', function ()
 
     it('should create new resource by length', function ()
     {
-        const resource = new ArrayResource(5, 100, 100);
+        const resource = new ArrayResource(5, { width: 100, height: 100 });
 
         resource.destroy();
         expect(resource.destroyed).to.be.true;
@@ -20,7 +20,7 @@ describe('PIXI.resources.ArrayResource', function ()
 
     it('should error on out of bound', function ()
     {
-        const resource = new ArrayResource(5, 100, 100);
+        const resource = new ArrayResource(5, { width: 100, height: 100 });
         const image = new ImageResource(this.imageUrl);
 
         expect(() => resource.addResourceAt(image, 10)).to.throw(Error, /out of bounds/);
@@ -37,7 +37,11 @@ describe('PIXI.resources.ArrayResource', function ()
             this.imageUrl,
         ];
 
-        const resource = new ArrayResource(images, 100, 100, { autoLoad: false });
+        const resource = new ArrayResource(images, {
+            width: 100,
+            height: 100,
+            autoLoad: false,
+        });
         const baseTexture = { setRealSize: sinon.stub() };
 
         resource.bind(baseTexture);

@@ -11,14 +11,16 @@ import { autoDetectResource } from './autoDetectResource';
  * @memberof PIXI.resources
  * @param {number|Array<*>} source - Number of items in array or the collection
  *        of image URLs to use. Can also be resources, image elements, canvas, etc.
- * @param {number} width - Width of the resource
- * @param {number} height - Height of the resource
  * @param {object} [options] Options to apply to {@link PIXI.resources.autoDetectResource}
+ * @param {number} [options.width] - Width of the resource
+ * @param {number} [options.height] - Height of the resource
  */
 export default class ArrayResource extends Resource
 {
-    constructor(source, width, height, options)
+    constructor(source, options)
     {
+        options = options || {};
+
         let urls;
         let length = source;
 
@@ -28,7 +30,7 @@ export default class ArrayResource extends Resource
             length = source.length;
         }
 
-        super(width, height);
+        super(options.width, options.height);
 
         /**
          * Collection of resources.
@@ -107,6 +109,13 @@ export default class ArrayResource extends Resource
         {
             throw new Error(`Index ${index} is out of bounds`);
         }
+
+        // Inherit the first resource dimensions
+        if (resource.valid && !this.valid)
+        {
+            this.resize(resource.width, resource.height);
+        }
+
         this.items[index].setResource(resource);
 
         return this;

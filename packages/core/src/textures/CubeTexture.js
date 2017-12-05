@@ -12,6 +12,6 @@ export default class CubeTexture extends BaseTexture
 {
     static from(...urls)
     {
-        return new CubeTexture(CubeResource.from(urls));
+        return new CubeTexture(new CubeResource(urls));
     }
 }
