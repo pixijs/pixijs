@@ -215,7 +215,11 @@ export default class TextureSystem extends WebGLSystem
             return;
         }
 
-        if (texture.resource && !texture.resource.style(this.renderer, texture, glTexture))
+        if (texture.resource && texture.resource.style(this.renderer, texture, glTexture))
+        {
+            // style is set, dont do anything!
+        }
+        else
         {
             this.setStyle(texture, glTexture);
         }
