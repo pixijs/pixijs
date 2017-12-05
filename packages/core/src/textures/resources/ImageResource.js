@@ -46,6 +46,11 @@ export default class ImageResource extends BaseImageResource
          */
         this.url = source.src;
 
+        /**
+         * When process is completed
+         * @member {Promise}
+         * @private
+         */
         this._process = null;
 
         /**
@@ -79,7 +84,7 @@ export default class ImageResource extends BaseImageResource
 
         if (options.autoLoad !== false)
         {
-            this.validate();
+            this.load();
         }
     }
 
@@ -104,15 +109,19 @@ export default class ImageResource extends BaseImageResource
         this._load = new Promise((resolve) =>
         {
             this.url = this.source.src;
-            const source = this.source;
+            const { source } = this;
 
             const completed = () =>
             {
-                this.valid = true;
+                if (this.destroyed)
+                {
+                    return;
+                }
                 source.onload = null;
                 source.onerror = null;
 
                 this.resize(source.width, source.height);
+                this._load = null;
 
                 if (this.createBitmap)
                 {
@@ -138,7 +147,7 @@ export default class ImageResource extends BaseImageResource
     }
 
     /**
-     * Called when we need to convert image into bitmap.
+     * Called when we need to convert image into BitmapImage.
      * Can be called multiple times, real promise is cached inside.
      *
      * @returns {Promise} cached promise to fill that bitmap
@@ -149,35 +158,22 @@ export default class ImageResource extends BaseImageResource
         {
             return this._process;
         }
-        if (this.bitmap !== null)
-        {
-            return Promise.resolve(this.bitmap);
-        }
-
-        this._process = this.onProcess();
-
-        return this._process;
-    }
-
-    /**
-     * insides of `process`, called only once per bitmap generation
-     *
-     * @returns {Promise} promise to fill that bitmap
-     */
-    onProcess()
-    {
-        if (!window.createImageBitmap)
+        if (this.bitmap !== null || !window.createImageBitmap)
         {
             return Promise.resolve(this);
         }
 
-        return window.createImageBitmap(this.source).then((imageBitmap) =>
-        {
-            this.bitmap = imageBitmap;
-            this.update();
+        this._process = window.createImageBitmap(this.source)
+            .then((bitmap) =>
+            {
+                this.bitmap = bitmap;
+                this.update();
+                this._process = null;
 
-            return this;
-        });
+                return this;
+            });
+
+        return this._process;
     }
 
     /**
@@ -208,7 +204,6 @@ export default class ImageResource extends BaseImageResource
                     this.bitmap.close();
                 }
                 this.bitmap = null;
-                this._process = null;
             }
         }
         else
@@ -217,5 +212,22 @@ export default class ImageResource extends BaseImageResource
         }
 
         return true;
+    }
+
+    /**
+     * Destroys this texture
+     * @override
+     */
+    dispose()
+    {
+        super.dispose();
+
+        if (this.bitmap)
+        {
+            this.bitmap.close();
+            this.bitmap = null;
+        }
+        this._process = null;
+        this._load = null;
     }
 }

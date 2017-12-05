@@ -189,7 +189,7 @@ export default class BaseTexture extends EventEmitter
          * @readonly
          * @member {boolean}
          */
-        this.valid = false;
+        this.valid = width > 0 && height > 0;
 
         /**
          * The collection of alternative cache ids, since some BaseTextures
@@ -424,15 +424,6 @@ export default class BaseTexture extends EventEmitter
         this.resource = resource;
 
         return this;
-    }
-
-    /**
-     * Called when a resource has been loaded
-     * @private
-     */
-    validated()
-    {
-        this.valid = true;
     }
 
     /**

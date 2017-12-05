@@ -89,6 +89,7 @@ export default class ArrayResource extends Resource
         }
         this.items = null;
         this.itemDirtyIds = null;
+        this._load = null;
     }
 
     /**
@@ -144,7 +145,6 @@ export default class ArrayResource extends Resource
             (it) => it.validate()
         )).then(() =>
         {
-            this.valid = true;
             this.resize(resources[0].width, resources[0].height);
         });
 

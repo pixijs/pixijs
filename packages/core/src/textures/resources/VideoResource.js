@@ -9,6 +9,7 @@ import { Ticker } from '@pixi/ticker';
  * @param {HTMLVideoElement|object|string|Array<string|object>} source - Video element to use.
  * @param {object} [options] - Options to use
  * @param {boolean} [options.autoLoad=true] - Start loading the video immediately
+ * @param {boolean} [options.autoPlay=true] - Start playing video immediately
  */
 export default class VideoResource extends BaseImageResource
 {
@@ -59,7 +60,7 @@ export default class VideoResource extends BaseImageResource
          * @member {boolean}
          * @default true
          */
-        this.autoPlay = true;
+        this.autoPlay = options.autoPlay !== false;
 
         /**
          * Promise when loading
@@ -69,16 +70,23 @@ export default class VideoResource extends BaseImageResource
          */
         this._load = null;
 
+        /**
+         * Callback when completed with load.
+         * @member {function}
+         * @private
+         */
+        this._resolve = null;
+
         // Bind for listeners
         this._onCanPlay = this._onCanPlay.bind(this);
 
         if (options.autoLoad !== false)
         {
-            this.validate();
+            this.load();
         }
     }
 
-    validate()
+    load()
     {
         if (this._load)
         {
@@ -108,11 +116,13 @@ export default class VideoResource extends BaseImageResource
 
         this._load = new Promise((resolve) =>
         {
-            this.resolve = resolve;
-
             if (this.valid)
             {
-                this.resolve(this);
+                resolve(this);
+            }
+            else
+            {
+                this._resolve = resolve;
             }
         });
 
@@ -192,13 +202,10 @@ export default class VideoResource extends BaseImageResource
         this.resize(source.videoWidth, source.videoHeight);
 
         // prevent multiple loaded dispatches..
-        if (!this.valid)
+        if (!this.valid && this._resolve)
         {
-            this.valid = true;
-            if (this.resolve)
-            {
-                this.resolve(this);
-            }
+            this._resolve(this);
+            this._resolve = null;
         }
 
         if (this._isSourcePlaying())
@@ -221,6 +228,14 @@ export default class VideoResource extends BaseImageResource
         {
             Ticker.shared.remove(this.update, this);
         }
+
+        if (this.source)
+        {
+            this.source.pause();
+            this.source.src = '';
+            this.source.load();
+        }
+        super.dispose();
     }
 
     /**

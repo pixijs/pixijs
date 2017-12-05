@@ -50,11 +50,11 @@ export default class SVGResource extends BaseImageResource
 
         if (options.autoLoad !== false)
         {
-            this.validate();
+            this.load();
         }
     }
 
-    validate()
+    load()
     {
         if (this._load)
         {
@@ -198,6 +198,7 @@ export default class SVGResource extends BaseImageResource
             .drawImage(tempImage, 0, 0, svgWidth, svgHeight, 0, 0, this.width, this.height);
 
         this._resolve();
+        this._resolve = null;
     }
 
     /**
@@ -227,6 +228,16 @@ export default class SVGResource extends BaseImageResource
         }
 
         return size;
+    }
+
+    /**
+     * Destroys this texture
+     * @override
+     */
+    dispose()
+    {
+        super.dispose();
+        this._resolve = null;
     }
 
     /**

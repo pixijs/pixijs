@@ -32,9 +32,6 @@ export default class BufferResource extends Resource
          * @member {Float32Array|Uint8Array|Uint32Array}
          */
         this.data = source;
-
-        // Already validated
-        this._valid = true;
     }
 
     /**

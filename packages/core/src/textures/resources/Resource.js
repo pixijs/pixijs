@@ -37,18 +37,11 @@ export default class Resource
         this.destroyed = false;
 
         /**
-         * Resource has been valid already.
-         * @protected
-         * @default false
-         */
-        this._valid = false;
-
-        /**
          * Mini-runner for handling resize events
          *
          * @member {Runner}
          */
-        this.onRealSize = new Runner('setRealSize', 2);
+        this.onResize = new Runner('setRealSize', 2);
 
         /**
          * Mini-runner for handling update events
@@ -56,13 +49,6 @@ export default class Resource
          * @member {Runner}
          */
         this.onUpdate = new Runner('update');
-
-        /**
-         * Mini-runner for handling valid events
-         *
-         * @member {Runner}
-         */
-        this.onValid = new Runner('validated');
     }
 
     /**
@@ -72,21 +58,14 @@ export default class Resource
      */
     bind(baseTexture)
     {
-        this.onRealSize.add(baseTexture);
+        this.onResize.add(baseTexture);
         this.onUpdate.add(baseTexture);
-        this.onValid.add(baseTexture);
 
         // Call a resize immediate if we already
         // have the width and height of the resource
         if (this._width || this._height)
         {
-            this.onRealSize.run(this._width, this._height);
-        }
-
-        // We are valid or not
-        if (this._valid)
-        {
-            this.onValid.run();
+            this.onResize.run(this._width, this._height);
         }
     }
 
@@ -97,9 +76,8 @@ export default class Resource
      */
     unbind(baseTexture)
     {
-        this.onRealSize.remove(baseTexture);
+        this.onResize.remove(baseTexture);
         this.onUpdate.remove(baseTexture);
-        this.onValid.remove(baseTexture);
     }
 
     /**
@@ -111,25 +89,18 @@ export default class Resource
         {
             this._width = width;
             this._height = height;
-            this.onRealSize.run(width, height);
+            this.onResize.run(width, height);
         }
     }
 
     /**
      * Has been validated
+     * @readonly
+     * @member {boolean}
      */
-    set valid(valid)
-    {
-        this._valid = valid;
-
-        if (!this.destroyed && valid)
-        {
-            this.onValid.run();
-        }
-    }
     get valid()
     {
-        return this._valid;
+        return !!this._width && !!this._height;
     }
 
     /**
@@ -220,12 +191,10 @@ export default class Resource
      */
     destroy()
     {
-        this.onRealSize.removeAll();
-        this.onRealSize = null;
+        this.onResize.removeAll();
+        this.onResize = null;
         this.onUpdate.removeAll();
         this.onUpdate = null;
-        this.onValid.removeAll();
-        this.onValid = null;
         this.destroyed = true;
         this.dispose();
     }

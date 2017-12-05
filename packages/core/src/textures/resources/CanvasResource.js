@@ -9,13 +9,6 @@ import BaseImageResource from './BaseImageResource';
  */
 export default class CanvasResource extends BaseImageResource
 {
-    constructor(source)
-    {
-        super(source);
-
-        this._valid = true;
-    }
-
     /**
      * Used to auto-detect the type of resource.
      *
