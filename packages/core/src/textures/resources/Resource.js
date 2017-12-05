@@ -167,7 +167,6 @@ export default class Resource
      */
     upload(renderer, baseTexture, glTexture) // eslint-disable-line no-unused-vars
     {
-        // override
         return false;
     }
 
@@ -177,11 +176,11 @@ export default class Resource
      * @param {PIXI.Renderer} renderer - yeah, renderer!
      * @param {PIXI.BaseTexture} baseTexture - the texture
      * @param {PIXI.glCore.Texture} glTexture - texture instance for this webgl context
-     * @returns {boolean} true is success
+     * @returns {boolean} `true` is success
      */
     style(renderer, baseTexture, glTexture) // eslint-disable-line no-unused-vars
     {
-        // override
+        return false;
     }
 
     /**
