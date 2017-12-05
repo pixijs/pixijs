@@ -47,17 +47,14 @@ export default class BaseImageResource extends Resource
      * Upload the texture to the GPU.
      * @param {PIXI.Renderer} renderer Upload to the renderer
      * @param {PIXI.BaseTexture} baseTexture Reference to parent texture
+     * @param {PIXI.glCore.GLTexture} glTexture Reference
      */
-    upload(renderer, baseTexture)
+    upload(renderer, baseTexture, glTexture)
     {
-        renderer.gl.texImage2D(
-            baseTexture.target,
-            0,
-            baseTexture.format,
-            baseTexture.format,
-            baseTexture.type,
-            this.source
-        );
+        // TODO: move glTexture.upload somewhere else
+        glTexture.format = baseTexture.format;
+        glTexture.type = baseTexture.type;
+        glTexture.upload(this.source);
 
         return true;
     }
