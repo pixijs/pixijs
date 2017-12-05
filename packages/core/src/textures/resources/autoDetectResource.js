@@ -16,12 +16,12 @@ import ArrayResource from './ArrayResource';
  *     super();
  *   }
  *   upload(renderer, baseTexture, glTexture) {
- *     // upload with GL 
+ *     // upload with GL
  *   }
  *   // used to auto-detect resource
  *   static test(source, extension) {
- *     return extension === 'xyz'|| source instanceof SomeClass; 
- *   }  
+ *     return extension === 'xyz'|| source instanceof SomeClass;
+ *   }
  * }
  * // Install the new resource type
  * PIXI.resources.INSTALLED.push(CustomResource);
@@ -46,7 +46,7 @@ export const INSTALLED = [
  * auto-detects which type of resource to create. All resources that
  * are auto-detectable must have a static `test` method and a constructor
  * with the arguments `(source, options?)`. Currently, the supported
- * resources for auto-detection include: 
+ * resources for auto-detection include:
  *  - {@link PIXI.resources.ImageResource}
  *  - {@link PIXI.resources.CanvasResource}
  *  - {@link PIXI.resources.VideoResource}
