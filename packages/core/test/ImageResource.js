@@ -47,8 +47,9 @@ describe('PIXI.resources.ImageResource', function ()
 
         const resource = new ImageResource(image, { autoLoad: false });
 
-        return resource.load().then(() =>
+        return resource.load().then((res) =>
         {
+            expect(res).to.equal(resource);
             expect(resource.width).to.equal(100);
             expect(resource.height).to.equal(100);
             expect(resource.valid).to.be.true;
@@ -67,8 +68,9 @@ describe('PIXI.resources.ImageResource', function ()
             createBitmap: false,
         });
 
-        return resource.load().then(() =>
+        return resource.load().then((res) =>
         {
+            expect(res).to.equal(resource);
             expect(resource.width).to.equal(100);
             expect(resource.height).to.equal(100);
             expect(resource.valid).to.be.true;

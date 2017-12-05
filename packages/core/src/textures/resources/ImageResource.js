@@ -168,13 +168,13 @@ export default class ImageResource extends BaseImageResource
             {
                 if (this.destroyed)
                 {
-                    return;
+                    return Promise.reject();
                 }
                 this.bitmap = bitmap;
                 this.update();
                 this._process = null;
 
-                return this;
+                return Promise.resolve(this);
             });
 
         return this._process;
