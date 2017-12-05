@@ -9,30 +9,24 @@ import Runner from 'mini-runner';
 export default class Resource
 {
     /**
-     * @param {object} [options] Options to use
-     * @param {number} [options.width=0] Width of the resource
-     * @param {number} [options.height=0] Height of the resource
+     * @param {number} [width=0] Width of the resource
+     * @param {number} [height=0] Height of the resource
      */
-    constructor(options)
+    constructor(width = 0, height = 0)
     {
-        options = Object.assign({
-            width: 0,
-            height: 0,
-        }, options);
-
         /**
          * Internal width of the resource
          * @member {number}
          * @protected
          */
-        this._width = options.width;
+        this._width = width;
 
         /**
          * Internal height of the resource
          * @member {number}
          * @protected
          */
-        this._height = options.height;
+        this._height = height;
 
         /**
          * If resource has been destroyed

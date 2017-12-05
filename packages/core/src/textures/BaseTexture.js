@@ -16,8 +16,8 @@ import bitTwiddle from 'bit-twiddle';
  * @extends PIXI.utils.EventEmitter
  * @memberof PIXI
  * @param {PIXI.resources.Resource|string|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement} [resource=null]
- *        The current resource to use, for things that are `Resource` objects already, will be converted
- *        into a resource.
+ *        The current resource to use, for things that aren't Resource objects, will be converted
+ *        into a Resource.
  * @param {Object} [options] - Collection of options
  * @param {boolean} [options.mipmap=PIXI.settings.MIPMAP_TEXTURES] - If mipmapping is enabled for texture
  * @param {PIXI.WRAP_MODES} [options.wrapMode=PIXI.settings.WRAP_MODE] - Wrap mode for textures
@@ -26,9 +26,10 @@ import bitTwiddle from 'bit-twiddle';
  * @param {PIXI.TYPES} [options.type=PIXI.TYPES.UNSIGNED_BYTE] - GL data type
  * @param {PIXI.TARGETS} [options.target=PIXI.TARGETS.TEXTURE_2D] - GL texture target
  * @param {boolean} [options.premultiplyAlpha=true] - Pre multiply the image alpha
- * @param {Object} [options.params] - Optional parameters for resource, use for shared/dynamic resources
  * @param {number} [options.width=0] - Width of the texture
  * @param {number} [options.height=0] - Height of the texture
+ * @param {object} [options.resourceOptions] - Optional resource options,
+ *        see {@link PIXI.resources.autoDetectResource autoDetectResource}
  */
 export default class BaseTexture extends EventEmitter
 {
@@ -39,12 +40,12 @@ export default class BaseTexture extends EventEmitter
         options = options || {};
 
         const { premultiplyAlpha, mipmap, scaleMode, width, height,
-            wrapMode, format, type, target, resolution } = options;
+            wrapMode, format, type, target, resolution, resourceOptions } = options;
 
         // Convert the resource to a Resource object
         if (resource && !(resource instanceof Resource))
         {
-            resource = autoDetectResource(resource, options);
+            resource = autoDetectResource(resource, resourceOptions);
         }
 
         /**
@@ -509,7 +510,7 @@ export default class BaseTexture extends EventEmitter
      * @static
      * @param {string|HTMLImageElement|HTMLCanvasElement|SVGElement|HTMLVideoElement} source - The
      *        source to create base texture from.
-     * @param {object} [options] See constructor for options.
+     * @param {object} [options] See {@link PIXI.BaseTexture}'s constructor for options.
      * @return {PIXI.BaseTexture} The new base texture.
      */
     static from(source, options)
@@ -546,18 +547,18 @@ export default class BaseTexture extends EventEmitter
      * Create a new BaseTexture with a BufferResource from a Float32Array.
      * RGBA values are floats from 0 to 1.
      * @static
+     * @param {Float32Array|UintArray} buffer The optional array to use, if no data
+     *        is provided, a new Float32Array is created.
      * @param {number} width - Width of the resource
      * @param {number} height - Height of the resource
-     * @param {Float32Array|UintArray} [data] The optional array to use, if no data
-     *        is provided, the data type is a float.
      * @return {PIXI.BaseTexture} The resulting new BaseTexture
      */
-    static fromBuffer(width, height, data)
+    static fromBuffer(buffer, width, height)
     {
-        data = data || new Float32Array(width * height * 4);
+        buffer = buffer || new Float32Array(width * height * 4);
 
-        const resource = new BufferResource(data, { width, height });
-        const type = data instanceof Float32Array ? TYPES.FLOAT : TYPES.UNSIGNED_BYTE;
+        const resource = new BufferResource(buffer, { width, height });
+        const type = buffer instanceof Float32Array ? TYPES.FLOAT : TYPES.UNSIGNED_BYTE;
 
         return BaseTexture(resource, {
             scaleMode: SCALE_MODES.NEAREST,

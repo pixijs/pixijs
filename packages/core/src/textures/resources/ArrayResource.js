@@ -1,7 +1,7 @@
 import Resource from './Resource';
-import ImageResource from './ImageResource';
 import BaseTexture from '../BaseTexture';
 import { TARGETS } from '@pixi/constants';
+import { autoDetectResource } from './autoDetectResource';
 
 /**
  * Resource for a CubeTexture which contains six resources.
@@ -9,15 +9,15 @@ import { TARGETS } from '@pixi/constants';
  * @class
  * @extends PIXI.resources.Resource
  * @memberof PIXI.resources
- * @param {number|Array<string>} source - Number of items in array or the collection
- *        of image URLs to use
- * @param {object} options - Options
- * @param {number} options.width - Width of the resource
- * @param {number} options.height - Height of the resource
+ * @param {number|Array<*>} source - Number of items in array or the collection
+ *        of image URLs to use. Can also be resources, image elements, canvas, etc.
+ * @param {number} width - Width of the resource
+ * @param {number} height - Height of the resource
+ * @param {object} [options] Options to apply to {@link PIXI.resources.autoDetectResource}
  */
 export default class ArrayResource extends Resource
 {
-    constructor(source, options)
+    constructor(source, width, height, options)
     {
         let urls;
         let length = source;
@@ -28,7 +28,7 @@ export default class ArrayResource extends Resource
             length = source.length;
         }
 
-        super(options);
+        super(width, height);
 
         /**
          * Collection of resources.
@@ -72,7 +72,7 @@ export default class ArrayResource extends Resource
         {
             for (let i = 0; i < length; i++)
             {
-                this.addResourceAt(new ImageResource(urls[i], options), i);
+                this.addResourceAt(autoDetectResource(urls[i], options), i);
             }
         }
     }

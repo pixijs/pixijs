@@ -14,9 +14,7 @@ export default class VideoResource extends BaseImageResource
 {
     constructor(source, options)
     {
-        options = Object.assign({
-            autoLoad: true,
-        }, options);
+        options = options || {};
 
         if (!(source instanceof HTMLVideoElement))
         {
@@ -74,7 +72,7 @@ export default class VideoResource extends BaseImageResource
         // Bind for listeners
         this._onCanPlay = this._onCanPlay.bind(this);
 
-        if (options.autoLoad)
+        if (options.autoLoad !== false)
         {
             this.validate();
         }
@@ -119,28 +117,6 @@ export default class VideoResource extends BaseImageResource
         });
 
         return this._load;
-    }
-
-    /**
-     * Override the width getter
-     * @member {number}
-     * @override
-     * @readonly
-     */
-    get width()
-    {
-        return this.source.videoWidth || 0;
-    }
-
-    /**
-     * Override the height getter
-     * @member {number}
-     * @override
-     * @readonly
-     */
-    get height()
-    {
-        return this.source.videoHeight || 0;
     }
 
     /**
@@ -285,7 +261,8 @@ export default class VideoResource extends BaseImageResource
      */
     static test(source, extension)
     {
-        return (source instanceof HTMLVideoElement) || VideoResource.TYPES.indexOf(extension) > -1;
+        return (source instanceof HTMLVideoElement)
+            || VideoResource.TYPES.indexOf(extension) > -1;
     }
 }
 

@@ -9,17 +9,20 @@ import { TARGETS } from '@pixi/constants';
  * @memberof PIXI.resources
  * @param {Array<string|PIXI.resource.Resource>} [source] Collection of URLs or resoures
  *        to use as the sides of the cube.
+ * @param {number} width - Width of resource
+ * @param {number} height - Height of resource
+ * @param {object} [options] - ImageResource options
  */
 export default class CubeResource extends ArrayResource
 {
-    constructor(source, options)
+    constructor(source, width, height, options)
     {
         if (source.length !== CubeResource.SIDES)
         {
             throw new Error(`Invalid cube length. Got ${source.length}, expected 6`);
         }
 
-        super(source, options);
+        super(source, width, height, options);
     }
 
     /**

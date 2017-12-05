@@ -15,10 +15,7 @@ export default class SVGResource extends BaseImageResource
 {
     constructor(source, options)
     {
-        options = Object.assign({
-            scale: 1,
-            autoLoad: true,
-        }, options);
+        options = options || {};
 
         super(document.createElement('canvas'));
 
@@ -34,7 +31,7 @@ export default class SVGResource extends BaseImageResource
          * @readonly
          * @member {number}
          */
-        this.scale = options.scale;
+        this.scale = options.scale || 1;
 
         /**
          * Call when completedly loaded
@@ -51,7 +48,7 @@ export default class SVGResource extends BaseImageResource
          */
         this._load = null;
 
-        if (options.autoLoad)
+        if (options.autoLoad !== false)
         {
             this.validate();
         }
@@ -241,18 +238,12 @@ export default class SVGResource extends BaseImageResource
      */
     static test(source, extension)
     {
-        return SVGResource.TYPES.indexOf(extension) > -1;
+        // url file extension is SVG
+        return extension === 'svg'
+            // source is SVG data-uri
+            || (typeof source === 'string' && source.indexOf('data:image/svg+xml') === 0);
     }
 }
-
-/**
- * List of common SVG file extensions supported by SVGResource.
- * @constant
- * @member {Array<string>}
- * @static
- * @readonly
- */
-SVGResource.TYPES = ['svg'];
 
 /**
  * RegExp for SVG size.

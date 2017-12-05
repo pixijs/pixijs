@@ -16,7 +16,14 @@ export default class BufferResource extends Resource
      */
     constructor(source, options)
     {
-        super(options);
+        const { width, height } = options || {};
+
+        if (!width || !height)
+        {
+            throw new Error('BufferResource width or height invalid');
+        }
+
+        super(width, height);
 
         /**
          * Source array
@@ -70,6 +77,8 @@ export default class BufferResource extends Resource
      */
     static test(source)
     {
-        return source instanceof Float32Array || source instanceof Uint8Array;
+        return source instanceof Float32Array
+            || source instanceof Uint8Array
+            || source instanceof Uint32Array;
     }
 }

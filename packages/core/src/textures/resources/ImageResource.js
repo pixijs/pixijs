@@ -19,11 +19,7 @@ export default class ImageResource extends BaseImageResource
      */
     constructor(source, options)
     {
-        options = Object.assign({
-            autoLoad: true,
-            createBitmap: true,
-            crossorigin: true,
-        }, options);
+        options = options || {};
 
         if (!(source instanceof HTMLImageElement))
         {
@@ -33,7 +29,7 @@ export default class ImageResource extends BaseImageResource
             {
                 imageElement.crossOrigin = determineCrossOrigin(source);
             }
-            else if (options.crossorigin)
+            else if (options.crossorigin !== false)
             {
                 imageElement.crossOrigin = 'anonymous';
             }
@@ -64,7 +60,7 @@ export default class ImageResource extends BaseImageResource
          * @member {boolean}
          * @default PIXI.settings.CREATE_IMAGE_BITMAP
          */
-        this.createBitmap = options.createBitmap && settings.CREATE_IMAGE_BITMAP && !!window.createImageBitmap;
+        this.createBitmap = options.createBitmap !== false && settings.CREATE_IMAGE_BITMAP && !!window.createImageBitmap;
 
         /**
          * The ImageBitmap element created for HTMLImageElement
@@ -81,7 +77,7 @@ export default class ImageResource extends BaseImageResource
          */
         this._load = null;
 
-        if (options.autoLoad)
+        if (options.autoLoad !== false)
         {
             this.validate();
         }
@@ -110,7 +106,7 @@ export default class ImageResource extends BaseImageResource
             this.url = this.source.src;
             const source = this.source;
 
-            const stuff = () =>
+            const completed = () =>
             {
                 this.valid = true;
                 source.onload = null;
@@ -130,11 +126,11 @@ export default class ImageResource extends BaseImageResource
 
             if (source.complete && source.src)
             {
-                stuff();
+                completed();
             }
             else
             {
-                source.onload = stuff;
+                source.onload = completed;
             }
         });
 
