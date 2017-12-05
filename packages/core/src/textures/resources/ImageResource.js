@@ -166,6 +166,10 @@ export default class ImageResource extends BaseImageResource
         this._process = window.createImageBitmap(this.source)
             .then((bitmap) =>
             {
+                if (this.destroyed)
+                {
+                    return;
+                }
                 this.bitmap = bitmap;
                 this.update();
                 this._process = null;
