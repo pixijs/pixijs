@@ -10,6 +10,7 @@ import { Ticker } from '@pixi/ticker';
  * @param {object} [options] - Options to use
  * @param {boolean} [options.autoLoad=true] - Start loading the video immediately
  * @param {boolean} [options.autoPlay=true] - Start playing video immediately
+ * @param {boolean} [options.crossorigin=true] - Load image using cross origin
  */
 export default class VideoResource extends BaseImageResource
 {
@@ -28,6 +29,8 @@ export default class VideoResource extends BaseImageResource
             {
                 source = [source];
             }
+
+            BaseImageResource.crossOrigin(videoElement, (source[0].src || source[0]), options.crossorigin);
 
             // array of objects or strings
             for (let i = 0; i < source.length; ++i)
@@ -123,6 +126,8 @@ export default class VideoResource extends BaseImageResource
             else
             {
                 this._resolve = resolve;
+
+                source.load();
             }
         });
 
@@ -199,10 +204,12 @@ export default class VideoResource extends BaseImageResource
         source.removeEventListener('canplay', this._onCanPlay);
         source.removeEventListener('canplaythrough', this._onCanPlay);
 
+        const valid = this.valid;
+
         this.resize(source.videoWidth, source.videoHeight);
 
         // prevent multiple loaded dispatches..
-        if (!this.valid && this._resolve)
+        if (!valid && this._resolve)
         {
             this._resolve(this);
             this._resolve = null;

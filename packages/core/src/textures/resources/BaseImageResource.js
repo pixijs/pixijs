@@ -1,4 +1,5 @@
 import Resource from './Resource';
+import { determineCrossOrigin } from '@pixi/utils';
 
 /**
  * Base for all the image/canvas resources
@@ -21,6 +22,25 @@ export default class BaseImageResource extends Resource
          * @readonly
          */
         this.source = source;
+    }
+
+    /**
+     * Set cross origin based detecting the url and the crossorigin
+     * @protected
+     * @param {HTMLElement} element - Element to apply crossOrigin
+     * @param {string} url - URL to check
+     * @param {boolean|string} [crossorigin=true] - Cross origin value to use
+     */
+    static crossOrigin(element, url, crossorigin)
+    {
+        if (crossorigin === undefined && url.indexOf('data:') !== 0)
+        {
+            element.crossOrigin = determineCrossOrigin(url);
+        }
+        else if (crossorigin !== false)
+        {
+            element.crossOrigin = typeof crossorigin === 'string' ? crossorigin : 'anonymous';
+        }
     }
 
     /**

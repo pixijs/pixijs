@@ -131,7 +131,9 @@ describe('BaseTexture', function ()
     {
         cleanCache();
 
-        const imageResource = new ImageResource(URL, true, true, true);
+        const imageResource = new ImageResource(URL, {
+            crossorigin: true,
+        });
 
         const baseTexture = new BaseTexture(imageResource);
 

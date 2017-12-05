@@ -1,4 +1,3 @@
-import { determineCrossOrigin } from '@pixi/utils';
 import BaseImageResource from './BaseImageResource';
 import { settings } from '@pixi/settings';
 
@@ -25,14 +24,7 @@ export default class ImageResource extends BaseImageResource
         {
             const imageElement = new Image();
 
-            if (options.crossorigin === undefined && source.indexOf('data:') !== 0)
-            {
-                imageElement.crossOrigin = determineCrossOrigin(source);
-            }
-            else if (options.crossorigin !== false)
-            {
-                imageElement.crossOrigin = 'anonymous';
-            }
+            BaseImageResource.crossOrigin(imageElement, source, options.crossorigin);
 
             imageElement.src = source;
             source = imageElement;

@@ -64,7 +64,7 @@ export const INSTALLED = [
  * @param {boolean} [options.autoLoad=true] - Image, SVG and Video flag to start loading
  * @param {number} [options.scale=1] - SVG source scale
  * @param {boolean} [options.createBitmap=true] - Image option to create Bitmap object
- * @param {boolean} [options.crossorigin=true] - Image option to load crossorigin
+ * @param {boolean} [options.crossorigin=true] - Image and Video option to set crossOrigin
  * @return {PIXI.resources.Resource} The created resource.
  */
 export function autoDetectResource(source, options)
