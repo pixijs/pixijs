@@ -46,6 +46,7 @@ export default class BaseTexture extends EventEmitter
         if (resource && !(resource instanceof Resource))
         {
             resource = autoDetectResource(resource, resourceOptions);
+            resource.internal = true;
         }
 
         /**
@@ -459,7 +460,11 @@ export default class BaseTexture extends EventEmitter
         if (this.resource)
         {
             this.resource.unbind(this);
-            this.resource.destroy();
+            // only destroy resourced created internally
+            if (this.resource.internal)
+            {
+                this.resource.destroy();
+            }
             this.resource = null;
         }
 

@@ -23,6 +23,14 @@ describe('PIXI.resources.ImageResource', function ()
         resource.destroy();
     });
 
+    it('should destroy resource multiple times', function ()
+    {
+        const resource = new ImageResource(new Image());
+
+        resource.destroy();
+        resource.destroy();
+    });
+
     it('should create new valid resource from HTMLImageElement', function ()
     {
         const image = new Image();

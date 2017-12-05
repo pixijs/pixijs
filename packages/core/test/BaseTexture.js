@@ -125,6 +125,8 @@ describe('BaseTexture', function ()
 
         expect(baseTexture.width).to.equal(canvas.width);
         expect(baseTexture.height).to.equal(canvas.height);
+
+        baseTexture.destroy();
     });
 
     it('should set source.crossOrigin to anonymous if explicitly set', function ()
@@ -138,5 +140,38 @@ describe('BaseTexture', function ()
         const baseTexture = new BaseTexture(imageResource);
 
         expect(baseTexture.resource.source.crossOrigin).to.equal('anonymous');
+
+        baseTexture.destroy();
+        imageResource.destroy();
+    });
+
+    it('should not destroy externally created resources', function ()
+    {
+        cleanCache();
+
+        const imageResource = new ImageResource(URL);
+        const baseTexture = new BaseTexture(imageResource);
+
+        baseTexture.destroy();
+
+        expect(baseTexture.destroyed).to.be.true;
+        expect(imageResource.destroyed).to.be.false;
+
+        imageResource.destroy();
+
+        expect(imageResource.destroyed).to.be.true;
+    });
+
+    it('should destroy internally created resources', function ()
+    {
+        cleanCache();
+
+        const baseTexture = new BaseTexture(URL);
+        const { resource } = baseTexture;
+
+        baseTexture.destroy();
+
+        expect(resource.destroyed).to.be.true;
+        expect(baseTexture.destroyed).to.be.true;
     });
 });

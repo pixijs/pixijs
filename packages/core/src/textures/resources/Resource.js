@@ -37,6 +37,16 @@ export default class Resource
         this.destroyed = false;
 
         /**
+         * `true` if resource is created by BaseTexture
+         * useful for doing cleanup with BaseTexture destroy
+         * and not cleaning up resources that were created
+         * externally.
+         * @member {boolean}
+         * @private
+         */
+        this.internal = false;
+
+        /**
          * Mini-runner for handling resize events
          *
          * @member {Runner}
@@ -191,11 +201,14 @@ export default class Resource
      */
     destroy()
     {
-        this.onResize.removeAll();
-        this.onResize = null;
-        this.onUpdate.removeAll();
-        this.onUpdate = null;
-        this.destroyed = true;
-        this.dispose();
+        if (!this.destroyed)
+        {
+            this.onResize.removeAll();
+            this.onResize = null;
+            this.onUpdate.removeAll();
+            this.onUpdate = null;
+            this.destroyed = true;
+            this.dispose();
+        }
     }
 }
