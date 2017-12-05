@@ -48,4 +48,22 @@ describe('PIXI.Application', function ()
             done();
         });
     });
+
+    it('should be able to destroy filter manager gracefully', function ()
+    {
+        const app = new PIXI.Application();
+
+        document.body.appendChild(app.view);
+
+        const sprite = new PIXI.Sprite(PIXI.Texture.WHITE);
+
+        app.stage.addChild(sprite);
+
+        const filter = new PIXI.filters.AlphaFilter();
+
+        sprite.filters = [filter];
+        app.render();
+
+        app.destroy(true);
+    });
 });
