@@ -30,7 +30,7 @@ import { uid, TextureCache, getResolutionOfUrl } from '@pixi/utils';
  * You can use a ticker or rAF to ensure your sprites load the finished textures after processing. See issue #3068.
  *
  * @class
- * @extends EventEmitter
+ * @extends PIXI.utils.EventEmitter
  * @memberof PIXI
  */
 export default class Texture extends EventEmitter
@@ -323,14 +323,15 @@ export default class Texture extends EventEmitter
     static fromLoader(source, imageUrl, name)
     {
         // console.log('added from loader...')
-        const resource = new ImageResource(source);// .from(imageUrl, crossorigin);// document.createElement('img');
+        const resource = new ImageResource(source);
 
         resource.url = imageUrl;
 
         //  console.log('base resource ' + resource.width);
-        const baseTexture = new BaseTexture(resource,
-            settings.SCALE_MODE,
-            getResolutionOfUrl(imageUrl));
+        const baseTexture = new BaseTexture(resource, {
+            scaleMode: settings.SCALE_MODE,
+            resultion: getResolutionOfUrl(imageUrl),
+        });
 
         const texture = new Texture(baseTexture);
 
@@ -457,7 +458,6 @@ export default class Texture extends EventEmitter
                 + `${errorX} ${relationship} ${errorY}`);
         }
 
-        this.valid = frame && frame.width && frame.height && this.baseTexture.hasLoaded;
         this.valid = width && height && this.baseTexture.valid;
 
         if (!this.trim && !this.rotate)

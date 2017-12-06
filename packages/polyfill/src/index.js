@@ -1,3 +1,4 @@
+import './Promise';
 import './Object.assign';
 import './requestAnimationFrame';
 import './Math.sign';
@@ -20,4 +21,14 @@ if (!window.Uint32Array)
 if (!window.Uint16Array)
 {
     window.Uint16Array = Array;
+}
+
+if (!window.Uint8Array)
+{
+    window.Uint8Array = Array;
+}
+
+if (!window.Int32Array)
+{
+    window.Int32Array = Array;
 }

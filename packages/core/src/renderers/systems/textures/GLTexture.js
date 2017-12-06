@@ -30,7 +30,7 @@ export default class Texture
         this.texture = gl.createTexture();
 
         /**
-         * If mipmapping was used for this texture, enable and disable with enableMipmap()
+         * GL texture is ready for mipmaps
          *
          * @member {Boolean}
          */
@@ -70,6 +70,18 @@ export default class Texture
          * @member {Number}
          */
         this.type = type || gl.UNSIGNED_BYTE;
+
+        /**
+         * Texture contents dirty flag
+         * @member {number}
+         */
+        this.dirtyId = -1;
+
+        /**
+         * Texture style dirty flag
+         * @type {number}
+         */
+        this.dirtyStyleId = -1;
     }
 
     /**
@@ -178,104 +190,6 @@ export default class Texture
         const gl = this.gl;
 
         gl.bindTexture(gl.TEXTURE_2D, null);
-    }
-
-    /**
-     * @param linear {Boolean} if we want to use linear filtering or nearest neighbour interpolation
-     */
-    minFilter(linear)
-    {
-        const gl = this.gl;
-
-        this.bind();
-
-        if (this.mipmap)
-        {
-            /* eslint-disable max-len */
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, linear ? gl.LINEAR_MIPMAP_LINEAR : gl.NEAREST_MIPMAP_NEAREST);
-            /* eslint-disable max-len */
-        }
-        else
-        {
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, linear ? gl.LINEAR : gl.NEAREST);
-        }
-    }
-
-    /**
-     * @param linear {Boolean} if we want to use linear filtering or nearest neighbour interpolation
-     */
-    magFilter(linear)
-    {
-        const gl = this.gl;
-
-        this.bind();
-
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, linear ? gl.LINEAR : gl.NEAREST);
-    }
-
-    /**
-     * Enables mipmapping
-     */
-    enableMipmap()
-    {
-        const gl = this.gl;
-
-        this.bind();
-
-        this.mipmap = true;
-
-        gl.generateMipmap(gl.TEXTURE_2D);
-    }
-
-    /**
-     * Enables linear filtering
-     */
-    enableLinearScaling()
-    {
-        this.minFilter(true);
-        this.magFilter(true);
-    }
-
-    /**
-     * Enables nearest neighbour interpolation
-     */
-    enableNearestScaling()
-    {
-        this.minFilter(false);
-        this.magFilter(false);
-    }
-
-    /**
-     * Enables clamping on the texture so WebGL will not repeat it
-     */
-    enableWrapClamp()
-    {
-        const gl = this.gl;
-
-        this.bind();
-
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    }
-
-    enableWrapRepeat()
-    {
-        const gl = this.gl;
-
-        this.bind();
-
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
-    }
-
-    enableWrapMirrorRepeat()
-    {
-        const gl = this.gl;
-
-        this.bind();
-
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.MIRRORED_REPEAT);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.MIRRORED_REPEAT);
     }
 
     /**

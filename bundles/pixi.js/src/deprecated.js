@@ -609,4 +609,52 @@ export default function deprecated(PIXI)
             },
         },
     });
+
+    const { BaseTexture } = PIXI;
+
+    /**
+     * @method fromImage
+     * @static
+     * @memberof PIXI.BaseTexture
+     * @deprecated since 5.0.0
+     * @see PIXI.BaseTexture.from
+     */
+    BaseTexture.fromImage = function fromImage(canvas, crossorigin, scaleMode, scale)
+    {
+        warn('PIXI.BaseTexture.fromImage has been replaced with PIXI.BaseTexture.from');
+
+        const resourceOptions = { scale, crossorigin };
+
+        return BaseTexture.from(canvas, { scaleMode, resourceOptions });
+    };
+
+    /**
+     * @method fromCanvas
+     * @static
+     * @memberof PIXI.BaseTexture
+     * @deprecated since 5.0.0
+     * @see PIXI.BaseTexture.from
+     */
+    BaseTexture.fromCanvas = function fromCanvas(canvas, scaleMode)
+    {
+        warn('PIXI.BaseTexture.fromCanvas has been replaced with PIXI.BaseTexture.from');
+
+        return BaseTexture.from(canvas, { scaleMode });
+    };
+
+    /**
+     * @method fromSVG
+     * @static
+     * @memberof PIXI.BaseTexture
+     * @deprecated since 5.0.0
+     * @see PIXI.BaseTexture.from
+     */
+    BaseTexture.fromSVG = function fromSVG(canvas, crossorigin, scaleMode, scale)
+    {
+        warn('PIXI.BaseTexture.fromSVG has been replaced with PIXI.BaseTexture.from');
+
+        const resourceOptions = { scale, crossorigin };
+
+        return BaseTexture.from(canvas, { scaleMode, resourceOptions });
+    };
 }

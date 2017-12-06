@@ -243,6 +243,11 @@ export default class Renderer extends AbstractRenderer
         // apply transform..
         this.batch.currentRenderer.flush();
 
+        if (renderTexture)
+        {
+            renderTexture.baseTexture.update();
+        }
+
         this.runners.postrender.run();
 
         this.emit('postrender');

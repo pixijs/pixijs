@@ -1,81 +1,90 @@
 import { uid, BaseTextureCache, TextureCache } from '@pixi/utils';
-
 import { FORMATS, TARGETS, TYPES, SCALE_MODES } from '@pixi/constants';
+
+import Resource from './resources/Resource';
 import BufferResource from './resources/BufferResource';
-import createResource from './resources/createResource';
+import { autoDetectResource } from './resources/autoDetectResource';
 
 import { settings } from '@pixi/settings';
 import EventEmitter from 'eventemitter3';
 import bitTwiddle from 'bit-twiddle';
 
+/**
+ * A texture stores the information that represents an image. All textures have a base texture.
+ *
+ * @class
+ * @extends PIXI.utils.EventEmitter
+ * @memberof PIXI
+ * @param {PIXI.resources.Resource|string|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement} [resource=null]
+ *        The current resource to use, for things that aren't Resource objects, will be converted
+ *        into a Resource.
+ * @param {Object} [options] - Collection of options
+ * @param {boolean} [options.mipmap=PIXI.settings.MIPMAP_TEXTURES] - If mipmapping is enabled for texture
+ * @param {PIXI.WRAP_MODES} [options.wrapMode=PIXI.settings.WRAP_MODE] - Wrap mode for textures
+ * @param {PIXI.SCALE_MODES} [options.scaleMode=PIXI.settings.SCALE_MODE] - Default scale mode, linear, nearest
+ * @param {PIXI.FORMATS} [options.format=PIXI.FORMATS.RGBA] - GL format type
+ * @param {PIXI.TYPES} [options.type=PIXI.TYPES.UNSIGNED_BYTE] - GL data type
+ * @param {PIXI.TARGETS} [options.target=PIXI.TARGETS.TEXTURE_2D] - GL texture target
+ * @param {boolean} [options.premultiplyAlpha=true] - Pre multiply the image alpha
+ * @param {number} [options.width=0] - Width of the texture
+ * @param {number} [options.height=0] - Height of the texture
+ * @param {object} [options.resourceOptions] - Optional resource options,
+ *        see {@link PIXI.resources.autoDetectResource autoDetectResource}
+ */
 export default class BaseTexture extends EventEmitter
 {
-    constructor(resource,
-        scaleMode = settings.SCALE_MODE,
-        resolution,
-        width,
-        height,
-        format,
-        type,
-        mipmap = settings.MIPMAP_TEXTURES)
+    constructor(resource = null, options = null)
     {
         super();
 
-        this.uid = uid();
+        options = options || {};
 
-        this.touched = 0;
+        const { premultiplyAlpha, mipmap, scaleMode, width, height,
+            wrapMode, format, type, target, resolution, resourceOptions } = options;
+
+        // Convert the resource to a Resource object
+        if (resource && !(resource instanceof Resource))
+        {
+            resource = autoDetectResource(resource, resourceOptions);
+            resource.internal = true;
+        }
 
         /**
-         * The width of texture
+         * The width of the base texture set when the image has loaded
          *
-         * @member {Number}
+         * @readonly
+         * @member {number}
          */
-        this.width = width || -1;
+        this.width = width || 0;
+
         /**
-         * The height of texture
+         * The height of the base texture set when the image has loaded
          *
-         * @member {Number}
+         * @readonly
+         * @member {number}
          */
-        this.height = height || -1;
+        this.height = height || 0;
 
         /**
          * The resolution / device pixel ratio of the texture
          *
          * @member {number}
-         * @default 1
+         * @default PIXI.settings.RESOLUTION
          */
         this.resolution = resolution || settings.RESOLUTION;
 
         /**
-         * Whether or not the texture is a power of two, try to use power of two textures as much
-         * as you can
-         *
-         * @private
-         * @member {boolean}
-         */
-        this.isPowerOfTwo = false;
-
-        /**
          * If mipmapping was used for this texture, enable and disable with enableMipmap()
          *
-         * @member {Boolean}
+         * @member {boolean}
          */
-        //  TODO fix mipmapping..
-        mipmap = false;
-        this.mipmap = mipmap;
+        this.mipmap = mipmap !== undefined ? mipmap : settings.MIPMAP_TEXTURES;
 
         /**
-         * Set to true to enable pre-multiplied alpha
-         *
-         * @member {Boolean}
+         * How the texture wraps
+         * @member {number}
          */
-        this.premultiplyAlpha = true;
-
-        /**
-         * [wrapMode description]
-         * @type {number}
-         */
-        this.wrapMode = settings.WRAP_MODE;
+        this.wrapMode = wrapMode || settings.WRAP_MODE;
 
         /**
          * The scale mode to apply when scaling this texture
@@ -84,40 +93,134 @@ export default class BaseTexture extends EventEmitter
          * @default PIXI.settings.SCALE_MODE
          * @see PIXI.SCALE_MODES
          */
-        this.scaleMode = scaleMode;// || settings.SCALE_MODE;
+        this.scaleMode = scaleMode !== undefined ? scaleMode : settings.SCALE_MODE;
 
         /**
-         * The pixel format of the texture. defaults to gl.RGBA
+         * The pixel format of the texture
          *
-         * @member {Number}
+         * @member {PIXI.FORMATS}
+         * @default PIXI.FORMATS.RGBA
          */
         this.format = format || FORMATS.RGBA;
-        this.type = type || TYPES.UNSIGNED_BYTE; // UNSIGNED_BYTE
 
-        this.target = TARGETS.TEXTURE_2D; // gl.TEXTURE_2D
+        /**
+         * The type of resource data
+         *
+         * @member {PIXI.TYPES}
+         * @default PIXI.TYPES.UNSIGNED_BYTE
+         */
+        this.type = type || TYPES.UNSIGNED_BYTE;
 
+        /**
+         * The target type
+         *
+         * @member {PIXI.TARGETS}
+         * @default PIXI.TARGETS.TEXTURE_2D
+         */
+        this.target = target || TARGETS.TEXTURE_2D;
+
+        /**
+         * Set to true to enable pre-multiplied alpha
+         *
+         * @member {boolean}
+         * @default true
+         */
+        this.premultiplyAlpha = premultiplyAlpha !== false;
+
+        /**
+         * Global unique identifier for this BaseTexture
+         *
+         * @member {string}
+         * @private
+         */
+        this.uid = uid();
+
+        /**
+         * TODO: fill in description
+         *
+         * @member {number}
+         * @private
+         */
+        this.touched = 0;
+
+        /**
+         * Whether or not the texture is a power of two, try to use power of two textures as much
+         * as you can
+         *
+         * @readonly
+         * @member {boolean}
+         * @default false
+         */
+        this.isPowerOfTwo = false;
+        this._refreshPOT();
+
+        /**
+         * The map of render context textures where this is bound
+         *
+         * @member {Object}
+         * @private
+         */
         this._glTextures = {};
 
-        this._new = true;
-
+        /**
+         * Used by TextureSystem to only update texture to the GPU when needed.
+         *
+         * @private
+         * @member {number}
+         */
         this.dirtyId = 0;
 
-        this.valid = false;
+        /**
+         * Used by TextureSystem to only update texture style when needed.
+         *
+         * @private
+         * @member {number}
+         */
+        this.dirtyStyleId = 0;
 
-        this.resource = null;
-
-        if (resource)
-        {
-            // lets convert this to a resource..
-            resource = createResource(resource);
-            this.setResource(resource);
-        }
-
+        /**
+         * Currently default cache ID.
+         *
+         * @member {string}
+         */
         this.cacheId = null;
 
-        this.validate();
+        /**
+         * Generally speaking means when resource is loaded.
+         * @readonly
+         * @member {boolean}
+         */
+        this.valid = width > 0 && height > 0;
 
+        /**
+         * The collection of alternative cache ids, since some BaseTextures
+         * can have more than one ID, short name and longer full URL
+         *
+         * @member {Array<string>}
+         * @readonly
+         */
         this.textureCacheIds = [];
+
+        /**
+         * Flag if BaseTexture has been destroyed.
+         *
+         * @member {boolean}
+         * @readonly
+         */
+        this.destroyed = false;
+
+        /**
+         * The resource used by this BaseTexture, there can only
+         * be one resource per BaseTexture, but textures can share
+         * resources.
+         *
+         * @member {PIXI.resources.Resource}
+         * @readonly
+         */
+        this.resource = null;
+
+        // Set the resource
+        this.setResource(resource);
 
         /**
          * Fired when a not-immediately-available source finishes loading.
@@ -168,111 +271,203 @@ export default class BaseTexture extends EventEmitter
          */
     }
 
-    updateResolution()
-    {
-        const resource = this.resource;
-
-        if (resource && resource.width !== -1 && resource.hight !== -1)
-        {
-            this.width = resource.width / this.resolution;
-            this.height = resource.height / this.resolution;
-        }
-    }
-
-    setResource(resource)
-    {
-        // TODO currently a resource can only be set once..
-
-        if (this.resource)
-        {
-            this.resource.resourceUpdated.remove(this);
-        }
-
-        this.resource = resource;
-
-        resource.resourceUpdated.add(this); // calls resourceUpaded
-
-        if (resource.loaded)
-        {
-            this.resourceLoaded(resource);
-        }
-
-        resource.load
-            .then(this.resourceLoaded.bind(this))
-            .catch((reason) =>
-            {
-            // failed to load - maybe resource was destroyed before it loaded.
-                console.warn(reason);
-            });
-    }
-
-    resourceLoaded(resource)
-    {
-        if (this.resource === resource)
-        {
-            this.updateResolution();
-
-            this.validate();
-
-            if (this.valid)
-            {
-                this.isPowerOfTwo = bitTwiddle.isPow2(this.realWidth) && bitTwiddle.isPow2(this.realHeight);
-
-                // we have not swapped half way!
-                this.dirtyId++;
-
-                this.emit('loaded', this);
-            }
-        }
-    }
-
-    resourceUpdated()
-    {
-        // the resource was updated..
-        this.dirtyId++;
-    }
-
-    update()
-    {
-        this.dirtyId++;
-    }
-
-    resize(width, height)
-    {
-        this.width = width;
-        this.height = height;
-
-        this.dirtyId++;
-    }
-
-    validate()
-    {
-        let valid = true;
-
-        if (this.width === -1 || this.height === -1)
-        {
-            valid = false;
-        }
-
-        this.valid = valid;
-    }
-
+    /**
+     * Pixel width of the source of this texture
+     *
+     * @readonly
+     * @member {number}
+     */
     get realWidth()
     {
         return this.width * this.resolution;
     }
 
+    /**
+     * Pixel height of the source of this texture
+     *
+     * @readonly
+     * @member {number}
+     */
     get realHeight()
     {
         return this.height * this.resolution;
     }
 
     /**
-     * Destroys this base texture
+     * Changes style options of BaseTexture
      *
+     * @param {object} options
+     * @param {PIXI.SCALE_MODES} [scaleMode] - pixi scalemode
+     * @param {boolean} [mipmap] - enable mipmaps
+     * @returns {BaseTexture} this
+     */
+    setStyle(scaleMode, mipmap)
+    {
+        let dirty;
+
+        if (scaleMode !== undefined && scaleMode !== this.scaleMode)
+        {
+            this.scaleMode = scaleMode;
+            dirty = true;
+        }
+
+        if (mipmap !== undefined && mipmap !== this.mipmap)
+        {
+            this.mipmap = mipmap;
+            dirty = true;
+        }
+
+        if (dirty)
+        {
+            this.dirtyStyleId++;
+        }
+
+        return this;
+    }
+
+    /**
+     * Changes w/h/resolution. Texture becomes valid if width and height are greater than zero.
+     *
+     * @param {number} width Visual width
+     * @param {number} height Visual height
+     * @param {number} [resolution] Optionally set resolution
+     * @returns {BaseTexture} this
+     */
+    setSize(width, height, resolution)
+    {
+        this.resolution = resolution || this.resolution;
+        this.width = width;
+        this.height = height;
+        this._refreshPOT();
+        this.update();
+
+        return this;
+    }
+
+    /**
+     * Sets real size of baseTexture, preserves current resolution.
+     *
+     * @param {number} realWidth Full rendered width
+     * @param {number} realHeight Full rendered height
+     * @param {number} [resolution] Optionally set resolution
+     * @returns {BaseTexture} this
+     */
+    setRealSize(realWidth, realHeight, resolution)
+    {
+        this.resolution = resolution || this.resolution;
+        this.width = realWidth / this.resolution;
+        this.height = realHeight / this.resolution;
+        this._refreshPOT();
+        this.update();
+
+        return this;
+    }
+
+    /**
+     * Refresh check for isPowerOfTwo texture based on size
+     *
+     * @private
+     */
+    _refreshPOT()
+    {
+        this.isPowerOfTwo = bitTwiddle.isPow2(this.realWidth) && bitTwiddle.isPow2(this.realHeight);
+    }
+
+    /**
+     * Changes resolution
+     *
+     * @param {number} [resolution] res
+     * @returns {BaseTexture} this
+     */
+    setResolution(resolution)
+    {
+        const oldResolution = this.resolution;
+
+        if (oldResolution === resolution)
+        {
+            return this;
+        }
+
+        this.resolution = resolution;
+
+        if (this.valid)
+        {
+            this.width = this.width * oldResolution / resolution;
+            this.height = this.height * oldResolution / resolution;
+            this.emit('update');
+        }
+
+        this._refreshPOT();
+
+        return this;
+    }
+
+    /**
+     * Sets the resource if it wasnt set. Throws error if resource already present
+     *
+     * @param {PIXI.resources.Resource} resource - that is managing this BaseTexture
+     * @returns {BaseTexture} this
+     */
+    setResource(resource)
+    {
+        if (this.resource === resource)
+        {
+            return this;
+        }
+
+        if (this.resource)
+        {
+            throw new Error('Resource can be set only once');
+        }
+
+        resource.bind(this);
+
+        this.resource = resource;
+
+        return this;
+    }
+
+    /**
+     * Invalidates the object. Texture becomes valid if width and height are greater than zero.
+     */
+    update()
+    {
+        if (!this.valid)
+        {
+            if (this.width > 0 && this.height > 0)
+            {
+                this.valid = true;
+                this.emit('loaded', this);
+                this.emit('update', this);
+            }
+        }
+        else
+        {
+            this.dirtyId++;
+            this.dirtyStyleId++;
+            this.emit('update', this);
+        }
+    }
+
+    /**
+     * Destroys this base texture.
+     * The method stops if resource doesn't want this texture to be destroyed.
+     * Removes texture from all caches.
      */
     destroy()
     {
+        // remove and destroy the resource
+        if (this.resource)
+        {
+            this.resource.unbind(this);
+            // only destroy resourced created internally
+            if (this.resource.internal)
+            {
+                this.resource.destroy();
+            }
+            this.resource = null;
+        }
+
         if (this.cacheId)
         {
             delete BaseTextureCache[this.cacheId];
@@ -281,19 +476,13 @@ export default class BaseTexture extends EventEmitter
             this.cacheId = null;
         }
 
-        // remove and destroy the resource
-
-        if (this.resource)
-        {
-            this.resource.destroy();
-            this.resource = null;
-        }
-
         // finally let the webGL renderer know..
         this.dispose();
 
         BaseTexture.removeFromCache(this);
         this.textureCacheIds = null;
+
+        this.destroyed = true;
     }
 
     /**
@@ -315,12 +504,12 @@ export default class BaseTexture extends EventEmitter
      * cache, it will be created and loaded.
      *
      * @static
-     * @param {string|HTMLImageElement|HTMLCanvasElement} source - The source to create base texture from.
-     * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES} for possible values
-     * @param {number} [sourceScale=(auto)] - Scale for the original image, used with Svg images.
+     * @param {string|HTMLImageElement|HTMLCanvasElement|SVGElement|HTMLVideoElement} source - The
+     *        source to create base texture from.
+     * @param {object} [options] See {@link PIXI.BaseTexture}'s constructor for options.
      * @return {PIXI.BaseTexture} The new base texture.
      */
-    static from(source, scaleMode)
+    static from(source, options)
     {
         let cacheId = null;
 
@@ -342,7 +531,7 @@ export default class BaseTexture extends EventEmitter
 
         if (!baseTexture)
         {
-            baseTexture = new BaseTexture(source, scaleMode);
+            baseTexture = new BaseTexture(source, options);
             baseTexture.cacheId = cacheId;
             BaseTexture.addToCache(baseTexture, cacheId);
         }
@@ -350,34 +539,30 @@ export default class BaseTexture extends EventEmitter
         return baseTexture;
     }
 
-    static fromFloat32Array(width, height, float32Array)
+    /**
+     * Create a new BaseTexture with a BufferResource from a Float32Array.
+     * RGBA values are floats from 0 to 1.
+     * @static
+     * @param {Float32Array|UintArray} buffer The optional array to use, if no data
+     *        is provided, a new Float32Array is created.
+     * @param {number} width - Width of the resource
+     * @param {number} height - Height of the resource
+     * @return {PIXI.BaseTexture} The resulting new BaseTexture
+     */
+    static fromBuffer(buffer, width, height)
     {
-        float32Array = float32Array || new Float32Array(width * height * 4);
+        buffer = buffer || new Float32Array(width * height * 4);
 
-        const texture = new BaseTexture(new BufferResource(float32Array),
-            SCALE_MODES.NEAREST,
-            1,
+        const resource = new BufferResource(buffer, { width, height });
+        const type = buffer instanceof Float32Array ? TYPES.FLOAT : TYPES.UNSIGNED_BYTE;
+
+        return BaseTexture(resource, {
+            scaleMode: SCALE_MODES.NEAREST,
+            format: FORMATS.RGBA,
+            type,
             width,
             height,
-            FORMATS.RGBA,
-            TYPES.FLOAT);
-
-        return texture;
-    }
-
-    static fromUint8Array(width, height, uint8Array)
-    {
-        uint8Array = uint8Array || new Uint8Array(width * height * 4);
-
-        const texture = new BaseTexture(new BufferResource(uint8Array),
-            SCALE_MODES.NEAREST,
-            1,
-            width,
-            height,
-            FORMATS.RGBA,
-            TYPES.UNSIGNED_BYTE);
-
-        return texture;
+        });
     }
 
     /**
@@ -448,8 +633,3 @@ export default class BaseTexture extends EventEmitter
         return null;
     }
 }
-
-BaseTexture.fromFrame = BaseTexture.fromFrame;
-BaseTexture.fromImage = BaseTexture.from;
-BaseTexture.fromSVG = BaseTexture.from;
-BaseTexture.fromCanvas = BaseTexture.from;
