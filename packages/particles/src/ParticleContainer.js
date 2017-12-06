@@ -218,7 +218,7 @@ export default class ParticleContainer extends Container
             }
         }
 
-        renderer.setObjectRenderer(renderer.plugins.particle);
+        renderer.batch.setObjectRenderer(renderer.plugins.particle);
         renderer.plugins.particle.render(this);
     }
 

@@ -128,7 +128,7 @@ export default class TilingSpriteRenderer extends ObjectRenderer
         renderer.shader.bind(shader);
         renderer.geometry.bind(quad);// , renderer.shader.getGLShader());
 
-        renderer.setBlendMode(correctBlendMode(ts.blendMode, baseTex.premultiplyAlpha));
+        renderer.state.setBlendMode(correctBlendMode(ts.blendMode, baseTex.premultiplyAlpha));
         renderer.geometry.draw(this.renderer.gl.TRIANGLES, 6, 0);
     }
 }
