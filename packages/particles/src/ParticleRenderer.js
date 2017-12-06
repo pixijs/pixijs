@@ -112,7 +112,7 @@ export default class ParticleRenderer extends ObjectRenderer
      */
     start()
     {
-        this.renderer._bindGLShader(this.shader);
+        this.renderer.shader.bind(this.shader);
     }
 
     /**
@@ -147,7 +147,7 @@ export default class ParticleRenderer extends ObjectRenderer
         const baseTexture = children[0]._texture.baseTexture;
 
         // if the uvs have not updated then no point rendering just yet!
-        this.renderer.setBlendMode(correctBlendMode(container.blendMode, baseTexture.premultiplyAlpha));
+        this.renderer.state.setBlendMode(correctBlendMode(container.blendMode, baseTexture.premultiplyAlpha));
 
         const gl = renderer.gl;
 
