@@ -1,17 +1,56 @@
-import TextureResource from './TextureResource';
+import BaseImageResource from './BaseImageResource';
 import { Ticker } from '@pixi/ticker';
 
 /**
  * Resource type for HTMLVideoElement.
  * @class
- * @extends PIXI.TextureResource
- * @memberof PIXI
- * @param {HTMLVideoElement} source - Video element to use.
+ * @extends PIXI.resources.BaseImageResource
+ * @memberof PIXI.resources
+ * @param {HTMLVideoElement|object|string|Array<string|object>} source - Video element to use.
+ * @param {object} [options] - Options to use
+ * @param {boolean} [options.autoLoad=true] - Start loading the video immediately
+ * @param {boolean} [options.autoPlay=true] - Start playing video immediately
+ * @param {boolean} [options.crossorigin=true] - Load image using cross origin
  */
-export default class VideoResource extends TextureResource
+export default class VideoResource extends BaseImageResource
 {
-    constructor(source)
+    constructor(source, options)
     {
+        options = options || {};
+
+        if (!(source instanceof HTMLVideoElement))
+        {
+            const videoElement = document.createElement('video');
+
+            videoElement.setAttribute('webkit-playsinline', '');
+            videoElement.setAttribute('playsinline', '');
+
+            if (typeof source === 'string')
+            {
+                source = [source];
+            }
+
+            BaseImageResource.crossOrigin(videoElement, (source[0].src || source[0]), options.crossorigin);
+
+            // array of objects or strings
+            for (let i = 0; i < source.length; ++i)
+            {
+                const sourceElement = document.createElement('source');
+
+                let { src, mime } = source[i];
+
+                src = src || source[i];
+                mime = mime || `video/${src.substr(src.lastIndexOf('.') + 1)}`;
+                sourceElement.src = src;
+                sourceElement.type = mime;
+
+                videoElement.appendChild(sourceElement);
+            }
+
+            // Override the source
+            source = videoElement;
+        }
+
         super(source);
 
         this._autoUpdate = true;
@@ -24,13 +63,43 @@ export default class VideoResource extends TextureResource
          * @member {boolean}
          * @default true
          */
-        this.autoPlay = true;
+        this.autoPlay = options.autoPlay !== false;
 
-        this.update = this.update.bind(this);
+        /**
+         * Promise when loading
+         * @member {Promise}
+         * @private
+         * @default null
+         */
+        this._load = null;
+
+        /**
+         * Callback when completed with load.
+         * @member {function}
+         * @private
+         */
+        this._resolve = null;
+
+        // Bind for listeners
         this._onCanPlay = this._onCanPlay.bind(this);
 
+        if (options.autoLoad !== false)
+        {
+            this.load();
+        }
+    }
+
+    load()
+    {
+        if (this._load)
+        {
+            return this._load;
+        }
+
+        const source = this.source;
+
         if ((source.readyState === source.HAVE_ENOUGH_DATA || source.readyState === source.HAVE_FUTURE_DATA)
-        && source.width && source.height)
+            && source.width && source.height)
         {
             source.complete = true;
         }
@@ -48,21 +117,21 @@ export default class VideoResource extends TextureResource
             this._onCanPlay();
         }
 
-        this.load = new Promise((resolve) =>
+        this._load = new Promise((resolve) =>
         {
-            this.resolve = resolve;
-
-            if (this.loaded)
+            if (this.valid)
             {
-                this.resolve(this);
+                resolve(this);
+            }
+            else
+            {
+                this._resolve = resolve;
+
+                source.load();
             }
         });
-    }
 
-    update()
-    {
-        // TODO - slow down and base on the videos framerate
-        this.resourceUpdated.emit();
+        return this._load;
     }
 
     /**
@@ -97,7 +166,7 @@ export default class VideoResource extends TextureResource
     _onPlayStart()
     {
         // Just in case the video has not received its can play even yet..
-        if (!this.loaded)
+        if (!this.valid)
         {
             this._onCanPlay();
         }
@@ -130,53 +199,50 @@ export default class VideoResource extends TextureResource
      */
     _onCanPlay()
     {
-        if (this.source)
+        const { source } = this;
+
+        source.removeEventListener('canplay', this._onCanPlay);
+        source.removeEventListener('canplaythrough', this._onCanPlay);
+
+        const valid = this.valid;
+
+        this.resize(source.videoWidth, source.videoHeight);
+
+        // prevent multiple loaded dispatches..
+        if (!valid && this._resolve)
         {
-            this.source.removeEventListener('canplay', this._onCanPlay);
-            this.source.removeEventListener('canplaythrough', this._onCanPlay);
+            this._resolve(this);
+            this._resolve = null;
+        }
 
-            this.width = this.source.videoWidth;
-            this.height = this.source.videoHeight;
-
-            // prevent multiple loaded dispatches..
-            if (!this.loaded)
-            {
-                this.loaded = true;
-                if (this.resolve)
-                {
-                    this.resolve(this);
-                }
-            }
-
-            if (this._isSourcePlaying())
-            {
-                this._onPlayStart();
-            }
-            else if (this.autoPlay)
-            {
-                this.source.play();
-            }
+        if (this._isSourcePlaying())
+        {
+            this._onPlayStart();
+        }
+        else if (this.autoPlay)
+        {
+            source.play();
         }
     }
 
     /**
      * Destroys this texture
-     *
+     * @override
      */
-    destroy()
+    dispose()
     {
         if (this._isAutoUpdating)
         {
             Ticker.shared.remove(this.update, this);
         }
-        /*
-        if (this.source && this.source._pixiId)
+
+        if (this.source)
         {
-            delete BaseTextureCache[this.source._pixiId];
-            delete this.source._pixiId;
+            this.source.pause();
+            this.source.src = '';
+            this.source.load();
         }
-*/
-        //      super.destroy();
+        super.dispose();
     }
 
     /**
@@ -188,7 +254,6 @@ export default class VideoResource extends TextureResource
     {
         return this._autoUpdate;
     }
-
     set autoUpdate(value) // eslint-disable-line require-jsdoc
     {
         if (value !== this._autoUpdate)
@@ -209,57 +274,18 @@ export default class VideoResource extends TextureResource
     }
 
     /**
-     * Helper function that creates a new BaseTexture based on the given video element.
-     * This BaseTexture can then be used to create a texture
+     * Used to auto-detect the type of resource.
      *
      * @static
-     * @param {string|object|string[]|object[]} videoSrc - The URL(s) for the video.
-     * @param {string} [videoSrc.src] - One of the source urls for the video
-     * @param {string} [videoSrc.mime] - The mimetype of the video (e.g. 'video/mp4'). If not specified
-     *  the url's extension will be used as the second part of the mime type.
-     * @param {number} scaleMode - See {@link PIXI.SCALE_MODES} for possible values
-     * @return {PIXI.VideoBaseTexture} Newly created VideoBaseTexture
+     * @param {*} source - The source object
+     * @param {string} extension - The extension of source, if set
+     * @return {boolean} `true` if video source
      */
-    static fromUrl(videoSrc, scaleMode)
+    static test(source, extension)
     {
-        const video = document.createElement('video');
-
-        video.setAttribute('webkit-playsinline', '');
-        video.setAttribute('playsinline', '');
-
-        // array of objects or strings
-        if (Array.isArray(videoSrc))
-        {
-            for (let i = 0; i < videoSrc.length; ++i)
-            {
-                video.appendChild(createSource(videoSrc[i].src || videoSrc[i], videoSrc[i].mime));
-            }
-        }
-        // single object or string
-        else
-        {
-            video.appendChild(createSource(videoSrc.src || videoSrc, videoSrc.mime));
-        }
-
-        video.load();
-
-        return new VideoResource(video, scaleMode);
+        return (source instanceof HTMLVideoElement)
+            || VideoResource.TYPES.indexOf(extension) > -1;
     }
-}
-
-function createSource(path, type)
-{
-    if (!type)
-    {
-        type = `video/${path.substr(path.lastIndexOf('.') + 1)}`;
-    }
-
-    const source = document.createElement('source');
-
-    source.src = path;
-    source.type = type;
-
-    return source;
 }
 
 /**

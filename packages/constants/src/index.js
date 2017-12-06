@@ -95,6 +95,22 @@ export const DRAW_MODES = {
     TRIANGLE_FAN:   6,
 };
 
+/**
+ * Various GL texture/resources formats.
+ *
+ * @static
+ * @constant
+ * @memberof PIXI
+ * @name FORMATS
+ * @type {object}
+ * @property {number} RGBA=6408
+ * @property {number} RGB=6407
+ * @property {number} ALPHA=6406
+ * @property {number} LUMINANCE=6409
+ * @property {number} LUMINANCE_ALPHA=6410
+ * @property {number} DEPTH_COMPONENT=6402
+ * @property {number} DEPTH_STENCIL=34041
+ */
 export const FORMATS = {
     RGBA:             6408,
     RGB:              6407,
@@ -105,6 +121,24 @@ export const FORMATS = {
     DEPTH_STENCIL:    34041,
 };
 
+/**
+ * Various GL target types.
+ *
+ * @static
+ * @constant
+ * @memberof PIXI
+ * @name TARGETS
+ * @type {object}
+ * @property {number} TEXTURE_2D=3553
+ * @property {number} TEXTURE_CUBE_MAP=34067
+ * @property {number} TEXTURE_2D_ARRAY=35866
+ * @property {number} TEXTURE_CUBE_MAP_POSITIVE_X=34069
+ * @property {number} TEXTURE_CUBE_MAP_NEGATIVE_X=34070
+ * @property {number} TEXTURE_CUBE_MAP_POSITIVE_Y=34071
+ * @property {number} TEXTURE_CUBE_MAP_NEGATIVE_Y=34072
+ * @property {number} TEXTURE_CUBE_MAP_POSITIVE_Z=34073
+ * @property {number} TEXTURE_CUBE_MAP_NEGATIVE_Z=34074
+ */
 export const TARGETS = {
     TEXTURE_2D: 3553,
     TEXTURE_CUBE_MAP: 34067,
@@ -117,6 +151,22 @@ export const TARGETS = {
     TEXTURE_CUBE_MAP_NEGATIVE_Z: 34074,
 };
 
+/**
+ * Various GL data format types.
+ *
+ * @static
+ * @constant
+ * @memberof PIXI
+ * @name TYPES
+ * @type {object}
+ * @property {number} UNSIGNED_BYTE=5121
+ * @property {number} UNSIGNED_SHORT=5123
+ * @property {number} UNSIGNED_SHORT_5_6_5=33635
+ * @property {number} UNSIGNED_SHORT_4_4_4_4=32819
+ * @property {number} UNSIGNED_SHORT_5_5_5_1=32820
+ * @property {number} FLOAT=5126
+ * @property {number} HALF_FLOAT=36193
+ */
 export const TYPES = {
     UNSIGNED_BYTE: 5121,
     UNSIGNED_SHORT: 5123,

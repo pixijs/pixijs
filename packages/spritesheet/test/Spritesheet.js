@@ -73,7 +73,7 @@ describe('PIXI.Spritesheet', function ()
     it('should create instance with BaseTexture source scale', function (done)
     {
         const data = require(path.resolve(this.resources, 'building1.json')); // eslint-disable-line global-require
-        const baseTexture = new BaseTexture.fromImage(data.meta.image, undefined, undefined, 1.5);
+        const baseTexture = BaseTexture.from(data.meta.image);// , undefined, undefined, 1.5);
         const spritesheet = new Spritesheet(baseTexture, data);
 
         expect(data).to.be.an.object;
@@ -92,7 +92,7 @@ describe('PIXI.Spritesheet', function ()
         image.src = path.join(this.resources, data.meta.image);
         image.onload = () =>
         {
-            const baseTexture = new BaseTexture(image, null, 1);
+            const baseTexture = new BaseTexture(image, { resolution: 1 });
             const spritesheet = new Spritesheet(baseTexture, data, uri);
 
             expect(data).to.be.an.object;

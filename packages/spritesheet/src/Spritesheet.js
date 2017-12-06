@@ -113,8 +113,7 @@ export default class Spritesheet
         // For non-1 resolutions, update baseTexture
         if (resolution !== 1)
         {
-            this.baseTexture.resolution = resolution;
-            this.baseTexture.updateResolution();
+            this.baseTexture.setResolution(resolution);
         }
 
         return resolution;

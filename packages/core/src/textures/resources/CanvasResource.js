@@ -1,32 +1,23 @@
-import TextureResource from './TextureResource';
+import BaseImageResource from './BaseImageResource';
 
 /**
  * Resource type for HTMLCanvasElement.
  * @class
- * @extends PIXI.TextureResource
- * @memberof PIXI
+ * @extends PIXI.resources.BaseImageResource
+ * @memberof PIXI.resources
  * @param {HTMLCanvasElement} source - Canvas element to use
  */
-export default class CanvasResource extends TextureResource
+export default class CanvasResource extends BaseImageResource
 {
-    constructor(source)
+    /**
+     * Used to auto-detect the type of resource.
+     *
+     * @static
+     * @param {*} source - The source object
+     * @return {boolean} `true` if <canvas>
+     */
+    static test(source)
     {
-        super(source);
-
-        this.loaded = true; // TODO rename to ready?
-        this.width = source.width;
-        this.height = source.height;
-
-        this.uploadable = true;
-
-        this.load = new Promise((resolve) =>
-        {
-            resolve(this);
-        });
-    }
-
-    static from(canvas)
-    {
-        return new CanvasResource(canvas);
+        return (source instanceof HTMLCanvasElement);
     }
 }

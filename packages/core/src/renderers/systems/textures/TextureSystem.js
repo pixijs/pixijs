@@ -101,7 +101,6 @@ export default class TextureSystem extends WebGLSystem
 
                 if (glTexture.dirtyId !== texture.dirtyId)
                 {
-                    glTexture.dirtyId = texture.dirtyId;
                     this.updateTexture(texture);
                 }
 
@@ -154,117 +153,25 @@ export default class TextureSystem extends WebGLSystem
     updateTexture(texture)
     {
         const glTexture = texture._glTextures[this.CONTEXT_UID];
-        const gl = this.gl;
 
-        let i;
-        let texturePart;
-
-        // TODO there are only 3 textures as far as im aware?
-        // Cube / 2D and later 3d. (the latter is WebGL2, we will get to that soon!)
-        if (texture.target === gl.TEXTURE_CUBE_MAP)
+        if (texture.resource && texture.resource.upload(this.renderer, texture, glTexture))
         {
-            // console.log( gl.UNSIGNED_BYTE)
-            for (i = 0; i < texture.sides.length; i++)
-            {
-                // TODO - we should only upload what changed..
-                // but im sure this is not  going to be a problem just yet!
-                texturePart = texture.sides[i];
-
-                if (texturePart.resource)
-                {
-                    if (texturePart.resource.uploadable)
-                    {
-                        gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + texturePart.side,
-                            0,
-                            texture.format,
-                            texture.format,
-                            texture.type,
-                            texturePart.resource.source);
-                    }
-                    else
-                    {
-                        gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + texturePart.side,
-                            0,
-                            texture.format,
-                            texture.width,
-                            texture.height,
-                            0,
-                            texture.format,
-                            texture.type,
-                            texturePart.resource.source);
-                    }
-                }
-                else
-                {
-                    gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + texturePart.side,
-                        0,
-                        texture.format,
-                        texture.width,
-                        texture.height,
-                        0,
-                        texture.format,
-                        texture.type,
-                        null);
-                }
-            }
+            // texture is uploaded, dont do anything!
         }
-        else if (texture.target === gl.TEXTURE_2D_ARRAY)
+        else if (glTexture.width !== texture.realWidth
+            || glTexture.height !== texture.realHeight
+            || glTexture.dirtyId < 0)
         {
-            gl.texImage3D(gl.TEXTURE_2D_ARRAY,
-                0,
-                texture.format,
-                texture.width,
-                texture.height,
-                6,
-                0,
-                texture.format,
-                texture.type,
-                null);
-
-            for (i = 0; i < texture.array.length; i++)
-            {
-                // TODO - we should only upload what changed..
-                // but im sure this is not  going to be a problem just yet!
-                texturePart = texture.array[i];
-
-                if (texturePart.resource)
-                {
-                    if (texturePart.resource.loaded)
-                    {
-                        gl.texSubImage3D(gl.TEXTURE_2D_ARRAY,
-                            0,
-                            0, // xoffset
-                            0, // yoffset
-                            i, // zoffset
-                            texturePart.resource.width,
-                            texturePart.resource.height,
-                            1,
-                            texture.format,
-                            texture.type,
-                            texturePart.resource.source);
-                    }
-                }
-            }
-        }
-        else
-        if (texture.resource)
-        {
-            if (texture.resource.uploadable)
-            {
-                glTexture.upload(texture.resource.source);
-            }
-            else
-            {
-                glTexture.uploadData(texture.resource.source, texture.width, texture.height);
-            }
-        }
-        else
-        {
-            glTexture.uploadData(null, texture.width, texture.height);
+            // default, renderTexture-like logic
+            glTexture.uploadData(null, texture.realWidth, texture.realHeight);
         }
 
         // lets only update what changes..
-        this.setStyle(texture);
+        if (texture.dirtyStyleId !== glTexture.dirtyStyleId)
+        {
+            this.updateTextureStyle(texture);
+        }
+        glTexture.dirtyId = texture.dirtyId;
     }
 
     /**
@@ -298,14 +205,40 @@ export default class TextureSystem extends WebGLSystem
         }
     }
 
-    setStyle(texture)
+    updateTextureStyle(texture)
+    {
+        const glTexture = texture._glTextures[this.CONTEXT_UID];
+
+        glTexture.mipmap = texture.mipmap && texture.isPowerOfTwo;
+        if (!glTexture)
+        {
+            return;
+        }
+
+        if (texture.resource && texture.resource.style(this.renderer, texture, glTexture))
+        {
+            // style is set, dont do anything!
+        }
+        else
+        {
+            this.setStyle(texture, glTexture);
+        }
+        glTexture.dirtyStyleId = texture.dirtyStyleId;
+    }
+
+    setStyle(texture, glTexture)
     {
         const gl = this.gl;
+
+        if (glTexture.mipmap)
+        {
+            gl.generateMipmap(texture.target);
+        }
 
         gl.texParameteri(texture.target, gl.TEXTURE_WRAP_S, texture.wrapMode);
         gl.texParameteri(texture.target, gl.TEXTURE_WRAP_T, texture.wrapMode);
 
-        if (texture.mipmap)
+        if (glTexture.mipmap)
         {
             /* eslint-disable max-len */
             gl.texParameteri(texture.target, gl.TEXTURE_MIN_FILTER, texture.scaleMode ? gl.LINEAR_MIPMAP_LINEAR : gl.NEAREST_MIPMAP_NEAREST);

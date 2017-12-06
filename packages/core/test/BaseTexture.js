@@ -1,5 +1,6 @@
 const { BaseTextureCache, TextureCache } = require('@pixi/utils');
-const { BaseTexture, Texture, ImageResource } = require('../');
+const { BaseTexture, Texture, resources } = require('../');
+const { ImageResource } = resources;
 
 const URL = 'foo.png';
 const NAME = 'foo';
@@ -40,7 +41,7 @@ describe('BaseTexture', function ()
         cleanCache();
 
         const canvas = document.createElement('canvas');
-        const baseTexture = BaseTexture.fromCanvas(canvas);
+        const baseTexture = BaseTexture.from(canvas);
         const _pixiId = canvas._pixiId;
 
         expect(baseTexture.textureCacheIds.indexOf(_pixiId)).to.equal(0);
@@ -113,14 +114,64 @@ describe('BaseTexture', function ()
         baseTexture.destroy();
     });
 
+    it('should update width and height', function ()
+    {
+        const canvas = document.createElement('canvas');
+
+        canvas.width = 100;
+        canvas.height = 100;
+
+        const baseTexture = BaseTexture.from(canvas);
+
+        expect(baseTexture.width).to.equal(canvas.width);
+        expect(baseTexture.height).to.equal(canvas.height);
+
+        baseTexture.destroy();
+    });
+
     it('should set source.crossOrigin to anonymous if explicitly set', function ()
     {
         cleanCache();
 
-        const imageResource = ImageResource.from(URL, true);
+        const imageResource = new ImageResource(URL, {
+            crossorigin: true,
+        });
 
         const baseTexture = new BaseTexture(imageResource);
 
         expect(baseTexture.resource.source.crossOrigin).to.equal('anonymous');
+
+        baseTexture.destroy();
+        imageResource.destroy();
+    });
+
+    it('should not destroy externally created resources', function ()
+    {
+        cleanCache();
+
+        const imageResource = new ImageResource(URL);
+        const baseTexture = new BaseTexture(imageResource);
+
+        baseTexture.destroy();
+
+        expect(baseTexture.destroyed).to.be.true;
+        expect(imageResource.destroyed).to.be.false;
+
+        imageResource.destroy();
+
+        expect(imageResource.destroyed).to.be.true;
+    });
+
+    it('should destroy internally created resources', function ()
+    {
+        cleanCache();
+
+        const baseTexture = new BaseTexture(URL);
+        const { resource } = baseTexture;
+
+        baseTexture.destroy();
+
+        expect(resource.destroyed).to.be.true;
+        expect(baseTexture.destroyed).to.be.true;
     });
 });
