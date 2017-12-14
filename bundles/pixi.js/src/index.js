@@ -107,6 +107,7 @@ if (typeof window !== 'undefined')
         prepare,
         settings,
         utils,
+        mesh,
     };
 
     window.PIXI = Object.assign(
@@ -134,6 +135,8 @@ if (typeof window !== 'undefined')
     deprecated(PIXI);
 }
 
+//mesh.Geometry = core.Geometry
+
 // Export ES for those importing specifically by name,
 // e.g., `import {autoDetectRenderer} from 'pixi.js'`
 export * from '@pixi/app';
@@ -159,6 +162,8 @@ export {
     extract,
     filters,
     interaction,
+    mesh,
+    loaders,
     prepare,
     settings,
     utils,

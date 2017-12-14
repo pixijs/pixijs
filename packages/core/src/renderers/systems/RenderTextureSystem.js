@@ -40,7 +40,7 @@ export default class RenderTextureSystem extends WebGLSystem
             const baseTexture = renderTexture.baseTexture;
 
             this.renderer.framebuffer.bind(baseTexture.frameBuffer);
-            this.renderer.projection.update(renderTexture.frame, renderTexture.frame, baseTexture.resolution, false);
+            this.renderer.projection.update(renderTexture.frame, renderTexture.frame, 1, false);
             this.renderer.stencil.setMaskStack(baseTexture.stencilMaskStack);
         }
         else

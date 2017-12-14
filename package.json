@@ -44,5 +44,9 @@
     "rollup-plugin-string": "^2.0.2",
     "rollup-plugin-uglify": "^2.0.1",
     "uglify-es": "^3.0.25"
+  },
+  "dependencies": {
+    "babel-plugin-add-module-exports": "^0.2.1",
+    "babel-preset-es2015": "^6.24.1"
   }
 }

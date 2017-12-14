@@ -2,6 +2,7 @@ import * as resources from './textures/resources';
 export { resources };
 
 export { default as Renderer } from './renderers/Renderer';
+export { default as WebGLRenderer } from './renderers/Renderer';
 export { default as AbstractRenderer } from './renderers/AbstractRenderer';
 export { default as FrameBuffer } from './textures/FrameBuffer';
 export { default as CubeTexture } from './textures/CubeTexture';
