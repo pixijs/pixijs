@@ -54,6 +54,7 @@ export default class MeshSpriteRenderer
             );
         }
 
+        renderer.context.globalAlpha = mesh.worldAlpha;
         renderer.setBlendMode(mesh.blendMode);
 
         if (mesh.drawMode === Mesh.DRAW_MODES.TRIANGLE_MESH)
