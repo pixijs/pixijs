@@ -3,7 +3,6 @@ attribute vec2 aTextureCoord;
 attribute vec4 aColor;
 
 attribute vec2 aPositionCoord;
-attribute vec2 aScale;
 attribute float aRotation;
 
 uniform mat3 projectionMatrix;
