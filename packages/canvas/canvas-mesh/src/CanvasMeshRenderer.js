@@ -53,6 +53,7 @@ export default class CanvasMeshRenderer
             );
         }
 
+        renderer.context.globalAlpha = mesh.worldAlpha;
         renderer.setBlendMode(mesh.blendMode);
 
         if (mesh.drawMode !== DRAW_MODES.TRIANGLES)
