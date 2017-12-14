@@ -49,5 +49,40 @@ describe('PIXI.ObservablePoint', function ()
         p1.copy(p3);
         expect(p1.y).to.equal(p3.y);
     });
-});
 
+    it('should properly add and remove change listeners', function ()
+    {
+        const cb = sinon.spy();
+        const changeListener1 = sinon.spy();
+        const changeListener2 = sinon.spy();
+        const p1 = new PIXI.ObservablePoint(cb, this, 10, 20);
+
+        p1.on('change', changeListener1);
+        p1.x += 1;
+        expect(cb.callCount).to.equal(1);
+        expect(changeListener1.callCount).to.equal(1);
+        expect(changeListener1.calledWith(11, 20)).to.be.true;
+
+        p1.set(2, 2);
+        expect(cb.callCount).to.equal(2);
+        expect(changeListener1.callCount).to.equal(2);
+        expect(changeListener1.calledWith(2, 2)).to.be.true;
+
+        p1.off('change', changeListener1);
+        p1.on('change', changeListener1);
+        p1.on('change', changeListener2);
+
+        p1.y += 2;
+        expect(cb.callCount).to.equal(3);
+        expect(changeListener1.callCount).to.equal(3);
+        expect(changeListener2.callCount).to.equal(1);
+        expect(changeListener1.calledWith(2, 4)).to.be.true;
+        expect(changeListener2.calledWith(2, 4)).to.be.true;
+
+        p1.removeAllListeners();
+        p1.y -= 2;
+        expect(cb.callCount).to.equal(4);
+        expect(changeListener1.callCount).to.equal(3);
+        expect(changeListener2.callCount).to.equal(1);
+    });
+});

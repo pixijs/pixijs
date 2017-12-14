@@ -1,3 +1,4 @@
+import EventEmitter from 'eventemitter3';
 /**
  * The Point object represents a location in a two-dimensional coordinate system, where x represents
  * the horizontal axis and y represents the vertical axis.
@@ -6,7 +7,7 @@
  * @class
  * @memberof PIXI
  */
-export default class ObservablePoint
+export default class ObservablePoint extends EventEmitter
 {
     /**
      * @param {Function} cb - callback when changed
@@ -16,6 +17,7 @@ export default class ObservablePoint
      */
     constructor(cb, scope, x = 0, y = 0)
     {
+        super();
         this._x = x;
         this._y = y;
 
@@ -39,7 +41,7 @@ export default class ObservablePoint
         {
             this._x = _x;
             this._y = _y;
-            this.cb.call(this.scope);
+            this.emitChange();
         }
     }
 
@@ -54,7 +56,7 @@ export default class ObservablePoint
         {
             this._x = point.x;
             this._y = point.y;
-            this.cb.call(this.scope);
+            this.emitChange();
         }
     }
 
@@ -73,7 +75,7 @@ export default class ObservablePoint
         if (this._x !== value)
         {
             this._x = value;
-            this.cb.call(this.scope);
+            this.emitChange();
         }
     }
 
@@ -92,7 +94,16 @@ export default class ObservablePoint
         if (this._y !== value)
         {
             this._y = value;
-            this.cb.call(this.scope);
+            this.emitChange();
         }
+    }
+
+    /**
+     * Executes constructor's callback and emits change event
+     */
+    emitChange()
+    {
+        this.cb.call(this.scope);
+        this.emit('change', this._x, this._y);
     }
 }
