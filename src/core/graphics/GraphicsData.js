@@ -20,58 +20,70 @@ export default class GraphicsData
     constructor(lineWidth, lineColor, lineAlpha, fillColor, fillAlpha, fill, nativeLines, shape)
     {
         /**
-         * @member {number} the width of the line to draw
+         * the width of the line to draw
+         * @member {number}
          */
         this.lineWidth = lineWidth;
+
         /**
-         * @member {boolean} if true the liens will be draw using LINES instead of TRIANGLE_STRIP
+         * if true the liens will be draw using LINES instead of TRIANGLE_STRIP
+         * @member {boolean}
          */
         this.nativeLines = nativeLines;
 
         /**
-         * @member {number} the color of the line to draw
+         * the color of the line to draw
+         * @member {number}
          */
         this.lineColor = lineColor;
 
         /**
-         * @member {number} the alpha of the line to draw
+         * the alpha of the line to draw
+         * @member {number}
          */
         this.lineAlpha = lineAlpha;
 
         /**
-         * @member {number} cached tint of the line to draw
+         * cached tint of the line to draw
+         * @member {number}
          */
         this._lineTint = lineColor;
 
         /**
-         * @member {number} the color of the fill
+         * the color of the fill
+         * @member {number}
          */
         this.fillColor = fillColor;
 
         /**
-         * @member {number} the alpha of the fill
+         * the alpha of the fill
+         * @member {number}
          */
         this.fillAlpha = fillAlpha;
 
         /**
-         * @member {number} cached tint of the fill
+         * cached tint of the fill
+         * @member {number}
          */
         this._fillTint = fillColor;
 
         /**
-         * @member {boolean} whether or not the shape is filled with a colour
+         * whether or not the shape is filled with a colour
+         * @member {boolean}
          */
         this.fill = fill;
 
         this.holes = [];
 
         /**
-         * @member {PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.Rectangle|PIXI.RoundedRectangle} The shape object to draw.
+         * The shape object to draw.
+         * @member {PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.Rectangle|PIXI.RoundedRectangle}
          */
         this.shape = shape;
 
         /**
-         * @member {number} The type of the shape, see the Const.Shapes file for all the existing types,
+         * The type of the shape, see the Const.Shapes file for all the existing types,
+         * @member {number}
          */
         this.type = shape.type;
     }
