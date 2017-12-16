@@ -46,6 +46,7 @@ export default class GraphicsData
         /**
          * cached tint of the line to draw
          * @member {number}
+         * @private
          */
         this._lineTint = lineColor;
 
@@ -64,6 +65,7 @@ export default class GraphicsData
         /**
          * cached tint of the fill
          * @member {number}
+         * @private
          */
         this._fillTint = fillColor;
 
