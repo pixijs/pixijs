@@ -680,7 +680,7 @@ export default class TextStyle
 
 /**
  * Utility function to convert hexadecimal colors to strings, and simply return the color if it's a string.
- *
+ * @private
  * @param {number|number[]} color
  * @return {string} The color as a string.
  */
@@ -704,7 +704,7 @@ function getSingleColor(color)
 /**
  * Utility function to convert hexadecimal colors to strings, and simply return the color if it's a string.
  * This version can also convert array of colors
- *
+ * @private
  * @param {number|number[]} color
  * @return {string} The color as a string.
  */
@@ -728,7 +728,7 @@ function getColor(color)
 /**
  * Utility function to convert hexadecimal colors to strings, and simply return the color if it's a string.
  * This version can also convert array of colors
- *
+ * @private
  * @param {Array} array1 First array to compare
  * @param {Array} array2 Second array to compare
  * @return {boolean} Do the arrays contain the same values in the same order
@@ -758,7 +758,7 @@ function areArraysEqual(array1, array2)
 
 /**
  * Utility function to ensure that object properties are copied by value, and not by reference
- *
+ * @private
  * @param {Object} target Target object to copy properties into
  * @param {Object} source Source object for the proporties to copy
  * @param {string} propertyObj Object containing properties names we want to loop over

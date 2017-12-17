@@ -61,6 +61,7 @@ export function correctBlendMode(blendMode, premultiplied)
 /**
  * combines rgb and alpha to out array
  *
+ * @memberof PIXI.utils
  * @param {Float32Array|number[]} rgb input rgb
  * @param {number} alpha alpha param
  * @param {Float32Array} [out] output
@@ -90,6 +91,7 @@ export function premultiplyRgba(rgb, alpha, out, premultiply)
 /**
  * premultiplies tint
  *
+ * @memberof PIXI.utils
  * @param {number} tint integet RGB
  * @param {number} alpha floating point alpha (0.0-1.0)
  * @returns {number} tint multiplied by alpha
@@ -118,6 +120,7 @@ export function premultiplyTint(tint, alpha)
 /**
  * converts integer tint and float alpha to vec4 form, premultiplies by default
  *
+ * @memberof PIXI.utils
  * @param {number} tint input tint
  * @param {number} alpha alpha param
  * @param {Float32Array} [out] output
