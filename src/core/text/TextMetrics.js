@@ -1,6 +1,11 @@
 /**
  * The TextMetrics object represents the measurement of a block of text with a specified style.
  *
+ * ```js
+ * let style = new PIXI.TextStyle({fontFamily : 'Arial', fontSize: 24, fill : 0xff1010, align : 'center'})
+ * let textMetrics = PIXI.TextMetrics.measureText('Your text', style)
+ * ```
+ *
  * @class
  * @memberOf PIXI
  */
@@ -105,20 +110,22 @@ export default class TextMetrics
 
         // Greedy wrapping algorithm that will wrap words as the line grows longer
         // than its horizontal bounds.
-        let result = '';
+        const result = [];
         const firstChar = text.charAt(0);
         const lines = text.split('\n');
         const wordWrapWidth = style.wordWrapWidth;
         const characterCache = {};
+        const spaceWidth = context.measureText(' ').width * style.letterSpacing;
 
         for (let i = 0; i < lines.length; i++)
         {
-            let spaceLeft = wordWrapWidth;
+            let currentLine = '';
             const words = lines[i].split(' ');
 
             for (let j = 0; j < words.length; j++)
             {
-                const wordWidth = context.measureText(words[j]).width;
+                const wordLetterSpacing = ((words[j].length - 1) * style.letterSpacing);
+                const wordWidth = context.measureText(words[j]).width + wordLetterSpacing;
 
                 if (style.breakWords && wordWidth > wordWrapWidth)
                 {
@@ -136,53 +143,53 @@ export default class TextMetrics
                             characterCache[character] = characterWidth;
                         }
 
-                        if (characterWidth > spaceLeft)
+                        const usedLetterSpacing = ((currentLine.length - 1) * style.letterSpacing);
+                        const usedSpace = context.measureText(currentLine).width + usedLetterSpacing;
+
+                        if (characterWidth + usedSpace > wordWrapWidth)
                         {
-                            result += `\n${character}`;
-                            spaceLeft = wordWrapWidth - characterWidth;
+                            result.push(currentLine);
+                            currentLine = character;
                         }
                         else
                         {
                             if (c === 0 && (j > 0 || firstChar === ' '))
                             {
-                                result += ' ';
+                                currentLine += ' ';
                             }
 
-                            result += character;
-                            spaceLeft -= characterWidth;
+                            currentLine += character;
                         }
                     }
                 }
                 else
                 {
-                    const wordWidthWithSpace = wordWidth + context.measureText(' ').width;
+                    const wordWidthWithSpace = wordWidth + spaceWidth;
+                    const usedLetterSpacing = ((currentLine.length - 1) * style.letterSpacing);
+                    const usedSpace = context.measureText(currentLine).width + usedLetterSpacing;
 
-                    if (j === 0 || wordWidthWithSpace > spaceLeft)
+                    if (j === 0 || wordWidthWithSpace + usedSpace > wordWrapWidth)
                     {
                         // Skip printing the newline if it's the first word of the line that is
                         // greater than the word wrap width.
                         if (j > 0)
                         {
-                            result += '\n';
+                            result.push(currentLine);
+                            currentLine = '';
                         }
-                        result += words[j];
-                        spaceLeft = wordWrapWidth - wordWidth;
+                        currentLine += words[j];
                     }
                     else
                     {
-                        spaceLeft -= wordWidthWithSpace;
-                        result += ` ${words[j]}`;
+                        currentLine += ` ${words[j]}`;
                     }
                 }
             }
 
-            if (i < lines.length - 1)
-            {
-                result += '\n';
-            }
+            result.push(currentLine);
         }
 
-        return result;
+        return result.join('\n');
     }
 
     /**
