@@ -183,7 +183,6 @@ export default class ImageResource extends BaseImageResource
     {
         const gl = renderer.gl;
 
-
         if (this.createBitmap)
         {
             if (!this.bitmap)
@@ -212,7 +211,6 @@ export default class ImageResource extends BaseImageResource
         }
         else
         {
-
             gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, baseTexture.premultiplyAlpha);
             // TODO add texSub2d option
             gl.texImage2D(gl.TEXTURE_2D, 0, baseTexture.format, baseTexture.format, baseTexture.type, this.source);
