@@ -12,6 +12,9 @@ class GLTexture
          */
         this.texture = texture;
 
+        this.width = -1;
+        this.height = -1;
+
         /**
          * Texture contents dirty flag
          * @member {number}

@@ -28,7 +28,8 @@ export default class Filter extends Shader
 
         this._blendMode = BLEND_MODES.NORMAL;
 
-        this.uniformData = uniforms;// || extractUniformsFromSrc(this.vertexSrc, this.fragmentSrc, 'projectionMatrix|uSampler');
+        this.uniformData = uniforms;
+        // || extractUniformsFromSrc(this.vertexSrc, this.fragmentSrc, 'projectionMatrix|uSampler');
 
         /**
          * An object containing the current values of custom uniforms.

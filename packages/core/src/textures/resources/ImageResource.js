@@ -181,8 +181,6 @@ export default class ImageResource extends BaseImageResource
      */
     upload(renderer, baseTexture, glTexture)
     {
-        const gl = renderer.gl;
-
         if (this.createBitmap)
         {
             if (!this.bitmap)
@@ -195,9 +193,7 @@ export default class ImageResource extends BaseImageResource
                 }
             }
 
-            gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, baseTexture.premultiplyAlpha);
-            // TODO add texSub2d option
-            gl.texImage2D(gl.TEXTURE_2D, 0, baseTexture.format, baseTexture.format, baseTexture.type, this.bitmap);
+            super.upload(renderer, baseTexture, glTexture, this.bitmap);
 
             if (!this.preserveBitmap)
             {
@@ -211,9 +207,7 @@ export default class ImageResource extends BaseImageResource
         }
         else
         {
-            gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, baseTexture.premultiplyAlpha);
-            // TODO add texSub2d option
-            gl.texImage2D(gl.TEXTURE_2D, 0, baseTexture.format, baseTexture.format, baseTexture.type, this.source);
+            super.upload(renderer, baseTexture, glTexture);
         }
 
         return true;

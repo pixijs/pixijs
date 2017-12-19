@@ -9,7 +9,7 @@ import * as interaction from '@pixi/interaction';
 import * as loaders from '@pixi/loaders';
 import * as math from '@pixi/math';
 import * as mesh from '@pixi/mesh';
-import * as particles from '@pixi/particles';
+// import * as particles from '@pixi/particles';
 import * as prepare from '@pixi/prepare';
 import * as sprite from '@pixi/sprite';
 import * as spriteAnimated from '@pixi/sprite-animated';

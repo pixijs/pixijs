@@ -48,15 +48,27 @@ export default class BaseImageResource extends Resource
      * @param {PIXI.Renderer} renderer Upload to the renderer
      * @param {PIXI.BaseTexture} baseTexture Reference to parent texture
      * @param {PIXI.glCore.GLTexture} glTexture Reference
+     * @param {HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|SVGElement} source (optional)
      */
-    upload(renderer, baseTexture, glTexture)
+    upload(renderer, baseTexture, glTexture, source)
     {
         const gl = renderer.gl;
 
+        source = source || this.source;
+
         gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, baseTexture.premultiplyAlpha);
 
-        // TODO add texSub2d option
-        gl.texImage2D(gl.TEXTURE_2D, 0, baseTexture.format, baseTexture.format, baseTexture.type, this.source);
+        if (glTexture.width === baseTexture.width && glTexture.height === baseTexture.height)
+        {
+            gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, baseTexture.format, baseTexture.type, source);
+        }
+        else
+        {
+            glTexture.width = baseTexture.width;
+            glTexture.height = baseTexture.height;
+
+            gl.texImage2D(gl.TEXTURE_2D, 0, baseTexture.format, baseTexture.format, baseTexture.type, source);
+        }
 
         return true;
     }
