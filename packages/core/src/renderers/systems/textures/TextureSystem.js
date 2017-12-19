@@ -1,5 +1,4 @@
 import WebGLSystem from '../WebGLSystem';
-//import GLTexture from './GLTexture';
 import { removeItems } from '@pixi/utils';
 
 class GLTexture
@@ -12,7 +11,6 @@ class GLTexture
          * @member {WebGLTexture}
          */
         this.texture = texture;
-        //gl.createTexture();
 
         /**
          * Texture contents dirty flag
@@ -27,7 +25,6 @@ class GLTexture
         this.dirtyStyleId = -1;
     }
 }
-
 
 /**
  * @class
@@ -168,7 +165,7 @@ export default class TextureSystem extends WebGLSystem
 
     initTexture(texture)
     {
-        const glTexture = new GLTexture(this.gl.createTexture())//, -1, -1, texture.format, texture.type);
+        const glTexture = new GLTexture(this.gl.createTexture());
 
         // guarentee an update..
         glTexture.dirtyId = -1;
@@ -240,7 +237,6 @@ export default class TextureSystem extends WebGLSystem
     {
         const glTexture = texture._glTextures[this.CONTEXT_UID];
 
-        glTexture.mipmap = texture.mipmap && texture.isPowerOfTwo;
         if (!glTexture)
         {
             return;
@@ -254,14 +250,15 @@ export default class TextureSystem extends WebGLSystem
         {
             this.setStyle(texture, glTexture);
         }
+
         glTexture.dirtyStyleId = texture.dirtyStyleId;
     }
 
-    setStyle(texture, glTexture)
+    setStyle(texture)
     {
         const gl = this.gl;
 
-        if (texture.mipmap)
+        if (texture.mipmap && texture.isPowerOfTwo)
         {
             gl.generateMipmap(texture.target);
         }

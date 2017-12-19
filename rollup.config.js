@@ -38,7 +38,7 @@ const plugins = [
     }),
     commonjs({
         namedExports: {
-            'resource-loader': ['Resource']
+            'resource-loader': ['Resource'],
         },
     }),
     string({
