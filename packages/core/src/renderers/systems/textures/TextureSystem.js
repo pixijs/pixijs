@@ -219,7 +219,7 @@ export default class TextureSystem extends WebGLSystem
         {
             this.unbind(texture);
 
-            texture._glTextures[this.renderer.CONTEXT_UID].destroy();
+            texture._glTextures[this.renderer.CONTEXT_UID].texture.destroy();
             texture.off('dispose', this.destroyTexture, this);
 
             delete texture._glTextures[this.renderer.CONTEXT_UID];
