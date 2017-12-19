@@ -115,6 +115,7 @@ export default class TextMetrics
         const lines = text.split('\n');
         const wordWrapWidth = style.wordWrapWidth;
         const characterCache = {};
+        const wordCache = {};
         const spaceWidth = context.measureText(' ').width * style.letterSpacing;
 
         for (let i = 0; i < lines.length; i++)
@@ -124,13 +125,21 @@ export default class TextMetrics
 
             for (let j = 0; j < words.length; j++)
             {
-                const wordLetterSpacing = ((words[j].length - 1) * style.letterSpacing);
-                const wordWidth = context.measureText(words[j]).width + wordLetterSpacing;
+                const word = words[j];
+                let wordWidth = wordCache[word];
+
+                if (wordWidth === undefined)
+                {
+                    const wordLetterSpacing = ((word.length - 1) * style.letterSpacing);
+
+                    wordWidth = context.measureText(word).width + wordLetterSpacing;
+                    wordCache[word] = wordWidth;
+                }
 
                 if (style.breakWords && wordWidth > wordWrapWidth)
                 {
                     // Word should be split in the middle
-                    const characters = words[j].split('');
+                    const characters = word.split('');
 
                     for (let c = 0; c < characters.length; c++)
                     {
@@ -177,11 +186,11 @@ export default class TextMetrics
                             result.push(currentLine);
                             currentLine = '';
                         }
-                        currentLine += words[j];
+                        currentLine += word;
                     }
                     else
                     {
-                        currentLine += ` ${words[j]}`;
+                        currentLine += ` ${word}`;
                     }
                 }
             }
