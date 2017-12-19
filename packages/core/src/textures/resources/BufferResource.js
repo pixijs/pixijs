@@ -39,21 +39,43 @@ export default class BufferResource extends Resource
      * @param {PIXI.Renderer} renderer Upload to the renderer
      * @param {PIXI.BaseTexture} baseTexture Reference to parent texture
      */
-    upload(renderer, baseTexture)
+    upload(renderer, baseTexture, glTexture)
     {
-        // TODO texSub2d could be faster!
+        const gl = renderer.gl;
 
-        renderer.gl.texImage2D(
-            baseTexture.target,
-            0,
-            baseTexture.format,
-            baseTexture.width,
-            baseTexture.height,
-            0,
-            baseTexture.format,
-            baseTexture.type,
-            this.data
-        );
+        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, baseTexture.premultiplyAlpha);
+
+        if (glTexture.width === baseTexture.width && glTexture.height === baseTexture.height)
+        {
+            gl.texSubImage2D(
+                baseTexture.target,
+                0,
+                0,
+                0,
+                baseTexture.width,
+                baseTexture.height,
+                baseTexture.format,
+                baseTexture.type,
+                this.data
+            );
+        }
+        else
+        {
+            glTexture.width = baseTexture.width;
+            glTexture.height = baseTexture.height;
+
+            gl.texImage2D(
+                baseTexture.target,
+                0,
+                baseTexture.format,
+                baseTexture.width,
+                baseTexture.height,
+                0,
+                baseTexture.format,
+                baseTexture.type,
+                this.data
+            );
+        }
 
         return true;
     }
