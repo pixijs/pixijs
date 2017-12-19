@@ -41,6 +41,8 @@ export default class BufferResource extends Resource
      */
     upload(renderer, baseTexture)
     {
+        // TODO texSub2d could be faster!
+
         renderer.gl.texImage2D(
             baseTexture.target,
             0,

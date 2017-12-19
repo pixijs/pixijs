@@ -181,6 +181,9 @@ export default class ImageResource extends BaseImageResource
      */
     upload(renderer, baseTexture, glTexture)
     {
+        const gl = renderer.gl;
+
+
         if (this.createBitmap)
         {
             if (!this.bitmap)
@@ -192,19 +195,27 @@ export default class ImageResource extends BaseImageResource
                     return false;
                 }
             }
-            glTexture.upload(this.bitmap);
+
+            gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, baseTexture.premultiplyAlpha);
+            // TODO add texSub2d option
+            gl.texImage2D(gl.TEXTURE_2D, 0, baseTexture.format, baseTexture.format, baseTexture.type, this.bitmap);
+
             if (!this.preserveBitmap)
             {
                 if (this.bitmap.close)
                 {
                     this.bitmap.close();
                 }
+
                 this.bitmap = null;
             }
         }
         else
         {
-            super.upload(renderer, baseTexture, glTexture);
+
+            gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, baseTexture.premultiplyAlpha);
+            // TODO add texSub2d option
+            gl.texImage2D(gl.TEXTURE_2D, 0, baseTexture.format, baseTexture.format, baseTexture.type, this.source);
         }
 
         return true;

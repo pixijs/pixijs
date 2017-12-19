@@ -1,6 +1,33 @@
 import WebGLSystem from '../WebGLSystem';
-import GLTexture from './GLTexture';
+//import GLTexture from './GLTexture';
 import { removeItems } from '@pixi/utils';
+
+class GLTexture
+{
+    constructor(texture)
+    {
+        /**
+         * The WebGL texture
+         *
+         * @member {WebGLTexture}
+         */
+        this.texture = texture;
+        //gl.createTexture();
+
+        /**
+         * Texture contents dirty flag
+         * @member {number}
+         */
+        this.dirtyId = -1;
+
+        /**
+         * Texture style dirty flag
+         * @type {number}
+         */
+        this.dirtyStyleId = -1;
+    }
+}
+
 
 /**
  * @class
@@ -56,8 +83,13 @@ export default class TextureSystem extends WebGLSystem
         // TODO move this.. to a nice make empty textures class..
         this.emptyTextures = {};
 
-        this.emptyTextures[gl.TEXTURE_2D] = new GLTexture.fromData(this.gl, null, 1, 1);
-        this.emptyTextures[gl.TEXTURE_CUBE_MAP] = new GLTexture(this.gl);
+        const emptyTexture2D = new GLTexture(gl.createTexture());
+
+        gl.bindTexture(gl.TEXTURE_2D, emptyTexture2D.texture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(4));
+
+        this.emptyTextures[gl.TEXTURE_2D] = emptyTexture2D;
+        this.emptyTextures[gl.TEXTURE_CUBE_MAP] = new GLTexture(gl.createTexture());
 
         gl.bindTexture(gl.TEXTURE_CUBE_MAP, this.emptyTextures[gl.TEXTURE_CUBE_MAP].texture);
 
@@ -136,9 +168,8 @@ export default class TextureSystem extends WebGLSystem
 
     initTexture(texture)
     {
-        const glTexture = new GLTexture(this.gl, -1, -1, texture.format, texture.type);
+        const glTexture = new GLTexture(this.gl.createTexture())//, -1, -1, texture.format, texture.type);
 
-        glTexture.premultiplyAlpha = texture.premultiplyAlpha;
         // guarentee an update..
         glTexture.dirtyId = -1;
 
@@ -230,7 +261,7 @@ export default class TextureSystem extends WebGLSystem
     {
         const gl = this.gl;
 
-        if (glTexture.mipmap)
+        if (texture.mipmap)
         {
             gl.generateMipmap(texture.target);
         }
@@ -238,7 +269,7 @@ export default class TextureSystem extends WebGLSystem
         gl.texParameteri(texture.target, gl.TEXTURE_WRAP_S, texture.wrapMode);
         gl.texParameteri(texture.target, gl.TEXTURE_WRAP_T, texture.wrapMode);
 
-        if (glTexture.mipmap)
+        if (texture.mipmap)
         {
             /* eslint-disable max-len */
             gl.texParameteri(texture.target, gl.TEXTURE_MIN_FILTER, texture.scaleMode ? gl.LINEAR_MIPMAP_LINEAR : gl.NEAREST_MIPMAP_NEAREST);
