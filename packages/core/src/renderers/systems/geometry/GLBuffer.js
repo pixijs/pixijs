@@ -1,4 +1,4 @@
-export default class GLBufferData
+export default class GLBuffer
 {
     constructor(buffer)
     {
