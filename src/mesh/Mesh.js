@@ -92,7 +92,7 @@ export default class Mesh extends core.Container
          *
          * @member {number}
          */
-        this.canvasPadding = 0;
+        this.canvasPadding = Mesh.defaults.canvasPadding;
 
         /**
          * The way the Mesh should be drawn, can be any of the {@link PIXI.mesh.Mesh.DRAW_MODES} consts
@@ -340,4 +340,16 @@ export default class Mesh extends core.Container
 Mesh.DRAW_MODES = {
     TRIANGLE_MESH: 0,
     TRIANGLES: 1,
+};
+
+/**
+ * Mesh default values
+ *
+ * @static
+ * @constant
+ * @type {object}
+ * @property {number} canvasPadding
+ */
+Mesh.defaults = {
+    canvasPadding: 0,
 };
