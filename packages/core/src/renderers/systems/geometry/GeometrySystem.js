@@ -3,8 +3,6 @@ import GLBuffer from './GLBuffer';
 
 const byteSizeMap = { 5126: 4, 5123: 2, 5121: 1 };
 
-
-
 /**
  * @class
  * @extends PIXI.WebGLSystem

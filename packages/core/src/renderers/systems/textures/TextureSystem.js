@@ -2,7 +2,6 @@ import WebGLSystem from '../WebGLSystem';
 import GLTexture from './GLTexture';
 import { removeItems } from '@pixi/utils';
 
-
 /**
  * @class
  * @extends PIXI.WebGLSystem
