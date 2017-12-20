@@ -207,8 +207,9 @@ export default class TextMetrics
 
         context.font = font;
 
-        const width = Math.ceil(context.measureText('|MÉq').width);
-        let baseline = Math.ceil(context.measureText('M').width);
+        const validateString = TextMetrics._validateString + TextMetrics._baselineSymbol;
+        const width = Math.ceil(context.measureText(validateString).width);
+        let baseline = Math.ceil(context.measureText(TextMetrics._baselineSymbol).width);
         const height = 2 * baseline;
 
         baseline = baseline * 1.4 | 0;
@@ -223,7 +224,7 @@ export default class TextMetrics
 
         context.textBaseline = 'alphabetic';
         context.fillStyle = '#000';
-        context.fillText('|MÉq', 0, baseline);
+        context.fillText(validateString, 0, baseline);
 
         const imagedata = context.getImageData(0, 0, width, height).data;
         const pixels = imagedata.length;
@@ -288,6 +289,36 @@ export default class TextMetrics
 
         return properties;
     }
+
+    /**
+     * Set custom params for calculate font metrics
+     * If validateString or baselineSymbol is not the same as a previous values than font metrics cache will reset
+     *
+     * @static
+     * @param {string} validateString - Symbols with different metrics: the highest symbol, the lowest, the widest,...
+     * @param {string} baselineSymbol - The widest symbol in fonts
+     */
+    static setValidateParams(validateString, baselineSymbol)
+    {
+        let isChanged = false;
+
+        if (TextMetrics._validateString !== validateString)
+        {
+            TextMetrics._validateString = validateString;
+            isChanged = true;
+        }
+
+        if (TextMetrics._baselineSymbol !== baselineSymbol)
+        {
+            TextMetrics._baselineSymbol = baselineSymbol;
+            isChanged = true;
+        }
+
+        if (isChanged)
+        {
+            TextMetrics._fonts = {};
+        }
+    }
 }
 
 /**
@@ -326,3 +357,37 @@ TextMetrics._context = canvas.getContext('2d');
  * @private
  */
 TextMetrics._fonts = {};
+
+/**
+ * Default string for validate font metrics.
+ * @public
+ * @static
+ * @memberof PIXI.TextMetrics
+ * @type {string}
+ */
+TextMetrics.DEFAULT_VALIDATE_STRING = '|Éq';
+
+/**
+ * Default baseline symbol for validate font metrics.
+ * @public
+ * @static
+ * @memberof PIXI.TextMetrics
+ * @type {string}
+ */
+TextMetrics.DEFAULT_BASELINE_SYMBOL = 'M';
+
+/**
+ * Current string for validate font metrics.
+ * @private
+ * @memberof PIXI.TextMetrics
+ * @type {string}
+ */
+TextMetrics._validateString = TextMetrics.DEFAULT_VALIDATE_STRING;
+
+/**
+ * Current baseline symbol for validate font metrics.
+ * @private
+ * @memberof PIXI.TextMetrics
+ * @type {string}
+ */
+TextMetrics._baselineSymbol = TextMetrics.DEFAULT_BASELINE_SYMBOL;
