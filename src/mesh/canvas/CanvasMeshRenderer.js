@@ -171,7 +171,7 @@ export default class MeshSpriteRenderer
         let y1 = vertices[index1 + 1];
         let y2 = vertices[index2 + 1];
 
-        const canvasPadding = mesh.canvasPadding * this.renderer.resolution;
+        const canvasPadding = mesh.canvasPadding / this.renderer.resolution;
 
         if (canvasPadding > 0)
         {
