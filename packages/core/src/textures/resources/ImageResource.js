@@ -192,13 +192,16 @@ export default class ImageResource extends BaseImageResource
                     return false;
                 }
             }
-            glTexture.upload(this.bitmap);
+
+            super.upload(renderer, baseTexture, glTexture, this.bitmap);
+
             if (!this.preserveBitmap)
             {
                 if (this.bitmap.close)
                 {
                     this.bitmap.close();
                 }
+
                 this.bitmap = null;
             }
         }

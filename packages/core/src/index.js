@@ -14,7 +14,6 @@ export { default as TextureUvs } from './textures/TextureUvs';
 export { default as WebGLSystem } from './renderers/systems/WebGLSystem';
 export { default as State } from './renderers/State';
 export { default as ObjectRenderer } from './renderers/utils/ObjectRenderer';
-export { default as RenderTarget } from './renderers/utils/RenderTarget';
 export { default as Quad } from './renderers/utils/Quad';
 export { default as checkMaxIfStatmentsInShader } from './renderers/utils/checkMaxIfStatmentsInShader';
 export { default as Shader } from './shader/Shader';

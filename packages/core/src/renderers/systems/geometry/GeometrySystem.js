@@ -1,16 +1,7 @@
 import WebGLSystem from '../WebGLSystem';
+import GLBuffer from './GLBuffer';
 
 const byteSizeMap = { 5126: 4, 5123: 2, 5121: 1 };
-
-class GLBufferData
-{
-    constructor(buffer)
-    {
-        this.buffer = buffer;
-        this.updateID = -1;
-        this.byteLength = -1;
-    }
-}
 
 /**
  * @class
@@ -269,7 +260,7 @@ export default class GeometrySystem extends WebGLSystem
 
             if (!buffer._glBuffers[CONTEXT_UID])
             {
-                buffer._glBuffers[CONTEXT_UID] = new GLBufferData(gl.createBuffer());
+                buffer._glBuffers[CONTEXT_UID] = new GLBuffer(gl.createBuffer());
             }
         }
 

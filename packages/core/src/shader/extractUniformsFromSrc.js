@@ -1,6 +1,4 @@
-import glCore from 'pixi-gl-core';
-
-const defaultValue = glCore.shader.defaultValue;
+import defaultValue from './defaultValue';
 
 export default function extractUniformsFromSrc(vertexSrc, fragmentSrc, mask)
 {

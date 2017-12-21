@@ -254,6 +254,7 @@ export default class VideoResource extends BaseImageResource
     {
         return this._autoUpdate;
     }
+
     set autoUpdate(value) // eslint-disable-line require-jsdoc
     {
         if (value !== this._autoUpdate)

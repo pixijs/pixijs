@@ -56,8 +56,13 @@ export default class TextureSystem extends WebGLSystem
         // TODO move this.. to a nice make empty textures class..
         this.emptyTextures = {};
 
-        this.emptyTextures[gl.TEXTURE_2D] = new GLTexture.fromData(this.gl, null, 1, 1);
-        this.emptyTextures[gl.TEXTURE_CUBE_MAP] = new GLTexture(this.gl);
+        const emptyTexture2D = new GLTexture(gl.createTexture());
+
+        gl.bindTexture(gl.TEXTURE_2D, emptyTexture2D.texture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(4));
+
+        this.emptyTextures[gl.TEXTURE_2D] = emptyTexture2D;
+        this.emptyTextures[gl.TEXTURE_CUBE_MAP] = new GLTexture(gl.createTexture());
 
         gl.bindTexture(gl.TEXTURE_CUBE_MAP, this.emptyTextures[gl.TEXTURE_CUBE_MAP].texture);
 
@@ -136,9 +141,8 @@ export default class TextureSystem extends WebGLSystem
 
     initTexture(texture)
     {
-        const glTexture = new GLTexture(this.gl, -1, -1, texture.format, texture.type);
+        const glTexture = new GLTexture(this.gl.createTexture());
 
-        glTexture.premultiplyAlpha = texture.premultiplyAlpha;
         // guarentee an update..
         glTexture.dirtyId = -1;
 
@@ -188,7 +192,7 @@ export default class TextureSystem extends WebGLSystem
         {
             this.unbind(texture);
 
-            texture._glTextures[this.renderer.CONTEXT_UID].destroy();
+            texture._glTextures[this.renderer.CONTEXT_UID].texture.destroy();
             texture.off('dispose', this.destroyTexture, this);
 
             delete texture._glTextures[this.renderer.CONTEXT_UID];
@@ -209,7 +213,6 @@ export default class TextureSystem extends WebGLSystem
     {
         const glTexture = texture._glTextures[this.CONTEXT_UID];
 
-        glTexture.mipmap = texture.mipmap && texture.isPowerOfTwo;
         if (!glTexture)
         {
             return;
@@ -223,14 +226,15 @@ export default class TextureSystem extends WebGLSystem
         {
             this.setStyle(texture, glTexture);
         }
+
         glTexture.dirtyStyleId = texture.dirtyStyleId;
     }
 
-    setStyle(texture, glTexture)
+    setStyle(texture)
     {
         const gl = this.gl;
 
-        if (glTexture.mipmap)
+        if (texture.mipmap && texture.isPowerOfTwo)
         {
             gl.generateMipmap(texture.target);
         }
@@ -238,7 +242,7 @@ export default class TextureSystem extends WebGLSystem
         gl.texParameteri(texture.target, gl.TEXTURE_WRAP_S, texture.wrapMode);
         gl.texParameteri(texture.target, gl.TEXTURE_WRAP_T, texture.wrapMode);
 
-        if (glTexture.mipmap)
+        if (texture.mipmap)
         {
             /* eslint-disable max-len */
             gl.texParameteri(texture.target, gl.TEXTURE_MIN_FILTER, texture.scaleMode ? gl.LINEAR_MIPMAP_LINEAR : gl.NEAREST_MIPMAP_NEAREST);
