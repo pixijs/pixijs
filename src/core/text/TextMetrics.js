@@ -108,97 +108,139 @@ export default class TextMetrics
     {
         const context = canvas.getContext('2d');
 
-        // Greedy wrapping algorithm that will wrap words as the line grows longer
-        // than its horizontal bounds.
-        const result = [];
-        const firstChar = text.charAt(0);
-        const lines = text.split('\n');
-        const wordWrapWidth = style.wordWrapWidth;
-        const characterCache = {};
-        const wordCache = {};
-        const spaceWidth = context.measureText(' ').width * style.letterSpacing;
+        let line = '';
+        let width = 0;
+        let lines = '';
+        const cache = {};
 
-        for (let i = 0; i < lines.length; i++)
+        // ideally there is letterSpacing after every char except the last one
+        // t_h_i_s_' '_i_s_' '_a_n_' '_e_x_a_m_p_l_e_' '_!
+        // so for convenience the above needs to be compared to width + 1 extra space
+        // t_h_i_s_' '_i_s_' '_a_n_' '_e_x_a_m_p_l_e_' '_!_
+        // ________________________________________________
+        // And then the final space is simply no appended to each line
+        const wordWrapWidth = style.wordWrapWidth + style.letterSpacing;
+
+        // store the width of calculated character(s)
+        function getFromCache(key)
         {
-            let currentLine = '';
-            const words = lines[i].split(' ');
+            let width = cache[key];
 
-            for (let j = 0; j < words.length; j++)
+            if (width === undefined)
             {
-                const word = words[j];
-                let wordWidth = wordCache[word];
+                const spacing = ((key.length) * style.letterSpacing);
 
-                if (wordWidth === undefined)
+                width = context.measureText(key).width + spacing;
+                cache[key] = width;
+            }
+
+            return width;
+        }
+
+        // convienience function for logging each line
+        function addLine(l, newLine = true)
+        {
+            l = (newLine) ? `${l}\n` : l;
+
+            // console.log(l)
+
+            return l;
+        }
+
+        // get the width of a space and add it to cache
+        const spaceWidth = getFromCache(' ');
+
+        // break text into words
+        const words = text.split(' ');
+
+        for (let i = 0; i < words.length; i++)
+        {
+            const word = words[i];
+
+            // get word width from cache if possible
+            const wordWidth = getFromCache(word);
+
+            // word is longer than desired bounds
+            if (wordWidth > wordWrapWidth)
+            {
+                // break large word over multiple lines
+                if (style.breakWords)
                 {
-                    const wordLetterSpacing = ((word.length - 1) * style.letterSpacing);
+                    // add a space to the start of the word unless its at the beginning of the line
+                    const tmpWord = (line.length > 0) ? ` ${word}` : word;
 
-                    wordWidth = context.measureText(word).width + wordLetterSpacing;
-                    wordCache[word] = wordWidth;
-                }
+                    // break word into characters
+                    const characters = tmpWord.split('');
 
-                if (style.breakWords && wordWidth > wordWrapWidth)
-                {
-                    // Word should be split in the middle
-                    const characters = word.split('');
-
-                    for (let c = 0; c < characters.length; c++)
+                    // loop the characters
+                    for (let j = 0; j < characters.length; j++)
                     {
-                        const character = characters[c];
-                        let characterWidth = characterCache[character];
+                        const character = characters[j];
+                        const characterWidth = getFromCache(character);
 
-                        if (characterWidth === undefined)
+                        if (characterWidth + width > wordWrapWidth)
                         {
-                            characterWidth = context.measureText(character).width;
-                            characterCache[character] = characterWidth;
-                        }
-
-                        const usedLetterSpacing = ((currentLine.length - 1) * style.letterSpacing);
-                        const usedSpace = context.measureText(currentLine).width + usedLetterSpacing;
-
-                        if (characterWidth + usedSpace > wordWrapWidth)
-                        {
-                            result.push(currentLine);
-                            currentLine = character;
+                            lines += addLine(line);
+                            line = '';
+                            width = 0;
                         }
                         else
                         {
-                            if (c === 0 && (j > 0 || firstChar === ' '))
-                            {
-                                currentLine += ' ';
-                            }
-
-                            currentLine += character;
+                            line += character;
+                            width += characterWidth;
                         }
                     }
                 }
+
+                // run word out of the bounds
                 else
                 {
-                    const wordWidthWithSpace = wordWidth + spaceWidth;
-                    const usedLetterSpacing = ((currentLine.length - 1) * style.letterSpacing);
-                    const usedSpace = context.measureText(currentLine).width + usedLetterSpacing;
+                   // if there are words in this line already
+                    // finish that line and start a new one
+                    if (line.length > 0)
+                    {
+                        lines += addLine(line);
+                        line = '';
+                        width = 0;
+                    }
 
-                    if (j === 0 || wordWidthWithSpace + usedSpace > wordWrapWidth)
-                    {
-                        // Skip printing the newline if it's the first word of the line that is
-                        // greater than the word wrap width.
-                        if (j > 0)
-                        {
-                            result.push(currentLine);
-                            currentLine = '';
-                        }
-                        currentLine += word;
-                    }
-                    else
-                    {
-                        currentLine += ` ${word}`;
-                    }
+                    // give it its own line
+                    lines += addLine(word);
+                    line = '';
+                    width = 0;
                 }
             }
 
-            result.push(currentLine);
+            // word could fit
+            else
+            {
+                // word won't fit, start a new line
+                if (wordWidth + width > wordWrapWidth)
+                {
+                    lines += addLine(line);
+                    line = '';
+                    width = 0;
+                }
+
+                // add the word to the current line
+                if (line.length > 0)
+                {
+                    // add a space if it is not the beginning
+                    line += ` ${word}`;
+                }
+                else
+                {
+                    // add without a space if it is the beginning
+                    line += word;
+                }
+
+                width += wordWidth + spaceWidth;
+            }
         }
 
-        return result.join('\n');
+        lines += addLine(line, false);
+
+        return lines;
     }
 
     /**
