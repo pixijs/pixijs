@@ -56,7 +56,7 @@ export default class DisplacementFilter extends core.Filter
      */
     apply(filterManager, input, output)
     {
-        const ratio =  (1 / output.destinationFrame.width) * (output.size.width / input.size.width);
+        const ratio =  (1 / output.destinationFrame.width) * (output.sourceFrame.width / input.sourceFrame.width);
 
         this.uniforms.filterMatrix = filterManager.calculateSpriteMatrix(this.maskMatrix, this.maskSprite);
         this.uniforms.scale.x = this.scale.x * ratio;
