@@ -157,17 +157,35 @@ export default class TextureSystem extends WebGLSystem
     updateTexture(texture)
     {
         const glTexture = texture._glTextures[this.CONTEXT_UID];
+        const renderer = this.renderer;
 
-        if (texture.resource && texture.resource.upload(this.renderer, texture, glTexture))
+        if (texture.resource && texture.resource.upload(renderer, texture, glTexture))
         {
             // texture is uploaded, dont do anything!
         }
-        else if (glTexture.width !== texture.realWidth
-            || glTexture.height !== texture.realHeight
-            || glTexture.dirtyId < 0)
+        else
         {
             // default, renderTexture-like logic
-            glTexture.uploadData(null, texture.realWidth, texture.realHeight);
+            const width = texture.realWidth;
+            const height = texture.realHeight;
+            const gl = renderer.gl;
+
+            if (glTexture.width !== width
+                || glTexture.height !== height
+                || glTexture.dirtyId < 0)
+            {
+                glTexture.width = width;
+                glTexture.height = height;
+
+                gl.texImage2D(texture.target, 0,
+                    texture.format,
+                    width,
+                    height,
+                    0,
+                    texture.format,
+                    texture.type,
+                    null);
+            }
         }
 
         // lets only update what changes..
@@ -213,6 +231,7 @@ export default class TextureSystem extends WebGLSystem
     {
         const glTexture = texture._glTextures[this.CONTEXT_UID];
 
+        glTexture.mipmap = texture.mipmap && texture.isPowerOfTwo;
         if (!glTexture)
         {
             return;
@@ -230,11 +249,11 @@ export default class TextureSystem extends WebGLSystem
         glTexture.dirtyStyleId = texture.dirtyStyleId;
     }
 
-    setStyle(texture)
+    setStyle(texture, glTexture)
     {
         const gl = this.gl;
 
-        if (texture.mipmap && texture.isPowerOfTwo)
+        if (glTexture.mipmap)
         {
             gl.generateMipmap(texture.target);
         }
@@ -242,7 +261,7 @@ export default class TextureSystem extends WebGLSystem
         gl.texParameteri(texture.target, gl.TEXTURE_WRAP_S, texture.wrapMode);
         gl.texParameteri(texture.target, gl.TEXTURE_WRAP_T, texture.wrapMode);
 
-        if (texture.mipmap)
+        if (glTexture.mipmap)
         {
             /* eslint-disable max-len */
             gl.texParameteri(texture.target, gl.TEXTURE_MIN_FILTER, texture.scaleMode ? gl.LINEAR_MIPMAP_LINEAR : gl.NEAREST_MIPMAP_NEAREST);
