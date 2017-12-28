@@ -17,6 +17,11 @@ core.DisplayObject.prototype.name = null;
  */
 core.Container.prototype.getChildByName = function getChildByName(name)
 {
+    if ((typeof name) !== 'string')
+    {
+        return null;
+    }
+
     for (let i = 0; i < this.children.length; i++)
     {
         if (this.children[i].name === name)
