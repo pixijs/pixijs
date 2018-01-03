@@ -48,7 +48,7 @@ _Note: After v4.5.0, support for the [Bower](https://bower.io) package manager h
 
 #### NPM Install
 
-```
+```sh
 $> npm install pixi.js
 ```
 
@@ -112,18 +112,17 @@ before submitting changes.
 ```js
 // The application will create a renderer using WebGL, if possible,
 // with a fallback to a canvas render. It will also setup the ticker
-// and the root stage PIXI.Container.
-var app = new PIXI.Application();
+// and the root stage PIXI.Container
+const app = new PIXI.Application();
 
 // The application will create a canvas element for you that you
-// can then insert into the DOM.
+// can then insert into the DOM
 document.body.appendChild(app.view);
 
 // load the texture we need
-PIXI.loader.add('bunny', 'bunny.png').load(function(loader, resources) {
-
-    // This creates a texture from a 'bunny.png' image.
-    var bunny = new PIXI.Sprite(resources.bunny.texture);
+PIXI.loader.add('bunny', 'bunny.png').load((loader, resources) => {
+    // This creates a texture from a 'bunny.png' image
+    const bunny = new PIXI.Sprite(resources.bunny.texture);
 
     // Setup the position of the bunny
     bunny.x = app.renderer.width / 2;
@@ -133,11 +132,11 @@ PIXI.loader.add('bunny', 'bunny.png').load(function(loader, resources) {
     bunny.anchor.x = 0.5;
     bunny.anchor.y = 0.5;
 
-    // Add the bunny to the scene we are building.
+    // Add the bunny to the scene we are building
     app.stage.addChild(bunny);
 
     // Listen for frame updates
-    app.ticker.add(function() {
+    app.ticker.add(() => {
          // each frame we spin the bunny around a bit
         bunny.rotation += 0.01;
     });
@@ -153,13 +152,13 @@ the only time you should need to build PixiJS is if you are developing it.
 If you don't already have Node.js and NPM, go install them. Then, in the folder where you have cloned
 the repository, install the build dependencies using npm:
 
-```
+```sh
 $> npm install
 ```
 
 Then, to build the source, run:
 
-```
+```sh
 $> npm run dist
 ```
 
@@ -168,13 +167,13 @@ with all the plugins in the PixiJS project.
 
 If there are specific plugins you don't want, say "interaction" or "extras", you can exclude those:
 
-```
+```sh
 $> npm run dist -- --exclude extras --exclude interaction
 ```
 
 You can also use the short-form `-e`:
 
-```
+```sh
 $> npm run dist -- -e extras -e interaction -e filters
 ```
 
@@ -182,7 +181,7 @@ $> npm run dist -- -e extras -e interaction -e filters
 
 The docs can be generated using npm:
 
-```
+```sh
 $> npm run docs
 ```
 
