@@ -53,19 +53,21 @@ export default class BaseImageResource extends Resource
     upload(renderer, baseTexture, glTexture, source)
     {
         const gl = renderer.gl;
+        const width = baseTexture.realWidth;
+        const height = baseTexture.realHeight;
 
         source = source || this.source;
 
         gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, baseTexture.premultiplyAlpha);
 
-        if (glTexture.width === baseTexture.width && glTexture.height === baseTexture.height)
+        if (glTexture.width === width && glTexture.height === height)
         {
             gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, baseTexture.format, baseTexture.type, source);
         }
         else
         {
-            glTexture.width = baseTexture.width;
-            glTexture.height = baseTexture.height;
+            glTexture.width = width;
+            glTexture.height = height;
 
             gl.texImage2D(gl.TEXTURE_2D, 0, baseTexture.format, baseTexture.format, baseTexture.type, source);
         }

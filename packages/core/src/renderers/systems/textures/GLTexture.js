@@ -23,5 +23,11 @@ export default class GLTexture
          * @type {number}
          */
         this.dirtyStyleId = -1;
+
+        /**
+         * Whether mip levels has to be generated
+         * @type {boolean}
+         */
+        this.mipmap = false;
     }
 }
