@@ -66,23 +66,21 @@ describe('PIXI.loaders.spritesheetParser', function ()
 
         // provide a mock pre-loader that creates an empty base texture for compressed texture assets
         // this is necessary because the spritesheetParser expects a baseTexture on the resource
-        loader.pre(function (resource, next)
+        loader.pre((resource, next) =>
         {
-            if (resource.url.indexOf('.crn') !== -1)
+            if (resource.extension === 'crn')
             {
-                resource.texture = {
-                    baseTexture: new PIXI.BaseTexture(),
-                };
+                resource.texture = PIXI.Texture.EMPTY;
             }
             next();
-        });
-
-        loader.add(`atlas_crn`, `file://${__dirname}/resources/atlas_crn.json`);
-        loader.add(`atlas`, `file://${__dirname}/resources/atlas.json`);
-        loader.load((loader, resources) =>
+        })
+        .add(`atlas_crn`, `file://${__dirname}/resources/atlas_crn.json`)
+        .add(`atlas`, `file://${__dirname}/resources/atlas.json`)
+        .load((loader, resources) =>
         {
             expect(resources.atlas_image.data).to.be.instanceof(HTMLImageElement);
             expect(resources.atlas_crn_image.data).to.not.be.instanceof(HTMLImageElement);
+            loader.reset();
             done();
         });
     });
