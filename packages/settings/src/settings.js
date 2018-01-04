@@ -198,4 +198,17 @@ export default {
      * @default true
      */
     CREATE_IMAGE_BITMAP: true,
+
+    /**
+     * Allows to use degrees to store rotation in Transform.
+     * Also affects TilingSprite and Graphics.
+     * Please set it before creation of instances of those classes.
+     *
+     * @static
+     * @constant
+     * @memberof PIXI.settings
+     * @type {boolean}
+     * @default false
+     */
+    USE_DEGREES: false,
 };

@@ -350,6 +350,7 @@ export default class Matrix
         const skewX = -Math.atan2(-c, d);
         const skewY = Math.atan2(b, a);
 
+        const rad2deg = transform.rad2deg;
         const delta = Math.abs(skewX + skewY);
 
         if (delta < 0.00001 || Math.abs(PI_2 - delta) < 0.00001)
@@ -361,15 +362,16 @@ export default class Matrix
                 transform.rotation += (transform.rotation <= 0) ? Math.PI : -Math.PI;
             }
 
+            transform.rotation *= rad2deg;
+
             transform.skew.x = transform.skew.y = 0;
         }
         else
         {
             transform.rotation = 0;
-            transform.skew.x = skewX;
-            transform.skew.y = skewY;
+            transform.skew.x = skewX * rad2deg;
+            transform.skew.y = skewY * rad2deg;
         }
-
         // next set scale
         transform.scale.x = Math.sqrt((a * a) + (b * b));
         transform.scale.y = Math.sqrt((c * c) + (d * d));

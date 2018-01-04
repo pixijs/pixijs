@@ -26,6 +26,7 @@
   ],
   "dependencies": {
     "@pixi/math": "^5.0.0-alpha",
+    "@pixi/settings": "^5.0.0-alpha",
     "@pixi/utils": "^5.0.0-alpha",
     "eventemitter3": "^2.0.0",
     "remove-array-items": "^1.0.0"

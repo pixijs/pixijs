@@ -1,6 +1,7 @@
 import EventEmitter from 'eventemitter3';
 import { Rectangle, Transform } from '@pixi/math';
 import Bounds from './Bounds';
+import { settings } from '@pixi/settings';
 // _tempDisplayObjectParent = new DisplayObject();
 
 /**
@@ -27,9 +28,11 @@ export default class DisplayObject extends EventEmitter
          * World transform and local transform of this object.
          * This will become read-only later, please do not assign anything there unless you know what are you doing
          *
-         * @member {PIXI.TransformBase}
+         * @member {PIXI.Transform}
          */
         this.transform = new Transform();
+
+        this.transform.useDegrees = settings.USE_DEGREES;
 
         /**
          * The opacity of the object.
@@ -523,7 +526,7 @@ export default class DisplayObject extends EventEmitter
     }
 
     /**
-     * The skew factor for the object in radians.
+     * The skew factor for the object in radians {@link PIXI.settings.USE_DEGREES or degrees}.
      * Assignment by value since pixi-v4.
      *
      * @member {PIXI.ObservablePoint}
@@ -539,7 +542,7 @@ export default class DisplayObject extends EventEmitter
     }
 
     /**
-     * The rotation of the object in radians.
+     * The rotation of the object in radians {@link PIXI.settings.USE_DEGREES or degrees}.
      *
      * @member {number}
      */
