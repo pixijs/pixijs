@@ -6,7 +6,6 @@ uniform vec2 scale;
 uniform sampler2D uSampler;
 uniform sampler2D mapSampler;
 
-uniform vec2 dimensions;
 uniform vec4 filterArea;
 uniform vec4 filterClamp;
 
