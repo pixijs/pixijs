@@ -11,7 +11,7 @@ core.DisplayObject.prototype.name = null;
 /**
  * Returns the display object in the container
  *
- * @function getChildByName
+ * @method getChildByName
  * @memberof PIXI.Container#
  * @param {string} name - instance name
  * @return {PIXI.DisplayObject} The child with the specified name.
