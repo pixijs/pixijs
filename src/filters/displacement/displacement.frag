@@ -6,6 +6,8 @@ uniform vec2 scale;
 uniform sampler2D uSampler;
 uniform sampler2D mapSampler;
 
+uniform vec2 dimensions;
+uniform vec4 filterArea;
 uniform vec4 filterClamp;
 
 void main(void)
@@ -13,7 +15,7 @@ void main(void)
    vec4 map =  texture2D(mapSampler, vFilterCoord);
 
    map -= 0.5;
-   map.xy *= scale;
+   map.xy *= scale / filterArea.x * dimensions.xy / filterArea.xy;
 
    gl_FragColor = texture2D(uSampler, clamp(vec2(vTextureCoord.x + map.x, vTextureCoord.y + map.y), filterClamp.xy, filterClamp.zw));
 }
