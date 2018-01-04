@@ -34,11 +34,11 @@ export default class FrameBuffer
     addColorTexture(index, texture)
     {
         // TODO add some validation to the texture - same width / height etc?
-        this.colorTextures[index || 0] = texture || new Texture(null, {scaleMode:0,
-                                                                      resolution:1,
-                                                                      mipmap:false,
-                                                                      width:this.width,
-                                                                      height:this.height});// || new Texture();
+        this.colorTextures[index || 0] = texture || new Texture(null, { scaleMode: 0,
+            resolution: 1,
+            mipmap: false,
+            width: this.width,
+            height: this.height });// || new Texture();
 
         this.dirtyId++;
         this.dirtyFormat++;
@@ -49,13 +49,13 @@ export default class FrameBuffer
     addDepthTexture(texture)
     {
         /* eslint-disable max-len */
-        this.depthTexture = texture || new Texture(null, {scaleMode:0,
-                                                          resolution:1,
-                                                          width:this.width,
-                                                          height:this.height,
-                                                          mipmap:false,
-                                                          format:FORMATS.DEPTH_COMPONENT,
-                                                          type:TYPES.UNSIGNED_SHORT});// UNSIGNED_SHORT;
+        this.depthTexture = texture || new Texture(null, { scaleMode: 0,
+            resolution: 1,
+            width: this.width,
+            height: this.height,
+            mipmap: false,
+            format: FORMATS.DEPTH_COMPONENT,
+            type: TYPES.UNSIGNED_SHORT });// UNSIGNED_SHORT;
         /* eslint-disable max-len */
         this.dirtyId++;
         this.dirtyFormat++;
