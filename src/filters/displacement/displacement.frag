@@ -12,10 +12,10 @@ uniform vec4 filterClamp;
 
 void main(void)
 {
-   vec4 map =  texture2D(mapSampler, vFilterCoord);
+  vec4 map =  texture2D(mapSampler, vFilterCoord);
 
-   map -= 0.5;
-   map.xy *= scale / dimensions.x * dimensions.xy / filterArea.xy;
+  map -= 0.5;
+  map.xy *= scale / filterArea.xy;
 
-   gl_FragColor = texture2D(uSampler, clamp(vec2(vTextureCoord.x + map.x, vTextureCoord.y + map.y), filterClamp.xy, filterClamp.zw));
+  gl_FragColor = texture2D(uSampler, clamp(vec2(vTextureCoord.x + map.x, vTextureCoord.y + map.y), filterClamp.xy, filterClamp.zw));
 }
