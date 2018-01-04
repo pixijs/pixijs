@@ -22,7 +22,6 @@ export default function ()
 
         const loadOptions = {
             crossOrigin: resource.crossOrigin,
-            loadType: Resource.LOAD_TYPE.IMAGE,
             metadata: resource.metadata.imageMetadata,
             parentResource: resource,
         };
