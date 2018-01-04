@@ -91,15 +91,15 @@ describe('PIXI.SpritesheetLoader', function ()
             }
             next();
         })
-        .add(`atlas_crn`, `file://${__dirname}/resources/atlas_crn.json`)
-        .add(`atlas`, `file://${__dirname}/resources/building1.json`)
-        .load((loader, resources) =>
-        {
-            expect(resources.atlas_image.data).to.be.instanceof(HTMLImageElement);
-            expect(resources.atlas_crn_image.data).to.not.be.instanceof(HTMLImageElement);
-            loader.reset();
-            done();
-        });
+            .add(`atlas_crn`, `file://${__dirname}/resources/atlas_crn.json`)
+            .add(`atlas`, `file://${__dirname}/resources/building1.json`)
+            .load((loader, resources) =>
+            {
+                expect(resources.atlas_image.data).to.be.instanceof(HTMLImageElement);
+                expect(resources.atlas_crn_image.data).to.not.be.instanceof(HTMLImageElement);
+                loader.reset();
+                done();
+            });
     });
 
     it('should build the image url', function ()
