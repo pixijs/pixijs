@@ -77,6 +77,31 @@ describe('PIXI.SpritesheetLoader', function ()
             .that.is.an.instanceof(Texture);
     });
 
+    it('should not load binary images as an image loader type', function (done)
+    {
+        const loader = new Loader();
+
+        // provide a mock pre-loader that creates an empty base texture for compressed texture assets
+        // this is necessary because the spritesheetParser expects a baseTexture on the resource
+        loader.pre((resource, next) =>
+        {
+            if (resource.extension === 'crn')
+            {
+                resource.texture = Texture.EMPTY;
+            }
+            next();
+        })
+        .add(`atlas_crn`, `file://${__dirname}/resources/atlas_crn.json`)
+        .add(`atlas`, `file://${__dirname}/resources/building1.json`)
+        .load((loader, resources) =>
+        {
+            expect(resources.atlas_image.data).to.be.instanceof(HTMLImageElement);
+            expect(resources.atlas_crn_image.data).to.not.be.instanceof(HTMLImageElement);
+            loader.reset();
+            done();
+        });
+    });
+
     it('should build the image url', function ()
     {
         function getPath(url, image)

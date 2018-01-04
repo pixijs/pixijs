@@ -37,7 +37,6 @@ export default class SpritesheetLoader
 
         const loadOptions = {
             crossOrigin: resource.crossOrigin,
-            loadType: LoaderResource.LOAD_TYPE.IMAGE,
             metadata: resource.metadata.imageMetadata,
             parentResource: resource,
         };
