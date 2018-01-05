@@ -66,7 +66,7 @@ _Note: `4.5.1` can be replaced by any [released](https://github.com/pixijs/pixi.
 - [Run Pixie Run](http://work.goodboydigital.com/runpixierun/)
 - [Fight for Everyone](http://www.goodboydigital.com/casestudies/fightforeveryone)
 - [Flash vs HTML](http://flashvhtml.com)
-- [Bunny Demo](http://pixijs.io/bunny-mark)
+- [Bunny Demo](http://www.goodboydigital.com/pixijs/bunnymark)
 - [Storm Brewing](http://www.goodboydigital.com/pixijs/storm)
 - [Render Texture Demo](http://www.goodboydigital.com/pixijs/examples/11)
 - [Primitives Demo](http://www.goodboydigital.com/pixijs/examples/13)
