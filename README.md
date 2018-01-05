@@ -63,7 +63,7 @@ _Note: `4.5.1` can be replaced by any [released](https://github.com/pixijs/pixi.
 ### Demos ###
 
 - [Filters Demo](http://pixijs.io/pixi-filters/tools/demo/)
-- [Run Pixie Run](http://www.goodboydigital.com/runpixierun)
+- [Run Pixie Run](http://work.goodboydigital.com/runpixierun/)
 - [Fight for Everyone](http://www.goodboydigital.com/casestudies/fightforeveryone)
 - [Flash vs HTML](http://flashvhtml.com)
 - [Bunny Demo](http://pixijs.io/bunny-mark)
