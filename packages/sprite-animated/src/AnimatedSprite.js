@@ -1,6 +1,5 @@
 import { Texture } from '@pixi/core';
 import { Sprite } from '@pixi/sprite';
-import { Ticker, UPDATE_PRIORITY } from '@pixi/ticker';
 
 /**
  * @typedef PIXI.extras.AnimatedSprite~FrameObject
@@ -34,7 +33,7 @@ export default class AnimatedSprite extends Sprite
     /**
      * @param {PIXI.Texture[]|PIXI.extras.AnimatedSprite~FrameObject[]} textures - an array of {@link PIXI.Texture} or frame
      *  objects that make up the animation
-     * @param {boolean} [autoUpdate=true] - Whether to use PIXI.Ticker.shared to auto update animation time.
+     * @param {boolean} [autoUpdate=true] - Whether to use stage animation update.
      */
     constructor(textures, autoUpdate)
     {
@@ -126,10 +125,6 @@ export default class AnimatedSprite extends Sprite
         }
 
         this.playing = false;
-        if (this._autoUpdate)
-        {
-            Ticker.shared.remove(this.update, this);
-        }
     }
 
     /**
@@ -144,10 +139,6 @@ export default class AnimatedSprite extends Sprite
         }
 
         this.playing = true;
-        if (this._autoUpdate)
-        {
-            Ticker.shared.add(this.update, this, UPDATE_PRIORITY.HIGH);
-        }
     }
 
     /**
@@ -189,7 +180,22 @@ export default class AnimatedSprite extends Sprite
     }
 
     /**
-     * Updates the object transform for rendering.
+     * Updates the animation in case of _autoUpdate
+     *
+     * @private
+     * @param {number} deltaTime - Time since last tick.
+     */
+    onAnimate(deltaTime)
+    {
+        if (this.playing && this._autoUpdate)
+        {
+            this.update(deltaTime);
+            this.emit('animate', deltaTime);
+        }
+    }
+
+    /**
+     * Updates animation.
      *
      * @private
      * @param {number} deltaTime - Time since last tick.
