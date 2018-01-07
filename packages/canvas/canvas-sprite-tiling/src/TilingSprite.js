@@ -12,7 +12,7 @@ TilingSprite.prototype._renderCanvas = function _renderCanvas(renderer)
 {
     const texture = this._texture;
 
-    if (!texture.baseTexture.hasLoaded)
+    if (!texture.baseTexture.valid)
     {
         return;
     }
@@ -21,6 +21,7 @@ TilingSprite.prototype._renderCanvas = function _renderCanvas(renderer)
     const transform = this.worldTransform;
     const resolution = renderer.resolution;
     const baseTexture = texture.baseTexture;
+    const source = baseTexture.getCanvasSource();
     const baseTextureResolution = baseTexture.resolution;
     const modX = ((this.tilePosition.x / this.tileScale.x) % texture._frame.width) * baseTextureResolution;
     const modY = ((this.tilePosition.y / this.tileScale.y) % texture._frame.height) * baseTextureResolution;
@@ -42,7 +43,7 @@ TilingSprite.prototype._renderCanvas = function _renderCanvas(renderer)
         }
         else
         {
-            tempCanvas.context.drawImage(baseTexture.source,
+            tempCanvas.context.drawImage(source,
                 -texture._frame.x * baseTextureResolution, -texture._frame.y * baseTextureResolution);
         }
         this.cachedTint = this.tint;
