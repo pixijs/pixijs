@@ -42,19 +42,7 @@ describe('PIXI.resources.ImageResource', function ()
         expect(resource.width).to.equal(0);
         expect(resource.height).to.equal(0);
         expect(resource.valid).to.be.false;
-        if (this.slugUrl.indexOf('\\') < 0)
-        {
-            // unix
-            expect(resource.url).to.equal(`file://${this.slugUrl}`);
-        }
-        else
-        {
-            // windows
-            const resourceUrl = resource.url.toLowerCase();
-            const windowsUrl = `file:///${this.slugUrl.replace(/\\/g, '/').toLowerCase()}`;
-
-            expect(resourceUrl).to.be.equals(windowsUrl);
-        }
+        expect(resource.url).to.equal(image.src);
 
         resource.destroy();
     });
