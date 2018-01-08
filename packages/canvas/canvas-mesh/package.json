@@ -23,6 +23,7 @@
   ],
   "dependencies": {
     "@pixi/constants": "^5.0.0-alpha",
+    "@pixi/settings": "^5.0.0-alpha",
     "@pixi/mesh": "^5.0.0-alpha"
   },
   "devDependencies": {

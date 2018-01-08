@@ -185,7 +185,7 @@ export default {
      *
      * @static
      * @constant
-     * @memberof PIXI
+     * @memberof PIXI.settings
      * @type {boolean}
      */
     CAN_UPLOAD_SAME_BUFFER: canUploadSameBuffer(),
@@ -195,7 +195,7 @@ export default {
      *
      * @static
      * @constant
-     * @memberof PIXI
+     * @memberof PIXI.settings
      * @type {boolean}
      * @default true
      */
