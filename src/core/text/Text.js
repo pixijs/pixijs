@@ -144,15 +144,15 @@ export default class Text extends Sprite
         const maxLineWidth = measured.maxLineWidth;
         const fontProperties = measured.fontProperties;
 
-        const prevTextWidth = this.textWidth;
-        const prevTextHeight = this.textHeight;
+        const prevCanvasWidth = this.canvasWidth;
+        const prevCanvasHeight = this.canvasHeight;
 
-        this.textWidth = Math.ceil(width + (style.padding * 2));
-        this.textHeight = Math.ceil(height + (style.padding * 2));
-        this._sizeChanged = this.textWidth !== prevTextWidth || this.textHeight !== prevTextHeight;
+        this.canvasWidth = Math.ceil(width + (style.padding * 2));
+        this.canvasHeight = Math.ceil(height + (style.padding * 2));
+        this._sizeChanged = this.canvasWidth !== prevCanvasWidth || this.canvasHeight !== prevCanvasHeight;
 
-        this.canvas.width = this.textWidth * this.resolution;
-        this.canvas.height = this.textHeight * this.resolution;
+        this.canvas.width = this.canvasWidth * this.resolution;
+        this.canvas.height = this.canvasHeight * this.resolution;
 
         context.scale(this.resolution, this.resolution);
 
@@ -462,8 +462,8 @@ export default class Text extends Sprite
         let currentIteration;
         let stop;
 
-        const width = this.textWidth;
-        const height = this.textHeight;
+        const width = this.canvasWidth;
+        const height = this.canvasHeight;
 
         // make a copy of the style settings, so we can manipulate them later
         const fill = style.fill.slice();
