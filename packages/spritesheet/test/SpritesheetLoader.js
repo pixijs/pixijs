@@ -91,8 +91,8 @@ describe('PIXI.SpritesheetLoader', function ()
             }
             next();
         })
-            .add(`atlas_crn`, `file://${__dirname}/resources/atlas_crn.json`)
-            .add(`atlas`, `file://${__dirname}/resources/building1.json`)
+            .add(`atlas_crn`, path.join(__dirname, 'resources', 'atlas_crn.json'))
+            .add(`atlas`, path.join(__dirname, 'resources', 'building1.json'))
             .load((loader, resources) =>
             {
                 expect(resources.atlas_image.data).to.be.instanceof(HTMLImageElement);
