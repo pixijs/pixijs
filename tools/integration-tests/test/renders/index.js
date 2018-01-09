@@ -2,7 +2,7 @@ const { Renderer } = require('@internal/renders');
 const path = require('path');
 
 // TODO: disable for now until we get the canvas version up and running again!
-describe.skip('renders', function ()
+describe('renders', function ()
 {
     before(function ()
     {
