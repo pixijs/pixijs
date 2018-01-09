@@ -1,6 +1,10 @@
 import { Mesh } from '@pixi/mesh';
 import { settings } from './settings';
 
+// IMPORTANT: Please do NOT use this as a precedent to use `settings` after the object is created
+// this was merely created to completely decouple canvas from the base Mesh class and we are
+// unable to add `canvasPadding` in the constructor anymore, as the case was for PixiJS v4.
+
 /**
  * Internal variable for `canvasPadding`.
  *
