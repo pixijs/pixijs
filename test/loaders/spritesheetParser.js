@@ -74,8 +74,8 @@ describe('PIXI.loaders.spritesheetParser', function ()
             }
             next();
         })
-        .add(`atlas_crn`, `file://${__dirname}/resources/atlas_crn.json`)
-        .add(`atlas`, `file://${__dirname}/resources/atlas.json`)
+        .add(`atlas_crn`, path.join(__dirname, 'resources', 'atlas_crn.json'))
+        .add(`atlas`, path.join(__dirname, 'resources', 'atlas.json'))
         .load((loader, resources) =>
         {
             expect(resources.atlas_image.data).to.be.instanceof(HTMLImageElement);
