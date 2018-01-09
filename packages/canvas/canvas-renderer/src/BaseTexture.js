@@ -1,6 +1,6 @@
 import { BaseTexture } from '@pixi/core';
 
-BaseTexture.prototype.getCanvasSource = function getCanvasSource()
+BaseTexture.prototype.getDrawableSource = function getDrawableSource()
 {
     const resource = this.resource;
 

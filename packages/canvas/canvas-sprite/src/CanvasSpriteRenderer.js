@@ -50,7 +50,7 @@ export default class CanvasSpriteRenderer
         let dx = 0;
         let dy = 0;
 
-        const source = texture.baseTexture.getCanvasSource();
+        const source = texture.baseTexture.getDrawableSource();
 
         if (texture.orig.width <= 0 || texture.orig.height <= 0 || !source)
         {
