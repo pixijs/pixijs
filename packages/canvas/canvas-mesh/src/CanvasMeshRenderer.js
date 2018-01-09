@@ -131,7 +131,7 @@ export default class CanvasMeshRenderer
         }
 
         const base = texture.baseTexture;
-        const textureSource = base.source;
+        const textureSource = base.getDrawableSource();
         const textureWidth = base.width;
         const textureHeight = base.height;
 

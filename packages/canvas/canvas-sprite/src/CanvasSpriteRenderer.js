@@ -50,7 +50,9 @@ export default class CanvasSpriteRenderer
         let dx = 0;
         let dy = 0;
 
-        if (texture.orig.width <= 0 || texture.orig.height <= 0 || !texture.baseTexture.source)
+        const source = texture.baseTexture.getDrawableSource();
+
+        if (texture.orig.width <= 0 || texture.orig.height <= 0 || !source)
         {
             return;
         }
@@ -134,7 +136,7 @@ export default class CanvasSpriteRenderer
                 }
 
                 renderer.context.drawImage(
-                    sprite.tintedTexture,
+                    source,
                     0,
                     0,
                     width * resolution,
@@ -148,7 +150,7 @@ export default class CanvasSpriteRenderer
             else
             {
                 renderer.context.drawImage(
-                    texture.baseTexture.source,
+                    source,
                     texture._frame.x * resolution,
                     texture._frame.y * resolution,
                     width * resolution,
