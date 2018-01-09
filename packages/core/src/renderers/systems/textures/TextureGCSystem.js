@@ -99,7 +99,7 @@ export default class TextureGCSystem extends WebGLSystem
         // only destroy non generated textures
         if (displayObject._texture && displayObject._texture._glRenderTargets)
         {
-            tm.destroyTexture(displayObject._texture, true);
+            tm.destroyTexture(displayObject._texture);
         }
 
         for (let i = displayObject.children.length - 1; i >= 0; i--)

@@ -100,6 +100,8 @@ export default class TextureSystem extends WebGLSystem
 
             if (texture.valid)
             {
+                texture.touched = this.renderer.textureGC.count;
+
                 const glTexture = texture._glTextures[this.CONTEXT_UID] || this.initTexture(texture);
 
                 gl.bindTexture(texture.target, glTexture.texture);
@@ -212,7 +214,7 @@ export default class TextureSystem extends WebGLSystem
         {
             this.unbind(texture);
 
-            gl.destroyTexture(texture._glTextures[this.renderer.CONTEXT_UID].texture);
+            gl.deleteTexture(texture._glTextures[this.renderer.CONTEXT_UID].texture);
             texture.off('dispose', this.destroyTexture, this);
 
             delete texture._glTextures[this.renderer.CONTEXT_UID];

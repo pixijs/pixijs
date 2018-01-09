@@ -198,7 +198,7 @@ export default class SpriteRenderer extends ObjectRenderer
         const float32View = buffer.float32View;
         const uint32View = buffer.uint32View;
 
-        // const touch = 0;// this.renderer.textureGC.count;
+        const touch = this.renderer.textureGC.count;
 
         let index = 0;
         let nextTexture;
@@ -262,6 +262,7 @@ export default class SpriteRenderer extends ObjectRenderer
                         currentGroup.start = i;
                     }
 
+                    nextTexture.touched = touch;
                     nextTexture._enabled = TICK;
                     nextTexture._id = textureCount;
 
