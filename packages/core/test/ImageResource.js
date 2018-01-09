@@ -42,7 +42,7 @@ describe('PIXI.resources.ImageResource', function ()
         expect(resource.width).to.equal(0);
         expect(resource.height).to.equal(0);
         expect(resource.valid).to.be.false;
-        expect(resource.url).to.equal(`file://${this.slugUrl}`);
+        expect(resource.url).to.equal(image.src);
 
         resource.destroy();
     });
