@@ -1,5 +1,5 @@
 import { AbstractRenderer } from '@pixi/core';
-import { CanvasRenderTarget } from '@pixi/utils';
+import { CanvasRenderTarget, sayHello } from '@pixi/utils';
 import CanvasMaskManager from './utils/CanvasMaskManager';
 import mapCanvasBlendModesToPixi from './utils/mapCanvasBlendModesToPixi';
 import { RENDERER_TYPE, SCALE_MODES, BLEND_MODES } from '@pixi/constants';
@@ -103,6 +103,8 @@ export default class CanvasRenderer extends AbstractRenderer
         this._activeBlendMode = null;
 
         this.renderingToScreen = false;
+
+        sayHello('Canvas');
 
         this.resize(this.options.width, this.options.height);
 

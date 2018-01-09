@@ -96,8 +96,10 @@ const CanvasTinter = {
 
         context.globalCompositeOperation = 'multiply';
 
+        const source = texture.baseTexture.getDrawableSource();
+
         context.drawImage(
-            texture.baseTexture.source,
+            source,
             crop.x,
             crop.y,
             crop.width,
@@ -111,7 +113,7 @@ const CanvasTinter = {
         context.globalCompositeOperation = 'destination-atop';
 
         context.drawImage(
-            texture.baseTexture.source,
+            source,
             crop.x,
             crop.y,
             crop.width,
@@ -153,7 +155,7 @@ const CanvasTinter = {
 
         context.globalCompositeOperation = 'destination-atop';
         context.drawImage(
-            texture.baseTexture.source,
+            texture.baseTexture.getDrawableSource(),
             crop.x,
             crop.y,
             crop.width,
@@ -193,7 +195,7 @@ const CanvasTinter = {
         context.save();
         context.globalCompositeOperation = 'copy';
         context.drawImage(
-            texture.baseTexture.source,
+            texture.baseTexture.getDrawableSource(),
             crop.x,
             crop.y,
             crop.width,
