@@ -657,4 +657,60 @@ export default function deprecated(PIXI)
 
         return BaseTexture.from(canvas, { scaleMode, resourceOptions });
     };
+
+    /**
+     * @method copy
+     * @static
+     * @memberof PIXI.Point
+     * @deprecated since 5.0.0
+     * @see PIXI.Point.copyFrom
+     */
+    PIXI.Point.prototype.copy = function copy(p)
+    {
+        warn('PIXI.Point.copy has been replaced with PIXI.Point.copyFrom');
+
+        return this.copyFrom(p);
+    };
+
+    /**
+     * @method copy
+     * @static
+     * @memberof PIXI.ObservablePoint
+     * @deprecated since 5.0.0
+     * @see PIXI.ObservablePoint.copyFrom
+     */
+    PIXI.ObservablePoint.prototype.copy = function copy(p)
+    {
+        warn('PIXI.ObservablePoint.copy has been replaced with PIXI.ObservablePoint.copyFrom');
+
+        return this.copyFrom(p);
+    };
+
+    /**
+     * @method copy
+     * @static
+     * @memberof PIXI.Rectangle
+     * @deprecated since 5.0.0
+     * @see PIXI.Rectangle.copyFrom
+     */
+    PIXI.Rectangle.prototype.copy = function copy(p)
+    {
+        warn('PIXI.Rectangle.copy has been replaced with PIXI.Rectangle.copyFrom');
+
+        return this.copyFrom(p);
+    };
+
+    /**
+     * @method copy
+     * @static
+     * @memberof PIXI.Rectangle
+     * @deprecated since 5.0.0
+     * @see PIXI.Matrix.copyTo
+     */
+    PIXI.Matrix.prototype.copy = function copy(p)
+    {
+        warn('PIXI.Matrix.copy has been replaced with PIXI.Matrix.copyTo');
+
+        return this.copyTo(p);
+    };
 }
