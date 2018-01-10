@@ -69,7 +69,7 @@ export default class ObservablePoint
      */
     copyTo(p)
     {
-        p.set(this.x, this.y);
+        p.set(this._x, this._y);
 
         return p;
     }
