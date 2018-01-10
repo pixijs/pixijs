@@ -1,5 +1,5 @@
 import RawMesh from './RawMesh';
-import { Geometry, Program, Shader } from '@pixi/core';
+import { Geometry, Program, Shader, Texture } from '@pixi/core';
 import { BLEND_MODES } from '@pixi/constants';
 import { hex2rgb, premultiplyRgba } from '@pixi/utils';
 import vertex from './mesh.vert';
@@ -16,7 +16,7 @@ let meshProgram;
 export default class Mesh extends RawMesh
 {
     /**
-     * @param {PIXI.Texture} texture - The texture to use
+     * @param {PIXI.Texture} [texture=Texture.EMPTY] - The texture to use
      * @param {Float32Array} [vertices] - if you want to specify the vertices
      * @param {Float32Array} [uvs] - if you want to specify the uvs
      * @param {Uint16Array} [indices] - if you want to specify the indices
@@ -45,14 +45,41 @@ export default class Mesh extends RawMesh
 
         super(geometry, new Shader(meshProgram, uniforms), null, drawMode);
 
+        /**
+         * The Uvs of the Mesh
+         *
+         * @member {Float32Array}
+         */
         this.uvs = geometry.getAttribute('aTextureCoord').data;
+
+        /**
+         * An array of vertices
+         *
+         * @member {Float32Array}
+         */
         this.vertices = geometry.getAttribute('aVertexPosition').data;
 
         this.uniforms = uniforms;
-        this.texture = texture;
 
+        /**
+         * The texture of the Mesh
+         *
+         * @member {PIXI.Texture}
+         * @default PIXI.Texture.EMPTY
+         * @private
+         */
+        this.texture = texture || Texture.EMPTY;
+
+        /**
+         * The tint applied to the mesh. This is a [r,g,b] value. A value of [1,1,1] will remove any
+         * tint effect.
+         *
+         * @member {number}
+         * @private
+         */
         this._tintRGB = new Float32Array([1, 1, 1]);
-        this._tint = 0xFFFFFF;
+
+        // Set default tint
         this.tint = 0xFFFFFF;
 
         this.blendMode = BLEND_MODES.NORMAL;
