@@ -151,7 +151,7 @@ export default class ParticleRenderer extends ObjectRenderer
 
         const gl = renderer.gl;
 
-        const m = container.worldTransform.copy(this.tempMatrix);
+        const m = container.worldTransform.copyTo(this.tempMatrix);
 
         m.prepend(renderer._activeRenderTarget.projectionMatrix);
 

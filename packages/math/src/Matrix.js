@@ -454,10 +454,10 @@ export default class Matrix
     /**
      * Changes the values of the given matrix to be the same as the ones in this matrix
      *
-     * @param {PIXI.Matrix} matrix - The matrix to copy from.
+     * @param {PIXI.Matrix} matrix - The matrix to copy to.
      * @return {PIXI.Matrix} The matrix given in parameter with its values updated.
      */
-    copy(matrix)
+    copyTo(matrix)
     {
         matrix.a = this.a;
         matrix.b = this.b;
@@ -467,6 +467,24 @@ export default class Matrix
         matrix.ty = this.ty;
 
         return matrix;
+    }
+
+    /**
+     * Changes the values of the matrix to be the same as the ones in given matrix
+     *
+     * @param {PIXI.Matrix} matrix - The matrix to copy from.
+     * @return {PIXI.Matrix} this
+     */
+    copyFrom(matrix)
+    {
+        this.a = matrix.a;
+        this.b = matrix.b;
+        this.c = matrix.c;
+        this.d = matrix.d;
+        this.tx = matrix.tx;
+        this.ty = matrix.ty;
+
+        return this;
     }
 
     /**
