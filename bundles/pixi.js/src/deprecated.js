@@ -659,57 +659,49 @@ export default function deprecated(PIXI)
     };
 
     /**
-     * @method copy
-     * @static
-     * @memberof PIXI.Point
+     * @method PIXI.Point#copy
      * @deprecated since 5.0.0
-     * @see PIXI.Point.copyFrom
+     * @see PIXI.Point#copyFrom
      */
     PIXI.Point.prototype.copy = function copy(p)
     {
-        warn('PIXI.Point.copy has been replaced with PIXI.Point.copyFrom');
+        warn('PIXI.Point.copy has been replaced with PIXI.Point#copyFrom');
 
         return this.copyFrom(p);
     };
 
     /**
-     * @method copy
-     * @static
-     * @memberof PIXI.ObservablePoint
+     * @method PIXI.ObservablePoint#copy
      * @deprecated since 5.0.0
-     * @see PIXI.ObservablePoint.copyFrom
+     * @see PIXI.ObservablePoint#copyFrom
      */
     PIXI.ObservablePoint.prototype.copy = function copy(p)
     {
-        warn('PIXI.ObservablePoint.copy has been replaced with PIXI.ObservablePoint.copyFrom');
+        warn('PIXI.ObservablePoint.copy has been replaced with PIXI.ObservablePoint#copyFrom');
 
         return this.copyFrom(p);
     };
 
     /**
-     * @method copy
-     * @static
-     * @memberof PIXI.Rectangle
+     * @method PIXI.Rectangle#copy
      * @deprecated since 5.0.0
-     * @see PIXI.Rectangle.copyFrom
+     * @see PIXI.Rectangle#copyFrom
      */
     PIXI.Rectangle.prototype.copy = function copy(p)
     {
-        warn('PIXI.Rectangle.copy has been replaced with PIXI.Rectangle.copyFrom');
+        warn('PIXI.Rectangle.copy has been replaced with PIXI.Rectangle#copyFrom');
 
         return this.copyFrom(p);
     };
 
     /**
-     * @method copy
-     * @static
-     * @memberof PIXI.Rectangle
+     * @method PIXI.Matrix#copy
      * @deprecated since 5.0.0
-     * @see PIXI.Matrix.copyTo
+     * @see PIXI.Matrix#copyTo
      */
     PIXI.Matrix.prototype.copy = function copy(p)
     {
-        warn('PIXI.Matrix.copy has been replaced with PIXI.Matrix.copyTo');
+        warn('PIXI.Matrix.copy has been replaced with PIXI.Matrix#copyTo');
 
         return this.copyTo(p);
     };
