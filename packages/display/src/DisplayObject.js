@@ -1,7 +1,6 @@
 import EventEmitter from 'eventemitter3';
 import { Rectangle, Transform } from '@pixi/math';
 import Bounds from './Bounds';
-// _tempDisplayObjectParent = new DisplayObject();
 
 /**
  * The base class for all objects that are rendered on the screen.
@@ -147,16 +146,16 @@ export default class DisplayObject extends EventEmitter
 
     /**
      * Updates the object transform for rendering
-     *
-     * TODO - Optimization pass!
      */
     updateTransform()
     {
-        this.transform.updateTransform(this.parent.transform);
-        // multiply the alphas..
-        this.worldAlpha = this.alpha * this.parent.worldAlpha;
+        const parent = this.parent || this._tempDisplayObjectParent;
 
-        this._bounds.updateID++;
+        this._boundsID++;
+        // coords transform
+        this.transform.updateTransform(parent.transform);
+        // color/alpha transform
+        this.worldAlpha = this.alpha * parent.worldAlpha;
     }
 
     /**
@@ -189,17 +188,8 @@ export default class DisplayObject extends EventEmitter
     {
         if (!skipUpdate)
         {
-            if (!this.parent)
-            {
-                this.parent = this._tempDisplayObjectParent;
-                this.updateTransform();
-                this.parent = null;
-            }
-            else
-            {
-                this._recursivePostUpdateTransform();
-                this.updateTransform();
-            }
+            this._recursivePostUpdateTransform();
+            this.updateTransform();
         }
 
         if (this._boundsID !== this._lastBoundsID)
@@ -266,20 +256,6 @@ export default class DisplayObject extends EventEmitter
         if (!skipUpdate)
         {
             this._recursivePostUpdateTransform();
-
-            // this parent check is for just in case the item is a root object.
-            // If it is we need to give it a temporary parent so that displayObjectUpdateTransform works correctly
-            // this is mainly to avoid a parent check in the main loop. Every little helps for performance :)
-            if (!this.parent)
-            {
-                this.parent = this._tempDisplayObjectParent;
-                this.displayObjectUpdateTransform();
-                this.parent = null;
-            }
-            else
-            {
-                this.displayObjectUpdateTransform();
-            }
         }
 
         // don't need to update the lot
@@ -306,20 +282,6 @@ export default class DisplayObject extends EventEmitter
         if (!skipUpdate)
         {
             this._recursivePostUpdateTransform();
-
-            // this parent check is for just in case the item is a root object.
-            // If it is we need to give it a temporary parent so that displayObjectUpdateTransform works correctly
-            // this is mainly to avoid a parent check in the main loop. Every little helps for performance :)
-            if (!this.parent)
-            {
-                this.parent = this._tempDisplayObjectParent;
-                this.displayObjectUpdateTransform();
-                this.parent = null;
-            }
-            else
-            {
-                this.displayObjectUpdateTransform();
-            }
         }
 
         // simply apply the matrix..
