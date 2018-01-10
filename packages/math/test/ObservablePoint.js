@@ -42,11 +42,11 @@ describe('PIXI.ObservablePoint', function ()
         const p2 = new ObservablePoint(cb, this, 5, 2);
         const p3 = new ObservablePoint(cb, this, 5, 6);
 
-        p1.copy(p2);
+        p1.copyFrom(p2);
         expect(p1.x).to.equal(p2.x);
         expect(p1.y).to.equal(p2.y);
 
-        p1.copy(p3);
+        p1.copyFrom(p3);
         expect(p1.y).to.equal(p3.y);
     });
 });

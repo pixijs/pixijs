@@ -12,7 +12,7 @@ import GeometrySystem from './systems/geometry/GeometrySystem';
 import ShaderSystem from './systems/shader/ShaderSystem';
 import ContextSystem from './systems/ContextSystem';
 import BatchSystem from './systems/BatchSystem';
-// import TextureGCSystem from './systems/textures/TextureGCSystem';
+import TextureGCSystem from './systems/textures/TextureGCSystem';
 import { RENDERER_TYPE } from '@pixi/constants';
 import UniformGroup from '../shader/UniformGroup';
 import { Matrix } from '@pixi/math';
@@ -102,7 +102,7 @@ export default class Renderer extends AbstractRenderer
             .addSystem(FramebufferSystem, 'framebuffer')
             .addSystem(StencilSystem, 'stencil')
             .addSystem(ProjectionSystem, 'projection')
-        // .addSystem(TextureGCSystem)
+            .addSystem(TextureGCSystem, 'textureGC')
         //    .addSystem(FilterSystem, 'filter')
             .addSystem(RenderTextureSystem, 'renderTexture')
             .addSystem(BatchSystem, 'batch');

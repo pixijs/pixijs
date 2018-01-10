@@ -44,18 +44,34 @@ export default class ObservablePoint
     }
 
     /**
-     * Copies the data from another point
+     * Copies x and y from the given point
      *
-     * @param {PIXI.Point|PIXI.ObservablePoint} point - point to copy from
+     * @param {PIXI.Point} p - The point to copy from.
+     * @returns Returns itself.
      */
-    copy(point)
+    copyFrom(p)
     {
-        if (this._x !== point.x || this._y !== point.y)
+        if (this._x !== p.x || this._y !== p.y)
         {
-            this._x = point.x;
-            this._y = point.y;
+            this._x = p.x;
+            this._y = p.y;
             this.cb.call(this.scope);
         }
+
+        return this;
+    }
+
+    /**
+     * Copies x and y into the given point
+     *
+     * @param {PIXI.Point} p - The point to copy.
+     * @returns Given point with values updated
+     */
+    copyTo(p)
+    {
+        p.set(this._x, this._y);
+
+        return p;
     }
 
     /**
