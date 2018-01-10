@@ -39,11 +39,27 @@ export default class Point
     /**
      * Copies x and y from the given point
      *
-     * @param {PIXI.Point} p - The point to copy.
+     * @param {PIXI.Point} p - The point to copy from
+     * @returns Returns itself.
      */
-    copy(p)
+    copyFrom(p)
     {
         this.set(p.x, p.y);
+
+        return this;
+    }
+
+    /**
+     * Copies x and y into the given point
+     *
+     * @param {PIXI.Point} p - The point to copy.
+     * @returns Given point with values updated
+     */
+    copyTo(p)
+    {
+        p.set(this.x, this.y);
+
+        return p;
     }
 
     /**

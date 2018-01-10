@@ -85,7 +85,7 @@ export default class CanvasSpriteRenderer
 
             if (texture.rotate)
             {
-                wt.copy(canvasRenderWorldTransform);
+                wt.copyTo(canvasRenderWorldTransform);
                 wt = canvasRenderWorldTransform;
                 GroupD8.matrixAppendRotationInv(wt, texture.rotate, dx, dy);
                 // the anchor has already been applied above, so lets set it to zero

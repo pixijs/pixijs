@@ -45,7 +45,7 @@ describe('PIXI.Rectangle', function ()
         const rect1 = new Rectangle(10, 10, 10, 10);
         const rect2 = new Rectangle(2, 2, 5, 5);
 
-        rect1.copy(rect2);
+        rect1.copyFrom(rect2);
 
         expect(rect1.x).to.equal(2);
         expect(rect1.y).to.equal(2);
