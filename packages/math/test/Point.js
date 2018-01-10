@@ -30,7 +30,7 @@ describe('PIXI.Point', function ()
         const p1 = new Point(10, 20);
         const p2 = new Point(2, 5);
 
-        p1.copy(p2);
+        p1.copyFrom(p2);
 
         expect(p1.x).to.equal(2);
         expect(p1.y).to.equal(5);

@@ -26,7 +26,7 @@ Graphics.prototype.generateCanvasTexture = function generateCanvasTexture(scaleM
     }
 
     this.transform.updateLocalTransform();
-    this.transform.localTransform.copy(tempMatrix);
+    this.transform.localTransform.copyTo(tempMatrix);
 
     tempMatrix.invert();
 

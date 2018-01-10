@@ -532,7 +532,7 @@ export default class Sprite extends Container
 
     set anchor(value) // eslint-disable-line require-jsdoc
     {
-        this._anchor.copy(value);
+        this._anchor.copyFrom(value);
     }
 
     /**

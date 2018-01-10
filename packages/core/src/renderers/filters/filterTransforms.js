@@ -7,13 +7,9 @@ import { Matrix } from '@pixi/math';
  * @param outputMatrix {Matrix} @alvin
  * @private
  */
-// TODO playing around here.. this is temporary - (will end up in the shader)
 // this returns a matrix that will normalise map filter cords in the filter to screen space
 export function calculateScreenSpaceMatrix(outputMatrix, filterArea, textureSize)
 {
-    // let worldTransform = sprite.worldTransform.copy(Matrix.TEMP_MATRIX),
-    // let texture = {width:1136, height:700};//sprite._texture.baseTexture;
-
     // TODO unwrap?
     const mappedMatrix = outputMatrix.identity();
 
@@ -43,7 +39,7 @@ export function calculateSpriteMatrix(outputMatrix, filterArea, textureSize, spr
 {
     const orig = sprite._texture.orig;
     const mappedMatrix = outputMatrix.set(textureSize.width, 0, 0, textureSize.height, filterArea.x, filterArea.y);
-    const worldTransform = sprite.worldTransform.copy(Matrix.TEMP_MATRIX);
+    const worldTransform = sprite.worldTransform.copyTo(Matrix.TEMP_MATRIX);
 
     worldTransform.invert();
     mappedMatrix.prepend(worldTransform);
