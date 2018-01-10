@@ -110,7 +110,7 @@ export default class TilingSprite extends Sprite
 
     set tileScale(value) // eslint-disable-line require-jsdoc
     {
-        this.tileTransform.scale.copy(value);
+        this.tileTransform.scale.copyFrom(value);
     }
 
     /**
@@ -125,7 +125,7 @@ export default class TilingSprite extends Sprite
 
     set tilePosition(value) // eslint-disable-line require-jsdoc
     {
-        this.tileTransform.position.copy(value);
+        this.tileTransform.position.copyFrom(value);
     }
 
     /**

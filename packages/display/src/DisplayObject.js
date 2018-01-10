@@ -480,7 +480,7 @@ export default class DisplayObject extends EventEmitter
 
     set position(value) // eslint-disable-line require-jsdoc
     {
-        this.transform.position.copy(value);
+        this.transform.position.copyFrom(value);
     }
 
     /**
@@ -496,7 +496,7 @@ export default class DisplayObject extends EventEmitter
 
     set scale(value) // eslint-disable-line require-jsdoc
     {
-        this.transform.scale.copy(value);
+        this.transform.scale.copyFrom(value);
     }
 
     /**
@@ -512,7 +512,7 @@ export default class DisplayObject extends EventEmitter
 
     set pivot(value) // eslint-disable-line require-jsdoc
     {
-        this.transform.pivot.copy(value);
+        this.transform.pivot.copyFrom(value);
     }
 
     /**
@@ -528,7 +528,7 @@ export default class DisplayObject extends EventEmitter
 
     set skew(value) // eslint-disable-line require-jsdoc
     {
-        this.transform.skew.copy(value);
+        this.transform.skew.copyFrom(value);
     }
 
     /**

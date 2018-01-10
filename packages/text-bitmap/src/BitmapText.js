@@ -378,7 +378,7 @@ export default class BitmapText extends Container
         }
         else
         {
-            this._anchor.copy(value);
+            this._anchor.copyFrom(value);
         }
     }
 

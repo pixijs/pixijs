@@ -116,10 +116,10 @@ export default class Rectangle
     /**
      * Copies another rectangle to this one.
      *
-     * @param {PIXI.Rectangle} rectangle - The rectangle to copy.
+     * @param {PIXI.Rectangle} rectangle - The rectangle to copy from.
      * @return {PIXI.Rectangle} Returns itself.
      */
-    copy(rectangle)
+    copyFrom(rectangle)
     {
         this.x = rectangle.x;
         this.y = rectangle.y;
@@ -127,6 +127,22 @@ export default class Rectangle
         this.height = rectangle.height;
 
         return this;
+    }
+
+    /**
+     * Copies this rectangle to another one.
+     *
+     * @param {PIXI.Rectangle} rectangle - The rectangle to copy to.
+     * @return {PIXI.Rectangle} Returns given parameter.
+     */
+    copyTo(rectangle)
+    {
+        rectangle.x = this.x;
+        rectangle.y = this.y;
+        rectangle.width = this.width;
+        rectangle.height = this.height;
+
+        return rectangle;
     }
 
     /**
