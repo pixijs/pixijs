@@ -63,7 +63,7 @@
     "object-assign": "^4.0.1",
     "pixi-gl-core": "^1.1.4",
     "remove-array-items": "^1.0.0",
-    "resource-loader": "^2.0.9"
+    "resource-loader": "^2.1.1"
   },
   "devDependencies": {
     "@pixi/jsdoc-template": "^2.0.0",

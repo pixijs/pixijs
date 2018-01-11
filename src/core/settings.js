@@ -214,9 +214,19 @@ export default {
      *
      * @static
      * @constant
-     * @memberof PIXI
+     * @memberof PIXI.settings
      * @type {boolean}
      */
     CAN_UPLOAD_SAME_BUFFER: canUploadSameBuffer(),
 
+    /**
+     * Default Mesh `canvasPadding`.
+     *
+     * @see PIXI.mesh.Mesh#canvasPadding
+     * @static
+     * @constant
+     * @memberof PIXI.settings
+     * @type {number}
+     */
+    MESH_CANVAS_PADDING: 0,
 };
