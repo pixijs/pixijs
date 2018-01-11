@@ -83,10 +83,10 @@ export default class ParticleContainer extends Container
         this._batchSize = batchSize;
 
         /**
-         * @member {object<number, WebGLBuffer>}
+         * @member {Array<PIXI.Buffer>}
          * @private
          */
-        this._glBuffers = {};
+        this._buffers = null;
 
         /**
          * @member {number}
@@ -362,6 +362,19 @@ export default class ParticleContainer extends Container
         }
     }
 
+    dispose()
+    {
+        if (this._buffers)
+        {
+            for (let i = 0; i < this._buffers.length; ++i)
+            {
+                this._buffers[i].destroy();
+            }
+
+            this._buffers = null;
+        }
+    }
+
     /**
      * Destroys the container
      *
@@ -378,15 +391,8 @@ export default class ParticleContainer extends Container
     {
         super.destroy(options);
 
-        if (this._buffers)
-        {
-            for (let i = 0; i < this._buffers.length; ++i)
-            {
-                this._buffers[i].destroy();
-            }
-        }
+        this.dispose();
 
         this._properties = null;
-        this._buffers = null;
     }
 }
