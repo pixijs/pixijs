@@ -315,10 +315,11 @@ export default class Container extends DisplayObject
 
     /**
      * Updates the transform on all children of this container for rendering
+     * parent must exist
      */
     updateTransform()
     {
-        const parent = this.parent || this._tempDisplayObjectParent;
+        const parent = this.parent;
 
         this._boundsID++;
         // coords transform

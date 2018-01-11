@@ -145,17 +145,38 @@ export default class DisplayObject extends EventEmitter
     }
 
     /**
-     * Updates the object transform for rendering
+     * Updates the object transform (coordinates and alpha) for rendering
+     * parent must exist
      */
     updateTransform()
     {
-        const parent = this.parent || this._tempDisplayObjectParent;
+        const parent = this.parent;
 
         this._boundsID++;
         // coords transform
         this.transform.updateTransform(parent.transform);
         // color/alpha transform
         this.worldAlpha = this.alpha * parent.worldAlpha;
+    }
+
+    /**
+     * Updates the object transform (coordinates and alpha) for rendering
+     * even if parent is null
+     */
+    safeUpdateTransform()
+    {
+        if (this.parent)
+        {
+            this.updateTransform();
+        }
+        else
+        {
+            // this parent check is for just in case the item is a root object.
+            // this is mainly to avoid a parent check in the main loop. Every little helps for performance :)
+            this.parent = this._tempDisplayObjectParent;
+            this.updateTransform();
+            this.parent = null;
+        }
     }
 
     /**
@@ -189,7 +210,7 @@ export default class DisplayObject extends EventEmitter
         if (!skipUpdate)
         {
             this._recursivePostUpdateTransform();
-            this.updateTransform();
+            this.safeUpdateTransform();
         }
 
         if (this._boundsID !== this._lastBoundsID)
