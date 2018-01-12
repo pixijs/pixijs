@@ -221,7 +221,7 @@ function getJsonSpritesheet()
         "spriteSourceSize": {"x":0,"y":0,"w":14,"h":14},
         "sourceSize": {"w":14,"h":14}
     },
-    "trimmed.png":
+    "7.png":
     {
         "frame": {"x":0,"y":28,"w":14,"h":14},
         "rotated": false,
@@ -229,14 +229,14 @@ function getJsonSpritesheet()
         "spriteSourceSize": {"x":0,"y":0,"w":14,"h":14},
         "sourceSize": {"w":14,"h":14}
     },
-    "not-trimmed-no-sourceSize.png":
+    "8.png":
     {
         "frame": {"x":0,"y":14,"w":14,"h":14},
         "rotated": false,
         "trimmed": false,
         "spriteSourceSize": {"x":0,"y":0,"w":14,"h":14},
     },
-    "minimal-frame-data.png":
+    "8.png":
     {
         "frame": {"x":0,"y":0,"w":14,"h":14},
     }},

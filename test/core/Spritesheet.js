@@ -27,6 +27,32 @@ describe('PIXI.Spritesheet', function ()
                 done();
             });
         };
+
+        this.parseFrame = function (frameData, callback)
+        {
+            const data = {
+                frames: { frame: frameData },
+                meta: { scale: 1 },
+            };
+            const baseTexture = PIXI.BaseTexture.fromCanvas(
+                document.createElement('canvas')
+            );
+
+            baseTexture.imageUrl = 'test.png';
+
+            const sheet = new PIXI.Spritesheet(baseTexture, data);
+
+            sheet.parse(() =>
+            {
+                const { frame } = sheet.textures;
+
+                expect(frame).to.be.instanceof(PIXI.Texture);
+
+                callback(frame);
+
+                sheet.destroy(true);
+            });
+        };
     });
 
     it('should exist on PIXI', function ()
@@ -101,5 +127,52 @@ describe('PIXI.Spritesheet', function ()
 
             this.validate(spritesheet, done);
         };
+    });
+
+    it('should parse texture from trimmed', function (done)
+    {
+        const data = {
+            frame: { x: 0, y: 28, w: 14, h: 14 },
+            rotated: false,
+            trimmed: true,
+            spriteSourceSize: { x: 0, y: 0, w: 14, h: 14 },
+            sourceSize: { w: 40, h: 20 },
+        };
+
+        this.parseFrame(data, (texture) =>
+        {
+            expect(texture.width).to.equal(40);
+            expect(texture.height).to.equal(20);
+            done();
+        });
+    });
+
+    it('should parse texture from minimal data', function (done)
+    {
+        const data = { frame: { x: 0, y: 0, w: 14, h: 14 } };
+
+        this.parseFrame(data, (texture) =>
+        {
+            expect(texture.width).to.equal(14);
+            expect(texture.height).to.equal(14);
+            done();
+        });
+    });
+
+    it('should parse texture without trimmed or sourceSize', function (done)
+    {
+        const data = {
+            frame: { x: 0, y: 14, w: 14, h: 14 },
+            rotated: false,
+            trimmed: false,
+            spriteSourceSize: { x: 0, y: 0, w: 14, h: 14 },
+        };
+
+        this.parseFrame(data, (texture) =>
+        {
+            expect(texture.width).to.equal(14);
+            expect(texture.height).to.equal(14);
+            done();
+        });
     });
 });
