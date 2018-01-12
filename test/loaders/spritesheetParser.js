@@ -225,7 +225,7 @@ function getJsonSpritesheet()
     {
         "frame": {"x":0,"y":28,"w":14,"h":14},
         "rotated": false,
-        "trimmed": true,
+        "trimmed": false,
         "spriteSourceSize": {"x":0,"y":0,"w":14,"h":14},
         "sourceSize": {"w":14,"h":14}
     },
@@ -235,10 +235,15 @@ function getJsonSpritesheet()
         "rotated": false,
         "trimmed": false,
         "spriteSourceSize": {"x":0,"y":0,"w":14,"h":14},
+        "sourceSize": {"w":14,"h":14}
     },
-    "8.png":
+    "9.png":
     {
         "frame": {"x":0,"y":0,"w":14,"h":14},
+        "rotated": false,       
+        "trimmed": false,     
+        "spriteSourceSize": {"x":0,"y":0,"w":14,"h":14},      
+        "sourceSize": {"w":14,"h":14}
     }},
     "meta": {
         "app": "http://www.texturepacker.com",
