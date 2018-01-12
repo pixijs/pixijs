@@ -13,6 +13,7 @@ NineSlicePlane.prototype._renderCanvas = function _renderCanvas(renderer)
     const context = renderer.context;
 
     context.globalAlpha = this.worldAlpha;
+    renderer.setBlendMode(this.blendMode);
 
     const transform = this.worldTransform;
     const res = renderer.resolution;
