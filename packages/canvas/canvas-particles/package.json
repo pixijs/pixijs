@@ -1,0 +1,30 @@
+{
+  "name": "@pixi/canvas-particles",
+  "version": "5.0.0-alpha",
+  "main": "lib/canvas-sprite-tiling.js",
+  "module": "lib/canvas-sprite-tiling.es.js",
+  "description": "Support for legacy browser JavaScript environments",
+  "author": "Mat Groves",
+  "contributors": [
+    "Matt Karl <matt@mattkarl.com>"
+  ],
+  "homepage": "http://pixijs.com/",
+  "bugs": "https://github.com/pixijs/pixi.js/issues",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pixijs/pixi.js.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "lib"
+  ],
+  "dependencies": {
+    "@pixi/particles": "^5.0.0-alpha"
+  },
+  "devDependencies": {
+    "floss": "^2.1.3"
+  }
+}
