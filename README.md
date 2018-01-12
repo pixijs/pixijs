@@ -1,7 +1,7 @@
 PixiJS — The HTML5 Creation Engine
 =============
 
-![pixi.js logo](http://www.goodboydigital.com/pixijs/pixiV4_wide_full.jpg)
+![pixi.js logo](http://pixijs.download/pixijs-banner.png)
 
 [![Inline docs](http://inch-ci.org/github/pixijs/pixi.js.svg?branch=dev)](http://inch-ci.org/github/pixijs/pixi.js)
 [![Build Status](https://travis-ci.org/pixijs/pixi.js.svg?branch=dev)](https://travis-ci.org/pixijs/pixi.js)
@@ -62,13 +62,12 @@ _Note: `4.5.1` can be replaced by any [released](https://github.com/pixijs/pixi.
 
 ### Demos ###
 
-- [WebGL Filters!](http://pixijs.github.io/pixi-filters/examples/)
-- [Run pixie run](http://www.goodboydigital.com/runpixierun)
+- [Filters Demo](http://pixijs.io/pixi-filters/tools/demo/)
+- [Run Pixie Run](http://work.goodboydigital.com/runpixierun/)
 - [Fight for Everyone](http://www.goodboydigital.com/casestudies/fightforeveryone)
 - [Flash vs HTML](http://flashvhtml.com)
 - [Bunny Demo](http://www.goodboydigital.com/pixijs/bunnymark)
 - [Storm Brewing](http://www.goodboydigital.com/pixijs/storm)
-- [Filters Demo](http://www.goodboydigital.com/pixijs/examples/15/indexAll.html)
 - [Render Texture Demo](http://www.goodboydigital.com/pixijs/examples/11)
 - [Primitives Demo](http://www.goodboydigital.com/pixijs/examples/13)
 - [Masking Demo](http://www.goodboydigital.com/pixijs/examples/14)

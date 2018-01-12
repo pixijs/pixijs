@@ -14,7 +14,7 @@ function checkPrecision(src, def)
             return copy;
         }
     }
-    else if (src.substring(0, 9) !== 'precision')
+    else if (src.trim().substring(0, 9) !== 'precision')
     {
         return `precision ${def} float;\n${src}`;
     }

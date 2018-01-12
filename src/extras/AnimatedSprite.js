@@ -1,7 +1,7 @@
 import * as core from '../core';
 
 /**
- * @typedef FrameObject
+ * @typedef PIXI.extras.AnimatedSprite~FrameObject
  * @type {object}
  * @property {PIXI.Texture} texture - The {@link PIXI.Texture} of the frame
  * @property {number} time - the duration of the frame in ms
@@ -30,7 +30,7 @@ import * as core from '../core';
 export default class AnimatedSprite extends core.Sprite
 {
     /**
-     * @param {PIXI.Texture[]|FrameObject[]} textures - an array of {@link PIXI.Texture} or frame
+     * @param {PIXI.Texture[]|PIXI.extras.AnimatedSprite~FrameObject[]} textures - an array of {@link PIXI.Texture} or frame
      *  objects that make up the animation
      * @param {boolean} [autoUpdate=true] - Whether to use PIXI.ticker.shared to auto update animation time.
      */
