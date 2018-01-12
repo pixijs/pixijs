@@ -240,9 +240,9 @@ function getJsonSpritesheet()
     "9.png":
     {
         "frame": {"x":0,"y":0,"w":14,"h":14},
-        "rotated": false,       
-        "trimmed": false,     
-        "spriteSourceSize": {"x":0,"y":0,"w":14,"h":14},      
+        "rotated": false,
+        "trimmed": false,
+        "spriteSourceSize": {"x":0,"y":0,"w":14,"h":14},
         "sourceSize": {"w":14,"h":14}
     }},
     "meta": {
