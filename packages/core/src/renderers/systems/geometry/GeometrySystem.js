@@ -137,29 +137,17 @@ export default class GeometrySystem extends WebGLSystem
             {
                 this.activateVao(geometry, shader.program);
             }
-
-            // Currently GeometrySystem is the only system that created element array buffers,
-            // it does not mess with index buffers of different vao's,
-            // but we have no guarantee that some other lib (by @mrdoob)
-            // is not managing the same context
-            //
-            // Pixi is the only lib that treats indexBuffer as a part of vao so far.
-
-            if (geometry.indexBuffer)
-            {
-                const glIndex = geometry.indexBuffer._glBuffers[this.CONTEXT_UID];
-
-                if (glIndex)
-                {
-                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, glIndex.buffer);
-                }
-            }
         }
 
         // TODO - optimise later!
         // don't need to loop through if nothing changed!
         // maybe look to add an 'autoupdate' to geometry?
         this.updateBuffers();
+    }
+
+    reset()
+    {
+        this.unbind();
     }
 
     updateBuffers()
