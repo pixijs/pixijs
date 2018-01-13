@@ -65,7 +65,7 @@ export default class ParticleBuffer
                 attributeName: property.attributeName,
                 size: property.size,
                 uploadFunction: property.uploadFunction,
-                unsignedByte: property.unsignedByte,
+                type: property.type || TYPES.FLOAT,
                 offset: property.offset,
             };
 
@@ -152,60 +152,30 @@ export default class ParticleBuffer
         {
             const property = this.dynamicProperties[i];
 
-            if (property.unsignedByte)
-            {
-                geometry.addAttribute(
-                    property.attributeName,
-                    this.dynamicBuffer,
-                    0,
-                    true,
-                    TYPES.UNSIGNED_BYTE,
-                    this.dynamicStride * 4,
-                    property.offset * 4
-                );
-            }
-            else
-            {
-                geometry.addAttribute(
-                    property.attributeName,
-                    this.dynamicBuffer,
-                    0,
-                    false,
-                    TYPES.FLOAT,
-                    this.dynamicStride * 4,
-                    property.offset * 4
-                );
-            }
+            geometry.addAttribute(
+                property.attributeName,
+                this.dynamicBuffer,
+                0,
+                property.type === TYPES.UNSIGNED_BYTE,
+                property.type,
+                this.dynamicStride * 4,
+                property.offset * 4
+            );
         }
 
         for (let i = 0; i < this.staticProperties.length; ++i)
         {
             const property = this.staticProperties[i];
 
-            if (property.unsignedByte)
-            {
-                geometry.addAttribute(
-                    property.attributeName,
-                    this.staticBuffer,
-                    0,
-                    true,
-                    TYPES.UNSIGNED_BYTE,
-                    this.staticStride * 4,
-                    property.offset * 4
-                );
-            }
-            else
-            {
-                geometry.addAttribute(
-                    property.attributeName,
-                    this.staticBuffer,
-                    0,
-                    false,
-                    TYPES.FLOAT,
-                    this.staticStride * 4,
-                    property.offset * 4
-                );
-            }
+            geometry.addAttribute(
+                property.attributeName,
+                this.staticBuffer,
+                0,
+                property.type === TYPES.UNSIGNED_BYTE,
+                property.type,
+                this.staticStride * 4,
+                property.offset * 4
+            );
         }
     }
 
@@ -223,7 +193,7 @@ export default class ParticleBuffer
             const property = this.dynamicProperties[i];
 
             property.uploadFunction(children, startIndex, amount,
-                property.unsignedByte ? this.dynamicDataUint32 : this.dynamicData,
+                property.type === TYPES.UNSIGNED_BYTE ? this.dynamicDataUint32 : this.dynamicData,
                 this.dynamicStride, property.offset);
         }
 
@@ -244,7 +214,7 @@ export default class ParticleBuffer
             const property = this.staticProperties[i];
 
             property.uploadFunction(children, startIndex, amount,
-                property.unsignedByte ? this.staticDataUint32 : this.staticData,
+                property.type === TYPES.UNSIGNED_BYTE ? this.staticDataUint32 : this.staticData,
                 this.staticStride, property.offset);
         }
 

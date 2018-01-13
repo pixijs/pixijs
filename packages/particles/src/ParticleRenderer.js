@@ -1,3 +1,4 @@
+import { TYPES } from '@pixi/constants';
 import { ObjectRenderer, Shader, UniformGroup } from '@pixi/core';
 import { correctBlendMode, premultiplyRgba, premultiplyTint } from '@pixi/utils';
 import { Matrix } from '@pixi/math';
@@ -81,7 +82,7 @@ export default class ParticleRenderer extends ObjectRenderer
             {
                 attributeName: 'aColor',
                 size: 1,
-                unsignedByte: true,
+                type: TYPES.UNSIGNED_BYTE,
                 uploadFunction: this.uploadTint,
                 offset: 0,
             },
