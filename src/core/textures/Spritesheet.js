@@ -163,9 +163,8 @@ export default class Spritesheet
             {
                 let frame = null;
                 let trim = null;
-                const sourceSize = data.trimmed === true
-                    ? data.sourceSize
-                    : data.frame;
+                const sourceSize = data.trimmed !== false && data.sourceSize
+                    ? data.sourceSize : data.frame;
 
                 const orig = new Rectangle(
                     0,
@@ -194,7 +193,7 @@ export default class Spritesheet
                 }
 
                 //  Check to see if the sprite is trimmed
-                if (data.trimmed)
+                if (data.trimmed !== false && data.spriteSourceSize)
                 {
                     trim = new Rectangle(
                         Math.floor(data.spriteSourceSize.x * sourceScale) / this.resolution,
