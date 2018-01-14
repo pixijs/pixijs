@@ -1,5 +1,5 @@
 import { TYPES } from '@pixi/constants';
-import { ObjectRenderer, Shader, UniformGroup } from '@pixi/core';
+import { ObjectRenderer, Shader } from '@pixi/core';
 import { correctBlendMode, premultiplyRgba, premultiplyTint } from '@pixi/utils';
 import { Matrix } from '@pixi/math';
 import ParticleBuffer from './ParticleBuffer';
@@ -88,11 +88,7 @@ export default class ParticleRenderer extends ObjectRenderer
             },
         ];
 
-        const uniforms = {
-            default: UniformGroup.from({ uSampler: 0 }, true),
-        };
-
-        this.shader = Shader.from(vertex, fragment, uniforms);
+        this.shader = Shader.from(vertex, fragment, {});
     }
 
     /**
@@ -140,7 +136,7 @@ export default class ParticleRenderer extends ObjectRenderer
         this.shader.uniforms.uColor = premultiplyRgba(container.tintRgb,
             container.worldAlpha, this.shader.uniforms.uColor, baseTexture.premultiplyAlpha);
 
-        renderer.texture.bind(baseTexture, 0);
+        this.shader.uniforms.uSampler = baseTexture;
 
         this.renderer.shader.bind(this.shader);
 
