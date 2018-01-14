@@ -1,6 +1,6 @@
-// import { VertexArrayObject } from 'pixi-gl-core';
 import { createIndicesForQuads } from '@pixi/utils';
-import { GLBuffer } from 'pixi-gl-core';
+import { Geometry, Buffer } from '@pixi/core';
+import { TYPES } from '@pixi/constants';
 
 /**
  * @author Mat Groves
@@ -24,19 +24,15 @@ import { GLBuffer } from 'pixi-gl-core';
 export default class ParticleBuffer
 {
     /**
-     * @param {WebGLRenderingContext} gl - The rendering context.
      * @param {object} properties - The properties to upload.
      * @param {boolean[]} dynamicPropertyFlags - Flags for which properties are dynamic.
      * @param {number} size - The size of the batch.
      */
-    constructor(gl, properties, dynamicPropertyFlags, size)
+    constructor(properties, dynamicPropertyFlags, size)
     {
-        /**
-         * The current WebGL drawing context.
-         *
-         * @member {WebGLRenderingContext}
-         */
-        this.gl = gl;
+        this.geometry = new Geometry();
+
+        this.indexBuffer = null;
 
         /**
          * The number of particles the buffer can hold
@@ -66,10 +62,10 @@ export default class ParticleBuffer
             // Make copy of properties object so that when we edit the offset it doesn't
             // change all other instances of the object literal
             property = {
-                attribute: property.attribute,
+                attributeName: property.attributeName,
                 size: property.size,
                 uploadFunction: property.uploadFunction,
-                unsignedByte: property.unsignedByte,
+                type: property.type || TYPES.FLOAT,
                 offset: property.offset,
             };
 
@@ -103,7 +99,8 @@ export default class ParticleBuffer
      */
     initBuffers()
     {
-        const gl = this.gl;
+        const geometry = this.geometry;
+
         let dynamicOffset = 0;
 
         /**
@@ -111,8 +108,8 @@ export default class ParticleBuffer
          *
          * @member {Uint16Array}
          */
-        this.indices = createIndicesForQuads(this.size);
-        this.indexBuffer = GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW);
+        this.indexBuffer = new Buffer(createIndicesForQuads(this.size), true, true);
+        geometry.addIndex(this.indexBuffer);
 
         this.dynamicStride = 0;
 
@@ -125,8 +122,11 @@ export default class ParticleBuffer
             this.dynamicStride += property.size;
         }
 
-        this.dynamicData = new Float32Array(this.size * this.dynamicStride * 4);
-        this.dynamicBuffer = GLBuffer.createVertexBuffer(gl, this.dynamicData, gl.STREAM_DRAW);
+        const dynBuffer = new ArrayBuffer(this.size * this.dynamicStride * 4 * 4);
+
+        this.dynamicData = new Float32Array(dynBuffer);
+        this.dynamicDataUint32 = new Uint32Array(dynBuffer);
+        this.dynamicBuffer = new Buffer(this.dynamicData, false, false);
 
         // static //
         let staticOffset = 0;
@@ -142,66 +142,40 @@ export default class ParticleBuffer
             this.staticStride += property.size;
         }
 
-        this.staticData = new Float32Array(this.size * this.staticStride * 4);
-        this.staticBuffer = GLBuffer.createVertexBuffer(gl, this.staticData, gl.STATIC_DRAW);
+        const statBuffer = new ArrayBuffer(this.size * this.staticStride * 4 * 4);
 
-        // this.vao = new VertexArrayObject(gl)
-        // .addIndex(this.indexBuffer);
+        this.staticData = new Float32Array(statBuffer);
+        this.staticDataUint32 = new Uint32Array(statBuffer);
+        this.staticBuffer = new Buffer(this.staticData, true, false);
 
         for (let i = 0; i < this.dynamicProperties.length; ++i)
         {
             const property = this.dynamicProperties[i];
 
-            if (property.unsignedByte)
-            {
-                this.vao.addAttribute(
-                    this.dynamicBuffer,
-                    property.attribute,
-                    gl.UNSIGNED_BYTE,
-                    true,
-                    this.dynamicStride * 4,
-                    property.offset * 4
-                );
-            }
-            else
-            {
-                this.vao.addAttribute(
-                    this.dynamicBuffer,
-                    property.attribute,
-                    gl.FLOAT,
-                    false,
-                    this.dynamicStride * 4,
-                    property.offset * 4
-                );
-            }
+            geometry.addAttribute(
+                property.attributeName,
+                this.dynamicBuffer,
+                0,
+                property.type === TYPES.UNSIGNED_BYTE,
+                property.type,
+                this.dynamicStride * 4,
+                property.offset * 4
+            );
         }
 
         for (let i = 0; i < this.staticProperties.length; ++i)
         {
             const property = this.staticProperties[i];
 
-            if (property.unsignedByte)
-            {
-                this.vao.addAttribute(
-                    this.staticBuffer,
-                    property.attribute,
-                    gl.UNSIGNED_BYTE,
-                    true,
-                    this.staticStride * 4,
-                    property.offset * 4
-                );
-            }
-            else
-            {
-                this.vao.addAttribute(
-                    this.staticBuffer,
-                    property.attribute,
-                    gl.FLOAT,
-                    false,
-                    this.staticStride * 4,
-                    property.offset * 4
-                );
-            }
+            geometry.addAttribute(
+                property.attributeName,
+                this.staticBuffer,
+                0,
+                property.type === TYPES.UNSIGNED_BYTE,
+                property.type,
+                this.staticStride * 4,
+                property.offset * 4
+            );
         }
     }
 
@@ -219,11 +193,11 @@ export default class ParticleBuffer
             const property = this.dynamicProperties[i];
 
             property.uploadFunction(children, startIndex, amount,
-                property.unsignedByte ? this.dynamicDataUint32 : this.dynamicData,
+                property.type === TYPES.UNSIGNED_BYTE ? this.dynamicDataUint32 : this.dynamicData,
                 this.dynamicStride, property.offset);
         }
 
-        this.dynamicBuffer.upload();
+        this.dynamicBuffer._updateID++;
     }
 
     /**
@@ -240,11 +214,11 @@ export default class ParticleBuffer
             const property = this.staticProperties[i];
 
             property.uploadFunction(children, startIndex, amount,
-                property.unsignedByte ? this.staticDataUint32 : this.staticData,
+                property.type === TYPES.UNSIGNED_BYTE ? this.staticDataUint32 : this.staticData,
                 this.staticStride, property.offset);
         }
 
-        this.staticBuffer.upload();
+        this.staticBuffer._updateID++;
     }
 
     /**
@@ -253,16 +227,20 @@ export default class ParticleBuffer
      */
     destroy()
     {
+        this.indexBuffer = null;
+
         this.dynamicProperties = null;
-        this.dynamicBuffer.destroy();
+        // this.dynamicBuffer.destroy();
         this.dynamicBuffer = null;
         this.dynamicData = null;
         this.dynamicDataUint32 = null;
 
         this.staticProperties = null;
-        this.staticBuffer.destroy();
+        // this.staticBuffer.destroy();
         this.staticBuffer = null;
         this.staticData = null;
         this.staticDataUint32 = null;
+        // all buffers are destroyed inside geometry
+        this.geometry.destroy();
     }
 }

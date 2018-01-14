@@ -29,9 +29,9 @@ export default class TilingSpriteRenderer extends ObjectRenderer
 
         const uniforms = { globals: this.renderer.globalUniforms };
 
-        this.shader = new Shader.from(vertex, fragment, uniforms);
+        this.shader = Shader.from(vertex, fragment, uniforms);
 
-        this.simpleShader = new Shader.from(vertex, fragmentSimple, uniforms);
+        this.simpleShader = Shader.from(vertex, fragmentSimple, uniforms);
 
         this.quad = new Quad();
     }

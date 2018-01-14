@@ -145,6 +145,11 @@ export default class GeometrySystem extends WebGLSystem
         this.updateBuffers();
     }
 
+    reset()
+    {
+        this.unbind();
+    }
+
     updateBuffers()
     {
         const geometry = this._activeGeometry;

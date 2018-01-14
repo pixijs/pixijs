@@ -1,8 +1,10 @@
-import { ObjectRenderer } from '@pixi/core';
+import { TYPES } from '@pixi/constants';
+import { ObjectRenderer, Shader } from '@pixi/core';
 import { correctBlendMode, premultiplyRgba, premultiplyTint } from '@pixi/utils';
 import { Matrix } from '@pixi/math';
-import ParticleShader from './ParticleShader';
 import ParticleBuffer from './ParticleBuffer';
+import vertex from './particles.vert';
+import fragment from './particles.frag';
 
 /**
  * @author Mat Groves
@@ -43,76 +45,50 @@ export default class ParticleRenderer extends ObjectRenderer
          */
         this.shader = null;
 
-        this.indexBuffer = null;
-
         this.properties = null;
 
         this.tempMatrix = new Matrix();
 
-        this.CONTEXT_UID = 0;
-    }
-
-    /**
-     * When there is a WebGL context change
-     *
-     * @private
-     */
-    onContextChange()
-    {
-        const gl = this.renderer.gl;
-
-        this.CONTEXT_UID = this.renderer.CONTEXT_UID;
-
-        // setup default shader
-        this.shader = new ParticleShader(gl);
-
         this.properties = [
             // verticesData
             {
-                attribute: this.shader.attributes.aVertexPosition,
+                attributeName: 'aVertexPosition',
                 size: 2,
                 uploadFunction: this.uploadVertices,
                 offset: 0,
             },
             // positionData
             {
-                attribute: this.shader.attributes.aPositionCoord,
+                attributeName: 'aPositionCoord',
                 size: 2,
                 uploadFunction: this.uploadPosition,
                 offset: 0,
             },
             // rotationData
             {
-                attribute: this.shader.attributes.aRotation,
+                attributeName: 'aRotation',
                 size: 1,
                 uploadFunction: this.uploadRotation,
                 offset: 0,
             },
             // uvsData
             {
-                attribute: this.shader.attributes.aTextureCoord,
+                attributeName: 'aTextureCoord',
                 size: 2,
                 uploadFunction: this.uploadUvs,
                 offset: 0,
             },
             // tintData
             {
-                attribute: this.shader.attributes.aColor,
+                attributeName: 'aColor',
                 size: 1,
-                unsignedByte: true,
+                type: TYPES.UNSIGNED_BYTE,
                 uploadFunction: this.uploadTint,
                 offset: 0,
             },
         ];
-    }
 
-    /**
-     * Starts a new particle batch.
-     *
-     */
-    start()
-    {
-        this.renderer.shader.bind(this.shader);
+        this.shader = Shader.from(vertex, fragment, {});
     }
 
     /**
@@ -137,11 +113,11 @@ export default class ParticleRenderer extends ObjectRenderer
             totalChildren = maxSize;
         }
 
-        let buffers = container._glBuffers[renderer.CONTEXT_UID];
+        let buffers = container._buffers;
 
         if (!buffers)
         {
-            buffers = container._glBuffers[renderer.CONTEXT_UID] = this.generateBuffers(container);
+            buffers = container._buffers = this.generateBuffers(container);
         }
 
         const baseTexture = children[0]._texture.baseTexture;
@@ -153,15 +129,16 @@ export default class ParticleRenderer extends ObjectRenderer
 
         const m = container.worldTransform.copyTo(this.tempMatrix);
 
-        m.prepend(renderer._activeRenderTarget.projectionMatrix);
+        m.prepend(renderer.globalUniforms.uniforms.projectionMatrix);
 
-        this.shader.uniforms.projectionMatrix = m.toArray(true);
+        this.shader.uniforms.translationMatrix = m.toArray(true);
 
         this.shader.uniforms.uColor = premultiplyRgba(container.tintRgb,
             container.worldAlpha, this.shader.uniforms.uColor, baseTexture.premultiplyAlpha);
 
-        // make sure the texture is bound..
-        this.shader.uniforms.uSampler = renderer.bindTexture(baseTexture);
+        this.shader.uniforms.uSampler = baseTexture;
+
+        this.renderer.shader.bind(this.shader);
 
         // now lets upload and render the buffers..
         for (let i = 0, j = 0; i < totalChildren; i += batchSize, j += 1)
@@ -195,8 +172,8 @@ export default class ParticleRenderer extends ObjectRenderer
             }
 
             // bind the buffer
-            renderer.bindVao(buffer.vao);
-            buffer.vao.draw(gl.TRIANGLES, amount * 6);
+            renderer.geometry.bind(buffer.geometry);
+            gl.drawElements(gl.TRIANGLES, amount * 6, gl.UNSIGNED_SHORT, 0);
         }
     }
 
@@ -208,7 +185,6 @@ export default class ParticleRenderer extends ObjectRenderer
      */
     generateBuffers(container)
     {
-        const gl = this.renderer.gl;
         const buffers = [];
         const size = container._maxSize;
         const batchSize = container._batchSize;
@@ -216,7 +192,7 @@ export default class ParticleRenderer extends ObjectRenderer
 
         for (let i = 0; i < size; i += batchSize)
         {
-            buffers.push(new ParticleBuffer(gl, this.properties, dynamicPropertyFlags, batchSize));
+            buffers.push(new ParticleBuffer(this.properties, dynamicPropertyFlags, batchSize));
         }
 
         return buffers;
@@ -231,11 +207,10 @@ export default class ParticleRenderer extends ObjectRenderer
      */
     _generateOneMoreBuffer(container)
     {
-        const gl = this.renderer.gl;
         const batchSize = container._batchSize;
         const dynamicPropertyFlags = container._properties;
 
-        return new ParticleBuffer(gl, this.properties, dynamicPropertyFlags, batchSize);
+        return new ParticleBuffer(this.properties, dynamicPropertyFlags, batchSize);
     }
 
     /**
@@ -440,11 +415,6 @@ export default class ParticleRenderer extends ObjectRenderer
      */
     destroy()
     {
-        if (this.renderer.gl)
-        {
-            this.renderer.gl.deleteBuffer(this.indexBuffer);
-        }
-
         super.destroy();
 
         if (this.shader)
@@ -453,7 +423,6 @@ export default class ParticleRenderer extends ObjectRenderer
             this.shader = null;
         }
 
-        this.indices = null;
         this.tempMatrix = null;
     }
 }
