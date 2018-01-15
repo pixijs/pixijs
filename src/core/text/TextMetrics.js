@@ -207,12 +207,12 @@ export default class TextMetrics
 
         context.font = font;
 
-        const validateString = TextMetrics._validateString + TextMetrics._baselineSymbol;
-        const width = Math.ceil(context.measureText(validateString).width);
+        const metricsString = TextMetrics._metricsString + TextMetrics._baselineSymbol;
+        const width = Math.ceil(context.measureText(metricsString).width);
         let baseline = Math.ceil(context.measureText(TextMetrics._baselineSymbol).width);
         const height = 2 * baseline;
 
-        baseline = baseline * 1.4 | 0;
+        baseline = baseline * TextMetrics._baselineMultiplier | 0;
 
         canvas.width = width;
         canvas.height = height;
@@ -224,7 +224,7 @@ export default class TextMetrics
 
         context.textBaseline = 'alphabetic';
         context.fillStyle = '#000';
-        context.fillText(validateString, 0, baseline);
+        context.fillText(metricsString, 0, baseline);
 
         const imagedata = context.getImageData(0, 0, width, height).data;
         const pixels = imagedata.length;
@@ -292,19 +292,22 @@ export default class TextMetrics
 
     /**
      * Set custom params for calculate font metrics
-     * If validateString or baselineSymbol is not the same as a previous values than font metrics cache will reset
+     * If metricsString, baselineSymbol or baseline multiplier is not the same as a previous values
+     * than font metrics cache will reset
      *
      * @static
-     * @param {string} validateString - Symbols with different metrics: the highest symbol, the lowest, the widest,...
+     * @param {string} metricsString - Symbols with different metrics: the highest symbol, the lowest, ...
+     * BaselineSymbol also add to metricsString in measureFont() so not necessary include baselineSymbol in metricsString
      * @param {string} baselineSymbol - The widest symbol in fonts
+     * @param {number} baselineMultiplier - Use for create a bit more area for check font symbols bounds
      */
-    static setValidateParams(validateString, baselineSymbol)
+    static setMetricsParams(metricsString, baselineSymbol, baselineMultiplier)
     {
         let isChanged = false;
 
-        if (TextMetrics._validateString !== validateString)
+        if (TextMetrics._metricsString !== metricsString)
         {
-            TextMetrics._validateString = validateString;
+            TextMetrics._metricsString = metricsString;
             isChanged = true;
         }
 
@@ -314,7 +317,31 @@ export default class TextMetrics
             isChanged = true;
         }
 
+        if (TextMetrics._baselineMultiplier !== baselineMultiplier)
+        {
+            TextMetrics._baselineMultiplier = baselineMultiplier;
+            isChanged = true;
+        }
+
         if (isChanged)
+        {
+            TextMetrics.clearMetrics();
+        }
+    }
+
+    /**
+     * Clear font metrics in metrics cache.
+     *
+     * @static
+     * @param {string} font - font name. If font name not set than clear cache for all fonts.
+     */
+    static clearMetrics(font = '')
+    {
+        if (font)
+        {
+            delete TextMetrics._fonts[font];
+        }
+        else
         {
             TextMetrics._fonts = {};
         }
@@ -359,16 +386,16 @@ TextMetrics._context = canvas.getContext('2d');
 TextMetrics._fonts = {};
 
 /**
- * Default string for validate font metrics.
+ * Default string for calculate font metrics.
  * @public
  * @static
  * @memberof PIXI.TextMetrics
  * @type {string}
  */
-TextMetrics.DEFAULT_VALIDATE_STRING = '|Éq';
+TextMetrics.DEFAULT_METRICS_STRING = '|Éq';
 
 /**
- * Default baseline symbol for validate font metrics.
+ * Default baseline symbol for calculate font metrics.
  * @public
  * @static
  * @memberof PIXI.TextMetrics
@@ -377,17 +404,34 @@ TextMetrics.DEFAULT_VALIDATE_STRING = '|Éq';
 TextMetrics.DEFAULT_BASELINE_SYMBOL = 'M';
 
 /**
- * Current string for validate font metrics.
+ * Default baseline multiplier for calculate font metrics.
+ * @public
+ * @static
+ * @memberof PIXI.TextMetrics
+ * @type {number}
+ */
+TextMetrics.DEFAULT_BASELINE_MULTIPLIER = 1.4;
+
+/**
+ * Current string for calculate font metrics.
  * @private
  * @memberof PIXI.TextMetrics
  * @type {string}
  */
-TextMetrics._validateString = TextMetrics.DEFAULT_VALIDATE_STRING;
+TextMetrics._metricsString = TextMetrics.DEFAULT_METRICS_STRING;
 
 /**
- * Current baseline symbol for validate font metrics.
+ * Current baseline symbol for calculate font metrics.
  * @private
  * @memberof PIXI.TextMetrics
  * @type {string}
  */
 TextMetrics._baselineSymbol = TextMetrics.DEFAULT_BASELINE_SYMBOL;
+
+/**
+ * Current baseline multiplier for calculate font metrics. Use for reserve a bit more space for draw metrics string.
+ * @private
+ * @memberof PIXI.TextMetrics
+ * @type {number}
+ */
+TextMetrics._baselineMultiplier = TextMetrics.DEFAULT_BASELINE_MULTIPLIER;
