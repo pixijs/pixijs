@@ -2,7 +2,7 @@
 
 const path = require('path');
 
-describe.only('PIXI.Spritesheet', function ()
+describe('PIXI.Spritesheet', function ()
 {
     before(function ()
     {
