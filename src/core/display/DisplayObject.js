@@ -605,6 +605,7 @@ export default class DisplayObject extends EventEmitter
         if (this._mask)
         {
             this._mask.renderable = true;
+            this._mask.isMask = false;
         }
 
         this._mask = value;
@@ -612,6 +613,7 @@ export default class DisplayObject extends EventEmitter
         if (this._mask)
         {
             this._mask.renderable = false;
+            this._mask.isMask = true;
         }
     }
 
