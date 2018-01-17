@@ -14,7 +14,7 @@ mixins.delayMixin(
     interactiveTarget
 );
 
-const MOUSE_POINTER_ID = 'MOUSE';
+const MOUSE_POINTER_ID = 1;
 
 // helpers for hitTest() - only used inside hitTest()
 const hitTestEvent = {
