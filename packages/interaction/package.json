@@ -37,6 +37,7 @@
     "@pixi/canvas-display": "^5.0.0-alpha",
     "@pixi/canvas-graphics": "^5.0.0-alpha",
     "@pixi/canvas-sprite": "^5.0.0-alpha",
+    "@pixi/sprite": "^5.0.0-alpha",
     "@pixi/graphics": "^5.0.0-alpha",
     "floss": "^2.1.3"
   }
