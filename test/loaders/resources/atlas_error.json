@@ -1,0 +1,17 @@
+{
+    "frames": {
+        "boss1.png": {
+            "frame": {"x":1,"y":1,"w":168,"h":168},
+            "rotated": false,
+            "trimmed": false,
+            "spriteSourceSize": {"x":0,"y":0,"w":168,"h":168},
+            "sourceSize": {"w":168,"h":168}
+        }
+    },
+    "meta": {
+        "image": "invalid.png",
+        "format": "RGBA8888",
+        "size": {"w":170,"h":170},
+        "scale": "1"
+    }
+}
