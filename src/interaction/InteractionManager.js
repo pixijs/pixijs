@@ -1428,7 +1428,7 @@ export default class InteractionManager extends EventEmitter
 
         const events = this.normalizeToPointerData(originalEvent);
 
-        if (events[0].pointerType === 'mouse')
+        if (events[0].pointerType === 'mouse' || events[0].pointerType === 'pen')
         {
             this.didMove = true;
 
