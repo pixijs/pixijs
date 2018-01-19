@@ -74,12 +74,33 @@ describe('PIXI.loaders.spritesheetParser', function ()
             }
             next();
         })
-        .add(`atlas_crn`, `file://${__dirname}/resources/atlas_crn.json`)
-        .add(`atlas`, `file://${__dirname}/resources/atlas.json`)
+        .add(`atlas_crn`, path.join(__dirname, 'resources', 'atlas_crn.json'))
+        .add(`atlas`, path.join(__dirname, 'resources', 'atlas.json'))
         .load((loader, resources) =>
         {
             expect(resources.atlas_image.data).to.be.instanceof(HTMLImageElement);
             expect(resources.atlas_crn_image.data).to.not.be.instanceof(HTMLImageElement);
+            loader.reset();
+            done();
+        });
+    });
+
+    it('should dispatch an error failing to load spritesheet image', function (done)
+    {
+        const spy = sinon.spy((error, ldr, res) =>
+        {
+            expect(res.name).to.equal('atlas_image');
+            expect(res.error).to.equal(error);
+            expect(error.toString()).to.have.string('Failed to load element using: IMG');
+        });
+        const loader = new PIXI.loaders.Loader();
+
+        loader.add('atlas', path.join(__dirname, 'resources', 'atlas_error.json'));
+        loader.onError.add(spy);
+        loader.load((loader, resources) =>
+        {
+            expect(resources.atlas_image.error).to.be.instanceof(Error);
+            expect(spy.calledOnce).to.be.true;
             loader.reset();
             done();
         });

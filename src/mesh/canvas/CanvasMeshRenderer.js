@@ -171,10 +171,12 @@ export default class MeshSpriteRenderer
         let y1 = vertices[index1 + 1];
         let y2 = vertices[index2 + 1];
 
-        if (mesh.canvasPadding > 0)
+        const canvasPadding = mesh.canvasPadding / this.renderer.resolution;
+
+        if (canvasPadding > 0)
         {
-            const paddingX = mesh.canvasPadding / mesh.worldTransform.a;
-            const paddingY = mesh.canvasPadding / mesh.worldTransform.d;
+            const paddingX = canvasPadding / Math.abs(mesh.worldTransform.a);
+            const paddingY = canvasPadding / Math.abs(mesh.worldTransform.d);
             const centerX = (x0 + x1 + x2) / 3;
             const centerY = (y0 + y1 + y2) / 3;
 
