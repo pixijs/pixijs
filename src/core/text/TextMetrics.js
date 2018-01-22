@@ -112,6 +112,7 @@ export default class TextMetrics
         let width = 0;
         let lines = '';
         const cache = {};
+        const ls = style.letterSpacing;
 
         // ideally there is letterSpacing after every char except the last one
         // t_h_i_s_' '_i_s_' '_a_n_' '_e_x_a_m_p_l_e_' '_!
@@ -121,34 +122,8 @@ export default class TextMetrics
         // And then the final space is simply no appended to each line
         const wordWrapWidth = style.wordWrapWidth + style.letterSpacing;
 
-        // store the width of calculated character(s)
-        function getFromCache(key)
-        {
-            let width = cache[key];
-
-            if (width === undefined)
-            {
-                const spacing = ((key.length) * style.letterSpacing);
-
-                width = context.measureText(key).width + spacing;
-                cache[key] = width;
-            }
-
-            return width;
-        }
-
-        // convienience function for logging each line
-        function addLine(l, newLine = true)
-        {
-            l = (newLine) ? `${l}\n` : l;
-
-            // console.log(l)
-
-            return l;
-        }
-
         // get the width of a space and add it to cache
-        const spaceWidth = getFromCache(' ');
+        const spaceWidth = TextMetrics.getFromCache(' ', ls, cache, context);
 
         // break text into words
         const words = text.split(' ');
@@ -158,7 +133,7 @@ export default class TextMetrics
             const word = words[i];
 
             // get word width from cache if possible
-            const wordWidth = getFromCache(word);
+            const wordWidth = TextMetrics.getFromCache(word, ls, cache, context);
 
             // word is longer than desired bounds
             if (wordWidth > wordWrapWidth)
@@ -176,19 +151,17 @@ export default class TextMetrics
                     for (let j = 0; j < characters.length; j++)
                     {
                         const character = characters[j];
-                        const characterWidth = getFromCache(character);
+                        const characterWidth = TextMetrics.getFromCache(character, ls, cache, context);
 
                         if (characterWidth + width > wordWrapWidth)
                         {
-                            lines += addLine(line);
+                            lines += TextMetrics.addLine(line);
                             line = '';
                             width = 0;
                         }
-                        else
-                        {
-                            line += character;
-                            width += characterWidth;
-                        }
+
+                        line += character;
+                        width += characterWidth;
                     }
                 }
 
@@ -199,13 +172,13 @@ export default class TextMetrics
                     // finish that line and start a new one
                     if (line.length > 0)
                     {
-                        lines += addLine(line);
+                        lines += TextMetrics.addLine(line);
                         line = '';
                         width = 0;
                     }
 
                     // give it its own line
-                    lines += addLine(word);
+                    lines += TextMetrics.addLine(word);
                     line = '';
                     width = 0;
                 }
@@ -217,7 +190,7 @@ export default class TextMetrics
                 // word won't fit, start a new line
                 if (wordWidth + width > wordWrapWidth)
                 {
-                    lines += addLine(line);
+                    lines += TextMetrics.addLine(line);
                     line = '';
                     width = 0;
                 }
@@ -238,9 +211,48 @@ export default class TextMetrics
             }
         }
 
-        lines += addLine(line, false);
+        lines += TextMetrics.addLine(line, false);
 
         return lines;
+    }
+
+    /**
+     *  Convienience function for logging each line added
+     *  during the wordWrap method
+     *
+     * @param  {string}   line    - The line of text to add
+     * @param  {boolean}  newLine - Add new line character to end
+     * @return {string}   A formatted line
+     */
+    static addLine(line, newLine = true)
+    {
+        line = (newLine) ? `${line}\n` : line;
+
+        return line;
+    }
+
+    /**
+     * Gets & sets the widths of calculated characters in a cache object
+     *
+     * @param  {string}                    key            The key
+     * @param  {number}                    letterSpacing  The letter spacing
+     * @param  {object}                    cache          The cache
+     * @param  {CanvasRenderingContext2D}  context        The canvas context
+     * @return {number}                    The from cache.
+     */
+    static getFromCache(key, letterSpacing, cache, context)
+    {
+        let width = cache[key];
+
+        if (width === undefined)
+        {
+            const spacing = ((key.length) * letterSpacing);
+
+            width = context.measureText(key).width + spacing;
+            cache[key] = width;
+        }
+
+        return width;
     }
 
     /**
