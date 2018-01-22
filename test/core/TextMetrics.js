@@ -144,10 +144,7 @@ describe('PIXI.TextMetrics', function ()
 
             const metrics = PIXI.TextMetrics.measureText(intergityText, new PIXI.TextStyle(style));
 
-            const lines = metrics.lines.reduce((accumulator, line) =>
-            {
-                return accumulator + line;
-            });
+            const lines = metrics.lines.reduce((accumulator, line) => accumulator + line);
 
             expect(lines).to.equal(intergityText, 'should have the same chars as the original text');
         });
