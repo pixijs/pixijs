@@ -34,13 +34,15 @@ export default class WebGLExtract
      *
      * @param {PIXI.DisplayObject|PIXI.RenderTexture} target - A displayObject or renderTexture
      *  to convert. If left empty will use use the main renderer
+     * @param {PIXI.Rectangle} [region] - The region of screen, or part of RenderTexture that has to be extracted.
+     * @param {boolean} [premultipliedAlpha=false] Neutralizes pre-multiplied alpha.
      * @return {HTMLImageElement} HTML Image of the target
      */
-    image(target)
+    image(target, region, premultipliedAlpha)
     {
         const image = new Image();
 
-        image.src = this.base64(target);
+        image.src = this.base64(target, region, premultipliedAlpha);
 
         return image;
     }
@@ -51,21 +53,25 @@ export default class WebGLExtract
      *
      * @param {PIXI.DisplayObject|PIXI.RenderTexture} target - A displayObject or renderTexture
      *  to convert. If left empty will use use the main renderer
+     * @param {PIXI.Rectangle} [region] - The region of screen, or part of RenderTexture that has to be extracted.
+     * @param {boolean} [premultipliedAlpha=false] Neutralizes pre-multiplied alpha.
      * @return {string} A base64 encoded string of the texture.
      */
-    base64(target)
+    base64(target, region, premultipliedAlpha)
     {
-        return this.canvas(target).toDataURL();
+        return this.canvas(target, region, premultipliedAlpha).toDataURL();
     }
 
     /**
      * Creates a Canvas element, renders this target to it and then returns it.
      *
-     * @param {PIXI.DisplayObject|PIXI.RenderTexture} target - A displayObject or renderTexture
+     * @param {PIXI.DisplayObject|PIXI.RenderTexture|null} target - A displayObject or renderTexture
      *  to convert. If left empty will use use the main renderer
+     * @param {PIXI.Rectangle} [region] - The region of screen, or part of RenderTexture that has to be extracted.
+     * @param {boolean} [premultipliedAlpha=false] Neutralizes pre-multiplied alpha.
      * @return {HTMLCanvasElement} A Canvas element with the texture rendered on.
      */
-    canvas(target)
+    canvas(target, region, premultipliedAlpha = false)
     {
         const renderer = this.renderer;
         let textureBuffer;
@@ -83,7 +89,7 @@ export default class WebGLExtract
             }
             else
             {
-                renderTexture = this.renderer.generateTexture(target);
+                renderTexture = this.renderer.generateTexture(target, region);
                 generated = true;
             }
         }
@@ -92,7 +98,7 @@ export default class WebGLExtract
         {
             textureBuffer = renderTexture.baseTexture._glRenderTargets[this.renderer.CONTEXT_UID];
             resolution = textureBuffer.resolution;
-            frame = renderTexture.frame;
+            frame = region || renderTexture.frame;
             flipY = false;
         }
         else
@@ -102,8 +108,17 @@ export default class WebGLExtract
             flipY = true;
 
             frame = TEMP_RECT;
-            frame.width = textureBuffer.size.width;
-            frame.height = textureBuffer.size.height;
+
+            if (region)
+            {
+                frame.copy(region);
+                frame.y = textureBuffer.size.height - frame.y - frame.height;
+            }
+            else
+            {
+                frame.width = textureBuffer.size.width;
+                frame.height = textureBuffer.size.height;
+            }
         }
 
         const width = frame.width * resolution;
@@ -132,6 +147,11 @@ export default class WebGLExtract
                 webglPixels
             );
 
+            if (premultipliedAlpha)
+            {
+                WebGLExtract.postDivide(webglPixels);
+            }
+
             // add the pixels to the canvas
             const canvasData = canvasBuffer.context.getImageData(0, 0, width, height);
 
@@ -144,6 +164,7 @@ export default class WebGLExtract
             {
                 canvasBuffer.context.scale(1, -1);
                 canvasBuffer.context.drawImage(canvasBuffer.canvas, 0, -height);
+                canvasBuffer.context.scale(1, -1);
             }
         }
 
@@ -162,14 +183,17 @@ export default class WebGLExtract
      *
      * @param {PIXI.DisplayObject|PIXI.RenderTexture} target - A displayObject or renderTexture
      *  to convert. If left empty will use use the main renderer
+     * @param {PIXI.Rectangle} [region] - The region of screen, or part of RenderTexture that has to be extracted.
+     * @param {boolean} [premultipliedAlpha=false] Neutralizes pre-multiplied alpha.
      * @return {Uint8ClampedArray} One-dimensional array containing the pixel data of the entire texture
      */
-    pixels(target)
+    pixels(target, region, premultipliedAlpha = false)
     {
         const renderer = this.renderer;
         let textureBuffer;
         let resolution;
         let frame;
+        let flipY = false;
         let renderTexture;
         let generated = false;
 
@@ -181,7 +205,7 @@ export default class WebGLExtract
             }
             else
             {
-                renderTexture = this.renderer.generateTexture(target);
+                renderTexture = this.renderer.generateTexture(target, region);
                 generated = true;
             }
         }
@@ -190,16 +214,27 @@ export default class WebGLExtract
         {
             textureBuffer = renderTexture.baseTexture._glRenderTargets[this.renderer.CONTEXT_UID];
             resolution = textureBuffer.resolution;
-            frame = renderTexture.frame;
+            frame = region || renderTexture.frame;
+            flipY = false;
         }
         else
         {
             textureBuffer = this.renderer.rootRenderTarget;
             resolution = textureBuffer.resolution;
+            flipY = true;
 
             frame = TEMP_RECT;
-            frame.width = textureBuffer.size.width;
-            frame.height = textureBuffer.size.height;
+
+            if (region)
+            {
+                frame.copy(region);
+                frame.y = textureBuffer.size.height - frame.y - frame.height;
+            }
+            else
+            {
+                frame.width = textureBuffer.size.width;
+                frame.height = textureBuffer.size.height;
+            }
         }
 
         const width = frame.width * resolution;
@@ -223,6 +258,16 @@ export default class WebGLExtract
                 gl.UNSIGNED_BYTE,
                 webglPixels
             );
+
+            if (flipY)
+            {
+                this.flipY(webglPixels, width);
+            }
+
+            if (premultipliedAlpha)
+            {
+                WebGLExtract.postDivide(webglPixels);
+            }
         }
 
         if (generated)
@@ -231,6 +276,52 @@ export default class WebGLExtract
         }
 
         return webglPixels;
+    }
+
+    /**
+     * Neutralizes pre-multiplied alpha in pixels array
+     * @param {Uint8Array} pixels input
+     */
+    static postDivide(pixels)
+    {
+        for (let i = 0; i < pixels.length; i += 4)
+        {
+            const alpha = pixels[i + 3];
+
+            if (alpha)
+            {
+                pixels[i] = Math.round(pixels[i] * 255.0 / alpha);
+                pixels[i + 1] = Math.round(pixels[i + 1] * 255.0 / alpha);
+                pixels[i + 2] = Math.round(pixels[i + 2] * 255.0 / alpha);
+            }
+        }
+    }
+
+    /**
+     * Flips Y in pixels array
+     * @param {Uint8Array} pixels input
+     * @param {number} width number of pixels in a row
+     */
+    static flipY(pixels, width)
+    {
+        const w4 = width * 4;
+
+        for (let pos = 0; pos * 2 < pixels.length; pos += w4)
+        {
+            let pos1 = pos;
+            let pos2 = pixels.length - pos - w4;
+            let t = 0;
+
+            for (let x = 0; x < w4; x++)
+            {
+                pos1++;
+                pos2++;
+
+                t = pixels[pos1];
+                pixels[pos1] = pixels[pos2];
+                pixels[pos2] = t;
+            }
+        }
     }
 
     /**
