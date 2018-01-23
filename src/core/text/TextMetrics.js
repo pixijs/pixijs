@@ -333,7 +333,7 @@ export default class TextMetrics
      * Clear font metrics in metrics cache.
      *
      * @static
-     * @param {string} font - font name. If font name not set than clear cache for all fonts.
+     * @param {string} font - font name. If font name not set then clear cache for all fonts.
      */
     static clearMetrics(font = '')
     {
