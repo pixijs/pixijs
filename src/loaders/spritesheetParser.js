@@ -31,6 +31,13 @@ export default function ()
         // load the image for this sheet
         this.add(imageResourceName, resourcePath, loadOptions, function onImageLoad(res)
         {
+            if (res.error)
+            {
+                next(res.error);
+
+                return;
+            }
+
             const spritesheet = new Spritesheet(
                 res.texture.baseTexture,
                 resource.data,
