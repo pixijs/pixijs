@@ -518,7 +518,7 @@ export default class BitmapText extends core.Container
         data.size = parseInt(info.getAttribute('size'), 10);
         data.lineHeight = parseInt(common.getAttribute('lineHeight'), 10) / res;
         data.chars = {};
-        if (textures.constructor !== Array)
+        if (!(textures instanceof Array))
         {
             textures = [textures];
         }
