@@ -156,7 +156,6 @@ export default class BitmapText extends core.Container
         let lastSpaceWidth = 0;
         let spacesRemoved = 0;
         let maxLineHeight = 0;
-        let currentChar;
 
         for (let i = 0; i < this.text.length; i++)
         {
@@ -213,7 +212,7 @@ export default class BitmapText extends core.Container
                 texture: charData.texture,
                 line,
                 charCode,
-                position: new core.Point(pos.x + charData.xOffset + this._letterSpacing / 2, pos.y + charData.yOffset),
+                position: new core.Point(pos.x + charData.xOffset + (this._letterSpacing / 2), pos.y + charData.yOffset),
             });
             pos.x += charData.xAdvance + this._letterSpacing;
             lastLineWidth = pos.x;
@@ -492,12 +491,17 @@ export default class BitmapText extends core.Container
         return this._textWidth;
     }
 
+    /**
+     * Additional space between characters.
+     *
+     * @member {number}
+     */
     get letterSpacing()
     {
         return this._letterSpacing;
     }
 
-    set letterSpacing(value)
+    set letterSpacing(value) // eslint-disable-line require-jsdoc
     {
         if (this._maxWidth !== value)
         {
