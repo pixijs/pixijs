@@ -111,6 +111,13 @@ export default class BitmapText extends core.Container
         this._maxLineHeight = 0;
 
         /**
+         * Letter spacing. This is useful for setting the space between characters.
+         * @member {number}
+         * @public
+         */
+        this._letterSpacing = 0;
+
+        /**
          * Text anchor. read-only
          *
          * @member {PIXI.ObservablePoint}
@@ -149,6 +156,7 @@ export default class BitmapText extends core.Container
         let lastSpaceWidth = 0;
         let spacesRemoved = 0;
         let maxLineHeight = 0;
+        let currentChar;
 
         for (let i = 0; i < this.text.length; i++)
         {
@@ -205,10 +213,10 @@ export default class BitmapText extends core.Container
                 texture: charData.texture,
                 line,
                 charCode,
-                position: new core.Point(pos.x + charData.xOffset, pos.y + charData.yOffset),
+                position: new core.Point(pos.x + charData.xOffset + this._letterSpacing / 2, pos.y + charData.yOffset),
             });
-            lastLineWidth = pos.x + (charData.texture.width + charData.xOffset);
-            pos.x += charData.xAdvance;
+            pos.x += charData.xAdvance + this._letterSpacing;
+            lastLineWidth = pos.x;
             maxLineHeight = Math.max(maxLineHeight, (charData.yOffset + charData.texture.height));
             prevCharCode = charCode;
         }
@@ -482,6 +490,20 @@ export default class BitmapText extends core.Container
         this.validate();
 
         return this._textWidth;
+    }
+
+    get letterSpacing()
+    {
+        return this._letterSpacing;
+    }
+
+    set letterSpacing(value)
+    {
+        if (this._maxWidth !== value)
+        {
+            this._letterSpacing = value;
+            this.dirty = true;
+        }
     }
 
     /**
