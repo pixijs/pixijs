@@ -53,6 +53,7 @@ export default class Application
      *  for devices with dual graphics card **webgl only**
      * @param {boolean} [options.sharedTicker=false] - `true` to use PIXI.ticker.shared, `false` to create new ticker.
      * @param {boolean} [options.sharedLoader=false] - `true` to use PIXI.loaders.shared, `false` to create new Loader.
+     * @param {boolean} [options.forceNative=false] - Whether use the native methods or the WebGL extension.
      */
     constructor(options, arg2, arg3, arg4, arg5)
     {
