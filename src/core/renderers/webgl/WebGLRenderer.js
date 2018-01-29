@@ -56,14 +56,16 @@ export default class WebGLRenderer extends SystemRenderer
      *  with older / less advanced devices. If you experiance unexplained flickering try setting this to true.
      * @param {string} [options.powerPreference] - Parameter passed to webgl context, set to "high-performance"
      *  for devices with dual graphics card
+     * @param {Boolean} [options.forceNative=false] - Whether use the native methods or the WebGL extension.
      */
     constructor(options, arg2, arg3)
     {
         super('WebGL', options, arg2, arg3);
 
         this.legacy = this.options.legacy;
+        this.forceNative = this.options.forceNative;
 
-        if (this.legacy)
+        if (this.legacy || this.forceNative)
         {
             glCore.VertexArrayObject.FORCE_NATIVE = true;
         }
@@ -163,7 +165,7 @@ export default class WebGLRenderer extends SystemRenderer
          *
          * @member {PIXI.WebGLState}
          */
-        this.state = new WebGLState(this.gl);
+        this.state = new WebGLState(this.gl, this.forceNative);
 
         this.renderingToScreen = true;
 

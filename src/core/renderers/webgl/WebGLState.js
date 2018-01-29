@@ -16,9 +16,12 @@ export default class WebGLState
 {
     /**
      * @param {WebGLRenderingContext} gl - The current WebGL rendering context
+     * @param {Boolean} [forceNative=false] - Whether use the native methods or the WebGL extension.
      */
-    constructor(gl)
+    constructor(gl, forceNative = false)
     {
+        this.forceNative = forceNative;
+
         /**
          * The current active state
          *
@@ -69,7 +72,7 @@ export default class WebGLState
         this.blendModes = mapWebGLBlendModesToPixi(gl);
 
         // check we have vao..
-        this.nativeVaoExtension = (
+        this.nativeVaoExtension = this.forceNative ? null : (
             gl.getExtension('OES_vertex_array_object')
             || gl.getExtension('MOZ_OES_vertex_array_object')
             || gl.getExtension('WEBKIT_OES_vertex_array_object')
