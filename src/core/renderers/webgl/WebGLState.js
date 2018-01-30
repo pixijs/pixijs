@@ -16,7 +16,7 @@ export default class WebGLState
 {
     /**
      * @param {WebGLRenderingContext} gl - The current WebGL rendering context
-     * @param {Boolean} [forceNative=false] - Whether use the native methods or the WebGL extension.
+     * @param {boolean} [forceNative=false] - Whether use the native methods or the WebGL extension.
      */
     constructor(gl, forceNative = false)
     {
