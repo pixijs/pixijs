@@ -56,7 +56,7 @@ export default class WebGLRenderer extends SystemRenderer
      *  with older / less advanced devices. If you experiance unexplained flickering try setting this to true.
      * @param {string} [options.powerPreference] - Parameter passed to webgl context, set to "high-performance"
      *  for devices with dual graphics card
-     * @param {boolean} [options.forceNative=false] - Whether use the native methods or the WebGL extension.
+     * @param {boolean} [options.forceNative=false] - Whether use the native methods or the WebGL extension. **webgl only**
      */
     constructor(options, arg2, arg3)
     {

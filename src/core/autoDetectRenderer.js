@@ -32,7 +32,7 @@ import WebGLRenderer from './renderers/webgl/WebGLRenderer';
  *  If you experience unexplained flickering try setting this to true. **webgl only**
  * @param {string} [options.powerPreference] - Parameter passed to webgl context, set to "high-performance"
  *  for devices with dual graphics card **webgl only**
- * @param {boolean} [options.forceNative=false] - Whether use the native methods or the WebGL extension.
+ * @param {boolean} [options.forceNative=false] - Whether use the native methods or the WebGL extension. **webgl only**
  * @return {PIXI.WebGLRenderer|PIXI.CanvasRenderer} Returns WebGL renderer if available, otherwise CanvasRenderer
  */
 export function autoDetectRenderer(options, arg1, arg2, arg3)
