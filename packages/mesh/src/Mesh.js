@@ -1,5 +1,6 @@
 import RawMesh from './RawMesh';
 import { Geometry, Program, Shader, Texture } from '@pixi/core';
+import { Matrix } from '@pixi/math';
 import { BLEND_MODES } from '@pixi/constants';
 import { hex2rgb, premultiplyRgba } from '@pixi/utils';
 import vertex from './mesh.vert';
@@ -39,6 +40,7 @@ export default class Mesh extends RawMesh
 
         const uniforms = {
             uSampler: texture,
+            uTransform: Matrix.IDENTITY,
             alpha: 1,
             uColor: new Float32Array([1, 1, 1, 1]),
         };
