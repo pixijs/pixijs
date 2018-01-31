@@ -39,6 +39,7 @@ export default class Mesh extends RawMesh
 
         const uniforms = {
             uSampler: texture,
+            uTransform:PIXI.Matrix.IDENTITY,
             alpha: 1,
             uColor: new Float32Array([1, 1, 1, 1]),
         };
