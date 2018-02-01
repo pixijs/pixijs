@@ -90,22 +90,22 @@ export default function ()
                 // load the texture for the font
                 this.add(`${resource.name}_image${x}`, textureUrl, loadOptions, () =>
                 {
-                    const textures = [];
-                    let textureUrl;
+                    const nextTextures = [];
+                    let nextTextureUrl;
 
                     for (let x = 0; x < pages.length; ++x)
                     {
-                        textureUrl = xmlUrl + pages[x].getAttribute('file');
-                        if (utils.TextureCache[textureUrl])
+                        nextTextureUrl = xmlUrl + pages[x].getAttribute('file');
+                        if (utils.TextureCache[nextTextureUrl])
                         {
-                            textures.push(utils.TextureCache[textureUrl]);
+                            nextTextures.push(utils.TextureCache[nextTextureUrl]);
                         }
                         else
                         {
                             return;
                         }
                     }
-                    parse(resource, textures);
+                    parse(resource, nextTextures);
                     next();
                 });
             }
