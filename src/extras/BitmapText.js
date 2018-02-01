@@ -153,22 +153,25 @@ export default class BitmapText extends core.Container
         let lastLineWidth = 0;
         let maxLineWidth = 0;
         let line = 0;
-        let lastSpace = -1;
-        let lastSpaceWidth = 0;
+        let lastBreakPos = -1;
+        let lastBreakWidth = 0;
+        let breakIsSpace = true;
         let spacesRemoved = 0;
         let maxLineHeight = 0;
 
         for (let i = 0; i < textLength; i++)
         {
             const charCode = this.text.charCodeAt(i);
+            const char = this.text.charAt(i);
 
-            if (/(\s)/.test(this.text.charAt(i)))
+            if (/(\s)/.test(char))
             {
-                lastSpace = i;
-                lastSpaceWidth = lastLineWidth;
+                lastBreakPos = i;
+                lastBreakWidth = lastLineWidth;
+                breakIsSpace = true;
             }
 
-            if (/(?:\r\n|\r|\n)/.test(this.text.charAt(i)))
+            if (/(?:\r\n|\r|\n)/.test(char))
             {
                 lineWidths.push(lastLineWidth);
                 maxLineWidth = Math.max(maxLineWidth, lastLineWidth);
@@ -203,21 +206,31 @@ export default class BitmapText extends core.Container
             maxLineHeight = Math.max(maxLineHeight, (charData.yOffset + charData.texture.height));
             prevCharCode = charCode;
 
-            if (lastSpace !== -1 && this._maxWidth > 0 && pos.x * scale > this._maxWidth)
+            if (lastBreakPos !== -1 && this._maxWidth > 0 && pos.x * scale > this._maxWidth)
             {
-                core.utils.removeItems(chars, lastSpace - spacesRemoved, 1 + i - lastSpace);
-                i = lastSpace;
-                lastSpace = -1;
-                ++spacesRemoved;
+                if (breakIsSpace)
+                {
+                    ++spacesRemoved;
+                }
+                core.utils.removeItems(chars, 1 + lastBreakPos - spacesRemoved, 1 + i - lastBreakPos);
+                i = lastBreakPos;
+                lastBreakPos = -1;
 
-                lineWidths.push(lastSpaceWidth);
-                maxLineWidth = Math.max(maxLineWidth, lastSpaceWidth);
+                lineWidths.push(lastBreakWidth);
+                maxLineWidth = Math.max(maxLineWidth, lastBreakWidth);
                 line++;
 
                 pos.x = 0;
                 pos.y += data.lineHeight;
                 prevCharCode = null;
                 continue;
+            }
+
+            if (/[-\\\/\.,?!;:;]/.test(char))
+            {
+                lastBreakPos = i;
+                lastBreakWidth = lastLineWidth;
+                breakIsSpace = false;
             }
         }
 
