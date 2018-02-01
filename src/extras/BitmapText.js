@@ -147,6 +147,7 @@ export default class BitmapText extends core.Container
         const pos = new core.Point();
         const chars = [];
         const lineWidths = [];
+        const textLength = this.text.length;
 
         let prevCharCode = null;
         let lastLineWidth = 0;
@@ -157,7 +158,7 @@ export default class BitmapText extends core.Container
         let spacesRemoved = 0;
         let maxLineHeight = 0;
 
-        for (let i = 0; i < this.text.length; i++)
+        for (let i = 0; i < textLength; i++)
         {
             const charCode = this.text.charCodeAt(i);
 
@@ -171,23 +172,6 @@ export default class BitmapText extends core.Container
             {
                 lineWidths.push(lastLineWidth);
                 maxLineWidth = Math.max(maxLineWidth, lastLineWidth);
-                line++;
-
-                pos.x = 0;
-                pos.y += data.lineHeight;
-                prevCharCode = null;
-                continue;
-            }
-
-            if (lastSpace !== -1 && this._maxWidth > 0 && pos.x * scale > this._maxWidth)
-            {
-                core.utils.removeItems(chars, lastSpace - spacesRemoved, i - lastSpace);
-                i = lastSpace;
-                lastSpace = -1;
-                ++spacesRemoved;
-
-                lineWidths.push(lastSpaceWidth);
-                maxLineWidth = Math.max(maxLineWidth, lastSpaceWidth);
                 line++;
 
                 pos.x = 0;
@@ -218,6 +202,23 @@ export default class BitmapText extends core.Container
             lastLineWidth = pos.x;
             maxLineHeight = Math.max(maxLineHeight, (charData.yOffset + charData.texture.height));
             prevCharCode = charCode;
+
+            if (lastSpace !== -1 && this._maxWidth > 0 && pos.x * scale > this._maxWidth)
+            {
+                core.utils.removeItems(chars, lastSpace - spacesRemoved, 1 + i - lastSpace);
+                i = lastSpace;
+                lastSpace = -1;
+                ++spacesRemoved;
+
+                lineWidths.push(lastSpaceWidth);
+                maxLineWidth = Math.max(maxLineWidth, lastSpaceWidth);
+                line++;
+
+                pos.x = 0;
+                pos.y += data.lineHeight;
+                prevCharCode = null;
+                continue;
+            }
         }
 
         lineWidths.push(lastLineWidth);
