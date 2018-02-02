@@ -228,6 +228,72 @@ export default class Graphics extends Container
     }
 
     /**
+     * Calculate length of quadratic curve.
+     * The detailed explanation of math behind this can be found under
+     * http://www.malczak.linuxpl.com/blog/quadratic-bezier-curve-length/
+     *
+     * @private
+     * @param {number} fromX - x-coordinate of curve start point
+     * @param {number} fromY - y-coordinate of curve start point
+     * @param {number} cpX - x-coordinate of curve control point
+     * @param {number} cpY - y-coordinate of curve control point
+     * @param {number} toX - x-coordinate of curve end point
+     * @param {number} toY - y-coordinate of curve end point
+     * @return {number} Length of quadratic curve
+     */
+    _quadraticCurveLength(fromX, fromY, cpX, cpY, toX, toY)
+    {
+        const ax = fromX - ((2.0 * cpX) + toX);
+        const ay = fromY - ((2.0 * cpY) + toY);
+        const bx = 2.0 * ((cpX - 2.0) * fromX);
+        const by = 2.0 * ((cpY - 2.0) * fromY);
+        const a = 4.0 * ((ax * ax) + (ay * ay));
+        const b = 4.0 * ((ax * bx) + (ay * by));
+        const c = (bx * bx) + (by * by);
+
+        const s = 2.0 * Math.sqrt(a + b + c);
+        const a2 = Math.sqrt(a);
+        const a32 = 2.0 * a * a2;
+        const c2 = 2.0 * Math.sqrt(c);
+        const ba = b / a2;
+
+        return (
+                (a32 * s)
+                + (a2 * b * (s - c2))
+                + (
+                   ((4.0 * c * a) - (b * b))
+                   * Math.log(((2.0 * a2) + ba + s) / (ba + c2))
+                  )
+               )
+               / (4.0 * a32);
+    }
+
+    /**
+     * Calculate number of segments for the curve based on its length to ensure its smoothness.
+     * The constants used in the calculation is a matter of experiments.
+     * The idea is that the length of each segment is about 10 px, but the number of segments lays in range 8..2048.
+     *
+     * @private
+     * @param {number} length - length of curve
+     * @return {number} Number of segments
+     */
+    _segmentsCount(length)
+    {
+        let result = Math.ceil(length / 10.0);
+
+        if (result < 8)
+        {
+            result = 8;
+        }
+        else if (result > 2048)
+        {
+            result = 2048;
+        }
+
+        return result;
+    }
+
+    /**
      * Specifies the line style used for subsequent calls to Graphics methods such as the lineTo()
      * method or the drawCircle() method.
      *
@@ -322,7 +388,6 @@ export default class Graphics extends Container
             this.moveTo(0, 0);
         }
 
-        const n = 20;
         const points = this.currentPath.shape.points;
         let xa = 0;
         let ya = 0;
@@ -334,6 +399,7 @@ export default class Graphics extends Container
 
         const fromX = points[points.length - 2];
         const fromY = points[points.length - 1];
+        const n = this._segmentsCount(this._quadraticCurveLength(fromX, fromY, cpX, cpY, toX, toY));
 
         for (let i = 1; i <= n; ++i)
         {
@@ -489,7 +555,7 @@ export default class Graphics extends Container
         }
 
         const sweep = endAngle - startAngle;
-        const segs = Math.ceil(Math.abs(sweep) / PI_2) * 40;
+        const segs = this._segmentsCount(Math.abs(sweep) * radius);
 
         if (sweep === 0)
         {
