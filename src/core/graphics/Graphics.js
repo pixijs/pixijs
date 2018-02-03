@@ -9,6 +9,7 @@ import { SHAPES, BLEND_MODES, PI_2 } from '../const';
 import Bounds from '../display/Bounds';
 import bezierCurveTo from './utils/bezierCurveTo';
 import CanvasRenderer from '../renderers/canvas/CanvasRenderer';
+import settings from '../settings';
 
 let canvasRenderer;
 const tempMatrix = new Matrix();
@@ -228,9 +229,9 @@ export default class Graphics extends Container
     }
 
     /**
-     * Calculate length of quadratic curve.
-     * The detailed explanation of math behind this can be found under
-     * http://www.malczak.linuxpl.com/blog/quadratic-bezier-curve-length/
+     * Calculate length of quadratic curve
+     * @see {@link http://www.malczak.linuxpl.com/blog/quadratic-bezier-curve-length/}
+     * for the detailed explanation of math behind this
      *
      * @private
      * @param {number} fromX - x-coordinate of curve start point
@@ -270,8 +271,6 @@ export default class Graphics extends Container
 
     /**
      * Calculate number of segments for the curve based on its length to ensure its smoothness.
-     * The constants used in the calculation is a matter of experiments.
-     * The idea is that the length of each segment is about 10 px, but the number of segments lays in range 8..2048.
      *
      * @private
      * @param {number} length - length of curve
@@ -279,15 +278,15 @@ export default class Graphics extends Container
      */
     _segmentsCount(length)
     {
-        let result = Math.ceil(length / 10.0);
+        let result = Math.ceil(length / settings.GRAPHICS_CURVES_RESOLUTION.segmentLength);
 
-        if (result < 8)
+        if (result < settings.GRAPHICS_CURVES_RESOLUTION.minSegmentNumber)
         {
-            result = 8;
+            result = settings.GRAPHICS_CURVES_RESOLUTION.minSegmentNumber;
         }
-        else if (result > 2048)
+        else if (result > settings.GRAPHICS_CURVES_RESOLUTION.maxSegmentNumber)
         {
-            result = 2048;
+            result = settings.GRAPHICS_CURVES_RESOLUTION.maxSegmentNumber;
         }
 
         return result;
@@ -399,7 +398,9 @@ export default class Graphics extends Container
 
         const fromX = points[points.length - 2];
         const fromY = points[points.length - 1];
-        const n = this._segmentsCount(this._quadraticCurveLength(fromX, fromY, cpX, cpY, toX, toY));
+        const n = settings.GRAPHICS_CURVES_RESOLUTION.adaptive
+                  ? this._segmentsCount(this._quadraticCurveLength(fromX, fromY, cpX, cpY, toX, toY))
+                  : 20;
 
         for (let i = 1; i <= n; ++i)
         {
@@ -555,7 +556,9 @@ export default class Graphics extends Container
         }
 
         const sweep = endAngle - startAngle;
-        const segs = this._segmentsCount(Math.abs(sweep) * radius);
+        const segs = settings.GRAPHICS_CURVES_RESOLUTION.adaptive
+                     ? this._segmentsCount(Math.abs(sweep) * radius)
+                     : Math.ceil(Math.abs(sweep) / PI_2) * 40;
 
         if (sweep === 0)
         {
