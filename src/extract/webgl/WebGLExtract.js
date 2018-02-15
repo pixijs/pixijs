@@ -53,7 +53,7 @@ export class WebGLExtract
      * Will return a a base64 encoded string of this target. It works by calling
      *  `WebGLExtract.getCanvas` and then running toDataURL on that.
      *
-     * @param {PIXI.DisplayObject|PIXI.RenderTexture} target - A displayObject or renderTexture
+     * @param {PIXI.DisplayObject|PIXI.RenderTexture|null} [target=null] - A displayObject or renderTexture
      *  to convert. If left empty will use use the main renderer
      * @param {PIXI.Rectangle} [region] - The region of screen, or part of RenderTexture that has to be extracted.
      * @return {string} A base64 encoded string of the texture.
@@ -66,7 +66,7 @@ export class WebGLExtract
     /**
      * Creates a Canvas element, renders this target to it and then returns it.
      *
-     * @param {PIXI.DisplayObject|PIXI.RenderTexture|null} target - A displayObject or renderTexture
+     * @param {PIXI.DisplayObject|PIXI.RenderTexture|null} [target=null] - A displayObject or renderTexture
      *  to convert. If left empty will use use the main renderer
      * @param {PIXI.Rectangle} [region] - The region of screen, or part of RenderTexture that has to be extracted.
      * @return {HTMLCanvasElement} A Canvas element with the texture rendered on.
@@ -82,7 +82,7 @@ export class WebGLExtract
      *
      * If you want width and height, use `pixelsAndFrame`, it also returns resolution of the object
      *
-     * @param {PIXI.DisplayObject|PIXI.RenderTexture} target - A displayObject or renderTexture
+     * @param {PIXI.DisplayObject|PIXI.RenderTexture|null} [target=null] - A displayObject or renderTexture
      *  to convert. If left empty will use use the main renderer
      * @param {PIXI.Rectangle} [region] - The region of screen, or part of RenderTexture that has to be extracted.
      * @return {Uint8Array} Array of pixels.
@@ -95,7 +95,7 @@ export class WebGLExtract
     /**
      * Returns object that has everything you need to know about pixels region of the target
      *
-     * @param {PIXI.DisplayObject|PIXI.RenderTexture} target - A displayObject or renderTexture
+     * @param {PIXI.DisplayObject|PIXI.RenderTexture|null} [target=null] - A displayObject or renderTexture
      *  to convert. If left empty will use use the main renderer
      * @param {PIXI.Rectangle} [region] - The region of screen, or part of RenderTexture that has to be extracted.
      * @param {boolean} [normalize=true] - call normalize just after extraction
@@ -146,6 +146,8 @@ export class WebGLExtract
             }
             else
             {
+                frame.x = 0;
+                frame.y = 0;
                 frame.width = textureBuffer.size.width;
                 frame.height = textureBuffer.size.height;
             }
