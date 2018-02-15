@@ -1,4 +1,5 @@
 import * as core from '../../core';
+import ExtractData from '../ExtractData';
 
 const TEMP_RECT = new core.Rectangle();
 const BYTES_PER_PIXEL = 4;
@@ -13,7 +14,7 @@ const BYTES_PER_PIXEL = 4;
  * @class
  * @memberof PIXI.extract
  */
-export default class WebGLExtract
+export class WebGLExtract
 {
     /**
      * @param {PIXI.WebGLRenderer} renderer - A reference to the current renderer
@@ -37,14 +38,13 @@ export default class WebGLExtract
      * @param {PIXI.DisplayObject|PIXI.RenderTexture} target - A displayObject or renderTexture
      *  to convert. If left empty will use use the main renderer
      * @param {PIXI.Rectangle} [region] - The region of screen, or part of RenderTexture that has to be extracted.
-     * @param {boolean} [premultipliedAlpha=false] Neutralizes pre-multiplied alpha.
      * @return {HTMLImageElement} HTML Image of the target
      */
-    image(target, region, premultipliedAlpha)
+    image(target, region)
     {
         const image = new Image();
 
-        image.src = this.base64(target, region, premultipliedAlpha);
+        image.src = this.data(target, region).base64();
 
         return image;
     }
@@ -56,12 +56,11 @@ export default class WebGLExtract
      * @param {PIXI.DisplayObject|PIXI.RenderTexture} target - A displayObject or renderTexture
      *  to convert. If left empty will use use the main renderer
      * @param {PIXI.Rectangle} [region] - The region of screen, or part of RenderTexture that has to be extracted.
-     * @param {boolean} [premultipliedAlpha=false] Neutralizes pre-multiplied alpha.
      * @return {string} A base64 encoded string of the texture.
      */
-    base64(target, region, premultipliedAlpha)
+    base64(target, region)
     {
-        return this.canvas(target, region, premultipliedAlpha).toDataURL();
+        return this.data(target, region).base64();
     }
 
     /**
@@ -70,126 +69,39 @@ export default class WebGLExtract
      * @param {PIXI.DisplayObject|PIXI.RenderTexture|null} target - A displayObject or renderTexture
      *  to convert. If left empty will use use the main renderer
      * @param {PIXI.Rectangle} [region] - The region of screen, or part of RenderTexture that has to be extracted.
-     * @param {boolean} [premultipliedAlpha=false] Neutralizes pre-multiplied alpha.
      * @return {HTMLCanvasElement} A Canvas element with the texture rendered on.
      */
-    canvas(target, region, premultipliedAlpha = false)
+    canvas(target, region)
     {
-        const renderer = this.renderer;
-        let textureBuffer;
-        let resolution;
-        let frame;
-        let flipY = false;
-        let renderTexture;
-        let generated = false;
-
-        if (target)
-        {
-            if (target instanceof core.RenderTexture)
-            {
-                renderTexture = target;
-            }
-            else
-            {
-                renderTexture = this.renderer.generateTexture(target, region);
-                generated = true;
-            }
-        }
-
-        if (renderTexture)
-        {
-            textureBuffer = renderTexture.baseTexture._glRenderTargets[this.renderer.CONTEXT_UID];
-            resolution = textureBuffer.resolution;
-            frame = region || renderTexture.frame;
-            flipY = false;
-        }
-        else
-        {
-            textureBuffer = this.renderer.rootRenderTarget;
-            resolution = textureBuffer.resolution;
-            flipY = true;
-
-            frame = TEMP_RECT;
-
-            if (region)
-            {
-                frame.copy(region);
-                frame.y = textureBuffer.size.height - frame.y - frame.height;
-            }
-            else
-            {
-                frame.width = textureBuffer.size.width;
-                frame.height = textureBuffer.size.height;
-            }
-        }
-
-        const width = frame.width * resolution;
-        const height = frame.height * resolution;
-
-        const canvasBuffer = new core.CanvasRenderTarget(width, height);
-
-        if (textureBuffer)
-        {
-            // bind the buffer
-            renderer.bindRenderTarget(textureBuffer);
-
-            // set up an array of pixels
-            const webglPixels = new Uint8Array(BYTES_PER_PIXEL * width * height);
-
-            // read pixels to the array
-            const gl = renderer.gl;
-
-            gl.readPixels(
-                frame.x * resolution,
-                frame.y * resolution,
-                width,
-                height,
-                gl.RGBA,
-                gl.UNSIGNED_BYTE,
-                webglPixels
-            );
-
-            if (premultipliedAlpha)
-            {
-                WebGLExtract.postDivide(webglPixels);
-            }
-
-            // add the pixels to the canvas
-            const canvasData = canvasBuffer.context.getImageData(0, 0, width, height);
-
-            canvasData.data.set(webglPixels);
-
-            canvasBuffer.context.putImageData(canvasData, 0, 0);
-
-            // pulling pixels
-            if (flipY)
-            {
-                canvasBuffer.context.scale(1, -1);
-                canvasBuffer.context.drawImage(canvasBuffer.canvas, 0, -height);
-                canvasBuffer.context.scale(1, -1);
-            }
-        }
-
-        if (generated)
-        {
-            renderTexture.destroy(true);
-        }
-        // send the canvas back..
-
-        return canvasBuffer.canvas;
+        return this.data(target, region).canvas();
     }
 
     /**
      * Will return a one-dimensional array containing the pixel data of the entire texture in RGBA
      * order, with integer values between 0 and 255 (included).
      *
+     * If you want width and height, use `pixelsAndFrame`, it also returns resolution of the object
+     *
      * @param {PIXI.DisplayObject|PIXI.RenderTexture} target - A displayObject or renderTexture
      *  to convert. If left empty will use use the main renderer
      * @param {PIXI.Rectangle} [region] - The region of screen, or part of RenderTexture that has to be extracted.
-     * @param {boolean} [premultipliedAlpha=false] Neutralizes pre-multiplied alpha.
-     * @return {Uint8ClampedArray} One-dimensional array containing the pixel data of the entire texture
+     * @return {Uint8Array} Array of pixels.
      */
-    pixels(target, region, premultipliedAlpha = false)
+    pixels(target, region)
+    {
+        return this.data(target, region).pixels;
+    }
+
+    /**
+     * Returns object that has everything you need to know about pixels region of the target
+     *
+     * @param {PIXI.DisplayObject|PIXI.RenderTexture} target - A displayObject or renderTexture
+     *  to convert. If left empty will use use the main renderer
+     * @param {PIXI.Rectangle} [region] - The region of screen, or part of RenderTexture that has to be extracted.
+     * @param {boolean} [normalize=true] - call normalize just after extraction
+     * @return {ExtractData} Returns everything
+     */
+    data(target, region, normalize = true)
     {
         const renderer = this.renderer;
         let textureBuffer;
@@ -260,16 +172,6 @@ export default class WebGLExtract
                 gl.UNSIGNED_BYTE,
                 webglPixels
             );
-
-            if (flipY)
-            {
-                this.flipY(webglPixels, width);
-            }
-
-            if (premultipliedAlpha)
-            {
-                WebGLExtract.postDivide(webglPixels);
-            }
         }
 
         if (generated)
@@ -277,53 +179,14 @@ export default class WebGLExtract
             renderTexture.destroy(true);
         }
 
-        return webglPixels;
-    }
+        const result = new ExtractData(webglPixels, frame, resolution, true, flipY);
 
-    /**
-     * Neutralizes pre-multiplied alpha in pixels array
-     * @param {Uint8Array} pixels input
-     */
-    static postDivide(pixels)
-    {
-        for (let i = 0; i < pixels.length; i += 4)
+        if (normalize)
         {
-            const alpha = pixels[i + 3];
-
-            if (alpha)
-            {
-                pixels[i] = Math.round(pixels[i] * 255.0 / alpha);
-                pixels[i + 1] = Math.round(pixels[i + 1] * 255.0 / alpha);
-                pixels[i + 2] = Math.round(pixels[i + 2] * 255.0 / alpha);
-            }
+            result.normalize();
         }
-    }
 
-    /**
-     * Flips Y in pixels array
-     * @param {Uint8Array} pixels input
-     * @param {number} width number of pixels in a row
-     */
-    static flipY(pixels, width)
-    {
-        const w4 = width * 4;
-
-        for (let pos = 0; pos * 2 < pixels.length; pos += w4)
-        {
-            let pos1 = pos;
-            let pos2 = pixels.length - pos - w4;
-            let t = 0;
-
-            for (let x = 0; x < w4; x++)
-            {
-                pos1++;
-                pos2++;
-
-                t = pixels[pos1];
-                pixels[pos1] = pixels[pos2];
-                pixels[pos2] = t;
-            }
-        }
+        return result;
     }
 
     /**
