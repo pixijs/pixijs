@@ -173,7 +173,7 @@ export default class Container extends DisplayObject
     {
         if (index < 0 || index >= this.children.length)
         {
-            throw new Error('The supplied index is out of bounds');
+            throw new Error(`The index ${index} supplied is out of bounds ${this.children.length}`);
         }
 
         const currentIndex = this.getChildIndex(child);
