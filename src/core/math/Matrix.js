@@ -364,6 +364,7 @@ export default class Matrix
         }
         else
         {
+            transform.rotation = 0;
             transform.skew.x = skewX;
             transform.skew.y = skewY;
         }
