@@ -8,6 +8,8 @@ const BYTES_PER_PIXEL = 4;
  *
  * An instance of this class is automatically created by default, and can be found at renderer.plugins.extract
  *
+ * All methods use global coordinates of the target. Please assign temporary parent and call updateTransform to use local.
+ *
  * @class
  * @memberof PIXI.extract
  */
@@ -30,7 +32,7 @@ export default class WebGLExtract
     }
 
     /**
-     * Will return a HTML Image of the target
+     * Will return a HTML Image of the target.
      *
      * @param {PIXI.DisplayObject|PIXI.RenderTexture} target - A displayObject or renderTexture
      *  to convert. If left empty will use use the main renderer
