@@ -75,7 +75,7 @@ export default class CanvasData
     {
         if (this.flipY !== flipY)
         {
-            this.flipY = true;
+            this.flipY = flipY;
             CanvasData.arrayFlipY(this.pixels, this.width);
         }
 
@@ -128,9 +128,9 @@ export default class CanvasData
 
             if (alpha)
             {
-                pixels[i] = Math.round(pixels[i] * 255.0 / alpha);
-                pixels[i + 1] = Math.round(pixels[i + 1] * 255.0 / alpha);
-                pixels[i + 2] = Math.round(pixels[i + 2] * 255.0 / alpha);
+                pixels[i] = Math.round(Math.min(pixels[i] * 255.0 / alpha, 255.0));
+                pixels[i + 1] = Math.round(Math.min(pixels[i + 1] * 255.0 / alpha, 255.0));
+                pixels[i + 2] = Math.round(Math.min(pixels[i + 2] * 255.0 / alpha, 255.0));
             }
         }
     }
@@ -152,12 +152,12 @@ export default class CanvasData
 
             for (let x = 0; x < w4; x++)
             {
-                pos1++;
-                pos2++;
-
                 t = pixels[pos1];
                 pixels[pos1] = pixels[pos2];
                 pixels[pos2] = t;
+
+                pos1++;
+                pos2++;
             }
         }
     }

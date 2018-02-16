@@ -253,25 +253,17 @@ export default class SystemRenderer extends EventEmitter
             region = displayObject.getLocalBounds();
         }
 
-        const tempWt = this._tempDisplayObjectParent.transform.worldTransform;
+        this._tempDisplayObjectParent.transform.worldTransform.set(1, 0, 0, 1, -region.x, -region.y);
 
-        /* eslint-disable no-console */
-        console.log(`generateTexture region: x=${region.x} y=${region.y}`);
-
-        tempWt.set(1, 0, 0, 1, -region.x, -region.y);
-
-        // this operation is covered by `extract` tests. Remove _parentID and see how everything falls down.
-        displayObject.pushTempParent(this._tempDisplayObjectParent, true);
+        displayObject.pushTempTransform(this._tempDisplayObjectParent);
         displayObject.updateTransform();
-
-        console.log(`generateTexture result bounds: x=${displayObject.getBounds().x} y=${displayObject.getBounds().y}`);
 
         const renderTexture = RenderTexture.create(region.width | 0, region.height | 0, scaleMode, resolution);
 
         this.render(displayObject, renderTexture, undefined, undefined, true);
 
+        displayObject.popTempTransform();
         // return back, generateTexture is not supposed to change transforms
-        displayObject.popTempParent();
         displayObject.updateTransform();
 
         return renderTexture;

@@ -8,8 +8,6 @@ describe('PIXI.extract', function ()
     {
         const renderers = [new PIXI.CanvasRenderer(36, 47, { transparent: true })];
 
-        renderers.pop();
-
         if (PIXI.utils.isWebGLSupported())
         {
             renderers.push(new PIXI.WebGLRenderer(36, 47, { transparent: true }));
@@ -26,11 +24,11 @@ describe('PIXI.extract', function ()
             const stage = new PIXI.Container();
             const sprite = new PIXI.Sprite(resources.bunny1.texture);
             const spriteRegion = new PIXI.Rectangle(-5, -5, 36, 47);
-            const screenRegion = new PIXI.Rectangle(-4, -3, 36, 47);
+            const screenRegion = new PIXI.Rectangle(-1, -2, 36, 47);
 
             stage.addChild(sprite);
 
-            sprite.position.set(1, 2);
+            sprite.position.set(4, 3);
 
             sprite.alpha = 0.5;
             sprite.updateTransform();
@@ -68,9 +66,9 @@ describe('PIXI.extract', function ()
                 renderer.destroy();
             }
 
-            for (const res of resources)
+            for (const key in resources)
             {
-                res.texture.destroy(true);
+                resources[key].texture.destroy(true);
             }
 
             done();

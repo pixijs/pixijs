@@ -28,9 +28,13 @@ export default class DisplayObject extends EventEmitter
 
         this.tempDisplayObjectParent = null;
 
+        this.tempDisplayObjectTransform = null;
+
         this.tempDisplayObjectParentFlag = 0;
 
         this.tempDisplayObjectParentCopy = null;
+
+        this.tempDisplayObjectTransformCopy = null;
 
         // TODO: need to create Transform from factory
         /**
@@ -156,6 +160,20 @@ export default class DisplayObject extends EventEmitter
     }
 
     /**
+     * @private
+     * @member {PIXI.TransformStatic}
+     */
+    get _tempDisplayObjectTransform()
+    {
+        if (this.tempDisplayObjectTransform === null)
+        {
+            this.tempDisplayObjectTransform = new Transform();
+        }
+
+        return this.tempDisplayObjectTransform;
+    }
+
+    /**
      * Updates the object transform for rendering
      *
      * TODO - Optimization pass!
@@ -188,9 +206,11 @@ export default class DisplayObject extends EventEmitter
 
     /**
      * Used by renderer and internals
+     * First type of root node operation
      * changes parent, forces to lazily update transform if needed
      *
-     * @param {DisplayObject} [tempParent] new, temporary root
+     * @private
+     * @param {PIXI.DisplayObject} [tempParent] new, temporary root
      * @param {boolean} [forceLazyUpdateTransform=false] whether updateTransform is needed
      */
     pushTempParent(tempParent, forceLazyUpdateTransform)
@@ -214,7 +234,8 @@ export default class DisplayObject extends EventEmitter
 
     /**
      * Used by renderer and internals
-     * changes parent back
+     * Reverts root node operation
+     * @private
      */
     popTempParent()
     {
@@ -226,6 +247,41 @@ export default class DisplayObject extends EventEmitter
         this.parent = this.tempDisplayObjectParentCopy;
 
         this.tempDisplayObjectParentFlag = 0;
+    }
+
+    /**
+     * Used by renderer and internals
+     * Second type of root node operations
+     * @private
+     * @param {PIXI.DisplayObject} [tempParent] temporary parent
+     * @param {DisplayObject} [tempTransform] temporary transform
+     */
+    pushTempTransform(tempParent, tempTransform)
+    {
+        const oldTransform = this.transform;
+
+        this.tempDisplayObjectParentFlag = 3;
+        this.tempDisplayObjectParentCopy = this.parent;
+        this.tempDisplayObjectTransformCopy = this.transform;
+        this.parent = tempParent || this._tempDisplayObjectParent;
+        this.transform = tempTransform || this._tempDisplayObjectTransform;
+
+        oldTransform._worldID++;
+        this.transform._worldID = oldTransform._worldID;
+        oldTransform._worldID++;
+    }
+
+    /**
+     * Used by renderer and internals
+     * Reverts root node operation
+     * @private
+     */
+    popTempTransform()
+    {
+        this.tempDisplayObjectParentFlag = 0;
+
+        this.parent = this.tempDisplayObjectParentCopy;
+        this.transform = this.tempDisplayObjectTransformCopy;
     }
 
     /**
@@ -280,11 +336,7 @@ export default class DisplayObject extends EventEmitter
      */
     getLocalBounds(rect)
     {
-        const transformRef = this.transform;
-        const parentRef = this.parent;
-
-        this.parent = null;
-        this.transform = this._tempDisplayObjectParent.transform;
+        this.pushTempTransform();
 
         if (!rect)
         {
@@ -298,8 +350,7 @@ export default class DisplayObject extends EventEmitter
 
         const bounds = this.getBounds(false, rect);
 
-        this.parent = parentRef;
-        this.transform = transformRef;
+        this.popTempTransform();
 
         return bounds;
     }

@@ -32,17 +32,18 @@ module.exports = function equals(arg1, arg2)
         {
             const ind1 = (x + offset1) << 2;
             const ind2 = (x + offset2) << 2;
-            const alpha = pixels1[ind1 + 3];
+            let alpha1 = pixels1[ind1 + 3];
+            let alpha2 = pixels2[ind2 + 3];
 
-            if (alpha !== pixels2[ind2 + 3])
+            if (Math.abs(alpha1 - alpha2) > 1.0)
             {
-                console.log(`alpha fail, x=${x} y=${y}, a1=${alpha} a2=${pixels2[ind2 + 3]}`);
+                console.log(`alpha fail, x=${x} y=${y}, a1=${alpha1} a2=${alpha2}`);
 
                 // return false;
             }
 
-            const alpha1 = arg1.premultipliedAlpha ? 1.0 : (alpha / 255.0);
-            const alpha2 = arg2.premultipliedAlpha ? 1.0 : (alpha / 255.0);
+            alpha1 = arg1.premultiplyAlpha ? 1.0 : (alpha1 / 255.0);
+            alpha2 = arg2.premultiplyAlpha ? 1.0 : (alpha2 / 255.0);
 
             for (let t = 0; t < 3; t++)
             {
@@ -51,7 +52,8 @@ module.exports = function equals(arg1, arg2)
 
                 if (Math.abs(R1 - R2) > 1)
                 {
-                    console.log(`color fail, x=${x} y=${y}, a=${alpha}, R1=${pixels1[ind1]}, R2=${pixels2[ind2]}`);
+                    console.log(`color fail, x=${x} y=${y}, a=${alpha1}, p1=${pixels1[ind1]}, p2=${pixels2[ind2]},
+                    R1=${R1} R2=${R2}`);
 
                     return false;
                 }
