@@ -1,12 +1,10 @@
 import { sayHello, hex2string, hex2rgb } from '../utils';
-import { Matrix, Rectangle } from '../math';
+import { Rectangle } from '../math';
 import { RENDERER_TYPE } from '../const';
 import settings from '../settings';
 import Container from '../display/Container';
 import RenderTexture from '../textures/RenderTexture';
 import EventEmitter from 'eventemitter3';
-
-const tempMatrix = new Matrix();
 
 /**
  * The SystemRenderer is the base for a PixiJS Renderer. It is extended by the {@link PIXI.CanvasRenderer}
@@ -250,14 +248,35 @@ export default class SystemRenderer extends EventEmitter
      */
     generateTexture(displayObject, scaleMode, resolution, region)
     {
-        region = region || displayObject.getLocalBounds();
+        if (!region)
+        {
+            region = displayObject.getLocalBounds();
+        }
+
+        const tempWt = this._tempDisplayObjectParent.transform.worldTransform;
+
+        /* eslint-disable no-console */
+        console.log(`generateTexture region: x=${region.x} y=${region.y}`);
+
+        tempWt.set(1, 0, 0, 1, -region.x, -region.y);
+
+        const tempParent = displayObject.parent;
+
+        // this operation is covered by `extract` tests. Remove _parentID and see how everything falls down.
+        displayObject.transform._parentID = -1;
+        displayObject.parent = this._tempDisplayObjectParent;
+        displayObject.updateTransform();
+
+        console.log(`generateTexture result bounds: x=${displayObject.getBounds().x} y=${displayObject.getBounds().y}`);
 
         const renderTexture = RenderTexture.create(region.width | 0, region.height | 0, scaleMode, resolution);
 
-        tempMatrix.tx = -region.x;
-        tempMatrix.ty = -region.y;
+        this.render(displayObject, renderTexture, undefined, undefined, true);
 
-        this.render(displayObject, renderTexture, false, tempMatrix, true);
+        // return back, generateTexture is not supposed to change transforms
+        displayObject.transform._parentID = -1;
+        displayObject.parent = tempParent;
+        displayObject.updateTransform();
 
         return renderTexture;
     }

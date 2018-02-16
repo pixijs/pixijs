@@ -183,9 +183,6 @@ export default class CanvasRenderer extends SystemRenderer
             if (transform)
             {
                 transform.copy(tempWt);
-
-                // lets not forget to flag the parent transform as dirty...
-                this._tempDisplayObjectParent.transform._worldID = -1;
             }
             else
             {
@@ -193,9 +190,19 @@ export default class CanvasRenderer extends SystemRenderer
             }
 
             displayObject.parent = this._tempDisplayObjectParent;
+            if (transform || cacheParent)
+            {
+                displayObject.transform._parentID = -1;
+            }
 
             displayObject.updateTransform();
+
             displayObject.parent = cacheParent;
+            if (transform || cacheParent)
+            {
+                displayObject.transform._parentID = -1;
+            }
+
             // displayObject.hitArea = //TODO add a temp hit area
         }
 

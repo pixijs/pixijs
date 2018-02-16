@@ -8,6 +8,8 @@ describe('PIXI.extract', function ()
     {
         const renderers = [new PIXI.CanvasRenderer(36, 47, { transparent: true })];
 
+        renderers.pop();
+
         if (PIXI.utils.isWebGLSupported())
         {
             renderers.push(new PIXI.WebGLRenderer(36, 47, { transparent: true }));
@@ -23,10 +25,13 @@ describe('PIXI.extract', function ()
         {
             const stage = new PIXI.Container();
             const sprite = new PIXI.Sprite(resources.bunny1.texture);
-            const region = new PIXI.Rectangle(-4, -3, 36, 47);
+            const spriteRegion = new PIXI.Rectangle(-5, -5, 36, 47);
+            const screenRegion = new PIXI.Rectangle(-4, -3, 36, 47);
 
             stage.addChild(sprite);
+
             sprite.position.set(1, 2);
+
             sprite.alpha = 0.5;
             sprite.updateTransform();
 
@@ -40,9 +45,9 @@ describe('PIXI.extract', function ()
 
                 // extract from framebuffer
                 const data1 = renderer.extract.data(sprite, undefined, false);
-                const data2 = renderer.extract.data(sprite, region, false);
+                const data2 = renderer.extract.data(sprite, spriteRegion, false);
                 // extract from context
-                const data3 = renderer.extract.data(undefined, region, false);
+                const data3 = renderer.extract.data(undefined, screenRegion, false);
                 const data4 = renderer.extract.data(undefined, undefined, false);
 
                 expect(EqualsData(data1, exp2)).to.be.true;

@@ -312,8 +312,18 @@ export default class WebGLRenderer extends SystemRenderer
             const cacheParent = displayObject.parent;
 
             displayObject.parent = this._tempDisplayObjectParent;
+            if (cacheParent)
+            {
+                displayObject.transform._parentID = -1;
+            }
+
             displayObject.updateTransform();
+
             displayObject.parent = cacheParent;
+            if (cacheParent)
+            {
+                displayObject.transform._parentID = -1;
+            }
            // displayObject.hitArea = //TODO add a temp hit area
         }
 
