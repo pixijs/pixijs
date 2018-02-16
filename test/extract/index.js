@@ -8,7 +8,6 @@ describe('PIXI.extract', function ()
     {
         const renderers = [new PIXI.CanvasRenderer(36, 47, { transparent: true })];
 
-        // renderers.pop();
         if (PIXI.utils.isWebGLSupported())
         {
             renderers.push(new PIXI.WebGLRenderer(36, 47, { transparent: true }));
@@ -16,7 +15,7 @@ describe('PIXI.extract', function ()
 
         const loader = new PIXI.loaders.Loader(`file://${__dirname}/resources/`);
 
-        loader.add('bunny1', 'bunny1.png');
+        loader.add('bunny1', 'bunny.png');
         loader.add('bunny2', 'bunny-alpha.png');
         loader.add('bunny3', 'bunny-alpha-padding.png');
         loader.add('bunny4', 'bunny-alpha-padding-shift.png');

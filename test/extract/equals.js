@@ -7,6 +7,7 @@
  * @returns {boolean} result
  */
 
+/* eslint-disable no-console */
 module.exports = function equals(arg1, arg2)
 {
     const w = arg1.width;
@@ -14,6 +15,8 @@ module.exports = function equals(arg1, arg2)
 
     if (w !== arg2.width || h !== arg2.height)
     {
+        console.log(`received ${w} x ${h}, expected ${arg2.width} x ${arg2.height} `);
+
         return false;
     }
 
@@ -33,7 +36,9 @@ module.exports = function equals(arg1, arg2)
 
             if (alpha !== pixels2[ind2 + 3])
             {
-                return false;
+                console.log(`alpha fail, x=${x} y=${y}, a1=${alpha} a2=${pixels2[ind2 + 3]}`);
+
+                // return false;
             }
 
             const alpha1 = arg1.premultipliedAlpha ? 1.0 : (alpha / 255.0);
@@ -46,6 +51,8 @@ module.exports = function equals(arg1, arg2)
 
                 if (Math.abs(R1 - R2) > 1)
                 {
+                    console.log(`color fail, x=${x} y=${y}, a=${alpha}, R1=${pixels1[ind1]}, R2=${pixels2[ind2]}`);
+
                     return false;
                 }
             }
