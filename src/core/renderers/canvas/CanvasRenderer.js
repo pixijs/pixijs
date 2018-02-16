@@ -190,7 +190,7 @@ export default class CanvasRenderer extends SystemRenderer
 
             displayObject.pushTempParent(this._tempDisplayObjectParent, transform);
             displayObject.updateTransform();
-            displayObject.popTempParent();
+            // we might force update transform, so popTempParent will be called after render method
 
             // displayObject.hitArea = //TODO add a temp hit area
         }
@@ -231,6 +231,11 @@ export default class CanvasRenderer extends SystemRenderer
         this.context = context;
         displayObject.renderCanvas(this);
         this.context = tempContext;
+
+        if (!skipUpdateTransform)
+        {
+            displayObject.popTempParent();
+        }
 
         context.restore();
 
