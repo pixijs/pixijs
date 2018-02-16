@@ -28,6 +28,10 @@ export default class DisplayObject extends EventEmitter
 
         this.tempDisplayObjectParent = null;
 
+        this.tempDisplayObjectParentFlag = 0;
+
+        this.tempDisplayObjectParentCopy = null;
+
         // TODO: need to create Transform from factory
         /**
          * World transform and local transform of this object.
@@ -183,6 +187,48 @@ export default class DisplayObject extends EventEmitter
     }
 
     /**
+     * Used by renderer and internals
+     * changes parent, forces to lazily update transform if needed
+     *
+     * @param {DisplayObject} [tempParent] new, temporary root
+     * @param {boolean} [forceLazyUpdateTransform=false] whether updateTransform is needed
+     */
+    pushTempParent(tempParent, forceLazyUpdateTransform)
+    {
+        const oldParent = this.parent;
+
+        this.tempDisplayObjectParentCopy = this.parent;
+
+        this.parent = tempParent || this._tempDisplayObjectParent;
+
+        if (oldParent || forceLazyUpdateTransform)
+        {
+            this.transform._parentID = -1;
+            this.tempDisplayObjectParentFlag = 2;
+        }
+        else
+        {
+            this.tempDisplayObjectParentFlag = 1;
+        }
+    }
+
+    /**
+     * Used by renderer and internals
+     * changes parent back
+     */
+    popTempParent()
+    {
+        if (this.tempDisplayObjectParentFlag === 2)
+        {
+            this.transform._parentID = -1;
+        }
+
+        this.parent = this.tempDisplayObjectParentCopy;
+
+        this.tempDisplayObjectParentFlag = 0;
+    }
+
+    /**
      * Retrieves the bounds of the displayObject as a rectangle object.
      *
      * @param {boolean} [skipUpdate=false] - setting to true will stop the transforms of the scene graph from
@@ -197,9 +243,9 @@ export default class DisplayObject extends EventEmitter
         {
             if (!this.parent)
             {
-                this.parent = this._tempDisplayObjectParent;
+                this.pushTempParent();
                 this.updateTransform();
-                this.parent = null;
+                this.popTempParent();
             }
             else
             {

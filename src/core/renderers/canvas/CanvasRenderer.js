@@ -177,7 +177,6 @@ export default class CanvasRenderer extends SystemRenderer
         if (!skipUpdateTransform)
         {
             // update the scene graph
-            const cacheParent = displayObject.parent;
             const tempWt = this._tempDisplayObjectParent.transform.worldTransform;
 
             if (transform)
@@ -189,19 +188,9 @@ export default class CanvasRenderer extends SystemRenderer
                 tempWt.identity();
             }
 
-            displayObject.parent = this._tempDisplayObjectParent;
-            if (transform || cacheParent)
-            {
-                displayObject.transform._parentID = -1;
-            }
-
+            displayObject.pushTempParent(this._tempDisplayObjectParent, transform);
             displayObject.updateTransform();
-
-            displayObject.parent = cacheParent;
-            if (transform || cacheParent)
-            {
-                displayObject.transform._parentID = -1;
-            }
+            displayObject.popTempParent();
 
             // displayObject.hitArea = //TODO add a temp hit area
         }

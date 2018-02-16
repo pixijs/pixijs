@@ -260,11 +260,8 @@ export default class SystemRenderer extends EventEmitter
 
         tempWt.set(1, 0, 0, 1, -region.x, -region.y);
 
-        const tempParent = displayObject.parent;
-
         // this operation is covered by `extract` tests. Remove _parentID and see how everything falls down.
-        displayObject.transform._parentID = -1;
-        displayObject.parent = this._tempDisplayObjectParent;
+        displayObject.pushTempParent(this._tempDisplayObjectParent, true);
         displayObject.updateTransform();
 
         console.log(`generateTexture result bounds: x=${displayObject.getBounds().x} y=${displayObject.getBounds().y}`);
@@ -274,8 +271,7 @@ export default class SystemRenderer extends EventEmitter
         this.render(displayObject, renderTexture, undefined, undefined, true);
 
         // return back, generateTexture is not supposed to change transforms
-        displayObject.transform._parentID = -1;
-        displayObject.parent = tempParent;
+        displayObject.popTempParent();
         displayObject.updateTransform();
 
         return renderTexture;
