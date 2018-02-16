@@ -113,7 +113,7 @@ export default class CanvasExtract
             }
             else
             {
-                renderTexture = renderer.generateTexture(target);
+                renderTexture = renderer.generateTexture(target, region);
             }
         }
 
