@@ -1,5 +1,5 @@
 import * as core from '../../core';
-import ExtractData from '../ExtractData';
+import CanvasData from '../CanvasData';
 
 const TEMP_RECT = new core.Rectangle();
 
@@ -95,7 +95,7 @@ export default class CanvasExtract
      * @param {PIXI.DisplayObject|PIXI.RenderTexture|null} [target=null] - A displayObject or renderTexture
      *  to convert. If left empty will use use the main renderer
      * @param {PIXI.Rectangle} [region] - The region of screen, or part of RenderTexture that has to be extracted.
-     * @return {ExtractData} Returns everything
+     * @return {PIXI.extract.CanvasData} Returns everything
      */
     data(target, region)
     {
@@ -126,6 +126,7 @@ export default class CanvasExtract
         else
         {
             context = renderer.rootContext;
+            resolution = renderer.resolution;
 
             frame = TEMP_RECT;
             if (region)
@@ -143,7 +144,7 @@ export default class CanvasExtract
 
         const pixels = context.getImageData(0, 0, frame.width * resolution, frame.height * resolution).data;
 
-        return new ExtractData(pixels, frame, resolution);
+        return new CanvasData(pixels, frame, resolution);
     }
 
     /**

@@ -2,8 +2,10 @@ import * as core from '../core';
 
 /**
  * Contains extracted data
+ * @class
+ * @memberof PIXI.extract
  */
-export default class ExtractData
+export default class CanvasData
 {
 
     /**
@@ -67,20 +69,20 @@ export default class ExtractData
      *
      * @param {boolean} [premultiplyAlpha=false] if false, should remove premultiplied alpha
      * @param {boolean} [flipY=true] if true, should flip Y
-     * @returns {ExtractData} this.
+     * @returns {PIXI.extract.CanvasData} this.
      */
     normalize(premultiplyAlpha = false, flipY = false)
     {
         if (this.flipY !== flipY)
         {
             this.flipY = true;
-            ExtractData.arrayFlipY(this.pixels, this.width);
+            CanvasData.arrayFlipY(this.pixels, this.width);
         }
 
         if (this.premultiplyAlpha && !premultiplyAlpha)
         {
             this.premultiplyAlpha = false;
-            ExtractData.arrayPostDivide(this.pixels);
+            CanvasData.arrayPostDivide(this.pixels);
         }
 
         return this;
@@ -158,5 +160,46 @@ export default class ExtractData
                 pixels[pos2] = t;
             }
         }
+    }
+
+    /**
+     * takes data from canvas, 2d
+     * @param {HTMLCanvasElement} canvas the source
+     * @param {PIXI.Rectangle} [region] the region
+     * @returns {ExtractData} result
+     */
+    static fromCanvas(canvas, region)
+    {
+        region = region || new core.Rectangle(0, 0, canvas.width, canvas.height);
+
+        const ext = canvas.getContext('2d').getImageData(region.x, region.y, region.width, region.height);
+
+        return new CanvasData(ext.data, region);
+    }
+
+    /**
+     * takes data from image element
+     * @param {HTMLImageElement} img the source
+     * @param {PIXI.Rectangle} [region] the region
+     * @returns {ExtractData} result
+     */
+    static fromImage(img, region)
+    {
+        region = region || new core.Rectangle(0, 0, img.width, img.height);
+
+        const canvas = document.createElement('canvas');
+
+        canvas.width = region.width;
+        canvas.height = region.height;
+
+        canvas.getContext('2d').drawImage(img, region.x, region.y, region.width, region.height,
+            0, 0, region.width, region.height);
+
+        const result = CanvasData.fromCanvas(canvas);
+
+        result.frame.x = region.x;
+        result.frame.y = region.y;
+
+        return result;
     }
 }

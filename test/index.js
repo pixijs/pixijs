@@ -11,10 +11,10 @@ describe('PIXI', function ()
     {
         expect(PIXI).to.be.an('object');
     });
-    require('./core');
-    require('./interaction');
-    require('./loaders');
-    require('./renders');
-    require('./prepare');
+    // require('./core');
+    // require('./interaction');
+    // require('./loaders');
+    // require('./renders');
+    // require('./prepare');
     require('./extract');
 });

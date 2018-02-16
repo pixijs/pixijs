@@ -1,5 +1,5 @@
 import * as core from '../../core';
-import ExtractData from '../ExtractData';
+import CanvasData from '../CanvasData';
 
 const TEMP_RECT = new core.Rectangle();
 const BYTES_PER_PIXEL = 4;
@@ -99,7 +99,7 @@ export class WebGLExtract
      *  to convert. If left empty will use use the main renderer
      * @param {PIXI.Rectangle} [region] - The region of screen, or part of RenderTexture that has to be extracted.
      * @param {boolean} [normalize=true] - call normalize just after extraction
-     * @return {ExtractData} Returns everything
+     * @return {PIXI.extract.CanvasData} Returns everything
      */
     data(target, region, normalize = true)
     {
@@ -181,7 +181,7 @@ export class WebGLExtract
             renderTexture.destroy(true);
         }
 
-        const result = new ExtractData(webglPixels, frame, resolution, true, flipY);
+        const result = new CanvasData(webglPixels, frame, resolution, true, flipY);
 
         if (normalize)
         {

@@ -1,15 +1,6 @@
 'use strict';
 
-function getBase64(img)
-{
-    const canvas = document.createElement('canvas');
-
-    canvas.width = img.width;
-    canvas.height = img.height;
-    canvas.getContext('2d').drawImage(img, 0, 0);
-
-    return canvas.toDataURL();
-}
+const EqualsData = require('./equals');
 
 describe('PIXI.extract', function ()
 {
@@ -40,17 +31,36 @@ describe('PIXI.extract', function ()
             sprite.alpha = 0.5;
             sprite.updateTransform();
 
-            const data2 = getBase64(resources.bunny2.data);
-            const data3 = getBase64(resources.bunny3.data);
-            const data4 = getBase64(resources.bunny4.data);
+            const exp2 = PIXI.extract.CanvasData.fromImage(resources.bunny2.data);
+            const exp3 = PIXI.extract.CanvasData.fromImage(resources.bunny3.data);
+            const exp4 = PIXI.extract.CanvasData.fromImage(resources.bunny4.data);
 
             for (const renderer of renderers)
             {
                 renderer.render(stage);
-                expect(renderer.extract.base64(sprite)).to.be.equals(data2);
-                expect(renderer.extract.base64(sprite, region)).to.be.equals(data3);
-                expect(renderer.extract.base64(undefined, region)).to.be.equals(data3);
-                expect(renderer.extract.base64()).to.be.equals(data4);
+
+                // extract from framebuffer
+                const data1 = renderer.extract.data(sprite, undefined, false);
+                const data2 = renderer.extract.data(sprite, region, false);
+                // extract from context
+                const data3 = renderer.extract.data(undefined, region, false);
+                const data4 = renderer.extract.data(undefined, undefined, false);
+
+                expect(EqualsData(data1, exp2)).to.be.true;
+                expect(EqualsData(data2, exp3)).to.be.true;
+                expect(EqualsData(data3, exp3)).to.be.true;
+                expect(EqualsData(data4, exp4)).to.be.true;
+
+                data1.normalize();
+                data2.normalize();
+                data3.normalize();
+                data4.normalize();
+
+                expect(EqualsData(data1, exp2)).to.be.true;
+                expect(EqualsData(data2, exp3)).to.be.true;
+                expect(EqualsData(data3, exp3)).to.be.true;
+                expect(EqualsData(data4, exp4)).to.be.true;
+
                 renderer.destroy();
             }
 
