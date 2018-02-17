@@ -258,6 +258,12 @@ export default class SystemRenderer extends EventEmitter
         {
             region = displayObject.getLocalBounds();
         }
+        else
+        {
+            region = new Rectangle().copy(region);
+        }
+
+        region.ceil(resolution);
 
         // TODO: save region to `renderTexture.orig` in future
 

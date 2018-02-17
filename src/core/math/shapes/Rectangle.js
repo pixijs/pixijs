@@ -250,4 +250,20 @@ export default class Rectangle
             && this.width === rectangle.width
             && this.height === rectangle.height;
     }
+
+    /**
+     * Math.ceil for rectangle, takes resolution and precision into account
+     * @param {number} [resolution=1] used resolution
+     * @param {number} [eps=0.001] epsilon for comparison
+     */
+    ceil(resolution = 1, eps = 0.001)
+    {
+        const x2 = Math.ceil(((this.x + this.width) * resolution) - eps) / resolution;
+        const y2 = Math.ceil(((this.y + this.height) * resolution) - eps) / resolution;
+
+        this.x = Math.floor((this.x * resolution) + eps) / resolution;
+        this.y = Math.floor((this.y * resolution) + eps) / resolution;
+        this.width = x2 - this.x;
+        this.height = y2 - this.y;
+    }
 }

@@ -92,4 +92,56 @@ describe('PIXI.extract', function ()
             done();
         });
     });
+
+    it('should extract half-pixels correctly', function (done)
+    {
+        const renderers = [new PIXI.CanvasRenderer(36, 47, { transparent: true })];
+
+        // renderers.pop();
+
+        if (PIXI.utils.isWebGLSupported())
+        {
+            renderers.push(new PIXI.WebGLRenderer(36, 47, { transparent: true }));
+        }
+
+        const loader = new PIXI.loaders.Loader(`file://${__dirname}/resources/`);
+
+        loader.add('bunny', 'bunny.png');
+        loader.add('exp2', 'bunny-alpha-padding.png');
+        loader.load(function (loader, resources)
+        {
+            const stage = new PIXI.Container();
+            const sprite = new PIXI.Sprite(resources.bunny.texture);
+
+            const halfPixelRegion = new PIXI.Rectangle(2.5, 1.5, 29, 40);
+            const region = new PIXI.Rectangle(2, 1, 30, 41);
+
+            stage.addChild(sprite);
+            sprite.position.set(4, 3);
+            sprite.alpha = 0.5;
+            sprite.updateTransform();
+
+            const exp2 = PIXI.extract.CanvasData.fromImage(resources.exp2.data);
+
+            for (const renderer of renderers)
+            {
+                renderer.render(stage);
+
+                const data = renderer.extract.data(undefined, halfPixelRegion, undefined, false);
+
+                expect(data.frame.equals(region)).to.be.true;
+
+                expect(EqualsData(data, exp2)).to.be.true;
+
+                renderer.destroy();
+            }
+
+            for (const key in resources)
+            {
+                resources[key].texture.destroy(true);
+            }
+
+            done();
+        });
+    });
 });

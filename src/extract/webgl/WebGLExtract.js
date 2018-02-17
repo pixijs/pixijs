@@ -105,6 +105,13 @@ export default class WebGLExtract
         let renderTexture;
         let generated = false;
 
+        resolution = resolution || renderer.resolution;
+        if (region)
+        {
+            region = new core.Rectangle().copy(region);
+            region.ceil();
+        }
+
         if (target)
         {
             if (target instanceof core.RenderTexture)
@@ -114,7 +121,8 @@ export default class WebGLExtract
             else
             {
                 region = region || target.getLocalBounds();
-                renderTexture = this.renderer.generateTexture(target, region, resolution || renderer.resolution);
+                region.ceil(resolution);
+                renderTexture = this.renderer.generateTexture(target, region, resolution);
                 generated = true;
             }
         }

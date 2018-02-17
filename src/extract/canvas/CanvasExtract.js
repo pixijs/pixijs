@@ -101,6 +101,13 @@ export default class CanvasExtract
         let frame;
         let renderTexture;
 
+        resolution = resolution || renderer.resolution;
+        if (region)
+        {
+            region = new core.Rectangle().copy(region);
+            region.ceil();
+        }
+
         if (target)
         {
             if (target instanceof core.RenderTexture)
@@ -110,7 +117,8 @@ export default class CanvasExtract
             else
             {
                 region = region || target.getLocalBounds();
-                renderTexture = renderer.generateTexture(target, region, resolution || renderer.resolution);
+                region.ceil(resolution);
+                renderTexture = renderer.generateTexture(target, region, resolution);
             }
         }
 
