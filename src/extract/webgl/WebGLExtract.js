@@ -9,12 +9,10 @@ const BYTES_PER_PIXEL = 4;
  *
  * An instance of this class is automatically created by default, and can be found at renderer.plugins.extract
  *
- * All methods use global coordinates of the target. Please assign temporary parent and call updateTransform to use local.
- *
  * @class
  * @memberof PIXI.extract
  */
-export class WebGLExtract
+export default class WebGLExtract
 {
     /**
      * @param {PIXI.WebGLRenderer} renderer - A reference to the current renderer

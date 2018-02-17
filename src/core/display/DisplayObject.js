@@ -215,13 +215,13 @@ export default class DisplayObject extends EventEmitter
      */
     pushTempParent(tempParent, forceLazyUpdateTransform)
     {
-        const oldParent = this.parent;
+        const parentCopy = this.parent;
 
         this.tempDisplayObjectParentCopy = this.parent;
 
         this.parent = tempParent || this._tempDisplayObjectParent;
 
-        if (oldParent || forceLazyUpdateTransform)
+        if (parentCopy || forceLazyUpdateTransform)
         {
             this.transform._parentID = -1;
             this.tempDisplayObjectParentFlag = 2;
@@ -258,7 +258,7 @@ export default class DisplayObject extends EventEmitter
      */
     pushTempTransform(tempParent, tempTransform)
     {
-        const oldTransform = this.transform;
+        const transformCopy = this.transform;
 
         this.tempDisplayObjectParentFlag = 3;
         this.tempDisplayObjectParentCopy = this.parent;
@@ -266,8 +266,8 @@ export default class DisplayObject extends EventEmitter
         this.parent = tempParent || this._tempDisplayObjectParent;
         this.transform = tempTransform || this._tempDisplayObjectTransform;
 
-        oldTransform._worldID++;
-        this.transform._worldID = oldTransform._worldID;
+        transformCopy._worldID++;
+        this.transform._worldID = transformCopy._worldID;
     }
 
     /**
@@ -277,15 +277,15 @@ export default class DisplayObject extends EventEmitter
      */
     popTempTransform()
     {
-        const oldTransform = this.transform;
+        const transformCopy = this.transform;
 
         this.tempDisplayObjectParentFlag = 0;
 
         this.parent = this.tempDisplayObjectParentCopy;
         this.transform = this.tempDisplayObjectTransformCopy;
 
-        oldTransform._worldID++;
-        this.transform._worldID = oldTransform._worldID;
+        transformCopy._worldID++;
+        this.transform._worldID = transformCopy._worldID;
     }
 
     /**

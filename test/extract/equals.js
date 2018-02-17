@@ -15,7 +15,7 @@ module.exports = function equals(arg1, arg2)
 
     if (w !== arg2.width || h !== arg2.height)
     {
-        console.log(`received ${w} x ${h}, expected ${arg2.width} x ${arg2.height} `);
+        console.log(`Image comparison: dimensions ${w} x ${h}, expected ${arg2.width} x ${arg2.height} `);
 
         return false;
     }
@@ -37,7 +37,7 @@ module.exports = function equals(arg1, arg2)
 
             if (Math.abs(alpha1 - alpha2) > 1.0)
             {
-                console.log(`Image comparsion: alpha fail, x=${x} y=${y}, a1=${alpha1} a2=${alpha2}`);
+                console.log(`Image comparison: alpha fail, x=${x} y=${y}, a1=${alpha1} a2=${alpha2}`);
 
                 return false;
             }
@@ -52,7 +52,7 @@ module.exports = function equals(arg1, arg2)
 
                 if (Math.abs(R1 - R2) > 1)
                 {
-                    console.log(`Image comparsion: color fail x=${x} y=${y}, a1=${alpha1}, a2=${alpha2}, 
+                    console.log(`Image comparison: color fail x=${x} y=${y}, a1=${alpha1}, a2=${alpha2}, 
                     p1=${pixels1[ind1]}, p2=${pixels2[ind2]},
                     R1=${R1} R2=${R2}`);
 
