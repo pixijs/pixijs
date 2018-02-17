@@ -322,11 +322,11 @@ export default class DisplayObject extends EventEmitter
             // this is mainly to avoid a parent check in the main loop. Every little helps for performance :)
             if (!this.parent)
             {
-                const utils = this.getUpdateHelper();
+                const helper = this.getUpdateHelper();
 
-                utils.pushParent();
+                helper.pushParent();
                 this.displayObjectUpdateTransform();
-                utils.popParent();
+                helper.popParent();
             }
             else
             {
