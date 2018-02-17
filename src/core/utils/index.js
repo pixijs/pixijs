@@ -6,6 +6,7 @@ import * as mixins from './mixin';
 import * as isMobile from 'ismobilejs';
 import removeItems from 'remove-array-items';
 import mapPremultipliedBlendModes from './mapPremultipliedBlendModes';
+import earcut from 'earcut';
 
 let nextUid = 0;
 let saidHello = false;
@@ -61,6 +62,14 @@ export {
      */
     pluginTarget,
     mixins,
+    /**
+     * @see {@link https://github.com/mapbox/earcut}
+     *
+     * @memberof PIXI.utils
+     * @function earcut
+     * @type {Array.number}
+     */
+    earcut,
 };
 
 /**
