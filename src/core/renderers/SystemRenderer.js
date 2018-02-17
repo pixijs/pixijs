@@ -269,14 +269,14 @@ export default class SystemRenderer extends EventEmitter
 
         this._tempDisplayObjectParent.transform.worldTransform.set(1, 0, 0, 1, -region.x, -region.y);
 
-        displayObject.pushTempTransform(this._tempDisplayObjectParent);
+        displayObject.getUpdateHelper().pushTransform(this._tempDisplayObjectParent);
         displayObject.updateTransform();
 
         const renderTexture = RenderTexture.create(region.width | 0, region.height | 0, scaleMode, resolution);
 
         this.render(displayObject, renderTexture, undefined, undefined, true);
 
-        displayObject.popTempTransform();
+        displayObject.getUpdateHelper().popTransform();
         // return back, generateTexture is not supposed to change transforms of objects that already belong to the stage
         // we'll add else here if someone complains about it
         if (displayObject.parent)

@@ -188,7 +188,7 @@ export default class CanvasRenderer extends SystemRenderer
                 tempWt.identity();
             }
 
-            displayObject.pushTempParent(this._tempDisplayObjectParent, transform);
+            displayObject.getUpdateHelper().pushParent(this._tempDisplayObjectParent, !!transform);
             displayObject.updateTransform();
             // we might force update transform, so popTempParent will be called after render method
 
@@ -234,7 +234,7 @@ export default class CanvasRenderer extends SystemRenderer
 
         if (!skipUpdateTransform)
         {
-            displayObject.popTempParent();
+            displayObject.getUpdateHelper().popParent();
         }
 
         context.restore();

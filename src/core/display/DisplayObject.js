@@ -5,7 +5,8 @@ import TransformStatic from './TransformStatic';
 import Transform from './Transform';
 import Bounds from './Bounds';
 import { Rectangle } from '../math';
-// _tempDisplayObjectParent = new DisplayObject();
+
+/* eslint-disable no-use-before-define */
 
 /**
  * The base class for all objects that are rendered on the screen.
@@ -26,15 +27,7 @@ export default class DisplayObject extends EventEmitter
 
         const TransformClass = settings.TRANSFORM_MODE === TRANSFORM_MODE.STATIC ? TransformStatic : Transform;
 
-        this.tempDisplayObjectParent = null;
-
-        this.tempDisplayObjectTransform = null;
-
-        this.tempDisplayObjectParentFlag = 0;
-
-        this.tempDisplayObjectParentCopy = null;
-
-        this.tempDisplayObjectTransformCopy = null;
+        this._utHelper = null;
 
         // TODO: need to create Transform from factory
         /**
@@ -146,31 +139,19 @@ export default class DisplayObject extends EventEmitter
     }
 
     /**
+     * gets UpdateTransformHelper instance for temp parent/transform operations
+     * its a function and not a property because infinite recursive properties that allocate memory are bad
      * @private
-     * @member {PIXI.DisplayObject}
+     * @returns {PIXI.utils.UpdateTransformHelper} created or stored instance of helper
      */
-    get _tempDisplayObjectParent()
+    getUpdateHelper()
     {
-        if (this.tempDisplayObjectParent === null)
+        if (this._utHelper === null)
         {
-            this.tempDisplayObjectParent = new DisplayObject();
+            this._utHelper = new UpdateTransformHelper(this);
         }
 
-        return this.tempDisplayObjectParent;
-    }
-
-    /**
-     * @private
-     * @member {PIXI.TransformStatic}
-     */
-    get _tempDisplayObjectTransform()
-    {
-        if (this.tempDisplayObjectTransform === null)
-        {
-            this.tempDisplayObjectTransform = new Transform();
-        }
-
-        return this.tempDisplayObjectTransform;
+        return this._utHelper;
     }
 
     /**
@@ -200,92 +181,8 @@ export default class DisplayObject extends EventEmitter
         }
         else
         {
-            this.transform.updateTransform(this._tempDisplayObjectParent.transform);
+            this.transform.updateTransform(this.getUpdateHelper().tempParent.transform);
         }
-    }
-
-    /**
-     * Used by renderer and internals
-     * First type of root node operation
-     * changes parent, forces to lazily update transform if needed
-     *
-     * @private
-     * @param {PIXI.DisplayObject} [tempParent] new, temporary root
-     * @param {boolean} [forceLazyUpdateTransform=false] whether updateTransform is needed
-     */
-    pushTempParent(tempParent, forceLazyUpdateTransform)
-    {
-        const parentCopy = this.parent;
-
-        this.tempDisplayObjectParentCopy = this.parent;
-
-        this.parent = tempParent || this._tempDisplayObjectParent;
-
-        if (parentCopy || forceLazyUpdateTransform)
-        {
-            this.transform._parentID = -1;
-            this.tempDisplayObjectParentFlag = 2;
-        }
-        else
-        {
-            this.tempDisplayObjectParentFlag = 1;
-        }
-    }
-
-    /**
-     * Used by renderer and internals
-     * Reverts root node operation
-     * @private
-     */
-    popTempParent()
-    {
-        if (this.tempDisplayObjectParentFlag === 2)
-        {
-            this.transform._parentID = -1;
-        }
-
-        this.parent = this.tempDisplayObjectParentCopy;
-
-        this.tempDisplayObjectParentFlag = 0;
-    }
-
-    /**
-     * Used by renderer and internals
-     * Second type of root node operations
-     * @private
-     * @param {PIXI.DisplayObject} [tempParent] temporary parent
-     * @param {DisplayObject} [tempTransform] temporary transform
-     */
-    pushTempTransform(tempParent, tempTransform)
-    {
-        const transformCopy = this.transform;
-
-        this.tempDisplayObjectParentFlag = 3;
-        this.tempDisplayObjectParentCopy = this.parent;
-        this.tempDisplayObjectTransformCopy = this.transform;
-        this.parent = tempParent || this._tempDisplayObjectParent;
-        this.transform = tempTransform || this._tempDisplayObjectTransform;
-
-        transformCopy._worldID++;
-        this.transform._worldID = transformCopy._worldID;
-    }
-
-    /**
-     * Used by renderer and internals
-     * Reverts root node operation
-     * @private
-     */
-    popTempTransform()
-    {
-        const transformCopy = this.transform;
-
-        this.tempDisplayObjectParentFlag = 0;
-
-        this.parent = this.tempDisplayObjectParentCopy;
-        this.transform = this.tempDisplayObjectTransformCopy;
-
-        transformCopy._worldID++;
-        this.transform._worldID = transformCopy._worldID;
     }
 
     /**
@@ -303,9 +200,11 @@ export default class DisplayObject extends EventEmitter
         {
             if (!this.parent)
             {
-                this.pushTempParent();
+                const helper = this.getUpdateHelper();
+
+                helper.pushParent();
                 this.updateTransform();
-                this.popTempParent();
+                helper.popParent();
             }
             else
             {
@@ -340,7 +239,9 @@ export default class DisplayObject extends EventEmitter
      */
     getLocalBounds(rect)
     {
-        this.pushTempTransform();
+        const helper = this.getUpdateHelper();
+
+        helper.pushTransform();
 
         if (!rect)
         {
@@ -354,7 +255,7 @@ export default class DisplayObject extends EventEmitter
 
         const bounds = this.getBounds(false, rect);
 
-        this.popTempTransform();
+        helper.popTransform();
 
         return bounds;
     }
@@ -379,9 +280,11 @@ export default class DisplayObject extends EventEmitter
             // this is mainly to avoid a parent check in the main loop. Every little helps for performance :)
             if (!this.parent)
             {
-                this.parent = this._tempDisplayObjectParent;
+                const helper = this.getUpdateHelper();
+
+                helper.pushParent();
                 this.displayObjectUpdateTransform();
-                this.parent = null;
+                helper.popParent();
             }
             else
             {
@@ -419,9 +322,11 @@ export default class DisplayObject extends EventEmitter
             // this is mainly to avoid a parent check in the main loop. Every little helps for performance :)
             if (!this.parent)
             {
-                this.parent = this._tempDisplayObjectParent;
+                const utils = this.getUpdateHelper();
+
+                utils.pushParent();
                 this.displayObjectUpdateTransform();
-                this.parent = null;
+                utils.popParent();
             }
             else
             {
@@ -738,3 +643,117 @@ export default class DisplayObject extends EventEmitter
 
 // performance increase to avoid using call.. (10x faster)
 DisplayObject.prototype.displayObjectUpdateTransform = DisplayObject.prototype.updateTransform;
+
+/**
+ * component of displayObject that takes care of temporary parent/transform operations
+ * @class
+ * @memberof PIXI.utils
+ */
+class UpdateTransformHelper
+{
+    /**
+     * creates a component for DisplayObject
+     * @param {PIXI.DisplayObject} displayObject component owner
+     */
+    constructor(displayObject)
+    {
+        this.displayObject = displayObject;
+
+        this.tempParent = new DisplayObject();
+
+        this.tempTransform = new TransformStatic();
+
+        this.flag = 0;
+
+        this.parentCopy = null;
+
+        this.transformCopy = null;
+    }
+
+    /**
+     * Used by renderer and internals
+     * First type of root node operation
+     * changes parent, forces to lazily update transform if needed
+     *
+     * @param {PIXI.DisplayObject} [tempParent] new, temporary root
+     * @param {boolean} [forceLazyUpdateTransform=false] whether updateTransform is needed
+     */
+    pushParent(tempParent, forceLazyUpdateTransform)
+    {
+        const displayObject = this.displayObject;
+
+        this.parentCopy = displayObject.parent;
+        displayObject.parent = tempParent || this.tempParent;
+
+        if (this.parentCopy || forceLazyUpdateTransform)
+        {
+            displayObject.transform._parentID = -1;
+            this.flag = 2;
+        }
+        else
+        {
+            this.flag = 1;
+        }
+    }
+
+    /**
+     * Used by renderer and internals
+     * Reverts root node operation
+     */
+    popParent()
+    {
+        const displayObject = this.displayObject;
+
+        if (this.flag === 2)
+        {
+            displayObject.transform._parentID = -1;
+        }
+
+        displayObject.parent = this.parentCopy;
+        this.parentCopy = null;
+
+        this.flag = 0;
+    }
+
+    /**
+     * Used by renderer and internals
+     * Second type of root node operations
+     * @param {PIXI.DisplayObject} [tempParent] temporary parent
+     * @param {DisplayObject} [tempTransform] temporary transform
+     */
+    pushTransform(tempParent, tempTransform)
+    {
+        const displayObject = this.displayObject;
+        const transformCopy = displayObject.transform;
+
+        this.flag = 3;
+        this.parentCopy = displayObject.parent;
+        this.transformCopy = displayObject.transform;
+        displayObject.parent = tempParent || this.tempParent;
+        displayObject.transform = tempTransform || this.tempTransform;
+        displayObject.transform._parentID = -1;
+
+        transformCopy._worldID++;
+        displayObject.transform._worldID = transformCopy._worldID;
+    }
+
+    /**
+     * Used by renderer and internals
+     * Reverts root node operation
+     */
+    popTransform()
+    {
+        const displayObject = this.displayObject;
+        const transformCopy = displayObject.transform;
+
+        this.flag = 0;
+
+        displayObject.parent = this.parentCopy;
+        displayObject.transform = this.transformCopy;
+        this.parentCopy = null;
+        this.transformCopy = null;
+
+        transformCopy._worldID++;
+        displayObject.transform._worldID = transformCopy._worldID;
+    }
+}

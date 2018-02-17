@@ -308,9 +308,9 @@ export default class WebGLRenderer extends SystemRenderer
 
         if (!skipUpdateTransform)
         {
-            displayObject.pushTempParent(this._tempDisplayObjectParent);
+            displayObject.getUpdateHelper().pushParent(this._tempDisplayObjectParent);
             displayObject.updateTransform();
-            displayObject.popTempParent();
+            displayObject.getUpdateHelper().popParent();
            // displayObject.hitArea = //TODO add a temp hit area
         }
 

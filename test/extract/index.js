@@ -88,6 +88,7 @@ describe('PIXI.extract', function ()
             {
                 resources[key].texture.destroy(true);
             }
+            loader.reset();
 
             done();
         });
@@ -140,6 +141,7 @@ describe('PIXI.extract', function ()
             {
                 resources[key].texture.destroy(true);
             }
+            loader.reset();
 
             done();
         });
