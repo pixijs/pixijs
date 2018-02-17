@@ -47,7 +47,7 @@ describe('PIXI.extras.BitmapText', function ()
 
     describe('text', function ()
     {
-        it('should render text iven if there are unsupported characters', function ()
+        it('should render text even if there are unsupported characters', function ()
         {
             const text = new PIXI.extras.BitmapText('ABCDEFG', {
                 font: this.font.font,
