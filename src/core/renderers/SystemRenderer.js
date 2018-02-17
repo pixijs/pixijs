@@ -240,18 +240,26 @@ export default class SystemRenderer extends EventEmitter
      * This can be quite useful if your displayObject is complicated and needs to be reused multiple times.
      *
      * @param {PIXI.DisplayObject} displayObject - The displayObject the object will be generated from
-     * @param {number} scaleMode - Should be one of the scaleMode consts
-     * @param {number} resolution - The resolution / device pixel ratio of the texture being generated
      * @param {PIXI.Rectangle} [region] - The region of the displayObject, that shall be rendered,
      *        if no region is specified, defaults to the local bounds of the displayObject.
+     * @param {number} resolution - The resolution / device pixel ratio of the texture being generated
+     * @param {number} scaleMode - Should be one of the scaleMode consts,
      * @return {PIXI.Texture} a texture of the graphics object
      */
-    generateTexture(displayObject, scaleMode, resolution, region)
+    generateTexture(displayObject, region, resolution, scaleMode)
     {
-        if (!region)
+        if (typeof region === 'number')
+        {
+            // old format
+            scaleMode = region;
+            region = undefined;
+        }
+        if (region === undefined)
         {
             region = displayObject.getLocalBounds();
         }
+
+        // TODO: save region to `renderTexture.orig` in future
 
         this._tempDisplayObjectParent.transform.worldTransform.set(1, 0, 0, 1, -region.x, -region.y);
 
@@ -263,8 +271,12 @@ export default class SystemRenderer extends EventEmitter
         this.render(displayObject, renderTexture, undefined, undefined, true);
 
         displayObject.popTempTransform();
-        // return back, generateTexture is not supposed to change transforms
-        displayObject.updateTransform();
+        // return back, generateTexture is not supposed to change transforms of objects that already belong to the stage
+        // we'll add else here if someone complains about it
+        if (displayObject.parent)
+        {
+            displayObject.updateTransform();
+        }
 
         return renderTexture;
     }

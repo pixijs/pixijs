@@ -268,7 +268,6 @@ export default class DisplayObject extends EventEmitter
 
         oldTransform._worldID++;
         this.transform._worldID = oldTransform._worldID;
-        oldTransform._worldID++;
     }
 
     /**
@@ -278,10 +277,15 @@ export default class DisplayObject extends EventEmitter
      */
     popTempTransform()
     {
+        const oldTransform = this.transform;
+
         this.tempDisplayObjectParentFlag = 0;
 
         this.parent = this.tempDisplayObjectParentCopy;
         this.transform = this.tempDisplayObjectTransformCopy;
+
+        oldTransform._worldID++;
+        this.transform._worldID = oldTransform._worldID;
     }
 
     /**

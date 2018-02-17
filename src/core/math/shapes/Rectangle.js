@@ -236,4 +236,18 @@ export default class Rectangle
         this.y = y1;
         this.height = y2 - y1;
     }
+
+    /**
+     * checks if all fields are same as in the other rectangle
+     *
+     * @param {PIXI.Rectangle} rectangle rect to compare to
+     * @returns {boolean} true if equals
+     */
+    equals(rectangle)
+    {
+        return this.x === rectangle.x
+            && this.y === rectangle.y
+            && this.width === rectangle.width
+            && this.height === rectangle.height;
+    }
 }

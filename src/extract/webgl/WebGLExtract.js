@@ -37,14 +37,13 @@ export class WebGLExtract
      *
      * @param {PIXI.DisplayObject|PIXI.RenderTexture} target - A displayObject or renderTexture
      *  to convert. If left empty will use use the main renderer
-     * @param {PIXI.Rectangle} [region] - The region of screen, or part of RenderTexture that has to be extracted.
      * @return {HTMLImageElement} HTML Image of the target
      */
-    image(target, region)
+    image(target)
     {
         const image = new Image();
 
-        image.src = this.data(target, region).base64();
+        image.src = this.data(target, undefined, 1).base64();
 
         return image;
     }
@@ -55,12 +54,11 @@ export class WebGLExtract
      *
      * @param {PIXI.DisplayObject|PIXI.RenderTexture|null} [target=null] - A displayObject or renderTexture
      *  to convert. If left empty will use use the main renderer
-     * @param {PIXI.Rectangle} [region] - The region of screen, or part of RenderTexture that has to be extracted.
      * @return {string} A base64 encoded string of the texture.
      */
-    base64(target, region)
+    base64(target)
     {
-        return this.data(target, region).base64();
+        return this.data(target, undefined, 1).base64();
     }
 
     /**
@@ -68,12 +66,11 @@ export class WebGLExtract
      *
      * @param {PIXI.DisplayObject|PIXI.RenderTexture|null} [target=null] - A displayObject or renderTexture
      *  to convert. If left empty will use use the main renderer
-     * @param {PIXI.Rectangle} [region] - The region of screen, or part of RenderTexture that has to be extracted.
      * @return {HTMLCanvasElement} A Canvas element with the texture rendered on.
      */
-    canvas(target, region)
+    canvas(target)
     {
-        return this.data(target, region).canvas();
+        return this.data(target, undefined, 1).canvas();
     }
 
     /**
@@ -84,12 +81,11 @@ export class WebGLExtract
      *
      * @param {PIXI.DisplayObject|PIXI.RenderTexture|null} [target=null] - A displayObject or renderTexture
      *  to convert. If left empty will use use the main renderer
-     * @param {PIXI.Rectangle} [region] - The region of screen, or part of RenderTexture that has to be extracted.
      * @return {Uint8Array} Array of pixels.
      */
-    pixels(target, region)
+    pixels(target)
     {
-        return this.data(target, region).pixels;
+        return this.data(target, undefined, 1).pixels;
     }
 
     /**
@@ -98,14 +94,14 @@ export class WebGLExtract
      * @param {PIXI.DisplayObject|PIXI.RenderTexture|null} [target=null] - A displayObject or renderTexture
      *  to convert. If left empty will use use the main renderer
      * @param {PIXI.Rectangle} [region] - The region of screen, or part of RenderTexture that has to be extracted.
-     * @param {boolean} [normalize=true] - call normalize just after extraction
+     * @param {number} [resolution] - Resolution of target for a displayObject. By default same as renderer's.
+     * @param {boolean} [normalize=true] - call normalization just after extraction
      * @return {PIXI.extract.CanvasData} Returns everything
      */
-    data(target, region, normalize = true)
+    data(target, region, resolution, normalize = true)
     {
         const renderer = this.renderer;
         let textureBuffer;
-        let resolution;
         let frame;
         let flipY = false;
         let renderTexture;
@@ -119,7 +115,8 @@ export class WebGLExtract
             }
             else
             {
-                renderTexture = this.renderer.generateTexture(target, region);
+                region = region || target.getLocalBounds();
+                renderTexture = this.renderer.generateTexture(target, region, resolution || renderer.resolution);
                 generated = true;
             }
         }
@@ -128,7 +125,7 @@ export class WebGLExtract
         {
             textureBuffer = renderTexture.baseTexture._glRenderTargets[this.renderer.CONTEXT_UID];
             resolution = textureBuffer.resolution;
-            frame = region || renderTexture.frame;
+            frame = renderTexture.frame;
             flipY = false;
         }
         else
@@ -181,7 +178,7 @@ export class WebGLExtract
             renderTexture.destroy(true);
         }
 
-        const result = new CanvasData(webglPixels, frame, resolution, true, flipY);
+        const result = new CanvasData(webglPixels, region || frame, resolution, true, flipY);
 
         if (normalize)
         {

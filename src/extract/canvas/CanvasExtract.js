@@ -34,14 +34,13 @@ export default class CanvasExtract
      *
      * @param {PIXI.DisplayObject|PIXI.RenderTexture} target - A displayObject or renderTexture
      *  to convert. If left empty will use use the main renderer
-     * @param {PIXI.Rectangle} [region] - The region of screen, or part of RenderTexture that has to be extracted.
      * @return {HTMLImageElement} HTML Image of the target
      */
-    image(target, region)
+    image(target)
     {
         const image = new Image();
 
-        image.src = this.data(target, region).base64();
+        image.src = this.data(target, undefined, 1).base64();
 
         return image;
     }
@@ -52,12 +51,11 @@ export default class CanvasExtract
      *
      * @param {PIXI.DisplayObject|PIXI.RenderTexture|null} [target=null] - A displayObject or renderTexture
      *  to convert. If left empty will use use the main renderer
-     * @param {PIXI.Rectangle} [region] - The region of screen, or part of RenderTexture that has to be extracted.
      * @return {string} A base64 encoded string of the texture.
      */
-    base64(target, region)
+    base64(target)
     {
-        return this.data(target, region).base64();
+        return this.data(target, undefined, 1).base64();
     }
 
     /**
@@ -65,12 +63,11 @@ export default class CanvasExtract
      *
      * @param {PIXI.DisplayObject|PIXI.RenderTexture|null} [target=null] - A displayObject or renderTexture
      *  to convert. If left empty will use use the main renderer
-     * @param {PIXI.Rectangle} [region] - The region of screen, or part of RenderTexture that has to be extracted.
      * @return {HTMLCanvasElement} A Canvas element with the texture rendered on.
      */
-    canvas(target, region)
+    canvas(target)
     {
-        return this.data(target, region).canvas();
+        return this.data(target, undefined, 1).canvas();
     }
 
     /**
@@ -81,12 +78,11 @@ export default class CanvasExtract
      *
      * @param {PIXI.DisplayObject|PIXI.RenderTexture|null} [target=null] - A displayObject or renderTexture
      *  to convert. If left empty will use use the main renderer
-     * @param {PIXI.Rectangle} [region] - The region of screen, or part of RenderTexture that has to be extracted.
      * @return {Uint8Array} Array of pixels.
      */
-    pixels(target, region)
+    pixels(target)
     {
-        return this.data(target, region).pixels;
+        return this.data(target, undefined, 1).pixels;
     }
 
     /**
@@ -95,13 +91,13 @@ export default class CanvasExtract
      * @param {PIXI.DisplayObject|PIXI.RenderTexture|null} [target=null] - A displayObject or renderTexture
      *  to convert. If left empty will use use the main renderer
      * @param {PIXI.Rectangle} [region] - The region of screen, or part of RenderTexture that has to be extracted.
+     * @param {number} [resolution] - Resolution of target for a displayObject. By default same as renderer's.
      * @return {PIXI.extract.CanvasData} Returns everything
      */
-    data(target, region)
+    data(target, region, resolution)
     {
         const renderer = this.renderer;
         let context;
-        let resolution;
         let frame;
         let renderTexture;
 
@@ -113,7 +109,8 @@ export default class CanvasExtract
             }
             else
             {
-                renderTexture = renderer.generateTexture(target, region);
+                region = region || target.getLocalBounds();
+                renderTexture = renderer.generateTexture(target, region, resolution || renderer.resolution);
             }
         }
 
@@ -121,7 +118,7 @@ export default class CanvasExtract
         {
             context = renderTexture.baseTexture._canvasRenderTarget.context;
             resolution = renderTexture.baseTexture._canvasRenderTarget.resolution;
-            frame = region || renderTexture.frame;
+            frame = renderTexture.frame;
         }
         else
         {
@@ -142,9 +139,10 @@ export default class CanvasExtract
             }
         }
 
-        const pixels = context.getImageData(0, 0, frame.width * resolution, frame.height * resolution).data;
+        const pixels = context.getImageData(frame.x * resolution, frame.y * resolution,
+            frame.width * resolution, frame.height * resolution).data;
 
-        return new CanvasData(pixels, frame, resolution);
+        return new CanvasData(pixels, region || frame, resolution);
     }
 
     /**

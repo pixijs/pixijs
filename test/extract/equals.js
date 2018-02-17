@@ -37,9 +37,9 @@ module.exports = function equals(arg1, arg2)
 
             if (Math.abs(alpha1 - alpha2) > 1.0)
             {
-                console.log(`alpha fail, x=${x} y=${y}, a1=${alpha1} a2=${alpha2}`);
+                console.log(`Image comparsion: alpha fail, x=${x} y=${y}, a1=${alpha1} a2=${alpha2}`);
 
-                // return false;
+                return false;
             }
 
             alpha1 = arg1.premultiplyAlpha ? 1.0 : (alpha1 / 255.0);
@@ -52,7 +52,8 @@ module.exports = function equals(arg1, arg2)
 
                 if (Math.abs(R1 - R2) > 1)
                 {
-                    console.log(`color fail, x=${x} y=${y}, a=${alpha1}, p1=${pixels1[ind1]}, p2=${pixels2[ind2]},
+                    console.log(`Image comparsion: color fail x=${x} y=${y}, a1=${alpha1}, a2=${alpha2}, 
+                    p1=${pixels1[ind1]}, p2=${pixels2[ind2]},
                     R1=${R1} R2=${R2}`);
 
                     return false;
