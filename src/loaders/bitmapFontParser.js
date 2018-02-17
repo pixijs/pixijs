@@ -9,7 +9,7 @@ import { BitmapText } from '../extras';
  * @function parseBitmapFontData
  * @memberof PIXI.loaders
  * @param {PIXI.loaders.Resource} resource - Loader resource.
- * @param {PIXI.Texture[]} textures - List of textures for each page.
+ * @param {PIXI.Texture|PIXI.Texture[]} textures - List of textures for each page.
  */
 export function parse(resource, textures)
 {
@@ -68,7 +68,6 @@ export default function ()
         }
 
         const pages = resource.data.getElementsByTagName('page');
-        let textureUrl;
         const textures = [];
         const loadOptions = {
             crossOrigin: resource.crossOrigin,
@@ -79,7 +78,7 @@ export default function ()
 
         for (let x = 0; x < pages.length; ++x)
         {
-            textureUrl = xmlUrl + pages[x].getAttribute('file');
+            const textureUrl = xmlUrl + pages[x].getAttribute('file');
 
             if (utils.TextureCache[textureUrl])
             {
@@ -91,11 +90,11 @@ export default function ()
                 this.add(`${resource.name}_image${x}`, textureUrl, loadOptions, () =>
                 {
                     const nextTextures = [];
-                    let nextTextureUrl;
 
                     for (let x = 0; x < pages.length; ++x)
                     {
-                        nextTextureUrl = xmlUrl + pages[x].getAttribute('file');
+                        const nextTextureUrl = xmlUrl + pages[x].getAttribute('file');
+
                         if (utils.TextureCache[nextTextureUrl])
                         {
                             nextTextures.push(utils.TextureCache[nextTextureUrl]);

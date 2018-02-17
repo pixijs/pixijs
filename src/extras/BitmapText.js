@@ -503,7 +503,7 @@ export default class BitmapText extends core.Container
      *
      * @static
      * @param {XMLDocument} xml - The XML document data.
-     * @param {PIXI.Texture[]} textures - List of textures for each page.
+     * @param {PIXI.Texture|PIXI.Texture[]} textures - List of textures for each page.
      * @return {Object} Result font object with font, size, lineHeight and char fields.
      */
     static registerFont(xml, textures)
