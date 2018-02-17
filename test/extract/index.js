@@ -44,6 +44,11 @@ describe('PIXI.extract', function ()
             {
                 renderer.render(stage);
 
+                const wid = stage.transform._worldID;
+
+                renderer.render(stage);
+                expect(stage.transform._worldID).to.be.equals(wid);
+
                 // extract from framebuffer
                 const data1 = renderer.extract.data(sprite, undefined, undefined, false);
                 const data2 = renderer.extract.data(stage, undefined, undefined, false);
