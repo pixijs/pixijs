@@ -2,7 +2,7 @@
 
 const EqualsData = require('./equals');
 
-describe('extract', function ()
+describe('PIXI.extract', function ()
 {
     it('should use generateTexture, check the region, premultiplyAlpha and flipY', function (done)
     {
