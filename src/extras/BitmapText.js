@@ -234,6 +234,11 @@ export default class BitmapText extends core.Container
             }
         }
 
+        if (this.text.charAt(this.text.length - 1) === ' ')
+        {
+            lastLineWidth = lastBreakWidth;
+        }
+
         lineWidths.push(lastLineWidth);
         maxLineWidth = Math.max(maxLineWidth, lastLineWidth);
 
@@ -580,7 +585,6 @@ export default class BitmapText extends core.Container
                 xAdvance: parseInt(letter.getAttribute('xadvance'), 10) / res,
                 kerning: {},
                 texture: new core.Texture(texture.baseTexture, textureRect),
-
             };
         }
 
