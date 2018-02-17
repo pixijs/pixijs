@@ -28,10 +28,13 @@ describe('PIXI.loaders.bitmapFontParser', function ()
         this.resources = path.join(__dirname, 'resources');
         this.fontXML = null;
         this.fontScaledXML = null;
+        this.fontSplitXML = null;
         this.fontImage = null;
         this.fontScaledImage = null;
         this.atlasImage = null;
         this.atlasScaledImage = null;
+        this.splitAbImage = null;
+        this.splitCdImage = null;
         this.atlasJSON = require(resolveURL('atlas.json')); // eslint-disable-line global-require
         this.atlasScaledJSON = require(resolveURL('atlas@0.5x.json')); // eslint-disable-line global-require
 
