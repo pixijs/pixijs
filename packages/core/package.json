@@ -26,7 +26,6 @@
   ],
   "dependencies": {
     "bit-twiddle": "^1.0.2",
-    "earcut": "^2.0.7",
     "eventemitter3": "^2.0.0",
     "ismobilejs": "^0.4.0",
     "mini-runner": "^1.0.1",

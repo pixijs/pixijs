@@ -1,6 +1,5 @@
 import buildLine from './buildLine';
-import { hex2rgb } from '@pixi/utils';
-import earcut from 'earcut';
+import { hex2rgb, earcut } from '@pixi/utils';
 
 /**
  * Builds a polygon to draw

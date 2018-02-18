@@ -1,6 +1,5 @@
-import earcut from 'earcut';
 import buildLine from './buildLine';
-import { hex2rgb } from '@pixi/utils';
+import { hex2rgb, earcut } from '@pixi/utils';
 
 /**
  * Builds a rounded rectangle to draw

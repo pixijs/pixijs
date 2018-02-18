@@ -30,8 +30,7 @@
     "@pixi/display": "^5.0.0-alpha",
     "@pixi/sprite": "^5.0.0-alpha",
     "@pixi/utils": "^5.0.0-alpha",
-    "@pixi/math": "^5.0.0-alpha",
-    "earcut": "^2.0.7"
+    "@pixi/math": "^5.0.0-alpha"
   },
   "devDependencies": {
     "floss": "^2.1.3"
