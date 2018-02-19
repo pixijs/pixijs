@@ -88,10 +88,16 @@ export default class ParticleContainer extends core.Container
         this._glBuffers = {};
 
         /**
-         * @member {number}
+         * @member {number[]}
          * @private
          */
-        this._bufferToUpdate = 0;
+        this._bufferUpdateID = [];
+
+        /**
+         * @member {number[]}
+         * @private
+         */
+        this._updateID = 0;
 
         /**
          * @member {boolean}
@@ -233,10 +239,11 @@ export default class ParticleContainer extends core.Container
     {
         const bufferIndex = Math.floor(smallestChildIndex / this._batchSize);
 
-        if (bufferIndex < this._bufferToUpdate)
+        while (this._bufferUpdateID.length < bufferIndex)
         {
-            this._bufferToUpdate = bufferIndex;
+            this._bufferUpdateID.push(0);
         }
+        this._bufferUpdateID[bufferIndex] = ++this._updateID;
     }
 
     /**
