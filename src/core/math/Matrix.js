@@ -1,4 +1,5 @@
 import Point from './Point';
+import { PI_2 } from '../const';
 
 /**
  * The PixiJS Matrix class as an object, which makes it a lot faster,
@@ -351,7 +352,7 @@ export default class Matrix
 
         const delta = Math.abs(skewX + skewY);
 
-        if (delta < 0.00001 || Math.abs((2 * Math.PI) - delta) < 0.00001)
+        if (delta < 0.00001 || Math.abs(PI_2 - delta) < 0.00001)
         {
             transform.rotation = skewY;
 
