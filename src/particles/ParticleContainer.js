@@ -88,12 +88,14 @@ export default class ParticleContainer extends core.Container
         this._glBuffers = {};
 
         /**
+         * for every batch stores _updateID corresponding to the last change in that batch
          * @member {number[]}
          * @private
          */
         this._bufferUpdateIDs = [];
 
         /**
+         * when child inserted, removed or changes position this number goes up
          * @member {number[]}
          * @private
          */
@@ -394,5 +396,6 @@ export default class ParticleContainer extends core.Container
 
         this._properties = null;
         this._buffers = null;
+        this._bufferUpdateIDs = null;
     }
 }
