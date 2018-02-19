@@ -91,7 +91,7 @@ export default class ParticleContainer extends core.Container
          * @member {number[]}
          * @private
          */
-        this._bufferUpdateID = [];
+        this._bufferUpdateIDs = [];
 
         /**
          * @member {number[]}
@@ -239,11 +239,11 @@ export default class ParticleContainer extends core.Container
     {
         const bufferIndex = Math.floor(smallestChildIndex / this._batchSize);
 
-        while (this._bufferUpdateID.length < bufferIndex)
+        while (this._bufferUpdateIDs.length < bufferIndex)
         {
-            this._bufferUpdateID.push(0);
+            this._bufferUpdateIDs.push(0);
         }
-        this._bufferUpdateID[bufferIndex] = ++this._updateID;
+        this._bufferUpdateIDs[bufferIndex] = ++this._updateID;
     }
 
     /**
