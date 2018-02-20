@@ -22,6 +22,6 @@ export default class Quad extends Geometry
             1, 1,
             0, 1,
         ])
-            .addIndex([0, 1, 2, 0, 2, 3]);
+            .addIndex([0, 1, 3, 2]);
     }
 }

@@ -22,7 +22,7 @@ export default class RenderTextureSystem extends WebGLSystem
 
         // TODO moe this property somewhere else!
         this.defaultMaskStack = [];
-        this.defaultFilterStack = [];
+        this.defaultFilterStack = [{}];
 
         // empty render texture?
         this.renderTexture = null;

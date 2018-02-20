@@ -5,6 +5,7 @@ import Quad from '../../utils/Quad';
 import { Rectangle } from '@pixi/math';
 import * as filterTransforms from '../../filters/filterTransforms';
 import bitTwiddle from 'bit-twiddle';
+import UniformGroup from '../../../shader/UniformGroup';
 
 //
 /**
@@ -21,7 +22,6 @@ class FilterState
         this.renderTexture = null;
         this.sourceFrame = new Rectangle();
         this.destinationFrame = new Rectangle();
-        this.targetFrame = null;
         this.filters = [];
         this.target = null;
         this.resolution = 1;
@@ -47,6 +47,11 @@ export default class FilterSystem extends WebGLSystem
 
         this.quad = new Quad();
         this.tempRect = new Rectangle();
+
+        this.globalUniforms = new UniformGroup({
+            sourceFrame: this.tempRect,
+            destinationFrame: this.tempRect,
+        }, true);
     }
 
     /**
@@ -62,11 +67,6 @@ export default class FilterSystem extends WebGLSystem
         const state = new FilterState();
         const resolution = filters[0].resolution;
 
-        if (filterStack.length > 0)
-        {
-            state.targetFrame = filterStack[filterStack.length - 1].sourceFrame;
-        }
-
         filterStack.push(state);
 
         // round to whole number based on resolution
@@ -79,6 +79,7 @@ export default class FilterSystem extends WebGLSystem
         state.sourceFrame.pad(filters[0].padding || 1);
 
         state.renderTexture = this.getPotRenderTexture(state.sourceFrame.width, state.sourceFrame.height, resolution);
+        state.renderTexture.filterFrame = state.sourceFrame;
         // state.renderTexture.filterFrame =
         state.filters = filters;
 
@@ -103,88 +104,35 @@ export default class FilterSystem extends WebGLSystem
 
         const filters = state.filters;
 
-        if (filterStack.length > 0)
-        {
-            const lastState = filterStack[filterStack.length - 1];
+        this.globalUniforms.uniforms.sourceFrame = state.sourceFrame;
+        this.globalUniforms.uniforms.destinationFrame = state.destinationFrame;
+        this.globalUniforms.update();
 
-            filters[0].apply(this, state.renderTexture, lastState.renderTexture, false, state);
-        }
-        else
+        const lastState = filterStack[filterStack.length - 1];
+
         if (filters.length === 1)
         {
-            filters[0].apply(this, state.renderTexture, null, false, state);
+            filters[0].apply(this, state.renderTexture, lastState.renderTexture, false, state);
             renderer.renderTexture.bind(null);
 
             this.returnPotRenderTexture(state.renderTexture);
         }
         else
         {
-            /*
-                let flip = state.renderTexture;
-                let flop = this.getPotRenderTexture(
-                    flip.width,
-                    flip.height,
-                    state.resolution
-                );
-
-//                flop.clear();
-
-                let i = 0;
-
-                for (i = 0; i < filters.length - 1; ++i)
-                {
-                    filters[i].apply(this, flip, flop, true, state);
-
-                    const t = flip;
-
-                    flip = flop;
-                    flop = t;
-                }
-
-                filters[i].apply(this, flip, null, false, state);
-
-                this.returnPotRenderTexture(flip);
-                this.returnPotRenderTexture(flop);
-                */
-        }
-
-        // const lastState = filterStack[filterStack.length-2];
-
-        /*
-        const filterData = this.filterData;
-
-        const lastState = filterData.stack[filterData.index - 1];
-        const currentState = filterData.stack[filterData.index];
-
-        this.quad.map(currentState.renderTarget.size, currentState.sourceFrame).upload();
-
-        const filters = currentState.filters;
-
-        if (filters.length === 1)
-        {
-            filters[0].apply(this, currentState.renderTarget, lastState.renderTarget, false, currentState);
-            this.freePotRenderTarget(currentState.renderTarget);
-        }
-        else
-        {
-            let flip = currentState.renderTarget;
-            let flop = this.getPotRenderTarget(
-                this.renderer.gl,
-                currentState.sourceFrame.width,
-                currentState.sourceFrame.height,
-                currentState.resolution
+            let flip = state.renderTexture;
+            let flop = this.getPotRenderTexture(
+                flip.width,
+                flip.height,
+                state.resolution
             );
 
-            flop.setFrame(currentState.destinationFrame, currentState.sourceFrame);
-
-            // finally lets clear the render target before drawing to it..
-            flop.clear();
+            flop.filterFrame = flip.filterFrame;
 
             let i = 0;
 
             for (i = 0; i < filters.length - 1; ++i)
             {
-                filters[i].apply(this, flip, flop, true, currentState);
+                filters[i].apply(this, flip, flop, true, state);
 
                 const t = flip;
 
@@ -192,19 +140,11 @@ export default class FilterSystem extends WebGLSystem
                 flop = t;
             }
 
-            filters[i].apply(this, flip, lastState.renderTarget, false, currentState);
+            filters[i].apply(this, flip, lastState.renderTexture, false, state);
 
-            this.freePotRenderTarget(flip);
-            this.freePotRenderTarget(flop);
+            this.returnPotRenderTexture(flip);
+            this.returnPotRenderTexture(flop);
         }
-
-        filterData.index--;
-
-        if (filterData.index === 0)
-        {
-            this.filterData = null;
-        }
-        */
     }
 
     /**
@@ -215,37 +155,22 @@ export default class FilterSystem extends WebGLSystem
      * @param {PIXI.RenderTarget} output - The target to output to.
      * @param {boolean} clear - Should the output be cleared before rendering to it
      */
-    applyFilter(filter, input, output, clear, filterState)
+    applyFilter(filter, input, output, clear)
     {
         const renderer = this.renderer;
 
-        const rts = renderer.renderTexture;
-
-        /*
-        if (output)
-        {
-            //const filterStack = rts.defaultFilterStack;
-            //const lastState = filterStack[filterStack.length - 1];
-        }
-        else
-        {
-            // rts.bind(output);
-        }
-        */
-
-        rts.bind(output, filterState.targetFrame);// lastState.sourceFrame);//, lastState.destinationFrame);
+        renderer.renderTexture.bind(output, output ? output.filterFrame : null);
 
         if (clear)
         {
             // gl.disable(gl.SCISSOR_TEST);
-            rts.clear();// [1, 1, 1, 1]);
+            renderer.renderTexture.clear();
             // gl.enable(gl.SCISSOR_TEST);
         }
 
-        // bind the sampler..
+        // set the uniforms..
         filter.uniforms.uSampler = input;
-        filter.uniforms.sourceFrame = filterState.sourceFrame;
-        filter.uniforms.destinationFrame = filterState.destinationFrame;
+        filter.uniforms.filterGlobals = this.globalUniforms;
 
         // TODO make it so that the order of this does not matter..
         // because it does at the moment cos of global uniforms.
@@ -254,7 +179,7 @@ export default class FilterSystem extends WebGLSystem
         renderer.state.setState(filter.state);
         renderer.shader.bind(filter);
         renderer.geometry.bind(this.quad);
-        renderer.geometry.draw(4);
+        renderer.geometry.draw(5);
     }
 
     /**

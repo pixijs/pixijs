@@ -71,11 +71,11 @@ export default class Filter extends Shader
      *        There are some useful properties in the currentState :
      *        target, filters, sourceFrame, destinationFrame, renderTarget, resolution
      */
-    apply(filterManager, input, output, clear, currentState) // eslint-disable-line no-unused-vars
+    apply(filterManager, input, output, clear, currentState, derp) // eslint-disable-line no-unused-vars
     {
         // do as you please!
 
-        filterManager.applyFilter(this, input, output, clear, currentState);
+        filterManager.applyFilter(this, input, output, clear, currentState, derp);
 
         // or just do a regular render..
     }
