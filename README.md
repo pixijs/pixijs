@@ -49,7 +49,7 @@ _Note: After v4.5.0, support for the [Bower](https://bower.io) package manager h
 #### NPM Install
 
 ```sh
-$> npm install pixi.js
+npm install pixi.js
 ```
 
 #### CDN Install (via cdnjs)
