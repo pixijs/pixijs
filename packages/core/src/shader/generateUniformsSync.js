@@ -174,6 +174,43 @@ export default function generateUniformsSync(group, uniformData)
                 \n`;
             }
         }
+        else if (data.type === 'vec4' && data.size === 1)
+        {
+            // TODO - do we need both here?
+            // maybe we can get away with only using points?
+            if (group.uniforms[i].width !== undefined)
+            {
+                func += `
+                cv = ud.${i}.value;
+                v = uv.${i};
+
+                if(cv[0] !== v.x || cv[1] !== v.y || cv[2] !== v.width || cv[3] !== v.height)
+                {
+                    cv[0] = v.x;
+                    cv[1] = v.y;
+                    cv[2] = v.width;
+                    cv[3] = v.height;
+                    gl.uniform4f(ud.${i}.location, v.x, v.y, v.width, v.height)
+                }\n`;
+            }
+            else
+            {
+                func += `
+                cv = ud.${i}.value;
+                v = uv.${i};
+
+                if(cv[0] !== v[0] || cv[1] !== v[1] || cv[2] !== v[2] || cv[3] !== v[3])
+                {
+                    cv[0] = v[0];
+                    cv[1] = v[1];
+                    cv[2] = v[2];
+                    cv[3] = v[3];
+
+                    gl.uniform4f(ud.${i}.location, v[0], v[1], v[2], v[3])
+                }
+                \n`;
+            }
+        }
         else
         {
             const templateType = (data.size === 1) ? GLSL_TO_SINGLE_SETTERS_CACHED : GLSL_TO_ARRAY_SETTERS;

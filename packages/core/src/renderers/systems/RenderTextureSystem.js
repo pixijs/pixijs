@@ -22,16 +22,17 @@ export default class RenderTextureSystem extends WebGLSystem
 
         // TODO moe this property somewhere else!
         this.defaultMaskStack = [];
+        this.defaultFilterStack = [];
 
         // empty render texture?
+        this.renderTexture = null;
     }
 
-    bind(renderTexture)
+    bind(renderTexture, sourceFrame, destinationFrame)
     {
         // TODO - do we want this??
         if (this.renderTexture === renderTexture) return;
         this.renderTexture = renderTexture;
-        this.current = renderTexture;
 
         const renderer = this.renderer;
 
@@ -39,20 +40,48 @@ export default class RenderTextureSystem extends WebGLSystem
         {
             const baseTexture = renderTexture.baseTexture;
 
-            this.renderer.framebuffer.bind(baseTexture.frameBuffer);
-            this.renderer.projection.update(renderTexture.frame, renderTexture.frame, baseTexture.resolution, false);
+            if (!destinationFrame)
+            {
+                tempRect.width = baseTexture.width;// /2;
+                tempRect.height = baseTexture.height;
+
+                destinationFrame = tempRect;
+            }
+
+            if (!sourceFrame)
+            {
+                sourceFrame = destinationFrame;
+            }
+
+            this.renderer.framebuffer.bind(baseTexture.frameBuffer, destinationFrame);
+
+            this.renderer.projection.update(destinationFrame, sourceFrame, baseTexture.resolution, false);
             this.renderer.stencil.setMaskStack(baseTexture.stencilMaskStack);
         }
         else
         {
-            renderer.framebuffer.bind(null);
+            // TODO these validation checks happen deeper down..
+            // thing they can be avoided..
+            if (!destinationFrame)
+            {
+                tempRect.width = renderer.width;// /2;
+                tempRect.height = renderer.height;
 
-            tempRect.width = renderer.width;
-            tempRect.height = renderer.height;
+                destinationFrame = tempRect;
+            }
+
+            if (!sourceFrame)
+            {
+                sourceFrame = destinationFrame;
+            }
+
+            renderer.framebuffer.bind(null, destinationFrame);
 
             // TODO store this..
-            this.renderer.projection.update(tempRect, tempRect, this.renderer.resolution, true);
+            this.renderer.projection.update(destinationFrame, sourceFrame, this.renderer.resolution, true);
             this.renderer.stencil.setMaskStack(this.defaultMaskStack);
+
+            // mode 2 //
         }
     }
 

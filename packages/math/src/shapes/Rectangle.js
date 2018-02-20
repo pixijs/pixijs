@@ -235,6 +235,16 @@ export default class Rectangle
         }
     }
 
+    round(value)
+    {
+        value = value || 1;
+
+        this.x = ((this.x * value) | 0) / value;
+        this.y = ((this.y * value) | 0) / value;
+        this.width = ((this.width * value) | 0) / value;
+        this.height = ((this.height * value) | 0) / value;
+    }
+
     /**
      * Enlarges this rectangle to include the passed rectangle.
      *

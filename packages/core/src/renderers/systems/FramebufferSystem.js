@@ -16,13 +16,16 @@ export default class FramebufferSystem extends WebGLSystem
     {
         this.gl = this.renderer.gl;
         this.CONTEXT_UID = this.renderer.CONTEXT_UID;
+        this.current = null;
 
         this.drawBufferExtension = this.renderer.context.extensions.drawBuffers;
     }
 
-    bind(framebuffer)
+    bind(framebuffer, frame)
     {
         const gl = this.gl;
+
+        this.current = framebuffer;
 
         if (framebuffer)
         {
@@ -67,14 +70,39 @@ export default class FramebufferSystem extends WebGLSystem
                 this.renderer.texture.unbind(framebuffer.depthTexture);
             }
 
-            gl.viewport(0, 0, framebuffer.width, framebuffer.height);
+            if (frame)
+            {
+                gl.viewport(frame.x, frame.y, frame.width, frame.height);
+            }
+            else
+            {
+                gl.viewport(0, 0, framebuffer.width, framebuffer.height);
+            }
         }
         else
         {
             gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
-            gl.viewport(0, 0, this.renderer.width, this.renderer.height);
+            if (frame)
+            {
+                gl.viewport(frame.x, frame.y, frame.width, frame.height);
+            }
+            else
+            {
+                gl.viewport(0, 0, this.renderer.width, this.renderer.height);
+            }
         }
+    }
+
+    get size()
+    {
+        if (this.current)
+        {
+            // TODO store temp
+            return { x: 0, y: 0, width: this.current.width, height: this.current.height };
+        }
+
+        return { x: 0, y: 0, width: this.renderer.width, height: this.renderer.height };
     }
 
     clear(r, g, b, a)
