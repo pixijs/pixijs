@@ -16,7 +16,7 @@ PixiJS can be installed with [npm](https://docs.npmjs.com/getting-started/what-i
 #### Install
 
 ```
-$> npm install pixi.js
+npm install pixi.js
 ```
 
 ### Basic Usage Example
