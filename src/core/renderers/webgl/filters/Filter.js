@@ -99,6 +99,12 @@ export default class Filter
          * @member {boolean}
          */
         this.autoFit = true;
+
+        /**
+         * If enabled, filterArea for element will be same size of the screen. PixiJS v3 mode.
+         * @member {boolean}
+         */
+        this.fullScreen = false;
     }
 
     /**
