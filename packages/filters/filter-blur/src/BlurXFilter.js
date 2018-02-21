@@ -37,19 +37,12 @@ export default class BlurXFilter extends Filter
         this._quality = 0;
 
         this.quality = quality || 4;
-        this.strength = strength || 8;
+
+        this.blur = strength || 8;
 
         this.firstRun = true;
     }
 
-    /**
-     * Applies the filter.
-     *
-     * @param {PIXI.FilterManager} filterManager - The manager.
-     * @param {PIXI.RenderTarget} input - The input target.
-     * @param {PIXI.RenderTarget} output - The output target.
-     * @param {boolean} clear - Should the output be cleared before rendering?
-     */
     apply(filterManager, input, output, clear)
     {
         if (this.firstRun)
@@ -63,11 +56,18 @@ export default class BlurXFilter extends Filter
             this.firstRun = false;
         }
 
-        this.uniforms.strength = (1 / output.size.width) * (output.size.width / input.size.width);
+        if (output)
+        {
+            this.uniforms.strength = (1 / output.width) * (output.width / input.width);
+        }
+        else
+        {
+            this.uniforms.strength = (1 / filterManager.renderer.width) * (filterManager.renderer.width / input.width);
+        }
 
         // screen space!
         this.uniforms.strength *= this.strength;
-        this.uniforms.strength /= this.passes;// / this.passes//Math.pow(1, this.passes);
+        this.uniforms.strength /= this.passes;
 
         if (this.passes === 1)
         {
@@ -75,26 +75,35 @@ export default class BlurXFilter extends Filter
         }
         else
         {
-            const renderTarget = filterManager.getRenderTarget(true);
+            const renderTarget = filterManager.getFilterTexture();
+            const renderer = filterManager.renderer;
+
             let flip = input;
             let flop = renderTarget;
 
-            for (let i = 0; i < this.passes - 1; i++)
+            this.state.blend = false;
+            filterManager.applyFilter(this, flip, flop, false);
+
+            for (let i = 1; i < this.passes - 1; i++)
             {
-                filterManager.applyFilter(this, flip, flop, true);
+                renderer.framebuffer.bind(flip.baseTexture.frameBuffer);
+
+                this.uniforms.uSampler = flop;
 
                 const temp = flop;
 
                 flop = flip;
                 flip = temp;
+
+                renderer.shader.bind(this);
+                renderer.geometry.draw(5);
             }
 
-            filterManager.applyFilter(this, flip, output, clear);
-
-            filterManager.returnRenderTarget(renderTarget);
+            this.state.blend = true;
+            filterManager.applyFilter(this, flop, output, clear);
+            filterManager.returnFilterTexture(renderTarget);
         }
     }
-
     /**
      * Sets the strength of both the blur.
      *

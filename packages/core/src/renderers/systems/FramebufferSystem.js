@@ -1,4 +1,5 @@
 import WebGLSystem from './WebGLSystem';
+import { Rectangle } from '@pixi/math';
 
 /**
  * @class
@@ -17,6 +18,7 @@ export default class FramebufferSystem extends WebGLSystem
         this.gl = this.renderer.gl;
         this.CONTEXT_UID = this.renderer.CONTEXT_UID;
         this.current = null;
+        this.viewport = new Rectangle();
 
         this.drawBufferExtension = this.renderer.context.extensions.drawBuffers;
     }
@@ -72,11 +74,11 @@ export default class FramebufferSystem extends WebGLSystem
 
             if (frame)
             {
-                gl.viewport(frame.x, frame.y, frame.width, frame.height);
+                this.setViewport(frame.x, frame.y, frame.width, frame.height);
             }
             else
             {
-                gl.viewport(0, 0, framebuffer.width, framebuffer.height);
+                this.setViewport(0, 0, framebuffer.width, framebuffer.height);
             }
         }
         else
@@ -85,12 +87,27 @@ export default class FramebufferSystem extends WebGLSystem
 
             if (frame)
             {
-                gl.viewport(frame.x, frame.y, frame.width, frame.height);
+                this.setViewport(frame.x, frame.y, frame.width, frame.height);
             }
             else
             {
-                gl.viewport(0, 0, this.renderer.width, this.renderer.height);
+                this.setViewport(0, 0, this.renderer.width, this.renderer.height);
             }
+        }
+    }
+
+    setViewport(x, y, width, height)
+    {
+        const v = this.viewport;
+
+        if (v.width !== width || v.height !== height || v.x !== x || v.y !== y)
+        {
+            v.x = x;
+            v.y = y;
+            v.width = width;
+            v.height = height;
+
+            this.gl.viewport(x, y, width, height);
         }
     }
 

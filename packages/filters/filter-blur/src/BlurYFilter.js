@@ -37,11 +37,20 @@ export default class BlurYFilter extends Filter
         this._quality = 0;
 
         this.quality = quality || 4;
-        this.strength = strength || 8;
+
+        this.blur = strength || 8;
 
         this.firstRun = true;
     }
 
+    /**
+     * Applies the filter.
+     *
+     * @param {PIXI.FilterManager} filterManager - The manager.
+     * @param {PIXI.RenderTarget} input - The input target.
+     * @param {PIXI.RenderTarget} output - The output target.
+     * @param {boolean} clear - Should the output be cleared before rendering?
+     */
     /**
      * Applies the filter.
      *
@@ -57,14 +66,22 @@ export default class BlurYFilter extends Filter
             const gl = filterManager.renderer.gl;
             const kernelSize = getMaxBlurKernelSize(gl);
 
-            this.vertexSrc = generateBlurVertSource(kernelSize, false);
+            this.vertexSrc = generateBlurVertSource(kernelSize, true);
             this.fragmentSrc = generateBlurFragSource(kernelSize);
 
             this.firstRun = false;
         }
 
-        this.uniforms.strength = (1 / output.size.height) * (output.size.height / input.size.height);
+        if (output)
+        {
+            this.uniforms.strength = (1 / output.width) * (output.width / input.width);
+        }
+        else
+        {
+            this.uniforms.strength = (1 / filterManager.renderer.width) * (filterManager.renderer.width / input.width);
+        }
 
+        // screen space!
         this.uniforms.strength *= this.strength;
         this.uniforms.strength /= this.passes;
 
@@ -74,23 +91,33 @@ export default class BlurYFilter extends Filter
         }
         else
         {
-            const renderTarget = filterManager.getRenderTarget(true);
+            const renderTarget = filterManager.getFilterTexture();
+            const renderer = filterManager.renderer;
+
             let flip = input;
             let flop = renderTarget;
 
-            for (let i = 0; i < this.passes - 1; i++)
+            this.state.blend = false;
+            filterManager.applyFilter(this, flip, flop, false);
+
+            for (let i = 1; i < this.passes - 1; i++)
             {
-                filterManager.applyFilter(this, flip, flop, true);
+                renderer.framebuffer.bind(flip.baseTexture.frameBuffer);
+
+                this.uniforms.uSampler = flop;
 
                 const temp = flop;
 
                 flop = flip;
                 flip = temp;
+
+                renderer.shader.bind(this);
+                renderer.geometry.draw(5);
             }
 
-            filterManager.applyFilter(this, flip, output, clear);
-
-            filterManager.returnRenderTarget(renderTarget);
+            this.state.blend = true;
+            filterManager.applyFilter(this, flop, output, clear);
+            filterManager.returnFilterTexture(renderTarget);
         }
     }
 

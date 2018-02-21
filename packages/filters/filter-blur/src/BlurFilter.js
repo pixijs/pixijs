@@ -41,12 +41,12 @@ export default class BlurFilter extends Filter
      */
     apply(filterManager, input, output)
     {
-        const renderTarget = filterManager.getRenderTarget(true);
+        const renderTarget = filterManager.getFilterTexture(true);
 
         this.blurXFilter.apply(filterManager, input, renderTarget, true);
         this.blurYFilter.apply(filterManager, renderTarget, output, false);
 
-        filterManager.returnRenderTarget(renderTarget);
+        filterManager.returnFilterTexture(renderTarget);
     }
 
     /**

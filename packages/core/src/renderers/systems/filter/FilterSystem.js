@@ -48,6 +48,8 @@ export default class FilterSystem extends WebGLSystem
         this.quad = new Quad();
         this.tempRect = new Rectangle();
 
+        this.activeState = {};
+
         this.globalUniforms = new UniformGroup({
             sourceFrame: this.tempRect,
             destinationFrame: this.tempRect,
@@ -80,7 +82,7 @@ export default class FilterSystem extends WebGLSystem
         state.sourceFrame.round(resolution);
         state.sourceFrame.pad(filters[0].padding || 1);
 
-        state.renderTexture = this.getPotRenderTexture(state.sourceFrame.width, state.sourceFrame.height, resolution);
+        state.renderTexture = this.getPotFilterTexture(state.sourceFrame.width, state.sourceFrame.height, resolution);
         state.filters = filters;
 
         state.destinationFrame.width = state.renderTexture.width;
@@ -105,6 +107,8 @@ export default class FilterSystem extends WebGLSystem
 
         const filters = state.filters;
 
+        this.activeState = state;
+
         this.globalUniforms.uniforms.sourceFrame = state.sourceFrame;
         this.globalUniforms.uniforms.destinationFrame = state.destinationFrame;
         this.globalUniforms.update();
@@ -116,12 +120,12 @@ export default class FilterSystem extends WebGLSystem
             filters[0].apply(this, state.renderTexture, lastState.renderTexture, false, state);
             renderer.renderTexture.bind(null);
 
-            this.returnPotRenderTexture(state.renderTexture);
+            this.returnFilterTexture(state.renderTexture);
         }
         else
         {
             let flip = state.renderTexture;
-            let flop = this.getPotRenderTexture(
+            let flop = this.getPotFilterTexture(
                 flip.width,
                 flip.height,
                 state.resolution
@@ -143,8 +147,8 @@ export default class FilterSystem extends WebGLSystem
 
             filters[i].apply(this, flip, lastState.renderTexture, false, state);
 
-            this.returnPotRenderTexture(flip);
-            this.returnPotRenderTexture(flop);
+            this.returnFilterTexture(flip);
+            this.returnFilterTexture(flop);
         }
     }
 
@@ -271,10 +275,11 @@ export default class FilterSystem extends WebGLSystem
      * @param {number} resolution - The resolution of the render target.
      * @return {PIXI.RenderTarget} The new render target.
      */
-    getPotRenderTexture(minWidth, minHeight, resolution = 1)
+    getPotFilterTexture(minWidth, minHeight, resolution)
     {
         minWidth = bitTwiddle.nextPow2(minWidth);
         minHeight = bitTwiddle.nextPow2(minHeight);
+        resolution = resolution || 1;
 
         const key = ((minWidth & 0xFFFF) << 16) | (minHeight & 0xFFFF);
 
@@ -299,13 +304,26 @@ export default class FilterSystem extends WebGLSystem
         return renderTexture;
     }
 
+    getFilterTexture(resolution)
+    {
+        const rt = this.activeState.renderTexture;
+
+        const filterTexture = this.getPotFilterTexture(rt.width, rt.height, resolution || rt.baseTexture.resolution);
+
+        filterTexture.filterFrame = rt.filterFrame;
+
+        return filterTexture;
+    }
+
     /**
      * Frees a render target back into the pool.
      *
      * @param {PIXI.RenderTarget} renderTarget - The renderTarget to free
      */
-    returnPotRenderTexture(renderTexture)
+    returnFilterTexture(renderTexture)
     {
+        renderTexture.filterFrame = null;
+
         const base = renderTexture.baseTexture;
 
         const minWidth = base.width;
@@ -315,7 +333,6 @@ export default class FilterSystem extends WebGLSystem
 
         this.pool[key].push(renderTexture);
     }
-
 
     /**
      * Empties the texture pool.
