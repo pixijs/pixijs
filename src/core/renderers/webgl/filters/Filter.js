@@ -99,6 +99,19 @@ export default class Filter
          * @member {boolean}
          */
         this.autoFit = true;
+
+        /**
+         * If set, filterManager calculates background image and stores location in to specified uniform
+         * @member {string|null}
+         */
+        this.backdropUniformName = null;
+
+        /**
+         * temporary storage for backdrop render texture
+         * @member {PIXI.RenderTexture}
+         * @private
+         */
+        this._backdropRenderTexture = null;
     }
 
     /**

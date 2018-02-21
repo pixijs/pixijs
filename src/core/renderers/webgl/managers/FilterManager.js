@@ -51,6 +51,9 @@ export default class FilterManager extends WebGLManager
         this.filterData = null;
 
         this.managedFilters = [];
+
+        this._tempRect = new Rectangle();
+        this._tempRect2 = new Rectangle();
     }
 
     /**
@@ -116,6 +119,14 @@ export default class FilterManager extends WebGLManager
         // lets apply the padding After we fit the element to the screen.
         // this should stop the strange side effects that can occur when cropping to the edges
         sourceFrame.pad(padding);
+
+        for (let i = 0; i < filters.length; i++)
+        {
+            if (filters[i].backdropUniformName)
+            {
+                filters[i]._backdropRenderTexture = this.prepareBackdrop(targetBounds);
+            }
+        }
 
         destinationFrame.width = sourceFrame.width;
         destinationFrame.height = sourceFrame.height;
@@ -326,6 +337,12 @@ export default class FilterManager extends WebGLManager
             filterClamp[3] = (currentState.sourceFrame.height - 1) / currentState.renderTarget.size.height;
 
             shader.uniforms.filterClamp = filterClamp;
+        }
+
+        if (filter._backdropRenderTexture)
+        {
+            shader.uniforms[filter._backdropUniformName] = this.renderer.bindTexture(filter._backdropRenderTexture, textureCount);
+            textureCount++;
         }
 
         // TODO Cacheing layer..
@@ -606,5 +623,68 @@ export default class FilterManager extends WebGLManager
         const key = ((minWidth & 0xFFFF) << 16) | (minHeight & 0xFFFF);
 
         this.pool[key].push(renderTarget);
+    }
+
+    /**
+     * Takes a part of current render target corresponding to bounds
+     * @param {PIXI.Rectangle} backdropBounds backdrop region
+     * @returns {PIXI.RenderTexture} pooled renderTexture with backdrop
+     */
+    prepareBackdrop(backdropBounds)
+    {
+        const renderer = this.renderer;
+        const renderTarget = renderer._activeRenderTarget;
+
+        if (renderTarget.root)
+        {
+            return null;
+        }
+
+        const matrix = renderTarget.projectionMatrix;
+        const flipX = matrix.a < 0;
+        const flipY = matrix.d < 0;
+        const resolution = renderTarget.resolution;
+        const screen = this._tempRect;
+        const fr = renderTarget.sourceFrame || renderTarget.destinationFrame;
+
+        screen.x = 0;
+        screen.y = 0;
+        screen.width = fr.width;
+        screen.height = fr.height;
+
+        const bounds = this._tempRect2;
+        const fbw = fr.width * resolution;
+        const fbh = fr.height * resolution;
+
+        bounds.x = ((backdropBounds.x + (matrix.tx / matrix.a)) * resolution) + (fbw / 2);
+        bounds.y = ((backdropBounds.y + (matrix.ty / matrix.d)) * resolution) + (fbh / 2);
+        bounds.width = backdropBounds.width * resolution;
+        bounds.height = backdropBounds.height * resolution;
+        if (flipX)
+        {
+            bounds.y = fbw - bounds.width - bounds.x;
+        }
+        if (flipY)
+        {
+            bounds.y = fbh - bounds.height - bounds.y;
+        }
+
+        const x1 = Math.floor(Math.max(screen.x, bounds.x));
+        const x2 = Math.ceil(Math.min(screen.x + screen.width, bounds.x + bounds.width));
+        const y1 = Math.floor(Math.max(screen.y, bounds.y));
+        const y2 = Math.ceil(Math.min(screen.y + screen.height, bounds.y + bounds.height));
+        const pixelsWidth = x2 - x1;
+        const pixelsHeight = y2 - y1;
+
+        if (pixelsWidth <= 0 || pixelsHeight <= 0)
+        {
+            return null;
+        }
+
+        const gl = renderer.gl;
+        const rt = this.getPotRenderTarget(gl, pixelsWidth, pixelsHeight, 1);
+
+        renderer.bindTexture(rt, 1, true);
+        gl.copyTexSubImage2D(gl.TEXTURE_2D, 0, 0, 0, x1, y1, pixelsWidth, pixelsHeight);
     }
 }
