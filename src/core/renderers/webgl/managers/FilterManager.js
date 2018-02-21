@@ -279,7 +279,8 @@ export default class FilterManager extends WebGLManager
         if (clear)
         {
             gl.disable(gl.SCISSOR_TEST);
-            renderer.clear(filter.clearColor);// [1, 1, 1, 1]);
+            // TODO - take next filter clear color
+            renderer.clear();// [1, 1, 1, 1]);
             gl.enable(gl.SCISSOR_TEST);
         }
 
