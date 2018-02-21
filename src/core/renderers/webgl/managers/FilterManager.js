@@ -203,6 +203,15 @@ export default class FilterManager extends WebGLManager
             this.freePotRenderTarget(flop);
         }
 
+        for (let i = 0; i < filters.length; i++)
+        {
+            if (filters[i]._backdropRenderTexture)
+            {
+                this.freePotRenderTarget(filters[i]._backdropRenderTexture);
+                filters[i]._backdropRenderTexture = null;
+            }
+        }
+
         filterData.index--;
 
         if (filterData.index === 0)
@@ -341,7 +350,8 @@ export default class FilterManager extends WebGLManager
 
         if (filter._backdropRenderTexture)
         {
-            shader.uniforms[filter._backdropUniformName] = this.renderer.bindTexture(filter._backdropRenderTexture, textureCount);
+            shader.uniforms[filter._backdropUniformName]
+                = this.renderer.bindTexture(filter._backdropRenderTexture, textureCount);
             textureCount++;
         }
 
@@ -686,5 +696,7 @@ export default class FilterManager extends WebGLManager
 
         renderer.bindTexture(rt, 1, true);
         gl.copyTexSubImage2D(gl.TEXTURE_2D, 0, 0, 0, x1, y1, pixelsWidth, pixelsHeight);
+
+        return rt;
     }
 }
