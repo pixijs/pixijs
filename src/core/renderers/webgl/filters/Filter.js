@@ -111,7 +111,14 @@ export default class Filter
          * @member {PIXI.RenderTexture}
          * @private
          */
-        this._backdropRenderTexture = null;
+        this._backdropRenderTarget = null;
+
+        /**
+         * color that is used to clear renderTarget before filter is applied
+         * RGBA array format
+         * @member {Float32Array}
+         */
+        this.clearColor = null;
     }
 
     /**

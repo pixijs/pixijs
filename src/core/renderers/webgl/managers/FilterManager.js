@@ -51,9 +51,6 @@ export default class FilterManager extends WebGLManager
         this.filterData = null;
 
         this.managedFilters = [];
-
-        this._tempRect = new Rectangle();
-        this._tempRect2 = new Rectangle();
     }
 
     /**
@@ -122,9 +119,16 @@ export default class FilterManager extends WebGLManager
 
         for (let i = 0; i < filters.length; i++)
         {
+            let backdrop = null;
+
             if (filters[i].backdropUniformName)
             {
-                filters[i]._backdropRenderTexture = this.prepareBackdrop(targetBounds);
+                if (backdrop === null)
+                {
+                    backdrop = this.prepareBackdrop(sourceFrame);
+                }
+
+                filters[i]._backdropRenderTarget = backdrop;
             }
         }
 
@@ -147,7 +151,7 @@ export default class FilterManager extends WebGLManager
 
         // bind the render target
         renderer.bindRenderTarget(renderTarget);
-        renderTarget.clear();
+        renderTarget.clear(filters[filters.length - 1].clearColor);
     }
 
     /**
@@ -183,7 +187,7 @@ export default class FilterManager extends WebGLManager
             flop.setFrame(currentState.destinationFrame, currentState.sourceFrame);
 
             // finally lets clear the render target before drawing to it..
-            flop.clear();
+            flop.clear(filters[1].clearColor);
 
             let i = 0;
 
@@ -203,12 +207,18 @@ export default class FilterManager extends WebGLManager
             this.freePotRenderTarget(flop);
         }
 
+        let backdropFree = false;
+
         for (let i = 0; i < filters.length; i++)
         {
-            if (filters[i]._backdropRenderTexture)
+            if (filters[i]._backdropRenderTarget)
             {
-                this.freePotRenderTarget(filters[i]._backdropRenderTexture);
-                filters[i]._backdropRenderTexture = null;
+                if (!backdropFree)
+                {
+                    this.freePotRenderTarget(filters[i]._backdropRenderTarget);
+                    backdropFree = true;
+                }
+                filters[i]._backdropRenderTarget = null;
             }
         }
 
@@ -269,7 +279,7 @@ export default class FilterManager extends WebGLManager
         if (clear)
         {
             gl.disable(gl.SCISSOR_TEST);
-            renderer.clear();// [1, 1, 1, 1]);
+            renderer.clear(filter.clearColor);// [1, 1, 1, 1]);
             gl.enable(gl.SCISSOR_TEST);
         }
 
@@ -308,6 +318,9 @@ export default class FilterManager extends WebGLManager
      */
     syncUniforms(shader, filter)
     {
+        const renderer = this.renderer;
+        const gl = renderer.gl;
+
         const uniformData = filter.uniformData;
         const uniforms = filter.uniforms;
 
@@ -348,16 +361,21 @@ export default class FilterManager extends WebGLManager
             shader.uniforms.filterClamp = filterClamp;
         }
 
-        if (filter._backdropRenderTexture)
-        {
-            shader.uniforms[filter._backdropUniformName]
-                = this.renderer.bindTexture(filter._backdropRenderTexture, textureCount);
-            textureCount++;
-        }
-
         // TODO Cacheing layer..
         for (const i in uniformData)
         {
+            if (i === filter.backdropUniformName)
+            {
+                const rt = filter._backdropRenderTarget;
+
+                shader.uniforms[i] = textureCount;
+                renderer.boundTextures[textureCount] = renderer.emptyTextures[textureCount];
+                gl.activeTexture(gl.TEXTURE0 + textureCount);
+                gl.bindTexture(gl.TEXTURE_2D, rt.texture.texture);
+                textureCount++;
+                continue;
+            }
+
             const type = uniformData[i].type;
 
             if (type === 'sampler2d' && uniforms[i] !== 0)
@@ -369,17 +387,8 @@ export default class FilterManager extends WebGLManager
                 else
                 {
                     shader.uniforms[i] = textureCount;
-
-                    // TODO
-                    // this is helpful as renderTargets can also be set.
-                    // Although thinking about it, we could probably
-                    // make the filter texture cache return a RenderTexture
-                    // rather than a renderTarget
-                    const gl = this.renderer.gl;
-
-                    this.renderer.boundTextures[textureCount] = this.renderer.emptyTextures[textureCount];
+                    renderer.boundTextures[textureCount] = renderer.emptyTextures[textureCount];
                     gl.activeTexture(gl.TEXTURE0 + textureCount);
-
                     uniforms[i].texture.bind();
                 }
 
@@ -637,10 +646,12 @@ export default class FilterManager extends WebGLManager
 
     /**
      * Takes a part of current render target corresponding to bounds
-     * @param {PIXI.Rectangle} backdropBounds backdrop region
-     * @returns {PIXI.RenderTexture} pooled renderTexture with backdrop
+     * fits sourceFrame to current render target frame to evade problems
+     *
+     * @param {PIXI.Rectangle} bounds backdrop region, can be modified inside
+     * @returns {PIXI.RenderTarget} pooled renderTexture with backdrop
      */
-    prepareBackdrop(backdropBounds)
+    prepareBackdrop(bounds)
     {
         const renderer = this.renderer;
         const renderTarget = renderer._activeRenderTarget;
@@ -650,52 +661,23 @@ export default class FilterManager extends WebGLManager
             return null;
         }
 
-        const matrix = renderTarget.projectionMatrix;
-        const flipX = matrix.a < 0;
-        const flipY = matrix.d < 0;
         const resolution = renderTarget.resolution;
-        const screen = this._tempRect;
         const fr = renderTarget.sourceFrame || renderTarget.destinationFrame;
 
-        screen.x = 0;
-        screen.y = 0;
-        screen.width = fr.width;
-        screen.height = fr.height;
+        bounds.fit(fr);
 
-        const bounds = this._tempRect2;
-        const fbw = fr.width * resolution;
-        const fbh = fr.height * resolution;
-
-        bounds.x = ((backdropBounds.x + (matrix.tx / matrix.a)) * resolution) + (fbw / 2);
-        bounds.y = ((backdropBounds.y + (matrix.ty / matrix.d)) * resolution) + (fbh / 2);
-        bounds.width = backdropBounds.width * resolution;
-        bounds.height = backdropBounds.height * resolution;
-        if (flipX)
-        {
-            bounds.y = fbw - bounds.width - bounds.x;
-        }
-        if (flipY)
-        {
-            bounds.y = fbh - bounds.height - bounds.y;
-        }
-
-        const x1 = Math.floor(Math.max(screen.x, bounds.x));
-        const x2 = Math.ceil(Math.min(screen.x + screen.width, bounds.x + bounds.width));
-        const y1 = Math.floor(Math.max(screen.y, bounds.y));
-        const y2 = Math.ceil(Math.min(screen.y + screen.height, bounds.y + bounds.height));
-        const pixelsWidth = x2 - x1;
-        const pixelsHeight = y2 - y1;
-
-        if (pixelsWidth <= 0 || pixelsHeight <= 0)
-        {
-            return null;
-        }
+        const x = (bounds.x - fr.x) * resolution;
+        const y = (bounds.y - fr.y) * resolution;
+        const w = (bounds.width) * resolution;
+        const h = (bounds.height) * resolution;
 
         const gl = renderer.gl;
-        const rt = this.getPotRenderTarget(gl, pixelsWidth, pixelsHeight, 1);
+        const rt = this.getPotRenderTarget(gl, w, h, 1);
 
-        renderer.bindTexture(rt, 1, true);
-        gl.copyTexSubImage2D(gl.TEXTURE_2D, 0, 0, 0, x1, y1, pixelsWidth, pixelsHeight);
+        renderer.boundTextures[1] = renderer.emptyTextures[1];
+        gl.activeTexture(gl.TEXTURE0 + 1);
+        gl.bindTexture(gl.TEXTURE_2D, rt.texture.texture);
+        gl.copyTexSubImage2D(gl.TEXTURE_2D, 0, 0, 0, x, y, w, h);
 
         return rt;
     }
