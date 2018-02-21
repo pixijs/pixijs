@@ -258,6 +258,19 @@ export default class FilterSystem extends WebGLSystem
         }
     }
 
+    /**
+     * Gets a Power-of-Two render texture.
+     *
+     * TODO move to a seperate class could be on renderer?
+     * also - could cause issue with multiple contexts?
+     *
+     * @private
+     * @param {WebGLRenderingContext} gl - The webgl rendering context
+     * @param {number} minWidth - The minimum width of the render target.
+     * @param {number} minHeight - The minimum height of the render target.
+     * @param {number} resolution - The resolution of the render target.
+     * @return {PIXI.RenderTarget} The new render target.
+     */
     getPotRenderTexture(minWidth, minHeight, resolution = 1)
     {
         minWidth = bitTwiddle.nextPow2(minWidth);
@@ -303,19 +316,6 @@ export default class FilterSystem extends WebGLSystem
         this.pool[key].push(renderTexture);
     }
 
-    /**
-     * Gets a Power-of-Two render texture.
-     *
-     * TODO move to a seperate class could be on renderer?
-     * also - could cause issue with multiple contexts?
-     *
-     * @private
-     * @param {WebGLRenderingContext} gl - The webgl rendering context
-     * @param {number} minWidth - The minimum width of the render target.
-     * @param {number} minHeight - The minimum height of the render target.
-     * @param {number} resolution - The resolution of the render target.
-     * @return {PIXI.RenderTarget} The new render target.
-     */
 
     /**
      * Empties the texture pool.

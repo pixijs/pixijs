@@ -80,8 +80,6 @@ export default class RenderTextureSystem extends WebGLSystem
             // TODO store this..
             this.renderer.projection.update(destinationFrame, sourceFrame, this.renderer.resolution, true);
             this.renderer.stencil.setMaskStack(this.defaultMaskStack);
-
-            // mode 2 //
         }
     }
 
