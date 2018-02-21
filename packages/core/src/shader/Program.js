@@ -1,9 +1,9 @@
-import extractUniformsFromSrc from './extractUniformsFromSrc';
 import * as shaderUtils from '../renderers/systems/shader/shader';
 import { ProgramCache } from '@pixi/utils';
 import getTestContext from './getTestContext';
 import defaultFragment from './defaultProgram.frag';
 import defaultVertex from './defaultProgram.vert';
+import { settings } from '@pixi/settings';
 
 let UID = 0;
 
@@ -34,11 +34,14 @@ class Program
          */
         this.fragmentSrc = fragmentSrc || Program.defaultFragmentSrc;
 
+        this.vertexSrc = shaderUtils.setPrecision(this.vertexSrc, settings.PRECISION_VERTEX);
+        this.fragmentSrc = shaderUtils.setPrecision(this.fragmentSrc, settings.PRECISION_FRAGMENT);
+
         // currently this does not extract structs only default types
         this.extractData(this.vertexSrc, this.fragmentSrc);
 
         // this is where we store shader references..
-        this.glShaders = {};
+        this.glPrograms = {};
 
         this.syncUniforms = null;
 
@@ -57,22 +60,19 @@ class Program
     {
         const gl = getTestContext();
 
-        if (!gl)
+        if (gl)
         {
-            // uh oh! no webGL.. lets read uniforms from the strings..
-            this.attributeData = {};
-            this.uniformData = extractUniformsFromSrc(vertexSrc, fragmentSrc);
-        }
-        else
-        {
-            vertexSrc = shaderUtils.setPrecision(vertexSrc, 'mediump');
-            fragmentSrc = shaderUtils.setPrecision(fragmentSrc, 'mediump');
-
             const program = shaderUtils.compileProgram(gl, vertexSrc, fragmentSrc);
 
             this.attributeData = this.getAttributeData(program, gl);
             this.uniformData = this.getUniformData(program, gl);
-            // gl.deleteProgram(program);
+
+            gl.deleteProgram(program);
+        }
+        else
+        {
+            this.uniformData = {};
+            this.attributeData = {};
         }
     }
 
