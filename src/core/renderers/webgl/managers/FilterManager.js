@@ -100,7 +100,7 @@ export default class FilterManager extends WebGLManager
         }
 
         // lets detect fullscreen, PixiJS v3 mode compatibility, it makes writing filters easier!
-        let filterArea = target.filterArea;
+        let fullscreen = false;
 
         if (renderTargetFrame.width === renderer.screen.width
             && renderTargetFrame.height === renderer.screen.height)
@@ -109,7 +109,7 @@ export default class FilterManager extends WebGLManager
             {
                 if (filters[i].fullScreen)
                 {
-                    filterArea = renderer.screen;
+                    fullscreen = true;
                     break;
                 }
             }
@@ -118,7 +118,7 @@ export default class FilterManager extends WebGLManager
         // for now we go off the filter of the first resolution..
         const resolution = filters[0].resolution;
         const padding = filters[0].padding | 0;
-        const targetBounds = filterArea || target.getBounds(true);
+        const targetBounds = fullscreen ? renderer.screen : (target.filterArea || target.getBounds(true));
         const sourceFrame = currentState.sourceFrame;
         const destinationFrame = currentState.destinationFrame;
 
@@ -127,19 +127,22 @@ export default class FilterManager extends WebGLManager
         sourceFrame.width = ((targetBounds.width * resolution) | 0) / resolution;
         sourceFrame.height = ((targetBounds.height * resolution) | 0) / resolution;
 
-        if (filterData.stack[0].renderTarget.transform)
-        { //
-
-            // TODO we should fit the rect around the transform..
-        }
-        else if (filters[0].autoFit)
+        if (!fullscreen)
         {
-            sourceFrame.fit(renderTargetFrame);
-        }
+            if (filterData.stack[0].renderTarget.transform)
+            { //
 
-        // lets apply the padding After we fit the element to the screen.
-        // this should stop the strange side effects that can occur when cropping to the edges
-        sourceFrame.pad(padding);
+                // TODO we should fit the rect around the transform..
+            }
+            else if (filters[0].autoFit)
+            {
+                sourceFrame.fit(renderTargetFrame);
+            }
+
+            // lets apply the padding After we fit the element to the screen.
+            // this should stop the strange side effects that can occur when cropping to the edges
+            sourceFrame.pad(padding);
+        }
 
         destinationFrame.width = sourceFrame.width;
         destinationFrame.height = sourceFrame.height;
