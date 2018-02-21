@@ -42,8 +42,8 @@ export default class RenderTextureSystem extends WebGLSystem
 
             if (!destinationFrame)
             {
-                tempRect.width = baseTexture.width;// /2;
-                tempRect.height = baseTexture.height;
+                tempRect.width = baseTexture.realWidth;
+                tempRect.height = baseTexture.realHeight;
 
                 destinationFrame = tempRect;
             }
@@ -64,7 +64,7 @@ export default class RenderTextureSystem extends WebGLSystem
             // thing they can be avoided..
             if (!destinationFrame)
             {
-                tempRect.width = renderer.width;// /2;
+                tempRect.width = renderer.width;
                 tempRect.height = renderer.height;
 
                 destinationFrame = tempRect;

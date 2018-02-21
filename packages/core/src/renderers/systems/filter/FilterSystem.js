@@ -69,6 +69,8 @@ export default class FilterSystem extends WebGLSystem
 
         filterStack.push(state);
 
+        state.resolution = resolution;
+
         // round to whole number based on resolution
         // TODO move that to the shader too?
         state.sourceFrame = target.filterArea ? this.transformFilterArea(this.tempRect,
@@ -79,13 +81,12 @@ export default class FilterSystem extends WebGLSystem
         state.sourceFrame.pad(filters[0].padding || 1);
 
         state.renderTexture = this.getPotRenderTexture(state.sourceFrame.width, state.sourceFrame.height, resolution);
-        state.renderTexture.filterFrame = state.sourceFrame;
-        // state.renderTexture.filterFrame =
         state.filters = filters;
 
         state.destinationFrame.width = state.renderTexture.width;
         state.destinationFrame.height = state.renderTexture.height;
 
+        state.renderTexture.filterFrame = state.sourceFrame;
         renderer.renderTexture.bind(state.renderTexture, state.sourceFrame);// /, state.destinationFrame);
         renderer.renderTexture.clear();
     }
@@ -259,8 +260,8 @@ export default class FilterSystem extends WebGLSystem
 
     getPotRenderTexture(minWidth, minHeight, resolution = 1)
     {
-        minWidth = bitTwiddle.nextPow2(minWidth * resolution);
-        minHeight = bitTwiddle.nextPow2(minHeight * resolution);
+        minWidth = bitTwiddle.nextPow2(minWidth);
+        minHeight = bitTwiddle.nextPow2(minHeight);
 
         const key = ((minWidth & 0xFFFF) << 16) | (minHeight & 0xFFFF);
 
@@ -275,9 +276,11 @@ export default class FilterSystem extends WebGLSystem
         {
             // temporary bypass cache..
             // internally - this will cause a texture to be bound..
-            renderTexture = RenderTexture.create({ width: minWidth,
+            renderTexture = RenderTexture.create({
+                width: minWidth,
                 height: minHeight,
-                resolution });
+                resolution,
+            });
         }
 
         return renderTexture;
@@ -292,8 +295,8 @@ export default class FilterSystem extends WebGLSystem
     {
         const base = renderTexture.baseTexture;
 
-        const minWidth = base.realWidth;
-        const minHeight = base.realHeight;
+        const minWidth = base.width;
+        const minHeight = base.height;
 
         const key = ((minWidth & 0xFFFF) << 16) | (minHeight & 0xFFFF);
 

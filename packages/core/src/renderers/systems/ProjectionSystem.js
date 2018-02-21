@@ -40,30 +40,25 @@ export default class ProjectionSystem extends WebGLSystem
     {
         const pm = this.projectionMatrix;
 
-        pm.identity();
+        // I don't think we will need this line..
+        // pm.identity();
 
-        // TODO: make dest scale source
         if (!root)
         {
-            pm.a = 1 / destinationFrame.width * 2;
-            pm.d = 1 / destinationFrame.height * 2;
+            pm.a = (1 / destinationFrame.width * 2) * resolution;
+            pm.d = (1 / destinationFrame.height * 2) * resolution;
 
             pm.tx = -1 - (sourceFrame.x * pm.a);
             pm.ty = -1 - (sourceFrame.y * pm.d);
         }
         else
         {
-            pm.a = 1 / destinationFrame.width * 2;
-            pm.d = -1 / destinationFrame.height * 2;
+            pm.a = (1 / destinationFrame.width * 2) * resolution;
+            pm.d = (-1 / destinationFrame.height * 2) * resolution;
 
             pm.tx = -1 - (sourceFrame.x * pm.a);
             pm.ty = 1 - (sourceFrame.y * pm.d);
         }
-
-        // apply the resolution..
-        // TODO - prob should apply this to x and y too!
-        pm.a *= resolution;
-        pm.d *= resolution;
     }
 
     /**
