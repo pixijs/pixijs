@@ -22,7 +22,10 @@ export default class NoiseFilter extends Filter
      */
     constructor(noise = 0.5, seed = Math.random())
     {
-        super(defaultVertex, fragment);
+        super(defaultVertex, fragment, {
+            uNoise: 0,
+            uSeed: 0,
+        });
 
         this.noise = noise;
         this.seed = seed;

@@ -6,38 +6,39 @@ varying vec2 v_rgbM;
 
 varying vec2 vTextureCoord;
 uniform sampler2D uSampler;
-uniform vec4 filterArea;
+uniform vec4 destinationFrame;
+
 
 /**
  Basic FXAA implementation based on the code on geeks3d.com with the
  modification that the texture2DLod stuff was removed since it's
  unsupported by WebGL.
- 
+
  --
- 
+
  From:
  https://github.com/mitsuhiko/webgl-meincraft
- 
+
  Copyright (c) 2011 by Armin Ronacher.
- 
+
  Some rights reserved.
- 
+
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions are
  met:
- 
+
  * Redistributions of source code must retain the above copyright
  notice, this list of conditions and the following disclaimer.
- 
+
  * Redistributions in binary form must reproduce the above
  copyright notice, this list of conditions and the following
  disclaimer in the documentation and/or other materials provided
  with the distribution.
- 
+
  * The names of the contributors may not be used to endorse or
  promote products derived from this software without specific
  prior written permission.
- 
+
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -83,26 +84,26 @@ vec4 fxaa(sampler2D tex, vec2 fragCoord, vec2 resolution,
     float lumaM  = dot(rgbM,  luma);
     float lumaMin = min(lumaM, min(min(lumaNW, lumaNE), min(lumaSW, lumaSE)));
     float lumaMax = max(lumaM, max(max(lumaNW, lumaNE), max(lumaSW, lumaSE)));
-    
+
     mediump vec2 dir;
     dir.x = -((lumaNW + lumaNE) - (lumaSW + lumaSE));
     dir.y =  ((lumaNW + lumaSW) - (lumaNE + lumaSE));
-    
+
     float dirReduce = max((lumaNW + lumaNE + lumaSW + lumaSE) *
                           (0.25 * FXAA_REDUCE_MUL), FXAA_REDUCE_MIN);
-    
+
     float rcpDirMin = 1.0 / (min(abs(dir.x), abs(dir.y)) + dirReduce);
     dir = min(vec2(FXAA_SPAN_MAX, FXAA_SPAN_MAX),
               max(vec2(-FXAA_SPAN_MAX, -FXAA_SPAN_MAX),
                   dir * rcpDirMin)) * inverseVP;
-    
+
     vec3 rgbA = 0.5 * (
                        texture2D(tex, fragCoord * inverseVP + dir * (1.0 / 3.0 - 0.5)).xyz +
                        texture2D(tex, fragCoord * inverseVP + dir * (2.0 / 3.0 - 0.5)).xyz);
     vec3 rgbB = rgbA * 0.5 + 0.25 * (
                                      texture2D(tex, fragCoord * inverseVP + dir * -0.5).xyz +
                                      texture2D(tex, fragCoord * inverseVP + dir * 0.5).xyz);
-    
+
     float lumaB = dot(rgbB, luma);
     if ((lumaB < lumaMin) || (lumaB > lumaMax))
         color = vec4(rgbA, texColor.a);
@@ -113,11 +114,11 @@ vec4 fxaa(sampler2D tex, vec2 fragCoord, vec2 resolution,
 
 void main() {
 
-      vec2 fragCoord = vTextureCoord * filterArea.xy;
+      vec2 fragCoord = vTextureCoord * destinationFrame.ba;
 
       vec4 color;
 
-    color = fxaa(uSampler, fragCoord, filterArea.xy, v_rgbNW, v_rgbNE, v_rgbSW, v_rgbSE, v_rgbM);
+      color = fxaa(uSampler, fragCoord, destinationFrame.ba, v_rgbNW, v_rgbNE, v_rgbSW, v_rgbSE, v_rgbM);
 
       gl_FragColor = color;
 }

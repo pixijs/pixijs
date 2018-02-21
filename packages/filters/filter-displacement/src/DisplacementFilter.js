@@ -26,14 +26,14 @@ export default class DisplacementFilter extends Filter
 
         sprite.renderable = false;
 
-        super(vertex, fragment);
+        super(vertex, fragment, {
+            mapSampler: sprite._texture,
+            filterMatrix: maskMatrix,
+            scale: { x: 1, y: 1 },
+        });
 
         this.maskSprite = sprite;
         this.maskMatrix = maskMatrix;
-
-        this.uniforms.mapSampler = sprite._texture;
-        this.uniforms.filterMatrix = maskMatrix;
-        this.uniforms.scale = { x: 1, y: 1 };
 
         if (scale === null || scale === undefined)
         {

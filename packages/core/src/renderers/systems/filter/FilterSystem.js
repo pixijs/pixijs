@@ -100,11 +100,8 @@ export default class FilterSystem extends WebGLSystem
     pop()
     {
         const renderer = this.renderer;
-
         const filterStack = renderer.renderTexture.defaultFilterStack;
-
         const state = filterStack.pop();
-
         const filters = state.filters;
 
         this.activeState = state;
@@ -198,29 +195,11 @@ export default class FilterSystem extends WebGLSystem
      */
     calculateScreenSpaceMatrix(outputMatrix)
     {
-        const currentState = this.filterData.stack[this.filterData.index];
+        const currentState = this.activeState;
 
         return filterTransforms.calculateScreenSpaceMatrix(
             outputMatrix,
             currentState.sourceFrame,
-            currentState.renderTarget.size
-        );
-    }
-
-    /**
-     * Multiply vTextureCoord to this matrix to achieve (0,0,1,1) for filterArea
-     *
-     * @param {PIXI.Matrix} outputMatrix - The matrix to output to.
-     * @return {PIXI.Matrix} The mapped matrix.
-     */
-    calculateNormalizedScreenSpaceMatrix(outputMatrix)
-    {
-        const currentState = this.filterData.stack[this.filterData.index];
-
-        return filterTransforms.calculateNormalizedScreenSpaceMatrix(
-            outputMatrix,
-            currentState.sourceFrame,
-            currentState.renderTarget.size,
             currentState.destinationFrame
         );
     }
@@ -234,12 +213,12 @@ export default class FilterSystem extends WebGLSystem
      */
     calculateSpriteMatrix(outputMatrix, sprite)
     {
-        const currentState = this.filterData.stack[this.filterData.index];
+        const currentState = this.activeState;
 
         return filterTransforms.calculateSpriteMatrix(
             outputMatrix,
             currentState.sourceFrame,
-            currentState.renderTarget.size,
+            currentState.destinationFrame,
             sprite
         );
     }
