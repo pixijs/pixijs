@@ -102,12 +102,14 @@ export default class Filter
 
         /**
          * If set, filterManager calculates background image and stores location in to specified uniform
+         * Backdrop is explained here: https://www.w3.org/TR/compositing-1/#backdropCalc
+         * All those blending modes are possible to implement through this feature
          * @member {string|null}
          */
         this.backdropUniformName = null;
 
         /**
-         * temporary storage for backdrop render texture
+         * Temporary storage for backdrop render texture
          * @member {PIXI.RenderTexture}
          * @private
          */
