@@ -42,14 +42,36 @@ export default class FilterSystem extends WebGLSystem
     {
         super(renderer);
 
-        // todo add default!
-        this.pool = {};
+        /**
+         * stores a bunch of PO2 textures used for filtering
+         * @type {Object}
+         */
+        this.texturePool = {};
 
+        /**
+         * a pool for storing filter states, save us creating new ones each tick
+         * @type {Array}
+         */
+        this.statePool = [];
+
+        /**
+         * A very simple geometry used when drawing a filter effect to the screen
+         * @type {Quad}
+         */
         this.quad = new Quad();
+
+        /**
+         * Temporary rect for maths
+         * @type {PIXI.Rectangle}
+         */
         this.tempRect = new Rectangle();
 
         this.activeState = {};
 
+        /**
+         * this uniform group is attached to filter uniforms when used
+         * @type {UniformGroup}
+         */
         this.globalUniforms = new UniformGroup({
             sourceFrame: this.tempRect,
             destinationFrame: this.tempRect,
@@ -66,7 +88,7 @@ export default class FilterSystem extends WebGLSystem
     {
         const renderer = this.renderer;
         const filterStack = this.renderer.renderTexture.defaultFilterStack;
-        const state = new FilterState();
+        const state = this.statePool.pop() || new FilterState();
         const resolution = filters[0].resolution;
 
         filterStack.push(state);
@@ -147,6 +169,8 @@ export default class FilterSystem extends WebGLSystem
             this.returnFilterTexture(flip);
             this.returnFilterTexture(flop);
         }
+
+        this.statePool.push(state);
     }
 
     /**
@@ -237,7 +261,7 @@ export default class FilterSystem extends WebGLSystem
         }
         else
         {
-            this.pool = {};
+            this.texturePool = {};
         }
     }
 
@@ -262,12 +286,12 @@ export default class FilterSystem extends WebGLSystem
 
         const key = ((minWidth & 0xFFFF) << 16) | (minHeight & 0xFFFF);
 
-        if (!this.pool[key])
+        if (!this.texturePool[key])
         {
-            this.pool[key] = [];
+            this.texturePool[key] = [];
         }
 
-        let renderTexture = this.pool[key].pop();
+        let renderTexture = this.texturePool[key].pop();
 
         if (!renderTexture)
         {
@@ -310,7 +334,7 @@ export default class FilterSystem extends WebGLSystem
 
         const key = ((minWidth & 0xFFFF) << 16) | (minHeight & 0xFFFF);
 
-        this.pool[key].push(renderTexture);
+        this.texturePool[key].push(renderTexture);
     }
 
     /**
@@ -319,9 +343,9 @@ export default class FilterSystem extends WebGLSystem
      */
     emptyPool()
     {
-        for (const i in this.pool)
+        for (const i in this.texturePool)
         {
-            const textures = this.pool[i];
+            const textures = this.texturePool[i];
 
             if (textures)
             {
@@ -332,7 +356,7 @@ export default class FilterSystem extends WebGLSystem
             }
         }
 
-        this.pool = {};
+        this.texturePool = {};
     }
 
     transformFilterArea(out, rectangle, transform)
