@@ -5,6 +5,7 @@ import { Rectangle } from '../../../math';
 import Shader from '../../../Shader';
 import * as filterTransforms from '../filters/filterTransforms';
 import bitTwiddle from 'bit-twiddle';
+import settings from '../../../settings';
 
 /**
  * @ignore
@@ -51,6 +52,12 @@ export default class FilterManager extends WebGLManager
         this.pool = {};
 
         this.filterData = null;
+
+        /**
+         * All filters
+         * @type {boolean}
+         */
+        this.fullScreen = settings.FILTER_FULLSCREEN;
 
         this.managedFilters = [];
 
@@ -99,8 +106,7 @@ export default class FilterManager extends WebGLManager
             currentState = filterData.stack[filterData.index] = new FilterState();
         }
 
-        // lets detect fullscreen, PixiJS v3 mode compatibility, it makes writing filters easier!
-        let fullscreen = false;
+        let fullScreen = this.fullScreen;
 
         if (renderTargetFrame.width === renderer.screen.width
             && renderTargetFrame.height === renderer.screen.height)
@@ -109,7 +115,7 @@ export default class FilterManager extends WebGLManager
             {
                 if (filters[i].fullScreen)
                 {
-                    fullscreen = true;
+                    fullScreen = true;
                     break;
                 }
             }
@@ -118,7 +124,7 @@ export default class FilterManager extends WebGLManager
         // for now we go off the filter of the first resolution..
         const resolution = filters[0].resolution;
         const padding = filters[0].padding | 0;
-        const targetBounds = fullscreen ? renderer.screen : (target.filterArea || target.getBounds(true));
+        const targetBounds = fullScreen ? renderer.screen : (target.filterArea || target.getBounds(true));
         const sourceFrame = currentState.sourceFrame;
         const destinationFrame = currentState.destinationFrame;
 
@@ -127,7 +133,7 @@ export default class FilterManager extends WebGLManager
         sourceFrame.width = ((targetBounds.width * resolution) | 0) / resolution;
         sourceFrame.height = ((targetBounds.height * resolution) | 0) / resolution;
 
-        if (!fullscreen)
+        if (!fullScreen)
         {
             if (filterData.stack[0].renderTarget.transform)
             { //

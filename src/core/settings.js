@@ -57,6 +57,13 @@ export default {
     FILTER_RESOLUTION: 1,
 
     /**
+     * All filters are fullscreen, filterArea is ignored
+     * Compatibility with PixiJS v3
+     * The property affects only new renderer instances
+     */
+    FILTER_FULLSCREEN: false,
+
+    /**
      * The maximum textures that this device supports.
      *
      * @static
