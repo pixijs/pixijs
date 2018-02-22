@@ -101,8 +101,8 @@ export default class FilterSystem extends WebGLSystem
             target.filterArea,
             target.transform) : target.getBounds(true);
 
+        state.sourceFrame.pad(filters[0].padding || 0);
         state.sourceFrame.round(resolution);
-        state.sourceFrame.pad(filters[0].padding || 1);
 
         state.renderTexture = this.getPotFilterTexture(state.sourceFrame.width, state.sourceFrame.height, resolution);
         state.filters = filters;

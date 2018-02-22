@@ -10,13 +10,25 @@ const vertTemplate = `
 
     varying vec2 vBlurTexCoords[%size%];
 
-    void main(void)
+    vec4 filterVertexPosition( void )
     {
         vec2 position = aVertexPosition * max(sourceFrame.zw, vec2(0.)) + sourceFrame.xy;
 
-        gl_Position = vec4((projectionMatrix * vec3(position, 1.0)).xy, 0.0, 1.0);
+        return vec4((projectionMatrix * vec3(position, 1.0)).xy, 0.0, 1.0);
+    }
 
-        vec2 textureCoord = aVertexPosition * (sourceFrame.zw / destinationFrame.zw);
+    vec2 filterTextureCoord( void )
+    {
+        return aVertexPosition * (sourceFrame.zw / destinationFrame.zw);
+    }
+
+
+
+    void main(void)
+    {
+        gl_Position = filterVertexPosition();
+
+        vec2 textureCoord = filterTextureCoord();
         %blur%
     }`;
 

@@ -86,7 +86,7 @@ export default class BlurXFilter extends Filter
 
             for (let i = 1; i < this.passes - 1; i++)
             {
-                renderer.framebuffer.bind(flip.baseTexture.frameBuffer);
+                renderer.renderTexture.bind(flip, flip.filterFrame);
 
                 this.uniforms.uSampler = flop;
 
@@ -117,7 +117,7 @@ export default class BlurXFilter extends Filter
 
     set blur(value) // eslint-disable-line require-jsdoc
     {
-        this.padding = Math.abs(value) * 2;
+        this.padding = 1 + (Math.abs(value) * 2);
         this.strength = value;
     }
 

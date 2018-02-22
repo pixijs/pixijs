@@ -74,11 +74,11 @@ export default class BlurYFilter extends Filter
 
         if (output)
         {
-            this.uniforms.strength = (1 / output.width) * (output.width / input.width);
+            this.uniforms.strength = (1 / output.height) * (output.height / input.height);
         }
         else
         {
-            this.uniforms.strength = (1 / filterManager.renderer.width) * (filterManager.renderer.width / input.width);
+            this.uniforms.strength = (1 / filterManager.renderer.height) * (filterManager.renderer.height / input.height);
         }
 
         // screen space!
@@ -102,7 +102,7 @@ export default class BlurYFilter extends Filter
 
             for (let i = 1; i < this.passes - 1; i++)
             {
-                renderer.framebuffer.bind(flip.baseTexture.frameBuffer);
+                renderer.renderTexture.bind(flip, flip.filterFrame);
 
                 this.uniforms.uSampler = flop;
 
@@ -134,7 +134,7 @@ export default class BlurYFilter extends Filter
 
     set blur(value) // eslint-disable-line require-jsdoc
     {
-        this.padding = Math.abs(value) * 2;
+        this.padding = 1 + (Math.abs(value) * 2);
         this.strength = value;
     }
 

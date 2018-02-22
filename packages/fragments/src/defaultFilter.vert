@@ -1,6 +1,8 @@
 attribute vec2 aVertexPosition;
 
 uniform mat3 projectionMatrix;
+uniform vec4 sourceFrame;
+uniform vec4 destinationFrame;
 
 varying vec2 vTextureCoord;
 
