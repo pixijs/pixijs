@@ -57,6 +57,10 @@ export default class Filter extends Shader
          */
         this.autoFit = true;
 
+         /**
+         * the webGL state the filter requires to render
+         * @type {PIXI.State}
+         */
         this.state = new State();
     }
 
