@@ -1,5 +1,5 @@
 import { Filter } from '@pixi/core';
-import { defaultVertex } from '@pixi/fragments';
+import { defaultFilterVertex } from '@pixi/fragments';
 import fragment from './colorMatrix.frag';
 
 /**
@@ -32,7 +32,7 @@ export default class ColorMatrixFilter extends Filter
             uAlpha: 1,
         };
 
-        super(defaultVertex, fragment, uniforms);
+        super(defaultFilterVertex, fragment, uniforms);
 
         this.alpha = 1;
     }

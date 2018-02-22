@@ -12,11 +12,11 @@ const vertTemplate = `
 
     void main(void)
     {
-        vec2 position = aVertexPosition * max(sourceFrame.ba, vec2(0.)) + sourceFrame.xy;
+        vec2 position = aVertexPosition * max(sourceFrame.zw, vec2(0.)) + sourceFrame.xy;
 
         gl_Position = vec4((projectionMatrix * vec3(position, 1.0)).xy, 0.0, 1.0);
 
-        vec2 textureCoord = aVertexPosition * (sourceFrame.ba / destinationFrame.ba);
+        vec2 textureCoord = aVertexPosition * (sourceFrame.zw / destinationFrame.zw);
         %blur%
     }`;
 

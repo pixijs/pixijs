@@ -14,7 +14,7 @@ void main(void)
   vec4 map =  texture2D(mapSampler, vFilterCoord);
 
   map -= 0.5;
-  map.xy *= scale / destinationFrame.ba;
+  map.xy *= scale / destinationFrame.zw;
 
   gl_FragColor = texture2D(uSampler, clamp(vec2(vTextureCoord.x + map.x, vTextureCoord.y + map.y), vFilterClamp.xy, vFilterClamp.zw));
 }

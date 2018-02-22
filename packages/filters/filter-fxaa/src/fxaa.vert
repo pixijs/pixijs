@@ -16,14 +16,14 @@ varying vec2 vTextureCoord;
 
 vec4 filterVertexPosition( void )
 {
-    vec2 position = aVertexPosition * max(sourceFrame.ba, vec2(0.)) + sourceFrame.xy;
+    vec2 position = aVertexPosition * max(sourceFrame.zw, vec2(0.)) + sourceFrame.xy;
 
     return vec4((projectionMatrix * vec3(position, 1.0)).xy, 0.0, 1.0);
 }
 
 vec2 filterTextureCoord( void )
 {
-    return aVertexPosition * (sourceFrame.ba / destinationFrame.ba);
+    return aVertexPosition * (sourceFrame.zw / destinationFrame.zw);
 }
 
 void texcoords(vec2 fragCoord, vec2 resolution,
@@ -44,7 +44,7 @@ void main(void) {
 
    vTextureCoord = filterTextureCoord();
 
-   vec2 fragCoord = vTextureCoord * destinationFrame.ba;
+   vec2 fragCoord = vTextureCoord * destinationFrame.zw;
 
-   texcoords(fragCoord, destinationFrame.ba, v_rgbNW, v_rgbNE, v_rgbSW, v_rgbSE, v_rgbM);
+   texcoords(fragCoord, destinationFrame.zw, v_rgbNW, v_rgbNE, v_rgbSW, v_rgbSE, v_rgbM);
 }
