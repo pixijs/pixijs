@@ -57,7 +57,7 @@ export default class FilterManager extends WebGLManager
          * All filters
          * @type {boolean}
          */
-        this.fullScreen = settings.FILTER_FULLSCREEN;
+        this.fullScreen = settings.FILTER_FULL_SCREEN;
 
         this.managedFilters = [];
 

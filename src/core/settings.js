@@ -61,7 +61,7 @@ export default {
      * Compatibility with PixiJS v3
      * The property affects only new renderer instances
      */
-    FILTER_FULLSCREEN: false,
+    FILTER_FULL_SCREEN: false,
 
     /**
      * The maximum textures that this device supports.
