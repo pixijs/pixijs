@@ -218,8 +218,8 @@ export default class GraphicsRenderer extends ObjectRenderer
         {
             webGLData = this.graphicsDataPool.pop()
             || new WebGLGraphicsData(this.renderer.gl,
-                this.primitiveShader,
-                this.renderer.state.attribsState);
+                    this.primitiveShader,
+                    this.renderer.state.attribsState);
 
             webGLData.nativeLines = nativeLines;
 
