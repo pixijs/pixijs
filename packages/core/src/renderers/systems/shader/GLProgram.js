@@ -1,8 +1,8 @@
 /**
- * Helper class to create a webGL Shader
+ * Helper class to create a webGL Program
  *
  * @class
- * @memberof PIXI.glCore
+ * @private
  */
 export default class GLProgram
 {
@@ -15,12 +15,23 @@ export default class GLProgram
          */
         this.program = program;
 
+        /**
+         * holds the uniform data which contains uniform locations
+         * and current uniform values used for caching and preventing undeed GPU commands
+         * @type {[type]}
+         */
         this.uniformData = uniformData;
+
+        /**
+         * uniformGroups holds the various upload functions for the shader. Each uniform group
+         * and program have a unique upload function generated.
+         * @type {Object}
+         */
         this.uniformGroups = {};
     }
 
     /**
-     * Destroys this shader
+     * Destroys this program
      * TODO
      */
     destroy()
