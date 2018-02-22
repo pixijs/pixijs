@@ -18,7 +18,7 @@ export default class GLProgram
         /**
          * holds the uniform data which contains uniform locations
          * and current uniform values used for caching and preventing undeed GPU commands
-         * @type {[type]}
+         * @type {Object}
          */
         this.uniformData = uniformData;
 
