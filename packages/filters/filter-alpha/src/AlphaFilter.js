@@ -26,10 +26,9 @@ export default class AlphaFilter extends Filter
      */
     constructor(alpha = 1.0)
     {
-        super(defaultVertex, fragment);
+        super(defaultVertex, fragment, { uAlpha: 1 });
 
         this.alpha = alpha;
-        this.glShaderKey = 'alpha';
     }
 
     /**

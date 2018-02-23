@@ -2,7 +2,7 @@ import AbstractRenderer from './AbstractRenderer';
 import { sayHello } from '@pixi/utils';
 import MaskSystem from './systems/MaskSystem';
 import StencilSystem from './systems/StencilSystem';
-// import FilterSystem from './systems/FilterSystem';
+import FilterSystem from './systems/filter/FilterSystem';
 import FramebufferSystem from './systems/FramebufferSystem';
 import RenderTextureSystem from './systems/RenderTextureSystem';
 import TextureSystem from './systems/textures/TextureSystem';
@@ -103,7 +103,7 @@ export default class Renderer extends AbstractRenderer
             .addSystem(StencilSystem, 'stencil')
             .addSystem(ProjectionSystem, 'projection')
             .addSystem(TextureGCSystem, 'textureGC')
-        //    .addSystem(FilterSystem, 'filter')
+            .addSystem(FilterSystem, 'filter')
             .addSystem(RenderTextureSystem, 'renderTexture')
             .addSystem(BatchSystem, 'batch');
 

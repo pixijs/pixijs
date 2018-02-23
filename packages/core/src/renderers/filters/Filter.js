@@ -1,8 +1,7 @@
 import Shader from '../../shader/Shader';
 import Program from '../../shader/Program';
-import { BLEND_MODES } from '@pixi/constants';
+import State from '../State';
 import { settings } from '@pixi/settings';
-import { uid } from '@pixi/utils';
 // import extractUniformsFromSrc from './extractUniformsFromSrc';
 import defaultVertex from './defaultFilter.vert';
 import defaultFragment from './defaultFilter.frag';
@@ -26,41 +25,6 @@ export default class Filter extends Shader
 
         super(program, uniforms);
 
-        this._blendMode = BLEND_MODES.NORMAL;
-
-        this.uniformData = uniforms;
-        // || extractUniformsFromSrc(this.vertexSrc, this.fragmentSrc, 'projectionMatrix|uSampler');
-
-        /**
-         * An object containing the current values of custom uniforms.
-         * @example <caption>Updating the value of a custom uniform</caption>
-         * filter.uniforms.time = performance.now();
-         *
-         * @member {object}
-         */
-        this.uniforms = {};
-
-        for (const i in this.uniformData)
-        {
-            this.uniforms[i] = this.uniformData[i].value;
-            if (this.uniformData[i].type)
-            {
-                this.uniformData[i].type = this.uniformData[i].type.toLowerCase();
-            }
-        }
-
-        // this is where we store shader references..
-        // TODO we could cache this!
-        this.glShaders = {};
-
-        // used for cacheing.. sure there is a better way!
-        if (!Filter.SOURCE_KEY_MAP[this.vertexSrc + this.fragmentSrc])
-        {
-            Filter.SOURCE_KEY_MAP[this.vertexSrc + this.fragmentSrc] = uid();
-        }
-
-        this.glShaderKey = Filter.SOURCE_KEY_MAP[this.vertexSrc + this.fragmentSrc];
-
         /**
          * The padding of the filter. Some filters require extra space to breath such as a blur.
          * Increasing this will add extra width and height to the bounds of the object that the
@@ -68,7 +32,7 @@ export default class Filter extends Shader
          *
          * @member {number}
          */
-        this.padding = 4;
+        this.padding = 0;
 
         /**
          * The resolution of the filter. Setting this to be lower will lower the quality but
@@ -92,6 +56,12 @@ export default class Filter extends Shader
          * @member {boolean}
          */
         this.autoFit = true;
+
+        /**
+         * the webGL state the filter requires to render
+         * @type {PIXI.State}
+         */
+        this.state = new State();
     }
 
     /**
@@ -105,11 +75,11 @@ export default class Filter extends Shader
      *        There are some useful properties in the currentState :
      *        target, filters, sourceFrame, destinationFrame, renderTarget, resolution
      */
-    apply(filterManager, input, output, clear, currentState) // eslint-disable-line no-unused-vars
+    apply(filterManager, input, output, clear, currentState, derp) // eslint-disable-line no-unused-vars
     {
         // do as you please!
 
-        filterManager.applyFilter(this, input, output, clear, currentState);
+        filterManager.applyFilter(this, input, output, clear, currentState, derp);
 
         // or just do a regular render..
     }
@@ -122,12 +92,12 @@ export default class Filter extends Shader
      */
     get blendMode()
     {
-        return this._blendMode;
+        return this.state.blendMode;
     }
 
     set blendMode(value) // eslint-disable-line require-jsdoc
     {
-        this._blendMode = value;
+        this.state.blendMode = value;
     }
 
     /**

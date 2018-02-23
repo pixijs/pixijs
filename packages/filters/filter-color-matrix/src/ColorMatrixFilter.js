@@ -1,5 +1,5 @@
 import { Filter } from '@pixi/core';
-import { defaultVertex } from '@pixi/fragments';
+import { defaultFilterVertex } from '@pixi/fragments';
 import fragment from './colorMatrix.frag';
 
 /**
@@ -24,13 +24,15 @@ export default class ColorMatrixFilter extends Filter
      */
     constructor()
     {
-        super(defaultVertex, fragment);
+        const uniforms = {
+            m: new Float32Array([1, 0, 0, 0, 0,
+                0, 1, 0, 0, 0,
+                0, 0, 1, 0, 0,
+                0, 0, 0, 1, 0]),
+            uAlpha: 1,
+        };
 
-        this.uniforms.m = [
-            1, 0, 0, 0, 0,
-            0, 1, 0, 0, 0,
-            0, 0, 1, 0, 0,
-            0, 0, 0, 1, 0];
+        super(defaultFilterVertex, fragment, uniforms);
 
         this.alpha = 1;
     }
