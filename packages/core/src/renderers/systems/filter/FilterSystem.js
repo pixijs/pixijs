@@ -89,7 +89,20 @@ export default class FilterSystem extends WebGLSystem
         const renderer = this.renderer;
         const filterStack = this.renderer.renderTexture.defaultFilterStack;
         const state = this.statePool.pop() || new FilterState();
-        const resolution = filters[0].resolution;
+
+        let resolution = filters[0].resolution;
+        let padding = filters[0].padding;
+        let autoFit = filters[0].autoFit;
+
+        for (let i = 1; i < filters.length; i++)
+        {
+            // lets use the lowest resolution..
+            resolution = Math.min(resolution, filters[i].resolution);
+            // and the largest amout of padding!
+            padding = Math.max(padding, filters[i].padding);
+            // only auto fit if all filters are autofit
+            autoFit = autoFit || filters[i].autoFit;
+        }
 
         filterStack.push(state);
 
@@ -101,7 +114,13 @@ export default class FilterSystem extends WebGLSystem
             target.filterArea,
             target.transform) : target.getBounds(true);
 
-        state.sourceFrame.pad(filters[0].padding || 0);
+        state.sourceFrame.pad(padding);
+
+        if (autoFit)
+        {
+            state.sourceFrame.fit(this.renderer.renderTexture.destinationFrame);
+        }
+
         state.sourceFrame.round(resolution);
 
         state.renderTexture = this.getPotFilterTexture(state.sourceFrame.width, state.sourceFrame.height, resolution);
@@ -128,8 +147,12 @@ export default class FilterSystem extends WebGLSystem
 
         this.activeState = state;
 
-        this.globalUniforms.uniforms.sourceFrame = state.sourceFrame;
-        this.globalUniforms.uniforms.destinationFrame = state.destinationFrame;
+        const globalUniforms = this.globalUniforms.uniforms;
+
+        globalUniforms.sourceFrame = state.sourceFrame;
+        globalUniforms.destinationFrame = state.destinationFrame;
+        globalUniforms.resolution = state.resolution;
+
         this.globalUniforms.update();
 
         const lastState = filterStack[filterStack.length - 1];

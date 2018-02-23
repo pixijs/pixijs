@@ -7,6 +7,7 @@ const vertTemplate = `
     uniform vec4 sourceFrame;
 
     uniform float strength;
+    uniform float resolution;
 
     varying vec2 vBlurTexCoords[%size%];
 
@@ -22,7 +23,10 @@ const vertTemplate = `
         return aVertexPosition * (sourceFrame.zw / destinationFrame.zw);
     }
 
-
+    vec2 size( void )
+    {
+        return ( (sourceFrame.zw -resolution) / destinationFrame.zw);
+    }
 
     void main(void)
     {
@@ -44,11 +48,11 @@ export default function generateVertBlurSource(kernelSize, x)
 
     if (x)
     {
-        template = 'vBlurTexCoords[%index%] = textureCoord + vec2(%sampleIndex% * strength, 0.0);';
+        template = 'vBlurTexCoords[%index%] =  min( textureCoord + vec2(%sampleIndex% * strength, 0.0), size());';
     }
     else
     {
-        template = 'vBlurTexCoords[%index%] = textureCoord + vec2(0.0, %sampleIndex% * strength);';
+        template = 'vBlurTexCoords[%index%] =  min( textureCoord + vec2(0.0, %sampleIndex% * strength), size());';
     }
 
     for (let i = 0; i < kernelSize; i++)

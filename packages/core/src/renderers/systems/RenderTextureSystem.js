@@ -26,6 +26,8 @@ export default class RenderTextureSystem extends WebGLSystem
 
         // empty render texture?
         this.renderTexture = null;
+
+        this.destinationFrame = new Rectangle();
     }
 
     bind(renderTexture, sourceFrame, destinationFrame)
@@ -81,6 +83,8 @@ export default class RenderTextureSystem extends WebGLSystem
             this.renderer.projection.update(destinationFrame, sourceFrame, this.renderer.resolution, true);
             this.renderer.stencil.setMaskStack(this.defaultMaskStack);
         }
+
+        this.destinationFrame.copyFrom(destinationFrame);
     }
 
     /**
