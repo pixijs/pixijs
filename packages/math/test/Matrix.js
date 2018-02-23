@@ -1,4 +1,4 @@
-const { Matrix } = require('../');
+const { Matrix, Transform } = require('../');
 
 describe('PIXI.Matrix', function ()
 {
@@ -162,5 +162,39 @@ describe('PIXI.Matrix', function ()
         expect(matrix.d).to.equal(1);
         expect(matrix.tx).to.equal(0);
         expect(matrix.ty).to.equal(0);
+    });
+
+    it('should have the same transform after decompose', function ()
+    {
+        const matrix = new Matrix();
+        const transformInitial  = new Transform();
+        const transformDecomposed = new Transform();
+
+        for (let x = 0; x < 50; ++x)
+        {
+            transformInitial.position.x = (Math.random() * 1000) - 2000;
+            transformInitial.position.y = (Math.random() * 1000) - 2000;
+            transformInitial.scale.x = (Math.random() * 5) - 10;
+            transformInitial.scale.y = (Math.random() * 5) - 10;
+            transformInitial.rotation = (Math.random() - 2) * Math.PI;
+            transformInitial.skew.x = (Math.random() - 2) * Math.PI;
+            transformInitial.skew.y = (Math.random() - 2) * Math.PI;
+
+            matrix.setTransform(
+                transformInitial.x, transformInitial.y,
+                0, 0,
+                transformInitial.scale.x, transformInitial.scale.y,
+                transformInitial.rotation,
+                transformInitial.skew.x, transformInitial.skew.y
+            );
+            matrix.decompose(transformDecomposed);
+
+            expect(transformInitial.a).to.equal(transformDecomposed.a);
+            expect(transformInitial.b).to.equal(transformDecomposed.b);
+            expect(transformInitial.c).to.equal(transformDecomposed.c);
+            expect(transformInitial.d).to.equal(transformDecomposed.d);
+            expect(transformInitial.tx).to.equal(transformDecomposed.tx);
+            expect(transformInitial.ty).to.equal(transformDecomposed.ty);
+        }
     });
 });
