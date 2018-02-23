@@ -92,7 +92,7 @@ export default class BaseRenderTexture extends BaseTexture
 
         this.clearColor = [0, 0, 0, 0];
 
-        this.frameBuffer = new FrameBuffer(width, height)
+        this.frameBuffer = new FrameBuffer(width * this.resolution, height * this.resolution)
             .addColorTexture(0, this);
 
         // TODO - could this be added the systems?
@@ -122,7 +122,7 @@ export default class BaseRenderTexture extends BaseTexture
     {
         width = Math.ceil(width);
         height = Math.ceil(height);
-        this.frameBuffer.resize(width, height);
+        this.frameBuffer.resize(width * this.resolution, height * this.resolution);
     }
 
     /**
