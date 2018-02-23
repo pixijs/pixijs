@@ -1,12 +1,10 @@
 import { sayHello, hex2string, hex2rgb } from '../utils';
-import { Matrix, Rectangle } from '../math';
+import { Rectangle } from '../math';
 import { RENDERER_TYPE } from '../const';
 import settings from '../settings';
 import Container from '../display/Container';
 import RenderTexture from '../textures/RenderTexture';
 import EventEmitter from 'eventemitter3';
-
-const tempMatrix = new Matrix();
 
 /**
  * The SystemRenderer is the base for a PixiJS Renderer. It is extended by the {@link PIXI.CanvasRenderer}
@@ -242,22 +240,49 @@ export default class SystemRenderer extends EventEmitter
      * This can be quite useful if your displayObject is complicated and needs to be reused multiple times.
      *
      * @param {PIXI.DisplayObject} displayObject - The displayObject the object will be generated from
-     * @param {number} scaleMode - Should be one of the scaleMode consts
-     * @param {number} resolution - The resolution / device pixel ratio of the texture being generated
      * @param {PIXI.Rectangle} [region] - The region of the displayObject, that shall be rendered,
      *        if no region is specified, defaults to the local bounds of the displayObject.
+     * @param {number} resolution - The resolution / device pixel ratio of the texture being generated
+     * @param {number} scaleMode - Should be one of the scaleMode consts,
      * @return {PIXI.Texture} a texture of the graphics object
      */
-    generateTexture(displayObject, scaleMode, resolution, region)
+    generateTexture(displayObject, region, resolution, scaleMode)
     {
-        region = region || displayObject.getLocalBounds();
+        if (typeof region === 'number')
+        {
+            // old format
+            scaleMode = region;
+            region = undefined;
+        }
+        if (region === undefined)
+        {
+            region = displayObject.getLocalBounds();
+        }
+        else
+        {
+            region = new Rectangle().copy(region);
+        }
+
+        region.ceil(resolution);
+
+        // TODO: save region to `renderTexture.orig` in future
+
+        this._tempDisplayObjectParent.transform.worldTransform.set(1, 0, 0, 1, -region.x, -region.y);
+
+        displayObject.getUpdateHelper().pushTransform(this._tempDisplayObjectParent);
+        displayObject.updateTransform();
 
         const renderTexture = RenderTexture.create(region.width | 0, region.height | 0, scaleMode, resolution);
 
-        tempMatrix.tx = -region.x;
-        tempMatrix.ty = -region.y;
+        this.render(displayObject, renderTexture, undefined, undefined, true);
 
-        this.render(displayObject, renderTexture, false, tempMatrix, true);
+        displayObject.getUpdateHelper().popTransform();
+        // return back, generateTexture is not supposed to change transforms of objects that already belong to the stage
+        // we'll add else here if someone complains about it
+        if (displayObject.parent)
+        {
+            displayObject.updateTransform();
+        }
 
         return renderTexture;
     }

@@ -308,12 +308,9 @@ export default class WebGLRenderer extends SystemRenderer
 
         if (!skipUpdateTransform)
         {
-            // update the scene graph
-            const cacheParent = displayObject.parent;
-
-            displayObject.parent = this._tempDisplayObjectParent;
+            displayObject.getUpdateHelper().pushParent(this._tempDisplayObjectParent);
             displayObject.updateTransform();
-            displayObject.parent = cacheParent;
+            displayObject.getUpdateHelper().popParent();
            // displayObject.hitArea = //TODO add a temp hit area
         }
 

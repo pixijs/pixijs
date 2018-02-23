@@ -236,4 +236,34 @@ export default class Rectangle
         this.y = y1;
         this.height = y2 - y1;
     }
+
+    /**
+     * checks if all fields are same as in the other rectangle
+     *
+     * @param {PIXI.Rectangle} rectangle rect to compare to
+     * @returns {boolean} true if equals
+     */
+    equals(rectangle)
+    {
+        return this.x === rectangle.x
+            && this.y === rectangle.y
+            && this.width === rectangle.width
+            && this.height === rectangle.height;
+    }
+
+    /**
+     * Math.ceil for rectangle, takes resolution and precision into account
+     * @param {number} [resolution=1] used resolution
+     * @param {number} [eps=0.001] epsilon for comparison
+     */
+    ceil(resolution = 1, eps = 0.001)
+    {
+        const x2 = Math.ceil(((this.x + this.width) * resolution) - eps) / resolution;
+        const y2 = Math.ceil(((this.y + this.height) * resolution) - eps) / resolution;
+
+        this.x = Math.floor((this.x * resolution) + eps) / resolution;
+        this.y = Math.floor((this.y * resolution) + eps) / resolution;
+        this.width = x2 - this.x;
+        this.height = y2 - this.y;
+    }
 }

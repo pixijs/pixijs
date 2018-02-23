@@ -177,25 +177,21 @@ export default class CanvasRenderer extends SystemRenderer
         if (!skipUpdateTransform)
         {
             // update the scene graph
-            const cacheParent = displayObject.parent;
             const tempWt = this._tempDisplayObjectParent.transform.worldTransform;
 
             if (transform)
             {
                 transform.copy(tempWt);
-
-                // lets not forget to flag the parent transform as dirty...
-                this._tempDisplayObjectParent.transform._worldID = -1;
             }
             else
             {
                 tempWt.identity();
             }
 
-            displayObject.parent = this._tempDisplayObjectParent;
-
+            displayObject.getUpdateHelper().pushParent(this._tempDisplayObjectParent, !!transform);
             displayObject.updateTransform();
-            displayObject.parent = cacheParent;
+            // we might force update transform, so popTempParent will be called after render method
+
             // displayObject.hitArea = //TODO add a temp hit area
         }
 
@@ -235,6 +231,11 @@ export default class CanvasRenderer extends SystemRenderer
         this.context = context;
         displayObject.renderCanvas(this);
         this.context = tempContext;
+
+        if (!skipUpdateTransform)
+        {
+            displayObject.getUpdateHelper().popParent();
+        }
 
         context.restore();
 
