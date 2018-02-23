@@ -109,7 +109,7 @@ export default class BaseRenderTexture extends BaseTexture
          *
          * @member {PIXI.Graphics[]}
          */
-        this.filterStack = [];
+        this.filterStack = [{}];
     }
 
     /**

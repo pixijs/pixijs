@@ -13,7 +13,7 @@ export default class StencilSystem extends WebGLSystem
     constructor(renderer)
     {
         super(renderer);
-        this.stencilMaskStack = null;
+        this.stencilMaskStack = [];
     }
 
     /**
@@ -23,18 +23,21 @@ export default class StencilSystem extends WebGLSystem
      */
     setMaskStack(stencilMaskStack)
     {
-        this.stencilMaskStack = stencilMaskStack;
-
         const gl = this.renderer.gl;
 
-        if (stencilMaskStack.length === 0)
+        if (stencilMaskStack.length !== this.stencilMaskStack.length)
         {
-            gl.disable(gl.STENCIL_TEST);
+            if (stencilMaskStack.length === 0)
+            {
+                gl.disable(gl.STENCIL_TEST);
+            }
+            else
+            {
+                gl.enable(gl.STENCIL_TEST);
+            }
         }
-        else
-        {
-            gl.enable(gl.STENCIL_TEST);
-        }
+
+        this.stencilMaskStack = stencilMaskStack;
     }
 
     /**
