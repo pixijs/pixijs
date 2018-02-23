@@ -99,6 +99,28 @@ export default class Filter
          * @member {boolean}
          */
         this.autoFit = true;
+
+        /**
+         * If set, filterManager calculates background image and stores location in to specified uniform
+         * Backdrop is explained here: https://www.w3.org/TR/compositing-1/#backdropCalc
+         * All those blending modes are possible to implement through this feature
+         * @member {string|null}
+         */
+        this.backdropUniformName = null;
+
+        /**
+         * Temporary storage for backdrop render texture
+         * @member {PIXI.RenderTexture}
+         * @private
+         */
+        this._backdropRenderTarget = null;
+
+        /**
+         * color that is used to clear renderTarget before filter is applied
+         * RGBA array format
+         * @member {Float32Array}
+         */
+        this.clearColor = null;
     }
 
     /**

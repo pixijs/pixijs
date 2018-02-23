@@ -117,6 +117,21 @@ export default class FilterManager extends WebGLManager
         // this should stop the strange side effects that can occur when cropping to the edges
         sourceFrame.pad(padding);
 
+        for (let i = 0; i < filters.length; i++)
+        {
+            let backdrop = null;
+
+            if (filters[i].backdropUniformName)
+            {
+                if (backdrop === null)
+                {
+                    backdrop = this.prepareBackdrop(sourceFrame);
+                }
+
+                filters[i]._backdropRenderTarget = backdrop;
+            }
+        }
+
         destinationFrame.width = sourceFrame.width;
         destinationFrame.height = sourceFrame.height;
 
@@ -136,7 +151,7 @@ export default class FilterManager extends WebGLManager
 
         // bind the render target
         renderer.bindRenderTarget(renderTarget);
-        renderTarget.clear();
+        renderTarget.clear(filters[filters.length - 1].clearColor);
     }
 
     /**
@@ -172,7 +187,7 @@ export default class FilterManager extends WebGLManager
             flop.setFrame(currentState.destinationFrame, currentState.sourceFrame);
 
             // finally lets clear the render target before drawing to it..
-            flop.clear();
+            flop.clear(filters[1].clearColor);
 
             let i = 0;
 
@@ -190,6 +205,21 @@ export default class FilterManager extends WebGLManager
 
             this.freePotRenderTarget(flip);
             this.freePotRenderTarget(flop);
+        }
+
+        let backdropFree = false;
+
+        for (let i = 0; i < filters.length; i++)
+        {
+            if (filters[i]._backdropRenderTarget)
+            {
+                if (!backdropFree)
+                {
+                    this.freePotRenderTarget(filters[i]._backdropRenderTarget);
+                    backdropFree = true;
+                }
+                filters[i]._backdropRenderTarget = null;
+            }
         }
 
         filterData.index--;
@@ -249,6 +279,7 @@ export default class FilterManager extends WebGLManager
         if (clear)
         {
             gl.disable(gl.SCISSOR_TEST);
+            // TODO - take next filter clear color
             renderer.clear();// [1, 1, 1, 1]);
             gl.enable(gl.SCISSOR_TEST);
         }
@@ -288,6 +319,9 @@ export default class FilterManager extends WebGLManager
      */
     syncUniforms(shader, filter)
     {
+        const renderer = this.renderer;
+        const gl = renderer.gl;
+
         const uniformData = filter.uniformData;
         const uniforms = filter.uniforms;
 
@@ -331,6 +365,18 @@ export default class FilterManager extends WebGLManager
         // TODO Cacheing layer..
         for (const i in uniformData)
         {
+            if (i === filter.backdropUniformName)
+            {
+                const rt = filter._backdropRenderTarget;
+
+                shader.uniforms[i] = textureCount;
+                renderer.boundTextures[textureCount] = renderer.emptyTextures[textureCount];
+                gl.activeTexture(gl.TEXTURE0 + textureCount);
+                gl.bindTexture(gl.TEXTURE_2D, rt.texture.texture);
+                textureCount++;
+                continue;
+            }
+
             const type = uniformData[i].type;
 
             if (type === 'sampler2d' && uniforms[i] !== 0)
@@ -342,17 +388,8 @@ export default class FilterManager extends WebGLManager
                 else
                 {
                     shader.uniforms[i] = textureCount;
-
-                    // TODO
-                    // this is helpful as renderTargets can also be set.
-                    // Although thinking about it, we could probably
-                    // make the filter texture cache return a RenderTexture
-                    // rather than a renderTarget
-                    const gl = this.renderer.gl;
-
-                    this.renderer.boundTextures[textureCount] = this.renderer.emptyTextures[textureCount];
+                    renderer.boundTextures[textureCount] = renderer.emptyTextures[textureCount];
                     gl.activeTexture(gl.TEXTURE0 + textureCount);
-
                     uniforms[i].texture.bind();
                 }
 
@@ -606,5 +643,43 @@ export default class FilterManager extends WebGLManager
         const key = ((minWidth & 0xFFFF) << 16) | (minHeight & 0xFFFF);
 
         this.pool[key].push(renderTarget);
+    }
+
+    /**
+     * Takes a part of current render target corresponding to bounds
+     * fits sourceFrame to current render target frame to evade problems
+     *
+     * @param {PIXI.Rectangle} bounds backdrop region, can be modified inside
+     * @returns {PIXI.RenderTarget} pooled renderTexture with backdrop
+     */
+    prepareBackdrop(bounds)
+    {
+        const renderer = this.renderer;
+        const renderTarget = renderer._activeRenderTarget;
+
+        if (renderTarget.root)
+        {
+            return null;
+        }
+
+        const resolution = renderTarget.resolution;
+        const fr = renderTarget.sourceFrame || renderTarget.destinationFrame;
+
+        bounds.fit(fr);
+
+        const x = (bounds.x - fr.x) * resolution;
+        const y = (bounds.y - fr.y) * resolution;
+        const w = (bounds.width) * resolution;
+        const h = (bounds.height) * resolution;
+
+        const gl = renderer.gl;
+        const rt = this.getPotRenderTarget(gl, w, h, 1);
+
+        renderer.boundTextures[1] = renderer.emptyTextures[1];
+        gl.activeTexture(gl.TEXTURE0 + 1);
+        gl.bindTexture(gl.TEXTURE_2D, rt.texture.texture);
+        gl.copyTexSubImage2D(gl.TEXTURE_2D, 0, 0, 0, x, y, w, h);
+
+        return rt;
     }
 }
