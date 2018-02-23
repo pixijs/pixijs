@@ -198,4 +198,12 @@ describe('PIXI.utils', function ()
             expect(target.prototype.bar).to.equal(1);
         });
     });
+
+    describe('earcut', function ()
+    {
+        it('should exist', function ()
+        {
+            expect(PIXI.utils.earcut).to.be.a('function');
+        });
+    });
 });
