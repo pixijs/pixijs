@@ -48,6 +48,8 @@ export default class ShaderSystem extends WebGLSystem
      */
     bind(shader, dontSync)
     {
+        shader.uniforms.globals = this.renderer.globalUniforms;
+
         const program = shader.program;
         const glProgram = program.glPrograms[this.renderer.CONTEXT_UID] || this.generateShader(shader);
 
@@ -56,6 +58,7 @@ export default class ShaderSystem extends WebGLSystem
         // TODO - some current pixi plugins bypass this.. so it not safe to use yet..
         if (this.program !== program)
         {
+
             this.program = program;
             this.gl.useProgram(glProgram.program);
         }
@@ -153,7 +156,6 @@ export default class ShaderSystem extends WebGLSystem
         const glProgram = new GLProgram(shaderProgram, uniformData);
 
         program.glPrograms[this.renderer.CONTEXT_UID] = glProgram;
-        shader.uniforms.globals = this.renderer.globalUniforms;
 
         return glProgram;
     }
