@@ -58,7 +58,6 @@ export default class ShaderSystem extends WebGLSystem
         // TODO - some current pixi plugins bypass this.. so it not safe to use yet..
         if (this.program !== program)
         {
-
             this.program = program;
             this.gl.useProgram(glProgram.program);
         }
