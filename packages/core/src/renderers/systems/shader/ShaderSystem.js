@@ -1,7 +1,8 @@
 import WebGLSystem from '../WebGLSystem';
-import GLShader from './GLShader';
-import { settings } from '@pixi/settings';
+import GLProgram from './GLProgram';
 import generateUniformsSync from '../../../shader/generateUniformsSync';
+import defaultValue from '../../../shader/defaultValue';
+import compileProgram from './shader/compileProgram';
 
 let UID = 0;
 
@@ -43,15 +44,12 @@ export default class ShaderSystem extends WebGLSystem
      *
      * @param {PIXI.Shader} shader - the new shader
      * @param {boolean} dontSync - false if the shader should automatically sync its uniforms.
-     * @returns {PIXI.glCore.GLShader} the glShader that belongs to the shader.
+     * @returns {PIXI.glCore.glProgram} the glProgram that belongs to the shader.
      */
     bind(shader, dontSync)
     {
-        // maybe a better place for this...
-        shader.uniforms.globals = this.renderer.globalUniforms;
-
         const program = shader.program;
-        const glShader = program.glShaders[this.renderer.CONTEXT_UID] || this.generateShader(shader);
+        const glProgram = program.glPrograms[this.renderer.CONTEXT_UID] || this.generateShader(shader);
 
         this.shader = shader;
 
@@ -59,7 +57,7 @@ export default class ShaderSystem extends WebGLSystem
         if (this.program !== program)
         {
             this.program = program;
-            glShader.bind();
+            this.gl.useProgram(glProgram.program);
         }
 
         if (!dontSync)
@@ -67,7 +65,7 @@ export default class ShaderSystem extends WebGLSystem
             this.syncUniformGroup(shader.uniformGroup);
         }
 
-        return glShader;
+        return glProgram;
     }
 
     /**
@@ -78,21 +76,21 @@ export default class ShaderSystem extends WebGLSystem
     setUniforms(uniforms)
     {
         const shader = this.shader.program;
-        const glShader = shader.glShaders[this.renderer.CONTEXT_UID];
+        const glProgram = shader.glPrograms[this.renderer.CONTEXT_UID];
 
-        shader.syncUniforms(glShader.uniformData, uniforms, this.renderer);
+        shader.syncUniforms(glProgram.uniformData, uniforms, this.renderer);
     }
 
     syncUniformGroup(group)
     {
-        const glShader = this.getGLShader();
+        const glProgram = this.getglProgram();
 
-        if (!group.static || group.dirtyId !== glShader.uniformGroups[group.id])
+        if (!group.static || group.dirtyId !== glProgram.uniformGroups[group.id])
         {
-            glShader.uniformGroups[group.id] = group.dirtyId;
+            glProgram.uniformGroups[group.id] = group.dirtyId;
             const syncFunc = group.syncUniforms[this.shader.program.id] || this.createSyncGroups(group);
 
-            syncFunc(glShader.uniformData, group.uniforms, this.renderer);
+            syncFunc(glProgram.uniformData, group.uniforms, this.renderer);
         }
     }
 
@@ -107,46 +105,57 @@ export default class ShaderSystem extends WebGLSystem
      * Returns the underlying GLShade rof the currently bound shader.
      * This can be handy for when you to have a little more control over the setting of your uniforms.
      *
-     * @return {PIXI.glCore.Shader} the glShader for the currently bound Shader for this context
+     * @return {PIXI.glCore.Shader} the glProgram for the currently bound Shader for this context
      */
-    getGLShader()
+    getglProgram()
     {
         if (this.shader)
         {
-            return this.shader.program.glShaders[this.renderer.CONTEXT_UID];
+            return this.shader.program.glPrograms[this.renderer.CONTEXT_UID];
         }
 
         return null;
     }
 
     /**
-     * Generates a GLShader verion of the Shader provided.
+     * Generates a glProgram verion of the Shader provided.
      *
      * @private
-     * @param {PIXI.Shader} shader the shader that the glShader will be based on.
-     * @return {PIXI.glCore.GLShader} A shiney new GLShader
+     * @param {PIXI.Shader} shader the shader that the glProgram will be based on.
+     * @return {PIXI.glCore.glProgram} A shiney new glProgram
      */
     generateShader(shader)
     {
-        const program = shader.program;
-        const attribMap = {};
+        const gl = this.gl;
 
-        // insert the global properties too!
+        const program = shader.program;
+
+        const attribMap = {};
 
         for (const i in program.attributeData)
         {
             attribMap[i] = program.attributeData[i].location;
         }
 
-        const glShader = new GLShader(this.gl,
-            program.vertexSrc,
-            program.fragmentSrc,
-            settings.PRECISION_FRAGMENT,
-            attribMap);
+        const shaderProgram = compileProgram(gl, program.vertexSrc, program.fragmentSrc, attribMap);
+        const uniformData = {};
 
-        program.glShaders[this.renderer.CONTEXT_UID] = glShader;
+        for (const i in program.uniformData)
+        {
+            const data = program.uniformData[i];
 
-        return glShader;
+            uniformData[i] = {
+                location: gl.getUniformLocation(shaderProgram, i),
+                value: defaultValue(data.type, data.size),
+            };
+        }
+
+        const glProgram = new GLProgram(shaderProgram, uniformData);
+
+        program.glPrograms[this.renderer.CONTEXT_UID] = glProgram;
+        shader.uniforms.globals = this.renderer.globalUniforms;
+
+        return glProgram;
     }
 
     /**
