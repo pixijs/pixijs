@@ -54,7 +54,7 @@ npm install pixi.js
 There is no default export. The correct way to import PixiJS is:
 
 ```js
-import * as Pixi from 'pixi.js'
+import * as PIXI from 'pixi.js'
 ```
 
 #### CDN Install (via cdnjs)
