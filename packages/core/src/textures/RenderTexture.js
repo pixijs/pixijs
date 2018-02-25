@@ -87,6 +87,13 @@ export default class RenderTexture extends Texture
          */
         this.valid = true;
 
+        /**
+         * FilterSystem temporary storage
+         * @private
+         * @member {PIXI.Rectangle}
+         */
+        this.filterFrame = null;
+
         this._updateUvs();
     }
 
@@ -142,5 +149,27 @@ export default class RenderTexture extends Texture
         }
 
         return new RenderTexture(new BaseRenderTexture(options));
+    }
+
+    /**
+     * For v4 filers compatibility, this field exists in RenderTarget but not here
+     * @private
+     * @readonly
+     * @member {PIXI.Rectangle}
+     */
+    get sourceFrame()
+    {
+        return this.filterFrame;
+    }
+
+    /**
+     * For v4 filers compatibility, this field exists in RenderTarget but not here
+     * @private
+     * @readonly
+     * @member {PIXI.Rectangle}
+     */
+    get destinationFrame()
+    {
+        return this._frame;
     }
 }
