@@ -48,6 +48,8 @@ export default class ShaderSystem extends WebGLSystem
      */
     bind(shader, dontSync)
     {
+        shader.uniforms.globals = this.renderer.globalUniforms;
+
         const program = shader.program;
         const glProgram = program.glPrograms[this.renderer.CONTEXT_UID] || this.generateShader(shader);
 
@@ -153,7 +155,6 @@ export default class ShaderSystem extends WebGLSystem
         const glProgram = new GLProgram(shaderProgram, uniformData);
 
         program.glPrograms[this.renderer.CONTEXT_UID] = glProgram;
-        shader.uniforms.globals = this.renderer.globalUniforms;
 
         return glProgram;
     }
