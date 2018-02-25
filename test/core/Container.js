@@ -361,8 +361,8 @@ describe('PIXI.Container', function ()
 
             container.addChild(child);
 
-            expect(() => container.setChildIndex(child, -1)).to.throw('The supplied index is out of bounds');
-            expect(() => container.setChildIndex(child, 1)).to.throw('The supplied index is out of bounds');
+            expect(() => container.setChildIndex(child, -1)).to.throw('The index -1 supplied is out of bounds 1');
+            expect(() => container.setChildIndex(child, 1)).to.throw('The index 1 supplied is out of bounds 1');
         });
 
         it('should throw when child does not belong', function ()
