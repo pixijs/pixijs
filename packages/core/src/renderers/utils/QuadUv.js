@@ -84,7 +84,7 @@ export default class QuadUv extends Geometry
         this.vertices[6] = x;
         this.vertices[7] = y + destinationFrame.height;
 
-        this.upload();
+        this.invalidate();
 
         return this;
     }
@@ -93,7 +93,7 @@ export default class QuadUv extends Geometry
      * legacy upload method, just marks buffers dirty
      * @returns {PIXI.QuadUv} Returns itself.
      */
-    upload()
+    invalidate()
     {
         this.vertexBuffer._updateID++;
         this.uvBuffer._updateID++;
