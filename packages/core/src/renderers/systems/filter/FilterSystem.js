@@ -248,7 +248,7 @@ export default class FilterSystem extends WebGLSystem
 
         if (filter.legacy)
         {
-            this.quadUv.map(this.globalUniforms.uniforms.destinationFrame, this.globalUniforms.uniforms.sourceFrame);
+            this.quadUv.map(input._frame, input.filterFrame);
 
             renderer.geometry.bind(this.quadUv);
             renderer.geometry.draw(DRAW_MODES.TRIANGLES);
