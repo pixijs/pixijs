@@ -21,7 +21,7 @@ import * as ticker from '@pixi/ticker';
 import * as utils from '@pixi/utils';
 import { settings } from '@pixi/settings';
 import { AlphaFilter } from '@pixi/filter-alpha';
-import { BlurFilter, BlurXFilter, BlurYFilter } from '@pixi/filter-blur';
+import { BlurFilter } from '@pixi/filter-blur';
 import { ColorMatrixFilter } from '@pixi/filter-color-matrix';
 import { DisplacementFilter } from '@pixi/filter-displacement';
 import { FXAAFilter } from '@pixi/filter-fxaa';
@@ -88,8 +88,6 @@ const PIXI = { VERSION };
 const filters = {
     AlphaFilter,
     BlurFilter,
-    BlurXFilter,
-    BlurYFilter,
     ColorMatrixFilter,
     DisplacementFilter,
     FXAAFilter,
