@@ -168,7 +168,7 @@ export default class RenderTexture extends Texture
      * @readonly
      * @member {PIXI.Rectangle}
      */
-    get destinationFrame()
+    get size()
     {
         return this._frame;
     }
