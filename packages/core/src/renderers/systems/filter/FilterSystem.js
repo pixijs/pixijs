@@ -2,10 +2,12 @@ import WebGLSystem from '../WebGLSystem';
 
 import RenderTexture from '../../../textures/RenderTexture';
 import Quad from '../../utils/Quad';
+import QuadUv from '../../utils/QuadUv';
 import { Rectangle } from '@pixi/math';
 import * as filterTransforms from '../../filters/filterTransforms';
 import bitTwiddle from 'bit-twiddle';
 import UniformGroup from '../../../shader/UniformGroup';
+import { DRAW_MODES } from '../../../../../constants';
 
 //
 /**
@@ -60,6 +62,8 @@ export default class FilterSystem extends WebGLSystem
          */
         this.quad = new Quad();
 
+        this.quadUv = new QuadUv();
+
         /**
          * Temporary rect for maths
          * @type {PIXI.Rectangle}
@@ -75,6 +79,10 @@ export default class FilterSystem extends WebGLSystem
         this.globalUniforms = new UniformGroup({
             sourceFrame: this.tempRect,
             destinationFrame: this.tempRect,
+
+            // legacy variables
+            filterArea: new Float32Array(4),
+            filterClamp: new Float32Array(4),
         }, true);
     }
 
@@ -98,7 +106,7 @@ export default class FilterSystem extends WebGLSystem
         {
             // lets use the lowest resolution..
             resolution = Math.min(resolution, filters[i].resolution);
-            // and the largest amout of padding!
+            // and the largest amount of padding!
             padding = Math.max(padding, filters[i].padding);
             // only auto fit if all filters are autofit
             autoFit = autoFit || filters[i].autoFit;
@@ -110,9 +118,7 @@ export default class FilterSystem extends WebGLSystem
 
         // round to whole number based on resolution
         // TODO move that to the shader too?
-        state.sourceFrame = target.filterArea ? this.transformFilterArea(this.tempRect,
-            target.filterArea,
-            target.transform) : target.getBounds(true);
+        state.sourceFrame = target.filterArea || target.getBounds(true);
 
         state.sourceFrame.pad(padding);
 
@@ -152,6 +158,18 @@ export default class FilterSystem extends WebGLSystem
         globalUniforms.sourceFrame = state.sourceFrame;
         globalUniforms.destinationFrame = state.destinationFrame;
         globalUniforms.resolution = state.resolution;
+
+        globalUniforms.filterArea[0] = state.destinationFrame.width;
+        globalUniforms.filterArea[1] = state.destinationFrame.height;
+        globalUniforms.filterArea[2] = state.sourceFrame.x;
+        globalUniforms.filterArea[3] = state.sourceFrame.y;
+
+        globalUniforms.filterClamp[0] = 0.5 / state.resolution / state.destinationFrame.width;
+        globalUniforms.filterClamp[1] = 0.5 / state.resolution / state.destinationFrame.height;
+        globalUniforms.filterClamp[2] = (state.sourceFrame.width - 0.5) / state.resolution
+            / state.destinationFrame.width;
+        globalUniforms.filterClamp[3] = (state.sourceFrame.height - 0.5) / state.resolution
+            / state.destinationFrame.height;
 
         this.globalUniforms.update();
 
@@ -227,8 +245,19 @@ export default class FilterSystem extends WebGLSystem
 
         renderer.state.setState(filter.state);
         renderer.shader.bind(filter);
-        renderer.geometry.bind(this.quad);
-        renderer.geometry.draw(5);
+
+        if (filter.legacy)
+        {
+            this.quadUv.map(this.globalUniforms.uniforms.destinationFrame, this.globalUniforms.uniforms.sourceFrame);
+
+            renderer.geometry.bind(this.quadUv);
+            renderer.geometry.draw(DRAW_MODES.TRIANGLES);
+        }
+        else
+        {
+            renderer.geometry.bind(this.quad);
+            renderer.geometry.draw(DRAW_MODES.TRIANGLE_STRIP);
+        }
     }
 
     /**

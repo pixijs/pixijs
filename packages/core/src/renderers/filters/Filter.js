@@ -58,6 +58,12 @@ export default class Filter extends Shader
         this.autoFit = true;
 
         /**
+         * Legacy filters use position and uvs from attributes
+         * @type {boolean}
+         */
+        this.legacy = !!this.program.attributeData.aTextureCoord;
+
+        /**
          * the webGL state the filter requires to render
          * @type {PIXI.State}
          */
