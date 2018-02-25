@@ -59,13 +59,14 @@ export default class Filter extends Shader
 
         /**
          * Legacy filters use position and uvs from attributes
-         * @type {boolean}
+         * @member {boolean}
+         * @readonly
          */
         this.legacy = !!this.program.attributeData.aTextureCoord;
 
         /**
          * the webGL state the filter requires to render
-         * @type {PIXI.State}
+         * @member {PIXI.State}
          */
         this.state = new State();
     }
