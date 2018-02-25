@@ -28,13 +28,10 @@ describe('PIXI.loaders.bitmapFontParser', function ()
         this.resources = path.join(__dirname, 'resources');
         this.fontXML = null;
         this.fontScaledXML = null;
-        this.fontSplitXML = null;
         this.fontImage = null;
         this.fontScaledImage = null;
         this.atlasImage = null;
         this.atlasScaledImage = null;
-        this.splitAbImage = null;
-        this.splitCdImage = null;
         this.atlasJSON = require(resolveURL('atlas.json')); // eslint-disable-line global-require
         this.atlasScaledJSON = require(resolveURL('atlas@0.5x.json')); // eslint-disable-line global-require
 
@@ -56,34 +53,25 @@ describe('PIXI.loaders.bitmapFontParser', function ()
         Promise.all([
             loadXML('font.fnt'),
             loadXML('font@0.5x.fnt'),
-            loadXML('split_font.fnt'),
             loadImage('font.png'),
             loadImage('font@0.5x.png'),
             loadImage('atlas.png'),
             loadImage('atlas@0.5x.png'),
-            loadImage('split_font_ab.png'),
-            loadImage('split_font_cd.png'),
         ]).then(([
             fontXML,
             fontScaledXML,
-            fontSplitXML,
             fontImage,
             fontScaledImage,
             atlasImage,
             atlasScaledImage,
-            splitAbImage,
-            splitCdImage,
         ]) =>
         {
             this.fontXML = fontXML;
             this.fontScaledXML = fontScaledXML;
-            this.fontSplitXML = fontSplitXML;
             this.fontImage = fontImage;
             this.fontScaledImage = fontScaledImage;
             this.atlasImage = atlasImage;
             this.atlasScaledImage = atlasScaledImage;
-            this.splitAbImage = splitAbImage;
-            this.splitCdImage = splitCdImage;
             done();
         });
     });
@@ -322,49 +310,65 @@ describe('PIXI.loaders.bitmapFontParser', function ()
 
     it('should properly register bitmap font having more than one texture', function (done)
     {
-        const baseTexture1 = new PIXI.Texture(new PIXI.BaseTexture(this.splitAbImage, null, 1));
-        const baseTexture2 = new PIXI.Texture(new PIXI.BaseTexture(this.splitCdImage, null, 1));
-        const font = PIXI.extras.BitmapText.registerFont(this.fontSplitXML, [baseTexture1, baseTexture2]);
+        const ldr = new PIXI.loaders.Loader();
 
-        expect(font).to.be.an.object;
-        expect(PIXI.extras.BitmapText.fonts.split_font).to.equal(font);
-        expect(font).to.have.property('chars');
-        const charA = font.chars['A'.charCodeAt(0) || 65];
+        ldr.add(`${__dirname}/resources/split_font.fnt`);
+        ldr.load(() =>
+        {
+            const font = PIXI.extras.BitmapText.fonts.split_font;
 
-        expect(charA).to.exist;
-        expect(charA.texture.baseTexture.source).to.equal(this.splitAbImage);
-        expect(charA.texture.frame.x).to.equal(2);
-        expect(charA.texture.frame.y).to.equal(2);
-        expect(charA.texture.frame.width).to.equal(19);
-        expect(charA.texture.frame.height).to.equal(20);
-        const charB = font.chars['B'.charCodeAt(0) || 66];
+            expect(font).to.be.an.object;
+            expect(PIXI.extras.BitmapText.fonts.split_font).to.equal(font);
+            expect(font).to.have.property('chars');
+            const charA = font.chars['A'.charCodeAt(0) || 65];
 
-        expect(charB).to.exist;
-        expect(charB.texture.baseTexture.source).to.equal(this.splitAbImage);
-        expect(charB.texture.frame.x).to.equal(2);
-        expect(charB.texture.frame.y).to.equal(24);
-        expect(charB.texture.frame.width).to.equal(15);
-        expect(charB.texture.frame.height).to.equal(20);
-        const charC = font.chars['C'.charCodeAt(0) || 67];
+            expect(charA).to.exist;
+            let src = charA.texture.baseTexture.source.src;
 
-        expect(charC).to.exist;
-        expect(charC.texture.baseTexture.source).to.equal(this.splitCdImage);
-        expect(charC.texture.frame.x).to.equal(2);
-        expect(charC.texture.frame.y).to.equal(2);
-        expect(charC.texture.frame.width).to.equal(18);
-        expect(charC.texture.frame.height).to.equal(20);
-        const charD = font.chars['D'.charCodeAt(0) || 68];
+            src = src.substring(src.length - 17);
+            expect(src).to.equal('split_font_ab.png');
+            expect(charA.texture.frame.x).to.equal(2);
+            expect(charA.texture.frame.y).to.equal(2);
+            expect(charA.texture.frame.width).to.equal(19);
+            expect(charA.texture.frame.height).to.equal(20);
+            const charB = font.chars['B'.charCodeAt(0) || 66];
 
-        expect(charD).to.exist;
-        expect(charD.texture.baseTexture.source).to.equal(this.splitCdImage);
-        expect(charD.texture.frame.x).to.equal(2);
-        expect(charD.texture.frame.y).to.equal(24);
-        expect(charD.texture.frame.width).to.equal(17);
-        expect(charD.texture.frame.height).to.equal(20);
-        const charE = font.chars['E'.charCodeAt(0) || 69];
+            expect(charB).to.exist;
+            src = charB.texture.baseTexture.source.src;
 
-        expect(charE).to.be.undefined;
-        done();
+            src = src.substring(src.length - 17);
+            expect(src).to.equal('split_font_ab.png');
+            expect(charB.texture.frame.x).to.equal(2);
+            expect(charB.texture.frame.y).to.equal(24);
+            expect(charB.texture.frame.width).to.equal(15);
+            expect(charB.texture.frame.height).to.equal(20);
+            const charC = font.chars['C'.charCodeAt(0) || 67];
+
+            expect(charC).to.exist;
+            src = charC.texture.baseTexture.source.src;
+
+            src = src.substring(src.length - 17);
+            expect(src).to.equal('split_font_cd.png');
+            expect(charC.texture.frame.x).to.equal(2);
+            expect(charC.texture.frame.y).to.equal(2);
+            expect(charC.texture.frame.width).to.equal(18);
+            expect(charC.texture.frame.height).to.equal(20);
+            const charD = font.chars['D'.charCodeAt(0) || 68];
+
+            expect(charD).to.exist;
+            src = charD.texture.baseTexture.source.src;
+
+            src = src.substring(src.length - 17);
+            expect(src).to.equal('split_font_cd.png');
+            expect(charD.texture.frame.x).to.equal(2);
+            expect(charD.texture.frame.y).to.equal(24);
+            expect(charD.texture.frame.width).to.equal(17);
+            expect(charD.texture.frame.height).to.equal(20);
+            const charE = font.chars['E'.charCodeAt(0) || 69];
+
+            expect(charE).to.be.undefined;
+            done();
+        });
     });
 });
 
