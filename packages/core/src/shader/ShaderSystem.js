@@ -1,8 +1,8 @@
-import WebGLSystem from '../WebGLSystem';
+import WebGLSystem from '../systems/WebGLSystem';
 import GLProgram from './GLProgram';
-import generateUniformsSync from '../../../shader/generateUniformsSync';
-import defaultValue from '../../../shader/defaultValue';
-import compileProgram from './shader/compileProgram';
+import { generateUniformsSync,
+    defaultValue,
+    compileProgram } from './utils';
 
 let UID = 0;
 

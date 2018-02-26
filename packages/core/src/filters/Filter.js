@@ -1,5 +1,5 @@
-import Shader from '../../shader/Shader';
-import Program from '../../shader/Program';
+import Shader from '../shader/Shader';
+import Program from '../shader/Program';
 import State from '../State';
 import { settings } from '@pixi/settings';
 // import extractUniformsFromSrc from './extractUniformsFromSrc';

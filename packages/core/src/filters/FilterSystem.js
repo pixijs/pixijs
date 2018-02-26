@@ -1,13 +1,13 @@
-import WebGLSystem from '../WebGLSystem';
+import WebGLSystem from '../systems/WebGLSystem';
 
-import RenderTexture from '../../../textures/RenderTexture';
-import Quad from '../../utils/Quad';
-import QuadUv from '../../utils/QuadUv';
+import RenderTexture from '../textures/RenderTexture';
+import Quad from '../utils/Quad';
+import QuadUv from '../utils/QuadUv';
 import { Rectangle } from '@pixi/math';
-import * as filterTransforms from '../../filters/filterTransforms';
+import * as filterTransforms from './filterTransforms';
 import bitTwiddle from 'bit-twiddle';
-import UniformGroup from '../../../shader/UniformGroup';
-import { DRAW_MODES } from '../../../../../constants';
+import UniformGroup from '../shader/UniformGroup';
+import { DRAW_MODES } from '@pixi/constants';
 
 //
 /**

@@ -1,8 +1,11 @@
 /**
- * @namespace PIXI.glCore.shader
+ * Systems are individual components to the Renderer pipeline.
+ * @namespace PIXI.systems
  */
 export { default as compileProgram } from './compileProgram';
 export { default as defaultValue } from './defaultValue';
 export { default as setPrecision } from './setPrecision';
 export { default as mapSize } from './mapSize';
 export { default as mapType } from './mapType';
+export { default as generateUniformsSync } from './generateUniformsSync';
+export { default as getTestContext } from './getTestContext';

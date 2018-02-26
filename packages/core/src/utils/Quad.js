@@ -1,4 +1,4 @@
-import Geometry from '../../geometry/Geometry';
+import Geometry from '../geometry/Geometry';
 
 /**
  * Helper class to create a quad

@@ -1,4 +1,4 @@
-import WebGLSystem from '../WebGLSystem';
+import WebGLSystem from '../systems/WebGLSystem';
 import GLBuffer from './GLBuffer';
 
 const byteSizeMap = { 5126: 4, 5123: 2, 5121: 1 };
