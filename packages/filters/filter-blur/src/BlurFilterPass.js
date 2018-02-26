@@ -5,7 +5,7 @@ import generateBlurFragSource from './generateBlurFragSource';
 import getMaxBlurKernelSize from './getMaxBlurKernelSize';
 
 /**
- * The BlurXFilter applies a horizontal Gaussian blur to an object.
+ * The BlurFilterPass applies a horizontal or vertical Gaussian blur to an object.
  *
  * @class
  * @extends PIXI.Filter
@@ -14,16 +14,16 @@ import getMaxBlurKernelSize from './getMaxBlurKernelSize';
 export default class BlurFilterPass extends Filter
 {
     /**
-     * @param {bool} x - Does this pass blur alpong the x or y axis.
+     * @param {boolean} horizontal - Do pass along the x-axis (`true`) or y-axis (`false`).
      * @param {number} strength - The strength of the blur filter.
      * @param {number} quality - The quality of the blur filter.
      * @param {number} resolution - The resolution of the blur filter.
      * @param {number} [kernelSize=5] - The kernelSize of the blur filter.Options: 5, 7, 9, 11, 13, 15.
      */
-    constructor(x, strength, quality, resolution, kernelSize)
+    constructor(horizontal, strength, quality, resolution, kernelSize)
     {
         kernelSize = kernelSize || 5;
-        const vertSrc = generateBlurVertSource(kernelSize, x);
+        const vertSrc = generateBlurVertSource(kernelSize, horizontal);
         const fragSrc = generateBlurFragSource(kernelSize);
 
         super(
@@ -33,7 +33,7 @@ export default class BlurFilterPass extends Filter
             fragSrc
         );
 
-        this.x = x;
+        this.horizontal = horizontal;
 
         this.resolution = resolution || settings.RESOLUTION;
 
@@ -61,7 +61,7 @@ export default class BlurFilterPass extends Filter
 
         if (output)
         {
-            if (this.x)
+            if (this.horizontal)
             {
                 this.uniforms.strength = (1 / output.width) * (output.width / input.width);
             }
@@ -72,7 +72,7 @@ export default class BlurFilterPass extends Filter
         }
         else
         {
-            if (this.x) // eslint-disable-line
+            if (this.horizontal) // eslint-disable-line
             {
                 this.uniforms.strength = (1 / filterManager.renderer.width) * (filterManager.renderer.width / input.width);
             }
