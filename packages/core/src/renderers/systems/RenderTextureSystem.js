@@ -5,8 +5,8 @@ const tempRect = new Rectangle();
 
 /**
  * @class
- * @extends PIXI.WebGLSystem
- * @memberof PIXI
+ * @extends PIXI.systems.WebGLSystem
+ * @memberof PIXI.systems
  */
 
 export default class RenderTextureSystem extends WebGLSystem

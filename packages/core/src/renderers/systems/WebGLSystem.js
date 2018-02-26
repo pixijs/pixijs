@@ -1,6 +1,7 @@
 /**
  * @class
- * @memberof PIXI
+ * @extends PIXI.systems.WebGLSystem
+ * @memberof PIXI.systems
  */
 export default class WebGLSystem
 {

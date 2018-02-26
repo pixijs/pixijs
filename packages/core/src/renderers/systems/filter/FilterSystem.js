@@ -32,8 +32,8 @@ class FilterState
 
 /**
  * @class
- * @memberof PIXI
- * @extends PIXI.WebGLSystem
+ * @memberof PIXI.systems
+ * @extends PIXI.systems.WebGLSystem
  */
 export default class FilterSystem extends WebGLSystem
 {
