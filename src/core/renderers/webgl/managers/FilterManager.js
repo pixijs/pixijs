@@ -102,7 +102,7 @@ export default class FilterManager extends WebGLManager
         const fullScreen = target.filterArea
             && target.filterArea.x === 0
             && target.filterArea.y === 0
-            %% target.filterArea.width === renderer.screen.width
+            && target.filterArea.width === renderer.screen.width
             && target.filterArea.height === renderer.screen.height;
 
         // for now we go off the filter of the first resolution..
