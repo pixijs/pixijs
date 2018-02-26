@@ -787,4 +787,41 @@ export default function deprecated(PIXI)
             },
         },
     });
+
+    /**
+     * @class BlurXFilter
+     * @memberof PIXI.filters
+     * @deprecated since 5.0.0
+     * @see PIXI.filters.BlurFilterPass
+     */
+    class BlurXFilter extends PIXI.filters.BlurFilterPass
+    {
+        constructor(strength, quality, resolution, kernelSize)
+        {
+            warn('PIXI.filters.BlurXFilter is deprecated, use PIXI.filters.BlurFilterPass');
+
+            super(true, strength, quality, resolution, kernelSize);
+        }
+    }
+
+    /**
+     * @class BlurYFilter
+     * @memberof PIXI.filters
+     * @deprecated since 5.0.0
+     * @see PIXI.filters.BlurFilterPass
+     */
+    class BlurYFilter extends PIXI.filters.BlurFilterPass
+    {
+        constructor(strength, quality, resolution, kernelSize)
+        {
+            warn('PIXI.filters.BlurYFilter is deprecated, use PIXI.filters.BlurFilterPass');
+
+            super(false, strength, quality, resolution, kernelSize);
+        }
+    }
+
+    Object.assign(PIXI.filters, {
+        BlurXFilter,
+        BlurYFilter,
+    });
 }
