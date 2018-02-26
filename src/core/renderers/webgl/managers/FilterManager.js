@@ -517,6 +517,8 @@ export default class FilterManager extends WebGLManager
         const renderer = this.renderer;
         const filters = this.managedFilters;
 
+        renderer.off('prerender', this.onPrerender, this);
+
         for (let i = 0; i < filters.length; i++)
         {
             if (!contextLost)
