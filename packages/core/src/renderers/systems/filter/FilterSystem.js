@@ -113,9 +113,9 @@ export default class FilterSystem extends WebGLSystem
             // and the largest amount of padding!
             padding = Math.max(padding, filter.padding);
             // only auto fit if all filters are autofit
-            autoFit = autoFit || filters.autoFit;
+            autoFit = autoFit || filter.autoFit;
 
-            legacy = legacy || filters.legacy;
+            legacy = legacy || filter.legacy;
         }
 
         filterStack.push(state);
