@@ -1,5 +1,5 @@
 import BaseRenderTexture from './BaseRenderTexture';
-import Texture from './Texture';
+import Texture from '../textures/Texture';
 
 /**
  * A RenderTexture is a special texture that allows any PixiJS display object to be rendered to it.

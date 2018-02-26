@@ -1,5 +1,5 @@
-import WebGLSystem from './WebGLSystem';
-import ObjectRenderer from '../utils/ObjectRenderer';
+import WebGLSystem from '../WebGLSystem';
+import ObjectRenderer from './ObjectRenderer';
 
 /**
  * @class

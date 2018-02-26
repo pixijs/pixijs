@@ -1,4 +1,4 @@
-import WebGLSystem from './WebGLSystem';
+import WebGLSystem from '../WebGLSystem';
 import { settings } from '@pixi/settings';
 
 let CONTEXT_UID = 0;

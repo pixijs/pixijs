@@ -1,4 +1,4 @@
-import WebGLSystem from './WebGLSystem';
+import WebGLSystem from '../WebGLSystem';
 import AlphaMaskFilter from '../filters/spriteMask/SpriteMaskFilter';
 
 /**

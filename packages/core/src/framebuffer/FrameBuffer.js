@@ -1,4 +1,4 @@
-import Texture from './BaseTexture';
+import Texture from '../textures/BaseTexture';
 import { FORMATS, TYPES } from '@pixi/constants';
 
 /**

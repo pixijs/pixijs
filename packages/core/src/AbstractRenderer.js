@@ -3,7 +3,7 @@ import { Matrix, Rectangle } from '@pixi/math';
 import { RENDERER_TYPE } from '@pixi/constants';
 import { settings } from '@pixi/settings';
 import { Container } from '@pixi/display';
-import RenderTexture from './textures/RenderTexture';
+import RenderTexture from './renderTexture/RenderTexture';
 import EventEmitter from 'eventemitter3';
 
 const tempMatrix = new Matrix();

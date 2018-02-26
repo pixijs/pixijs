@@ -1,4 +1,4 @@
-import WebGLSystem from './WebGLSystem';
+import WebGLSystem from '../WebGLSystem';
 import { Rectangle } from '@pixi/math';
 
 const tempRect = new Rectangle();

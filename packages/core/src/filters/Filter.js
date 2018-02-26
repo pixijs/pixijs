@@ -1,6 +1,6 @@
 import Shader from '../shader/Shader';
 import Program from '../shader/Program';
-import State from '../State';
+import State from '../state/State';
 import { settings } from '@pixi/settings';
 // import extractUniformsFromSrc from './extractUniformsFromSrc';
 import defaultVertex from './defaultFilter.vert';

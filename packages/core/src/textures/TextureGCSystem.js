@@ -1,4 +1,4 @@
-import WebGLSystem from '../systems/WebGLSystem';
+import WebGLSystem from '../WebGLSystem';
 import { GC_MODES } from '@pixi/constants';
 import { settings } from '@pixi/settings';
 

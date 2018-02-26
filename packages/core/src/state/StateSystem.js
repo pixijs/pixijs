@@ -1,6 +1,6 @@
-import mapWebGLBlendModesToPixi from '../utils/mapWebGLBlendModesToPixi';
-import WebGLSystem from './WebGLSystem';
-import WebGLState from '../State';
+import mapWebGLBlendModesToPixi from './utils/mapWebGLBlendModesToPixi';
+import WebGLSystem from '../WebGLSystem';
+import WebGLState from './State';
 
 const BLEND = 0;
 const OFFSET = 1;

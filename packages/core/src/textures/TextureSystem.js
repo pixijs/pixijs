@@ -1,4 +1,4 @@
-import WebGLSystem from '../systems/WebGLSystem';
+import WebGLSystem from '../WebGLSystem';
 import GLTexture from './GLTexture';
 import { removeItems } from '@pixi/utils';
 

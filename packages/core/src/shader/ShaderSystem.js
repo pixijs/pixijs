@@ -1,4 +1,4 @@
-import WebGLSystem from '../systems/WebGLSystem';
+import WebGLSystem from '../WebGLSystem';
 import GLProgram from './GLProgram';
 import { generateUniformsSync,
     defaultValue,

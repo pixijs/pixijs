@@ -1,4 +1,4 @@
-import WebGLSystem from './WebGLSystem';
+import WebGLSystem from '../WebGLSystem';
 import { Matrix } from '@pixi/math';
 
 /**

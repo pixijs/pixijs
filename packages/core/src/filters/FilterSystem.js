@@ -1,6 +1,6 @@
-import WebGLSystem from '../systems/WebGLSystem';
+import WebGLSystem from '../WebGLSystem';
 
-import RenderTexture from '../textures/RenderTexture';
+import RenderTexture from '../renderTexture/RenderTexture';
 import Quad from '../utils/Quad';
 import QuadUv from '../utils/QuadUv';
 import { Rectangle } from '@pixi/math';
