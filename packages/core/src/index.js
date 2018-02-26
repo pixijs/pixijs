@@ -12,6 +12,7 @@ export { default as RenderTexture } from './textures/RenderTexture';
 export { default as BaseRenderTexture } from './textures/BaseRenderTexture';
 export { default as TextureUvs } from './textures/TextureUvs';
 export { default as WebGLSystem } from './renderers/systems/WebGLSystem';
+export { default as FilterSystem } from './renderers/systems/filter/FilterSystem';
 export { default as State } from './renderers/State';
 export { default as ObjectRenderer } from './renderers/utils/ObjectRenderer';
 export { default as Quad } from './renderers/utils/Quad';
