@@ -5,7 +5,6 @@ import { Rectangle } from '../../../math';
 import Shader from '../../../Shader';
 import * as filterTransforms from '../filters/filterTransforms';
 import bitTwiddle from 'bit-twiddle';
-import settings from '../../../settings';
 
 /**
  * @ignore
@@ -52,12 +51,6 @@ export default class FilterManager extends WebGLManager
         this.pool = {};
 
         this.filterData = null;
-
-        /**
-         * All filters
-         * @type {boolean}
-         */
-        this.fullScreen = settings.FILTER_FULL_SCREEN;
 
         this.managedFilters = [];
 
@@ -106,20 +99,11 @@ export default class FilterManager extends WebGLManager
             currentState = filterData.stack[filterData.index] = new FilterState();
         }
 
-        let fullScreen = this.fullScreen;
-
-        if (renderTargetFrame.width === renderer.screen.width
-            && renderTargetFrame.height === renderer.screen.height)
-        {
-            for (let i = 0; i < filters.length; i++)
-            {
-                if (filters[i].fullScreen)
-                {
-                    fullScreen = true;
-                    break;
-                }
-            }
-        }
+        const fullScreen = target.filterArea
+            && target.filterArea.x === 0
+            && target.filterArea.y === 0
+            %% target.filterArea.width === renderer.screen.width
+            && target.filterArea.height === renderer.screen.height;
 
         // for now we go off the filter of the first resolution..
         const resolution = filters[0].resolution;
