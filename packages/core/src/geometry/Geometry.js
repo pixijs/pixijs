@@ -40,8 +40,8 @@ const map = {
 export default class Geometry
 {
     /**
-     * @param {array} buffers  an array of buffers. optional.
-     * @param {object} attributes of the geometry, optional structure of the attributes layout
+     * @param {array} [buffers]  an array of buffers. optional.
+     * @param {object} [attributes] of the geometry, optional structure of the attributes layout
      */
     constructor(buffers, attributes)
     {

@@ -11,8 +11,9 @@ const WINDING = 4;
 /**
  * A WebGL state machines
  *
- * @memberof PIXI
  * @class
+ * @extends PIXI.systems.WebGLSystem
+ * @memberof PIXI.systems
  */
 export default class StateSystem extends WebGLSystem
 {
