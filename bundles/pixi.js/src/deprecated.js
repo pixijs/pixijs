@@ -1,8 +1,17 @@
+// A map of warning messages alread fired
+const warnings = {};
+
 // provide method to give a stack track for warnings
 // useful for tracking-down where deprecated methods/properties/classes
 // are being used within the code
 function warn(msg)
 {
+    // Ignore duplicat
+    if (warnings[msg])
+    {
+        return;
+    }
+
     /* eslint-disable no-console */
     let stack = new Error().stack;
 
@@ -34,6 +43,8 @@ function warn(msg)
         }
     }
     /* eslint-enable no-console */
+
+    warnings[msg] = true;
 }
 
 export default function deprecated(PIXI)
@@ -145,6 +156,20 @@ export default function deprecated(PIXI)
                 warn('PIXI.loader has moved to PIXI.Loader.shared');
 
                 return PIXI.Loader.shared;
+            },
+        },
+
+        /**
+         * @class PIXI.FilterManager
+         * @see PIXI.systems.FilterSystem
+         * @deprecated since 5.0.0
+         */
+        FilterManager: {
+            get()
+            {
+                warn('PIXI.FilterManager has moved to PIXI.systems.FilterSystem');
+
+                return PIXI.systems.FilterManager;
             },
         },
     });
@@ -705,4 +730,61 @@ export default function deprecated(PIXI)
 
         return this.copyTo(p);
     };
+
+    Object.assign(PIXI.systems.FilterSystem.prototype, {
+        /**
+         * @method PIXI.FilterManager#getRenderTarget
+         * @deprecated since 5.0.0
+         * @see PIXI.systems.FilterSystem#getFilterTexture
+         */
+        getRenderTarget(clear, resolution)
+        {
+            warn('FilterManager#getRenderTarget has been replaced with FilterSystem#getFilterTexture');
+
+            return this.getFilterTexture(resolution);
+        },
+
+        /**
+         * @method PIXI.FilterManager#returnRenderTarget
+         * @deprecated since 5.0.0
+         * @see PIXI.systems.FilterSystem#returnFilterTexture
+         */
+        returnRenderTarget(renderTexture)
+        {
+            warn('FilterManager#returnRenderTarget has been replaced with FilterSystem#returnFilterTexture');
+
+            this.returnFilterTexture(renderTexture);
+        },
+    });
+
+    Object.defineProperties(PIXI.RenderTexture.prototype, {
+        /**
+         * @name PIXI.RenderTexture#sourceFrame
+         * @type {PIXI.Rectangle}
+         * @deprecated since 5.0.0
+         * @readonly
+         */
+        sourceFrame: {
+            get()
+            {
+                warn('PIXI.RenderTexture#sourceFrame has been removed');
+
+                return this.filterFrame;
+            },
+        },
+        /**
+         * @name PIXI.RenderTexture#size
+         * @type {PIXI.Rectangle}
+         * @deprecated since 5.0.0
+         * @readonly
+         */
+        size: {
+            get()
+            {
+                warn('PIXI.RenderTexture#size has been removed');
+
+                return this._frame;
+            },
+        },
+    });
 }

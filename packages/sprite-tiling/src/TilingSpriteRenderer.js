@@ -1,4 +1,4 @@
-import { ObjectRenderer, Shader, Quad } from '@pixi/core';
+import { ObjectRenderer, Shader, QuadUv } from '@pixi/core';
 import { WRAP_MODES } from '@pixi/constants';
 import { Matrix } from '@pixi/math';
 import { premultiplyTintToRgba, correctBlendMode } from '@pixi/utils';
@@ -33,7 +33,7 @@ export default class TilingSpriteRenderer extends ObjectRenderer
 
         this.simpleShader = Shader.from(vertex, fragmentSimple, uniforms);
 
-        this.quad = new Quad();
+        this.quad = new QuadUv();
     }
 
     /**
@@ -63,6 +63,8 @@ export default class TilingSpriteRenderer extends ObjectRenderer
             vertices[2] = vertices[4] = 1.0 - ts.anchor.x;
             vertices[5] = vertices[7] = 1.0 - ts.anchor.y;
         }
+
+        quad.invalidate();
 
         const tex = ts._texture;
         const baseTex = tex.baseTexture;

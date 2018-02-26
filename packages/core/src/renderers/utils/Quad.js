@@ -9,8 +9,7 @@ import Geometry from '../../geometry/Geometry';
 export default class Quad extends Geometry
 {
     /**
-     * @param {WebGLRenderingContext} gl - The gl context for this quad to use.
-     * @param {object} state - TODO: Description
+     * just a quad
      */
     constructor()
     {

@@ -87,6 +87,13 @@ export default class RenderTexture extends Texture
          */
         this.valid = true;
 
+        /**
+         * FilterSystem temporary storage
+         * @private
+         * @member {PIXI.Rectangle}
+         */
+        this.filterFrame = null;
+
         this._updateUvs();
     }
 

@@ -2,10 +2,12 @@ import WebGLSystem from '../WebGLSystem';
 
 import RenderTexture from '../../../textures/RenderTexture';
 import Quad from '../../utils/Quad';
+import QuadUv from '../../utils/QuadUv';
 import { Rectangle } from '@pixi/math';
 import * as filterTransforms from '../../filters/filterTransforms';
 import bitTwiddle from 'bit-twiddle';
 import UniformGroup from '../../../shader/UniformGroup';
+import { DRAW_MODES } from '../../../../../constants';
 
 //
 /**
@@ -24,14 +26,15 @@ class FilterState
         this.destinationFrame = new Rectangle();
         this.filters = [];
         this.target = null;
+        this.legacy = false;
         this.resolution = 1;
     }
 }
 
 /**
  * @class
- * @memberof PIXI
- * @extends PIXI.WebGLSystem
+ * @memberof PIXI.systems
+ * @extends PIXI.systems.WebGLSystem
  */
 export default class FilterSystem extends WebGLSystem
 {
@@ -60,6 +63,8 @@ export default class FilterSystem extends WebGLSystem
          */
         this.quad = new Quad();
 
+        this.quadUv = new QuadUv();
+
         /**
          * Temporary rect for maths
          * @type {PIXI.Rectangle}
@@ -75,6 +80,10 @@ export default class FilterSystem extends WebGLSystem
         this.globalUniforms = new UniformGroup({
             sourceFrame: this.tempRect,
             destinationFrame: this.tempRect,
+
+            // legacy variables
+            filterArea: new Float32Array(4),
+            filterClamp: new Float32Array(4),
         }, true);
     }
 
@@ -93,26 +102,31 @@ export default class FilterSystem extends WebGLSystem
         let resolution = filters[0].resolution;
         let padding = filters[0].padding;
         let autoFit = filters[0].autoFit;
+        let legacy = filters[0].legacy;
 
         for (let i = 1; i < filters.length; i++)
         {
+            const filter =  filters[i];
+
             // lets use the lowest resolution..
-            resolution = Math.min(resolution, filters[i].resolution);
-            // and the largest amout of padding!
-            padding = Math.max(padding, filters[i].padding);
+            resolution = Math.min(resolution, filter.resolution);
+            // and the largest amount of padding!
+            padding = Math.max(padding, filter.padding);
             // only auto fit if all filters are autofit
-            autoFit = autoFit || filters[i].autoFit;
+            autoFit = autoFit || filter.autoFit;
+
+            legacy = legacy || filter.legacy;
         }
 
         filterStack.push(state);
 
         state.resolution = resolution;
 
+        state.legacy = legacy;
+
         // round to whole number based on resolution
         // TODO move that to the shader too?
-        state.sourceFrame = target.filterArea ? this.transformFilterArea(this.tempRect,
-            target.filterArea,
-            target.transform) : target.getBounds(true);
+        state.sourceFrame = target.filterArea || target.getBounds(true);
 
         state.sourceFrame.pad(padding);
 
@@ -153,6 +167,23 @@ export default class FilterSystem extends WebGLSystem
         globalUniforms.destinationFrame = state.destinationFrame;
         globalUniforms.resolution = state.resolution;
 
+        // only update the rect if its legacy..
+        if (state.legacy)
+        {
+            const filterArea = globalUniforms.filterArea;
+            const filterClamp = globalUniforms.filterClamp;
+
+            filterArea[0] = state.destinationFrame.width;
+            filterArea[1] = state.destinationFrame.height;
+            filterArea[2] = state.sourceFrame.x;
+            filterArea[3] = state.sourceFrame.y;
+
+            filterClamp[0] = 0.5 / state.resolution / state.destinationFrame.width;
+            filterClamp[1] = 0.5 / state.resolution / state.destinationFrame.height;
+            filterClamp[2] = (state.sourceFrame.width - 0.5) / state.resolution / state.destinationFrame.width;
+            filterClamp[3] = (state.sourceFrame.height - 0.5) / state.resolution / state.destinationFrame.height;
+        }
+
         this.globalUniforms.update();
 
         const lastState = filterStack[filterStack.length - 1];
@@ -160,7 +191,6 @@ export default class FilterSystem extends WebGLSystem
         if (filters.length === 1)
         {
             filters[0].apply(this, state.renderTexture, lastState.renderTexture, false, state);
-            renderer.renderTexture.bind(null);
 
             this.returnFilterTexture(state.renderTexture);
         }
@@ -227,8 +257,19 @@ export default class FilterSystem extends WebGLSystem
 
         renderer.state.setState(filter.state);
         renderer.shader.bind(filter);
-        renderer.geometry.bind(this.quad);
-        renderer.geometry.draw(5);
+
+        if (filter.legacy)
+        {
+            this.quadUv.map(input._frame, input.filterFrame);
+
+            renderer.geometry.bind(this.quadUv);
+            renderer.geometry.draw(DRAW_MODES.TRIANGLES);
+        }
+        else
+        {
+            renderer.geometry.bind(this.quad);
+            renderer.geometry.draw(DRAW_MODES.TRIANGLE_STRIP);
+        }
     }
 
     /**
@@ -330,6 +371,12 @@ export default class FilterSystem extends WebGLSystem
         return renderTexture;
     }
 
+    /**
+     * Gets extra render texture to use inside current filter
+     *
+     * @param {number} resolution resolution of the renderTexture
+     * @returns {PIXI.RenderTexture}
+     */
     getFilterTexture(resolution)
     {
         const rt = this.activeState.renderTexture;
@@ -342,9 +389,9 @@ export default class FilterSystem extends WebGLSystem
     }
 
     /**
-     * Frees a render target back into the pool.
+     * Frees a render texture back into the pool.
      *
-     * @param {PIXI.RenderTarget} renderTarget - The renderTarget to free
+     * @param {PIXI.RenderTarget} renderTexture - The renderTarget to free
      */
     returnFilterTexture(renderTexture)
     {
@@ -380,65 +427,5 @@ export default class FilterSystem extends WebGLSystem
         }
 
         this.texturePool = {};
-    }
-
-    transformFilterArea(out, rectangle, transform)
-    {
-        const x0 = rectangle.x;
-        const y0 = rectangle.y;
-
-        const x1 = rectangle.x + rectangle.width;
-        const y1 = rectangle.y + rectangle.height;
-
-        const matrix = transform.worldTransform;
-        const a = matrix.a;
-        const b = matrix.b;
-        const c = matrix.c;
-        const d = matrix.d;
-        const tx = matrix.tx;
-        const ty = matrix.ty;
-
-        let minX = Infinity;
-        let minY = Infinity;
-        let maxX = -Infinity;
-        let maxY = -Infinity;
-
-        let x = (a * x0) + (c * y0) + tx;
-        let y = (b * x0) + (d * y0) + ty;
-
-        minX = x < minX ? x : minX;
-        minY = y < minY ? y : minY;
-        maxX = x > maxX ? x : maxX;
-        maxY = y > maxY ? y : maxY;
-
-        x = (a * x1) + (c * y0) + tx;
-        y = (b * x1) + (d * y0) + ty;
-        minX = x < minX ? x : minX;
-        minY = y < minY ? y : minY;
-        maxX = x > maxX ? x : maxX;
-        maxY = y > maxY ? y : maxY;
-
-        x = (a * x0) + (c * y1) + tx;
-        y = (b * x0) + (d * y1) + ty;
-        minX = x < minX ? x : minX;
-        minY = y < minY ? y : minY;
-        maxX = x > maxX ? x : maxX;
-        maxY = y > maxY ? y : maxY;
-
-        x = (a * x1) + (c * y1) + tx;
-        y = (b * x1) + (d * y1) + ty;
-
-        minX = x < minX ? x : minX;
-        minY = y < minY ? y : minY;
-        maxX = x > maxX ? x : maxX;
-        maxY = y > maxY ? y : maxY;
-
-        out.x = minX;
-        out.y = minY;
-
-        out.width = maxX - minX;
-        out.height = maxY - minY;
-
-        return out;
     }
 }
