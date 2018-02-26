@@ -26,6 +26,7 @@ class FilterState
         this.destinationFrame = new Rectangle();
         this.filters = [];
         this.target = null;
+        this.legacy = false;
         this.resolution = 1;
     }
 }
@@ -101,20 +102,27 @@ export default class FilterSystem extends WebGLSystem
         let resolution = filters[0].resolution;
         let padding = filters[0].padding;
         let autoFit = filters[0].autoFit;
+        let legacy = filters[0].legacy;
 
         for (let i = 1; i < filters.length; i++)
         {
+            const filter =  filters[i];
+
             // lets use the lowest resolution..
-            resolution = Math.min(resolution, filters[i].resolution);
+            resolution = Math.min(resolution, filter.resolution);
             // and the largest amount of padding!
-            padding = Math.max(padding, filters[i].padding);
+            padding = Math.max(padding, filter.padding);
             // only auto fit if all filters are autofit
-            autoFit = autoFit || filters[i].autoFit;
+            autoFit = autoFit || filter.autoFit;
+
+            legacy = legacy || filter.legacy;
         }
 
         filterStack.push(state);
 
         state.resolution = resolution;
+
+        state.legacy = legacy;
 
         // round to whole number based on resolution
         // TODO move that to the shader too?
@@ -159,17 +167,22 @@ export default class FilterSystem extends WebGLSystem
         globalUniforms.destinationFrame = state.destinationFrame;
         globalUniforms.resolution = state.resolution;
 
-        globalUniforms.filterArea[0] = state.destinationFrame.width;
-        globalUniforms.filterArea[1] = state.destinationFrame.height;
-        globalUniforms.filterArea[2] = state.sourceFrame.x;
-        globalUniforms.filterArea[3] = state.sourceFrame.y;
+        // only update the rect if its legacy..
+        if (state.legacy)
+        {
+            const filterArea = globalUniforms.filterArea;
+            const filterClamp = globalUniforms.filterClamp;
 
-        globalUniforms.filterClamp[0] = 0.5 / state.resolution / state.destinationFrame.width;
-        globalUniforms.filterClamp[1] = 0.5 / state.resolution / state.destinationFrame.height;
-        globalUniforms.filterClamp[2] = (state.sourceFrame.width - 0.5) / state.resolution
-            / state.destinationFrame.width;
-        globalUniforms.filterClamp[3] = (state.sourceFrame.height - 0.5) / state.resolution
-            / state.destinationFrame.height;
+            filterArea[0] = state.destinationFrame.width;
+            filterArea[1] = state.destinationFrame.height;
+            filterArea[2] = state.sourceFrame.x;
+            filterArea[3] = state.sourceFrame.y;
+
+            filterClamp[0] = 0.5 / state.resolution / state.destinationFrame.width;
+            filterClamp[1] = 0.5 / state.resolution / state.destinationFrame.height;
+            filterClamp[2] = (state.sourceFrame.width - 0.5) / state.resolution / state.destinationFrame.width;
+            filterClamp[3] = (state.sourceFrame.height - 0.5) / state.resolution / state.destinationFrame.height;
+        }
 
         this.globalUniforms.update();
 
@@ -178,7 +191,6 @@ export default class FilterSystem extends WebGLSystem
         if (filters.length === 1)
         {
             filters[0].apply(this, state.renderTexture, lastState.renderTexture, false, state);
-            renderer.renderTexture.bind(null);
 
             this.returnFilterTexture(state.renderTexture);
         }
