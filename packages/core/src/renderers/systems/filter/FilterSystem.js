@@ -372,29 +372,6 @@ export default class FilterSystem extends WebGLSystem
     }
 
     /**
-     * Gets extra render texture to use inside current filter. v4 compatibility
-     *
-     * @param {boolean} clear useless param, wasnt used in v4 too
-     * @param {number} resolution resolution of the renderTexture
-     * @returns {PIXI.RenderTexture}
-     * @private
-     */
-    getRenderTarget(clear, resolution)
-    {
-        return this.getFilterTexture(resolution);
-    }
-
-    /**
-     * Frees a render texture back into the pool. v4 compatibility
-     *
-     * @param {PIXI.RenderTexture} renderTexture - The renderTarget to free
-     */
-    returnRenderTarget(renderTexture)
-    {
-        this.returnFilterTexture(renderTexture);
-    }
-
-    /**
      * Gets extra render texture to use inside current filter
      *
      * @param {number} resolution resolution of the renderTexture

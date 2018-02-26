@@ -150,26 +150,4 @@ export default class RenderTexture extends Texture
 
         return new RenderTexture(new BaseRenderTexture(options));
     }
-
-    /**
-     * For v4 filers compatibility, this field exists in RenderTarget but not here
-     * @private
-     * @readonly
-     * @member {PIXI.Rectangle}
-     */
-    get sourceFrame()
-    {
-        return this.filterFrame;
-    }
-
-    /**
-     * For v4 filers compatibility, this field exists in RenderTarget but not here
-     * @private
-     * @readonly
-     * @member {PIXI.Rectangle}
-     */
-    get size()
-    {
-        return this._frame;
-    }
 }
