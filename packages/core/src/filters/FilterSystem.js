@@ -1,4 +1,4 @@
-import WebGLSystem from '../WebGLSystem';
+import System from '../System';
 
 import RenderTexture from '../renderTexture/RenderTexture';
 import Quad from '../utils/Quad';
@@ -34,9 +34,9 @@ class FilterState
 /**
  * @class
  * @memberof PIXI.systems
- * @extends PIXI.systems.WebGLSystem
+ * @extends PIXI.systems.System
  */
-export default class FilterSystem extends WebGLSystem
+export default class FilterSystem extends System
 {
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.

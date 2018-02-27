@@ -1,13 +1,13 @@
-import WebGLSystem from '../WebGLSystem';
+import System from '../System';
 import GLTexture from './GLTexture';
 import { removeItems } from '@pixi/utils';
 
 /**
  * @class
- * @extends PIXI.WebGLSystem
+ * @extends PIXI.System
  * @memberof PIXI
  */
-export default class TextureSystem extends WebGLSystem
+export default class TextureSystem extends System
 {
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.

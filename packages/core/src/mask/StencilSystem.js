@@ -1,11 +1,11 @@
-import WebGLSystem from '../WebGLSystem';
+import System from '../System';
 
 /**
  * @class
- * @extends PIXI.systems.WebGLSystem
+ * @extends PIXI.systems.System
  * @memberof PIXI.systems
  */
-export default class StencilSystem extends WebGLSystem
+export default class StencilSystem extends System
 {
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.

@@ -1,14 +1,14 @@
-import WebGLSystem from '../WebGLSystem';
+import System from '../System';
 import { settings } from '@pixi/settings';
 
 let CONTEXT_UID = 0;
 
 /**
  * @class
- * @extends PIXI.WebGLSystem
+ * @extends PIXI.System
  * @memberof PIXI
  */
-export default class ContextSystem extends WebGLSystem
+export default class ContextSystem extends System
 {
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.

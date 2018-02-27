@@ -1,8 +1,16 @@
 import * as resources from './textures/resources';
+import FilterSystem from './filters/FilterSystem';
+
+const systems = { FilterSystem };
+
+/**
+ * @namespace PIXI.systems
+ */
+export { systems };
 
 export { resources };
 
-export { default as WebGLSystem } from './WebGLSystem';
+export { default as System } from './System';
 export { default as Renderer } from './Renderer';
 export { default as AbstractRenderer } from './AbstractRenderer';
 export { default as FrameBuffer } from './framebuffer/FrameBuffer';
@@ -26,4 +34,3 @@ export { default as Filter } from './filters/Filter';
 export { default as Attribute } from './geometry/Attribute';
 export { default as Buffer } from './geometry/Buffer';
 export { default as Geometry } from './geometry/Geometry';
-

@@ -1,13 +1,13 @@
-import WebGLSystem from '../WebGLSystem';
+import System from '../System';
 import ObjectRenderer from './ObjectRenderer';
 
 /**
  * @class
- * @extends PIXI.WebGLSystem
+ * @extends PIXI.System
  * @memberof PIXI
  */
 
-export default class BatchSystem extends WebGLSystem
+export default class BatchSystem extends System
 {
     /**
      * @param {PIXI.Renderer} renderer - The renderer this manager works for.

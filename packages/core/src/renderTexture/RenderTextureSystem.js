@@ -1,15 +1,15 @@
-import WebGLSystem from '../WebGLSystem';
+import System from '../System';
 import { Rectangle } from '@pixi/math';
 
 const tempRect = new Rectangle();
 
 /**
  * @class
- * @extends PIXI.systems.WebGLSystem
+ * @extends PIXI.systems.System
  * @memberof PIXI.systems
  */
 
-export default class RenderTextureSystem extends WebGLSystem
+export default class RenderTextureSystem extends System
 {
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.

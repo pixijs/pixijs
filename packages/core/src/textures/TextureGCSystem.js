@@ -1,4 +1,4 @@
-import WebGLSystem from '../WebGLSystem';
+import System from '../System';
 import { GC_MODES } from '@pixi/constants';
 import { settings } from '@pixi/settings';
 
@@ -9,7 +9,7 @@ import { settings } from '@pixi/settings';
  * @class
  * @memberof PIXI
  */
-export default class TextureGCSystem extends WebGLSystem
+export default class TextureGCSystem extends System
 {
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.

@@ -1,4 +1,4 @@
-import WebGLSystem from '../WebGLSystem';
+import System from '../System';
 import GLProgram from './GLProgram';
 import { generateUniformsSync,
     defaultValue,
@@ -12,7 +12,7 @@ let UID = 0;
  * @class
  * @memberof PIXI
  */
-export default class ShaderSystem extends WebGLSystem
+export default class ShaderSystem extends System
 {
     /**
      * @param {PIXI.Renderer} renderer - A reference to the current renderer

@@ -1,9 +1,9 @@
 /**
  * @class
- * @extends PIXI.systems.WebGLSystem
+ * @extends PIXI.systems.System
  * @memberof PIXI.systems
  */
-export default class WebGLSystem
+export default class System
 {
     /**
      * @param {PIXI.Renderer} renderer - The renderer this manager works for.

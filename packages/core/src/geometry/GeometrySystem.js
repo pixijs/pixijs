@@ -1,14 +1,14 @@
-import WebGLSystem from '../WebGLSystem';
+import System from '../System';
 import GLBuffer from './GLBuffer';
 
 const byteSizeMap = { 5126: 4, 5123: 2, 5121: 1 };
 
 /**
  * @class
- * @extends PIXI.WebGLSystem
+ * @extends PIXI.System
  * @memberof PIXI
  */
-export default class GeometrySystem extends WebGLSystem
+export default class GeometrySystem extends System
 {
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.

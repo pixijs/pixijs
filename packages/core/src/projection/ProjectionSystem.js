@@ -1,13 +1,13 @@
-import WebGLSystem from '../WebGLSystem';
+import System from '../System';
 import { Matrix } from '@pixi/math';
 
 /**
  * @class
- * @extends PIXI.systems.WebGLSystem
+ * @extends PIXI.systems.System
  * @memberof PIXI.systems
  */
 
-export default class ProjectionSystem extends WebGLSystem
+export default class ProjectionSystem extends System
 {
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.

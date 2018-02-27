@@ -1,13 +1,13 @@
-import WebGLSystem from '../WebGLSystem';
+import System from '../System';
 
 /**
  * Base for a common object renderer that can be used as a system renderer plugin.
  *
  * @class
- * @extends PIXI.WebGLSystem
+ * @extends PIXI.System
  * @memberof PIXI
  */
-export default class ObjectRenderer extends WebGLSystem
+export default class ObjectRenderer extends System
 {
     /**
      * Starts the renderer and sets the shader

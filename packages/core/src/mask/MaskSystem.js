@@ -1,12 +1,12 @@
-import WebGLSystem from '../WebGLSystem';
+import System from '../System';
 import AlphaMaskFilter from '../filters/spriteMask/SpriteMaskFilter';
 
 /**
  * @class
- * @extends PIXI.systems.WebGLSystem
+ * @extends PIXI.systems.System
  * @memberof PIXI.systems
  */
-export default class MaskSystem extends WebGLSystem
+export default class MaskSystem extends System
 {
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.

@@ -1,5 +1,5 @@
 import mapWebGLBlendModesToPixi from './utils/mapWebGLBlendModesToPixi';
-import WebGLSystem from '../WebGLSystem';
+import System from '../System';
 import WebGLState from './State';
 
 const BLEND = 0;
@@ -12,10 +12,10 @@ const WINDING = 4;
  * A WebGL state machines
  *
  * @class
- * @extends PIXI.systems.WebGLSystem
+ * @extends PIXI.systems.System
  * @memberof PIXI.systems
  */
-export default class StateSystem extends WebGLSystem
+export default class StateSystem extends System
 {
     /**
      * @param {WebGLRenderingContext} gl - The current WebGL rendering context

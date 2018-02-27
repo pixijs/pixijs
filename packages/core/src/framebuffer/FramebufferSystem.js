@@ -1,12 +1,12 @@
-import WebGLSystem from '../WebGLSystem';
+import System from '../System';
 import { Rectangle } from '@pixi/math';
 
 /**
  * @class
- * @extends PIXI.WebGLSystem
+ * @extends PIXI.System
  * @memberof PIXI
  */
-export default class FramebufferSystem extends WebGLSystem
+export default class FramebufferSystem extends System
 {
     /**
      * Sets up the renderer context and necessary buffers.
