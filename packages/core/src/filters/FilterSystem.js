@@ -78,12 +78,15 @@ export default class FilterSystem extends System
          * @type {UniformGroup}
          */
         this.globalUniforms = new UniformGroup({
-            sourceFrame: this.tempRect,
-            destinationFrame: this.tempRect,
+            outputFrame: this.tempRect,
+            inputSize: new Float32Array(4),
+            inputPixel: new Float32Array(4),
+            inputClamp: new Float32Array(4),
+            resolution: 1,
 
             // legacy variables
             filterArea: new Float32Array(4),
-            filterClamp: new Float32Array(4),
+            filterClamp: new Float32Array(4)
         }, true);
     }
 
@@ -163,25 +166,39 @@ export default class FilterSystem extends System
 
         const globalUniforms = this.globalUniforms.uniforms;
 
-        globalUniforms.sourceFrame = state.sourceFrame;
-        globalUniforms.destinationFrame = state.destinationFrame;
+        globalUniforms.outputFrame = state.sourceFrame;
         globalUniforms.resolution = state.resolution;
+
+        const inputSize = globalUniforms.inputSize;
+        const inputPixel = globalUniforms.inputPixel;
+        const inputClamp = globalUniforms.inputClamp;
+
+        inputSize[0] = state.destinationFrame.width;
+        inputSize[1] = state.destinationFrame.height;
+        inputSize[2] = 1.0 / inputSize[0];
+        inputSize[3] = 1.0 / inputSize[1];
+
+        inputPixel[0] = inputSize[0] * state.resolution;
+        inputPixel[1] = inputSize[1] * state.resolution;
+        inputPixel[2] = 1.0 / inputPixel[0];
+        inputPixel[3] = 1.0 / inputPixel[1];
+
+        inputClamp[0] = 0.5 * inputPixel[2];
+        inputClamp[1] = 0.5 * inputPixel[3];
+        inputClamp[2] = (state.sourceFrame.width * inputSize[2]) - (0.5 * inputPixel[2]);
+        inputClamp[3] = (state.sourceFrame.height * inputSize[3]) - (0.5 * inputPixel[3]);
 
         // only update the rect if its legacy..
         if (state.legacy)
         {
             const filterArea = globalUniforms.filterArea;
-            const filterClamp = globalUniforms.filterClamp;
 
             filterArea[0] = state.destinationFrame.width;
             filterArea[1] = state.destinationFrame.height;
             filterArea[2] = state.sourceFrame.x;
             filterArea[3] = state.sourceFrame.y;
 
-            filterClamp[0] = 0.5 / state.resolution / state.destinationFrame.width;
-            filterClamp[1] = 0.5 / state.resolution / state.destinationFrame.height;
-            filterClamp[2] = (state.sourceFrame.width - 0.5) / state.resolution / state.destinationFrame.width;
-            filterClamp[3] = (state.sourceFrame.height - 0.5) / state.resolution / state.destinationFrame.height;
+            globalUniforms.filterClamp = globalUniforms.inputClamp;
         }
 
         this.globalUniforms.update();
