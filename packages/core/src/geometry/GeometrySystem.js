@@ -178,6 +178,7 @@ export default class GeometrySystem extends System
                 }
                 else
                 {
+                    glBuffer.byteLength =  buffer.data.byteLength;
                     gl.bufferData(type, buffer.data, drawType);
                 }
             }
