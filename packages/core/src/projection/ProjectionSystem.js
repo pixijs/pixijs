@@ -3,7 +3,7 @@ import { Matrix } from '@pixi/math';
 
 /**
  * @class
- * @extends PIXI.systems.System
+ * @extends PIXI.System
  * @memberof PIXI.systems
  */
 

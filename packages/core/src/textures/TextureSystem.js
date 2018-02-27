@@ -5,7 +5,7 @@ import { removeItems } from '@pixi/utils';
 /**
  * @class
  * @extends PIXI.System
- * @memberof PIXI
+ * @memberof PIXI.systems
  */
 export default class TextureSystem extends System
 {

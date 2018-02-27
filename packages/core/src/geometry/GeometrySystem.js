@@ -6,7 +6,7 @@ const byteSizeMap = { 5126: 4, 5123: 2, 5121: 1 };
 /**
  * @class
  * @extends PIXI.System
- * @memberof PIXI
+ * @memberof PIXI.systems
  */
 export default class GeometrySystem extends System
 {

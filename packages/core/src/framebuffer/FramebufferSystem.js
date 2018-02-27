@@ -4,7 +4,7 @@ import { Rectangle } from '@pixi/math';
 /**
  * @class
  * @extends PIXI.System
- * @memberof PIXI
+ * @memberof PIXI.systems
  */
 export default class FramebufferSystem extends System
 {

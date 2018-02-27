@@ -5,7 +5,7 @@ const tempRect = new Rectangle();
 
 /**
  * @class
- * @extends PIXI.systems.System
+ * @extends PIXI.System
  * @memberof PIXI.systems
  */
 

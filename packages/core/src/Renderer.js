@@ -138,11 +138,20 @@ export default class Renderer extends AbstractRenderer
         this.resize(this.options.width, this.options.height);
     }
 
-    addSystem(_class, name)
+    /**
+     * Add a new system to the renderer.
+     * @param {class} ClassRef - Class reference
+     * @param {string} [name] - Property name for system, if not specified
+     *        will use a static `name` property on the class itself. This
+     *        name will be assigned as s property on the Renderer so make
+     *        sure it doesn't collide with properties on Renderer.
+     * @return {PIXI.Renderer} Return instance of renderer
+     */
+    addSystem(ClassRef, name)
     {
         if (!name)
         {
-            name = _class.name;
+            name = ClassRef.name;
         }
 
         // TODO - read name from class.name..
@@ -155,7 +164,7 @@ export default class Renderer extends AbstractRenderer
         }
         */
 
-        const system = new _class(this);
+        const system = new ClassRef(this);
 
         if (this[name])
         {

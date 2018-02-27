@@ -3,7 +3,7 @@ import AlphaMaskFilter from '../filters/spriteMask/SpriteMaskFilter';
 
 /**
  * @class
- * @extends PIXI.systems.System
+ * @extends PIXI.System
  * @memberof PIXI.systems
  */
 export default class MaskSystem extends System

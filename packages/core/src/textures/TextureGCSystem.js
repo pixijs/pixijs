@@ -7,7 +7,8 @@ import { settings } from '@pixi/settings';
  * up with textures that are no longer being used.
  *
  * @class
- * @memberof PIXI
+ * @memberof PIXI.systems
+ * @extends PIXI.System
  */
 export default class TextureGCSystem extends System
 {

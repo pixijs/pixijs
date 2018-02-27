@@ -10,7 +10,8 @@ let UID = 0;
  * Helper class to create a webGL Texture
  *
  * @class
- * @memberof PIXI
+ * @memberof PIXI.systems
+ * @extends PIXI.System
  */
 export default class ShaderSystem extends System
 {

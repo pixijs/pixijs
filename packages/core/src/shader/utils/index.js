@@ -1,7 +1,3 @@
-/**
- * Systems are individual components to the Renderer pipeline.
- * @namespace PIXI.systems
- */
 export { default as compileProgram } from './compileProgram';
 export { default as defaultValue } from './defaultValue';
 export { default as setPrecision } from './setPrecision';

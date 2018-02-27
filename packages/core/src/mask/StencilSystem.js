@@ -2,7 +2,7 @@ import System from '../System';
 
 /**
  * @class
- * @extends PIXI.systems.System
+ * @extends PIXI.System
  * @memberof PIXI.systems
  */
 export default class StencilSystem extends System

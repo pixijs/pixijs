@@ -34,7 +34,7 @@ class FilterState
 /**
  * @class
  * @memberof PIXI.systems
- * @extends PIXI.systems.System
+ * @extends PIXI.System
  */
 export default class FilterSystem extends System
 {

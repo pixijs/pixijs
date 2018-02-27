@@ -1,13 +1,7 @@
 import * as resources from './textures/resources';
-import FilterSystem from './filters/FilterSystem';
+import * as systems from './systems';
 
-const systems = { FilterSystem };
-
-/**
- * @namespace PIXI.systems
- */
 export { systems };
-
 export { resources };
 
 export { default as System } from './System';

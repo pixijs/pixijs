@@ -6,7 +6,7 @@ let CONTEXT_UID = 0;
 /**
  * @class
  * @extends PIXI.System
- * @memberof PIXI
+ * @memberof PIXI.systems
  */
 export default class ContextSystem extends System
 {

@@ -1,7 +1,8 @@
 /**
+ * System is a base class used for extending systems used by the {@link PIXI.Renderer}
+ * @see PIXI.Renderer#addSystem
  * @class
- * @extends PIXI.systems.System
- * @memberof PIXI.systems
+ * @memberof PIXI
  */
 export default class System
 {
