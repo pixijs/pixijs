@@ -144,8 +144,15 @@ export default class Text extends Sprite
         const maxLineWidth = measured.maxLineWidth;
         const fontProperties = measured.fontProperties;
 
-        this.canvas.width = Math.ceil((width + (style.padding * 2)) * this.resolution);
-        this.canvas.height = Math.ceil((height + (style.padding * 2)) * this.resolution);
+        const prevCanvasWidth = this.canvasWidth;
+        const prevCanvasHeight = this.canvasHeight;
+
+        this.canvasWidth = Math.ceil(width + (style.padding * 2));
+        this.canvasHeight = Math.ceil(height + (style.padding * 2));
+        this._sizeChanged = this.canvasWidth !== prevCanvasWidth || this.canvasHeight !== prevCanvasHeight;
+
+        this.canvas.width = this.canvasWidth * this.resolution;
+        this.canvas.height = this.canvasHeight * this.resolution;
 
         context.scale(this.resolution, this.resolution);
 
@@ -443,6 +450,11 @@ export default class Text extends Sprite
             return style.fill[0];
         }
 
+        if (!this._sizeChanged && style._gradient)
+        {
+            return style._gradient;
+        }
+
         // the gradient will be evenly spaced out according to how large the array is.
         // ['#FF0000', '#00FF00', '#0000FF'] would created stops at 0.25, 0.5 and 0.75
         let gradient;
@@ -450,8 +462,8 @@ export default class Text extends Sprite
         let currentIteration;
         let stop;
 
-        const width = this.canvas.width / this.resolution;
-        const height = this.canvas.height / this.resolution;
+        const width = this.canvasWidth;
+        const height = this.canvasHeight;
 
         // make a copy of the style settings, so we can manipulate them later
         const fill = style.fill.slice();
@@ -527,6 +539,8 @@ export default class Text extends Sprite
                 currentIteration++;
             }
         }
+
+        style._gradient = gradient;
 
         return gradient;
     }

@@ -284,6 +284,7 @@ export default class TextStyle
         if (this._fill !== outputColor)
         {
             this._fill = outputColor;
+            this._gradient = null;
             this.styleID++;
         }
     }
@@ -303,6 +304,7 @@ export default class TextStyle
         if (this._fillGradientType !== fillGradientType)
         {
             this._fillGradientType = fillGradientType;
+            this._gradient = null;
             this.styleID++;
         }
     }
@@ -322,6 +324,7 @@ export default class TextStyle
         if (!areArraysEqual(this._fillGradientStops,fillGradientStops))
         {
             this._fillGradientStops = fillGradientStops;
+            this._gradient = null;
             this.styleID++;
         }
     }
