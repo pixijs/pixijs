@@ -86,7 +86,7 @@ export default class FilterSystem extends System
 
             // legacy variables
             filterArea: new Float32Array(4),
-            filterClamp: new Float32Array(4)
+            filterClamp: new Float32Array(4),
         }, true);
     }
 
