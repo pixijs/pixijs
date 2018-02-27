@@ -562,7 +562,7 @@ export default class BaseTexture extends EventEmitter
             type,
             width,
             height,
-            premultiplyAlpha:false,
+            premultiplyAlpha: false,
         });
     }
 
