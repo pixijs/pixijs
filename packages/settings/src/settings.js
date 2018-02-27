@@ -36,7 +36,7 @@ export default {
      */
     RESOLUTION: 1,
 
-    PREFER_WEBGL_2: false,
+    PREFER_WEBGL_2: true,
 
     /**
      * Default filter resolution.
