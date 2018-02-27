@@ -38,9 +38,13 @@ export default class RenderTextureSystem extends System
 
         const renderer = this.renderer;
 
+        let resolution;
+
         if (renderTexture)
         {
             const baseTexture = renderTexture.baseTexture;
+
+            resolution = baseTexture.resolution;
 
             if (!destinationFrame)
             {
@@ -57,11 +61,13 @@ export default class RenderTextureSystem extends System
 
             this.renderer.framebuffer.bind(baseTexture.frameBuffer, destinationFrame);
 
-            this.renderer.projection.update(destinationFrame, sourceFrame, baseTexture.resolution, false);
+            this.renderer.projection.update(destinationFrame, sourceFrame, resolution, false);
             this.renderer.stencil.setMaskStack(baseTexture.stencilMaskStack);
         }
         else
         {
+            resolution = this.renderer.resolution;
+
             // TODO these validation checks happen deeper down..
             // thing they can be avoided..
             if (!destinationFrame)
@@ -80,11 +86,15 @@ export default class RenderTextureSystem extends System
             renderer.framebuffer.bind(null, destinationFrame);
 
             // TODO store this..
-            this.renderer.projection.update(destinationFrame, sourceFrame, this.renderer.resolution, true);
+            this.renderer.projection.update(destinationFrame, sourceFrame, resolution, true);
             this.renderer.stencil.setMaskStack(this.defaultMaskStack);
         }
 
-        this.destinationFrame.copyFrom(destinationFrame);
+        this.destinationFrame.x = destinationFrame.x / resolution;
+        this.destinationFrame.y = destinationFrame.y / resolution;
+
+        this.destinationFrame.width = destinationFrame.width / resolution;
+        this.destinationFrame.height = destinationFrame.height / resolution;
     }
 
     /**
