@@ -4,9 +4,9 @@ varying vec2 v_rgbSW;
 varying vec2 v_rgbSE;
 varying vec2 v_rgbM;
 
-varying vec2 vTextureCoord;
+varying vec2 vFragCoord;
 uniform sampler2D uSampler;
-uniform vec4 destinationFrame;
+uniform highp vec4 inputPixel;
 
 
 /**
@@ -64,12 +64,11 @@ uniform vec4 destinationFrame;
 
 //optimized version for mobile, where dependent
 //texture reads can be a bottleneck
-vec4 fxaa(sampler2D tex, vec2 fragCoord, vec2 resolution,
+vec4 fxaa(sampler2D tex, vec2 fragCoord, vec2 inverseVP,
           vec2 v_rgbNW, vec2 v_rgbNE,
           vec2 v_rgbSW, vec2 v_rgbSE,
           vec2 v_rgbM) {
     vec4 color;
-    mediump vec2 inverseVP = vec2(1.0 / resolution.x, 1.0 / resolution.y);
     vec3 rgbNW = texture2D(tex, v_rgbNW).xyz;
     vec3 rgbNE = texture2D(tex, v_rgbNE).xyz;
     vec3 rgbSW = texture2D(tex, v_rgbSW).xyz;
@@ -114,11 +113,9 @@ vec4 fxaa(sampler2D tex, vec2 fragCoord, vec2 resolution,
 
 void main() {
 
-      vec2 fragCoord = vTextureCoord * destinationFrame.zw;
-
       vec4 color;
 
-      color = fxaa(uSampler, fragCoord, destinationFrame.zw, v_rgbNW, v_rgbNE, v_rgbSW, v_rgbSE, v_rgbM);
+      color = fxaa(uSampler, vFragCoord, inputPixel.zw, v_rgbNW, v_rgbNE, v_rgbSW, v_rgbSE, v_rgbM);
 
       gl_FragColor = color;
 }
