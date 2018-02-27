@@ -1,7 +1,6 @@
 import { Filter } from '@pixi/core';
 import { settings } from '@pixi/settings';
-import BlurXFilter from './BlurXFilter';
-import BlurYFilter from './BlurYFilter';
+import BlurFilterPass from './BlurFilterPass';
 
 /**
  * The BlurFilter applies a Gaussian blur to an object.
@@ -23,13 +22,15 @@ export default class BlurFilter extends Filter
     {
         super();
 
-        this.blurXFilter = new BlurXFilter(strength, quality, resolution, kernelSize);
-        this.blurYFilter = new BlurYFilter(strength, quality, resolution, kernelSize);
+        this.blurXFilter = new BlurFilterPass(true, strength, quality, resolution, kernelSize);
+        this.blurYFilter = new BlurFilterPass(false, strength, quality, resolution, kernelSize);
 
-        this.padding = 0;
+        this._padding = 0;
         this.resolution = resolution || settings.RESOLUTION;
         this.quality = quality || 4;
         this.blur = strength || 8;
+
+        this.repeatEdgePixels = false;
     }
 
     /**
@@ -41,12 +42,38 @@ export default class BlurFilter extends Filter
      */
     apply(filterManager, input, output)
     {
-        const renderTarget = filterManager.getFilterTexture(true);
+        const xStrength = Math.abs(this.blurXFilter.strength);
+        const yStrength = Math.abs(this.blurYFilter.strength);
 
-        this.blurXFilter.apply(filterManager, input, renderTarget, true);
-        this.blurYFilter.apply(filterManager, renderTarget, output, false);
+        if (xStrength && yStrength)
+        {
+            const renderTarget = filterManager.getFilterTexture(true);
 
-        filterManager.returnFilterTexture(renderTarget);
+            this.blurXFilter.apply(filterManager, input, renderTarget, true);
+            this.blurYFilter.apply(filterManager, renderTarget, output, false);
+
+            filterManager.returnFilterTexture(renderTarget);
+        }
+        else if (yStrength)
+        {
+            this.blurYFilter.apply(filterManager, input, output, false);
+        }
+        else
+        {
+            this.blurXFilter.apply(filterManager, input, output, false);
+        }
+    }
+
+    updatePadding()
+    {
+        if (this._repeatEdgePixels)
+        {
+            this.padding = 0;
+        }
+        else
+        {
+            this.padding = Math.max(Math.abs(this.blurXFilter.strength), Math.abs(this.blurYFilter.strength)) * 2;
+        }
     }
 
     /**
@@ -63,7 +90,7 @@ export default class BlurFilter extends Filter
     set blur(value) // eslint-disable-line require-jsdoc
     {
         this.blurXFilter.blur = this.blurYFilter.blur = value;
-        this.padding = Math.max(Math.abs(this.blurXFilter.strength), Math.abs(this.blurYFilter.strength)) * 2;
+        this.updatePadding();
     }
 
     /**
@@ -96,7 +123,7 @@ export default class BlurFilter extends Filter
     set blurX(value) // eslint-disable-line require-jsdoc
     {
         this.blurXFilter.blur = value;
-        this.padding = Math.max(Math.abs(this.blurXFilter.strength), Math.abs(this.blurYFilter.strength)) * 2;
+        this.updatePadding();
     }
 
     /**
@@ -113,7 +140,7 @@ export default class BlurFilter extends Filter
     set blurY(value) // eslint-disable-line require-jsdoc
     {
         this.blurYFilter.blur = value;
-        this.padding = Math.max(Math.abs(this.blurXFilter.strength), Math.abs(this.blurYFilter.strength)) * 2;
+        this.updatePadding();
     }
 
     /**
@@ -130,5 +157,22 @@ export default class BlurFilter extends Filter
     set blendMode(value) // eslint-disable-line require-jsdoc
     {
         this.blurYFilter._blendMode = value;
+    }
+
+    /**
+     * If set to true the edge of the target will be clamped
+     *
+     * @member {bool}
+     * @default false
+     */
+    get repeatEdgePixels()
+    {
+        return this._repeatEdgePixels;
+    }
+
+    set repeatEdgePixels(value)
+    {
+        this._repeatEdgePixels = value;
+        this.updatePadding();
     }
 }

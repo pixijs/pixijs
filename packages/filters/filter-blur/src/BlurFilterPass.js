@@ -5,24 +5,25 @@ import generateBlurFragSource from './generateBlurFragSource';
 import getMaxBlurKernelSize from './getMaxBlurKernelSize';
 
 /**
- * The BlurYFilter applies a horizontal Gaussian blur to an object.
+ * The BlurFilterPass applies a horizontal or vertical Gaussian blur to an object.
  *
  * @class
  * @extends PIXI.Filter
  * @memberof PIXI.filters
  */
-export default class BlurYFilter extends Filter
+export default class BlurFilterPass extends Filter
 {
     /**
+     * @param {boolean} horizontal - Do pass along the x-axis (`true`) or y-axis (`false`).
      * @param {number} strength - The strength of the blur filter.
      * @param {number} quality - The quality of the blur filter.
      * @param {number} resolution - The resolution of the blur filter.
      * @param {number} [kernelSize=5] - The kernelSize of the blur filter.Options: 5, 7, 9, 11, 13, 15.
      */
-    constructor(strength, quality, resolution, kernelSize)
+    constructor(horizontal, strength, quality, resolution, kernelSize)
     {
         kernelSize = kernelSize || 5;
-        const vertSrc = generateBlurVertSource(kernelSize, false);
+        const vertSrc = generateBlurVertSource(kernelSize, horizontal);
         const fragSrc = generateBlurFragSource(kernelSize);
 
         super(
@@ -31,6 +32,8 @@ export default class BlurYFilter extends Filter
             // fragment shader
             fragSrc
         );
+
+        this.horizontal = horizontal;
 
         this.resolution = resolution || settings.RESOLUTION;
 
@@ -43,22 +46,6 @@ export default class BlurYFilter extends Filter
         this.firstRun = true;
     }
 
-    /**
-     * Applies the filter.
-     *
-     * @param {PIXI.FilterManager} filterManager - The manager.
-     * @param {PIXI.RenderTarget} input - The input target.
-     * @param {PIXI.RenderTarget} output - The output target.
-     * @param {boolean} clear - Should the output be cleared before rendering?
-     */
-    /**
-     * Applies the filter.
-     *
-     * @param {PIXI.FilterManager} filterManager - The manager.
-     * @param {PIXI.RenderTarget} input - The input target.
-     * @param {PIXI.RenderTarget} output - The output target.
-     * @param {boolean} clear - Should the output be cleared before rendering?
-     */
     apply(filterManager, input, output, clear)
     {
         if (this.firstRun)
@@ -74,11 +61,25 @@ export default class BlurYFilter extends Filter
 
         if (output)
         {
-            this.uniforms.strength = (1 / output.height) * (output.height / input.height);
+            if (this.horizontal)
+            {
+                this.uniforms.strength = (1 / output.width) * (output.width / input.width);
+            }
+            else
+            {
+                this.uniforms.strength = (1 / output.height) * (output.height / input.height);
+            }
         }
         else
         {
-            this.uniforms.strength = (1 / filterManager.renderer.height) * (filterManager.renderer.height / input.height);
+            if (this.horizontal) // eslint-disable-line
+            {
+                this.uniforms.strength = (1 / filterManager.renderer.width) * (filterManager.renderer.width / input.width);
+            }
+            else
+            {
+                this.uniforms.strength = (1 / filterManager.renderer.height) * (filterManager.renderer.height / input.height); // eslint-disable-line
+            }
         }
 
         // screen space!
@@ -120,12 +121,11 @@ export default class BlurYFilter extends Filter
             filterManager.returnFilterTexture(renderTarget);
         }
     }
-
     /**
      * Sets the strength of both the blur.
      *
      * @member {number}
-     * @default 2
+     * @default 16
      */
     get blur()
     {
