@@ -556,12 +556,13 @@ export default class BaseTexture extends EventEmitter
         const resource = new BufferResource(buffer, { width, height });
         const type = buffer instanceof Float32Array ? TYPES.FLOAT : TYPES.UNSIGNED_BYTE;
 
-        return BaseTexture(resource, {
+        return new BaseTexture(resource, {
             scaleMode: SCALE_MODES.NEAREST,
             format: FORMATS.RGBA,
             type,
             width,
             height,
+            premultiplyAlpha:false,
         });
     }
 
