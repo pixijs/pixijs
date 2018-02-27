@@ -36,6 +36,14 @@ export default {
      */
     RESOLUTION: 1,
 
+    /**
+     * Prefer the use of WebGL v2 by default.
+     *
+     * @static
+     * @memberof PIXI.settings
+     * @type {boolean}
+     * @default true
+     */
     PREFER_WEBGL_2: true,
 
     /**
