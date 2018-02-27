@@ -74,7 +74,7 @@ export default class ContextSystem extends System
     {
         let gl;
 
-        if (settings.PREFER_WEBGL_2)
+        if (settings.PREFER_WEBGL_2 && !this.renderer.legacy)
         {
             gl = canvas.getContext('webgl2', options);
         }
