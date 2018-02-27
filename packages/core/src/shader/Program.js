@@ -1,6 +1,11 @@
-import * as shaderUtils from '../renderers/systems/shader/shader';
+// import * as from '../systems/shader/shader';
+import { setPrecision,
+    defaultValue,
+    compileProgram,
+    mapSize,
+    mapType,
+    getTestContext } from './utils';
 import { ProgramCache } from '@pixi/utils';
-import getTestContext from './getTestContext';
 import defaultFragment from './defaultProgram.frag';
 import defaultVertex from './defaultProgram.vert';
 import { settings } from '@pixi/settings';
@@ -34,8 +39,8 @@ class Program
          */
         this.fragmentSrc = fragmentSrc || Program.defaultFragmentSrc;
 
-        this.vertexSrc = shaderUtils.setPrecision(this.vertexSrc, settings.PRECISION_VERTEX);
-        this.fragmentSrc = shaderUtils.setPrecision(this.fragmentSrc, settings.PRECISION_FRAGMENT);
+        this.vertexSrc = setPrecision(this.vertexSrc, settings.PRECISION_VERTEX);
+        this.fragmentSrc = setPrecision(this.fragmentSrc, settings.PRECISION_FRAGMENT);
 
         // currently this does not extract structs only default types
         this.extractData(this.vertexSrc, this.fragmentSrc);
@@ -62,7 +67,7 @@ class Program
 
         if (gl)
         {
-            const program = shaderUtils.compileProgram(gl, vertexSrc, fragmentSrc);
+            const program = compileProgram(gl, vertexSrc, fragmentSrc);
 
             this.attributeData = this.getAttributeData(program, gl);
             this.uniformData = this.getUniformData(program, gl);
@@ -95,13 +100,13 @@ class Program
         for (let i = 0; i < totalAttributes; i++)
         {
             const attribData = gl.getActiveAttrib(program, i);
-            const type = shaderUtils.mapType(gl, attribData.type);
+            const type = mapType(gl, attribData.type);
 
             /*eslint-disable */
             const data = {
                 type: type,
                 name: attribData.name,
-                size: shaderUtils.mapSize(type),
+                size: mapSize(type),
                 location: 0,
             };
             /* eslint-enable */
@@ -145,14 +150,14 @@ class Program
             const name = uniformData.name.replace(/\[.*?\]/, '');
 
             const isArray = uniformData.name.match(/\[.*?\]/, '');
-            const type = shaderUtils.mapType(gl, uniformData.type);
+            const type = mapType(gl, uniformData.type);
 
             /*eslint-disable */
             uniforms[name] = {
                 type: type,
                 size: uniformData.size,
                 isArray:isArray,
-                value: shaderUtils.defaultValue(type, uniformData.size),
+                value: defaultValue(type, uniformData.size),
             };
             /* eslint-enable */
         }
