@@ -8,6 +8,16 @@ import defaultFragment from './defaultFilter.frag';
 /**
  * Filter is a special type of shader that is applied to the screen.
  *
+ * Example of BlurFilter (LINK): http://pixijs.io/examples/#/filters/blur-filter.js
+ *
+ * Suppose, you assigned filter to a container:
+ *
+ * ```
+ * let filter = new PIXI.Filter(myShaderVert, myShaderFrag, { myUniform: 0.5 });
+ *
+ * container.filters = [filter]
+ * ```
+ *
  * Pixi `FilterSystem` renders the container into temporary FrameBuffer, then filter renders it to the screen.
  * Filters can be stacked.
  *
@@ -28,8 +38,10 @@ import defaultFragment from './defaultFilter.frag';
  *
  * `resolution` is the ratio of  screen (CSS) pixels to real pixels.
  *
- * `inputPixel.xy` is the size of framebuffer in real pixels
+ * `inputPixel.xy` is the size of framebuffer in real pixels, same as `inputSize.xy * resolution`
  * `inputPixel.zw` is inverted `inputPixel.xy`
+ *
+ * its handy for filters that use neighbour pixels, like FXAAFilter (LINK!)
  *
  * Only a part of  `outputFrame.zw` size of temporary FrameBuffer is used,
  * `(0, 0, outputFrame.width, outputFrame.height)`,
