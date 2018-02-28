@@ -24,8 +24,14 @@ import defaultFragment from './defaultFilter.frag';
  *
  * ### Previous Version Differences
  *
- * In PixiJS v3, a filter was always applied to whole screen.
- * Since v4, it can be applied only to part of it, thus it has a set of uniforms to deal with coordinates.
+ * In PixiJS **v3**, a filter was always applied to _whole screen_.
+ *
+ * In PixiJS **v4**, a filter can be applied _only part of the screen_, developers
+ * had to create a set of uniforms to deal with coordinates.
+ *
+ * In PixiJS **v5** combines _both approaches_, developers can use normal coordinates of
+ * v3 and then allow filter to use partial FrameBuffers, bringing those extra
+ * uniforms into account.
  *
  * ### Built-in Uniforms
  *
