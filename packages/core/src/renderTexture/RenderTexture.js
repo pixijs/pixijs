@@ -94,7 +94,7 @@ export default class RenderTexture extends Texture
          */
         this.filterFrame = null;
 
-        this._updateUvs();
+        this.updateUvs();
     }
 
     /**
@@ -120,7 +120,7 @@ export default class RenderTexture extends Texture
             this.baseTexture.resize(width, height);
         }
 
-        this._updateUvs();
+        this.updateUvs();
     }
 
     /**
