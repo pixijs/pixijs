@@ -34,24 +34,23 @@ import defaultFragment from './defaultFilter.frag';
  *
  * **uSampler**
  *
- * The most important uniform, its the input texture that container was rendered into.
- * As all PixiJS' FrameBuffers, both input and output are premultiplied by alpha.
+ * The most important uniform is the input texture that container was rendered into.
+ * _Important note: as with all PixiJS' FrameBuffers, both input and output are
+ * premultiplied by alpha._
  *
- * Suppose, you've passed FrameBuffer space coordinates to fragment shader to fragment shader in `vTextureCoord`.
+ * For example, you can passed FrameBuffer space coordinates to fragment shader with `vTextureCoord`.
  *
  * ```
- * var myFragment = `
+ * const fragment = `
  * varying vec2 vTextureCoord;
- *
  * uniform sampler2D uSampler;
- *
  * void main(void)
  * {
  *    gl_FragColor = texture2D(uSampler, vTextureCoord);
  * }
  * `;
  *
- * var myFilter = new PIXI.Filter(null, myFragment);
+ * const myFilter = new PIXI.Filter(null, fragment);
  * ```
  *
  * This filter is just one uniform less than {@link PIXI.filters.AlphaFilter AlphaFilter}.
