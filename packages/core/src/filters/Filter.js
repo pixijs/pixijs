@@ -8,7 +8,7 @@ import defaultFragment from './defaultFilter.frag';
 /**
  * Filter is a special type of shader that is applied to the screen.
  * {@link http://pixijs.io/examples/#/filters/blur-filter.js Example} of the
- * {@link PIXI.filters.BlurFilter BlurFilter}. 
+ * {@link PIXI.filters.BlurFilter BlurFilter}.
  *
  * ### Usage
  * Filters can be applied to any DisplayObject or Container. PixiJS' `FilterSystem`
@@ -38,7 +38,7 @@ import defaultFragment from './defaultFilter.frag';
  * It's the same as `renderer.screen` for a fullscreen filter.
  * Only a part of  `outputFrame.zw` size of temporary FrameBuffer is used,
  * `(0, 0, outputFrame.width, outputFrame.height)`,
- * 
+ *
  * Filters uses this quad to normalized (0-1) space, its passed into `aVertexPosition` attribute.
  * To calculate vertex position in screen space using normalized (0-1) space:
  *
@@ -77,7 +77,7 @@ import defaultFragment from './defaultFilter.frag';
  * `inputPixel.xy` is the size of framebuffer in real pixels, same as `inputSize.xy * resolution`
  * `inputPixel.zw` is inverted `inputPixel.xy`.
  *
- * It's handy for filters that use neighbour pixels, like {@link PIXI.filters.FXAAFilter FXAAFilter}. 
+ * It's handy for filters that use neighbour pixels, like {@link PIXI.filters.FXAAFilter FXAAFilter}.
  *
  * **inputClamp**
  *
