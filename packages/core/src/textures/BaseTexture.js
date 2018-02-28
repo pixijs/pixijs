@@ -9,6 +9,12 @@ import { settings } from '@pixi/settings';
 import EventEmitter from 'eventemitter3';
 import bitTwiddle from 'bit-twiddle';
 
+const defaultBufferOptions = {
+    scaleMode: SCALE_MODES.NEAREST,
+    format: FORMATS.RGBA,
+    premultiplyAlpha: false,
+};
+
 /**
  * A texture stores the information that represents an image. All textures have a base texture.
  *
@@ -547,22 +553,17 @@ export default class BaseTexture extends EventEmitter
      *        is provided, a new Float32Array is created.
      * @param {number} width - Width of the resource
      * @param {number} height - Height of the resource
+     * @param {object} [options] See {@link PIXI.BaseTexture}'s constructor for options.
      * @return {PIXI.BaseTexture} The resulting new BaseTexture
      */
-    static fromBuffer(buffer, width, height)
+    static fromBuffer(buffer, width, height, options)
     {
         buffer = buffer || new Float32Array(width * height * 4);
 
         const resource = new BufferResource(buffer, { width, height });
         const type = buffer instanceof Float32Array ? TYPES.FLOAT : TYPES.UNSIGNED_BYTE;
 
-        return BaseTexture(resource, {
-            scaleMode: SCALE_MODES.NEAREST,
-            format: FORMATS.RGBA,
-            type,
-            width,
-            height,
-        });
+        return new BaseTexture(resource, Object.assign(defaultBufferOptions, options || { width, height, type }));
     }
 
     /**

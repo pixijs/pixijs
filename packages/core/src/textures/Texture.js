@@ -275,9 +275,10 @@ export default class Texture extends EventEmitter
      * @static
      * @param {number|string|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|PIXI.BaseTexture}
      *        source - Source to create texture from
+     * @param {object} [options] See {@link PIXI.BaseTexture}'s constructor for options.
      * @return {PIXI.Texture} The newly created texture
      */
-    static from(source, scaleMode)
+    static from(source, options)
     {
         let cacheId = null;
 
@@ -299,7 +300,7 @@ export default class Texture extends EventEmitter
 
         if (!texture)
         {
-            texture = new Texture(new BaseTexture(source, scaleMode));
+            texture = new Texture(new BaseTexture(source, options));
             texture.baseTexture.cacheId = cacheId;
 
             BaseTexture.addToCache(texture.baseTexture, cacheId);
@@ -308,6 +309,22 @@ export default class Texture extends EventEmitter
 
         // lets assume its a base texture!
         return texture;
+    }
+
+    /**
+     * Create a new Texture with a BufferResource from a Float32Array.
+     * RGBA values are floats from 0 to 1.
+     * @static
+     * @param {Float32Array|UintArray} buffer The optional array to use, if no data
+     *        is provided, a new Float32Array is created.
+     * @param {number} width - Width of the resource
+     * @param {number} height - Height of the resource
+     * @param {object} [options] See {@link PIXI.BaseTexture}'s constructor for options.
+     * @return {PIXI.Texture} The resulting new BaseTexture
+     */
+    static fromBuffer(buffer, width, height, options)
+    {
+        return new Texture(BaseTexture.fromBuffer(buffer, width, height, options));
     }
 
     /**

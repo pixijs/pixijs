@@ -1,6 +1,8 @@
 import * as resources from './textures/resources';
 import * as systems from './systems';
 
+import './settings';
+
 export { systems };
 export { resources };
 

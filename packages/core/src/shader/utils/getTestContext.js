@@ -1,4 +1,5 @@
-import { settings } from '@pixi/settings';
+import { settings } from '../../settings';
+import { ENV } from '@pixi/constants';
 
 let context = null;
 
@@ -17,7 +18,7 @@ export default function getTestContext()
 
         let gl;
 
-        if (settings.PREFER_WEBGL_2)
+        if (settings.PREFER_ENV >= ENV.WEBGL2)
         {
             gl = canvas.getContext('webgl2', {});
         }
