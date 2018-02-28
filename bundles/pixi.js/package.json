@@ -20,7 +20,8 @@
     "url": "https://github.com/pixijs/pixi.js.git"
   },
   "scripts": {
-    "test": "floss --path test"
+    "test": "floss --path test",
+    "build:min": "uglifyjs dist/pixi.js -c -m -o dist/pixi.min.js --source-map \"content='dist/pixi.js.map',includeSources=true,filename='dist/pixi.min.js.map',url='pixi.min.js.map'\" --comments \"/pixi.js - /\""
   },
   "files": [
     "lib/"
@@ -60,6 +61,7 @@
     "@pixi/utils": "^5.0.0-alpha"
   },
   "devDependencies": {
-    "floss": "^2.1.3"
+    "floss": "^2.1.3",
+    "uglify-es": "^3.3.9"
   }
 }
