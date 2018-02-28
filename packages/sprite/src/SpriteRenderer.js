@@ -7,6 +7,7 @@ import { createIndicesForQuads, premultiplyBlendMode, premultiplyTint } from '@p
 import bitTwiddle from 'bit-twiddle';
 import BatchBuffer from './BatchBuffer';
 import generateMultiTextureShader from './generateMultiTextureShader';
+import { ENV } from '@pixi/constants';
 
 let TICK = 0;
 // const TEXTURE_TICK = 0;
@@ -103,7 +104,7 @@ export default class SpriteRenderer extends ObjectRenderer
     {
         const gl = this.renderer.gl;
 
-        if (this.renderer.legacy)
+        if (settings.PREFER_ENV === ENV.WEBGL_LEGACY)
         {
             this.MAX_TEXTURES = 1;
         }

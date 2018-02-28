@@ -1,4 +1,23 @@
 /**
+ * Different types of environments for WebGL.
+ *
+ * @static
+ * @constant
+ * @memberof PIXI
+ * @name ENV
+ * @type {object}
+ * @property {number} WEBGL_LEGACY - Used for older v1 WebGL devices. PixiJS will aim to ensure compatibility
+ *  with older / less advanced devices. If you experiance unexplained flickering prefer this envionment.
+ * @property {number} WEBGL - Version 1 of WebGL
+ * @property {number} WEBGL2 - Version 2 of WebGL
+ */
+export const ENV = {
+    WEBGL_LEGACY: 0,
+    WEBGL: 1,
+    WEBGL2: 2,
+};
+
+/**
  * Constant to identify the Renderer Type.
  *
  * @static
