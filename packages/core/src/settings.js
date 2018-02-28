@@ -11,7 +11,7 @@ import { ENV } from '@pixi/constants';
  * @static
  * @constant
  * @name PREFER_ENV
- * @memberof PIXI
+ * @memberof PIXI.settings
  * @type {number}
  * @default PIXI.ENV.WEBGL2
  */
