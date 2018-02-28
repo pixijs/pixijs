@@ -3,25 +3,25 @@
   "scripts": {
     "postinstall": "npm run bootstrap",
     "bootstrap": "lerna bootstrap --hoist",
-    "clean:build": "rimraf \"{bundles,packages,packages/canvas,packages/filters}/*/lib\"",
+    "clean:build": "rimraf \"{bundles,packages,packages/canvas,packages/filters}/*/{lib,dist}\"",
     "preclean": "npm run clean:build",
     "clean": "lerna clean",
-    "pretest": "npm run lint && npm run build:dev",
+    "pretest": "npm run lint && npm run build",
     "test": "floss --path test",
     "unit-test": "floss --path test",
     "docs": "jsdoc -c jsdoc.conf.json -R README.md",
     "lint": "eslint *.js test bundles packages tools --ignore-path .gitignore --max-warnings 0",
     "lintfix": "npm run lint -- --fix",
     "prebuild": "npm run clean:build",
-    "build": "npm run build:prod",
-    "build:dev": "rollup -c",
-    "build:prod": "rollup -c --prod",
+    "build:min": "lerna run build:min --concurrency 1 --scope pixi*",
+    "build": "rollup -c",
     "watch": "rollup -cw",
     "lerna": "lerna",
     "predist": "rimraf dist/*",
-    "dist": "npm run docs && npm run build:prod -- --scope \"pixi.js*\"",
+    "dist": "npm run docs && npm run build:min",
     "postdist": "copyfiles -f \"bundles/*/dist/*\" dist",
     "prerelease": "npm run clean:build && npm test",
+    "postversion": "npm run build && npm run build:min",
     "release": "lerna publish"
   },
   "pre-commit": [
@@ -35,7 +35,7 @@
     "floss": "^2.1.3",
     "glob": "^7.1.2",
     "jsdoc": "^3.4.0",
-    "lerna": "^2.4.0",
+    "lerna": "^2.9.0",
     "minimist": "^1.2.0",
     "pre-commit": "^1.2.2",
     "rimraf": "^2.6.2",
@@ -45,8 +45,6 @@
     "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-plugin-replace": "^2.0.0",
     "rollup-plugin-sourcemaps": "^0.4.2",
-    "rollup-plugin-string": "^2.0.2",
-    "rollup-plugin-uglify": "^2.0.1",
-    "uglify-es": "^3.0.25"
+    "rollup-plugin-string": "^2.0.2"
   }
 }

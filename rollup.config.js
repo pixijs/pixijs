@@ -5,21 +5,17 @@ import transpile from 'rollup-plugin-buble';
 import resolve from 'rollup-plugin-node-resolve';
 import string from 'rollup-plugin-string';
 import sourcemaps from 'rollup-plugin-sourcemaps';
-import uglify from 'rollup-plugin-uglify';
-import { minify } from 'uglify-es';
 import minimist from 'minimist';
 import commonjs from 'rollup-plugin-commonjs';
 import replace from 'rollup-plugin-replace';
 
 // Support --scope and --ignore globs
 const args = minimist(process.argv.slice(2), {
-    boolean: ['prod', 'bundles'],
+    boolean: ['bundles'],
     default: {
-        prod: false,
         bundles: true,
     },
     alias: {
-        p: 'prod',
         b: 'bundles',
     },
 });
@@ -52,20 +48,6 @@ const plugins = [
     }),
     transpile(),
 ];
-
-if (args.prod)
-{
-    plugins.push(uglify({
-        mangle: true,
-        compress: true,
-        output: {
-            comments(node, comment)
-            {
-                return comment.line === 1;
-            },
-        },
-    }, minify));
-}
 
 const compiled = (new Date()).toUTCString().replace(/GMT/g, 'UTC');
 const sourcemap = true;
