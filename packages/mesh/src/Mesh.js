@@ -72,7 +72,7 @@ export default class Mesh extends RawMesh
          * @default PIXI.Texture.EMPTY
          * @private
          */
-        this._texture = texture;
+        this.texture = texture;
 
         /**
          * The tint applied to the mesh. This is a [r,g,b] value. A value of [1,1,1] will remove any
@@ -204,6 +204,11 @@ export default class Mesh extends RawMesh
      */
     _onTextureUpdate()
     {
+        // constructor texture update - stop 1
+        if (!this.uvMatrix)
+        {
+            return;
+        }
         this.uvMatrix.texture = this._texture;
         this.refresh();
     }
