@@ -579,7 +579,7 @@ export default class Sprite extends Container
         if (value)
         {
             // wait for the texture to load
-            if (value.baseTexture.hasLoaded)
+            if (value.baseTexture.valid)
             {
                 this._onTextureUpdate();
             }

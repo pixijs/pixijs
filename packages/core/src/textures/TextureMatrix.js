@@ -3,12 +3,18 @@ import { Matrix } from '@pixi/math';
 const tempMat = new Matrix();
 
 /**
- * Class controls uv transform and frame clamp for texture
- * Can be used in Texture "transform" field, or separately, you can use different clamp settings on the same texture.
+ * Class controls uv mapping from Texture normal space to BaseTexture normal space.
+ * Takes `trim` and `rotate` into account.
+ * May contain clamp settings for Meshes and TilingSprite.
+ *
+ * Can be used in Texture `uvMatrix` field, or separately, you can use different clamp settings on the same texture.
  * If you want to add support for texture region of certain feature or filter, that's what you're looking for.
  *
+ * Takes track of Texture changes through `_lastTextureID` private field.
+ * Use `update()` method call to track it from outside.
+ *
  * @see PIXI.Texture
- * @see PIXI.mesh.Mesh
+ * @see PIXI.Mesh
  * @see PIXI.TilingSprite
  * @class
  * @memberof PIXI
@@ -31,6 +37,10 @@ export default class TextureMatrix
 
         this.uClampOffset = new Float32Array(2);
 
+        /**
+         * @member {number} Tracks Texture frame changes
+         * @private
+         */
         this._lastTextureID = -1;
 
         /**
