@@ -1,5 +1,6 @@
 import System from '../System';
-import { settings } from '@pixi/settings';
+import { settings } from '../settings';
+import { ENV } from '@pixi/constants';
 
 let CONTEXT_UID = 0;
 
@@ -74,7 +75,7 @@ export default class ContextSystem extends System
     {
         let gl;
 
-        if (settings.PREFER_WEBGL_2)
+        if (settings.PREFER_ENV >= ENV.WEBGL2)
         {
             gl = canvas.getContext('webgl2', options);
         }

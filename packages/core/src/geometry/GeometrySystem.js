@@ -1,5 +1,7 @@
 import System from '../System';
 import GLBuffer from './GLBuffer';
+import { ENV } from '@pixi/constants';
+import { settings } from '../settings';
 
 const byteSizeMap = { 5126: 4, 5123: 2, 5121: 1 };
 
@@ -41,7 +43,7 @@ export default class GeometrySystem extends System
             // webgl 1!
             let nativeVaoExtension = this.renderer.context.extensions.vertexArrayObject;
 
-            if (this.renderer.legacy)
+            if (settings.PREFER_ENV === ENV.WEBGL_LEGACY)
             {
                 nativeVaoExtension = null;
             }
