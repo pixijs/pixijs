@@ -68,6 +68,13 @@ const PIXI = { VERSION };
 /**
  * This namespace contains WebGL-only display filters that can be applied
  * to DisplayObjects using the {@link PIXI.DisplayObject#filters filters} property.
+ *
+ * Since PixiJS only had a handful of built-in filters, additional filters
+ * can be downloaded {@link https://github.com/pixijs/pixi-filters here} from the
+ * PixiJS Filters repository.
+ *
+ * All filters must extend {@link PIXI.Filter}.
+ *
  * @example
  * // Create a new application
  * const app = new PIXI.Application();
