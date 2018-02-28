@@ -32,6 +32,30 @@ import defaultFragment from './defaultFilter.frag';
  * PixiJS viewport uses screen (CSS) coordinates, `(0, 0, renderer.screen.width, renderer.screen.height)`,
  * and `projectionMatrix` uniform maps it to the gl viewport.
  *
+ * **uSampler**
+ *
+ * The most important uniform, its the input texture that container was rendered into.
+ * As all PixiJS' FrameBuffers, both input and output are premultiplied by alpha.
+ *
+ * Suppose, you've passed FrameBuffer space coordinates to fragment shader to fragment shader in `vTextureCoord`.
+ *
+ * ```
+ * var myFragment = `
+ * varying vec2 vTextureCoord;
+ *
+ * uniform sampler2D uSampler;
+ *
+ * void main(void)
+ * {
+ *    gl_FragColor = texture2D(uSampler, vTextureCoord);
+ * }
+ * `;
+ *
+ * var myFilter = new PIXI.Filter(null, myFragment);
+ * ```
+ *
+ * This filter is just one uniform less than {@link PIXI.filters.AlphaFilter AlphaFilter}.
+ *
  * **outputFrame**
  *
  * The `outputFrame` holds the rectangle where filter is applied in screen (CSS) coordinates.
