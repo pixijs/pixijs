@@ -44,7 +44,8 @@ import defaultFragment from './defaultFilter.frag';
  * _Important note: as with all PixiJS' FrameBuffers, both input and output are
  * premultiplied by alpha._
  *
- * For example, you can passed FrameBuffer space coordinates to fragment shader with `vTextureCoord`.
+ * By default, input FrameBuffer space coordinates are passed to fragment shader with `vTextureCoord`.
+ * Use it to sample the input.
  *
  * ```
  * const fragment = `
