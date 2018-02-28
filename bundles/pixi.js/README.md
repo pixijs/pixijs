@@ -18,7 +18,11 @@ PixiJS can be installed with [npm](https://docs.npmjs.com/getting-started/what-i
 ```
 npm install pixi.js
 ```
+There is no default export. The correct way to import PixiJS is:
 
+```js
+import * as PIXI from 'pixi.js'
+```
 ### Basic Usage Example
 
 ```js
