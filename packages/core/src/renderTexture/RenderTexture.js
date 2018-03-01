@@ -94,6 +94,13 @@ export default class RenderTexture extends Texture
          */
         this.filterFrame = null;
 
+        /**
+        * The key for pooled texture of FilterSystem
+        * @private
+        * @member {string}
+        */
+        this.filterPoolKey = null;
+
         this.updateUvs();
     }
 
