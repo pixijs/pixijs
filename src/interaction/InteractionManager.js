@@ -1661,7 +1661,7 @@ export default class InteractionManager extends EventEmitter
         }
         // copy properties from the event, so that we can make sure that touch/pointer specific
         // data is available
-        interactionData._copyEvent(event);
+        interactionData.copyEvent(event);
 
         return interactionData;
     }
@@ -1679,7 +1679,7 @@ export default class InteractionManager extends EventEmitter
         if (interactionData)
         {
             delete this.activeInteractionData[pointerId];
-            interactionData._reset();
+            interactionData.reset();
             this.interactionDataPool.push(interactionData);
         }
     }
@@ -1717,7 +1717,7 @@ export default class InteractionManager extends EventEmitter
         }
 
         interactionData.originalEvent = pointerEvent;
-        interactionEvent._reset();
+        interactionEvent.reset();
 
         return interactionEvent;
     }
