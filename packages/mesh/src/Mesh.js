@@ -90,7 +90,7 @@ export default class Mesh extends RawMesh
          * TextureMatrix instance for this Mesh, used to track Texture changes
          *
          * @member {PIXI.TextureMatrix}
-         * @private
+         * @readonly
          */
         this.uvMatrix = new TextureMatrix(this._texture);
 
