@@ -30,7 +30,7 @@ export default class Mesh extends core.Container
          * @default PIXI.Texture.EMPTY
          * @private
          */
-        this._texture = texture || Texture.EMPTY;
+        this.texture = texture || Texture.EMPTY;
 
         /**
          * The Uvs of the Mesh
@@ -185,6 +185,11 @@ export default class Mesh extends core.Container
      */
     _onTextureUpdate()
     {
+        // constructor texture update - stop 2
+        if (!this._uvTransform)
+        {
+            return;
+        }
         this._uvTransform.texture = this._texture;
         this.refresh();
     }
