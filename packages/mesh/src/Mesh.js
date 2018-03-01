@@ -23,11 +23,9 @@ export default class Mesh extends RawMesh
      * @param {Uint16Array} [indices] - if you want to specify the indices
      * @param {number} [drawMode] - the drawMode, can be any of the Mesh.DRAW_MODES consts
      */
-    constructor(texture, vertices, uvs, indices, drawMode)
+    constructor(texture = Texture.EMPTY, vertices, uvs, indices, drawMode)
     {
         const geometry = new Geometry();
-
-        texture = texture || Texture.EMPTY;
 
         if (!meshProgram)
         {
@@ -204,7 +202,7 @@ export default class Mesh extends RawMesh
      */
     _onTextureUpdate()
     {
-        // constructor texture update - stop 1
+        // constructor texture update - stop 2
         if (!this.uvMatrix)
         {
             return;

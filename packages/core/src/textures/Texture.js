@@ -74,7 +74,7 @@ export default class Texture extends EventEmitter
         /**
          * This is the area of the BaseTexture image to actually copy to the Canvas / WebGL when rendering,
          * irrespective of the actual frame size or placement (which can be influenced by trimmed texture atlases)
-         *         *
+         *
          * @member {PIXI.Rectangle}
          */
         this._frame = frame;
