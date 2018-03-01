@@ -109,7 +109,7 @@ export default class Plane extends Mesh
     _onTextureUpdate()
     {
         // constructor texture update - stop 1
-        if (this._ready)
+        if (!this._ready)
         {
             return;
         }
