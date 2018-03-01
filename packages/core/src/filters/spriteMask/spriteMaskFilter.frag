@@ -19,7 +19,6 @@ void main(void)
     vec4 masky = texture2D(mask, vMaskCoord);
     float alphaMul = 1.0 - npmAlpha * (1.0 - masky.a);
 
-    original.rgb *= 1.0 - npmAlpha * (1.0 - original.a);
     original *= (alphaMul * masky.r * alpha * clip);
 
     gl_FragColor = original;
