@@ -27,15 +27,6 @@ export default class Plane extends Mesh
     {
         super(texture, new Float32Array(1), new Float32Array(1), new Uint16Array(1), 4);
 
-        /**
-         * Tracker for if the Plane is ready to be drawn. Needed because Mesh ctor can
-         * call _onTextureUpdated which could call refresh too early.
-         *
-         * @member {boolean}
-         * @private
-         */
-        this._ready = true;
-
         this.verticesX = verticesX || 10;
         this.verticesY = verticesY || 10;
 
@@ -105,22 +96,5 @@ export default class Plane extends Mesh
         this.geometry.indexBuffer.update();
 
         this.multiplyUvs();
-    }
-
-    /**
-     * Clear texture UVs when new texture is set
-     *
-     * @private
-     */
-    _onTextureUpdate()
-    {
-        // constructor texture update - stop 2
-        if (!this._ready)
-        {
-            return;
-        }
-
-        super._onTextureUpdate.call(this);
-        this.refresh();
     }
 }

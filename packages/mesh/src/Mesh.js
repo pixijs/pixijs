@@ -202,7 +202,7 @@ export default class Mesh extends RawMesh
      */
     _onTextureUpdate()
     {
-        // constructor texture update - stop 2
+        // constructor texture update stop
         if (!this.uvMatrix)
         {
             return;
