@@ -188,7 +188,17 @@ export default class StateSystem extends System
         }
 
         this.blendMode = value;
-        this.gl.blendFunc(this.blendModes[value][0], this.blendModes[value][1]);
+
+        const mode = this.blendModes[value];
+
+        if (mode.length === 2)
+        {
+            this.gl.blendFunc(mode[0], mode[1]);
+        }
+        else
+        {
+            this.gl.blendFuncSeparate(mode[0], mode[1], mode[2], mode[3]);
+        }
     }
 
     /**
