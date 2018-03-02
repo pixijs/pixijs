@@ -113,7 +113,7 @@ export default class MaskSystem extends System
         // TODO - may cause issues!
         target.filterArea = maskData.getBounds(true);
 
-        this.renderer.filterSystem.pushFilter(target, alphaMaskFilter);
+        this.renderer.filter.push(target, alphaMaskFilter);
 
         this.alphaMaskIndex++;
     }
@@ -124,7 +124,7 @@ export default class MaskSystem extends System
      */
     popSpriteMask()
     {
-        this.renderer.filterSystem.popFilter();
+        this.renderer.filter.pop();
         this.alphaMaskIndex--;
     }
 

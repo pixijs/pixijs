@@ -582,6 +582,8 @@ export default class DisplayObject extends EventEmitter
      * PIXI.Graphics or a PIXI.Sprite object. This allows for much faster masking in canvas as it
      * utilises shape clipping. To remove a mask, set this property to null.
      *
+     * For sprite mask both alpha and red channel are used. Black mask is the same as transparent mask.
+     *
      * @todo For the moment, PIXI.CanvasRenderer doesn't support PIXI.Sprite as mask.
      *
      * @member {PIXI.Graphics|PIXI.Sprite}
