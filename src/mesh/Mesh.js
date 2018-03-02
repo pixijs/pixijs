@@ -185,7 +185,7 @@ export default class Mesh extends core.Container
      */
     _onTextureUpdate()
     {
-        // constructor texture update - stop 2
+        // constructor texture update stop
         if (!this._uvTransform)
         {
             return;
