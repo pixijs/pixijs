@@ -142,9 +142,10 @@ export default class ImageResource extends BaseImageResource
      * Called when we need to convert image into BitmapImage.
      * Can be called multiple times, real promise is cached inside.
      *
+     * @param {PIXI.BaseTexture} baseTexture - BaseTexture for this resource
      * @returns {Promise} cached promise to fill that bitmap
      */
-    process()
+    process(baseTexture)
     {
         if (this._process !== null)
         {
@@ -155,7 +156,11 @@ export default class ImageResource extends BaseImageResource
             return Promise.resolve(this);
         }
 
-        this._process = window.createImageBitmap(this.source)
+        this._process = window.createImageBitmap(this.source,
+            0, 0, this.source.width, this.source.height,
+            {
+                premultiplyAlpha: baseTexture.premultiplyAlpha ? 'premultiply' : 'none',
+            })
             .then((bitmap) =>
             {
                 if (this.destroyed)
