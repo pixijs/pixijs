@@ -7,8 +7,8 @@ import { BLEND_MODES } from '@pixi/constants';
  * @function mapWebGLBlendModesToPixi
  * @private
  * @param {WebGLRenderingContext} gl - The rendering context.
- * @param {string[]} [array=[]] - The array to output into.
- * @return {string[]} Mapped modes.
+ * @param {number[][]} [array=[]] - The array to output into.
+ * @return {number[][]} Mapped modes.
  */
 export default function mapWebGLBlendModesToPixi(gl, array = [])
 {

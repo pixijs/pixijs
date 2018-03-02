@@ -52,6 +52,7 @@ export default class SpriteMaskFilter extends Filter
         }
         tex.transform.update();
 
+        this.uniforms.npmAlpha = tex.baseTexture.premultiplyAlpha ? 0.0 : 1.0;
         this.uniforms.mask = tex;
         this.uniforms.otherMatrix = filterManager.calculateSpriteMatrix(this.maskMatrix, maskSprite)
             .prepend(tex.transform.mapCoord);
