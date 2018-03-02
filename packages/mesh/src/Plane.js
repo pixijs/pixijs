@@ -38,7 +38,7 @@ export default class Plane extends Mesh
 
     /**
      * Refreshes plane coordinates
-     *
+     * @private
      */
     _refresh()
     {

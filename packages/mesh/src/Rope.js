@@ -35,8 +35,8 @@ export default class Rope extends Mesh
         this.refresh();
     }
     /**
-     * Refreshes
-     *
+     * Refreshes Rope indices and uvs
+     * @private
      */
     _refresh()
     {

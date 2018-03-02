@@ -254,7 +254,7 @@ export default class Mesh extends RawMesh
 
     /**
      * re-calculates mesh coords
-     * @protected
+     * @private
      */
     _refresh()
     {
