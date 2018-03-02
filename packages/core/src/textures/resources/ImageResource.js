@@ -117,7 +117,7 @@ export default class ImageResource extends BaseImageResource
 
                 if (this.createBitmap)
                 {
-                    resolve(this.process());
+                    resolve(this.process(/* baseTexture */));
                 }
                 else
                 {
@@ -191,7 +191,7 @@ export default class ImageResource extends BaseImageResource
             if (!this.bitmap)
             {
                 // yeah, ignore the output
-                this.process();
+                this.process(baseTexture);
                 if (!this.bitmap)
                 {
                     return false;
