@@ -66,7 +66,7 @@ export default class ImageResource extends BaseImageResource
          * @member {boolean|null}
          * @readonly
          */
-        this.premultiplyAlpha = options.premultiplyAlpha !== 'undefined' ? options.premultiplyAlpha : true;
+        this.premultiplyAlpha = options.premultiplyAlpha !== false;
 
         /**
          * The ImageBitmap element created for HTMLImageElement
