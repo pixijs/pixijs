@@ -15,6 +15,7 @@ export default class ImageResource extends BaseImageResource
      * @param {boolean} [options.createBitmap=true] whether its required to create
      *        a bitmap before upload defaults true
      * @param {boolean} [options.crossorigin=true] - Load image using cross origin
+     * @param {boolean} [options.premultiplyAlpha=true] - Premultiply image alpha in bitmap
      */
     constructor(source, options)
     {
@@ -58,6 +59,14 @@ export default class ImageResource extends BaseImageResource
          * @default PIXI.settings.CREATE_IMAGE_BITMAP
          */
         this.createBitmap = options.createBitmap !== false && settings.CREATE_IMAGE_BITMAP && !!window.createImageBitmap;
+
+        /**
+         * Controls texture premultiplyAlpha field
+         * Copies from options
+         * @member {boolean|null}
+         * @readonly
+         */
+        this.premultiplyAlpha = options.premultiplyAlpha !== false;
 
         /**
          * The ImageBitmap element created for HTMLImageElement
@@ -155,7 +164,11 @@ export default class ImageResource extends BaseImageResource
             return Promise.resolve(this);
         }
 
-        this._process = window.createImageBitmap(this.source)
+        this._process = window.createImageBitmap(this.source,
+            0, 0, this.source.width, this.source.height,
+            {
+                premultiplyAlpha: this.premultiplyAlpha ? 'premultiply' : 'none',
+            })
             .then((bitmap) =>
             {
                 if (this.destroyed)
@@ -181,6 +194,8 @@ export default class ImageResource extends BaseImageResource
      */
     upload(renderer, baseTexture, glTexture)
     {
+        baseTexture.premultiplyAlpha = this.premultiplyAlpha;
+
         if (this.createBitmap)
         {
             if (!this.bitmap)
