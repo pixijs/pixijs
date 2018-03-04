@@ -1,5 +1,5 @@
 import RawMesh from './RawMesh';
-import { Geometry, Program, Shader, Texture } from '@pixi/core';
+import { Geometry, Program, Shader, Texture, TextureMatrix } from '@pixi/core';
 import { Matrix } from '@pixi/math';
 import { BLEND_MODES } from '@pixi/constants';
 import { hex2rgb, premultiplyRgba } from '@pixi/utils';
@@ -23,7 +23,7 @@ export default class Mesh extends RawMesh
      * @param {Uint16Array} [indices] - if you want to specify the indices
      * @param {number} [drawMode] - the drawMode, can be any of the Mesh.DRAW_MODES consts
      */
-    constructor(texture, vertices, uvs, indices, drawMode)
+    constructor(texture = Texture.EMPTY, vertices, uvs, indices, drawMode)
     {
         const geometry = new Geometry();
 
@@ -40,7 +40,7 @@ export default class Mesh extends RawMesh
 
         const uniforms = {
             uSampler: texture,
-            uTransform: Matrix.IDENTITY,
+            uTextureMatrix: Matrix.IDENTITY,
             alpha: 1,
             uColor: new Float32Array([1, 1, 1, 1]),
         };
@@ -70,7 +70,7 @@ export default class Mesh extends RawMesh
          * @default PIXI.Texture.EMPTY
          * @private
          */
-        this.texture = texture || Texture.EMPTY;
+        this.texture = texture;
 
         /**
          * The tint applied to the mesh. This is a [r,g,b] value. A value of [1,1,1] will remove any
@@ -85,6 +85,31 @@ export default class Mesh extends RawMesh
         this.tint = 0xFFFFFF;
 
         this.blendMode = BLEND_MODES.NORMAL;
+
+        /**
+         * TextureMatrix instance for this Mesh, used to track Texture changes
+         *
+         * @member {PIXI.TextureMatrix}
+         * @readonly
+         */
+        this.uvMatrix = new TextureMatrix(this._texture);
+
+        /**
+         * whether or not upload uvMatrix to shader
+         * if its false, then uvs should be pre-multiplied
+         * if you change it for generated mesh, please call 'refresh(true)'
+         * @member {boolean}
+         * @default false
+         */
+        this.uploadUvMatrix = false;
+
+        /**
+         * Uploads vertices buffer every frame, like in PixiJS V3 and V4.
+         *
+         * @member {boolean}
+         * @default true
+         */
+        this.autoUpdate = true;
     }
 
     /**
@@ -152,7 +177,7 @@ export default class Mesh extends RawMesh
         if (value)
         {
             // wait for the texture to load
-            if (value.baseTexture.hasLoaded)
+            if (value.baseTexture.valid)
             {
                 this._onTextureUpdate();
             }
@@ -176,6 +201,62 @@ export default class Mesh extends RawMesh
      * @private
      */
     _onTextureUpdate()
+    {
+        // constructor texture update stop
+        if (!this.uvMatrix)
+        {
+            return;
+        }
+        this.uvMatrix.texture = this._texture;
+        this.refresh();
+    }
+
+    /**
+     * multiplies uvs only if uploadUvMatrix is false
+     * call it after you change uvs manually
+     * make sure that texture is valid
+     */
+    multiplyUvs()
+    {
+        if (!this.uploadUvMatrix)
+        {
+            this.uvMatrix.multiplyUvs(this.uvs);
+        }
+    }
+
+    /**
+     * Refreshes uvs for generated meshes (rope, plane)
+     * sometimes refreshes vertices too
+     *
+     * @param {boolean} [forceUpdate=false] if true, matrices will be updated any case
+     */
+    refresh(forceUpdate)
+    {
+        if (this.uvMatrix.update(forceUpdate))
+        {
+            this._refresh();
+        }
+    }
+
+    /**
+     * Updates the object transform for rendering
+     *
+     * @private
+     */
+    updateTransform()
+    {
+        if (this.autoUpdate)
+        {
+            this.geometry.buffers[0].update();
+        }
+        this.containerUpdateTransform();
+    }
+
+    /**
+     * re-calculates mesh coords
+     * @private
+     */
+    _refresh()
     {
         /* empty */
     }

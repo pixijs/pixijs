@@ -81,7 +81,7 @@ export default class Texture extends EventEmitter
 
         /**
          * This is the trimmed area of original texture, before it was put in atlas
-         * Please call `_updateUvs()` after you change coordinates of `trim` manually.
+         * Please call `updateUvs()` after you change coordinates of `trim` manually.
          *
          * @member {PIXI.Rectangle}
          */
@@ -102,12 +102,20 @@ export default class Texture extends EventEmitter
         this.requiresUpdate = false;
 
         /**
-         * The WebGL UV data cache.
+         * The WebGL UV data cache. Can be used as quad UV
          *
          * @member {PIXI.TextureUvs}
          * @private
          */
         this._uvs = null;
+
+        /**
+         * Default TextureMatrix instance for this texture
+         * By default that object is not created because its heavy
+         *
+         * @member {PIXI.TextureMatrix}
+         */
+        this.uvMatrix = null;
 
         /**
          * This is the area of original texture, before it was put in atlas
@@ -145,22 +153,14 @@ export default class Texture extends EventEmitter
         }
 
         /**
-         * Fired when the texture is updated. This happens if the frame or the baseTexture is updated.
+         * Update ID is observed by sprites and TextureMatrix instances.
+         * Call updateUvs() to increment it.
          *
-         * @event PIXI.Texture#update
-         * @protected
-         * @param {PIXI.Texture} texture - Instance of texture being updated.
+         * @member {number}
+         * @private
          */
 
         this._updateID = 0;
-
-        /**
-         * Contains data for uvs. May contain clamp settings and some matrices.
-         * Its a bit heavy, so by default that object is not created.
-         * @type {PIXI.TextureMatrix}
-         * @default null
-         */
-        this.transform = null;
 
         /**
          * The ids under which this Texture has been added to the texture cache. This is
@@ -255,8 +255,9 @@ export default class Texture extends EventEmitter
 
     /**
      * Updates the internal WebGL UV cache. Use it after you change `frame` or `trim` of the texture.
+     * Call it after changing the frame
      */
-    _updateUvs()
+    updateUvs()
     {
         if (!this._uvs)
         {
@@ -446,7 +447,7 @@ export default class Texture extends EventEmitter
 
     /**
      * The frame specifies the region of the base texture that this texture uses.
-     * Please call `_updateUvs()` after you change coordinates of `frame` manually.
+     * Please call `updateUvs()` after you change coordinates of `frame` manually.
      *
      * @member {PIXI.Rectangle}
      */
@@ -484,7 +485,7 @@ export default class Texture extends EventEmitter
 
         if (this.valid)
         {
-            this._updateUvs();
+            this.updateUvs();
         }
     }
 
@@ -507,7 +508,7 @@ export default class Texture extends EventEmitter
         this._rotate = rotate;
         if (this.valid)
         {
-            this._updateUvs();
+            this.updateUvs();
         }
     }
 

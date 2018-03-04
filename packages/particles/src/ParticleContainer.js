@@ -214,7 +214,7 @@ export default class ParticleContainer extends Container
         if (!this.baseTexture)
         {
             this.baseTexture = this.children[0]._texture.baseTexture;
-            if (!this.baseTexture.hasLoaded)
+            if (!this.baseTexture.valid)
             {
                 this.baseTexture.once('update', () => this.onChildrenChange(0));
             }

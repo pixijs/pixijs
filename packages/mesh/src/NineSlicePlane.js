@@ -133,58 +133,6 @@ export default class NineSlicePlane extends Plane
     }
 
     /**
-     * Renders one segment of the plane.
-     * to mimic the exact drawing behavior of stretching the image like WebGL does, we need to make sure
-     * that the source area is at least 1 pixel in size, otherwise nothing gets drawn when a slice size of 0 is used.
-     *
-     * @private
-     * @param {CanvasRenderingContext2D} context - The context to draw with.
-     * @param {CanvasImageSource} textureSource - The source to draw.
-     * @param {number} w - width of the texture
-     * @param {number} h - height of the texture
-     * @param {number} x1 - x index 1
-     * @param {number} y1 - y index 1
-     * @param {number} x2 - x index 2
-     * @param {number} y2 - y index 2
-     */
-    drawSegment(context, textureSource, w, h, x1, y1, x2, y2)
-    {
-        // otherwise you get weird results when using slices of that are 0 wide or high.
-        const uvs = this.uvs;
-        const vertices = this.vertices;
-
-        let sw = (uvs[x2] - uvs[x1]) * w;
-        let sh = (uvs[y2] - uvs[y1]) * h;
-        let dw = vertices[x2] - vertices[x1];
-        let dh = vertices[y2] - vertices[y1];
-
-        // make sure the source is at least 1 pixel wide and high, otherwise nothing will be drawn.
-        if (sw < 1)
-        {
-            sw = 1;
-        }
-
-        if (sh < 1)
-        {
-            sh = 1;
-        }
-
-        // make sure destination is at least 1 pixel wide and high, otherwise you get
-        // lines when rendering close to original size.
-        if (dw < 1)
-        {
-            dw = 1;
-        }
-
-        if (dh < 1)
-        {
-            dh = 1;
-        }
-
-        context.drawImage(textureSource, uvs[x1] * w, uvs[y1] * h, sw, sh, vertices[x1], vertices[y1], dw, dh);
-    }
-
-    /**
      * The width of the NineSlicePlane, setting this will actually modify the vertices and UV's of this plane
      *
      * @member {number}
@@ -309,7 +257,7 @@ export default class NineSlicePlane extends Plane
         this.updateHorizontalVertices();
         this.updateVerticalVertices();
 
-        this.dirty++;
+        this.geometry.buffers[1].update();
 
         this.multiplyUvs();
     }

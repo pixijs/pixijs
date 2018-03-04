@@ -69,7 +69,7 @@ export default class TilingSpriteRenderer extends ObjectRenderer
         const tex = ts._texture;
         const baseTex = tex.baseTexture;
         const lt = ts.tileTransform.localTransform;
-        const uv = ts.uvTransform;
+        const uv = ts.uvMatrix;
         let isSimple = baseTex.isPowerOfTwo
             && tex.frame.width === baseTex.width && tex.frame.height === baseTex.height;
 

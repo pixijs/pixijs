@@ -57,11 +57,11 @@ export default class TilingSprite extends Sprite
         this._canvasPattern = null;
 
         /**
-         * transform that is applied to UV to get the texture coords
+         * matrix that is applied to UV to get the coords in Texture normalized space to coords in BaseTexture space
          *
          * @member {PIXI.TextureMatrix}
          */
-        this.uvTransform = texture.transform || new TextureMatrix(texture);
+        this.uvMatrix = texture.uvMatrix || new TextureMatrix(texture);
 
         /**
          * Plugin that is responsible for rendering this element.
@@ -89,13 +89,13 @@ export default class TilingSprite extends Sprite
      */
     get clampMargin()
     {
-        return this.uvTransform.clampMargin;
+        return this.uvMatrix.clampMargin;
     }
 
     set clampMargin(value) // eslint-disable-line require-jsdoc
     {
-        this.uvTransform.clampMargin = value;
-        this.uvTransform.update(true);
+        this.uvMatrix.clampMargin = value;
+        this.uvMatrix.update(true);
     }
 
     /**
@@ -133,9 +133,9 @@ export default class TilingSprite extends Sprite
      */
     _onTextureUpdate()
     {
-        if (this.uvTransform)
+        if (this.uvMatrix)
         {
-            this.uvTransform.texture = this._texture;
+            this.uvMatrix.texture = this._texture;
         }
         this.cachedTint = 0xFFFFFF;
     }
@@ -157,7 +157,7 @@ export default class TilingSprite extends Sprite
         }
 
         this.tileTransform.updateLocalTransform();
-        this.uvTransform.update();
+        this.uvMatrix.update();
 
         renderer.batch.setObjectRenderer(renderer.plugins[this.pluginName]);
         renderer.plugins[this.pluginName].render(this);
@@ -252,7 +252,7 @@ export default class TilingSprite extends Sprite
         super.destroy(options);
 
         this.tileTransform = null;
-        this.uvTransform = null;
+        this.uvMatrix = null;
     }
 
     /**

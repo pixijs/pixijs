@@ -1,5 +1,4 @@
 import Mesh from './Mesh';
-import { Point } from '@pixi/math';
 
 /**
  * The rope allows you to draw a texture across several points and them manipulate these points
@@ -35,11 +34,11 @@ export default class Rope extends Mesh
         this.points = points;
         this.refresh();
     }
-
     /**
-     * Refreshes
+     * Refreshes Rope indices and uvs
+     * @private
      */
-    refresh()
+    _refresh()
     {
         const points = this.points;
 
@@ -66,14 +65,10 @@ export default class Rope extends Mesh
         const uvs = uvBuffer.data;
         const indices = indexBuffer.data;
 
-        const textureUvs = this.texture._uvs;
-        const offset = new Point(textureUvs.x0, textureUvs.y0);
-        const factor = new Point(textureUvs.x2 - textureUvs.x0, Number(textureUvs.y2 - textureUvs.y0));
-
-        uvs[0] = 0 + offset.x;
-        uvs[1] = 0 + offset.y;
-        uvs[2] = 0 + offset.x;
-        uvs[3] = factor.y + offset.y;
+        uvs[0] = 0;
+        uvs[1] = 0;
+        uvs[2] = 0;
+        uvs[3] = 1;
 
         indices[0] = 0;
         indices[1] = 1;
@@ -86,11 +81,11 @@ export default class Rope extends Mesh
             let index = i * 4;
             const amount = i / (total - 1);
 
-            uvs[index] = (amount * factor.x) + offset.x;
-            uvs[index + 1] = 0 + offset.y;
+            uvs[index] = amount;
+            uvs[index + 1] = 0;
 
-            uvs[index + 2] = (amount * factor.x) + offset.x;
-            uvs[index + 3] = factor.y + offset.y;
+            uvs[index + 2] = amount;
+            uvs[index + 3] = 1;
 
             index = i * 2;
             indices[index] = index;
@@ -98,17 +93,17 @@ export default class Rope extends Mesh
         }
 
         // ensure that the changes are uploaded
-        vertexBuffer.update();
         uvBuffer.update();
         indexBuffer.update();
+
+        this.multiplyUvs();
+        this.refreshVertices();
     }
 
     /**
-     * Updates the object transform for rendering
-     *
-     * @private
+     * refreshes vertices of Rope mesh
      */
-    updateTransform()
+    refreshVertices()
     {
         const points = this.points;
 
@@ -124,9 +119,7 @@ export default class Rope extends Mesh
 
         // this.count -= 0.2;
 
-        const vertexBuffer = this.geometry.getAttribute('aVertexPosition');
-        const vertices = vertexBuffer.data;
-
+        const vertices = this.vertices;
         const total = points.length;
 
         for (let i = 0; i < total; i++)
@@ -152,8 +145,9 @@ export default class Rope extends Mesh
             {
                 ratio = 1;
             }
+
             const perpLength = Math.sqrt((perpX * perpX) + (perpY * perpY));
-            const num = this.texture.height / 2; // (20 + Math.abs(Math.sin((i + this.count) * 0.3) * 50) )* ratio;
+            const num = this._texture.height / 2; // (20 + Math.abs(Math.sin((i + this.count) * 0.3) * 50) )* ratio;
 
             perpX /= perpLength;
             perpY /= perpLength;
@@ -169,21 +163,20 @@ export default class Rope extends Mesh
             lastPoint = point;
         }
 
-        // mark the buffer as requiring an upload..
-        vertexBuffer.update();
-
-        this.uniforms.alpha = this.worldAlpha;
-
-        this.containerUpdateTransform();
+        this.geometry.buffers[0].update();
     }
 
     /**
-     * When the texture is updated, this event will fire to update the scale and frame
+     * Updates the object transform for rendering
      *
      * @private
      */
-    _onTextureUpdate()
+    updateTransform()
     {
-        this.refresh();
+        if (this.autoUpdate)
+        {
+            this.refreshVertices();
+        }
+        this.containerUpdateTransform();
     }
 }

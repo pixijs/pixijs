@@ -1,4 +1,5 @@
 import { ObjectRenderer } from '@pixi/core';
+import { Matrix } from '@pixi/math';
 
 /**
  * WebGL renderer plugin for tiling sprites
@@ -44,11 +45,22 @@ export default class MeshRenderer extends ObjectRenderer
         // TODO
         // set the shader props..
         // probably only need to set once!
-        // as its then a refference..
+        // as its then a reference..
         if (mesh.shader.program.uniformData.translationMatrix)
         {
             // the transform!
             mesh.shader.uniforms.translationMatrix = mesh.transform.worldTransform.toArray(true);
+        }
+        if (mesh.shader.uniforms.uTextureMatrix)
+        {
+            if (mesh.uploadUvMatrix)
+            {
+                mesh.shader.uniforms.uTextureMatrix = mesh.uvMatrix.mapCoord.toArray(true);
+            }
+            else
+            {
+                mesh.shader.uniforms.uTextureMatrix = Matrix.IDENTITY.toArray(true);
+            }
         }
 
         // bind and sync uniforms..
