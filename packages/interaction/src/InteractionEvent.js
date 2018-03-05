@@ -58,11 +58,9 @@ export default class InteractionEvent
     }
 
     /**
-     * Prevents event from reaching any objects other than the current object.
-     *
-     * @private
+     * Resets the event.
      */
-    _reset()
+    reset()
     {
         this.stopped = false;
         this.currentTarget = null;
