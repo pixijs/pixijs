@@ -63,7 +63,8 @@
     "mini-runner": "^1.0.1",
     "object-assign": "^4.0.1",
     "pixi-gl-core": "^1.0.3",
-    "resource-loader": "^2.0.6"
+    "resource-loader": "^2.0.6",
+    "promise-polyfill": "^7.1.0"
   },
   "devDependencies": {
     "babel-cli": "^6.18.0",
