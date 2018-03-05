@@ -563,8 +563,8 @@ export default class FilterManager extends WebGLManager
             || minHeight !== this._screenHeight)
         {
             // TODO you could return a bigger texture if there is not one in the pool?
-            minWidth = bitTwiddle.nextPow2(minWidth * resolution);
-            minHeight = bitTwiddle.nextPow2(minHeight * resolution);
+            minWidth = bitTwiddle.nextPow2(minWidth);
+            minHeight = bitTwiddle.nextPow2(minHeight);
             key = ((minWidth & 0xFFFF) << 16) | (minHeight & 0xFFFF);
         }
 
