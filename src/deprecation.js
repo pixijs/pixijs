@@ -1,6 +1,10 @@
 // provide method to give a stack track for warnings
 // useful for tracking-down where deprecated methods/properties/classes
 // are being used within the code
+
+// message/stack map - helps to prevent showing deprecation warning if it was already shown
+const shownWarningStacks = {};
+
 function warn(msg)
 {
     // @if DEBUG
@@ -17,21 +21,27 @@ function warn(msg)
         // chop off the stack trace which includes pixi.js internal calls
         stack = stack.split('\n').splice(3).join('\n');
 
-        if (console.groupCollapsed)
+        // don't show warning message if it was already shown
+        if (!shownWarningStacks[msg])
         {
-            console.groupCollapsed(
-                '%cDeprecation Warning: %c%s',
-                'color:#614108;background:#fffbe6',
-                'font-weight:normal;color:#614108;background:#fffbe6',
-                msg
-            );
-            console.warn(stack);
-            console.groupEnd();
-        }
-        else
-        {
-            console.warn('Deprecation Warning: ', msg);
-            console.warn(stack);
+            shownWarningStacks[msg] = stack;
+
+            if (console.groupCollapsed)
+            {
+                console.groupCollapsed(
+                    '%cDeprecation Warning: %c%s',
+                    'color:#614108;background:#fffbe6',
+                    'font-weight:normal;color:#614108;background:#fffbe6',
+                    msg
+                );
+                console.warn(stack);
+                console.groupEnd();
+            }
+            else
+            {
+                console.warn('Deprecation Warning: ', msg);
+                console.warn(stack);
+            }
         }
     }
     /* eslint-enable no-console */
