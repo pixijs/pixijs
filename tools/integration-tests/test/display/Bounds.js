@@ -146,7 +146,6 @@ describe('getBounds', function ()
         expect(bounds.width).to.equal(80);
         expect(bounds.height).to.equal(90);
 
-        container.transform.useRadians = true;
         container.rotation = 0.1;
 
         bounds = container.getBounds();
