@@ -10,8 +10,8 @@ export default class FrameBuffer
 {
     constructor(width, height)
     {
-        this.width = width || 100;
-        this.height = height || 100;
+        this.width = Math.ceil(width || 100);
+        this.height =  Math.ceil(height || 100);
 
         this.stencil = false;
         this.depth = false;
@@ -85,6 +85,9 @@ export default class FrameBuffer
 
     resize(width, height)
     {
+        width = Math.ceil(width);
+        height = Math.ceil(height);
+
         if (width === this.width && height === this.height) return;
 
         this.width = width;
