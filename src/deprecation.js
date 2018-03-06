@@ -2,7 +2,7 @@
 // useful for tracking-down where deprecated methods/properties/classes
 // are being used within the code
 
-// message/stack map - helps to prevent showing deprecation warning if it was already shown
+// message/stack map - helps to prevent showing same deprecation warning several times
 const shownWarningStacks = {};
 
 function warn(msg)
@@ -22,7 +22,7 @@ function warn(msg)
         stack = stack.split('\n').splice(3).join('\n');
 
         // don't show warning message if it was already shown
-        if (!shownWarningStacks[msg])
+        if (!shownWarningStacks[msg] || shownWarningStacks[msg] !== stack)
         {
             shownWarningStacks[msg] = stack;
 
