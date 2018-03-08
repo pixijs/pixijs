@@ -231,7 +231,7 @@ export default class Graphics extends Container
     /**
      * Calculate length of quadratic curve
      * @see {@link http://www.malczak.linuxpl.com/blog/quadratic-bezier-curve-length/}
-     * for the detailed explanation of math behind this
+     * for the detailed explanation of math behind this.
      *
      * @private
      * @param {number} fromX - x-coordinate of curve start point
@@ -267,6 +267,61 @@ export default class Graphics extends Container
                   )
                )
                / (4.0 * a32);
+    }
+
+    /**
+     * Calculate length of bezier curve.
+     * Analytical solution is impossible, since it involves an integral that does not integrate in general.
+     * Therefore numerical solution is used.
+     *
+     * @private
+     * @param {number} fromX - Starting point x
+     * @param {number} fromY - Starting point y
+     * @param {number} cpX - Control point x
+     * @param {number} cpY - Control point y
+     * @param {number} cpX2 - Second Control point x
+     * @param {number} cpY2 - Second Control point y
+     * @param {number} toX - Destination point x
+     * @param {number} toY - Destination point y
+     * @return {number} Length of bezier curve
+     */
+    _bezierCurveLength(fromX, fromY, cpX, cpY, cpX2, cpY2, toX, toY)
+    {
+        const n = 10;
+        let result = 0.0;
+        let t = 0.0;
+        let t2 = 0.0;
+        let t3 = 0.0;
+        let nt = 0.0;
+        let nt2 = 0.0;
+        let nt3 = 0.0;
+        let x = 0.0;
+        let y = 0.0;
+        let dx = 0.0;
+        let dy = 0.0;
+        let prevX = fromX;
+        let prevY = fromY;
+
+        for (let i = 1; i <= n; ++i)
+        {
+            t = i / n;
+            t2 = t * t;
+            t3 = t2 * t;
+            nt = (1.0 - t);
+            nt2 = nt * nt;
+            nt3 = nt2 * nt;
+
+            x = (nt3 * fromX) + (3.0 * nt2 * t * cpX) + (3.0 * nt * t2 * cpX2) + (t3 * toX);
+            y = (nt3 * fromY) + (3.0 * nt2 * t * cpY) + (3 * nt * t2 * cpY2) + (t3 * toY);
+            dx = prevX - x;
+            dy = prevY - y;
+            prevX = x;
+            prevY = y;
+
+            result += Math.sqrt((dx * dx) + (dy * dy));
+        }
+
+        return result;
     }
 
     /**
@@ -450,7 +505,11 @@ export default class Graphics extends Container
 
         points.length -= 2;
 
-        bezierCurveTo(fromX, fromY, cpX, cpY, cpX2, cpY2, toX, toY, points);
+        const n = settings.GRAPHICS_CURVES_RESOLUTION.adaptive
+                  ? this._segmentsCount(this._bezierCurveLength(fromX, fromY, cpX, cpY, cpX2, cpY2, toX, toY))
+                  : 20;
+
+        bezierCurveTo(fromX, fromY, cpX, cpY, cpX2, cpY2, toX, toY, n, points);
 
         this.dirty++;
 
