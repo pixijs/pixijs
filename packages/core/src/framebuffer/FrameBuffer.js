@@ -11,7 +11,7 @@ export default class FrameBuffer
     constructor(width, height)
     {
         this.width = Math.ceil(width || 100);
-        this.height =  Math.ceil(height || 100);
+        this.height = Math.ceil(height || 100);
 
         this.stencil = false;
         this.depth = false;
