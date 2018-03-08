@@ -1,4 +1,5 @@
 import Point from './Point';
+import { PI_2 } from '../const';
 
 /**
  * The PixiJS Matrix class as an object, which makes it a lot faster,
@@ -294,25 +295,13 @@ export default class Matrix
      */
     setTransform(x, y, pivotX, pivotY, scaleX, scaleY, rotation, skewX, skewY)
     {
-        const sr = Math.sin(rotation);
-        const cr = Math.cos(rotation);
-        const cy = Math.cos(skewY);
-        const sy = Math.sin(skewY);
-        const nsx = -Math.sin(skewX);
-        const cx = Math.cos(skewX);
+        this.a = Math.cos(rotation + skewY) * scaleX;
+        this.b = Math.sin(rotation + skewY) * scaleX;
+        this.c = -Math.sin(rotation - skewX) * scaleY;
+        this.d = Math.cos(rotation - skewX) * scaleY;
 
-        const a = cr * scaleX;
-        const b = sr * scaleX;
-        const c = -sr * scaleY;
-        const d = cr * scaleY;
-
-        this.a = (cy * a) + (sy * c);
-        this.b = (cy * b) + (sy * d);
-        this.c = (nsx * a) + (cx * c);
-        this.d = (nsx * b) + (cx * d);
-
-        this.tx = x + ((pivotX * a) + (pivotY * c));
-        this.ty = y + ((pivotX * b) + (pivotY * d));
+        this.tx = x - ((pivotX * this.a) + (pivotY * this.c));
+        this.ty = y - ((pivotX * this.b) + (pivotY * this.d));
 
         return this;
     }
@@ -363,7 +352,7 @@ export default class Matrix
 
         const delta = Math.abs(skewX + skewY);
 
-        if (delta < 0.00001)
+        if (delta < 0.00001 || Math.abs(PI_2 - delta) < 0.00001)
         {
             transform.rotation = skewY;
 
@@ -376,6 +365,7 @@ export default class Matrix
         }
         else
         {
+            transform.rotation = 0;
             transform.skew.x = skewX;
             transform.skew.y = skewY;
         }

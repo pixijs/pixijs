@@ -306,4 +306,12 @@ describe('PIXI.utils', function ()
             expect(PIXI.utils.isMobile.any).to.be.a('boolean');
         });
     });
+
+    describe('earcut', function ()
+    {
+        it('should exist', function ()
+        {
+            expect(PIXI.utils.earcut).to.be.a('function');
+        });
+    });
 });
