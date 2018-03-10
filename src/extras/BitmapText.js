@@ -147,7 +147,9 @@ export default class BitmapText extends core.Container
         const pos = new core.Point();
         const chars = [];
         const lineWidths = [];
-        const textLength = this.text.length;
+        const text = this.text.replace(/(?:\r\n|\r)/g, '\n');
+        const textLength = text.length;
+        const maxWidth = this._maxWidth * data.size / this._font.size;
 
         let prevCharCode = null;
         let lastLineWidth = 0;
@@ -155,27 +157,26 @@ export default class BitmapText extends core.Container
         let line = 0;
         let lastBreakPos = -1;
         let lastBreakWidth = 0;
-        let breakIsSpace = true;
         let spacesRemoved = 0;
         let maxLineHeight = 0;
 
         for (let i = 0; i < textLength; i++)
         {
-            const charCode = this.text.charCodeAt(i);
-            const char = this.text.charAt(i);
+            const charCode = text.charCodeAt(i);
+            const char = text.charAt(i);
 
-            if (/(\s)/.test(char))
+            if (/(?:\s)/.test(char))
             {
                 lastBreakPos = i;
                 lastBreakWidth = lastLineWidth;
-                breakIsSpace = true;
             }
 
-            if (/(?:\r\n|\r|\n)/.test(char))
+            if (char === '\r' || char === '\n')
             {
                 lineWidths.push(lastLineWidth);
                 maxLineWidth = Math.max(maxLineWidth, lastLineWidth);
-                line++;
+                ++line;
+                ++spacesRemoved;
 
                 pos.x = 0;
                 pos.y += data.lineHeight;
@@ -206,12 +207,9 @@ export default class BitmapText extends core.Container
             maxLineHeight = Math.max(maxLineHeight, (charData.yOffset + charData.texture.height));
             prevCharCode = charCode;
 
-            if (lastBreakPos !== -1 && this._maxWidth > 0 && pos.x * scale > this._maxWidth)
+            if (lastBreakPos !== -1 && maxWidth > 0 && pos.x > maxWidth)
             {
-                if (breakIsSpace)
-                {
-                    ++spacesRemoved;
-                }
+                ++spacesRemoved;
                 core.utils.removeItems(chars, 1 + lastBreakPos - spacesRemoved, 1 + i - lastBreakPos);
                 i = lastBreakPos;
                 lastBreakPos = -1;
@@ -223,24 +221,21 @@ export default class BitmapText extends core.Container
                 pos.x = 0;
                 pos.y += data.lineHeight;
                 prevCharCode = null;
-                continue;
-            }
-
-            if (/[-\\\/\.,?!;:;]/.test(char))
-            {
-                lastBreakPos = i;
-                lastBreakWidth = lastLineWidth;
-                breakIsSpace = false;
             }
         }
 
-        if (this.text.charAt(this.text.length - 1) === ' ')
+        const lastChar = text.charAt(text.length - 1);
+
+        if (lastChar !== '\r' && lastChar !== '\n')
         {
-            lastLineWidth = lastBreakWidth;
-        }
+            if (/(?:\s)/.test(lastChar))
+            {
+                lastLineWidth = lastBreakWidth;
+            }
 
-        lineWidths.push(lastLineWidth);
-        maxLineWidth = Math.max(maxLineWidth, lastLineWidth);
+            lineWidths.push(lastLineWidth);
+            maxLineWidth = Math.max(maxLineWidth, lastLineWidth);
+        }
 
         const lineAlignOffsets = [];
 

@@ -55,27 +55,24 @@ describe('PIXI.extras.BitmapText', function ()
 
             expect(text.children.length).to.equal(4);
         });
-        it('should break line on space and the following characters: -\\/.,?!;:;', function ()
+        it('should break line on space', function ()
         {
-            const chars = ' -\\/.,?!;:;';
             const bmpText = new PIXI.extras.BitmapText('', {
                 font: this.font.font,
+                size: 24,
             });
 
             bmpText.maxWidth = 40;
-            for (let char = 0; char < 1; ++char)
-            {
-                let text = `A${chars.charAt(char)}`;
+            bmpText.text = 'A A A A A A A ';
+            bmpText.updateText();
 
-                for (let x = 0; x < 5; ++x)
-                {
-                    text += text;
-                }
-                bmpText.text = text;
-                bmpText.updateText();
+            expect(bmpText.textWidth).to.lessThan(bmpText.maxWidth);
 
-                expect(bmpText.textWidth).to.lessThan(bmpText.maxWidth);
-            }
+            bmpText.maxWidth = 40;
+            bmpText.text = 'A A A A A A A';
+            bmpText.updateText();
+
+            expect(bmpText.textWidth).to.lessThan(bmpText.maxWidth);
         });
         it('letterSpacing should add extra space between characters', function ()
         {
