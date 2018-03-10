@@ -49,7 +49,12 @@ _Note: After v4.5.0, support for the [Bower](https://bower.io) package manager h
 #### NPM Install
 
 ```sh
-$> npm install pixi.js
+npm install pixi.js
+```
+There is no default export. The correct way to import PixiJS is:
+
+```js
+import * as PIXI from 'pixi.js'
 ```
 
 #### CDN Install (via cdnjs)
@@ -152,13 +157,13 @@ If you don't already have Node.js and NPM, go install them. Then, in the folder 
 the repository, install the build dependencies using npm:
 
 ```sh
-$> npm install
+npm install
 ```
 
 Then, to build the source, run:
 
 ```sh
-$> npm run dist
+npm run dist
 ```
 
 This will create a minified version at `dist/pixi.min.js` and a non-minified version at `dist/pixi.js`
@@ -167,13 +172,13 @@ with all the plugins in the PixiJS project.
 If there are specific plugins you don't want, say "interaction" or "extras", you can exclude those:
 
 ```sh
-$> npm run dist -- --exclude extras --exclude interaction
+npm run dist -- --exclude extras --exclude interaction
 ```
 
 You can also use the short-form `-e`:
 
 ```sh
-$> npm run dist -- -e extras -e interaction -e filters
+npm run dist -- -e extras -e interaction -e filters
 ```
 
 ### How to generate the documentation ###
@@ -181,7 +186,7 @@ $> npm run dist -- -e extras -e interaction -e filters
 The docs can be generated using npm:
 
 ```sh
-$> npm run docs
+npm run docs
 ```
 
 The documentation uses [Jaguar.js](https://github.com/pixijs/jaguarjs-jsdoc) and the jsdoc format, the configuration file can be found at [scripts/jsdoc.conf.json](scripts/jsdoc.conf.json)
