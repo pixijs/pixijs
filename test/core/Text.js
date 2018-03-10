@@ -115,5 +115,19 @@ describe('PIXI.Text', function ()
 
             expect(text.text).to.equal(' ');
         });
+
+        it('should keep at least 1 pixel for canvas width and height', function ()
+        {
+            const text = new PIXI.Text('');
+
+            text.updateText();
+
+            expect(text.canvas.width).to.be.above(1);
+            expect(text.canvas.height).to.be.above(1);
+
+            text.text = '\n';
+
+            expect(text.canvas.width).to.be.above(1);
+        });
     });
 });

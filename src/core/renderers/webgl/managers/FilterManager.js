@@ -26,6 +26,8 @@ class FilterState
     }
 }
 
+const screenKey = 'screen';
+
 /**
  * @class
  * @memberof PIXI
@@ -51,6 +53,11 @@ export default class FilterManager extends WebGLManager
         this.filterData = null;
 
         this.managedFilters = [];
+
+        this.renderer.on('prerender', this.onPrerender, this);
+
+        this._screenWidth = renderer.view.width;
+        this._screenHeight = renderer.view.height;
     }
 
     /**
@@ -85,16 +92,23 @@ export default class FilterManager extends WebGLManager
 
         // get the current filter state..
         let currentState = filterData.stack[++filterData.index];
+        const renderTargetFrame = filterData.stack[0].destinationFrame;
 
         if (!currentState)
         {
             currentState = filterData.stack[filterData.index] = new FilterState();
         }
 
+        const fullScreen = target.filterArea
+            && target.filterArea.x === 0
+            && target.filterArea.y === 0
+            && target.filterArea.width === renderer.screen.width
+            && target.filterArea.height === renderer.screen.height;
+
         // for now we go off the filter of the first resolution..
         const resolution = filters[0].resolution;
         const padding = filters[0].padding | 0;
-        const targetBounds = target.filterArea || target.getBounds(true);
+        const targetBounds = fullScreen ? renderer.screen : (target.filterArea || target.getBounds(true));
         const sourceFrame = currentState.sourceFrame;
         const destinationFrame = currentState.destinationFrame;
 
@@ -103,19 +117,22 @@ export default class FilterManager extends WebGLManager
         sourceFrame.width = ((targetBounds.width * resolution) | 0) / resolution;
         sourceFrame.height = ((targetBounds.height * resolution) | 0) / resolution;
 
-        if (filterData.stack[0].renderTarget.transform)
-        { //
-
-            // TODO we should fit the rect around the transform..
-        }
-        else if (filters[0].autoFit)
+        if (!fullScreen)
         {
-            sourceFrame.fit(filterData.stack[0].destinationFrame);
-        }
+            if (filterData.stack[0].renderTarget.transform)
+            { //
 
-        // lets apply the padding After we fit the element to the screen.
-        // this should stop the strange side effects that can occur when cropping to the edges
-        sourceFrame.pad(padding);
+                // TODO we should fit the rect around the transform..
+            }
+            else if (filters[0].autoFit)
+            {
+                sourceFrame.fit(renderTargetFrame);
+            }
+
+            // lets apply the padding After we fit the element to the screen.
+            // this should stop the strange side effects that can occur when cropping to the edges
+            sourceFrame.pad(padding);
+        }
 
         destinationFrame.width = sourceFrame.width;
         destinationFrame.height = sourceFrame.height;
@@ -500,6 +517,8 @@ export default class FilterManager extends WebGLManager
         const renderer = this.renderer;
         const filters = this.managedFilters;
 
+        renderer.off('prerender', this.onPrerender, this);
+
         for (let i = 0; i < filters.length; i++)
         {
             if (!contextLost)
@@ -535,11 +554,19 @@ export default class FilterManager extends WebGLManager
      */
     getPotRenderTarget(gl, minWidth, minHeight, resolution)
     {
-        // TODO you could return a bigger texture if there is not one in the pool?
-        minWidth = bitTwiddle.nextPow2(minWidth * resolution);
-        minHeight = bitTwiddle.nextPow2(minHeight * resolution);
+        let key = screenKey;
 
-        const key = ((minWidth & 0xFFFF) << 16) | (minHeight & 0xFFFF);
+        minWidth *= resolution;
+        minHeight *= resolution;
+
+        if (minWidth !== this._screenWidth
+            || minHeight !== this._screenHeight)
+        {
+            // TODO you could return a bigger texture if there is not one in the pool?
+            minWidth = bitTwiddle.nextPow2(minWidth);
+            minHeight = bitTwiddle.nextPow2(minHeight);
+            key = ((minWidth & 0xFFFF) << 16) | (minHeight & 0xFFFF);
+        }
 
         if (!this.pool[key])
         {
@@ -603,8 +630,40 @@ export default class FilterManager extends WebGLManager
     {
         const minWidth = renderTarget.size.width * renderTarget.resolution;
         const minHeight = renderTarget.size.height * renderTarget.resolution;
-        const key = ((minWidth & 0xFFFF) << 16) | (minHeight & 0xFFFF);
+
+        let key = screenKey;
+
+        if (minWidth !== this._screenWidth
+            || minHeight !== this._screenHeight)
+        {
+            key = ((minWidth & 0xFFFF) << 16) | (minHeight & 0xFFFF);
+        }
 
         this.pool[key].push(renderTarget);
+    }
+
+    /**
+     * Called before the renderer starts rendering.
+     *
+     */
+    onPrerender()
+    {
+        if (this._screenWidth !== this.renderer.view.width
+            || this._screenHeight !== this.renderer.view.height)
+        {
+            this._screenWidth = this.renderer.view.width;
+            this._screenHeight = this.renderer.view.height;
+
+            const textures = this.pool[screenKey];
+
+            if (textures)
+            {
+                for (let j = 0; j < textures.length; j++)
+                {
+                    textures[j].destroy(true);
+                }
+            }
+            this.pool[screenKey] = [];
+        }
     }
 }
