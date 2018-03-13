@@ -235,14 +235,22 @@ export default class Rectangle
         }
     }
 
-    round(value)
+    /**
+     * Enlarges rectangle that way its corners lie on grid
+     *
+     * @param {number} [resolution=1] resolution
+     * @param {number} [eps=0.001] precision
+     */
+    ceil(resolution = 1, eps = 0.001)
     {
-        value = value || 1;
+        const x2 = Math.ceil((this.x + this.width - eps) * resolution) / resolution;
+        const y2 = Math.ceil((this.y + this.height - eps) * resolution) / resolution;
 
-        this.x = ((this.x * value) | 0) / value;
-        this.y = ((this.y * value) | 0) / value;
-        this.width = ((this.width * value) | 0) / value;
-        this.height = ((this.height * value) | 0) / value;
+        this.x = Math.floor((this.x + eps) * resolution) / resolution;
+        this.y = Math.floor((this.y + eps) * resolution) / resolution;
+
+        this.width = x2 - this.x;
+        this.height = y2 - this.y;
     }
 
     /**

@@ -31,6 +31,8 @@ class FilterState
     }
 }
 
+const screenKey = 'screen';
+
 /**
  * @class
  * @memberof PIXI.systems
@@ -88,6 +90,10 @@ export default class FilterSystem extends System
             filterArea: new Float32Array(4),
             filterClamp: new Float32Array(4),
         }, true);
+
+        this._pixelsWidth = renderer.view.width;
+
+        this._pixelsHeight = renderer.view.height;
     }
 
     /**
@@ -127,20 +133,18 @@ export default class FilterSystem extends System
 
         state.legacy = legacy;
 
-        // round to whole number based on resolution
-        // TODO move that to the shader too?
         state.sourceFrame = target.filterArea || target.getBounds(true);
 
         state.sourceFrame.pad(padding);
-
         if (autoFit)
         {
             state.sourceFrame.fit(this.renderer.renderTexture.destinationFrame);
         }
 
-        state.sourceFrame.round(resolution);
+        // round to whole number based on resolution
+        state.sourceFrame.ceil(resolution);
 
-        state.renderTexture = this.getPotFilterTexture(state.sourceFrame.width, state.sourceFrame.height, resolution);
+        state.renderTexture = this.getOptimalFilterTexture(state.sourceFrame.width, state.sourceFrame.height, resolution);
         state.filters = filters;
 
         state.destinationFrame.width = state.renderTexture.width;
@@ -214,7 +218,7 @@ export default class FilterSystem extends System
         else
         {
             let flip = state.renderTexture;
-            let flop = this.getPotFilterTexture(
+            let flop = this.getOptimalFilterTexture(
                 flip.width,
                 flip.height,
                 state.resolution
@@ -347,25 +351,29 @@ export default class FilterSystem extends System
     }
 
     /**
-     * Gets a Power-of-Two render texture.
+     * Gets a Power-of-Two render texture or fullScreen texture
      *
      * TODO move to a seperate class could be on renderer?
-     * also - could cause issue with multiple contexts?
      *
      * @private
-     * @param {WebGLRenderingContext} gl - The webgl rendering context
-     * @param {number} minWidth - The minimum width of the render target.
-     * @param {number} minHeight - The minimum height of the render target.
-     * @param {number} resolution - The resolution of the render target.
-     * @return {PIXI.RenderTarget} The new render target.
+     * @param {number} minWidth - The minimum width of the render texture in real pixels.
+     * @param {number} minHeight - The minimum height of the render texture in real pixels.
+     * @param {number} [resolution=1] - The resolution of the render texture.
+     * @return {PIXI.RenderTexture} The new render texture.
      */
-    getPotFilterTexture(minWidth, minHeight, resolution)
+    getOptimalFilterTexture(minWidth, minHeight, resolution = 1)
     {
-        minWidth = bitTwiddle.nextPow2(minWidth);
-        minHeight = bitTwiddle.nextPow2(minHeight);
-        resolution = resolution || 1;
+        let key = screenKey;
 
-        const key = ((minWidth & 0xFFFF) << 16) | (minHeight & 0xFFFF);
+        minWidth *= resolution;
+        minHeight *= resolution;
+
+        if (minWidth !== this._pixelsWidth || minHeight !== this._pixelsHeight)
+        {
+            minWidth = bitTwiddle.nextPow2(minWidth);
+            minHeight = bitTwiddle.nextPow2(minHeight);
+            key = ((minWidth & 0xFFFF) << 16) | (minHeight & 0xFFFF);
+        }
 
         if (!this.texturePool[key])
         {
@@ -379,11 +387,13 @@ export default class FilterSystem extends System
             // temporary bypass cache..
             // internally - this will cause a texture to be bound..
             renderTexture = RenderTexture.create({
-                width: minWidth,
-                height: minHeight,
+                width: minWidth / resolution,
+                height: minHeight / resolution,
                 resolution,
             });
         }
+
+        renderTexture.filterPoolKey = key;
 
         return renderTexture;
     }
@@ -398,7 +408,7 @@ export default class FilterSystem extends System
     {
         const rt = this.activeState.renderTexture;
 
-        const filterTexture = this.getPotFilterTexture(rt.width, rt.height, resolution || rt.baseTexture.resolution);
+        const filterTexture = this.getOptimalFilterTexture(rt.width, rt.height, resolution || rt.baseTexture.resolution);
 
         filterTexture.filterFrame = rt.filterFrame;
 
@@ -412,15 +422,9 @@ export default class FilterSystem extends System
      */
     returnFilterTexture(renderTexture)
     {
+        const key = renderTexture.filterPoolKey;
+
         renderTexture.filterFrame = null;
-
-        const base = renderTexture.baseTexture;
-
-        const minWidth = base.width;
-        const minHeight = base.height;
-
-        const key = ((minWidth & 0xFFFF) << 16) | (minHeight & 0xFFFF);
-
         this.texturePool[key].push(renderTexture);
     }
 
@@ -444,5 +448,22 @@ export default class FilterSystem extends System
         }
 
         this.texturePool = {};
+    }
+
+    resize()
+    {
+        const textures = this.texturePool[screenKey];
+
+        if (textures)
+        {
+            for (let j = 0; j < textures.length; j++)
+            {
+                textures[j].destroy(true);
+            }
+        }
+        this.texturePool[screenKey] = [];
+
+        this._pixelsWidth = this.renderer.view.width;
+        this._pixelsHeight = this.renderer.view.height;
     }
 }
