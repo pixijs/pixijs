@@ -12,6 +12,7 @@
   "main": "lib/pixi-legacy.js",
   "module": "lib/pixi-legacy.es.js",
   "bundle": "dist/pixi-legacy.js",
+  "types": "pixi-legacy.js.d.ts",
   "homepage": "http://www.pixijs.com/",
   "bugs": "https://github.com/pixijs/pixi.js/issues",
   "license": "MIT",

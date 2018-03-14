@@ -12,6 +12,7 @@
   "main": "lib/pixi.js",
   "module": "lib/pixi.es.js",
   "bundle": "dist/pixi.js",
+  "types": "pixi.js.d.ts",
   "homepage": "http://www.pixijs.com/",
   "bugs": "https://github.com/pixijs/pixi.js/issues",
   "license": "MIT",
