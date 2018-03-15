@@ -89,10 +89,18 @@ export default class ParticleContainer extends Container
         this._buffers = null;
 
         /**
-         * @member {number}
+         * for every batch stores _updateID corresponding to the last change in that batch
+         * @member {number[]}
          * @private
          */
-        this._bufferToUpdate = 0;
+        this._bufferUpdateIDs = [];
+
+        /**
+         * when child inserted, removed or changes position this number goes up
+         * @member {number[]}
+         * @private
+         */
+        this._updateID = 0;
 
         /**
          * @member {boolean}
@@ -234,10 +242,11 @@ export default class ParticleContainer extends Container
     {
         const bufferIndex = Math.floor(smallestChildIndex / this._batchSize);
 
-        if (bufferIndex < this._bufferToUpdate)
+        while (this._bufferUpdateIDs.length < bufferIndex)
         {
-            this._bufferToUpdate = bufferIndex;
+            this._bufferUpdateIDs.push(0);
         }
+        this._bufferUpdateIDs[bufferIndex] = ++this._updateID;
     }
 
     dispose()
@@ -272,5 +281,7 @@ export default class ParticleContainer extends Container
         this.dispose();
 
         this._properties = null;
+        this._buffers = null;
+        this._bufferUpdateIDs = null;
     }
 }
