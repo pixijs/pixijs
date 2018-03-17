@@ -459,9 +459,9 @@ export default class Graphics extends Container
      * @param {number} cx - The x-coordinate of the center of the circle
      * @param {number} cy - The y-coordinate of the center of the circle
      * @param {number} radius - The radius of the circle
-     * @param {number} startAngle - The starting angle, in radians (0 is at the 3 o'clock position
-     *  of the arc's circle)
-     * @param {number} endAngle - The ending angle, in radians
+     * @param {number} startAngle - The starting angle, in radians {@link PIXI.settings.USE_DEGREES or degrees}
+     * (0 is at the 3 o'clock position of the arc's circle)
+     * @param {number} endAngle - The ending angle, in radians {@link PIXI.settings.USE_DEGREES or degrees}
      * @param {boolean} [anticlockwise=false] - Specifies whether the drawing should be
      *  counter-clockwise or clockwise. False is default, and indicates clockwise, while true
      *  indicates counter-clockwise.
@@ -473,6 +473,9 @@ export default class Graphics extends Container
         {
             return this;
         }
+
+        startAngle *= this.transform.deg2rad;
+        endAngle *= this.transform.deg2rad;
 
         if (!anticlockwise && endAngle <= startAngle)
         {

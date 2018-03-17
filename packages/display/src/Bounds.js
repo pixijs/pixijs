@@ -153,7 +153,7 @@ export default class Bounds
     /**
      * Adds sprite frame, transformed.
      *
-     * @param {PIXI.TransformBase} transform - TODO
+     * @param {PIXI.Transform} transform - TODO
      * @param {number} x0 - TODO
      * @param {number} y0 - TODO
      * @param {number} x1 - TODO
@@ -212,7 +212,7 @@ export default class Bounds
     /**
      * Add an array of vertices
      *
-     * @param {PIXI.TransformBase} transform - TODO
+     * @param {PIXI.Transform} transform - TODO
      * @param {Float32Array} vertices - TODO
      * @param {number} beginOffset - TODO
      * @param {number} endOffset - TODO

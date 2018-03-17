@@ -30,7 +30,8 @@
     "@pixi/utils": "^5.0.0-alpha",
     "@pixi/sprite": "^5.0.0-alpha",
     "@pixi/display": "^5.0.0-alpha",
-    "@pixi/constants": "^5.0.0-alpha"
+    "@pixi/constants": "^5.0.0-alpha",
+    "@pixi/settings": "^5.0.0-alpha"
   },
   "devDependencies": {
     "floss": "^2.1.3"

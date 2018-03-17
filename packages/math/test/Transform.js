@@ -12,11 +12,13 @@ describe('PIXI.Transform', function ()
             const parent = new Transform();
             const otherTransform = new Transform();
 
+            transform.useDegrees = true;
             transform.position.set(20, 10);
             transform.scale.set(-2, -3);
-            transform.rotation = Math.PI / 6;
+            transform.rotation = 30;
             transform.updateTransform(parent);
 
+            otherTransform.useDegrees = true;
             otherTransform.setFromMatrix(transform.worldTransform);
 
             const position = otherTransform.position;
@@ -29,7 +31,7 @@ describe('PIXI.Transform', function ()
             expect(scale.y).to.be.closeTo(3, eps);
             expect(skew.x).to.equal(0);
             expect(skew.y).to.equal(0);
-            expect(otherTransform.rotation).to.be.closeTo(-5 * Math.PI / 6, eps);
+            expect(otherTransform.rotation).to.be.closeTo(-150, eps);
         });
 
         it('should decompose mirror into skew', function ()
@@ -40,11 +42,13 @@ describe('PIXI.Transform', function ()
             const parent = new Transform();
             const otherTransform = new Transform();
 
+            transform.useDegrees = true;
             transform.position.set(20, 10);
             transform.scale.set(2, -3);
-            transform.rotation = Math.PI / 6;
+            transform.rotation = 30;
             transform.updateTransform(parent);
 
+            otherTransform.useDegrees = true;
             otherTransform.setFromMatrix(transform.worldTransform);
 
             const position = otherTransform.position;
@@ -55,8 +59,8 @@ describe('PIXI.Transform', function ()
             expect(position.y).to.be.closeTo(10, eps);
             expect(scale.x).to.be.closeTo(2, eps);
             expect(scale.y).to.be.closeTo(3, eps);
-            expect(skew.x).to.be.closeTo(5 * Math.PI / 6, eps);
-            expect(skew.y).to.be.closeTo(Math.PI / 6, eps);
+            expect(skew.x).to.be.closeTo(150, eps);
+            expect(skew.y).to.be.closeTo(30, eps);
             expect(otherTransform.rotation).to.equal(0);
         });
 
@@ -69,6 +73,9 @@ describe('PIXI.Transform', function ()
             const transform = new Transform();
             const parent = new Transform();
             const otherTransform = new Transform();
+
+            transform.useDegrees = false;
+            otherTransform.useDegrees = false;
 
             transform.position.set(387.8, 313.95);
             transform.scale.set(0.572, 4.101);
