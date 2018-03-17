@@ -1,25 +1,25 @@
 {
   "name": "@internal/integration-tests",
   "private": true,
-  "version": "5.0.0-alpha",
+  "version": "5.0.0-alpha.2",
   "description": "Integration tests for PixiJS packages",
   "scripts": {
     "test": "floss --path test"
   },
   "devDependencies": {
-    "@pixi/graphics": "^5.0.0-alpha",
-    "@pixi/canvas-display": "^5.0.0-alpha",
-    "@pixi/canvas-renderer": "^5.0.0-alpha",
-    "@pixi/canvas-graphics": "^5.0.0-alpha",
-    "@pixi/canvas-sprite": "^5.0.0-alpha",
-    "@pixi/canvas-mesh": "^5.0.0-alpha",
-    "@pixi/core": "^5.0.0-alpha",
-    "@pixi/sprite": "^5.0.0-alpha",
-    "@pixi/mesh": "^5.0.0-alpha",
-    "@pixi/text": "^5.0.0-alpha",
-    "@pixi/math": "^5.0.0-alpha",
-    "@pixi/display": "^5.0.0-alpha",
-    "@internal/renders": "^5.0.0-alpha",
+    "@internal/renders": "^5.0.0-alpha.2",
+    "@pixi/canvas-display": "^5.0.0-alpha.2",
+    "@pixi/canvas-graphics": "^5.0.0-alpha.2",
+    "@pixi/canvas-mesh": "^5.0.0-alpha.2",
+    "@pixi/canvas-renderer": "^5.0.0-alpha.2",
+    "@pixi/canvas-sprite": "^5.0.0-alpha.2",
+    "@pixi/core": "^5.0.0-alpha.2",
+    "@pixi/display": "^5.0.0-alpha.2",
+    "@pixi/graphics": "^5.0.0-alpha.2",
+    "@pixi/math": "^5.0.0-alpha.2",
+    "@pixi/mesh": "^5.0.0-alpha.2",
+    "@pixi/sprite": "^5.0.0-alpha.2",
+    "@pixi/text": "^5.0.0-alpha.2",
     "floss": "^2.1.3"
   }
 }

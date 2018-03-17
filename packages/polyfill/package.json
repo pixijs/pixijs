@@ -1,6 +1,6 @@
 {
   "name": "@pixi/polyfill",
-  "version": "5.0.0-alpha",
+  "version": "5.0.0-alpha.2",
   "main": "lib/polyfill.js",
   "module": "lib/polyfill.es.js",
   "description": "Support for legacy browser JavaScript environments",

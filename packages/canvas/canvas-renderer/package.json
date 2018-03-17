@@ -1,6 +1,6 @@
 {
   "name": "@pixi/canvas-renderer",
-  "version": "5.0.0-alpha",
+  "version": "5.0.0-alpha.2",
   "main": "lib/canvas-renderer.js",
   "module": "lib/canvas-renderer.es.js",
   "description": "PixiJS Application",
@@ -25,11 +25,11 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/constants": "^5.0.0-alpha",
-    "@pixi/core": "^5.0.0-alpha",
-    "@pixi/utils": "^5.0.0-alpha",
-    "@pixi/math": "^5.0.0-alpha",
-    "@pixi/settings": "^5.0.0-alpha"
+    "@pixi/constants": "^5.0.0-alpha.2",
+    "@pixi/core": "^5.0.0-alpha.2",
+    "@pixi/math": "^5.0.0-alpha.2",
+    "@pixi/settings": "^5.0.0-alpha.2",
+    "@pixi/utils": "^5.0.0-alpha.2"
   },
   "devDependencies": {
     "floss": "^2.1.3"

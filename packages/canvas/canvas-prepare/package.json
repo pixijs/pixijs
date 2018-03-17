@@ -1,6 +1,6 @@
 {
   "name": "@pixi/canvas-prepare",
-  "version": "5.0.0-alpha",
+  "version": "5.0.0-alpha.2",
   "main": "lib/canvas-prepare.js",
   "module": "lib/canvas-prepare.es.js",
   "description": "PixiJS Application",
@@ -22,9 +22,9 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/canvas-renderer": "^5.0.0-alpha",
-    "@pixi/core": "^5.0.0-alpha",
-    "@pixi/prepare": "^5.0.0-alpha"
+    "@pixi/canvas-renderer": "^5.0.0-alpha.2",
+    "@pixi/core": "^5.0.0-alpha.2",
+    "@pixi/prepare": "^5.0.0-alpha.2"
   },
   "devDependencies": {
     "floss": "^2.1.3"

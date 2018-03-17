@@ -1,6 +1,6 @@
 {
   "name": "@pixi/filter-alpha",
-  "version": "5.0.0-alpha",
+  "version": "5.0.0-alpha.2",
   "main": "lib/filter-alpha.js",
   "module": "lib/filter-alpha.es.js",
   "description": "Support for legacy browser JavaScript environments",
@@ -22,8 +22,8 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/core": "^5.0.0-alpha",
-    "@pixi/fragments": "^5.0.0-alpha"
+    "@pixi/core": "^5.0.0-alpha.2",
+    "@pixi/fragments": "^5.0.0-alpha.2"
   },
   "devDependencies": {
     "floss": "^2.1.3"

@@ -1,6 +1,6 @@
 {
   "name": "@pixi/extract",
-  "version": "5.0.0-alpha",
+  "version": "5.0.0-alpha.2",
   "main": "lib/extract.js",
   "module": "lib/extract.es.js",
   "description": "Extract raw graphics data from renderer",
@@ -22,9 +22,9 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/utils": "^5.0.0-alpha",
-    "@pixi/core": "^5.0.0-alpha",
-    "@pixi/math": "^5.0.0-alpha"
+    "@pixi/core": "^5.0.0-alpha.2",
+    "@pixi/math": "^5.0.0-alpha.2",
+    "@pixi/utils": "^5.0.0-alpha.2"
   },
   "devDependencies": {
     "floss": "^2.1.3"

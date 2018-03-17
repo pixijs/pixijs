@@ -1,6 +1,6 @@
 {
   "name": "@pixi/ticker",
-  "version": "5.0.0-alpha",
+  "version": "5.0.0-alpha.2",
   "main": "lib/ticker.js",
   "module": "lib/ticker.es.js",
   "description": "PixiJS Application",
@@ -25,7 +25,7 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/settings": "^5.0.0-alpha"
+    "@pixi/settings": "^5.0.0-alpha.2"
   },
   "devDependencies": {
     "floss": "^2.1.3"

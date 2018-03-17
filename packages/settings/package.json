@@ -1,6 +1,6 @@
 {
   "name": "@pixi/settings",
-  "version": "5.0.0-alpha",
+  "version": "5.0.0-alpha.2",
   "main": "lib/settings.js",
   "module": "lib/settings.es.js",
   "description": "PixiJS Application",

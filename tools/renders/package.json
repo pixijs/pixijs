@@ -1,17 +1,17 @@
 {
   "name": "@internal/renders",
-  "version": "5.0.0-alpha",
+  "version": "5.0.0-alpha.2",
   "private": true,
   "main": "src/index.js",
   "devDependencies": {
     "chai": "^3.5.0",
     "electron": "^1.7.9",
+    "js-md5": "^0.6.1",
+    "pixi.js": "^5.0.0-alpha.2",
     "sinon": "^1.17.6",
-    "sinon-chai": "^2.8.0",
-    "pixi.js": "5.0.0-alpha",
-    "js-md5": "^0.6.1"
+    "sinon-chai": "^2.8.0"
   },
   "scripts": {
-  	"app": "electron app"
+    "app": "electron app"
   }
 }

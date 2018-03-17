@@ -1,6 +1,6 @@
 {
   "name": "@pixi/app",
-  "version": "5.0.0-alpha",
+  "version": "5.0.0-alpha.2",
   "main": "lib/app.js",
   "module": "lib/app.es.js",
   "description": "PixiJS Application",
@@ -25,14 +25,14 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/core": "^5.0.0-alpha",
-    "@pixi/display": "^5.0.0-alpha",
-    "@pixi/ticker": "^5.0.0-alpha",
-    "@pixi/settings": "^5.0.0-alpha"
+    "@pixi/core": "^5.0.0-alpha.2",
+    "@pixi/display": "^5.0.0-alpha.2",
+    "@pixi/settings": "^5.0.0-alpha.2",
+    "@pixi/ticker": "^5.0.0-alpha.2"
   },
   "devDependencies": {
-    "@pixi/utils": "^5.0.0-alpha",
-    "@pixi/canvas-renderer": "^5.0.0-alpha",
+    "@pixi/canvas-renderer": "^5.0.0-alpha.2",
+    "@pixi/utils": "^5.0.0-alpha.2",
     "floss": "^2.1.3"
   }
 }

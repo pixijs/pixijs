@@ -1,6 +1,6 @@
 {
   "name": "@pixi/filter-fxaa",
-  "version": "5.0.0-alpha",
+  "version": "5.0.0-alpha.2",
   "main": "lib/filter-fxaa.js",
   "module": "lib/filter-fxaa.es.js",
   "description": "Support for legacy browser JavaScript environments",
@@ -22,7 +22,7 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/core": "^5.0.0-alpha"
+    "@pixi/core": "^5.0.0-alpha.2"
   },
   "devDependencies": {
     "floss": "^2.1.3"

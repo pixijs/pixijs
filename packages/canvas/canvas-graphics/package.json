@@ -1,6 +1,6 @@
 {
   "name": "@pixi/canvas-graphics",
-  "version": "5.0.0-alpha",
+  "version": "5.0.0-alpha.2",
   "main": "lib/canvas-graphics.js",
   "module": "lib/canvas-graphics.es.js",
   "description": "PixiJS Application",
@@ -22,10 +22,10 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/core": "^5.0.0-alpha",
-    "@pixi/math": "^5.0.0-alpha",
-    "@pixi/graphics": "^5.0.0-alpha",
-    "@pixi/canvas-renderer": "^5.0.0-alpha"
+    "@pixi/canvas-renderer": "^5.0.0-alpha.2",
+    "@pixi/core": "^5.0.0-alpha.2",
+    "@pixi/graphics": "^5.0.0-alpha.2",
+    "@pixi/math": "^5.0.0-alpha.2"
   },
   "devDependencies": {
     "floss": "^2.1.3"

@@ -1,6 +1,6 @@
 {
   "name": "@pixi/particles",
-  "version": "5.0.0-alpha",
+  "version": "5.0.0-alpha.2",
   "main": "lib/particles.js",
   "module": "lib/particles.es.js",
   "description": "Support for legacy browser JavaScript environments",
@@ -22,11 +22,11 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/core": "^5.0.0-alpha",
-    "@pixi/constants": "^5.0.0-alpha",
-    "@pixi/utils": "^5.0.0-alpha",
-    "@pixi/display": "^5.0.0-alpha",
-    "@pixi/math": "^5.0.0-alpha"
+    "@pixi/constants": "^5.0.0-alpha.2",
+    "@pixi/core": "^5.0.0-alpha.2",
+    "@pixi/display": "^5.0.0-alpha.2",
+    "@pixi/math": "^5.0.0-alpha.2",
+    "@pixi/utils": "^5.0.0-alpha.2"
   },
   "devDependencies": {
     "floss": "^2.1.3"

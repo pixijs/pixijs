@@ -1,6 +1,6 @@
 {
   "name": "@pixi/canvas-mesh",
-  "version": "5.0.0-alpha",
+  "version": "5.0.0-alpha.2",
   "main": "lib/canvas-mesh.js",
   "module": "lib/canvas-mesh.es.js",
   "description": "PixiJS Application",
@@ -22,9 +22,9 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/constants": "^5.0.0-alpha",
-    "@pixi/settings": "^5.0.0-alpha",
-    "@pixi/mesh": "^5.0.0-alpha"
+    "@pixi/constants": "^5.0.0-alpha.2",
+    "@pixi/mesh": "^5.0.0-alpha.2",
+    "@pixi/settings": "^5.0.0-alpha.2"
   },
   "devDependencies": {
     "floss": "^2.1.3"

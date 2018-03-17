@@ -1,6 +1,6 @@
 {
   "name": "@pixi/display",
-  "version": "5.0.0-alpha",
+  "version": "5.0.0-alpha.2",
   "main": "lib/display.js",
   "module": "lib/display.es.js",
   "description": "PixiJS Application",
@@ -25,8 +25,8 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/math": "^5.0.0-alpha",
-    "@pixi/utils": "^5.0.0-alpha",
+    "@pixi/math": "^5.0.0-alpha.2",
+    "@pixi/utils": "^5.0.0-alpha.2",
     "eventemitter3": "^2.0.0",
     "remove-array-items": "^1.0.0"
   },

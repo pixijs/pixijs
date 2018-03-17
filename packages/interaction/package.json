@@ -1,6 +1,6 @@
 {
   "name": "@pixi/interaction",
-  "version": "5.0.0-alpha",
+  "version": "5.0.0-alpha.2",
   "main": "lib/interaction.js",
   "module": "lib/interaction.es.js",
   "description": "Support for legacy browser JavaScript environments",
@@ -25,20 +25,20 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/core": "^5.0.0-alpha",
-    "@pixi/utils": "^5.0.0-alpha",
-    "@pixi/display": "^5.0.0-alpha",
-    "@pixi/math": "^5.0.0-alpha",
-    "@pixi/ticker": "^5.0.0-alpha",
+    "@pixi/core": "^5.0.0-alpha.2",
+    "@pixi/display": "^5.0.0-alpha.2",
+    "@pixi/math": "^5.0.0-alpha.2",
+    "@pixi/ticker": "^5.0.0-alpha.2",
+    "@pixi/utils": "^5.0.0-alpha.2",
     "eventemitter3": "^2.0.0"
   },
   "devDependencies": {
-    "@pixi/canvas-renderer": "^5.0.0-alpha",
-    "@pixi/canvas-display": "^5.0.0-alpha",
-    "@pixi/canvas-graphics": "^5.0.0-alpha",
-    "@pixi/canvas-sprite": "^5.0.0-alpha",
-    "@pixi/sprite": "^5.0.0-alpha",
-    "@pixi/graphics": "^5.0.0-alpha",
+    "@pixi/canvas-display": "^5.0.0-alpha.2",
+    "@pixi/canvas-graphics": "^5.0.0-alpha.2",
+    "@pixi/canvas-renderer": "^5.0.0-alpha.2",
+    "@pixi/canvas-sprite": "^5.0.0-alpha.2",
+    "@pixi/graphics": "^5.0.0-alpha.2",
+    "@pixi/sprite": "^5.0.0-alpha.2",
     "floss": "^2.1.3"
   }
 }

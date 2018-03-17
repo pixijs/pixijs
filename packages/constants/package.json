@@ -1,6 +1,6 @@
 {
   "name": "@pixi/constants",
-  "version": "5.0.0-alpha",
+  "version": "5.0.0-alpha.2",
   "main": "lib/constants.js",
   "module": "lib/constants.es.js",
   "description": "PixiJS Application",

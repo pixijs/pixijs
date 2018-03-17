@@ -1,6 +1,6 @@
 {
   "name": "@pixi/mixin-get-global-position",
-  "version": "5.0.0-alpha",
+  "version": "5.0.0-alpha.2",
   "main": "lib/mixin-get-global-position.js",
   "module": "lib/mixin-get-global-position.es.js",
   "description": "Support for legacy browser JavaScript environments",
@@ -25,8 +25,8 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/display": "^5.0.0-alpha",
-    "@pixi/math": "^5.0.0-alpha"
+    "@pixi/display": "^5.0.0-alpha.2",
+    "@pixi/math": "^5.0.0-alpha.2"
   },
   "devDependencies": {
     "floss": "^2.1.3"

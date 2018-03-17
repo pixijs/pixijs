@@ -1,6 +1,6 @@
 {
   "name": "@pixi/canvas-particles",
-  "version": "5.0.0-alpha",
+  "version": "5.0.0-alpha.2",
   "main": "lib/canvas-sprite-tiling.js",
   "module": "lib/canvas-sprite-tiling.es.js",
   "description": "Support for legacy browser JavaScript environments",
@@ -22,7 +22,7 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/particles": "^5.0.0-alpha"
+    "@pixi/particles": "^5.0.0-alpha.2"
   },
   "devDependencies": {
     "floss": "^2.1.3"
