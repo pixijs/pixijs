@@ -216,10 +216,11 @@ export default class GraphicsRenderer extends ObjectRenderer
 
         if (!webGLData || webGLData.nativeLines !== nativeLines || webGLData.points.length > 320000)
         {
-            webGLData = this.graphicsDataPool.pop()
-            || new WebGLGraphicsData(this.renderer.gl,
-                    this.primitiveShader,
-                    this.renderer.state.attribsState);
+            webGLData = this.graphicsDataPool.pop() || new WebGLGraphicsData(
+                this.renderer.gl,
+                this.primitiveShader,
+                this.renderer.state.attribsState
+            );
 
             webGLData.nativeLines = nativeLines;
 
