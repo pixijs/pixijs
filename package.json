@@ -17,6 +17,9 @@
     "type": "git",
     "url": "https://github.com/pixijs/pixi.js.git"
   },
+  "engines": {
+    "npm": ">=5"
+  },
   "scripts": {
     "clean": "rimraf dist lib && mkdirp dist && mkdir lib",
     "prestart": "npm run clean",
