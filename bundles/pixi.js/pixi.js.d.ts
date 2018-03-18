@@ -633,7 +633,7 @@ declare namespace PIXI {
 
     export class GraphicsRenderer extends ObjectRenderer {
 
-        constructor(renderer: PIXI.CanvasRenderer);
+        constructor(renderer: PIXI.Renderer);
 
         protected graphicsDataPool: GraphicsData[];
         protected primitiveShader: PrimitiveShader;
@@ -2019,7 +2019,7 @@ declare namespace PIXI {
 
         export class InteractionManager extends utils.EventEmitter {
 
-            constructor(renderer: CanvasRenderer | Renderer | SystemRenderer, options?: InteractionManagerOptions);
+            constructor(renderer: Renderer | SystemRenderer, options?: InteractionManagerOptions);
 
             renderer: SystemRenderer;
             autoPreventDefault: boolean;
@@ -2152,6 +2152,7 @@ declare namespace PIXI {
     export class Loader extends utils.EventEmitter {
 
         static shared: Loader;
+        static registerPlugin(plugin: {pre?: Function, use?: Function}): any;
 
         // below this line is the original non-pixi loader
 
