@@ -554,10 +554,3 @@ export default class Sprite extends Container
         }
     }
 }
-
-Sprite.fromImage = Sprite.from;
-Sprite.fromSVG = Sprite.from;
-Sprite.fromCanvas = Sprite.from;
-Sprite.fromVideo = Sprite.from;
-Sprite.fromFrame = Sprite.from;
-
