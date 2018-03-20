@@ -47,10 +47,6 @@ export default class StencilSystem extends System
      */
     pushStencil(graphics)
     {
-        this.renderer.batch.setObjectRenderer(this.renderer.plugins.graphics);
-
-        //        this.renderer._activeRenderTarget.attachStencilBuffer();
-
         const gl = this.renderer.gl;
         const prevMaskCount = this.stencilMaskStack.length;
 
@@ -65,7 +61,11 @@ export default class StencilSystem extends System
         gl.colorMask(false, false, false, false);
         gl.stencilFunc(gl.EQUAL, prevMaskCount, this._getBitwiseMask());
         gl.stencilOp(gl.KEEP, gl.KEEP, gl.INCR);
-        this.renderer.plugins.graphics.render(graphics);
+
+        graphics.renderable = true;
+        graphics.render(this.renderer);
+        this.renderer.batch.flush();
+        graphics.renderable = false;
 
         this._useCurrent();
     }
@@ -75,8 +75,6 @@ export default class StencilSystem extends System
      */
     popStencil()
     {
-        this.renderer.batch.setObjectRenderer(this.renderer.plugins.graphics);
-
         const gl = this.renderer.gl;
         const graphics = this.stencilMaskStack.pop();
 
@@ -92,7 +90,11 @@ export default class StencilSystem extends System
             // Decrement the refference stencil value where the popped mask overlaps with the other ones
             gl.colorMask(false, false, false, false);
             gl.stencilOp(gl.KEEP, gl.KEEP, gl.DECR);
-            this.renderer.plugins.graphics.render(graphics);
+
+            graphics.renderable = true;
+            graphics.render(this.renderer);
+            this.renderer.batch.flush();
+            graphics.renderable = false;
 
             this._useCurrent();
         }
