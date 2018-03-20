@@ -1044,7 +1044,7 @@ export default class InteractionManager extends EventEmitter
         {
             if (hitTest)
             {
-                if (!displayObject._mask.containsPoint(point))
+                if (!(displayObject._mask.containsPoint && displayObject._mask.containsPoint(point)))
                 {
                     hitTest = false;
                     hitTestChildren = false;
