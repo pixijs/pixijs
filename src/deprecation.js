@@ -2,12 +2,20 @@
 // useful for tracking-down where deprecated methods/properties/classes
 // are being used within the code
 
-// message/stack map - helps to prevent showing same deprecation warning several times
-const shownWarningStacks = {};
+// A map of warning messages already fired
+const warnings = {};
 
+// provide method to give a stack track for warnings
+// useful for tracking-down where deprecated methods/properties/classes
+// are being used within the code
 function warn(msg)
 {
-    // @if DEBUG
+    // Ignore duplicat
+    if (warnings[msg])
+    {
+        return;
+    }
+
     /* eslint-disable no-console */
     let stack = new Error().stack;
 
@@ -21,31 +29,26 @@ function warn(msg)
         // chop off the stack trace which includes pixi.js internal calls
         stack = stack.split('\n').splice(3).join('\n');
 
-        // don't show warning message if it was already shown
-        if (!shownWarningStacks[msg] || shownWarningStacks[msg] !== stack)
+        if (console.groupCollapsed)
         {
-            shownWarningStacks[msg] = stack;
-
-            if (console.groupCollapsed)
-            {
-                console.groupCollapsed(
-                    '%cDeprecation Warning: %c%s',
-                    'color:#614108;background:#fffbe6',
-                    'font-weight:normal;color:#614108;background:#fffbe6',
-                    msg
-                );
-                console.warn(stack);
-                console.groupEnd();
-            }
-            else
-            {
-                console.warn('Deprecation Warning: ', msg);
-                console.warn(stack);
-            }
+            console.groupCollapsed(
+                '%cDeprecation Warning: %c%s',
+                'color:#614108;background:#fffbe6',
+                'font-weight:normal;color:#614108;background:#fffbe6',
+                msg
+            );
+            console.warn(stack);
+            console.groupEnd();
+        }
+        else
+        {
+            console.warn('Deprecation Warning: ', msg);
+            console.warn(stack);
         }
     }
     /* eslint-enable no-console */
-    // @endif
+
+    warnings[msg] = true;
 }
 
 export default function deprecation(core)
