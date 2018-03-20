@@ -279,13 +279,18 @@ export default class Texture extends EventEmitter
      * @param {object} [options] See {@link PIXI.BaseTexture}'s constructor for options.
      * @return {PIXI.Texture} The newly created texture
      */
-    static from(source, options)
+    static from(source, options = {})
     {
         let cacheId = null;
 
         if (typeof source === 'string')
         {
             cacheId = source;
+
+            if (!options.resolution)
+            {
+                options.resolution = getResolutionOfUrl(source);
+            }
         }
         else
         {
