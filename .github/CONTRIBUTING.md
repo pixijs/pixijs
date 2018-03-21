@@ -21,8 +21,8 @@ of [jsFiddle][fiddle], [jsBin][jsbin], or a link to your live site so that we ca
 4. **Share as much information as possible.** Include browser version affected, your OS, version of
 the library, steps to reproduce, etc. "X isn't working!!!1!" will probably just be closed.
 
-> NOTE: if you are looking for support, please visit the [FAQ][faq], [forums][forums] or go through
-> the [tutorials][tutorials].
+> NOTE: if you are looking for support, please visit the [FAQ][faq], [forums][forums], [wiki][wiki]
+> or go through the [tutorials][tutorials].
 
 ## Contributing Changes
 
@@ -86,6 +86,7 @@ eslint, rebuild, then run the test suite.
 [node]: http://nodejs.org
 [pixi]: https://github.com/pixijs/pixi.js
 [tutorials]: http://www.pixijs.com/tutorials
+[wiki]: https://github.com/pixijs/pixi.js/wiki
 
 ## Contributor Code of Conduct
 
