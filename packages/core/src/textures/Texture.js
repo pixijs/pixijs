@@ -538,12 +538,6 @@ export default class Texture extends EventEmitter
     }
 }
 
-Texture.fromImage = Texture.from;
-Texture.fromSVG = Texture.from;
-Texture.fromCanvas = Texture.from;
-Texture.fromVideo = Texture.from;
-Texture.fromFrame = Texture.from;
-
 function createWhiteTexture()
 {
     const canvas = document.createElement('canvas');

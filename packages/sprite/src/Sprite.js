@@ -1,5 +1,5 @@
 import { Point, ObservablePoint, Rectangle } from '@pixi/math';
-import { sign, TextureCache } from '@pixi/utils';
+import { sign } from '@pixi/utils';
 import { Texture } from '@pixi/core';
 import { BLEND_MODES } from '@pixi/constants';
 import { Container } from '@pixi/display';
@@ -432,53 +432,17 @@ export default class Sprite extends Container
      * The source can be - frame id, image url, video url, canvas element, video element, base texture
      *
      * @static
-     * @param {number|string|PIXI.BaseTexture|HTMLCanvasElement|HTMLVideoElement} source Source to create texture from
+     * @param {number|string|PIXI.Texture|HTMLCanvasElement|HTMLVideoElement} source Source to create texture from
+     * @param {object} [options] See {@link PIXI.BaseTexture}'s constructor for options.
      * @return {PIXI.Sprite} The newly created sprite
      */
-    static from(source)
+    static from(source, options)
     {
-        return new Sprite(Texture.from(source));
-    }
-
-    /**
-     * Helper function that creates a sprite that will contain a texture from the TextureCache based on the frameId
-     * The frame ids are created when a Texture packer file has been loaded
-     *
-     * @static
-     * @param {string} frameId - The frame Id of the texture in the cache
-     * @return {PIXI.Sprite} A new Sprite using a texture from the texture cache matching the frameId
-     */
-    static fromFrame(frameId)
-    {
-        const texture = TextureCache[frameId];
-
-        if (!texture)
-        {
-            throw new Error(`The frameId "${frameId}" does not exist in the texture cache`);
-        }
+        const texture = (source instanceof Texture)
+            ? source
+            : new Texture.from(source, options);
 
         return new Sprite(texture);
-    }
-
-    /**
-     * Helper function that creates a sprite that will contain a texture based on an image url
-     * If the image is not in the texture cache it will be loaded
-     *
-     * @static
-     * @param {string} imageId - The image url of the texture
-     * @param {boolean} [crossorigin=(auto)] - if you want to specify the cross-origin parameter
-     * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - if you want to specify the scale mode,
-     *  see {@link PIXI.SCALE_MODES} for possible values
-     * @return {PIXI.Sprite} A new Sprite using a texture from the texture cache matching the image id
-     */
-    static fromImage(imageId, crossorigin, scaleMode)
-    {
-        return new Sprite(Texture.fromImage(imageId, crossorigin, scaleMode));
-    }
-
-    static fromSVG(svgId, crossorigin, scaleMode)
-    {
-        return new Sprite(Texture.fromSVG(svgId, crossorigin, scaleMode));
     }
 
     /**
