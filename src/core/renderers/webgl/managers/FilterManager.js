@@ -24,6 +24,18 @@ class FilterState
         this.target = null;
         this.resolution = 1;
     }
+    /**
+     * Clears FilterState fields
+     */
+    destroy()
+    {
+        this.renderTarget = null;
+        this.sourceFrame = null;
+        this.destinationFrame = null;
+        this.filters = null;
+        this.target = null;
+    }
+
 }
 
 const screenKey = 'screen';
@@ -536,6 +548,36 @@ export default class FilterManager extends WebGLManager
         else
         {
             this.pool = {};
+        }
+    }
+
+    /**
+     * Destroys FilterState of specified target
+     *
+     * @param {PIXI.DisplayObject} target, which FilterState should be destroyed
+     */
+    destroyFilterStateByTarget(target)
+    {
+        let filterData = this.filterData;
+
+        if (!filterData)
+        {
+            filterData = this.renderer._activeRenderTarget.filterData;
+        }
+
+        const stack = filterData.stack;
+        let index = stack.length - 1;
+
+        while (index >= 0)
+        {
+            const filterState = stack[index];
+
+            if (filterState.target === target)
+            {
+                filterState.destroy();
+                stack.splice(index, 1);
+            }
+            index -= 1;
         }
     }
 
