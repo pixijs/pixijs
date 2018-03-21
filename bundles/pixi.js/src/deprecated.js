@@ -824,4 +824,112 @@ export default function deprecated(PIXI)
         BlurXFilter,
         BlurYFilter,
     });
+
+    const { Sprite, Texture } = PIXI;
+
+    // Use these to deprecate all the Sprite from* methods
+    function spriteFrom(name, source, crossorigin, scaleMode)
+    {
+        warn(`PIXI.Sprite.${name} is deprecated, use PIXI.Sprite.from`);
+
+        return Sprite.from(source, {
+            resourceOptions: {
+                scale: scaleMode,
+                crossorigin,
+            },
+        });
+    }
+
+    /**
+     * @deprecated since 5.0.0
+     * @see PIXI.Sprite.from
+     * @method PIXI.Sprite.fromImage
+     * @return {PIXI.Sprite}
+     */
+    Sprite.fromImage = spriteFrom.bind(null, 'fromImage');
+
+    /**
+     * @deprecated since 5.0.0
+     * @method PIXI.Sprite.fromSVG
+     * @see PIXI.Sprite.from
+     * @return {PIXI.Sprite}
+     */
+    Sprite.fromSVG = spriteFrom.bind(null, 'fromSVG');
+
+    /**
+     * @deprecated since 5.0.0
+     * @method PIXI.Sprite.fromCanvas
+     * @see PIXI.Sprite.from
+     * @return {PIXI.Sprite}
+     */
+    Sprite.fromCanvas = spriteFrom.bind(null, 'fromCanvas');
+
+    /**
+     * @deprecated since 5.0.0
+     * @method PIXI.Sprite.fromVideo
+     * @see PIXI.Sprite.from
+     * @return {PIXI.Sprite}
+     */
+    Sprite.fromVideo = spriteFrom.bind(null, 'fromVideo');
+
+    /**
+     * @deprecated since 5.0.0
+     * @method PIXI.Sprite.fromFrame
+     * @see PIXI.Sprite.from
+     * @return {PIXI.Sprite}
+     */
+    Sprite.fromFrame = spriteFrom.bind(null, 'fromFrame');
+
+    // Use these to deprecate all the Texture from* methods
+    function textureFrom(name, source, crossorigin, scaleMode)
+    {
+        warn(`PIXI.Texture.${name} is deprecated, use PIXI.Texture.from`);
+
+        return Texture.from(source, {
+            resourceOptions: {
+                scale: scaleMode,
+                crossorigin,
+            },
+        });
+    }
+
+    /**
+     * @deprecated since 5.0.0
+     * @method PIXI.Texture.fromImage
+     * @see PIXI.Texture.from
+     * @return {PIXI.Texture}
+     */
+    Texture.fromImage = textureFrom.bind(null, 'fromImage');
+
+    /**
+     * @deprecated since 5.0.0
+     * @method PIXI.Texture.fromSVG
+     * @see PIXI.Texture.from
+     * @return {PIXI.Texture}
+     */
+    Texture.fromSVG = textureFrom.bind(null, 'fromSVG');
+
+    /**
+     * @deprecated since 5.0.0
+     * @method PIXI.Texture.fromCanvas
+     * @see PIXI.Texture.from
+     * @return {PIXI.Texture}
+     */
+    Texture.fromCanvas = textureFrom.bind(null, 'fromCanvas');
+
+    /**
+     * @deprecated since 5.0.0
+     * @method PIXI.Texture.fromVideo
+     * @see PIXI.Texture.from
+     * @return {PIXI.Texture}
+     */
+    Texture.fromVideo = textureFrom.bind(null, 'fromVideo');
+
+    /**
+     * @deprecated since 5.0.0
+     * @method PIXI.Texture.fromFrame
+     * @see PIXI.Texture.from
+     * @return {PIXI.Texture}
+     */
+    Texture.fromFrame = textureFrom.bind(null, 'fromFrame');
 }
