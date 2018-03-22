@@ -122,16 +122,40 @@ export default class TextMetrics
         // And then the final space is simply no appended to each line
         const wordWrapWidth = style.wordWrapWidth + style.letterSpacing;
 
-        // get the width of a space and add it to cache
-        const spaceWidth = TextMetrics.getFromCache(' ', ls, cache, context);
+        let lastSpacePosition = -1;
+        const spaces = /\s/g;
+        const textLen = text.length;
 
-        // break text into words
-        const words = text.split(' ');
-
-        for (let i = 0; i < words.length; i++)
+        while (lastSpacePosition < textLen)
         {
-            const word = words[i];
+            const result = spaces.exec(text);
+            const wordStart = lastSpacePosition + 1;
+            let spaceWidth = 0;
+            let space;
 
+            if (lastSpacePosition > -1)
+            {
+                space = text.charAt(lastSpacePosition);
+
+                if (space === '\r' || space === '\n')
+                {
+                    lines += line + space;
+                    line = '';
+                    width = 0;
+                    space = '';
+                }
+                else
+                {
+                    spaceWidth = TextMetrics.getFromCache(space, ls, cache, context);
+                }
+            }
+            else
+            {
+                space = '';
+            }
+
+            lastSpacePosition = result === null ? textLen : result.index;
+            const word = text.substring(wordStart, lastSpacePosition);
             // get word width from cache if possible
             const wordWidth = TextMetrics.getFromCache(word, ls, cache, context);
 
@@ -141,8 +165,7 @@ export default class TextMetrics
                 // break large word over multiple lines
                 if (style.breakWords)
                 {
-                    // add a space to the start of the word unless its at the beginning of the line
-                    const tmpWord = (line.length > 0) ? ` ${word}` : word;
+                    const tmpWord = `${space}${word}`;
 
                     // break word into characters
                     const characters = tmpWord.split('');
@@ -195,17 +218,7 @@ export default class TextMetrics
                     width = 0;
                 }
 
-                // add the word to the current line
-                if (line.length > 0)
-                {
-                    // add a space if it is not the beginning
-                    line += ` ${word}`;
-                }
-                else
-                {
-                    // add without a space if it is the beginning
-                    line += word;
-                }
+                line += `${space}${word}`;
 
                 width += wordWidth + spaceWidth;
             }
@@ -226,7 +239,10 @@ export default class TextMetrics
      */
     static addLine(line, newLine = true)
     {
-        line = (newLine) ? `${line}\n` : line;
+        if (newLine)
+        {
+            line = `${line}\n`;
+        }
 
         return line;
     }
