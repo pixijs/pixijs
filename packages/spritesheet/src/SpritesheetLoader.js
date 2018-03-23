@@ -21,7 +21,6 @@ export default class SpritesheetLoader
      */
     static use(resource, next)
     {
-
         // skip if no data, its not json, it isn't spritesheet data,
         if (!resource.data
             || resource.type !== LoaderResource.TYPE.JSON
@@ -39,13 +38,13 @@ export default class SpritesheetLoader
         // resolve removes the ./ if present.
         // this name needs to be the exactly the same as the url path
         // so we add it back if its there
-        if(resource.url.substring(0, 2) === './')
+        if (resource.url.substring(0, 2) === './')
         {
-            imageResourceName = './' + imageResourceName;
+            imageResourceName = `./${imageResourceName}`;
         }
 
         // skip if the image resource already exists
-        if(this.resources[imageResourceName])
+        if (this.resources[imageResourceName])
         {
             next();
 
