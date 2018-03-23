@@ -31,6 +31,7 @@ export default class ShaderSystem extends System
 
         this.shader = null;
         this.program = null;
+        this.cache = {};
 
         this.id = UID++;
     }
@@ -99,9 +100,37 @@ export default class ShaderSystem extends System
 
     createSyncGroups(group)
     {
-        group.syncUniforms[this.shader.program.id] = generateUniformsSync(group, this.shader.program.uniformData);
+        const id = this.getSigniture(group, this.shader.program.uniformData);
+
+        if (!this.cache[id])
+        {
+            this.cache[id] = generateUniformsSync(group, this.shader.program.uniformData);
+        }
+
+        group.syncUniforms[this.shader.program.id] = this.cache[id];
 
         return group.syncUniforms[this.shader.program.id];
+    }
+
+    getSigniture(group, uniformData)
+    {
+        const uniforms = group.uniforms;
+
+        let sig = '';
+
+        for (const i in uniforms)
+        {
+            if (uniformData[i])
+            {
+                sig += i + uniformData[i].type;
+            }
+            else
+            {
+                sig += i;
+            }
+        }
+
+        return sig;
     }
 
     /**
