@@ -21,14 +21,31 @@ export default class SpritesheetLoader
      */
     static use(resource, next)
     {
-        const imageResourceName = `${resource.name}_image`;
 
-        // skip if no data, its not json, it isn't spritesheet data, or the image resource already exists
+        // skip if no data, its not json, it isn't spritesheet data,
         if (!resource.data
             || resource.type !== LoaderResource.TYPE.JSON
-            || !resource.data.frames
-            || this.resources[imageResourceName]
-        )
+            || !resource.data.frames)
+        {
+            next();
+
+            return;
+        }
+
+        const resourcePath = SpritesheetLoader.getResourcePath(resource, this.baseUrl);
+
+        let imageResourceName = url.resolve(resource.url, resource.data.meta.image);
+
+        // resolve removes the ./ if present.
+        // this name needs to be the exactly the same as the url path
+        // so we add it back if its there
+        if(resource.url.substring(0, 2) === './')
+        {
+            imageResourceName = './' + imageResourceName;
+        }
+
+        // skip if the image resource already exists
+        if(this.resources[imageResourceName])
         {
             next();
 
@@ -40,8 +57,6 @@ export default class SpritesheetLoader
             metadata: resource.metadata.imageMetadata,
             parentResource: resource,
         };
-
-        const resourcePath = SpritesheetLoader.getResourcePath(resource, this.baseUrl);
 
         // load the image for this sheet
         this.add(imageResourceName, resourcePath, loadOptions, function onImageLoad(res)
