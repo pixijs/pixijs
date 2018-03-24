@@ -1,6 +1,6 @@
 {
   "name": "pixi.js",
-  "version": "4.7.0",
+  "version": "4.7.1",
   "description": "The HTML5 Creation Engine: Create beautiful digital content with the fastest, most flexible 2D WebGL renderer.",
   "author": "Mat Groves",
   "contributors": [
@@ -57,7 +57,7 @@
   ],
   "dependencies": {
     "bit-twiddle": "^1.0.2",
-    "earcut": "^2.0.7",
+    "earcut": "^2.1.3",
     "eventemitter3": "^2.0.0",
     "ismobilejs": "^0.4.0",
     "object-assign": "^4.0.1",

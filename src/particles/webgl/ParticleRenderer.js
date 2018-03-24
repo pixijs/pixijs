@@ -163,6 +163,8 @@ export default class ParticleRenderer extends core.ObjectRenderer
         // make sure the texture is bound..
         this.shader.uniforms.uSampler = renderer.bindTexture(baseTexture);
 
+        let updateStatic = false;
+
         // now lets upload and render the buffers..
         for (let i = 0, j = 0; i < totalChildren; i += batchSize, j += 1)
         {
@@ -187,11 +189,14 @@ export default class ParticleRenderer extends core.ObjectRenderer
             // we always upload the dynamic
             buffer.uploadDynamic(children, i, amount);
 
+            const bid = container._bufferUpdateIDs[i] || 0;
+
+            updateStatic = updateStatic || (buffer._updateID < bid);
             // we only upload the static content when we have to!
-            if (container._bufferToUpdate === j)
+            if (updateStatic)
             {
+                buffer._updateID = container._updateID;
                 buffer.uploadStatic(children, i, amount);
-                container._bufferToUpdate = j + 1;
             }
 
             // bind the buffer
