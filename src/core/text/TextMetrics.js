@@ -108,11 +108,27 @@ export default class TextMetrics
     {
         const context = canvas.getContext('2d');
 
-        let line = '';
         let width = 0;
+        let line = '';
         let lines = '';
+
         const cache = {};
         const ls = style.letterSpacing;
+
+        // whether or not spaces may be added to the beginning of lines
+        let canPrependSpaces = true;
+
+        // for debugging change this to a '•' or some other character
+        // to be able to see the space characters
+        const spaceChar = ' ';
+
+        // build the reg exp need to trim the lines
+        const query = (spaceChar === ' ') ? '/s' : spaceChar;
+        const re = new RegExp(`${query}*$`);
+
+        // whether to apply a new line before layouting a word that is
+        // longer than wordWrapWidth
+        const overFlowNewLine = true;
 
         // ideally there is letterSpacing after every char except the last one
         // t_h_i_s_' '_i_s_' '_a_n_' '_e_x_a_m_p_l_e_' '_!
@@ -122,15 +138,23 @@ export default class TextMetrics
         // And then the final space is simply no appended to each line
         const wordWrapWidth = style.wordWrapWidth + style.letterSpacing;
 
-        // get the width of a space and add it to cache
-        const spaceWidth = TextMetrics.getFromCache(' ', ls, cache, context);
-
-        // break text into words
-        const words = text.split(' ');
+        // break text into words, spaces and newline chars
+        const words = TextMetrics.explodeIntoWordsSpacesAndNewlineChars(text, spaceChar);
 
         for (let i = 0; i < words.length; i++)
         {
+            // get the word, space or newlineChar
             const word = words[i];
+
+            // if word is a new line
+            if (word === '\n')
+            {
+                lines += TextMetrics.addLine(line, re);
+                canPrependSpaces = true;
+                line = '';
+                width = 0;
+                continue;
+            }
 
             // get word width from cache if possible
             const wordWidth = TextMetrics.getFromCache(word, ls, cache, context);
@@ -138,14 +162,20 @@ export default class TextMetrics
             // word is longer than desired bounds
             if (wordWidth > wordWrapWidth)
             {
+                // whether to start newlines for overflow words
+                if (overFlowNewLine)
+                {
+                    lines += TextMetrics.addLine(line, re);
+                    canPrependSpaces = true;
+                    line = '';
+                    width = 0;
+                }
+
                 // break large word over multiple lines
                 if (style.breakWords)
                 {
-                    // add a space to the start of the word unless its at the beginning of the line
-                    const tmpWord = (line.length > 0) ? ` ${word}` : word;
-
                     // break word into characters
-                    const characters = tmpWord.split('');
+                    const characters = word.split('');
 
                     // loop the characters
                     for (let j = 0; j < characters.length; j++)
@@ -155,7 +185,8 @@ export default class TextMetrics
 
                         if (characterWidth + width > wordWrapWidth)
                         {
-                            lines += TextMetrics.addLine(line);
+                            lines += TextMetrics.addLine(line, re);
+                            canPrependSpaces = false;
                             line = '';
                             width = 0;
                         }
@@ -172,13 +203,14 @@ export default class TextMetrics
                     // finish that line and start a new one
                     if (line.length > 0)
                     {
-                        lines += TextMetrics.addLine(line);
+                        lines += TextMetrics.addLine(line, re);
                         line = '';
                         width = 0;
                     }
 
                     // give it its own line
-                    lines += TextMetrics.addLine(word);
+                    lines += TextMetrics.addLine(word, re);
+                    canPrependSpaces = false;
                     line = '';
                     width = 0;
                 }
@@ -187,45 +219,51 @@ export default class TextMetrics
             // word could fit
             else
             {
-                // word won't fit, start a new line
+                // word won't fit because of existing words
+                // start a new line
                 if (wordWidth + width > wordWrapWidth)
                 {
-                    lines += TextMetrics.addLine(line);
+                    // if its a space we don't want it
+                    canPrependSpaces = false;
+
+                    // add a new line
+                    lines += TextMetrics.addLine(line, re);
+
+                    // start a new line
                     line = '';
                     width = 0;
                 }
 
-                // add the word to the current line
-                if (line.length > 0)
+                // don't add spaces to the beginning of lines
+                if (line.length > 0 || word !== spaceChar || canPrependSpaces)
                 {
-                    // add a space if it is not the beginning
-                    line += ` ${word}`;
-                }
-                else
-                {
-                    // add without a space if it is the beginning
+                    // add the word to the current line
                     line += word;
-                }
 
-                width += wordWidth + spaceWidth;
+                    // update width counter
+                    width += wordWidth;
+                }
             }
         }
 
-        lines += TextMetrics.addLine(line, false);
+        lines += TextMetrics.addLine(line, re, false);
 
         return lines;
     }
 
     /**
-     *  Convienience function for logging each line added
-     *  during the wordWrap method
+     * Convienience function for logging each line added during the wordWrap
+     * method
      *
-     * @param  {string}   line    - The line of text to add
-     * @param  {boolean}  newLine - Add new line character to end
+     * @param  {string}   line        - The line of text to add
+     * @param  {RegExp}   trimRegExp  - A RegExp to trim traling spaces
+     * @param  {boolean}  newLine     - Add new line character to end
      * @return {string}   A formatted line
      */
-    static addLine(line, newLine = true)
+    static addLine(line, trimRegExp = ' ', newLine = true)
     {
+        line = line.replace(trimRegExp, '');
+
         line = (newLine) ? `${line}\n` : line;
 
         return line;
@@ -253,6 +291,48 @@ export default class TextMetrics
         }
 
         return width;
+    }
+
+    /**
+     * Splits a string into words, spaces and newLine characters
+     *
+     * @param  {string}  text       The text
+     * @param  {string}  spaceChar  The space character for debugging
+     * @return {array}  A tokenized array
+     */
+    static explodeIntoWordsSpacesAndNewlineChars(text, spaceChar = ' ')
+    {
+        const tokens = [];
+        let word = '';
+
+        for (let i = 0; i < text.length; i++)
+        {
+            let char = text[i];
+
+            if (char === ' ' || char === '\n')
+            {
+                if (word !== '')
+                {
+                    tokens.push(word);
+                    word = '';
+                }
+
+                if (char === ' ')
+                {
+                    char = spaceChar;
+                }
+
+                tokens.push(char);
+
+                continue;
+            }
+
+            word += char;
+        }
+
+        tokens.push(word);
+
+        return tokens;
     }
 
     /**

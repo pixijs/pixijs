@@ -14,6 +14,9 @@ autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil \
 molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla \
 pariatur?';
 
+/* eslint-disable max-len */
+const spaceNewLineText = ' Should have a space at the beginning of the line.\n   And 3 more here. But after that there should be no more spaces at the beginning of lines. And none at the end. And all this text is just to check the wrapping abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz. 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2     ';
+
 const breakingWordText = 'Pixi.js - The HTML5 Creation Engine. Create beautiful \
 digital content with the supercalifragilisticexpialidociously fastest, most \
 flexible 2D WebGL renderer.';
@@ -86,6 +89,30 @@ describe('PIXI.TextMetrics', function ()
                 expect(line[line - 1]).to.not.equal(' ', 'should not have space at the end');
             });
         });
+
+        it('width should be greater than wordWrapWidth and should format correct spaces', function ()
+        {
+            const style = Object.assign({}, defaultStyle, { breakWords: false });
+
+            const metrics = PIXI.TextMetrics.measureText(spaceNewLineText, new PIXI.TextStyle(style));
+
+            expect(metrics.width).to.be.above(style.wordWrapWidth);
+
+            expect(metrics.lines[0][0]).to.equal(' ', '1st line should start with a space');
+            expect(metrics.lines[4][0]).to.equal(' ', '5th line should start with 3 spaces (1)');
+            expect(metrics.lines[4][1]).to.equal(' ', '5th line should start with 3 spaces (2)');
+            expect(metrics.lines[4][2]).to.equal(' ', '5th line should start with 3 spaces (3)');
+            expect(metrics.lines[4][3]).to.not.equal(' ', '5th line should not have a space as the 4th char');
+
+            metrics.lines.forEach((line, i) =>
+            {
+                if (i !== 0 && i !== 4)
+                {
+                    expect(metrics.lines[1][0]).to.not.equal(' ', 'all lines except 1 & 5 should not have space at the start');
+                }
+                expect(line[line - 1]).to.not.equal(' ', 'no lines should have a space at the end');
+            });
+        });
     });
 
     describe('wordWrap with breakWords', function ()
@@ -147,6 +174,30 @@ describe('PIXI.TextMetrics', function ()
             const lines = metrics.lines.reduce((accumulator, line) => accumulator + line);
 
             expect(lines).to.equal(intergityText, 'should have the same chars as the original text');
+        });
+
+        it('width should not be greater than wordWrapWidth and should format correct spaces', function ()
+        {
+            const style = Object.assign({}, defaultStyle, { breakWords: true });
+
+            const metrics = PIXI.TextMetrics.measureText(spaceNewLineText, new PIXI.TextStyle(style));
+
+            expect(metrics.width).to.be.below(style.wordWrapWidth);
+
+            expect(metrics.lines[0][0]).to.equal(' ', '1st line should start with a space');
+            expect(metrics.lines[4][0]).to.equal(' ', '5th line should start with 3 spaces (1)');
+            expect(metrics.lines[4][1]).to.equal(' ', '5th line should start with 3 spaces (2)');
+            expect(metrics.lines[4][2]).to.equal(' ', '5th line should start with 3 spaces (3)');
+            expect(metrics.lines[4][3]).to.not.equal(' ', '5th line should not have a space as the 4th char');
+
+            metrics.lines.forEach((line, i) =>
+            {
+                if (i !== 0 && i !== 4)
+                {
+                    expect(metrics.lines[1][0]).to.not.equal(' ', 'all lines except 1 & 5 should not have space at the start');
+                }
+                expect(line[line - 1]).to.not.equal(' ', 'no lines should have a space at the end');
+            });
         });
     });
 });
