@@ -117,7 +117,7 @@ export default class AccessibilityManager
          * @private
          */
         this.isActive = false;
-        this.isMobileAccessability = false;
+        this.isMobileAccessibility = false;
 
         // let listen for tab.. once pressed we can fire up and show the accessibility layer
         window.addEventListener('keydown', this._onKeyDown, false);
@@ -142,7 +142,7 @@ export default class AccessibilityManager
 
         hookDiv.addEventListener('focus', () =>
         {
-            this.isMobileAccessability = true;
+            this.isMobileAccessibility = true;
             this.activate();
             document.body.removeChild(hookDiv);
         });
@@ -184,7 +184,7 @@ export default class AccessibilityManager
      */
     deactivate()
     {
-        if (!this.isActive || this.isMobileAccessability)
+        if (!this.isActive || this.isMobileAccessibility)
         {
             return;
         }
