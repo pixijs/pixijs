@@ -200,7 +200,7 @@ export default class AbstractRenderer extends EventEmitter
      * Initialize the plugins.
      *
      * @protected
-     * @param {object} staticMap - The dictionary of staticly saved plugins.
+     * @param {object} staticMap - The dictionary of statically saved plugins.
      */
     initPlugins(staticMap)
     {

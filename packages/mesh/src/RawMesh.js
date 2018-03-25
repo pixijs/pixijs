@@ -8,14 +8,14 @@ const tempPolygon = new Polygon();
 
 /**
  * Base mesh class.
- * The reason for this class is to empower you to have maximum flexbilty to render any kind of webGL you can think of.
+ * The reason for this class is to empower you to have maximum flexibility to render any kind of webGL you can think of.
  * This class assumes a certain level of webGL knowledge.
  * If you know a bit this should abstract enough away to make you life easier!
  * Pretty much ALL WebGL can be broken down into the following:
  * Geometry - The structure and data for the mesh. This can include anything from positions, uvs, normals, colors etc..
  * Shader - This is the shader that pixi will render the geometry with. (attributes in the shader must match the geometry!)
  * Uniforms - These are the values passed to the shader when the mesh is rendered.
- * As a shader can be resued accross multiple objects, it made sense to allow uniforms to exist outside of the shader
+ * As a shader can be reused across multiple objects, it made sense to allow uniforms to exist outside of the shader
  * State - This is the state of WebGL required to render the mesh.
  * Through a combination of the above elements you can render anything you want, 2D or 3D!
  *
@@ -101,7 +101,7 @@ export default class RawMesh extends Container
 
     /**
      * Updates the bounds of the mesh as a rectangle. The bounds calculation takes the worldTransform into account.
-     * there must be a aVertexPosition attribute present in the geometry for bounds to be calcualted correctly.
+     * there must be a aVertexPosition attribute present in the geometry for bounds to be calculated correctly.
      *
      * @private
      */

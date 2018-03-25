@@ -409,7 +409,7 @@ export default class BaseTexture extends EventEmitter
     }
 
     /**
-     * Sets the resource if it wasnt set. Throws error if resource already present
+     * Sets the resource if it wasn't set. Throws error if resource already present
      *
      * @param {PIXI.resources.Resource} resource - that is managing this BaseTexture
      * @returns {BaseTexture} this

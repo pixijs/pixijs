@@ -145,7 +145,7 @@ export default class TextureSystem extends System
     {
         const glTexture = new GLTexture(this.gl.createTexture());
 
-        // guarentee an update..
+        // guarantee an update..
         glTexture.dirtyId = -1;
 
         texture._glTextures[this.CONTEXT_UID] = glTexture;

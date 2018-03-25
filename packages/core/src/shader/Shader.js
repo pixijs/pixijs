@@ -90,7 +90,7 @@ class Shader
      * @param {string} [fragmentSrc] - The source of the fragment shader.
      * @param {object} [uniforms] - Custom uniforms to use to augment the built-in ones.
      *
-     * @returns {PIXI.Shader} an shiney new pixi shader.
+     * @returns {PIXI.Shader} an shiny new pixi shader!
      */
     static from(vertexSrc, fragmentSrc, uniforms)
     {

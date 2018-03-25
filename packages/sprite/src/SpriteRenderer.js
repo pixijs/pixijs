@@ -1,7 +1,7 @@
 import { Geometry,
     Buffer,
     ObjectRenderer,
-    checkMaxIfStatmentsInShader } from '@pixi/core';
+    checkMaxIfStatementsInShader } from '@pixi/core';
 import { settings } from '@pixi/settings';
 import { createIndicesForQuads, premultiplyBlendMode, premultiplyTint } from '@pixi/utils';
 import bitTwiddle from 'bit-twiddle';
@@ -70,7 +70,7 @@ export default class SpriteRenderer extends ObjectRenderer
 
         /**
          * The default shaders that is used if a sprite doesn't have a more specific one.
-         * there is a shader for each number of textures that can be rendererd.
+         * there is a shader for each number of textures that can be rendered.
          * These shaders will also be generated on the fly as required.
          * @member {PIXI.Shader[]}
          */
@@ -114,7 +114,7 @@ export default class SpriteRenderer extends ObjectRenderer
             this.MAX_TEXTURES = Math.min(gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS), settings.SPRITE_MAX_TEXTURES);
 
             // step 2: check the maximum number of if statements the shader can have too..
-            this.MAX_TEXTURES = checkMaxIfStatmentsInShader(this.MAX_TEXTURES, gl);
+            this.MAX_TEXTURES = checkMaxIfStatementsInShader(this.MAX_TEXTURES, gl);
         }
 
         // generate generateMultiTextureProgram, may be a better move?
@@ -223,7 +223,7 @@ export default class SpriteRenderer extends ObjectRenderer
 
         for (i = 0; i < this.currentIndex; ++i)
         {
-            // upload the sprite elemetns...
+            // upload the sprite elements...
             // they have all ready been calculated so we just need to push them into the buffer.
 
             const sprite = sprites[i];

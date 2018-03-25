@@ -339,7 +339,7 @@ export default class Texture extends EventEmitter
      * @static
      * @param {HTMLImageElement|HTMLCanvasElement} source - The input source.
      * @param {String} imageUrl - File name of texture, for cache and resolving resolution.
-     * @param {String} [name] - Human readible name for the texture cache. If no name is
+     * @param {String} [name] - Human readable name for the texture cache. If no name is
      *        specified, only `imageUrl` will be used as the cache ID.
      * @return {PIXI.Texture} Output texture
      */
@@ -353,7 +353,7 @@ export default class Texture extends EventEmitter
         //  console.log('base resource ' + resource.width);
         const baseTexture = new BaseTexture(resource, {
             scaleMode: settings.SCALE_MODE,
-            resultion: getResolutionOfUrl(imageUrl),
+            resolution: getResolutionOfUrl(imageUrl),
         });
 
         const texture = new Texture(baseTexture);
@@ -364,7 +364,7 @@ export default class Texture extends EventEmitter
             name = imageUrl;
         }
 
-        // lets also add the frame to pixi's global cache for fromFrame and fromImage fucntions
+        // lets also add the frame to pixi's global cache for fromFrame and fromImage functions
         BaseTexture.addToCache(texture.baseTexture, name);
         Texture.addToCache(texture, name);
 

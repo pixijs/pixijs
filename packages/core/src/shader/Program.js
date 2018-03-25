@@ -86,7 +86,7 @@ class Program
      * @private
      *
      * @param {webGL-program} [program] - the webgl program
-     * @param {contex} [gl] - the webGL context
+     * @param {context} [gl] - the webGL context
      *
      * @returns {object} the attribute data for this program
      */
@@ -130,7 +130,7 @@ class Program
      * @private
      *
      * @param {webGL-program} [program] - the webgl program
-     * @param {contex} [gl] - the webGL context
+     * @param {context} [gl] - the webGL context
      *
      * @returns {object} the uniform data for this program
      */
@@ -195,7 +195,7 @@ class Program
      * @param {string} [fragmentSrc] - The source of the fragment shader.
      * @param {object} [uniforms] - Custom uniforms to use to augment the built-in ones.
      *
-     * @returns {PIXI.Shader} an shiney new pixi shader.
+     * @returns {PIXI.Shader} an shiny new pixi shader!
      */
     static from(vertexSrc, fragmentSrc)
     {
