@@ -131,11 +131,11 @@ export default class TextMetrics
         {
             const result = spaces.exec(text);
 
+            // Check for non-breakable spaces.
             if (result)
             {
                 const space = text.charAt(result.index);
 
-                // Check for non-breakable spaces.
                 if (space === '\u00A0' || space === '\u202F' || space === '\u2060' || space === '\uFEFF')
                 {
                     continue;
@@ -233,7 +233,7 @@ export default class TextMetrics
             else
             {
                 // word won't fit, start a new line
-                if (wordWidth + width > wordWrapWidth)
+                if (spaceWidth + wordWidth + width > wordWrapWidth)
                 {
                     lines += TextMetrics.addLine(line.trimRight());
                     line = '';
