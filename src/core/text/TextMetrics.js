@@ -227,7 +227,7 @@ export default class TextMetrics
                 }
 
                 // don't add spaces to the beginning of lines
-                if (line.length > 0 || !TextMetrics.isWhitespace(token) || canPrependSpaces)
+                if (line.length > 0 || !TextMetrics.isBreakingSpace(token) || canPrependSpaces)
                 {
                     // add the word to the current line
                     line += token;
@@ -296,7 +296,7 @@ export default class TextMetrics
         {
             const char = text[i];
 
-            if (!TextMetrics.isWhitespace(char))
+            if (!TextMetrics.isBreakingSpace(char))
             {
                 break;
             }
@@ -311,7 +311,7 @@ export default class TextMetrics
      * Determines if char is a newline.
      *
      * @param  {string}  char  The character
-     * @return {string}  True if newline, False otherwise.
+     * @return {boolean}  True if newline, False otherwise.
      */
     static isNewline(char)
     {
@@ -324,12 +324,12 @@ export default class TextMetrics
     }
 
     /**
-     * Determines if char is a whitespace.
+     * Determines if char is a breaking whitespace.
      *
      * @param  {string}  char  The character
-     * @return {string}  True if whitespace, False otherwise.
+     * @return {boolean}  True if whitespace, False otherwise.
      */
-    static isWhitespace(char)
+    static isBreakingSpace(char)
     {
         const breakingSpaces = [
             0x0009, // character tabulation
@@ -366,7 +366,7 @@ export default class TextMetrics
         {
             const char = text[i];
 
-            if (TextMetrics.isWhitespace(char) || TextMetrics.isNewline(char))
+            if (TextMetrics.isBreakingSpace(char) || TextMetrics.isNewline(char))
             {
                 if (token !== '')
                 {
