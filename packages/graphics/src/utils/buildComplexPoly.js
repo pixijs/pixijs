@@ -58,7 +58,7 @@ export default function buildComplexPoly(graphicsData, webGLData)
 
     // push a quad onto the end..
 
-    // TODO - this aint needed!
+    // TODO - this ain't needed!
     const length = points.length / 2;
 
     for (let i = 0; i < length; i++)

@@ -181,7 +181,7 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
     }
 
     // for now we cache the current renderTarget that the webGL renderer is currently using.
-    // this could be more elegent..
+    // this could be more elegant..
     const cachedRenderTarget = renderer._activeRenderTarget;
     // We also store the filter stack - I will definitely look to change how this works a little later down the line.
     // const stack = renderer.filterManager.filterStack;
@@ -275,7 +275,7 @@ DisplayObject.prototype._renderCachedCanvas = function _renderCachedCanvas(rende
     this._cacheData.sprite.renderCanvas(renderer);
 };
 
-// TODO this can be the same as the webGL verison.. will need to do a little tweaking first though..
+// TODO this can be the same as the webGL version.. will need to do a little tweaking first though..
 /**
  * Prepares the Canvas renderer to cache the sprite
  *

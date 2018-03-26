@@ -31,12 +31,12 @@ export default class FramebufferSystem extends System
 
         if (framebuffer)
         {
-            // TODO cacheing layer!
+            // TODO caching layer!
 
             const fbo = framebuffer.glFrameBuffers[this.CONTEXT_UID] || this.initFramebuffer(framebuffer);
 
             gl.bindFramebuffer(gl.FRAMEBUFFER, fbo.framebuffer);
-            // makesure all textures are unbound..
+            // make sure all textures are unbound..
 
             // now check for updates...
             if (fbo.dirtyId !== framebuffer.dirtyId)

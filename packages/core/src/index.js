@@ -21,7 +21,7 @@ export { default as State } from './state/State';
 export { default as ObjectRenderer } from './batch/ObjectRenderer';
 export { default as Quad } from './utils/Quad';
 export { default as QuadUv } from './utils/QuadUv';
-export { default as checkMaxIfStatmentsInShader } from './shader/utils/checkMaxIfStatmentsInShader';
+export { default as checkMaxIfStatementsInShader } from './shader/utils/checkMaxIfStatementsInShader';
 export { default as Shader } from './shader/Shader';
 export { default as Program } from './shader/Program';
 export { default as UniformGroup } from './shader/UniformGroup';

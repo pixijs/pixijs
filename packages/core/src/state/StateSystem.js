@@ -259,9 +259,9 @@ export default class StateSystem extends System
     }
 
     /**
-     * checks to see which updates should be checked based on which settings have been activated
-     * for example if blend is enabled then we shold check the blend modes each time the state is changed
-     * or if poygon fill is activated then we need to check if the polygone offset changes.
+     * checks to see which updates should be checked based on which settings have been activated.
+     * For example, if blend is enabled then we should check the blend modes each time the state is changed
+     * or if polygon fill is activated then we need to check if the polygon offset changes.
      * The idea is that we only check what we have too.
      *
      * @param {Function} func  the checking function to add or remove

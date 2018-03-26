@@ -3,7 +3,7 @@ import canUploadSameBuffer from './utils/canUploadSameBuffer';
 
 /**
  * User's customizable globals for overriding the default PIXI settings, such
- * as a renderer's default resolution, framerate, float percision, etc.
+ * as a renderer's default resolution, framerate, float precision, etc.
  * @example
  * // Use the native window resolution as the default resolution
  * // will support high-density displays when rendering

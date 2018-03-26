@@ -62,7 +62,7 @@ export default class Renderer extends AbstractRenderer
         super('WebGL', options, arg2, arg3);
 
         /**
-         * The type of this renderer as a standardised const
+         * The type of this renderer as a standardized const
          *
          * @member {number}
          * @see PIXI.RENDERER_TYPE

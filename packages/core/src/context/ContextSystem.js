@@ -107,7 +107,7 @@ export default class ContextSystem extends System
 
     getExtensions()
     {
-        // time to set up default etensions that pixi uses..
+        // time to set up default extensions that pixi uses..
         const gl = this.gl;
         const extensions = this.extensions;
 

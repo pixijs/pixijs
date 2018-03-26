@@ -126,7 +126,7 @@ export default class ParticleContainer extends Container
         this.autoResize = autoResize;
 
         /**
-         * Used for canvas renderering. If true then the elements will be positioned at the
+         * Used for canvas rendering. If true then the elements will be positioned at the
          * nearest pixel. This provides a nice speed boost.
          *
          * @member {boolean}
