@@ -118,14 +118,6 @@ export default class TextMetrics
         // whether or not spaces may be added to the beginning of lines
         let canPrependSpaces = true;
 
-        // for debugging change this to a '•' or some other character
-        // to be able to see the space characters
-        const spaceChar = ' ';
-
-        // build the reg exp need to trim the lines
-        const query = (spaceChar === ' ') ? '/s' : spaceChar;
-        const re = new RegExp(`${query}*$`);
-
         // whether to apply a new line before layouting a word that is
         // longer than wordWrapWidth
         const overFlowNewLine = true;
@@ -139,17 +131,17 @@ export default class TextMetrics
         const wordWrapWidth = style.wordWrapWidth + style.letterSpacing;
 
         // break text into words, spaces and newline chars
-        const words = TextMetrics.explodeIntoWordsSpacesAndNewlineChars(text, spaceChar);
+        const tokens = TextMetrics.explodeIntoWordsSpacesAndNewlineChars(text);
 
-        for (let i = 0; i < words.length; i++)
+        for (let i = 0; i < tokens.length; i++)
         {
             // get the word, space or newlineChar
-            const word = words[i];
+            const token = tokens[i];
 
             // if word is a new line
-            if (word === '\n')
+            if (TextMetrics.isNewline(token))
             {
-                lines += TextMetrics.addLine(line, re);
+                lines += TextMetrics.addLine(line);
                 canPrependSpaces = true;
                 line = '';
                 width = 0;
@@ -157,15 +149,15 @@ export default class TextMetrics
             }
 
             // get word width from cache if possible
-            const wordWidth = TextMetrics.getFromCache(word, ls, cache, context);
+            const tokenWidth = TextMetrics.getFromCache(token, ls, cache, context);
 
             // word is longer than desired bounds
-            if (wordWidth > wordWrapWidth)
+            if (tokenWidth > wordWrapWidth)
             {
                 // whether to start newlines for overflow words
                 if (overFlowNewLine)
                 {
-                    lines += TextMetrics.addLine(line, re);
+                    lines += TextMetrics.addLine(line);
                     canPrependSpaces = true;
                     line = '';
                     width = 0;
@@ -175,7 +167,7 @@ export default class TextMetrics
                 if (style.breakWords)
                 {
                     // break word into characters
-                    const characters = word.split('');
+                    const characters = token.split('');
 
                     // loop the characters
                     for (let j = 0; j < characters.length; j++)
@@ -185,7 +177,7 @@ export default class TextMetrics
 
                         if (characterWidth + width > wordWrapWidth)
                         {
-                            lines += TextMetrics.addLine(line, re);
+                            lines += TextMetrics.addLine(line);
                             canPrependSpaces = false;
                             line = '';
                             width = 0;
@@ -203,13 +195,13 @@ export default class TextMetrics
                     // finish that line and start a new one
                     if (line.length > 0)
                     {
-                        lines += TextMetrics.addLine(line, re);
+                        lines += TextMetrics.addLine(line);
                         line = '';
                         width = 0;
                     }
 
                     // give it its own line
-                    lines += TextMetrics.addLine(word, re);
+                    lines += TextMetrics.addLine(token);
                     canPrependSpaces = false;
                     line = '';
                     width = 0;
@@ -221,13 +213,13 @@ export default class TextMetrics
             {
                 // word won't fit because of existing words
                 // start a new line
-                if (wordWidth + width > wordWrapWidth)
+                if (tokenWidth + width > wordWrapWidth)
                 {
                     // if its a space we don't want it
                     canPrependSpaces = false;
 
                     // add a new line
-                    lines += TextMetrics.addLine(line, re);
+                    lines += TextMetrics.addLine(line);
 
                     // start a new line
                     line = '';
@@ -235,18 +227,18 @@ export default class TextMetrics
                 }
 
                 // don't add spaces to the beginning of lines
-                if (line.length > 0 || word !== spaceChar || canPrependSpaces)
+                if (line.length > 0 || !TextMetrics.isWhitespace(token) || canPrependSpaces)
                 {
                     // add the word to the current line
-                    line += word;
+                    line += token;
 
                     // update width counter
-                    width += wordWidth;
+                    width += tokenWidth;
                 }
             }
         }
 
-        lines += TextMetrics.addLine(line, re, false);
+        lines += TextMetrics.addLine(line, false);
 
         return lines;
     }
@@ -256,13 +248,12 @@ export default class TextMetrics
      * method
      *
      * @param  {string}   line        - The line of text to add
-     * @param  {RegExp}   trimRegExp  - A RegExp to trim traling spaces
      * @param  {boolean}  newLine     - Add new line character to end
      * @return {string}   A formatted line
      */
-    static addLine(line, trimRegExp = ' ', newLine = true)
+    static addLine(line, newLine = true)
     {
-        line = line.replace(trimRegExp, '');
+        line = TextMetrics.trimRight(line);
 
         line = (newLine) ? `${line}\n` : line;
 
@@ -294,32 +285,93 @@ export default class TextMetrics
     }
 
     /**
+     * trims breaking whitespaces from string
+     *
+     * @param  {string}  text  The text
+     * @return {string}  trimmed string
+     */
+    static trimRight(text)
+    {
+        for (let i = text.length - 1; i >= 0; i--)
+        {
+            const char = text[i];
+
+            if (!TextMetrics.isWhitespace(char))
+            {
+                break;
+            }
+
+            text = text.slice(0, -1);
+        }
+
+        return text;
+    }
+
+    /**
+     * Determines if char is a newline.
+     *
+     * @param  {string}  char  The character
+     * @return {string}  True if newline, False otherwise.
+     */
+    static isNewline(char)
+    {
+        const newlines = [
+            0x000A, // line feed
+            0x000D, // carriage return
+        ];
+
+        return (newlines.indexOf(char.charCodeAt(0)) >= 0);
+    }
+
+    /**
+     * Determines if char is a whitespace.
+     *
+     * @param  {string}  char  The character
+     * @return {string}  True if whitespace, False otherwise.
+     */
+    static isWhitespace(char)
+    {
+        const breakingSpaces = [
+            0x0009, // character tabulation
+            0x0020, // space
+            0x2000, // en quad
+            0x2001, // em quad
+            0x2002, // en space
+            0x2003, // em space
+            0x2004, // three-per-em space
+            0x2005, // four-per-em space
+            0x2006, // six-per-em space
+            0x2008, // punctuation space
+            0x2009, // thin space
+            0x200A, // hair space
+            0x205F, // medium mathematical space
+            0x3000, // ideographic space
+        ];
+
+        return (breakingSpaces.indexOf(char.charCodeAt(0)) >= 0);
+    }
+
+    /**
      * Splits a string into words, spaces and newLine characters
      *
      * @param  {string}  text       The text
-     * @param  {string}  spaceChar  The space character for debugging
      * @return {array}  A tokenized array
      */
-    static explodeIntoWordsSpacesAndNewlineChars(text, spaceChar = ' ')
+    static explodeIntoWordsSpacesAndNewlineChars(text)
     {
         const tokens = [];
-        let word = '';
+        let token = '';
 
         for (let i = 0; i < text.length; i++)
         {
-            let char = text[i];
+            const char = text[i];
 
-            if (char === ' ' || char === '\n')
+            if (TextMetrics.isWhitespace(char) || TextMetrics.isNewline(char))
             {
-                if (word !== '')
+                if (token !== '')
                 {
-                    tokens.push(word);
-                    word = '';
-                }
-
-                if (char === ' ')
-                {
-                    char = spaceChar;
+                    tokens.push(token);
+                    token = '';
                 }
 
                 tokens.push(char);
@@ -327,10 +379,10 @@ export default class TextMetrics
                 continue;
             }
 
-            word += char;
+            token += char;
         }
 
-        tokens.push(word);
+        tokens.push(token);
 
         return tokens;
     }
