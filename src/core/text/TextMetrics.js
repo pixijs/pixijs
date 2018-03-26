@@ -122,18 +122,62 @@ export default class TextMetrics
         // And then the final space is simply no appended to each line
         const wordWrapWidth = style.wordWrapWidth + style.letterSpacing;
 
-        // get the width of a space and add it to cache
-        const spaceWidth = TextMetrics.getFromCache(' ', ls, cache, context);
+        let lastSpacePosition = -1;
+        const spaces = /\s/g;
+        const textLen = text.length;
+        let wordWraped = false;
 
-        // break text into words
-        const words = text.split(' ');
-
-        for (let i = 0; i < words.length; i++)
+        while (lastSpacePosition < textLen)
         {
-            const word = words[i];
+            const result = spaces.exec(text);
 
+            // Check for non-breakable spaces.
+            if (result)
+            {
+                const space = text.charAt(result.index);
+
+                if (space === '\u00A0' || space === '\u202F' || space === '\u2060' || space === '\uFEFF')
+                {
+                    continue;
+                }
+            }
+
+            const wordStart = lastSpacePosition + 1;
+            let spaceWidth = 0;
+            let space;
+
+            if (lastSpacePosition > -1)
+            {
+                space = text.charAt(lastSpacePosition);
+                if (space === '\r' || space === '\n')
+                {
+                    lines += line + (wordWraped && width === 0 ? '' : space);
+                    line = '';
+                    width = 0;
+                    space = '';
+                    wordWraped = false;
+                }
+                else
+                {
+                    spaceWidth = TextMetrics.getFromCache(space, ls, cache, context);
+                }
+            }
+            else
+            {
+                space = '';
+            }
+
+            lastSpacePosition = result === null ? textLen : result.index;
+            const word = text.substring(wordStart, lastSpacePosition);
             // get word width from cache if possible
             const wordWidth = TextMetrics.getFromCache(word, ls, cache, context);
+
+            // Check if the last line was wrapped and the current line is still empty.
+            if (wordWraped && width === 0)
+            {
+                space = '';
+                spaceWidth = 0;
+            }
 
             // word is longer than desired bounds
             if (wordWidth > wordWrapWidth)
@@ -141,8 +185,7 @@ export default class TextMetrics
                 // break large word over multiple lines
                 if (style.breakWords)
                 {
-                    // add a space to the start of the word unless its at the beginning of the line
-                    const tmpWord = (line.length > 0) ? ` ${word}` : word;
+                    const tmpWord = `${space}${word}`;
 
                     // break word into characters
                     const characters = tmpWord.split('');
@@ -181,6 +224,8 @@ export default class TextMetrics
                     lines += TextMetrics.addLine(word);
                     line = '';
                     width = 0;
+
+                    wordWraped = true;
                 }
             }
 
@@ -188,24 +233,17 @@ export default class TextMetrics
             else
             {
                 // word won't fit, start a new line
-                if (wordWidth + width > wordWrapWidth)
+                if (spaceWidth + wordWidth + width > wordWrapWidth)
                 {
-                    lines += TextMetrics.addLine(line);
+                    lines += TextMetrics.addLine(line.trimRight());
                     line = '';
                     width = 0;
+                    space = '';
+                    spaceWidth = 0;
+                    wordWraped = wordWidth === 0;
                 }
 
-                // add the word to the current line
-                if (line.length > 0)
-                {
-                    // add a space if it is not the beginning
-                    line += ` ${word}`;
-                }
-                else
-                {
-                    // add without a space if it is the beginning
-                    line += word;
-                }
+                line += `${space}${word}`;
 
                 width += wordWidth + spaceWidth;
             }
@@ -226,7 +264,10 @@ export default class TextMetrics
      */
     static addLine(line, newLine = true)
     {
-        line = (newLine) ? `${line}\n` : line;
+        if (newLine)
+        {
+            line = `${line}\n`;
+        }
 
         return line;
     }

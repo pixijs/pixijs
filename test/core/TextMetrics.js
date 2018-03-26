@@ -21,6 +21,11 @@ flexible 2D WebGL renderer.';
 const fillText = '. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .\
 . . . . . . . . . . . . . . . . . . . . . . . . ';
 
+const formatedText = 'test12 test1\n\
+aa test test\n\
+   test123             test123';
+const nonBreakSpaceText = 'test test2\u00A0test3';
+
 const intergityText = '012345678901234567890123456789';
 
 describe('PIXI.TextMetrics', function ()
@@ -41,7 +46,8 @@ describe('PIXI.TextMetrics', function ()
     {
         it('width should not be greater than wordWrapWidth with longText', function ()
         {
-            const style = Object.assign({}, defaultStyle, { breakWords: false });
+            // exercitationem is wider than 200px with fontWeight 900
+            const style = Object.assign({}, defaultStyle, { breakWords: false, fontWeight: 'normal' });
 
             const metrics = PIXI.TextMetrics.measureText(longText, new PIXI.TextStyle(style));
 
@@ -105,7 +111,7 @@ describe('PIXI.TextMetrics', function ()
             });
         });
 
-        it('width should not be greater than wordWrapWidth with breakingWordAtStartText', function ()
+        it('width should not be greater than wordWrapWidth with breakingWordText', function ()
         {
             const style = Object.assign({}, defaultStyle, { breakWords: true });
 
@@ -136,6 +142,30 @@ describe('PIXI.TextMetrics', function ()
                 expect(line[0]).to.not.equal(' ', 'should not have space at the start');
                 expect(line[line - 1]).to.not.equal(' ', 'should not have space at the end');
             });
+        });
+
+        it('formatedText should retain its formatting', function ()
+        {
+            const style = Object.assign({}, defaultStyle, { breakWords: false });
+
+            const metrics = PIXI.TextMetrics.measureText(formatedText, new PIXI.TextStyle(style));
+
+            expect(metrics.lines.length).to.be.equal(4, 'should have exactly 4 lines');
+            expect(metrics.lines[2].substring(0, 3)).to.be.equal('   ', 'third line should retain the spaces at start');
+            metrics.lines.forEach((line) =>
+            {
+                expect(line[line - 1]).to.not.equal(' ', 'should not have space at the end');
+            });
+            expect(metrics.lines[3].charAt(0)).to.not.be.equal(' ', 'should remove all spaces on non-explicit line break.');
+        });
+
+        it('should not break on non-breaking characters', function ()
+        {
+            const style = Object.assign({}, defaultStyle, { breakWords: false });
+
+            const metrics = PIXI.TextMetrics.measureText(nonBreakSpaceText, new PIXI.TextStyle(style));
+
+            expect(metrics.lines[0]).to.be.equal('test');
         });
 
         it('no words or characters should lost or changed', function ()
