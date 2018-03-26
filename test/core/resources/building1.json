@@ -1,0 +1,21 @@
+{"frames": {
+
+"goldmine_10_5.png":
+{
+	"frame": {"x":1,"y":1,"w":95,"h":115},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":95,"h":115},
+	"sourceSize": {"w":95,"h":115},
+	"pivot": {"x":0.5,"y":0.5}
+}},
+"meta": {
+	"app": "http://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "building1.png",
+	"format": "RGBA8888",
+	"size": {"w":128,"h":128},
+	"scale": "0.5",
+	"smartupdate": "$TexturePacker:SmartUpdate:d7a5e54c8f8a3fecd508baf190c44807:99a0e3a4dc0f441e4aad77614191ab38:6046b8eb706ddefaa771c33ceb7cb6d5$"
+}
+}

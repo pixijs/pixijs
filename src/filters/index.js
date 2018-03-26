@@ -1,37 +1,28 @@
 /**
- * @file        Main export of the PIXI filters library
- * @author      Mat Groves <mat@goodboydigital.com>
- * @copyright   2013-2015 GoodBoyDigital
- * @license     {@link https://github.com/pixijs/pixi.js/blob/master/LICENSE|MIT License}
- */
-
-/**
+ * This namespace contains WebGL-only display filters that can be applied
+ * to DisplayObjects using the {@link PIXI.DisplayObject#filters filters} property.
+ * @example
+ * // Create a new application
+ * const app = new PIXI.Application();
+ *
+ * // Draw a green rectangle
+ * const rect = new PIXI.Graphics()
+ *     .beginFill(0x00ff00)
+ *     .drawRect(40, 40, 200, 200);
+ *
+ * // Add a blur filter
+ * rect.filters = [new PIXI.filters.BlurFilter()];
+ *
+ * // Display rectangle
+ * app.stage.addChild(rect);
+ * document.body.appendChild(app.view);
  * @namespace PIXI.filters
  */
-module.exports = {
-    AsciiFilter:        require('./ascii/AsciiFilter'),
-    BloomFilter:        require('./bloom/BloomFilter'),
-    BlurFilter:         require('./blur/BlurFilter'),
-    BlurXFilter:        require('./blur/BlurXFilter'),
-    BlurYFilter:        require('./blur/BlurYFilter'),
-    BlurDirFilter:      require('./blur/BlurDirFilter'),
-    ColorMatrixFilter:  require('./color/ColorMatrixFilter'),
-    ColorStepFilter:    require('./color/ColorStepFilter'),
-    ConvolutionFilter:  require('./convolution/ConvolutionFilter'),
-    CrossHatchFilter:   require('./crosshatch/CrossHatchFilter'),
-    DisplacementFilter: require('./displacement/DisplacementFilter'),
-    DotScreenFilter:    require('./dot/DotScreenFilter'),
-    GrayFilter:         require('./gray/GrayFilter'),
-    DropShadowFilter:   require('./dropshadow/DropShadowFilter'),
-    InvertFilter:       require('./invert/InvertFilter'),
-    NoiseFilter:        require('./noise/NoiseFilter'),
-    PixelateFilter:     require('./pixelate/PixelateFilter'),
-    RGBSplitFilter:     require('./rgb/RGBSplitFilter'),
-    ShockwaveFilter:    require('./shockwave/ShockwaveFilter'),
-    SepiaFilter:        require('./sepia/SepiaFilter'),
-    SmartBlurFilter:    require('./blur/SmartBlurFilter'),
-    TiltShiftFilter:    require('./tiltshift/TiltShiftFilter'),
-    TiltShiftXFilter:   require('./tiltshift/TiltShiftXFilter'),
-    TiltShiftYFilter:   require('./tiltshift/TiltShiftYFilter'),
-    TwistFilter:        require('./twist/TwistFilter')
-};
+export { default as FXAAFilter } from './fxaa/FXAAFilter';
+export { default as NoiseFilter } from './noise/NoiseFilter';
+export { default as DisplacementFilter } from './displacement/DisplacementFilter';
+export { default as BlurFilter } from './blur/BlurFilter';
+export { default as BlurXFilter } from './blur/BlurXFilter';
+export { default as BlurYFilter } from './blur/BlurYFilter';
+export { default as ColorMatrixFilter } from './colormatrix/ColorMatrixFilter';
+export { default as AlphaFilter } from './alpha/AlphaFilter';

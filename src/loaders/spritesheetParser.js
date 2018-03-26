@@ -1,87 +1,63 @@
-var Resource = require('resource-loader').Resource,
-    path = require('path'),
-    core = require('../core');
+import { Resource } from 'resource-loader';
+import url from 'url';
+import { Spritesheet } from '../core';
 
-module.exports = function ()
+export default function ()
 {
-    return function (resource, next)
+    return function spritesheetParser(resource, next)
     {
-        // skip if no data, its not json, or it isn't spritesheet data
-        if (!resource.data || !resource.isJson || !resource.data.frames)
+        const imageResourceName = `${resource.name}_image`;
+
+        // skip if no data, its not json, it isn't spritesheet data, or the image resource already exists
+        if (
+            !resource.data
+            || resource.type !== Resource.TYPE.JSON
+            || !resource.data.frames
+            || this.resources[imageResourceName]
+        )
         {
-            return next();
+            next();
+
+            return;
         }
 
-        var loadOptions = {
+        const loadOptions = {
             crossOrigin: resource.crossOrigin,
-            loadType: Resource.LOAD_TYPE.IMAGE,
-            metadata: resource.metadata.imageMetadata
+            metadata: resource.metadata.imageMetadata,
+            parentResource: resource,
         };
 
-        var route = path.dirname(resource.url.replace(this.baseUrl, ''));
-
-        var resolution = core.utils.getResolutionOfUrl( resource.url );
+        const resourcePath = getResourcePath(resource, this.baseUrl);
 
         // load the image for this sheet
-        this.add(resource.name + '_image', route + '/' + resource.data.meta.image, loadOptions, function (res)
+        this.add(imageResourceName, resourcePath, loadOptions, function onImageLoad(res)
         {
-            resource.textures = {};
-
-            var frames = resource.data.frames;
-
-            for (var i in frames)
+            if (res.error)
             {
-                var rect = frames[i].frame;
+                next(res.error);
 
-                if (rect)
-                {
-                    var size = null;
-                    var trim = null;
-
-                    if (frames[i].rotated) {
-                        size = new core.Rectangle(rect.x, rect.y, rect.h, rect.w);
-                    }
-                    else {
-                        size = new core.Rectangle(rect.x, rect.y, rect.w, rect.h);
-                    }
-
-                    //  Check to see if the sprite is trimmed
-                    if (frames[i].trimmed)
-                    {
-                        trim = new core.Rectangle(
-                            frames[i].spriteSourceSize.x / resolution,
-                            frames[i].spriteSourceSize.y / resolution,
-                            frames[i].sourceSize.w / resolution,
-                            frames[i].sourceSize.h / resolution
-                         );
-                    }
-
-                    // flip the width and height!
-                    if (frames[i].rotated)
-                    {
-                        var temp = size.width;
-                        size.width = size.height;
-                        size.height = temp;
-                    }
-
-                    size.x /= resolution;
-                    size.y /= resolution;
-                    size.width /= resolution;
-                    size.height /= resolution;
-
-                    var id = i;
-                    if(core.utils.useFilenamesForTextures)
-                    {
-                        id = core.utils.getFilenameFromUrl(i);
-                    }
-                    resource.textures[id] = new core.Texture(res.texture.baseTexture, size, size.clone(), trim, frames[i].rotated);
-
-                    // lets also add the frame to pixi's global cache for fromFrame and fromImage functions
-                    core.utils.TextureCache[id] = resource.textures[id];
-                }
+                return;
             }
 
-            next();
+            const spritesheet = new Spritesheet(res.texture.baseTexture, resource.data, resource.url);
+
+            spritesheet.parse(() =>
+            {
+                resource.spritesheet = spritesheet;
+                resource.textures = spritesheet.textures;
+                next();
+            });
         });
     };
-};
+}
+
+export function getResourcePath(resource, baseUrl)
+{
+    // Prepend url path unless the resource image is a data url
+    if (resource.isDataUrl)
+    {
+        return resource.data.meta.image;
+    }
+
+    return url.resolve(resource.url.replace(baseUrl, ''), resource.data.meta.image);
+}

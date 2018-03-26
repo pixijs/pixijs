@@ -1,6 +1,6 @@
-var core = require('../../core');
-// @see https://github.com/substack/brfs/issues/25
-var fs = require('fs');
+import * as core from '../../core';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
 /**
  * @author Vico @vicocotea
@@ -11,43 +11,56 @@ var fs = require('fs');
  * A Noise effect filter.
  *
  * @class
- * @extends PIXI.AbstractFilter
+ * @extends PIXI.Filter
  * @memberof PIXI.filters
  */
-function NoiseFilter()
+export default class NoiseFilter extends core.Filter
 {
-    core.AbstractFilter.call(this,
-        // vertex shader
-        null,
-        // fragment shader
-        fs.readFileSync(__dirname + '/noise.frag', 'utf8'),
-        // custom uniforms
-        {
-            noise: { type: '1f', value: 0.5 }
-        }
-    );
-}
-
-NoiseFilter.prototype = Object.create(core.AbstractFilter.prototype);
-NoiseFilter.prototype.constructor = NoiseFilter;
-module.exports = NoiseFilter;
-
-Object.defineProperties(NoiseFilter.prototype, {
     /**
-     * The amount of noise to apply.
+     * @param {number} noise - The noise intensity, should be a normalized value in the range [0, 1].
+     * @param {number} seed - A random seed for the noise generation. Default is `Math.random()`.
+     */
+    constructor(noise = 0.5, seed = Math.random())
+    {
+        super(
+            // vertex shader
+            readFileSync(join(__dirname, '../fragments/default.vert'), 'utf8'),
+            // fragment shader
+            readFileSync(join(__dirname, './noise.frag'), 'utf8')
+        );
+
+        this.noise = noise;
+        this.seed = seed;
+    }
+
+    /**
+     * The amount of noise to apply, this value should be in the range (0, 1].
      *
      * @member {number}
-     * @memberof PIXI.filters.NoiseFilter#
      * @default 0.5
      */
-    noise: {
-        get: function ()
-        {
-            return this.uniforms.noise.value;
-        },
-        set: function (value)
-        {
-            this.uniforms.noise.value = value;
-        }
+    get noise()
+    {
+        return this.uniforms.uNoise;
     }
-});
+
+    set noise(value) // eslint-disable-line require-jsdoc
+    {
+        this.uniforms.uNoise = value;
+    }
+
+    /**
+     * A seed value to apply to the random noise generation. `Math.random()` is a good value to use.
+     *
+     * @member {number}
+     */
+    get seed()
+    {
+        return this.uniforms.uSeed;
+    }
+
+    set seed(value) // eslint-disable-line require-jsdoc
+    {
+        this.uniforms.uSeed = value;
+    }
+}

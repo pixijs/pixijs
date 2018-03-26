@@ -1,82 +1,81 @@
-var core = require('../../core');
-// @see https://github.com/substack/brfs/issues/25
-var fs = require('fs');
+import * as core from '../../core';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
 /**
- * The DisplacementFilter class uses the pixel values from the specified texture (called the displacement map) to perform a displacement of an object.
- * You can use this filter to apply all manor of crazy warping effects
- * Currently the r property of the texture is used to offset the x and the g property of the texture is used to offset the y.
+ * The DisplacementFilter class uses the pixel values from the specified texture
+ * (called the displacement map) to perform a displacement of an object. You can
+ * use this filter to apply all manor of crazy warping effects. Currently the r
+ * property of the texture is used to offset the x and the g property of the texture
+ * is used to offset the y.
  *
  * @class
- * @extends PIXI.AbstractFilter
+ * @extends PIXI.Filter
  * @memberof PIXI.filters
- * @param sprite {PIXI.Sprite} the sprite used for the displacement map. (make sure its added to the scene!)
  */
-function DisplacementFilter(sprite, scale)
+export default class DisplacementFilter extends core.Filter
 {
-    var maskMatrix = new core.Matrix();
-    sprite.renderable = false;
-
-    core.AbstractFilter.call(this,
-        // vertex shader
-        fs.readFileSync(__dirname + '/displacement.vert', 'utf8'),
-        // fragment shader
-        fs.readFileSync(__dirname + '/displacement.frag', 'utf8'),
-        // uniforms
-        {
-            mapSampler:     { type: 'sampler2D', value: sprite.texture },
-            otherMatrix:    { type: 'mat3', value: maskMatrix.toArray(true) },
-            scale:          { type: 'v2', value: { x: 1, y: 1 } }
-        }
-    );
-
-    this.maskSprite = sprite;
-    this.maskMatrix = maskMatrix;
-
-    if (scale === null || scale === undefined)
+    /**
+     * @param {PIXI.Sprite} sprite - The sprite used for the displacement map. (make sure its added to the scene!)
+     * @param {number} scale - The scale of the displacement
+     */
+    constructor(sprite, scale)
     {
-        scale = 20;
+        const maskMatrix = new core.Matrix();
+
+        sprite.renderable = false;
+
+        super(
+            // vertex shader
+            readFileSync(join(__dirname, '../fragments/default-filter-matrix.vert'), 'utf8'),
+            // fragment shader
+            readFileSync(join(__dirname, './displacement.frag'), 'utf8')
+        );
+
+        this.maskSprite = sprite;
+        this.maskMatrix = maskMatrix;
+
+        this.uniforms.mapSampler = sprite._texture;
+        this.uniforms.filterMatrix = maskMatrix;
+        this.uniforms.scale = { x: 1, y: 1 };
+
+        if (scale === null || scale === undefined)
+        {
+            scale = 20;
+        }
+
+        this.scale = new core.Point(scale, scale);
     }
 
-    this.scale = new core.Point(scale, scale);
-}
+    /**
+     * Applies the filter.
+     *
+     * @param {PIXI.FilterManager} filterManager - The manager.
+     * @param {PIXI.RenderTarget} input - The input target.
+     * @param {PIXI.RenderTarget} output - The output target.
+     */
+    apply(filterManager, input, output)
+    {
+        this.uniforms.filterMatrix = filterManager.calculateSpriteMatrix(this.maskMatrix, this.maskSprite);
+        this.uniforms.scale.x = this.scale.x;
+        this.uniforms.scale.y = this.scale.y;
 
-DisplacementFilter.prototype = Object.create(core.AbstractFilter.prototype);
-DisplacementFilter.prototype.constructor = DisplacementFilter;
-module.exports = DisplacementFilter;
+         // draw the filter...
+        filterManager.applyFilter(this, input, output);
+    }
 
-DisplacementFilter.prototype.applyFilter = function (renderer, input, output)
-{
-    var filterManager = renderer.filterManager;
-
-    filterManager.calculateMappedMatrix(input.frame, this.maskSprite, this.maskMatrix);
-
-    this.uniforms.otherMatrix.value = this.maskMatrix.toArray(true);
-    this.uniforms.scale.value.x = this.scale.x * (1/input.frame.width);
-    this.uniforms.scale.value.y = this.scale.y * (1/input.frame.height);
-
-    var shader = this.getShader(renderer);
-     // draw the filter...
-    filterManager.applyFilter(shader, input, output);
-};
-
-
-Object.defineProperties(DisplacementFilter.prototype, {
     /**
      * The texture used for the displacement map. Must be power of 2 sized texture.
      *
      * @member {PIXI.Texture}
-     * @memberof PIXI.filters.DisplacementFilter#
      */
-    map: {
-        get: function ()
-        {
-            return this.uniforms.mapSampler.value;
-        },
-        set: function (value)
-        {
-            this.uniforms.mapSampler.value = value;
-
-        }
+    get map()
+    {
+        return this.uniforms.mapSampler;
     }
-});
+
+    set map(value) // eslint-disable-line require-jsdoc
+    {
+        this.uniforms.mapSampler = value;
+    }
+}

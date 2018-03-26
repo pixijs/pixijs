@@ -1,8 +1,19 @@
-var Sprite = require('../sprites/Sprite'),
-    Texture = require('../textures/Texture'),
-    math = require('../math'),
-    utils = require('../utils'),
-    CONST = require('../const');
+/* eslint max-depth: [2, 8] */
+import Sprite from '../sprites/Sprite';
+import Texture from '../textures/Texture';
+import { Rectangle } from '../math';
+import { sign } from '../utils';
+import { TEXT_GRADIENT } from '../const';
+import settings from '../settings';
+import TextStyle from './TextStyle';
+import TextMetrics from './TextMetrics';
+import trimCanvas from '../utils/trimCanvas';
+
+const defaultDestroyOptions = {
+    texture: true,
+    children: false,
+    baseTexture: true,
+};
 
 /**
  * A Text Object will create a line or multiple lines of text. To split a line you can use '\n' in your text string,
@@ -11,316 +22,208 @@ var Sprite = require('../sprites/Sprite'),
  * A Text can be created directly from a string and a style object
  *
  * ```js
- * var text = new PIXI.Text('This is a pixi text',{font : '24px Arial', fill : 0xff1010, align : 'center'});
+ * let text = new PIXI.Text('This is a PixiJS text',{fontFamily : 'Arial', fontSize: 24, fill : 0xff1010, align : 'center'});
  * ```
  *
  * @class
  * @extends PIXI.Sprite
  * @memberof PIXI
- * @param text {string} The copy that you would like the text to display
- * @param [style] {object} The style parameters
- * @param [style.font] {string} default 'bold 20px Arial' The style and size of the font
- * @param [style.fill='black'] {String|Number} A canvas fillstyle that will be used on the text e.g 'red', '#00FF00'
- * @param [style.align='left'] {string} Alignment for multiline text ('left', 'center' or 'right'), does not affect single line text
- * @param [style.stroke] {String|Number} A canvas fillstyle that will be used on the text stroke e.g 'blue', '#FCFF00'
- * @param [style.strokeThickness=0] {number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
- * @param [style.wordWrap=false] {boolean} Indicates if word wrap should be used
- * @param [style.wordWrapWidth=100] {number} The width at which text will wrap, it needs wordWrap to be set to true
- * @param [style.lineHeight] {number} The line height, a number that represents the vertical space that a letter uses
- * @param [style.dropShadow=false] {boolean} Set a drop shadow for the text
- * @param [style.dropShadowColor='#000000'] {string} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
- * @param [style.dropShadowAngle=Math.PI/4] {number} Set a angle of the drop shadow
- * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
- * @param [style.dropShadowBlur=0] {number} Set a shadow blur radius
- * @param [style.padding=0] {number} Occasionally some fonts are cropped on top or bottom. Adding some padding will
- *      prevent this from happening by adding padding to the top and bottom of text height.
- * @param [style.textBaseline='alphabetic'] {string} The baseline of the text that is rendered.
- * @param [style.lineJoin='miter'] {string} The lineJoin property sets the type of corner created, it can resolve
- *      spiked text issues. Default is 'miter' (creates a sharp corner).
- * @param [style.miterLimit=10] {number} The miter limit to use when using the 'miter' lineJoin mode. This can reduce
- *      or increase the spikiness of rendered text.
  */
-function Text(text, style, resolution)
+export default class Text extends Sprite
 {
     /**
-     * The canvas element that everything is drawn to
+     * @param {string} text - The string that you would like the text to display
+     * @param {object|PIXI.TextStyle} [style] - The style parameters
+     * @param {HTMLCanvasElement} [canvas] - The canvas element for drawing text
+     */
+    constructor(text, style, canvas)
+    {
+        canvas = canvas || document.createElement('canvas');
+
+        canvas.width = 3;
+        canvas.height = 3;
+
+        const texture = Texture.fromCanvas(canvas, settings.SCALE_MODE, 'text');
+
+        texture.orig = new Rectangle();
+        texture.trim = new Rectangle();
+
+        super(texture);
+
+        // base texture is already automatically added to the cache, now adding the actual texture
+        Texture.addToCache(this._texture, this._texture.baseTexture.textureCacheIds[0]);
+
+        /**
+         * The canvas element that everything is drawn to
+         *
+         * @member {HTMLCanvasElement}
+         */
+        this.canvas = canvas;
+
+        /**
+         * The canvas 2d context that everything is drawn with
+         * @member {CanvasRenderingContext2D}
+         */
+        this.context = this.canvas.getContext('2d');
+
+        /**
+         * The resolution / device pixel ratio of the canvas. This is set automatically by the renderer.
+         * @member {number}
+         * @default 1
+         */
+        this.resolution = settings.RESOLUTION;
+
+        /**
+         * Private tracker for the current text.
+         *
+         * @member {string}
+         * @private
+         */
+        this._text = null;
+
+        /**
+         * Private tracker for the current style.
+         *
+         * @member {object}
+         * @private
+         */
+        this._style = null;
+        /**
+         * Private listener to track style changes.
+         *
+         * @member {Function}
+         * @private
+         */
+        this._styleListener = null;
+
+        /**
+         * Private tracker for the current font.
+         *
+         * @member {string}
+         * @private
+         */
+        this._font = '';
+
+        this.text = text;
+        this.style = style;
+
+        this.localStyleID = -1;
+    }
+
+    /**
+     * Renders text and updates it when needed.
      *
-     * @member {HTMLCanvasElement}
-     */
-    this.canvas = document.createElement('canvas');
-
-    /**
-     * The canvas 2d context that everything is drawn with
-     * @member {HTMLCanvasElement}
-     */
-    this.context = this.canvas.getContext('2d');
-
-    /**
-     * The resolution of the canvas.
-     * @member {number}
-     */
-    this.resolution = resolution || CONST.RESOLUTION;
-
-    /**
-     * Private tracker for the current text.
-     *
-     * @member {string}
      * @private
+     * @param {boolean} respectDirty - Whether to abort updating the text if the Text isn't dirty and the function is called.
      */
-    this._text = null;
+    updateText(respectDirty)
+    {
+        const style = this._style;
 
-    /**
-     * Private tracker for the current style.
-     *
-     * @member {object}
-     * @private
-     */
-    this._style = null;
-
-    var texture = Texture.fromCanvas(this.canvas);
-    texture.trim = new math.Rectangle();
-    Sprite.call(this, texture);
-
-    this.text = text;
-    this.style = style;
-}
-
-// constructor
-Text.prototype = Object.create(Sprite.prototype);
-Text.prototype.constructor = Text;
-module.exports = Text;
-
-Text.fontPropertiesCache = {};
-Text.fontPropertiesCanvas = document.createElement('canvas');
-Text.fontPropertiesContext = Text.fontPropertiesCanvas.getContext('2d');
-
-Object.defineProperties(Text.prototype, {
-    /**
-     * The width of the Text, setting this will actually modify the scale to achieve the value set
-     *
-     * @member {number}
-     * @memberof PIXI.Text#
-     */
-    width: {
-        get: function ()
+        // check if style has changed..
+        if (this.localStyleID !== style.styleID)
         {
-            if (this.dirty)
-            {
-                this.updateText();
-            }
-
-            return this.scale.x * this._texture.width;
-        },
-        set: function (value)
-        {
-            this.scale.x = value / this._texture.width;
-            this._width = value;
-        }
-    },
-
-    /**
-     * The height of the Text, setting this will actually modify the scale to achieve the value set
-     *
-     * @member {number}
-     * @memberof PIXI.Text#
-     */
-    height: {
-        get: function ()
-        {
-            if (this.dirty)
-            {
-                this.updateText();
-            }
-
-            return  this.scale.y * this._texture.height;
-        },
-        set: function (value)
-        {
-            this.scale.y = value / this._texture.height;
-            this._height = value;
-        }
-    },
-
-    /**
-     * Set the style of the text
-     *
-     * @param [style] {object} The style parameters
-     * @param [style.font='bold 20pt Arial'] {string} The style and size of the font
-     * @param [style.fill='black'] {string|number} A canvas fillstyle that will be used on the text eg 'red', '#00FF00'
-     * @param [style.align='left'] {string} Alignment for multiline text ('left', 'center' or 'right'), does not affect single line text
-     * @param [style.stroke='black'] {string|number} A canvas fillstyle that will be used on the text stroke eg 'blue', '#FCFF00'
-     * @param [style.strokeThickness=0] {number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
-     * @param [style.wordWrap=false] {boolean} Indicates if word wrap should be used
-     * @param [style.wordWrapWidth=100] {number} The width at which text will wrap
-     * @param [style.lineHeight] {number} The line height, a number that represents the vertical space that a letter uses
-     * @param [style.dropShadow=false] {boolean} Set a drop shadow for the text
-     * @param [style.dropShadowColor='#000000'] {string|number} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
-     * @param [style.dropShadowAngle=Math.PI/6] {number} Set a angle of the drop shadow
-     * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
-     * @param [style.dropShadowBlur=0] {number} Set a shadow blur radius
-     * @param [style.padding=0] {number} Occasionally some fonts are cropped on top or bottom. Adding some padding will
-     *      prevent this from happening by adding padding to the top and bottom of text height.
-     * @param [style.textBaseline='alphabetic'] {string} The baseline of the text that is rendered.
-     * @param [style.lineJoin='miter'] {string} The lineJoin property sets the type of corner created, it can resolve
-     *      spiked text issues. Default is 'miter' (creates a sharp corner).
-     * @param [style.miterLimit=10] {number} The miter limit to use when using the 'miter' lineJoin mode. This can reduce
-     *      or increase the spikiness of rendered text.
-     * @memberof PIXI.Text#
-     */
-    style: {
-        get: function ()
-        {
-            return this._style;
-        },
-        set: function (style)
-        {
-            style = style || {};
-
-            if (typeof style.fill === 'number') {
-                style.fill = utils.hex2string(style.fill);
-            }
-
-            if (typeof style.stroke === 'number') {
-                style.stroke = utils.hex2string(style.stroke);
-            }
-
-            if (typeof style.dropShadowColor === 'number') {
-                style.dropShadowColor = utils.hex2string(style.dropShadowColor);
-            }
-
-            style.font = style.font || 'bold 20pt Arial';
-            style.fill = style.fill || 'black';
-            style.align = style.align || 'left';
-            style.stroke = style.stroke || 'black'; //provide a default, see: https://github.com/pixijs/pixi.js/issues/136
-            style.strokeThickness = style.strokeThickness || 0;
-            style.wordWrap = style.wordWrap || false;
-            style.wordWrapWidth = style.wordWrapWidth || 100;
-
-            style.dropShadow = style.dropShadow || false;
-            style.dropShadowColor = style.dropShadowColor || '#000000';
-            style.dropShadowAngle = style.dropShadowAngle !== undefined ? style.dropShadowAngle : Math.PI / 6;
-            style.dropShadowDistance = style.dropShadowDistance !== undefined ? style.dropShadowDistance : 5;
-            style.dropShadowBlur = style.dropShadowBlur !== undefined ? style.dropShadowBlur : 0; //shadowBlur is '0' by default according to HTML
-
-            style.padding = style.padding || 0;
-
-            style.textBaseline = style.textBaseline || 'alphabetic';
-
-            style.lineJoin = style.lineJoin || 'miter';
-            style.miterLimit = style.miterLimit || 10;
-
-            this._style = style;
             this.dirty = true;
+            this.localStyleID = style.styleID;
         }
-    },
 
-    /**
-     * Set the copy for the text object. To split a line you can use '\n'.
-     *
-     * @param text {string} The copy that you would like the text to display
-     * @memberof PIXI.Text#
-     */
-    text: {
-        get: function()
+        if (!this.dirty && respectDirty)
         {
-            return this._text;
-        },
-        set: function (text){
-            text = text.toString() || ' ';
-            if (this._text === text)
+            return;
+        }
+
+        this._font = this._style.toFontString();
+
+        const context = this.context;
+        const measured = TextMetrics.measureText(this._text, this._style, this._style.wordWrap, this.canvas);
+        const width = measured.width;
+        const height = measured.height;
+        const lines = measured.lines;
+        const lineHeight = measured.lineHeight;
+        const lineWidths = measured.lineWidths;
+        const maxLineWidth = measured.maxLineWidth;
+        const fontProperties = measured.fontProperties;
+
+        this.canvas.width = Math.ceil((Math.max(1, width) + style.padding * 2) * this.resolution);
+        this.canvas.height = Math.ceil((Math.max(1, height) + style.padding * 2) * this.resolution);
+
+        context.scale(this.resolution, this.resolution);
+
+        context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+        context.font = this._font;
+        context.strokeStyle = style.stroke;
+        context.lineWidth = style.strokeThickness;
+        context.textBaseline = style.textBaseline;
+        context.lineJoin = style.lineJoin;
+        context.miterLimit = style.miterLimit;
+
+        let linePositionX;
+        let linePositionY;
+
+        if (style.dropShadow)
+        {
+            context.fillStyle = style.dropShadowColor;
+            context.globalAlpha = style.dropShadowAlpha;
+            context.shadowBlur = style.dropShadowBlur;
+
+            if (style.dropShadowBlur > 0)
             {
-                return;
+                context.shadowColor = style.dropShadowColor;
             }
-            this._text = text;
-            this.dirty = true;
-        }
-    }
-});
 
-/**
- * Renders text and updates it when needed
- *
- * @private
- */
-Text.prototype.updateText = function ()
-{
-    var style = this._style;
-    this.context.font = style.font;
+            const xShadowOffset = Math.cos(style.dropShadowAngle) * style.dropShadowDistance;
+            const yShadowOffset = Math.sin(style.dropShadowAngle) * style.dropShadowDistance;
 
-    // word wrap
-    // preserve original text
-    var outputText = style.wordWrap ? this.wordWrap(this._text) : this._text;
+            for (let i = 0; i < lines.length; i++)
+            {
+                linePositionX = style.strokeThickness / 2;
+                linePositionY = style.strokeThickness / 2 + i * lineHeight + fontProperties.ascent;
 
-    // split text into lines
-    var lines = outputText.split(/(?:\r\n|\r|\n)/);
+                if (style.align === 'right')
+                {
+                    linePositionX += maxLineWidth - lineWidths[i];
+                }
+                else if (style.align === 'center')
+                {
+                    linePositionX += (maxLineWidth - lineWidths[i]) / 2;
+                }
 
-    // calculate text width
-    var lineWidths = new Array(lines.length);
-    var maxLineWidth = 0;
-    var fontProperties = this.determineFontProperties(style.font);
-    for (var i = 0; i < lines.length; i++)
-    {
-        var lineWidth = this.context.measureText(lines[i]).width;
-        lineWidths[i] = lineWidth;
-        maxLineWidth = Math.max(maxLineWidth, lineWidth);
-    }
+                if (style.fill)
+                {
+                    this.drawLetterSpacing(
+                        lines[i],
+                        linePositionX + xShadowOffset + style.padding,
+                        linePositionY + yShadowOffset + style.padding
+                    );
 
-    var width = maxLineWidth + style.strokeThickness;
-    if (style.dropShadow)
-    {
-        width += style.dropShadowDistance;
-    }
-
-    this.canvas.width = ( width + this.context.lineWidth ) * this.resolution;
-
-    // calculate text height
-    var lineHeight = this.style.lineHeight || fontProperties.fontSize + style.strokeThickness;
-
-    var height = lineHeight * lines.length;
-    if (style.dropShadow)
-    {
-        height += style.dropShadowDistance;
-    }
-
-    this.canvas.height = ( height + this._style.padding * 2 ) * this.resolution;
-
-    this.context.scale( this.resolution, this.resolution);
-
-    if (navigator.isCocoonJS)
-    {
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-    }
-
-    //this.context.fillStyle="#FF0000";
-    //this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
-
-    this.context.font = style.font;
-    this.context.strokeStyle = style.stroke;
-    this.context.lineWidth = style.strokeThickness;
-    this.context.textBaseline = style.textBaseline;
-    this.context.lineJoin = style.lineJoin;
-    this.context.miterLimit = style.miterLimit;
-
-    var linePositionX;
-    var linePositionY;
-
-    if (style.dropShadow)
-    {
-        if (style.dropShadowBlur > 0) {
-            this.context.shadowColor = style.dropShadowColor;
-            this.context.shadowBlur = style.dropShadowBlur;
-        } else {
-            this.context.fillStyle = style.dropShadowColor;
+                    if (style.stroke && style.strokeThickness)
+                    {
+                        context.strokeStyle = style.dropShadowColor;
+                        this.drawLetterSpacing(
+                            lines[i],
+                            linePositionX + xShadowOffset + style.padding,
+                            linePositionY + yShadowOffset + style.padding,
+                            true
+                        );
+                        context.strokeStyle = style.stroke;
+                    }
+                }
+            }
         }
 
-        var xShadowOffset = Math.cos(style.dropShadowAngle) * style.dropShadowDistance;
-        var yShadowOffset = Math.sin(style.dropShadowAngle) * style.dropShadowDistance;
+        // reset the shadow blur and alpha that was set by the drop shadow, for the regular text
+        context.shadowBlur = 0;
+        context.globalAlpha = 1;
 
-        for (i = 0; i < lines.length; i++)
+        // set canvas text styles
+        context.fillStyle = this._generateFillStyle(style, lines);
+
+        // draw lines line by line
+        for (let i = 0; i < lines.length; i++)
         {
             linePositionX = style.strokeThickness / 2;
-            linePositionY = (style.strokeThickness / 2 + i * lineHeight) + fontProperties.ascent;
+            linePositionY = style.strokeThickness / 2 + i * lineHeight + fontProperties.ascent;
 
             if (style.align === 'right')
             {
@@ -331,292 +234,425 @@ Text.prototype.updateText = function ()
                 linePositionX += (maxLineWidth - lineWidths[i]) / 2;
             }
 
+            if (style.stroke && style.strokeThickness)
+            {
+                this.drawLetterSpacing(lines[i], linePositionX + style.padding, linePositionY + style.padding, true);
+            }
+
             if (style.fill)
             {
-                this.context.fillText(lines[i], linePositionX + xShadowOffset, linePositionY + yShadowOffset + this._style.padding);
+                this.drawLetterSpacing(lines[i], linePositionX + style.padding, linePositionY + style.padding);
             }
         }
+
+        this.updateTexture();
     }
 
-    //set canvas text styles
-    this.context.fillStyle = style.fill;
-
-    //draw lines line by line
-    for (i = 0; i < lines.length; i++)
+    /**
+     * Render the text with letter-spacing.
+     * @param {string} text - The text to draw
+     * @param {number} x - Horizontal position to draw the text
+     * @param {number} y - Vertical position to draw the text
+     * @param {boolean} [isStroke=false] - Is this drawing for the outside stroke of the
+     *  text? If not, it's for the inside fill
+     * @private
+     */
+    drawLetterSpacing(text, x, y, isStroke = false)
     {
-        linePositionX = style.strokeThickness / 2;
-        linePositionY = (style.strokeThickness / 2 + i * lineHeight) + fontProperties.ascent;
+        const style = this._style;
 
-        if (style.align === 'right')
+        // letterSpacing of 0 means normal
+        const letterSpacing = style.letterSpacing;
+
+        if (letterSpacing === 0)
         {
-            linePositionX += maxLineWidth - lineWidths[i];
-        }
-        else if (style.align === 'center')
-        {
-            linePositionX += (maxLineWidth - lineWidths[i]) / 2;
-        }
-
-        if (style.stroke && style.strokeThickness)
-        {
-            this.context.strokeText(lines[i], linePositionX, linePositionY + this._style.padding);
-        }
-
-        if (style.fill)
-        {
-            this.context.fillText(lines[i], linePositionX, linePositionY + this._style.padding);
-        }
-    }
-
-    this.updateTexture();
-};
-
-/**
- * Updates texture size based on canvas size
- *
- * @private
- */
-Text.prototype.updateTexture = function ()
-{
-    var texture = this._texture;
-
-    texture.baseTexture.hasLoaded = true;
-    texture.baseTexture.resolution = this.resolution;
-    
-    texture.baseTexture.realWidth = this.canvas.width;
-    texture.baseTexture.realHeight = this.canvas.height;
-
-    texture.width = texture.baseTexture.width = this.canvas.width / this.resolution;
-    texture.height = texture.baseTexture.height = this.canvas.height / this.resolution;
-    texture.crop.width = texture._frame.width = this.canvas.width / this.resolution;
-    texture.crop.height = texture._frame.height = this.canvas.height / this.resolution;
-
-    texture.trim.x = 0;
-    texture.trim.y = -this._style.padding;
-
-    texture.trim.width = texture._frame.width;
-    texture.trim.height = texture._frame.height - this._style.padding*2;
-
-    this._width = this.canvas.width / this.resolution;
-    this._height = this.canvas.height / this.resolution;
-
-    texture.baseTexture.emit('update',  texture.baseTexture);
-
-    this.dirty = false;
-};
-
-/**
- * Renders the object using the WebGL renderer
- *
- * @param renderer {PIXI.WebGLRenderer}
- */
-Text.prototype.renderWebGL = function (renderer)
-{
-    if (this.dirty)
-    {
-        //this.resolution = 1//renderer.resolution;
-
-        this.updateText();
-    }
-
-    Sprite.prototype.renderWebGL.call(this, renderer);
-};
-
-/**
- * Renders the object using the Canvas renderer
- *
- * @param renderer {PIXI.CanvasRenderer}
- * @private
- */
-Text.prototype._renderCanvas = function (renderer)
-{
-    if (this.dirty)
-    {
-     //   this.resolution = 1//renderer.resolution;
-
-        this.updateText();
-    }
-
-    Sprite.prototype._renderCanvas.call(this, renderer);
-};
-
-/**
- * Calculates the ascent, descent and fontSize of a given fontStyle
- *
- * @param fontStyle {object}
- * @private
- */
-Text.prototype.determineFontProperties = function (fontStyle)
-{
-    var properties = Text.fontPropertiesCache[fontStyle];
-
-    if (!properties)
-    {
-        properties = {};
-
-        var canvas = Text.fontPropertiesCanvas;
-        var context = Text.fontPropertiesContext;
-
-        context.font = fontStyle;
-
-        var width = Math.ceil(context.measureText('|MÉq').width);
-        var baseline = Math.ceil(context.measureText('M').width);
-        var height = 2 * baseline;
-
-        baseline = baseline * 1.4 | 0;
-
-        canvas.width = width;
-        canvas.height = height;
-
-        context.fillStyle = '#f00';
-        context.fillRect(0, 0, width, height);
-
-        context.font = fontStyle;
-
-        context.textBaseline = 'alphabetic';
-        context.fillStyle = '#000';
-        context.fillText('|MÉq', 0, baseline);
-
-        var imagedata = context.getImageData(0, 0, width, height).data;
-        var pixels = imagedata.length;
-        var line = width * 4;
-
-        var i, j;
-
-        var idx = 0;
-        var stop = false;
-
-        // ascent. scan from top to bottom until we find a non red pixel
-        for (i = 0; i < baseline; i++)
-        {
-            for (j = 0; j < line; j += 4)
+            if (isStroke)
             {
-                if (imagedata[idx + j] !== 255)
-                {
-                    stop = true;
-                    break;
-                }
-            }
-            if (!stop)
-            {
-                idx += line;
+                this.context.strokeText(text, x, y);
             }
             else
             {
-                break;
+                this.context.fillText(text, x, y);
             }
+
+            return;
         }
 
-        properties.ascent = baseline - i;
+        const characters = String.prototype.split.call(text, '');
+        let currentPosition = x;
+        let index = 0;
+        let current = '';
 
-        idx = pixels - line;
-        stop = false;
-
-        // descent. scan from bottom to top until we find a non red pixel
-        for (i = height; i > baseline; i--)
+        while (index < text.length)
         {
-            for (j = 0; j < line; j += 4)
+            current = characters[index++];
+            if (isStroke)
             {
-                if (imagedata[idx + j] !== 255)
-                {
-                    stop = true;
-                    break;
-                }
-            }
-            if (!stop)
-            {
-                idx -= line;
+                this.context.strokeText(current, currentPosition, y);
             }
             else
             {
-                break;
+                this.context.fillText(current, currentPosition, y);
+            }
+            currentPosition += this.context.measureText(current).width + letterSpacing;
+        }
+    }
+
+    /**
+     * Updates texture size based on canvas size
+     *
+     * @private
+     */
+    updateTexture()
+    {
+        const canvas = this.canvas;
+
+        if (this._style.trim)
+        {
+            const trimmed = trimCanvas(canvas);
+
+            canvas.width = trimmed.width;
+            canvas.height = trimmed.height;
+            this.context.putImageData(trimmed.data, 0, 0);
+        }
+
+        const texture = this._texture;
+        const style = this._style;
+        const padding = style.trim ? 0 : style.padding;
+        const baseTexture = texture.baseTexture;
+
+        baseTexture.hasLoaded = true;
+        baseTexture.resolution = this.resolution;
+
+        baseTexture.realWidth = canvas.width;
+        baseTexture.realHeight = canvas.height;
+        baseTexture.width = canvas.width / this.resolution;
+        baseTexture.height = canvas.height / this.resolution;
+
+        texture.trim.width = texture._frame.width = canvas.width / this.resolution;
+        texture.trim.height = texture._frame.height = canvas.height / this.resolution;
+        texture.trim.x = -padding;
+        texture.trim.y = -padding;
+
+        texture.orig.width = texture._frame.width - padding * 2;
+        texture.orig.height = texture._frame.height - padding * 2;
+
+        // call sprite onTextureUpdate to update scale if _width or _height were set
+        this._onTextureUpdate();
+
+        baseTexture.emit('update', baseTexture);
+
+        this.dirty = false;
+    }
+
+    /**
+     * Renders the object using the WebGL renderer
+     *
+     * @param {PIXI.WebGLRenderer} renderer - The renderer
+     */
+    renderWebGL(renderer)
+    {
+        if (this.resolution !== renderer.resolution)
+        {
+            this.resolution = renderer.resolution;
+            this.dirty = true;
+        }
+
+        this.updateText(true);
+
+        super.renderWebGL(renderer);
+    }
+
+    /**
+     * Renders the object using the Canvas renderer
+     *
+     * @private
+     * @param {PIXI.CanvasRenderer} renderer - The renderer
+     */
+    _renderCanvas(renderer)
+    {
+        if (this.resolution !== renderer.resolution)
+        {
+            this.resolution = renderer.resolution;
+            this.dirty = true;
+        }
+
+        this.updateText(true);
+
+        super._renderCanvas(renderer);
+    }
+
+    /**
+     * Gets the local bounds of the text object.
+     *
+     * @param {Rectangle} rect - The output rectangle.
+     * @return {Rectangle} The bounds.
+     */
+    getLocalBounds(rect)
+    {
+        this.updateText(true);
+
+        return super.getLocalBounds.call(this, rect);
+    }
+
+    /**
+     * calculates the bounds of the Text as a rectangle. The bounds calculation takes the worldTransform into account.
+     */
+    _calculateBounds()
+    {
+        this.updateText(true);
+        this.calculateVertices();
+        // if we have already done this on THIS frame.
+        this._bounds.addQuad(this.vertexData);
+    }
+
+    /**
+     * Method to be called upon a TextStyle change.
+     * @private
+     */
+    _onStyleChange()
+    {
+        this.dirty = true;
+    }
+
+    /**
+     * Generates the fill style. Can automatically generate a gradient based on the fill style being an array
+     *
+     * @private
+     * @param {object} style - The style.
+     * @param {string[]} lines - The lines of text.
+     * @return {string|number|CanvasGradient} The fill style
+     */
+    _generateFillStyle(style, lines)
+    {
+        if (!Array.isArray(style.fill))
+        {
+            return style.fill;
+        }
+
+        // cocoon on canvas+ cannot generate textures, so use the first colour instead
+        if (navigator.isCocoonJS)
+        {
+            return style.fill[0];
+        }
+
+        // the gradient will be evenly spaced out according to how large the array is.
+        // ['#FF0000', '#00FF00', '#0000FF'] would created stops at 0.25, 0.5 and 0.75
+        let gradient;
+        let totalIterations;
+        let currentIteration;
+        let stop;
+
+        const width = this.canvas.width / this.resolution;
+        const height = this.canvas.height / this.resolution;
+
+        // make a copy of the style settings, so we can manipulate them later
+        const fill = style.fill.slice();
+        const fillGradientStops = style.fillGradientStops.slice();
+
+        // wanting to evenly distribute the fills. So an array of 4 colours should give fills of 0.25, 0.5 and 0.75
+        if (!fillGradientStops.length)
+        {
+            const lengthPlus1 = fill.length + 1;
+
+            for (let i = 1; i < lengthPlus1; ++i)
+            {
+                fillGradientStops.push(i / lengthPlus1);
             }
         }
 
-        properties.descent = i - baseline;
-        properties.fontSize = properties.ascent + properties.descent;
+        // stop the bleeding of the last gradient on the line above to the top gradient of the this line
+        // by hard defining the first gradient colour at point 0, and last gradient colour at point 1
+        fill.unshift(style.fill[0]);
+        fillGradientStops.unshift(0);
 
-        Text.fontPropertiesCache[fontStyle] = properties;
-    }
+        fill.push(style.fill[style.fill.length - 1]);
+        fillGradientStops.push(1);
 
-    return properties;
-};
-
-/**
- * Applies newlines to a string to have it optimally fit into the horizontal
- * bounds set by the Text object's wordWrapWidth property.
- *
- * @param text {string}
- * @private
- */
-Text.prototype.wordWrap = function (text)
-{
-    // Greedy wrapping algorithm that will wrap words as the line grows longer
-    // than its horizontal bounds.
-    var result = '';
-    var lines = text.split('\n');
-    var wordWrapWidth = this._style.wordWrapWidth;
-    for (var i = 0; i < lines.length; i++)
-    {
-        var spaceLeft = wordWrapWidth;
-        var words = lines[i].split(' ');
-        for (var j = 0; j < words.length; j++)
+        if (style.fillGradientType === TEXT_GRADIENT.LINEAR_VERTICAL)
         {
-            var wordWidth = this.context.measureText(words[j]).width;
-            var wordWidthWithSpace = wordWidth + this.context.measureText(' ').width;
-            if (j === 0 || wordWidthWithSpace > spaceLeft)
+            // start the gradient at the top center of the canvas, and end at the bottom middle of the canvas
+            gradient = this.context.createLinearGradient(width / 2, 0, width / 2, height);
+
+            // we need to repeat the gradient so that each individual line of text has the same vertical gradient effect
+            // ['#FF0000', '#00FF00', '#0000FF'] over 2 lines would create stops at 0.125, 0.25, 0.375, 0.625, 0.75, 0.875
+            totalIterations = (fill.length + 1) * lines.length;
+            currentIteration = 0;
+            for (let i = 0; i < lines.length; i++)
             {
-                // Skip printing the newline if it's the first word of the line that is
-                // greater than the word wrap width.
-                if (j > 0)
+                currentIteration += 1;
+                for (let j = 0; j < fill.length; j++)
                 {
-                    result += '\n';
+                    if (typeof fillGradientStops[j] === 'number')
+                    {
+                        stop = fillGradientStops[j] / lines.length + i / lines.length;
+                    }
+                    else
+                    {
+                        stop = currentIteration / totalIterations;
+                    }
+                    gradient.addColorStop(stop, fill[j]);
+                    currentIteration++;
                 }
-                result += words[j];
-                spaceLeft = wordWrapWidth - wordWidth;
-            }
-            else
-            {
-                spaceLeft -= wordWidthWithSpace;
-                result += ' ' + words[j];
             }
         }
-
-        if (i < lines.length-1)
+        else
         {
-            result += '\n';
+            // start the gradient at the center left of the canvas, and end at the center right of the canvas
+            gradient = this.context.createLinearGradient(0, height / 2, width, height / 2);
+
+            // can just evenly space out the gradients in this case, as multiple lines makes no difference
+            // to an even left to right gradient
+            totalIterations = fill.length + 1;
+            currentIteration = 1;
+
+            for (let i = 0; i < fill.length; i++)
+            {
+                if (typeof fillGradientStops[i] === 'number')
+                {
+                    stop = fillGradientStops[i];
+                }
+                else
+                {
+                    stop = currentIteration / totalIterations;
+                }
+                gradient.addColorStop(stop, fill[i]);
+                currentIteration++;
+            }
         }
-    }
-    return result;
-};
 
-/**
- * Returns the bounds of the Text as a rectangle. The bounds calculation takes the worldTransform into account.
- *
- * @param matrix {PIXI.Matrix} the transformation matrix of the Text
- * @return {PIXI.Rectangle} the framing rectangle
- */
-Text.prototype.getBounds = function (matrix)
-{
-    if (this.dirty)
+        return gradient;
+    }
+
+    /**
+     * Destroys this text object.
+     * Note* Unlike a Sprite, a Text object will automatically destroy its baseTexture and texture as
+     * the majority of the time the texture will not be shared with any other Sprites.
+     *
+     * @param {object|boolean} [options] - Options parameter. A boolean will act as if all options
+     *  have been set to that value
+     * @param {boolean} [options.children=false] - if set to true, all the children will have their
+     *  destroy method called as well. 'options' will be passed on to those calls.
+     * @param {boolean} [options.texture=true] - Should it destroy the current texture of the sprite as well
+     * @param {boolean} [options.baseTexture=true] - Should it destroy the base texture of the sprite as well
+     */
+    destroy(options)
     {
-        this.updateText();
+        if (typeof options === 'boolean')
+        {
+            options = { children: options };
+        }
+
+        options = Object.assign({}, defaultDestroyOptions, options);
+
+        super.destroy(options);
+
+        // make sure to reset the the context and canvas.. dont want this hanging around in memory!
+        this.context = null;
+        this.canvas = null;
+
+        this._style = null;
     }
 
-    return Sprite.prototype.getBounds.call(this, matrix);
-};
+    /**
+     * The width of the Text, setting this will actually modify the scale to achieve the value set
+     *
+     * @member {number}
+     */
+    get width()
+    {
+        this.updateText(true);
 
-/**
- * Destroys this text object.
- *
- * @param [destroyBaseTexture=true] {boolean} whether to destroy the base texture as well
- */
-Text.prototype.destroy = function (destroyBaseTexture)
-{
-    // make sure to reset the the context and canvas.. dont want this hanging around in memory!
-    this.context = null;
-    this.canvas = null;
+        return Math.abs(this.scale.x) * this._texture.orig.width;
+    }
 
-    this._style = null;
+    set width(
+        value // eslint-disable-line require-jsdoc
+    )
+    {
+        this.updateText(true);
 
-    this._texture.destroy(destroyBaseTexture === undefined ? true : destroyBaseTexture);
-};
+        const s = sign(this.scale.x) || 1;
+
+        this.scale.x = s * value / this._texture.orig.width;
+        this._width = value;
+    }
+
+    /**
+     * The height of the Text, setting this will actually modify the scale to achieve the value set
+     *
+     * @member {number}
+     */
+    get height()
+    {
+        this.updateText(true);
+
+        return Math.abs(this.scale.y) * this._texture.orig.height;
+    }
+
+    set height(
+        value // eslint-disable-line require-jsdoc
+    )
+    {
+        this.updateText(true);
+
+        const s = sign(this.scale.y) || 1;
+
+        this.scale.y = s * value / this._texture.orig.height;
+        this._height = value;
+    }
+
+    /**
+     * Set the style of the text. Set up an event listener to listen for changes on the style
+     * object and mark the text as dirty.
+     *
+     * @member {object|PIXI.TextStyle}
+     */
+    get style()
+    {
+        return this._style;
+    }
+
+    set style(
+        style // eslint-disable-line require-jsdoc
+    )
+    {
+        style = style || {};
+
+        if (style instanceof TextStyle)
+        {
+            this._style = style;
+        }
+        else
+        {
+            this._style = new TextStyle(style);
+        }
+
+        this.localStyleID = -1;
+        this.dirty = true;
+    }
+
+    /**
+     * Set the copy for the text object. To split a line you can use '\n'.
+     *
+     * @member {string}
+     */
+    get text()
+    {
+        return this._text;
+    }
+
+    set text(
+        text // eslint-disable-line require-jsdoc
+    )
+    {
+        text = String(text === '' || text === null || text === undefined ? ' ' : text);
+
+        if (this._text === text)
+        {
+            return;
+        }
+        this._text = text;
+        this.dirty = true;
+    }
+}

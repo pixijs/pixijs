@@ -1,450 +1,669 @@
-var WebGLManager = require('./WebGLManager'),
-    RenderTarget = require('../utils/RenderTarget'),
-    CONST = require('../../../const'),
-    Quad = require('../utils/Quad'),
-    math =  require('../../../math');
+import WebGLManager from './WebGLManager';
+import RenderTarget from '../utils/RenderTarget';
+import Quad from '../utils/Quad';
+import { Rectangle } from '../../../math';
+import Shader from '../../../Shader';
+import * as filterTransforms from '../filters/filterTransforms';
+import bitTwiddle from 'bit-twiddle';
+
+/**
+ * @ignore
+ * @class
+ */
+class FilterState
+{
+    /**
+     *
+     */
+    constructor()
+    {
+        this.renderTarget = null;
+        this.sourceFrame = new Rectangle();
+        this.destinationFrame = new Rectangle();
+        this.filters = [];
+        this.target = null;
+        this.resolution = 1;
+    }
+}
+
+const screenKey = 'screen';
 
 /**
  * @class
  * @memberof PIXI
  * @extends PIXI.WebGLManager
- * @param renderer {PIXI.WebGLRenderer} The renderer this manager works for.
  */
-function FilterManager(renderer)
+export default class FilterManager extends WebGLManager
 {
-    WebGLManager.call(this, renderer);
-
     /**
-     * @member {object[]}
+     * @param {PIXI.WebGLRenderer} renderer - The renderer this manager works for.
      */
-    this.filterStack = [];
+    constructor(renderer)
+    {
+        super(renderer);
 
-    this.filterStack.push({
-        renderTarget:renderer.currentRenderTarget,
-        filter:[],
-        bounds:null
-    });
+        this.gl = this.renderer.gl;
+        // know about sprites!
+        this.quad = new Quad(this.gl, renderer.state.attribState);
+
+        this.shaderCache = {};
+        // todo add default!
+        this.pool = {};
+
+        this.filterData = null;
+
+        this.managedFilters = [];
+
+        this.renderer.on('prerender', this.onPrerender, this);
+
+        this._screenWidth = renderer.view.width;
+        this._screenHeight = renderer.view.height;
+    }
 
     /**
-     * @member {PIXI.RenderTarget[]}
-     */
-    this.texturePool = [];
-
-    /**
-     * The size of the texture
+     * Adds a new filter to the manager.
      *
-     * @member {PIXI.Rectangle}
+     * @param {PIXI.DisplayObject} target - The target of the filter to render.
+     * @param {PIXI.Filter[]} filters - The filters to apply.
      */
-    // listen for context and update necessary buffers
-    //TODO make this dynamic!
-    //TODO test this out by forces power of two?
-    this.textureSize = new math.Rectangle(0, 0, renderer.width, renderer.height);
-
-    /**
-     * The current frame
-     *
-     * @member {PIXI.Rectangle}
-     */
-    this.currentFrame = null;
-}
-
-FilterManager.prototype = Object.create(WebGLManager.prototype);
-FilterManager.prototype.constructor = FilterManager;
-module.exports = FilterManager;
-
-
-/**
- * Called when there is a WebGL context change.
- *
- */
-FilterManager.prototype.onContextChange = function ()
-{
-    this.texturePool.length = 0;
-
-    var gl = this.renderer.gl;
-    this.quad = new Quad(gl);
-};
-
-/**
- * @param renderer {PIXI.WebGLRenderer}
- * @param buffer {ArrayBuffer}
- */
-FilterManager.prototype.setFilterStack = function ( filterStack )
-{
-    this.filterStack = filterStack;
-};
-
-/**
- * Applies the filter and adds it to the current filter stack.
- *
- * @param target {PIXI.DisplayObject}
- * @param filters {PIXI.AbstractFiler[]} the filters that will be pushed to the current filter stack
- */
-FilterManager.prototype.pushFilter = function (target, filters)
-{
-    // get the bounds of the object..
-    // TODO replace clone with a copy to save object creation
-    var bounds = target.filterArea ? target.filterArea.clone() : target.getBounds();
-
-    //bounds = bounds.clone();
-
-    // round off the rectangle to get a nice smoooooooth filter :)
-    bounds.x = bounds.x | 0;
-    bounds.y = bounds.y | 0;
-    bounds.width = bounds.width | 0;
-    bounds.height = bounds.height | 0;
-
-
-    // padding!
-    var padding = filters[0].padding | 0;
-    bounds.x -= padding;
-    bounds.y -= padding;
-    bounds.width += padding * 2;
-    bounds.height += padding * 2;
-
-
-    if(this.renderer.currentRenderTarget.transform)
+    pushFilter(target, filters)
     {
-        //TODO this will break if the renderTexture transform is anything other than a translation.
-        //Will need to take the full matrix transform into acount..
-        var transform = this.renderer.currentRenderTarget.transform;
+        const renderer = this.renderer;
 
-        bounds.x += transform.tx;
-        bounds.y += transform.ty;
+        let filterData = this.filterData;
 
-        this.capFilterArea( bounds );
-
-        bounds.x -= transform.tx;
-        bounds.y -= transform.ty;
-    }
-    else
-    {
-         this.capFilterArea( bounds );
-    }
-
-    if(bounds.width > 0 && bounds.height > 0)
-    {
-        this.currentFrame = bounds;
-
-        var texture = this.getRenderTarget();
-
-        this.renderer.setRenderTarget(texture);
-
-        // clear the texture..
-        texture.clear();
-
-        // TODO get rid of object creation!
-        this.filterStack.push({
-            renderTarget: texture,
-            filter: filters
-        });
-
-    }
-    else
-    {
-        // push somthing on to the stack that is empty
-        this.filterStack.push({
-            renderTarget: null,
-            filter: filters
-        });
-    }
-};
-
-
-/**
- * Removes the last filter from the filter stack and returns it.
- *
- */
-FilterManager.prototype.popFilter = function ()
-{
-    var filterData = this.filterStack.pop();
-    var previousFilterData = this.filterStack[this.filterStack.length-1];
-
-    var input = filterData.renderTarget;
-
-    // if the renderTarget is null then we don't apply the filter as its offscreen
-    if(!filterData.renderTarget)
-    {
-        return;
-    }
-
-    var output = previousFilterData.renderTarget;
-
-    // use program
-    var gl = this.renderer.gl;
-
-
-    this.currentFrame = input.frame;
-
-    this.quad.map(this.textureSize, input.frame);
-
-
-    // TODO.. this probably only needs to be done once!
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.quad.vertexBuffer);
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.quad.indexBuffer);
-
-    var filters = filterData.filter;
-
-    // assuming all filters follow the correct format??
-    gl.vertexAttribPointer(this.renderer.shaderManager.defaultShader.attributes.aVertexPosition, 2, gl.FLOAT, false, 0, 0);
-    gl.vertexAttribPointer(this.renderer.shaderManager.defaultShader.attributes.aTextureCoord, 2, gl.FLOAT, false, 0, 2 * 4 * 4);
-    gl.vertexAttribPointer(this.renderer.shaderManager.defaultShader.attributes.aColor, 4, gl.FLOAT, false, 0, 4 * 4 * 4);
-
-    // restore the normal blendmode!
-    this.renderer.blendModeManager.setBlendMode(CONST.BLEND_MODES.NORMAL);
-
-    if (filters.length === 1)
-    {
-        // TODO (cengler) - There has to be a better way then setting this each time?
-        if (filters[0].uniforms.dimensions)
+        if (!filterData)
         {
-            filters[0].uniforms.dimensions.value[0] = this.renderer.width;
-            filters[0].uniforms.dimensions.value[1] = this.renderer.height;
-            filters[0].uniforms.dimensions.value[2] = this.quad.vertices[0];
-            filters[0].uniforms.dimensions.value[3] = this.quad.vertices[5];
+            filterData = this.renderer._activeRenderTarget.filterStack;
+
+            // add new stack
+            const filterState = new FilterState();
+
+            filterState.sourceFrame = filterState.destinationFrame = this.renderer._activeRenderTarget.size;
+            filterState.renderTarget = renderer._activeRenderTarget;
+
+            this.renderer._activeRenderTarget.filterData = filterData = {
+                index: 0,
+                stack: [filterState],
+            };
+
+            this.filterData = filterData;
         }
 
-        filters[0].applyFilter( this.renderer, input, output );
-        this.returnRenderTarget( input );
+        // get the current filter state..
+        let currentState = filterData.stack[++filterData.index];
+        const renderTargetFrame = filterData.stack[0].destinationFrame;
 
-    }
-    else
-    {
-        var flipTexture = input;
-        var flopTexture = this.getRenderTarget(true);
-
-        for (var i = 0; i < filters.length-1; i++)
+        if (!currentState)
         {
-            var filter = filters[i];
+            currentState = filterData.stack[filterData.index] = new FilterState();
+        }
 
-            // TODO (cengler) - There has to be a better way then setting this each time?
-            if (filter.uniforms.dimensions)
+        const fullScreen = target.filterArea
+            && target.filterArea.x === 0
+            && target.filterArea.y === 0
+            && target.filterArea.width === renderer.screen.width
+            && target.filterArea.height === renderer.screen.height;
+
+        // for now we go off the filter of the first resolution..
+        const resolution = filters[0].resolution;
+        const padding = filters[0].padding | 0;
+        const targetBounds = fullScreen ? renderer.screen : (target.filterArea || target.getBounds(true));
+        const sourceFrame = currentState.sourceFrame;
+        const destinationFrame = currentState.destinationFrame;
+
+        sourceFrame.x = ((targetBounds.x * resolution) | 0) / resolution;
+        sourceFrame.y = ((targetBounds.y * resolution) | 0) / resolution;
+        sourceFrame.width = ((targetBounds.width * resolution) | 0) / resolution;
+        sourceFrame.height = ((targetBounds.height * resolution) | 0) / resolution;
+
+        if (!fullScreen)
+        {
+            if (filterData.stack[0].renderTarget.transform)
+            { //
+
+                // TODO we should fit the rect around the transform..
+            }
+            else if (filters[0].autoFit)
             {
-                filter.uniforms.dimensions.value[0] = this.renderer.width;
-                filter.uniforms.dimensions.value[1] = this.renderer.height;
-                filter.uniforms.dimensions.value[2] = this.quad.vertices[0];
-                filter.uniforms.dimensions.value[3] = this.quad.vertices[5];
+                sourceFrame.fit(renderTargetFrame);
             }
 
-            filter.applyFilter( this.renderer, flipTexture, flopTexture );
-
-            var temp = flipTexture;
-            flipTexture = flopTexture;
-            flopTexture = temp;
+            // lets apply the padding After we fit the element to the screen.
+            // this should stop the strange side effects that can occur when cropping to the edges
+            sourceFrame.pad(padding);
         }
 
-        filters[filters.length-1].applyFilter( this.renderer, flipTexture, output );
+        destinationFrame.width = sourceFrame.width;
+        destinationFrame.height = sourceFrame.height;
 
-        this.returnRenderTarget( flipTexture );
-        this.returnRenderTarget( flopTexture );
+        // lets play the padding after we fit the element to the screen.
+        // this should stop the strange side effects that can occur when cropping to the edges
+
+        const renderTarget = this.getPotRenderTarget(renderer.gl, sourceFrame.width, sourceFrame.height, resolution);
+
+        currentState.target = target;
+        currentState.filters = filters;
+        currentState.resolution = resolution;
+        currentState.renderTarget = renderTarget;
+
+        // bind the render target to draw the shape in the top corner..
+
+        renderTarget.setFrame(destinationFrame, sourceFrame);
+
+        // bind the render target
+        renderer.bindRenderTarget(renderTarget);
+        renderTarget.clear();
     }
 
-    return filterData.filter;
-};
-
-/**
- * Grabs an render target from the internal pool
- *
- * @param clear {boolean} Whether or not we need to clear the RenderTarget
- * @return {RenderTarget}
- */
-FilterManager.prototype.getRenderTarget = function ( clear )
-{
-    var renderTarget = this.texturePool.pop() || new RenderTarget(this.renderer.gl, this.textureSize.width, this.textureSize.height, CONST.SCALE_MODES.LINEAR, this.renderer.resolution * CONST.FILTER_RESOLUTION);
-    renderTarget.frame = this.currentFrame;
-
-    if (clear)
+    /**
+     * Pops off the filter and applies it.
+     *
+     */
+    popFilter()
     {
-        renderTarget.clear(true);
+        const filterData = this.filterData;
+
+        const lastState = filterData.stack[filterData.index - 1];
+        const currentState = filterData.stack[filterData.index];
+
+        this.quad.map(currentState.renderTarget.size, currentState.sourceFrame).upload();
+
+        const filters = currentState.filters;
+
+        if (filters.length === 1)
+        {
+            filters[0].apply(this, currentState.renderTarget, lastState.renderTarget, false, currentState);
+            this.freePotRenderTarget(currentState.renderTarget);
+        }
+        else
+        {
+            let flip = currentState.renderTarget;
+            let flop = this.getPotRenderTarget(
+                this.renderer.gl,
+                currentState.sourceFrame.width,
+                currentState.sourceFrame.height,
+                currentState.resolution
+            );
+
+            flop.setFrame(currentState.destinationFrame, currentState.sourceFrame);
+
+            // finally lets clear the render target before drawing to it..
+            flop.clear();
+
+            let i = 0;
+
+            for (i = 0; i < filters.length - 1; ++i)
+            {
+                filters[i].apply(this, flip, flop, true, currentState);
+
+                const t = flip;
+
+                flip = flop;
+                flop = t;
+            }
+
+            filters[i].apply(this, flip, lastState.renderTarget, false, currentState);
+
+            this.freePotRenderTarget(flip);
+            this.freePotRenderTarget(flop);
+        }
+
+        filterData.index--;
+
+        if (filterData.index === 0)
+        {
+            this.filterData = null;
+        }
     }
 
-    return renderTarget;
-};
-
-/*
- * Returns a RenderTarget to the internal pool
- * @param renderTarget {RenderTarget} The RenderTarget we want to return to the pool
- */
-FilterManager.prototype.returnRenderTarget = function (renderTarget)
-{
-    this.texturePool.push( renderTarget );
-};
-
-/*
- * Applies the filter
- * @param shader {Shader} The shader to upload
- * @param inputTarget {RenderTarget}
- * @param outputTarget {RenderTarget}
- * @param clear {boolean} Whether or not we want to clear the outputTarget
- */
-FilterManager.prototype.applyFilter = function (shader, inputTarget, outputTarget, clear)
-{
-    var gl = this.renderer.gl;
-
-    this.renderer.setRenderTarget(outputTarget);
-
-    if (clear)
+    /**
+     * Draws a filter.
+     *
+     * @param {PIXI.Filter} filter - The filter to draw.
+     * @param {PIXI.RenderTarget} input - The input render target.
+     * @param {PIXI.RenderTarget} output - The target to output to.
+     * @param {boolean} clear - Should the output be cleared before rendering to it
+     */
+    applyFilter(filter, input, output, clear)
     {
-        outputTarget.clear();
+        const renderer = this.renderer;
+        const gl = renderer.gl;
+
+        let shader = filter.glShaders[renderer.CONTEXT_UID];
+
+        // cacheing..
+        if (!shader)
+        {
+            if (filter.glShaderKey)
+            {
+                shader = this.shaderCache[filter.glShaderKey];
+
+                if (!shader)
+                {
+                    shader = new Shader(this.gl, filter.vertexSrc, filter.fragmentSrc);
+
+                    filter.glShaders[renderer.CONTEXT_UID] = this.shaderCache[filter.glShaderKey] = shader;
+                    this.managedFilters.push(filter);
+                }
+            }
+            else
+            {
+                shader = filter.glShaders[renderer.CONTEXT_UID] = new Shader(this.gl, filter.vertexSrc, filter.fragmentSrc);
+                this.managedFilters.push(filter);
+            }
+
+            // TODO - this only needs to be done once?
+            renderer.bindVao(null);
+
+            this.quad.initVao(shader);
+        }
+
+        renderer.bindVao(this.quad.vao);
+
+        renderer.bindRenderTarget(output);
+
+        if (clear)
+        {
+            gl.disable(gl.SCISSOR_TEST);
+            renderer.clear();// [1, 1, 1, 1]);
+            gl.enable(gl.SCISSOR_TEST);
+        }
+
+        // in case the render target is being masked using a scissor rect
+        if (output === renderer.maskManager.scissorRenderTarget)
+        {
+            renderer.maskManager.pushScissorMask(null, renderer.maskManager.scissorData);
+        }
+
+        renderer.bindShader(shader);
+
+        // free unit 0 for us, doesn't matter what was there
+        // don't try to restore it, because syncUniforms can upload it to another slot
+        // and it'll be a problem
+        const tex = this.renderer.emptyTextures[0];
+
+        this.renderer.boundTextures[0] = tex;
+        // this syncs the PixiJS filters  uniforms with glsl uniforms
+        this.syncUniforms(shader, filter);
+
+        renderer.state.setBlendMode(filter.blendMode);
+
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, input.texture.texture);
+
+        this.quad.vao.draw(this.renderer.gl.TRIANGLES, 6, 0);
+
+        gl.bindTexture(gl.TEXTURE_2D, tex._glTextures[this.renderer.CONTEXT_UID].texture);
     }
 
-    // set the shader
-    this.renderer.shaderManager.setShader(shader);
-
-    // TODO (cengler) - Can this be cached and not `toArray`ed each frame?
-    shader.uniforms.projectionMatrix.value = this.renderer.currentRenderTarget.projectionMatrix.toArray(true);
-
-    //TODO can this be optimised?
-    shader.syncUniforms();
-/*
-    gl.vertexAttribPointer(shader.attributes.aVertexPosition, 2, gl.FLOAT, false, 0, 0);
-    gl.vertexAttribPointer(shader.attributes.aTextureCoord, 2, gl.FLOAT, false, 0, 2 * 4 * 4);
-    gl.vertexAttribPointer(shader.attributes.aColor, 4, gl.FLOAT, false, 0, 4 * 4 * 4);
-*/
-
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, inputTarget.texture);
-
-    gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0 );
-    this.renderer.drawCount++;
-};
-
-/*
- * Calculates the mapped matrix
- * @param filterArea {Rectangle} The filter area
- * @param sprite {Sprite} the target sprite
- * @param outputMatrix {Matrix} @alvin
- */
-// TODO playing around here.. this is temporary - (will end up in the shader)
-FilterManager.prototype.calculateMappedMatrix = function (filterArea, sprite, outputMatrix)
-{
-    var worldTransform = sprite.worldTransform.copy(math.Matrix.TEMP_MATRIX),
-    texture = sprite._texture.baseTexture;
-
-    var mappedMatrix = outputMatrix.identity();
-
-    // scale..
-    var ratio = this.textureSize.height / this.textureSize.width;
-
-    mappedMatrix.translate(filterArea.x / this.textureSize.width, filterArea.y / this.textureSize.height );
-
-    mappedMatrix.scale(1 , ratio);
-
-    var translateScaleX = (this.textureSize.width / texture.width);
-    var translateScaleY = (this.textureSize.height / texture.height);
-
-    worldTransform.tx /= texture.width * translateScaleX;
-    worldTransform.ty /= texture.width * translateScaleX;
-
-    worldTransform.invert();
-
-    mappedMatrix.prepend(worldTransform);
-
-    // apply inverse scale..
-    mappedMatrix.scale(1 , 1/ratio);
-
-    mappedMatrix.scale( translateScaleX , translateScaleY );
-
-    mappedMatrix.translate(sprite.anchor.x, sprite.anchor.y);
-
-    return mappedMatrix;
-
-    // Keeping the orginal as a reminder to me on how this works!
-    //
-    // var m = new math.Matrix();
-
-    // // scale..
-    // var ratio = this.textureSize.height / this.textureSize.width;
-
-    // m.translate(filterArea.x / this.textureSize.width, filterArea.y / this.textureSize.height);
-
-
-    // m.scale(1 , ratio);
-
-
-    // var transform = wt.clone();
-
-    // var translateScaleX = (this.textureSize.width / 620);
-    // var translateScaleY = (this.textureSize.height / 380);
-
-    // transform.tx /= 620 * translateScaleX;
-    // transform.ty /= 620 * translateScaleX;
-
-    // transform.invert();
-
-    // transform.append(m);
-
-    // // apply inverse scale..
-    // transform.scale(1 , 1/ratio);
-
-    // transform.scale( translateScaleX , translateScaleY );
-
-    // return transform;
-};
-
-/*
- * Constrains the filter area to the texture size
- * @param filterArea {Rectangle} The filter area we want to cap
- */
-FilterManager.prototype.capFilterArea = function (filterArea)
-{
-    if (filterArea.x < 0)
+    /**
+     * Uploads the uniforms of the filter.
+     *
+     * @param {GLShader} shader - The underlying gl shader.
+     * @param {PIXI.Filter} filter - The filter we are synchronizing.
+     */
+    syncUniforms(shader, filter)
     {
-        filterArea.width += filterArea.x;
-        filterArea.x = 0;
+        const uniformData = filter.uniformData;
+        const uniforms = filter.uniforms;
+
+        // 0 is reserved for the PixiJS texture so we start at 1!
+        let textureCount = 1;
+        let currentState;
+
+        // filterArea and filterClamp that are handled by FilterManager directly
+        // they must not appear in uniformData
+
+        if (shader.uniforms.filterArea)
+        {
+            currentState = this.filterData.stack[this.filterData.index];
+
+            const filterArea = shader.uniforms.filterArea;
+
+            filterArea[0] = currentState.renderTarget.size.width;
+            filterArea[1] = currentState.renderTarget.size.height;
+            filterArea[2] = currentState.sourceFrame.x;
+            filterArea[3] = currentState.sourceFrame.y;
+
+            shader.uniforms.filterArea = filterArea;
+        }
+
+        // use this to clamp displaced texture coords so they belong to filterArea
+        // see displacementFilter fragment shader for an example
+        if (shader.uniforms.filterClamp)
+        {
+            currentState = currentState || this.filterData.stack[this.filterData.index];
+
+            const filterClamp = shader.uniforms.filterClamp;
+
+            filterClamp[0] = 0;
+            filterClamp[1] = 0;
+            filterClamp[2] = (currentState.sourceFrame.width - 1) / currentState.renderTarget.size.width;
+            filterClamp[3] = (currentState.sourceFrame.height - 1) / currentState.renderTarget.size.height;
+
+            shader.uniforms.filterClamp = filterClamp;
+        }
+
+        // TODO Cacheing layer..
+        for (const i in uniformData)
+        {
+            const type = uniformData[i].type;
+
+            if (type === 'sampler2d' && uniforms[i] !== 0)
+            {
+                if (uniforms[i].baseTexture)
+                {
+                    shader.uniforms[i] = this.renderer.bindTexture(uniforms[i].baseTexture, textureCount);
+                }
+                else
+                {
+                    shader.uniforms[i] = textureCount;
+
+                    // TODO
+                    // this is helpful as renderTargets can also be set.
+                    // Although thinking about it, we could probably
+                    // make the filter texture cache return a RenderTexture
+                    // rather than a renderTarget
+                    const gl = this.renderer.gl;
+
+                    this.renderer.boundTextures[textureCount] = this.renderer.emptyTextures[textureCount];
+                    gl.activeTexture(gl.TEXTURE0 + textureCount);
+
+                    uniforms[i].texture.bind();
+                }
+
+                textureCount++;
+            }
+            else if (type === 'mat3')
+            {
+                // check if its PixiJS matrix..
+                if (uniforms[i].a !== undefined)
+                {
+                    shader.uniforms[i] = uniforms[i].toArray(true);
+                }
+                else
+                {
+                    shader.uniforms[i] = uniforms[i];
+                }
+            }
+            else if (type === 'vec2')
+            {
+                // check if its a point..
+                if (uniforms[i].x !== undefined)
+               {
+                    const val = shader.uniforms[i] || new Float32Array(2);
+
+                    val[0] = uniforms[i].x;
+                    val[1] = uniforms[i].y;
+                    shader.uniforms[i] = val;
+                }
+                else
+               {
+                    shader.uniforms[i] = uniforms[i];
+                }
+            }
+            else if (type === 'float')
+            {
+                if (shader.uniforms.data[i].value !== uniformData[i])
+                {
+                    shader.uniforms[i] = uniforms[i];
+                }
+            }
+            else
+            {
+                shader.uniforms[i] = uniforms[i];
+            }
+        }
     }
 
-    if (filterArea.y < 0)
+    /**
+     * Gets a render target from the pool, or creates a new one.
+     *
+     * @param {boolean} clear - Should we clear the render texture when we get it?
+     * @param {number} resolution - The resolution of the target.
+     * @return {PIXI.RenderTarget} The new render target
+     */
+    getRenderTarget(clear, resolution)
     {
-        filterArea.height += filterArea.y;
-        filterArea.y = 0;
+        const currentState = this.filterData.stack[this.filterData.index];
+        const renderTarget = this.getPotRenderTarget(
+            this.renderer.gl,
+            currentState.sourceFrame.width,
+            currentState.sourceFrame.height,
+            resolution || currentState.resolution
+        );
+
+        renderTarget.setFrame(currentState.destinationFrame, currentState.sourceFrame);
+
+        return renderTarget;
     }
 
-    if ( filterArea.x + filterArea.width > this.textureSize.width )
+    /**
+     * Returns a render target to the pool.
+     *
+     * @param {PIXI.RenderTarget} renderTarget - The render target to return.
+     */
+    returnRenderTarget(renderTarget)
     {
-        filterArea.width = this.textureSize.width - filterArea.x;
+        this.freePotRenderTarget(renderTarget);
     }
 
-    if ( filterArea.y + filterArea.height > this.textureSize.height )
+    /**
+     * Calculates the mapped matrix.
+     *
+     * TODO playing around here.. this is temporary - (will end up in the shader)
+     * this returns a matrix that will normalise map filter cords in the filter to screen space
+     *
+     * @param {PIXI.Matrix} outputMatrix - the matrix to output to.
+     * @return {PIXI.Matrix} The mapped matrix.
+     */
+    calculateScreenSpaceMatrix(outputMatrix)
     {
-        filterArea.height = this.textureSize.height - filterArea.y;
+        const currentState = this.filterData.stack[this.filterData.index];
+
+        return filterTransforms.calculateScreenSpaceMatrix(
+            outputMatrix,
+            currentState.sourceFrame,
+            currentState.renderTarget.size
+        );
     }
-};
 
-/*
- * Resizes all the render targets in the pool
- * @param width {number} the new width
- * @param height {number} the new height
- */
-FilterManager.prototype.resize = function ( width, height )
-{
-    this.textureSize.width = width;
-    this.textureSize.height = height;
-
-    for (var i = 0; i < this.texturePool.length; i++)
+    /**
+     * Multiply vTextureCoord to this matrix to achieve (0,0,1,1) for filterArea
+     *
+     * @param {PIXI.Matrix} outputMatrix - The matrix to output to.
+     * @return {PIXI.Matrix} The mapped matrix.
+     */
+    calculateNormalizedScreenSpaceMatrix(outputMatrix)
     {
-        this.texturePool[i].resize( width, height );
+        const currentState = this.filterData.stack[this.filterData.index];
+
+        return filterTransforms.calculateNormalizedScreenSpaceMatrix(
+            outputMatrix,
+            currentState.sourceFrame,
+            currentState.renderTarget.size,
+            currentState.destinationFrame
+        );
     }
-};
 
-/**
- * Destroys the filter and removes it from the filter stack.
- *
- */
-FilterManager.prototype.destroy = function ()
-{
-    this.quad.destroy();
-    
-    WebGLManager.prototype.destroy.call(this);
-    
-    this.filterStack = null;
-    this.offsetY = 0;
-
-    // destroy textures
-    for (var i = 0; i < this.texturePool.length; i++)
+    /**
+     * This will map the filter coord so that a texture can be used based on the transform of a sprite
+     *
+     * @param {PIXI.Matrix} outputMatrix - The matrix to output to.
+     * @param {PIXI.Sprite} sprite - The sprite to map to.
+     * @return {PIXI.Matrix} The mapped matrix.
+     */
+    calculateSpriteMatrix(outputMatrix, sprite)
     {
-        this.texturePool[i].destroy();
+        const currentState = this.filterData.stack[this.filterData.index];
+
+        return filterTransforms.calculateSpriteMatrix(
+            outputMatrix,
+            currentState.sourceFrame,
+            currentState.renderTarget.size,
+            sprite
+        );
     }
 
-    this.texturePool = null;
-};
+    /**
+     * Destroys this Filter Manager.
+     *
+     * @param {boolean} [contextLost=false] context was lost, do not free shaders
+     *
+     */
+    destroy(contextLost = false)
+    {
+        const renderer = this.renderer;
+        const filters = this.managedFilters;
+
+        renderer.off('prerender', this.onPrerender, this);
+
+        for (let i = 0; i < filters.length; i++)
+        {
+            if (!contextLost)
+            {
+                filters[i].glShaders[renderer.CONTEXT_UID].destroy();
+            }
+            delete filters[i].glShaders[renderer.CONTEXT_UID];
+        }
+
+        this.shaderCache = {};
+        if (!contextLost)
+        {
+            this.emptyPool();
+        }
+        else
+        {
+            this.pool = {};
+        }
+    }
+
+    /**
+     * Gets a Power-of-Two render texture.
+     *
+     * TODO move to a seperate class could be on renderer?
+     * also - could cause issue with multiple contexts?
+     *
+     * @private
+     * @param {WebGLRenderingContext} gl - The webgl rendering context
+     * @param {number} minWidth - The minimum width of the render target.
+     * @param {number} minHeight - The minimum height of the render target.
+     * @param {number} resolution - The resolution of the render target.
+     * @return {PIXI.RenderTarget} The new render target.
+     */
+    getPotRenderTarget(gl, minWidth, minHeight, resolution)
+    {
+        let key = screenKey;
+
+        minWidth *= resolution;
+        minHeight *= resolution;
+
+        if (minWidth !== this._screenWidth
+            || minHeight !== this._screenHeight)
+        {
+            // TODO you could return a bigger texture if there is not one in the pool?
+            minWidth = bitTwiddle.nextPow2(minWidth);
+            minHeight = bitTwiddle.nextPow2(minHeight);
+            key = ((minWidth & 0xFFFF) << 16) | (minHeight & 0xFFFF);
+        }
+
+        if (!this.pool[key])
+        {
+            this.pool[key] = [];
+        }
+
+        let renderTarget = this.pool[key].pop();
+
+        // creating render target will cause texture to be bound!
+        if (!renderTarget)
+        {
+            // temporary bypass cache..
+            const tex = this.renderer.boundTextures[0];
+
+            gl.activeTexture(gl.TEXTURE0);
+
+            // internally - this will cause a texture to be bound..
+            renderTarget = new RenderTarget(gl, minWidth, minHeight, null, 1);
+
+            // set the current one back
+            gl.bindTexture(gl.TEXTURE_2D, tex._glTextures[this.renderer.CONTEXT_UID].texture);
+        }
+
+        // manually tweak the resolution...
+        // this will not modify the size of the frame buffer, just its resolution.
+        renderTarget.resolution = resolution;
+        renderTarget.defaultFrame.width = renderTarget.size.width = minWidth / resolution;
+        renderTarget.defaultFrame.height = renderTarget.size.height = minHeight / resolution;
+
+        return renderTarget;
+    }
+
+    /**
+     * Empties the texture pool.
+     *
+     */
+    emptyPool()
+    {
+        for (const i in this.pool)
+        {
+            const textures = this.pool[i];
+
+            if (textures)
+            {
+                for (let j = 0; j < textures.length; j++)
+                {
+                    textures[j].destroy(true);
+                }
+            }
+        }
+
+        this.pool = {};
+    }
+
+    /**
+     * Frees a render target back into the pool.
+     *
+     * @param {PIXI.RenderTarget} renderTarget - The renderTarget to free
+     */
+    freePotRenderTarget(renderTarget)
+    {
+        const minWidth = renderTarget.size.width * renderTarget.resolution;
+        const minHeight = renderTarget.size.height * renderTarget.resolution;
+
+        let key = screenKey;
+
+        if (minWidth !== this._screenWidth
+            || minHeight !== this._screenHeight)
+        {
+            key = ((minWidth & 0xFFFF) << 16) | (minHeight & 0xFFFF);
+        }
+
+        this.pool[key].push(renderTarget);
+    }
+
+    /**
+     * Called before the renderer starts rendering.
+     *
+     */
+    onPrerender()
+    {
+        if (this._screenWidth !== this.renderer.view.width
+            || this._screenHeight !== this.renderer.view.height)
+        {
+            this._screenWidth = this.renderer.view.width;
+            this._screenHeight = this.renderer.view.height;
+
+            const textures = this.pool[screenKey];
+
+            if (textures)
+            {
+                for (let j = 0; j < textures.length; j++)
+                {
+                    textures[j].destroy(true);
+                }
+            }
+            this.pool[screenKey] = [];
+        }
+    }
+}

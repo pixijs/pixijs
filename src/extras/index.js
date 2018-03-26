@@ -1,19 +1,13 @@
 /**
- * @file        Main export of the PIXI extras library
- * @author      Mat Groves <mat@goodboydigital.com>
- * @copyright   2013-2015 GoodBoyDigital
- * @license     {@link https://github.com/pixijs/pixi.js/blob/master/LICENSE|MIT License}
- */
-
-require('./cacheAsBitmap');
-require('./getChildByName');
-require('./getGlobalPosition');
-
-/**
+ * Additional PIXI DisplayObjects for animation, tiling and bitmap text.
  * @namespace PIXI.extras
  */
-module.exports = {
-    MovieClip:      require('./MovieClip'),
-    TilingSprite:   require('./TilingSprite'),
-    BitmapText:     require('./BitmapText')
-};
+export { default as AnimatedSprite } from './AnimatedSprite';
+export { default as TilingSprite } from './TilingSprite';
+export { default as TilingSpriteRenderer } from './webgl/TilingSpriteRenderer';
+export { default as BitmapText } from './BitmapText';
+
+// imported for side effect of extending the prototype only, contains no exports
+import './cacheAsBitmap';
+import './getChildByName';
+import './getGlobalPosition';
