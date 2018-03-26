@@ -125,10 +125,23 @@ export default class TextMetrics
         let lastSpacePosition = -1;
         const spaces = /\s/g;
         const textLen = text.length;
+        let wordWraped = false;
 
         while (lastSpacePosition < textLen)
         {
             const result = spaces.exec(text);
+
+            if (result)
+            {
+                const space = text.charAt(result.index);
+
+                // Check for non-breakable spaces.
+                if (space === '\u00A0' || space === '\u202F' || space === '\u2060' || space === '\uFEFF')
+                {
+                    continue;
+                }
+            }
+
             const wordStart = lastSpacePosition + 1;
             let spaceWidth = 0;
             let space;
@@ -136,13 +149,13 @@ export default class TextMetrics
             if (lastSpacePosition > -1)
             {
                 space = text.charAt(lastSpacePosition);
-
                 if (space === '\r' || space === '\n')
                 {
-                    lines += line + space;
+                    lines += line + (wordWraped && width === 0 ? '' : space);
                     line = '';
                     width = 0;
                     space = '';
+                    wordWraped = false;
                 }
                 else
                 {
@@ -158,6 +171,13 @@ export default class TextMetrics
             const word = text.substring(wordStart, lastSpacePosition);
             // get word width from cache if possible
             const wordWidth = TextMetrics.getFromCache(word, ls, cache, context);
+
+            // Check if the last line was wrapped and the current line is still empty.
+            if (wordWraped && width === 0)
+            {
+                space = '';
+                spaceWidth = 0;
+            }
 
             // word is longer than desired bounds
             if (wordWidth > wordWrapWidth)
@@ -204,6 +224,8 @@ export default class TextMetrics
                     lines += TextMetrics.addLine(word);
                     line = '';
                     width = 0;
+
+                    wordWraped = true;
                 }
             }
 
@@ -213,9 +235,12 @@ export default class TextMetrics
                 // word won't fit, start a new line
                 if (wordWidth + width > wordWrapWidth)
                 {
-                    lines += TextMetrics.addLine(line);
+                    lines += TextMetrics.addLine(line.trimRight());
                     line = '';
                     width = 0;
+                    space = '';
+                    spaceWidth = 0;
+                    wordWraped = wordWidth === 0;
                 }
 
                 line += `${space}${word}`;
