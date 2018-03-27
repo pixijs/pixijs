@@ -113,15 +113,14 @@ export default class TextMetrics
         let lines = '';
 
         const cache = {};
-        const { letterSpacing } = style;
+        const { letterSpacing, whiteSpace } = style;
+
+        // How to handle whitespaces
+        const collapseSpaces = TextMetrics.collapseSpaces(whiteSpace);
+        const collapseNewlines = TextMetrics.collapseNewlines(whiteSpace);
 
         // whether or not spaces may be added to the beginning of lines
-        let canPrependSpaces = true;
-
-        // whether to apply a new line before layouting a word that is
-        // longer than wordWrapWidth. This flag is in case one wants to
-        // make this a textStyle attr one day
-        const overFlowNewLine = true;
+        let canPrependSpaces = !collapseSpaces;
 
         // There is letterSpacing after every char except the last one
         // t_h_i_s_' '_i_s_' '_a_n_' '_e_x_a_m_p_l_e_' '_!
@@ -137,16 +136,37 @@ export default class TextMetrics
         for (let i = 0; i < tokens.length; i++)
         {
             // get the word, space or newlineChar
-            const token = tokens[i];
+            let token = tokens[i];
 
             // if word is a new line
             if (TextMetrics.isNewline(token))
             {
-                lines += TextMetrics.addLine(line);
-                canPrependSpaces = true;
-                line = '';
-                width = 0;
-                continue;
+                // keep the new line
+                if (!collapseNewlines)
+                {
+                    lines += TextMetrics.addLine(line);
+                    canPrependSpaces = !collapseSpaces;
+                    line = '';
+                    width = 0;
+                    continue;
+                }
+
+                // if we should collapse new lines
+                // we simply convert it into a space
+                token = ' ';
+            }
+
+            // if we should collapse repeated whitespaces
+            if (collapseSpaces)
+            {
+                // check both this and the last tokens for spaces
+                const currIsBreakingSpace = TextMetrics.isBreakingSpace(token);
+                const lastIsBreakingSpace = TextMetrics.isBreakingSpace(line[line.length - 1]);
+
+                if (currIsBreakingSpace && lastIsBreakingSpace)
+                {
+                    continue;
+                }
             }
 
             // get word width from cache if possible
@@ -155,14 +175,11 @@ export default class TextMetrics
             // word is longer than desired bounds
             if (tokenWidth > wordWrapWidth)
             {
-                // whether to start newlines for overflow words
-                if (overFlowNewLine)
-                {
-                    lines += TextMetrics.addLine(line);
-                    canPrependSpaces = true;
-                    line = '';
-                    width = 0;
-                }
+                // start newlines for overflow words
+                lines += TextMetrics.addLine(line);
+                // canPrependSpaces = !collapseSpaces; Seems wrong
+                line = '';
+                width = 0;
 
                 // break large word over multiple lines
                 if (style.breakWords)
@@ -259,6 +276,8 @@ export default class TextMetrics
 
         line = (newLine) ? `${line}\n` : line;
 
+        // line = line.replace(new RegExp(' ', 'g'), '*');
+
         return line;
     }
 
@@ -285,6 +304,28 @@ export default class TextMetrics
         }
 
         return width;
+    }
+
+    /**
+     * Determines whether we should collapse breaking spaces
+     *
+     * @param  {string}   whiteSpace  The TextStyle property whiteSpace
+     * @return {boolean}  should collapse
+     */
+    static collapseSpaces(whiteSpace)
+    {
+        return (whiteSpace === 'normal' || whiteSpace === 'pre-line');
+    }
+
+    /**
+     * Determines whether we should collapse newLine chars
+     *
+     * @param  {string}   whiteSpace  The white space
+     * @return {boolean}  should collapse
+     */
+    static collapseNewlines(whiteSpace)
+    {
+        return (whiteSpace === 'normal');
     }
 
     /**
