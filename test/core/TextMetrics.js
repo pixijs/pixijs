@@ -215,10 +215,9 @@ describe('PIXI.TextMetrics', function ()
 
     describe('whiteSpace `normal` without breakWords', function ()
     {
-
         it('multiple spaces should be collapsed to 1 and but not newlines', function ()
         {
-            const style = Object.assign({}, defaultStyle, { breakWords: false, whiteSpace: 'normal'});
+            const style = Object.assign({}, defaultStyle, { breakWords: false, whiteSpace: 'normal' });
 
             const metrics = PIXI.TextMetrics.measureText(spaceNewLineText, new PIXI.TextStyle(style));
 
@@ -230,12 +229,9 @@ describe('PIXI.TextMetrics', function ()
             expect(metrics.lines[4][2]).to.equal('r', '5th line should not start with 3 spaces (3)');
             expect(metrics.lines[17][0]).to.equal('a', '17th line should not have wrapped');
 
-            metrics.lines.forEach((line, i) =>
+            metrics.lines.forEach((line) =>
             {
-                if (i !== 0 && i !== 4)
-                {
-                    expect(metrics.lines[1][0]).to.not.equal(' ', 'all lines should not have space at the start');
-                }
+                expect(line[0]).to.not.equal(' ', 'all lines should not have space at the start');
                 expect(line[line - 1]).to.not.equal(' ', 'no lines should have a space at the end');
             });
         });
@@ -243,10 +239,9 @@ describe('PIXI.TextMetrics', function ()
 
     describe('whiteSpace `pre-line` without breakWords', function ()
     {
-
         it('multiple spaces should be collapsed to 1 but not newlines', function ()
         {
-            const style = Object.assign({}, defaultStyle, { breakWords: false, whiteSpace: 'pre-line'});
+            const style = Object.assign({}, defaultStyle, { breakWords: false, whiteSpace: 'pre-line' });
 
             const metrics = PIXI.TextMetrics.measureText(spaceNewLineText, new PIXI.TextStyle(style));
 
@@ -258,12 +253,9 @@ describe('PIXI.TextMetrics', function ()
             expect(metrics.lines[4][2]).to.equal('d', '5th line should not start with 3 spaces (3)');
             expect(metrics.lines[17][0]).to.equal('t', '17th line should have wrapped');
 
-            metrics.lines.forEach((line, i) =>
+            metrics.lines.forEach((line) =>
             {
-                if (i !== 0 && i !== 4)
-                {
-                    expect(metrics.lines[1][0]).to.not.equal(' ', 'all lines should not have space at the start');
-                }
+                expect(line[0]).to.not.equal(' ', 'all lines should not have space at the start');
                 expect(line[line - 1]).to.not.equal(' ', 'no lines should have a space at the end');
             });
         });
@@ -271,10 +263,9 @@ describe('PIXI.TextMetrics', function ()
 
     describe('whiteSpace `normal` with breakWords', function ()
     {
-
         it('multiple spaces should be collapsed to 1 and but not newlines', function ()
         {
-            const style = Object.assign({}, defaultStyle, { breakWords: true, whiteSpace: 'normal'});
+            const style = Object.assign({}, defaultStyle, { breakWords: true, whiteSpace: 'normal' });
 
             const metrics = PIXI.TextMetrics.measureText(spaceNewLineText, new PIXI.TextStyle(style));
 
@@ -286,12 +277,9 @@ describe('PIXI.TextMetrics', function ()
             expect(metrics.lines[4][2]).to.equal('r', '5th line should not start with 3 spaces (3)');
             expect(metrics.lines[17][0]).to.equal('a', '17th line should not have wrapped');
 
-            metrics.lines.forEach((line, i) =>
+            metrics.lines.forEach((line) =>
             {
-                if (i !== 0 && i !== 4)
-                {
-                    expect(metrics.lines[1][0]).to.not.equal(' ', 'all lines should not have space at the start');
-                }
+                expect(line[0]).to.not.equal(' ', 'all lines should not have space at the start');
                 expect(line[line - 1]).to.not.equal(' ', 'no lines should have a space at the end');
             });
         });
@@ -299,10 +287,9 @@ describe('PIXI.TextMetrics', function ()
 
     describe('whiteSpace `pre-line` with breakWords', function ()
     {
-
         it('multiple spaces should be collapsed to 1 but not newlines', function ()
         {
-            const style = Object.assign({}, defaultStyle, { breakWords: true, whiteSpace: 'pre-line'});
+            const style = Object.assign({}, defaultStyle, { breakWords: true, whiteSpace: 'pre-line' });
 
             const metrics = PIXI.TextMetrics.measureText(spaceNewLineText, new PIXI.TextStyle(style));
 
@@ -314,12 +301,9 @@ describe('PIXI.TextMetrics', function ()
             expect(metrics.lines[4][2]).to.equal('d', '5th line should not start with 3 spaces (3)');
             expect(metrics.lines[17][0]).to.equal('t', '17th line should have wrapped');
 
-            metrics.lines.forEach((line, i) =>
+            metrics.lines.forEach((line) =>
             {
-                if (i !== 0 && i !== 4)
-                {
-                    expect(metrics.lines[1][0]).to.not.equal(' ', 'all lines should not have space at the start');
-                }
+                expect(line[0]).to.not.equal(' ', 'all lines should not have space at the start');
                 expect(line[line - 1]).to.not.equal(' ', 'no lines should have a space at the end');
             });
         });
@@ -490,7 +474,7 @@ describe('PIXI.TextMetrics', function ()
         {
             const bool = PIXI.TextMetrics.collapseSpaces('pre');
 
-             expect(bool).to.equal(false);
+            expect(bool).to.equal(false);
         });
 
         it('normal', function ()
@@ -528,7 +512,7 @@ describe('PIXI.TextMetrics', function ()
         {
             const bool = PIXI.TextMetrics.collapseNewlines('pre');
 
-             expect(bool).to.equal(false);
+            expect(bool).to.equal(false);
         });
 
         it('normal', function ()
