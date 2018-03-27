@@ -113,25 +113,26 @@ export default class TextMetrics
         let lines = '';
 
         const cache = {};
-        const ls = style.letterSpacing;
+        const { letterSpacing } = style;
 
         // whether or not spaces may be added to the beginning of lines
         let canPrependSpaces = true;
 
         // whether to apply a new line before layouting a word that is
-        // longer than wordWrapWidth
+        // longer than wordWrapWidth. This flag is in case one wants to
+        // make this a textStyle attr one day
         const overFlowNewLine = true;
 
-        // ideally there is letterSpacing after every char except the last one
+        // There is letterSpacing after every char except the last one
         // t_h_i_s_' '_i_s_' '_a_n_' '_e_x_a_m_p_l_e_' '_!
-        // so for convenience the above needs to be compared to width + 1 extra space
+        // so for convenience the above needs to be compared to width + 1 extra letterSpace
         // t_h_i_s_' '_i_s_' '_a_n_' '_e_x_a_m_p_l_e_' '_!_
         // ________________________________________________
         // And then the final space is simply no appended to each line
-        const wordWrapWidth = style.wordWrapWidth + style.letterSpacing;
+        const wordWrapWidth = style.wordWrapWidth + letterSpacing;
 
         // break text into words, spaces and newline chars
-        const tokens = TextMetrics.explodeIntoWordsSpacesAndNewlineChars(text);
+        const tokens = TextMetrics.tokenize(text);
 
         for (let i = 0; i < tokens.length; i++)
         {
@@ -149,7 +150,7 @@ export default class TextMetrics
             }
 
             // get word width from cache if possible
-            const tokenWidth = TextMetrics.getFromCache(token, ls, cache, context);
+            const tokenWidth = TextMetrics.getFromCache(token, letterSpacing, cache, context);
 
             // word is longer than desired bounds
             if (tokenWidth > wordWrapWidth)
@@ -173,7 +174,7 @@ export default class TextMetrics
                     for (let j = 0; j < characters.length; j++)
                     {
                         const character = characters[j];
-                        const characterWidth = TextMetrics.getFromCache(character, ls, cache, context);
+                        const characterWidth = TextMetrics.getFromCache(character, letterSpacing, cache, context);
 
                         if (characterWidth + width > wordWrapWidth)
                         {
@@ -247,6 +248,7 @@ export default class TextMetrics
      * Convienience function for logging each line added during the wordWrap
      * method
      *
+     * @private
      * @param  {string}   line        - The line of text to add
      * @param  {boolean}  newLine     - Add new line character to end
      * @return {string}   A formatted line
@@ -263,6 +265,7 @@ export default class TextMetrics
     /**
      * Gets & sets the widths of calculated characters in a cache object
      *
+     * @private
      * @param  {string}                    key            The key
      * @param  {number}                    letterSpacing  The letter spacing
      * @param  {object}                    cache          The cache
@@ -287,6 +290,7 @@ export default class TextMetrics
     /**
      * trims breaking whitespaces from string
      *
+     * @private
      * @param  {string}  text  The text
      * @return {string}  trimmed string
      */
@@ -310,6 +314,7 @@ export default class TextMetrics
     /**
      * Determines if char is a newline.
      *
+     * @private
      * @param  {string}  char  The character
      * @return {boolean}  True if newline, False otherwise.
      */
@@ -326,6 +331,7 @@ export default class TextMetrics
     /**
      * Determines if char is a breaking whitespace.
      *
+     * @private
      * @param  {string}  char  The character
      * @return {boolean}  True if whitespace, False otherwise.
      */
@@ -352,12 +358,13 @@ export default class TextMetrics
     }
 
     /**
-     * Splits a string into words, spaces and newLine characters
+     * Splits a string into words, breaking-spaces and newLine characters
      *
+     * @private
      * @param  {string}  text       The text
      * @return {array}  A tokenized array
      */
-    static explodeIntoWordsSpacesAndNewlineChars(text)
+    static tokenize(text)
     {
         const tokens = [];
         let token = '';
