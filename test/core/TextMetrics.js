@@ -327,6 +327,8 @@ describe('PIXI.TextMetrics', function ()
 
             expect(arr).to.be.an('array');
             expect(arr.length).to.equal(144);
+            expect(arr).to.not.contain('');
+
         });
 
         it('empty string', function ()
