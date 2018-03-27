@@ -16,15 +16,27 @@ pariatur?';
 
 /* eslint-disable max-len */
 const spaceNewLineText = ' Should have\u0009space\u2003at the\u2000beginning of the line.\n   And 3 more here. But after that there should be no\u3000more spaces at the beginning of lines. And none at the end. And all this text is just to check the wrapping abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz. I \u2665 text. 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2     ';
-
-const breakingWordText = 'Pixi.js - The HTML5 Creation Engine. Create beautiful \
-digital content with the supercalifragilisticexpialidociously fastest, most \
-flexible 2D WebGL renderer.';
-
-const fillText = '. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .\
-. . . . . . . . . . . . . . . . . . . . . . . . ';
-
+const breakingWordText = 'Pixi.js - The HTML5 Creation Engine. Create beautiful digital content with the supercalifragilisticexpialidociously fastest, most flexible 2D WebGL renderer.';
+const fillText = '. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ';
 const intergityText = '012345678901234567890123456789';
+const nonBreakingSpaces = ['\u00A0', '\u2007', '\u202F'];
+
+const breakingSpaces = [
+    '\u0009',
+    '\u0020',
+    '\u2000',
+    '\u2001',
+    '\u2002',
+    '\u2003',
+    '\u2004',
+    '\u2005',
+    '\u2006',
+    '\u2008',
+    '\u2009',
+    '\u200A',
+    '\u205F',
+    '\u3000',
+];
 
 describe('PIXI.TextMetrics', function ()
 {
@@ -198,6 +210,163 @@ describe('PIXI.TextMetrics', function ()
                 }
                 expect(line[line - 1]).to.not.equal(' ', 'no lines should have a space at the end');
             });
+        });
+    });
+
+    describe('trimRight', function ()
+    {
+        it('string with no whitespaces to trim', function ()
+        {
+            const text = PIXI.TextMetrics.trimRight('remove white spaces to the right');
+
+            expect(text).to.equal('remove white spaces to the right');
+        });
+
+        it('string with whitespaces to trim', function ()
+        {
+            const text = PIXI.TextMetrics.trimRight('remove white spaces to the right   ');
+
+            expect(text).to.equal('remove white spaces to the right');
+        });
+
+        it('string with strange unicode whitespaces to trim', function ()
+        {
+            const text = PIXI.TextMetrics.trimRight('remove white spaces to the right\u0009\u0020\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2008\u2009\u200A\u205F\u3000');
+
+            expect(text).to.equal('remove white spaces to the right');
+        });
+
+        it('empty string', function ()
+        {
+            const text = PIXI.TextMetrics.trimRight('');
+
+            expect(text).to.equal('');
+        });
+
+        it('non-string input', function ()
+        {
+            const text = PIXI.TextMetrics.trimRight({});
+
+            expect(text).to.equal('');
+        });
+    });
+
+    describe('isNewline', function ()
+    {
+        it('line feed', function ()
+        {
+            const bool = PIXI.TextMetrics.isNewline('\n');
+
+            expect(bool).to.equal(true);
+        });
+
+        it('carriage return', function ()
+        {
+            const bool = PIXI.TextMetrics.isNewline('\r');
+
+            expect(bool).to.equal(true);
+        });
+
+        it('newline char', function ()
+        {
+            const bool = PIXI.TextMetrics.isNewline('A');
+
+            expect(bool).to.equal(false);
+        });
+
+        it('non string', function ()
+        {
+            const bool = PIXI.TextMetrics.isNewline({});
+
+            expect(bool).to.equal(false);
+        });
+    });
+
+    describe('isBreakingSpace', function ()
+    {
+        it('legit breaking spaces', function ()
+        {
+            breakingSpaces.forEach((char) =>
+            {
+                const bool = PIXI.TextMetrics.isBreakingSpace(char);
+
+                expect(bool).to.equal(true);
+            });
+        });
+
+        it('non breaking spaces', function ()
+        {
+            nonBreakingSpaces.forEach((char) =>
+            {
+                const bool = PIXI.TextMetrics.isBreakingSpace(char);
+
+                expect(bool).to.not.equal(true);
+            });
+        });
+
+        it('newline char', function ()
+        {
+            const bool = PIXI.TextMetrics.isBreakingSpace('A');
+
+            expect(bool).to.equal(false);
+        });
+
+        it('non string', function ()
+        {
+            const bool = PIXI.TextMetrics.isBreakingSpace({});
+
+            expect(bool).to.equal(false);
+        });
+    });
+
+    describe('tokenize', function ()
+    {
+        it('full example', function ()
+        {
+            const arr = PIXI.TextMetrics.tokenize(spaceNewLineText);
+
+            expect(arr).to.be.an('array');
+            expect(arr.length).to.equal(144);
+        });
+
+        it('empty string', function ()
+        {
+            const arr = PIXI.TextMetrics.tokenize('');
+
+            expect(arr).to.be.an('array');
+            expect(arr.length).to.equal(0);
+        });
+
+        it('single char', function ()
+        {
+            const arr = PIXI.TextMetrics.tokenize('A');
+
+            expect(arr).to.be.an('array');
+            expect(arr.length).to.equal(1);
+        });
+
+        it('newline char', function ()
+        {
+            const arr = PIXI.TextMetrics.tokenize('\n');
+
+            expect(arr).to.be.an('array');
+            expect(arr.length).to.equal(1);
+        });
+
+        it('breakingSpaces', function ()
+        {
+            const arr = PIXI.TextMetrics.tokenize(breakingSpaces.join(''));
+
+            expect(arr).to.be.an('array');
+            expect(arr.length).to.equal(breakingSpaces.length);
+        });
+
+        it('non string', function ()
+        {
+            const arr = PIXI.TextMetrics.tokenize({});
+
+            expect(arr).to.be.an('array');
+            expect(arr.length).to.equal(0);
         });
     });
 });

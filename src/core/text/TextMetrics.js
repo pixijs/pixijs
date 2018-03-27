@@ -296,6 +296,11 @@ export default class TextMetrics
      */
     static trimRight(text)
     {
+        if (typeof text !== 'string')
+        {
+            return '';
+        }
+
         for (let i = text.length - 1; i >= 0; i--)
         {
             const char = text[i];
@@ -320,6 +325,11 @@ export default class TextMetrics
      */
     static isNewline(char)
     {
+        if (typeof char !== 'string')
+        {
+            return false;
+        }
+
         const newlines = [
             0x000A, // line feed
             0x000D, // carriage return
@@ -337,6 +347,11 @@ export default class TextMetrics
      */
     static isBreakingSpace(char)
     {
+        if (typeof char !== 'string')
+        {
+            return false;
+        }
+
         const breakingSpaces = [
             0x0009, // character tabulation
             0x0020, // space
@@ -369,6 +384,11 @@ export default class TextMetrics
         const tokens = [];
         let token = '';
 
+        if (typeof text !== 'string')
+        {
+            return tokens;
+        }
+
         for (let i = 0; i < text.length; i++)
         {
             const char = text[i];
@@ -389,7 +409,10 @@ export default class TextMetrics
             token += char;
         }
 
-        tokens.push(token);
+        if (token !== '')
+        {
+            tokens.push(token);
+        }
 
         return tokens;
     }
