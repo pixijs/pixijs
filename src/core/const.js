@@ -239,7 +239,7 @@ export const DATA_URI = /^\s*data:(?:([\w-]+)\/([\w+.-]+))?(?:;(charset=[\w-]+|b
  * @type {RegExp|string}
  * @example &lt;svg width="100" height="100"&gt;&lt;/svg&gt;
  */
-export const SVG_SIZE = /<svg[^>]*(?:\s(width|height)=('|")(\d*(?:\.\d+)?)(?:px)?('|"))[^>]*(?:\s(width|height)=('|")(\d*(?:\.\d+)?)(?:px)?('|"))[^>]*>/i; // eslint-disable-line max-len
+export const SVG_SIZE = /(?:\s(width|height)=('|")(\d*(?:\.\d+)?)(?:px)?('|"))*(?:\s(width|height)=('|")(\d*(?:\.\d+)?)(?:px)?('|"))/i; // eslint-disable-line max-len
 
 /**
  * Constants that identify shapes, mainly to prevent `instanceof` calls.
