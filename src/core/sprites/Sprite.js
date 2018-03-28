@@ -491,14 +491,14 @@ export default class Sprite extends Container
      */
     get width()
     {
-        return Math.abs(this.scale.x) * this._texture.orig.width;
+        return Math.abs(this.scale.x) * this._texture.width;
     }
 
     set width(value) // eslint-disable-line require-jsdoc
     {
         const s = sign(this.scale.x) || 1;
 
-        this.scale.x = s * value / this._texture.orig.width;
+        this.scale.x = s * value / this._texture.width;
         this._width = value;
     }
 
@@ -509,7 +509,7 @@ export default class Sprite extends Container
      */
     get height()
     {
-        return Math.abs(this.scale.y) * this._texture.orig.height;
+        return Math.abs(this.scale.y) * this._texture.height;
     }
 
     set height(value) // eslint-disable-line require-jsdoc

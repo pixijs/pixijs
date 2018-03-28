@@ -292,15 +292,16 @@ export default class Texture extends EventEmitter
      * @param {boolean} [crossorigin] - Whether requests should be treated as crossorigin
      * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES} for possible values
      * @param {number} [sourceScale=(auto)] - Scale for the original image, used with SVG images.
+     * @param {number} [resolution=(auto)] - Override resolution if not using @x on the end of image name.
      * @return {PIXI.Texture} The newly created texture
      */
-    static fromImage(imageUrl, crossorigin, scaleMode, sourceScale)
+    static fromImage(imageUrl, crossorigin, scaleMode, sourceScale, resolution)
     {
         let texture = TextureCache[imageUrl];
 
         if (!texture)
         {
-            texture = new Texture(BaseTexture.fromImage(imageUrl, crossorigin, scaleMode, sourceScale));
+            texture = new Texture(BaseTexture.fromImage(imageUrl, crossorigin, scaleMode, sourceScale, resolution));
             Texture.addToCache(texture, imageUrl);
         }
 
@@ -612,7 +613,7 @@ export default class Texture extends EventEmitter
      */
     get width()
     {
-        return this.orig.width;
+        return this.noFrame ? this.baseTexture.tempWidth : this.orig.width;
     }
 
     /**
@@ -622,7 +623,7 @@ export default class Texture extends EventEmitter
      */
     get height()
     {
-        return this.orig.height;
+        return this.noFrame ? this.baseTexture.tempHeight : this.orig.height;
     }
 }
 

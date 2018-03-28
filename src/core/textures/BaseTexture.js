@@ -38,6 +38,22 @@ export default class BaseTexture extends EventEmitter
         this.resolution = resolution || settings.RESOLUTION;
 
         /**
+         * Temp width of the BaseTexture, if it can be determined before loading source is complete (like from and svg uri);
+         *
+         * @readonly
+         * @member {number}
+         */
+        this.tempWidth = 0;
+
+        /**
+         * Temp height of the BaseTexture, if it can be determined before loading source is complete (like from and svg uri);
+         *
+         * @readonly
+         * @member {number}
+         */
+        this.tempHeight = 0;
+
+        /**
          * The width of the base texture set when the image has loaded
          *
          * @readonly
@@ -324,7 +340,7 @@ export default class BaseTexture extends EventEmitter
         // Apply source if loaded. Otherwise setup appropriate loading monitors.
         if (((source.src && source.complete) || source.getContext) && source.width && source.height)
         {
-            this._updateImageType();
+            // this._updateImageType();
 
             if (this.imageType === 'svg')
             {
@@ -350,7 +366,7 @@ export default class BaseTexture extends EventEmitter
 
             source.onload = () =>
             {
-                scope._updateImageType();
+                // scope._updateImageType();
                 source.onload = null;
                 source.onerror = null;
 
@@ -434,13 +450,12 @@ export default class BaseTexture extends EventEmitter
             return;
         }
 
-        const dataUri = decomposeDataUri(this.imageUrl);
         let imageType;
 
-        if (dataUri && dataUri.mediaType === 'image')
+        if (this.dataUri && this.dataUri.mediaType === 'image')
         {
             // Check for subType validity
-            const firstSubType = dataUri.subType.split('+')[0];
+            const firstSubType = this.dataUri.subType.split('+')[0];
 
             imageType = getUrlFileExtension(`.${firstSubType}`);
 
@@ -474,11 +489,9 @@ export default class BaseTexture extends EventEmitter
             return;
         }
 
-        const dataUri = decomposeDataUri(this.imageUrl);
-
-        if (dataUri)
+        if (this.dataUri)
         {
-            this._loadSvgSourceUsingDataUri(dataUri);
+            this._loadSvgSourceUsingDataUri(this.dataUri);
         }
         else
         {
@@ -667,9 +680,10 @@ export default class BaseTexture extends EventEmitter
      * @param {boolean} [crossorigin=(auto)] - Should use anonymous CORS? Defaults to true if the URL is not a data-URI.
      * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES} for possible values
      * @param {number} [sourceScale=(auto)] - Scale for the original image, used with Svg images.
+     * @param {number} [resolution=(auto)] - Override resolution if not using @x on the end of image name.
      * @return {PIXI.BaseTexture} The new base texture.
      */
-    static fromImage(imageUrl, crossorigin, scaleMode, sourceScale)
+    static fromImage(imageUrl, crossorigin, scaleMode, sourceScale, resolution)
     {
         let baseTexture = BaseTextureCache[imageUrl];
 
@@ -696,8 +710,40 @@ export default class BaseTexture extends EventEmitter
                 baseTexture.sourceScale = sourceScale;
             }
 
+            // set get image type / check data uri
+            baseTexture.imageUrl = imageUrl;
+            baseTexture.dataUri = decomposeDataUri(imageUrl);
+            baseTexture._updateImageType();
+
             // if there is an @2x at the end of the url we are going to assume its a highres image
-            baseTexture.resolution = getResolutionOfUrl(imageUrl);
+            baseTexture.resolution = resolution || getResolutionOfUrl(imageUrl);
+
+            if (baseTexture.dataUri && baseTexture.imageType === 'svg')
+{
+                let svgString = 0;
+
+                if (baseTexture.dataUri.encoding === 'base64')
+{
+                    if (!atob)
+{
+                        throw new Error('Your browser doesn\'t support base64 conversions.');
+                    }
+                    svgString = atob(baseTexture.dataUri.data);
+                }
+                else
+{
+                    svgString = baseTexture.dataUri.data;
+                }
+
+                const svgSize = getSvgSize(svgString);
+                const svgWidth = svgSize.width;
+                const svgHeight = svgSize.height;
+                const realWidth = Math.round(svgWidth * sourceScale) / baseTexture.resolution;
+                const realHeight = Math.round(svgHeight * sourceScale) / baseTexture.resolution;
+
+                baseTexture.tempWidth = realWidth;
+                baseTexture.tempHeight = realHeight;
+            }
 
             image.src = imageUrl; // Setting this triggers load
 
