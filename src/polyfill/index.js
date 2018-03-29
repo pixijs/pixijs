@@ -2,7 +2,7 @@ import './Object.assign';
 import './requestAnimationFrame';
 import './Math.sign';
 import Promise from 'promise-polyfill';
-if(!window.Promise) = window.Promise = Promise;
+if(!window.Promise) window.Promise = Promise;
 
 if (!window.ArrayBuffer)
 {
