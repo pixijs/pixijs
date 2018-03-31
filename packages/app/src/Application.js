@@ -241,6 +241,8 @@ export default class Application
      */
     destroy(removeView)
     {
+        this.resizeTo = null;
+
         if (this._ticker)
         {
             const oldTicker = this._ticker;
