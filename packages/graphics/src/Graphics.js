@@ -685,7 +685,7 @@ export default class Graphics extends Container
     }
 
     /**
-     * Draw a star shape with an abitrary number of points.
+     * Draw a star shape with an arbitrary number of points.
      *
      * @param {number} x - Center X position of the star
      * @param {number} y - Center Y position of the star

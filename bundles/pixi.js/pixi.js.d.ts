@@ -406,7 +406,7 @@ declare namespace PIXI {
 
         trackedPointers(): { [key: number]: interaction.InteractionTrackingData; };
 
-        // depricated
+        // deprecated
         defaultCursor: string;
         // end interactive target
 
@@ -1094,7 +1094,7 @@ declare namespace PIXI {
             antiAlias?: boolean;
             premultipliedAlpha: boolean;
             stencil: boolean;
-            preseveDrawingBuffer?: boolean;
+            preserveDrawingBuffer?: boolean;
         };
         protected _backgroundColorRgba: number[];
 
@@ -1919,7 +1919,7 @@ declare namespace PIXI {
 
             trackedPointers(): { [key: number]: InteractionTrackingData; };
 
-            // depricated
+            // deprecated
             defaultCursor: string;
 
         }
@@ -2086,7 +2086,7 @@ declare namespace PIXI {
 
             destroy(): void;
 
-            // depricated
+            // deprecated
             defaultCursorStyle: string;
             currentCursorStyle: string;
 
@@ -2464,7 +2464,7 @@ declare namespace PIXI {
 
         refresh(): void;
 
-        protected _onTexureUpdate(): void;
+        protected _onTextureUpdate(): void;
 
     }
 
@@ -2701,7 +2701,7 @@ declare namespace PIXI {
     //////////////////////////////////////////////////////////////////////////////
 
     export class Attribute {
-        constructor(buffer: string, size?: number, normalised?: boolean, type?: number,
+        constructor(buffer: string, size?: number, normalized?: boolean, type?: number,
                     stride?: number, start?: number, instance?: number);
 
         buffer: string;
@@ -2741,7 +2741,7 @@ declare namespace PIXI {
         instanceCount: number;
 
         addAttribute(id: string, buffer: Buffer | Array<number> | ArrayBuffer | ArrayBufferView, size?: number,
-                     normalised?: boolean, type?: number, stride?: number, start?: number, instance?: boolean): void;
+                     normalized?: boolean, type?: number, stride?: number, start?: number, instance?: boolean): void;
 
         getAttribute(id: string): Attribute;
 
@@ -2775,7 +2775,7 @@ declare namespace PIXI {
 
             updateBuffers(): void;
 
-            checkCompatability(geometry: Geometry, program: Program): void;
+            checkCompatibility(geometry: Geometry, program: Program): void;
 
             initGeometryVao(geometry: Geometry, program: Program): any;
 

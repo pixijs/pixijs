@@ -68,7 +68,7 @@ export default class InteractionManager extends EventEmitter
         this.autoPreventDefault = options.autoPreventDefault !== undefined ? options.autoPreventDefault : true;
 
         /**
-         * Frequency in milliseconds that the mousemove, moveover & mouseout interaction events will be checked.
+         * Frequency in milliseconds that the mousemove, mouseover & mouseout interaction events will be checked.
          *
          * @member {number}
          * @default 10
@@ -91,7 +91,7 @@ export default class InteractionManager extends EventEmitter
          * Actively tracked InteractionData
          *
          * @private
-         * @member {Object.<number,PIXI.interation.InteractionData>}
+         * @member {Object.<number,PIXI.interaction.InteractionData>}
          */
         this.activeInteractionData = {};
         this.activeInteractionData[MOUSE_POINTER_ID] = this.mouse;
@@ -100,7 +100,7 @@ export default class InteractionManager extends EventEmitter
          * Pool of unused InteractionData
          *
          * @private
-         * @member {PIXI.interation.InteractionData[]}
+         * @member {PIXI.interaction.InteractionData[]}
          */
         this.interactionDataPool = [];
 
@@ -122,7 +122,7 @@ export default class InteractionManager extends EventEmitter
         /**
          * This property determines if mousemove and touchmove events are fired only when the cursor
          * is over the object.
-         * Setting to true will make things work more in line with how the DOM verison works.
+         * Setting to true will make things work more in line with how the DOM version works.
          * Setting to false can make things easier for things like dragging
          * It is currently set to false as this is how PixiJS used to work. This will be set to true in
          * future versions of pixi.
@@ -677,7 +677,7 @@ export default class InteractionManager extends EventEmitter
 
     /**
      * Sets the DOM element which will receive mouse/touch events. This is useful for when you have
-     * other DOM elements on top of the renderers Canvas element. With this you'll be bale to deletegate
+     * other DOM elements on top of the renderers Canvas element. With this you'll be bale to delegate
      * another DOM element to receive those events.
      *
      * @param {HTMLCanvasElement} element - the DOM element which will receive mouse and touch events.
@@ -719,8 +719,8 @@ export default class InteractionManager extends EventEmitter
         }
 
         /**
-         * These events are added first, so that if pointer events are normalised, they are fired
-         * in the same order as non-normalised events. ie. pointer event 1st, mouse / touch 2nd
+         * These events are added first, so that if pointer events are normalized, they are fired
+         * in the same order as non-normalized events. ie. pointer event 1st, mouse / touch 2nd
          */
         if (this.supportsPointerEvents)
         {
@@ -999,7 +999,7 @@ export default class InteractionManager extends EventEmitter
 
         const point = interactionEvent.data.global;
 
-        // Took a little while to rework this function correctly! But now it is done and nice and optimised. ^_^
+        // Took a little while to rework this function correctly! But now it is done and nice and optimized! ^_^
         //
         // This function will now loop through all objects and then only hit test the objects it HAS
         // to, not all of them. MUCH faster..
@@ -1008,9 +1008,9 @@ export default class InteractionManager extends EventEmitter
         // 1: It is interactive.
         // 2: It belongs to a parent that is interactive AND one of the parents children have not already been hit.
         //
-        // As another little optimisation once an interactive object has been hit we can carry on
+        // As another little optimization once an interactive object has been hit we can carry on
         // through the scenegraph, but we know that there will be no more hits! So we can avoid extra hit tests
-        // A final optimisation is that an object is not hit test directly if a child has already been hit.
+        // A final optimization is that an object is not hit test directly if a child has already been hit.
 
         interactive = displayObject.interactive || interactive;
 

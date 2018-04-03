@@ -93,8 +93,8 @@ export default class CanvasSpriteRenderer
                 dy = 0;
             }
 
-            dx -= width / 2;
-            dy -= height / 2;
+            dx -= texture.orig.width / 2;
+            dy -= texture.orig.height / 2;
 
             // Allow for pixel rounding
             if (renderer.roundPixels)
@@ -143,8 +143,8 @@ export default class CanvasSpriteRenderer
                     height * resolution,
                     dx * renderer.resolution,
                     dy * renderer.resolution,
-                    width * renderer.resolution,
-                    height * renderer.resolution
+                    texture.orig.width * renderer.resolution,
+                    texture.orig.height * renderer.resolution
                 );
             }
             else
@@ -157,8 +157,8 @@ export default class CanvasSpriteRenderer
                     height * resolution,
                     dx * renderer.resolution,
                     dy * renderer.resolution,
-                    width * renderer.resolution,
-                    height * renderer.resolution
+                    texture.orig.width * renderer.resolution,
+                    texture.orig.height * renderer.resolution
                 );
             }
         }

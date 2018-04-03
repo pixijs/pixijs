@@ -117,7 +117,7 @@ export default class AccessibilityManager
          * @private
          */
         this.isActive = false;
-        this.isMobileAccessabillity = false;
+        this.isMobileAccessibility = false;
 
         // let listen for tab.. once pressed we can fire up and show the accessibility layer
         window.addEventListener('keydown', this._onKeyDown, false);
@@ -142,7 +142,7 @@ export default class AccessibilityManager
 
         hookDiv.addEventListener('focus', () =>
         {
-            this.isMobileAccessabillity = true;
+            this.isMobileAccessibility = true;
             this.activate();
             document.body.removeChild(hookDiv);
         });
@@ -152,7 +152,7 @@ export default class AccessibilityManager
 
     /**
      * Activating will cause the Accessibility layer to be shown. This is called when a user
-     * preses the tab key.
+     * presses the tab key.
      *
      * @private
      */
@@ -184,7 +184,7 @@ export default class AccessibilityManager
      */
     deactivate()
     {
-        if (!this.isActive || this.isMobileAccessabillity)
+        if (!this.isActive || this.isMobileAccessibility)
         {
             return;
         }

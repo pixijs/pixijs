@@ -297,7 +297,7 @@ export default class FilterSystem extends System
      * Calculates the mapped matrix.
      *
      * TODO playing around here.. this is temporary - (will end up in the shader)
-     * this returns a matrix that will normalise map filter cords in the filter to screen space
+     * this returns a matrix that will normalize map filter cords in the filter to screen space
      *
      * @param {PIXI.Matrix} outputMatrix - the matrix to output to.
      * @return {PIXI.Matrix} The mapped matrix.
@@ -353,7 +353,7 @@ export default class FilterSystem extends System
     /**
      * Gets a Power-of-Two render texture or fullScreen texture
      *
-     * TODO move to a seperate class could be on renderer?
+     * TODO move to a separate class could be on renderer?
      *
      * @private
      * @param {number} minWidth - The minimum width of the render texture in real pixels.

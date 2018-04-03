@@ -58,9 +58,9 @@ export { mixins };
  *
  * @memberof PIXI.utils
  * @function earcut
- * @param {number[]} vertices - A flat array of vertice coordinates
+ * @param {number[]} vertices - A flat array of vertex coordinates
  * @param {number[]} [holes] - An array of hole indices
- * @param {number} [dimensions=2] The number of coordinates per vertice in the input array
+ * @param {number} [dimensions=2] The number of coordinates per vertex in the input array
  * @return {number[]} Triangulated polygon
  */
 import earcut from 'earcut';

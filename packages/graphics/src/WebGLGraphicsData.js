@@ -98,7 +98,7 @@ export default class WebGLGraphicsData
         this.glIndices = new Uint16Array(this.indices);
         this.indexBuffer.update(this.glIndices);
 
-        //     console.log("UPKOADING,.",this.glPoints,this.glIndices)
+        //     console.log("UPLOADING,.",this.glPoints,this.glIndices)
         this.dirty = false;
     }
 

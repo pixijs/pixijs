@@ -7,7 +7,7 @@ import { Matrix } from '@pixi/math';
  * @param outputMatrix {Matrix} @alvin
  * @private
  */
-// this returns a matrix that will normalise map filter cords in the filter to screen space
+// this returns a matrix that will normalize map filter cords in the filter to screen space
 export function calculateScreenSpaceMatrix(outputMatrix, filterArea, textureSize)
 {
     // TODO unwrap?

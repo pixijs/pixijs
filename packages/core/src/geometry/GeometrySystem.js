@@ -187,7 +187,7 @@ export default class GeometrySystem extends System
         }
     }
 
-    checkCompatability(geometry, program)
+    checkCompatibility(geometry, program)
     {
         // geometry must have at least all the attributes that the shader requires.
         const geometryAttributes = geometry.attributes;
@@ -209,7 +209,7 @@ export default class GeometrySystem extends System
      */
     initGeometryVao(geometry, program)
     {
-        this.checkCompatability(geometry, program);
+        this.checkCompatibility(geometry, program);
 
         const gl = this.gl;
         const CONTEXT_UID = this.CONTEXT_UID;

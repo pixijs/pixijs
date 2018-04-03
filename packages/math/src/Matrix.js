@@ -406,7 +406,7 @@ export default class Matrix
     }
 
     /**
-     * Resets this Matix to an identity (default) matrix.
+     * Resets this Matrix to an identity (default) matrix.
      *
      * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
      */

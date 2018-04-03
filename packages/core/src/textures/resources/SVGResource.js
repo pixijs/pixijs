@@ -34,7 +34,7 @@ export default class SVGResource extends BaseImageResource
         this.scale = options.scale || 1;
 
         /**
-         * Call when completedly loaded
+         * Call when completely loaded
          * @private
          * @member {function}
          */

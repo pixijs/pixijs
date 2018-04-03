@@ -92,7 +92,7 @@ export function premultiplyRgba(rgb, alpha, out, premultiply)
  * premultiplies tint
  *
  * @memberof PIXI.utils
- * @param {number} tint integet RGB
+ * @param {number} tint integer RGB
  * @param {number} alpha floating point alpha (0.0-1.0)
  * @returns {number} tint multiplied by alpha
  */

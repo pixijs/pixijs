@@ -5,4 +5,4 @@ export { default as mapSize } from './mapSize';
 export { default as mapType } from './mapType';
 export { default as generateUniformsSync } from './generateUniformsSync';
 export { default as getTestContext } from './getTestContext';
-export { default as checkMaxIfStatmentsInShader } from './checkMaxIfStatmentsInShader';
+export { default as checkMaxIfStatementsInShader } from './checkMaxIfStatementsInShader';

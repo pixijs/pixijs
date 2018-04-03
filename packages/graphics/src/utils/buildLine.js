@@ -25,7 +25,7 @@ export default function (graphicsData, webGLData, webGLDataNativeLines)
 }
 
 /**
- * Builds a line to draw using the poligon method.
+ * Builds a line to draw using the polygon method.
  *
  * Ignored from docs since it is not directly exposed.
  *

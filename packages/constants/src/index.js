@@ -7,7 +7,7 @@
  * @name ENV
  * @type {object}
  * @property {number} WEBGL_LEGACY - Used for older v1 WebGL devices. PixiJS will aim to ensure compatibility
- *  with older / less advanced devices. If you experiance unexplained flickering prefer this envionment.
+ *  with older / less advanced devices. If you experience unexplained flickering prefer this environment.
  * @property {number} WEBGL - Version 1 of WebGL
  * @property {number} WEBGL2 - Version 2 of WebGL
  */
