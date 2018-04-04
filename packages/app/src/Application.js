@@ -1,5 +1,5 @@
 import { settings } from '@pixi/settings';
-import { Container } from '@pixi/display';
+import { Stage } from '@pixi/display';
 import { Renderer } from '@pixi/core';
 import { Ticker, UPDATE_PRIORITY } from '@pixi/ticker';
 
@@ -50,6 +50,8 @@ export default class Application
      *  for devices with dual graphics card **webgl only**
      * @param {boolean} [options.sharedTicker=false] - `true` to use PIXI.Ticker.shared, `false` to create new ticker.
      * @param {boolean} [options.sharedLoader=false] - `true` to use PIXI.Loaders.shared, `false` to create new Loader.
+     * @param {PIXI.Container} {options.stage} - Pass existing stage or container
+     * @param {number} {options.animationDeltaMax} - How many frames will be processed by animation if user switches the tab
      */
     constructor(options, arg2, arg3, arg4, arg5)
     {
@@ -86,7 +88,15 @@ export default class Application
          * The root display container that's rendered.
          * @member {PIXI.Container}
          */
-        this.stage = new Container();
+        this.stage = options.stage || new Stage();
+
+        /**
+         * How many frames will be processed by animation if user switches the tab
+         *
+         * @member {number}
+         * @default 5
+         */
+        this.animationDeltaMax = options.animationDeltaMax || 5;
 
         /**
          * Internal reference to the ticker
@@ -140,8 +150,22 @@ export default class Application
     /**
      * Render the current stage.
      */
-    render()
+    render(delta)
     {
+        if (this.stage.animate)
+        {
+            // Time travel animation fix
+            if (delta < 0)
+            {
+                delta = 0;
+            }
+            if (delta > this.animationDeltaMax)
+            {
+                delta = this.animationDeltaMax;
+            }
+            this.stage.onAnimate(delta);
+        }
+
         this.renderer.render(this.stage);
     }
 

@@ -50,38 +50,6 @@ describe('PIXI.Container', function ()
         });
     });
 
-    describe('events', function ()
-    {
-        it('should trigger "added" and "removed" events on its children', function ()
-        {
-            const container = new Container();
-            const child = new DisplayObject();
-            let triggeredAdded = false;
-            let triggeredRemoved = false;
-
-            child.on('added', (to) =>
-            {
-                triggeredAdded = true;
-                expect(container.children.length).to.be.equals(1);
-                expect(child.parent).to.be.equals(to);
-            });
-            child.on('removed', (from) =>
-            {
-                triggeredRemoved = true;
-                expect(container.children.length).to.be.equals(0);
-                expect(child.parent).to.be.null;
-                expect(container).to.be.equals(from);
-            });
-
-            container.addChild(child);
-            expect(triggeredAdded).to.be.true;
-            expect(triggeredRemoved).to.be.false;
-
-            container.removeChild(child);
-            expect(triggeredRemoved).to.be.true;
-        });
-    });
-
     describe('addChild', function ()
     {
         it('should remove from current parent', function ()

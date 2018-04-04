@@ -47,6 +47,8 @@ export default class ParticleContainer extends Container
     {
         super();
 
+        this.passParentStageToChildren = false;
+
         // Making sure the batch size is valid
         // 65535 is max vertex index in the index buffer (see ParticleRenderer)
         // so max number of particles is 65536 / 4 = 16384

@@ -30,6 +30,8 @@ export default class Container extends DisplayObject
          * @readonly
          */
         this.children = [];
+
+        this.passParentStageToChildren = true;
     }
 
     /**
@@ -40,6 +42,22 @@ export default class Container extends DisplayObject
     onChildrenChange()
     {
         /* empty */
+    }
+
+    /**
+     * Returns stage that owns children. Depends on `passParentStageToChildren`
+     * and whether the container is actually a stage itself
+     *
+     * @returns {Container}
+     */
+    getStageForChildren()
+    {
+        if (this.innerStage)
+        {
+            return this;
+        }
+
+        return this.passParentStageToChildren ? this.parentStage : null;
     }
 
     /**
@@ -66,24 +84,26 @@ export default class Container extends DisplayObject
         }
         else
         {
+            let newChildStage = this.getStageForChildren();
+
             // if the child has a parent then lets remove it as PixiJS objects can only exist in one place
             if (child.parent)
             {
-                child.parent.removeChild(child);
+                if (child.parentStage !== newChildStage)
+                {
+                    child.parent.removeChild(child);
+                }
+                else
+                {
+                    child.parent.detachChild(child);
+                    newChildStage = null;
+                }
             }
-
-            child.parent = this;
-            // ensure child transform will be recalculated
-            child.transform._parentID = -1;
-
             this.children.push(child);
 
-            // ensure bounds will be recalculated
-            this._boundsID++;
+            this._innerAddChild(child, newChildStage);
 
-            // TODO - lets either do all callbacks or all events.. not both!
             this.onChildrenChange(this.children.length - 1);
-            child.emit('added', this);
         }
 
         return child;
@@ -103,25 +123,50 @@ export default class Container extends DisplayObject
             throw new Error(`${child}addChildAt: The index ${index} supplied is out of bounds ${this.children.length}`);
         }
 
+        let newChildStage = this.getStageForChildren();
+
         if (child.parent)
         {
-            child.parent.removeChild(child);
+            if (child.parentStage !== newChildStage)
+            {
+                child.parent.removeChild(child);
+            }
+            else
+            {
+                child.parent.detachChild(child);
+                newChildStage = null;
+            }
         }
 
+        this.children.splice(index, 0, child);
+
+        this._innerAddChild(child, newChildStage);
+
+        this.onChildrenChange(index);
+
+        return child;
+    }
+
+    /**
+     * Inner workings of addChild and addChildAt
+     *
+     * @param child {PIXI.DisplayObject} new child
+     * @param newChildStage {PIXI.Stage} if child needs his stage changed
+     * @private
+     */
+    _innerAddChild(child, newChildStage)
+    {
         child.parent = this;
         // ensure child transform will be recalculated
         child.transform._parentID = -1;
 
-        this.children.splice(index, 0, child);
-
         // ensure bounds will be recalculated
         this._boundsID++;
 
-        // TODO - lets either do all callbacks or all events.. not both!
-        this.onChildrenChange(index);
-        child.emit('added', this);
-
-        return child;
+        if (newChildStage)
+        {
+            newChildStage.innerStage.addSubtree(child);
+        }
     }
 
     /**
@@ -226,17 +271,7 @@ export default class Container extends DisplayObject
 
             if (index === -1) return null;
 
-            child.parent = null;
-            // ensure child transform will be recalculated
-            child.transform._parentID = -1;
-            removeItems(this.children, index, 1);
-
-            // ensure bounds will be recalculated
-            this._boundsID++;
-
-            // TODO - lets either do all callbacks or all events.. not both!
-            this.onChildrenChange(index);
-            child.emit('removed', this);
+            this._innerRemoveChild(index, child, false);
         }
 
         return child;
@@ -252,6 +287,20 @@ export default class Container extends DisplayObject
     {
         const child = this.getChildAt(index);
 
+        this._innerRemoveChild(index, child, false);
+
+        return child;
+    }
+
+    /**
+     * Inner workings of removeChild and removeChildAt
+     * @param index
+     * @param child
+     * @param detach
+     * @private
+     */
+    _innerRemoveChild(index, child, detach)
+    {
         // ensure child transform will be recalculated..
         child.parent = null;
         child.transform._parentID = -1;
@@ -262,7 +311,67 @@ export default class Container extends DisplayObject
 
         // TODO - lets either do all callbacks or all events.. not both!
         this.onChildrenChange(index);
-        child.emit('removed', this);
+
+        const childStage = this.getStageForChildren();
+
+        if (childStage)
+        {
+            if (detach)
+            {
+                childStage.innerStage.detachSubtree(child);
+            }
+            else
+            {
+                childStage.innerStage.removeSubtree(child);
+            }
+        }
+    }
+
+    /**
+     * Detaches one or more children from the container.
+     * Stage events woould not fire.
+     *
+     * @param {...PIXI.DisplayObject} child - The DisplayObject(s) to remove
+     * @return {PIXI.DisplayObject} The first child that was detached.
+     */
+    detachChild(child)
+    {
+        const argumentsLength = arguments.length;
+
+        // if there is only one argument we can bypass looping through the them
+        if (argumentsLength > 1)
+        {
+            // loop through the arguments property and add all children
+            // use it the right way (.length and [i]) so that this function can still be optimised by JS runtimes
+            for (let i = 0; i < argumentsLength; i++)
+            {
+                this.detachChild(arguments[i]);
+            }
+        }
+        else
+        {
+            const index = this.children.indexOf(child);
+
+            if (index === -1) return null;
+
+            this._innerRemoveChild(index, child, true);
+        }
+
+        return child;
+    }
+
+    /**
+     * Detaches a child from the specified index position.
+     * Stage events woould not fire.
+     *
+     * @param {number} index - The index to get the child from
+     * @return {PIXI.DisplayObject} The child that was detached.
+     */
+    detachChildAt(index)
+    {
+        const child = this.getChildAt(index);
+
+        this._innerRemoveChild(index, child, true);
 
         return child;
     }
@@ -272,9 +381,10 @@ export default class Container extends DisplayObject
      *
      * @param {number} [beginIndex=0] - The beginning position.
      * @param {number} [endIndex=this.children.length] - The ending position. Default value is size of the container.
+     * @param {boolean} [detach=false] - Whether to fire stage events
      * @returns {DisplayObject[]} List of removed children
      */
-    removeChildren(beginIndex = 0, endIndex)
+    removeChildren(beginIndex = 0, endIndex, detach)
     {
         const begin = beginIndex;
         const end = typeof endIndex === 'number' ? endIndex : this.children.length;
@@ -298,9 +408,24 @@ export default class Container extends DisplayObject
 
             this.onChildrenChange(beginIndex);
 
-            for (let i = 0; i < removed.length; ++i)
+            const childStage = this.getStageForChildren();
+
+            if (childStage)
             {
-                removed[i].emit('removed', this);
+                if (detach)
+                {
+                    for (let i = 0; i < removed.length; ++i)
+                    {
+                        childStage.innerStage.detachSubtree(removed[i]);
+                    }
+                }
+                else
+                {
+                    for (let i = 0; i < removed.length; ++i)
+                    {
+                        childStage.innerStage.removeSubtree(removed[i]);
+                    }
+                }
             }
 
             return removed;

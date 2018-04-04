@@ -645,4 +645,10 @@ export default class Text extends Sprite
         this._text = text;
         this.dirty = true;
     }
+
+    onRemoved()
+    {
+        // Text frees videomemory when it leaves the stage
+        this._texture.baseTexture.dispose();
+    }
 }
