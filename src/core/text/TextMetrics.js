@@ -175,11 +175,14 @@ export default class TextMetrics
             // word is longer than desired bounds
             if (tokenWidth > wordWrapWidth)
             {
-                // start newlines for overflow words
-                lines += TextMetrics.addLine(line);
-                // canPrependSpaces = !collapseSpaces; Seems wrong
-                line = '';
-                width = 0;
+                // if we are not already at the beginning of a line
+                if (line !== '')
+                {
+                    // start newlines for overflow words
+                    lines += TextMetrics.addLine(line);
+                    line = '';
+                    width = 0;
+                }
 
                 // break large word over multiple lines
                 if (style.breakWords)
@@ -275,8 +278,6 @@ export default class TextMetrics
         line = TextMetrics.trimRight(line);
 
         line = (newLine) ? `${line}\n` : line;
-
-        // line = line.replace(new RegExp(' ', 'g'), '*');
 
         return line;
     }
