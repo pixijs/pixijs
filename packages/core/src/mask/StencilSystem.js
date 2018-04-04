@@ -13,6 +13,11 @@ export default class StencilSystem extends System
     constructor(renderer)
     {
         super(renderer);
+
+        /**
+         * The mask stack
+         * @member {PIXI.Graphics[]}
+         */
         this.stencilMaskStack = [];
     }
 
@@ -102,6 +107,7 @@ export default class StencilSystem extends System
 
     /**
      * Setup renderer to use the current stencil data.
+     * @private
      */
     _useCurrent()
     {
@@ -114,7 +120,7 @@ export default class StencilSystem extends System
 
     /**
      * Fill 1s equal to the number of acitve stencil masks.
-     *
+     * @private
      * @return {number} The bitwise mask.
      */
     _getBitwiseMask()

@@ -19,10 +19,39 @@ export default class TextureGCSystem extends System
     {
         super(renderer);
 
+        /**
+         * Count
+         * @member {number}
+         * @readonly
+         */
         this.count = 0;
+
+        /**
+         * Check count
+         * @member {number}
+         * @readonly
+         */
         this.checkCount = 0;
+
+        /**
+         * Maximum idle time, in seconds
+         * @member {number}
+         * @see PIXI.settings.GC_MAX_IDLE
+         */
         this.maxIdle = settings.GC_MAX_IDLE;
+
+        /**
+         * Maximum number of itesm to check
+         * @member {number}
+         * @see PIXI.settings.GC_MAX_CHECK_COUNT
+         */
         this.checkCountMax = settings.GC_MAX_CHECK_COUNT;
+
+        /**
+         * Current garabage collection mode
+         * @member {PIXI.GC_MODES}
+         * @see PIXI.settings.GC_MODE
+         */
         this.mode = settings.GC_MODE;
     }
 

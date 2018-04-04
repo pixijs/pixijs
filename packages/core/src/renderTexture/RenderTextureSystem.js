@@ -18,18 +18,50 @@ export default class RenderTextureSystem extends System
     {
         super(renderer);
 
+        /**
+         * The clear background color as rgba
+         * @member {number[]}
+         */
         this.clearColor = renderer._backgroundColorRgba;
 
-        // TODO moe this property somewhere else!
+        // TODO move this property somewhere else!
+        /**
+         * List of masks for the StencilSystem
+         * @member {Array}
+         * @readonly
+         */
         this.defaultMaskStack = [];
+
+        /**
+         * List of filters for the FilterSystem
+         * @member {Array}
+         * @readonly
+         */
         this.defaultFilterStack = [{}];
 
         // empty render texture?
+        /**
+         * Render texture
+         * @member {PIXI.RenderTexture}
+         * @readonly
+         */
         this.renderTexture = null;
 
+        /**
+         * Destination frame
+         * @member {PIXI.Rectangle}
+         * @readonly
+         */
         this.destinationFrame = new Rectangle();
     }
 
+    /**
+     * Bind the current render texture
+     * @private
+     * @param {PIXI.RenderTexture} renderTexture
+     * @param {PIXI.Rectangle} sourceFrame
+     * @param {PIXI.Rectangle} destinationFrame
+     */
     bind(renderTexture, sourceFrame, destinationFrame)
     {
         // TODO - do we want this??
@@ -100,7 +132,7 @@ export default class RenderTextureSystem extends System
     /**
      * Erases the render texture and fills the drawing area with a colour
      *
-     * @param {number} [clearColor] - The colour
+     * @param {number[]} [clearColor] - The color as rgba, default to use the renderer backgroundColor
      * @return {PIXI.Renderer} Returns itself.
      */
     clear(clearColor)

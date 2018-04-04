@@ -16,9 +16,43 @@ export default class ProjectionSystem extends System
     {
         super(renderer);
 
+        /**
+         * Destination frame
+         * @member {PIXI.Rectangle}
+         * @readonly
+         */
+        this.destinationFrame = null;
+
+        /**
+         * Source frame
+         * @member {PIXI.Rectangle}
+         * @readonly
+         */
+        this.sourceFrame = null;
+
+        /**
+         * Default destination frame
+         * @member {PIXI.Rectangle}
+         * @readonly
+         */
+        this.defaultFrame = null;
+
+        /**
+         * Project matrix
+         * @member {PIXI.Matrix}
+         * @readonly
+         */
         this.projectionMatrix = new Matrix();
     }
 
+    /**
+     * Updates the projection matrix based on a projection frame (which is a rectangle)
+     *
+     * @param {PIXI.Rectangle} destinationFrame - The destination frame.
+     * @param {PIXI.Rectangle} sourceFrame - The source frame.
+     * @param {Number} resolution - Resolution
+     * @param {boolean} root - If is root
+     */
     update(destinationFrame, sourceFrame, resolution, root)
     {
         this.destinationFrame = destinationFrame || this.destinationFrame || this.defaultFrame;
@@ -33,8 +67,10 @@ export default class ProjectionSystem extends System
     /**
      * Updates the projection matrix based on a projection frame (which is a rectangle)
      *
-     * @param {Rectangle} destinationFrame - The destination frame.
-     * @param {Rectangle} sourceFrame - The source frame.
+     * @param {PIXI.Rectangle} destinationFrame - The destination frame.
+     * @param {PIXI.Rectangle} sourceFrame - The source frame.
+     * @param {Number} resolution - Resolution
+     * @param {boolean} root - If is root
      */
     calculateProjection(destinationFrame, sourceFrame, resolution, root)
     {
