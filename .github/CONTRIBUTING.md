@@ -21,6 +21,9 @@ of [jsFiddle][fiddle], [jsBin][jsbin], or a link to your live site so that we ca
 4. **Share as much information as possible.** Include browser version affected, your OS, version of
 the library, steps to reproduce, etc. "X isn't working!!!1!" will probably just be closed.
 
+> NOTE: if you are looking for support, please visit the [FAQ][faq], [forums][forums] or go through
+> the [tutorials][tutorials].
+
 ## Contributing Changes
 
 ### Setting Up
@@ -73,13 +76,16 @@ from your fork to the main **pixi.js** repository on the branch you used in the 
 to ensure that you didn't break anything. You can do this with `npm test` which will run
 eslint, rebuild, then run the test suite.
 
-[issues]: https://github.com/pixijs/pixi.js/issues
-[pixi]: https://github.com/pixijs/pixi.js
+[faq]: http://www.pixijs.com/faq
 [fiddle]: http://jsfiddle.net
-[jsbin]: http://jsbin.com/
-[node]: http://nodejs.org
 [fork-cli]: https://help.github.com/articles/fork-a-repo/
 [fork-gui]: https://guides.github.com/activities/forking/
+[forums]: http://www.html5gamedevs.com/forum/15-pixijs/
+[issues]: https://github.com/pixijs/pixi.js/issues
+[jsbin]: http://jsbin.com/
+[node]: http://nodejs.org
+[pixi]: https://github.com/pixijs/pixi.js
+[tutorials]: http://www.pixijs.com/tutorials
 
 ## Contributor Code of Conduct
 
