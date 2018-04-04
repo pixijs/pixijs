@@ -166,7 +166,7 @@ export default class Filter extends Shader
          *
          * @member {number}
          */
-        this.resolution = settings.RESOLUTION;
+        this.resolution = settings.FILTER_RESOLUTION;
 
         /**
          * If enabled is true the filter is applied, if false it will not.
