@@ -1,7 +1,7 @@
 const { Application } = require('../');
 const { autoDetectRenderer } = require('@pixi/canvas-renderer');
 const { Container } = require('@pixi/display');
-const { Ticker } = require('@pixi/ticker');
+const { Ticker, UPDATE_PRIORITY } = require('@pixi/ticker');
 const { skipHello } = require('@pixi/utils');
 
 skipHello();
@@ -88,7 +88,7 @@ describe('PIXI.Application', function ()
             expect(ticker.add).to.be.calledOnce;
             expect(ticker.add.args[0][0]).to.be.equal(this.app.render);
             expect(ticker.add.args[0][1]).to.be.equal(this.app);
-            expect(ticker.add.args[0][2]).to.be.equal(PIXI.UPDATE_PRIORITY.LOW);
+            expect(ticker.add.args[0][2]).to.be.equal(UPDATE_PRIORITY.LOW);
         });
 
         it('should assign ticker if no ticker', function ()
@@ -102,7 +102,7 @@ describe('PIXI.Application', function ()
             expect(ticker.add).to.be.calledOnce;
             expect(ticker.add.args[0][0]).to.be.equal(this.app.render);
             expect(ticker.add.args[0][1]).to.be.equal(this.app);
-            expect(ticker.add.args[0][2]).to.be.equal(PIXI.UPDATE_PRIORITY.LOW);
+            expect(ticker.add.args[0][2]).to.be.equal(UPDATE_PRIORITY.LOW);
         });
 
         it('should assign null ticker', function ()
@@ -117,6 +117,64 @@ describe('PIXI.Application', function ()
             expect(_ticker.remove.args[0][1]).to.be.equal(this.app);
 
             expect(this.app._ticker).to.be.null;
+        });
+    });
+
+    describe('resizeTo', function ()
+    {
+        before(function ()
+        {
+            const div = document.createElement('div');
+
+            div.style.width = '100px';
+            div.style.height = '200px';
+            document.body.appendChild(div);
+            this.div = div;
+        });
+
+        after(function ()
+        {
+            this.div.parentNode.removeChild(this.div);
+            this.div = null;
+        });
+
+        it('should assign resizeTo', function ()
+        {
+            const app = new Application({
+                resizeTo: this.div,
+            });
+
+            expect(app.resizeTo).to.equal(this.div);
+            expect(app.view.width).to.equal(100);
+            expect(app.view.height).to.equal(200);
+            app.destroy();
+        });
+
+        it('should resizeTo with resolution', function ()
+        {
+            const app = new Application({
+                resolution: 2,
+                resizeTo: this.div,
+            });
+
+            expect(app.view.width).to.equal(200);
+            expect(app.view.height).to.equal(400);
+            app.destroy();
+        });
+
+        it('should resizeTo with resolution and autoDensity', function ()
+        {
+            const app = new Application({
+                resolution: 2,
+                resizeTo: this.div,
+                autoDensity: true,
+            });
+
+            expect(app.view.width).to.equal(200);
+            expect(app.view.height).to.equal(400);
+            expect(app.view.style.width).to.equal(this.div.style.width);
+            expect(app.view.style.height).to.equal(this.div.style.height);
+            app.destroy();
         });
     });
 });
