@@ -15,6 +15,8 @@ import CanvasRenderer from './CanvasRenderer';
  * @param {number} [options.height=600] - the height of the renderers view
  * @param {HTMLCanvasElement} [options.view] - the canvas to use as a view, optional
  * @param {boolean} [options.transparent=false] - If the render view is transparent, default false
+ * @param {boolean} [options.autoDensity=false] - Resizes renderer view in CSS pixels to allow for
+ *   resolutions other than 1
  * @param {boolean} [options.antialias=false] - sets antialias (only applicable in chrome at the moment)
  * @param {boolean} [options.preserveDrawingBuffer=false] - enables drawing buffer preservation, enable this if you
  *  need to call toDataUrl on the webgl context

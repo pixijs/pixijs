@@ -38,7 +38,8 @@ export default class Renderer extends AbstractRenderer
      * @param {number} [options.height=600] - the height of the screen
      * @param {HTMLCanvasElement} [options.view] - the canvas to use as a view, optional
      * @param {boolean} [options.transparent=false] - If the render view is transparent, default false
-     * @param {boolean} [options.autoResize=false] - If the render view is automatically resized, default false
+     * @param {boolean} [options.autoDensity=false] - Resizes renderer view in CSS pixels to allow for
+     *   resolutions other than 1
      * @param {boolean} [options.antialias=false] - sets antialias. If not available natively then FXAA
      *  antialiasing is used
      * @param {boolean} [options.forceFXAA=false] - forces FXAA antialiasing to be used over native.

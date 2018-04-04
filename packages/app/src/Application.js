@@ -33,6 +33,8 @@ export default class Application
      * @param {number} [options.height=600] - the height of the renderers view
      * @param {HTMLCanvasElement} [options.view] - the canvas to use as a view, optional
      * @param {boolean} [options.transparent=false] - If the render view is transparent, default false
+     * @param {boolean} [options.autoDensity=false] - Resizes renderer view in CSS pixels to allow for
+     *   resolutions other than 1
      * @param {boolean} [options.antialias=false] - sets antialias (only applicable in chrome at the moment)
      * @param {boolean} [options.preserveDrawingBuffer=false] - enables drawing buffer preservation, enable this if you
      *  need to call toDataUrl on the webgl context
@@ -50,6 +52,7 @@ export default class Application
      *  for devices with dual graphics card **webgl only**
      * @param {boolean} [options.sharedTicker=false] - `true` to use PIXI.Ticker.shared, `false` to create new ticker.
      * @param {boolean} [options.sharedLoader=false] - `true` to use PIXI.Loaders.shared, `false` to create new Loader.
+     * @param {Window|HTMLElement} [options.resizeTo] - Element to automatically resize stage to.
      */
     constructor(options, arg2, arg3, arg4, arg5)
     {
@@ -74,6 +77,7 @@ export default class Application
             sharedTicker: false,
             forceCanvas: false,
             sharedLoader: false,
+            resizeTo: null,
         }, options);
 
         /**
@@ -101,6 +105,10 @@ export default class Application
          * @default PIXI.Ticker.shared
          */
         this.ticker = options.sharedTicker ? Ticker.shared : new Ticker();
+
+        // Resize
+        this.resize = this.resize.bind(this);
+        this.resizeTo = options.resizeTo;
 
         // Start the rendering
         if (options.autoStart)
@@ -135,6 +143,52 @@ export default class Application
     get ticker() // eslint-disable-line require-jsdoc
     {
         return this._ticker;
+    }
+
+    /**
+     * The element or window to resize the application to.
+     * @member {Window|HTMLElement}
+     */
+    set resizeTo(node)
+    {
+        window.removeEventListener('resize', this.resize);
+        this._resizeTo = node;
+        if (node)
+        {
+            window.addEventListener('resize', this.resize);
+            this.resize();
+        }
+    }
+    get resizeTo()
+    {
+        return this._resizeTo;
+    }
+
+    /**
+     * If `resizeTo` is set, calling this function
+     * will resize to the width and height of that element.
+     */
+    resize()
+    {
+        if (this._resizeTo)
+        {
+            // Resize to the window
+            if (this._resizeTo === window)
+            {
+                this.renderer.resize(
+                    window.innerWidth,
+                    window.innerHeight
+                );
+            }
+            // Resize to other HTML entities
+            else
+            {
+                this.renderer.resize(
+                    this._resizeTo.clientWidth,
+                    this._resizeTo.clientHeight
+                );
+            }
+        }
     }
 
     /**
@@ -187,6 +241,8 @@ export default class Application
      */
     destroy(removeView)
     {
+        this.resizeTo = null;
+
         if (this._ticker)
         {
             const oldTicker = this._ticker;
