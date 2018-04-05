@@ -13,9 +13,18 @@ Contributors guide: https://github.com/pixijs/pixi.js/blob/dev/.github/CONTRIBUT
 Code of Conduct: https://github.com/pixijs/pixi.js/blob/dev/.github/CODE_OF_CONDUCT.md
 -->
 
-- **Library Version**: _version_
-- **Browser & Version**: _version_
-- **OS & Version**: _version_
-- **Running Example**: _url_
+<!-- Bug Report (delete if not applicable) -->
+### Expected Behavior
 
-<!-- Enter your issue details below this comment. -->
+### Current Behavior
+
+### Possible Solution
+
+### Steps to Reproduce
+
+### Environment
+
+- **`pixi.js` version**: _e.g. 4.7.1_
+- **Browser & Version**: _e.g. Chrome 67_
+- **OS & Version**: _e.g. Ubuntu 18.04_
+- **Running Example**: _url_

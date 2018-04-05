@@ -38,7 +38,8 @@ export default class Renderer extends AbstractRenderer
      * @param {number} [options.height=600] - the height of the screen
      * @param {HTMLCanvasElement} [options.view] - the canvas to use as a view, optional
      * @param {boolean} [options.transparent=false] - If the render view is transparent, default false
-     * @param {boolean} [options.autoResize=false] - If the render view is automatically resized, default false
+     * @param {boolean} [options.autoDensity=false] - Resizes renderer view in CSS pixels to allow for
+     *   resolutions other than 1
      * @param {boolean} [options.antialias=false] - sets antialias. If not available natively then FXAA
      *  antialiasing is used
      * @param {boolean} [options.forceFXAA=false] - forces FXAA antialiasing to be used over native.
@@ -62,7 +63,7 @@ export default class Renderer extends AbstractRenderer
         super('WebGL', options, arg2, arg3);
 
         /**
-         * The type of this renderer as a standardised const
+         * The type of this renderer as a standardized const
          *
          * @member {number}
          * @see PIXI.RENDERER_TYPE
@@ -75,33 +76,129 @@ export default class Renderer extends AbstractRenderer
 
         // TODO legacy!
 
-        // runners!
+        /**
+         * Internal signal instances of **mini-runner**, these
+         * are assigned to each system created.
+         * @see https://github.com/GoodBoyDigital/mini-runner
+         * @name PIXI.Renderer#runners
+         * @type {object}
+         * @readonly
+         * @property {Runner} destroy - Destroy runner
+         * @property {Runner} contextChange - Context change runner
+         * @property {Runner} reset - Reset runner
+         * @property {Runner} update - Update runner
+         * @property {Runner} postrender - Post-render runner
+         * @property {Runner} prerender - Pre-render runner
+         * @property {Runner} resize - Resize runner
+         */
         this.runners = {
-            destroy:        new Runner('destroy'),
-            contextChange:  new Runner('contextChange', 1),
-            reset:          new Runner('reset'),
-            update:         new Runner('update'),
-            postrender:     new Runner('postrender'),
-            prerender:      new Runner('prerender'),
-            resize:         new Runner('resize', 2),
+            destroy: new Runner('destroy'),
+            contextChange: new Runner('contextChange', 1),
+            reset: new Runner('reset'),
+            update: new Runner('update'),
+            postrender: new Runner('postrender'),
+            prerender: new Runner('prerender'),
+            resize: new Runner('resize', 2),
         };
 
+        /**
+         * Global uniforms
+         * @member {PIXI.UniformGroup}
+         */
         this.globalUniforms = new UniformGroup({
             projectionMatrix: new Matrix(),
         }, true);
 
+        /**
+         * Mask system instance
+         * @member {PIXI.systems.MaskSystem} mask
+         * @memberof PIXI.Renderer#
+         * @readonly
+         */
         this.addSystem(MaskSystem, 'mask')
+            /**
+             * Context system instance
+             * @member {PIXI.systems.ContextSystem} context
+             * @memberof PIXI.Renderer#
+             * @readonly
+             */
             .addSystem(ContextSystem, 'context')
+            /**
+             * State system instance
+             * @member {PIXI.systems.StateSystem} state
+             * @memberof PIXI.Renderer#
+             * @readonly
+             */
             .addSystem(StateSystem, 'state')
+            /**
+             * Shader system instance
+             * @member {PIXI.systems.ShaderSystem} shader
+             * @memberof PIXI.Renderer#
+             * @readonly
+             */
             .addSystem(ShaderSystem, 'shader')
+            /**
+             * Texture system instance
+             * @member {PIXI.systems.TextureSystem} texture
+             * @memberof PIXI.Renderer#
+             * @readonly
+             */
             .addSystem(TextureSystem, 'texture')
+            /**
+             * Geometry system instance
+             * @member {PIXI.systems.GeometrySystem} geometry
+             * @memberof PIXI.Renderer#
+             * @readonly
+             */
             .addSystem(GeometrySystem, 'geometry')
+            /**
+             * Framebuffer system instance
+             * @member {PIXI.systems.FramebufferSystem} framebuffer
+             * @memberof PIXI.Renderer#
+             * @readonly
+             */
             .addSystem(FramebufferSystem, 'framebuffer')
+            /**
+             * Stencil system instance
+             * @member {PIXI.systems.StencilSystem} stencil
+             * @memberof PIXI.Renderer#
+             * @readonly
+             */
             .addSystem(StencilSystem, 'stencil')
+            /**
+             * Projection system instance
+             * @member {PIXI.systems.ProjectionSystem} projection
+             * @memberof PIXI.Renderer#
+             * @readonly
+             */
             .addSystem(ProjectionSystem, 'projection')
+            /**
+             * Texture garbage collector system instance
+             * @member {PIXI.systems.TextureGCSystem} textureGC
+             * @memberof PIXI.Renderer#
+             * @readonly
+             */
             .addSystem(TextureGCSystem, 'textureGC')
+            /**
+             * Filter system instance
+             * @member {PIXI.systems.FilterSystem} filter
+             * @memberof PIXI.Renderer#
+             * @readonly
+             */
             .addSystem(FilterSystem, 'filter')
+            /**
+             * RenderTexture system instance
+             * @member {PIXI.systems.RenderTextureSystem} renderTexture
+             * @memberof PIXI.Renderer#
+             * @readonly
+             */
             .addSystem(RenderTextureSystem, 'renderTexture')
+            /**
+             * Batch system instance
+             * @member {PIXI.systems.BatchSystem} batch
+             * @memberof PIXI.Renderer#
+             * @readonly
+             */
             .addSystem(BatchSystem, 'batch');
 
         this.initPlugins(Renderer.__plugins);
@@ -128,6 +225,12 @@ export default class Renderer extends AbstractRenderer
             });
         }
 
+        /**
+         * Flag if we are rendering to the screen vs renderTexture
+         * @member {boolean}
+         * @readonly
+         * @default true
+         */
         this.renderingToScreen = true;
 
         sayHello(this.context.webGLVersion === 2 ? 'WebGL 2' : 'WebGL 1');
@@ -151,21 +254,11 @@ export default class Renderer extends AbstractRenderer
             name = ClassRef.name;
         }
 
-        // TODO - read name from class.name..
-
-        /*
-        if(name.includes('System'))
-        {
-            name = name.replace('System', '');
-            name = name.charAt(0).toLowerCase() + name.slice(1);
-        }
-        */
-
         const system = new ClassRef(this);
 
         if (this[name])
         {
-            throw new Error(`Whoops! ${name} is already a manger`);
+            throw new Error(`Whoops! The name "${name}" is already in use`);
         }
 
         this[name] = system;
@@ -284,6 +377,9 @@ export default class Renderer extends AbstractRenderer
         return this;
     }
 
+    /**
+     * Clear the frame buffer
+     */
     clear()
     {
         this.framebuffer.bind();

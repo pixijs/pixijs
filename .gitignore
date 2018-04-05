@@ -30,3 +30,6 @@ dist
 
 # jetBrains IDE ignores
 .idea
+
+# VSCode ignores
+.vscode

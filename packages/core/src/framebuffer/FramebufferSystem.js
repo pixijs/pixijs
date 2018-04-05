@@ -2,6 +2,7 @@ import System from '../System';
 import { Rectangle } from '@pixi/math';
 
 /**
+ * Framebuffer system
  * @class
  * @extends PIXI.System
  * @memberof PIXI.systems
@@ -19,24 +20,29 @@ export default class FramebufferSystem extends System
         this.CONTEXT_UID = this.renderer.CONTEXT_UID;
         this.current = null;
         this.viewport = new Rectangle();
-
         this.drawBufferExtension = this.renderer.context.extensions.drawBuffers;
     }
 
+    /**
+     * Bind a framebuffer
+     *
+     * @param {PIXI.Framebuffer} framebuffer
+     * @param {PIXI.Rectangle} frame
+     */
     bind(framebuffer, frame)
     {
-        const gl = this.gl;
+        const { gl } = this;
 
         this.current = framebuffer;
 
         if (framebuffer)
         {
-            // TODO cacheing layer!
+            // TODO caching layer!
 
             const fbo = framebuffer.glFrameBuffers[this.CONTEXT_UID] || this.initFramebuffer(framebuffer);
 
             gl.bindFramebuffer(gl.FRAMEBUFFER, fbo.framebuffer);
-            // makesure all textures are unbound..
+            // make sure all textures are unbound..
 
             // now check for updates...
             if (fbo.dirtyId !== framebuffer.dirtyId)
@@ -96,6 +102,14 @@ export default class FramebufferSystem extends System
         }
     }
 
+    /**
+     * Set the WebGLRenderingContext's viewport.
+     *
+     * @param {Number} x - X position of viewport
+     * @param {Number} y - Y position of viewport
+     * @param {Number} width - Width of viewport
+     * @param {Number} height - Height of viewport
+     */
     setViewport(x, y, width, height)
     {
         const v = this.viewport;
@@ -111,6 +125,12 @@ export default class FramebufferSystem extends System
         }
     }
 
+    /**
+     * Get the size of the current width and height. Returns object with `width` and `height` values.
+     *
+     * @member {object}
+     * @readonly
+     */
     get size()
     {
         if (this.current)
@@ -122,20 +142,32 @@ export default class FramebufferSystem extends System
         return { x: 0, y: 0, width: this.renderer.width, height: this.renderer.height };
     }
 
+    /**
+     * Clear the color of the context
+     *
+     * @param {Number} r - Red value from 0 to 1
+     * @param {Number} g - Green value from 0 to 1
+     * @param {Number} b - Blue value from 0 to 1
+     * @param {Number} a - Alpha value from 0 to 1
+     */
     clear(r, g, b, a)
     {
-        const gl = this.gl;
+        const { gl } = this;
 
         // TODO clear color can be set only one right?
         gl.clearColor(r, g, b, a);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     }
 
-    // private functions...
-
+    /**
+     * Initialize framebuffer
+     *
+     * @private
+     * @param {PIXI.Framebuffer} framebuffer
+     */
     initFramebuffer(framebuffer)
     {
-        const gl = this.gl;
+        const { gl } = this;
 
         // TODO - make this a class?
         const fbo = {
@@ -151,9 +183,15 @@ export default class FramebufferSystem extends System
         return fbo;
     }
 
+    /**
+     * Resize the framebuffer
+     *
+     * @private
+     * @param {PIXI.Framebuffer} framebuffer
+     */
     resizeFramebuffer(framebuffer)
     {
-        const gl = this.gl;
+        const { gl } = this;
 
         if (framebuffer.stencil || framebuffer.depth)
         {
@@ -162,9 +200,15 @@ export default class FramebufferSystem extends System
         }
     }
 
+    /**
+     * Update the framebuffer
+     *
+     * @private
+     * @param {PIXI.Framebuffer} framebuffer
+     */
     updateFramebuffer(framebuffer)
     {
-        const gl = this.gl;
+        const { gl } = this;
 
         const fbo = framebuffer.glFrameBuffers[this.CONTEXT_UID];
 

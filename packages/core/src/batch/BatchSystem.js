@@ -6,7 +6,6 @@ import ObjectRenderer from './ObjectRenderer';
  * @extends PIXI.System
  * @memberof PIXI.systems
  */
-
 export default class BatchSystem extends System
 {
     /**

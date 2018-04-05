@@ -9,24 +9,59 @@ import bitTwiddle from 'bit-twiddle';
 import UniformGroup from '../shader/UniformGroup';
 import { DRAW_MODES } from '@pixi/constants';
 
-//
 /**
- * @ignore
+ * Internal class to manage filter state
  * @class
+ * @private
  */
 class FilterState
 {
-    /**
-     *
-     */
     constructor()
     {
         this.renderTexture = null;
+
+        /**
+         * Source frame
+         * @member {PIXI.Rectangle}
+         * @private
+         */
         this.sourceFrame = new Rectangle();
+
+        /**
+         * Destination frame
+         * @member {PIXI.Rectangle}
+         * @private
+         */
         this.destinationFrame = new Rectangle();
+
+        /**
+         * Collection of filters
+         * @member {PIXI.Filter[]}
+         * @private
+         */
         this.filters = [];
+
+        /**
+         * Target
+         * @member {PIXI.DisplayObject}
+         * @private
+         */
         this.target = null;
+
+        /**
+         * Compatibility with PixiJS v4 filters
+         * @member {boolean}
+         * @default false
+         * @private
+         */
         this.legacy = false;
+
+        /**
+         * Resolution of filters
+         * @member {number}
+         * @default 1
+         * @private
+         */
         this.resolution = 1;
     }
 }
@@ -34,6 +69,7 @@ class FilterState
 const screenKey = 'screen';
 
 /**
+ * Manage the rendering of filters within PixiJS
  * @class
  * @memberof PIXI.systems
  * @extends PIXI.System
@@ -49,22 +85,26 @@ export default class FilterSystem extends System
 
         /**
          * stores a bunch of PO2 textures used for filtering
-         * @type {Object}
+         * @member {Object}
          */
         this.texturePool = {};
 
         /**
          * a pool for storing filter states, save us creating new ones each tick
-         * @type {Array}
+         * @member {Array}
          */
         this.statePool = [];
 
         /**
          * A very simple geometry used when drawing a filter effect to the screen
-         * @type {Quad}
+         * @member {PIXI.Quad}
          */
         this.quad = new Quad();
 
+        /**
+         * Quad UVs
+         * @member {PIXI.QuadUv}
+         */
         this.quadUv = new QuadUv();
 
         /**
@@ -73,11 +113,22 @@ export default class FilterSystem extends System
          */
         this.tempRect = new Rectangle();
 
+        /**
+         * Active state
+         * @member {object}
+         */
         this.activeState = {};
 
         /**
-         * this uniform group is attached to filter uniforms when used
-         * @type {UniformGroup}
+         * This uniform group is attached to filter uniforms when used
+         * @member {PIXI.UniformGroup}
+         * @property {PIXI.Rectangle} outputFrame
+         * @property {Float32Array} inputSize
+         * @property {Float32Array} inputPixel
+         * @property {Float32Array} inputClamp
+         * @property {Number} resolution
+         * @property {Float32Array} filterArea
+         * @property {Fload32Array} filterClamp
          */
         this.globalUniforms = new UniformGroup({
             outputFrame: this.tempRect,
@@ -92,7 +143,6 @@ export default class FilterSystem extends System
         }, true);
 
         this._pixelsWidth = renderer.view.width;
-
         this._pixelsHeight = renderer.view.height;
     }
 
@@ -297,7 +347,7 @@ export default class FilterSystem extends System
      * Calculates the mapped matrix.
      *
      * TODO playing around here.. this is temporary - (will end up in the shader)
-     * this returns a matrix that will normalise map filter cords in the filter to screen space
+     * this returns a matrix that will normalize map filter cords in the filter to screen space
      *
      * @param {PIXI.Matrix} outputMatrix - the matrix to output to.
      * @return {PIXI.Matrix} The mapped matrix.
@@ -353,7 +403,7 @@ export default class FilterSystem extends System
     /**
      * Gets a Power-of-Two render texture or fullScreen texture
      *
-     * TODO move to a seperate class could be on renderer?
+     * TODO move to a separate class could be on renderer?
      *
      * @private
      * @param {number} minWidth - The minimum width of the render texture in real pixels.

@@ -2,7 +2,7 @@
 // v = value
 // ud = uniformData
 // uv = uniformValue
-// l = loaction
+// l = location
 const GLSL_TO_SINGLE_SETTERS_CACHED = {
 
     float: `

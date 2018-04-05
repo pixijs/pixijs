@@ -22,7 +22,18 @@ export default class GeometrySystem extends System
         this._activeGeometry = null;
         this._activeVao = null;
 
+        /**
+         * `true` if we has `*_vertex_array_object` extension
+         * @member {boolean}
+         * @readonly
+         */
         this.hasVao = true;
+
+        /**
+         * `true` if has `ANGLE_instanced_arrays` extension
+         * @member {boolean}
+         * @readonly
+         */
         this.hasInstance = true;
     }
 
@@ -105,12 +116,13 @@ export default class GeometrySystem extends System
      * Binds geometry so that is can be drawn. Creating a Vao if required
      * @private
      * @param {PIXI.Geometry} geometry instance of geometry to bind
+     * @param {PIXI.Shader} shader instance of shader to bind
      */
     bind(geometry, shader)
     {
         shader = shader || this.renderer.shader.shader;
 
-        const gl = this.gl;
+        const { gl } = this;
 
         // not sure the best way to address this..
         // currently different shaders require different VAOs for the same geometry
@@ -147,15 +159,22 @@ export default class GeometrySystem extends System
         this.updateBuffers();
     }
 
+    /**
+     * Reset and unbind any active VAO and geometry
+     */
     reset()
     {
         this.unbind();
     }
 
+    /**
+     * Update buffers
+     * @private
+     */
     updateBuffers()
     {
         const geometry = this._activeGeometry;
-        const gl = this.gl;
+        const { gl } = this;
 
         for (let i = 0; i < geometry.buffers.length; i++)
         {
@@ -187,7 +206,13 @@ export default class GeometrySystem extends System
         }
     }
 
-    checkCompatability(geometry, program)
+    /**
+     * Check compability between a geometry and a program
+     * @private
+     * @param {PIXI.Geometry} geometry - Geometry instance
+     * @param {PIXI.Program} program - Program instance
+     */
+    checkCompatibility(geometry, program)
     {
         // geometry must have at least all the attributes that the shader requires.
         const geometryAttributes = geometry.attributes;
@@ -205,11 +230,12 @@ export default class GeometrySystem extends System
     /**
      * Creates a Vao with the same structure as the geometry and stores it on the geometry.
      * @private
-     * @param {PIXI.Geometry} geometry instance of geometry to to generate Vao for
+     * @param {PIXI.Geometry} geometry - Instance of geometry to to generate Vao for
+     * @param {PIXI.Program} program - Instance of program
      */
     initGeometryVao(geometry, program)
     {
-        this.checkCompatability(geometry, program);
+        this.checkCompatibility(geometry, program);
 
         const gl = this.gl;
         const CONTEXT_UID = this.CONTEXT_UID;
@@ -288,6 +314,13 @@ export default class GeometrySystem extends System
         return vao;
     }
 
+    /**
+     * Activate vertex array object
+     *
+     * @private
+     * @param {PIXI.Geometry} geometry - Geometry instance
+     * @param {PIXI.Program} program - Shader program instance
+     */
     activateVao(geometry, program)
     {
         const gl = this.gl;
@@ -348,9 +381,17 @@ export default class GeometrySystem extends System
         }
     }
 
+    /**
+     * Draw the geometry
+     *
+     * @param {Number} type - the type primitive to render
+     * @param {Number} [size] - the number of elements to be rendered
+     * @param {Number} [start] - Starting index
+     * @param {Number} [instanceCount] - the number of instances of the set of elements to execute
+     */
     draw(type, size, start, instanceCount)
     {
-        const gl = this.gl;
+        const { gl } = this;
         const geometry = this._activeGeometry;
 
         // TODO.. this should not change so maybe cache the function?
@@ -368,8 +409,7 @@ export default class GeometrySystem extends System
                 gl.drawElements(type, size || geometry.indexBuffer.data.length, gl.UNSIGNED_SHORT, (start || 0) * 2);
             }
         }
-        else
-        if (geometry.instanced)
+        else if (geometry.instanced)
         {
             // TODO need a better way to calculate size..
             gl.drawArraysInstanced(type, start, size || geometry.getSize(), instanceCount || 1);
@@ -382,6 +422,10 @@ export default class GeometrySystem extends System
         return this;
     }
 
+    /**
+     * Unbind/reset everything
+     * @private
+     */
     unbind()
     {
         this.gl.bindVertexArray(null);

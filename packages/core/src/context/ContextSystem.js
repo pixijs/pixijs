@@ -18,22 +18,46 @@ export default class ContextSystem extends System
     {
         super(renderer);
 
+        /**
+         * Either 1 or 2 to reflect the WebGL version being used
+         * @member {number}
+         * @readonly
+         */
         this.webGLVersion = 1;
 
+        /**
+         * Extensions being used
+         * @name {object}
+         * @readonly
+         * @property {WEBGL_draw_buffers} drawBuffers - WebGL v1 extension
+         * @property {WEBKIT_WEBGL_depth_texture} depthTexture - WebGL v1 extension
+         * @property {OES_texture_float} floatTexture - WebGL v1 extension
+         * @property {WEBGL_lose_context} loseContext - WebGL v1 extension
+         * @property {OES_vertex_array_object} vertexArrayObject - WebGL v1 extension
+         */
+        this.extensions = {};
+
+        // Bind functions
         this.handleContextLost = this.handleContextLost.bind(this);
         this.handleContextRestored = this.handleContextRestored.bind(this);
-
-        this.extensions = {};
 
         renderer.view.addEventListener('webglcontextlost', this.handleContextLost, false);
         renderer.view.addEventListener('webglcontextrestored', this.handleContextRestored, false);
     }
 
+    /**
+     * `true` if the context is lost
+     * @member {boolean}
+     * @readonly
+     */
     get isLost()
     {
         return (!this.gl || this.gl.isContextLost());
     }
 
+    /**
+     * Handle the context change event
+     */
     contextChange(gl)
     {
         this.gl = gl;
@@ -45,6 +69,12 @@ export default class ContextSystem extends System
         }
     }
 
+    /**
+     * Initialize the context
+     *
+     * @private
+     * @param {WebGLRenderingContext} gl - WebGL context
+     */
     initFromContext(gl)
     {
         this.gl = gl;
@@ -54,6 +84,13 @@ export default class ContextSystem extends System
         this.renderer.runners.contextChange.run(gl);
     }
 
+    /**
+     * Initialize from context options
+     *
+     * @private
+     * @see https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/getContext
+     * @param {object} options - context attributes
+     */
     initFromOptions(options)
     {
         const gl = this.createContext(this.renderer.view, options);
@@ -64,11 +101,9 @@ export default class ContextSystem extends System
     /**
      * Helper class to create a webGL Context
      *
-     * @class
-     * @memberof PIXI.glCore
      * @param canvas {HTMLCanvasElement} the canvas element that we will get the context from
-     * @param options {Object} An options object that gets passed in to the canvas element containing the context attributes,
-     * see https://developer.mozilla.org/en/docs/Web/API/HTMLCanvasElement/getContext for the options available
+     * @param options {object} An options object that gets passed in to the canvas element containing the context attributes
+     * @see https://developer.mozilla.org/en/docs/Web/API/HTMLCanvasElement/getContext
      * @return {WebGLRenderingContext} the WebGL context
      */
     createContext(canvas, options)
@@ -105,22 +140,27 @@ export default class ContextSystem extends System
         return gl;
     }
 
+    /**
+     * Auto-populate the extensions
+     *
+     * @private
+     */
     getExtensions()
     {
-        // time to set up default etensions that pixi uses..
-        const gl = this.gl;
-        const extensions = this.extensions;
+        // time to set up default extensions that pixi uses..
+        const { gl } = this;
 
         if (this.webGLVersion === 1)
         {
-            extensions.drawBuffers = gl.getExtension('WEBGL_draw_buffers');
-            extensions.depthTexture = gl.getExtension('WEBKIT_WEBGL_depth_texture');
-            extensions.floatTexture = gl.getExtension('OES_texture_float');
-            extensions.loseContext = gl.getExtension('WEBGL_lose_context');
-
-            extensions.vertexArrayObject = gl.getExtension('OES_vertex_array_object')
-                                        || gl.getExtension('MOZ_OES_vertex_array_object')
-                                        || gl.getExtension('WEBKIT_OES_vertex_array_object');
+            Object.assign(this.extensions, {
+                drawBuffers: gl.getExtension('WEBGL_draw_buffers'),
+                depthTexture: gl.getExtension('WEBKIT_WEBGL_depth_texture'),
+                floatTexture: gl.getExtension('OES_texture_float'),
+                loseContext: gl.getExtension('WEBGL_lose_context'),
+                vertexArrayObject: gl.getExtension('OES_vertex_array_object')
+                    || gl.getExtension('MOZ_OES_vertex_array_object')
+                    || gl.getExtension('WEBKIT_OES_vertex_array_object'),
+            });
         }
 
         // we don't use any specific WebGL 2 ones yet!
@@ -163,11 +203,22 @@ export default class ContextSystem extends System
         }
     }
 
+    /**
+     * Handle the post-render runner event
+     *
+     * @private
+     */
     postrender()
     {
         this.gl.flush();
     }
 
+    /**
+     * Validate context
+     *
+     * @private
+     * @param {WebGLRenderingContext} gl - Render context
+     */
     validateContext(gl)
     {
         const attributes = gl.getContextAttributes();

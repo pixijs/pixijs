@@ -40,7 +40,7 @@ export default class CanvasMaskManager
             transform.ty * resolution
         );
 
-        // TODO suport sprite alpha masks??
+        // TODO support sprite alpha masks??
         // lots of effort required. If demand is great enough..
         if (!maskData._texture)
         {

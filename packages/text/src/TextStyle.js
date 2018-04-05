@@ -760,7 +760,7 @@ function areArraysEqual(array1, array2)
  * Utility function to ensure that object properties are copied by value, and not by reference
  * @private
  * @param {Object} target Target object to copy properties into
- * @param {Object} source Source object for the proporties to copy
+ * @param {Object} source Source object for the properties to copy
  * @param {string} propertyObj Object containing properties names we want to loop over
  */
 function deepCopyProperties(target, source, propertyObj) {

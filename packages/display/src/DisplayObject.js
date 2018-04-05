@@ -75,7 +75,7 @@ export default class DisplayObject extends EventEmitter
         this.worldAlpha = 1;
 
         /**
-         * The area the filter is applied to. This is used as more of an optimisation
+         * The area the filter is applied to. This is used as more of an optimization
          * rather than figuring out the dimensions of the displayObject each frame you can set this rectangle
          *
          * Also works as an interaction mask
@@ -580,7 +580,7 @@ export default class DisplayObject extends EventEmitter
      * Sets a mask for the displayObject. A mask is an object that limits the visibility of an
      * object to the shape of the mask applied to it. In PIXI a regular mask must be a
      * PIXI.Graphics or a PIXI.Sprite object. This allows for much faster masking in canvas as it
-     * utilises shape clipping. To remove a mask, set this property to null.
+     * utilities shape clipping. To remove a mask, set this property to null.
      *
      * For sprite mask both alpha and red channel are used. Black mask is the same as transparent mask.
      *

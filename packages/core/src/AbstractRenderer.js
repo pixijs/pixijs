@@ -27,7 +27,8 @@ export default class AbstractRenderer extends EventEmitter
      * @param {number} [options.height=600] - the height of the screen
      * @param {HTMLCanvasElement} [options.view] - the canvas to use as a view, optional
      * @param {boolean} [options.transparent=false] - If the render view is transparent, default false
-     * @param {boolean} [options.autoResize=false] - If the render view is automatically resized, default false
+     * @param {boolean} [options.autoDensity=false] - Resizes renderer view in CSS pixels to allow for
+     *   resolutions other than 1
      * @param {boolean} [options.antialias=false] - sets antialias (only applicable in chrome at the moment)
      * @param {number} [options.resolution=1] - The resolution / device pixel ratio of the renderer. The
      *  resolution of the renderer retina would be 2.
@@ -109,7 +110,8 @@ export default class AbstractRenderer extends EventEmitter
          *
          * @member {boolean}
          */
-        this.autoResize = options.autoResize || false;
+        this.autoDensity = options.autoDensity || options.autoResize || false;
+        // autoResize is deprecated, provides fallback support
 
         /**
          * Tracks the blend modes useful for this renderer.
@@ -200,7 +202,7 @@ export default class AbstractRenderer extends EventEmitter
      * Initialize the plugins.
      *
      * @protected
-     * @param {object} staticMap - The dictionary of staticly saved plugins.
+     * @param {object} staticMap - The dictionary of statically saved plugins.
      */
     initPlugins(staticMap)
     {
@@ -249,7 +251,7 @@ export default class AbstractRenderer extends EventEmitter
         this.view.width = screenWidth * this.resolution;
         this.view.height = screenHeight * this.resolution;
 
-        if (this.autoResize)
+        if (this.autoDensity)
         {
             this.view.style.width = `${screenWidth}px`;
             this.view.style.height = `${screenHeight}px`;
@@ -315,7 +317,7 @@ export default class AbstractRenderer extends EventEmitter
 
         this.transparent = false;
 
-        this.autoResize = false;
+        this.autoDensity = false;
 
         this.blendModes = null;
 

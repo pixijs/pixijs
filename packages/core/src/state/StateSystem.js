@@ -1,6 +1,6 @@
 import mapWebGLBlendModesToPixi from './utils/mapWebGLBlendModesToPixi';
 import System from '../System';
-import WebGLState from './State';
+import State from './State';
 
 const BLEND = 0;
 const OFFSET = 1;
@@ -12,31 +12,75 @@ const WINDING = 4;
  * A WebGL state machines
  *
  * @class
- * @extends PIXI.systems.System
+ * @extends PIXI.System
  * @memberof PIXI.systems
  */
 export default class StateSystem extends System
 {
     /**
-     * @param {WebGLRenderingContext} gl - The current WebGL rendering context
+     * @param {PIXI.Renderer} renderer - Reference to renderer
      */
     constructor(renderer)
     {
         super(renderer);
 
+        /**
+         * GL context
+         * @member {WebGLRenderingContext}
+         * @readonly
+         */
         this.gl = null;
 
+        /**
+         * Return from MAX_VERTEX_ATTRIBS
+         * @member {number}
+         * @readonly
+         */
         this.maxAttribs = null;
 
-        // check we have vao..
+        /**
+         * Check we have vao
+         * @member {OES_vertex_array_object}
+         * @readonly
+         */
         this.nativeVaoExtension = null;
 
+        /**
+         * Attribute state
+         * @member {object}
+         * @readonly
+         * @property {Array} tempAttribState
+         * @property {Array} attribState
+         */
         this.attribState = null;
 
+        /**
+         * State ID
+         * @member {number}
+         * @readonly
+         */
         this.stateId = 0;
+
+        /**
+         * Polygon offset
+         * @member {number}
+         * @readonly
+         */
         this.polygonOffset = 0;
+
+        /**
+         * Blend mode
+         * @member {number}
+         * @default 17
+         * @readonly
+         */
         this.blendMode = 17;
 
+        /**
+         * Collection of calls
+         * @member {function[]}
+         * @readonly
+         */
         this.map = [];
 
         // map functions for when we set state..
@@ -46,20 +90,25 @@ export default class StateSystem extends System
         this.map[DEPTH_TEST] = this.setDepthTest;
         this.map[WINDING] = this.setFrontFace;
 
+        /**
+         * Collection of check calls
+         * @member {function[]}
+         * @readonly
+         */
         this.checks = [];
 
-        this.defaultState = new WebGLState();
+        /**
+         * Default WebGL State
+         * @member {PIXI.State}
+         * @readonly
+         */
+        this.defaultState = new State();
         this.defaultState.blend = true;
         this.defaultState.depth = true;
     }
 
     contextChange(gl)
     {
-        /**
-         * The current WebGL rendering context
-         *
-         * @member {WebGLRenderingContext}
-         */
         this.gl = gl;
 
         this.maxAttribs = gl.getParameter(gl.MAX_VERTEX_ATTRIBS);
@@ -259,9 +308,9 @@ export default class StateSystem extends System
     }
 
     /**
-     * checks to see which updates should be checked based on which settings have been activated
-     * for example if blend is enabled then we shold check the blend modes each time the state is changed
-     * or if poygon fill is activated then we need to check if the polygone offset changes.
+     * checks to see which updates should be checked based on which settings have been activated.
+     * For example, if blend is enabled then we should check the blend modes each time the state is changed
+     * or if polygon fill is activated then we need to check if the polygon offset changes.
      * The idea is that we only check what we have too.
      *
      * @param {Function} func  the checking function to add or remove

@@ -125,7 +125,7 @@ export default class Resource
     }
 
     /**
-     * This can be overriden to start preloading a resource
+     * This can be overridden to start preloading a resource
      * or do any other prepare step.
      * @protected
      * @return {Promise} Handle the validate event

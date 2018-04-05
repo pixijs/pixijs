@@ -932,4 +932,24 @@ export default function deprecated(PIXI)
      * @return {PIXI.Texture}
      */
     Texture.fromFrame = textureFrom.bind(null, 'fromFrame');
+
+    /**
+     * @deprecated since 5.0.0
+     * @member {boolean} PIXI.AbstractRenderer#autoResize
+     * @see PIXI.AbstractRenderer#autoDensity
+     */
+    Object.defineProperty(PIXI.AbstractRenderer.prototype, 'autoResize', {
+        get()
+        {
+            warn('PIXI.AbstractRenderer autoResize is deprecated, use autoDensity');
+
+            return this.autoDensity;
+        },
+        set(value)
+        {
+            warn('PIXI.AbstractRenderer autoResize is deprecated, use autoDensity');
+
+            this.autoDensity = value;
+        },
+    });
 }

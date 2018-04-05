@@ -58,7 +58,7 @@ export default class Container extends DisplayObject
         if (argumentsLength > 1)
         {
             // loop through the arguments property and add all children
-            // use it the right way (.length and [i]) so that this function can still be optimised by JS runtimes
+            // use it the right way (.length and [i]) so that this function can still be optimized by JS runtimes
             for (let i = 0; i < argumentsLength; i++)
             {
                 this.addChild(arguments[i]);
@@ -214,7 +214,7 @@ export default class Container extends DisplayObject
         if (argumentsLength > 1)
         {
             // loop through the arguments property and add all children
-            // use it the right way (.length and [i]) so that this function can still be optimised by JS runtimes
+            // use it the right way (.length and [i]) so that this function can still be optimized by JS runtimes
             for (let i = 0; i < argumentsLength; i++)
             {
                 this.removeChild(arguments[i]);

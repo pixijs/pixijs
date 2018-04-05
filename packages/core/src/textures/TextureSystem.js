@@ -17,6 +17,11 @@ export default class TextureSystem extends System
         super(renderer);
 
         // TODO set to max textures...
+        /**
+         * Bound textures
+         * @member {PIXI.BaseTexture[]}
+         * @readonly
+         */
         this.boundTextures = [
             null,
             null,
@@ -37,8 +42,18 @@ export default class TextureSystem extends System
             null,
         ];
 
+        /**
+         * Current location
+         * @member {number}
+         * @readonly
+         */
         this.currentLocation = -1;
 
+        /**
+         * List of managed textures
+         * @member {PIXI.BaseTextures[]}
+         * @readonly
+         */
         this.managedTextures = [];
     }
 
@@ -82,11 +97,15 @@ export default class TextureSystem extends System
         }
     }
 
-    bind(texture, location)
+    /**
+     * Bind a texture to a specific location
+     *
+     * @param {PIXI.Texture|PIXI.BaseTexture} texture - Texture to bind
+     * @param {number} [location=0] - Location to bind at
+     */
+    bind(texture, location = 0)
     {
-        const gl = this.gl;
-
-        location = location || 0;
+        const { gl } = this;
 
         if (this.currentLocation !== location)
         {
@@ -121,9 +140,13 @@ export default class TextureSystem extends System
         }
     }
 
+    /**
+     * Unbind a texture
+     * @param {PIXI.Texture|PIXI.BaseTexture} texture - Texture to bind
+     */
     unbind(texture)
     {
-        const gl = this.gl;
+        const { gl } = this;
 
         for (let i = 0; i < this.boundTextures.length; i++)
         {
@@ -141,11 +164,17 @@ export default class TextureSystem extends System
         }
     }
 
+    /**
+     * Initialize a texture
+     *
+     * @private
+     * @param {PIXI.BaseTexture} texture - Texture to initialize
+     */
     initTexture(texture)
     {
         const glTexture = new GLTexture(this.gl.createTexture());
 
-        // guarentee an update..
+        // guarantee an update..
         glTexture.dirtyId = -1;
 
         texture._glTextures[this.CONTEXT_UID] = glTexture;
@@ -156,6 +185,12 @@ export default class TextureSystem extends System
         return glTexture;
     }
 
+    /**
+     * Update a texture
+     *
+     * @private
+     * @param {PIXI.BaseTexture} texture - Texture to initialize
+     */
     updateTexture(texture)
     {
         const glTexture = texture._glTextures[this.CONTEXT_UID];
@@ -201,12 +236,13 @@ export default class TextureSystem extends System
     /**
      * Deletes the texture from WebGL
      *
+     * @private
      * @param {PIXI.BaseTexture|PIXI.Texture} texture - the texture to destroy
      * @param {boolean} [skipRemove=false] - Whether to skip removing the texture from the TextureManager.
      */
     destroyTexture(texture, skipRemove)
     {
-        const gl = this.gl;
+        const { gl } = this;
 
         texture = texture.baseTexture || texture;
 
@@ -231,6 +267,12 @@ export default class TextureSystem extends System
         }
     }
 
+    /**
+     * Update texture style such as mipmap flag
+     *
+     * @private
+     * @param {PIXI.BaseTexture} texture - Texture to update
+     */
     updateTextureStyle(texture)
     {
         const glTexture = texture._glTextures[this.CONTEXT_UID];
@@ -253,6 +295,13 @@ export default class TextureSystem extends System
         glTexture.dirtyStyleId = texture.dirtyStyleId;
     }
 
+    /**
+     * Set style for texture
+     *
+     * @private
+     * @param {PIXI.BaseTexture} texture - Texture to update
+     * @param {glTexture} glTexture
+     */
     setStyle(texture, glTexture)
     {
         const gl = this.gl;

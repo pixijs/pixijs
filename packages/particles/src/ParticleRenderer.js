@@ -219,7 +219,7 @@ export default class ParticleRenderer extends ObjectRenderer
     }
 
     /**
-     * Uploads the verticies.
+     * Uploads the vertices.
      *
      * @param {PIXI.DisplayObject[]} children - the array of display objects to render
      * @param {number} startIndex - the index to start from in the children array

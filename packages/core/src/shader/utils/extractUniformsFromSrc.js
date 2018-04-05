@@ -15,7 +15,7 @@ function extractUniformsFromString(string)
     const uniforms = {};
     let nameSplit;
 
-    // clean the lines a little - remove extra spaces / teabs etc
+    // clean the lines a little - remove extra spaces, tabs, etc.
     // then split along ';'
     const lines = string.replace(/\s+/g, ' ')
         .split(/\s*;\s*/);

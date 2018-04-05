@@ -166,7 +166,7 @@ export default class Filter extends Shader
          *
          * @member {number}
          */
-        this.resolution = settings.RESOLUTION;
+        this.resolution = settings.FILTER_RESOLUTION;
 
         /**
          * If enabled is true the filter is applied, if false it will not.
@@ -237,6 +237,7 @@ export default class Filter extends Shader
      * The default vertex shader source
      *
      * @static
+     * @type {string}
      * @constant
      */
     static get defaultVertexSrc()
@@ -248,6 +249,7 @@ export default class Filter extends Shader
      * The default fragment shader source
      *
      * @static
+     * @type {string}
      * @constant
      */
     static get defaultFragmentSrc()

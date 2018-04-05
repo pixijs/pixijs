@@ -8,7 +8,7 @@ const WINDING = 4;
 
 /**
  * This is a webGL state. It is passed The WebGL StateManager.
- * Each mesh renderered may require webGL to be in a different state.
+ * Each mesh rendered may require webGL to be in a different state.
  * For example you may want different blend mode or to enable polygon offsets
  *
  * @class
@@ -144,7 +144,7 @@ export default class State
     }
 
     /**
-     * The polygon offset. Setting this property to anything other than 0 will automatically enable poygon offset fill.
+     * The polygon offset. Setting this property to anything other than 0 will automatically enable polygon offset fill.
      *
      * @member {number}
      * @default 0

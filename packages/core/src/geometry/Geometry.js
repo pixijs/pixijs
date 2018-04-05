@@ -20,7 +20,7 @@ const map = {
 /**
  * The Geometry represents a model. It consists of two components:
  * GeometryStyle - The structure of the model such as the attributes layout
- * GeometryData - the data of the model - this consits of buffers.
+ * GeometryData - the data of the model - this consists of buffers.
  *
  * This can include anything from positions, uvs, normals, colors etc..
  *
@@ -43,13 +43,13 @@ export default class Geometry
      * @param {array} [buffers]  an array of buffers. optional.
      * @param {object} [attributes] of the geometry, optional structure of the attributes layout
      */
-    constructor(buffers, attributes)
+    constructor(buffers = [], attributes = {})
     {
-        this.buffers = buffers || [];
+        this.buffers = buffers;
 
         this.indexBuffer = null;
 
-        this.attributes = attributes || {};
+        this.attributes = attributes;
 
         /**
          * A map of renderer IDs to webgl VAOs
@@ -74,15 +74,15 @@ export default class Geometry
     *
     * @param {String} id - the name of the attribute (matching up to a shader)
     * @param {PIXI.Buffer} [buffer] the buffer that holds the data of the attribute . You can also provide an Array and a buffer will be created from it.
-    * @param {Number} [size=0] the size of the attribute. If you hava 2 floats per vertex (eg position x and y) this would be 2
-    * @param {Boolean} [normalised=false] should the data be normalised.
-    * @param {Number} [type=PIXI.TYPES.FLOAT] what type of numbe is the attribute. Check {PIXI.TYPES} to see the ones available
+    * @param {Number} [size=0] the size of the attribute. If you have 2 floats per vertex (eg position x and y) this would be 2
+    * @param {Boolean} [normalized=false] should the data be normalized.
+    * @param {Number} [type=PIXI.TYPES.FLOAT] what type of number is the attribute. Check {PIXI.TYPES} to see the ones available
     * @param {Number} [stride=0] How far apart (in floats) the start of each value is. (used for interleaving data)
     * @param {Number} [start=0] How far into the array to start reading values (used for interleaving data)
     *
     * @return {PIXI.Geometry} returns self, useful for chaining.
     */
-    addAttribute(id, buffer, size, normalised = false, type, stride, start, instance = false)
+    addAttribute(id, buffer, size, normalized = false, type, stride, start, instance = false)
     {
         if (!buffer)
         {
@@ -107,7 +107,7 @@ export default class Geometry
         {
             for (let i = 0; i < ids.length; i++)
             {
-                this.addAttribute(ids[i], buffer, size, normalised, type);
+                this.addAttribute(ids[i], buffer, size, normalized, type);
             }
 
             return this;
@@ -121,7 +121,7 @@ export default class Geometry
             bufferIndex = this.buffers.length - 1;
         }
 
-        this.attributes[id] = new Attribute(bufferIndex, size, normalised, type, stride, start, instance);
+        this.attributes[id] = new Attribute(bufferIndex, size, normalized, type, stride, start, instance);
 
         // assuming that if there is instanced data then this will be drawn with instancing!
         this.instanced = this.instanced || instance;
@@ -311,7 +311,7 @@ export default class Geometry
      * geometry attribute styles must match for this operation to work
      *
      * @param {array|PIXI.Geometry} geometries array of geometries to merge
-     * @returns {PIXI.Geometry} shiney new geometry
+     * @returns {PIXI.Geometry} shiny new geometry!
      */
     static merge(geometries)
     {
