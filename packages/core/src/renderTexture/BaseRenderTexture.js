@@ -13,7 +13,7 @@ import FrameBuffer from '../framebuffer/FrameBuffer';
  * ```js
  * let renderer = PIXI.autoDetectRenderer(1024, 1024, { view: canvas, ratio: 1 });
  * let baseRenderTexture = new PIXI.BaseRenderTexture(renderer, 800, 600);
- * let sprite = PIXI.Sprite.fromImage("spinObj_01.png");
+ * let sprite = PIXI.Sprite.from("spinObj_01.png");
  *
  * sprite.position.x = 800/2;
  * sprite.position.y = 600/2;
