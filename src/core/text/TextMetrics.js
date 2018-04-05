@@ -310,6 +310,7 @@ export default class TextMetrics
     /**
      * Determines whether we should collapse breaking spaces
      *
+     * @private
      * @param  {string}   whiteSpace  The TextStyle property whiteSpace
      * @return {boolean}  should collapse
      */
@@ -321,6 +322,7 @@ export default class TextMetrics
     /**
      * Determines whether we should collapse newLine chars
      *
+     * @private
      * @param  {string}   whiteSpace  The white space
      * @return {boolean}  should collapse
      */
