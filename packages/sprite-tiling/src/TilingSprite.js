@@ -306,12 +306,13 @@ export default class TilingSprite extends Sprite
     static fromImage(imageId, width, height, options)
     {
         // Fallback support for crossorigin, scaleMode parameters
-        if (options && typeof options !== 'object') {
+        if (options && typeof options !== 'object')
+        {
             options = {
                 scaleMode: arguments[4],
                 resourceOptions: {
-                    crossorigin: arguments[3]
-                }
+                    crossorigin: arguments[3],
+                },
             };
         }
 
