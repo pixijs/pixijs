@@ -23,7 +23,7 @@ export default class System
 
     /**
      * Generic method called when there is a WebGL context change.
-     *
+     * @param {WebGLRenderingContext} gl - WebGL context
      */
     contextChange()
     {

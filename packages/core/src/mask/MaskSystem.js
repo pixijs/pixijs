@@ -1,5 +1,5 @@
 import System from '../System';
-import AlphaMaskFilter from '../filters/spriteMask/SpriteMaskFilter';
+import SpriteMaskFilter from '../filters/spriteMask/SpriteMaskFilter';
 
 /**
  * @class
@@ -16,13 +16,47 @@ export default class MaskSystem extends System
         super(renderer);
 
         // TODO - we don't need both!
+        /**
+         * `true` if current pushed masked is scissor
+         * @member {boolean}
+         * @readonly
+         */
         this.scissor = false;
+
+        /**
+         * Mask data
+         * @member {PIXI.Graphics}
+         * @readonly
+         */
         this.scissorData = null;
+
+        /**
+         * Target to mask
+         * @member {PIXI.DisplayObject}
+         * @readonly
+         */
         this.scissorRenderTarget = null;
 
+        /**
+         * Enable scissor
+         * @member {boolean}
+         * @readonly
+         */
         this.enableScissor = false;
 
+        /**
+         * Pool of used sprite mask filters
+         * @member {PIXI.SpriteMaskFilter[]}
+         * @readonly
+         */
         this.alphaMaskPool = [];
+
+        /**
+         * Current index of alpha mask pool
+         * @member {number}
+         * @default 0
+         * @readonly
+         */
         this.alphaMaskIndex = 0;
     }
 
@@ -104,7 +138,7 @@ export default class MaskSystem extends System
 
         if (!alphaMaskFilter)
         {
-            alphaMaskFilter = this.alphaMaskPool[this.alphaMaskIndex] = [new AlphaMaskFilter(maskData)];
+            alphaMaskFilter = this.alphaMaskPool[this.alphaMaskIndex] = [new SpriteMaskFilter(maskData)];
         }
 
         alphaMaskFilter[0].resolution = this.renderer.resolution;
@@ -182,7 +216,7 @@ export default class MaskSystem extends System
     }
 
     /**
-     *
+     * Pop scissor mask
      *
      */
     popScissorMask()
@@ -192,7 +226,7 @@ export default class MaskSystem extends System
         this.scissor = false;
 
         // must be scissor!
-        const gl = this.renderer.gl;
+        const { gl } = this.renderer;
 
         gl.disable(gl.SCISSOR_TEST);
     }

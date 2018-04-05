@@ -43,13 +43,13 @@ export default class Geometry
      * @param {array} [buffers]  an array of buffers. optional.
      * @param {object} [attributes] of the geometry, optional structure of the attributes layout
      */
-    constructor(buffers, attributes)
+    constructor(buffers = [], attributes = {})
     {
-        this.buffers = buffers || [];
+        this.buffers = buffers;
 
         this.indexBuffer = null;
 
-        this.attributes = attributes || {};
+        this.attributes = attributes;
 
         /**
          * A map of renderer IDs to webgl VAOs

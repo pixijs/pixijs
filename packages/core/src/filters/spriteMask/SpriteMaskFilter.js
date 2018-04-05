@@ -24,7 +24,16 @@ export default class SpriteMaskFilter extends Filter
 
         sprite.renderable = false;
 
+        /**
+         * Sprite mask
+         * @member {PIXI.Sprite}
+         */
         this.maskSprite = sprite;
+
+        /**
+         * Mask matrix
+         * @member {PIXI.Matrix}
+         */
         this.maskMatrix = maskMatrix;
     }
 
