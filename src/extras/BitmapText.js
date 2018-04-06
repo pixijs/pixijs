@@ -129,7 +129,7 @@ export default class BitmapText extends core.Container
          * Do we want to force this display component to be drawn at whole pixels only.
          *
          * @member {boolean}
-         * @default false
+         * @default true
          */
         this.roundPixels = true;
 

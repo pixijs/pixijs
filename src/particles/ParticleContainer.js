@@ -129,7 +129,7 @@ export default class ParticleContainer extends core.Container
          * nearest pixel. This provides a nice speed boost.
          *
          * @member {boolean}
-         * @default true;
+         * @default true
          */
         this.roundPixels = true;
 
