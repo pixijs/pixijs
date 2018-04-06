@@ -584,27 +584,22 @@ describe('PIXI.TextMetrics', function ()
                 padding: 10,
                 fill: 0xffffff,
                 breakWords: false,
-                whiteSpace: 'pre-line'
+                whiteSpace: 'pre-line',
             });
 
             const str = `这是一段包含大量金钱的长文本，例如999,999,999英镑。如果你能理解这一点，你好`;
 
-
             const regexBasicLatin = /[\u0000-\u00ff]/;
 
             // override breakWords
-            PIXI.TextMetrics.canBreakWords = (token) =>
-            {
-                return true;
-            };
+            PIXI.TextMetrics.canBreakWords = () => true;
 
             // override breakChars
             PIXI.TextMetrics.canBreakChars = (char, nextChar) =>
             {
-
                 if (regexBasicLatin.exec(char) || regexBasicLatin.exec(nextChar))
                 {
-                        return false;
+                    return false;
                 }
 
                 return true;
