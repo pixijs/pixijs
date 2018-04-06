@@ -543,4 +543,31 @@ describe('PIXI.TextMetrics', function ()
             expect(bool).to.equal(false);
         });
     });
+
+    describe('canBreakWords', function ()
+    {
+        it('breakWords: true', function ()
+        {
+            const bool = PIXI.TextMetrics.canBreakWords('text', true);
+
+            expect(bool).to.equal(true);
+        });
+
+        it('breakWords: false', function ()
+        {
+            const bool = PIXI.TextMetrics.canBreakWords('text', false);
+
+            expect(bool).to.equal(false);
+        });
+    });
+
+    describe('canBreakChars', function ()
+    {
+        it('should always return true', function ()
+        {
+            const bool = PIXI.TextMetrics.canBreakChars();
+
+            expect(bool).to.equal(true);
+        });
+    });
 });

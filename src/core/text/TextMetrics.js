@@ -185,7 +185,7 @@ export default class TextMetrics
                 }
 
                 // break large word over multiple lines
-                if (style.breakWords)
+                if (TextMetrics.canBreakWords(token, style.breakWords))
                 {
                     // break word into characters
                     const characters = token.split('');
@@ -193,8 +193,23 @@ export default class TextMetrics
                     // loop the characters
                     for (let j = 0; j < characters.length; j++)
                     {
-                        const character = characters[j];
-                        const characterWidth = TextMetrics.getFromCache(character, letterSpacing, cache, context);
+                        let char = characters[j];
+
+                        // we are not at the end of the token
+                        if (characters[j + 1])
+                        {
+                            const nextChar = characters[j + 1];
+
+                            // should not split chars
+                            if (!TextMetrics.canBreakChars(char, nextChar, token, j))
+                            {
+                                // combine chars & move forward one
+                                char += nextChar;
+                                j++;
+                            }
+                        }
+
+                        const characterWidth = TextMetrics.getFromCache(char, letterSpacing, cache, context);
 
                         if (characterWidth + width > wordWrapWidth)
                         {
@@ -204,7 +219,7 @@ export default class TextMetrics
                             width = 0;
                         }
 
-                        line += character;
+                        line += char;
                         width += characterWidth;
                     }
                 }
@@ -374,12 +389,7 @@ export default class TextMetrics
             return false;
         }
 
-        const newlines = [
-            0x000A, // line feed
-            0x000D, // carriage return
-        ];
-
-        return (newlines.indexOf(char.charCodeAt(0)) >= 0);
+        return (TextMetrics._newlines.indexOf(char.charCodeAt(0)) >= 0);
     }
 
     /**
@@ -396,24 +406,7 @@ export default class TextMetrics
             return false;
         }
 
-        const breakingSpaces = [
-            0x0009, // character tabulation
-            0x0020, // space
-            0x2000, // en quad
-            0x2001, // em quad
-            0x2002, // en space
-            0x2003, // em space
-            0x2004, // three-per-em space
-            0x2005, // four-per-em space
-            0x2006, // six-per-em space
-            0x2008, // punctuation space
-            0x2009, // thin space
-            0x200A, // hair space
-            0x205F, // medium mathematical space
-            0x3000, // ideographic space
-        ];
-
-        return (breakingSpaces.indexOf(char.charCodeAt(0)) >= 0);
+        return (TextMetrics._breakingSpaces.indexOf(char.charCodeAt(0)) >= 0);
     }
 
     /**
@@ -459,6 +452,41 @@ export default class TextMetrics
         }
 
         return tokens;
+    }
+
+    /**
+     * This method exists to be easily overridden
+     * It allows one to customise which words should break
+     * Examples are if the token is CJK or numbers.
+     * It must return a boolean.
+     *
+     * @private
+     * @param  {string}  token       The token
+     * @param  {boolean}  breakWords  The break words
+     * @return {boolean} whether to break word or not
+     */
+    static canBreakWords(token, breakWords)
+    {
+        return breakWords;
+    }
+
+    /**
+     * This method exists to be easily overridden
+     * It allows one to determine whether a pair of characters
+     * should be broken by newlines
+     * For example certain characters in CJK langs or numbers.
+     * It must return a boolean.
+     *
+     * @private
+     * @param  {string}  char      The character
+     * @param  {string}  nextChar  The next character
+     * @param  {string}  token     The token/word the characters are from
+     * @param  {number}  index     The index in the token of the char
+     * @return {boolean} whether to break word or not
+     */
+    static canBreakChars(char, nextChar, token, index) // eslint-disable-line no-unused-vars
+    {
+        return true;
     }
 
     /**
@@ -602,3 +630,37 @@ TextMetrics._context = canvas.getContext('2d');
  * @private
  */
 TextMetrics._fonts = {};
+
+/**
+ * Cache of new line chars.
+ * @memberof PIXI.TextMetrics
+ * @type {Object}
+ * @private
+ */
+TextMetrics._newlines = [
+    0x000A, // line feed
+    0x000D, // carriage return
+];
+
+/**
+ * Cache of breaking spaces.
+ * @memberof PIXI.TextMetrics
+ * @type {Object}
+ * @private
+ */
+TextMetrics._breakingSpaces = [
+    0x0009, // character tabulation
+    0x0020, // space
+    0x2000, // en quad
+    0x2001, // em quad
+    0x2002, // en space
+    0x2003, // em space
+    0x2004, // three-per-em space
+    0x2005, // four-per-em space
+    0x2006, // six-per-em space
+    0x2008, // punctuation space
+    0x2009, // thin space
+    0x200A, // hair space
+    0x205F, // medium mathematical space
+    0x3000, // ideographic space
+];
