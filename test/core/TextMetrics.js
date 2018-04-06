@@ -569,5 +569,54 @@ describe('PIXI.TextMetrics', function ()
 
             expect(bool).to.equal(true);
         });
+
+        it('should prevent breaking for all numbers', function ()
+        {
+            const style = new PIXI.TextStyle({
+                fontFamily: 'Arial',
+                fontSize: 24,
+                fontStyle: 'italic',
+                fontVariant: 'normal',
+                fontWeight: 900,
+                wordWrap: true,
+                wordWrapWidth: 200,
+                letterSpacing: 4,
+                fill: 0xffffff,
+                breakWords: false,
+                whiteSpace: 'pre-line',
+            });
+
+            const str = `-----------999999999----------`;
+
+            const reg = /^\d+$/;
+
+            // override breakWords
+            PIXI.TextMetrics.canBreakWords = (token) =>
+            {
+                if (token.match(reg))
+                {
+                    return false;
+                }
+
+                return true;
+            };
+
+            // override breakChars
+            PIXI.TextMetrics.canBreakChars = (char, nextChar) =>
+            {
+                if (char === '9' && nextChar === '9')
+                {
+                    return false;
+                }
+
+                return true;
+            };
+
+            const metrics = PIXI.TextMetrics.measureText(str, style);
+
+            expect(metrics.lines[0]).to.equal('-----------');
+            expect(metrics.lines[1]).to.equal('999999999---');
+            expect(metrics.lines[2]).to.equal('-------');
+        });
     });
 });

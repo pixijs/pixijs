@@ -195,18 +195,27 @@ export default class TextMetrics
                     {
                         let char = characters[j];
 
+                        let k = 1;
                         // we are not at the end of the token
-                        if (characters[j + 1])
+
+                        while (characters[j + k])
                         {
-                            const nextChar = characters[j + 1];
+                            const nextChar = characters[j + k];
+                            const lastChar = char[char.length - 1];
 
                             // should not split chars
-                            if (!TextMetrics.canBreakChars(char, nextChar, token, j))
+                            if (!TextMetrics.canBreakChars(lastChar, nextChar, token, j))
                             {
                                 // combine chars & move forward one
                                 char += nextChar;
                                 j++;
                             }
+                            else
+                            {
+                                break;
+                            }
+
+                            k++;
                         }
 
                         const characterWidth = TextMetrics.getFromCache(char, letterSpacing, cache, context);
@@ -634,7 +643,7 @@ TextMetrics._fonts = {};
 /**
  * Cache of new line chars.
  * @memberof PIXI.TextMetrics
- * @type {Object}
+ * @type {number[]}
  * @private
  */
 TextMetrics._newlines = [
@@ -645,7 +654,7 @@ TextMetrics._newlines = [
 /**
  * Cache of breaking spaces.
  * @memberof PIXI.TextMetrics
- * @type {Object}
+ * @type {number[]}
  * @private
  */
 TextMetrics._breakingSpaces = [
