@@ -148,7 +148,7 @@ export default class NineSlicePlane extends Plane
         const transform = this.worldTransform;
         const res = renderer.resolution;
 
-        if (renderer.roundPixels)
+        if (renderer.roundPixels || this.roundPixels)
         {
             context.setTransform(
                 transform.a * res,

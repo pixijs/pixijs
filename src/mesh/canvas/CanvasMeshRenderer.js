@@ -31,7 +31,7 @@ export default class MeshSpriteRenderer
         const transform = mesh.worldTransform;
         const res = renderer.resolution;
 
-        if (renderer.roundPixels)
+        if (renderer.roundPixels || mesh.roundPixels)
         {
             context.setTransform(
                 transform.a * res,

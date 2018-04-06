@@ -324,7 +324,7 @@ export default class ParticleContainer extends core.Container
 
                 const childTransform = child.worldTransform;
 
-                if (renderer.roundPixels)
+                if (renderer.roundPixels || this.roundPixels)
                 {
                     context.setTransform(
                         childTransform.a,

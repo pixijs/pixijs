@@ -333,7 +333,7 @@ export default class SpriteRenderer extends ObjectRenderer
             // TODO this sum does not need to be set each frame..
             uvs = sprite._texture._uvs.uvsUint32;
 
-            if (this.renderer.roundPixels)
+            if (this.renderer.roundPixels || sprite.roundPixels)
             {
                 const resolution = this.renderer.resolution;
 

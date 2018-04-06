@@ -108,6 +108,8 @@ export default class Text extends Sprite
         this.style = style;
 
         this.localStyleID = -1;
+
+        this.roundPixels = true;
     }
 
     /**
