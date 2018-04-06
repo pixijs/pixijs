@@ -132,6 +132,14 @@ export default class Sprite extends Container
          * @default 'sprite'
          */
         this.pluginName = 'sprite';
+
+        /**
+         * Do we want to force this display component to be drawn at whole pixels only.
+         *
+         * @member {boolean}
+         * @default false
+         */
+        this.roundPixels = false;
     }
 
     /**

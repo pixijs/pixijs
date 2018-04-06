@@ -151,6 +151,14 @@ export default class Mesh extends core.Container
          * @default 'mesh'
          */
         this.pluginName = 'mesh';
+
+        /**
+         * Do we want to force this display component to be drawn at whole pixels only.
+         *
+         * @member {boolean}
+         * @default false
+         */
+        this.roundPixels = false;
     }
 
     /**

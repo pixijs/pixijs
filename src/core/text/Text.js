@@ -108,6 +108,14 @@ export default class Text extends Sprite
         this.style = style;
 
         this.localStyleID = -1;
+
+        /**
+         * Do we want to force this display component to be drawn at whole pixels only.
+         *
+         * @member {boolean}
+         * @default true
+         */
+        this.roundPixels = true;
     }
 
     /**

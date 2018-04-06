@@ -96,7 +96,7 @@ export default class CanvasSpriteRenderer
             dy -= height / 2;
 
             // Allow for pixel rounding
-            if (renderer.roundPixels)
+            if (renderer.roundPixels || sprite.roundPixels)
             {
                 renderer.context.setTransform(
                     wt.a,

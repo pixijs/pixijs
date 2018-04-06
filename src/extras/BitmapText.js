@@ -125,6 +125,14 @@ export default class BitmapText extends core.Container
          */
         this.dirty = false;
 
+        /**
+         * Do we want to force this display component to be drawn at whole pixels only.
+         *
+         * @member {boolean}
+         * @default true
+         */
+        this.roundPixels = true;
+
         this.updateText();
     }
 
@@ -248,6 +256,7 @@ export default class BitmapText extends core.Container
             else
             {
                 c = new core.Sprite(chars[i].texture);
+                c.roundPixels = this.roundPixels;
                 this._glyphs.push(c);
             }
 
