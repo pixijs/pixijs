@@ -208,7 +208,6 @@ export default class TextMetrics
                             {
                                 // combine chars & move forward one
                                 char += nextChar;
-                                j++;
                             }
                             else
                             {
@@ -217,6 +216,8 @@ export default class TextMetrics
 
                             k++;
                         }
+
+                        j += char.length - 1;
 
                         const characterWidth = TextMetrics.getFromCache(char, letterSpacing, cache, context);
 

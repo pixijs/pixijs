@@ -574,39 +574,37 @@ describe('PIXI.TextMetrics', function ()
         {
             const style = new PIXI.TextStyle({
                 fontFamily: 'Arial',
-                fontSize: 24,
+                fontSize: 26,
                 fontStyle: 'italic',
                 fontVariant: 'normal',
                 fontWeight: 900,
                 wordWrap: true,
-                wordWrapWidth: 200,
+                wordWrapWidth: 300,
                 letterSpacing: 4,
+                padding: 10,
                 fill: 0xffffff,
                 breakWords: false,
-                whiteSpace: 'pre-line',
+                whiteSpace: 'pre-line'
             });
 
-            const str = `-----------999999999----------`;
+            const str = `这是一段包含大量金钱的长文本，例如999,999,999英镑。如果你能理解这一点，你好`;
 
-            const reg = /^\d+$/;
+
+            const regexBasicLatin = /[\u0000-\u00ff]/;
 
             // override breakWords
             PIXI.TextMetrics.canBreakWords = (token) =>
             {
-                if (token.match(reg))
-                {
-                    return false;
-                }
-
                 return true;
             };
 
             // override breakChars
             PIXI.TextMetrics.canBreakChars = (char, nextChar) =>
             {
-                if (char === '9' && nextChar === '9')
+
+                if (regexBasicLatin.exec(char) || regexBasicLatin.exec(nextChar))
                 {
-                    return false;
+                        return false;
                 }
 
                 return true;
@@ -614,9 +612,11 @@ describe('PIXI.TextMetrics', function ()
 
             const metrics = PIXI.TextMetrics.measureText(str, style);
 
-            expect(metrics.lines[0]).to.equal('-----------');
-            expect(metrics.lines[1]).to.equal('999999999---');
-            expect(metrics.lines[2]).to.equal('-------');
+            expect(metrics.lines[0]).to.equal('这是一段包含大量金钱');
+            expect(metrics.lines[1]).to.equal('的长文本，例');
+            expect(metrics.lines[2]).to.equal('如999,999,999英镑');
+            expect(metrics.lines[3]).to.equal('。如果你能理解这一点');
+            expect(metrics.lines[4]).to.equal('，你好');
         });
     });
 });
