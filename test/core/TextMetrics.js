@@ -583,17 +583,11 @@ describe('PIXI.TextMetrics', function ()
                 letterSpacing: 4,
                 padding: 10,
                 fill: 0xffffff,
-                breakWords: false,
+                breakWords: true,
                 whiteSpace: 'pre-line',
             });
 
             const str = `这是一段包含大量金钱的长文本，例如999,999,999英镑。如果你能理解这一点，你好`;
-
-            // override breakWords
-            PIXI.TextMetrics.canBreakWords = function ()
-            {
-                return true;
-            };
 
             // override breakChars
             PIXI.TextMetrics.canBreakChars = function (char, nextChar)
