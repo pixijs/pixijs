@@ -583,30 +583,28 @@ describe('PIXI.TextMetrics', function ()
                 letterSpacing: 4,
                 padding: 10,
                 fill: 0xffffff,
-                breakWords: true,
+                breakWords: false,
                 whiteSpace: 'pre-line',
             });
 
-            const str = `这是一段包含大量金钱的长文本，例如999,999,999英镑。如果你能理解这一点，你好`;
+            const str = '-------0000,1111,9999------';
+            const reg = /^\d+$/;
+
+            PIXI.TextMetrics.canBreakWords = function ()
+            {
+                return true;
+            };
 
             // override breakChars
             PIXI.TextMetrics.canBreakChars = function (char, nextChar)
             {
-                if (char.match(/[\u0000-\u00ff]/) || nextChar.match(/[\u0000-\u00ff]/))
-                {
-                    return false;
-                }
-
-                return true;
+                return !(char.match(reg) && nextChar.match(reg));
             };
 
             const metrics = PIXI.TextMetrics.measureText(str, style);
 
-            expect(metrics.lines[0]).to.equal('这是一段包含大量金钱');
-            expect(metrics.lines[1]).to.equal('的长文本，例');
-            expect(metrics.lines[2]).to.equal('如999,999,999英镑');
-            expect(metrics.lines[3]).to.equal('。如果你能理解这一点');
-            expect(metrics.lines[4]).to.equal('，你好');
+            expect(metrics.lines[0]).to.equal('-------0000,1111,');
+            expect(metrics.lines[1]).to.equal('9999------');
         });
     });
 });
