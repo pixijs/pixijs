@@ -22,26 +22,7 @@ export default class TextureSystem extends System
          * @member {PIXI.BaseTexture[]}
          * @readonly
          */
-        this.boundTextures = [
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-        ];
-
+        this.boundTextures = [];
         /**
          * Current location
          * @member {number}
@@ -68,6 +49,17 @@ export default class TextureSystem extends System
 
         this.CONTEXT_UID = this.renderer.CONTEXT_UID;
 
+        let i;
+
+        const maxTextures = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
+
+        this.boundTextures = [];
+
+        for (let i = 0; i < maxTextures; i++)
+        {
+            this.boundTextures[i] = null;
+        }
+
         // TODO move this.. to a nice make empty textures class..
         this.emptyTextures = {};
 
@@ -80,8 +72,6 @@ export default class TextureSystem extends System
         this.emptyTextures[gl.TEXTURE_CUBE_MAP] = new GLTexture(gl.createTexture());
 
         gl.bindTexture(gl.TEXTURE_CUBE_MAP, this.emptyTextures[gl.TEXTURE_CUBE_MAP].texture);
-
-        let i;
 
         for (i = 0; i < 6; i++)
         {
