@@ -228,6 +228,32 @@ export default class GeometrySystem extends System
     }
 
     /**
+     * Takes a geometry and program and generates a unique signature for them.
+     *
+     * @param {PIXI.Geometry} geometry to get signiture from
+     * @param {PIXI.Program} prgram to test geometry against
+     * @returns {String} Unique signature of the geometry and program
+     * @private
+     */
+    getSigniture(geometry, program)
+    {
+        const attribs = geometry.attributes;
+        const shaderAttributes = program.attributeData;
+
+        let id = geometry.id;
+
+        for (const i in attribs)
+        {
+            if (shaderAttributes[i])
+            {
+                id += i;
+            }
+        }
+
+        return id;
+    }
+
+    /**
      * Creates a Vao with the same structure as the geometry and stores it on the geometry.
      * @private
      * @param {PIXI.Geometry} geometry - Instance of geometry to to generate Vao for
@@ -239,9 +265,20 @@ export default class GeometrySystem extends System
 
         const gl = this.gl;
         const CONTEXT_UID = this.CONTEXT_UID;
+
+        const signiture = this.getSigniture(geometry, program);
+
+        if (this.cache[signiture])
+        {
+            const vao = this.cache[signiture];
+
+            geometry.glVertexArrayObjects[this.CONTEXT_UID][program.id] = vao;
+
+            return vao;
+        }
+
         const buffers = geometry.buffers;
         const attributes = geometry.attributes;
-
         const tempStride = {};
         const tempStart = {};
 
