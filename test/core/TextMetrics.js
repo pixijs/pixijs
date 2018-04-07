@@ -590,10 +590,13 @@ describe('PIXI.TextMetrics', function ()
             const str = `这是一段包含大量金钱的长文本，例如999,999,999英镑。如果你能理解这一点，你好`;
 
             // override breakWords
-            PIXI.TextMetrics.canBreakWords = () => true;
+            PIXI.TextMetrics.canBreakWords = function ()
+            {
+                return true;
+            };
 
             // override breakChars
-            PIXI.TextMetrics.canBreakChars = (char, nextChar) =>
+            PIXI.TextMetrics.canBreakChars = function (char, nextChar)
             {
                 if (char.match(/[\u0000-\u00ff]/) || nextChar.match(/[\u0000-\u00ff]/))
                 {
