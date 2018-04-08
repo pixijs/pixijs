@@ -36,7 +36,7 @@ export default class GeometrySystem extends System
          */
         this.hasInstance = true;
 
-        this.cache  = {};
+        this.cache = {};
     }
 
     /**
