@@ -36,6 +36,11 @@ export default class GeometrySystem extends System
          */
         this.hasInstance = true;
 
+        /**
+         * A cache thats stores vaos linked to geometries.
+         * @member {Object}
+         * @private
+         */
         this.cache = {};
     }
 
