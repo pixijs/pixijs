@@ -92,7 +92,7 @@ export default class BaseRenderTexture extends BaseTexture
 
         this.clearColor = [0, 0, 0, 0];
 
-        this.frameBuffer = new FrameBuffer(width * this.resolution, height * this.resolution)
+        this.frameBuffer = new FrameBuffer(this.width * this.resolution, this.height * this.resolution)
             .addColorTexture(0, this)
             .enableStencil();
 
