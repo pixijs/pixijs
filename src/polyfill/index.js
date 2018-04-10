@@ -1,6 +1,7 @@
 import './Object.assign';
 import './requestAnimationFrame';
 import './Math.sign';
+import './Number.isInteger';
 
 if (!window.ArrayBuffer)
 {
