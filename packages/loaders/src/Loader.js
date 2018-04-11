@@ -2,6 +2,7 @@ import ResourceLoader from 'resource-loader';
 import EventEmitter from 'eventemitter3';
 import { blobMiddlewareFactory } from 'resource-loader/lib/middlewares/parsing/blob';
 import TextureLoader from './TextureLoader';
+import CompressedLoader from './CompressedLoader';
 
 /**
  *
@@ -169,6 +170,9 @@ Loader.registerPlugin({ use: blobMiddlewareFactory() });
 
 // parse any Image objects into textures
 Loader.registerPlugin(TextureLoader);
+
+// parsed compressed images into texture
+Loader.registerPlugin(CompressedLoader);
 
 /**
  * Plugin to be installed for handling specific Loader resources.

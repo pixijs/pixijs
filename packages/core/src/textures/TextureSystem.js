@@ -58,8 +58,13 @@ export default class TextureSystem extends System
 
         /**
          * List of compressed textures extensions that are available
-         * @member {{}}
+         * @member {object}
          * @readonly
+         * @property {object|null} dxt - WebGL extension for `WEBGL_compressed_texture_s3tc`
+         * @property {object|null} pvrtc - WebGL extension for `WEBGL_compressed_texture_pvrtc`
+         * @property {object|null} astc - WebGL extension for `WEBGL_compressed_texture_astc`
+         * @property {object|null} atc - WebGL extension for `WEBGL_compressed_texture_atc`
+         * @property {object|null} etc1 - WebGL extension for `WEBGL_compressed_texture_etc1`
          */
         this.compressedExtensions = {};
     }
