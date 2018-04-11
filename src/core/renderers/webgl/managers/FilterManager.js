@@ -556,7 +556,10 @@ export default class FilterManager extends WebGLManager
         {
             this.pool = {};
         }
-        this.managedDisplayObjects.forEach((displayObject) => displayObject.off('destroyed', this.onManagedDisplayObjectDestroyed, this));
+        this.managedDisplayObjects.forEach((displayObject) =>
+        {
+            displayObject.off('destroyed', this.onManagedDisplayObjectDestroyed, this);
+        });
         this.managedDisplayObjects = [];
     }
 
