@@ -65,6 +65,7 @@ export default class FilterManager extends WebGLManager
         this.filterData = null;
 
         this.managedFilters = [];
+        this.managedDisplayObjects = [];
 
         this.renderer.on('prerender', this.onPrerender, this);
 
@@ -83,6 +84,12 @@ export default class FilterManager extends WebGLManager
         const renderer = this.renderer;
 
         let filterData = this.filterData;
+
+        if (this.managedDisplayObjects.indexOf(target) === -1)
+        {
+            this.managedDisplayObjects.push(target);
+            target.on('destroyed', this.onManagedDisplayObjectDestroyed, this);
+        }
 
         if (!filterData)
         {
@@ -549,6 +556,8 @@ export default class FilterManager extends WebGLManager
         {
             this.pool = {};
         }
+        this.managedDisplayObjects.forEach((displayObject) => displayObject.off('destroyed', this.onManagedDisplayObjectDestroyed, this));
+        this.managedDisplayObjects = [];
     }
 
     /**
@@ -706,6 +715,22 @@ export default class FilterManager extends WebGLManager
                 }
             }
             this.pool[screenKey] = [];
+        }
+    }
+
+    /**
+     * Called when managed DisplayObject is destroyed
+     *
+     * @param {PIXI.DisplayObject} destroyedDisplayObject, object which was destroyed
+     */
+    onManagedDisplayObjectDestroyed(destroyedDisplayObject)
+    {
+        const removedDisplayObjectIndex = this.managedDisplayObjects.indexOf(destroyedDisplayObject);
+
+        if (removedDisplayObjectIndex !== -1)
+        {
+            this.destroyFilterStateByTarget(destroyedDisplayObject);
+            this.managedDisplayObjects.splice(removedDisplayObjectIndex, 1);
         }
     }
 }

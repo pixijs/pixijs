@@ -408,6 +408,8 @@ export default class DisplayObject extends EventEmitter
      */
     destroy()
     {
+        this.emit('destroyed', this);
+
         this.removeAllListeners();
         if (this.parent)
         {

@@ -30,12 +30,6 @@ export default class Container extends DisplayObject
          * @readonly
          */
         this.children = [];
-
-        /**
-         * Advanced WebGL renderer
-         * @type {PIXI.WebGLRenderer}
-         */
-        this.advancedWebGLRenderer = null;
     }
 
     /**
@@ -432,8 +426,6 @@ export default class Container extends DisplayObject
     {
         renderer.flush();
 
-        this.advancedWebGLRenderer = renderer;
-
         const filters = this._filters;
         const mask = this._mask;
 
@@ -567,13 +559,6 @@ export default class Container extends DisplayObject
             {
                 oldChildren[i].destroy(options);
             }
-        }
-
-        // destroy filter states which retains display object data
-        if (this.advancedWebGLRenderer)
-        {
-            this.advancedWebGLRenderer.filterManager.destroyFilterStateByTarget(this);
-            this.advancedWebGLRenderer = null;
         }
     }
 
