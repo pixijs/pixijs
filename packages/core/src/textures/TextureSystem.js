@@ -55,6 +55,13 @@ export default class TextureSystem extends System
          * @readonly
          */
         this.managedTextures = [];
+
+        /**
+         * List of compressed textures extensions that are available
+         * @member {{}}
+         * @readonly
+         */
+        this.compressedExtensions = {};
     }
 
     /**
@@ -67,6 +74,14 @@ export default class TextureSystem extends System
         const gl = this.gl = this.renderer.gl;
 
         this.CONTEXT_UID = this.renderer.CONTEXT_UID;
+
+        this.compressedExtensions = {
+            dxt: gl.getExtension('WEBGL_compressed_texture_s3tc'),
+            pvrtc: gl.getExtension('WEBGL_compressed_texture_pvrtc'),
+            astc: gl.getExtension('WEBGL_compressed_texture_astc'),
+            atc: gl.getExtension('WEBGL_compressed_texture_atc'),
+            etc1: gl.getExtension('WEBGL_compressed_texture_etc1'),
+        };
 
         // TODO move this.. to a nice make empty textures class..
         this.emptyTextures = {};
