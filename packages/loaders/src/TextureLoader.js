@@ -1,10 +1,5 @@
 import { Resource } from 'resource-loader';
-import { BaseTexture, Texture, resources } from '@pixi/core';
-
-Resource.setExtensionXhrType('dds', Resource.XHR_RESPONSE_TYPE.BUFFER);
-Resource.setExtensionXhrType('pvr', Resource.XHR_RESPONSE_TYPE.BUFFER);
-Resource.setExtensionXhrType('etc1', Resource.XHR_RESPONSE_TYPE.BUFFER);
-Resource.setExtensionXhrType('astc', Resource.XHR_RESPONSE_TYPE.BUFFER);
+import { Texture } from '@pixi/core';
 
 /**
  * Loader plugin for handling Texture resources.
@@ -30,19 +25,6 @@ export default class TextureLoader
                 resource.url,
                 resource.name
             );
-        }
-
-        if (resource.data instanceof ArrayBuffer)
-        {
-            if (resource.url.indexOf('.dds') !== -1 || resource.url.indexOf('.pvr') !== -1
-                || resource.url.indexOf('.etc1') !== -1 || resource.url.indexOf('.astc') !== -1)
-            {
-                const compressedImage = resources.CompressedResource.fromArrayBuffer(resource.data);
-
-                // TODO: make something like `fromLoader` but for compressed
-
-                resource.texture = new Texture(new BaseTexture(compressedImage));
-            }
         }
 
         next();

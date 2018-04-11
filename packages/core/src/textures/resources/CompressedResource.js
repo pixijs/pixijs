@@ -2,7 +2,15 @@
 import Resource from './Resource';
 
 /**
- * Compressed textures
+ * Provides support for compressed textures, these textures
+ * are much faster to upload to the GPU but are many more
+ * device formats to support.
+ * @see {@link http://www.khronos.org/registry/webgl/extensions/WEBGL_compressed_texture_s3tc/ DXT Format}
+ * @see {@link http://www.khronos.org/registry/webgl/extensions/WEBGL_compressed_texture_atc/ ATC Format}
+ * @see {@link https://www.khronos.org/registry/webgl/extensions/WEBGL_compressed_texture_astc/ ASTC Format}
+ * @see {@link http://msdn.microsoft.com/en-us/library/bb943991.aspx/ DDS Format}
+ * @see {@link http://www.khronos.org/registry/webgl/extensions/WEBGL_compressed_texture_pvrtc/ PVR Format}
+ * @see {@link http://www.khronos.org/registry/webgl/extensions/WEBGL_compressed_texture_etc1/ ETC1 Format}
  * @class
  * @extends PIXI.resources.Resource
  * @memberof PIXI.resources
@@ -12,12 +20,12 @@ export default class CompressedResource extends Resource
     /**
      * @param {ArrayBuffer} source - Source
      * @param {object} options Options
-     * @param {number} options.width Width of the texture
-     * @param {number} options.height Height of the texture
-     * @param {string} options.type type of the file: DDS, ASTC, PVR
-     * @param {number} options.levels Number of mip levels
-     * @param {number} options.internalFormat internal format of texture
-     * @param {boolean} [options.preserveSource] if false, data will be removed after the upload
+     * @param {number} options.width - Width of the texture
+     * @param {number} options.height - Height of the texture
+     * @param {string} options.type - type of the file: DDS, ASTC, or PVR
+     * @param {number} options.levels -  Number of mip levels
+     * @param {number} options.internalFormat - internal format of texture
+     * @param {boolean} [options.preserveSource=false] if false, data will be removed after the upload
      */
     constructor(source, options)
     {
@@ -37,13 +45,34 @@ export default class CompressedResource extends Resource
         this.data = source;
 
         /**
-         * Type: DDS, ASTC, PVR
-         * @type {string}
+         * Type: DDS, ASTC, or PVR
+         * @member {string}
          */
         this.type = type;
+
+        /**
+         * Number of mip levels
+         * @member {number}
+         */
         this.levels = levels;
+
+        /**
+         * Internal format of texture
+         * @member {number}
+         */
         this.internalFormat = internalFormat;
+
+        /**
+         * `false` then data will be removed after the upload
+         * @member {boolean}
+         * @default false
+         */
         this.preserveSource = preserveSource || false;
+    }
+
+    static test(source, extension)
+    {
+        return CompressedResource.TYPES.indexOf(extension) > -1;
     }
 
     /**
@@ -81,11 +110,13 @@ export default class CompressedResource extends Resource
         {
             // Determine how big this level of compressed texture data is in bytes.
             const levelSize = textureLevelSize(this.internalFormat, width, height);
+
             // Get a view of the bytes for this level of DXT data.
             const dxtLevel = new Uint8Array(this.data.buffer, this.data.byteOffset + offset, levelSize);
 
             // Upload!
             gl.compressedTexImage2D(gl.TEXTURE_2D, i, this.internalFormat, width, height, 0, dxtLevel);
+
             // The next mip level will be half the height and width of this one.
             width = width >> 1;
 
@@ -160,7 +191,6 @@ export default class CompressedResource extends Resource
      * @param {ArrayBuffer} arrayBuffer - The file
      * @returns {PIXI.resources.CompressedResource} resource
      */
-
     static fromArrayBuffer(arrayBuffer)
     {
         const head = new Uint8Array(arrayBuffer, 0, 3);
@@ -181,6 +211,15 @@ export default class CompressedResource extends Resource
         throw new Error(`Compressed texture format is not recognized`);
     }
 }
+
+/**
+ * List of file extensions supported by CompressedResource.
+ * @constant
+ * @member {Array<string>}
+ * @static
+ * @readonly
+ */
+CompressedResource.TYPES = ['dds', 'pvr', 'etc1', 'astc'];
 
 // DXT constants and utilites //
 
