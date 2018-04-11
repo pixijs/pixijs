@@ -5,7 +5,7 @@ import SVGResource from './SVGResource';
 import BufferResource from './BufferResource';
 import CubeResource from './CubeResource';
 import ArrayResource from './ArrayResource';
-import CompressedResource from './CompressedResource';
+// import CompressedResource from './CompressedResource';
 
 /**
  * Collection of installed resource types, class must extend {@link PIXI.resources.Resource}.
@@ -34,7 +34,7 @@ import CompressedResource from './CompressedResource';
  */
 export const INSTALLED = [
     ImageResource,
-    CompressedResource,
+    // CompressedResource,
     CanvasResource,
     VideoResource,
     SVGResource,
@@ -54,7 +54,6 @@ export const INSTALLED = [
  *  - {@link PIXI.resources.VideoResource}
  *  - {@link PIXI.resources.SVGResource}
  *  - {@link PIXI.resources.BufferResource}
- *  - {@link PIXI.resources.CompressedResource}
  * @static
  * @function PIXI.resources.autoDetectResource
  * @param {string|*} source - Resource source, this can be the URL to the resource,
