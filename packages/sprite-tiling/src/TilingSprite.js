@@ -300,14 +300,23 @@ export default class TilingSprite extends Sprite
      * @param {string} imageId - The image url of the texture
      * @param {number} width - the width of the tiling sprite
      * @param {number} height - the height of the tiling sprite
-     * @param {boolean} [crossorigin] - if you want to specify the cross-origin parameter
-     * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - if you want to specify the scale mode,
-     *  see {@link PIXI.SCALE_MODES} for possible values
+     * @param {Object} [options] - See {@link PIXI.BaseTexture}'s constructor for options.
      * @return {PIXI.TilingSprite} A new TilingSprite using a texture from the texture cache matching the image id
      */
-    static fromImage(imageId, width, height, crossorigin, scaleMode)
+    static fromImage(imageId, width, height, options)
     {
-        return new TilingSprite(Texture.fromImage(imageId, crossorigin, scaleMode), width, height);
+        // Fallback support for crossorigin, scaleMode parameters
+        if (options && typeof options !== 'object')
+        {
+            options = {
+                scaleMode: arguments[4],
+                resourceOptions: {
+                    crossorigin: arguments[3],
+                },
+            };
+        }
+
+        return new TilingSprite(Texture.from(imageId, options), width, height);
     }
 
     /**

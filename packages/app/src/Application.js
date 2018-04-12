@@ -16,7 +16,7 @@ import { Ticker, UPDATE_PRIORITY } from '@pixi/ticker';
  * document.body.appendChild(app.view);
  *
  * // ex, add display objects
- * app.stage.addChild(PIXI.Sprite.fromImage('something.png'));
+ * app.stage.addChild(PIXI.Sprite.from('something.png'));
  *
  * @class
  * @memberof PIXI

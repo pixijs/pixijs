@@ -224,7 +224,7 @@ describe('PIXI.BitmapFontLoader', function ()
 
         spritesheet.parse(() =>
         {
-            const fontTexture  = Texture.fromFrame('resources/font.png');
+            const fontTexture  = Texture.from('resources/font.png');
             const font =  BitmapText.registerFont(this.fontXML, fontTexture);
             const fontX = 158; // bare value from spritesheet frame
             const fontY = 2; // bare value from spritesheet frame
@@ -280,7 +280,7 @@ describe('PIXI.BitmapFontLoader', function ()
 
         spritesheet.parse(() =>
         {
-            const fontTexture  = Texture.fromFrame('resources/font.png');
+            const fontTexture  = Texture.from('resources/font.png');
             const font =  BitmapText.registerFont(this.fontXML, fontTexture);
             const fontX = 158; // bare value from spritesheet frame
             const fontY = 2; // bare value from spritesheet frame

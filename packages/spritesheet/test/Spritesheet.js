@@ -34,7 +34,7 @@ describe('PIXI.Spritesheet', function ()
                 frames: { frame: frameData },
                 meta: { scale: 1 },
             };
-            const baseTexture = BaseTexture.fromCanvas(
+            const baseTexture = BaseTexture.from(
                 document.createElement('canvas')
             );
 
