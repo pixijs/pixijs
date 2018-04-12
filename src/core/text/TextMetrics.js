@@ -204,7 +204,7 @@ export default class TextMetrics
                             const lastChar = char[char.length - 1];
 
                             // should not split chars
-                            if (!TextMetrics.canBreakChars(lastChar, nextChar, token, j))
+                            if (!TextMetrics.canBreakChars(lastChar, nextChar, token, j, style.breakWords))
                             {
                                 // combine chars & move forward one
                                 char += nextChar;
@@ -472,7 +472,7 @@ export default class TextMetrics
      *
      * @private
      * @param  {string}  token       The token
-     * @param  {boolean}  breakWords  The break words
+     * @param  {boolean}  breakWords  The style attr break words
      * @return {boolean} whether to break word or not
      */
     static canBreakWords(token, breakWords)
@@ -492,9 +492,10 @@ export default class TextMetrics
      * @param  {string}  nextChar  The next character
      * @param  {string}  token     The token/word the characters are from
      * @param  {number}  index     The index in the token of the char
+     * @param  {boolean}  breakWords  The style attr break words
      * @return {boolean} whether to break word or not
      */
-    static canBreakChars(char, nextChar, token, index) // eslint-disable-line no-unused-vars
+    static canBreakChars(char, nextChar, token, index, breakWords) // eslint-disable-line no-unused-vars
     {
         return true;
     }
