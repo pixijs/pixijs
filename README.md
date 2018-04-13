@@ -60,16 +60,15 @@ import * as PIXI from 'pixi.js'
 #### CDN Install (via cdnjs)
 
 ```html
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.5.1/pixi.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.7.1/pixi.min.js"></script>
 ```
 
-_Note: `4.5.1` can be replaced by any [released](https://github.com/pixijs/pixi.js/releases) version._
+_Note: `4.7.1` can be replaced by any [released](https://github.com/pixijs/pixi.js/releases) version._
 
 ### Demos ###
 
 - [Filters Demo](http://pixijs.io/pixi-filters/tools/demo/)
 - [Run Pixie Run](http://work.goodboydigital.com/runpixierun/)
-- [Fight for Everyone](http://www.goodboydigital.com/casestudies/fightforeveryone)
 - [Flash vs HTML](http://flashvhtml.com)
 - [Bunny Demo](http://www.goodboydigital.com/pixijs/bunnymark)
 - [Storm Brewing](http://www.goodboydigital.com/pixijs/storm)
@@ -89,7 +88,7 @@ Want to be part of the PixiJS project? Great! All are welcome! We will get there
 together :) Whether you find a bug, have a great feature request or you fancy owning a task
 from the road map above feel free to get in touch.
 
-Make sure to read the [Contributing Guide](https://github.com/pixijs/pixi.js/blob/master/CONTRIBUTING.md)
+Make sure to read the [Contributing Guide](.github/CONTRIBUTING.md)
 before submitting changes.
 
 ### Current features ###
