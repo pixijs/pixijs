@@ -78,7 +78,7 @@ const GLSL_TO_ARRAY_SETTERS = {
     sampler2DArray: 'gl.uniform1iv(location, v)',
 };
 
-export default function generateUniformsSync(group, uniformData)
+export function generateUniformsSync(group, uniformData)
 {
     let textureCount = 0;
     let func = `var v = null;

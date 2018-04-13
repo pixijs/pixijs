@@ -19,7 +19,7 @@ const tempMat = new Matrix();
  * @class
  * @memberof PIXI
  */
-export default class TextureMatrix
+export class TextureMatrix
 {
     /**
      *

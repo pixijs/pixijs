@@ -7,7 +7,7 @@ import { GroupD8 } from '@pixi/math';
  * @private
  * @memberof PIXI
  */
-export default class TextureUvs
+export class TextureUvs
 {
     /**
      *

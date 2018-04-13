@@ -1,4 +1,4 @@
-import BaseImageResource from './BaseImageResource';
+import { BaseImageResource } from './BaseImageResource';
 
 /**
  * Resource type for HTMLCanvasElement.
@@ -7,7 +7,7 @@ import BaseImageResource from './BaseImageResource';
  * @memberof PIXI.resources
  * @param {HTMLCanvasElement} source - Canvas element to use
  */
-export default class CanvasResource extends BaseImageResource
+export class CanvasResource extends BaseImageResource
 {
     /**
      * Used to auto-detect the type of resource.

@@ -9,12 +9,12 @@
  * @namespace PIXI.resources
  */
 export * from './autoDetectResource';
-export { default as Resource } from './Resource';
-export { default as ArrayResource } from './ArrayResource';
-export { default as BaseImageResource } from './BaseImageResource';
-export { default as BufferResource } from './BufferResource';
-export { default as CanvasResource } from './CanvasResource';
-export { default as CubeResource } from './CubeResource';
-export { default as ImageResource } from './ImageResource';
-export { default as SVGResource } from './SVGResource';
-export { default as VideoResource } from './VideoResource';
+export * from './Resource';
+export * from './ArrayResource';
+export * from './BaseImageResource';
+export * from './BufferResource';
+export * from './CanvasResource';
+export * from './CubeResource';
+export * from './ImageResource';
+export * from './SVGResource';
+export * from './VideoResource';

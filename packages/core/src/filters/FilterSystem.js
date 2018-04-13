@@ -1,12 +1,12 @@
-import System from '../System';
+import { System } from '../System';
 
-import RenderTexture from '../renderTexture/RenderTexture';
-import Quad from '../utils/Quad';
-import QuadUv from '../utils/QuadUv';
+import { RenderTexture } from '../renderTexture/RenderTexture';
+import { Quad } from '../utils/Quad';
+import { QuadUv } from '../utils/QuadUv';
 import { Rectangle } from '@pixi/math';
 import * as filterTransforms from './filterTransforms';
-import bitTwiddle from 'bit-twiddle';
-import UniformGroup from '../shader/UniformGroup';
+import * as bitTwiddle from 'bit-twiddle';
+import { UniformGroup } from '../shader/UniformGroup';
 import { DRAW_MODES } from '@pixi/constants';
 
 /**
@@ -74,7 +74,7 @@ const screenKey = 'screen';
  * @memberof PIXI.systems
  * @extends PIXI.System
  */
-export default class FilterSystem extends System
+export class FilterSystem extends System
 {
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.

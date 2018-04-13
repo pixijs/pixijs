@@ -1,5 +1,5 @@
-import BaseTexture from '../textures/BaseTexture';
-import FrameBuffer from '../framebuffer/FrameBuffer';
+import { BaseTexture } from '../textures/BaseTexture';
+import { FrameBuffer } from '../framebuffer/FrameBuffer';
 
 /**
  * A BaseRenderTexture is a special texture that allows any PixiJS display object to be rendered to it.
@@ -40,7 +40,7 @@ import FrameBuffer from '../framebuffer/FrameBuffer';
  * @extends PIXI.BaseTexture
  * @memberof PIXI
  */
-export default class BaseRenderTexture extends BaseTexture
+export class BaseRenderTexture extends BaseTexture
 {
     /**
      * @param {object} [options]

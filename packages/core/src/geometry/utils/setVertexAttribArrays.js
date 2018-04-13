@@ -5,7 +5,7 @@
  * @param attribs {*}
  * @param state {*}
  */
-export default function setVertexAttribArrays(gl, attribs, state)
+export function setVertexAttribArrays(gl, attribs, state)
 {
     let i;
 

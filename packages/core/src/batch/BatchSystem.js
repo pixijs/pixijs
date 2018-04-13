@@ -1,12 +1,12 @@
-import System from '../System';
-import ObjectRenderer from './ObjectRenderer';
+import { System } from '../System';
+import { ObjectRenderer } from './ObjectRenderer';
 
 /**
  * @class
  * @extends PIXI.System
  * @memberof PIXI.systems
  */
-export default class BatchSystem extends System
+export class BatchSystem extends System
 {
     /**
      * @param {PIXI.Renderer} renderer - The renderer this manager works for.

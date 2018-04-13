@@ -1,5 +1,5 @@
-import Program from './Program';
-import UniformGroup from './UniformGroup';
+import { Program } from './Program';
+import { UniformGroup } from './UniformGroup';
 
 // let math = require('../../../math');
 /**
@@ -7,7 +7,7 @@ import UniformGroup from './UniformGroup';
  * @memberof PIXI
  * @extends PIXI.Shader
  */
-class Shader
+export class Shader
 {
     /**
      * @param {PIXI.Program} [program] - The program the shader will use.
@@ -99,5 +99,3 @@ class Shader
         return new Shader(program, uniforms);
     }
 }
-
-export default Shader;

@@ -1,4 +1,4 @@
-import BaseImageResource from './BaseImageResource';
+import { BaseImageResource } from './BaseImageResource';
 import { Ticker } from '@pixi/ticker';
 
 /**
@@ -12,7 +12,7 @@ import { Ticker } from '@pixi/ticker';
  * @param {boolean} [options.autoPlay=true] - Start playing video immediately
  * @param {boolean} [options.crossorigin=true] - Load image using cross origin
  */
-export default class VideoResource extends BaseImageResource
+export class VideoResource extends BaseImageResource
 {
     constructor(source, options)
     {

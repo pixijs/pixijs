@@ -1,12 +1,11 @@
 let UID = 0;
 
-// let math = require('../../../math');
 /**
  * @class
  * @memberof PIXI
  * @extends PIXI.UniformGroup
  */
-class UniformGroup
+export class UniformGroup
 {
     /**
      * @param {PIXI.Program} [program] - The program the shader will use.
@@ -39,5 +38,3 @@ class UniformGroup
         return new UniformGroup(uniforms, _static);
     }
 }
-
-export default UniformGroup;

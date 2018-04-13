@@ -1,5 +1,5 @@
-import Resource from './Resource';
-import BaseTexture from '../BaseTexture';
+import { Resource } from './Resource';
+import { BaseTexture } from '../BaseTexture';
 import { TARGETS } from '@pixi/constants';
 import { autoDetectResource } from './autoDetectResource';
 
@@ -15,7 +15,7 @@ import { autoDetectResource } from './autoDetectResource';
  * @param {number} [options.width] - Width of the resource
  * @param {number} [options.height] - Height of the resource
  */
-export default class ArrayResource extends Resource
+export class ArrayResource extends Resource
 {
     constructor(source, options)
     {
