@@ -1,10 +1,10 @@
-// import * as from '../systems/shader/shader';
-import { setPrecision,
-    defaultValue,
+import {
     compileProgram,
+    defaultValue,
+    getTestContext,
     mapSize,
     mapType,
-    getTestContext } from './utils';
+    setPrecision } from './utils';
 import { ProgramCache } from '@pixi/utils';
 import defaultFragment from './defaultProgram.frag';
 import defaultVertex from './defaultProgram.vert';
@@ -17,7 +17,7 @@ let UID = 0;
  * @memberof PIXI
  * @extends PIXI.Shader
  */
-class Program
+export class Program
 {
     /**
      * @param {string} [vertexSrc] - The source of the vertex shader.
@@ -211,5 +211,3 @@ class Program
         return program;
     }
 }
-
-export default Program;

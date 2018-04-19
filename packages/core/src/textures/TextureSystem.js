@@ -1,5 +1,5 @@
-import System from '../System';
-import GLTexture from './GLTexture';
+import { System } from '../System';
+import { GLTexture } from './GLTexture';
 import { removeItems } from '@pixi/utils';
 
 /**
@@ -7,7 +7,7 @@ import { removeItems } from '@pixi/utils';
  * @extends PIXI.System
  * @memberof PIXI.systems
  */
-export default class TextureSystem extends System
+export class TextureSystem extends System
 {
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.

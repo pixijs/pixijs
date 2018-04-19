@@ -8,7 +8,7 @@
  * @class
  * @memberof PIXI
  */
-class Attribute
+export class Attribute
 {
     /**
      * @param {string} buffer  the id of the buffer that this attribute will look for
@@ -54,5 +54,3 @@ class Attribute
         return new Attribute(buffer, size, stride, start, normalized);
     }
 }
-
-module.exports = Attribute;

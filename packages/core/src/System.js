@@ -4,7 +4,7 @@
  * @class
  * @memberof PIXI
  */
-export default class System
+export class System
 {
     /**
      * @param {PIXI.Renderer} renderer - The renderer this manager works for.

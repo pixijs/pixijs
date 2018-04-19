@@ -1,4 +1,4 @@
-export default function getBufferType(array)
+export function getBufferType(array)
 {
     if (array.BYTES_PER_ELEMENT === 4)
     {

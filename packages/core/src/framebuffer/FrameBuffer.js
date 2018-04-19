@@ -1,4 +1,4 @@
-import Texture from '../textures/BaseTexture';
+import { BaseTexture } from '../textures/BaseTexture';
 import { FORMATS, TYPES } from '@pixi/constants';
 
 /**
@@ -6,7 +6,7 @@ import { FORMATS, TYPES } from '@pixi/constants';
  * @class
  * @memberof PIXI
  */
-export default class FrameBuffer
+export class FrameBuffer
 {
     constructor(width, height)
     {
@@ -34,7 +34,7 @@ export default class FrameBuffer
     addColorTexture(index, texture)
     {
         // TODO add some validation to the texture - same width / height etc?
-        this.colorTextures[index || 0] = texture || new Texture(null, { scaleMode: 0,
+        this.colorTextures[index || 0] = texture || new BaseTexture(null, { scaleMode: 0,
             resolution: 1,
             mipmap: false,
             width: this.width,
@@ -49,7 +49,7 @@ export default class FrameBuffer
     addDepthTexture(texture)
     {
         /* eslint-disable max-len */
-        this.depthTexture = texture || new Texture(null, { scaleMode: 0,
+        this.depthTexture = texture || new BaseTexture(null, { scaleMode: 0,
             resolution: 1,
             width: this.width,
             height: this.height,

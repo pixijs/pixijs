@@ -1,4 +1,4 @@
-import System from '../System';
+import { System } from '../System';
 import { settings } from '../settings';
 import { ENV } from '@pixi/constants';
 
@@ -9,7 +9,7 @@ let CONTEXT_UID = 0;
  * @extends PIXI.System
  * @memberof PIXI.systems
  */
-export default class ContextSystem extends System
+export class ContextSystem extends System
 {
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.

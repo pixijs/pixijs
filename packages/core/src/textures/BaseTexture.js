@@ -1,13 +1,13 @@
 import { uid, BaseTextureCache, TextureCache } from '@pixi/utils';
 import { FORMATS, TARGETS, TYPES, SCALE_MODES } from '@pixi/constants';
 
-import Resource from './resources/Resource';
-import BufferResource from './resources/BufferResource';
+import { Resource } from './resources/Resource';
+import { BufferResource } from './resources/BufferResource';
 import { autoDetectResource } from './resources/autoDetectResource';
 
 import { settings } from '@pixi/settings';
-import EventEmitter from 'eventemitter3';
-import bitTwiddle from 'bit-twiddle';
+import * as EventEmitter from 'eventemitter3';
+import * as bitTwiddle from 'bit-twiddle';
 
 const defaultBufferOptions = {
     scaleMode: SCALE_MODES.NEAREST,
@@ -37,7 +37,7 @@ const defaultBufferOptions = {
  * @param {object} [options.resourceOptions] - Optional resource options,
  *        see {@link PIXI.resources.autoDetectResource autoDetectResource}
  */
-export default class BaseTexture extends EventEmitter
+export class BaseTexture extends EventEmitter
 {
     constructor(resource = null, options = null)
     {

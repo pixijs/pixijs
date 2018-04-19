@@ -1,7 +1,7 @@
-import Attribute from './Attribute';
-import Buffer from './Buffer';
-import interleaveTypedArrays from './utils/interleaveTypedArrays';
-import getBufferType from './utils/getBufferType';
+import { Attribute } from './Attribute';
+import { Buffer } from './Buffer';
+import { interleaveTypedArrays } from './utils/interleaveTypedArrays';
+import { getBufferType } from './utils/getBufferType';
 
 const byteSizeMap = { 5126: 4, 5123: 2, 5121: 1 };
 let UID = 0;
@@ -37,7 +37,7 @@ const map = {
  * @class
  * @memberof PIXI
  */
-export default class Geometry
+export class Geometry
 {
     /**
      * @param {array} [buffers]  an array of buffers. optional.

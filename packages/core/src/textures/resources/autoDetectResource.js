@@ -1,10 +1,10 @@
-import ImageResource from './ImageResource';
-import CanvasResource from './CanvasResource';
-import VideoResource from './VideoResource';
-import SVGResource from './SVGResource';
-import BufferResource from './BufferResource';
-import CubeResource from './CubeResource';
-import ArrayResource from './ArrayResource';
+import { ImageResource } from './ImageResource';
+import { CanvasResource } from './CanvasResource';
+import { VideoResource } from './VideoResource';
+import { SVGResource } from './SVGResource';
+import { BufferResource } from './BufferResource';
+import { CubeResource } from './CubeResource';
+import { ArrayResource } from './ArrayResource';
 
 /**
  * Collection of installed resource types, class must extend {@link PIXI.resources.Resource}.

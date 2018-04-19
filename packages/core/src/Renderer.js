@@ -1,22 +1,22 @@
-import AbstractRenderer from './AbstractRenderer';
+import { AbstractRenderer } from './AbstractRenderer';
 import { sayHello } from '@pixi/utils';
-import MaskSystem from './mask/MaskSystem';
-import StencilSystem from './mask/StencilSystem';
-import FilterSystem from './filters/FilterSystem';
-import FramebufferSystem from './framebuffer/FramebufferSystem';
-import RenderTextureSystem from './renderTexture/RenderTextureSystem';
-import TextureSystem from './textures/TextureSystem';
-import ProjectionSystem from './projection/ProjectionSystem';
-import StateSystem from './state/StateSystem';
-import GeometrySystem from './geometry/GeometrySystem';
-import ShaderSystem from './shader/ShaderSystem';
-import ContextSystem from './context/ContextSystem';
-import BatchSystem from './batch/BatchSystem';
-import TextureGCSystem from './textures/TextureGCSystem';
+import { MaskSystem } from './mask/MaskSystem';
+import { StencilSystem } from './mask/StencilSystem';
+import { FilterSystem } from './filters/FilterSystem';
+import { FramebufferSystem } from './framebuffer/FramebufferSystem';
+import { RenderTextureSystem } from './renderTexture/RenderTextureSystem';
+import { TextureSystem } from './textures/TextureSystem';
+import { ProjectionSystem } from './projection/ProjectionSystem';
+import { StateSystem } from './state/StateSystem';
+import { GeometrySystem } from './geometry/GeometrySystem';
+import { ShaderSystem } from './shader/ShaderSystem';
+import { ContextSystem } from './context/ContextSystem';
+import { BatchSystem } from './batch/BatchSystem';
+import { TextureGCSystem } from './textures/TextureGCSystem';
 import { RENDERER_TYPE } from '@pixi/constants';
-import UniformGroup from './shader/UniformGroup';
+import { UniformGroup } from './shader/UniformGroup';
 import { Matrix } from '@pixi/math';
-import Runner from 'mini-runner';
+import * as Runner from 'mini-runner';
 
 /**
  * The Renderer draws the scene and all its content onto a webGL enabled canvas. This renderer
@@ -28,7 +28,7 @@ import Runner from 'mini-runner';
  * @memberof PIXI
  * @extends PIXI.AbstractRenderer
  */
-export default class Renderer extends AbstractRenderer
+export class Renderer extends AbstractRenderer
 {
     // eslint-disable-next-line valid-jsdoc
     /**

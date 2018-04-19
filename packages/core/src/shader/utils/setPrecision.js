@@ -5,7 +5,7 @@
  *
  * @return {string} modified shader source
  */
-export default function setPrecision(src, precision)
+export function setPrecision(src, precision)
 {
     src = src.trim();
 

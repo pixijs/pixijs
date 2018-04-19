@@ -1,4 +1,4 @@
-import System from '../System';
+import { System } from '../System';
 
 /**
  * Base for a common object renderer that can be used as a system renderer plugin.
@@ -7,7 +7,7 @@ import System from '../System';
  * @extends PIXI.System
  * @memberof PIXI
  */
-export default class ObjectRenderer extends System
+export class ObjectRenderer extends System
 {
     /**
      * Starts the renderer and sets the shader

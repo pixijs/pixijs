@@ -1,4 +1,4 @@
-import Runner from 'mini-runner';
+import * as Runner from 'mini-runner';
 
 /**
  * Base Texture resource class, manages validation and upload depends on its type.
@@ -6,7 +6,7 @@ import Runner from 'mini-runner';
  * @class
  * @memberof PIXI.resources
  */
-export default class Resource
+export class Resource
 {
     /**
      * @param {number} [width=0] Width of the resource

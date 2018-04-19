@@ -1,4 +1,4 @@
-import System from '../System';
+import { System } from '../System';
 import { Rectangle } from '@pixi/math';
 
 /**
@@ -7,7 +7,7 @@ import { Rectangle } from '@pixi/math';
  * @extends PIXI.System
  * @memberof PIXI.systems
  */
-export default class FramebufferSystem extends System
+export class FramebufferSystem extends System
 {
     /**
      * Sets up the renderer context and necessary buffers.

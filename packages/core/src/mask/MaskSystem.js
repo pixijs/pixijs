@@ -1,12 +1,12 @@
-import System from '../System';
-import SpriteMaskFilter from '../filters/spriteMask/SpriteMaskFilter';
+import { System } from '../System';
+import { SpriteMaskFilter } from '../filters/spriteMask/SpriteMaskFilter';
 
 /**
  * @class
  * @extends PIXI.System
  * @memberof PIXI.systems
  */
-export default class MaskSystem extends System
+export class MaskSystem extends System
 {
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.

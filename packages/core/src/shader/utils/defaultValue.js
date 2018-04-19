@@ -4,7 +4,7 @@
  * @param type {String} Type of value
  * @param size {Number}
  */
-export default function defaultValue(type, size)
+export function defaultValue(type, size)
 {
     switch (type)
     {

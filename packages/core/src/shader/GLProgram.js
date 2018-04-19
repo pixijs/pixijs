@@ -4,7 +4,7 @@
  * @class
  * @private
  */
-export default class GLProgram
+export class GLProgram
 {
     constructor(program, uniformData)
     {

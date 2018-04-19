@@ -1,4 +1,4 @@
-import Resource from './Resource';
+import { Resource } from './Resource';
 
 /**
  * Buffer resource with data of typed array.
@@ -6,7 +6,7 @@ import Resource from './Resource';
  * @extends PIXI.resources.Resource
  * @memberof PIXI.resources
  */
-export default class BufferResource extends Resource
+export class BufferResource extends Resource
 {
     /**
      * @param {Float32Array|Uint8Array|Uint32Array} source - Source buffer

@@ -10,7 +10,7 @@ let context = null;
  * @private
  * @returns {webGL-context} a gl context to test with
  */
-export default function getTestContext()
+export function getTestContext()
 {
     if (!context)
     {

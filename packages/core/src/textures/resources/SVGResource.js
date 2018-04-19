@@ -1,5 +1,5 @@
 import { decomposeDataUri, uid } from '@pixi/utils';
-import BaseImageResource from './BaseImageResource';
+import { BaseImageResource } from './BaseImageResource';
 
 /**
  * Resource type for SVG elements and graphics.
@@ -11,7 +11,7 @@ import BaseImageResource from './BaseImageResource';
  * @param {number} [options.scale=1] Scale to apply to SVG.
  * @param {boolean} [options.autoLoad=true] Start loading right away.
  */
-export default class SVGResource extends BaseImageResource
+export class SVGResource extends BaseImageResource
 {
     constructor(source, options)
     {

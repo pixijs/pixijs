@@ -3,8 +3,8 @@ import { Matrix, Rectangle } from '@pixi/math';
 import { RENDERER_TYPE } from '@pixi/constants';
 import { settings } from '@pixi/settings';
 import { Container } from '@pixi/display';
-import RenderTexture from './renderTexture/RenderTexture';
-import EventEmitter from 'eventemitter3';
+import { RenderTexture } from './renderTexture/RenderTexture';
+import * as EventEmitter from 'eventemitter3';
 
 const tempMatrix = new Matrix();
 
@@ -17,7 +17,7 @@ const tempMatrix = new Matrix();
  * @extends EventEmitter
  * @memberof PIXI
  */
-export default class AbstractRenderer extends EventEmitter
+export class AbstractRenderer extends EventEmitter
 {
     // eslint-disable-next-line valid-jsdoc
     /**
