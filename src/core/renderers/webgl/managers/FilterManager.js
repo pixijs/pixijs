@@ -65,7 +65,7 @@ export default class FilterManager extends WebGLManager
         this.filterData = null;
 
         this.managedFilters = [];
-        this.managedDisplayObjects = [];
+        this.managedTargets = [];
 
         this.renderer.on('prerender', this.onPrerender, this);
 
@@ -85,10 +85,10 @@ export default class FilterManager extends WebGLManager
 
         let filterData = this.filterData;
 
-        if (this.managedDisplayObjects.indexOf(target) === -1)
+        if (this.managedTargets.indexOf(target) === -1)
         {
-            this.managedDisplayObjects.push(target);
-            target.on('destroyed', this.onManagedDisplayObjectDestroyed, this);
+            this.managedTargets.push(target);
+            target.on('destroyed', this.onTargetDestroy, this);
         }
 
         if (!filterData)
@@ -556,41 +556,12 @@ export default class FilterManager extends WebGLManager
         {
             this.pool = {};
         }
-        this.managedDisplayObjects.forEach((displayObject) =>
-        {
-            displayObject.off('destroyed', this.onManagedDisplayObjectDestroyed, this);
-        });
-        this.managedDisplayObjects = [];
-    }
 
-    /**
-     * Destroys FilterState of specified target
-     *
-     * @param {PIXI.DisplayObject} target, which FilterState should be destroyed
-     */
-    destroyFilterStateByTarget(target)
-    {
-        let filterData = this.filterData;
-
-        if (!filterData)
+        for (let i = 0; i < this.managedTargets.length; i++)
         {
-            filterData = this.renderer._activeRenderTarget.filterData;
+            this.managedTargets[i].off('destroyed', this.onTargetDestroy, this);
         }
-
-        const stack = filterData.stack;
-        let index = stack.length - 1;
-
-        while (index >= 0)
-        {
-            const filterState = stack[index];
-
-            if (filterState.target === target)
-            {
-                filterState.destroy();
-                stack.splice(index, 1);
-            }
-            index -= 1;
-        }
+        this.managedTargets.length = 0;
     }
 
     /**
@@ -722,18 +693,39 @@ export default class FilterManager extends WebGLManager
     }
 
     /**
-     * Called when managed DisplayObject is destroyed
+     * Called when specified target is destroyed
      *
-     * @param {PIXI.DisplayObject} destroyedDisplayObject, object which was destroyed
+     * @param {PIXI.DisplayObject} target which was destroyed
      */
-    onManagedDisplayObjectDestroyed(destroyedDisplayObject)
+    onTargetDestroy(target)
     {
-        const removedDisplayObjectIndex = this.managedDisplayObjects.indexOf(destroyedDisplayObject);
+        const destroyedTargetIndex = this.managedTargets.indexOf(target);
 
-        if (removedDisplayObjectIndex !== -1)
+        if (destroyedTargetIndex !== -1)
         {
-            this.destroyFilterStateByTarget(destroyedDisplayObject);
-            this.managedDisplayObjects.splice(removedDisplayObjectIndex, 1);
+            let filterData = this.filterData;
+
+            if (!filterData)
+            {
+                filterData = this.renderer._activeRenderTarget.filterData;
+            }
+
+            const stack = filterData.stack;
+            let index = stack.length - 1;
+
+            while (index >= 0)
+            {
+                const filterState = stack[index];
+
+                if (filterState.target === target)
+                {
+                    filterState.destroy();
+                    stack.splice(index, 1);
+                }
+                index -= 1;
+            }
+
+            this.managedTargets.splice(destroyedTargetIndex, 1);
         }
     }
 }

@@ -101,4 +101,21 @@ describe('PIXI.DisplayObject', function ()
             expect(child.worldVisible).to.be.false;
         });
     });
+
+    describe('destroyed event', function ()
+    {
+        it('should trigger "destroyed" event when destroyed', function ()
+        {
+            const object = new PIXI.DisplayObject();
+            let triggeredDestroy = false;
+
+            object.on('destroyed', (destroyedObject) =>
+            {
+                triggeredDestroy = true;
+                expect(object).to.be.equals(destroyedObject);
+            });
+            object.destroy();
+            expect(triggeredDestroy).to.be.true;
+        });
+    });
 });
