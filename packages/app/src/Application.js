@@ -1,6 +1,7 @@
 import { settings } from '@pixi/settings';
 import { Container } from '@pixi/display';
 import { Renderer } from '@pixi/core';
+import { InteractionManager } from '@pixi/interaction';
 import { Ticker, UPDATE_PRIORITY } from '@pixi/ticker';
 
 /**
@@ -52,6 +53,8 @@ export default class Application
      *  for devices with dual graphics card **webgl only**
      * @param {boolean} [options.sharedTicker=false] - `true` to use PIXI.Ticker.shared, `false` to create new ticker.
      * @param {boolean} [options.sharedLoader=false] - `true` to use PIXI.Loaders.shared, `false` to create new Loader.
+     * @param {object|boolean} [options.interaction] - Options for interaction manager.
+     * Set it to `false` to remove interaction completely.
      * @param {Window|HTMLElement} [options.resizeTo] - Element to automatically resize stage to.
      */
     constructor(options, arg2, arg3, arg4, arg5)
@@ -105,6 +108,12 @@ export default class Application
          * @default PIXI.Ticker.shared
          */
         this.ticker = options.sharedTicker ? Ticker.shared : new Ticker();
+
+        /**
+         * InteractionManager for the application
+         * @member {PIXI.InteractionManager}
+         */
+        this.interaction = options.interaction !== 'false' ? new InteractionManager(this, options.interaction) : null;
 
         // Resize
         this.resize = this.resize.bind(this);
@@ -242,6 +251,11 @@ export default class Application
     destroy(removeView)
     {
         this.resizeTo = null;
+
+        if (this.interaction)
+        {
+            this.interaction.destroy();
+        }
 
         if (this._ticker)
         {

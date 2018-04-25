@@ -1,4 +1,4 @@
-import { Ticker, UPDATE_PRIORITY } from '@pixi/ticker';
+import { UPDATE_PRIORITY } from '@pixi/ticker';
 import { Point } from '@pixi/math';
 import { DisplayObject } from '@pixi/display';
 import { mixins } from '@pixi/utils';
@@ -29,7 +29,7 @@ const hitTestEvent = {
  * if its interactive parameter is set to true
  * This manager also supports multitouch.
  *
- * An instance of this class is automatically created by default, and can be found at renderer.plugins.interaction
+ * An instance of this class is automatically created by Application, and can be found at app.interaction
  *
  * @class
  * @extends EventEmitter
@@ -38,23 +38,31 @@ const hitTestEvent = {
 export default class InteractionManager extends EventEmitter
 {
     /**
-     * @param {PIXI.CanvasRenderer|PIXI.Renderer} renderer - A reference to the current renderer
-     * @param {object} [options] - The options for the manager.
+     * @param {object} app - Application object
+     * @param {PIXI.Ticker} app.ticker - Ticker to bound update function on
+     * @param {PIXI.DisplayObject} app.stage - Root element for interaction
+     * @param {PIXI.DisplayObject} [app.renderer] - Renderer, optional
+     * you can pass `view` and `resolution` in options parameter
+     * @param {object} [options] - The options for the manager
+     * @param {HTMLElement} [options.view] - Element to bound events on. By default it is `app.renderer.view`
+     * @param {number} [options.resolution] - Resolution that is passed to `setTargetElement`.
+     * By default its taken from `app.renderer.resolution`.
      * @param {boolean} [options.autoPreventDefault=true] - Should the manager automatically prevent default browser actions.
      * @param {number} [options.interactionFrequency=10] - Frequency increases the interaction events will be checked.
+     * @param {number} [options.isCocoonJS]
      */
-    constructor(renderer, options)
+    constructor(app, options)
     {
         super();
 
         options = options || {};
 
         /**
-         * The renderer this interaction manager works for.
+         * Application object that contains necessary dependencies (ticker, stage) and optional ones (renderer)
          *
-         * @member {PIXI.AbstractRenderer}
+         * @member {object}
          */
-        this.renderer = renderer;
+        this.app = app;
 
         /**
          * Should default browser actions automatically be prevented.
@@ -253,7 +261,7 @@ export default class InteractionManager extends EventEmitter
          */
         this.resolution = 1;
 
-        this.setTargetElement(this.renderer.view, this.renderer.resolution);
+        this.setTargetElement(options.view || app.renderer.view, options.resolution || app.renderer.resolution);
 
         /**
          * Fired when a pointer device button (usually a mouse left-button) is pressed on the display
@@ -650,11 +658,21 @@ export default class InteractionManager extends EventEmitter
     }
 
     /**
+     * Root interaction element, same as application stage
+     *
+     * @returns {PIXI.DisplayObject}
+     */
+    get root()
+    {
+        return this.app.stage;
+    }
+
+    /**
      * Hit tests a point against the display tree, returning the first interactive object that is hit.
      *
      * @param {PIXI.Point} globalPoint - A point to hit test with, in global space.
-     * @param {PIXI.Container} [root] - The root display object to start from. If omitted, defaults
-     * to the last rendered root of the associated renderer.
+     * @param {PIXI.Container} [root] - The root display object to start from.
+     * If omitted, uses default root of the manager.
      * @return {PIXI.DisplayObject} The hit display object, if any.
      */
     hitTest(globalPoint, root)
@@ -666,7 +684,7 @@ export default class InteractionManager extends EventEmitter
         // ensure safety of the root
         if (!root)
         {
-            root = this.renderer._lastObjectRendered;
+            root = this.root;
         }
         // run the hit test
         this.processInteractive(hitTestEvent, root, null, true);
@@ -677,7 +695,7 @@ export default class InteractionManager extends EventEmitter
 
     /**
      * Sets the DOM element which will receive mouse/touch events. This is useful for when you have
-     * other DOM elements on top of the renderers Canvas element. With this you'll be bale to delegate
+     * other DOM elements on top of the Canvas element. With this you'll be bale to delegate
      * another DOM element to receive those events.
      *
      * @param {HTMLCanvasElement} element - the DOM element which will receive mouse and touch events.
@@ -706,7 +724,10 @@ export default class InteractionManager extends EventEmitter
             return;
         }
 
-        Ticker.shared.add(this.update, this, UPDATE_PRIORITY.INTERACTION);
+        if (this.app.ticker)
+        {
+            this.app.ticker.add(this.update, this, UPDATE_PRIORITY.INTERACTION);
+        }
 
         if (window.navigator.msPointerEnabled)
         {
@@ -769,7 +790,10 @@ export default class InteractionManager extends EventEmitter
             return;
         }
 
-        Ticker.shared.remove(this.update, this);
+        if (this.app.ticker)
+        {
+            this.app.ticker.remove(this.update, this);
+        }
 
         if (window.navigator.msPointerEnabled)
         {
@@ -864,7 +888,7 @@ export default class InteractionManager extends EventEmitter
 
                     this.processInteractive(
                         interactionEvent,
-                        this.renderer._lastObjectRendered,
+                        this.root,
                         this.processPointerOverOut,
                         true
                     );
@@ -1170,7 +1194,7 @@ export default class InteractionManager extends EventEmitter
 
             interactionEvent.data.originalEvent = originalEvent;
 
-            this.processInteractive(interactionEvent, this.renderer._lastObjectRendered, this.processPointerDown, true);
+            this.processInteractive(interactionEvent, this.root, this.processPointerDown, true);
 
             this.emit('pointerdown', interactionEvent);
             if (event.pointerType === 'touch')
@@ -1259,7 +1283,7 @@ export default class InteractionManager extends EventEmitter
             interactionEvent.data.originalEvent = originalEvent;
 
             // perform hit testing for events targeting our canvas or cancel events
-            this.processInteractive(interactionEvent, this.renderer._lastObjectRendered, func, cancelled || !eventAppend);
+            this.processInteractive(interactionEvent, this.root, func, cancelled || !eventAppend);
 
             this.emit(cancelled ? 'pointercancel' : `pointerup${eventAppend}`, interactionEvent);
 
@@ -1317,7 +1341,7 @@ export default class InteractionManager extends EventEmitter
     }
 
     /**
-     * Is called when the pointer button is released on the renderer element
+     * Is called when the pointer button is released on the interaction DOM element
      *
      * @private
      * @param {PointerEvent} event - The DOM event of a pointer button being released
@@ -1419,7 +1443,7 @@ export default class InteractionManager extends EventEmitter
     }
 
     /**
-     * Is called when the pointer moves across the renderer element
+     * Is called when the pointer moves across the interaction DOM element
      *
      * @private
      * @param {PointerEvent} originalEvent - The DOM event of a pointer moving
@@ -1454,7 +1478,7 @@ export default class InteractionManager extends EventEmitter
 
             this.processInteractive(
                 interactionEvent,
-                this.renderer._lastObjectRendered,
+                this.root,
                 this.processPointerMove,
                 interactive
             );
@@ -1501,7 +1525,7 @@ export default class InteractionManager extends EventEmitter
     }
 
     /**
-     * Is called when the pointer is moved out of the renderer element
+     * Is called when the pointer is moved out of the interaction DOM element
      *
      * @private
      * @param {PointerEvent} originalEvent - The DOM event of a pointer being moved out
@@ -1528,7 +1552,7 @@ export default class InteractionManager extends EventEmitter
 
         interactionEvent.data.originalEvent = event;
 
-        this.processInteractive(interactionEvent, this.renderer._lastObjectRendered, this.processPointerOverOut, false);
+        this.processInteractive(interactionEvent, this.root, this.processPointerOverOut, false);
 
         this.emit('pointerout', interactionEvent);
         if (event.pointerType === 'mouse' || event.pointerType === 'pen')
@@ -1605,10 +1629,10 @@ export default class InteractionManager extends EventEmitter
     }
 
     /**
-     * Is called when the pointer is moved into the renderer element
+     * Is called when the pointer is moved into the interaction DOM element
      *
      * @private
-     * @param {PointerEvent} originalEvent - The DOM event of a pointer button being moved into the renderer view
+     * @param {PointerEvent} originalEvent - The DOM event of a pointer button being moved into the interaction DOM element
      */
     onPointerOver(originalEvent)
     {
@@ -1808,7 +1832,7 @@ export default class InteractionManager extends EventEmitter
 
         this.removeAllListeners();
 
-        this.renderer = null;
+        this.app = null;
 
         this.mouse = null;
 
