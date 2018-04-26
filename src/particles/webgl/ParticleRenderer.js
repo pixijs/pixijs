@@ -189,7 +189,7 @@ export default class ParticleRenderer extends core.ObjectRenderer
             // we always upload the dynamic
             buffer.uploadDynamic(children, i, amount);
 
-            const bid = container._bufferUpdateIDs[i] || 0;
+            const bid = container._bufferUpdateIDs[j] || 0;
 
             updateStatic = updateStatic || (buffer._updateID < bid);
             // we only upload the static content when we have to!
