@@ -1,9 +1,9 @@
 {
-  "name": "@pixi/mixin-app-loader",
+  "name": "@pixi/app-loader",
   "version": "5.0.0-alpha.2",
-  "main": "lib/mixin-app-loader.js",
-  "module": "lib/mixin-app-loader.es.js",
-  "description": "Support for loader in Application",
+  "main": "lib/app-loader.js",
+  "module": "lib/app-loader.es.js",
+  "description": "Plugin support for for Loader in Application",
   "author": "Mat Groves",
   "contributors": [
     "Matt Karl <matt@mattkarl.com>"
