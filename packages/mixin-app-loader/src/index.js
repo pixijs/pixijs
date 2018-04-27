@@ -1,38 +1,46 @@
 import { Application } from '@pixi/app';
 import { Loader } from '@pixi/loaders';
 
-Application.prototype._loader = null;
-
 /**
- * Loader instance to help with asset loading.
- * @name PIXI.Application#loader
- * @type {PIXI.Loader}
+ * Application plugin for supporting loader option
+ * @class
+ * @private
  */
-Object.defineProperties(Application.prototype, {
-    loader: {
-        get()
-        {
-            if (!this._loader && this._options)
-            {
-                const { sharedLoader } = this._options;
-
-                this._loader = sharedLoader ? Loader.shared : new Loader();
-            }
-
-            return this._loader;
-        },
-    },
-});
-
-// Override the destroy function
-// making sure to destroy the current Loader
-Application.prototype._parentDestroy = Application.prototype.destroy;
-Application.prototype.destroy = function destroy(removeView)
+class LoaderPlugin
 {
-    if (this._loader)
+    /**
+     * Called on application constructor
+     * @param {object} options
+     * @private
+     */
+    static init(options)
     {
-        this._loader.destroy();
-        this._loader = null;
+        options = Object.assign({
+            sharedLoader: false,
+        }, options);
+
+        /**
+         * Loader instance to help with asset loading.
+         * @name PIXI.Application#loader
+         * @type {PIXI.Loader}
+         * @readonly
+         */
+        this.loader = options.sharedLoader ? Loader.shared : new Loader();
     }
-    this._parentDestroy(removeView);
-};
+
+    /**
+     * Called when application destroyed
+     * @private
+     */
+    static destroy()
+    {
+        if (this.loader)
+        {
+            this.loader.destroy();
+            this.loader = null;
+        }
+    }
+}
+
+// Register the plugin with Application
+Application.registerPlugin(LoaderPlugin);

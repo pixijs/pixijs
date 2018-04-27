@@ -9,5 +9,5 @@ npm install @pixi/app
 ## Usage
 
 ```js
-import * as app from '@pixi/app';
+import { Application } from '@pixi/app';
 ```

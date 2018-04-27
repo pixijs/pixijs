@@ -78,7 +78,6 @@ export default class Application
          * @private
          */
         this._options = options = Object.assign({
-            sharedLoader: false,
             forceCanvas: false,
         }, options);
 
