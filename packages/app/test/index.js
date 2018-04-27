@@ -3,6 +3,7 @@ const { autoDetectRenderer } = require('@pixi/canvas-renderer');
 const { Container } = require('@pixi/display');
 const { Ticker, UPDATE_PRIORITY } = require('@pixi/ticker');
 const { skipHello } = require('@pixi/utils');
+const { InteractionManager } = require('@pixi/interaction');
 
 skipHello();
 
@@ -19,12 +20,36 @@ describe('PIXI.Application', function ()
         expect(app.stage).to.be.instanceof(Container);
         expect(app.ticker).to.be.instanceof(Ticker);
         expect(app.renderer).to.be.ok;
+        expect(app.interaction).to.be.instanceof(InteractionManager);
 
         app.ticker.addOnce(() =>
         {
             app.destroy();
+            expect(app.interaction).to.be.null;
+            expect(app.ticker).to.be.null;
+            expect(app.stage).to.be.null;
+            expect(app.renderer).to.be.null;
             done();
         });
+    });
+
+    it('register a new plugin, then destroy it', function()
+    {
+        const plugin = {
+            init: sinon.spy(),
+            destroy: sinon.spy()
+        };
+
+        Application.registerPlugin(plugin);
+
+        const app = new Application();
+
+        app.destroy();
+
+        expect(plugin.init).to.be.calledOnce;
+        expect(plugin.destroy).to.be.calledOnce;
+
+        Application._plugins.pop();
     });
 
     it('should remove canvas when destroyed', function (done)

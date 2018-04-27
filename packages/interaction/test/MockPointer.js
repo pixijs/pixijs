@@ -2,6 +2,7 @@ const { CanvasRenderer } = require('@pixi/canvas-renderer');
 const { Ticker } = require('@pixi/ticker');
 const { Rectangle } = require('@pixi/math');
 const { shared } = Ticker;
+const { InteractionManager } = require('../');
 
 /**
  * Use this to mock mouse/touch/pointer events
@@ -37,7 +38,12 @@ class MockPointer
         this.stage = stage;
         this.renderer = new CanvasRenderer(width || 100, height || 100);
         this.renderer.sayHello = () => { /* empty */ };
-        this.interaction = this.renderer.plugins.interaction;
+        this.interaction = new InteractionManager({
+            root: stage,
+            ticker: shared,
+            view: this.renderer.view,
+            resolution: this.renderer.resolution,
+        });
         this.interaction.supportsTouchEvents = true;
         shared.remove(this.interaction.update, this.interaction);
     }
@@ -52,6 +58,9 @@ class MockPointer
             delete window.PointerEvent;
         }
         this.renderer.destroy();
+        this.renderer = null;
+        this.interaction.destroy();
+        this.interaction = null;
     }
 
     /**
@@ -61,7 +70,7 @@ class MockPointer
      */
     setPosition(x, y)
     {
-        this.renderer.plugins.interaction.mapPositionToPoint = (point) =>
+        this.interaction.mapPositionToPoint = (point) =>
         {
             point.x = x;
             point.y = y;

@@ -38,31 +38,34 @@ const hitTestEvent = {
 export default class InteractionManager extends EventEmitter
 {
     /**
-     * @param {object} app - Application object
-     * @param {PIXI.Ticker} app.ticker - Ticker to bound update function on
-     * @param {PIXI.DisplayObject} app.stage - Root element for interaction
-     * @param {PIXI.DisplayObject} [app.renderer] - Renderer, optional
-     * you can pass `view` and `resolution` in options parameter
      * @param {object} [options] - The options for the manager
-     * @param {HTMLElement} [options.view] - Element to bound events on. By default it is `app.renderer.view`
+     * @param {PIXI.Container} [options.root] - Root element for interaction
+     * @param {PIXI.Ticker} [options.ticker] - Ticker to bound update function on
+     * @param {HTMLCanvasElement} [options.view] - Element to bound events on.
      * @param {number} [options.resolution] - Resolution that is passed to `setTargetElement`.
-     * By default its taken from `app.renderer.resolution`.
      * @param {boolean} [options.autoPreventDefault=true] - Should the manager automatically prevent default browser actions.
      * @param {number} [options.interactionFrequency=10] - Frequency increases the interaction events will be checked.
-     * @param {number} [options.isCocoonJS]
      */
-    constructor(app, options)
+    constructor(options)
     {
         super();
 
         options = options || {};
 
         /**
-         * Application object that contains necessary dependencies (ticker, stage) and optional ones (renderer)
+         * The root display object to check interaction on
          *
-         * @member {object}
+         * @member {PIXI.Container}
+         * @readonly
          */
-        this.app = app;
+        this.root = options.root || null;
+
+        /**
+         * Handle the internal updates for the interaction, for things like rollover and mouse move.
+         *
+         * @member {PIXI.Ticker}
+         */
+        this.ticker = options.ticker || null;
 
         /**
          * Should default browser actions automatically be prevented.
@@ -125,7 +128,7 @@ export default class InteractionManager extends EventEmitter
          * @private
          * @member {HTMLElement}
          */
-        this.interactionDOMElement = null;
+        this.domElement = null;
 
         /**
          * This property determines if mousemove and touchmove events are fired only when the cursor
@@ -219,7 +222,7 @@ export default class InteractionManager extends EventEmitter
 
         /**
          * Dictionary of how different cursor modes are handled. Strings are handled as CSS cursor
-         * values, objects are handled as dictionaries of CSS values for interactionDOMElement,
+         * values, objects are handled as dictionaries of CSS values for domElement,
          * and functions are called instead of changing the CSS.
          * Default CSS cursor values are provided for 'default' and 'pointer' modes.
          * @member {Object.<string, (string|Function|Object.<string, string>)>}
@@ -261,7 +264,11 @@ export default class InteractionManager extends EventEmitter
          */
         this.resolution = 1;
 
-        this.setTargetElement(options.view || app.renderer.view, options.resolution || app.renderer.resolution);
+        // Initialize if we have a view
+        if (options.view)
+        {
+            this.setTargetElement(options.view, options.resolution);
+        }
 
         /**
          * Fired when a pointer device button (usually a mouse left-button) is pressed on the display
@@ -658,16 +665,6 @@ export default class InteractionManager extends EventEmitter
     }
 
     /**
-     * Root interaction element, same as application stage
-     *
-     * @returns {PIXI.DisplayObject}
-     */
-    get root()
-    {
-        return this.app.stage;
-    }
-
-    /**
      * Hit tests a point against the display tree, returning the first interactive object that is hit.
      *
      * @param {PIXI.Point} globalPoint - A point to hit test with, in global space.
@@ -704,11 +701,8 @@ export default class InteractionManager extends EventEmitter
     setTargetElement(element, resolution = 1)
     {
         this.removeEvents();
-
-        this.interactionDOMElement = element;
-
+        this.domElement = element;
         this.resolution = resolution;
-
         this.addEvents();
     }
 
@@ -719,24 +713,26 @@ export default class InteractionManager extends EventEmitter
      */
     addEvents()
     {
-        if (!this.interactionDOMElement)
+        const dom = this.domElement;
+
+        if (!dom)
         {
             return;
         }
 
-        if (this.app.ticker)
+        if (this.ticker)
         {
-            this.app.ticker.add(this.update, this, UPDATE_PRIORITY.INTERACTION);
+            this.ticker.add(this.update, this, UPDATE_PRIORITY.INTERACTION);
         }
 
         if (window.navigator.msPointerEnabled)
         {
-            this.interactionDOMElement.style['-ms-content-zooming'] = 'none';
-            this.interactionDOMElement.style['-ms-touch-action'] = 'none';
+            dom.style['-ms-content-zooming'] = 'none';
+            dom.style['-ms-touch-action'] = 'none';
         }
         else if (this.supportsPointerEvents)
         {
-            this.interactionDOMElement.style['touch-action'] = 'none';
+            dom.style['touch-action'] = 'none';
         }
 
         /**
@@ -746,21 +742,21 @@ export default class InteractionManager extends EventEmitter
         if (this.supportsPointerEvents)
         {
             window.document.addEventListener('pointermove', this.onPointerMove, true);
-            this.interactionDOMElement.addEventListener('pointerdown', this.onPointerDown, true);
+            dom.addEventListener('pointerdown', this.onPointerDown, true);
             // pointerout is fired in addition to pointerup (for touch events) and pointercancel
             // we already handle those, so for the purposes of what we do in onPointerOut, we only
             // care about the pointerleave event
-            this.interactionDOMElement.addEventListener('pointerleave', this.onPointerOut, true);
-            this.interactionDOMElement.addEventListener('pointerover', this.onPointerOver, true);
+            dom.addEventListener('pointerleave', this.onPointerOut, true);
+            dom.addEventListener('pointerover', this.onPointerOver, true);
             window.addEventListener('pointercancel', this.onPointerCancel, true);
             window.addEventListener('pointerup', this.onPointerUp, true);
         }
         else
         {
             window.document.addEventListener('mousemove', this.onPointerMove, true);
-            this.interactionDOMElement.addEventListener('mousedown', this.onPointerDown, true);
-            this.interactionDOMElement.addEventListener('mouseout', this.onPointerOut, true);
-            this.interactionDOMElement.addEventListener('mouseover', this.onPointerOver, true);
+            dom.addEventListener('mousedown', this.onPointerDown, true);
+            dom.addEventListener('mouseout', this.onPointerOut, true);
+            dom.addEventListener('mouseover', this.onPointerOver, true);
             window.addEventListener('mouseup', this.onPointerUp, true);
         }
 
@@ -769,10 +765,10 @@ export default class InteractionManager extends EventEmitter
         // PointerEvents whenever available
         if (this.supportsTouchEvents)
         {
-            this.interactionDOMElement.addEventListener('touchstart', this.onPointerDown, true);
-            this.interactionDOMElement.addEventListener('touchcancel', this.onPointerCancel, true);
-            this.interactionDOMElement.addEventListener('touchend', this.onPointerUp, true);
-            this.interactionDOMElement.addEventListener('touchmove', this.onPointerMove, true);
+            dom.addEventListener('touchstart', this.onPointerDown, true);
+            dom.addEventListener('touchcancel', this.onPointerCancel, true);
+            dom.addEventListener('touchend', this.onPointerUp, true);
+            dom.addEventListener('touchmove', this.onPointerMove, true);
         }
 
         this.eventsAdded = true;
@@ -785,53 +781,55 @@ export default class InteractionManager extends EventEmitter
      */
     removeEvents()
     {
-        if (!this.interactionDOMElement)
+        const view = this.domElement;
+
+        if (!view)
         {
             return;
         }
 
-        if (this.app.ticker)
+        if (this.ticker)
         {
-            this.app.ticker.remove(this.update, this);
+            this.ticker.remove(this.update, this);
         }
 
         if (window.navigator.msPointerEnabled)
         {
-            this.interactionDOMElement.style['-ms-content-zooming'] = '';
-            this.interactionDOMElement.style['-ms-touch-action'] = '';
+            view.style['-ms-content-zooming'] = '';
+            view.style['-ms-touch-action'] = '';
         }
         else if (this.supportsPointerEvents)
         {
-            this.interactionDOMElement.style['touch-action'] = '';
+            view.style['touch-action'] = '';
         }
 
         if (this.supportsPointerEvents)
         {
             window.document.removeEventListener('pointermove', this.onPointerMove, true);
-            this.interactionDOMElement.removeEventListener('pointerdown', this.onPointerDown, true);
-            this.interactionDOMElement.removeEventListener('pointerleave', this.onPointerOut, true);
-            this.interactionDOMElement.removeEventListener('pointerover', this.onPointerOver, true);
+            view.removeEventListener('pointerdown', this.onPointerDown, true);
+            view.removeEventListener('pointerleave', this.onPointerOut, true);
+            view.removeEventListener('pointerover', this.onPointerOver, true);
             window.removeEventListener('pointercancel', this.onPointerCancel, true);
             window.removeEventListener('pointerup', this.onPointerUp, true);
         }
         else
         {
             window.document.removeEventListener('mousemove', this.onPointerMove, true);
-            this.interactionDOMElement.removeEventListener('mousedown', this.onPointerDown, true);
-            this.interactionDOMElement.removeEventListener('mouseout', this.onPointerOut, true);
-            this.interactionDOMElement.removeEventListener('mouseover', this.onPointerOver, true);
+            view.removeEventListener('mousedown', this.onPointerDown, true);
+            view.removeEventListener('mouseout', this.onPointerOut, true);
+            view.removeEventListener('mouseover', this.onPointerOver, true);
             window.removeEventListener('mouseup', this.onPointerUp, true);
         }
 
         if (this.supportsTouchEvents)
         {
-            this.interactionDOMElement.removeEventListener('touchstart', this.onPointerDown, true);
-            this.interactionDOMElement.removeEventListener('touchcancel', this.onPointerCancel, true);
-            this.interactionDOMElement.removeEventListener('touchend', this.onPointerUp, true);
-            this.interactionDOMElement.removeEventListener('touchmove', this.onPointerMove, true);
+            view.removeEventListener('touchstart', this.onPointerDown, true);
+            view.removeEventListener('touchcancel', this.onPointerCancel, true);
+            view.removeEventListener('touchend', this.onPointerUp, true);
+            view.removeEventListener('touchmove', this.onPointerMove, true);
         }
 
-        this.interactionDOMElement = null;
+        this.domElement = null;
 
         this.eventsAdded = false;
     }
@@ -853,7 +851,7 @@ export default class InteractionManager extends EventEmitter
 
         this._deltaTime = 0;
 
-        if (!this.interactionDOMElement)
+        if (!this.domElement)
         {
             return;
         }
@@ -924,7 +922,7 @@ export default class InteractionManager extends EventEmitter
             {
                 case 'string':
                     // string styles are handled as cursor CSS
-                    this.interactionDOMElement.style.cursor = style;
+                    this.domElement.style.cursor = style;
                     break;
                 case 'function':
                     // functions are just called, and passed the cursor mode
@@ -932,8 +930,8 @@ export default class InteractionManager extends EventEmitter
                     break;
                 case 'object':
                     // if it is an object, assume that it is a dictionary of CSS styles,
-                    // apply it to the interactionDOMElement
-                    Object.assign(this.interactionDOMElement.style, style);
+                    // apply it to the domElement
+                    Object.assign(this.domElement.style, style);
                     break;
             }
         }
@@ -941,7 +939,7 @@ export default class InteractionManager extends EventEmitter
         {
             // if it mode is a string (not a Symbol) and cursorStyles doesn't have any entry
             // for the mode, then assume that the dev wants it to be CSS for the cursor.
-            this.interactionDOMElement.style.cursor = mode;
+            this.domElement.style.cursor = mode;
         }
     }
 
@@ -983,19 +981,19 @@ export default class InteractionManager extends EventEmitter
         let rect;
 
         // IE 11 fix
-        if (!this.interactionDOMElement.parentElement)
+        if (!this.domElement.parentElement)
         {
             rect = { x: 0, y: 0, width: 0, height: 0 };
         }
         else
         {
-            rect = this.interactionDOMElement.getBoundingClientRect();
+            rect = this.domElement.getBoundingClientRect();
         }
 
         const resolutionMultiplier = navigator.isCocoonJS ? this.resolution : (1.0 / this.resolution);
 
-        point.x = ((x - rect.left) * (this.interactionDOMElement.width / rect.width)) * resolutionMultiplier;
-        point.y = ((y - rect.top) * (this.interactionDOMElement.height / rect.height)) * resolutionMultiplier;
+        point.x = ((x - rect.left) * (this.domElement.width / rect.width)) * resolutionMultiplier;
+        point.y = ((y - rect.top) * (this.domElement.height / rect.height)) * resolutionMultiplier;
     }
 
     /**
@@ -1270,7 +1268,7 @@ export default class InteractionManager extends EventEmitter
 
         // if the event wasn't targeting our canvas, then consider it to be pointerupoutside
         // in all cases (unless it was a pointercancel)
-        const eventAppend = originalEvent.target !== this.interactionDOMElement ? 'outside' : '';
+        const eventAppend = originalEvent.target !== this.domElement ? 'outside' : '';
 
         for (let i = 0; i < eventLen; i++)
         {
@@ -1838,7 +1836,7 @@ export default class InteractionManager extends EventEmitter
 
         this.eventData = null;
 
-        this.interactionDOMElement = null;
+        this.domElement = null;
 
         this.onPointerDown = null;
         this.processPointerDown = null;
