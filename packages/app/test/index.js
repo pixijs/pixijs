@@ -33,11 +33,11 @@ describe('PIXI.Application', function ()
         });
     });
 
-    it('register a new plugin, then destroy it', function()
+    it('register a new plugin, then destroy it', function ()
     {
         const plugin = {
             init: sinon.spy(),
-            destroy: sinon.spy()
+            destroy: sinon.spy(),
         };
 
         Application.registerPlugin(plugin);

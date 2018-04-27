@@ -36,7 +36,7 @@ Graphics.prototype.generateCanvasTexture = function generateCanvasTexture(scaleM
     canvasRenderer.render(this, canvasBuffer, true, tempMatrix);
 
     const texture = Texture.from(canvasBuffer.baseTexture._canvasRenderTarget.canvas, {
-        scaleMode
+        scaleMode,
     });
 
     texture.baseTexture.resolution = resolution;
