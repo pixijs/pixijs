@@ -595,6 +595,7 @@ export default class FilterManager extends WebGLManager
         renderTarget.resolution = resolution;
         renderTarget.defaultFrame.width = renderTarget.size.width = minWidth / resolution;
         renderTarget.defaultFrame.height = renderTarget.size.height = minHeight / resolution;
+        renderTarget.filterPoolKey = key;
 
         return renderTarget;
     }
@@ -628,18 +629,7 @@ export default class FilterManager extends WebGLManager
      */
     freePotRenderTarget(renderTarget)
     {
-        const minWidth = renderTarget.size.width * renderTarget.resolution;
-        const minHeight = renderTarget.size.height * renderTarget.resolution;
-
-        let key = screenKey;
-
-        if (minWidth !== this._screenWidth
-            || minHeight !== this._screenHeight)
-        {
-            key = ((minWidth & 0xFFFF) << 16) | (minHeight & 0xFFFF);
-        }
-
-        this.pool[key].push(renderTarget);
+        this.pool[renderTarget.filterPoolKey].push(renderTarget);
     }
 
     /**
