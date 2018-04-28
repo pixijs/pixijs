@@ -72,12 +72,8 @@ export default class Application
             }, arg3);
         }
 
-        /**
-         * The default options, so we mixin functionality later.
-         * @member {object}
-         * @private
-         */
-        this._options = options = Object.assign({
+        // The default options
+        options = Object.assign({
             forceCanvas: false,
         }, options);
 
