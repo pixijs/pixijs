@@ -1,13 +1,13 @@
 # How to contribute
 
-It is essential to the development of pixi.js that the community is empowered
+It is essential to the development of PixiJS that the community is empowered
 to make changes and get them into the library. Here are some guidelines to make
 that process silky smooth for all involved.
 
 ## Reporting issues
 
 To report a bug, request a feature, or even ask a question, make use of the GitHub Issues
-section for [pixi.js][issues]. When submitting an issue please take the following steps:
+section for [PixiJS][issues]. When submitting an issue please take the following steps:
 
 1. **Seach for existing issues.** Your question or bug may have already been answered or fixed,
 be sure to search the issues first before putting in a duplicate issue.
@@ -21,6 +21,9 @@ of [jsFiddle][fiddle], [jsBin][jsbin], or a link to your live site so that we ca
 4. **Share as much information as possible.** Include browser version affected, your OS, version of
 the library, steps to reproduce, etc. "X isn't working!!!1!" will probably just be closed.
 
+> NOTE: if you are looking for support, please visit the [FAQ][faq], [forums][forums] or go through
+> the [tutorials][tutorials].
+
 ## Contributing Changes
 
 ### Setting Up
@@ -30,11 +33,11 @@ To setup for making changes you will need to take a few steps, we've outlined th
 1. Ensure you have node.js installed. You can download node.js from [nodejs.org][node]. Because
 pixi uses modern JS features, you will need a modern version of node. v4+ is recommended.
 
-2. Fork the [pixi.js][pixi] repository, if you are unsure how to do this GitHub has a guides
+2. Fork the **[pixi.js][pixi]** repository, if you are unsure how to do this GitHub has a guides
 for the [command line][fork-cli] and for the [GitHub Client][fork-gui].
 
 3. Next, run `npm install` from within your clone of your fork. That will install dependencies
-necessary to build pixi.js
+necessary to build PixiJS.
 
 
 ### Making a Change
@@ -54,14 +57,14 @@ one of the above branches.
 
 ### Testing Your Change
 
-You can test your change by using the automated tests packaged with pixi.js. You can run these tests
+You can test your change by using the automated tests packaged with PixiJS. You can run these tests
 by running `npm test` from the command line. If you fix a bug please add a test that will catch that
 bug if it ever happens again. This prevents regressions from sneaking in.
 
 ### Submitting Your Change
 
 After you have made and tested your change, commit and push it to your fork. Then, open a Pull Request
-from your fork to the main pixi.js repository on the branch you used in the `Making a Change` section of this document.
+from your fork to the main **pixi.js** repository on the branch you used in the `Making a Change` section of this document.
 
 ## Quickie Code Style Guide
 
@@ -73,13 +76,16 @@ from your fork to the main pixi.js repository on the branch you used in the `Mak
 to ensure that you didn't break anything. You can do this with `npm test` which will run
 eslint, rebuild, then run the test suite.
 
-[issues]: https://github.com/pixijs/pixi.js/issues
-[pixi]: https://github.com/pixijs/pixi.js
+[faq]: http://www.pixijs.com/faq
 [fiddle]: http://jsfiddle.net
-[jsbin]: http://jsbin.com/
-[node]: http://nodejs.org
 [fork-cli]: https://help.github.com/articles/fork-a-repo/
 [fork-gui]: https://guides.github.com/activities/forking/
+[forums]: http://www.html5gamedevs.com/forum/15-pixijs/
+[issues]: https://github.com/pixijs/pixi.js/issues
+[jsbin]: http://jsbin.com/
+[node]: http://nodejs.org
+[pixi]: https://github.com/pixijs/pixi.js
+[tutorials]: http://www.pixijs.com/tutorials
 
 ## Contributor Code of Conduct
 

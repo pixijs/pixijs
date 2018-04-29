@@ -1,12 +1,13 @@
 import * as core from '../../core';
 import ParticleShader from './ParticleShader';
 import ParticleBuffer from './ParticleBuffer';
+import { premultiplyTint } from '../../core/utils';
 
 /**
  * @author Mat Groves
  *
  * Big thanks to the very clever Matt DesLauriers <mattdesl> https://github.com/mattdesl/
- * for creating the original pixi version!
+ * for creating the original PixiJS version!
  * Also a thanks to https://github.com/bchevalier for tweaking the tint and alpha so that they now
  * share 4 bytes on the vertex buffer
  *
@@ -94,11 +95,12 @@ export default class ParticleRenderer extends core.ObjectRenderer
                 uploadFunction: this.uploadUvs,
                 offset: 0,
             },
-            // alphaData
+            // tintData
             {
                 attribute: this.shader.attributes.aColor,
                 size: 1,
-                uploadFunction: this.uploadAlpha,
+                unsignedByte: true,
+                uploadFunction: this.uploadTint,
                 offset: 0,
             },
         ];
@@ -161,6 +163,8 @@ export default class ParticleRenderer extends core.ObjectRenderer
         // make sure the texture is bound..
         this.shader.uniforms.uSampler = renderer.bindTexture(baseTexture);
 
+        let updateStatic = false;
+
         // now lets upload and render the buffers..
         for (let i = 0, j = 0; i < totalChildren; i += batchSize, j += 1)
         {
@@ -171,16 +175,28 @@ export default class ParticleRenderer extends core.ObjectRenderer
                 amount = batchSize;
             }
 
+            if (j >= buffers.length)
+            {
+                if (!container.autoResize)
+                {
+                    break;
+                }
+                buffers.push(this._generateOneMoreBuffer(container));
+            }
+
             const buffer = buffers[j];
 
             // we always upload the dynamic
             buffer.uploadDynamic(children, i, amount);
 
+            const bid = container._bufferUpdateIDs[j] || 0;
+
+            updateStatic = updateStatic || (buffer._updateID < bid);
             // we only upload the static content when we have to!
-            if (container._bufferToUpdate === j)
+            if (updateStatic)
             {
+                buffer._updateID = container._updateID;
                 buffer.uploadStatic(children, i, amount);
-                container._bufferToUpdate = j + 1;
             }
 
             // bind the buffer
@@ -209,6 +225,22 @@ export default class ParticleRenderer extends core.ObjectRenderer
         }
 
         return buffers;
+    }
+
+    /**
+     * Creates one more particle buffer, because container has autoResize feature
+     *
+     * @param {PIXI.ParticleContainer} container - The container to render using this ParticleRenderer
+     * @return {PIXI.ParticleBuffer} generated buffer
+     * @private
+     */
+    _generateOneMoreBuffer(container)
+    {
+        const gl = this.renderer.gl;
+        const batchSize = container._batchSize;
+        const dynamicPropertyFlags = container._properties;
+
+        return new ParticleBuffer(gl, this.properties, dynamicPropertyFlags, batchSize);
     }
 
     /**
@@ -387,16 +419,21 @@ export default class ParticleRenderer extends core.ObjectRenderer
      * @param {number} stride - Stride to use for iteration.
      * @param {number} offset - Offset to start at.
      */
-    uploadAlpha(children, startIndex, amount, array, stride, offset)
+    uploadTint(children, startIndex, amount, array, stride, offset)
     {
-        for (let i = 0; i < amount; i++)
+        for (let i = 0; i < amount; ++i)
         {
-            const spriteAlpha = children[startIndex + i].alpha;
+            const sprite = children[startIndex + i];
+            const premultiplied = sprite._texture.baseTexture.premultipliedAlpha;
+            const alpha = sprite.alpha;
+            // we dont call extra function if alpha is 1.0, that's faster
+            const argb = alpha < 1.0 && premultiplied ? premultiplyTint(sprite._tintRGB, alpha)
+                : sprite._tintRGB + (alpha * 255 << 24);
 
-            array[offset] = spriteAlpha;
-            array[offset + stride] = spriteAlpha;
-            array[offset + (stride * 2)] = spriteAlpha;
-            array[offset + (stride * 3)] = spriteAlpha;
+            array[offset] = argb;
+            array[offset + stride] = argb;
+            array[offset + (stride * 2)] = argb;
+            array[offset + (stride * 3)] = argb;
 
             offset += stride * 4;
         }

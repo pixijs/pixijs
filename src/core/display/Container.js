@@ -66,7 +66,7 @@ export default class Container extends DisplayObject
         }
         else
         {
-            // if the child has a parent then lets remove it as Pixi objects can only exist in one place
+            // if the child has a parent then lets remove it as PixiJS objects can only exist in one place
             if (child.parent)
             {
                 child.parent.removeChild(child);
@@ -173,7 +173,7 @@ export default class Container extends DisplayObject
     {
         if (index < 0 || index >= this.children.length)
         {
-            throw new Error('The supplied index is out of bounds');
+            throw new Error(`The index ${index} supplied is out of bounds ${this.children.length}`);
         }
 
         const currentIndex = this.getChildIndex(child);

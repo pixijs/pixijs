@@ -22,7 +22,7 @@ const defaultDestroyOptions = {
  * A Text can be created directly from a string and a style object
  *
  * ```js
- * let text = new PIXI.Text('This is a pixi text',{fontFamily : 'Arial', fontSize: 24, fill : 0xff1010, align : 'center'});
+ * let text = new PIXI.Text('This is a PixiJS text',{fontFamily : 'Arial', fontSize: 24, fill : 0xff1010, align : 'center'});
  * ```
  *
  * @class
@@ -144,8 +144,8 @@ export default class Text extends Sprite
         const maxLineWidth = measured.maxLineWidth;
         const fontProperties = measured.fontProperties;
 
-        this.canvas.width = Math.ceil((width + (style.padding * 2)) * this.resolution);
-        this.canvas.height = Math.ceil((height + (style.padding * 2)) * this.resolution);
+        this.canvas.width = Math.ceil((Math.max(1, width) + (style.padding * 2)) * this.resolution);
+        this.canvas.height = Math.ceil((Math.max(1, height) + (style.padding * 2)) * this.resolution);
 
         context.scale(this.resolution, this.resolution);
 

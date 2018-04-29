@@ -9,8 +9,8 @@ import EventEmitter from 'eventemitter3';
 const tempMatrix = new Matrix();
 
 /**
- * The SystemRenderer is the base for a Pixi Renderer. It is extended by the {@link PIXI.CanvasRenderer}
- * and {@link PIXI.WebGLRenderer} which can be used for rendering a Pixi scene.
+ * The SystemRenderer is the base for a PixiJS Renderer. It is extended by the {@link PIXI.CanvasRenderer}
+ * and {@link PIXI.WebGLRenderer} which can be used for rendering a PixiJS scene.
  *
  * @abstract
  * @class
@@ -37,7 +37,7 @@ export default class SystemRenderer extends EventEmitter
      *      not before the new render pass.
      * @param {number} [options.backgroundColor=0x000000] - The background color of the rendered area
      *  (shown if not transparent).
-     * @param {boolean} [options.roundPixels=false] - If true Pixi will Math.floor() x/y values when rendering,
+     * @param {boolean} [options.roundPixels=false] - If true PixiJS will Math.floor() x/y values when rendering,
      *  stopping pixel interpolation.
      */
     constructor(system, options, arg2, arg3)
@@ -130,8 +130,8 @@ export default class SystemRenderer extends EventEmitter
 
         /**
          * This sets if the CanvasRenderer will clear the canvas or not before the new render pass.
-         * If the scene is NOT transparent Pixi will use a canvas sized fillRect operation every
-         * frame to set the canvas background color. If the scene is transparent Pixi will use clearRect
+         * If the scene is NOT transparent PixiJS will use a canvas sized fillRect operation every
+         * frame to set the canvas background color. If the scene is transparent PixiJS will use clearRect
          * to clear the canvas every frame. Disable this by setting this to false. For example if
          * your game has a canvas filling background image you often don't need this set.
          *
@@ -141,7 +141,7 @@ export default class SystemRenderer extends EventEmitter
         this.clearBeforeRender = options.clearBeforeRender;
 
         /**
-         * If true Pixi will Math.floor() x/y values when rendering, stopping pixel interpolation.
+         * If true PixiJS will Math.floor() x/y values when rendering, stopping pixel interpolation.
          * Handy for crisp pixel art and speed on legacy devices.
          *
          * @member {boolean}
@@ -244,16 +244,18 @@ export default class SystemRenderer extends EventEmitter
      * @param {PIXI.DisplayObject} displayObject - The displayObject the object will be generated from
      * @param {number} scaleMode - Should be one of the scaleMode consts
      * @param {number} resolution - The resolution / device pixel ratio of the texture being generated
+     * @param {PIXI.Rectangle} [region] - The region of the displayObject, that shall be rendered,
+     *        if no region is specified, defaults to the local bounds of the displayObject.
      * @return {PIXI.Texture} a texture of the graphics object
      */
-    generateTexture(displayObject, scaleMode, resolution)
+    generateTexture(displayObject, scaleMode, resolution, region)
     {
-        const bounds = displayObject.getLocalBounds();
+        region = region || displayObject.getLocalBounds();
 
-        const renderTexture = RenderTexture.create(bounds.width | 0, bounds.height | 0, scaleMode, resolution);
+        const renderTexture = RenderTexture.create(region.width | 0, region.height | 0, scaleMode, resolution);
 
-        tempMatrix.tx = -bounds.x;
-        tempMatrix.ty = -bounds.y;
+        tempMatrix.tx = -region.x;
+        tempMatrix.ty = -region.y;
 
         this.render(displayObject, renderTexture, false, tempMatrix, true);
 

@@ -1,14 +1,19 @@
-import { default as Matrix } from '../core/math/Matrix';
+import { default as Matrix } from '../math/Matrix';
 
 const tempMat = new Matrix();
 
 /**
- * class controls uv transform and frame clamp for texture
+ * Class controls uv transform and frame clamp for texture
+ * Can be used in Texture "transform" field, or separately, you can use different clamp settings on the same texture.
+ * If you want to add support for texture region of certain feature or filter, that's what you're looking for.
  *
+ * @see PIXI.Texture
+ * @see PIXI.mesh.Mesh
+ * @see PIXI.extras.TilingSprite
  * @class
- * @memberof PIXI.extras
+ * @memberof PIXI
  */
-export default class TextureTransform
+export default class TextureMatrix
 {
     /**
      *

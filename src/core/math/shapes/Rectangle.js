@@ -21,25 +21,25 @@ export default class Rectangle
          * @member {number}
          * @default 0
          */
-        this.x = x;
+        this.x = Number(x);
 
         /**
          * @member {number}
          * @default 0
          */
-        this.y = y;
+        this.y = Number(y);
 
         /**
          * @member {number}
          * @default 0
          */
-        this.width = width;
+        this.width = Number(width);
 
         /**
          * @member {number}
          * @default 0
          */
-        this.height = height;
+        this.height = Number(height);
 
         /**
          * The type of the object, mainly used to avoid `instanceof` checks
@@ -158,7 +158,7 @@ export default class Rectangle
      * Pads the rectangle making it grow in all directions.
      *
      * @param {number} paddingX - The horizontal padding amount.
-     * @param {number} paddingY - The vertical padding amount.
+     * @param {number} [paddingY] - The vertical padding amount.
      */
     pad(paddingX, paddingY)
     {
