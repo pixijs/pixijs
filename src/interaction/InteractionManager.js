@@ -1557,9 +1557,6 @@ export default class InteractionManager extends EventEmitter
             trackingData = displayObject.trackedPointers[id] = new InteractionTrackingData(id);
         }
 
-        // eslint-disable-next-line no-console
-        console.log('overout', data, displayObject.name, hit, trackingData);
-
         if (trackingData === undefined) return;
 
         if (hit && this.mouseOverRenderer)
