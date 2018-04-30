@@ -51,11 +51,10 @@ export default class Application
      *  for devices with dual graphics card **webgl only**
      * @param {boolean} [options.sharedTicker=false] - `true` to use PIXI.Ticker.shared, `false` to create new ticker.
      * @param {boolean} [options.sharedLoader=false] - `true` to use PIXI.Loaders.shared, `false` to create new Loader.
-     * @param {object|boolean} [options.interaction] - Options for interaction manager.
-     *  Set it to `false` to remove interaction completely.
-     * @param {boolean} [options.interaction.autoPreventDefault=true] - Should the manager automatically prevent
+     * @param {boolean} [options.interaction=true] - Set it to `false` to remove interaction.
+     * @param {boolean} [options.autoPreventDefault=true] - Should the InteractionManager automatically prevent
      *  default browser actions.
-     * @param {number} [options.interaction.interactionFrequency=10] - Frequency increases the interaction events
+     * @param {number} [options.interactionFrequency=10] - Frequency increases the interaction events
      *  will be checked.
      * @param {Window|HTMLElement} [options.resizeTo] - Element to automatically resize stage to.
      */

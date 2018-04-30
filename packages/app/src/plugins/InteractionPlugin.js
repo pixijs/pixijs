@@ -15,6 +15,12 @@ export default class InteractionPlugin
      */
     static init(options)
     {
+        options = Object.assign({
+            interaction: true,
+            autoPreventDefault: true,
+            interactionFrequency: 10,
+        }, options);
+
         /**
          * InteractionManager for the application
          * @member {PIXI.interaction.InteractionManager} interaction
@@ -23,14 +29,18 @@ export default class InteractionPlugin
         this.interaction = null;
 
         // Default is to opt-in to interaction
-        if (options.interaction !== false)
+        if (options.interaction)
         {
-            this.interaction = new InteractionManager(Object.assign({
+            const { autoPreventDefault, interactionFrequency } = options;
+
+            this.interaction = new InteractionManager({
                 root: this.stage,
                 ticker: this.ticker,
                 view: this.view,
                 resolution: this.renderer.resolution,
-            }, options.interaction));
+                autoPreventDefault,
+                interactionFrequency,
+            });
         }
     }
 
