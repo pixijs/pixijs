@@ -496,7 +496,7 @@ export default class BaseTexture extends EventEmitter
     {
         let svgString;
 
-        if (dataUri.encoding === 'base64')
+        if (dataUri.encoding.indexOf('base64') >= 0)
         {
             if (!atob)
             {
