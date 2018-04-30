@@ -8,3 +8,4 @@
  */
 export { default as accessibleTarget } from './accessibleTarget';
 export { default as AccessibilityManager } from './AccessibilityManager';
+export { default as AccessibilityPlugin } from './AccessibilityPlugin';

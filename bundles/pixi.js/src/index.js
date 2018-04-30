@@ -32,7 +32,6 @@ import '@pixi/mixin-get-global-position';
 import deprecated from './deprecated';
 
 // Install renderer plugins
-core.Renderer.registerPlugin('accessibility', accessibility.AccessibilityManager);
 core.Renderer.registerPlugin('extract', extract.Extract);
 core.Renderer.registerPlugin('graphics', graphics.GraphicsRenderer);
 core.Renderer.registerPlugin('mesh', mesh.MeshRenderer);
@@ -47,6 +46,7 @@ loaders.Loader.registerPlugin(spritesheet.SpritesheetLoader);
 app.Application.registerPlugin(ticker.TickerPlugin);
 app.Application.registerPlugin(loaders.LoaderPlugin);
 app.Application.registerPlugin(interaction.InteractionPlugin);
+app.Application.registerPlugin(accessibility.AccessibilityPlugin);
 
 // Apply deplayed mixins
 utils.mixins.performMixins();

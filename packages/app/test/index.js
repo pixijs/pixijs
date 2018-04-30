@@ -17,11 +17,11 @@ describe('PIXI.Application', function ()
 
         expect(app.stage).to.be.instanceof(Container);
         expect(app.renderer).to.be.ok;
-        
+
         app.destroy();
 
         expect(app.stage).to.be.null;
-        expect(app.renderer).to.be.null; 
+        expect(app.renderer).to.be.null;
     });
 
     it('register a new plugin, then destroy it', function ()
