@@ -73,6 +73,7 @@ export default class MeshRenderer extends core.ObjectRenderer
                 vao: null,
                 dirty: mesh.dirty,
                 indexDirty: mesh.indexDirty,
+                vertexDirty: mesh.vertexDirty,
             };
 
             // build the vao object that will render..
@@ -98,7 +99,16 @@ export default class MeshRenderer extends core.ObjectRenderer
             glData.indexBuffer.upload(mesh.indices);
         }
 
-        glData.vertexBuffer.upload(mesh.vertices);
+        // For backwards compatibility
+        if (mesh.manualVertexDirtyUpdate === false) {
+            mesh.vertexDirty++;
+        }
+
+        if (mesh.vertexDirty !== glData.vertexDirty)
+        {
+            glData.vertexDirty = mesh.vertexDirty;
+            glData.vertexBuffer.upload(mesh.vertices);
+        }
 
         renderer.bindShader(glData.shader);
 
