@@ -32,7 +32,6 @@
   "dependencies": {
     "@pixi/accessibility": "^5.0.0-alpha.2",
     "@pixi/app": "^5.0.0-alpha.2",
-    "@pixi/app-loader": "^5.0.0-alpha.2",
     "@pixi/constants": "^5.0.0-alpha.2",
     "@pixi/core": "^5.0.0-alpha.2",
     "@pixi/display": "^5.0.0-alpha.2",
