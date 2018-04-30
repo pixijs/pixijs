@@ -90,6 +90,22 @@ describe('PIXI.utils', function ()
                 .to.equal('94Z9RWUN77ZW');
         });
 
+        it('should decompose a data URI with charset', function ()
+        {
+            const dataUri = PIXI.utils.decomposeDataUri('data:image/svg+xml;charset=utf8;base64,PGRpdiB4bWxucz0Pg==');
+
+            expect(dataUri)
+                .to.be.an('object');
+            expect(dataUri.mediaType)
+                .to.equal('image');
+            expect(dataUri.subType)
+                .to.equal('svg+xml');
+            expect(dataUri.encoding)
+                .to.equal('charset=utf8;base64');
+            expect(dataUri.data)
+                .to.equal('PGRpdiB4bWxucz0Pg==');
+        });
+
         it('should return undefined for anything else', function ()
         {
             const dataUri = PIXI.utils.decomposeDataUri('foo');
