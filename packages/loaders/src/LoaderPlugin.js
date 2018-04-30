@@ -1,12 +1,16 @@
-import { Application } from '@pixi/app';
-import { Loader } from '@pixi/loaders';
+import Loader from './Loader';
 
 /**
- * Application plugin for supporting loader option
+ * Application plugin for supporting loader option. Installing the LoaderPlugin
+ * is not necessary if using **pixi.js** or **pixi.js-legacy**.
+ * @example
+ * import {LoaderPlugin} from '@pixi/loaders';
+ * import {Application} from '@pixi/app';
+ * Application.registerPlugin(LoaderPlugin);
  * @class
- * @private
+ * @memberof PIXI
  */
-class LoaderPlugin
+export default class LoaderPlugin
 {
     /**
      * Called on application constructor
@@ -41,6 +45,3 @@ class LoaderPlugin
         }
     }
 }
-
-// Register the plugin with Application
-Application.registerPlugin(LoaderPlugin);

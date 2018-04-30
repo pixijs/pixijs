@@ -1,9 +1,13 @@
-import { InteractionManager } from '@pixi/interaction';
+import InteractionManager from './InteractionManager';
 
 /**
  * Middleware for for Application's InteractionManager
- * @private
+ * @example
+ * import {InteractionPlugin} from '@pixi/interaction';
+ * import {Application} from '@pixi/app';
+ * Application.registerPlugin(InteractionPlugin);
  * @class
+ * @memberof PIXI.interaction
  */
 export default class InteractionPlugin
 {

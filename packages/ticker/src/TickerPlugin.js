@@ -1,9 +1,14 @@
-import { Ticker, UPDATE_PRIORITY } from '@pixi/ticker';
+import Ticker from './Ticker';
+import { UPDATE_PRIORITY } from './const';
 
 /**
- * Middleware for for Application Ticker
- * @private
+ * Middleware for for Application Ticker.
+ * @example
+ * import {TickerPlugin} from '@pixi/ticker';
+ * import {Application} from '@pixi/app';
+ * Application.registerPlugin(TickerPlugin);
  * @class
+ * @memberof PIXI
  */
 export default class TickerPlugin
 {

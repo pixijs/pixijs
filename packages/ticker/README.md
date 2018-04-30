@@ -8,6 +8,23 @@ npm install @pixi/ticker
 
 ## Usage
 
+Create a Ticker object directly:
+
 ```js
-import * as ticker from '@pixi/ticker';
+import { Ticker } from '@pixi/ticker';
+
+const ticker = new Ticker();
+ticker.start();
+```
+
+Use as an Application plugin:
+
+```js
+import { TickerPlugin } from '@pixi/ticker';
+import { Application } from '@pixi/app';
+
+Application.registerPlugin(TickerPlugin);
+
+const app = new Application();
+app.ticker.start();
 ```
