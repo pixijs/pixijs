@@ -306,6 +306,10 @@ export default class BaseTexture extends EventEmitter
      */
     loadSource(source)
     {
+        if (source.src === undefined) return;
+        this.imageUrl = source.src;
+        this.imageType = 'svg';
+
         const wasLoading = this.isLoading;
 
         this.hasLoaded = false;
