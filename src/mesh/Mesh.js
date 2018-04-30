@@ -83,14 +83,13 @@ export default class Mesh extends core.Container
          */
         this.vertexDirty = 0;
 
-
         /**
          * For backwards compatibility the default is to re-upload verticies each render call.
-         * Set this to `true` and increase `vertexDirty` to manually re-upload the buffer.
+         * Set this to `false` and increase `vertexDirty` to manually re-upload the buffer.
          *
          * @member {boolean}
          */
-        this.manualVertexDirtyUpdate = false;
+        this.autoVertexUpdate = true;
 
         /**
          * The blend mode to be applied to the sprite. Set to `PIXI.BLEND_MODES.NORMAL` to remove

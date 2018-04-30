@@ -100,7 +100,8 @@ export default class MeshRenderer extends core.ObjectRenderer
         }
 
         // For backwards compatibility
-        if (mesh.manualVertexDirtyUpdate === false) {
+        if (mesh.autoVertexUpdate)
+        {
             mesh.vertexDirty++;
         }
 
