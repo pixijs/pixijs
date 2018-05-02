@@ -1365,6 +1365,8 @@ export default class InteractionManager extends EventEmitter
                 if (isDown)
                 {
                     this.dispatchEvent(displayObject, isRightButton ? 'rightclick' : 'click', interactionEvent);
+                    // because we can confirm that the mousedown happened on this object, emit pointertap
+                    this.dispatchEvent(displayObject, 'pointertap', interactionEvent);
                 }
             }
             else if (isDown)
@@ -1393,7 +1395,11 @@ export default class InteractionManager extends EventEmitter
 
             if (trackingData)
             {
-                this.dispatchEvent(displayObject, 'pointertap', interactionEvent);
+                // mouse pointer taps are handled in the isMouse block for code simplicity
+                if (!isMouse)
+                {
+                    this.dispatchEvent(displayObject, 'pointertap', interactionEvent);
+                }
                 if (isTouch)
                 {
                     this.dispatchEvent(displayObject, 'tap', interactionEvent);
