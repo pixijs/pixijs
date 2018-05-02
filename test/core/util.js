@@ -84,6 +84,8 @@ describe('PIXI.utils', function ()
                 .to.equal('image');
             expect(dataUri.subType)
                 .to.equal('png');
+            expect(dataUri.charset)
+                .to.be.an('undefined');
             expect(dataUri.encoding)
                 .to.equal('base64');
             expect(dataUri.data)
@@ -100,8 +102,28 @@ describe('PIXI.utils', function ()
                 .to.equal('image');
             expect(dataUri.subType)
                 .to.equal('svg+xml');
+            expect(dataUri.charset)
+                .to.equal('utf8');
             expect(dataUri.encoding)
-                .to.equal('charset=utf8;base64');
+                .to.equal('base64');
+            expect(dataUri.data)
+                .to.equal('PGRpdiB4bWxucz0Pg==');
+        });
+
+        it('should decompose a data URI with charset without encoding', function ()
+        {
+            const dataUri = PIXI.utils.decomposeDataUri('data:image/svg+xml;charset=utf8,PGRpdiB4bWxucz0Pg==');
+
+            expect(dataUri)
+                .to.be.an('object');
+            expect(dataUri.mediaType)
+                .to.equal('image');
+            expect(dataUri.subType)
+                .to.equal('svg+xml');
+            expect(dataUri.charset)
+                .to.equal('utf8');
+            expect(dataUri.encoding)
+                .to.be.an('undefined');
             expect(dataUri.data)
                 .to.equal('PGRpdiB4bWxucz0Pg==');
         });

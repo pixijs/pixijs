@@ -186,8 +186,9 @@ export function decomposeDataUri(dataUri)
         return {
             mediaType: dataUriMatch[1] ? dataUriMatch[1].toLowerCase() : undefined,
             subType: dataUriMatch[2] ? dataUriMatch[2].toLowerCase() : undefined,
-            encoding: dataUriMatch[3] ? dataUriMatch[3].toLowerCase() : undefined,
-            data: dataUriMatch[4],
+            charset: dataUriMatch[3] ? dataUriMatch[3].toLowerCase() : undefined,
+            encoding: dataUriMatch[4] ? dataUriMatch[4].toLowerCase() : undefined,
+            data: dataUriMatch[5],
         };
     }
 
