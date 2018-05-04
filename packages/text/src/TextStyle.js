@@ -30,6 +30,7 @@ const defaultStyle = {
     strokeThickness: 0,
     textBaseline: 'alphabetic',
     trim: false,
+    whiteSpace: 'pre',
     wordWrap: false,
     wordWrapWidth: 100,
     leading: 0,
@@ -87,6 +88,8 @@ export default class TextStyle
      *  Default is 0 (no stroke)
      * @param {boolean} [style.trim=false] - Trim transparent borders
      * @param {string} [style.textBaseline='alphabetic'] - The baseline of the text that is rendered.
+     * @param {boolean} [style.whiteSpace='pre'] - Determines whether newlines & spaces are collapsed or preserved "normal"
+     *      (collapse, collapse), "pre" (preserve, preserve) | "pre-line" (preserve, collapse). It needs wordWrap to be set to true
      * @param {boolean} [style.wordWrap=false] - Indicates if word wrap should be used
      * @param {number} [style.wordWrapWidth=100] - The width at which text will wrap, it needs wordWrap to be set to true
      */
@@ -602,6 +605,31 @@ export default class TextStyle
         if (this._trim !== trim)
         {
             this._trim = trim;
+            this.styleID++;
+        }
+    }
+
+    /**
+     * How newlines and spaces should be handled.
+     * Default is 'pre' (preserve, preserve).
+     *
+     *  value       | New lines     |   Spaces
+     *  ---         | ---           |   ---
+     * 'normal'     | Collapse      |   Collapse
+     * 'pre'        | Preserve      |   Preserve
+     * 'pre-line'   | Preserve      |   Collapse
+     *
+     * @member {string}
+     */
+    get whiteSpace()
+    {
+        return this._whiteSpace;
+    }
+    set whiteSpace(whiteSpace) // eslint-disable-line require-jsdoc
+    {
+        if (this._whiteSpace !== whiteSpace)
+        {
+            this._whiteSpace = whiteSpace;
             this.styleID++;
         }
     }

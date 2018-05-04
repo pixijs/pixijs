@@ -16,7 +16,7 @@ import { Container } from '@pixi/display';
  *
  * for (let i = 0; i < 100; ++i)
  * {
- *     let sprite = new PIXI.Sprite.fromImage("myImage.png");
+ *     let sprite = new PIXI.Sprite.from("myImage.png");
  *     container.addChild(sprite);
  * }
  * ```

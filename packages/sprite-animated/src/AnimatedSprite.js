@@ -18,7 +18,7 @@ import { Ticker, UPDATE_PRIORITY } from '@pixi/ticker';
  *
  * for (let i=0; i < 4; i++)
  * {
- *      let texture = PIXI.Texture.fromImage(alienImages[i]);
+ *      let texture = PIXI.Texture.from(alienImages[i]);
  *      textureArray.push(texture);
  * };
  *
@@ -310,7 +310,7 @@ export default class AnimatedSprite extends Sprite
 
         for (let i = 0; i < frames.length; ++i)
         {
-            textures.push(Texture.fromFrame(frames[i]));
+            textures.push(Texture.from(frames[i]));
         }
 
         return new AnimatedSprite(textures);
@@ -329,7 +329,7 @@ export default class AnimatedSprite extends Sprite
 
         for (let i = 0; i < images.length; ++i)
         {
-            textures.push(Texture.fromImage(images[i]));
+            textures.push(Texture.from(images[i]));
         }
 
         return new AnimatedSprite(textures);
