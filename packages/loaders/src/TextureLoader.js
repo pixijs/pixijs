@@ -26,6 +26,7 @@ export default class TextureLoader
                 resource.name
             );
         }
+
         next();
     }
 }

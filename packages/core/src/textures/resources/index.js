@@ -18,3 +18,4 @@ export { default as CubeResource } from './CubeResource';
 export { default as ImageResource } from './ImageResource';
 export { default as SVGResource } from './SVGResource';
 export { default as VideoResource } from './VideoResource';
+export { default as CompressedResource } from './CompressedResource';
