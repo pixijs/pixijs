@@ -24,6 +24,18 @@ class FilterState
         this.target = null;
         this.resolution = 1;
     }
+    /**
+     * Clears FilterState fields
+     */
+    destroy()
+    {
+        this.renderTarget = null;
+        this.sourceFrame = null;
+        this.destinationFrame = null;
+        this.filters = null;
+        this.target = null;
+    }
+
 }
 
 const screenKey = 'screen';
@@ -53,6 +65,7 @@ export default class FilterManager extends WebGLManager
         this.filterData = null;
 
         this.managedFilters = [];
+        this.managedTargets = [];
 
         this.renderer.on('prerender', this.onPrerender, this);
 
@@ -71,6 +84,12 @@ export default class FilterManager extends WebGLManager
         const renderer = this.renderer;
 
         let filterData = this.filterData;
+
+        if (this.managedTargets.indexOf(target) === -1)
+        {
+            this.managedTargets.push(target);
+            target.on('destroyed', this.onTargetDestroy, this);
+        }
 
         if (!filterData)
         {
@@ -537,6 +556,12 @@ export default class FilterManager extends WebGLManager
         {
             this.pool = {};
         }
+
+        for (let i = 0; i < this.managedTargets.length; i++)
+        {
+            this.managedTargets[i].off('destroyed', this.onTargetDestroy, this);
+        }
+        this.managedTargets.length = 0;
     }
 
     /**
@@ -654,6 +679,43 @@ export default class FilterManager extends WebGLManager
                 }
             }
             this.pool[screenKey] = [];
+        }
+    }
+
+    /**
+     * Called when specified target is destroyed
+     *
+     * @param {PIXI.DisplayObject} target which was destroyed
+     */
+    onTargetDestroy(target)
+    {
+        const destroyedTargetIndex = this.managedTargets.indexOf(target);
+
+        if (destroyedTargetIndex !== -1)
+        {
+            let filterData = this.filterData;
+
+            if (!filterData)
+            {
+                filterData = this.renderer._activeRenderTarget.filterData;
+            }
+
+            const stack = filterData.stack;
+            let index = stack.length - 1;
+
+            while (index >= 0)
+            {
+                const filterState = stack[index];
+
+                if (filterState.target === target)
+                {
+                    filterState.destroy();
+                    stack.splice(index, 1);
+                }
+                index -= 1;
+            }
+
+            this.managedTargets.splice(destroyedTargetIndex, 1);
         }
     }
 }
