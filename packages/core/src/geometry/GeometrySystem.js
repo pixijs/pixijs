@@ -248,16 +248,17 @@ export default class GeometrySystem extends System
         const shaderAttributes = program.attributeData;
 
         let id = geometry.id;
+        const strings = [id];
 
         for (const i in attribs)
         {
             if (shaderAttributes[i])
             {
-                id += i;
+                strings.push(i);
             }
         }
 
-        return id;
+        return strings.join('-');
     }
 
     /**
