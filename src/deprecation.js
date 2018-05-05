@@ -1,9 +1,21 @@
 // provide method to give a stack track for warnings
 // useful for tracking-down where deprecated methods/properties/classes
 // are being used within the code
+
+// A map of warning messages already fired
+const warnings = {};
+
+// provide method to give a stack track for warnings
+// useful for tracking-down where deprecated methods/properties/classes
+// are being used within the code
 function warn(msg)
 {
-    // @if DEBUG
+    // Ignore duplicat
+    if (warnings[msg])
+    {
+        return;
+    }
+
     /* eslint-disable no-console */
     let stack = new Error().stack;
 
@@ -35,7 +47,8 @@ function warn(msg)
         }
     }
     /* eslint-enable no-console */
-    // @endif
+
+    warnings[msg] = true;
 }
 
 export default function deprecation(core)

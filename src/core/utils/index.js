@@ -6,6 +6,7 @@ import * as mixins from './mixin';
 import * as isMobile from 'ismobilejs';
 import removeItems from 'remove-array-items';
 import mapPremultipliedBlendModes from './mapPremultipliedBlendModes';
+import earcut from 'earcut';
 
 let nextUid = 0;
 let saidHello = false;
@@ -61,6 +62,17 @@ export {
      */
     pluginTarget,
     mixins,
+    /**
+     * @see {@link https://github.com/mapbox/earcut}
+     *
+     * @memberof PIXI.utils
+     * @function earcut
+     * @param {number[]} vertices - A flat array of vertice coordinates
+     * @param {number[]} [holes] - An array of hole indices
+     * @param {number} [dimensions=2] The number of coordinates per vertice in the input array
+     * @return {number[]} Triangulated polygon
+     */
+    earcut,
 };
 
 /**
@@ -174,8 +186,9 @@ export function decomposeDataUri(dataUri)
         return {
             mediaType: dataUriMatch[1] ? dataUriMatch[1].toLowerCase() : undefined,
             subType: dataUriMatch[2] ? dataUriMatch[2].toLowerCase() : undefined,
-            encoding: dataUriMatch[3] ? dataUriMatch[3].toLowerCase() : undefined,
-            data: dataUriMatch[4],
+            charset: dataUriMatch[3] ? dataUriMatch[3].toLowerCase() : undefined,
+            encoding: dataUriMatch[4] ? dataUriMatch[4].toLowerCase() : undefined,
+            data: dataUriMatch[5],
         };
     }
 
