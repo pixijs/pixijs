@@ -84,10 +84,48 @@ describe('PIXI.utils', function ()
                 .to.equal('image');
             expect(dataUri.subType)
                 .to.equal('png');
+            expect(dataUri.charset)
+                .to.be.an('undefined');
             expect(dataUri.encoding)
                 .to.equal('base64');
             expect(dataUri.data)
                 .to.equal('94Z9RWUN77ZW');
+        });
+
+        it('should decompose a data URI with charset', function ()
+        {
+            const dataUri = PIXI.utils.decomposeDataUri('data:image/svg+xml;charset=utf8;base64,PGRpdiB4bWxucz0Pg==');
+
+            expect(dataUri)
+                .to.be.an('object');
+            expect(dataUri.mediaType)
+                .to.equal('image');
+            expect(dataUri.subType)
+                .to.equal('svg+xml');
+            expect(dataUri.charset)
+                .to.equal('utf8');
+            expect(dataUri.encoding)
+                .to.equal('base64');
+            expect(dataUri.data)
+                .to.equal('PGRpdiB4bWxucz0Pg==');
+        });
+
+        it('should decompose a data URI with charset without encoding', function ()
+        {
+            const dataUri = PIXI.utils.decomposeDataUri('data:image/svg+xml;charset=utf8,PGRpdiB4bWxucz0Pg==');
+
+            expect(dataUri)
+                .to.be.an('object');
+            expect(dataUri.mediaType)
+                .to.equal('image');
+            expect(dataUri.subType)
+                .to.equal('svg+xml');
+            expect(dataUri.charset)
+                .to.equal('utf8');
+            expect(dataUri.encoding)
+                .to.be.an('undefined');
+            expect(dataUri.data)
+                .to.equal('PGRpdiB4bWxucz0Pg==');
         });
 
         it('should return undefined for anything else', function ()
@@ -304,6 +342,14 @@ describe('PIXI.utils', function ()
         it('should return a boolean for .any', function ()
         {
             expect(PIXI.utils.isMobile.any).to.be.a('boolean');
+        });
+    });
+
+    describe('earcut', function ()
+    {
+        it('should exist', function ()
+        {
+            expect(PIXI.utils.earcut).to.be.a('function');
         });
     });
 });

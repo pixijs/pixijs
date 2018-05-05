@@ -5,7 +5,7 @@ import GraphicsData from './GraphicsData';
 import Sprite from '../sprites/Sprite';
 import { Matrix, Point, Rectangle, RoundedRectangle, Ellipse, Polygon, Circle } from '../math';
 import { hex2rgb, rgb2hex } from '../utils';
-import { SHAPES, BLEND_MODES } from '../const';
+import { SHAPES, BLEND_MODES, PI_2 } from '../const';
 import Bounds from '../display/Bounds';
 import bezierCurveTo from './utils/bezierCurveTo';
 import CanvasRenderer from '../renderers/canvas/CanvasRenderer';
@@ -64,6 +64,14 @@ export default class Graphics extends Container
          * @default 0
          */
         this.lineColor = 0;
+
+        /**
+         * The alignment of any lines drawn (0.5 = middle, 1 = outter, 0 = inner).
+         *
+         * @member {number}
+         * @default 0
+         */
+        this.lineAlignment = 0.5;
 
         /**
          * Graphics data
@@ -207,6 +215,7 @@ export default class Graphics extends Container
         clone.fillAlpha = this.fillAlpha;
         clone.lineWidth = this.lineWidth;
         clone.lineColor = this.lineColor;
+        clone.lineAlignment = this.lineAlignment;
         clone.tint = this.tint;
         clone.blendMode = this.blendMode;
         clone.isMask = this.isMask;
@@ -234,13 +243,15 @@ export default class Graphics extends Container
      * @param {number} [lineWidth=0] - width of the line to draw, will update the objects stored style
      * @param {number} [color=0] - color of the line to draw, will update the objects stored style
      * @param {number} [alpha=1] - alpha of the line to draw, will update the objects stored style
+     * @param {number} [alignment=1] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outter)
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    lineStyle(lineWidth = 0, color = 0, alpha = 1)
+    lineStyle(lineWidth = 0, color = 0, alpha = 1, alignment = 0.5)
     {
         this.lineWidth = lineWidth;
         this.lineColor = color;
         this.lineAlpha = alpha;
+        this.lineAlignment = alignment;
 
         if (this.currentPath)
         {
@@ -259,6 +270,7 @@ export default class Graphics extends Container
                 this.currentPath.lineWidth = this.lineWidth;
                 this.currentPath.lineColor = this.lineColor;
                 this.currentPath.lineAlpha = this.lineAlpha;
+                this.currentPath.lineAlignment = this.lineAlignment;
             }
         }
 
@@ -481,15 +493,15 @@ export default class Graphics extends Container
 
         if (!anticlockwise && endAngle <= startAngle)
         {
-            endAngle += Math.PI * 2;
+            endAngle += PI_2;
         }
         else if (anticlockwise && startAngle <= endAngle)
         {
-            startAngle += Math.PI * 2;
+            startAngle += PI_2;
         }
 
         const sweep = endAngle - startAngle;
-        const segs = Math.ceil(Math.abs(sweep) / (Math.PI * 2)) * 40;
+        const segs = Math.ceil(Math.abs(sweep) / PI_2) * 40;
 
         if (sweep === 0)
         {
@@ -690,6 +702,40 @@ export default class Graphics extends Container
     }
 
     /**
+     * Draw a star shape with an abitrary number of points.
+     *
+     * @param {number} x - Center X position of the star
+     * @param {number} y - Center Y position of the star
+     * @param {number} points - The number of points of the star, must be > 1
+     * @param {number} radius - The outer radius of the star
+     * @param {number} [innerRadius] - The inner radius between points, default half `radius`
+     * @param {number} [rotation=0] - The rotation of the star in radians, where 0 is vertical
+     * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
+     */
+    drawStar(x, y, points, radius, innerRadius, rotation = 0)
+    {
+        innerRadius = innerRadius || radius / 2;
+
+        const startAngle = (-1 * Math.PI / 2) + rotation;
+        const len = points * 2;
+        const delta = PI_2 / len;
+        const polygon = [];
+
+        for (let i = 0; i < len; i++)
+        {
+            const r = i % 2 ? innerRadius : radius;
+            const angle = (i * delta) + startAngle;
+
+            polygon.push(
+                x + (r * Math.cos(angle)),
+                y + (r * Math.sin(angle))
+            );
+        }
+
+        return this.drawPolygon(polygon);
+    }
+
+    /**
      * Clears the graphics that were drawn to this Graphics object, and resets fill and line style settings.
      *
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
@@ -699,6 +745,8 @@ export default class Graphics extends Container
         if (this.lineWidth || this.filling || this.graphicsData.length > 0)
         {
             this.lineWidth = 0;
+            this.lineAlignment = 0.5;
+
             this.filling = false;
 
             this.boundsDirty = -1;
@@ -1040,7 +1088,8 @@ export default class Graphics extends Container
             this.fillAlpha,
             this.filling,
             this.nativeLines,
-            shape
+            shape,
+            this.lineAlignment
         );
 
         this.graphicsData.push(data);
@@ -1151,11 +1200,11 @@ export default class Graphics extends Container
         }
 
         // for each webgl data entry, destroy the WebGLGraphicsData
-        for (const id in this._webgl)
+        for (const id in this._webGL)
         {
-            for (let j = 0; j < this._webgl[id].data.length; ++j)
+            for (let j = 0; j < this._webGL[id].data.length; ++j)
             {
-                this._webgl[id].data[j].destroy();
+                this._webGL[id].data[j].destroy();
             }
         }
 
@@ -1167,7 +1216,7 @@ export default class Graphics extends Container
         this.graphicsData = null;
 
         this.currentPath = null;
-        this._webgl = null;
+        this._webGL = null;
         this._localBounds = null;
     }
 

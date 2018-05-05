@@ -30,6 +30,7 @@ const defaultStyle = {
     strokeThickness: 0,
     textBaseline: 'alphabetic',
     trim: false,
+    whiteSpace: 'pre',
     wordWrap: false,
     wordWrapWidth: 100,
     leading: 0,
@@ -75,7 +76,8 @@ export default class TextStyle
      * @param {number} [style.letterSpacing=0] - The amount of spacing between letters, default is 0
      * @param {number} [style.lineHeight] - The line height, a number that represents the vertical space that a letter uses
      * @param {string} [style.lineJoin='miter'] - The lineJoin property sets the type of corner created, it can resolve
-     *      spiked text issues. Default is 'miter' (creates a sharp corner).
+     *      spiked text issues. Possible values "miter" (creates a sharp corner), "round" (creates a round corner) or "bevel"
+     *      (creates a squared corner).
      * @param {number} [style.miterLimit=10] - The miter limit to use when using the 'miter' lineJoin mode. This can reduce
      *      or increase the spikiness of rendered text.
      * @param {number} [style.padding=0] - Occasionally some fonts are cropped. Adding some padding will prevent this from
@@ -86,6 +88,8 @@ export default class TextStyle
      *  Default is 0 (no stroke)
      * @param {boolean} [style.trim=false] - Trim transparent borders
      * @param {string} [style.textBaseline='alphabetic'] - The baseline of the text that is rendered.
+     * @param {boolean} [style.whiteSpace='pre'] - Determines whether newlines & spaces are collapsed or preserved "normal"
+     *      (collapse, collapse), "pre" (preserve, preserve) | "pre-line" (preserve, collapse). It needs wordWrap to be set to true
      * @param {boolean} [style.wordWrap=false] - Indicates if word wrap should be used
      * @param {number} [style.wordWrapWidth=100] - The width at which text will wrap, it needs wordWrap to be set to true
      */
@@ -93,7 +97,9 @@ export default class TextStyle
     {
         this.styleID = 0;
 
-        Object.assign(this, defaultStyle, style);
+        this.reset();
+
+        deepCopyProperties(this, style, style);
     }
 
     /**
@@ -106,10 +112,7 @@ export default class TextStyle
     {
         const clonedProperties = {};
 
-        for (const key in defaultStyle)
-        {
-            clonedProperties[key] = this[key];
-        }
+        deepCopyProperties(clonedProperties, this, defaultStyle);
 
         return new TextStyle(clonedProperties);
     }
@@ -119,7 +122,7 @@ export default class TextStyle
      */
     reset()
     {
-        Object.assign(this, defaultStyle);
+        deepCopyProperties(this, defaultStyle, defaultStyle);
     }
 
     /**
@@ -607,6 +610,31 @@ export default class TextStyle
     }
 
     /**
+     * How newlines and spaces should be handled.
+     * Default is 'pre' (preserve, preserve).
+     *
+     *  value       | New lines     |   Spaces
+     *  ---         | ---           |   ---
+     * 'normal'     | Collapse      |   Collapse
+     * 'pre'        | Preserve      |   Preserve
+     * 'pre-line'   | Preserve      |   Collapse
+     *
+     * @member {string}
+     */
+    get whiteSpace()
+    {
+        return this._whiteSpace;
+    }
+    set whiteSpace(whiteSpace) // eslint-disable-line require-jsdoc
+    {
+        if (this._whiteSpace !== whiteSpace)
+        {
+            this._whiteSpace = whiteSpace;
+            this.styleID++;
+        }
+    }
+
+    /**
      * Indicates if word wrap should be used
      *
      * @member {boolean}
@@ -680,7 +708,7 @@ export default class TextStyle
 
 /**
  * Utility function to convert hexadecimal colors to strings, and simply return the color if it's a string.
- *
+ * @private
  * @param {number|number[]} color
  * @return {string} The color as a string.
  */
@@ -704,7 +732,7 @@ function getSingleColor(color)
 /**
  * Utility function to convert hexadecimal colors to strings, and simply return the color if it's a string.
  * This version can also convert array of colors
- *
+ * @private
  * @param {number|number[]} color
  * @return {string} The color as a string.
  */
@@ -728,7 +756,7 @@ function getColor(color)
 /**
  * Utility function to convert hexadecimal colors to strings, and simply return the color if it's a string.
  * This version can also convert array of colors
- *
+ * @private
  * @param {Array} array1 First array to compare
  * @param {Array} array2 Second array to compare
  * @return {boolean} Do the arrays contain the same values in the same order
@@ -754,4 +782,21 @@ function areArraysEqual(array1, array2)
     }
 
     return true;
+}
+
+/**
+ * Utility function to ensure that object properties are copied by value, and not by reference
+ * @private
+ * @param {Object} target Target object to copy properties into
+ * @param {Object} source Source object for the proporties to copy
+ * @param {string} propertyObj Object containing properties names we want to loop over
+ */
+function deepCopyProperties(target, source, propertyObj) {
+    for (const prop in propertyObj) {
+        if (Array.isArray(source[prop])) {
+            target[prop] = source[prop].slice();
+        } else {
+            target[prop] = source[prop];
+        }
+    }
 }

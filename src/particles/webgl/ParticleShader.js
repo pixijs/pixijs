@@ -21,7 +21,6 @@ export default class ParticleShader extends Shader
                 'attribute vec4 aColor;',
 
                 'attribute vec2 aPositionCoord;',
-                'attribute vec2 aScale;',
                 'attribute float aRotation;',
 
                 'uniform mat3 projectionMatrix;',
@@ -31,10 +30,10 @@ export default class ParticleShader extends Shader
                 'varying vec4 vColor;',
 
                 'void main(void){',
-                '   vec2 v = aVertexPosition;',
+                '   float x = (aVertexPosition.x) * cos(aRotation) - (aVertexPosition.y) * sin(aRotation);',
+                '   float y = (aVertexPosition.x) * sin(aRotation) + (aVertexPosition.y) * cos(aRotation);',
 
-                '   v.x = (aVertexPosition.x) * cos(aRotation) - (aVertexPosition.y) * sin(aRotation);',
-                '   v.y = (aVertexPosition.x) * sin(aRotation) + (aVertexPosition.y) * cos(aRotation);',
+                '   vec2 v = vec2(x, y);',
                 '   v = v + aPositionCoord;',
 
                 '   gl_Position = vec4((projectionMatrix * vec3(v, 1.0)).xy, 0.0, 1.0);',
@@ -52,7 +51,6 @@ export default class ParticleShader extends Shader
 
                 'void main(void){',
                 '  vec4 color = texture2D(uSampler, vTextureCoord) * vColor;',
-                '  if (color.a == 0.0) discard;',
                 '  gl_FragColor = color;',
                 '}',
             ].join('\n')

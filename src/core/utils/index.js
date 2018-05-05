@@ -6,6 +6,7 @@ import * as mixins from './mixin';
 import * as isMobile from 'ismobilejs';
 import removeItems from 'remove-array-items';
 import mapPremultipliedBlendModes from './mapPremultipliedBlendModes';
+import earcut from 'earcut';
 
 let nextUid = 0;
 let saidHello = false;
@@ -61,6 +62,17 @@ export {
      */
     pluginTarget,
     mixins,
+    /**
+     * @see {@link https://github.com/mapbox/earcut}
+     *
+     * @memberof PIXI.utils
+     * @function earcut
+     * @param {number[]} vertices - A flat array of vertice coordinates
+     * @param {number[]} [holes] - An array of hole indices
+     * @param {number} [dimensions=2] The number of coordinates per vertice in the input array
+     * @return {number[]} Triangulated polygon
+     */
+    earcut,
 };
 
 /**
@@ -149,7 +161,7 @@ export function getResolutionOfUrl(url, defaultValue)
 /**
  * Typedef for decomposeDataUri return object.
  *
- * @typedef {object} DecomposedDataUri
+ * @typedef {object} PIXI.utils~DecomposedDataUri
  * @property {mediaType} Media type, eg. `image`
  * @property {subType} Sub type, eg. `png`
  * @property {encoding} Data encoding, eg. `base64`
@@ -163,7 +175,7 @@ export function getResolutionOfUrl(url, defaultValue)
  * @memberof PIXI.utils
  * @function decomposeDataUri
  * @param {string} dataUri - the data URI to check
- * @return {DecomposedDataUri|undefined} The decomposed data uri or undefined
+ * @return {PIXI.utils~DecomposedDataUri|undefined} The decomposed data uri or undefined
  */
 export function decomposeDataUri(dataUri)
 {
@@ -174,8 +186,9 @@ export function decomposeDataUri(dataUri)
         return {
             mediaType: dataUriMatch[1] ? dataUriMatch[1].toLowerCase() : undefined,
             subType: dataUriMatch[2] ? dataUriMatch[2].toLowerCase() : undefined,
-            encoding: dataUriMatch[3] ? dataUriMatch[3].toLowerCase() : undefined,
-            data: dataUriMatch[4],
+            charset: dataUriMatch[3] ? dataUriMatch[3].toLowerCase() : undefined,
+            encoding: dataUriMatch[4] ? dataUriMatch[4].toLowerCase() : undefined,
+            data: dataUriMatch[5],
         };
     }
 
@@ -205,7 +218,7 @@ export function getUrlFileExtension(url)
 /**
  * Typedef for Size object.
  *
- * @typedef {object} Size
+ * @typedef {object} PIXI.utils~Size
  * @property {width} Width component
  * @property {height} Height component
  */
@@ -216,7 +229,7 @@ export function getUrlFileExtension(url)
  * @memberof PIXI.utils
  * @function getSvgSize
  * @param {string} svgString - a serialized svg element
- * @return {Size|undefined} image extension
+ * @return {PIXI.utils~Size|undefined} image extension
  */
 export function getSvgSize(svgString)
 {
@@ -424,6 +437,7 @@ export function correctBlendMode(blendMode, premultiplied)
 /**
  * premultiplies tint
  *
+ * @memberof PIXI.utils
  * @param {number} tint integet RGB
  * @param {number} alpha floating point alpha (0.0-1.0)
  * @returns {number} tint multiplied by alpha
@@ -452,6 +466,7 @@ export function premultiplyTint(tint, alpha)
 /**
  * combines rgb and alpha to out array
  *
+ * @memberof PIXI.utils
  * @param {Float32Array|number[]} rgb input rgb
  * @param {number} alpha alpha param
  * @param {Float32Array} [out] output
@@ -481,6 +496,7 @@ export function premultiplyRgba(rgb, alpha, out, premultiply)
 /**
  * converts integer tint and float alpha to vec4 form, premultiplies by default
  *
+ * @memberof PIXI.utils
  * @param {number} tint input tint
  * @param {number} alpha alpha param
  * @param {Float32Array} [out] output

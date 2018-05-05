@@ -118,6 +118,13 @@ export default class RenderTarget
         this.filterData = null;
 
         /**
+         * The key for pooled texture of FilterSystem
+         * @private
+         * @member {string}
+         */
+        this.filterPoolKey = '';
+
+        /**
          * The scale mode.
          *
          * @member {number}

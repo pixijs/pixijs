@@ -14,7 +14,7 @@ function checkPrecision(src, def)
             return copy;
         }
     }
-    else if (src.substring(0, 9) !== 'precision')
+    else if (src.trim().substring(0, 9) !== 'precision')
     {
         return `precision ${def} float;\n${src}`;
     }
@@ -37,10 +37,13 @@ export default class Shader extends GLShader
      * @param {WebGLRenderingContext} gl - The current WebGL rendering context
      * @param {string|string[]} vertexSrc - The vertex shader source as an array of strings.
      * @param {string|string[]} fragmentSrc - The fragment shader source as an array of strings.
+     * @param {object} [attributeLocations] - A key value pair showing which location eact attribute should sit.
+                       e.g. {position:0, uvs:1}.
+     * @param {string} [precision] - The float precision of the shader. Options are 'lowp', 'mediump' or 'highp'.
      */
-    constructor(gl, vertexSrc, fragmentSrc)
+    constructor(gl, vertexSrc, fragmentSrc, attributeLocations, precision)
     {
-        super(gl, checkPrecision(vertexSrc, settings.PRECISION_VERTEX),
-            checkPrecision(fragmentSrc, settings.PRECISION_FRAGMENT));
+        super(gl, checkPrecision(vertexSrc, precision || settings.PRECISION_VERTEX),
+            checkPrecision(fragmentSrc, precision || settings.PRECISION_FRAGMENT), undefined, attributeLocations);
     }
 }

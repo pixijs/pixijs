@@ -73,6 +73,7 @@ export default class WebGLExtract
         let frame;
         let flipY = false;
         let renderTexture;
+        let generated = false;
 
         if (target)
         {
@@ -83,6 +84,7 @@ export default class WebGLExtract
             else
             {
                 renderTexture = this.renderer.generateTexture(target);
+                generated = true;
             }
         }
 
@@ -145,7 +147,12 @@ export default class WebGLExtract
             }
         }
 
-         // send the canvas back..
+        if (generated)
+        {
+            renderTexture.destroy(true);
+        }
+        // send the canvas back..
+
         return canvasBuffer.canvas;
     }
 
@@ -164,6 +171,7 @@ export default class WebGLExtract
         let resolution;
         let frame;
         let renderTexture;
+        let generated = false;
 
         if (target)
         {
@@ -174,6 +182,7 @@ export default class WebGLExtract
             else
             {
                 renderTexture = this.renderer.generateTexture(target);
+                generated = true;
             }
         }
 
@@ -214,6 +223,11 @@ export default class WebGLExtract
                 gl.UNSIGNED_BYTE,
                 webglPixels
             );
+        }
+
+        if (generated)
+        {
+            renderTexture.destroy(true);
         }
 
         return webglPixels;
