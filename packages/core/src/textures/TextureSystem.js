@@ -49,11 +49,9 @@ export default class TextureSystem extends System
 
         this.CONTEXT_UID = this.renderer.CONTEXT_UID;
 
-        let i;
-
         const maxTextures = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
 
-        this.boundTextures.length = 0;
+        this.boundTextures.length = maxTextures;
 
         for (let i = 0; i < maxTextures; i++)
         {
@@ -73,7 +71,7 @@ export default class TextureSystem extends System
 
         gl.bindTexture(gl.TEXTURE_CUBE_MAP, this.emptyTextures[gl.TEXTURE_CUBE_MAP].texture);
 
-        for (i = 0; i < 6; i++)
+        for (let i = 0; i < 6; i++)
         {
             gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
         }
@@ -81,7 +79,7 @@ export default class TextureSystem extends System
         gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
         gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 
-        for (i = 0; i < this.boundTextures.length; i++)
+        for (let i = 0; i < this.boundTextures.length; i++)
         {
             this.bind(null, i);
         }
