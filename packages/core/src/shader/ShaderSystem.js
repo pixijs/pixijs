@@ -130,21 +130,19 @@ export default class ShaderSystem extends System
     {
         const uniforms = group.uniforms;
 
-        let sig = '';
+        const strings = [];
 
         for (const i in uniforms)
         {
+            strings.push(i);
+
             if (uniformData[i])
             {
-                sig += i + uniformData[i].type;
-            }
-            else
-            {
-                sig += i;
+                strings.push(uniformData[i].type);
             }
         }
 
-        return sig;
+        return strings.join('-');
     }
 
     /**
