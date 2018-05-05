@@ -35,6 +35,13 @@ export default class GeometrySystem extends System
          * @readonly
          */
         this.hasInstance = true;
+
+        /**
+         * A cache thats stores vaos linked to geometries.
+         * @member {Object}
+         * @private
+         */
+        this.cache = {};
     }
 
     /**
@@ -228,6 +235,32 @@ export default class GeometrySystem extends System
     }
 
     /**
+     * Takes a geometry and program and generates a unique signature for them.
+     *
+     * @param {PIXI.Geometry} geometry to get signature from
+     * @param {PIXI.Program} prgram to test geometry against
+     * @returns {String} Unique signature of the geometry and program
+     * @private
+     */
+    getSignature(geometry, program)
+    {
+        const attribs = geometry.attributes;
+        const shaderAttributes = program.attributeData;
+
+        const strings = [geometry.id];
+
+        for (const i in attribs)
+        {
+            if (shaderAttributes[i])
+            {
+                strings.push(i);
+            }
+        }
+
+        return strings.join('-');
+    }
+
+    /**
      * Creates a Vao with the same structure as the geometry and stores it on the geometry.
      * @private
      * @param {PIXI.Geometry} geometry - Instance of geometry to to generate Vao for
@@ -239,9 +272,20 @@ export default class GeometrySystem extends System
 
         const gl = this.gl;
         const CONTEXT_UID = this.CONTEXT_UID;
+
+        const signature = this.getSignature(geometry, program);
+
+        if (this.cache[signature])
+        {
+            const vao = this.cache[signature];
+
+            geometry.glVertexArrayObjects[this.CONTEXT_UID][program.id] = vao;
+
+            return vao;
+        }
+
         const buffers = geometry.buffers;
         const attributes = geometry.attributes;
-
         const tempStride = {};
         const tempStart = {};
 
