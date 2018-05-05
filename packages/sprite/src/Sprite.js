@@ -12,7 +12,7 @@ const tempPoint = new Point();
  * A sprite can be created directly from an image like this:
  *
  * ```js
- * let sprite = new PIXI.Sprite.fromImage('assets/image.png');
+ * let sprite = new PIXI.Sprite.from('assets/image.png');
  * ```
  *
  * @class

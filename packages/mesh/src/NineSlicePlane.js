@@ -7,7 +7,7 @@ const DEFAULT_BORDER_SIZE = 10;
  * for buttons with rounded corners for example) and the other areas will be scaled horizontally and or vertically
  *
  *```js
- * let Plane9 = new PIXI.NineSlicePlane(PIXI.Texture.fromImage('BoxWithRoundedCorners.png'), 15, 15, 15, 15);
+ * let Plane9 = new PIXI.NineSlicePlane(PIXI.Texture.from('BoxWithRoundedCorners.png'), 15, 15, 15, 15);
  *  ```
  * <pre>
  *      A                          B

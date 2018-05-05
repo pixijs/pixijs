@@ -23,7 +23,7 @@ settings.UPLOADS_PER_FRAME = 4;
  *
  * @example
  * // Create a sprite
- * const sprite = new PIXI.Sprite.fromImage('something.png');
+ * const sprite = new PIXI.Sprite.from('something.png');
  *
  * // Load object into GPU
  * app.renderer.plugins.prepare.upload(sprite, () => {

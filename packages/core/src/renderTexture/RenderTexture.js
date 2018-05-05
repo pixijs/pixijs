@@ -12,7 +12,7 @@ import Texture from '../textures/Texture';
  * ```js
  * let renderer = PIXI.autoDetectRenderer(1024, 1024, { view: canvas, ratio: 1 });
  * let renderTexture = PIXI.RenderTexture.create(800, 600);
- * let sprite = PIXI.Sprite.fromImage("spinObj_01.png");
+ * let sprite = PIXI.Sprite.from("spinObj_01.png");
  *
  * sprite.position.x = 800/2;
  * sprite.position.y = 600/2;

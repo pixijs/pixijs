@@ -7,7 +7,7 @@ import Mesh from './Mesh';
  * for (let i = 0; i < 20; i++) {
  *     points.push(new PIXI.Point(i * 50, 0));
  * };
- * let Plane = new PIXI.Plane(PIXI.Texture.fromImage("snake.png"), points);
+ * let Plane = new PIXI.Plane(PIXI.Texture.from("snake.png"), points);
  *  ```
  *
  * @class
