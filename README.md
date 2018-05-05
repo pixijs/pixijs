@@ -78,7 +78,9 @@ _Note: `4.7.1` can be replaced by any [released](https://github.com/pixijs/pixi.
 - [Interaction Demo](http://www.goodboydigital.com/pixijs/examples/6)
 - [photonstorm's Balls Demo](http://gametest.mobi/pixi/balls)
 - [photonstorm's Morph Demo](http://gametest.mobi/pixi/morph)
+- [Animated Sprite Demo](https://www.goodboydigital.com/pixijs/examples/3)
 
+    
 Thanks to [@photonstorm](https://twitter.com/photonstorm) for providing
 those last 2 examples and allowing us to share the source code :)
 
