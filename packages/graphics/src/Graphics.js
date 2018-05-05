@@ -61,6 +61,14 @@ export default class Graphics extends Container
         this.lineColor = 0;
 
         /**
+         * The alignment of any lines drawn (0.5 = middle, 1 = outter, 0 = inner).
+         *
+         * @member {number}
+         * @default 0
+         */
+        this.lineAlignment = 0.5;
+
+        /**
          * Graphics data
          *
          * @member {PIXI.GraphicsData[]}
@@ -202,6 +210,7 @@ export default class Graphics extends Container
         clone.fillAlpha = this.fillAlpha;
         clone.lineWidth = this.lineWidth;
         clone.lineColor = this.lineColor;
+        clone.lineAlignment = this.lineAlignment;
         clone.tint = this.tint;
         clone.blendMode = this.blendMode;
         clone.isMask = this.isMask;
@@ -229,13 +238,15 @@ export default class Graphics extends Container
      * @param {number} [lineWidth=0] - width of the line to draw, will update the objects stored style
      * @param {number} [color=0] - color of the line to draw, will update the objects stored style
      * @param {number} [alpha=1] - alpha of the line to draw, will update the objects stored style
+     * @param {number} [alignment=1] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outter)
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    lineStyle(lineWidth = 0, color = 0, alpha = 1)
+    lineStyle(lineWidth = 0, color = 0, alpha = 1, alignment = 0.5)
     {
         this.lineWidth = lineWidth;
         this.lineColor = color;
         this.lineAlpha = alpha;
+        this.lineAlignment = alignment;
 
         if (this.currentPath)
         {
@@ -254,6 +265,7 @@ export default class Graphics extends Container
                 this.currentPath.lineWidth = this.lineWidth;
                 this.currentPath.lineColor = this.lineColor;
                 this.currentPath.lineAlpha = this.lineAlpha;
+                this.currentPath.lineAlignment = this.lineAlignment;
             }
         }
 
@@ -728,6 +740,8 @@ export default class Graphics extends Container
         if (this.lineWidth || this.filling || this.graphicsData.length > 0)
         {
             this.lineWidth = 0;
+            this.lineAlignment = 0.5;
+
             this.filling = false;
 
             this.boundsDirty = -1;
@@ -1053,7 +1067,8 @@ export default class Graphics extends Container
             this.fillAlpha,
             this.filling,
             this.nativeLines,
-            shape
+            shape,
+            this.lineAlignment
         );
 
         this.graphicsData.push(data);
@@ -1128,11 +1143,11 @@ export default class Graphics extends Container
         }
 
         // for each webgl data entry, destroy the WebGLGraphicsData
-        for (const id in this._webgl)
+        for (const id in this._webGL)
         {
-            for (let j = 0; j < this._webgl[id].data.length; ++j)
+            for (let j = 0; j < this._webGL[id].data.length; ++j)
             {
-                this._webgl[id].data[j].destroy();
+                this._webGL[id].data[j].destroy();
             }
         }
 
@@ -1144,7 +1159,7 @@ export default class Graphics extends Container
         this.graphicsData = null;
 
         this.currentPath = null;
-        this._webgl = null;
+        this._webGL = null;
         this._localBounds = null;
     }
 }
