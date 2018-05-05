@@ -160,4 +160,61 @@ export default class RawMesh extends Container
 
         return false;
     }
+
+    /**
+     * Destroys the RawMesh object.
+     *
+     * @param {object|boolean} [options] - Options parameter. A boolean will act as if all
+     *  options have been set to that value
+     * @param {boolean} [options.children=false] - if set to true, all the children will have
+     *  their destroy method called as well. 'options' will be passed on to those calls.
+     * @param {boolean} [options.texture=false] - Only used for child Sprites if options.children is set to true
+     *  Should it destroy the texture of the child sprite
+     * @param {boolean} [options.baseTexture=false] - Only used for child Sprites if options.children is set to true
+     *  Should it destroy the base texture of the child sprite
+     */
+    destroy(options)
+    {
+        // for each webgl data entry, destroy the WebGLGraphicsData
+        for (const id in this._glDatas)
+        {
+            const data = this._glDatas[id];
+
+            if (data.destroy)
+            {
+                data.destroy();
+            }
+            else
+            {
+                if (data.vertexBuffer)
+                {
+                    data.vertexBuffer.destroy();
+                    data.vertexBuffer = null;
+                }
+                if (data.indexBuffer)
+                {
+                    data.indexBuffer.destroy();
+                    data.indexBuffer = null;
+                }
+                if (data.uvBuffer)
+                {
+                    data.uvBuffer.destroy();
+                    data.uvBuffer = null;
+                }
+                if (data.vao)
+                {
+                    data.vao.destroy();
+                    data.vao = null;
+                }
+            }
+        }
+
+        this._glDatas = null;
+
+        this.geometry = null;
+        this.shader = null;
+        this.state = null;
+
+        super.destroy(options);
+    }
 }
