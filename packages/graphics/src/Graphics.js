@@ -1143,11 +1143,11 @@ export default class Graphics extends Container
         }
 
         // for each webgl data entry, destroy the WebGLGraphicsData
-        for (const id in this._webgl)
+        for (const id in this._webGL)
         {
-            for (let j = 0; j < this._webgl[id].data.length; ++j)
+            for (let j = 0; j < this._webGL[id].data.length; ++j)
             {
-                this._webgl[id].data[j].destroy();
+                this._webGL[id].data[j].destroy();
             }
         }
 
@@ -1159,7 +1159,7 @@ export default class Graphics extends Container
         this.graphicsData = null;
 
         this.currentPath = null;
-        this._webgl = null;
+        this._webGL = null;
         this._localBounds = null;
     }
 }
