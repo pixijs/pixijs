@@ -247,8 +247,7 @@ export default class GeometrySystem extends System
         const attribs = geometry.attributes;
         const shaderAttributes = program.attributeData;
 
-        let id = geometry.id;
-        const strings = [id];
+        const strings = [geometry.id];
 
         for (const i in attribs)
         {

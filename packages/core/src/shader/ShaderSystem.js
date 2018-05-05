@@ -134,11 +134,11 @@ export default class ShaderSystem extends System
 
         for (const i in uniforms)
         {
-            strings.push(i)
+            strings.push(i);
 
             if (uniformData[i])
             {
-                 strings.push(uniformData[i].type);
+                strings.push(uniformData[i].type);
             }
         }
 
