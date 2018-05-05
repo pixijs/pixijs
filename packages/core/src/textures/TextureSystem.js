@@ -53,7 +53,7 @@ export default class TextureSystem extends System
 
         const maxTextures = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
 
-        this.boundTextures = [];
+        this.boundTextures.length = 0;
 
         for (let i = 0; i < maxTextures; i++)
         {
