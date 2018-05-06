@@ -209,6 +209,7 @@ export default class FilterManager extends WebGLManager
             this.freePotRenderTarget(flop);
         }
 
+        currentState.target = null;
         filterData.index--;
 
         if (filterData.index === 0)
