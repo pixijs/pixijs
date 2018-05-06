@@ -21,28 +21,8 @@ class FilterState
         this.renderTexture = null;
 
         /**
-         * Source frame
-         * @member {PIXI.Rectangle}
-         * @private
-         */
-        this.sourceFrame = new Rectangle();
-
-        /**
-         * Destination frame
-         * @member {PIXI.Rectangle}
-         * @private
-         */
-        this.destinationFrame = new Rectangle();
-
-        /**
-         * Collection of filters
-         * @member {PIXI.Filter[]}
-         * @private
-         */
-        this.filters = [];
-
-        /**
-         * Target
+         * Target of the filters
+         * We store for case when custom filter wants to know the element it was applied on
          * @member {PIXI.DisplayObject}
          * @private
          */
@@ -63,6 +43,40 @@ class FilterState
          * @private
          */
         this.resolution = 1;
+
+        // next three fields are created only for root
+        // re-assigned for everything else
+
+        /**
+         * Source frame
+         * @member {PIXI.Rectangle}
+         * @private
+         */
+        this.sourceFrame = new Rectangle();
+
+        /**
+         * Destination frame
+         * @member {PIXI.Rectangle}
+         * @private
+         */
+        this.destinationFrame = new Rectangle();
+
+        /**
+         * Collection of filters
+         * @member {PIXI.Filter[]}
+         * @private
+         */
+        this.filters = [];
+    }
+
+    /**
+     * clears the state
+     */
+    clear()
+    {
+        this.target = null;
+        this.filters = null;
+        this.renderTexture = null;
     }
 }
 
@@ -183,6 +197,8 @@ export default class FilterSystem extends System
 
         state.legacy = legacy;
 
+        state.target = target;
+
         state.sourceFrame = target.filterArea || target.getBounds(true);
 
         state.sourceFrame.pad(padding);
@@ -294,6 +310,7 @@ export default class FilterSystem extends System
             this.returnFilterTexture(flop);
         }
 
+        state.clear();
         this.statePool.push(state);
     }
 
