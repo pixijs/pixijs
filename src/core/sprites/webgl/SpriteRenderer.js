@@ -466,6 +466,7 @@ export default class SpriteRenderer extends ObjectRenderer
 
         // reset elements for the next flush
         this.currentIndex = 0;
+        this.sprites.length = 0;
     }
 
     /**
