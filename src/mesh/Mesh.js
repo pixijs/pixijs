@@ -225,6 +225,10 @@ export default class Mesh extends core.Container
      */
     refresh(forceUpdate)
     {
+        if (this.autoVertexUpdate)
+        {
+            this.vertexDirty++;
+        }
         if (this._uvTransform.update(forceUpdate))
         {
             this._refresh();
