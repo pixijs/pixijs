@@ -18,11 +18,24 @@ class FilterState
     constructor()
     {
         this.renderTarget = null;
+        this.target = null;
+        this.resolution = 1;
+
+        // those three objects are used only for root
+        // re-assigned for everything else
         this.sourceFrame = new Rectangle();
         this.destinationFrame = new Rectangle();
         this.filters = [];
+    }
+
+    /**
+     * clears the state
+     */
+    clear()
+    {
+        this.filters = null;
         this.target = null;
-        this.resolution = 1;
+        this.renderTarget = null;
     }
 }
 
@@ -209,6 +222,7 @@ export default class FilterManager extends WebGLManager
             this.freePotRenderTarget(flop);
         }
 
+        currentState.clear();
         filterData.index--;
 
         if (filterData.index === 0)
