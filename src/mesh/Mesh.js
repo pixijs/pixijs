@@ -89,7 +89,7 @@ export default class Mesh extends core.Container
          *
          * @member {boolean}
          */
-        this.autoVertexUpdate = true;
+        this.autoUpdate = true;
 
         /**
          * The blend mode to be applied to the sprite. Set to `PIXI.BLEND_MODES.NORMAL` to remove
@@ -225,7 +225,7 @@ export default class Mesh extends core.Container
      */
     refresh(forceUpdate)
     {
-        if (this.autoVertexUpdate)
+        if (this.autoUpdate)
         {
             this.vertexDirty++;
         }
