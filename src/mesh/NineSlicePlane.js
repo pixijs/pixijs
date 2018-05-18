@@ -115,10 +115,10 @@ export default class NineSlicePlane extends Plane
         const vertices = this.vertices;
 
         const h = this._topHeight + this._bottomHeight;
-        let scale = this._height > h ? 1.0 : this._height / h;
-        
+        const scale = this._height > h ? 1.0 : this._height / h;
+
         vertices[9] = vertices[11] = vertices[13] = vertices[15] = this._topHeight * scale;
-        vertices[17] = vertices[19] = vertices[21] = vertices[23] = this._height - this._bottomHeight * scale;
+        vertices[17] = vertices[19] = vertices[21] = vertices[23] = this._height - (this._bottomHeight * scale);
         vertices[25] = vertices[27] = vertices[29] = vertices[31] = this._height;
     }
 
@@ -131,10 +131,10 @@ export default class NineSlicePlane extends Plane
         const vertices = this.vertices;
 
         const w = this._leftWidth + this._rightWidth;
-        let scale = this._width > w ? 1.0 : this._width / w;
-        
+        const scale = this._width > w ? 1.0 : this._width / w;
+
         vertices[2] = vertices[10] = vertices[18] = vertices[26] = this._leftWidth * scale;
-        vertices[4] = vertices[12] = vertices[20] = vertices[28] = this._width - this._rightWidth * scale;
+        vertices[4] = vertices[12] = vertices[20] = vertices[28] = this._width - (this._rightWidth * scale);
         vertices[6] = vertices[14] = vertices[22] = vertices[30] = this._width;
     }
 
