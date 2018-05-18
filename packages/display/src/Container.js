@@ -315,15 +315,17 @@ export default class Container extends DisplayObject
 
     /**
      * Updates the transform on all children of this container for rendering
+     * parent must exist
      */
     updateTransform()
     {
+        const parent = this.parent;
+
         this._boundsID++;
-
-        this.transform.updateTransform(this.parent.transform);
-
-        // TODO: check render flags, how to process stuff here
-        this.worldAlpha = this.alpha * this.parent.worldAlpha;
+        // coords transform
+        this.transform.updateTransform(parent.transform);
+        // color/alpha transform
+        this.worldAlpha = this.alpha * parent.worldAlpha;
 
         for (let i = 0, j = this.children.length; i < j; ++i)
         {
