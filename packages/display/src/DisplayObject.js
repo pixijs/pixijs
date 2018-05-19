@@ -25,7 +25,7 @@ export default class DisplayObject extends EventEmitter
         // TODO: need to create Transform from factory
         /**
          * World transform and local transform of this object.
-         * This will become read-only later, please do not assign anything there unless you know what are you doing
+         * This will become read-only later, please do not assign anything there unless you know what are you doing.
          *
          * @member {PIXI.TransformBase}
          */
@@ -42,7 +42,7 @@ export default class DisplayObject extends EventEmitter
          * The visibility of the object. If false the object will not be drawn, and
          * the updateTransform function will not be called.
          *
-         * Only affects recursive calls from parent. You can ask for bounds or call updateTransform manually
+         * Only affects recursive calls from parent. You can ask for bounds or call updateTransform manually.
          *
          * @member {boolean}
          */
@@ -52,7 +52,7 @@ export default class DisplayObject extends EventEmitter
          * Can this object be rendered, if false the object will not be drawn but the updateTransform
          * methods will still be called.
          *
-         * Only affects recursive calls from parent. You can ask for bounds manually
+         * Only affects recursive calls from parent. You can ask for bounds manually.
          *
          * @member {boolean}
          */
@@ -67,7 +67,7 @@ export default class DisplayObject extends EventEmitter
         this.parent = null;
 
         /**
-         * The multiplied alpha of the displayObject
+         * The multiplied alpha of the displayObject.
          *
          * @member {number}
          * @readonly
@@ -76,9 +76,9 @@ export default class DisplayObject extends EventEmitter
 
         /**
          * The area the filter is applied to. This is used as more of an optimization
-         * rather than figuring out the dimensions of the displayObject each frame you can set this rectangle
+         * rather than figuring out the dimensions of the displayObject each frame you can set this rectangle.
          *
-         * Also works as an interaction mask
+         * Also works as an interaction mask.
          *
          * @member {PIXI.Rectangle}
          */
@@ -86,8 +86,8 @@ export default class DisplayObject extends EventEmitter
 
         /**
          * Sets the filters for the displayObject.
-         * * IMPORTANT: This is a webGL only feature and will be ignored by the canvas renderer.
-         * To remove filters simply set this property to 'null'
+         * * IMPORTANT: This is a WebGL only feature and will be ignored by the canvas renderer.
+         * To remove filters simply set this property to `'null'`.
          *
          * @member {PIXI.Filter[]}
          */
@@ -95,7 +95,7 @@ export default class DisplayObject extends EventEmitter
         this._enabledFilters = null;
 
         /**
-         * The bounds object, this is used to calculate and store the bounds of the displayObject
+         * The bounds object, this is used to calculate and store the bounds of the displayObject.
          *
          * @member {PIXI.Rectangle}
          * @private
@@ -107,7 +107,7 @@ export default class DisplayObject extends EventEmitter
         this._localBoundsRect = null;
 
         /**
-         * The original, cached mask of the object
+         * The original, cached mask of the object.
          *
          * @member {PIXI.Graphics|PIXI.Sprite}
          * @private
@@ -153,7 +153,7 @@ export default class DisplayObject extends EventEmitter
     }
 
     /**
-     * Updates the object transform for rendering
+     * Updates the object transform for rendering.
      *
      * TODO - Optimization pass!
      */
@@ -167,7 +167,7 @@ export default class DisplayObject extends EventEmitter
     }
 
     /**
-     * recursively updates transform of all objects from the root to this one
+     * Recursively updates transform of all objects from the root to this one
      * internal function for toLocal()
      */
     _recursivePostUpdateTransform()
@@ -186,11 +186,11 @@ export default class DisplayObject extends EventEmitter
     /**
      * Retrieves the bounds of the displayObject as a rectangle object.
      *
-     * @param {boolean} skipUpdate - setting to true will stop the transforms of the scene graph from
+     * @param {boolean} skipUpdate - Setting to `true` will stop the transforms of the scene graph from
      *  being updated. This means the calculation returned MAY be out of date BUT will give you a
-     *  nice performance boost
-     * @param {PIXI.Rectangle} rect - Optional rectangle to store the result of the bounds calculation
-     * @return {PIXI.Rectangle} the rectangular bounding area
+     *  nice performance boost.
+     * @param {PIXI.Rectangle} rect - Optional rectangle to store the result of the bounds calculation.
+     * @return {PIXI.Rectangle} The rectangular bounding area.
      */
     getBounds(skipUpdate, rect)
     {
@@ -228,10 +228,10 @@ export default class DisplayObject extends EventEmitter
     }
 
     /**
-     * Retrieves the local bounds of the displayObject as a rectangle object
+     * Retrieves the local bounds of the displayObject as a rectangle object.
      *
-     * @param {PIXI.Rectangle} [rect] - Optional rectangle to store the result of the bounds calculation
-     * @return {PIXI.Rectangle} the rectangular bounding area
+     * @param {PIXI.Rectangle} [rect] - Optional rectangle to store the result of the bounds calculation.
+     * @return {PIXI.Rectangle} The rectangular bounding area.
      */
     getLocalBounds(rect)
     {
@@ -260,13 +260,13 @@ export default class DisplayObject extends EventEmitter
     }
 
     /**
-     * Calculates the global position of the display object
+     * Calculates the global position of the display object.
      *
-     * @param {PIXI.Point} position - The world origin to calculate from
+     * @param {PIXI.Point} position - The world origin to calculate from.
      * @param {PIXI.Point} [point] - A Point object in which to store the value, optional
-     *  (otherwise will create a new Point)
+     *  (otherwise will create a new Point).
      * @param {boolean} [skipUpdate=false] - Should we skip the update transform.
-     * @return {PIXI.Point} A point object representing the position of this object
+     * @return {PIXI.Point} A point object representing the position of this object.
      */
     toGlobal(position, point, skipUpdate = false)
     {
@@ -294,12 +294,12 @@ export default class DisplayObject extends EventEmitter
     }
 
     /**
-     * Calculates the local position of the display object relative to another point
+     * Calculates the local position of the display object relative to another point.
      *
-     * @param {PIXI.Point} position - The world origin to calculate from
-     * @param {PIXI.DisplayObject} [from] - The DisplayObject to calculate the global position from
+     * @param {PIXI.Point} position - The world origin to calculate from.
+     * @param {PIXI.DisplayObject} [from] - The DisplayObject to calculate the global position from.
      * @param {PIXI.Point} [point] - A Point object in which to store the value, optional
-     *  (otherwise will create a new Point)
+     *  (otherwise will create a new Point).
      * @param {boolean} [skipUpdate=false] - Should we skip the update transform
      * @return {PIXI.Point} A point object representing the position of this object
      */
@@ -334,9 +334,9 @@ export default class DisplayObject extends EventEmitter
     }
 
     /**
-     * Renders the object using the WebGL renderer
+     * Renders the object using the WebGL renderer.
      *
-     * @param {PIXI.Renderer} renderer - The renderer
+     * @param {PIXI.Renderer} renderer - The renderer.
      */
     render(renderer) // eslint-disable-line no-unused-vars
     {
@@ -344,10 +344,10 @@ export default class DisplayObject extends EventEmitter
     }
 
     /**
-     * Set the parent Container of this DisplayObject
+     * Set the parent Container of this DisplayObject.
      *
-     * @param {PIXI.Container} container - The Container to add this DisplayObject to
-     * @return {PIXI.Container} The Container that this DisplayObject was added to
+     * @param {PIXI.Container} container - The Container to add this DisplayObject to.
+     * @return {PIXI.Container} The Container that this DisplayObject was added to.
      */
     setParent(container)
     {
@@ -394,7 +394,7 @@ export default class DisplayObject extends EventEmitter
      * Base destroy method for generic display objects. This will automatically
      * remove the display object from its parent Container as well as remove
      * all current event listeners and internal references. Do not use a DisplayObject
-     * after calling `destroy`.
+     * after calling `destroy()`.
      *
      */
     destroy()
@@ -453,7 +453,7 @@ export default class DisplayObject extends EventEmitter
     }
 
     /**
-     * Current transform of the object based on world (parent) factors
+     * Current transform of the object based on world (parent) factors.
      *
      * @member {PIXI.Matrix}
      * @readonly
@@ -464,7 +464,7 @@ export default class DisplayObject extends EventEmitter
     }
 
     /**
-     * Current transform of the object based on local factors: position, scale, other stuff
+     * Current transform of the object based on local factors: position, scale, other stuff.
      *
      * @member {PIXI.Matrix}
      * @readonly
@@ -507,7 +507,7 @@ export default class DisplayObject extends EventEmitter
     }
 
     /**
-     * The pivot point of the displayObject that it rotates around
+     * The pivot point of the displayObject that it rotates around.
      * Assignment by value since pixi-v4.
      *
      * @member {PIXI.Point|PIXI.ObservablePoint}
@@ -579,12 +579,19 @@ export default class DisplayObject extends EventEmitter
     /**
      * Sets a mask for the displayObject. A mask is an object that limits the visibility of an
      * object to the shape of the mask applied to it. In PIXI a regular mask must be a
-     * PIXI.Graphics or a PIXI.Sprite object. This allows for much faster masking in canvas as it
-     * utilities shape clipping. To remove a mask, set this property to null.
+     * {@link PIXI.Graphics} or a {@link PIXI.Sprite} object. This allows for much faster masking in canvas as it
+     * utilities shape clipping. To remove a mask, set this property to `null`.
      *
      * For sprite mask both alpha and red channel are used. Black mask is the same as transparent mask.
+     * @example
+     * const graphics = new PIXI.Graphics();
+     * graphics.beginFill(0xFF3300);
+     * graphics.drawRect(50, 250, 100, 100);
+     * graphics.endFill();
      *
-     * @todo For the moment, PIXI.CanvasRenderer doesn't support PIXI.Sprite as mask.
+     * const sprite = new PIXI.Sprite(texture);
+     * sprite.mask = graphics;
+     * @todo At the moment, PIXI.CanvasRenderer doesn't support PIXI.Sprite as mask.
      *
      * @member {PIXI.Graphics|PIXI.Sprite}
      */

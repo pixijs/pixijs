@@ -19,10 +19,10 @@ import { Matrix } from '@pixi/math';
 import Runner from 'mini-runner';
 
 /**
- * The Renderer draws the scene and all its content onto a webGL enabled canvas. This renderer
- * should be used for browsers that support webGL. This Render works by automatically managing webGLBatchs.
+ * The Renderer draws the scene and all its content onto a WebGL enabled canvas. This renderer
+ * should be used for browsers that support WebGL. This renderer works by automatically managing WebGLBatches.
  * So no need for Sprite Batches or Sprite Clouds.
- * Don't forget to add the view to your DOM or you will not see anything :)
+ * Don't forget to add the view to your DOM or you will not see anything :).
  *
  * @class
  * @memberof PIXI
@@ -33,30 +33,30 @@ export default class Renderer extends AbstractRenderer
     // eslint-disable-next-line valid-jsdoc
     /**
      *
-     * @param {object} [options] - The optional renderer parameters
-     * @param {number} [options.width=800] - the width of the screen
-     * @param {number} [options.height=600] - the height of the screen
-     * @param {HTMLCanvasElement} [options.view] - the canvas to use as a view, optional
-     * @param {boolean} [options.transparent=false] - If the render view is transparent, default false
+     * @param {object} [options] - The optional renderer parameters.
+     * @param {number} [options.width=800] - The width of the screen.
+     * @param {number} [options.height=600] - The height of the screen.
+     * @param {HTMLCanvasElement} [options.view] - The canvas to use as a view, optional.
+     * @param {boolean} [options.transparent=false] - If the render view is transparent.
      * @param {boolean} [options.autoDensity=false] - Resizes renderer view in CSS pixels to allow for
-     *   resolutions other than 1
-     * @param {boolean} [options.antialias=false] - sets antialias. If not available natively then FXAA
-     *  antialiasing is used
-     * @param {boolean} [options.forceFXAA=false] - forces FXAA antialiasing to be used over native.
-     *  FXAA is faster, but may not always look as great
+     *   resolutions other than 1.
+     * @param {boolean} [options.antialias=false] - Sets antialias. If not available natively then FXAA
+     *  antialiasing is used.
+     * @param {boolean} [options.forceFXAA=false] - Forces FXAA antialiasing to be used over native.
+     *  FXAA is faster, but may not always look as great.
      * @param {number} [options.resolution=1] - The resolution / device pixel ratio of the renderer.
      *  The resolution of the renderer retina would be 2.
      * @param {boolean} [options.clearBeforeRender=true] - This sets if the renderer will clear
      *  the canvas or not before the new render pass. If you wish to set this to false, you *must* set
      *  preserveDrawingBuffer to `true`.
-     * @param {boolean} [options.preserveDrawingBuffer=false] - enables drawing buffer preservation,
-     *  enable this if you need to call toDataUrl on the webgl context.
+     * @param {boolean} [options.preserveDrawingBuffer=false] - Enables drawing buffer preservation,
+     *  enable this if you need to call toDataUrl on the WebGL context.
      * @param {boolean} [options.roundPixels=false] - If true PixiJS will Math.floor() x/y values when
      *  rendering, stopping pixel interpolation.
      * @param {number} [options.backgroundColor=0x000000] - The background color of the rendered area
      *  (shown if not transparent).
-     * @param {string} [options.powerPreference] - Parameter passed to webgl context, set to "high-performance"
-     *  for devices with dual graphics card
+     * @param {string} [options.powerPreference] - Parameter passed to WebGL context, set to "high-performance"
+     *  for devices with dual graphics card.
      */
     constructor(options, arg2, arg3)
     {
@@ -204,7 +204,7 @@ export default class Renderer extends AbstractRenderer
         this.initPlugins(Renderer.__plugins);
 
         /**
-         * The options passed in to create a new webgl context.
+         * The options passed in to create a new WebGL context.
          *
          * @member {object}
          * @private
@@ -291,11 +291,11 @@ export default class Renderer extends AbstractRenderer
     }
 
     /**
-     * Renders the object to its webGL view
+     * Renders the object to its WebGL view
      *
-     * @param {PIXI.DisplayObject} displayObject - the object to be rendered
+     * @param {PIXI.DisplayObject} displayObject - The object to be rendered.
      * @param {PIXI.RenderTexture} renderTexture - The render texture to render to.
-     * @param {boolean} [clear] - Should the canvas be cleared before the new render
+     * @param {boolean} [clear] - Should the canvas be cleared before the new render.
      * @param {PIXI.Transform} [transform] - A transform to apply to the render texture before rendering.
      * @param {boolean} [skipUpdateTransform] - Should we skip the update transform pass?
      */
@@ -353,10 +353,10 @@ export default class Renderer extends AbstractRenderer
     }
 
     /**
-     * Resizes the webGL view to the specified width and height.
+     * Resizes the WebGL view to the specified width and height.
      *
-     * @param {number} screenWidth - the new width of the screen
-     * @param {number} screenHeight - the new height of the screen
+     * @param {number} screenWidth - The new width of the screen.
+     * @param {number} screenHeight - The new height of the screen.
      */
     resize(screenWidth, screenHeight)
     {

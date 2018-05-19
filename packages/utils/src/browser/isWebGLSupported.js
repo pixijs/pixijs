@@ -1,9 +1,9 @@
 /**
- * Helper for checking for webgl support
+ * Helper for checking for WebGL support.
  *
  * @memberof PIXI.utils
  * @function isWebGLSupported
- * @return {boolean} is webgl supported
+ * @return {boolean} Is WebGL supported.
  */
 export function isWebGLSupported()
 {

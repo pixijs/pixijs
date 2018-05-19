@@ -22,7 +22,7 @@ const tempPoint = new Point();
 export default class Sprite extends Container
 {
     /**
-     * @param {PIXI.Texture} texture - The texture for this sprite
+     * @param {PIXI.Texture} texture - The texture for this sprite.
      */
     constructor(texture)
     {
@@ -482,10 +482,19 @@ export default class Sprite extends Container
     }
 
     /**
-     * The anchor sets the origin point of the texture.
-     * The default is 0,0 this means the texture's origin is the top left
-     * Setting the anchor to 0.5,0.5 means the texture's origin is centered
-     * Setting the anchor to 1,1 would mean the texture's origin point will be the bottom right corner
+     * The anchor sets the origin point of the text.
+     *
+     * The default is `(0,0)`, this means the text's origin is the top left.
+     *
+     * Setting the anchor to `(0.5,0.5)` means the text's origin is centered.
+     *
+     * Setting the anchor to `(1,1)` would mean the text's origin point will be the bottom right corner.
+     *
+     * If you pass only single parameter, it will set both x and y to the same value as shown in the example below.
+     *
+     * @example
+     * const sprite = new PIXI.Sprite(texture);
+     * sprite.anchor.set(0.5); // This will set the origin to center. (0.5) is same as (0.5, 0.5).
      *
      * @member {PIXI.ObservablePoint}
      */
