@@ -1,5 +1,6 @@
-import buildLine from './buildLine';
 import { hex2rgb, earcut } from '@pixi/utils';
+
+import buildLine from './buildLine';
 
 /**
  * Builds a polygon to draw
@@ -26,24 +27,22 @@ export default function buildPoly(graphicsData, graphicsGeometry)
         let maxX = -Infinity;
         let maxY = -Infinity;
 
-        for (let i = 0; i < points.length; i+=2)
+        for (let i = 0; i < points.length; i += 2)
         {
             const px = points[i];
-            const py = points[i+1];
+            const py = points[i + 1];
 
-            if(px < minX)minX = px;
-            else if(px > maxX)maxX = px;
+            if (px < minX)minX = px;
+            else if (px > maxX)maxX = px;
 
-            if(py < minY)minY = py;
-            else if(py > maxY)maxY = py;
+            if (py < minY)minY = py;
+            else if (py > maxY)maxY = py;
         }
 
-        const w = 1/(maxX - minX);
-        const h = 1/(maxY - minY);
-        const ox = minX
-        const oy = minY
-
-        console.log(w, h, ox, oy)
+        const w = 1 / (maxX - minX);
+        const h = 1 / (maxY - minY);
+        const ox = minX;
+        const oy = minY;
 
         const holeArray = [];
         // Process holes..
@@ -89,13 +88,12 @@ export default function buildPoly(graphicsData, graphicsGeometry)
             indices.push(triangles[i + 2] + vertPos);
         }
 
-
         for (let i = 0; i < length; i++)
         {
             const x = points[i * 2];
             const y = points[(i * 2) + 1];
 
-            verts.push(x,y,
+            verts.push(x, y,
                 r, g, b, alpha,
                 (x - ox) * w,
                 (y - oy) * h);

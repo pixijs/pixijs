@@ -1,4 +1,3 @@
-import buildLine from './buildLine';
 import { SHAPES } from '@pixi/math';
 import { hex2rgb } from '@pixi/utils';
 
@@ -44,7 +43,6 @@ export default function buildCircle(graphicsData, graphicsGeometry)
 
     const seg = (Math.PI * 2) / totalSegs;
 
-
     const color = hex2rgb(graphicsData.fillColor);
     const alpha = graphicsData.fillAlpha;
 
@@ -62,20 +60,18 @@ export default function buildCircle(graphicsData, graphicsGeometry)
 
     for (let i = 0; i < totalSegs + 2; i++)
     {
-
         const s = Math.sin(seg * i);
-        const c = Math.cos(seg * i)
+        const c = Math.cos(seg * i);
 
         verts.push(
             x + (Math.sin(seg * i) * width),
             y + (Math.cos(seg * i) * height),
             r, g, b, alpha,
             0.5 + (s * 0.5),
-            0.5 + (c * 0.5),
+            0.5 + (c * 0.5)
         );
 
         // add some uvs
-
         indices.push(center, vecPos++);
     }
 }

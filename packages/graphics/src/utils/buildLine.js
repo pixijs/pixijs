@@ -121,15 +121,13 @@ function buildLine(graphicsData, graphicsGeometry)
         p1x - (perpx * r1),
         p1y - (perpy * r1),
         r, g, b, alpha,
-        0, 0,
-    );
+        0, 0);
 
     verts.push(
         p1x + (perpx * r2),
         p1y + (perpy * r2),
         r, g, b, alpha,
-        0, 0,
-    );
+        0, 0);
 
     for (let i = 1; i < length - 1; ++i)
     {
@@ -176,15 +174,13 @@ function buildLine(graphicsData, graphicsGeometry)
                 p2x - (perpx * r1),
                 p2y - (perpy * r1),
                 r, g, b, alpha,
-                0, 0,
-            );
+                0, 0);
 
             verts.push(
                 p2x + (perpx * r2),
                 p2y + (perpy * r2),
                 r, g, b, alpha,
-                0, 0,
-            );
+                0, 0);
 
             continue;
         }
@@ -206,15 +202,15 @@ function buildLine(graphicsData, graphicsGeometry)
 
             verts.push(p2x - (perp3x * r1), p2y - (perp3y * r1));
             verts.push(r, g, b, alpha);
-            verts.push(0,0);
+            verts.push(0, 0);
 
             verts.push(p2x + (perp3x * r2), p2y + (perp3y * r2));
             verts.push(r, g, b, alpha);
-            verts.push(0,0);
+            verts.push(0, 0);
 
             verts.push(p2x - (perp3x * r2 * r1), p2y - (perp3y * r1));
             verts.push(r, g, b, alpha);
-            verts.push(0,0);
+            verts.push(0, 0);
 
             indexCount++;
         }
@@ -222,13 +218,11 @@ function buildLine(graphicsData, graphicsGeometry)
         {
             verts.push(p2x + ((px - p2x) * r1), p2y + ((py - p2y) * r1));
             verts.push(r, g, b, alpha);
-            verts.push(0,0);
-
+            verts.push(0, 0);
 
             verts.push(p2x - ((px - p2x) * r2), p2y - ((py - p2y) * r2));
             verts.push(r, g, b, alpha);
-            verts.push(0,0);
-
+            verts.push(0, 0);
         }
     }
 
@@ -249,11 +243,11 @@ function buildLine(graphicsData, graphicsGeometry)
 
     verts.push(p2x - (perpx * r1), p2y - (perpy * r1));
     verts.push(r, g, b, alpha);
-    verts.push(0,0);
+    verts.push(0, 0);
 
     verts.push(p2x + (perpx * r2), p2y + (perpy * r2));
     verts.push(r, g, b, alpha);
-    verts.push(0,0);
+    verts.push(0, 0);
 
     indices.push(indexStart);
 

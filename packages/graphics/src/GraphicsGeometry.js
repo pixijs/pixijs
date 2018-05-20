@@ -1,5 +1,13 @@
 import { Buffer, Geometry, Texture } from '@pixi/core';
-import { Point, Rectangle, RoundedRectangle, Ellipse, Polygon, Circle, SHAPES, PI_2 } from '@pixi/math';
+import {
+    Rectangle,
+    RoundedRectangle,
+    Ellipse,
+    Polygon,
+    Circle,
+    SHAPES,
+    PI_2,
+} from '@pixi/math';
 
 import GraphicsData from './GraphicsData';
 import bezierCurveTo from './utils/bezierCurveTo';
@@ -11,10 +19,6 @@ import buildRectangle from './utils/buildRectangle';
 import buildRectangleLine from './utils/buildRectangleLine';
 import buildRoundedRectangle from './utils/buildRoundedRectangle';
 import buildRoundedRectangleLine from './utils/buildRoundedRectangleLine';
-
-const tempPoint = new Point();
-const tempColor1 = new Float32Array(4);
-const tempColor2 = new Float32Array(4);
 
 /**
  * The Graphics class contains methods used to draw primitive shapes such as lines, circles and
@@ -67,7 +71,7 @@ export default class GraphicsGeometry extends Geometry
         this.addAttribute('aVertexPosition|aColor|aTextureCoord', this.buffer)
             .addIndex(this.indexBuffer);
 
-        if(multiTexture)
+        if (multiTexture)
         {
             // then add the extra attribute!
         }
@@ -142,7 +146,7 @@ export default class GraphicsGeometry extends Geometry
          */
         this.dirty = 0;
 
-        this.cacheDirty = -1
+        this.cacheDirty = -1;
         /**
          * Used to detect if we clear the graphics webGL data
          * @type {Number}
@@ -151,8 +155,7 @@ export default class GraphicsGeometry extends Geometry
 
         this.drawCalls = [];
 
-
-        this.fillCommands = {}
+        this.fillCommands = {};
 
         this.fillCommands[SHAPES.POLY] = buildPoly;
         this.fillCommands[SHAPES.CIRC] = buildCircle;
@@ -160,19 +163,18 @@ export default class GraphicsGeometry extends Geometry
         this.fillCommands[SHAPES.RECT] = buildRectangle;
         this.fillCommands[SHAPES.RREC] = buildRoundedRectangle;
 
-        this.lineCommands = {}
+        this.lineCommands = {};
 
         this.lineCommands[SHAPES.POLY] = buildLine;
         this.lineCommands[SHAPES.CIRC] = buildCircleLine;
         this.lineCommands[SHAPES.ELIP] = buildCircleLine;
         this.lineCommands[SHAPES.RECT] = buildRectangleLine;
         this.lineCommands[SHAPES.RREC] = buildRoundedRectangleLine;
-
     }
 
     addDrawCall(type, size, start, texture)
     {
-        this.drawCalls.push({type, size, start, texture});
+        this.drawCalls.push({ type, size, start, texture });
     }
 
     /**
@@ -509,7 +511,7 @@ export default class GraphicsGeometry extends Geometry
         this.filling = true;
         this.fillColor = color;
         this.fillAlpha = alpha;
-        this.fillTexture = texture  || Texture.WHITE;
+        this.fillTexture = texture || Texture.WHITE;
         this.fillMatrix = textureMatrix;
 
         if (this.currentPath)
@@ -852,29 +854,29 @@ export default class GraphicsGeometry extends Geometry
      */
     updateAttributes()
     {
-        if(this.dirty === this.cacheDirty)return;
+        if (this.dirty === this.cacheDirty) return;
         this.dirty = this.cacheDirty;
 
         let lastTexture = this.graphicsData[0].fillTexture.baseTexture;
         let lastIndex = 0;
-        let indexCount = 0;
 
         // TODO - this can be simplified
         for (let i = 0; i < this.graphicsData.length; i++)
         {
             const data = this.graphicsData[i];
 
-            if(data.fill)
+            if (data.fill)
             {
                 const nextTexture = data.fillTexture.baseTexture;
 
-                if(lastTexture !== nextTexture)
+                if (lastTexture !== nextTexture)
                 {
-                    let index = this.indices.length;
-                    if(lastIndex - index)
+                    const index = this.indices.length;
+
+                    if (lastIndex - index)
                     {
                         // add a draw call..
-                        this.addDrawCall(5, index-lastIndex, lastIndex, lastTexture);
+                        this.addDrawCall(5, index - lastIndex, lastIndex, lastTexture);
                         lastTexture = nextTexture;
                         lastIndex = index;
                     }
@@ -883,17 +885,18 @@ export default class GraphicsGeometry extends Geometry
                 this.fillCommands[data.type](data, this);
             }
 
-            if(data.lineWidth)
+            if (data.lineWidth)
             {
                 const nextTexture = Texture.WHITE.baseTexture;
 
-                if(lastTexture !== nextTexture)
+                if (lastTexture !== nextTexture)
                 {
-                    let index = this.indices.length;
-                    if(lastIndex - index)
+                    const index = this.indices.length;
+
+                    if (lastIndex - index)
                     {
                         // add a draw call..
-                        this.addDrawCall(5, index-lastIndex, lastIndex, lastTexture);
+                        this.addDrawCall(5, index - lastIndex, lastIndex, lastTexture);
                         lastTexture = nextTexture;
                         lastIndex = index;
                     }
@@ -903,9 +906,9 @@ export default class GraphicsGeometry extends Geometry
             }
         }
 
-        let index = this.indices.length;
+        const index = this.indices.length;
 
-        this.addDrawCall(5, index-lastIndex, lastIndex, lastTexture);
+        this.addDrawCall(5, index - lastIndex, lastIndex, lastTexture);
 
         // upload..
         const glPoints = new Float32Array(this.points);
@@ -915,6 +918,5 @@ export default class GraphicsGeometry extends Geometry
         const glIndices = new Uint16Array(this.indices);
 
         this.indexBuffer.update(glIndices);
-
     }
 }

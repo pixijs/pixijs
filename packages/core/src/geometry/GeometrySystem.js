@@ -429,8 +429,8 @@ export default class GeometrySystem extends System
     {
         const geometry = this._activeGeometry;
 
-        for (var i = 0; i < geometry.drawCalls.length; i++) {
-
+        for (let i = 0; i < geometry.drawCalls.length; i++)
+        {
             const drawCall = geometry.drawCalls[i];
 
             this.draw(drawCall.type, drawCall.size, drawCall.start);

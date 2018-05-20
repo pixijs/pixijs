@@ -1,6 +1,6 @@
-import buildLine from './buildLine';
 import { SHAPES } from '@pixi/math';
-import { hex2rgb } from '@pixi/utils';
+
+import buildLine from './buildLine';
 
 /**
  * Builds a circle to draw

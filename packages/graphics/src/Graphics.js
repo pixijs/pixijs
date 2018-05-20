@@ -1,16 +1,8 @@
 import { BLEND_MODES } from '@pixi/constants';
-import { Point } from '@pixi/math';
-import {RawMesh} from '@pixi/mesh';
-import { Sprite } from '@pixi/sprite';
-import { Texture } from '@pixi/core';
-import { hex2rgb, rgb2hex } from '@pixi/utils';
+import { RawMesh } from '@pixi/mesh';
 
 import GraphicsGeometry from './GraphicsGeometry';
 import PrimitiveShader from './shaders/PrimitiveShader';
-
-const tempPoint = new Point();
-const tempColor1 = new Float32Array(4);
-const tempColor2 = new Float32Array(4);
 
 /**
  * The Graphics class contains methods used to draw primitive shapes such as lines, circles and
@@ -28,10 +20,10 @@ export default class Graphics extends RawMesh
      */
     constructor(nativeLines = false)
     {
-        const geometry = new GraphicsGeometry();
+        const geometry = new GraphicsGeometry(nativeLines);
         const shader = new PrimitiveShader();
 
-        super(geometry, shader, null, 5); //DRAW_MODES.TRIANGLE_STRIP
+        super(geometry, shader, null, 5); // DRAW_MODES.TRIANGLE_STRIP
 
         /**
          * The tint applied to the graphic shape. This is a hex value. Apply a value of 0xFFFFFF to
@@ -122,7 +114,7 @@ export default class Graphics extends RawMesh
      */
     lineStyle(lineWidth = 0, color = 0, alpha = 1, alignment = 0.5)
     {
-        this.geometry.lineStyle(lineWidth, color, alpha, alignment)
+        this.geometry.lineStyle(lineWidth, color, alpha, alignment);
 
         return this;
     }
@@ -169,6 +161,7 @@ export default class Graphics extends RawMesh
     quadraticCurveTo(cpX, cpY, toX, toY)
     {
         this.geometry.quadraticCurveTo(cpX, cpY, toX, toY);
+
         return this;
     }
 
@@ -186,6 +179,7 @@ export default class Graphics extends RawMesh
     bezierCurveTo(cpX, cpY, cpX2, cpY2, toX, toY)
     {
         this.geometry.bezierCurveTo(cpX, cpY, cpX2, cpY2, toX, toY);
+
         return this;
     }
 
@@ -204,6 +198,7 @@ export default class Graphics extends RawMesh
     arcTo(x1, y1, x2, y2, radius)
     {
         this.geometry.arcTo(x1, y1, x2, y2, radius);
+
         return this;
     }
 
@@ -237,6 +232,7 @@ export default class Graphics extends RawMesh
     beginFill(color = 0, alpha = 1, texture, textureMatrix)
     {
         this.geometry.beginFill(color, alpha, texture, textureMatrix);
+
         return this;
     }
 
@@ -248,6 +244,7 @@ export default class Graphics extends RawMesh
     endFill()
     {
         this.geometry.endFill();
+
         return this;
     }
 
@@ -262,6 +259,7 @@ export default class Graphics extends RawMesh
     drawRect(x, y, width, height)
     {
         this.geometry.drawRect(x, y, width, height);
+
         return this;
     }
 
@@ -277,6 +275,7 @@ export default class Graphics extends RawMesh
     drawRoundedRect(x, y, width, height, radius)
     {
         this.geometry.drawRoundedRect(x, y, width, height, radius);
+
         return this;
     }
 
@@ -291,6 +290,7 @@ export default class Graphics extends RawMesh
     drawCircle(x, y, radius)
     {
         this.geometry.drawCircle(x, y, radius);
+
         return this;
     }
 
@@ -306,6 +306,7 @@ export default class Graphics extends RawMesh
     drawEllipse(x, y, width, height)
     {
         this.geometry.drawEllipse(x, y, width, height);
+
         return this;
     }
 
@@ -318,6 +319,7 @@ export default class Graphics extends RawMesh
     drawPolygon(path)
     {
         this.geometry.drawPolygon(path);
+
         return this;
     }
 
@@ -335,6 +337,7 @@ export default class Graphics extends RawMesh
     drawStar(x, y, points, radius, innerRadius, rotation = 0)
     {
         this.geometry.drawStar(x, y, points, radius, innerRadius, rotation);
+
         return this;
     }
 
@@ -346,6 +349,7 @@ export default class Graphics extends RawMesh
     clear()
     {
         this.geometry.clear();
+
         return this;
     }
 
@@ -358,9 +362,9 @@ export default class Graphics extends RawMesh
     isFastRect()
     {
         return false;
-        //this.graphicsData.length === 1
-          //  && this.graphicsData[0].shape.type === SHAPES.RECT
-            //&& !this.graphicsData[0].lineWidth;
+        // this.graphicsData.length === 1
+        //  && this.graphicsData[0].shape.type === SHAPES.RECT
+        // && !this.graphicsData[0].lineWidth;
     }
 
     /**
@@ -373,8 +377,8 @@ export default class Graphics extends RawMesh
     {
         renderer.batch.flush();
 
-      //  console.log("HI!")
-        const geometry = this.geometry
+        //  console.log("HI!")
+        const geometry = this.geometry;
 
         geometry.updateAttributes();
 
@@ -390,69 +394,20 @@ export default class Graphics extends RawMesh
         // set state..
         renderer.state.setState(this.state);
 
-        if(geometry.drawCalls)
+        if (geometry.drawCalls)
         {
-            for (var i = 0; i < geometry.drawCalls.length; i++) {
-
+            for (let i = 0; i < geometry.drawCalls.length; i++)
+            {
                 const drawCall = geometry.drawCalls[i];
-            //    console.log("<>")
-                //console.log(drawCall.texture)
+                //    console.log("<>")
+                // console.log(drawCall.texture)
+
                 renderer.texture.bind(drawCall.texture, 0);
                 // bind the geometry...
                 renderer.geometry.draw(drawCall.type, drawCall.size, drawCall.start);
             }
         }
-        //console.log('---')
-    }
-
-    /**
-     * Renders a sprite rectangle.
-     *
-     * @private
-     * @param {PIXI.Renderer} renderer - The renderer
-     */
-    _renderSpriteRect(renderer)
-    {
-        const rect = this.graphicsData[0].shape;
-
-        if (!this._spriteRect)
-        {
-            this._spriteRect = new Sprite(new Texture(Texture.WHITE));
-        }
-
-        const sprite = this._spriteRect;
-
-        if (this.tint === 0xffffff)
-        {
-            sprite.tint = this.graphicsData[0].fillColor;
-        }
-        else
-        {
-            const t1 = tempColor1;
-            const t2 = tempColor2;
-
-            hex2rgb(this.graphicsData[0].fillColor, t1);
-            hex2rgb(this.tint, t2);
-
-            t1[0] *= t2[0];
-            t1[1] *= t2[1];
-            t1[2] *= t2[2];
-
-            sprite.tint = rgb2hex(t1);
-        }
-        sprite.alpha = this.graphicsData[0].fillAlpha;
-        sprite.worldAlpha = this.worldAlpha * sprite.alpha;
-        sprite.blendMode = this.blendMode;
-
-        sprite._texture._frame.width = rect.width;
-        sprite._texture._frame.height = rect.height;
-
-        sprite.transform.worldTransform = this.transform.worldTransform;
-
-        sprite.anchor.set(-rect.x / rect.width, -rect.y / rect.height);
-        sprite._onAnchorUpdate();
-
-        sprite._render(renderer);
+        // console.log('---')
     }
 
     /**
@@ -659,7 +614,6 @@ export default class Graphics extends RawMesh
      * @return {PIXI.GraphicsData} The generated GraphicsData object.
      */
 
-
     /**
      * Closes the current path.
      *
@@ -693,7 +647,7 @@ export default class Graphics extends RawMesh
     destroy(options)
     {
         super.destroy(options);
-/*
+        /*
         // destroy each of the GraphicsData objects
         for (let i = 0; i < this.graphicsData.length; ++i)
         {

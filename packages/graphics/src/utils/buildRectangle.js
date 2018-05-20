@@ -1,4 +1,3 @@
-import buildLine from './buildLine';
 import { hex2rgb } from '@pixi/utils';
 
 /**
