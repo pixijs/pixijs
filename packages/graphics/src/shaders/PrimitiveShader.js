@@ -14,10 +14,10 @@ export default class PrimitiveShader extends Shader
     /**
      * @param {WebGLRenderingContext} gl - The webgl shader manager this shader works for.
      */
-    constructor()
+    constructor(uSampler)
     {
         const program = Program.from(vertex, fragment);
 
-        super(program, {});
+        super(program, { uSampler, alpha: 1, tint: new Float32Array([1, 1, 1]) });
     }
 }

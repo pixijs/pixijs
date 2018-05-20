@@ -1,5 +1,4 @@
 import buildLine from './buildLine';
-import { hex2rgb, earcut } from '@pixi/utils';
 
 /**
  * Builds a rounded rectangle to draw
@@ -12,7 +11,7 @@ import { hex2rgb, earcut } from '@pixi/utils';
  * @param {object} webGLData - an object containing all the webGL-specific information to create this shape
  * @param {object} webGLDataNativeLines - an object containing all the webGL-specific information to create nativeLines
  */
-export default function buildRoundedRectangle(graphicsData, graphicsGeometry)
+export default function buildRoundedRectangleLine(graphicsData, graphicsGeometry)
 {
     const rrectData = graphicsData.shape;
     const x = rrectData.x;
@@ -29,40 +28,6 @@ export default function buildRoundedRectangle(graphicsData, graphicsGeometry)
     quadraticBezierCurve(x + width - radius, y + height, x + width, y + height, x + width, y + height - radius, recPoints);
     quadraticBezierCurve(x + width, y + radius, x + width, y, x + width - radius, y, recPoints);
     quadraticBezierCurve(x + radius, y, x, y, x, y + radius + 0.0000000001, recPoints);
-
-    // this tiny number deals with the issue that occurs when points overlap and earcut fails to triangulate the item.
-    // TODO - fix this properly, this is not very elegant.. but it works for now.
-
-    if (graphicsData.fill)
-    {
-        const color = hex2rgb(graphicsData.fillColor);
-        const alpha = graphicsData.fillAlpha;
-
-        const r = color[0] * alpha;
-        const g = color[1] * alpha;
-        const b = color[2] * alpha;
-
-        const verts = graphicsGeometry.points;
-        const indices = graphicsGeometry.indices;
-
-        const vecPos = verts.length / 6;
-
-        const triangles = earcut(recPoints, null, 2);
-
-        for (let i = 0, j = triangles.length; i < j; i += 3)
-        {
-            indices.push(triangles[i] + vecPos);
-            indices.push(triangles[i] + vecPos);
-            indices.push(triangles[i + 1] + vecPos);
-            indices.push(triangles[i + 2] + vecPos);
-            indices.push(triangles[i + 2] + vecPos);
-        }
-
-        for (let i = 0, j = recPoints.length; i < j; i++)
-        {
-            verts.push(recPoints[i], recPoints[++i], r, g, b, alpha);
-        }
-    }
 
     if (graphicsData.lineWidth)
     {

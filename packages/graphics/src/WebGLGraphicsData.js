@@ -40,17 +40,6 @@ export default class WebGLGraphicsData
          * @member {number[]}
          */
         this.indices = [];
-        /**
-         * The main buffer
-         * @member {WebGLBuffer}
-         */
-        this.buffer = new Buffer();
-
-        /**
-         * The index buffer
-         * @member {WebGLBuffer}
-         */
-        this.indexBuffer = new Buffer();
 
         /**
          * Whether this graphics is dirty or not

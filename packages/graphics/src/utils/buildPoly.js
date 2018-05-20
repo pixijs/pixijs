@@ -12,7 +12,7 @@ import { hex2rgb, earcut } from '@pixi/utils';
  * @param {object} webGLData - an object containing all the webGL-specific information to create this shape
  * @param {object} webGLDataNativeLines - an object containing all the webGL-specific information to create nativeLines
  */
-export default function buildPoly(graphicsData, webGLData, webGLDataNativeLines)
+export default function buildPoly(graphicsData, graphicsGeometry)
 {
     graphicsData.points = graphicsData.shape.points.slice();
 
@@ -20,6 +20,31 @@ export default function buildPoly(graphicsData, webGLData, webGLDataNativeLines)
 
     if (graphicsData.fill && points.length >= 6)
     {
+        // bounds. for uvs
+        let minX = Infinity;
+        let minY = Infinity;
+        let maxX = -Infinity;
+        let maxY = -Infinity;
+
+        for (let i = 0; i < points.length; i+=2)
+        {
+            const px = points[i];
+            const py = points[i+1];
+
+            if(px < minX)minX = px;
+            else if(px > maxX)maxX = px;
+
+            if(py < minY)minY = py;
+            else if(py > maxY)maxY = py;
+        }
+
+        const w = 1/(maxX - minX);
+        const h = 1/(maxY - minY);
+        const ox = minX
+        const oy = minY
+
+        console.log(w, h, ox, oy)
+
         const holeArray = [];
         // Process holes..
         const holes = graphicsData.holes;
@@ -34,8 +59,8 @@ export default function buildPoly(graphicsData, webGLData, webGLDataNativeLines)
         }
 
         // get first and last point.. figure out the middle!
-        const verts = webGLData.points;
-        const indices = webGLData.indices;
+        const verts = graphicsGeometry.points;
+        const indices = graphicsGeometry.indices;
 
         const length = points.length / 2;
 
@@ -53,7 +78,7 @@ export default function buildPoly(graphicsData, webGLData, webGLDataNativeLines)
             return;
         }
 
-        const vertPos = verts.length / 6;
+        const vertPos = verts.length / 8;
 
         for (let i = 0; i < triangles.length; i += 3)
         {
@@ -64,15 +89,21 @@ export default function buildPoly(graphicsData, webGLData, webGLDataNativeLines)
             indices.push(triangles[i + 2] + vertPos);
         }
 
+
         for (let i = 0; i < length; i++)
         {
-            verts.push(points[i * 2], points[(i * 2) + 1],
-                r, g, b, alpha);
+            const x = points[i * 2];
+            const y = points[(i * 2) + 1];
+
+            verts.push(x,y,
+                r, g, b, alpha,
+                (x - ox) * w,
+                (y - oy) * h);
         }
     }
 
     if (graphicsData.lineWidth > 0)
     {
-        buildLine(graphicsData, webGLData, webGLDataNativeLines);
+        buildLine(graphicsData, graphicsGeometry);
     }
 }

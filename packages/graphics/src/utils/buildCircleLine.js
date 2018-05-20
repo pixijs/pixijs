@@ -13,7 +13,7 @@ import { hex2rgb } from '@pixi/utils';
  * @param {object} webGLData - an object containing all the webGL-specific information to create this shape
  * @param {object} webGLDataNativeLines - an object containing all the webGL-specific information to create nativeLines
  */
-export default function buildCircle(graphicsData, graphicsGeometry)
+export default function buildCircleLine(graphicsData, graphicsGeometry)
 {
     // need to convert points to a nice regular data
     const circleData = graphicsData.shape;
@@ -44,38 +44,19 @@ export default function buildCircle(graphicsData, graphicsGeometry)
 
     const seg = (Math.PI * 2) / totalSegs;
 
+    const tempPoints = graphicsData.points;
 
-    const color = hex2rgb(graphicsData.fillColor);
-    const alpha = graphicsData.fillAlpha;
+    graphicsData.points = [];
 
-    const r = color[0] * alpha;
-    const g = color[1] * alpha;
-    const b = color[2] * alpha;
-
-    const verts = graphicsGeometry.points;
-    const indices = graphicsGeometry.indices;
-
-    let vecPos = verts.length / 8;
-    const center = vecPos;
-
-    verts.push(x, y, r, g, b, alpha, 0.5, 0.5);
-
-    for (let i = 0; i < totalSegs + 2; i++)
+    for (let i = 0; i < totalSegs + 1; i++)
     {
-
-        const s = Math.sin(seg * i);
-        const c = Math.cos(seg * i)
-
-        verts.push(
-            x + (Math.sin(seg * i) * width),
-            y + (Math.cos(seg * i) * height),
-            r, g, b, alpha,
-            0.5 + (s * 0.5),
-            0.5 + (c * 0.5),
+        graphicsData.points.push(
+            x + (Math.sin(seg * -i) * width),
+            y + (Math.cos(seg * -i) * height)
         );
-
-        // add some uvs
-
-        indices.push(center, vecPos++);
     }
+
+    buildLine(graphicsData, graphicsGeometry);
+
+    graphicsData.points = tempPoints;
 }

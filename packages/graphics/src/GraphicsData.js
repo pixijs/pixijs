@@ -18,7 +18,7 @@ export default class GraphicsData
      * @param {PIXI.Circle|PIXI.Rectangle|PIXI.Ellipse|PIXI.Polygon} shape - The shape object to draw.
      * @param {number} lineAlignment - the alignment of the line.
      */
-    constructor(lineWidth, lineColor, lineAlpha, fillColor, fillAlpha, fill, nativeLines, shape, lineAlignment)
+    constructor(lineWidth, lineColor, lineAlpha, fillColor, fillTexture, fillMatrix, fillAlpha, fill, nativeLines, shape, lineAlignment)
     {
         /**
          * the width of the line to draw
@@ -64,6 +64,9 @@ export default class GraphicsData
          * @member {number}
          */
         this.fillColor = fillColor;
+
+        this.fillTexture = fillTexture;
+        this.fillMatrix = fillMatrix;
 
         /**
          * the alpha of the fill
@@ -111,6 +114,8 @@ export default class GraphicsData
             this.lineColor,
             this.lineAlpha,
             this.fillColor,
+            this.fillTexture,
+            this.fillMatrix,
             this.fillAlpha,
             this.fill,
             this.nativeLines,
