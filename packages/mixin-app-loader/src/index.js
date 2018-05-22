@@ -27,12 +27,12 @@ Object.defineProperties(Application.prototype, {
 // Override the destroy function
 // making sure to destroy the current Loader
 Application.prototype._parentDestroy = Application.prototype.destroy;
-Application.prototype.destroy = function destroy(removeView)
+Application.prototype.destroy = function destroy(removeView, stageOptions)
 {
     if (this._loader)
     {
         this._loader.destroy();
         this._loader = null;
     }
-    this._parentDestroy(removeView);
+    this._parentDestroy(removeView, stageOptions);
 };
