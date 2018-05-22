@@ -108,59 +108,128 @@ export default class TextMetrics
     {
         const context = canvas.getContext('2d');
 
-        let line = '';
         let width = 0;
+        let line = '';
         let lines = '';
-        const cache = {};
-        const ls = style.letterSpacing;
 
-        // ideally there is letterSpacing after every char except the last one
+        const cache = {};
+        const { letterSpacing, whiteSpace } = style;
+
+        // How to handle whitespaces
+        const collapseSpaces = TextMetrics.collapseSpaces(whiteSpace);
+        const collapseNewlines = TextMetrics.collapseNewlines(whiteSpace);
+
+        // whether or not spaces may be added to the beginning of lines
+        let canPrependSpaces = !collapseSpaces;
+
+        // There is letterSpacing after every char except the last one
         // t_h_i_s_' '_i_s_' '_a_n_' '_e_x_a_m_p_l_e_' '_!
-        // so for convenience the above needs to be compared to width + 1 extra space
+        // so for convenience the above needs to be compared to width + 1 extra letterSpace
         // t_h_i_s_' '_i_s_' '_a_n_' '_e_x_a_m_p_l_e_' '_!_
         // ________________________________________________
         // And then the final space is simply no appended to each line
-        const wordWrapWidth = style.wordWrapWidth + style.letterSpacing;
+        const wordWrapWidth = style.wordWrapWidth + letterSpacing;
 
-        // get the width of a space and add it to cache
-        const spaceWidth = TextMetrics.getFromCache(' ', ls, cache, context);
+        // break text into words, spaces and newline chars
+        const tokens = TextMetrics.tokenize(text);
 
-        // break text into words
-        const words = text.split(' ');
-
-        for (let i = 0; i < words.length; i++)
+        for (let i = 0; i < tokens.length; i++)
         {
-            const word = words[i];
+            // get the word, space or newlineChar
+            let token = tokens[i];
+
+            // if word is a new line
+            if (TextMetrics.isNewline(token))
+            {
+                // keep the new line
+                if (!collapseNewlines)
+                {
+                    lines += TextMetrics.addLine(line);
+                    canPrependSpaces = !collapseSpaces;
+                    line = '';
+                    width = 0;
+                    continue;
+                }
+
+                // if we should collapse new lines
+                // we simply convert it into a space
+                token = ' ';
+            }
+
+            // if we should collapse repeated whitespaces
+            if (collapseSpaces)
+            {
+                // check both this and the last tokens for spaces
+                const currIsBreakingSpace = TextMetrics.isBreakingSpace(token);
+                const lastIsBreakingSpace = TextMetrics.isBreakingSpace(line[line.length - 1]);
+
+                if (currIsBreakingSpace && lastIsBreakingSpace)
+                {
+                    continue;
+                }
+            }
 
             // get word width from cache if possible
-            const wordWidth = TextMetrics.getFromCache(word, ls, cache, context);
+            const tokenWidth = TextMetrics.getFromCache(token, letterSpacing, cache, context);
 
             // word is longer than desired bounds
-            if (wordWidth > wordWrapWidth)
+            if (tokenWidth > wordWrapWidth)
             {
-                // break large word over multiple lines
-                if (style.breakWords)
+                // if we are not already at the beginning of a line
+                if (line !== '')
                 {
-                    // add a space to the start of the word unless its at the beginning of the line
-                    const tmpWord = (line.length > 0) ? ` ${word}` : word;
+                    // start newlines for overflow words
+                    lines += TextMetrics.addLine(line);
+                    line = '';
+                    width = 0;
+                }
 
+                // break large word over multiple lines
+                if (TextMetrics.canBreakWords(token, style.breakWords))
+                {
                     // break word into characters
-                    const characters = tmpWord.split('');
+                    const characters = token.split('');
 
                     // loop the characters
                     for (let j = 0; j < characters.length; j++)
                     {
-                        const character = characters[j];
-                        const characterWidth = TextMetrics.getFromCache(character, ls, cache, context);
+                        let char = characters[j];
+
+                        let k = 1;
+                        // we are not at the end of the token
+
+                        while (characters[j + k])
+                        {
+                            const nextChar = characters[j + k];
+                            const lastChar = char[char.length - 1];
+
+                            // should not split chars
+                            if (!TextMetrics.canBreakChars(lastChar, nextChar, token, j, style.breakWords))
+                            {
+                                // combine chars & move forward one
+                                char += nextChar;
+                            }
+                            else
+                            {
+                                break;
+                            }
+
+                            k++;
+                        }
+
+                        j += char.length - 1;
+
+                        const characterWidth = TextMetrics.getFromCache(char, letterSpacing, cache, context);
 
                         if (characterWidth + width > wordWrapWidth)
                         {
                             lines += TextMetrics.addLine(line);
+                            canPrependSpaces = false;
                             line = '';
                             width = 0;
                         }
 
-                        line += character;
+                        line += char;
                         width += characterWidth;
                     }
                 }
@@ -178,7 +247,8 @@ export default class TextMetrics
                     }
 
                     // give it its own line
-                    lines += TextMetrics.addLine(word);
+                    lines += TextMetrics.addLine(token);
+                    canPrependSpaces = false;
                     line = '';
                     width = 0;
                 }
@@ -187,27 +257,30 @@ export default class TextMetrics
             // word could fit
             else
             {
-                // word won't fit, start a new line
-                if (wordWidth + width > wordWrapWidth)
+                // word won't fit because of existing words
+                // start a new line
+                if (tokenWidth + width > wordWrapWidth)
                 {
+                    // if its a space we don't want it
+                    canPrependSpaces = false;
+
+                    // add a new line
                     lines += TextMetrics.addLine(line);
+
+                    // start a new line
                     line = '';
                     width = 0;
                 }
 
-                // add the word to the current line
-                if (line.length > 0)
+                // don't add spaces to the beginning of lines
+                if (line.length > 0 || !TextMetrics.isBreakingSpace(token) || canPrependSpaces)
                 {
-                    // add a space if it is not the beginning
-                    line += ` ${word}`;
-                }
-                else
-                {
-                    // add without a space if it is the beginning
-                    line += word;
-                }
+                    // add the word to the current line
+                    line += token;
 
-                width += wordWidth + spaceWidth;
+                    // update width counter
+                    width += tokenWidth;
+                }
             }
         }
 
@@ -217,15 +290,18 @@ export default class TextMetrics
     }
 
     /**
-     *  Convienience function for logging each line added
-     *  during the wordWrap method
+     * Convienience function for logging each line added during the wordWrap
+     * method
      *
-     * @param  {string}   line    - The line of text to add
-     * @param  {boolean}  newLine - Add new line character to end
+     * @private
+     * @param  {string}   line        - The line of text to add
+     * @param  {boolean}  newLine     - Add new line character to end
      * @return {string}   A formatted line
      */
     static addLine(line, newLine = true)
     {
+        line = TextMetrics.trimRight(line);
+
         line = (newLine) ? `${line}\n` : line;
 
         return line;
@@ -234,6 +310,7 @@ export default class TextMetrics
     /**
      * Gets & sets the widths of calculated characters in a cache object
      *
+     * @private
      * @param  {string}                    key            The key
      * @param  {number}                    letterSpacing  The letter spacing
      * @param  {object}                    cache          The cache
@@ -253,6 +330,174 @@ export default class TextMetrics
         }
 
         return width;
+    }
+
+    /**
+     * Determines whether we should collapse breaking spaces
+     *
+     * @private
+     * @param  {string}   whiteSpace  The TextStyle property whiteSpace
+     * @return {boolean}  should collapse
+     */
+    static collapseSpaces(whiteSpace)
+    {
+        return (whiteSpace === 'normal' || whiteSpace === 'pre-line');
+    }
+
+    /**
+     * Determines whether we should collapse newLine chars
+     *
+     * @private
+     * @param  {string}   whiteSpace  The white space
+     * @return {boolean}  should collapse
+     */
+    static collapseNewlines(whiteSpace)
+    {
+        return (whiteSpace === 'normal');
+    }
+
+    /**
+     * trims breaking whitespaces from string
+     *
+     * @private
+     * @param  {string}  text  The text
+     * @return {string}  trimmed string
+     */
+    static trimRight(text)
+    {
+        if (typeof text !== 'string')
+        {
+            return '';
+        }
+
+        for (let i = text.length - 1; i >= 0; i--)
+        {
+            const char = text[i];
+
+            if (!TextMetrics.isBreakingSpace(char))
+            {
+                break;
+            }
+
+            text = text.slice(0, -1);
+        }
+
+        return text;
+    }
+
+    /**
+     * Determines if char is a newline.
+     *
+     * @private
+     * @param  {string}  char  The character
+     * @return {boolean}  True if newline, False otherwise.
+     */
+    static isNewline(char)
+    {
+        if (typeof char !== 'string')
+        {
+            return false;
+        }
+
+        return (TextMetrics._newlines.indexOf(char.charCodeAt(0)) >= 0);
+    }
+
+    /**
+     * Determines if char is a breaking whitespace.
+     *
+     * @private
+     * @param  {string}  char  The character
+     * @return {boolean}  True if whitespace, False otherwise.
+     */
+    static isBreakingSpace(char)
+    {
+        if (typeof char !== 'string')
+        {
+            return false;
+        }
+
+        return (TextMetrics._breakingSpaces.indexOf(char.charCodeAt(0)) >= 0);
+    }
+
+    /**
+     * Splits a string into words, breaking-spaces and newLine characters
+     *
+     * @private
+     * @param  {string}  text       The text
+     * @return {array}  A tokenized array
+     */
+    static tokenize(text)
+    {
+        const tokens = [];
+        let token = '';
+
+        if (typeof text !== 'string')
+        {
+            return tokens;
+        }
+
+        for (let i = 0; i < text.length; i++)
+        {
+            const char = text[i];
+
+            if (TextMetrics.isBreakingSpace(char) || TextMetrics.isNewline(char))
+            {
+                if (token !== '')
+                {
+                    tokens.push(token);
+                    token = '';
+                }
+
+                tokens.push(char);
+
+                continue;
+            }
+
+            token += char;
+        }
+
+        if (token !== '')
+        {
+            tokens.push(token);
+        }
+
+        return tokens;
+    }
+
+    /**
+     * This method exists to be easily overridden
+     * It allows one to customise which words should break
+     * Examples are if the token is CJK or numbers.
+     * It must return a boolean.
+     *
+     * @private
+     * @param  {string}  token       The token
+     * @param  {boolean}  breakWords  The style attr break words
+     * @return {boolean} whether to break word or not
+     */
+    static canBreakWords(token, breakWords)
+    {
+        return breakWords;
+    }
+
+    /**
+     * This method exists to be easily overridden
+     * It allows one to determine whether a pair of characters
+     * should be broken by newlines
+     * For example certain characters in CJK langs or numbers.
+     * It must return a boolean.
+     *
+     * @private
+     * @param  {string}  char      The character
+     * @param  {string}  nextChar  The next character
+     * @param  {string}  token     The token/word the characters are from
+     * @param  {number}  index     The index in the token of the char
+     * @param  {boolean}  breakWords  The style attr break words
+     * @return {boolean} whether to break word or not
+     */
+    static canBreakChars(char, nextChar, token, index, breakWords) // eslint-disable-line no-unused-vars
+    {
+        return true;
     }
 
     /**
@@ -396,3 +641,37 @@ TextMetrics._context = canvas.getContext('2d');
  * @private
  */
 TextMetrics._fonts = {};
+
+/**
+ * Cache of new line chars.
+ * @memberof PIXI.TextMetrics
+ * @type {number[]}
+ * @private
+ */
+TextMetrics._newlines = [
+    0x000A, // line feed
+    0x000D, // carriage return
+];
+
+/**
+ * Cache of breaking spaces.
+ * @memberof PIXI.TextMetrics
+ * @type {number[]}
+ * @private
+ */
+TextMetrics._breakingSpaces = [
+    0x0009, // character tabulation
+    0x0020, // space
+    0x2000, // en quad
+    0x2001, // em quad
+    0x2002, // en space
+    0x2003, // em space
+    0x2004, // three-per-em space
+    0x2005, // four-per-em space
+    0x2006, // six-per-em space
+    0x2008, // punctuation space
+    0x2009, // thin space
+    0x200A, // hair space
+    0x205F, // medium mathematical space
+    0x3000, // ideographic space
+];

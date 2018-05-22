@@ -261,6 +261,8 @@ export default class SpriteRenderer extends ObjectRenderer
             // they have all ready been calculated so we just need to push them into the buffer.
             const sprite = sprites[i];
 
+            sprites[i] = null;
+
             nextTexture = sprite._texture.baseTexture;
 
             const spriteBlendMode = premultiplyBlendMode[Number(nextTexture.premultipliedAlpha)][sprite.blendMode];
