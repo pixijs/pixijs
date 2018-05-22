@@ -31,7 +31,6 @@
     "ismobilejs": "^0.4.0"
   },
   "devDependencies": {
-    "@pixi/canvas-renderer": "^5.0.0-alpha.2",
     "floss": "^2.1.3"
   }
 }

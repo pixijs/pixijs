@@ -1,1 +1,6 @@
-export { default as Application } from './Application';
+import Application from './Application';
+import ResizePlugin from './ResizePlugin';
+
+Application.registerPlugin(ResizePlugin);
+
+export { Application };

@@ -26,17 +26,14 @@ import { ColorMatrixFilter } from '@pixi/filter-color-matrix';
 import { DisplacementFilter } from '@pixi/filter-displacement';
 import { FXAAFilter } from '@pixi/filter-fxaa';
 import { NoiseFilter } from '@pixi/filter-noise';
-import '@pixi/mixin-app-loader';
 import '@pixi/mixin-cache-as-bitmap';
 import '@pixi/mixin-get-child-by-name';
 import '@pixi/mixin-get-global-position';
 import deprecated from './deprecated';
 
 // Install renderer plugins
-core.Renderer.registerPlugin('accessibility', accessibility.AccessibilityManager);
 core.Renderer.registerPlugin('extract', extract.Extract);
 core.Renderer.registerPlugin('graphics', graphics.GraphicsRenderer);
-core.Renderer.registerPlugin('interaction', interaction.InteractionManager);
 core.Renderer.registerPlugin('mesh', mesh.MeshRenderer);
 core.Renderer.registerPlugin('particle', particles.ParticleRenderer);
 core.Renderer.registerPlugin('prepare', prepare.Prepare);
@@ -45,6 +42,11 @@ core.Renderer.registerPlugin('tilingSprite', spriteTiling.TilingSpriteRenderer);
 
 loaders.Loader.registerPlugin(textBitmap.BitmapFontLoader);
 loaders.Loader.registerPlugin(spritesheet.SpritesheetLoader);
+
+app.Application.registerPlugin(ticker.TickerPlugin);
+app.Application.registerPlugin(loaders.LoaderPlugin);
+app.Application.registerPlugin(interaction.InteractionPlugin);
+app.Application.registerPlugin(accessibility.AccessibilityPlugin);
 
 // Apply deplayed mixins
 utils.mixins.performMixins();

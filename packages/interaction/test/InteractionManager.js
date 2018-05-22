@@ -11,7 +11,7 @@ const { Sprite } = require('@pixi/sprite');
 
 require('@pixi/canvas-display');
 
-CanvasRenderer.registerPlugin('interaction', InteractionManager);
+// CanvasRenderer.registerPlugin('interaction', InteractionManager);
 CanvasRenderer.registerPlugin('graphics', CanvasGraphicsRenderer);
 CanvasRenderer.registerPlugin('sprite', CanvasSpriteRenderer);
 
@@ -252,7 +252,7 @@ describe('PIXI.interaction.InteractionManager', function ()
             const addSpy = sinon.spy(window.document, 'addEventListener');
             const removeSpy = sinon.spy(window.document, 'removeEventListener');
 
-            manager.interactionDOMElement = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
+            manager.domElement = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
             manager.supportsPointerEvents = true;
 
             manager.addEvents();
@@ -275,7 +275,7 @@ describe('PIXI.interaction.InteractionManager', function ()
             const addSpy = sinon.spy(window, 'addEventListener');
             const removeSpy = sinon.spy(window, 'removeEventListener');
 
-            manager.interactionDOMElement = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
+            manager.domElement = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
             manager.supportsPointerEvents = true;
 
             manager.addEvents();
@@ -299,7 +299,7 @@ describe('PIXI.interaction.InteractionManager', function ()
             const manager = new InteractionManager(sinon.stub());
             const element = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
 
-            manager.interactionDOMElement = element;
+            manager.domElement = element;
             manager.supportsPointerEvents = true;
             manager.supportsTouchEvents = true;
 
@@ -333,7 +333,7 @@ describe('PIXI.interaction.InteractionManager', function ()
             const manager = new InteractionManager(sinon.stub());
             const element = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
 
-            manager.interactionDOMElement = element;
+            manager.domElement = element;
             manager.supportsPointerEvents = true;
             manager.supportsTouchEvents = false;
 
@@ -358,7 +358,7 @@ describe('PIXI.interaction.InteractionManager', function ()
             const addSpy = sinon.spy(window.document, 'addEventListener');
             const removeSpy = sinon.spy(window.document, 'removeEventListener');
 
-            manager.interactionDOMElement = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
+            manager.domElement = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
             manager.supportsPointerEvents = false;
 
             manager.addEvents();
@@ -381,7 +381,7 @@ describe('PIXI.interaction.InteractionManager', function ()
             const addSpy = sinon.spy(window, 'addEventListener');
             const removeSpy = sinon.spy(window, 'removeEventListener');
 
-            manager.interactionDOMElement = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
+            manager.domElement = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
             manager.supportsPointerEvents = false;
 
             manager.addEvents();
@@ -403,7 +403,7 @@ describe('PIXI.interaction.InteractionManager', function ()
             const manager = new InteractionManager(sinon.stub());
             const element = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
 
-            manager.interactionDOMElement = element;
+            manager.domElement = element;
             manager.supportsPointerEvents = false;
             manager.supportsTouchEvents = false;
 
@@ -427,7 +427,7 @@ describe('PIXI.interaction.InteractionManager', function ()
             const manager = new InteractionManager(sinon.stub());
             const element = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
 
-            manager.interactionDOMElement = element;
+            manager.domElement = element;
             manager.supportsPointerEvents = false;
             manager.supportsTouchEvents = true;
 
@@ -451,7 +451,7 @@ describe('PIXI.interaction.InteractionManager', function ()
             const manager = new InteractionManager(sinon.stub());
             const element = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
 
-            manager.interactionDOMElement = element;
+            manager.domElement = element;
             manager.supportsPointerEvents = true;
             manager.supportsTouchEvents = true;
 

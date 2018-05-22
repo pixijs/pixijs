@@ -11,10 +11,8 @@ import '@pixi/canvas-sprite-tiling';
 import '@pixi/canvas-particles';
 import '@pixi/canvas-display';
 
-CanvasRenderer.registerPlugin('accessibility', PIXI.accessibility.AccessibilityManager);
 CanvasRenderer.registerPlugin('extract', canvasExtract.CanvasExtract);
 CanvasRenderer.registerPlugin('graphics', CanvasGraphicsRenderer);
-CanvasRenderer.registerPlugin('interaction', PIXI.interaction.InteractionManager);
 CanvasRenderer.registerPlugin('mesh', CanvasMeshRenderer);
 CanvasRenderer.registerPlugin('prepare', canvasPrepare.CanvasPrepare);
 CanvasRenderer.registerPlugin('sprite', CanvasSpriteRenderer);
