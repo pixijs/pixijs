@@ -16,8 +16,9 @@ import { removeItems, getResolutionOfUrl } from '@pixi/utils';
  * let bitmapText = new PIXI.BitmapText("text using a fancy font!", {font: "35px Desyrel", align: "right"});
  * ```
  *
- * http://www.angelcode.com/products/bmfont/ for windows or
- * http://www.bmglyph.com/ for mac.
+ * http://www.angelcode.com/products/bmfont/ for Windows or
+ *
+ * http://www.bmglyph.com/ for Mac.
  *
  * @class
  * @extends PIXI.Container
@@ -26,15 +27,15 @@ import { removeItems, getResolutionOfUrl } from '@pixi/utils';
 export default class BitmapText extends Container
 {
     /**
-     * @param {string} text - The copy that you would like the text to display
-     * @param {object} style - The style parameters
+     * @param {string} text - A string that you would like the text to display.
+     * @param {object} style - The style parameters.
      * @param {string|object} style.font - The font descriptor for the object, can be passed as a string of form
      *      "24px FontName" or "FontName" or as an object with explicit name/size properties.
-     * @param {string} [style.font.name] - The bitmap font id
+     * @param {string} [style.font.name] - The bitmap font id.
      * @param {number} [style.font.size] - The size of the font in pixels, e.g. 24
      * @param {string} [style.align='left'] - Alignment for multiline text ('left', 'center' or 'right'), does not affect
-     *      single line text
-     * @param {number} [style.tint=0xFFFFFF] - The tint color
+     *      single line text.
+     * @param {number} [style.tint=0xFFFFFF] - The tint color.
      */
     constructor(text, style = {})
     {
@@ -323,7 +324,7 @@ export default class BitmapText extends Container
     }
 
     /**
-     * The tint of the BitmapText object
+     * The tint of the BitmapText object.
      *
      * @member {number}
      */
@@ -340,7 +341,7 @@ export default class BitmapText extends Container
     }
 
     /**
-     * The alignment of the BitmapText object
+     * The alignment of the BitmapText object.
      *
      * @member {string}
      * @default 'left'
@@ -359,9 +360,12 @@ export default class BitmapText extends Container
 
     /**
      * The anchor sets the origin point of the text.
-     * The default is 0,0 this means the text's origin is the top left
-     * Setting the anchor to 0.5,0.5 means the text's origin is centered
-     * Setting the anchor to 1,1 would mean the text's origin point will be the bottom right corner
+     *
+     * The default is `(0,0)`, this means the text's origin is the top left.
+     *
+     * Setting the anchor to `(0.5,0.5)` means the text's origin is centered.
+     *
+     * Setting the anchor to `(1,1)` would mean the text's origin point will be the bottom right corner.
      *
      * @member {PIXI.Point | number}
      */
@@ -383,7 +387,7 @@ export default class BitmapText extends Container
     }
 
     /**
-     * The font descriptor of the BitmapText object
+     * The font descriptor of the BitmapText object.
      *
      * @member {string|object}
      */
@@ -416,7 +420,7 @@ export default class BitmapText extends Container
     }
 
     /**
-     * The text of the BitmapText object
+     * The text of the BitmapText object.
      *
      * @member {string}
      */
@@ -439,7 +443,7 @@ export default class BitmapText extends Container
     /**
      * The max width of this bitmap text in pixels. If the text provided is longer than the
      * value provided, line breaks will be automatically inserted in the last whitespace.
-     * Disable by setting value to 0
+     * Disable by setting the value to 0.
      *
      * @member {number}
      */
@@ -460,7 +464,7 @@ export default class BitmapText extends Container
 
     /**
      * The max line height. This is useful when trying to use the total height of the Text,
-     * ie: when trying to vertically align.
+     * i.e. when trying to vertically align.
      *
      * @member {number}
      * @readonly
@@ -474,7 +478,7 @@ export default class BitmapText extends Container
 
     /**
      * The width of the overall text, different from fontSize,
-     * which is defined in the style object
+     * which is defined in the style object.
      *
      * @member {number}
      * @readonly
@@ -488,7 +492,7 @@ export default class BitmapText extends Container
 
     /**
      * The height of the overall text, different from fontSize,
-     * which is defined in the style object
+     * which is defined in the style object.
      *
      * @member {number}
      * @readonly

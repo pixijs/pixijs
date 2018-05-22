@@ -9,11 +9,11 @@ import { DisplayObject, Container } from '@pixi/display';
 DisplayObject.prototype.name = null;
 
 /**
- * Returns the display object in the container
+ * Returns the display object in the container.
  *
  * @method getChildByName
  * @memberof PIXI.Container#
- * @param {string} name - instance name
+ * @param {string} name - Instance name.
  * @return {PIXI.DisplayObject} The child with the specified name.
  */
 Container.prototype.getChildByName = function getChildByName(name)
