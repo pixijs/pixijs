@@ -77,6 +77,21 @@ export default class Mesh extends core.Container
         this.indexDirty = 0;
 
         /**
+         * Version of mesh verticies array
+         *
+         * @member {number}
+         */
+        this.vertexDirty = 0;
+
+        /**
+         * For backwards compatibility the default is to re-upload verticies each render call.
+         * Set this to `false` and increase `vertexDirty` to manually re-upload the buffer.
+         *
+         * @member {boolean}
+         */
+        this.autoUpdate = true;
+
+        /**
          * The blend mode to be applied to the sprite. Set to `PIXI.BLEND_MODES.NORMAL` to remove
          * any blend mode.
          *
@@ -210,6 +225,10 @@ export default class Mesh extends core.Container
      */
     refresh(forceUpdate)
     {
+        if (this.autoUpdate)
+        {
+            this.vertexDirty++;
+        }
         if (this._uvTransform.update(forceUpdate))
         {
             this._refresh();
@@ -325,6 +344,59 @@ export default class Mesh extends core.Container
     set tint(value) // eslint-disable-line require-jsdoc
     {
         this.tintRgb = core.utils.hex2rgb(value, this.tintRgb);
+    }
+
+    /**
+     * Destroys the Mesh object.
+     *
+     * @param {object|boolean} [options] - Options parameter. A boolean will act as if all
+     *  options have been set to that value
+     * @param {boolean} [options.children=false] - if set to true, all the children will have
+     *  their destroy method called as well. 'options' will be passed on to those calls.
+     * @param {boolean} [options.texture=false] - Only used for child Sprites if options.children is set to true
+     *  Should it destroy the texture of the child sprite
+     * @param {boolean} [options.baseTexture=false] - Only used for child Sprites if options.children is set to true
+     *  Should it destroy the base texture of the child sprite
+     */
+    destroy(options)
+    {
+        // for each webgl data entry, destroy the WebGLGraphicsData
+        for (const id in this._glDatas)
+        {
+            const data = this._glDatas[id];
+
+            if (data.destroy)
+            {
+                data.destroy();
+            }
+            else
+            {
+                if (data.vertexBuffer)
+                {
+                    data.vertexBuffer.destroy();
+                    data.vertexBuffer = null;
+                }
+                if (data.indexBuffer)
+                {
+                    data.indexBuffer.destroy();
+                    data.indexBuffer = null;
+                }
+                if (data.uvBuffer)
+                {
+                    data.uvBuffer.destroy();
+                    data.uvBuffer = null;
+                }
+                if (data.vao)
+                {
+                    data.vao.destroy();
+                    data.vao = null;
+                }
+            }
+        }
+
+        this._glDatas = null;
+
+        super.destroy(options);
     }
 }
 
