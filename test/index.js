@@ -16,4 +16,5 @@ describe('PIXI', function ()
     require('./loaders');
     require('./renders');
     require('./prepare');
+    require('./extras');
 });
