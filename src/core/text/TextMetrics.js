@@ -522,11 +522,12 @@ export default class TextMetrics
 
         context.font = font;
 
-        const width = Math.ceil(context.measureText('|MÉq').width);
-        let baseline = Math.ceil(context.measureText('M').width);
+        const metricsString = TextMetrics.METRICS_STRING + TextMetrics.BASELINE_SYMBOL;
+        const width = Math.ceil(context.measureText(metricsString).width);
+        let baseline = Math.ceil(context.measureText(TextMetrics.BASELINE_SYMBOL).width);
         const height = 2 * baseline;
 
-        baseline = baseline * 1.4 | 0;
+        baseline = baseline * TextMetrics.BASELINE_MULTIPLIER | 0;
 
         canvas.width = width;
         canvas.height = height;
@@ -538,7 +539,7 @@ export default class TextMetrics
 
         context.textBaseline = 'alphabetic';
         context.fillStyle = '#000';
-        context.fillText('|MÉq', 0, baseline);
+        context.fillText(metricsString, 0, baseline);
 
         const imagedata = context.getImageData(0, 0, width, height).data;
         const pixels = imagedata.length;
@@ -603,6 +604,24 @@ export default class TextMetrics
 
         return properties;
     }
+
+    /**
+     * Clear font metrics in metrics cache.
+     *
+     * @static
+     * @param {string} [font] - font name. If font name not set then clear cache for all fonts.
+     */
+    static clearMetrics(font = '')
+    {
+        if (font)
+        {
+            delete TextMetrics._fonts[font];
+        }
+        else
+        {
+            TextMetrics._fonts = {};
+        }
+    }
 }
 
 /**
@@ -641,6 +660,36 @@ TextMetrics._context = canvas.getContext('2d');
  * @private
  */
 TextMetrics._fonts = {};
+
+/**
+ * String used for calculate font metrics.
+ * @static
+ * @memberof PIXI.TextMetrics
+ * @name METRICS_STRING
+ * @type {string}
+ * @default |Éq
+ */
+TextMetrics.METRICS_STRING = '|Éq';
+
+/**
+ * Baseline symbol for calculate font metrics.
+ * @static
+ * @memberof PIXI.TextMetrics
+ * @name BASELINE_SYMBOL
+ * @type {string}
+ * @default M
+ */
+TextMetrics.BASELINE_SYMBOL = 'M';
+
+/**
+ * Baseline multiplier for calculate font metrics.
+ * @static
+ * @memberof PIXI.TextMetrics
+ * @name BASELINE_MULTIPLIER
+ * @type {number}
+ * @default 1.4
+ */
+TextMetrics.BASELINE_MULTIPLIER = 1.4;
 
 /**
  * Cache of new line chars.
