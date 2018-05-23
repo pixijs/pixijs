@@ -16,14 +16,23 @@ export default class GraphicsData
      * @param {boolean} fill - whether or not the shape is filled with a colour
      * @param {boolean} nativeLines - the method for drawing lines
      * @param {PIXI.Circle|PIXI.Rectangle|PIXI.Ellipse|PIXI.Polygon} shape - The shape object to draw.
+     * @param {number} lineAlignment - the alignment of the line.
      */
-    constructor(lineWidth, lineColor, lineAlpha, fillColor, fillAlpha, fill, nativeLines, shape)
+    constructor(lineWidth, lineColor, lineAlpha, fillColor, fillAlpha, fill, nativeLines, shape, lineAlignment)
     {
         /**
          * the width of the line to draw
          * @member {number}
          */
         this.lineWidth = lineWidth;
+
+        /**
+         * The alignment of any lines drawn (0.5 = middle, 1 = outter, 0 = inner).
+         *
+         * @member {number}
+         * @default 0
+         */
+        this.lineAlignment = lineAlignment;
 
         /**
          * if true the liens will be draw using LINES instead of TRIANGLE_STRIP
