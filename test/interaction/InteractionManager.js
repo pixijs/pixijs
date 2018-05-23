@@ -555,6 +555,185 @@ describe('PIXI.interaction.InteractionManager', function ()
 
             expect(clickSpy).to.not.have.been.called;
         });
+
+        it('should not call handler when moved to other sprite', function ()
+        {
+            const stage = new PIXI.Container();
+            const graphics = new PIXI.Graphics();
+            const graphics2 = new PIXI.Graphics();
+            const clickSpy = sinon.spy();
+            const overSpy = sinon.spy();
+            const endSpy = sinon.spy();
+            const pointer = this.pointer = new MockPointer(stage);
+
+            stage.addChild(graphics);
+            graphics.beginFill(0xFFFFFF);
+            graphics.drawRect(0, 0, 50, 50);
+            graphics.interactive = true;
+            graphics.name = 'graphics1';
+
+            stage.addChild(graphics2);
+            graphics2.beginFill(0xFFFFFF);
+            graphics2.drawRect(75, 75, 50, 50);
+            graphics2.interactive = true;
+            graphics2.on('tap', clickSpy);
+            graphics2.on('touchmove', overSpy);
+            graphics2.on('touchend', endSpy);
+            graphics2.name = 'graphics2';
+
+            pointer.touchstart(25, 25, 3);
+            pointer.touchmove(60, 60, 3);
+            pointer.touchmove(80, 80, 3);
+            pointer.touchend(80, 80, 3);
+
+            expect(overSpy).to.have.been.called;
+            expect(endSpy).to.have.been.called;
+            expect(clickSpy).to.not.have.been.called;
+        });
+    });
+
+    describe('pointertap', function ()
+    {
+        it('should call handler when inside', function ()
+        {
+            const stage = new PIXI.Container();
+            const graphics = new PIXI.Graphics();
+            const clickSpy = sinon.spy();
+            const pointer = this.pointer = new MockPointer(stage);
+
+            stage.addChild(graphics);
+            graphics.beginFill(0xFFFFFF);
+            graphics.drawRect(0, 0, 50, 50);
+            graphics.interactive = true;
+            graphics.on('pointertap', clickSpy);
+
+            pointer.click(10, 10, true);
+
+            expect(clickSpy).to.have.been.calledOnce;
+        });
+
+        it('should not call handler when outside', function ()
+        {
+            const stage = new PIXI.Container();
+            const graphics = new PIXI.Graphics();
+            const clickSpy = sinon.spy();
+            const pointer = this.pointer = new MockPointer(stage);
+
+            stage.addChild(graphics);
+            graphics.beginFill(0xFFFFFF);
+            graphics.drawRect(0, 0, 50, 50);
+            graphics.interactive = true;
+            graphics.on('pointertap', clickSpy);
+
+            pointer.click(60, 60, true);
+
+            expect(clickSpy).to.not.have.been.called;
+        });
+
+        it('with mouse events, should not call handler when moved to other sprite', function ()
+        {
+            const stage = new PIXI.Container();
+            const graphics = new PIXI.Graphics();
+            const graphics2 = new PIXI.Graphics();
+            const overSpy = sinon.spy();
+            const upSpy = sinon.spy();
+            const clickSpy = sinon.spy();
+            const pointer = this.pointer = new MockPointer(stage);
+
+            stage.addChild(graphics);
+            graphics.beginFill(0xFFFFFF);
+            graphics.drawRect(0, 0, 50, 50);
+            graphics.interactive = true;
+            graphics.name = 'graphics1';
+
+            stage.addChild(graphics2);
+            graphics2.beginFill(0xFFFFFF);
+            graphics2.drawRect(75, 75, 50, 50);
+            graphics2.interactive = true;
+            graphics2.on('pointertap', clickSpy);
+            graphics2.on('pointerover', overSpy);
+            graphics2.on('pointerup', upSpy);
+            graphics2.name = 'graphics2';
+
+            pointer.mousedown(25, 25);
+            pointer.mousemove(60, 60);
+            pointer.mousemove(80, 80);
+            pointer.mouseup(80, 80);
+
+            expect(overSpy).to.have.been.called;
+            expect(upSpy).to.have.been.called;
+            expect(clickSpy).to.not.have.been.called;
+        });
+
+        it('with pointer events, should not call handler when moved to other sprite', function ()
+        {
+            const stage = new PIXI.Container();
+            const graphics = new PIXI.Graphics();
+            const graphics2 = new PIXI.Graphics();
+            const overSpy = sinon.spy();
+            const upSpy = sinon.spy();
+            const clickSpy = sinon.spy();
+            const pointer = this.pointer = new MockPointer(stage);
+
+            stage.addChild(graphics);
+            graphics.beginFill(0xFFFFFF);
+            graphics.drawRect(0, 0, 50, 50);
+            graphics.interactive = true;
+            graphics.name = 'graphics1';
+
+            stage.addChild(graphics2);
+            graphics2.beginFill(0xFFFFFF);
+            graphics2.drawRect(75, 75, 50, 50);
+            graphics2.interactive = true;
+            graphics2.on('pointertap', clickSpy);
+            graphics2.on('pointerover', overSpy);
+            graphics2.on('pointerup', upSpy);
+            graphics2.name = 'graphics2';
+
+            pointer.mousedown(25, 25, true);
+            pointer.mousemove(60, 60, true);
+            pointer.mousemove(80, 80, true);
+            pointer.mouseup(80, 80, true);
+
+            expect(overSpy).to.have.been.called;
+            expect(upSpy).to.have.been.called;
+            expect(clickSpy).to.not.have.been.called;
+        });
+
+        it('with touch events, should not call handler when moved to other sprite', function ()
+        {
+            const stage = new PIXI.Container();
+            const graphics = new PIXI.Graphics();
+            const graphics2 = new PIXI.Graphics();
+            const moveSpy = sinon.spy();
+            const upSpy = sinon.spy();
+            const clickSpy = sinon.spy();
+            const pointer = this.pointer = new MockPointer(stage);
+
+            stage.addChild(graphics);
+            graphics.beginFill(0xFFFFFF);
+            graphics.drawRect(0, 0, 50, 50);
+            graphics.interactive = true;
+            graphics.name = 'graphics1';
+
+            stage.addChild(graphics2);
+            graphics2.beginFill(0xFFFFFF);
+            graphics2.drawRect(75, 75, 50, 50);
+            graphics2.interactive = true;
+            graphics2.on('pointertap', clickSpy);
+            graphics2.on('pointermove', moveSpy);
+            graphics2.on('pointerup', upSpy);
+            graphics2.name = 'graphics2';
+
+            pointer.touchstart(25, 25, true);
+            pointer.touchmove(60, 60, true);
+            pointer.touchmove(80, 80, true);
+            pointer.touchend(80, 80, true);
+
+            expect(moveSpy).to.have.been.called;
+            expect(upSpy).to.have.been.called;
+            expect(clickSpy).to.not.have.been.called;
+        });
     });
 
     describe('overlapping children', function ()

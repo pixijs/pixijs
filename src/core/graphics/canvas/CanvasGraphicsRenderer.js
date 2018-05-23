@@ -238,7 +238,7 @@ export default class CanvasGraphicsRenderer
             const fillColor = data.fillColor | 0;
             const lineColor = data.lineColor | 0;
 
-            // super inline cos im an optimization NAZI :)
+            // super inline, cos optimization :)
             data._fillTint = (
                 (((fillColor >> 16) & 0xFF) / 255 * tintR * 255 << 16)
                 + (((fillColor >> 8) & 0xFF) / 255 * tintG * 255 << 8)

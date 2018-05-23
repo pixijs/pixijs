@@ -1346,6 +1346,9 @@ export default class InteractionManager extends EventEmitter
         const isTouch = data.pointerType === 'touch';
 
         const isMouse = (data.pointerType === 'mouse' || data.pointerType === 'pen');
+        // need to track mouse down status in the mouse block so that we can emit
+        // event in a later block
+        let isMouseTap = false;
 
         // Mouse only
         if (isMouse)
@@ -1365,6 +1368,8 @@ export default class InteractionManager extends EventEmitter
                 if (isDown)
                 {
                     this.dispatchEvent(displayObject, isRightButton ? 'rightclick' : 'click', interactionEvent);
+                    // because we can confirm that the mousedown happened on this object, flag for later emit of pointertap
+                    isMouseTap = true;
                 }
             }
             else if (isDown)
@@ -1393,7 +1398,11 @@ export default class InteractionManager extends EventEmitter
 
             if (trackingData)
             {
-                this.dispatchEvent(displayObject, 'pointertap', interactionEvent);
+                // emit pointertap if not a mouse, or if the mouse block decided it was a tap
+                if (!isMouse || isMouseTap)
+                {
+                    this.dispatchEvent(displayObject, 'pointertap', interactionEvent);
+                }
                 if (isTouch)
                 {
                     this.dispatchEvent(displayObject, 'tap', interactionEvent);
@@ -1661,7 +1670,7 @@ export default class InteractionManager extends EventEmitter
         }
         // copy properties from the event, so that we can make sure that touch/pointer specific
         // data is available
-        interactionData._copyEvent(event);
+        interactionData.copyEvent(event);
 
         return interactionData;
     }
@@ -1679,7 +1688,7 @@ export default class InteractionManager extends EventEmitter
         if (interactionData)
         {
             delete this.activeInteractionData[pointerId];
-            interactionData._reset();
+            interactionData.reset();
             this.interactionDataPool.push(interactionData);
         }
     }
@@ -1717,7 +1726,7 @@ export default class InteractionManager extends EventEmitter
         }
 
         interactionData.originalEvent = pointerEvent;
-        interactionEvent._reset();
+        interactionEvent.reset();
 
         return interactionEvent;
     }
