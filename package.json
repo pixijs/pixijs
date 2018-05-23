@@ -28,7 +28,7 @@
     "lintfix"
   ],
   "devDependencies": {
-    "@pixi/jsdoc-template": "^2.2.0",
+    "@pixi/jsdoc-template": "^2.4.1",
     "copyfiles": "^1.2.0",
     "electron": "^1.7.9",
     "eslint": "^4.18.1",
