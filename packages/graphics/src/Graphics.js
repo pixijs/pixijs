@@ -262,14 +262,13 @@ export default class Graphics extends Container
         const ba = b / a2;
 
         return (
-                (a32 * s)
+            (a32 * s)
                 + (a2 * b * (s - c2))
                 + (
-                   ((4.0 * c * a) - (b * b))
+                    ((4.0 * c * a) - (b * b))
                    * Math.log(((2.0 * a2) + ba + s) / (ba + c2))
-                  )
-               )
-               / (4.0 * a32);
+                )
+        ) / (4.0 * a32);
     }
 
     /**
@@ -460,8 +459,8 @@ export default class Graphics extends Container
         const fromX = points[points.length - 2];
         const fromY = points[points.length - 1];
         const n = Graphics.CURVES.adaptive
-                  ? this._segmentsCount(this._quadraticCurveLength(fromX, fromY, cpX, cpY, toX, toY))
-                  : 20;
+            ? this._segmentsCount(this._quadraticCurveLength(fromX, fromY, cpX, cpY, toX, toY))
+            : 20;
 
         for (let i = 1; i <= n; ++i)
         {
@@ -512,8 +511,8 @@ export default class Graphics extends Container
         points.length -= 2;
 
         const n = Graphics.CURVES.adaptive
-                  ? this._segmentsCount(this._bezierCurveLength(fromX, fromY, cpX, cpY, cpX2, cpY2, toX, toY))
-                  : 20;
+            ? this._segmentsCount(this._bezierCurveLength(fromX, fromY, cpX, cpY, cpX2, cpY2, toX, toY))
+            : 20;
 
         bezierCurveTo(fromX, fromY, cpX, cpY, cpX2, cpY2, toX, toY, n, points);
 
@@ -622,8 +621,8 @@ export default class Graphics extends Container
 
         const sweep = endAngle - startAngle;
         const segs = Graphics.CURVES.adaptive
-                     ? this._segmentsCount(Math.abs(sweep) * radius)
-                     : Math.ceil(Math.abs(sweep) / PI_2) * 40;
+            ? this._segmentsCount(Math.abs(sweep) * radius)
+            : Math.ceil(Math.abs(sweep) / PI_2) * 40;
 
         if (sweep === 0)
         {
