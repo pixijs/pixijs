@@ -522,12 +522,12 @@ export default class TextMetrics
 
         context.font = font;
 
-        const metricsString = TextMetrics._metricsString + TextMetrics._baselineSymbol;
+        const metricsString = TextMetrics.METRICS_STRING + TextMetrics.BASELINE_SYMBOL;
         const width = Math.ceil(context.measureText(metricsString).width);
-        let baseline = Math.ceil(context.measureText(TextMetrics._baselineSymbol).width);
+        let baseline = Math.ceil(context.measureText(TextMetrics.BASELINE_SYMBOL).width);
         const height = 2 * baseline;
 
-        baseline = baseline * TextMetrics._baselineMultiplier | 0;
+        baseline = baseline * TextMetrics.BASELINE_MULTIPLIER | 0;
 
         canvas.width = width;
         canvas.height = height;
@@ -606,49 +606,10 @@ export default class TextMetrics
     }
 
     /**
-     * Set custom params for calculate font metrics
-     * If metricsString, baselineSymbol or baseline multiplier is not the same as a previous values
-     * than font metrics cache will reset
-     *
-     * @static
-     * @param {string} metricsString - Symbols with different metrics: the highest symbol, the lowest, ...
-     * BaselineSymbol also add to metricsString in measureFont() so not necessary include baselineSymbol in metricsString
-     * @param {string} baselineSymbol - The widest symbol in fonts
-     * @param {number} baselineMultiplier - Use for create a bit more area for check font symbols bounds
-     */
-    static setMetricsParams(metricsString, baselineSymbol, baselineMultiplier)
-    {
-        let isChanged = false;
-
-        if (TextMetrics._metricsString !== metricsString)
-        {
-            TextMetrics._metricsString = metricsString;
-            isChanged = true;
-        }
-
-        if (TextMetrics._baselineSymbol !== baselineSymbol)
-        {
-            TextMetrics._baselineSymbol = baselineSymbol;
-            isChanged = true;
-        }
-
-        if (TextMetrics._baselineMultiplier !== baselineMultiplier)
-        {
-            TextMetrics._baselineMultiplier = baselineMultiplier;
-            isChanged = true;
-        }
-
-        if (isChanged)
-        {
-            TextMetrics.clearMetrics();
-        }
-    }
-
-    /**
      * Clear font metrics in metrics cache.
      *
      * @static
-     * @param {string} font - font name. If font name not set then clear cache for all fonts.
+     * @param {string} [font] - font name. If font name not set then clear cache for all fonts.
      */
     static clearMetrics(font = '')
     {
@@ -701,55 +662,34 @@ TextMetrics._context = canvas.getContext('2d');
 TextMetrics._fonts = {};
 
 /**
- * Default string for calculate font metrics.
- * @public
+ * String used for calculate font metrics.
  * @static
  * @memberof PIXI.TextMetrics
+ * @name METRICS_STRING
  * @type {string}
+ * @default |Éq
  */
-TextMetrics.DEFAULT_METRICS_STRING = '|Éq';
+TextMetrics.METRICS_STRING = '|Éq';
 
 /**
- * Default baseline symbol for calculate font metrics.
- * @public
+ * Baseline symbol for calculate font metrics.
  * @static
  * @memberof PIXI.TextMetrics
+ * @name BASELINE_SYMBOL
  * @type {string}
+ * @default M
  */
-TextMetrics.DEFAULT_BASELINE_SYMBOL = 'M';
+TextMetrics.BASELINE_SYMBOL = 'M';
 
 /**
- * Default baseline multiplier for calculate font metrics.
- * @public
+ * Baseline multiplier for calculate font metrics.
  * @static
  * @memberof PIXI.TextMetrics
+ * @name BASELINE_MULTIPLIER
  * @type {number}
+ * @default 1.4
  */
-TextMetrics.DEFAULT_BASELINE_MULTIPLIER = 1.4;
-
-/**
- * Current string for calculate font metrics.
- * @private
- * @memberof PIXI.TextMetrics
- * @type {string}
- */
-TextMetrics._metricsString = TextMetrics.DEFAULT_METRICS_STRING;
-
-/**
- * Current baseline symbol for calculate font metrics.
- * @private
- * @memberof PIXI.TextMetrics
- * @type {string}
- */
-TextMetrics._baselineSymbol = TextMetrics.DEFAULT_BASELINE_SYMBOL;
-
-/**
- * Current baseline multiplier for calculate font metrics. Use for reserve a bit more space for draw metrics string.
- * @private
- * @memberof PIXI.TextMetrics
- * @type {number}
- */
-TextMetrics._baselineMultiplier = TextMetrics.DEFAULT_BASELINE_MULTIPLIER;
+TextMetrics.BASELINE_MULTIPLIER = 1.4;
 
 /**
  * Cache of new line chars.
