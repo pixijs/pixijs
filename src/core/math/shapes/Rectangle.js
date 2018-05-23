@@ -158,7 +158,7 @@ export default class Rectangle
      * Pads the rectangle making it grow in all directions.
      *
      * @param {number} paddingX - The horizontal padding amount.
-     * @param {number} paddingY - The vertical padding amount.
+     * @param {number} [paddingY] - The vertical padding amount.
      */
     pad(paddingX, paddingY)
     {

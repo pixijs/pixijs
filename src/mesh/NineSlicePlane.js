@@ -74,7 +74,7 @@ export default class NineSlicePlane extends Plane
          * @memberof PIXI.NineSlicePlane#
          * @override
          */
-        this.leftWidth = typeof leftWidth !== 'undefined' ? leftWidth : DEFAULT_BORDER_SIZE;
+        this._leftWidth = typeof leftWidth !== 'undefined' ? leftWidth : DEFAULT_BORDER_SIZE;
 
         /**
          * The width of the right column (b)
@@ -83,7 +83,7 @@ export default class NineSlicePlane extends Plane
          * @memberof PIXI.NineSlicePlane#
          * @override
          */
-        this.rightWidth = typeof rightWidth !== 'undefined' ? rightWidth : DEFAULT_BORDER_SIZE;
+        this._rightWidth = typeof rightWidth !== 'undefined' ? rightWidth : DEFAULT_BORDER_SIZE;
 
         /**
          * The height of the top row (c)
@@ -92,7 +92,7 @@ export default class NineSlicePlane extends Plane
          * @memberof PIXI.NineSlicePlane#
          * @override
          */
-        this.topHeight = typeof topHeight !== 'undefined' ? topHeight : DEFAULT_BORDER_SIZE;
+        this._topHeight = typeof topHeight !== 'undefined' ? topHeight : DEFAULT_BORDER_SIZE;
 
         /**
          * The height of the bottom row (d)
@@ -101,7 +101,7 @@ export default class NineSlicePlane extends Plane
          * @memberof PIXI.NineSlicePlane#
          * @override
          */
-        this.bottomHeight = typeof bottomHeight !== 'undefined' ? bottomHeight : DEFAULT_BORDER_SIZE;
+        this._bottomHeight = typeof bottomHeight !== 'undefined' ? bottomHeight : DEFAULT_BORDER_SIZE;
 
         this.refresh(true);
     }
@@ -114,8 +114,11 @@ export default class NineSlicePlane extends Plane
     {
         const vertices = this.vertices;
 
-        vertices[9] = vertices[11] = vertices[13] = vertices[15] = this._topHeight;
-        vertices[17] = vertices[19] = vertices[21] = vertices[23] = this._height - this._bottomHeight;
+        const h = this._topHeight + this._bottomHeight;
+        const scale = this._height > h ? 1.0 : this._height / h;
+
+        vertices[9] = vertices[11] = vertices[13] = vertices[15] = this._topHeight * scale;
+        vertices[17] = vertices[19] = vertices[21] = vertices[23] = this._height - (this._bottomHeight * scale);
         vertices[25] = vertices[27] = vertices[29] = vertices[31] = this._height;
     }
 
@@ -127,8 +130,11 @@ export default class NineSlicePlane extends Plane
     {
         const vertices = this.vertices;
 
-        vertices[2] = vertices[10] = vertices[18] = vertices[26] = this._leftWidth;
-        vertices[4] = vertices[12] = vertices[20] = vertices[28] = this._width - this._rightWidth;
+        const w = this._leftWidth + this._rightWidth;
+        const scale = this._width > w ? 1.0 : this._width / w;
+
+        vertices[2] = vertices[10] = vertices[18] = vertices[26] = this._leftWidth * scale;
+        vertices[4] = vertices[12] = vertices[20] = vertices[28] = this._width - (this._rightWidth * scale);
         vertices[6] = vertices[14] = vertices[22] = vertices[30] = this._width;
     }
 
@@ -143,6 +149,7 @@ export default class NineSlicePlane extends Plane
         const context = renderer.context;
 
         context.globalAlpha = this.worldAlpha;
+        renderer.setBlendMode(this.blendMode);
 
         const transform = this.worldTransform;
         const res = renderer.resolution;

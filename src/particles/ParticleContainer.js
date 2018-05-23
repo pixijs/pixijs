@@ -32,13 +32,14 @@ export default class ParticleContainer extends core.Container
      * @param {number} [maxSize=1500] - The maximum number of particles that can be rendered by the container.
      *  Affects size of allocated buffers.
      * @param {object} [properties] - The properties of children that should be uploaded to the gpu and applied.
-     * @param {boolean} [properties.scale=false] - When true, scale be uploaded and applied.
+     * @param {boolean} [properties.vertices=false] - When true, vertices be uploaded and applied.
+     *                  if sprite's ` scale/anchor/trim/frame/orig` is dynamic, please set `true`.
      * @param {boolean} [properties.position=true] - When true, position be uploaded and applied.
      * @param {boolean} [properties.rotation=false] - When true, rotation be uploaded and applied.
      * @param {boolean} [properties.uvs=false] - When true, uvs be uploaded and applied.
      * @param {boolean} [properties.tint=false] - When true, alpha and tint be uploaded and applied.
      * @param {number} [batchSize=16384] - Number of particles per batch. If less than maxSize, it uses maxSize instead.
-     * @param {boolean} [autoResize=true] If true, container allocates more batches in case
+     * @param {boolean} [autoResize=false] If true, container allocates more batches in case
      *  there are more than `maxSize` particles.
      */
     constructor(maxSize = 1500, properties, batchSize = 16384, autoResize = false)
@@ -87,10 +88,18 @@ export default class ParticleContainer extends core.Container
         this._glBuffers = {};
 
         /**
-         * @member {number}
+         * for every batch stores _updateID corresponding to the last change in that batch
+         * @member {number[]}
          * @private
          */
-        this._bufferToUpdate = 0;
+        this._bufferUpdateIDs = [];
+
+        /**
+         * when child inserted, removed or changes position this number goes up
+         * @member {number[]}
+         * @private
+         */
+        this._updateID = 0;
 
         /**
          * @member {boolean}
@@ -156,12 +165,13 @@ export default class ParticleContainer extends core.Container
     {
         if (properties)
         {
-            this._properties[0] = 'scale' in properties ? !!properties.scale : this._properties[0];
+            this._properties[0] = 'vertices' in properties || 'scale' in properties
+                ? !!properties.vertices || !!properties.scale : this._properties[0];
             this._properties[1] = 'position' in properties ? !!properties.position : this._properties[1];
             this._properties[2] = 'rotation' in properties ? !!properties.rotation : this._properties[2];
             this._properties[3] = 'uvs' in properties ? !!properties.uvs : this._properties[3];
-            this._properties[4] = 'alpha' in properties || 'tint' in properties
-                ? !!properties.alpha || !!properties.tint : this._properties[4];
+            this._properties[4] = 'tint' in properties || 'alpha' in properties
+                ? !!properties.tint || !!properties.alpha : this._properties[4];
         }
     }
 
@@ -231,10 +241,11 @@ export default class ParticleContainer extends core.Container
     {
         const bufferIndex = Math.floor(smallestChildIndex / this._batchSize);
 
-        if (bufferIndex < this._bufferToUpdate)
+        while (this._bufferUpdateIDs.length < bufferIndex)
         {
-            this._bufferToUpdate = bufferIndex;
+            this._bufferUpdateIDs.push(0);
         }
+        this._bufferUpdateIDs[bufferIndex] = ++this._updateID;
     }
 
     /**
@@ -385,5 +396,6 @@ export default class ParticleContainer extends core.Container
 
         this._properties = null;
         this._buffers = null;
+        this._bufferUpdateIDs = null;
     }
 }
