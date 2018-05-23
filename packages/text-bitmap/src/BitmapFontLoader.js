@@ -112,29 +112,53 @@ export default class BitmapFontLoader
             xmlUrl += '/';
         }
 
-        const textureUrl = xmlUrl + resource.data.getElementsByTagName('page')[0].getAttribute('file');
+        const pages = resource.data.getElementsByTagName('page');
+        const textures = [];
+        const loadOptions = {
+            crossOrigin: resource.crossOrigin,
+            loadType: LoaderResource.LOAD_TYPE.IMAGE,
+            metadata: resource.metadata.imageMetadata,
+            parentResource: resource,
+        };
 
-        if (TextureCache[textureUrl])
+        for (let x = 0; x < pages.length; ++x)
         {
-            // reuse existing texture
-            BitmapFontLoader.parse(resource, TextureCache[textureUrl]);
-            next();
-        }
-        else
-        {
-            const loadOptions = {
-                crossOrigin: resource.crossOrigin,
-                loadType: LoaderResource.LOAD_TYPE.IMAGE,
-                metadata: resource.metadata.imageMetadata,
-                parentResource: resource,
-            };
+            const textureUrl = xmlUrl + pages[x].getAttribute('file');
 
-            // load the texture for the font
-            this.add(`${resource.name}_image`, textureUrl, loadOptions, (res) =>
+            if (TextureCache[textureUrl])
             {
-                BitmapFontLoader.parse(resource, res.texture);
-                next();
-            });
+                textures.push(TextureCache[textureUrl]);
+            }
+            else
+            {
+                // load the texture for the font
+                this.add(`${resource.name}_image${x}`, textureUrl, loadOptions, () =>
+                {
+                    const nextTextures = [];
+
+                    for (let x = 0; x < pages.length; ++x)
+                    {
+                        const nextTextureUrl = xmlUrl + pages[x].getAttribute('file');
+
+                        if (TextureCache[nextTextureUrl])
+                        {
+                            nextTextures.push(TextureCache[nextTextureUrl]);
+                        }
+                        else
+                        {
+                            return;
+                        }
+                    }
+                    BitmapFontLoader.parse(resource, nextTextures);
+                    next();
+                });
+            }
+        }
+
+        if (textures.length === pages.length)
+        {
+            BitmapFontLoader.parse(resource, textures);
+            next();
         }
     }
 }
