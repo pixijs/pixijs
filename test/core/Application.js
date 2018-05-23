@@ -128,4 +128,44 @@ describe('PIXI.Application', function ()
             expect(this.app._ticker).to.be.null;
         });
     });
+
+    describe('destroy', function ()
+    {
+        it('should not destroy children by default', function (done)
+        {
+            const app = new PIXI.Application();
+            const stage = app.stage;
+            const child = new PIXI.DisplayObject();
+
+            stage.addChild(child);
+
+            app.ticker.addOnce(() =>
+            {
+                app.destroy();
+                expect(stage.children.length).to.be.equals(0);
+                expect(child.transform).to.not.be.null;
+
+                done();
+            });
+        });
+
+        it('should allow children destroy', function (done)
+        {
+            const app = new PIXI.Application();
+            const stage = app.stage;
+            const child = new PIXI.DisplayObject();
+
+            stage.addChild(child);
+
+            app.ticker.addOnce(() =>
+            {
+                app.destroy(false, true);
+                expect(stage.children.length).to.be.equals(0);
+                expect(stage.transform).to.be.null;
+                expect(child.transform).to.be.null;
+
+                done();
+            });
+        });
+    });
 });
