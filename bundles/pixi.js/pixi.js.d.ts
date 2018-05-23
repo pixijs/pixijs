@@ -3182,7 +3182,7 @@ declare namespace PIXI {
 
         static from(source: any, options: IBaseTextureOptions): BaseTexture;
 
-        static fromBuffer(buffer: Float32Array | Uint8Array | Uint32Array, width: number, height: number, options: IBaseTextureOptions): BaseTexture;
+        static fromBuffer(buffer: Float32Array | Uint8Array | Uint32Array, width: number, height: number, options?: IBaseTextureOptions): BaseTexture;
 
         static addToCache(baseTexture: BaseTexture, id: string): void;
 
@@ -3278,7 +3278,7 @@ declare namespace PIXI {
 
         static from(source: number | string | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement | BaseTexture): Texture;
 
-        static fromBuffer(buffer: Float32Array | Uint8Array | Uint32Array, width: number, height: number, options: IBaseTextureOptions): Texture;
+        static fromBuffer(buffer: Float32Array | Uint8Array | Uint32Array, width: number, height: number, options?: IBaseTextureOptions): Texture;
 
         static fromLoader(source: HTMLImageElement | HTMLCanvasElement, imageUrl: string, name?: string): Texture;
 
