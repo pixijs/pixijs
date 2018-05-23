@@ -9,7 +9,6 @@ import { SHAPES, BLEND_MODES, PI_2 } from '../const';
 import Bounds from '../display/Bounds';
 import bezierCurveTo from './utils/bezierCurveTo';
 import CanvasRenderer from '../renderers/canvas/CanvasRenderer';
-import settings from '../settings';
 
 let canvasRenderer;
 const tempMatrix = new Matrix();
@@ -342,15 +341,15 @@ export default class Graphics extends Container
      */
     _segmentsCount(length)
     {
-        let result = Math.ceil(length / settings.GRAPHICS_CURVES_RESOLUTION.segmentLength);
+        let result = Math.ceil(length / Graphics.CURVES.maxLength);
 
-        if (result < settings.GRAPHICS_CURVES_RESOLUTION.minSegmentNumber)
+        if (result < Graphics.CURVES.minSegments)
         {
-            result = settings.GRAPHICS_CURVES_RESOLUTION.minSegmentNumber;
+            result = Graphics.CURVES.minSegments;
         }
-        else if (result > settings.GRAPHICS_CURVES_RESOLUTION.maxSegmentNumber)
+        else if (result > Graphics.CURVES.maxSegments)
         {
-            result = settings.GRAPHICS_CURVES_RESOLUTION.maxSegmentNumber;
+            result = Graphics.CURVES.maxSegments;
         }
 
         return result;
@@ -465,7 +464,7 @@ export default class Graphics extends Container
 
         const fromX = points[points.length - 2];
         const fromY = points[points.length - 1];
-        const n = settings.GRAPHICS_CURVES_RESOLUTION.adaptive
+        const n = Graphics.CURVES.adaptive
                   ? this._segmentsCount(this._quadraticCurveLength(fromX, fromY, cpX, cpY, toX, toY))
                   : 20;
 
@@ -517,7 +516,7 @@ export default class Graphics extends Container
 
         points.length -= 2;
 
-        const n = settings.GRAPHICS_CURVES_RESOLUTION.adaptive
+        const n = Graphics.CURVES.adaptive
                   ? this._segmentsCount(this._bezierCurveLength(fromX, fromY, cpX, cpY, cpX2, cpY2, toX, toY))
                   : 20;
 
@@ -627,7 +626,7 @@ export default class Graphics extends Container
         }
 
         const sweep = endAngle - startAngle;
-        const segs = settings.GRAPHICS_CURVES_RESOLUTION.adaptive
+        const segs = Graphics.CURVES.adaptive
                      ? this._segmentsCount(Math.abs(sweep) * radius)
                      : Math.ceil(Math.abs(sweep) / PI_2) * 40;
 
@@ -1351,3 +1350,25 @@ export default class Graphics extends Container
 }
 
 Graphics._SPRITE_TEXTURE = null;
+
+/**
+ * Graphics curves resolution settings. If `adaptive` flag is set to `true`,
+ * the resolution is calculated based on the curve's length to ensure better visual quality.
+ * Adaptive draw works with `bezierCurveTo` and `quadraticCurveTo`.
+ *
+ * @static
+ * @constant
+ * @memberof PIXI.Graphics
+ * @name CURVES
+ * @type {object}
+ * @property {boolean} adaptive=false - flag indicating if the resolution should be adaptive
+ * @property {number} maxLength=10 - maximal length of a single segment of the curve (if adaptive = false, ignored)
+ * @property {number} minSegments=8 - minimal number of segments in the curve (if adaptive = false, ignored)
+ * @property {number} maxSegments=2048 - maximal number of segments in the curve (if adaptive = false, ignored)
+ */
+Graphics.CURVES = {
+    adaptive: false,
+    maxLength: 10,
+    minSegments: 8,
+    maxSegments: 2048,
+};

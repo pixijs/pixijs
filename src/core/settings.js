@@ -229,24 +229,4 @@ export default {
      * @type {number}
      */
     MESH_CANVAS_PADDING: 0,
-
-    /**
-     * Graphics curves resolution. If <code>adaptive</code> flag is set,
-     * the resolution is calculated based on the curve's length to ensure better visual quality.
-     *
-     * @static
-     * @constant
-     * @memberof PIXI.settings
-     * @type {object}
-     * @property {boolean} adaptive=false - flag indicating if the resolution should be adaptive
-     * @property {number} segmentLength=10 - maximal length of a single segment of the curve (if adaptive = false, ignored)
-     * @property {number} minSegmentNumber=8 - minimal number of segments in the curve (if adaptive = false, ignored)
-     * @property {number} maxSegmentNumber=2048 - maximal number of segments in the curve (if adaptive = false, ignored)
-     */
-    GRAPHICS_CURVES_RESOLUTION: {
-        adaptive: false,
-        segmentLength: 10,
-        minSegmentNumber: 8,
-        maxSegmentNumber: 2048,
-    },
 };
