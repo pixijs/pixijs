@@ -1,5 +1,6 @@
 const path = require('path');
 const fs = require('fs');
+const { Loader } = require('@pixi/loaders');
 const { BaseTextureCache, TextureCache } = require('@pixi/utils');
 const { Texture, BaseTexture } = require('@pixi/core');
 const { Spritesheet } = require('@pixi/spritesheet');
@@ -318,6 +319,71 @@ describe('PIXI.BitmapFontLoader', function ()
             expect(charD.texture.baseTexture.resource.source).to.equal(this.atlasScaledImage);
             expect(charD.texture.frame.x).to.equal(fontX + 19);
             expect(charD.texture.frame.y).to.equal(fontY + 24);
+            expect(charD.texture.frame.width).to.equal(17);
+            expect(charD.texture.frame.height).to.equal(20);
+            const charE = font.chars['E'.charCodeAt(0) || 69];
+
+            expect(charE).to.be.undefined;
+            done();
+        });
+    });
+
+    it('should properly register bitmap font having more than one texture', function (done)
+    {
+        Loader.registerPlugin(BitmapFontLoader);
+
+        const loader = new Loader();
+
+        loader.add(`${__dirname}/resources/split_font.fnt`);
+        loader.load(() =>
+        {
+            const font = BitmapText.fonts.split_font;
+
+            expect(font).to.be.an.object;
+            expect(BitmapText.fonts.split_font).to.equal(font);
+            expect(font).to.have.property('chars');
+            const charA = font.chars['A'.charCodeAt(0) || 65];
+
+            expect(charA).to.exist;
+            let src = charA.texture.baseTexture.resource.url;
+
+            src = src.substring(src.length - 17);
+            expect(src).to.equal('split_font_ab.png');
+            expect(charA.texture.frame.x).to.equal(2);
+            expect(charA.texture.frame.y).to.equal(2);
+            expect(charA.texture.frame.width).to.equal(19);
+            expect(charA.texture.frame.height).to.equal(20);
+            const charB = font.chars['B'.charCodeAt(0) || 66];
+
+            expect(charB).to.exist;
+            src = charB.texture.baseTexture.resource.url;
+
+            src = src.substring(src.length - 17);
+            expect(src).to.equal('split_font_ab.png');
+            expect(charB.texture.frame.x).to.equal(2);
+            expect(charB.texture.frame.y).to.equal(24);
+            expect(charB.texture.frame.width).to.equal(15);
+            expect(charB.texture.frame.height).to.equal(20);
+            const charC = font.chars['C'.charCodeAt(0) || 67];
+
+            expect(charC).to.exist;
+            src = charC.texture.baseTexture.resource.url;
+
+            src = src.substring(src.length - 17);
+            expect(src).to.equal('split_font_cd.png');
+            expect(charC.texture.frame.x).to.equal(2);
+            expect(charC.texture.frame.y).to.equal(2);
+            expect(charC.texture.frame.width).to.equal(18);
+            expect(charC.texture.frame.height).to.equal(20);
+            const charD = font.chars['D'.charCodeAt(0) || 68];
+
+            expect(charD).to.exist;
+            src = charD.texture.baseTexture.resource.url;
+
+            src = src.substring(src.length - 17);
+            expect(src).to.equal('split_font_cd.png');
+            expect(charD.texture.frame.x).to.equal(2);
+            expect(charD.texture.frame.y).to.equal(24);
             expect(charD.texture.frame.width).to.equal(17);
             expect(charD.texture.frame.height).to.equal(20);
             const charE = font.chars['E'.charCodeAt(0) || 69];
