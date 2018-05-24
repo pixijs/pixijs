@@ -503,10 +503,10 @@ export default class BitmapText extends core.Container
      *
      * @static
      * @param {XMLDocument} xml - The XML document data.
-     * @param {PIXI.Texture} texture - Texture with all symbols.
+     * @param {PIXI.Texture|PIXI.Texture[]} textures - List of textures for each page.
      * @return {Object} Result font object with font, size, lineHeight and char fields.
      */
-    static registerFont(xml, texture)
+    static registerFont(xml, textures)
     {
         const data = {};
         const info = xml.getElementsByTagName('info')[0];
@@ -518,29 +518,44 @@ export default class BitmapText extends core.Container
         data.size = parseInt(info.getAttribute('size'), 10);
         data.lineHeight = parseInt(common.getAttribute('lineHeight'), 10) / res;
         data.chars = {};
+        if (!(textures instanceof Array))
+        {
+            textures = [textures];
+        }
 
         // parse letters
         const letters = xml.getElementsByTagName('char');
+        let page;
 
         for (let i = 0; i < letters.length; i++)
         {
             const letter = letters[i];
             const charCode = parseInt(letter.getAttribute('id'), 10);
+            let textureRect;
 
-            const textureRect = new core.Rectangle(
-                (parseInt(letter.getAttribute('x'), 10) / res) + (texture.frame.x / res),
-                (parseInt(letter.getAttribute('y'), 10) / res) + (texture.frame.y / res),
-                parseInt(letter.getAttribute('width'), 10) / res,
-                parseInt(letter.getAttribute('height'), 10) / res
-            );
+            page = parseInt(letter.getAttribute('page'), 10);
+            if (isNaN(page))
+            {
+                textureRect = new core.Rectangle(0, 0, 0, 0);
+                page = 0;
+            }
+            else
+            {
+                textureRect = new core.Rectangle(
+                    (parseInt(letter.getAttribute('x'), 10) / res) + (textures[page].frame.x / res),
+                    (parseInt(letter.getAttribute('y'), 10) / res) + (textures[page].frame.y / res),
+                    parseInt(letter.getAttribute('width'), 10) / res,
+                    parseInt(letter.getAttribute('height'), 10) / res
+                );
+            }
 
             data.chars[charCode] = {
                 xOffset: parseInt(letter.getAttribute('xoffset'), 10) / res,
                 yOffset: parseInt(letter.getAttribute('yoffset'), 10) / res,
                 xAdvance: parseInt(letter.getAttribute('xadvance'), 10) / res,
                 kerning: {},
-                texture: new core.Texture(texture.baseTexture, textureRect),
-
+                texture: new core.Texture(textures[page].baseTexture, textureRect),
+                page,
             };
         }
 
