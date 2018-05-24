@@ -7,7 +7,7 @@ skipHello();
 
 function withGL(fn)
 {
-    return isWebGLSupported() ? fn : undefined;
+    return isWebGLSupported() ? (fn || true) : undefined;
 }
 
 describe('PIXI.Renderer', function ()
@@ -42,4 +42,52 @@ describe('PIXI.Renderer', function ()
             renderer.destroy();
         }
     }));
+
+    describe('.setObjectRenderer()', function ()
+    {
+        if (withGL())
+        {
+            before(function ()
+            {
+                this.renderer = new Renderer();
+            });
+
+            beforeEach(function ()
+            {
+                this.curRenderer = {
+                    start: sinon.spy(),
+                    stop: sinon.spy(),
+                };
+                this.objRenderer = {
+                    start: sinon.spy(),
+                    stop: sinon.spy(),
+                };
+                this.renderer.batch.currentRenderer = this.curRenderer;
+            });
+
+            after(function ()
+            {
+                this.renderer.destroy();
+                this.renderer = null;
+                this.curRenderer = null;
+                this.objRenderer = null;
+            });
+        }
+
+        it('should set objectRenderer as new current renderer', withGL(function ()
+        {
+            this.renderer.batch.setObjectRenderer(this.objRenderer);
+            expect(this.curRenderer.stop).to.be.calledOnce;
+            expect(this.renderer.batch.currentRenderer).to.be.equal(this.objRenderer);
+            expect(this.objRenderer.start).to.be.calledOnce;
+        }));
+
+        it('should do nothing if objectRenderer is already used as current', withGL(function ()
+        {
+            this.renderer.batch.setObjectRenderer(this.curRenderer);
+            expect(this.renderer.batch.currentRenderer).to.be.equal(this.curRenderer);
+            expect(this.curRenderer.stop).to.not.be.called;
+            expect(this.curRenderer.start).to.not.be.called;
+        }));
+    });
 });

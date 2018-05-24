@@ -58,7 +58,7 @@ export default class Renderer extends AbstractRenderer
      * @param {string} [options.powerPreference] - Parameter passed to WebGL context, set to "high-performance"
      *  for devices with dual graphics card.
      */
-    constructor(options, arg2, arg3)
+    constructor(options = {}, arg2, arg3)
     {
         super('WebGL', options, arg2, arg3);
 
