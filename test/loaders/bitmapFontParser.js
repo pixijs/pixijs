@@ -307,6 +307,69 @@ describe('PIXI.loaders.bitmapFontParser', function ()
             done();
         });
     });
+
+    it('should properly register bitmap font having more than one texture', function (done)
+    {
+        const ldr = new PIXI.loaders.Loader();
+
+        ldr.add(`${__dirname}/resources/split_font.fnt`);
+        ldr.load(() =>
+        {
+            const font = PIXI.extras.BitmapText.fonts.split_font;
+
+            expect(font).to.be.an.object;
+            expect(PIXI.extras.BitmapText.fonts.split_font).to.equal(font);
+            expect(font).to.have.property('chars');
+            const charA = font.chars['A'.charCodeAt(0) || 65];
+
+            expect(charA).to.exist;
+            let src = charA.texture.baseTexture.source.src;
+
+            src = src.substring(src.length - 17);
+            expect(src).to.equal('split_font_ab.png');
+            expect(charA.texture.frame.x).to.equal(2);
+            expect(charA.texture.frame.y).to.equal(2);
+            expect(charA.texture.frame.width).to.equal(19);
+            expect(charA.texture.frame.height).to.equal(20);
+            const charB = font.chars['B'.charCodeAt(0) || 66];
+
+            expect(charB).to.exist;
+            src = charB.texture.baseTexture.source.src;
+
+            src = src.substring(src.length - 17);
+            expect(src).to.equal('split_font_ab.png');
+            expect(charB.texture.frame.x).to.equal(2);
+            expect(charB.texture.frame.y).to.equal(24);
+            expect(charB.texture.frame.width).to.equal(15);
+            expect(charB.texture.frame.height).to.equal(20);
+            const charC = font.chars['C'.charCodeAt(0) || 67];
+
+            expect(charC).to.exist;
+            src = charC.texture.baseTexture.source.src;
+
+            src = src.substring(src.length - 17);
+            expect(src).to.equal('split_font_cd.png');
+            expect(charC.texture.frame.x).to.equal(2);
+            expect(charC.texture.frame.y).to.equal(2);
+            expect(charC.texture.frame.width).to.equal(18);
+            expect(charC.texture.frame.height).to.equal(20);
+            const charD = font.chars['D'.charCodeAt(0) || 68];
+
+            expect(charD).to.exist;
+            src = charD.texture.baseTexture.source.src;
+
+            src = src.substring(src.length - 17);
+            expect(src).to.equal('split_font_cd.png');
+            expect(charD.texture.frame.x).to.equal(2);
+            expect(charD.texture.frame.y).to.equal(24);
+            expect(charD.texture.frame.width).to.equal(17);
+            expect(charD.texture.frame.height).to.equal(20);
+            const charE = font.chars['E'.charCodeAt(0) || 69];
+
+            expect(charE).to.be.undefined;
+            done();
+        });
+    });
 });
 
 describe('PIXI.loaders.parseBitmapFontData', function ()
