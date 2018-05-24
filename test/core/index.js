@@ -1,5 +1,6 @@
 'use strict';
 
+require('./AnimatedSprite');
 require('./Application');
 require('./TransformStatic');
 require('./Bounds');
