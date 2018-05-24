@@ -1,5 +1,6 @@
 'use strict';
 
+require('./AnimatedSprite');
 require('./Application');
 require('./TransformStatic');
 require('./Bounds');
@@ -10,6 +11,7 @@ require('./Sprite');
 require('./Spritesheet');
 require('./TilingSprite');
 require('./TextStyle');
+require('./TextMetrics');
 require('./Text');
 require('./toGlobal');
 require('./toLocal');

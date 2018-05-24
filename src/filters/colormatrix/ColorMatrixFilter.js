@@ -8,7 +8,7 @@ import { join } from 'path';
  * with a new set of RGBA color and alpha values. It's pretty powerful!
  *
  * ```js
- *  let colorMatrix = new PIXI.ColorMatrixFilter();
+ *  let colorMatrix = new PIXI.filters.ColorMatrixFilter();
  *  container.filters = [colorMatrix];
  *  colorMatrix.contrast(2);
  * ```
@@ -299,9 +299,9 @@ export default class ColorMatrixFilter extends core.Filter
     negative(multiply)
     {
         const matrix = [
-            0, 1, 1, 0, 0,
-            1, 0, 1, 0, 0,
-            1, 1, 0, 0, 0,
+            -1, 0, 0, 1, 0,
+            0, -1, 0, 1, 0,
+            0, 0, -1, 1, 0,
             0, 0, 0, 1, 0,
         ];
 

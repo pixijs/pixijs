@@ -1,9 +1,21 @@
 // provide method to give a stack track for warnings
 // useful for tracking-down where deprecated methods/properties/classes
 // are being used within the code
+
+// A map of warning messages already fired
+const warnings = {};
+
+// provide method to give a stack track for warnings
+// useful for tracking-down where deprecated methods/properties/classes
+// are being used within the code
 function warn(msg)
 {
-    // @if DEBUG
+    // Ignore duplicat
+    if (warnings[msg])
+    {
+        return;
+    }
+
     /* eslint-disable no-console */
     let stack = new Error().stack;
 
@@ -35,7 +47,8 @@ function warn(msg)
         }
     }
     /* eslint-enable no-console */
-    // @endif
+
+    warnings[msg] = true;
 }
 
 export default function deprecation(core)
@@ -586,6 +599,28 @@ export default function deprecation(core)
         });
     }
 
+    if (extras)
+    {
+        Object.defineProperties(extras, {
+            /**
+             * @class
+             * @name TextureTransform
+             * @memberof PIXI.extras
+             * @see PIXI.TextureMatrix
+             * @deprecated since version 4.6.0
+             */
+            TextureTransform: {
+                get()
+                {
+                    warn('The TextureTransform class has been renamed to TextureMatrix, '
+                        + 'please use PIXI.TextureMatrix from now on.');
+
+                    return core.TextureMatrix;
+                },
+            },
+        });
+    }
+
     core.DisplayObject.prototype.generateTexture = function generateTexture(renderer, scaleMode, resolution)
     {
         warn('generateTexture has moved to the renderer, please use renderer.generateTexture(displayObject)');
@@ -599,6 +634,21 @@ export default function deprecation(core)
             + 'Or to render a graphics to a texture using canvas please use generateCanvasTexture');
 
         return this.generateCanvasTexture(scaleMode, resolution);
+    };
+
+    /**
+     * @method
+     * @name PIXI.GroupD8.isSwapWidthHeight
+     * @see PIXI.GroupD8.isVertical
+     * @param {number} rotation - The number to check.
+     * @returns {boolean} Whether or not the direction is vertical
+     * @deprecated since version 4.6.0
+     */
+    core.GroupD8.isSwapWidthHeight = function isSwapWidthHeight(rotation)
+    {
+        warn('GroupD8.isSwapWidthHeight was renamed to GroupD8.isVertical');
+
+        return core.GroupD8.isVertical(rotation);
     };
 
     core.RenderTexture.prototype.render = function render(displayObject, matrix, clear, updateTransform)
@@ -944,6 +994,22 @@ export default function deprecation(core)
                 warn('filters.SpriteMaskFilter is an undocumented alias, please use SpriteMaskFilter from now on.');
 
                 return core.SpriteMaskFilter;
+            },
+        },
+
+        /**
+         * @class
+         * @private
+         * @name PIXI.filters.VoidFilter
+         * @see PIXI.filters.AlphaFilter
+         * @deprecated since version 4.5.7
+         */
+        VoidFilter: {
+            get()
+            {
+                warn('VoidFilter has been renamed to AlphaFilter, please use PIXI.filters.AlphaFilter');
+
+                return filters.AlphaFilter;
             },
         },
     });

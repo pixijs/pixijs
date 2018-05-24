@@ -50,6 +50,10 @@ export default class Filter
         for (const i in this.uniformData)
         {
             this.uniforms[i] = this.uniformData[i].value;
+            if (this.uniformData[i].type)
+            {
+                this.uniformData[i].type = this.uniformData[i].type.toLowerCase();
+            }
         }
 
         // this is where we store shader references..
@@ -79,7 +83,7 @@ export default class Filter
          *
          * @member {number}
          */
-        this.resolution = settings.RESOLUTION;
+        this.resolution = settings.FILTER_RESOLUTION;
 
         /**
          * If enabled is true the filter is applied, if false it will not.

@@ -1,7 +1,7 @@
 PixiJS — The HTML5 Creation Engine
 =============
 
-![pixi.js logo](http://www.goodboydigital.com/pixijs/pixiV4_wide_full.jpg)
+![pixi.js logo](http://pixijs.download/pixijs-banner.png)
 
 [![Inline docs](http://inch-ci.org/github/pixijs/pixi.js.svg?branch=dev)](http://inch-ci.org/github/pixijs/pixi.js)
 [![Build Status](https://travis-ci.org/pixijs/pixi.js.svg?branch=dev)](https://travis-ci.org/pixijs/pixi.js)
@@ -10,7 +10,7 @@ The aim of this project is to provide a fast lightweight 2D library that works
 across all devices. The PixiJS renderer allows everyone to enjoy the power of
 hardware acceleration without prior knowledge of WebGL. Also, it's fast. Really fast.
 
-If you want to keep up to date with the latest PixiJS news then feel free to follow us on twitter
+If you want to keep up to date with the latest PixiJS news then feel free to follow us on Twitter
 ([@doormat23](https://twitter.com/doormat23), [@rolnaaba](https://twitter.com/rolnaaba), [@bigtimebuddy](https://twitter.com/bigtimebuddy), [@ivanpopelyshev](https://twitter.com/ivanpopelyshev))
 and we will keep you posted! You can also check back on [our site](http://www.pixijs.com)
 as any breakthroughs will be posted up there too!
@@ -48,27 +48,30 @@ _Note: After v4.5.0, support for the [Bower](https://bower.io) package manager h
 
 #### NPM Install
 
+```sh
+npm install pixi.js
 ```
-$> npm install pixi.js
+There is no default export. The correct way to import PixiJS is:
+
+```js
+import * as PIXI from 'pixi.js'
 ```
 
 #### CDN Install (via cdnjs)
 
 ```html
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.5.1/pixi.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.7.1/pixi.min.js"></script>
 ```
 
-_Note: `4.5.1` can be replaced by any [released](https://github.com/pixijs/pixi.js/releases) version._
+_Note: `4.7.1` can be replaced by any [released](https://github.com/pixijs/pixi.js/releases) version._
 
 ### Demos ###
 
-- [WebGL Filters!](http://pixijs.github.io/pixi-filters/examples/)
-- [Run pixie run](http://www.goodboydigital.com/runpixierun)
-- [Fight for Everyone](http://www.goodboydigital.com/casestudies/fightforeveryone)
+- [Filters Demo](http://pixijs.io/pixi-filters/tools/demo/)
+- [Run Pixie Run](http://work.goodboydigital.com/runpixierun/)
 - [Flash vs HTML](http://flashvhtml.com)
 - [Bunny Demo](http://www.goodboydigital.com/pixijs/bunnymark)
 - [Storm Brewing](http://www.goodboydigital.com/pixijs/storm)
-- [Filters Demo](http://www.goodboydigital.com/pixijs/examples/15/indexAll.html)
 - [Render Texture Demo](http://www.goodboydigital.com/pixijs/examples/11)
 - [Primitives Demo](http://www.goodboydigital.com/pixijs/examples/13)
 - [Masking Demo](http://www.goodboydigital.com/pixijs/examples/14)
@@ -85,7 +88,7 @@ Want to be part of the PixiJS project? Great! All are welcome! We will get there
 together :) Whether you find a bug, have a great feature request or you fancy owning a task
 from the road map above feel free to get in touch.
 
-Make sure to read the [Contributing Guide](https://github.com/pixijs/pixi.js/blob/master/CONTRIBUTING.md)
+Make sure to read the [Contributing Guide](.github/CONTRIBUTING.md)
 before submitting changes.
 
 ### Current features ###
@@ -112,18 +115,17 @@ before submitting changes.
 ```js
 // The application will create a renderer using WebGL, if possible,
 // with a fallback to a canvas render. It will also setup the ticker
-// and the root stage PIXI.Container.
-var app = new PIXI.Application();
+// and the root stage PIXI.Container
+const app = new PIXI.Application();
 
 // The application will create a canvas element for you that you
-// can then insert into the DOM.
+// can then insert into the DOM
 document.body.appendChild(app.view);
 
 // load the texture we need
-PIXI.loader.add('bunny', 'bunny.png').load(function(loader, resources) {
-
-    // This creates a texture from a 'bunny.png' image.
-    var bunny = new PIXI.Sprite(resources.bunny.texture);
+PIXI.loader.add('bunny', 'bunny.png').load((loader, resources) => {
+    // This creates a texture from a 'bunny.png' image
+    const bunny = new PIXI.Sprite(resources.bunny.texture);
 
     // Setup the position of the bunny
     bunny.x = app.renderer.width / 2;
@@ -133,11 +135,11 @@ PIXI.loader.add('bunny', 'bunny.png').load(function(loader, resources) {
     bunny.anchor.x = 0.5;
     bunny.anchor.y = 0.5;
 
-    // Add the bunny to the scene we are building.
+    // Add the bunny to the scene we are building
     app.stage.addChild(bunny);
 
     // Listen for frame updates
-    app.ticker.add(function() {
+    app.ticker.add(() => {
          // each frame we spin the bunny around a bit
         bunny.rotation += 0.01;
     });
@@ -153,14 +155,14 @@ the only time you should need to build PixiJS is if you are developing it.
 If you don't already have Node.js and NPM, go install them. Then, in the folder where you have cloned
 the repository, install the build dependencies using npm:
 
-```
-$> npm install
+```sh
+npm install
 ```
 
 Then, to build the source, run:
 
-```
-$> npm run dist
+```sh
+npm run dist
 ```
 
 This will create a minified version at `dist/pixi.min.js` and a non-minified version at `dist/pixi.js`
@@ -168,22 +170,22 @@ with all the plugins in the PixiJS project.
 
 If there are specific plugins you don't want, say "interaction" or "extras", you can exclude those:
 
-```
-$> npm run dist -- --exclude extras --exclude interaction
+```sh
+npm run dist -- --exclude extras --exclude interaction
 ```
 
 You can also use the short-form `-e`:
 
-```
-$> npm run dist -- -e extras -e interaction -e filters
+```sh
+npm run dist -- -e extras -e interaction -e filters
 ```
 
 ### How to generate the documentation ###
 
 The docs can be generated using npm:
 
-```
-$> npm run docs
+```sh
+npm run docs
 ```
 
 The documentation uses [Jaguar.js](https://github.com/pixijs/jaguarjs-jsdoc) and the jsdoc format, the configuration file can be found at [scripts/jsdoc.conf.json](scripts/jsdoc.conf.json)
