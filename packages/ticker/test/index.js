@@ -299,6 +299,11 @@ describe('PIXI.Ticker', function ()
 
         expect(this.length()).to.equal(length + 1);
 
+        expect(listener2.called).to.be.false;
+        expect(listener1.calledOnce).to.be.true;
+
+        shared.update();
+
         expect(listener2.calledOnce).to.be.true;
         expect(listener1.calledOnce).to.be.true;
 
@@ -368,6 +373,33 @@ describe('PIXI.Ticker', function ()
 
         ticker.add(listener);
         ticker.add(listener2, null, UPDATE_PRIORITY.LOW);
+        ticker.start();
+    });
+
+    it('should Ticker call destroyed listener "next" pointer after destroy', function (done)
+    {
+        const ticker = new Ticker();
+
+        const listener1 = sinon.spy();
+        const listener2 = sinon.spy(() =>
+        {
+            ticker.remove(listener2);
+        });
+
+        const listener3 = sinon.spy(() =>
+        {
+            ticker.stop();
+
+            expect(listener1.calledOnce).to.be.true;
+            expect(listener2.calledOnce).to.be.true;
+            expect(listener3.calledOnce).to.be.true;
+            done();
+        });
+
+        ticker.add(listener1, null, UPDATE_PRIORITY.HIGH);
+        ticker.add(listener2, null, UPDATE_PRIORITY.HIGH);
+        ticker.add(listener3, null, UPDATE_PRIORITY.HIGH);
+
         ticker.start();
     });
 });
