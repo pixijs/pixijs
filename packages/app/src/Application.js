@@ -23,7 +23,7 @@ import { Renderer } from '@pixi/core';
 export default class Application
 {
     // eslint-disable-next-line valid-jsdoc
-        /**
+    /**
      * @param {object} [options] - The optional renderer parameters.
      * @param {boolean} [options.autoStart=true] - Automatically starts the rendering after the construction.
      *     **Note**: Setting this parameter to false does NOT stop the shared ticker even if you set
@@ -142,14 +142,14 @@ export default class Application
     /**
      * Destroy and don't use after this.
      * @param {Boolean} [removeView=false] Automatically remove canvas from DOM.
-     * @param {object|boolean} [stageOptions] - Options parameter. A boolean will act as if all options    
-     *  have been set to that value    
-     * @param {boolean} [stageOptions.children=false] - if set to true, all the children will have their destroy   
-     *  method called as well. 'stageOptions' will be passed on to those calls.    
-     * @param {boolean} [stageOptions.texture=false] - Only used for child Sprites if stageOptions.children is set 
-     *  to true. Should it destroy the texture of the child sprite 
-     * @param {boolean} [stageOptions.baseTexture=false] - Only used for child Sprites if stageOptions.children is set 
-     *  to true. Should it destroy the base texture of the child sprite    
+     * @param {object|boolean} [stageOptions] - Options parameter. A boolean will act as if all options
+     *  have been set to that value
+     * @param {boolean} [stageOptions.children=false] - if set to true, all the children will have their destroy
+     *  method called as well. 'stageOptions' will be passed on to those calls.
+     * @param {boolean} [stageOptions.texture=false] - Only used for child Sprites if stageOptions.children is set
+     *  to true. Should it destroy the texture of the child sprite
+     * @param {boolean} [stageOptions.baseTexture=false] - Only used for child Sprites if stageOptions.children is set
+     *  to true. Should it destroy the base texture of the child sprite
      */
     destroy(removeView)
     {
