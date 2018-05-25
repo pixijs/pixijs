@@ -1,4 +1,3 @@
-import { TextureCache } from '@pixi/utils';
 import { LoaderResource } from '@pixi/loaders';
 import BitmapText from './BitmapText';
 
@@ -114,6 +113,19 @@ export default class BitmapFontLoader
 
         const pages = resource.data.getElementsByTagName('page');
         const textures = [];
+
+        // Handle completed, when the number of textures
+        // load is the same number as references in the fnt file
+        const completed = () =>
+        {
+            if (textures.length === pages.length)
+            {
+                BitmapFontLoader.parse(resource, textures);
+                next();
+            }
+        };
+
+        // Standard loading options for images
         const loadOptions = {
             crossOrigin: resource.crossOrigin,
             loadType: LoaderResource.LOAD_TYPE.IMAGE,
@@ -121,44 +133,27 @@ export default class BitmapFontLoader
             parentResource: resource,
         };
 
-        for (let x = 0; x < pages.length; ++x)
+        for (let i = 0; i < pages.length; ++i)
         {
-            const textureUrl = xmlUrl + pages[x].getAttribute('file');
+            const url = xmlUrl + pages[i].getAttribute('file');
 
-            if (TextureCache[textureUrl])
+            // texture is not loaded, we'll attempt to add
+            // it to the load and add the texture to the list
+            if (!this.resources[url])
             {
-                textures.push(TextureCache[textureUrl]);
+                this.add(url, loadOptions, (resource) =>
+                {
+                    textures.push(resource.texture);
+                    completed();
+                });
             }
             else
             {
-                // load the texture for the font
-                this.add(`${resource.name}_image${x}`, textureUrl, loadOptions, () =>
-                {
-                    const nextTextures = [];
-
-                    for (let x = 0; x < pages.length; ++x)
-                    {
-                        const nextTextureUrl = xmlUrl + pages[x].getAttribute('file');
-
-                        if (TextureCache[nextTextureUrl])
-                        {
-                            nextTextures.push(TextureCache[nextTextureUrl]);
-                        }
-                        else
-                        {
-                            return;
-                        }
-                    }
-                    BitmapFontLoader.parse(resource, nextTextures);
-                    next();
-                });
+                // incase the image is loaded outside
+                // using the same loader, texture will be available
+                textures.push(this.resources[url].texture);
+                completed();
             }
-        }
-
-        if (textures.length === pages.length)
-        {
-            BitmapFontLoader.parse(resource, textures);
-            next();
         }
     }
 }
