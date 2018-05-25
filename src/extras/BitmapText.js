@@ -111,6 +111,13 @@ export default class BitmapText extends core.Container
         this._maxLineHeight = 0;
 
         /**
+         * Letter spacing. This is useful for setting the space between characters.
+         * @member {number}
+         * @private
+         */
+        this._letterSpacing = 0;
+
+        /**
          * Text anchor. read-only
          *
          * @member {PIXI.ObservablePoint}
@@ -140,48 +147,36 @@ export default class BitmapText extends core.Container
         const pos = new core.Point();
         const chars = [];
         const lineWidths = [];
+        const text = this.text.replace(/(?:\r\n|\r)/g, '\n');
+        const textLength = text.length;
+        const maxWidth = this._maxWidth * data.size / this._font.size;
 
         let prevCharCode = null;
         let lastLineWidth = 0;
         let maxLineWidth = 0;
         let line = 0;
-        let lastSpace = -1;
-        let lastSpaceWidth = 0;
+        let lastBreakPos = -1;
+        let lastBreakWidth = 0;
         let spacesRemoved = 0;
         let maxLineHeight = 0;
 
-        for (let i = 0; i < this.text.length; i++)
+        for (let i = 0; i < textLength; i++)
         {
-            const charCode = this.text.charCodeAt(i);
+            const charCode = text.charCodeAt(i);
+            const char = text.charAt(i);
 
-            if (/(\s)/.test(this.text.charAt(i)))
+            if (/(?:\s)/.test(char))
             {
-                lastSpace = i;
-                lastSpaceWidth = lastLineWidth;
+                lastBreakPos = i;
+                lastBreakWidth = lastLineWidth;
             }
 
-            if (/(?:\r\n|\r|\n)/.test(this.text.charAt(i)))
+            if (char === '\r' || char === '\n')
             {
                 lineWidths.push(lastLineWidth);
                 maxLineWidth = Math.max(maxLineWidth, lastLineWidth);
-                line++;
-
-                pos.x = 0;
-                pos.y += data.lineHeight;
-                prevCharCode = null;
-                continue;
-            }
-
-            if (lastSpace !== -1 && this._maxWidth > 0 && pos.x * scale > this._maxWidth)
-            {
-                core.utils.removeItems(chars, lastSpace - spacesRemoved, i - lastSpace);
-                i = lastSpace;
-                lastSpace = -1;
+                ++line;
                 ++spacesRemoved;
-
-                lineWidths.push(lastSpaceWidth);
-                maxLineWidth = Math.max(maxLineWidth, lastSpaceWidth);
-                line++;
 
                 pos.x = 0;
                 pos.y += data.lineHeight;
@@ -205,16 +200,42 @@ export default class BitmapText extends core.Container
                 texture: charData.texture,
                 line,
                 charCode,
-                position: new core.Point(pos.x + charData.xOffset, pos.y + charData.yOffset),
+                position: new core.Point(pos.x + charData.xOffset + (this._letterSpacing / 2), pos.y + charData.yOffset),
             });
-            lastLineWidth = pos.x + (charData.texture.width + charData.xOffset);
-            pos.x += charData.xAdvance;
+            pos.x += charData.xAdvance + this._letterSpacing;
+            lastLineWidth = pos.x;
             maxLineHeight = Math.max(maxLineHeight, (charData.yOffset + charData.texture.height));
             prevCharCode = charCode;
+
+            if (lastBreakPos !== -1 && maxWidth > 0 && pos.x > maxWidth)
+            {
+                ++spacesRemoved;
+                core.utils.removeItems(chars, 1 + lastBreakPos - spacesRemoved, 1 + i - lastBreakPos);
+                i = lastBreakPos;
+                lastBreakPos = -1;
+
+                lineWidths.push(lastBreakWidth);
+                maxLineWidth = Math.max(maxLineWidth, lastBreakWidth);
+                line++;
+
+                pos.x = 0;
+                pos.y += data.lineHeight;
+                prevCharCode = null;
+            }
         }
 
-        lineWidths.push(lastLineWidth);
-        maxLineWidth = Math.max(maxLineWidth, lastLineWidth);
+        const lastChar = text.charAt(text.length - 1);
+
+        if (lastChar !== '\r' && lastChar !== '\n')
+        {
+            if (/(?:\s)/.test(lastChar))
+            {
+                lastLineWidth = lastBreakWidth;
+            }
+
+            lineWidths.push(lastLineWidth);
+            maxLineWidth = Math.max(maxLineWidth, lastLineWidth);
+        }
 
         const lineAlignOffsets = [];
 
@@ -482,6 +503,25 @@ export default class BitmapText extends core.Container
         this.validate();
 
         return this._textWidth;
+    }
+
+    /**
+     * Additional space between characters.
+     *
+     * @member {number}
+     */
+    get letterSpacing()
+    {
+        return this._letterSpacing;
+    }
+
+    set letterSpacing(value) // eslint-disable-line require-jsdoc
+    {
+        if (this._letterSpacing !== value)
+        {
+            this._letterSpacing = value;
+            this.dirty = true;
+        }
     }
 
     /**
