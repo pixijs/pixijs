@@ -27,8 +27,7 @@
   "dependencies": {
     "@pixi/core": "^5.0.0-alpha.2",
     "@pixi/display": "^5.0.0-alpha.2",
-    "@pixi/settings": "^5.0.0-alpha.2",
-    "@pixi/ticker": "^5.0.0-alpha.2"
+    "@pixi/settings": "^5.0.0-alpha.2"
   },
   "devDependencies": {
     "@pixi/canvas-renderer": "^5.0.0-alpha.2",
