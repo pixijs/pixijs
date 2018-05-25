@@ -2,7 +2,7 @@
 
 function withGL(fn)
 {
-    return PIXI.utils.isWebGLSupported() ? fn : undefined;
+    return PIXI.utils.isWebGLSupported() ? (fn || true) : undefined;
 }
 
 module.exports = withGL;

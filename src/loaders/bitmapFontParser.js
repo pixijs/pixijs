@@ -9,11 +9,11 @@ import { BitmapText } from '../extras';
  * @function parseBitmapFontData
  * @memberof PIXI.loaders
  * @param {PIXI.loaders.Resource} resource - Loader resource.
- * @param {PIXI.Texture} texture - Reference to texture.
+ * @param {PIXI.Texture|PIXI.Texture[]} textures - List of textures for each page.
  */
-export function parse(resource, texture)
+export function parse(resource, textures)
 {
-    resource.bitmapFont = BitmapText.registerFont(resource.data, texture);
+    resource.bitmapFont = BitmapText.registerFont(resource.data, textures);
 }
 
 export default function ()
@@ -67,29 +67,53 @@ export default function ()
             xmlUrl += '/';
         }
 
-        const textureUrl = xmlUrl + resource.data.getElementsByTagName('page')[0].getAttribute('file');
+        const pages = resource.data.getElementsByTagName('page');
+        const textures = [];
+        const loadOptions = {
+            crossOrigin: resource.crossOrigin,
+            loadType: Resource.LOAD_TYPE.IMAGE,
+            metadata: resource.metadata.imageMetadata,
+            parentResource: resource,
+        };
 
-        if (utils.TextureCache[textureUrl])
+        for (let x = 0; x < pages.length; ++x)
         {
-            // reuse existing texture
-            parse(resource, utils.TextureCache[textureUrl]);
-            next();
-        }
-        else
-        {
-            const loadOptions = {
-                crossOrigin: resource.crossOrigin,
-                loadType: Resource.LOAD_TYPE.IMAGE,
-                metadata: resource.metadata.imageMetadata,
-                parentResource: resource,
-            };
+            const textureUrl = xmlUrl + pages[x].getAttribute('file');
 
-            // load the texture for the font
-            this.add(`${resource.name}_image`, textureUrl, loadOptions, (res) =>
+            if (utils.TextureCache[textureUrl])
             {
-                parse(resource, res.texture);
-                next();
-            });
+                textures.push(utils.TextureCache[textureUrl]);
+            }
+            else
+            {
+                // load the texture for the font
+                this.add(`${resource.name}_image${x}`, textureUrl, loadOptions, () =>
+                {
+                    const nextTextures = [];
+
+                    for (let x = 0; x < pages.length; ++x)
+                    {
+                        const nextTextureUrl = xmlUrl + pages[x].getAttribute('file');
+
+                        if (utils.TextureCache[nextTextureUrl])
+                        {
+                            nextTextures.push(utils.TextureCache[nextTextureUrl]);
+                        }
+                        else
+                        {
+                            return;
+                        }
+                    }
+                    parse(resource, nextTextures);
+                    next();
+                });
+            }
+        }
+
+        if (textures.length === pages.length)
+        {
+            parse(resource, textures);
+            next();
         }
     };
 }
