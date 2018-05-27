@@ -330,11 +330,9 @@ describe('PIXI.BitmapFontLoader', function ()
 
     it('should properly register bitmap font having more than one texture', function (done)
     {
-        Loader.registerPlugin(BitmapFontLoader);
-
         const loader = new Loader();
 
-        loader.add(`${__dirname}/resources/split_font.fnt`);
+        loader.add(path.join(this.resources, 'split_font.fnt'));
         loader.load(() =>
         {
             const font = BitmapText.fonts.split_font;
