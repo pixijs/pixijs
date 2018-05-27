@@ -1,5 +1,4 @@
 import * as path from 'path';
-import { utils } from '../core';
 import { Resource } from 'resource-loader';
 import { BitmapText } from '../extras';
 
@@ -69,6 +68,19 @@ export default function ()
 
         const pages = resource.data.getElementsByTagName('page');
         const textures = [];
+
+        // Handle completed, when the number of textures
+        // load is the same number as references in the fnt file
+        const completed = () =>
+        {
+            if (textures.length === pages.length)
+            {
+                parse(resource, textures);
+                next();
+            }
+        };
+
+        // Standard loading options for images
         const loadOptions = {
             crossOrigin: resource.crossOrigin,
             loadType: Resource.LOAD_TYPE.IMAGE,
@@ -76,44 +88,27 @@ export default function ()
             parentResource: resource,
         };
 
-        for (let x = 0; x < pages.length; ++x)
+        for (let i = 0; i < pages.length; ++i)
         {
-            const textureUrl = xmlUrl + pages[x].getAttribute('file');
+            const url = xmlUrl + pages[i].getAttribute('file');
 
-            if (utils.TextureCache[textureUrl])
+            // texture is not loaded, we'll attempt to add
+            // it to the load and add the texture to the list
+            if (!this.resources[url])
             {
-                textures.push(utils.TextureCache[textureUrl]);
+                this.add(url, loadOptions, (resource) =>
+                {
+                    textures.push(resource.texture);
+                    completed();
+                });
             }
             else
             {
-                // load the texture for the font
-                this.add(`${resource.name}_image${x}`, textureUrl, loadOptions, () =>
-                {
-                    const nextTextures = [];
-
-                    for (let x = 0; x < pages.length; ++x)
-                    {
-                        const nextTextureUrl = xmlUrl + pages[x].getAttribute('file');
-
-                        if (utils.TextureCache[nextTextureUrl])
-                        {
-                            nextTextures.push(utils.TextureCache[nextTextureUrl]);
-                        }
-                        else
-                        {
-                            return;
-                        }
-                    }
-                    parse(resource, nextTextures);
-                    next();
-                });
+                // incase the image is loaded outside
+                // using the same loader, texture will be available
+                textures.push(this.resources[url].texture);
+                completed();
             }
-        }
-
-        if (textures.length === pages.length)
-        {
-            parse(resource, textures);
-            next();
         }
     };
 }
