@@ -2,7 +2,7 @@
 
 const path = require('path');
 
-describe.only('PIXI.Sprite', function ()
+describe('PIXI.Sprite', function ()
 {
     describe('width', function ()
     {
