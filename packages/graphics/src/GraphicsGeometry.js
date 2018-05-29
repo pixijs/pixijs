@@ -1048,7 +1048,7 @@ export default class GraphicsGeometry extends Geometry
             u32[p++] = colors[i];
         }
 
-        this.buffer.update(glPoints.vertices);
+        this.buffer.update(glPoints);
 
         const glIndices = new Uint16Array(this.indices);
 
