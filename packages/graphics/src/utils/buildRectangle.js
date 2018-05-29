@@ -1,5 +1,3 @@
-import { hex2rgb } from '@pixi/utils';
-
 /**
  * Builds a rectangle to draw
  *
@@ -11,46 +9,43 @@ import { hex2rgb } from '@pixi/utils';
  * @param {object} webGLData - an object containing all the webGL-specific information to create this shape
  * @param {object} webGLDataNativeLines - an object containing all the webGL-specific information to create nativeLines
  */
-export default function buildRectangle(graphicsData, graphicsGeometry)
-{
-    // --- //
-    // need to convert points to a nice regular data
-    //
-    const rectData = graphicsData.shape;
-    const x = rectData.x;
-    const y = rectData.y;
-    const width = rectData.width;
-    const height = rectData.height;
+export default {
 
-    const color = hex2rgb(graphicsData.fillColor);
-    const alpha = graphicsData.fillAlpha;
+    build(graphicsData)
+    {
+        // --- //
+        // need to convert points to a nice regular data
+        //
+        const rectData = graphicsData.shape;
+        const x = rectData.x;
+        const y = rectData.y;
+        const width = rectData.width;
+        const height = rectData.height;
 
-    const r = color[0] * alpha;
-    const g = color[1] * alpha;
-    const b = color[2] * alpha;
+        const points = graphicsData.points;
 
-    const verts = graphicsGeometry.points;
-    const indices = graphicsGeometry.indices;
+        points.length = 0;
 
-    const vertPos = verts.length / 8;
+        points.push(x, y,
+            x + width, y,
+            x + width, y + height,
+            x, y + height,
+            x, y);
+    },
 
-    // start
-    verts.push(x, y);
-    verts.push(r, g, b, alpha);
-    verts.push(0, 0);
+    triangulate(graphicsData, graphicsGeometry)
+    {
+        const points = graphicsData.points;
+        const verts = graphicsGeometry.points;
 
-    verts.push(x + width, y);
-    verts.push(r, g, b, alpha);
-    verts.push(0, 1);
+        const vertPos = verts.length / 2;
 
-    verts.push(x, y + height);
-    verts.push(r, g, b, alpha);
-    verts.push(1, 0);
+        verts.push(points[0], points[1],
+            points[2], points[3],
+            points[6], points[7],
+            points[4], points[5]);
 
-    verts.push(x + width, y + height);
-    verts.push(r, g, b, alpha);
-    verts.push(1, 1);
-
-    // insert 2 dead triangles..
-    indices.push(vertPos, vertPos, vertPos + 1, vertPos + 2, vertPos + 3, vertPos + 3);
-}
+        // insert 2 dead triangles..
+        graphicsGeometry.indices.push(vertPos, vertPos, vertPos + 1, vertPos + 2, vertPos + 3, vertPos + 3);
+    },
+};

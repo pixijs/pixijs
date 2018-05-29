@@ -18,7 +18,17 @@ export default class GraphicsData
      * @param {PIXI.Circle|PIXI.Rectangle|PIXI.Ellipse|PIXI.Polygon} shape - The shape object to draw.
      * @param {number} lineAlignment - the alignment of the line.
      */
-    constructor(lineWidth, lineColor, lineAlpha, fillColor, fillTexture, fillMatrix, fillAlpha, fill, nativeLines, shape, lineAlignment)
+    constructor(lineWidth, // eslint-disable-line max-params
+        lineColor,
+        lineAlpha,
+        fillColor,
+        fillTexture,
+        fillMatrix,
+        fillAlpha,
+        fill,
+        nativeLines,
+        shape,
+        lineAlignment)
     {
         /**
          * the width of the line to draw
@@ -100,6 +110,10 @@ export default class GraphicsData
          * @member {number}
          */
         this.type = shape.type;
+
+        this.matrix = null;
+
+        this.points = [];
     }
 
     /**
@@ -121,16 +135,6 @@ export default class GraphicsData
             this.nativeLines,
             this.shape
         );
-    }
-
-    /**
-     * Adds a hole to the shape.
-     *
-     * @param {PIXI.Rectangle|PIXI.Circle} shape - The shape of the hole.
-     */
-    addHole(shape)
-    {
-        this.holes.push(shape);
     }
 
     /**

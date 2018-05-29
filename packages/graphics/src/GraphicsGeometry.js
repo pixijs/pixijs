@@ -1,24 +1,14 @@
 import { Buffer, Geometry, Texture } from '@pixi/core';
-import {
-    Rectangle,
-    RoundedRectangle,
-    Ellipse,
-    Polygon,
-    Circle,
-    SHAPES,
-    PI_2,
-} from '@pixi/math';
+import { Circle, Ellipse, PI_2, Polygon, Rectangle, RoundedRectangle, SHAPES } from '@pixi/math';
+import { TYPES } from '@pixi/constants';
 
 import GraphicsData from './GraphicsData';
 import bezierCurveTo from './utils/bezierCurveTo';
 import buildCircle from './utils/buildCircle';
-import buildCircleLine from './utils/buildCircleLine';
 import buildLine from './utils/buildLine';
 import buildPoly from './utils/buildPoly';
 import buildRectangle from './utils/buildRectangle';
-import buildRectangleLine from './utils/buildRectangleLine';
 import buildRoundedRectangle from './utils/buildRoundedRectangle';
-import buildRoundedRectangleLine from './utils/buildRoundedRectangleLine';
 
 /**
  * The Graphics class contains methods used to draw primitive shapes such as lines, circles and
@@ -55,6 +45,8 @@ export default class GraphicsGeometry extends Geometry
          * @member {PIXI.Point[]}
          */
         this.points = [];
+        this.colors = [];
+        this.uvs = [];
 
         /**
          * The indices of the vertices
@@ -68,7 +60,14 @@ export default class GraphicsGeometry extends Geometry
          */
         this.indexBuffer = new Buffer();
 
-        this.addAttribute('aVertexPosition|aColor|aTextureCoord', this.buffer)
+        // .addAttribute('aVertexPosition', buffer, 2, false, gl.FLOAT)
+        //          .addAttribute('aTextureCoord', buffer, 2, true, gl.UNSIGNED_SHORT)
+        //        .addAttribute('aColor', buffer, 4, true, gl.UNSIGNED_BYTE)
+
+        this
+            .addAttribute('aVertexPosition', this.buffer, 2, false, TYPES.FLOAT)
+            .addAttribute('aTextureCoord', this.buffer, 2, true, TYPES.FLOAT)
+            .addAttribute('aColor', this.buffer, 4, true, TYPES.UNSIGNED_BYTE)
             .addIndex(this.indexBuffer);
 
         if (multiTexture)
@@ -87,6 +86,7 @@ export default class GraphicsGeometry extends Geometry
         this.fillColor = 0x000000;
         this.fillTexture = Texture.WHITE;
         this.fillMatrix = null;
+        this.matrix = null;
 
         /**
          * The width (thickness) of any lines drawn.
@@ -119,6 +119,7 @@ export default class GraphicsGeometry extends Geometry
          * @private
          */
         this.graphicsData = [];
+        this.graphicsDataHoles = [];
 
         /**
          * Current path
@@ -163,13 +164,21 @@ export default class GraphicsGeometry extends Geometry
         this.fillCommands[SHAPES.RECT] = buildRectangle;
         this.fillCommands[SHAPES.RREC] = buildRoundedRectangle;
 
-        this.lineCommands = {};
+        this._bounds = new Rectangle();
+        this.boundsDirty = -1;
+        this.boundsPadding = 0;
+        this.dirty = 0;
+    }
 
-        this.lineCommands[SHAPES.POLY] = buildLine;
-        this.lineCommands[SHAPES.CIRC] = buildCircleLine;
-        this.lineCommands[SHAPES.ELIP] = buildCircleLine;
-        this.lineCommands[SHAPES.RECT] = buildRectangleLine;
-        this.lineCommands[SHAPES.RREC] = buildRoundedRectangleLine;
+    get bounds()
+    {
+        if (this.boundsDirty !== this.dirty)
+        {
+            this.boundsDirty = this.dirty;
+            this.calculateBounds();
+        }
+
+        return this._bounds;
     }
 
     addDrawCall(type, size, start, texture)
@@ -216,6 +225,11 @@ export default class GraphicsGeometry extends Geometry
         }
 
         return this;
+    }
+
+    setMatrix(matrix)
+    {
+        this.matrix = matrix;
     }
 
     /**
@@ -506,7 +520,14 @@ export default class GraphicsGeometry extends Geometry
      * @param {number} [alpha=1] - the alpha of the fill
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    beginFill(color = 0, alpha = 1, texture, textureMatrix)
+    beginFill(color = 0, alpha = 1)
+    {
+        this.beginTextureFill(null, color, alpha);
+
+        return this;
+    }
+
+    beginTextureFill(texture, color = 0xFFFFFF, alpha = 1, textureMatrix)
     {
         this.filling = true;
         this.fillColor = color;
@@ -523,6 +544,7 @@ export default class GraphicsGeometry extends Geometry
                 this.currentPath.fillAlpha = this.fillAlpha;
                 this.currentPath.fillTexture = this.fillTexture;
                 this.currentPath.fillMatrix = this.fillMatrix;
+                this.currentPath.matrix = this.matrix;
             }
         }
 
@@ -703,7 +725,6 @@ export default class GraphicsGeometry extends Geometry
         }
 
         this.currentPath = null;
-        this._spriteRect = null;
 
         return this;
     }
@@ -754,7 +775,16 @@ export default class GraphicsGeometry extends Geometry
             this.lineAlignment
         );
 
-        this.graphicsData.push(data);
+        data.matrix = this.matrix;
+
+        if (this.holeMode)
+        {
+            this.graphicsDataHoles.push(data);
+        }
+        else
+        {
+            this.graphicsData.push(data);
+        }
 
         if (data.type === SHAPES.POLY)
         {
@@ -786,21 +816,29 @@ export default class GraphicsGeometry extends Geometry
     }
 
     /**
-     * Adds a hole in the current path.
-     *
-     * @return {PIXI.Graphics} Returns itself.
+     * Begin adding holes to the last draw shape
+     * IMPORTANT: holes must be fully inside a shape to work
+     * Also weirdness ensues if holes overlap!
      */
-    addHole()
+    beginHole()
     {
-        // this is a hole!
-        const hole = this.graphicsData.pop();
+        this.holeMode = true;
+    }
 
-        this.currentPath = this.graphicsData[this.graphicsData.length - 1];
+    /**
+     * End adding holes to the last draw shape
+     */
+    endHole()
+    {
+        const currentPath = this.graphicsData[this.graphicsData.length - 1];
 
-        this.currentPath.addHole(hole.shape);
-        this.currentPath = null;
+        for (let i = 0; i < this.graphicsDataHoles.length; i++)
+        {
+            currentPath.holes[i] = this.graphicsDataHoles[i];
+        }
 
-        return this;
+        this.graphicsDataHoles.length = 0;
+        this.holeMode = false;
     }
 
     /**
@@ -834,16 +872,50 @@ export default class GraphicsGeometry extends Geometry
             }
         }
 
-        if (this._spriteRect)
-        {
-            this._spriteRect.destroy();
-        }
-
         this.graphicsData = null;
 
         this.currentPath = null;
         this._webGL = null;
         this._localBounds = null;
+    }
+
+    containsPoint(point)
+    {
+        const graphicsData = this.graphicsData;
+
+        for (let i = 0; i < graphicsData.length; ++i)
+        {
+            const data = graphicsData[i];
+
+            if (!data.fill)
+            {
+                continue;
+            }
+
+            // only deal with fills..
+            if (data.shape)
+            {
+                if (data.shape.contains(point.x, point.y))
+                {
+                    if (data.holes)
+                    {
+                        for (let i = 0; i < data.holes.length; i++)
+                        {
+                            const hole = data.holes[i];
+
+                            if (hole.shape.contains(point.x, point.y))
+                            {
+                                return false;
+                            }
+                        }
+                    }
+
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -855,19 +927,40 @@ export default class GraphicsGeometry extends Geometry
     updateAttributes()
     {
         if (this.dirty === this.cacheDirty) return;
+        if (this.graphicsData.length === 0) return;
+
+        for (let i = 0; i < this.graphicsData.length; i++)
+        {
+            if (!this.graphicsData[0].fillTexture.baseTexture.valid) return;
+        }
+
         this.dirty = this.cacheDirty;
 
         let lastTexture = this.graphicsData[0].fillTexture.baseTexture;
         let lastIndex = 0;
 
+        const uvs = [];
+        const colors = [];
+
         // TODO - this can be simplified
         for (let i = 0; i < this.graphicsData.length; i++)
         {
             const data = this.graphicsData[i];
+            const command = this.fillCommands[data.type];
+
+            // build out the shapes points..
+            command.build(data);
+
+            if (data.matrix)
+            {
+                this.transformPoints(data.points, data.matrix);
+            }
 
             if (data.fill)
             {
                 const nextTexture = data.fillTexture.baseTexture;
+
+                nextTexture.wrapMode = 10497;
 
                 if (lastTexture !== nextTexture)
                 {
@@ -882,7 +975,23 @@ export default class GraphicsGeometry extends Geometry
                     }
                 }
 
-                this.fillCommands[data.type](data, this);
+                const start = this.points.length / 2;
+
+                if (data.holes)
+                {
+                    this.proccessHoles(data.holes);
+
+                    buildPoly.triangulate(data, this);
+                }
+                else
+                {
+                    command.triangulate(data, this);
+                }
+
+                const size = (this.points.length / 2) - start;
+
+                this.addUvs(this.points, uvs, data.fillTexture, start, size, data.fillMatrix);
+                this.addColors(colors, data.fillColor, data.fillAlpha, size);
             }
 
             if (data.lineWidth)
@@ -897,12 +1006,20 @@ export default class GraphicsGeometry extends Geometry
                     {
                         // add a draw call..
                         this.addDrawCall(5, index - lastIndex, lastIndex, lastTexture);
+
                         lastTexture = nextTexture;
                         lastIndex = index;
                     }
                 }
 
-                this.lineCommands[data.type](data, this);
+                const start = this.points.length / 2;
+
+                buildLine(data, this);
+
+                const size = (this.points.length / 2) - start;
+
+                this.addUvs(this.points, uvs, data.fillTexture, start, size, data.fillMatrix);
+                this.addColors(colors, data.lineColor, data.fillAlpha, size);
             }
         }
 
@@ -911,12 +1028,224 @@ export default class GraphicsGeometry extends Geometry
         this.addDrawCall(5, index - lastIndex, lastIndex, lastTexture);
 
         // upload..
-        const glPoints = new Float32Array(this.points);
+        // merge for now!
+        const verts = this.points;
 
-        this.buffer.update(glPoints);
+        const glPoints = new ArrayBuffer(verts.length * 8 * 4);
+        const f32 = new Float32Array(glPoints);
+        const u32 = new Uint32Array(glPoints);
+
+        let p = 0;
+
+        for (let i = 0; i < verts.length / 2; i++)
+        {
+            f32[p++] = verts[i * 2];
+            f32[p++] = verts[(i * 2) + 1];
+
+            f32[p++] = uvs[i * 2];
+            f32[p++] = uvs[(i * 2) + 1];
+
+            u32[p++] = colors[i];
+        }
+
+        this.buffer.update(glPoints.vertices);
 
         const glIndices = new Uint16Array(this.indices);
 
         this.indexBuffer.update(glIndices);
+    }
+
+    proccessHoles(holes)
+    {
+        for (let i = 0; i < holes.length; i++)
+        {
+            const hole = holes[i];
+
+            const command = this.fillCommands[hole.type];
+
+            command.build(hole);
+
+            if (hole.matrix)
+            {
+                this.transformPoints(hole.points, hole.matrix);
+            }
+        }
+    }
+
+    /**
+     * Update the bounds of the object
+     *
+     */
+    calculateBounds()
+    {
+        let minX = Infinity;
+        let maxX = -Infinity;
+
+        let minY = Infinity;
+        let maxY = -Infinity;
+
+        if (this.graphicsData.length)
+        {
+            let shape = 0;
+            let x = 0;
+            let y = 0;
+            let w = 0;
+            let h = 0;
+
+            for (let i = 0; i < this.graphicsData.length; i++)
+            {
+                const data = this.graphicsData[i];
+                const type = data.type;
+                const lineWidth = data.lineWidth;
+
+                shape = data.shape;
+
+                if (type === SHAPES.RECT || type === SHAPES.RREC)
+                {
+                    x = shape.x - (lineWidth / 2);
+                    y = shape.y - (lineWidth / 2);
+                    w = shape.width + lineWidth;
+                    h = shape.height + lineWidth;
+
+                    minX = x < minX ? x : minX;
+                    maxX = x + w > maxX ? x + w : maxX;
+
+                    minY = y < minY ? y : minY;
+                    maxY = y + h > maxY ? y + h : maxY;
+                }
+                else if (type === SHAPES.CIRC)
+                {
+                    x = shape.x;
+                    y = shape.y;
+                    w = shape.radius + (lineWidth / 2);
+                    h = shape.radius + (lineWidth / 2);
+
+                    minX = x - w < minX ? x - w : minX;
+                    maxX = x + w > maxX ? x + w : maxX;
+
+                    minY = y - h < minY ? y - h : minY;
+                    maxY = y + h > maxY ? y + h : maxY;
+                }
+                else if (type === SHAPES.ELIP)
+                {
+                    x = shape.x;
+                    y = shape.y;
+                    w = shape.width + (lineWidth / 2);
+                    h = shape.height + (lineWidth / 2);
+
+                    minX = x - w < minX ? x - w : minX;
+                    maxX = x + w > maxX ? x + w : maxX;
+
+                    minY = y - h < minY ? y - h : minY;
+                    maxY = y + h > maxY ? y + h : maxY;
+                }
+                else
+                {
+                    // POLY
+                    const points = shape.points;
+                    let x2 = 0;
+                    let y2 = 0;
+                    let dx = 0;
+                    let dy = 0;
+                    let rw = 0;
+                    let rh = 0;
+                    let cx = 0;
+                    let cy = 0;
+
+                    for (let j = 0; j + 2 < points.length; j += 2)
+                    {
+                        x = points[j];
+                        y = points[j + 1];
+                        x2 = points[j + 2];
+                        y2 = points[j + 3];
+                        dx = Math.abs(x2 - x);
+                        dy = Math.abs(y2 - y);
+                        h = lineWidth;
+                        w = Math.sqrt((dx * dx) + (dy * dy));
+
+                        if (w < 1e-9)
+                        {
+                            continue;
+                        }
+
+                        rw = ((h / w * dy) + dx) / 2;
+                        rh = ((h / w * dx) + dy) / 2;
+                        cx = (x2 + x) / 2;
+                        cy = (y2 + y) / 2;
+
+                        minX = cx - rw < minX ? cx - rw : minX;
+                        maxX = cx + rw > maxX ? cx + rw : maxX;
+
+                        minY = cy - rh < minY ? cy - rh : minY;
+                        maxY = cy + rh > maxY ? cy + rh : maxY;
+                    }
+                }
+            }
+        }
+        else
+        {
+            minX = 0;
+            maxX = 0;
+            minY = 0;
+            maxY = 0;
+        }
+
+        const padding = this.boundsPadding;
+
+        this._bounds.minX = minX - padding;
+        this._bounds.maxX = maxX + padding;
+
+        this._bounds.minY = minY - padding;
+        this._bounds.maxY = maxY + padding;
+    }
+
+    transformPoints(points, matrix)
+    {
+        for (let i = 0; i < points.length / 2; i++)
+        {
+            const x = points[(i * 2)];
+            const y = points[(i * 2) + 1];
+
+            points[(i * 2)] = (matrix.a * x) + (matrix.c * y) + matrix.tx;
+            points[(i * 2) + 1] = (matrix.b * x) + (matrix.d * y) + matrix.ty;
+        }
+    }
+
+    addColors(colors, color, alpha, size)
+    {
+        const tRGB = (color >> 16)
+        + (color & 0xff00)
+        + ((color & 0xff) << 16)
+        + (alpha * 255 << 24);
+
+        while (size-- > 0)
+        {
+            colors.push(tRGB);
+        }
+    }
+
+    addUvs(verts, uvs, texture, start, size, matrix)
+    {
+        let index = 0;
+
+        while (index < size)
+        {
+            let x = verts[(start + index) * 2];
+            let y = verts[((start + index) * 2) + 1];
+
+            if (matrix)
+            {
+                const nx = (matrix.a * x) + (matrix.c * y) + matrix.tx;
+
+                y = (matrix.b * x) + (matrix.d * y) + matrix.ty;
+                x = nx;
+            }
+
+            index++;
+
+            const frame = texture.frame;
+
+            uvs.push(x / frame.width, y / frame.height);
+        }
     }
 }

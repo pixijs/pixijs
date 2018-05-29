@@ -1,5 +1,4 @@
 import { Point } from '@pixi/math';
-import { hex2rgb } from '@pixi/utils';
 
 /**
  * Builds a line to draw
@@ -37,7 +36,7 @@ export default function (graphicsData, graphicsGeometry, webGLDataNativeLines)
 function buildLine(graphicsData, graphicsGeometry)
 {
     // TODO OPTIMISE!
-    let points = graphicsData.points;
+    let points = graphicsData.points || graphicsData.shape.points.slice();
 
     if (points.length === 0)
     {
@@ -76,21 +75,14 @@ function buildLine(graphicsData, graphicsGeometry)
     }
 
     const verts = graphicsGeometry.points;
-    const indices = graphicsGeometry.indices;
     const length = points.length / 2;
     let indexCount = points.length;
-    let indexStart = verts.length / 8;
+    let indexStart = verts.length / 2;
 
     // DRAW the Line
     const width = graphicsData.lineWidth / 2;
 
     // sort color
-    const color = hex2rgb(graphicsData.lineColor);
-    const alpha = graphicsData.lineAlpha;
-    const r = color[0] * alpha;
-    const g = color[1] * alpha;
-    const b = color[2] * alpha;
-
     let p1x = points[0];
     let p1y = points[1];
     let p2x = points[2];
@@ -119,15 +111,11 @@ function buildLine(graphicsData, graphicsGeometry)
     // start
     verts.push(
         p1x - (perpx * r1),
-        p1y - (perpy * r1),
-        r, g, b, alpha,
-        0, 0);
+        p1y - (perpy * r1));
 
     verts.push(
         p1x + (perpx * r2),
-        p1y + (perpy * r2),
-        r, g, b, alpha,
-        0, 0);
+        p1y + (perpy * r2));
 
     for (let i = 1; i < length - 1; ++i)
     {
@@ -172,15 +160,11 @@ function buildLine(graphicsData, graphicsGeometry)
             denom += 10.1;
             verts.push(
                 p2x - (perpx * r1),
-                p2y - (perpy * r1),
-                r, g, b, alpha,
-                0, 0);
+                p2y - (perpy * r1));
 
             verts.push(
                 p2x + (perpx * r2),
-                p2y + (perpy * r2),
-                r, g, b, alpha,
-                0, 0);
+                p2y + (perpy * r2));
 
             continue;
         }
@@ -201,28 +185,18 @@ function buildLine(graphicsData, graphicsGeometry)
             perp3y *= width;
 
             verts.push(p2x - (perp3x * r1), p2y - (perp3y * r1));
-            verts.push(r, g, b, alpha);
-            verts.push(0, 0);
 
             verts.push(p2x + (perp3x * r2), p2y + (perp3y * r2));
-            verts.push(r, g, b, alpha);
-            verts.push(0, 0);
 
             verts.push(p2x - (perp3x * r2 * r1), p2y - (perp3y * r1));
-            verts.push(r, g, b, alpha);
-            verts.push(0, 0);
 
             indexCount++;
         }
         else
         {
             verts.push(p2x + ((px - p2x) * r1), p2y + ((py - p2y) * r1));
-            verts.push(r, g, b, alpha);
-            verts.push(0, 0);
 
             verts.push(p2x - ((px - p2x) * r2), p2y - ((py - p2y) * r2));
-            verts.push(r, g, b, alpha);
-            verts.push(0, 0);
         }
     }
 
@@ -242,12 +216,10 @@ function buildLine(graphicsData, graphicsGeometry)
     perpy *= width;
 
     verts.push(p2x - (perpx * r1), p2y - (perpy * r1));
-    verts.push(r, g, b, alpha);
-    verts.push(0, 0);
 
     verts.push(p2x + (perpx * r2), p2y + (perpy * r2));
-    verts.push(r, g, b, alpha);
-    verts.push(0, 0);
+
+    const indices = graphicsGeometry.indices;
 
     indices.push(indexStart);
 
@@ -280,11 +252,6 @@ function buildNativeLine(graphicsData, webGLData)
     const length = points.length / 2;
 
     // sort color
-    const color = hex2rgb(graphicsData.lineColor);
-    const alpha = graphicsData.lineAlpha;
-    const r = color[0] * alpha;
-    const g = color[1] * alpha;
-    const b = color[2] * alpha;
 
     for (i = 1; i < length; i++)
     {
@@ -295,9 +262,7 @@ function buildNativeLine(graphicsData, webGLData)
         const p2y = points[(i * 2) + 1];
 
         verts.push(p1x, p1y);
-        verts.push(r, g, b, alpha);
 
         verts.push(p2x, p2y);
-        verts.push(r, g, b, alpha);
     }
 }

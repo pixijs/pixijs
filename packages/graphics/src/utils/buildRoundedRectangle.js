@@ -1,5 +1,4 @@
-import buildLine from './buildLine';
-import { hex2rgb, earcut } from '@pixi/utils';
+import { earcut } from '@pixi/utils';
 
 /**
  * Builds a rounded rectangle to draw
@@ -12,42 +11,41 @@ import { hex2rgb, earcut } from '@pixi/utils';
  * @param {object} webGLData - an object containing all the webGL-specific information to create this shape
  * @param {object} webGLDataNativeLines - an object containing all the webGL-specific information to create nativeLines
  */
-export default function buildRoundedRectangle(graphicsData, graphicsGeometry)
-{
-    const rrectData = graphicsData.shape;
-    const x = rrectData.x;
-    const y = rrectData.y;
-    const width = rrectData.width;
-    const height = rrectData.height;
+export default {
 
-    const radius = rrectData.radius;
-
-    const recPoints = [];
-
-    recPoints.push(x, y + radius);
-    quadraticBezierCurve(x, y + height - radius, x, y + height, x + radius, y + height, recPoints);
-    quadraticBezierCurve(x + width - radius, y + height, x + width, y + height, x + width, y + height - radius, recPoints);
-    quadraticBezierCurve(x + width, y + radius, x + width, y, x + width - radius, y, recPoints);
-    quadraticBezierCurve(x + radius, y, x, y, x, y + radius + 0.0000000001, recPoints);
-
-    // this tiny number deals with the issue that occurs when points overlap and earcut fails to triangulate the item.
-    // TODO - fix this properly, this is not very elegant.. but it works for now.
-
-    if (graphicsData.fill)
+    build(graphicsData)
     {
-        const color = hex2rgb(graphicsData.fillColor);
-        const alpha = graphicsData.fillAlpha;
+        const rrectData = graphicsData.shape;
+        const points = graphicsData.points;
+        const x = rrectData.x;
+        const y = rrectData.y;
+        const width = rrectData.width;
+        const height = rrectData.height;
 
-        const r = color[0] * alpha;
-        const g = color[1] * alpha;
-        const b = color[2] * alpha;
+        const radius = rrectData.radius;
+
+        points.length = 0;
+
+        points.push(x, y + radius);
+        quadraticBezierCurve(x, y + height - radius, x, y + height, x + radius, y + height, points);
+        quadraticBezierCurve(x + width - radius, y + height, x + width, y + height, x + width, y + height - radius, points);
+        quadraticBezierCurve(x + width, y + radius, x + width, y, x + width - radius, y, points);
+        quadraticBezierCurve(x + radius, y, x, y, x, y + radius + 0.0000000001, points);
+
+        // this tiny number deals with the issue that occurs when points overlap and earcut fails to triangulate the item.
+        // TODO - fix this properly, this is not very elegant.. but it works for now.
+    },
+
+    triangulate(graphicsData, graphicsGeometry)
+    {
+        const points = graphicsData.points;
 
         const verts = graphicsGeometry.points;
         const indices = graphicsGeometry.indices;
 
-        const vecPos = verts.length / 6;
+        const vecPos = verts.length / 2;
 
-        const triangles = earcut(recPoints, null, 2);
+        const triangles = earcut(points, null, 2);
 
         for (let i = 0, j = triangles.length; i < j; i += 3)
         {
@@ -58,23 +56,12 @@ export default function buildRoundedRectangle(graphicsData, graphicsGeometry)
             indices.push(triangles[i + 2] + vecPos);
         }
 
-        for (let i = 0, j = recPoints.length; i < j; i++)
+        for (let i = 0, j = points.length; i < j; i++)
         {
-            verts.push(recPoints[i], recPoints[++i], r, g, b, alpha);
+            verts.push(points[i], points[++i]);
         }
-    }
-
-    if (graphicsData.lineWidth)
-    {
-        const tempPoints = graphicsData.points;
-
-        graphicsData.points = recPoints;
-
-        buildLine(graphicsData, graphicsGeometry);
-
-        graphicsData.points = tempPoints;
-    }
-}
+    },
+};
 
 /**
  * Calculate a single point for a quadratic bezier curve.

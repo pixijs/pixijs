@@ -1,8 +1,11 @@
 import { BLEND_MODES } from '@pixi/constants';
+import { Point } from '@pixi/math';
 import { RawMesh } from '@pixi/mesh';
 
 import GraphicsGeometry from './GraphicsGeometry';
 import PrimitiveShader from './shaders/PrimitiveShader';
+
+const tempPoint = new Point();
 
 /**
  * The Graphics class contains methods used to draw primitive shapes such as lines, circles and
@@ -236,6 +239,13 @@ export default class Graphics extends RawMesh
         return this;
     }
 
+    beginTextureFill(texture, color, alpha, textureMatrix)
+    {
+        this.geometry.beginTextureFill(texture, color, alpha, textureMatrix);
+
+        return this;
+    }
+
     /**
      * Applies a fill to the lines and shapes that were added since the last call to the beginFill() method.
      *
@@ -361,6 +371,7 @@ export default class Graphics extends RawMesh
      */
     isFastRect()
     {
+        // will fix this!
         return false;
         // this.graphicsData.length === 1
         //  && this.graphicsData[0].shape.type === SHAPES.RECT
@@ -377,7 +388,6 @@ export default class Graphics extends RawMesh
     {
         renderer.batch.flush();
 
-        //  console.log("HI!")
         const geometry = this.geometry;
 
         geometry.updateAttributes();
@@ -399,8 +409,6 @@ export default class Graphics extends RawMesh
             for (let i = 0; i < geometry.drawCalls.length; i++)
             {
                 const drawCall = geometry.drawCalls[i];
-                //    console.log("<>")
-                // console.log(drawCall.texture)
 
                 renderer.texture.bind(drawCall.texture, 0);
                 // bind the geometry...
@@ -417,15 +425,7 @@ export default class Graphics extends RawMesh
      */
     _calculateBounds()
     {
-        if (this.boundsDirty !== this.dirty)
-        {
-            this.boundsDirty = this.dirty;
-            this.updateLocalBounds();
-
-            this.cachedSpriteDirty = true;
-        }
-
-        const lb = this._localBounds;
+        const lb = this.geometry.bounds;
 
         this._bounds.addFrame(this.transform, lb.minX, lb.minY, lb.maxX, lb.maxY);
     }
@@ -438,173 +438,9 @@ export default class Graphics extends RawMesh
      */
     containsPoint(point)
     {
-        /*
         this.worldTransform.applyInverse(point, tempPoint);
 
-        const graphicsData = this.graphicsData;
-
-        for (let i = 0; i < graphicsData.length; ++i)
-        {
-            const data = graphicsData[i];
-
-            if (!data.fill)
-            {
-                continue;
-            }
-
-            // only deal with fills..
-            if (data.shape)
-            {
-                if (data.shape.contains(tempPoint.x, tempPoint.y))
-                {
-                    if (data.holes)
-                    {
-                        for (let i = 0; i < data.holes.length; i++)
-                        {
-                            const hole = data.holes[i];
-
-                            if (hole.contains(tempPoint.x, tempPoint.y))
-                            {
-                                return false;
-                            }
-                        }
-                    }
-
-                    return true;
-                }
-            }
-        }
-*/
-        return false;
-    }
-
-    /**
-     * Update the bounds of the object
-     *
-     */
-    updateLocalBounds()
-    {
-        /*
-        let minX = Infinity;
-        let maxX = -Infinity;
-
-        let minY = Infinity;
-        let maxY = -Infinity;
-
-        if (this.graphicsData.length)
-        {
-            let shape = 0;
-            let x = 0;
-            let y = 0;
-            let w = 0;
-            let h = 0;
-
-            for (let i = 0; i < this.graphicsData.length; i++)
-            {
-                const data = this.graphicsData[i];
-                const type = data.type;
-                const lineWidth = data.lineWidth;
-
-                shape = data.shape;
-
-                if (type === SHAPES.RECT || type === SHAPES.RREC)
-                {
-                    x = shape.x - (lineWidth / 2);
-                    y = shape.y - (lineWidth / 2);
-                    w = shape.width + lineWidth;
-                    h = shape.height + lineWidth;
-
-                    minX = x < minX ? x : minX;
-                    maxX = x + w > maxX ? x + w : maxX;
-
-                    minY = y < minY ? y : minY;
-                    maxY = y + h > maxY ? y + h : maxY;
-                }
-                else if (type === SHAPES.CIRC)
-                {
-                    x = shape.x;
-                    y = shape.y;
-                    w = shape.radius + (lineWidth / 2);
-                    h = shape.radius + (lineWidth / 2);
-
-                    minX = x - w < minX ? x - w : minX;
-                    maxX = x + w > maxX ? x + w : maxX;
-
-                    minY = y - h < minY ? y - h : minY;
-                    maxY = y + h > maxY ? y + h : maxY;
-                }
-                else if (type === SHAPES.ELIP)
-                {
-                    x = shape.x;
-                    y = shape.y;
-                    w = shape.width + (lineWidth / 2);
-                    h = shape.height + (lineWidth / 2);
-
-                    minX = x - w < minX ? x - w : minX;
-                    maxX = x + w > maxX ? x + w : maxX;
-
-                    minY = y - h < minY ? y - h : minY;
-                    maxY = y + h > maxY ? y + h : maxY;
-                }
-                else
-                {
-                    // POLY
-                    const points = shape.points;
-                    let x2 = 0;
-                    let y2 = 0;
-                    let dx = 0;
-                    let dy = 0;
-                    let rw = 0;
-                    let rh = 0;
-                    let cx = 0;
-                    let cy = 0;
-
-                    for (let j = 0; j + 2 < points.length; j += 2)
-                    {
-                        x = points[j];
-                        y = points[j + 1];
-                        x2 = points[j + 2];
-                        y2 = points[j + 3];
-                        dx = Math.abs(x2 - x);
-                        dy = Math.abs(y2 - y);
-                        h = lineWidth;
-                        w = Math.sqrt((dx * dx) + (dy * dy));
-
-                        if (w < 1e-9)
-                        {
-                            continue;
-                        }
-
-                        rw = ((h / w * dy) + dx) / 2;
-                        rh = ((h / w * dx) + dy) / 2;
-                        cx = (x2 + x) / 2;
-                        cy = (y2 + y) / 2;
-
-                        minX = cx - rw < minX ? cx - rw : minX;
-                        maxX = cx + rw > maxX ? cx + rw : maxX;
-
-                        minY = cy - rh < minY ? cy - rh : minY;
-                        maxY = cy + rh > maxY ? cy + rh : maxY;
-                    }
-                }
-            }
-        }
-        else
-        {
-            minX = 0;
-            maxX = 0;
-            minY = 0;
-            maxY = 0;
-        }
-
-        const padding = this.boundsPadding;
-
-        this._localBounds.minX = minX - padding;
-        this._localBounds.maxX = maxX + padding;
-
-        this._localBounds.minY = minY - padding;
-        this._localBounds.maxY = maxY + padding;
-        */
+        return this.geometry.containsPoint(tempPoint);
     }
 
     /**
@@ -622,12 +458,40 @@ export default class Graphics extends RawMesh
     closePath()
     {
         // ok so close path assumes next one is a hole!
-        const currentPath = this.currentPath;
+        this.geometry.closePath();
 
-        if (currentPath && currentPath.shape)
-        {
-            currentPath.shape.close();
-        }
+        return this;
+    }
+
+    /**
+     * Adds a hole in the current path.
+     *
+     * @return {PIXI.Graphics} Returns itself.
+     */
+    addHole()
+    {
+        this.geometry.addHole();
+
+        return this;
+    }
+
+    setMatrix(matrix)
+    {
+        this.geometry.setMatrix(matrix);
+
+        return this;
+    }
+
+    beginHole()
+    {
+        this.geometry.beginHole();
+
+        return this;
+    }
+
+    endHole()
+    {
+        this.geometry.endHole();
 
         return this;
     }
@@ -647,33 +511,10 @@ export default class Graphics extends RawMesh
     destroy(options)
     {
         super.destroy(options);
-        /*
-        // destroy each of the GraphicsData objects
-        for (let i = 0; i < this.graphicsData.length; ++i)
-        {
-            this.graphicsData[i].destroy();
-        }
 
-        // for each webgl data entry, destroy the WebGLGraphicsData
-        for (const id in this._webGL)
-        {
-            for (let j = 0; j < this._webGL[id].data.length; ++j)
-            {
-                this._webGL[id].data[j].destroy();
-            }
-        }
-
-        if (this._spriteRect)
-        {
-            this._spriteRect.destroy();
-        }
-
-        this.graphicsData = null;
-
-        this.currentPath = null;
-        this._webGL = null;
-        this._localBounds = null;
-        */
+        // TODO should this be an option
+        this.geometry.destroy();
+        this.shader = null;
     }
 }
 
