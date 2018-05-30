@@ -147,12 +147,12 @@ export default class GraphicsGeometry extends Geometry
      * @param {number} [alignment=1] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outter)
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    lineStyle(width = 0, color = 0, alpha = 1, alignment = 0.5)
+    lineStyle(width = 0, color = 0, alpha = 1, alignment = 0.5, native = false)
     {
-        this.lineTextureStyle(width, Texture.WHITE, color, alpha, null, alignment);
+        this.lineTextureStyle(width, Texture.WHITE, color, alpha, null, alignment, native);
     }
 
-    lineTextureStyle(width = 0, texture, color = 0xFFFFFF, alpha = 1, textureMatrix, alignment = 0.5)
+    lineTextureStyle(width = 0, texture, color = 0xFFFFFF, alpha = 1, textureMatrix, alignment = 0.5, native)
     {
         if (width === 0 || alpha === 0)
         {
@@ -169,6 +169,7 @@ export default class GraphicsGeometry extends Geometry
         style.matrix = textureMatrix;
         style.texture = texture || Texture.WHITE;
         style.alignment = alignment;
+        style.native = native;
 
         if (this.currentPath)
         {
@@ -908,9 +909,11 @@ export default class GraphicsGeometry extends Geometry
                 this.transformPoints(data.points, data.matrix);
             }
 
-            if (fillStyle)
+            for (let j = 0; j < 2; j++)
             {
-                const nextTexture = fillStyle.texture.baseTexture;
+                const style = (j === 0) ? fillStyle : lineStyle;
+
+                const nextTexture = style.texture.baseTexture;
 
                 nextTexture.wrapMode = 10497;
 
@@ -929,49 +932,28 @@ export default class GraphicsGeometry extends Geometry
 
                 const start = this.points.length / 2;
 
-                if (data.holes)
+                if (j === 0)
                 {
-                    this.proccessHoles(data.holes);
+                    if (data.holes)
+                    {
+                        this.proccessHoles(data.holes);
 
-                    buildPoly.triangulate(data, this);
+                        buildPoly.triangulate(data, this);
+                    }
+                    else
+                    {
+                        command.triangulate(data, this);
+                    }
                 }
                 else
                 {
-                    command.triangulate(data, this);
+                    buildLine(data, this);
                 }
 
                 const size = (this.points.length / 2) - start;
 
-                this.addUvs(this.points, uvs, fillStyle.texture, start, size, fillStyle.matrix);
-                this.addColors(colors, fillStyle.color, fillStyle.alpha, size);
-            }
-
-            if (lineStyle)
-            {
-                const nextTexture = lineStyle.texture.baseTexture;
-
-                if (lastTexture !== nextTexture)
-                {
-                    const index = this.indices.length;
-
-                    if (lastIndex - index)
-                    {
-                        // add a draw call..
-                        this.addDrawCall(5, index - lastIndex, lastIndex, lastTexture);
-
-                        lastTexture = nextTexture;
-                        lastIndex = index;
-                    }
-                }
-
-                const start = this.points.length / 2;
-
-                buildLine(data, this);
-
-                const size = (this.points.length / 2) - start;
-
-                this.addUvs(this.points, uvs, lineStyle.texture, start, size, lineStyle.matrix);
-                this.addColors(colors, lineStyle.color, lineStyle.alpha, size);
+                this.addUvs(this.points, uvs, style.texture, start, size, style.matrix);
+                this.addColors(colors, style.color, style.alpha, size);
             }
         }
 

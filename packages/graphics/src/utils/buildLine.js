@@ -11,11 +11,11 @@ import { Point } from '@pixi/math';
  * @param {object} webGLData - an object containing all the webGL-specific information to create this shape
  * @param {object} webGLDataNativeLines - an object containing all the webGL-specific information to create nativeLines
  */
-export default function (graphicsData, graphicsGeometry, webGLDataNativeLines)
+export default function (graphicsData, graphicsGeometry)
 {
-    if (graphicsData.nativeLines)
+    if (graphicsData.lineStyle.native)
     {
-        buildNativeLine(graphicsData, webGLDataNativeLines);
+        buildNativeLine(graphicsData, graphicsGeometry);
     }
     else
     {
@@ -243,16 +243,18 @@ function buildLine(graphicsData, graphicsGeometry)
  * @param {PIXI.WebGLGraphicsData} graphicsData - The graphics object containing all the necessary properties
  * @param {object} webGLData - an object containing all the webGL-specific information to create this shape
  */
-function buildNativeLine(graphicsData, webGLData)
+function buildNativeLine(graphicsData, graphicsGeometry)
 {
     let i = 0;
     const points = graphicsData.points;
 
     if (points.length === 0) return;
 
-    const verts = webGLData.points;
+    const verts = graphicsGeometry.points;
+    const indices = graphicsGeometry.indices;
     const length = points.length / 2;
 
+    let indexStart = verts.length / 2;
     // sort color
 
     for (i = 1; i < length; i++)
@@ -266,5 +268,7 @@ function buildNativeLine(graphicsData, webGLData)
         verts.push(p1x, p1y);
 
         verts.push(p2x, p2y);
+
+        indices.push(indexStart++, indexStart++);
     }
 }
