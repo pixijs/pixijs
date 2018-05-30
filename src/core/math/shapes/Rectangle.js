@@ -1,3 +1,4 @@
+import Point from '../Point';
 import { SHAPES } from '../../const';
 
 /**
@@ -90,6 +91,38 @@ export default class Rectangle
     get bottom()
     {
         return this.y + this.height;
+    }
+
+    /**
+     * The location of the Rectangle object's bottom-right corner, determined by the
+     * values of the right and bottom properties.
+     *
+     * @member {PIXI.Point}
+     */
+    get bottomRight()
+    {
+        return new Point(this.right, this.bottom);
+    }
+
+    /**
+     * The location of the Rectangle object's top-left corner, determined by the x
+     * and y coordinates of the point.
+     *
+     * @member {PIXI.Point}
+     */
+    get topLeft()
+    {
+        return new Point(this.left, this.top);
+    }
+
+    /**
+     * The size of the Rectangle object, expressed as a Point object with the values of
+     * the width and height properties
+     * @member {PIXI.Point}
+     */
+    get size()
+    {
+        return new Point(this.width, this.height);
     }
 
     /**
@@ -236,4 +269,58 @@ export default class Rectangle
         this.y = y1;
         this.height = y2 - y1;
     }
+
+    /**
+     * @param {PIXI.Rectangle} rectangle - The rectangle to test against.
+     * @return {boolean} Determines whether the rectangle specified as a parameter
+     * intersects with this Rectangle object.
+     */
+    intersects(rectangle)
+    {
+        if (rectangle.x < (this.x + this.width)
+        && this.x < rectangle.x + rectangle.width
+        && rectangle.y < this.y + this.height)
+        {
+            return this.y < rectangle.y + rectangle.height;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param {PIXI.Rectangle} rectangle - The rectangle to test against.
+     * @return {PIXI.Rectangle} Returns the area of intersection as a Rectangle object.
+     * If the rectangles do not intersect, this method returns an empty Rectangle object
+     * with its properties set to 0.
+     */
+    intersection(rectangle)
+    {
+        if (this.intersects(rectangle))
+        {
+            const left = this.x > rectangle.x ? this.x : rectangle.x;
+            const right = this.right < rectangle.right ? this.right : rectangle.right;
+            const top = this.y > rectangle.y ? this.y : rectangle.y;
+            const bottom = this.bottom < rectangle.bottom ? this.bottom : rectangle.bottom;
+
+            return new Rectangle(top, left, right - left, bottom - top);
+        }
+
+        return new Rectangle();
+    }
+
+    /**
+     * @param {PIXI.Rectangle} rectangle - The rectangle to test against.
+     * @return {PIXI.Rectangle} Adds two rectangles together to create a new Rectangle
+     * object, by filling in the horizontal and vertical space between the two rectangles.
+     */
+    union(rectangle)
+    {
+        const top = this.y < rectangle.y ? this.y : rectangle.y;
+        const left = this.x < rectangle.x ? this.x : rectangle.x;
+        const right = this.right > rectangle.right ? this.right : rectangle.right;
+        const bottom = this.bottom > rectangle.bottom ? this.bottom : rectangle.bottom;
+
+        return new Rectangle(top, left, right, bottom);
+    }
+
 }
