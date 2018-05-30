@@ -81,6 +81,13 @@ export default class Graphics extends RawMesh
         return this;
     }
 
+    lineTextureStyle(width, texture, color, alpha, textureMatrix, alignment)
+    {
+        this.geometry.lineTextureStyle(width, texture, color, alpha, textureMatrix, alignment);
+
+        return this;
+    }
+
     /**
      * Moves the current drawing position to x, y.
      *

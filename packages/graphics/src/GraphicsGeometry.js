@@ -149,6 +149,11 @@ export default class GraphicsGeometry extends Geometry
      */
     lineStyle(width = 0, color = 0, alpha = 1, alignment = 0.5)
     {
+        this.lineTextureStyle(width, Texture.WHITE, color, alpha, null, alignment);
+    }
+
+    lineTextureStyle(width = 0, texture, color = 0xFFFFFF, alpha = 1, textureMatrix, alignment = 0.5)
+    {
         if (width === 0 || alpha === 0)
         {
             this._lineStyle = null;
@@ -161,7 +166,8 @@ export default class GraphicsGeometry extends Geometry
         style.color = color;
         style.width = width;
         style.alpha = alpha;
-        style.texture = Texture.WHITE;
+        style.matrix = textureMatrix;
+        style.texture = texture || Texture.WHITE;
         style.alignment = alignment;
 
         if (this.currentPath)
@@ -942,7 +948,7 @@ export default class GraphicsGeometry extends Geometry
 
             if (lineStyle)
             {
-                const nextTexture = Texture.WHITE.baseTexture;
+                const nextTexture = lineStyle.texture.baseTexture;
 
                 if (lastTexture !== nextTexture)
                 {
