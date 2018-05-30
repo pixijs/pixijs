@@ -21,9 +21,9 @@ export default class Graphics extends RawMesh
      *
      * @param {boolean} [nativeLines=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
      */
-    constructor(nativeLines = false)
+    constructor(geometry)
     {
-        const geometry = new GraphicsGeometry(nativeLines);
+        geometry = geometry || new GraphicsGeometry();
         const shader = new PrimitiveShader();
 
         super(geometry, shader, null, 5); // DRAW_MODES.TRIANGLE_STRIP
@@ -37,22 +37,7 @@ export default class Graphics extends RawMesh
          */
         this.tint = 0xFFFFFF;
 
-        /**
-         * The blend mode to be applied to the graphic shape. Apply a value of
-         * `PIXI.BLEND_MODES.NORMAL` to reset the blend mode.
-         *
-         * @member {number}
-         * @default PIXI.BLEND_MODES.NORMAL;
-         * @see PIXI.BLEND_MODES
-         */
         this.blendMode = BLEND_MODES.NORMAL;
-
-        /**
-         * Whether this shape is being used as a mask.
-         *
-         * @member {boolean}
-         */
-        this.isMask = false;
 
         /**
          * When cacheAsBitmap is set to true the graphics object will be rendered as if it was a sprite.
@@ -76,33 +61,7 @@ export default class Graphics extends RawMesh
      */
     clone()
     {
-        /*
-        const clone = new Graphics();
-
-        clone.renderable = this.renderable;
-        clone.fillAlpha = this.fillAlpha;
-        clone.lineWidth = this.lineWidth;
-        clone.lineColor = this.lineColor;
-        clone.lineAlignment = this.lineAlignment;
-        clone.tint = this.tint;
-        clone.blendMode = this.blendMode;
-        clone.isMask = this.isMask;
-        clone.boundsPadding = this.boundsPadding;
-        clone.dirty = 0;
-        clone.cachedSpriteDirty = this.cachedSpriteDirty;
-
-        // copy graphics data
-        for (let i = 0; i < this.graphicsData.length; ++i)
-        {
-            clone.graphicsData.push(this.graphicsData[i].clone());
-        }
-
-        clone.currentPath = clone.graphicsData[clone.graphicsData.length - 1];
-
-        clone.updateLocalBounds();
-
-        return clone;
-        */
+        return new Graphics(this.geometry);
     }
 
     /**

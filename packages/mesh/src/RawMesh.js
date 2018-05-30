@@ -88,6 +88,24 @@ export default class RawMesh extends Container
     }
 
     /**
+     * The blend mode to be applied to the graphic shape. Apply a value of
+     * `PIXI.BLEND_MODES.NORMAL` to reset the blend mode.
+     *
+     * @member {number}
+     * @default PIXI.BLEND_MODES.NORMAL;
+     * @see PIXI.BLEND_MODES
+     */
+    set blendMode(value)
+    {
+        this.state.blendMode = value;
+    }
+
+    get blendMode()
+    {
+        return this.state.blendMode;
+    }
+
+    /**
      * Renders the object using the WebGL renderer
      *
      * @param {PIXI.Renderer} renderer a reference to the WebGL renderer

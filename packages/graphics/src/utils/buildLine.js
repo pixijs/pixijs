@@ -52,6 +52,8 @@ function buildLine(graphicsData, graphicsGeometry)
     //     }
     // }
 
+    const style = graphicsData.lineStyle;
+
     // get first and last point.. figure out the middle!
     const firstPoint = new Point(points[0], points[1]);
     let lastPoint = new Point(points[points.length - 2], points[points.length - 1]);
@@ -80,7 +82,7 @@ function buildLine(graphicsData, graphicsGeometry)
     let indexStart = verts.length / 2;
 
     // DRAW the Line
-    const width = graphicsData.lineWidth / 2;
+    const width = style.width / 2;
 
     // sort color
     let p1x = points[0];
@@ -104,7 +106,7 @@ function buildLine(graphicsData, graphicsGeometry)
     perpx *= width;
     perpy *= width;
 
-    const ratio = graphicsData.lineAlignment;// 0.5;
+    const ratio = style.alignment;// 0.5;
     const r1 = (1 - ratio) * 2;
     const r2 = ratio * 2;
 

@@ -2,7 +2,9 @@ import { Buffer, Geometry, Texture } from '@pixi/core';
 import { Circle, Ellipse, PI_2, Polygon, Rectangle, RoundedRectangle, SHAPES } from '@pixi/math';
 import { TYPES } from '@pixi/constants';
 
+import FillStyle from './styles/FillStyle';
 import GraphicsData from './GraphicsData';
+import LineStyle from './styles/LineStyle';
 import bezierCurveTo from './utils/bezierCurveTo';
 import buildCircle from './utils/buildCircle';
 import buildLine from './utils/buildLine';
@@ -54,16 +56,6 @@ export default class GraphicsGeometry extends Geometry
          */
         this.indices = [];
 
-        /**
-         * The index buffer
-         * @member {WebGLBuffer}
-         */
-        this.indexBuffer = new Buffer();
-
-        // .addAttribute('aVertexPosition', buffer, 2, false, gl.FLOAT)
-        //          .addAttribute('aTextureCoord', buffer, 2, true, gl.UNSIGNED_SHORT)
-        //        .addAttribute('aColor', buffer, 4, true, gl.UNSIGNED_BYTE)
-
         this
             .addAttribute('aVertexPosition', this.buffer, 2, false, TYPES.FLOAT)
             .addAttribute('aTextureCoord', this.buffer, 2, true, TYPES.FLOAT)
@@ -75,42 +67,10 @@ export default class GraphicsGeometry extends Geometry
             // then add the extra attribute!
         }
 
-        /**
-         * The alpha value used when filling the Graphics object.
-         *
-         * @member {number}
-         * @default 1
-         */
-        this.fillAlpha = 1;
+        this._fillStyle = null;
+        this._lineStyle = null;
 
-        this.fillColor = 0x000000;
-        this.fillTexture = Texture.WHITE;
-        this.fillMatrix = null;
         this.matrix = null;
-
-        /**
-         * The width (thickness) of any lines drawn.
-         *
-         * @member {number}
-         * @default 0
-         */
-        this.lineWidth = 0;
-
-        /**
-         * The color of any lines drawn.
-         *
-         * @member {string}
-         * @default 0
-         */
-        this.lineColor = 0;
-
-        /**
-         * The alignment of any lines drawn (0.5 = middle, 1 = outter, 0 = inner).
-         *
-         * @member {number}
-         * @default 0
-         */
-        this.lineAlignment = 0.5;
 
         /**
          * Graphics data
@@ -128,15 +88,6 @@ export default class GraphicsGeometry extends Geometry
          * @private
          */
         this.currentPath = null;
-
-        /**
-         * Array containing some WebGL-related properties used by the WebGL renderer.
-         *
-         * @member {object<number, object>}
-         * @private
-         */
-        // TODO - _webgl should use a prototype object, not a random undocumented object...
-        this._webGL = {};
 
         /**
          * Used to detect if the graphics object has changed. If this is set to true then the graphics
@@ -196,12 +147,22 @@ export default class GraphicsGeometry extends Geometry
      * @param {number} [alignment=1] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outter)
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    lineStyle(lineWidth = 0, color = 0, alpha = 1, alignment = 0.5)
+    lineStyle(width = 0, color = 0, alpha = 1, alignment = 0.5)
     {
-        this.lineWidth = lineWidth;
-        this.lineColor = color;
-        this.lineAlpha = alpha;
-        this.lineAlignment = alignment;
+        if (width === 0 || alpha === 0)
+        {
+            this._lineStyle = null;
+
+            return this;
+        }
+
+        const style = new LineStyle();
+
+        style.color = color;
+        style.width = width;
+        style.alpha = alpha;
+        style.texture = Texture.WHITE;
+        style.alignment = alignment;
 
         if (this.currentPath)
         {
@@ -212,17 +173,16 @@ export default class GraphicsGeometry extends Geometry
 
                 shape.closed = false;
 
-                this.drawShape(shape);
+                this.drawShape(shape, this._fillStyle, this._lineStyle, this.matrix);
             }
             else
             {
                 // otherwise its empty so lets just set the line properties
-                this.currentPath.lineWidth = this.lineWidth;
-                this.currentPath.lineColor = this.lineColor;
-                this.currentPath.lineAlpha = this.lineAlpha;
-                this.currentPath.lineAlignment = this.lineAlignment;
+                this.currentPath.lineStyle = style;
             }
         }
+
+        this._lineStyle = style;
 
         return this;
     }
@@ -244,7 +204,7 @@ export default class GraphicsGeometry extends Geometry
         const shape = new Polygon([x, y]);
 
         shape.closed = false;
-        this.drawShape(shape);
+        this.drawShape(shape, this._fillStyle, this._lineStyle, this.matrix);
 
         return this;
     }
@@ -529,24 +489,31 @@ export default class GraphicsGeometry extends Geometry
 
     beginTextureFill(texture, color = 0xFFFFFF, alpha = 1, textureMatrix)
     {
+        if (alpha === 0)
+        {
+            this._fillStyle = null;
+
+            return this;
+        }
+
+        const style = new FillStyle();
+
+        style.color = color;
+        style.alpha = alpha;
+        style.texture = texture || Texture.WHITE;
+        style.matrix = textureMatrix;
+
         this.filling = true;
-        this.fillColor = color;
-        this.fillAlpha = alpha;
-        this.fillTexture = texture || Texture.WHITE;
-        this.fillMatrix = textureMatrix;
 
         if (this.currentPath)
         {
             if (this.currentPath.shape.points.length <= 2)
             {
-                this.currentPath.fill = this.filling;
-                this.currentPath.fillColor = this.fillColor;
-                this.currentPath.fillAlpha = this.fillAlpha;
-                this.currentPath.fillTexture = this.fillTexture;
-                this.currentPath.fillMatrix = this.fillMatrix;
-                this.currentPath.matrix = this.matrix;
+                this.currentPath.fillStyle = style;
             }
         }
+
+        this._fillStyle = style;
 
         return this;
     }
@@ -558,11 +525,7 @@ export default class GraphicsGeometry extends Geometry
      */
     endFill()
     {
-        this.filling = false;
-        this.fillColor = null;
-        this.fillAlpha = 1;
-        this.fillTexture = null;
-        this.fillMatrix = null;
+        this._fillStyle = null;
 
         return this;
     }
@@ -577,7 +540,7 @@ export default class GraphicsGeometry extends Geometry
      */
     drawRect(x, y, width, height)
     {
-        this.drawShape(new Rectangle(x, y, width, height));
+        this.drawShape(new Rectangle(x, y, width, height), this._fillStyle, this._lineStyle, this.matrix);
 
         return this;
     }
@@ -593,7 +556,7 @@ export default class GraphicsGeometry extends Geometry
      */
     drawRoundedRect(x, y, width, height, radius)
     {
-        this.drawShape(new RoundedRectangle(x, y, width, height, radius));
+        this.drawShape(new RoundedRectangle(x, y, width, height, radius), this._fillStyle, this._lineStyle, this.matrix);
 
         return this;
     }
@@ -608,7 +571,7 @@ export default class GraphicsGeometry extends Geometry
      */
     drawCircle(x, y, radius)
     {
-        this.drawShape(new Circle(x, y, radius));
+        this.drawShape(new Circle(x, y, radius), this._fillStyle, this._lineStyle, this.matrix);
 
         return this;
     }
@@ -624,7 +587,7 @@ export default class GraphicsGeometry extends Geometry
      */
     drawEllipse(x, y, width, height)
     {
-        this.drawShape(new Ellipse(x, y, width, height));
+        this.drawShape(new Ellipse(x, y, width, height), this._fillStyle, this._lineStyle, this.matrix);
 
         return this;
     }
@@ -665,7 +628,7 @@ export default class GraphicsGeometry extends Geometry
 
         shape.closed = closed;
 
-        this.drawShape(shape);
+        this.drawShape(shape, this._fillStyle, this._lineStyle, this.matrix);
 
         return this;
     }
@@ -713,15 +676,14 @@ export default class GraphicsGeometry extends Geometry
     {
         if (this.lineWidth || this.filling || this.graphicsData.length > 0)
         {
-            this.lineWidth = 0;
-            this.lineAlignment = 0.5;
-
-            this.filling = false;
+            this._lineStyle = null;
+            this._fillStyle = null;
 
             this.boundsDirty = -1;
             this.dirty++;
             this.clearDirty++;
             this.graphicsData.length = 0;
+            this.graphicsDataHoles.length = 0;
         }
 
         this.currentPath = null;
@@ -730,25 +692,12 @@ export default class GraphicsGeometry extends Geometry
     }
 
     /**
-     * Renders the object using the WebGL renderer
-     *
-     * @private
-     * @param {PIXI.Renderer} renderer - The renderer
-     */
-    _render(renderer)
-    {
-        // if the sprite is not visible or the alpha is 0 then no need to render this element
-        renderer.batch.setObjectRenderer(renderer.plugins.graphics);
-        renderer.plugins.graphics.render(this);
-    }
-
-    /**
      * Draws the given shape to this Graphics object. Can be any of Circle, Rectangle, Ellipse, Line or Polygon.
      *
      * @param {PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.Rectangle|PIXI.RoundedRectangle} shape - The shape object to draw.
      * @return {PIXI.GraphicsData} The generated GraphicsData object.
      */
-    drawShape(shape)
+    drawShape(shape, fillStyle, lineStyle, matrix)
     {
         if (this.currentPath)
         {
@@ -762,20 +711,11 @@ export default class GraphicsGeometry extends Geometry
         this.currentPath = null;
 
         const data = new GraphicsData(
-            this.lineWidth,
-            this.lineColor,
-            this.lineAlpha,
-            this.fillColor,
-            this.fillTexture,
-            this.fillMatrix,
-            this.fillAlpha,
-            this.filling,
-            this.nativeLines,
             shape,
-            this.lineAlignment
+            fillStyle,
+            lineStyle,
+            matrix
         );
-
-        data.matrix = this.matrix;
 
         if (this.holeMode)
         {
@@ -931,12 +871,15 @@ export default class GraphicsGeometry extends Geometry
 
         for (let i = 0; i < this.graphicsData.length; i++)
         {
-            if (!this.graphicsData[0].fillTexture.baseTexture.valid) return;
+            const data = this.graphicsData[i];
+
+            if (data.fillStyle && !data.fillStyle.texture.baseTexture.valid) return;
+            if (data.lineStyle && !data.lineStyle.texture.baseTexture.valid) return;
         }
 
         this.dirty = this.cacheDirty;
 
-        let lastTexture = this.graphicsData[0].fillTexture.baseTexture;
+        let lastTexture = this.graphicsData[0].fillStyle.texture.baseTexture;
         let lastIndex = 0;
 
         const uvs = [];
@@ -948,6 +891,9 @@ export default class GraphicsGeometry extends Geometry
             const data = this.graphicsData[i];
             const command = this.fillCommands[data.type];
 
+            const fillStyle = data.fillStyle;
+            const lineStyle = data.lineStyle;
+
             // build out the shapes points..
             command.build(data);
 
@@ -956,9 +902,9 @@ export default class GraphicsGeometry extends Geometry
                 this.transformPoints(data.points, data.matrix);
             }
 
-            if (data.fill)
+            if (fillStyle)
             {
-                const nextTexture = data.fillTexture.baseTexture;
+                const nextTexture = fillStyle.texture.baseTexture;
 
                 nextTexture.wrapMode = 10497;
 
@@ -990,11 +936,11 @@ export default class GraphicsGeometry extends Geometry
 
                 const size = (this.points.length / 2) - start;
 
-                this.addUvs(this.points, uvs, data.fillTexture, start, size, data.fillMatrix);
-                this.addColors(colors, data.fillColor, data.fillAlpha, size);
+                this.addUvs(this.points, uvs, fillStyle.texture, start, size, fillStyle.matrix);
+                this.addColors(colors, fillStyle.color, fillStyle.alpha, size);
             }
 
-            if (data.lineWidth)
+            if (lineStyle)
             {
                 const nextTexture = Texture.WHITE.baseTexture;
 
@@ -1018,8 +964,8 @@ export default class GraphicsGeometry extends Geometry
 
                 const size = (this.points.length / 2) - start;
 
-                this.addUvs(this.points, uvs, data.fillTexture, start, size, data.fillMatrix);
-                this.addColors(colors, data.lineColor, data.fillAlpha, size);
+                this.addUvs(this.points, uvs, lineStyle.texture, start, size, lineStyle.matrix);
+                this.addColors(colors, lineStyle.color, lineStyle.alpha, size);
             }
         }
 
