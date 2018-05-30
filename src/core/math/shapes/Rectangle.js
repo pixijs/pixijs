@@ -102,18 +102,18 @@ export default class Rectangle
     get bottomRight()
     {
         return new Point(this.right, this.bottom);
-    }    
+    }
 
     /**
-     * The location of the Rectangle object's top-left corner, determined by the x 
+     * The location of the Rectangle object's top-left corner, determined by the x
      * and y coordinates of the point.
-     * 
+     *
      * @member {PIXI.Point}
      */
     get topLeft()
     {
         return new Point(this.left, this.top);
-    }       
+    }
 
     /**
      * The size of the Rectangle object, expressed as a Point object with the values of
@@ -123,7 +123,7 @@ export default class Rectangle
     get size()
     {
         return new Point(this.width, this.height);
-    }       
+    }
 
     /**
      * A constant empty rectangle.
@@ -277,11 +277,13 @@ export default class Rectangle
      */
     intersects(rectangle)
     {
-        if (rectangle.x < (this.x + this.width) && this.x < rectangle.x + rectangle.width && rectangle.y < this.y + this.height)
+        if (rectangle.x < (this.x + this.width)
+        && this.x < rectangle.x + rectangle.width
+        && rectangle.y < this.y + this.height)
         {
             return this.y < rectangle.y + rectangle.height;
         }
-        
+
         return false;
     }
 
@@ -293,12 +295,12 @@ export default class Rectangle
      */
     intersection(rectangle)
     {
-        if (this.intersects(rectangle)) 
+        if (this.intersects(rectangle))
         {
-            const left = this.x > rectangle.x ? this.x : rectangle.x,
-                right = this.right < rectangle.right ? this.right : rectangle.right,
-                top = this.y > rectangle.y ? this.y : rectangle.y,
-                bottom = this.bottom < rectangle.bottom ? this.bottom : rectangle.bottom;
+            const left = this.x > rectangle.x ? this.x : rectangle.x;
+            const right = this.right < rectangle.right ? this.right : rectangle.right;
+            const top = this.y > rectangle.y ? this.y : rectangle.y;
+            const bottom = this.bottom < rectangle.bottom ? this.bottom : rectangle.bottom;
 
             return new Rectangle(top, left, right - left, bottom - top);
         }
@@ -308,17 +310,17 @@ export default class Rectangle
 
     /**
      * @param {PIXI.Rectangle} rectangle - The rectangle to test against.
-     * @return {PIXI.Rectangle} Adds two rectangles together to create a new Rectangle 
+     * @return {PIXI.Rectangle} Adds two rectangles together to create a new Rectangle
      * object, by filling in the horizontal and vertical space between the two rectangles.
      */
     union(rectangle)
     {
-        const top = this.y < rectangle.y ? this.y : rectangle.y,
-            left = this.x < rectangle.x ? this.x : rectangle.x,
-            right = this.right > rectangle.right ? this.right : rectangle.right,
-            bottom = this.bottom > rectangle.bottom ? this.bottom : rectangle.bottom;
+        const top = this.y < rectangle.y ? this.y : rectangle.y;
+        const left = this.x < rectangle.x ? this.x : rectangle.x;
+        const right = this.right > rectangle.right ? this.right : rectangle.right;
+        const bottom = this.bottom > rectangle.bottom ? this.bottom : rectangle.bottom;
 
-        return new Rectangle(top, left, right, bottom);     
+        return new Rectangle(top, left, right, bottom);
     }
 
 }
