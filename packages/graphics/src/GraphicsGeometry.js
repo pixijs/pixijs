@@ -67,6 +67,7 @@ export default class GraphicsGeometry extends Geometry
             // then add the extra attribute!
         }
 
+
         this._fillStyle = null;
         this._lineStyle = null;
 
@@ -154,15 +155,13 @@ export default class GraphicsGeometry extends Geometry
 
     lineTextureStyle(width = 0, texture, color = 0xFFFFFF, alpha = 1, textureMatrix, alignment = 0.5, native)
     {
-        if (width === 0 || alpha === 0)
+        if(width === 0 || alpha === 0)
         {
             this._lineStyle = null;
-
             return this;
         }
 
         const style = new LineStyle();
-
         style.color = color;
         style.width = width;
         style.alpha = alpha;
@@ -496,10 +495,9 @@ export default class GraphicsGeometry extends Geometry
 
     beginTextureFill(texture, color = 0xFFFFFF, alpha = 1, textureMatrix)
     {
-        if (alpha === 0)
+        if(alpha === 0)
         {
             this._fillStyle = null;
-
             return this;
         }
 
@@ -879,14 +877,13 @@ export default class GraphicsGeometry extends Geometry
         for (let i = 0; i < this.graphicsData.length; i++)
         {
             const data = this.graphicsData[i];
-
-            if (data.fillStyle && !data.fillStyle.texture.baseTexture.valid) return;
-            if (data.lineStyle && !data.lineStyle.texture.baseTexture.valid) return;
+            if(data.fillStyle && !data.fillStyle.texture.baseTexture.valid) return;
+            if(data.lineStyle && !data.lineStyle.texture.baseTexture.valid) return;
         }
 
         this.dirty = this.cacheDirty;
 
-        let lastTexture = this.graphicsData[0].fillStyle.texture.baseTexture;
+        let lastTexture = null;
         let lastIndex = 0;
 
         const uvs = [];
@@ -909,11 +906,16 @@ export default class GraphicsGeometry extends Geometry
                 this.transformPoints(data.points, data.matrix);
             }
 
-            for (let j = 0; j < 2; j++)
+            for (var j = 0; j < 2; j++) 
             {
                 const style = (j === 0) ? fillStyle : lineStyle;
 
+                if(!style)continue;
+
                 const nextTexture = style.texture.baseTexture;
+
+                // last texture is null at the start..
+                lastTexture = lastTexture || nextTexture;
 
                 nextTexture.wrapMode = 10497;
 
@@ -932,7 +934,7 @@ export default class GraphicsGeometry extends Geometry
 
                 const start = this.points.length / 2;
 
-                if (j === 0)
+                if(j === 0)
                 {
                     if (data.holes)
                     {
@@ -954,6 +956,7 @@ export default class GraphicsGeometry extends Geometry
 
                 this.addUvs(this.points, uvs, style.texture, start, size, style.matrix);
                 this.addColors(colors, style.color, style.alpha, size);
+   
             }
         }
 
