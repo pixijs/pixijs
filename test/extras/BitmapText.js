@@ -30,17 +30,21 @@ describe('PIXI.extras.BitmapText', function ()
         this.resources = path.join(__dirname, 'resources');
         Promise.all([
             loadXML('font.fnt'),
+            loadXML('font-no-page.fnt'),
             loadImage('font.png'),
         ]).then(([
             fontXML,
+            font2XML,
             fontImage,
         ]) =>
         {
             this.fontXML = fontXML;
+            this.font2XML = font2XML;
             this.fontImage = fontImage;
             const texture = new PIXI.Texture(new PIXI.BaseTexture(this.fontImage, null, 1));
 
             this.font = PIXI.extras.BitmapText.registerFont(this.fontXML, texture);
+            this.font2 = PIXI.extras.BitmapText.registerFont(this.font2XML, texture);
             done();
         });
     });
@@ -54,6 +58,15 @@ describe('PIXI.extras.BitmapText', function ()
             });
 
             expect(text.children.length).to.equal(4);
+        });
+        it('should support font without page reference', function ()
+        {
+            const text = new PIXI.extras.BitmapText('A', {
+                font: this.font2.font,
+            });
+
+            expect(text.children[0].width).to.equal(19);
+            expect(text.children[0].height).to.equal(20);
         });
         it('should break line on space', function ()
         {

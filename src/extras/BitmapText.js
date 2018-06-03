@@ -565,29 +565,18 @@ export default class BitmapText extends core.Container
 
         // parse letters
         const letters = xml.getElementsByTagName('char');
-        let page;
 
         for (let i = 0; i < letters.length; i++)
         {
             const letter = letters[i];
             const charCode = parseInt(letter.getAttribute('id'), 10);
-            let textureRect;
-
-            page = parseInt(letter.getAttribute('page'), 10);
-            if (isNaN(page))
-            {
-                textureRect = new core.Rectangle(0, 0, 0, 0);
-                page = 0;
-            }
-            else
-            {
-                textureRect = new core.Rectangle(
-                    (parseInt(letter.getAttribute('x'), 10) / res) + (textures[page].frame.x / res),
-                    (parseInt(letter.getAttribute('y'), 10) / res) + (textures[page].frame.y / res),
-                    parseInt(letter.getAttribute('width'), 10) / res,
-                    parseInt(letter.getAttribute('height'), 10) / res
-                );
-            }
+            const page = letter.getAttribute('page') ? parseInt(letter.getAttribute('page'), 10) : 0;
+            const textureRect = new core.Rectangle(
+                (parseInt(letter.getAttribute('x'), 10) / res) + (textures[page].frame.x / res),
+                (parseInt(letter.getAttribute('y'), 10) / res) + (textures[page].frame.y / res),
+                parseInt(letter.getAttribute('width'), 10) / res,
+                parseInt(letter.getAttribute('height'), 10) / res
+            );
 
             data.chars[charCode] = {
                 xOffset: parseInt(letter.getAttribute('xoffset'), 10) / res,
