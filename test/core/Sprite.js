@@ -1,5 +1,7 @@
 'use strict';
 
+const path = require('path');
+
 describe('PIXI.Sprite', function ()
 {
     describe('width', function ()
@@ -120,6 +122,24 @@ describe('PIXI.Sprite', function ()
             const point = new PIXI.Point(100, 100);
 
             expect(sprite.containsPoint(point)).to.be.false;
+        });
+    });
+
+    describe('destroy', function ()
+    {
+        it('should destroy while BaseTexture is loading', function ()
+        {
+            const texture = PIXI.Texture.from(path.resolve(__dirname, 'resources', 'building1.png'));
+            const sprite = new PIXI.Sprite(texture);
+
+            expect(texture._eventsCount).to.equal(1);
+
+            sprite.destroy();
+
+            expect(texture._eventsCount).to.equal(0);
+
+            texture.emit('update', texture);
+            texture.destroy(true);
         });
     });
 });
