@@ -1,4 +1,4 @@
-import { Point } from '../Point';
+import Point from '../Point';
 import { SHAPES } from '../const';
 
 /**

@@ -192,18 +192,34 @@ describe('PIXI.Rectangle', function ()
         const rect2 = new Rectangle(5, 5, 10, 10);
         const rect3 = new Rectangle(10, 10, 10, 10);
 
+        const test1Vs2 = rect1.intersection(rect2);
         const result1Vs2 = new Rectangle(5, 5, 5, 5);
 
-        expect(rect1.intersection(rect2)).to.equal(result1Vs2);
-        expect(rect1.intersection(rect3)).to.equal(Rectangle.EMPTY);
+        expect(test1Vs2.top).to.equal(result1Vs2.top);
+        expect(test1Vs2.left).to.equal(result1Vs2.left);
+        expect(test1Vs2.right).to.equal(result1Vs2.right);
+        expect(test1Vs2.bottom).to.equal(result1Vs2.bottom);
+
+        const test1Vs3 = rect1.intersection(rect3);
+        const result1Vs3 = Rectangle.EMPTY;
+
+        expect(test1Vs3.top).to.equal(result1Vs3.top);
+        expect(test1Vs3.left).to.equal(result1Vs3.left);
+        expect(test1Vs3.right).to.equal(result1Vs3.right);
+        expect(test1Vs3.bottom).to.equal(result1Vs3.bottom);
     });
 
     it('should return a new rectangle that represent Union of 2 Rectangles', function ()
     {
         const rect1 = new Rectangle(0, 0, 10, 10);
         const rect2 = new Rectangle(10, 10, 10, 10);
+
+        const test1Vs2 = rect1.union(rect2);
         const result1Vs2 = new Rectangle(0, 0, 20, 20);
 
-        expect(rect1.union(rect2)).to.equal(result1Vs2);
+        expect(test1Vs2.top).to.equal(result1Vs2.top);
+        expect(test1Vs2.left).to.equal(result1Vs2.left);
+        expect(test1Vs2.right).to.equal(result1Vs2.right);
+        expect(test1Vs2.bottom).to.equal(result1Vs2.bottom);
     });
 });
