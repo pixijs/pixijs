@@ -175,4 +175,35 @@ describe('PIXI.Rectangle', function ()
         expect(rect.right).to.equal(0);
         expect(rect.bottom).to.equal(0);
     });
+
+    it('should return true if 2 Rectangle intersects', function ()
+    {
+        const rect1 = new Rectangle(0, 0, 10, 10);
+        const rect2 = new Rectangle(5, 5, 10, 10);
+        const rect3 = new Rectangle(10, 10, 10, 10);
+
+        expect(rect1.intersects(rect2)).to.be.true;
+        expect(rect1.intersects(rect3)).to.be.false;
+    });
+
+    it('should return a new rectangle that represent intersection or EMPTY', function ()
+    {
+        const rect1 = new Rectangle(0, 0, 10, 10);
+        const rect2 = new Rectangle(5, 5, 10, 10);
+        const rect3 = new Rectangle(10, 10, 10, 10);
+
+        const result1Vs2 = new Rectangle(5, 5, 5, 5);
+
+        expect(rect1.intersection(rect2)).to.equal(result1Vs2);
+        expect(rect1.intersection(rect3)).to.equal(Rectangle.EMPTY);
+    });
+
+    it('should return a new rectangle that represent Union of 2 Rectangles', function ()
+    {
+        const rect1 = new Rectangle(0, 0, 10, 10);
+        const rect2 = new Rectangle(10, 10, 10, 10);
+        const result1Vs2 = new Rectangle(0, 0, 20, 20);
+
+        expect(rect1.union(rect2)).to.equal(result1Vs2);
+    });
 });
