@@ -370,6 +370,50 @@ describe('PIXI.loaders.bitmapFontParser', function ()
             done();
         });
     });
+
+    it('should split fonts if page IDs are in chronological order', function (done)
+    {
+        const loader = new PIXI.loaders.Loader();
+
+        loader.add(path.join(this.resources, 'split_font2.fnt'));
+        loader.load(() =>
+        {
+            const page0 = path.join(this.resources, 'split_font_ab.png');
+            const page1 = path.join(this.resources, 'split_font_cd.png');
+
+            expect(loader.resources[page0].metadata.pageId).to.equal('0');
+            expect(loader.resources[page1].metadata.pageId).to.equal('1');
+
+            const font = PIXI.extras.BitmapText.fonts.split_font2;
+            const charA = font.chars['A'.charCodeAt(0) || 65];
+            const charC = font.chars['C'.charCodeAt(0) || 67];
+
+            expect(charA.page).to.equal('0');
+            expect(charC.page).to.equal('1');
+            expect(charA.texture.baseTexture.imageUrl).to.equal(page0);
+            expect(charC.texture.baseTexture.imageUrl).to.equal(page1);
+
+            done();
+        });
+    });
+
+    it('should register bitmap font with side-loaded image', function (done)
+    {
+        const loader = new PIXI.loaders.Loader();
+        const imagePath = path.join(this.resources, 'font.png');
+        const fontPath = path.join(this.resources, 'font.fnt');
+
+        loader.add('image', imagePath);
+        loader.add('font', fontPath);
+        loader.load(() =>
+        {
+            expect(Object.values(loader.resources).length).to.equal(2);
+            expect(loader.resources.image.url).to.equal(imagePath);
+            expect(loader.resources.font.url).to.equal(fontPath);
+
+            done();
+        });
+    });
 });
 
 describe('PIXI.loaders.parseBitmapFontData', function ()

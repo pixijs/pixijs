@@ -543,7 +543,8 @@ export default class BitmapText extends core.Container
      *
      * @static
      * @param {XMLDocument} xml - The XML document data.
-     * @param {PIXI.Texture|PIXI.Texture[]} textures - List of textures for each page.
+     * @param {Object.<string, PIXI.Texture>|PIXI.Texture|PIXI.Texture[]} textures - List of textures for each page.
+     *  If providing an object, the key is the `<page />` element `id` attribute in the FNT file.
      * @return {Object} Result font object with font, size, lineHeight and char fields.
      */
     static registerFont(xml, textures)
@@ -551,16 +552,31 @@ export default class BitmapText extends core.Container
         const data = {};
         const info = xml.getElementsByTagName('info')[0];
         const common = xml.getElementsByTagName('common')[0];
-        const fileName = xml.getElementsByTagName('page')[0].getAttribute('file');
-        const res = getResolutionOfUrl(fileName, settings.RESOLUTION);
+        const pages = xml.getElementsByTagName('page');
+        const res = getResolutionOfUrl(pages[0].getAttribute('file'), settings.RESOLUTION);
 
         data.font = info.getAttribute('face');
         data.size = parseInt(info.getAttribute('size'), 10);
         data.lineHeight = parseInt(common.getAttribute('lineHeight'), 10) / res;
         data.chars = {};
-        if (!(textures instanceof Array))
+
+        // Single texture, convert to list
+        if (textures instanceof core.Texture)
         {
             textures = [textures];
+        }
+
+        // Convert the texture array to a map of the textures
+        // where the key is the page ID and value is the texture
+        if (textures instanceof Array)
+        {
+            const map = {};
+
+            for (let i = 0; i < pages.length; i++)
+            {
+                map[pages[i].getAttribute('id')] = textures[i];
+            }
+            textures = map;
         }
 
         // parse letters
@@ -570,7 +586,7 @@ export default class BitmapText extends core.Container
         {
             const letter = letters[i];
             const charCode = parseInt(letter.getAttribute('id'), 10);
-            const page = letter.getAttribute('page') ? parseInt(letter.getAttribute('page'), 10) : 0;
+            const page = letter.getAttribute('page') || 0;
             const textureRect = new core.Rectangle(
                 (parseInt(letter.getAttribute('x'), 10) / res) + (textures[page].frame.x / res),
                 (parseInt(letter.getAttribute('y'), 10) / res) + (textures[page].frame.y / res),
