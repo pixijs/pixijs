@@ -182,22 +182,28 @@ export default class CanvasGraphicsRenderer
                 const ry = shape.y;
                 const width = shape.width;
                 const height = shape.height;
-                let radius = shape.radius;
+                let radiusTL = shape.radiusTL;
+                let radiusTR = shape.radiusTR;
+                let radiusBR = shape.radiusBR;
+                let radiusBL = shape.radiusBL;
 
                 const maxRadius = Math.min(width, height) / 2 | 0;
 
-                radius = radius > maxRadius ? maxRadius : radius;
+                radiusTL = Math.min(radiusTL, maxRadius);
+                radiusTR = Math.min(radiusTR, maxRadius);
+                radiusBR = Math.min(radiusBR, maxRadius);
+                radiusBL = Math.min(radiusBL, maxRadius);
 
                 context.beginPath();
-                context.moveTo(rx, ry + radius);
-                context.lineTo(rx, ry + height - radius);
-                context.quadraticCurveTo(rx, ry + height, rx + radius, ry + height);
-                context.lineTo(rx + width - radius, ry + height);
-                context.quadraticCurveTo(rx + width, ry + height, rx + width, ry + height - radius);
-                context.lineTo(rx + width, ry + radius);
-                context.quadraticCurveTo(rx + width, ry, rx + width - radius, ry);
-                context.lineTo(rx + radius, ry);
-                context.quadraticCurveTo(rx, ry, rx, ry + radius);
+                context.moveTo(rx, ry + radiusTL);
+                context.lineTo(rx, ry + height - radiusBL);
+                context.quadraticCurveTo(rx, ry + height, rx + radiusBL, ry + height);
+                context.lineTo(rx + width - radiusBR, ry + height);
+                context.quadraticCurveTo(rx + width, ry + height, rx + width, ry + height - radiusBR);
+                context.lineTo(rx + width, ry + radiusTR);
+                context.quadraticCurveTo(rx + width, ry, rx + width - radiusTR, ry);
+                context.lineTo(rx + radiusTL, ry);
+                context.quadraticCurveTo(rx, ry, rx, ry + radiusTL);
                 context.closePath();
 
                 if (data.fillColor || data.fillColor === 0)

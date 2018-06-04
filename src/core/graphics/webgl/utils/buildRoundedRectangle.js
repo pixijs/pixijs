@@ -21,15 +21,19 @@ export default function buildRoundedRectangle(graphicsData, webGLData, webGLData
     const width = rrectData.width;
     const height = rrectData.height;
 
-    const radius = rrectData.radius;
+    const radiusTL = rrectData.radiusTL;
+    const radiusTR = rrectData.radiusTR;
+    const radiusBR = rrectData.radiusBR;
+    const radiusBL = rrectData.radiusBL;
 
     const recPoints = [];
 
-    recPoints.push(x, y + radius);
-    quadraticBezierCurve(x, y + height - radius, x, y + height, x + radius, y + height, recPoints);
-    quadraticBezierCurve(x + width - radius, y + height, x + width, y + height, x + width, y + height - radius, recPoints);
-    quadraticBezierCurve(x + width, y + radius, x + width, y, x + width - radius, y, recPoints);
-    quadraticBezierCurve(x + radius, y, x, y, x, y + radius + 0.0000000001, recPoints);
+    recPoints.push(x, y + radiusTL);
+    quadraticBezierCurve(x, y + height - radiusBL, x, y + height, x + radiusBL, y + height, recPoints);
+    quadraticBezierCurve(x + width - radiusBR, y + height, x + width, y + height, x + width, y + height - radiusBR,
+        recPoints);
+    quadraticBezierCurve(x + width, y + radiusTR, x + width, y, x + width - radiusTR, y, recPoints);
+    quadraticBezierCurve(x + radiusTL, y, x, y, x, y + radiusTL + 0.0000000001, recPoints);
 
     // this tiny number deals with the issue that occurs when points overlap and earcut fails to triangulate the item.
     // TODO - fix this properly, this is not very elegant.. but it works for now.

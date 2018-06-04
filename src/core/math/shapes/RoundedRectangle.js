@@ -14,9 +14,12 @@ export default class RoundedRectangle
      * @param {number} [y=0] - The Y coordinate of the upper-left corner of the rounded rectangle
      * @param {number} [width=0] - The overall width of this rounded rectangle
      * @param {number} [height=0] - The overall height of this rounded rectangle
-     * @param {number} [radius=20] - Controls the radius of the rounded corners
+     * @param {number} [radiusTL=20] - Controls the radius of the top left rounded corner
+     * @param {number} [radiusTR=20] - Controls the radius of the top right rounded corner
+     * @param {number} [radiusBR=20] - Controls the radius of the bottom right rounded corner
+     * @param {number} [radiusBL=20] - Controls the radius of the bottom left rounded corner
      */
-    constructor(x = 0, y = 0, width = 0, height = 0, radius = 20)
+    constructor(x = 0, y = 0, width = 0, height = 0, radiusTL = 20, radiusTR = 20, radiusBR = 20, radiusBL = 20)
     {
         /**
          * @member {number}
@@ -46,7 +49,25 @@ export default class RoundedRectangle
          * @member {number}
          * @default 20
          */
-        this.radius = radius;
+        this.radiusTL = radiusTL;
+
+        /**
+         * @member {number}
+         * @default 20
+         */
+        this.radiusTR = radiusTR;
+
+        /**
+         * @member {number}
+         * @default 20
+         */
+        this.radiusBR = radiusBR;
+
+        /**
+         * @member {number}
+         * @default 20
+         */
+        this.radiusBL = radiusBL;
 
         /**
          * The type of the object, mainly used to avoid `instanceof` checks
@@ -66,7 +87,8 @@ export default class RoundedRectangle
      */
     clone()
     {
-        return new RoundedRectangle(this.x, this.y, this.width, this.height, this.radius);
+        return new RoundedRectangle(this.x, this.y, this.width, this.height, this.radiusTL, this.radiusTR, this.radiusBR,
+                                    this.radiusBL);
     }
 
     /**
@@ -86,31 +108,61 @@ export default class RoundedRectangle
         {
             if (y >= this.y && y <= this.y + this.height)
             {
-                if ((y >= this.y + this.radius && y <= this.y + this.height - this.radius)
-                || (x >= this.x + this.radius && x <= this.x + this.width - this.radius))
-                {
-                    return true;
-                }
-                let dx = x - (this.x + this.radius);
-                let dy = y - (this.y + this.radius);
-                const radius2 = this.radius * this.radius;
+                let rx1;
+                let rx2;
+                let ry1;
+                let ry2;
 
-                if ((dx * dx) + (dy * dy) <= radius2)
+                if (y < this.y + (this.height / 2))
+                {
+                    rx1 = this.radiusTL;
+                    rx2 = this.radiusTR;
+                }
+                else
+                {
+                    rx1 = this.radiusBL;
+                    rx2 = this.radiusBR;
+                }
+
+                if (x < this.x + (this.width / 2))
+                {
+                    ry1 = this.radiusTL;
+                    ry2 = this.radiusBL;
+                }
+                else
+                {
+                    ry1 = this.radiusTR;
+                    ry2 = this.radiusBR;
+                }
+
+                if ((y >= this.y + ry1 && y <= this.y + this.height - ry2)
+                || (x >= this.x + rx1 && x <= this.x + this.width - rx2))
                 {
                     return true;
                 }
-                dx = x - (this.x + this.width - this.radius);
-                if ((dx * dx) + (dy * dy) <= radius2)
+
+                let dx = x - (this.x + this.radiusTL);
+                let dy = y - (this.y + this.radiusTL);
+
+                if ((dx * dx) + (dy * dy) <= this.radiusTL * this.radiusTL)
                 {
                     return true;
                 }
-                dy = y - (this.y + this.height - this.radius);
-                if ((dx * dx) + (dy * dy) <= radius2)
+                dx = x - (this.x + this.width - this.radiusTR);
+                dy = y - (this.y + this.radiusTR);
+                if ((dx * dx) + (dy * dy) <= this.radiusTR * this.radiusTR)
                 {
                     return true;
                 }
-                dx = x - (this.x + this.radius);
-                if ((dx * dx) + (dy * dy) <= radius2)
+                dx = x - (this.x + this.width - this.radiusBR);
+                dy = y - (this.y + this.height - this.radiusBR);
+                if ((dx * dx) + (dy * dy) <= this.radiusBR * this.radiusBR)
+                {
+                    return true;
+                }
+                dx = x - (this.x + this.radiusBL);
+                dy = y - (this.y + this.height - this.radiusBL);
+                if ((dx * dx) + (dy * dy) <= this.radiusBL * this.radiusBL)
                 {
                     return true;
                 }
