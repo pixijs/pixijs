@@ -544,7 +544,7 @@ export default class BitmapText extends core.Container
      * @static
      * @param {XMLDocument} xml - The XML document data.
      * @param {Object.<string, PIXI.Texture>|PIXI.Texture|PIXI.Texture[]} textures - List of textures for each page.
-     *  If providing an object, the key is the `<page />` element `id` attribute in the FNT file.
+     *  If providing an object, the key is the `<page>` element's `file` attribute in the FNT file.
      * @return {Object} Result font object with font, size, lineHeight and char fields.
      */
     static registerFont(xml, textures)
@@ -554,6 +554,7 @@ export default class BitmapText extends core.Container
         const common = xml.getElementsByTagName('common')[0];
         const pages = xml.getElementsByTagName('page');
         const res = getResolutionOfUrl(pages[0].getAttribute('file'), settings.RESOLUTION);
+        const pagesTextures = {};
 
         data.font = info.getAttribute('face');
         data.size = parseInt(info.getAttribute('size'), 10);
@@ -566,17 +567,14 @@ export default class BitmapText extends core.Container
             textures = [textures];
         }
 
-        // Convert the texture array to a map of the textures
-        // where the key is the page ID and value is the texture
-        if (textures instanceof Array)
+        // Convert the input Texture, Textures or object
+        // into a page Texture lookup by "id"
+        for (let i = 0; i < pages.length; i++)
         {
-            const map = {};
+            const id = pages[i].getAttribute('id');
+            const file = pages[i].getAttribute('file');
 
-            for (let i = 0; i < pages.length; i++)
-            {
-                map[pages[i].getAttribute('id')] = textures[i];
-            }
-            textures = map;
+            pagesTextures[id] = textures[file] || textures[i];
         }
 
         // parse letters
@@ -588,8 +586,8 @@ export default class BitmapText extends core.Container
             const charCode = parseInt(letter.getAttribute('id'), 10);
             const page = letter.getAttribute('page') || 0;
             const textureRect = new core.Rectangle(
-                (parseInt(letter.getAttribute('x'), 10) / res) + (textures[page].frame.x / res),
-                (parseInt(letter.getAttribute('y'), 10) / res) + (textures[page].frame.y / res),
+                (parseInt(letter.getAttribute('x'), 10) / res) + (pagesTextures[page].frame.x / res),
+                (parseInt(letter.getAttribute('y'), 10) / res) + (pagesTextures[page].frame.y / res),
                 parseInt(letter.getAttribute('width'), 10) / res,
                 parseInt(letter.getAttribute('height'), 10) / res
             );
@@ -599,7 +597,7 @@ export default class BitmapText extends core.Container
                 yOffset: parseInt(letter.getAttribute('yoffset'), 10) / res,
                 xAdvance: parseInt(letter.getAttribute('xadvance'), 10) / res,
                 kerning: {},
-                texture: new core.Texture(textures[page].baseTexture, textureRect),
+                texture: new core.Texture(pagesTextures[page].baseTexture, textureRect),
                 page,
             };
         }

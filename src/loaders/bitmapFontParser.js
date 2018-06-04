@@ -73,7 +73,7 @@ export default function ()
         // load is the same number as references in the fnt file
         const completed = (page) =>
         {
-            textures[page.metadata.pageId || 0] = page.texture;
+            textures[page.metadata.pageFile] = page.texture;
 
             if (Object.keys(textures).length === pages.length)
             {
@@ -84,7 +84,8 @@ export default function ()
 
         for (let i = 0; i < pages.length; ++i)
         {
-            const url = xmlUrl + pages[i].getAttribute('file');
+            const pageFile = pages[i].getAttribute('file');
+            const url = xmlUrl + pageFile;
             let exists = false;
 
             // incase the image is loaded outside
@@ -93,6 +94,7 @@ export default function ()
             {
                 if (this.resources[name].url === url)
                 {
+                    this.resources[name].metadata.pageFile = pageFile;
                     completed(this.resources[name]);
                     exists = true;
                     break;
@@ -108,7 +110,7 @@ export default function ()
                     crossOrigin: resource.crossOrigin,
                     loadType: Resource.LOAD_TYPE.IMAGE,
                     metadata: Object.assign(
-                        { pageId: pages[i].getAttribute('id') },
+                        { pageFile },
                         resource.metadata.imageMetadata
                     ),
                     parentResource: resource,

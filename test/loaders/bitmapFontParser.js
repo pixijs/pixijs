@@ -381,8 +381,8 @@ describe('PIXI.loaders.bitmapFontParser', function ()
             const page0 = path.join(this.resources, 'split_font_ab.png');
             const page1 = path.join(this.resources, 'split_font_cd.png');
 
-            expect(loader.resources[page0].metadata.pageId).to.equal('0');
-            expect(loader.resources[page1].metadata.pageId).to.equal('1');
+            expect(loader.resources[page0].metadata.pageFile).to.equal('split_font_ab.png');
+            expect(loader.resources[page1].metadata.pageFile).to.equal('split_font_cd.png');
 
             const font = PIXI.extras.BitmapText.fonts.split_font2;
             const charA = font.chars['A'.charCodeAt(0) || 65];
