@@ -751,7 +751,24 @@ export default class Graphics extends Container
      */
     drawRoundedRect(x, y, width, height, radius)
     {
-        this.drawShape(new RoundedRectangle(x, y, width, height, radius));
+        return this.drawRoundedRectComplex(x, y, width, height, radius, radius, radius, radius);
+    }
+
+    /**
+     *
+     * @param {number} x - The X coord of the top-left of the rectangle
+     * @param {number} y - The Y coord of the top-left of the rectangle
+     * @param {number} width - The width of the rectangle
+     * @param {number} height - The height of the rectangle
+     * @param {number} radiusTL - Radius of the top left rectangle corner
+     * @param {number} radiusTR - Radius of the top right rectangle corner
+     * @param {number} radiusBR - Radius of the bottom right rectangle corner
+     * @param {number} radiusBL - Radius of the bottom left rectangle corner
+     * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
+     */
+    drawRoundedRectComplex(x, y, width, height, radiusTL, radiusTR, radiusBR, radiusBL)
+    {
+        this.drawShape(new RoundedRectangle(x, y, width, height, radiusTL, radiusTR, radiusBR, radiusBL));
 
         return this;
     }
