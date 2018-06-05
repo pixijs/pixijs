@@ -1,0 +1,16 @@
+<font>
+  <info face="split_font2" size="24" bold="0" italic="0" charset="" unicode="" stretchH="100" smooth="1" aa="1" padding="2,2,2,2" spacing="0,0" outline="0"/>
+  <common lineHeight="27" base="18" scaleW="22" scaleH="46" pages="2" packed="0"/>
+  <pages>
+    <page id="1" file="split_font_cd.png"/>
+    <page id="0" file="split_font_ab.png"/>
+  </pages>
+  <chars count="5">
+    <char id="65" x="2" y="2" width="19" height="20" xoffset="0" yoffset="0" xadvance="16" page="0" chnl="15"/>
+    <char id="66" x="2" y="24" width="15" height="20" xoffset="2" yoffset="0" xadvance="16" page="0" chnl="15"/>
+
+    <char id="67" x="2" y="2" width="18" height="20" xoffset="1" yoffset="0" xadvance="17" page="1" chnl="15"/>
+    <char id="68" x="2" y="24" width="17" height="20" xoffset="2" yoffset="0" xadvance="17" page="1" chnl="15"/>
+  </chars>
+  <kernings count="0"/>
+</font>
