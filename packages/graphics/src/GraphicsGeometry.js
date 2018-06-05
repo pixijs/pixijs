@@ -322,6 +322,16 @@ export default class GraphicsGeometry extends Geometry
 
         const uvs = this.uvs;
         const colors = this.colors;
+        
+        var lastDrawCall = this.drawCalls.pop();
+        
+        // this is so we can batch the new call if possible..
+        if(lastDrawCall)
+        {
+            //type, size, start, texture
+            lastTexture = lastDrawCall.texture;
+            lastIndex = lastDrawCall.start;
+        }
 
         // TODO - this can be simplified
         for (let i = this.shapeIndex; i < this.graphicsData.length; i++)
@@ -336,6 +346,8 @@ export default class GraphicsGeometry extends Geometry
 
             // build out the shapes points..
             command.build(data);
+            
+           
 
             if (data.matrix)
             {
