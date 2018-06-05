@@ -28,6 +28,8 @@ describe('PIXI.BitmapFontLoader', function ()
     {
         const resolveURL = (url) => path.resolve(this.resources, url);
 
+        BitmapFontLoader.add();
+
         this.resources = path.join(__dirname, 'resources');
         this.fontXML = null;
         this.fontScaledXML = null;
@@ -124,13 +126,13 @@ describe('PIXI.BitmapFontLoader', function ()
 
     it('should properly register bitmap font', function (done)
     {
-        const texture = new Texture(new BaseTexture(this.fontImage, null, 1));
+        const texture = Texture.from(this.fontImage);
         const font = BitmapText.registerFont(this.fontXML, texture);
 
         expect(font).to.be.an.object;
         expect(BitmapText.fonts.font).to.equal(font);
         expect(font).to.have.property('chars');
-        const charA = font.chars['A'.charCodeAt(0) || 65];
+        const charA = font.chars['A'.charCodeAt(0)];
 
         expect(charA).to.exist;
         expect(charA.texture.baseTexture.resource.source).to.equal(this.fontImage);
@@ -138,7 +140,7 @@ describe('PIXI.BitmapFontLoader', function ()
         expect(charA.texture.frame.y).to.equal(2);
         expect(charA.texture.frame.width).to.equal(19);
         expect(charA.texture.frame.height).to.equal(20);
-        const charB = font.chars['B'.charCodeAt(0) || 66];
+        const charB = font.chars['B'.charCodeAt(0)];
 
         expect(charB).to.exist;
         expect(charB.texture.baseTexture.resource.source).to.equal(this.fontImage);
@@ -146,7 +148,7 @@ describe('PIXI.BitmapFontLoader', function ()
         expect(charB.texture.frame.y).to.equal(24);
         expect(charB.texture.frame.width).to.equal(15);
         expect(charB.texture.frame.height).to.equal(20);
-        const charC = font.chars['C'.charCodeAt(0) || 67];
+        const charC = font.chars['C'.charCodeAt(0)];
 
         expect(charC).to.exist;
         expect(charC.texture.baseTexture.resource.source).to.equal(this.fontImage);
@@ -154,7 +156,7 @@ describe('PIXI.BitmapFontLoader', function ()
         expect(charC.texture.frame.y).to.equal(2);
         expect(charC.texture.frame.width).to.equal(18);
         expect(charC.texture.frame.height).to.equal(20);
-        const charD = font.chars['D'.charCodeAt(0) || 68];
+        const charD = font.chars['D'.charCodeAt(0)];
 
         expect(charD).to.exist;
         expect(charD.texture.baseTexture.resource.source).to.equal(this.fontImage);
@@ -162,7 +164,7 @@ describe('PIXI.BitmapFontLoader', function ()
         expect(charD.texture.frame.y).to.equal(24);
         expect(charD.texture.frame.width).to.equal(17);
         expect(charD.texture.frame.height).to.equal(20);
-        const charE = font.chars['E'.charCodeAt(0) || 69];
+        const charE = font.chars['E'.charCodeAt(0)];
 
         expect(charE).to.be.undefined;
         done();
@@ -180,7 +182,7 @@ describe('PIXI.BitmapFontLoader', function ()
         expect(font).to.be.an.object;
         expect(BitmapText.fonts.font).to.equal(font);
         expect(font).to.have.property('chars');
-        const charA = font.chars['A'.charCodeAt(0) || 65];
+        const charA = font.chars['A'.charCodeAt(0)];
 
         expect(charA).to.exist;
         expect(charA.texture.baseTexture.resource.source).to.equal(this.fontScaledImage);
@@ -188,7 +190,7 @@ describe('PIXI.BitmapFontLoader', function ()
         expect(charA.texture.frame.y).to.equal(4); // 2 / 0.5
         expect(charA.texture.frame.width).to.equal(38); // 19 / 0.5
         expect(charA.texture.frame.height).to.equal(40); // 20 / 0.5
-        const charB = font.chars['B'.charCodeAt(0) || 66];
+        const charB = font.chars['B'.charCodeAt(0)];
 
         expect(charB).to.exist;
         expect(charB.texture.baseTexture.resource.source).to.equal(this.fontScaledImage);
@@ -196,7 +198,7 @@ describe('PIXI.BitmapFontLoader', function ()
         expect(charB.texture.frame.y).to.equal(48); // 24 / 0.5
         expect(charB.texture.frame.width).to.equal(30); // 15 / 0.5
         expect(charB.texture.frame.height).to.equal(40); // 20 / 0.5
-        const charC = font.chars['C'.charCodeAt(0) || 67];
+        const charC = font.chars['C'.charCodeAt(0)];
 
         expect(charC).to.exist;
         expect(charC.texture.baseTexture.resource.source).to.equal(this.fontScaledImage);
@@ -204,7 +206,7 @@ describe('PIXI.BitmapFontLoader', function ()
         expect(charC.texture.frame.y).to.equal(4); // 2 / 0.5
         expect(charC.texture.frame.width).to.equal(36); // 18 / 0.5
         expect(charC.texture.frame.height).to.equal(40); // 20 / 0.5
-        const charD = font.chars['D'.charCodeAt(0) || 68];
+        const charD = font.chars['D'.charCodeAt(0)];
 
         expect(charD).to.exist;
         expect(charD.texture.baseTexture.resource.source).to.equal(this.fontScaledImage);
@@ -212,7 +214,7 @@ describe('PIXI.BitmapFontLoader', function ()
         expect(charD.texture.frame.y).to.equal(48); // 24 / 0.5
         expect(charD.texture.frame.width).to.equal(34); // 17 / 0.5
         expect(charD.texture.frame.height).to.equal(40); // 20 / 0.5
-        const charE = font.chars['E'.charCodeAt(0) || 69];
+        const charE = font.chars['E'.charCodeAt(0)];
 
         expect(charE).to.be.undefined;
         done();
@@ -220,7 +222,7 @@ describe('PIXI.BitmapFontLoader', function ()
 
     it('should properly register bitmap font NESTED into spritesheet', function (done)
     {
-        const baseTexture = new BaseTexture(this.atlasImage, null, 1);
+        const baseTexture = new BaseTexture(this.atlasImage);
         const spritesheet = new Spritesheet(baseTexture, this.atlasJSON);
 
         spritesheet.parse(() =>
@@ -233,7 +235,7 @@ describe('PIXI.BitmapFontLoader', function ()
             expect(font).to.be.an.object;
             expect(BitmapText.fonts.font).to.equal(font);
             expect(font).to.have.property('chars');
-            const charA = font.chars['A'.charCodeAt(0) || 65];
+            const charA = font.chars['A'.charCodeAt(0)];
 
             expect(charA).to.exist;
             expect(charA.texture.baseTexture.resource.source).to.equal(this.atlasImage);
@@ -241,7 +243,7 @@ describe('PIXI.BitmapFontLoader', function ()
             expect(charA.texture.frame.y).to.equal(fontY + 2);
             expect(charA.texture.frame.width).to.equal(19);
             expect(charA.texture.frame.height).to.equal(20);
-            const charB = font.chars['B'.charCodeAt(0) || 66];
+            const charB = font.chars['B'.charCodeAt(0)];
 
             expect(charB).to.exist;
             expect(charB.texture.baseTexture.resource.source).to.equal(this.atlasImage);
@@ -249,7 +251,7 @@ describe('PIXI.BitmapFontLoader', function ()
             expect(charB.texture.frame.y).to.equal(fontY + 24);
             expect(charB.texture.frame.width).to.equal(15);
             expect(charB.texture.frame.height).to.equal(20);
-            const charC = font.chars['C'.charCodeAt(0) || 67];
+            const charC = font.chars['C'.charCodeAt(0)];
 
             expect(charC).to.exist;
             expect(charC.texture.baseTexture.resource.source).to.equal(this.atlasImage);
@@ -257,7 +259,7 @@ describe('PIXI.BitmapFontLoader', function ()
             expect(charC.texture.frame.y).to.equal(fontY + 2);
             expect(charC.texture.frame.width).to.equal(18);
             expect(charC.texture.frame.height).to.equal(20);
-            const charD = font.chars['D'.charCodeAt(0) || 68];
+            const charD = font.chars['D'.charCodeAt(0)];
 
             expect(charD).to.exist;
             expect(charD.texture.baseTexture.resource.source).to.equal(this.atlasImage);
@@ -265,7 +267,7 @@ describe('PIXI.BitmapFontLoader', function ()
             expect(charD.texture.frame.y).to.equal(fontY + 24);
             expect(charD.texture.frame.width).to.equal(17);
             expect(charD.texture.frame.height).to.equal(20);
-            const charE = font.chars['E'.charCodeAt(0) || 69];
+            const charE = font.chars['E'.charCodeAt(0)];
 
             expect(charE).to.be.undefined;
             done();
@@ -274,7 +276,7 @@ describe('PIXI.BitmapFontLoader', function ()
 
     it('should properly register bitmap font NESTED into SCALED spritesheet', function (done)
     {
-        const baseTexture = new BaseTexture(this.atlasScaledImage, null, 1);
+        const baseTexture = new BaseTexture(this.atlasScaledImage);
         const spritesheet = new Spritesheet(baseTexture, this.atlasScaledJSON);
 
         spritesheet.resolution = 1;
@@ -289,7 +291,7 @@ describe('PIXI.BitmapFontLoader', function ()
             expect(font).to.be.an.object;
             expect(BitmapText.fonts.font).to.equal(font);
             expect(font).to.have.property('chars');
-            const charA = font.chars['A'.charCodeAt(0) || 65];
+            const charA = font.chars['A'.charCodeAt(0)];
 
             expect(charA).to.exist;
             expect(charA.texture.baseTexture.resource.source).to.equal(this.atlasScaledImage);
@@ -297,7 +299,7 @@ describe('PIXI.BitmapFontLoader', function ()
             expect(charA.texture.frame.y).to.equal(fontY + 2);
             expect(charA.texture.frame.width).to.equal(19);
             expect(charA.texture.frame.height).to.equal(20);
-            const charB = font.chars['B'.charCodeAt(0) || 66];
+            const charB = font.chars['B'.charCodeAt(0)];
 
             expect(charB).to.exist;
             expect(charB.texture.baseTexture.resource.source).to.equal(this.atlasScaledImage);
@@ -305,7 +307,7 @@ describe('PIXI.BitmapFontLoader', function ()
             expect(charB.texture.frame.y).to.equal(fontY + 24);
             expect(charB.texture.frame.width).to.equal(15);
             expect(charB.texture.frame.height).to.equal(20);
-            const charC = font.chars['C'.charCodeAt(0) || 67];
+            const charC = font.chars['C'.charCodeAt(0)];
 
             expect(charC).to.exist;
             expect(charC.texture.baseTexture.resource.source).to.equal(this.atlasScaledImage);
@@ -313,7 +315,7 @@ describe('PIXI.BitmapFontLoader', function ()
             expect(charC.texture.frame.y).to.equal(fontY + 2);
             expect(charC.texture.frame.width).to.equal(18);
             expect(charC.texture.frame.height).to.equal(20);
-            const charD = font.chars['D'.charCodeAt(0) || 68];
+            const charD = font.chars['D'.charCodeAt(0)];
 
             expect(charD).to.exist;
             expect(charD.texture.baseTexture.resource.source).to.equal(this.atlasScaledImage);
@@ -321,7 +323,7 @@ describe('PIXI.BitmapFontLoader', function ()
             expect(charD.texture.frame.y).to.equal(fontY + 24);
             expect(charD.texture.frame.width).to.equal(17);
             expect(charD.texture.frame.height).to.equal(20);
-            const charE = font.chars['E'.charCodeAt(0) || 69];
+            const charE = font.chars['E'.charCodeAt(0)];
 
             expect(charE).to.be.undefined;
             done();
@@ -332,6 +334,7 @@ describe('PIXI.BitmapFontLoader', function ()
     {
         const loader = new Loader();
 
+        loader.use(BitmapFontLoader.use);
         loader.add(path.join(this.resources, 'split_font.fnt'));
         loader.load(() =>
         {
@@ -340,7 +343,7 @@ describe('PIXI.BitmapFontLoader', function ()
             expect(font).to.be.an.object;
             expect(BitmapText.fonts.split_font).to.equal(font);
             expect(font).to.have.property('chars');
-            const charA = font.chars['A'.charCodeAt(0) || 65];
+            const charA = font.chars['A'.charCodeAt(0)];
 
             expect(charA).to.exist;
             let src = charA.texture.baseTexture.resource.url;
@@ -351,7 +354,7 @@ describe('PIXI.BitmapFontLoader', function ()
             expect(charA.texture.frame.y).to.equal(2);
             expect(charA.texture.frame.width).to.equal(19);
             expect(charA.texture.frame.height).to.equal(20);
-            const charB = font.chars['B'.charCodeAt(0) || 66];
+            const charB = font.chars['B'.charCodeAt(0)];
 
             expect(charB).to.exist;
             src = charB.texture.baseTexture.resource.url;
@@ -362,7 +365,7 @@ describe('PIXI.BitmapFontLoader', function ()
             expect(charB.texture.frame.y).to.equal(24);
             expect(charB.texture.frame.width).to.equal(15);
             expect(charB.texture.frame.height).to.equal(20);
-            const charC = font.chars['C'.charCodeAt(0) || 67];
+            const charC = font.chars['C'.charCodeAt(0)];
 
             expect(charC).to.exist;
             src = charC.texture.baseTexture.resource.url;
@@ -373,7 +376,7 @@ describe('PIXI.BitmapFontLoader', function ()
             expect(charC.texture.frame.y).to.equal(2);
             expect(charC.texture.frame.width).to.equal(18);
             expect(charC.texture.frame.height).to.equal(20);
-            const charD = font.chars['D'.charCodeAt(0) || 68];
+            const charD = font.chars['D'.charCodeAt(0)];
 
             expect(charD).to.exist;
             src = charD.texture.baseTexture.resource.url;
@@ -384,9 +387,54 @@ describe('PIXI.BitmapFontLoader', function ()
             expect(charD.texture.frame.y).to.equal(24);
             expect(charD.texture.frame.width).to.equal(17);
             expect(charD.texture.frame.height).to.equal(20);
-            const charE = font.chars['E'.charCodeAt(0) || 69];
+            const charE = font.chars['E'.charCodeAt(0)];
 
             expect(charE).to.be.undefined;
+            done();
+        });
+    });
+
+    it('should split fonts if page IDs are in chronological order', function (done)
+    {
+        const loader = new Loader();
+
+        loader.use(BitmapFontLoader.use);
+        loader.add(path.join(this.resources, 'split_font2.fnt'));
+        loader.load(() =>
+        {
+            const page0 = path.join(this.resources, 'split_font_ab.png');
+            const page1 = path.join(this.resources, 'split_font_cd.png');
+
+            expect(loader.resources[page0].metadata.pageFile).to.equal('split_font_ab.png');
+            expect(loader.resources[page1].metadata.pageFile).to.equal('split_font_cd.png');
+
+            const font = BitmapText.fonts.split_font2;
+            const charA = font.chars['A'.charCodeAt(0)];
+            const charC = font.chars['C'.charCodeAt(0)];
+
+            expect(charA.page).to.equal('0');
+            expect(charC.page).to.equal('1');
+            expect(charA.texture.baseTexture.resource.url).to.equal(page0);
+            expect(charC.texture.baseTexture.resource.url).to.equal(page1);
+
+            done();
+        });
+    });
+
+    it('should register bitmap font with side-loaded image', function (done)
+    {
+        const loader = new Loader();
+        const imagePath = path.join(this.resources, 'font.png');
+        const fontPath = path.join(this.resources, 'font.fnt');
+
+        loader.add('image', imagePath);
+        loader.add('font', fontPath);
+        loader.load(() =>
+        {
+            expect(Object.values(loader.resources).length).to.equal(2);
+            expect(loader.resources.image.url).to.equal(imagePath);
+            expect(loader.resources.font.url).to.equal(fontPath);
+
             done();
         });
     });

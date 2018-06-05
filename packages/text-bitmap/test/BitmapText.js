@@ -1,7 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const { BitmapText } = require('../');
-const { Texture, BaseTexture } = require('@pixi/core');
+const { Texture } = require('@pixi/core');
 
 describe('PIXI.BitmapText', function ()
 {
@@ -29,76 +29,96 @@ describe('PIXI.BitmapText', function ()
 
         this.resources = path.join(__dirname, 'resources');
         Promise.all([
-            loadXML('font1.fnt'),
-            loadImage('font1.png'),
+            loadXML('font.fnt'),
+            loadXML('font-no-page.fnt'),
+            loadImage('font.png'),
         ]).then(([
             fontXML,
+            font2XML,
             fontImage,
         ]) =>
         {
             this.fontXML = fontXML;
+            this.font2XML = font2XML;
             this.fontImage = fontImage;
-            const texture = new Texture(new BaseTexture(this.fontImage, null, 1));
-
-            this.font = BitmapText.registerFont(this.fontXML, texture);
             done();
         });
     });
 
-    describe('text', function ()
+    after(function ()
     {
-        it('should render text even if there are unsupported characters', function ()
-        {
-            const text = new BitmapText('ABCDEFG', {
-                font: this.font.font,
-            });
+        this.texture.destroy(true);
+        this.texture = null;
+        this.font = null;
+        this.font2 = null;
+    });
 
-            expect(text.children.length).to.equal(4);
+    it('should register fonts from preloaded images', function ()
+    {
+        this.texture = Texture.from(this.fontImage);
+        this.font = BitmapText.registerFont(this.fontXML, this.texture);
+        this.font2 = BitmapText.registerFont(this.font2XML, this.texture);
+    });
+    it('should render text even if there are unsupported characters', function ()
+    {
+        const text = new BitmapText('ABCDEFG', {
+            font: this.font.font,
         });
-        it('should break line on space', function ()
-        {
-            const bmpText = new BitmapText('', {
-                font: this.font.font,
-                size: 24,
-            });
 
-            bmpText.maxWidth = 40;
-            bmpText.text = 'A A A A A A A ';
+        expect(text.children.length).to.equal(4);
+    });
+    it('should support font without page reference', function ()
+    {
+        const text = new BitmapText('A', {
+            font: this.font2.font,
+        });
+
+        expect(text.children[0].width).to.equal(19);
+        expect(text.children[0].height).to.equal(20);
+    });
+    it('should break line on space', function ()
+    {
+        const bmpText = new BitmapText('', {
+            font: this.font.font,
+            size: 24,
+        });
+
+        bmpText.maxWidth = 40;
+        bmpText.text = 'A A A A A A A ';
+        bmpText.updateText();
+
+        expect(bmpText.textWidth).to.lessThan(bmpText.maxWidth);
+
+        bmpText.maxWidth = 40;
+        bmpText.text = 'A A A A A A A';
+        bmpText.updateText();
+
+        expect(bmpText.textWidth).to.lessThan(bmpText.maxWidth);
+    });
+    it('letterSpacing should add extra space between characters', function ()
+    {
+        const text = 'ABCD zz DCBA';
+        const bmpText = new BitmapText(text, {
+            font: this.font.font,
+        });
+        const positions = [];
+        const renderedChars = bmpText.children.length;
+
+        for (let x = 0; x < renderedChars; ++x)
+        {
+            positions.push(bmpText.children[x].x);
+        }
+        for (let space = 1; space < 20; ++space)
+        {
+            bmpText.letterSpacing = space;
             bmpText.updateText();
+            let prevPos = bmpText.children[0].x;
 
-            expect(bmpText.textWidth).to.lessThan(bmpText.maxWidth);
-
-            bmpText.maxWidth = 40;
-            bmpText.text = 'A A A A A A A';
-            bmpText.updateText();
-
-            expect(bmpText.textWidth).to.lessThan(bmpText.maxWidth);
-        });
-        it('letterSpacing should add extra space between characters', function ()
-        {
-            const text = 'ABCD zz DCBA';
-            const bmpText = new BitmapText(text, {
-                font: this.font.font,
-            });
-            const positions = [];
-            const renderedChars = bmpText.children.length;
-
-            for (let x = 0; x < renderedChars; ++x)
+            for (let char = 1; char < renderedChars; ++char)
             {
-                positions.push(bmpText.children[x].x);
+                expect(bmpText.children[char].x).to.equal(prevPos + space + positions[char] - positions[char - 1]);
+                prevPos = bmpText.children[char].x;
             }
-            for (let space = 1; space < 20; ++space)
-            {
-                bmpText.letterSpacing = space;
-                bmpText.updateText();
-                let prevPos = bmpText.children[0].x;
-
-                for (let char = 1; char < renderedChars; ++char)
-                {
-                    expect(bmpText.children[char].x).to.equal(prevPos + space + positions[char] - positions[char - 1]);
-                    prevPos = bmpText.children[char].x;
-                }
-            }
-        });
+        }
     });
 });
