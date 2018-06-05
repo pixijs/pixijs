@@ -319,7 +319,7 @@ export default class GraphicsGeometry extends Geometry
 
         let lastTexture = null;
         let lastIndex = this.indices.length;
-        
+
         const uvs = this.uvs;
         const colors = this.colors;
 
@@ -327,7 +327,7 @@ export default class GraphicsGeometry extends Geometry
         for (let i = this.shapeIndex; i < this.graphicsData.length; i++)
         {
             this.shapeIndex++;
-          
+
             const data = this.graphicsData[i];
             const command = this.fillCommands[data.type];
 
@@ -354,7 +354,7 @@ export default class GraphicsGeometry extends Geometry
                 lastTexture = lastTexture || nextTexture;
 
                 nextTexture.wrapMode = 10497;
-                
+
                 if (lastTexture !== nextTexture)
                 {
                     const index = this.indices.length;
