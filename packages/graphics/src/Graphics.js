@@ -1,9 +1,21 @@
 import { BLEND_MODES } from '@pixi/constants';
-import { Point } from '@pixi/math';
+import {
+    Circle,
+    Ellipse,
+    PI_2,
+    Point,
+    Polygon,
+    Rectangle,
+    RoundedRectangle,
+} from '@pixi/math';
 import { RawMesh } from '@pixi/mesh';
+import { Texture } from '@pixi/core';
 
+import FillStyle from './styles/FillStyle';
 import GraphicsGeometry from './GraphicsGeometry';
+import LineStyle from './styles/LineStyle';
 import PrimitiveShader from './shaders/PrimitiveShader';
+import bezierCurveTo from './utils/bezierCurveTo';
 
 const tempPoint = new Point();
 
@@ -38,6 +50,19 @@ export default class Graphics extends RawMesh
         this.tint = 0xFFFFFF;
 
         this.blendMode = BLEND_MODES.NORMAL;
+
+        this._fillStyle = null;
+        this._lineStyle = null;
+
+        this.matrix = null;
+
+        /**
+         * Current path
+         *
+         * @member {PIXI.Polygon}
+         * @private
+         */
+        this.currentPoly = null;
 
         /**
          * When cacheAsBitmap is set to true the graphics object will be rendered as if it was a sprite.
@@ -74,18 +99,75 @@ export default class Graphics extends RawMesh
      * @param {number} [alignment=1] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outter)
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    lineStyle(lineWidth = 0, color = 0, alpha = 1, alignment = 0.5)
+    lineStyle(width = 0, color = 0, alpha = 1, alignment = 0.5, native = false)
     {
-        this.geometry.lineStyle(lineWidth, color, alpha, alignment);
+        this.lineTextureStyle(width, Texture.WHITE, color, alpha, null, alignment, native);
+    }
+
+    lineTextureStyle(width = 0, texture, color = 0xFFFFFF, alpha = 1, textureMatrix, alignment = 0.5, native)
+    {
+        if (width === 0 || alpha === 0)
+        {
+            this._lineStyle = null;
+
+            return this;
+        }
+
+        const style = new LineStyle();
+
+        style.color = color;
+        style.width = width;
+        style.alpha = alpha;
+        style.matrix = textureMatrix;
+        style.texture = texture || Texture.WHITE;
+        style.alignment = alignment;
+        style.native = native;
+
+        /*    if (this.currentPath)
+        {
+            if (this.currentPath.shape.points.length)
+            {
+                // halfway through a line? start a new one!
+                const shape = new Polygon(this.currentPath.shape.points.slice(-2));
+
+                shape.closed = false;
+
+                this.drawShape(shape);
+            }
+            else
+            {
+                // otherwise its empty so lets just set the line properties
+                this.currentPath.lineStyle = style;
+            }
+        }
+*/
+        this.finishPoly();
+
+        this._lineStyle = style;
 
         return this;
     }
 
-    lineTextureStyle(width, texture, color, alpha, textureMatrix, alignment)
+    startPoly()
     {
-        this.geometry.lineTextureStyle(width, texture, color, alpha, textureMatrix, alignment);
+        this.currentPoly = new Polygon();
+        this.currentPoly.closed = false;
+    }
 
-        return this;
+    finishPoly()
+    {
+        if (this.currentPoly)
+        {
+            if (this.currentPoly.points.length > 2)
+            {
+                this.drawShape(this.currentPoly);
+                this.currentPoly = null;
+            }
+            else
+            {
+                this.currentPoly.points.length = 0;
+            }
+        }
     }
 
     /**
@@ -97,7 +179,8 @@ export default class Graphics extends RawMesh
      */
     moveTo(x, y)
     {
-        this.geometry.moveTo(x, y);
+        this.startPoly();
+        this.currentPoly.points.push(x, y);
 
         return this;
     }
@@ -112,7 +195,12 @@ export default class Graphics extends RawMesh
      */
     lineTo(x, y)
     {
-        this.geometry.lineTo(x, y);
+        if (!this.currentPoly)
+        {
+            this.moveTo(0, 0);
+        }
+
+        this.currentPoly.points.push(x, y);
 
         return this;
     }
@@ -129,7 +217,43 @@ export default class Graphics extends RawMesh
      */
     quadraticCurveTo(cpX, cpY, toX, toY)
     {
-        this.geometry.quadraticCurveTo(cpX, cpY, toX, toY);
+        if (this.currentPoly)
+        {
+            if (this.currentPoly.points.length === 0)
+            {
+                this.currentPoly.points = [0, 0];
+            }
+        }
+        else
+        {
+            this.moveTo(0, 0);
+        }
+
+        const n = 20;
+        const points = this.currentPoly.points;
+        let xa = 0;
+        let ya = 0;
+
+        if (points.length === 0)
+        {
+            this.moveTo(0, 0);
+        }
+
+        const fromX = points[points.length - 2];
+        const fromY = points[points.length - 1];
+
+        for (let i = 1; i <= n; ++i)
+        {
+            const j = i / n;
+
+            xa = fromX + ((cpX - fromX) * j);
+            ya = fromY + ((cpY - fromY) * j);
+
+            points.push(xa + (((cpX + ((toX - cpX) * j)) - xa) * j),
+                ya + (((cpY + ((toY - cpY) * j)) - ya) * j));
+        }
+
+        this.dirty++;
 
         return this;
     }
@@ -147,7 +271,28 @@ export default class Graphics extends RawMesh
      */
     bezierCurveTo(cpX, cpY, cpX2, cpY2, toX, toY)
     {
-        this.geometry.bezierCurveTo(cpX, cpY, cpX2, cpY2, toX, toY);
+        if (this.currentPoly)
+        {
+            if (this.currentPoly.points.length === 0)
+            {
+                this.currentPoly.points = [0, 0];
+            }
+        }
+        else
+        {
+            this.moveTo(0, 0);
+        }
+
+        const points = this.currentPoly.points;
+
+        const fromX = points[points.length - 2];
+        const fromY = points[points.length - 1];
+
+        points.length -= 2;
+
+        bezierCurveTo(fromX, fromY, cpX, cpY, cpX2, cpY2, toX, toY, points);
+
+        this.dirty++;
 
         return this;
     }
@@ -166,7 +311,56 @@ export default class Graphics extends RawMesh
      */
     arcTo(x1, y1, x2, y2, radius)
     {
-        this.geometry.arcTo(x1, y1, x2, y2, radius);
+        if (this.currentPoly)
+        {
+            if (this.currentPoly.points.length === 0)
+            {
+                this.currentPoly.points = [x1, y1];
+            }
+        }
+        else
+        {
+            this.moveTo(x1, y1);
+        }
+
+        const points = this.currentPath.points;
+        const fromX = points[points.length - 2];
+        const fromY = points[points.length - 1];
+        const a1 = fromY - y1;
+        const b1 = fromX - x1;
+        const a2 = y2 - y1;
+        const b2 = x2 - x1;
+        const mm = Math.abs((a1 * b2) - (b1 * a2));
+
+        if (mm < 1.0e-8 || radius === 0)
+        {
+            if (points[points.length - 2] !== x1 || points[points.length - 1] !== y1)
+            {
+                points.push(x1, y1);
+            }
+        }
+        else
+        {
+            const dd = (a1 * a1) + (b1 * b1);
+            const cc = (a2 * a2) + (b2 * b2);
+            const tt = (a1 * a2) + (b1 * b2);
+            const k1 = radius * Math.sqrt(dd) / mm;
+            const k2 = radius * Math.sqrt(cc) / mm;
+            const j1 = k1 * tt / dd;
+            const j2 = k2 * tt / cc;
+            const cx = (k1 * b2) + (k2 * b1);
+            const cy = (k1 * a2) + (k2 * a1);
+            const px = b1 * (k2 + j1);
+            const py = a1 * (k2 + j1);
+            const qx = b2 * (k1 + j2);
+            const qy = a2 * (k1 + j2);
+            const startAngle = Math.atan2(py - cy, px - cx);
+            const endAngle = Math.atan2(qy - cy, qx - cx);
+
+            this.arc(cx + x1, cy + y1, radius, startAngle, endAngle, b1 * a2 > b2 * a1);
+        }
+
+        this.dirty++;
 
         return this;
     }
@@ -187,7 +381,75 @@ export default class Graphics extends RawMesh
      */
     arc(cx, cy, radius, startAngle, endAngle, anticlockwise = false)
     {
-        this.geometry.arc(cx, cy, radius, startAngle, endAngle, anticlockwise);
+        if (startAngle === endAngle)
+        {
+            return this;
+        }
+
+        if (!anticlockwise && endAngle <= startAngle)
+        {
+            endAngle += PI_2;
+        }
+        else if (anticlockwise && startAngle <= endAngle)
+        {
+            startAngle += PI_2;
+        }
+
+        const sweep = endAngle - startAngle;
+        const segs = Math.ceil(Math.abs(sweep) / PI_2) * 40;
+
+        if (sweep === 0)
+        {
+            return this;
+        }
+
+        const startX = cx + (Math.cos(startAngle) * radius);
+        const startY = cy + (Math.sin(startAngle) * radius);
+
+        // If the currentPath exists, take its points. Otherwise call `moveTo` to start a path.
+        let points = this.currentPoly ? this.currentPoly.points : null;
+
+        if (points)
+        {
+            if (points[points.length - 2] !== startX || points[points.length - 1] !== startY)
+            {
+                points.push(startX, startY);
+            }
+        }
+        else
+        {
+            this.moveTo(startX, startY);
+            points = this.currentPoly.points;
+        }
+
+        const theta = sweep / (segs * 2);
+        const theta2 = theta * 2;
+
+        const cTheta = Math.cos(theta);
+        const sTheta = Math.sin(theta);
+
+        const segMinus = segs - 1;
+
+        const remainder = (segMinus % 1) / segMinus;
+
+        for (let i = 0; i <= segMinus; ++i)
+        {
+            const real = i + (remainder * i);
+
+            const angle = ((theta) + startAngle + (theta2 * real));
+
+            const c = Math.cos(angle);
+            const s = -Math.sin(angle);
+
+            points.push(
+                (((cTheta * c) + (sTheta * s)) * radius) + cx,
+                (((cTheta * -s) + (sTheta * c)) * radius) + cy
+            );
+        }
+
+        this.dirty++;
+
+        return this;
     }
 
     /**
@@ -198,16 +460,35 @@ export default class Graphics extends RawMesh
      * @param {number} [alpha=1] - the alpha of the fill
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    beginFill(color = 0, alpha = 1, texture, textureMatrix)
+    beginFill(color = 0, alpha = 1)
     {
-        this.geometry.beginFill(color, alpha, texture, textureMatrix);
+        this.beginTextureFill(null, color, alpha);
 
         return this;
     }
 
-    beginTextureFill(texture, color, alpha, textureMatrix)
+    beginTextureFill(texture, color = 0xFFFFFF, alpha = 1, textureMatrix)
     {
-        this.geometry.beginTextureFill(texture, color, alpha, textureMatrix);
+        if (alpha === 0)
+        {
+            this._fillStyle = null;
+
+            return this;
+        }
+
+        const style = new FillStyle();
+
+        style.color = color;
+        style.alpha = alpha;
+        style.texture = texture || Texture.WHITE;
+        style.matrix = textureMatrix;
+
+        if (this.currentPoly)
+        {
+            this.finishPoly();
+        }
+
+        this._fillStyle = style;
 
         return this;
     }
@@ -219,7 +500,9 @@ export default class Graphics extends RawMesh
      */
     endFill()
     {
-        this.geometry.endFill();
+        this.finishPoly();
+
+        this._fillStyle = null;
 
         return this;
     }
@@ -234,7 +517,7 @@ export default class Graphics extends RawMesh
      */
     drawRect(x, y, width, height)
     {
-        this.geometry.drawRect(x, y, width, height);
+        this.drawShape(new Rectangle(x, y, width, height));
 
         return this;
     }
@@ -250,7 +533,7 @@ export default class Graphics extends RawMesh
      */
     drawRoundedRect(x, y, width, height, radius)
     {
-        this.geometry.drawRoundedRect(x, y, width, height, radius);
+        this.drawShape(new RoundedRectangle(x, y, width, height, radius));
 
         return this;
     }
@@ -265,7 +548,7 @@ export default class Graphics extends RawMesh
      */
     drawCircle(x, y, radius)
     {
-        this.geometry.drawCircle(x, y, radius);
+        this.drawShape(new Circle(x, y, radius));
 
         return this;
     }
@@ -281,7 +564,7 @@ export default class Graphics extends RawMesh
      */
     drawEllipse(x, y, width, height)
     {
-        this.geometry.drawEllipse(x, y, width, height);
+        this.drawShape(new Ellipse(x, y, width, height));
 
         return this;
     }
@@ -294,9 +577,53 @@ export default class Graphics extends RawMesh
      */
     drawPolygon(path)
     {
-        this.geometry.drawPolygon(path);
+        // prevents an argument assignment deopt
+        // see section 3.1: https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#3-managing-arguments
+        let points = path;
+
+        let closed = true;// !!this._fillStyle;
+
+        if (points instanceof Polygon)
+        {
+            closed = points.closed;
+            points = points.points;
+        }
+
+        if (!Array.isArray(points))
+        {
+            // prevents an argument leak deopt
+            // see section 3.2: https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#3-managing-arguments
+            points = new Array(arguments.length);
+
+            for (let i = 0; i < points.length; ++i)
+            {
+                points[i] = arguments[i]; // eslint-disable-line prefer-rest-params
+            }
+        }
+
+        const shape = new Polygon(points);
+
+        shape.closed = closed;
+
+        this.drawShape(shape);
 
         return this;
+    }
+
+    drawShape(shape)
+    {
+        if (!this.holeMode)
+        {
+            this.geometry.drawShape(shape,
+                this._fillStyle,
+                this._lineStyle,
+                this.matrix);
+        }
+        else
+        {
+            this.geometry.drawHole(shape,
+                this.matrix);
+        }
     }
 
     /**
@@ -312,7 +639,25 @@ export default class Graphics extends RawMesh
      */
     drawStar(x, y, points, radius, innerRadius, rotation = 0)
     {
-        this.geometry.drawStar(x, y, points, radius, innerRadius, rotation);
+        innerRadius = innerRadius || radius / 2;
+
+        const startAngle = (-1 * Math.PI / 2) + rotation;
+        const len = points * 2;
+        const delta = PI_2 / len;
+        const polygon = [];
+
+        for (let i = 0; i < len; i++)
+        {
+            const r = i % 2 ? innerRadius : radius;
+            const angle = (i * delta) + startAngle;
+
+            polygon.push(
+                x + (r * Math.cos(angle)),
+                y + (r * Math.sin(angle))
+            );
+        }
+
+        this.drawPolygon(polygon);
 
         return this;
     }
@@ -353,6 +698,8 @@ export default class Graphics extends RawMesh
     _render(renderer)
     {
         renderer.batch.flush();
+
+        this.finishPoly();
 
         const geometry = this.geometry;
 
@@ -410,13 +757,6 @@ export default class Graphics extends RawMesh
     }
 
     /**
-     * Draws the given shape to this Graphics object. Can be any of Circle, Rectangle, Ellipse, Line or Polygon.
-     *
-     * @param {PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.Rectangle|PIXI.RoundedRectangle} shape - The shape object to draw.
-     * @return {PIXI.GraphicsData} The generated GraphicsData object.
-     */
-
-    /**
      * Closes the current path.
      *
      * @return {PIXI.Graphics} Returns itself.
@@ -424,7 +764,12 @@ export default class Graphics extends RawMesh
     closePath()
     {
         // ok so close path assumes next one is a hole!
-        this.geometry.closePath();
+        const currentPath = this.currentPath;
+
+        if (currentPath && currentPath.shape)
+        {
+            currentPath.shape.close();
+        }
 
         return this;
     }
@@ -443,21 +788,29 @@ export default class Graphics extends RawMesh
 
     setMatrix(matrix)
     {
-        this.geometry.setMatrix(matrix);
+        this.matrix = matrix;
 
         return this;
     }
 
+    /**
+     * Begin adding holes to the last draw shape
+     * IMPORTANT: holes must be fully inside a shape to work
+     * Also weirdness ensues if holes overlap!
+     */
     beginHole()
     {
-        this.geometry.beginHole();
+        this.holeMode = true;
 
         return this;
     }
 
+    /**
+     * End adding holes to the last draw shape
+     */
     endHole()
     {
-        this.geometry.endHole();
+        this.holeMode = false;
 
         return this;
     }
