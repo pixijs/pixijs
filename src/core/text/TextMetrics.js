@@ -248,7 +248,7 @@ export default class TextMetrics
 
                     const isLastToken = i === tokens.length - 1;
 
-					// give it its own line if it's not the end
+                    // give it its own line if it's not the end
                     lines += TextMetrics.addLine(token, !isLastToken);
                     canPrependSpaces = false;
                     line = '';
