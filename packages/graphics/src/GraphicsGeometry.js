@@ -136,7 +136,8 @@ export default class GraphicsGeometry extends Geometry
             this.dirty++;
             this.clearDirty++;
             this.graphicsData.length = 0;
-
+            this.shapeIndex = 0;
+            
             this.drawCalls.length = 0;
 
             this.points.length = 0;
