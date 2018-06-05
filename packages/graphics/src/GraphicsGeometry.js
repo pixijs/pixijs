@@ -266,7 +266,7 @@ export default class GraphicsGeometry extends Geometry
         {
             const data = graphicsData[i];
 
-            if (!data.fill)
+            if (!data.fillStyle)
             {
                 continue;
             }
