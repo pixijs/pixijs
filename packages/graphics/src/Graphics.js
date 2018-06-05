@@ -834,19 +834,30 @@ export default class Graphics extends RawMesh
 
         this.shader.uniforms.translationMatrix = this.transform.worldTransform.toArray(true);
 
-        // bind and sync uniforms..
-        // there is a way to optimise this..
-        renderer.shader.bind(this.shader);
+        
 
-        // then render it
-        renderer.geometry.bind(geometry, this.shader);
-
-        // set state..
-        renderer.state.setState(this.state);
-
-        if (geometry.drawCalls)
+        if (geometry.drawCalls.length)
         {
-            for (let i = 0; i < geometry.drawCalls.length; i++)
+            // the first draw call, we can set the uniforms of the shader directly here.
+            const firstCall = geometry.drawCalls[0];
+            
+            // this means that we can tack advantage of the sync function of pixi!
+            this.shader.uniforms.uSampler = firstCall.texture;
+
+            // bind and sync uniforms..
+            // there is a way to optimise this..
+            renderer.shader.bind(this.shader);
+
+            // then render it
+            renderer.geometry.bind(geometry, this.shader);
+
+            // set state..
+            renderer.state.setState(this.state);
+
+            renderer.geometry.draw(firstCall.type, firstCall.size, firstCall.start);
+            
+            // then render the rest of them...
+            for (let i = 1; i < geometry.drawCalls.length; i++)
             {
                 const drawCall = geometry.drawCalls[i];
 
