@@ -91,6 +91,8 @@ export default class GraphicsGeometry extends Geometry
 
         this.drawCalls = [];
 
+        this.shapeIndex = 0;
+
         this.fillCommands = {};
 
         this.fillCommands[SHAPES.POLY] = buildPoly;
@@ -316,14 +318,16 @@ export default class GraphicsGeometry extends Geometry
         this.dirty = this.cacheDirty;
 
         let lastTexture = null;
-        let lastIndex = 0;
-
-        const uvs = [];
-        const colors = [];
+        let lastIndex = this.indices.length;
+        
+        const uvs = this.uvs;
+        const colors = this.colors;
 
         // TODO - this can be simplified
-        for (let i = 0; i < this.graphicsData.length; i++)
+        for (let i = this.shapeIndex; i < this.graphicsData.length; i++)
         {
+            this.shapeIndex++;
+          
             const data = this.graphicsData[i];
             const command = this.fillCommands[data.type];
 
@@ -350,7 +354,7 @@ export default class GraphicsGeometry extends Geometry
                 lastTexture = lastTexture || nextTexture;
 
                 nextTexture.wrapMode = 10497;
-
+                
                 if (lastTexture !== nextTexture)
                 {
                     const index = this.indices.length;
