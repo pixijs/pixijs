@@ -834,13 +834,11 @@ export default class Graphics extends RawMesh
 
         this.shader.uniforms.translationMatrix = this.transform.worldTransform.toArray(true);
 
-        
-
         if (geometry.drawCalls.length)
         {
             // the first draw call, we can set the uniforms of the shader directly here.
             const firstCall = geometry.drawCalls[0];
-            
+
             // this means that we can tack advantage of the sync function of pixi!
             this.shader.uniforms.uSampler = firstCall.texture;
 
@@ -855,7 +853,7 @@ export default class Graphics extends RawMesh
             renderer.state.setState(this.state);
 
             renderer.geometry.draw(firstCall.type, firstCall.size, firstCall.start);
-            
+
             // then render the rest of them...
             for (let i = 1; i < geometry.drawCalls.length; i++)
             {
