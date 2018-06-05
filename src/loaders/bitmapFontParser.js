@@ -67,47 +67,56 @@ export default function ()
         }
 
         const pages = resource.data.getElementsByTagName('page');
-        const textures = [];
+        const textures = {};
 
         // Handle completed, when the number of textures
         // load is the same number as references in the fnt file
-        const completed = () =>
+        const completed = (page) =>
         {
-            if (textures.length === pages.length)
+            textures[page.metadata.pageFile] = page.texture;
+
+            if (Object.keys(textures).length === pages.length)
             {
                 parse(resource, textures);
                 next();
             }
         };
 
-        // Standard loading options for images
-        const loadOptions = {
-            crossOrigin: resource.crossOrigin,
-            loadType: Resource.LOAD_TYPE.IMAGE,
-            metadata: resource.metadata.imageMetadata,
-            parentResource: resource,
-        };
-
         for (let i = 0; i < pages.length; ++i)
         {
-            const url = xmlUrl + pages[i].getAttribute('file');
+            const pageFile = pages[i].getAttribute('file');
+            const url = xmlUrl + pageFile;
+            let exists = false;
+
+            // incase the image is loaded outside
+            // using the same loader, resource will be available
+            for (const name in this.resources)
+            {
+                if (this.resources[name].url === url)
+                {
+                    this.resources[name].metadata.pageFile = pageFile;
+                    completed(this.resources[name]);
+                    exists = true;
+                    break;
+                }
+            }
 
             // texture is not loaded, we'll attempt to add
             // it to the load and add the texture to the list
-            if (!this.resources[url])
+            if (!exists)
             {
-                this.add(url, loadOptions, (resource) =>
-                {
-                    textures.push(resource.texture);
-                    completed();
-                });
-            }
-            else
-            {
-                // incase the image is loaded outside
-                // using the same loader, texture will be available
-                textures.push(this.resources[url].texture);
-                completed();
+                // Standard loading options for images
+                const options = {
+                    crossOrigin: resource.crossOrigin,
+                    loadType: Resource.LOAD_TYPE.IMAGE,
+                    metadata: Object.assign(
+                        { pageFile },
+                        resource.metadata.imageMetadata
+                    ),
+                    parentResource: resource,
+                };
+
+                this.add(url, options, completed);
             }
         }
     };
