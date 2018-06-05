@@ -16,8 +16,9 @@ import { removeItems, getResolutionOfUrl } from '@pixi/utils';
  * let bitmapText = new PIXI.BitmapText("text using a fancy font!", {font: "35px Desyrel", align: "right"});
  * ```
  *
- * http://www.angelcode.com/products/bmfont/ for windows or
- * http://www.bmglyph.com/ for mac.
+ * http://www.angelcode.com/products/bmfont/ for Windows or
+ *
+ * http://www.bmglyph.com/ for Mac.
  *
  * @class
  * @extends PIXI.Container
@@ -26,15 +27,15 @@ import { removeItems, getResolutionOfUrl } from '@pixi/utils';
 export default class BitmapText extends Container
 {
     /**
-     * @param {string} text - The copy that you would like the text to display
-     * @param {object} style - The style parameters
+     * @param {string} text - A string that you would like the text to display.
+     * @param {object} style - The style parameters.
      * @param {string|object} style.font - The font descriptor for the object, can be passed as a string of form
      *      "24px FontName" or "FontName" or as an object with explicit name/size properties.
-     * @param {string} [style.font.name] - The bitmap font id
+     * @param {string} [style.font.name] - The bitmap font id.
      * @param {number} [style.font.size] - The size of the font in pixels, e.g. 24
      * @param {string} [style.align='left'] - Alignment for multiline text ('left', 'center' or 'right'), does not affect
-     *      single line text
-     * @param {number} [style.tint=0xFFFFFF] - The tint color
+     *      single line text.
+     * @param {number} [style.tint=0xFFFFFF] - The tint color.
      */
     constructor(text, style = {})
     {
@@ -113,6 +114,13 @@ export default class BitmapText extends Container
         this._maxLineHeight = 0;
 
         /**
+         * Letter spacing. This is useful for setting the space between characters.
+         * @member {number}
+         * @private
+         */
+        this._letterSpacing = 0;
+
+        /**
          * Text anchor. read-only
          *
          * @member {PIXI.ObservablePoint}
@@ -142,48 +150,36 @@ export default class BitmapText extends Container
         const pos = new Point();
         const chars = [];
         const lineWidths = [];
+        const text = this.text.replace(/(?:\r\n|\r)/g, '\n');
+        const textLength = text.length;
+        const maxWidth = this._maxWidth * data.size / this._font.size;
 
         let prevCharCode = null;
         let lastLineWidth = 0;
         let maxLineWidth = 0;
         let line = 0;
-        let lastSpace = -1;
-        let lastSpaceWidth = 0;
+        let lastBreakPos = -1;
+        let lastBreakWidth = 0;
         let spacesRemoved = 0;
         let maxLineHeight = 0;
 
-        for (let i = 0; i < this.text.length; i++)
+        for (let i = 0; i < textLength; i++)
         {
-            const charCode = this.text.charCodeAt(i);
+            const charCode = text.charCodeAt(i);
+            const char = text.charAt(i);
 
-            if (/(\s)/.test(this.text.charAt(i)))
+            if (/(?:\s)/.test(char))
             {
-                lastSpace = i;
-                lastSpaceWidth = lastLineWidth;
+                lastBreakPos = i;
+                lastBreakWidth = lastLineWidth;
             }
 
-            if (/(?:\r\n|\r|\n)/.test(this.text.charAt(i)))
+            if (char === '\r' || char === '\n')
             {
                 lineWidths.push(lastLineWidth);
                 maxLineWidth = Math.max(maxLineWidth, lastLineWidth);
-                line++;
-
-                pos.x = 0;
-                pos.y += data.lineHeight;
-                prevCharCode = null;
-                continue;
-            }
-
-            if (lastSpace !== -1 && this._maxWidth > 0 && pos.x * scale > this._maxWidth)
-            {
-                removeItems(chars, lastSpace - spacesRemoved, i - lastSpace);
-                i = lastSpace;
-                lastSpace = -1;
+                ++line;
                 ++spacesRemoved;
-
-                lineWidths.push(lastSpaceWidth);
-                maxLineWidth = Math.max(maxLineWidth, lastSpaceWidth);
-                line++;
 
                 pos.x = 0;
                 pos.y += data.lineHeight;
@@ -207,16 +203,42 @@ export default class BitmapText extends Container
                 texture: charData.texture,
                 line,
                 charCode,
-                position: new Point(pos.x + charData.xOffset, pos.y + charData.yOffset),
+                position: new Point(pos.x + charData.xOffset + (this._letterSpacing / 2), pos.y + charData.yOffset),
             });
-            lastLineWidth = pos.x + (charData.texture.width + charData.xOffset);
-            pos.x += charData.xAdvance;
+            pos.x += charData.xAdvance + this._letterSpacing;
+            lastLineWidth = pos.x;
             maxLineHeight = Math.max(maxLineHeight, (charData.yOffset + charData.texture.height));
             prevCharCode = charCode;
+
+            if (lastBreakPos !== -1 && maxWidth > 0 && pos.x > maxWidth)
+            {
+                ++spacesRemoved;
+                removeItems(chars, 1 + lastBreakPos - spacesRemoved, 1 + i - lastBreakPos);
+                i = lastBreakPos;
+                lastBreakPos = -1;
+
+                lineWidths.push(lastBreakWidth);
+                maxLineWidth = Math.max(maxLineWidth, lastBreakWidth);
+                line++;
+
+                pos.x = 0;
+                pos.y += data.lineHeight;
+                prevCharCode = null;
+            }
         }
 
-        lineWidths.push(lastLineWidth);
-        maxLineWidth = Math.max(maxLineWidth, lastLineWidth);
+        const lastChar = text.charAt(text.length - 1);
+
+        if (lastChar !== '\r' && lastChar !== '\n')
+        {
+            if (/(?:\s)/.test(lastChar))
+            {
+                lastLineWidth = lastBreakWidth;
+            }
+
+            lineWidths.push(lastLineWidth);
+            maxLineWidth = Math.max(maxLineWidth, lastLineWidth);
+        }
 
         const lineAlignOffsets = [];
 
@@ -323,7 +345,7 @@ export default class BitmapText extends Container
     }
 
     /**
-     * The tint of the BitmapText object
+     * The tint of the BitmapText object.
      *
      * @member {number}
      */
@@ -340,7 +362,7 @@ export default class BitmapText extends Container
     }
 
     /**
-     * The alignment of the BitmapText object
+     * The alignment of the BitmapText object.
      *
      * @member {string}
      * @default 'left'
@@ -359,9 +381,12 @@ export default class BitmapText extends Container
 
     /**
      * The anchor sets the origin point of the text.
-     * The default is 0,0 this means the text's origin is the top left
-     * Setting the anchor to 0.5,0.5 means the text's origin is centered
-     * Setting the anchor to 1,1 would mean the text's origin point will be the bottom right corner
+     *
+     * The default is `(0,0)`, this means the text's origin is the top left.
+     *
+     * Setting the anchor to `(0.5,0.5)` means the text's origin is centered.
+     *
+     * Setting the anchor to `(1,1)` would mean the text's origin point will be the bottom right corner.
      *
      * @member {PIXI.Point | number}
      */
@@ -383,7 +408,7 @@ export default class BitmapText extends Container
     }
 
     /**
-     * The font descriptor of the BitmapText object
+     * The font descriptor of the BitmapText object.
      *
      * @member {string|object}
      */
@@ -416,7 +441,7 @@ export default class BitmapText extends Container
     }
 
     /**
-     * The text of the BitmapText object
+     * The text of the BitmapText object.
      *
      * @member {string}
      */
@@ -439,7 +464,7 @@ export default class BitmapText extends Container
     /**
      * The max width of this bitmap text in pixels. If the text provided is longer than the
      * value provided, line breaks will be automatically inserted in the last whitespace.
-     * Disable by setting value to 0
+     * Disable by setting the value to 0.
      *
      * @member {number}
      */
@@ -460,7 +485,7 @@ export default class BitmapText extends Container
 
     /**
      * The max line height. This is useful when trying to use the total height of the Text,
-     * ie: when trying to vertically align.
+     * i.e. when trying to vertically align.
      *
      * @member {number}
      * @readonly
@@ -474,7 +499,7 @@ export default class BitmapText extends Container
 
     /**
      * The width of the overall text, different from fontSize,
-     * which is defined in the style object
+     * which is defined in the style object.
      *
      * @member {number}
      * @readonly
@@ -487,8 +512,27 @@ export default class BitmapText extends Container
     }
 
     /**
+     * Additional space between characters.
+     *
+     * @member {number}
+     */
+    get letterSpacing()
+    {
+        return this._letterSpacing;
+    }
+
+    set letterSpacing(value) // eslint-disable-line require-jsdoc
+    {
+        if (this._letterSpacing !== value)
+        {
+            this._letterSpacing = value;
+            this.dirty = true;
+        }
+    }
+
+    /**
      * The height of the overall text, different from fontSize,
-     * which is defined in the style object
+     * which is defined in the style object.
      *
      * @member {number}
      * @readonly
@@ -505,10 +549,10 @@ export default class BitmapText extends Container
      *
      * @static
      * @param {XMLDocument} xml - The XML document data.
-     * @param {PIXI.Texture} texture - Texture with all symbols.
+     * @param {PIXI.Texture|PIXI.Texture[]} textures - List of textures for each page.
      * @return {Object} Result font object with font, size, lineHeight and char fields.
      */
-    static registerFont(xml, texture)
+    static registerFont(xml, textures)
     {
         const data = {};
         const info = xml.getElementsByTagName('info')[0];
@@ -520,29 +564,44 @@ export default class BitmapText extends Container
         data.size = parseInt(info.getAttribute('size'), 10);
         data.lineHeight = parseInt(common.getAttribute('lineHeight'), 10) / res;
         data.chars = {};
+        if (!(textures instanceof Array))
+        {
+            textures = [textures];
+        }
 
         // parse letters
         const letters = xml.getElementsByTagName('char');
+        let page;
 
         for (let i = 0; i < letters.length; i++)
         {
             const letter = letters[i];
             const charCode = parseInt(letter.getAttribute('id'), 10);
+            let textureRect;
 
-            const textureRect = new Rectangle(
-                (parseInt(letter.getAttribute('x'), 10) / res) + (texture.frame.x / res),
-                (parseInt(letter.getAttribute('y'), 10) / res) + (texture.frame.y / res),
-                parseInt(letter.getAttribute('width'), 10) / res,
-                parseInt(letter.getAttribute('height'), 10) / res
-            );
+            page = parseInt(letter.getAttribute('page'), 10);
+            if (isNaN(page))
+            {
+                textureRect = new Rectangle(0, 0, 0, 0);
+                page = 0;
+            }
+            else
+            {
+                textureRect = new Rectangle(
+                    (parseInt(letter.getAttribute('x'), 10) / res) + (textures[page].frame.x / res),
+                    (parseInt(letter.getAttribute('y'), 10) / res) + (textures[page].frame.y / res),
+                    parseInt(letter.getAttribute('width'), 10) / res,
+                    parseInt(letter.getAttribute('height'), 10) / res
+                );
+            }
 
             data.chars[charCode] = {
                 xOffset: parseInt(letter.getAttribute('xoffset'), 10) / res,
                 yOffset: parseInt(letter.getAttribute('yoffset'), 10) / res,
                 xAdvance: parseInt(letter.getAttribute('xadvance'), 10) / res,
                 kerning: {},
-                texture: new Texture(texture.baseTexture, textureRect),
-
+                texture: new Texture(textures[page].baseTexture, textureRect),
+                page,
             };
         }
 

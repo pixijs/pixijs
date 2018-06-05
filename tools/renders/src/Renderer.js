@@ -11,8 +11,8 @@ class Renderer
 {
     /**
      * @constructor
-     * @param {HTMLCanvasElement} [viewWebGL] Optional canvas element for webgl
-     * @param {HTMLCanvasElement} [viewContext2d] Optional canvas element for context2d
+     * @param {HTMLCanvasElement} [viewWebGL] Optional canvas element for WebGL.
+     * @param {HTMLCanvasElement} [viewContext2d] Optional canvas element for Context2D.
      * @param {HTMLElement} [parentNode] container, defaults to `document.body`
      */
     constructor(viewWebGL, viewContext2d, parentNode)

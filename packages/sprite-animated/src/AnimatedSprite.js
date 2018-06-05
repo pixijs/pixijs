@@ -32,8 +32,8 @@ import { Ticker, UPDATE_PRIORITY } from '@pixi/ticker';
 export default class AnimatedSprite extends Sprite
 {
     /**
-     * @param {PIXI.Texture[]|PIXI.extras.AnimatedSprite~FrameObject[]} textures - an array of {@link PIXI.Texture} or frame
-     *  objects that make up the animation
+     * @param {PIXI.Texture[]|PIXI.extras.AnimatedSprite~FrameObject[]} textures - An array of {@link PIXI.Texture} or frame
+     *  objects that make up the animation.
      * @param {boolean} [autoUpdate=true] - Whether to use PIXI.Ticker.shared to auto update animation time.
      */
     constructor(textures, autoUpdate)
@@ -61,7 +61,7 @@ export default class AnimatedSprite extends Sprite
         this._autoUpdate = autoUpdate !== false;
 
         /**
-         * The speed that the AnimatedSprite will play at. Higher is faster, lower is slower
+         * The speed that the AnimatedSprite will play at. Higher is faster, lower is slower.
          *
          * @member {number}
          * @default 1
@@ -77,28 +77,28 @@ export default class AnimatedSprite extends Sprite
         this.loop = true;
 
         /**
-         * Function to call when a AnimatedSprite finishes playing
+         * Function to call when a AnimatedSprite finishes playing.
          *
          * @member {Function}
          */
         this.onComplete = null;
 
         /**
-         * Function to call when a AnimatedSprite changes which texture is being rendered
+         * Function to call when a AnimatedSprite changes which texture is being rendered.
          *
          * @member {Function}
          */
         this.onFrameChange = null;
 
         /**
-         * Function to call when 'loop' is true, and an AnimatedSprite is played and loops around to start again
+         * Function to call when `loop` is true, and an AnimatedSprite is played and loops around to start again.
          *
          * @member {Function}
          */
         this.onLoop = null;
 
         /**
-         * Elapsed time since animation has been started, used internally to display current texture
+         * Elapsed time since animation has been started, used internally to display current texture.
          *
          * @member {number}
          * @private
@@ -106,7 +106,7 @@ export default class AnimatedSprite extends Sprite
         this._currentTime = 0;
 
         /**
-         * Indicates if the AnimatedSprite is currently playing
+         * Indicates if the AnimatedSprite is currently playing.
          *
          * @member {boolean}
          * @readonly
@@ -115,7 +115,7 @@ export default class AnimatedSprite extends Sprite
     }
 
     /**
-     * Stops the AnimatedSprite
+     * Stops the AnimatedSprite.
      *
      */
     stop()
@@ -133,7 +133,7 @@ export default class AnimatedSprite extends Sprite
     }
 
     /**
-     * Plays the AnimatedSprite
+     * Plays the AnimatedSprite.
      *
      */
     play()
@@ -151,9 +151,9 @@ export default class AnimatedSprite extends Sprite
     }
 
     /**
-     * Stops the AnimatedSprite and goes to a specific frame
+     * Stops the AnimatedSprite and goes to a specific frame.
      *
-     * @param {number} frameNumber - frame index to stop at
+     * @param {number} frameNumber - Frame index to stop at.
      */
     gotoAndStop(frameNumber)
     {
@@ -170,9 +170,9 @@ export default class AnimatedSprite extends Sprite
     }
 
     /**
-     * Goes to a specific frame and begins playing the AnimatedSprite
+     * Goes to a specific frame and begins playing the AnimatedSprite.
      *
-     * @param {number} frameNumber - frame index to start at
+     * @param {number} frameNumber - Frame index to start at.
      */
     gotoAndPlay(frameNumber)
     {
@@ -265,7 +265,7 @@ export default class AnimatedSprite extends Sprite
     }
 
     /**
-     * Updates the displayed texture to match the current frame index
+     * Updates the displayed texture to match the current frame index.
      *
      * @private
      */
@@ -282,14 +282,14 @@ export default class AnimatedSprite extends Sprite
     }
 
     /**
-     * Stops the AnimatedSprite and destroys it
+     * Stops the AnimatedSprite and destroys it.
      *
      * @param {object|boolean} [options] - Options parameter. A boolean will act as if all options
-     *  have been set to that value
-     * @param {boolean} [options.children=false] - if set to true, all the children will have their destroy
+     *  have been set to that value.
+     * @param {boolean} [options.children=false] - If set to true, all the children will have their destroy
      *      method called as well. 'options' will be passed on to those calls.
-     * @param {boolean} [options.texture=false] - Should it destroy the current texture of the sprite as well
-     * @param {boolean} [options.baseTexture=false] - Should it destroy the base texture of the sprite as well
+     * @param {boolean} [options.texture=false] - Should it destroy the current texture of the sprite as well.
+     * @param {boolean} [options.baseTexture=false] - Should it destroy the base texture of the sprite as well.
      */
     destroy(options)
     {
@@ -298,10 +298,10 @@ export default class AnimatedSprite extends Sprite
     }
 
     /**
-     * A short hand way of creating a movieclip from an array of frame ids
+     * A short hand way of creating a movieclip from an array of frame ids.
      *
      * @static
-     * @param {string[]} frames - The array of frames ids the movieclip will use as its texture frames
+     * @param {string[]} frames - The array of frames ids the movieclip will use as its texture frames.
      * @return {AnimatedSprite} The new animated sprite with the specified frames.
      */
     static fromFrames(frames)
@@ -317,10 +317,10 @@ export default class AnimatedSprite extends Sprite
     }
 
     /**
-     * A short hand way of creating a movieclip from an array of image ids
+     * A short hand way of creating a movieclip from an array of image ids.
      *
      * @static
-     * @param {string[]} images - the array of image urls the movieclip will use as its texture frames
+     * @param {string[]} images - The array of image urls the movieclip will use as its texture frames.
      * @return {AnimatedSprite} The new animate sprite with the specified images as frames.
      */
     static fromImages(images)
@@ -336,7 +336,7 @@ export default class AnimatedSprite extends Sprite
     }
 
     /**
-     * totalFrames is the total number of frames in the AnimatedSprite. This is the same as number of textures
+     * The total number of frames in the AnimatedSprite. This is the same as number of textures
      * assigned to the AnimatedSprite.
      *
      * @readonly
@@ -349,7 +349,7 @@ export default class AnimatedSprite extends Sprite
     }
 
     /**
-     * The array of textures used for this AnimatedSprite
+     * The array of textures used for this AnimatedSprite.
      *
      * @member {PIXI.Texture[]}
      */
@@ -381,7 +381,7 @@ export default class AnimatedSprite extends Sprite
     }
 
     /**
-    * The AnimatedSprites current frame index
+    * The AnimatedSprites current frame index.
     *
     * @member {number}
     * @readonly

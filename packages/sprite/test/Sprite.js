@@ -3,6 +3,8 @@ const { Texture, BaseTexture, RenderTexture } = require('@pixi/core');
 const { Container } = require('@pixi/display');
 const { Point } = require('@pixi/math');
 
+const path = require('path');
+
 describe('PIXI.Sprite', function ()
 {
     describe('width', function ()
@@ -123,6 +125,24 @@ describe('PIXI.Sprite', function ()
             const point = new Point(100, 100);
 
             expect(sprite.containsPoint(point)).to.be.false;
+        });
+    });
+
+    describe('destroy', function ()
+    {
+        it('should destroy while BaseTexture is loading', function ()
+        {
+            const texture = Texture.from(path.resolve(__dirname, 'resources', 'building1.png'));
+            const sprite = new Sprite(texture);
+
+            expect(texture._eventsCount).to.equal(1);
+
+            sprite.destroy();
+
+            expect(texture._eventsCount).to.equal(0);
+
+            texture.emit('update', texture);
+            texture.destroy(true);
         });
     });
 });

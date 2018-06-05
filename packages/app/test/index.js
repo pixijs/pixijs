@@ -1,6 +1,6 @@
 const { Application } = require('../');
 const { autoDetectRenderer } = require('@pixi/canvas-renderer');
-const { Container } = require('@pixi/display');
+const { Container, DisplayObject } = require('@pixi/display');
 const { Ticker, UPDATE_PRIORITY } = require('@pixi/ticker');
 const { skipHello } = require('@pixi/utils');
 
@@ -175,6 +175,46 @@ describe('PIXI.Application', function ()
             expect(app.view.style.width).to.equal(this.div.style.width);
             expect(app.view.style.height).to.equal(this.div.style.height);
             app.destroy();
+        });
+    });
+
+    describe('destroy', function ()
+    {
+        it('should not destroy children by default', function (done)
+        {
+            const app = new Application();
+            const stage = app.stage;
+            const child = new DisplayObject();
+
+            stage.addChild(child);
+
+            app.ticker.addOnce(() =>
+            {
+                app.destroy();
+                expect(stage.children.length).to.be.equals(0);
+                expect(child.transform).to.not.be.null;
+
+                done();
+            });
+        });
+
+        it('should allow children destroy', function (done)
+        {
+            const app = new Application();
+            const stage = app.stage;
+            const child = new DisplayObject();
+
+            stage.addChild(child);
+
+            app.ticker.addOnce(() =>
+            {
+                app.destroy(false, true);
+                expect(stage.children.length).to.be.equals(0);
+                expect(stage.transform).to.be.null;
+                expect(child.transform).to.be.null;
+
+                done();
+            });
         });
     });
 });

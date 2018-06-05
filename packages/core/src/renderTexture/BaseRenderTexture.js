@@ -8,7 +8,7 @@ import FrameBuffer from '../framebuffer/FrameBuffer';
  * otherwise black rectangles will be drawn instead.
  *
  * A BaseRenderTexture takes a snapshot of any Display Object given to its render method. The position
- * and rotation of the given Display Objects is ignored. For example:
+ * and rotation of the given Display Objects are ignored. For example:
  *
  * ```js
  * let renderer = PIXI.autoDetectRenderer(1024, 1024, { view: canvas, ratio: 1 });
@@ -23,8 +23,8 @@ import FrameBuffer from '../framebuffer/FrameBuffer';
  * baseRenderTexture.render(sprite);
  * ```
  *
- * The Sprite in this case will be rendered using its local transform. To render this sprite at 0,0
- * you can clear the transform
+ * The Sprite, in this case, will be rendered using its local transform. To render this sprite at (0,0)
+ * you can clear the transform.
  *
  * ```js
  *
@@ -44,10 +44,10 @@ export default class BaseRenderTexture extends BaseTexture
 {
     /**
      * @param {object} [options]
-     * @param {number} [options.width=100] - The width of the base render texture
-     * @param {number} [options.height=100] - The height of the base render texture
-     * @param {PIXI.SCALE_MODES} [options.scaleMode] - See {@link PIXI.SCALE_MODES} for possible values
-     * @param {number} [options.resolution=1] - The resolution / device pixel ratio of the texture being generated
+     * @param {number} [options.width=100] - The width of the base render texture.
+     * @param {number} [options.height=100] - The height of the base render texture.
+     * @param {PIXI.SCALE_MODES} [options.scaleMode] - See {@link PIXI.SCALE_MODES} for possible values.
+     * @param {number} [options.resolution=1] - The resolution / device pixel ratio of the texture being generated.
      */
     constructor(options)
     {
@@ -99,14 +99,14 @@ export default class BaseRenderTexture extends BaseTexture
         // TODO - could this be added the systems?
 
         /**
-         * The data structure for the stencil masks
+         * The data structure for the stencil masks.
          *
          * @member {PIXI.Graphics[]}
          */
         this.stencilMaskStack = [];
 
         /**
-         * The data structure for the filters
+         * The data structure for the filters.
          *
          * @member {PIXI.Graphics[]}
          */
@@ -127,7 +127,7 @@ export default class BaseRenderTexture extends BaseTexture
     }
 
     /**
-     * Destroys this texture
+     * Destroys this texture.
      *
      */
     destroy()

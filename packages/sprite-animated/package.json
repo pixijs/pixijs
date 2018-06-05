@@ -18,6 +18,9 @@
   "publishConfig": {
     "access": "public"
   },
+  "scripts": {
+    "test": "floss --path test"
+  },
   "files": [
     "lib"
   ],

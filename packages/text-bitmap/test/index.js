@@ -1,1 +1,2 @@
+require('./BitmapText');
 require('./BitmapFontLoader');
