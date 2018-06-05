@@ -574,7 +574,7 @@ export default class BitmapText extends core.Container
             const id = pages[i].getAttribute('id');
             const file = pages[i].getAttribute('file');
 
-            pagesTextures[id] = textures[file] || textures[i];
+            pagesTextures[id] = textures instanceof Array ? textures[i] : textures[file];
         }
 
         // parse letters
