@@ -8,17 +8,12 @@ export default class GraphicsData
 {
     /**
      *
-     * @param {number} lineWidth - the width of the line to draw
-     * @param {number} lineColor - the color of the line to draw
-     * @param {number} lineAlpha - the alpha of the line to draw
-     * @param {number} fillColor - the color of the fill
-     * @param {number} fillAlpha - the alpha of the fill
-     * @param {boolean} fill - whether or not the shape is filled with a colour
-     * @param {boolean} nativeLines - the method for drawing lines
      * @param {PIXI.Circle|PIXI.Rectangle|PIXI.Ellipse|PIXI.Polygon} shape - The shape object to draw.
-     * @param {number} lineAlignment - the alignment of the line.
+     * @param {PIXI.FillStyle} [fillStyle] - the width of the line to draw
+     * @param {PIXI.LineStyle} [lineStyle] - the color of the line to draw
+     * @param {PIXI.Matrix} [matrix] - Transform matrix
      */
-    constructor(shape, fillStyle, lineStyle, matrix)
+    constructor(shape, fillStyle = null, lineStyle = null, matrix = null)
     {
         /**
          * The shape object to draw.
@@ -26,9 +21,22 @@ export default class GraphicsData
          */
         this.shape = shape;
 
+        /**
+         * The style of the line.
+         * @member {PIXI.LineStyle}
+         */
         this.lineStyle = lineStyle;
+
+        /**
+         * The style of the fill.
+         * @member {PIXI.FillStyle}
+         */
         this.fillStyle = fillStyle;
 
+        /**
+         * The transform matrix.
+         * @member {PIXI.Matrix}
+         */
         this.matrix = matrix;
 
         /**
@@ -37,7 +45,16 @@ export default class GraphicsData
          */
         this.type = shape.type;
 
+        /**
+         * The collection of points.
+         * @member {number[]}
+         */
         this.points = [];
+
+        /**
+         * The collection of holes.
+         * @member {number[]}
+         */
         this.holes = [];
     }
 
@@ -51,7 +68,8 @@ export default class GraphicsData
         return new GraphicsData(
             this.shape,
             this.lineStyle,
-            this.fillStyle
+            this.fillStyle,
+            this.matrix
         );
     }
 
@@ -61,8 +79,10 @@ export default class GraphicsData
     destroy()
     {
         this.shape = null;
+        this.holes.length = 0;
         this.holes = null;
-
+        this.points.length = 0;
+        this.points = null;
         this.lineStyle = null;
         this.fillStyle = null;
     }

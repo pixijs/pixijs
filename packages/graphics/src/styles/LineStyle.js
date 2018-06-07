@@ -1,5 +1,11 @@
 import FillStyle from './FillStyle';
 
+/**
+ * Represents the line style for Graphics.
+ * @memberof PIXI
+ * @class
+ * @extends PIXI.FillStyle
+ */
 export default class LineStyle extends FillStyle
 {
     constructor()
@@ -22,6 +28,23 @@ export default class LineStyle extends FillStyle
          */
         this.alignment = 0.5;
 
+        /**
+         * If true the lines will be draw using LINES instead of TRIANGLE_STRIP
+         *
+         * @member {boolean}
+         * @default false
+         */
         this.native = false;
+    }
+
+    /**
+     * Reset the line style to default.
+     */
+    reset()
+    {
+        super.reset();
+        this.alignment = 0.5;
+        this.native = false;
+        this.width = 0;
     }
 }
