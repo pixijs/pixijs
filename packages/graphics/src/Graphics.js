@@ -106,7 +106,7 @@ export default class Graphics extends RawMesh
          * @member {PIXI.Polygon}
          * @private
          */
-        this.currentPoly = null;
+        this.currentPath = null;
 
         /**
          * When cacheAsBitmap is set to true the graphics object will be rendered as if it was a sprite.
@@ -131,6 +131,28 @@ export default class Graphics extends RawMesh
     clone()
     {
         return new Graphics(this.geometry);
+    }
+
+    /**
+     * The current fill style.
+     *
+     * @member {PIXI.FillStyle}
+     * @readonly
+     */
+    get fill()
+    {
+        return this._fillStyle;
+    }
+
+    /**
+     * The current line style.
+     *
+     * @member {PIXI.LineStyle}
+     * @readonly
+     */
+    get line()
+    {
+        return this._lineStyle;
     }
 
     /**
@@ -213,8 +235,8 @@ export default class Graphics extends RawMesh
      */
     startPoly()
     {
-        this.currentPoly = new Polygon();
-        this.currentPoly.closed = false;
+        this.currentPath = new Polygon();
+        this.currentPath.closed = false;
     }
 
     /**
@@ -223,16 +245,16 @@ export default class Graphics extends RawMesh
      */
     finishPoly()
     {
-        if (this.currentPoly)
+        if (this.currentPath)
         {
-            if (this.currentPoly.points.length > 2)
+            if (this.currentPath.points.length > 2)
             {
-                this.drawShape(this.currentPoly);
-                this.currentPoly = null;
+                this.drawShape(this.currentPath);
+                this.currentPath = null;
             }
             else
             {
-                this.currentPoly.points.length = 0;
+                this.currentPath.points.length = 0;
             }
         }
     }
@@ -247,7 +269,7 @@ export default class Graphics extends RawMesh
     moveTo(x, y)
     {
         this.startPoly();
-        this.currentPoly.points.push(x, y);
+        this.currentPath.points.push(x, y);
 
         return this;
     }
@@ -262,12 +284,12 @@ export default class Graphics extends RawMesh
      */
     lineTo(x, y)
     {
-        if (!this.currentPoly)
+        if (!this.currentPath)
         {
             this.moveTo(0, 0);
         }
 
-        this.currentPoly.points.push(x, y);
+        this.currentPath.points.push(x, y);
 
         return this;
     }
@@ -281,11 +303,11 @@ export default class Graphics extends RawMesh
      */
     _initCurve(x = 0, y = 0)
     {
-        if (this.currentPoly)
+        if (this.currentPath)
         {
-            if (this.currentPoly.points.length === 0)
+            if (this.currentPath.points.length === 0)
             {
-                this.currentPoly.points = [x, y];
+                this.currentPath.points = [x, y];
             }
         }
         else
@@ -308,7 +330,7 @@ export default class Graphics extends RawMesh
     {
         this._initCurve();
 
-        const points = this.currentPoly.points;
+        const points = this.currentPath.points;
 
         if (points.length === 0)
         {
@@ -337,7 +359,7 @@ export default class Graphics extends RawMesh
     {
         this._initCurve();
 
-        BezierUtils.curveTo(cpX, cpY, cpX2, cpY2, toX, toY, this.currentPoly.points);
+        BezierUtils.curveTo(cpX, cpY, cpX2, cpY2, toX, toY, this.currentPath.points);
 
         this.dirty++;
 
@@ -360,7 +382,7 @@ export default class Graphics extends RawMesh
     {
         this._initCurve(x1, y1);
 
-        const points = this.currentPoly.points;
+        const points = this.currentPath.points;
 
         const result = ArcUtils.curveTo(x1, y1, x2, y2, radius, points);
 
@@ -417,7 +439,7 @@ export default class Graphics extends RawMesh
         const startY = cy + (Math.sin(startAngle) * radius);
 
         // If the currentPath exists, take its points. Otherwise call `moveTo` to start a path.
-        let points = this.currentPoly ? this.currentPoly.points : null;
+        let points = this.currentPath ? this.currentPath.points : null;
 
         if (points)
         {
@@ -429,7 +451,7 @@ export default class Graphics extends RawMesh
         else
         {
             this.moveTo(startX, startY);
-            points = this.currentPoly.points;
+            points = this.currentPath.points;
         }
 
         ArcUtils.arc(startX, startY, cx, cy, radius, startAngle, endAngle, anticlockwise, points);
@@ -471,7 +493,7 @@ export default class Graphics extends RawMesh
         }
         else
         {
-            if (this.currentPoly)
+            if (this.currentPath)
             {
                 this.finishPoly();
             }
@@ -760,18 +782,6 @@ export default class Graphics extends RawMesh
     }
 
     /**
-     * Adds a hole in the current path.
-     *
-     * @return {PIXI.Graphics} Returns itself.
-     */
-    addHole()
-    {
-        this.geometry.addHole();
-
-        return this;
-    }
-
-    /**
      * Apply a matrix
      *
      * @param {PIXI.Matrix} matrix - Matrix to use for transform current shape.
@@ -834,7 +844,7 @@ export default class Graphics extends RawMesh
         }
 
         this._matrix = null;
-        this.currentPoly = null;
+        this.currentPath = null;
         this._lineStyle.destroy();
         this._lineStyle = null;
         this._fillStyle.destroy();

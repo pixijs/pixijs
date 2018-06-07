@@ -7,6 +7,37 @@ export default class FillStyle
 {
     constructor()
     {
+        this.reset();
+    }
+
+    /**
+     * Convert the object to JSON
+     *
+     * @return {object}
+     */
+    toJSON()
+    {
+        if (!this.visible)
+        {
+            return null;
+        }
+
+        const keys = Object.keys(this);
+        const result = {};
+
+        for (const name in keys)
+        {
+            result[name] = this[name];
+        }
+
+        return result;
+    }
+
+    /**
+     * Reset
+     */
+    reset()
+    {
         /**
          * The hex color value used when coloring the Graphics object.
          *
@@ -45,41 +76,6 @@ export default class FillStyle
          * @member {boolean}
          * @default false
          */
-        this.visible = false;
-    }
-
-    /**
-     * Convert the object to JSON
-     *
-     * @return {object}
-     */
-    toJSON()
-    {
-        if (!this.visible)
-        {
-            return null;
-        }
-
-        const keys = Object.keys(this);
-        const result = {};
-
-        for (const name in keys)
-        {
-            result[name] = this[name];
-        }
-
-        return result;
-    }
-
-    /**
-     * Reset
-     */
-    reset()
-    {
-        this.color = 0xFFFFFF;
-        this.alpha = 0;
-        this.texture = null;
-        this.matrix = null;
         this.visible = false;
     }
 

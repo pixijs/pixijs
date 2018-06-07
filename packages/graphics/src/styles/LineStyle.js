@@ -8,9 +8,15 @@ import FillStyle from './FillStyle';
  */
 export default class LineStyle extends FillStyle
 {
-    constructor()
+    /**
+     * Reset the line style to default.
+     */
+    reset()
     {
-        super();
+        super.reset();
+
+        // Override default line style color
+        this.color = 0x0;
 
         /**
          * The width (thickness) of any lines drawn.
@@ -35,16 +41,5 @@ export default class LineStyle extends FillStyle
          * @default false
          */
         this.native = false;
-    }
-
-    /**
-     * Reset the line style to default.
-     */
-    reset()
-    {
-        super.reset();
-        this.alignment = 0.5;
-        this.native = false;
-        this.width = 0;
     }
 }
