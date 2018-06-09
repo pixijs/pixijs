@@ -86,7 +86,7 @@ export default class CanvasGraphicsRenderer
             if (data.type === SHAPES.POLY)
             {
                 context.beginPath();
-
+               
                 this.renderPolygon(shape.points, shape.closed, context);
 
                 for (let j = 0; j < data.holes.length; j++)

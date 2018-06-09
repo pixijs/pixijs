@@ -58,5 +58,6 @@ Graphics.prototype._renderCanvas = function _renderCanvas(renderer)
         return;
     }
 
+    this.finishPoly();
     renderer.plugins.graphics.render(this);
 };
