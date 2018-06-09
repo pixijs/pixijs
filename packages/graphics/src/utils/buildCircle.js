@@ -42,8 +42,10 @@ export default {
             return;
         }
 
-        const totalSegs = Math.floor(30 * Math.sqrt(circleData.radius))
+        let totalSegs = Math.floor(30 * Math.sqrt(circleData.radius))
             || Math.floor(15 * Math.sqrt(circleData.width + circleData.height));
+
+        totalSegs /= 2.3;
 
         const seg = (Math.PI * 2) / totalSegs;
 

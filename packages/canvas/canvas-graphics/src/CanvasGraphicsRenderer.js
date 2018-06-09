@@ -57,23 +57,31 @@ export default class CanvasGraphicsRenderer
             transform.ty * resolution
         );
 
-        if (graphics.dirty)
+        const geometry = graphics.geometry;
+
+        if (geometry.dirty !== geometry.cacheDirty)
         {
-            this.updateGraphicsTint(graphics);
-            graphics.dirty = false;
+            this.updateGraphicsTint(geometry, graphics.tint);
+            geometry.cacheDirty = geometry.dirty;
         }
 
         renderer.setBlendMode(graphics.blendMode);
 
-        for (let i = 0; i < graphics.graphicsData.length; i++)
+        for (let i = 0; i < geometry.graphicsData.length; i++)
         {
-            const data = graphics.graphicsData[i];
+            const data = geometry.graphicsData[i];
             const shape = data.shape;
 
-            const fillColor = data._fillTint;
-            const lineColor = data._lineTint;
+            const fillStyle = data.fillStyle;
+            const lineStyle = data.lineStyle;
 
-            context.lineWidth = data.lineWidth;
+            const fillTint = data._fillTint;
+            const lineTint = data._lineTint;
+
+            if (lineStyle)
+            {
+                context.lineWidth = lineStyle.width;
+            }
 
             if (data.type === SHAPES.POLY)
             {
@@ -86,31 +94,34 @@ export default class CanvasGraphicsRenderer
                     this.renderPolygon(data.holes[j].points, true, context);
                 }
 
-                if (data.fill)
+                if (fillStyle)
                 {
-                    context.globalAlpha = data.fillAlpha * worldAlpha;
-                    context.fillStyle = `#${(`00000${(fillColor | 0).toString(16)}`).substr(-6)}`;
+                    //   console.log(data)
+                    context.globalAlpha = fillStyle.alpha * worldAlpha;
+                    context.fillStyle = `#${(`00000${(fillTint | 0).toString(16)}`).substr(-6)}`;
+                    // console.log()
                     context.fill();
                 }
-                if (data.lineWidth)
+                if (lineStyle)
                 {
-                    context.globalAlpha = data.lineAlpha * worldAlpha;
-                    context.strokeStyle = `#${(`00000${(lineColor | 0).toString(16)}`).substr(-6)}`;
+                    context.globalAlpha = lineStyle.alpha * worldAlpha;
+                    context.strokeStyle = `#${(`00000${(lineTint | 0).toString(16)}`).substr(-6)}`;
                     context.stroke();
                 }
             }
             else if (data.type === SHAPES.RECT)
             {
-                if (data.fillColor || data.fillColor === 0)
+                // console.log(data.type)
+                if (fillStyle)
                 {
-                    context.globalAlpha = data.fillAlpha * worldAlpha;
-                    context.fillStyle = `#${(`00000${(fillColor | 0).toString(16)}`).substr(-6)}`;
+                    context.globalAlpha = fillStyle.alpha * worldAlpha;
+                    context.fillStyle = `#${(`00000${(fillTint | 0).toString(16)}`).substr(-6)}`;
                     context.fillRect(shape.x, shape.y, shape.width, shape.height);
                 }
-                if (data.lineWidth)
+                if (lineStyle)
                 {
-                    context.globalAlpha = data.lineAlpha * worldAlpha;
-                    context.strokeStyle = `#${(`00000${(lineColor | 0).toString(16)}`).substr(-6)}`;
+                    context.globalAlpha = lineStyle.alpha * worldAlpha;
+                    context.strokeStyle = `#${(`00000${(lineTint | 0).toString(16)}`).substr(-6)}`;
                     context.strokeRect(shape.x, shape.y, shape.width, shape.height);
                 }
             }
@@ -121,16 +132,16 @@ export default class CanvasGraphicsRenderer
                 context.arc(shape.x, shape.y, shape.radius, 0, 2 * Math.PI);
                 context.closePath();
 
-                if (data.fill)
+                if (fillStyle)
                 {
-                    context.globalAlpha = data.fillAlpha * worldAlpha;
-                    context.fillStyle = `#${(`00000${(fillColor | 0).toString(16)}`).substr(-6)}`;
+                    context.globalAlpha = fillStyle.alpha * worldAlpha;
+                    context.fillStyle = `#${(`00000${(fillTint | 0).toString(16)}`).substr(-6)}`;
                     context.fill();
                 }
-                if (data.lineWidth)
+                if (lineStyle)
                 {
-                    context.globalAlpha = data.lineAlpha * worldAlpha;
-                    context.strokeStyle = `#${(`00000${(lineColor | 0).toString(16)}`).substr(-6)}`;
+                    context.globalAlpha = lineStyle.alpha * worldAlpha;
+                    context.strokeStyle = `#${(`00000${(lineTint | 0).toString(16)}`).substr(-6)}`;
                     context.stroke();
                 }
             }
@@ -162,16 +173,16 @@ export default class CanvasGraphicsRenderer
 
                 context.closePath();
 
-                if (data.fill)
+                if (fillStyle)
                 {
                     context.globalAlpha = data.fillAlpha * worldAlpha;
-                    context.fillStyle = `#${(`00000${(fillColor | 0).toString(16)}`).substr(-6)}`;
+                    context.fillStyle = `#${(`00000${(fillTint | 0).toString(16)}`).substr(-6)}`;
                     context.fill();
                 }
-                if (data.lineWidth)
+                if (lineStyle)
                 {
-                    context.globalAlpha = data.lineAlpha * worldAlpha;
-                    context.strokeStyle = `#${(`00000${(lineColor | 0).toString(16)}`).substr(-6)}`;
+                    context.globalAlpha = lineStyle.alpha * worldAlpha;
+                    context.strokeStyle = `#${(`00000${(lineTint | 0).toString(16)}`).substr(-6)}`;
                     context.stroke();
                 }
             }
@@ -199,17 +210,17 @@ export default class CanvasGraphicsRenderer
                 context.quadraticCurveTo(rx, ry, rx, ry + radius);
                 context.closePath();
 
-                if (data.fillColor || data.fillColor === 0)
+                if (fillStyle)
                 {
-                    context.globalAlpha = data.fillAlpha * worldAlpha;
-                    context.fillStyle = `#${(`00000${(fillColor | 0).toString(16)}`).substr(-6)}`;
+                    context.globalAlpha = fillStyle.alpha * worldAlpha;
+                    context.fillStyle = `#${(`00000${(fillTint | 0).toString(16)}`).substr(-6)}`;
                     context.fill();
                 }
 
-                if (data.lineWidth)
+                if (lineStyle)
                 {
-                    context.globalAlpha = data.lineAlpha * worldAlpha;
-                    context.strokeStyle = `#${(`00000${(lineColor | 0).toString(16)}`).substr(-6)}`;
+                    context.globalAlpha = lineStyle.alpha * worldAlpha;
+                    context.strokeStyle = `#${(`00000${(fillTint | 0).toString(16)}`).substr(-6)}`;
                     context.stroke();
                 }
             }
@@ -222,33 +233,41 @@ export default class CanvasGraphicsRenderer
      * @private
      * @param {PIXI.Graphics} graphics - the graphics that will have its tint updated
      */
-    updateGraphicsTint(graphics)
+    updateGraphicsTint(geometry, tint)
     {
-        graphics._prevTint = graphics.tint;
+        geometry._prevTint = geometry.tint;
 
-        const tintR = ((graphics.tint >> 16) & 0xFF) / 255;
-        const tintG = ((graphics.tint >> 8) & 0xFF) / 255;
-        const tintB = (graphics.tint & 0xFF) / 255;
+        const tintR = ((tint >> 16) & 0xFF) / 255;
+        const tintG = ((tint >> 8) & 0xFF) / 255;
+        const tintB = (tint & 0xFF) / 255;
 
-        for (let i = 0; i < graphics.graphicsData.length; ++i)
+        for (let i = 0; i < geometry.graphicsData.length; ++i)
         {
-            const data = graphics.graphicsData[i];
+            const data = geometry.graphicsData[i];
 
-            const fillColor = data.fillColor | 0;
-            const lineColor = data.lineColor | 0;
+            if (data.fillStyle)
+            {
+                const fillColor = data.fillStyle.color || 0;
 
-            // super inline, cos optimization :)
-            data._fillTint = (
-                (((fillColor >> 16) & 0xFF) / 255 * tintR * 255 << 16)
-                + (((fillColor >> 8) & 0xFF) / 255 * tintG * 255 << 8)
-                + (((fillColor & 0xFF) / 255) * tintB * 255)
-            );
+                data._fillTint = (
+                    (((fillColor >> 16) & 0xFF) / 255 * tintR * 255 << 16)
+                    + (((fillColor >> 8) & 0xFF) / 255 * tintG * 255 << 8)
+                    + (((fillColor & 0xFF) / 255) * tintB * 255)
+                );
+            }
 
-            data._lineTint = (
-                (((lineColor >> 16) & 0xFF) / 255 * tintR * 255 << 16)
-                + (((lineColor >> 8) & 0xFF) / 255 * tintG * 255 << 8)
-                + (((lineColor & 0xFF) / 255) * tintB * 255)
-            );
+            if (data.lineStyle)
+            {
+                const lineColor = data.lineStyle.color || 0;
+
+                // super inline, cos optimization :)
+
+                data._lineTint = (
+                    (((lineColor >> 16) & 0xFF) / 255 * tintR * 255 << 16)
+                    + (((lineColor >> 8) & 0xFF) / 255 * tintG * 255 << 8)
+                    + (((lineColor & 0xFF) / 255) * tintB * 255)
+                );
+            }
         }
     }
 
