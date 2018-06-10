@@ -24,6 +24,7 @@
   "dependencies": {
     "@pixi/constants": "^5.0.0-alpha.2",
     "@pixi/mesh": "^5.0.0-alpha.2",
+    "@pixi/mesh-extras": "^5.0.0-alpha.2",
     "@pixi/settings": "^5.0.0-alpha.2"
   },
   "devDependencies": {

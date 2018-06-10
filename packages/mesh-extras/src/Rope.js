@@ -1,4 +1,4 @@
-import Mesh from './Mesh';
+import Mesh2d from './Mesh2d';
 
 /**
  * The rope allows you to draw a texture across several points and them manipulate these points
@@ -15,7 +15,7 @@ import Mesh from './Mesh';
  * @memberof PIXI
  *
  */
-export default class Rope extends Mesh
+export default class Rope extends Mesh2d
 {
     /**
      * @param {PIXI.Texture} texture - The texture to use on the rope.
