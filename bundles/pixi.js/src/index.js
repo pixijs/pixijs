@@ -9,6 +9,7 @@ import * as interaction from '@pixi/interaction';
 import * as loaders from '@pixi/loaders';
 import * as math from '@pixi/math';
 import * as mesh from '@pixi/mesh';
+import * as meshExtras from '@pixi/mesh-extras';
 import * as particles from '@pixi/particles';
 import * as prepare from '@pixi/prepare';
 import * as sprite from '@pixi/sprite';
@@ -128,6 +129,7 @@ if (typeof window !== 'undefined')
         loaders,
         math,
         mesh,
+        meshExtras,
         particles,
         sprite,
         spriteAnimated,
@@ -152,6 +154,7 @@ export * from '@pixi/graphics';
 export * from '@pixi/loaders';
 export * from '@pixi/math';
 export * from '@pixi/mesh';
+export * from '@pixi/mesh-extras';
 export * from '@pixi/particles';
 export * from '@pixi/sprite';
 export * from '@pixi/spritesheet';

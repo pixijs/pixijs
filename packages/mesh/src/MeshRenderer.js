@@ -36,7 +36,7 @@ export default class MeshRenderer extends ObjectRenderer
     /**
      * renders mesh
      * @private
-     * @param {PIXI.RawMesh} mesh mesh instance
+     * @param {PIXI.Mesh} mesh mesh instance
      */
     render(mesh)
     {

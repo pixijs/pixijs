@@ -1,4 +1,4 @@
-import { NineSlicePlane } from '@pixi/mesh';
+import { NineSlicePlane } from '@pixi/mesh-extras';
 
 /**
  * Renders the object using the Canvas renderer
