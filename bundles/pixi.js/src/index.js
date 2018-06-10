@@ -27,7 +27,6 @@ import { ColorMatrixFilter } from '@pixi/filter-color-matrix';
 import { DisplacementFilter } from '@pixi/filter-displacement';
 import { FXAAFilter } from '@pixi/filter-fxaa';
 import { NoiseFilter } from '@pixi/filter-noise';
-import '@pixi/mixin-app-loader';
 import '@pixi/mixin-cache-as-bitmap';
 import '@pixi/mixin-get-child-by-name';
 import '@pixi/mixin-get-global-position';
@@ -46,6 +45,9 @@ core.Renderer.registerPlugin('tilingSprite', spriteTiling.TilingSpriteRenderer);
 
 loaders.Loader.registerPlugin(textBitmap.BitmapFontLoader);
 loaders.Loader.registerPlugin(spritesheet.SpritesheetLoader);
+
+app.Application.registerPlugin(ticker.TickerPlugin);
+app.Application.registerPlugin(loaders.LoaderPlugin);
 
 // Apply deplayed mixins
 utils.mixins.performMixins();
