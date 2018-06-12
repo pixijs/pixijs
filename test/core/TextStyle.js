@@ -39,7 +39,7 @@ describe('PIXI.TextStyle', function ()
             fontFamily: ['Georgia', 'Arial', 'sans-serif'],
         });
 
-        expect(style.toFontString()).to.have.string('"Georgia","Arial","sans-serif"');
+        expect(style.toFontString()).to.have.string('"Georgia","Arial",sans-serif');
     });
 
     it('should handle multiple fonts as string', function ()
@@ -48,7 +48,7 @@ describe('PIXI.TextStyle', function ()
             fontFamily: 'Georgia, "Arial", sans-serif',
         });
 
-        expect(style.toFontString()).to.have.string('"Georgia","Arial","sans-serif"');
+        expect(style.toFontString()).to.have.string('"Georgia","Arial",sans-serif');
     });
 
     it('should not shared array / object references between different instances', function ()
