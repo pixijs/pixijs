@@ -573,8 +573,9 @@ export default class GraphicsGeometry extends Geometry
             for (let i = 0; i < this.graphicsData.length; i++)
             {
                 const data = this.graphicsData[i];
+
                 const type = data.type;
-                const lineWidth = data.lineWidth;
+                const lineWidth = data.lineStyle ? data.lineStyle.width : 0;
 
                 shape = data.shape;
 
