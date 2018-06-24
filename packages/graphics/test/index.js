@@ -1,5 +1,5 @@
 // const MockPointer = require('../interaction/MockPointer');
-const { Graphics, GraphicsRenderer } = require('../');
+const { Graphics } = require('../');
 const { BLEND_MODES } = require('@pixi/constants');
 const { Point } = require('@pixi/math');
 const { isWebGLSupported, skipHello } = require('@pixi/utils');
@@ -8,7 +8,7 @@ const { SpriteRenderer } = require('@pixi/sprite');
 
 skipHello();
 
-Renderer.registerPlugin('graphics', GraphicsRenderer);
+// Renderer.registerPlugin('graphics', GraphicsRenderer);
 Renderer.registerPlugin('sprite', SpriteRenderer);
 
 function withGL(fn)
@@ -24,9 +24,10 @@ describe('PIXI.Graphics', function ()
         {
             const graphics = new Graphics();
 
-            expect(graphics.fillAlpha).to.be.equals(1);
-            expect(graphics.lineWidth).to.be.equals(0);
-            expect(graphics.lineColor).to.be.equals(0);
+            expect(graphics.fill.color).to.be.equals(0xFFFFFF);
+            expect(graphics.fill.alpha).to.be.equals(1);
+            expect(graphics.line.width).to.be.equals(0);
+            expect(graphics.line.color).to.be.equals(0);
             expect(graphics.tint).to.be.equals(0xFFFFFF);
             expect(graphics.blendMode).to.be.equals(BLEND_MODES.NORMAL);
         });
@@ -38,8 +39,8 @@ describe('PIXI.Graphics', function ()
         {
             const graphics = new Graphics();
 
-            graphics.moveTo(0, 0);
             graphics.lineStyle(1);
+            graphics.moveTo(0, 0);
             graphics.lineTo(0, 10);
 
             expect(graphics.width).to.be.below(1.00001);
@@ -165,12 +166,12 @@ describe('PIXI.Graphics', function ()
                 .lineTo(10, 0)
                 .lineTo(10, 10)
                 .lineTo(0, 10)
-                // draw hole
+                .beginHole()
                 .moveTo(2, 2)
                 .lineTo(8, 2)
                 .lineTo(8, 8)
                 .lineTo(2, 8)
-                .addHole();
+                .endHole();
 
             expect(graphics.containsPoint(point1)).to.be.true;
             expect(graphics.containsPoint(point2)).to.be.false;

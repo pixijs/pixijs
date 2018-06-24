@@ -21,7 +21,7 @@ export default class GraphicsGeometry extends Geometry
 {
     /**
      *
-     * @param {boolean} [nativeLines=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
+     * @param {boolean} [multiTexture=false] - `true` to support multiple textures
      */
     constructor(multiTexture = false)
     {
@@ -42,14 +42,28 @@ export default class GraphicsGeometry extends Geometry
         /**
          * An array of points to draw
          * @member {PIXI.Point[]}
+         * @private
          */
         this.points = [];
+
+        /**
+         * The collection of colors
+         * @member {number[]}
+         * @private
+         */
         this.colors = [];
+
+        /**
+         * The UVs collection
+         * @member {number[]}
+         * @private
+         */
         this.uvs = [];
 
         /**
          * The indices of the vertices
          * @member {number[]}
+         * @private
          */
         this.indices = [];
 
@@ -65,12 +79,19 @@ export default class GraphicsGeometry extends Geometry
         }
 
         /**
-         * Graphics data
+         * The collection of drawn shapes.
          *
          * @member {PIXI.GraphicsData[]}
          * @private
          */
         this.graphicsData = [];
+
+        /**
+         * Graphics data representing holes in the graphicsData.
+         *
+         * @member {PIXI.GraphicsData[]}
+         * @private
+         */
         this.graphicsDataHoles = [];
 
         /**
@@ -82,31 +103,80 @@ export default class GraphicsGeometry extends Geometry
          */
         this.dirty = 0;
 
+        /**
+         * Used to check if the cache is dirty.
+         *
+         * @member {number}
+         * @private
+         */
         this.cacheDirty = -1;
+
         /**
          * Used to detect if we clear the graphics webGL data
-         * @type {Number}
+         * @member {Number}
          */
         this.clearDirty = 0;
 
+        /**
+         * List of current draw calls.
+         *
+         * @member {Array}
+         * @private
+         */
         this.drawCalls = [];
 
+        /**
+         * Index of the current last shape in the stack of calls.
+         *
+         * @member {number}
+         * @private
+         */
         this.shapeIndex = 0;
 
+        /**
+         * Map of fill commands for each shape type.
+         *
+         * @member {Object}
+         * @private
+         */
         this.fillCommands = {};
-
         this.fillCommands[SHAPES.POLY] = buildPoly;
         this.fillCommands[SHAPES.CIRC] = buildCircle;
         this.fillCommands[SHAPES.ELIP] = buildCircle;
         this.fillCommands[SHAPES.RECT] = buildRectangle;
         this.fillCommands[SHAPES.RREC] = buildRoundedRectangle;
 
+        /**
+         * Cache bounds
+         *
+         * @member {PIXI.Rectangle}
+         * @private
+         */
         this._bounds = new Rectangle();
+
+        /**
+         * The bounds dirty flag
+         *
+         * @member {number}
+         * @private
+         */
         this.boundsDirty = -1;
+
+        /**
+         * Padding to add to the bounds.
+         *
+         * @member {number}
+         * @default 0
+         */
         this.boundsPadding = 0;
-        this.dirty = 0;
     }
 
+    /**
+     * Get the current bounds of the graphic geometry.
+     *
+     * @member {PIXI.Rectangle}
+     * @readonly
+     */
     get bounds()
     {
         if (this.boundsDirty !== this.dirty)
@@ -118,6 +188,14 @@ export default class GraphicsGeometry extends Geometry
         return this._bounds;
     }
 
+    /**
+     * Add a new draw call.
+     *
+     * @param {string} type
+     * @param {number} size
+     * @param {number} start
+     * @param {PIXI.Texture} texture
+     */
     addDrawCall(type, size, start, texture)
     {
         this.drawCalls.push({ type, size, start, texture });
@@ -137,17 +215,10 @@ export default class GraphicsGeometry extends Geometry
             this.clearDirty++;
             this.graphicsData.length = 0;
             this.shapeIndex = 0;
-
             this.drawCalls.length = 0;
-
             this.points.length = 0;
             this.colors.length = 0;
             this.uvs.length = 0;
-
-            /**
-             * The indices of the vertices
-             * @member {number[]}
-             */
             this.indices.length = 0;
         }
 
@@ -175,12 +246,7 @@ export default class GraphicsGeometry extends Geometry
 
         //        this.currentPath = null;
 
-        const data = new GraphicsData(
-            shape,
-            fillStyle,
-            lineStyle,
-            matrix
-        );
+        const data = new GraphicsData(shape, fillStyle, lineStyle, matrix);
 
         this.graphicsData.push(data);
         /*
@@ -189,7 +255,7 @@ export default class GraphicsGeometry extends Geometry
             data.shape.closed = data.shape.closed || this.filling;
             this.currentPath = data;
         }
-*/
+        */
 
         this.dirty++;
 
@@ -204,20 +270,20 @@ export default class GraphicsGeometry extends Geometry
      */
     drawHole(shape, matrix)
     {
-        if (!this.graphicsData.length) return;
+        if (!this.graphicsData.length)
+        {
+            return null;
+        }
 
-        const data = new GraphicsData(
-            shape,
-            null,
-            null,
-            matrix
-        );
+        const data = new GraphicsData(shape, null, null, matrix);
 
         const lastShape = this.graphicsData[this.graphicsData.length - 1];
 
         lastShape.holes.push(data);
 
         this.dirty++;
+
+        return data;
     }
 
     /**
@@ -251,13 +317,37 @@ export default class GraphicsGeometry extends Geometry
             }
         }
 
+        this.points.length = 0;
+        this.points = null;
+        this.colors.length = 0;
+        this.colors = null;
+        this.uvs.length = 0;
+        this.uvs = null;
+        this.indices.length = 0;
+        this.indices = null;
+        this.buffer.destroy();
+        this.buffer = null;
+        this.indexBuffer.destroy();
+        this.indexBuffer = null;
+        this.graphicsData.length = 0;
         this.graphicsData = null;
-
-        this.currentPath = null;
+        this.graphicsDataHoles.length = 0;
+        this.graphicsDataHoles = null;
+        this.drawCalls.length = 0;
+        this.drawCalls = null;
+        this.fillCommands = null;
+        this._bounds = null;
+        // this.currentPath = null;
         this._webGL = null;
         this._localBounds = null;
     }
 
+    /**
+     * Check to see if a point is contained within this geometry.
+     *
+     * @param {PIXI.Point} point - Point to check if it's contained.
+     * @return {Boolean} `true` if the point is contained within geometry.
+     */
     containsPoint(point)
     {
         const graphicsData = this.graphicsData;
@@ -437,6 +527,12 @@ export default class GraphicsGeometry extends Geometry
         this.indexBuffer.update(glIndices);
     }
 
+    /**
+     * Process the holes data.
+     *
+     * @param {PIXI.GraphicsData[]} holes - Holes to render
+     * @private
+     */
     proccessHoles(holes)
     {
         for (let i = 0; i < holes.length; i++)
@@ -581,6 +677,13 @@ export default class GraphicsGeometry extends Geometry
         this._bounds.maxY = maxY + padding;
     }
 
+    /**
+     * Transform points using matrix.
+     *
+     * @private
+     * @param {number[]} points - Points to transform
+     * @param {PIXI.Matrix} matrix - Transform matrix
+     */
     transformPoints(points, matrix)
     {
         for (let i = 0; i < points.length / 2; i++)
@@ -593,6 +696,14 @@ export default class GraphicsGeometry extends Geometry
         }
     }
 
+    /**
+     * Add colors.
+     *
+     * @param {number[]} colors - List of colors to add to
+     * @param {number} color - Color to add
+     * @param {number} alpha - Alpha to use
+     * @param {number} Number of colors to add
+     */
     addColors(colors, color, alpha, size)
     {
         const tRGB = (color >> 16)
@@ -606,6 +717,16 @@ export default class GraphicsGeometry extends Geometry
         }
     }
 
+    /**
+     * Add new UVs.
+     *
+     * @param {number[]} verts - Vertices
+     * @param {number[]} uvs - UVs
+     * @param {PIXI.Texture} texture
+     * @param {number} start
+     * @param {number} size
+     * @param {PIXI.Matrix} matrix
+     */
     addUvs(verts, uvs, texture, start, size, matrix)
     {
         let index = 0;

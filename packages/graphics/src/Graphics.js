@@ -10,31 +10,33 @@ import {
 } from '@pixi/math';
 import { RawMesh } from '@pixi/mesh';
 import { Texture } from '@pixi/core';
-
 import FillStyle from './styles/FillStyle';
 import GraphicsGeometry from './GraphicsGeometry';
 import LineStyle from './styles/LineStyle';
 import PrimitiveShader from './shaders/PrimitiveShader';
-import bezierCurveTo from './utils/bezierCurveTo';
-
-const tempPoint = new Point();
+import BezierUtils from './utils/BezierUtils';
+import QuadraticUtils from './utils/QuadraticUtils';
+import ArcUtils from './utils/ArcUtils';
+import Star from './utils/Star';
 
 /**
  * The Graphics class contains methods used to draw primitive shapes such as lines, circles and
  * rectangles to the display, and to color and fill them.
  *
  * @class
- * @extends PIXI.Container
+ * @extends PIXI.Mesh
  * @memberof PIXI
  */
 export default class Graphics extends RawMesh
 {
     /**
      *
-     * @param {boolean} [nativeLines=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
+     * @param {PIXI.GraphicsGeometry} [geometry] - Geometry to use
      */
-    constructor(geometry)
+    constructor(geometry = null)
     {
+        const ownsGeometry = geometry === null;
+
         geometry = geometry || new GraphicsGeometry();
         const shader = new PrimitiveShader();
 
@@ -42,19 +44,61 @@ export default class Graphics extends RawMesh
 
         /**
          * The tint applied to the graphic shape. This is a hex value. Apply a value of 0xFFFFFF to
-         * reset the tint.s
+         * reset the tint.
          *
          * @member {number}
          * @default 0xFFFFFF
          */
         this.tint = 0xFFFFFF;
 
+        /**
+         * Current display blend mode.
+         *
+         * @member {PIXI.BLEND_MODES}
+         * @default PIXI.BLEND_MODES.NORMAL
+         */
         this.blendMode = BLEND_MODES.NORMAL;
 
-        this._fillStyle = null;
-        this._lineStyle = null;
+        /**
+         * If this Graphics object owns the GraphicsGeometry
+         *
+         * @member {boolean}
+         * @private
+         */
+        this._ownsGeometry = ownsGeometry;
 
-        this.matrix = null;
+        /**
+         * Current fill style
+         *
+         * @member {PIXI.FillStyle}
+         * @private
+         */
+        this._fillStyle = new FillStyle();
+
+        /**
+         * Current line style
+         *
+         * @member {PIXI.LineStyle}
+         * @private
+         */
+        this._lineStyle = new LineStyle();
+
+        /**
+         * Current shape transform matrix.
+         *
+         * @member {PIXI.Matrix}
+         * @private
+         */
+        this._matrix = null;
+
+        /**
+         * Current hole mode is enabled.
+         *
+         * @member {boolean}
+         * @default false
+         * @private
+         */
+        this._holeMode = false;
 
         /**
          * Current path
@@ -62,7 +106,7 @@ export default class Graphics extends RawMesh
          * @member {PIXI.Polygon}
          * @private
          */
-        this.currentPoly = null;
+        this.currentPath = null;
 
         /**
          * When cacheAsBitmap is set to true the graphics object will be rendered as if it was a sprite.
@@ -90,131 +134,36 @@ export default class Graphics extends RawMesh
     }
 
     /**
-     * Calculate length of quadratic curve
-     * @see {@link http://www.malczak.linuxpl.com/blog/quadratic-bezier-curve-length/}
-     * for the detailed explanation of math behind this.
+     * The current fill style.
      *
-     * @private
-     * @param {number} fromX - x-coordinate of curve start point
-     * @param {number} fromY - y-coordinate of curve start point
-     * @param {number} cpX - x-coordinate of curve control point
-     * @param {number} cpY - y-coordinate of curve control point
-     * @param {number} toX - x-coordinate of curve end point
-     * @param {number} toY - y-coordinate of curve end point
-     * @return {number} Length of quadratic curve
+     * @member {PIXI.FillStyle}
+     * @readonly
      */
-    _quadraticCurveLength(fromX, fromY, cpX, cpY, toX, toY)
+    get fill()
     {
-        const ax = fromX - ((2.0 * cpX) + toX);
-        const ay = fromY - ((2.0 * cpY) + toY);
-        const bx = 2.0 * ((cpX - 2.0) * fromX);
-        const by = 2.0 * ((cpY - 2.0) * fromY);
-        const a = 4.0 * ((ax * ax) + (ay * ay));
-        const b = 4.0 * ((ax * bx) + (ay * by));
-        const c = (bx * bx) + (by * by);
-
-        const s = 2.0 * Math.sqrt(a + b + c);
-        const a2 = Math.sqrt(a);
-        const a32 = 2.0 * a * a2;
-        const c2 = 2.0 * Math.sqrt(c);
-        const ba = b / a2;
-
-        return (
-            (a32 * s)
-                + (a2 * b * (s - c2))
-                + (
-                    ((4.0 * c * a) - (b * b))
-                   * Math.log(((2.0 * a2) + ba + s) / (ba + c2))
-                )
-        ) / (4.0 * a32);
+        return this._fillStyle;
     }
 
     /**
-     * Calculate length of bezier curve.
-     * Analytical solution is impossible, since it involves an integral that does not integrate in general.
-     * Therefore numerical solution is used.
+     * The current line style.
      *
-     * @private
-     * @param {number} fromX - Starting point x
-     * @param {number} fromY - Starting point y
-     * @param {number} cpX - Control point x
-     * @param {number} cpY - Control point y
-     * @param {number} cpX2 - Second Control point x
-     * @param {number} cpY2 - Second Control point y
-     * @param {number} toX - Destination point x
-     * @param {number} toY - Destination point y
-     * @return {number} Length of bezier curve
+     * @member {PIXI.LineStyle}
+     * @readonly
      */
-    _bezierCurveLength(fromX, fromY, cpX, cpY, cpX2, cpY2, toX, toY)
+    get line()
     {
-        const n = 10;
-        let result = 0.0;
-        let t = 0.0;
-        let t2 = 0.0;
-        let t3 = 0.0;
-        let nt = 0.0;
-        let nt2 = 0.0;
-        let nt3 = 0.0;
-        let x = 0.0;
-        let y = 0.0;
-        let dx = 0.0;
-        let dy = 0.0;
-        let prevX = fromX;
-        let prevY = fromY;
-
-        for (let i = 1; i <= n; ++i)
-        {
-            t = i / n;
-            t2 = t * t;
-            t3 = t2 * t;
-            nt = (1.0 - t);
-            nt2 = nt * nt;
-            nt3 = nt2 * nt;
-
-            x = (nt3 * fromX) + (3.0 * nt2 * t * cpX) + (3.0 * nt * t2 * cpX2) + (t3 * toX);
-            y = (nt3 * fromY) + (3.0 * nt2 * t * cpY) + (3 * nt * t2 * cpY2) + (t3 * toY);
-            dx = prevX - x;
-            dy = prevY - y;
-            prevX = x;
-            prevY = y;
-
-            result += Math.sqrt((dx * dx) + (dy * dy));
-        }
-
-        return result;
-    }
-
-    /**
-     * Calculate number of segments for the curve based on its length to ensure its smoothness.
-     *
-     * @private
-     * @param {number} length - length of curve
-     * @return {number} Number of segments
-     */
-    _segmentsCount(length)
-    {
-        let result = Math.ceil(length / Graphics.CURVES.maxLength);
-
-        if (result < Graphics.CURVES.minSegments)
-        {
-            result = Graphics.CURVES.minSegments;
-        }
-        else if (result > Graphics.CURVES.maxSegments)
-        {
-            result = Graphics.CURVES.maxSegments;
-        }
-
-        return result;
+        return this._lineStyle;
     }
 
     /**
      * Specifies the line style used for subsequent calls to Graphics methods such as the lineTo()
      * method or the drawCircle() method.
      *
-     * @param {number} [lineWidth=0] - width of the line to draw, will update the objects stored style
+     * @param {number} [width=0] - width of the line to draw, will update the objects stored style
      * @param {number} [color=0] - color of the line to draw, will update the objects stored style
      * @param {number} [alpha=1] - alpha of the line to draw, will update the objects stored style
      * @param {number} [alignment=1] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outter)
+     * @param {boolean} [native=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
     lineStyle(width = 0, color = 0, alpha = 1, alignment = 0.5, native = false)
@@ -222,26 +171,44 @@ export default class Graphics extends RawMesh
         this.lineTextureStyle(width, Texture.WHITE, color, alpha, null, alignment, native);
     }
 
-    lineTextureStyle(width = 0, texture, color = 0xFFFFFF, alpha = 1, textureMatrix, alignment = 0.5, native)
+    /**
+     * Like line style but support texture for line fill.
+     *
+     * @param {number} [width=0] - width of the line to draw, will update the objects stored style
+     * @param {PIXI.Texture} [texture] - Texture to use
+     * @param {number} [color=0] - color of the line to draw, will update the objects stored style
+     * @param {number} [alpha=1] - alpha of the line to draw, will update the objects stored style
+     * @param {PIXI.Matrix} [textureMatrix=null] Texture matrix to transform texture
+     * @param {number} [alignment=1] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outter)
+     * @param {boolean} [native=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
+     * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
+     */
+    lineTextureStyle(width = 0, texture = Texture.WHITE, color = 0xFFFFFF, alpha = 1,
+        matrix = null, alignment = 0.5, native = false)
     {
-        if (width === 0 || alpha === 0)
-        {
-            this._lineStyle = null;
+        const visible = width > 0 || alpha > 0;
 
-            return this;
+        if (!visible)
+        {
+            this._lineStyle.reset();
+        }
+        else
+        {
+            this.finishPoly();
+
+            Object.assign(this._lineStyle, {
+                color,
+                width,
+                alpha,
+                matrix,
+                texture,
+                alignment,
+                native,
+                visible,
+            });
         }
 
-        const style = new LineStyle();
-
-        style.color = color;
-        style.width = width;
-        style.alpha = alpha;
-        style.matrix = textureMatrix;
-        style.texture = texture || Texture.WHITE;
-        style.alignment = alignment;
-        style.native = native;
-
-        /*    if (this.currentPath)
+        /* if (this.currentPath)
         {
             if (this.currentPath.shape.points.length)
             {
@@ -257,33 +224,37 @@ export default class Graphics extends RawMesh
                 // otherwise its empty so lets just set the line properties
                 this.currentPath.lineStyle = style;
             }
-        }
-*/
-        this.finishPoly();
-
-        this._lineStyle = style;
+        }*/
 
         return this;
     }
 
+    /**
+     * Start a polygon object internally
+     * @private
+     */
     startPoly()
     {
-        this.currentPoly = new Polygon();
-        this.currentPoly.closed = false;
+        this.currentPath = new Polygon();
+        this.currentPath.closed = false;
     }
 
+    /**
+     * Finish the polygon object.
+     * @private
+     */
     finishPoly()
     {
-        if (this.currentPoly)
+        if (this.currentPath)
         {
-            if (this.currentPoly.points.length > 2)
+            if (this.currentPath.points.length > 2)
             {
-                this.drawShape(this.currentPoly);
-                this.currentPoly = null;
+                this.drawShape(this.currentPath);
+                this.currentPath = null;
             }
             else
             {
-                this.currentPoly.points.length = 0;
+                this.currentPath.points.length = 0;
             }
         }
     }
@@ -298,7 +269,7 @@ export default class Graphics extends RawMesh
     moveTo(x, y)
     {
         this.startPoly();
-        this.currentPoly.points.push(x, y);
+        this.currentPath.points.push(x, y);
 
         return this;
     }
@@ -313,14 +284,36 @@ export default class Graphics extends RawMesh
      */
     lineTo(x, y)
     {
-        if (!this.currentPoly)
+        if (!this.currentPath)
         {
             this.moveTo(0, 0);
         }
 
-        this.currentPoly.points.push(x, y);
+        this.currentPath.points.push(x, y);
 
         return this;
+    }
+
+    /**
+     * Initialize the curve
+     *
+     * @private
+     * @param {number} [x=0]
+     * @param {number} [y=0]
+     */
+    _initCurve(x = 0, y = 0)
+    {
+        if (this.currentPath)
+        {
+            if (this.currentPath.points.length === 0)
+            {
+                this.currentPath.points = [x, y];
+            }
+        }
+        else
+        {
+            this.moveTo(x, y);
+        }
     }
 
     /**
@@ -335,44 +328,16 @@ export default class Graphics extends RawMesh
      */
     quadraticCurveTo(cpX, cpY, toX, toY)
     {
-        if (this.currentPoly)
-        {
-            if (this.currentPoly.points.length === 0)
-            {
-                this.currentPoly.points = [0, 0];
-            }
-        }
-        else
-        {
-            this.moveTo(0, 0);
-        }
+        this._initCurve();
 
-        const points = this.currentPoly.points;
-
-        let xa = 0;
-        let ya = 0;
+        const points = this.currentPath.points;
 
         if (points.length === 0)
         {
             this.moveTo(0, 0);
         }
 
-        const fromX = points[points.length - 2];
-        const fromY = points[points.length - 1];
-        const n = Graphics.CURVES.adaptive
-            ? this._segmentsCount(this._quadraticCurveLength(fromX, fromY, cpX, cpY, toX, toY))
-            : 20;
-
-        for (let i = 1; i <= n; ++i)
-        {
-            const j = i / n;
-
-            xa = fromX + ((cpX - fromX) * j);
-            ya = fromY + ((cpY - fromY) * j);
-
-            points.push(xa + (((cpX + ((toX - cpX) * j)) - xa) * j),
-                ya + (((cpY + ((toY - cpY) * j)) - ya) * j));
-        }
+        QuadraticUtils.curveTo(cpX, cpY, toX, toY, points);
 
         this.dirty++;
 
@@ -392,30 +357,9 @@ export default class Graphics extends RawMesh
      */
     bezierCurveTo(cpX, cpY, cpX2, cpY2, toX, toY)
     {
-        if (this.currentPoly)
-        {
-            if (this.currentPoly.points.length === 0)
-            {
-                this.currentPoly.points = [0, 0];
-            }
-        }
-        else
-        {
-            this.moveTo(0, 0);
-        }
+        this._initCurve();
 
-        const points = this.currentPoly.points;
-
-        const fromX = points[points.length - 2];
-        const fromY = points[points.length - 1];
-
-        points.length -= 2;
-
-        const n = Graphics.CURVES.adaptive
-            ? this._segmentsCount(this._bezierCurveLength(fromX, fromY, cpX, cpY, cpX2, cpY2, toX, toY))
-            : 20;
-
-        bezierCurveTo(fromX, fromY, cpX, cpY, cpX2, cpY2, toX, toY, n, points);
+        BezierUtils.curveTo(cpX, cpY, cpX2, cpY2, toX, toY, this.currentPath.points);
 
         this.dirty++;
 
@@ -436,53 +380,17 @@ export default class Graphics extends RawMesh
      */
     arcTo(x1, y1, x2, y2, radius)
     {
-        if (this.currentPoly)
-        {
-            if (this.currentPoly.points.length === 0)
-            {
-                this.currentPoly.points = [x1, y1];
-            }
-        }
-        else
-        {
-            this.moveTo(x1, y1);
-        }
+        this._initCurve(x1, y1);
 
         const points = this.currentPath.points;
-        const fromX = points[points.length - 2];
-        const fromY = points[points.length - 1];
-        const a1 = fromY - y1;
-        const b1 = fromX - x1;
-        const a2 = y2 - y1;
-        const b2 = x2 - x1;
-        const mm = Math.abs((a1 * b2) - (b1 * a2));
 
-        if (mm < 1.0e-8 || radius === 0)
-        {
-            if (points[points.length - 2] !== x1 || points[points.length - 1] !== y1)
-            {
-                points.push(x1, y1);
-            }
-        }
-        else
-        {
-            const dd = (a1 * a1) + (b1 * b1);
-            const cc = (a2 * a2) + (b2 * b2);
-            const tt = (a1 * a2) + (b1 * b2);
-            const k1 = radius * Math.sqrt(dd) / mm;
-            const k2 = radius * Math.sqrt(cc) / mm;
-            const j1 = k1 * tt / dd;
-            const j2 = k2 * tt / cc;
-            const cx = (k1 * b2) + (k2 * b1);
-            const cy = (k1 * a2) + (k2 * a1);
-            const px = b1 * (k2 + j1);
-            const py = a1 * (k2 + j1);
-            const qx = b2 * (k1 + j2);
-            const qy = a2 * (k1 + j2);
-            const startAngle = Math.atan2(py - cy, px - cx);
-            const endAngle = Math.atan2(qy - cy, qx - cx);
+        const result = ArcUtils.curveTo(x1, y1, x2, y2, radius, points);
 
-            this.arc(cx + x1, cy + y1, radius, startAngle, endAngle, b1 * a2 > b2 * a1);
+        if (result)
+        {
+            const { cx, cy, radius, startAngle, endAngle, anticlockwise } = result;
+
+            this.arc(cx, cy, radius, startAngle, endAngle, anticlockwise);
         }
 
         this.dirty++;
@@ -521,9 +429,6 @@ export default class Graphics extends RawMesh
         }
 
         const sweep = endAngle - startAngle;
-        const segs = Graphics.CURVES.adaptive
-            ? this._segmentsCount(Math.abs(sweep) * radius)
-            : Math.ceil(Math.abs(sweep) / PI_2) * 40;
 
         if (sweep === 0)
         {
@@ -534,7 +439,7 @@ export default class Graphics extends RawMesh
         const startY = cy + (Math.sin(startAngle) * radius);
 
         // If the currentPath exists, take its points. Otherwise call `moveTo` to start a path.
-        let points = this.currentPoly ? this.currentPoly.points : null;
+        let points = this.currentPath ? this.currentPath.points : null;
 
         if (points)
         {
@@ -546,33 +451,10 @@ export default class Graphics extends RawMesh
         else
         {
             this.moveTo(startX, startY);
-            points = this.currentPoly.points;
+            points = this.currentPath.points;
         }
 
-        const theta = sweep / (segs * 2);
-        const theta2 = theta * 2;
-
-        const cTheta = Math.cos(theta);
-        const sTheta = Math.sin(theta);
-
-        const segMinus = segs - 1;
-
-        const remainder = (segMinus % 1) / segMinus;
-
-        for (let i = 0; i <= segMinus; ++i)
-        {
-            const real = i + (remainder * i);
-
-            const angle = ((theta) + startAngle + (theta2 * real));
-
-            const c = Math.cos(angle);
-            const s = -Math.sin(angle);
-
-            points.push(
-                (((cTheta * c) + (sTheta * s)) * radius) + cx,
-                (((cTheta * -s) + (sTheta * c)) * radius) + cy
-            );
-        }
+        ArcUtils.arc(startX, startY, cx, cy, radius, startAngle, endAngle, anticlockwise, points);
 
         this.dirty++;
 
@@ -589,33 +471,41 @@ export default class Graphics extends RawMesh
      */
     beginFill(color = 0, alpha = 1)
     {
-        this.beginTextureFill(null, color, alpha);
-
-        return this;
+        return this.beginTextureFill(Texture.WHITE, color, alpha);
     }
 
-    beginTextureFill(texture, color = 0xFFFFFF, alpha = 1, textureMatrix)
+    /**
+     * Begin the texture fill
+     *
+     * @param {PIXI.Texture} texture - Texture to fill
+     * @param {number} [color=0xffffff] - Background to fill behind texture
+     * @param {number} [alpha=1] - Alpha of fill
+     * @param {PIXI.Matrix} [textureMatrix=null] - Transform matrix
+     * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
+     */
+    beginTextureFill(texture = Texture.WHITE, color = 0xFFFFFF, alpha = 1, matrix = null)
     {
-        if (alpha === 0)
+        const visible = alpha > 0;
+
+        if (!visible)
         {
-            this._fillStyle = null;
-
-            return this;
+            this._fillStyle.reset();
         }
-
-        const style = new FillStyle();
-
-        style.color = color;
-        style.alpha = alpha;
-        style.texture = texture || Texture.WHITE;
-        style.matrix = textureMatrix;
-
-        if (this.currentPoly)
+        else
         {
-            this.finishPoly();
-        }
+            if (this.currentPath)
+            {
+                this.finishPoly();
+            }
 
-        this._fillStyle = style;
+            Object.assign(this._fillStyle, {
+                color,
+                alpha,
+                texture,
+                matrix,
+                visible,
+            });
+        }
 
         return this;
     }
@@ -629,7 +519,7 @@ export default class Graphics extends RawMesh
     {
         this.finishPoly();
 
-        this._fillStyle = null;
+        this._fillStyle.reset();
 
         return this;
     }
@@ -644,9 +534,7 @@ export default class Graphics extends RawMesh
      */
     drawRect(x, y, width, height)
     {
-        this.drawShape(new Rectangle(x, y, width, height));
-
-        return this;
+        return this.drawShape(new Rectangle(x, y, width, height));
     }
 
     /**
@@ -660,9 +548,7 @@ export default class Graphics extends RawMesh
      */
     drawRoundedRect(x, y, width, height, radius)
     {
-        this.drawShape(new RoundedRectangle(x, y, width, height, radius));
-
-        return this;
+        return this.drawShape(new RoundedRectangle(x, y, width, height, radius));
     }
 
     /**
@@ -675,9 +561,7 @@ export default class Graphics extends RawMesh
      */
     drawCircle(x, y, radius)
     {
-        this.drawShape(new Circle(x, y, radius));
-
-        return this;
+        return this.drawShape(new Circle(x, y, radius));
     }
 
     /**
@@ -691,9 +575,7 @@ export default class Graphics extends RawMesh
      */
     drawEllipse(x, y, width, height)
     {
-        this.drawShape(new Ellipse(x, y, width, height));
-
-        return this;
+        return this.drawShape(new Ellipse(x, y, width, height));
     }
 
     /**
@@ -737,20 +619,29 @@ export default class Graphics extends RawMesh
         return this;
     }
 
+    /**
+     * Draw any shape.
+     *
+     * @param {PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.Rectangle|PIXI.RoundedRectangle} shape - Shape to draw
+     * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
+     */
     drawShape(shape)
     {
-        if (!this.holeMode)
+        if (!this._holeMode)
         {
-            this.geometry.drawShape(shape,
-                this._fillStyle,
-                this._lineStyle,
-                this.matrix);
+            this.geometry.drawShape(
+                shape,
+                this._fillStyle.toJSON(),
+                this._lineStyle.toJSON(),
+                this._matrix
+            );
         }
         else
         {
-            this.geometry.drawHole(shape,
-                this.matrix);
+            this.geometry.drawHole(shape, this._matrix);
         }
+
+        return this;
     }
 
     /**
@@ -766,27 +657,7 @@ export default class Graphics extends RawMesh
      */
     drawStar(x, y, points, radius, innerRadius, rotation = 0)
     {
-        innerRadius = innerRadius || radius / 2;
-
-        const startAngle = (-1 * Math.PI / 2) + rotation;
-        const len = points * 2;
-        const delta = PI_2 / len;
-        const polygon = [];
-
-        for (let i = 0; i < len; i++)
-        {
-            const r = i % 2 ? innerRadius : radius;
-            const angle = (i * delta) + startAngle;
-
-            polygon.push(
-                x + (r * Math.cos(angle)),
-                y + (r * Math.sin(angle))
-            );
-        }
-
-        this.drawPolygon(polygon);
-
-        return this;
+        return this.drawPolygon(new Star(x, y, points, radius, innerRadius, rotation));
     }
 
     /**
@@ -887,9 +758,9 @@ export default class Graphics extends RawMesh
      */
     containsPoint(point)
     {
-        this.worldTransform.applyInverse(point, tempPoint);
+        this.worldTransform.applyInverse(point, Graphics._TEMP_POINT);
 
-        return this.geometry.containsPoint(tempPoint);
+        return this.geometry.containsPoint(Graphics._TEMP_POINT);
     }
 
     /**
@@ -911,20 +782,14 @@ export default class Graphics extends RawMesh
     }
 
     /**
-     * Adds a hole in the current path.
+     * Apply a matrix
      *
+     * @param {PIXI.Matrix} matrix - Matrix to use for transform current shape.
      * @return {PIXI.Graphics} Returns itself.
      */
-    addHole()
-    {
-        this.geometry.addHole();
-
-        return this;
-    }
-
     setMatrix(matrix)
     {
-        this.matrix = matrix;
+        this._matrix = matrix;
 
         return this;
     }
@@ -933,20 +798,22 @@ export default class Graphics extends RawMesh
      * Begin adding holes to the last draw shape
      * IMPORTANT: holes must be fully inside a shape to work
      * Also weirdness ensues if holes overlap!
+     * @return {PIXI.Graphics} Returns itself.
      */
     beginHole()
     {
-        this.holeMode = true;
+        this._holeMode = true;
 
         return this;
     }
 
     /**
      * End adding holes to the last draw shape
+     * @return {PIXI.Graphics} Returns itself.
      */
     endHole()
     {
-        this.holeMode = false;
+        this._holeMode = false;
 
         return this;
     }
@@ -962,37 +829,36 @@ export default class Graphics extends RawMesh
      *  Should it destroy the texture of the child sprite
      * @param {boolean} [options.baseTexture=false] - Only used for child Sprites if options.children is set to true
      *  Should it destroy the base texture of the child sprite
+     * @param {boolean} [options.geometry=false] - if set to true, the geometry object will be
+     *  be destroyed.
      */
     destroy(options)
     {
         super.destroy(options);
 
-        // TODO should this be an option
-        this.geometry.destroy();
+        const destroyGeometry = typeof options === 'boolean' ? options : options && options.geometry;
+
+        if (destroyGeometry || this._ownsGeometry)
+        {
+            this.geometry.destroy();
+        }
+
+        this._matrix = null;
+        this.currentPath = null;
+        this._lineStyle.destroy();
+        this._lineStyle = null;
+        this._fillStyle.destroy();
+        this._fillStyle = null;
+        this.geometry = null;
         this.shader = null;
     }
 }
 
-Graphics._SPRITE_TEXTURE = null;
-
 /**
- * Graphics curves resolution settings. If `adaptive` flag is set to `true`,
- * the resolution is calculated based on the curve's length to ensure better visual quality.
- * Adaptive draw works with `bezierCurveTo` and `quadraticCurveTo`.
+ * Temporary point to use for containsPoint
  *
  * @static
- * @constant
- * @memberof PIXI.Graphics
- * @name CURVES
- * @type {object}
- * @property {boolean} adaptive=false - flag indicating if the resolution should be adaptive
- * @property {number} maxLength=10 - maximal length of a single segment of the curve (if adaptive = false, ignored)
- * @property {number} minSegments=8 - minimal number of segments in the curve (if adaptive = false, ignored)
- * @property {number} maxSegments=2048 - maximal number of segments in the curve (if adaptive = false, ignored)
+ * @private
+ * @member {PIXI.Point}
  */
-Graphics.CURVES = {
-    adaptive: false,
-    maxLength: 10,
-    minSegments: 8,
-    maxSegments: 2048,
-};
+Graphics._TEMP_POINT = new Point();
