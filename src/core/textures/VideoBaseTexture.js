@@ -35,8 +35,11 @@ export default class VideoBaseTexture extends BaseTexture
     /**
      * @param {HTMLVideoElement} source - Video source
      * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES} for possible values
+     * @param {Object} [options=] - Video texture options
+     * @param {boolean} [options.autoPlay=true] - Override autoPlay default
+     * @param {boolean} [options.autoUpdate=true] - Override autoUpdate default
      */
-    constructor(source, scaleMode)
+    constructor(source, scaleMode, options)
     {
         if (!source)
         {
@@ -54,10 +57,16 @@ export default class VideoBaseTexture extends BaseTexture
 
         super(source, scaleMode);
 
+        options = options !== null && options !== undefined ? options : {};
+        const optionsWithDefaults = {
+            autoPlay: options.autoPlay !== null && options.autoPlay !== undefined ? options.autoPlay : true,
+            autoUpdate: options.autoUpdate !== null && options.autoUpdate !== undefined ? options.autoUpdate : true,
+        };
+
         this.width = source.videoWidth;
         this.height = source.videoHeight;
 
-        this._autoUpdate = true;
+        this._autoUpdate = optionsWithDefaults.autoUpdate;
         this._isAutoUpdating = false;
 
         /**
@@ -67,7 +76,7 @@ export default class VideoBaseTexture extends BaseTexture
          * @member {boolean}
          * @default true
          */
-        this.autoPlay = true;
+        this.autoPlay = optionsWithDefaults.autoPlay;
 
         this.update = this.update.bind(this);
         this._onCanPlay = this._onCanPlay.bind(this);
@@ -211,9 +220,12 @@ export default class VideoBaseTexture extends BaseTexture
      * @static
      * @param {HTMLVideoElement} video - Video to create texture from
      * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES} for possible values
+     * @param {Object} [options=] - Video texture options
+     * @param {boolean} [options.autoPlay=true] - Override autoPlay default
+     * @param {boolean} [options.autoUpdate=true] - Override autoUpdate default
      * @return {PIXI.VideoBaseTexture} Newly created VideoBaseTexture
      */
-    static fromVideo(video, scaleMode)
+    static fromVideo(video, scaleMode, options)
     {
         if (!video._pixiId)
         {
@@ -224,7 +236,7 @@ export default class VideoBaseTexture extends BaseTexture
 
         if (!baseTexture)
         {
-            baseTexture = new VideoBaseTexture(video, scaleMode);
+            baseTexture = new VideoBaseTexture(video, scaleMode, options);
             BaseTexture.addToCache(baseTexture, video._pixiId);
         }
 
@@ -242,9 +254,12 @@ export default class VideoBaseTexture extends BaseTexture
      *  the url's extension will be used as the second part of the mime type.
      * @param {number} scaleMode - See {@link PIXI.SCALE_MODES} for possible values
      * @param {boolean} [crossorigin=(auto)] - Should use anonymous CORS? Defaults to true if the URL is not a data-URI.
+     * @param {Object} [options=] - Video texture options
+     * @param {boolean} [options.autoPlay=true] - Override autoPlay default
+     * @param {boolean} [options.autoUpdate=true] - Override autoUpdate default
      * @return {PIXI.VideoBaseTexture} Newly created VideoBaseTexture
      */
-    static fromUrl(videoSrc, scaleMode, crossorigin)
+    static fromUrl(videoSrc, scaleMode, crossorigin, options)
     {
         const video = document.createElement('video');
 
@@ -278,7 +293,7 @@ export default class VideoBaseTexture extends BaseTexture
 
         video.load();
 
-        return VideoBaseTexture.fromVideo(video, scaleMode);
+        return VideoBaseTexture.fromVideo(video, scaleMode, options);
     }
 
     /**
