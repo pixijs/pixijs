@@ -575,7 +575,7 @@ export default class Sprite extends Container
             return;
         }
 
-        this._texture = value;
+        this._texture = value || Texture.EMPTY;
         this.cachedTint = 0xFFFFFF;
 
         this._textureID = -1;
