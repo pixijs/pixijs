@@ -1,6 +1,6 @@
 import {
     uid, getUrlFileExtension, decomposeDataUri, getSvgSize,
-    getResolutionOfUrl, BaseTextureCache, TextureCache, expandToEven
+    getResolutionOfUrl, BaseTextureCache, TextureCache, expandToEven,
 } from '../utils';
 import settings from '../settings';
 import EventEmitter from 'eventemitter3';

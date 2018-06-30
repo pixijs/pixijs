@@ -128,13 +128,16 @@ export function hex2string(hex)
  *
  * @memberof PIXI.utils
  * @function expandToEven
- * @param {number} 
+ * @param {number} input - the integer to convert
  * @return {number} even integer.
  */
-export function expandToEven(input) {
-    if(input & 1) {
+export function expandToEven(input)
+{
+    if (input & 1)
+    {
         input++;
     }
+
     return input;
 }
 
