@@ -1,6 +1,6 @@
 import {
     uid, getUrlFileExtension, decomposeDataUri, getSvgSize,
-    getResolutionOfUrl, BaseTextureCache, TextureCache,
+    getResolutionOfUrl, BaseTextureCache, TextureCache, expandToEven
 } from '../utils';
 import settings from '../settings';
 import EventEmitter from 'eventemitter3';
@@ -564,8 +564,8 @@ export default class BaseTexture extends EventEmitter
         }
 
         // Scale realWidth and realHeight
-        this.realWidth = Math.round(svgWidth * this.sourceScale);
-        this.realHeight = Math.round(svgHeight * this.sourceScale);
+        this.realWidth = expandToEven(Math.round(svgWidth * this.sourceScale));
+        this.realHeight = expandToEven(Math.round(svgHeight * this.sourceScale));
 
         this._updateDimensions();
 
