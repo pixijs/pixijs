@@ -124,6 +124,25 @@ export function hex2string(hex)
 }
 
 /**
+ * Converts an integer to closest even integer.
+ *
+ * @memberof PIXI.utils
+ * @function expandToEven
+ * @param {number} input - the integer to convert
+ * @return {number} even integer.
+ */
+export function expandToEven(input)
+{
+    input = Math.ceil(input);
+    if (input & 1)
+    {
+        input++;
+    }
+
+    return input;
+}
+
+/**
  * Converts a color as an [R, G, B] array to a hex number
  *
  * @memberof PIXI.utils

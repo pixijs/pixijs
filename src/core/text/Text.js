@@ -2,7 +2,7 @@
 import Sprite from '../sprites/Sprite';
 import Texture from '../textures/Texture';
 import { Rectangle } from '../math';
-import { sign } from '../utils';
+import { sign, expandToEven } from '../utils';
 import { TEXT_GRADIENT } from '../const';
 import settings from '../settings';
 import TextStyle from './TextStyle';
@@ -145,8 +145,8 @@ export default class Text extends Sprite
         const maxLineWidth = measured.maxLineWidth;
         const fontProperties = measured.fontProperties;
 
-        this.canvas.width = Math.ceil((Math.max(1, width) + (style.padding * 2)) * this.resolution);
-        this.canvas.height = Math.ceil((Math.max(1, height) + (style.padding * 2)) * this.resolution);
+        this.canvas.width = expandToEven(Math.ceil((Math.max(1, width) + (style.padding * 2)) * this.resolution));
+        this.canvas.height = expandToEven(Math.ceil((Math.max(1, height) + (style.padding * 2)) * this.resolution));
 
         context.scale(this.resolution, this.resolution);
 
@@ -319,8 +319,8 @@ export default class Text extends Sprite
         {
             const trimmed = trimCanvas(canvas);
 
-            canvas.width = trimmed.width;
-            canvas.height = trimmed.height;
+            canvas.width = trimmed.width(trimmed.width);
+            canvas.height = trimmed.width(trimmed.height);
             this.context.putImageData(trimmed.data, 0, 0);
         }
 
