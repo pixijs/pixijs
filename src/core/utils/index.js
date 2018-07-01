@@ -133,6 +133,7 @@ export function hex2string(hex)
  */
 export function expandToEven(input)
 {
+    input = Math.ceil(input);
     if (input & 1)
     {
         input++;
