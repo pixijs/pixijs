@@ -43,6 +43,12 @@ export default class Spritesheet
         this.textures = {};
 
         /**
+         * Map of texture arrays, key is animation name
+         * @type {Object}
+         */
+        this.animations = {};
+
+        /**
          * Reference to the original JSON data.
          * @type {Object}
          */
@@ -133,6 +139,7 @@ export default class Spritesheet
         if (this._frameKeys.length <= Spritesheet.BATCH_SIZE)
         {
             this._processFrames(0);
+            this._processAnimations();
             this._parseComplete();
         }
         else
@@ -221,6 +228,25 @@ export default class Spritesheet
     }
 
     /**
+     * Parse animations config
+     *
+     * @private
+     */
+    _processAnimations()
+    {
+        const animations = this.data.animations || {};
+
+        for (const animName in animations)
+        {
+            this.animations[animName] = [];
+            for (const frameName of animations[animName])
+            {
+                this.animations[animName].push(this.textures[frameName]);
+            }
+        }
+    }
+
+    /**
      * The parse has completed.
      *
      * @private
@@ -251,6 +277,7 @@ export default class Spritesheet
             }
             else
             {
+                this._processAnimations();
                 this._parseComplete();
             }
         }, 0);
