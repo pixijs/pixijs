@@ -1,6 +1,6 @@
 {
   "name": "@pixi/math",
-  "version": "5.0.0-alpha.2",
+  "version": "5.0.0-alpha.3",
   "main": "lib/math.js",
   "module": "lib/math.es.js",
   "description": "PixiJS Application",

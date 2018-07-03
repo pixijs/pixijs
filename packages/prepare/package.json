@@ -1,6 +1,6 @@
 {
   "name": "@pixi/prepare",
-  "version": "5.0.0-alpha.2",
+  "version": "5.0.0-alpha.3",
   "main": "lib/prepare.js",
   "module": "lib/prepare.es.js",
   "description": "Support for legacy browser JavaScript environments",
@@ -25,13 +25,13 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/canvas-renderer": "^5.0.0-alpha.2",
-    "@pixi/core": "^5.0.0-alpha.2",
-    "@pixi/display": "^5.0.0-alpha.2",
-    "@pixi/graphics": "^5.0.0-alpha.2",
-    "@pixi/settings": "^5.0.0-alpha.2",
-    "@pixi/text": "^5.0.0-alpha.2",
-    "@pixi/ticker": "^5.0.0-alpha.2"
+    "@pixi/canvas-renderer": "^5.0.0-alpha.3",
+    "@pixi/core": "^5.0.0-alpha.3",
+    "@pixi/display": "^5.0.0-alpha.3",
+    "@pixi/graphics": "^5.0.0-alpha.3",
+    "@pixi/settings": "^5.0.0-alpha.3",
+    "@pixi/text": "^5.0.0-alpha.3",
+    "@pixi/ticker": "^5.0.0-alpha.3"
   },
   "devDependencies": {
     "floss": "^2.1.3"

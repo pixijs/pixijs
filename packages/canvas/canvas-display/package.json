@@ -1,6 +1,6 @@
 {
   "name": "@pixi/canvas-display",
-  "version": "5.0.0-alpha.2",
+  "version": "5.0.0-alpha.3",
   "main": "lib/canvas-display.js",
   "module": "lib/canvas-display.es.js",
   "description": "PixiJS Application",
@@ -25,7 +25,7 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/display": "^5.0.0-alpha.2"
+    "@pixi/display": "^5.0.0-alpha.3"
   },
   "devDependencies": {
     "floss": "^2.1.3"

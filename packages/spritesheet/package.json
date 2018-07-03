@@ -1,6 +1,6 @@
 {
   "name": "@pixi/spritesheet",
-  "version": "5.0.0-alpha.2",
+  "version": "5.0.0-alpha.3",
   "main": "lib/spritesheet.js",
   "module": "lib/spritesheet.es.js",
   "description": "PixiJS Application",
@@ -25,10 +25,10 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/core": "^5.0.0-alpha.2",
-    "@pixi/loaders": "^5.0.0-alpha.2",
-    "@pixi/math": "^5.0.0-alpha.2",
-    "@pixi/utils": "^5.0.0-alpha.2",
+    "@pixi/core": "^5.0.0-alpha.3",
+    "@pixi/loaders": "^5.0.0-alpha.3",
+    "@pixi/math": "^5.0.0-alpha.3",
+    "@pixi/utils": "^5.0.0-alpha.3",
     "url": "^0.11.0"
   },
   "devDependencies": {

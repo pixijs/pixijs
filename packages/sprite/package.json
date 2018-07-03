@@ -1,6 +1,6 @@
 {
   "name": "@pixi/sprite",
-  "version": "5.0.0-alpha.2",
+  "version": "5.0.0-alpha.3",
   "main": "lib/sprite.js",
   "module": "lib/sprite.es.js",
   "description": "PixiJS Application",
@@ -25,13 +25,13 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/canvas-renderer": "^5.0.0-alpha.2",
-    "@pixi/constants": "^5.0.0-alpha.2",
-    "@pixi/core": "^5.0.0-alpha.2",
-    "@pixi/display": "^5.0.0-alpha.2",
-    "@pixi/math": "^5.0.0-alpha.2",
-    "@pixi/settings": "^5.0.0-alpha.2",
-    "@pixi/utils": "^5.0.0-alpha.2",
+    "@pixi/canvas-renderer": "^5.0.0-alpha.3",
+    "@pixi/constants": "^5.0.0-alpha.3",
+    "@pixi/core": "^5.0.0-alpha.3",
+    "@pixi/display": "^5.0.0-alpha.3",
+    "@pixi/math": "^5.0.0-alpha.3",
+    "@pixi/settings": "^5.0.0-alpha.3",
+    "@pixi/utils": "^5.0.0-alpha.3",
     "bit-twiddle": "^1.0.2"
   },
   "devDependencies": {
