@@ -38,6 +38,7 @@ export default class Sprite extends Container
          * @private
          */
         this._anchor = new ObservablePoint(this._onAnchorUpdate, this);
+        this._anchor.copy((texture && texture.anchor) || { x: 0, y: 0 });
 
         /**
          * The texture that the sprite is using
