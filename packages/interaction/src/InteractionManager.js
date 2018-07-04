@@ -253,8 +253,6 @@ export default class InteractionManager extends EventEmitter
          */
         this.resolution = 1;
 
-        this.setTargetElement(this.renderer.view, this.renderer.resolution);
-
         /**
          * Fired when a pointer device button (usually a mouse left-button) is pressed on the display
          * object.
@@ -647,6 +645,8 @@ export default class InteractionManager extends EventEmitter
          * @event PIXI.DisplayObject#touchmove
          * @param {PIXI.interaction.InteractionEvent} event - Interaction event
          */
+        this.setTargetElement(this.renderer.view, this.renderer.resolution);
+
     }
 
     /**
