@@ -646,7 +646,6 @@ export default class InteractionManager extends EventEmitter
          * @param {PIXI.interaction.InteractionEvent} event - Interaction event
          */
         this.setTargetElement(this.renderer.view, this.renderer.resolution);
-
     }
 
     /**
