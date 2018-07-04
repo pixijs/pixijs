@@ -5,6 +5,24 @@ import { getResolutionOfUrl } from '../utils';
  * Utility class for maintaining reference to a collection
  * of Textures on a single Spritesheet.
  *
+ * To access a sprite sheet from your code pass its JSON data file to Pixi's loader:
+ *
+ * ```js
+ * PIXI.loader.add("images/spritesheet.json").load(setup);
+ *
+ * function setup() {
+ *   let sheet = PIXI.loader.resources["images/spritesheet.json"].spritesheet;
+ *   ...
+ * }
+ * ```
+ * With the {@link PIXI.Spritesheet#textures|Spritesheet.textures} you can create {@link PIXI.Sprite|Sprite} objects,
+ * {@link PIXI.Spritesheet#animations|Spritesheet.animations} can be used to create a
+ * {@link PIXI.extras.AnimatedSprite|AnimatedSprite}
+ *
+ * Sprite sheets can be packed using tools like {@link https://codeandweb.com/texturepacker|TexturePacker},
+ * Shoebox or Spritesheet.js. Pivot points and grouping of animation sprites are currently only
+ * supported by TexturePacker.
+ *
  * @class
  * @memberof PIXI
  */
@@ -37,14 +55,22 @@ export default class Spritesheet
         this.baseTexture = baseTexture;
 
         /**
-         * Map of spritesheet textures.
-         * @type {Object}
+         * A map containing all textures of the sprite sheet.
+         * Can be used to create a {@link PIXI.Sprite|Sprite}:
+         * ```js
+         * new PIXI.Sprite(sheet.textures["image.png"]);
+         * ```
+         * @member {Object}
          */
         this.textures = {};
 
         /**
-         * Map of texture arrays, key is animation name
-         * @type {Object}
+         * A map containing the textures for each animation.
+         * Can be used to create an {@link PIXI.extras.AnimatedSprite|AnimatedSprite}:
+         * ```js
+         * new PIXI.extras.AnimatedSprite(sheet.animations["anim_name"])
+         * ```
+         * @member {Object}
          */
         this.animations = {};
 
