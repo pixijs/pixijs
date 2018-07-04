@@ -65,6 +65,12 @@ describe('PIXI.loaders.spritesheetParser', function ()
         expect(res.textures['0.png'].anchor.y).to.equal(0.4);
         expect(res.textures['1.png'].anchor.x).to.equal(0.0); // default anchor is 0,0
         expect(res.textures['1.png'].anchor.y).to.equal(0.0);
+
+        expect(res).to.have.property('spritesheet')
+            .to.have.property('animations')
+            .to.have.property('png123');
+        expect(res.spritesheet.animations.png123.length).to.equal(3);
+        expect(res.spritesheet.animations.png123[0]).to.equal(res.textures['1.png']);
     });
 
     it('should not load binary images as an image loader type', function (done)
@@ -253,6 +259,9 @@ function getJsonSpritesheet()
         "spriteSourceSize": {"x":0,"y":0,"w":14,"h":14},
         "sourceSize": {"w":14,"h":14}
     }},
+    "animations": {
+        "png123": [ "1.png", "2.png", "3.png" ]
+    },
     "meta": {
         "app": "http://www.texturepacker.com",
         "version": "1.0",
