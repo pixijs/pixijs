@@ -225,9 +225,6 @@ export default class BaseTexture extends EventEmitter
          */
         this.resource = null;
 
-        // Set the resource
-        this.setResource(resource);
-
         /**
          * Fired when a not-immediately-available source finishes loading.
          *
@@ -275,6 +272,9 @@ export default class BaseTexture extends EventEmitter
          * @event PIXI.BaseTexture#dispose
          * @param {PIXI.BaseTexture} baseTexture - Instance of texture being destroyed.
          */
+
+        // Set the resource
+        this.setResource(resource);
     }
 
     /**
