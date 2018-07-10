@@ -15,9 +15,7 @@ import { getResolutionOfUrl } from '../utils';
  *   ...
  * }
  * ```
- * With the {@link PIXI.Spritesheet#textures|Spritesheet.textures} you can create {@link PIXI.Sprite|Sprite} objects,
- * {@link PIXI.Spritesheet#animations|Spritesheet.animations} can be used to create a
- * {@link PIXI.extras.AnimatedSprite|AnimatedSprite}
+ * With the `sheet.textures` you can create Sprite objects,`sheet.animations` can be used to create an AnimatedSprite.
  *
  * Sprite sheets can be packed using tools like {@link https://codeandweb.com/texturepacker|TexturePacker},
  * Shoebox or Spritesheet.js. Pivot points and grouping of animation sprites are currently only
