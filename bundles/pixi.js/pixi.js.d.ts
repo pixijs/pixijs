@@ -3528,7 +3528,8 @@ declare namespace PIXI {
             defaultMaskStack: Array<Graphics>;
             defaultFilterStack: Array<filters.IFilterState>;
             renderTexture: RenderTexture | null;
-            destinationFrame: Rectangle;
+            readonly sourceFrame: Rectangle;
+            readonly destinationFrame: Rectangle;
 
             bind(renderTexture: RenderTexture, sourceFrame: Rectangle, destinationFrame: Rectangle): void;
 
