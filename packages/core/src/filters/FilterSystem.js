@@ -204,7 +204,7 @@ export default class FilterSystem extends System
         state.sourceFrame.pad(padding);
         if (autoFit)
         {
-            state.sourceFrame.fit(this.renderer.renderTexture.destinationFrame);
+            state.sourceFrame.fit(this.renderer.renderTexture.sourceFrame);
         }
 
         // round to whole number based on resolution
