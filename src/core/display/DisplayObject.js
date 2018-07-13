@@ -400,6 +400,18 @@ export default class DisplayObject extends EventEmitter
     }
 
     /**
+     * Removes the display object from its parent Container if it's attached to a parent.
+     *
+     */
+    removeFromParent()
+    {
+        if (this.parent)
+        {
+            this.parent.removeChild(this);
+        }
+    }
+
+    /**
      * Base destroy method for generic display objects. This will automatically
      * remove the display object from its parent Container as well as remove
      * all current event listeners and internal references. Do not use a DisplayObject
