@@ -199,12 +199,12 @@ export default class FilterSystem extends System
 
         state.target = target;
 
-        state.sourceFrame = target.filterArea || target.getBounds(true);
+        state.sourceFrame.copyFrom(target.filterArea || target.getBounds(true));
 
         state.sourceFrame.pad(padding);
         if (autoFit)
         {
-            state.sourceFrame.fit(this.renderer.renderTexture.destinationFrame);
+            state.sourceFrame.fit(this.renderer.renderTexture.sourceFrame);
         }
 
         // round to whole number based on resolution

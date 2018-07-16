@@ -48,6 +48,13 @@ export default class RenderTextureSystem extends System
         this.renderTexture = null;
 
         /**
+         * Source frame
+         * @member {PIXI.Rectangle}
+         * @readonly
+         */
+        this.sourceFrame = new Rectangle();
+
+        /**
          * Destination frame
          * @member {PIXI.Rectangle}
          * @readonly
@@ -121,6 +128,8 @@ export default class RenderTextureSystem extends System
             this.renderer.projection.update(destinationFrame, sourceFrame, resolution, true);
             this.renderer.stencil.setMaskStack(this.defaultMaskStack);
         }
+
+        this.sourceFrame.copyFrom(sourceFrame);
 
         this.destinationFrame.x = destinationFrame.x / resolution;
         this.destinationFrame.y = destinationFrame.y / resolution;
