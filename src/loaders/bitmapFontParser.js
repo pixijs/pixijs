@@ -97,13 +97,13 @@ export default function ()
                 if (bitmapResource.url === url)
                 {
                     bitmapResource.metadata.pageFile = pageFile;
-                    if (bitmapResource.isComplete)
+                    if (bitmapResource.texture)
                     {
                         completed(bitmapResource);
                     }
                     else
                     {
-                        bitmapResource.onComplete.add(completed);
+                        bitmapResource.onAfterMiddleware.add(completed);
                     }
                     exists = true;
                     break;
