@@ -112,7 +112,7 @@ export default class Extract
         const width = frame.width * resolution;
         const height = frame.height * resolution;
 
-        const canvasBuffer = new CanvasRenderTarget(width, height);
+        const canvasBuffer = new CanvasRenderTarget(width, height, 1);
 
         const webglPixels = new Uint8Array(BYTES_PER_PIXEL * width * height);
 
