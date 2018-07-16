@@ -137,10 +137,19 @@ export default class BitmapFontLoader
             // using the same loader, resource will be available
             for (const name in this.resources)
             {
-                if (this.resources[name].url === url)
+                const bitmapResource = this.resources[name];
+
+                if (bitmapResource.url === url)
                 {
-                    this.resources[name].metadata.pageFile = pageFile;
-                    completed(this.resources[name]);
+                    bitmapResource.metadata.pageFile = pageFile;
+                    if (bitmapResource.texture)
+                    {
+                        completed(bitmapResource);
+                    }
+                    else
+                    {
+                        bitmapResource.onAfterMiddleware.add(completed);
+                    }
                     exists = true;
                     break;
                 }
