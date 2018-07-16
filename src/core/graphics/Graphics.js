@@ -362,7 +362,7 @@ export default class Graphics extends Container
      * @param {number} [lineWidth=0] - width of the line to draw, will update the objects stored style
      * @param {number} [color=0] - color of the line to draw, will update the objects stored style
      * @param {number} [alpha=1] - alpha of the line to draw, will update the objects stored style
-     * @param {number} [alignment=1] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outter)
+     * @param {number} [alignment=0.5] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outter)
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
     lineStyle(lineWidth = 0, color = 0, alpha = 1, alignment = 0.5)
