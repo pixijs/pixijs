@@ -42,7 +42,9 @@ export default class Sprite extends Container
 
         /**
          * The anchor sets the origin point of the texture.
-         * The default is 0,0 or taken from the {@link PIXI.Spritesheet|Spritesheet}.
+         * The default is 0,0 or taken from the {@link PIXI.Texture|Texture} passed to the constructor.
+         * Setting the texture at a later point of time does not change the anchor.
+         *
          * 0,0 means the texture's origin is the top left, 0.5,0.5 is the center, 1,1 the bottom right corner.
          *
          * @member {PIXI.ObservablePoint}
@@ -51,8 +53,8 @@ export default class Sprite extends Container
         this._anchor = new ObservablePoint(
             this._onAnchorUpdate,
             this,
-            (texture ? texture.anchor.x : 0),
-            (texture ? texture.anchor.y : 0)
+            (texture ? texture.defaultAnchor.x : 0),
+            (texture ? texture.defaultAnchor.y : 0)
         );
 
         /**
@@ -540,7 +542,9 @@ export default class Sprite extends Container
 
     /**
      * The anchor sets the origin point of the texture.
-     * The default is 0,0 or taken from the {@link PIXI.Spritesheet|Spritesheet}.
+     * The default is 0,0 or taken from the {@link PIXI.Texture|Texture} passed to the constructor.
+     * Setting the texture at a later point of time does not change the anchor.
+     *
      * 0,0 means the texture's origin is the top left, 0.5,0.5 is the center, 1,1 the bottom right corner.
      *
      * @member {PIXI.ObservablePoint}

@@ -145,11 +145,13 @@ export default class Texture extends EventEmitter
         }
 
         /**
-         * Anchor point that is used as default if sprite is created with this texture
+         * Anchor point that is used as default if sprite is created with this texture.
+         * Changing the defaultAnchor at a later point of time will not update Sprite's anchor point.
          * @type {PIXI.Point}
          * @default {0,0}
+         * @private
          */
-        this.anchor = anchor ? new Point(anchor.x, anchor.y) : new Point(0, 0);
+        this.defaultAnchor = anchor ? new Point(anchor.x, anchor.y) : new Point(0, 0);
 
         /**
          * Fired when the texture is updated. This happens if the frame or the baseTexture is updated.

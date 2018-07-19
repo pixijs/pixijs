@@ -20,14 +20,14 @@ describe('PIXI.Spritesheet', function ()
                 expect(textures[id]).to.be.an.instanceof(PIXI.Texture);
                 expect(textures[id].width).to.equal(width / spritesheet.resolution);
                 expect(textures[id].height).to.equal(height / spritesheet.resolution);
-                expect(textures[id].anchor.x).to.equal(0);
-                expect(textures[id].anchor.y).to.equal(0);
+                expect(textures[id].defaultAnchor.x).to.equal(0);
+                expect(textures[id].defaultAnchor.y).to.equal(0);
                 expect(textures[id].textureCacheIds.indexOf(id)).to.equal(0);
 
                 expect(this.animations).to.have.property('star').that.is.an('array');
                 expect(this.animations.star.length).to.equal(4);
-                expect(this.animations.star[0].anchor.x).to.equal(0.5);
-                expect(this.animations.star[0].anchor.y).to.equal(0.5);
+                expect(this.animations.star[0].defaultAnchor.x).to.equal(0.5);
+                expect(this.animations.star[0].defaultAnchor.y).to.equal(0.5);
 
                 spritesheet.destroy(true);
                 expect(spritesheet.textures).to.be.null;
