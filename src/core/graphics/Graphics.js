@@ -187,6 +187,9 @@ export default class Graphics extends Container
         this._spriteRect = null;
         this._fastRect = false;
 
+        this._prevRectTint = null;
+        this._prevRectFillColor = null;
+
         /**
          * When cacheAsBitmap is set to true the graphics object will be rendered as if it was a sprite.
          * This is useful if your graphics element does not change often, as it will speed up the rendering
@@ -944,17 +947,18 @@ export default class Graphics extends Container
         }
 
         const sprite = this._spriteRect;
+        const fillColor = this.graphicsData[0].fillColor;
 
         if (this.tint === 0xffffff)
         {
-            sprite.tint = this.graphicsData[0].fillColor;
+            sprite.tint = fillColor;
         }
-        else
+        else if (this.tint !== this._prevRectTint || fillColor !== this._prevRectFillColor)
         {
             const t1 = tempColor1;
             const t2 = tempColor2;
 
-            hex2rgb(this.graphicsData[0].fillColor, t1);
+            hex2rgb(fillColor, t1);
             hex2rgb(this.tint, t2);
 
             t1[0] *= t2[0];
@@ -963,6 +967,10 @@ export default class Graphics extends Container
 
             sprite.tint = rgb2hex(t1);
         }
+
+        this._prevRectTint = this.tint;
+        this._prevRectFillColor = fillColor;
+
         sprite.alpha = this.graphicsData[0].fillAlpha;
         sprite.worldAlpha = this.worldAlpha * sprite.alpha;
         sprite.blendMode = this.blendMode;
