@@ -949,26 +949,23 @@ export default class Graphics extends Container
         const sprite = this._spriteRect;
         const fillColor = this.graphicsData[0].fillColor;
 
-        if (this.tint !== this._prevRectTint || fillColor !== this._prevRectFillColor)
+        if (this.tint === 0xffffff)
         {
-            if (this.tint === 0xffffff)
-            {
-                sprite.tint = fillColor;
-            }
-            else
-            {
-                const t1 = tempColor1;
-                const t2 = tempColor2;
+            sprite.tint = fillColor;
+        }
+        else if (this.tint !== this._prevRectTint || fillColor !== this._prevRectFillColor)
+        {
+            const t1 = tempColor1;
+            const t2 = tempColor2;
 
-                hex2rgb(fillColor, t1);
-                hex2rgb(this.tint, t2);
+            hex2rgb(fillColor, t1);
+            hex2rgb(this.tint, t2);
 
-                t1[0] *= t2[0];
-                t1[1] *= t2[1];
-                t1[2] *= t2[2];
+            t1[0] *= t2[0];
+            t1[1] *= t2[1];
+            t1[2] *= t2[2];
 
-                sprite.tint = rgb2hex(t1);
-            }
+            sprite.tint = rgb2hex(t1);
 
             this._prevRectTint = this.tint;
             this._prevRectFillColor = fillColor;
