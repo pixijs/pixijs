@@ -146,10 +146,9 @@ export default class Texture extends EventEmitter
 
         /**
          * Anchor point that is used as default if sprite is created with this texture.
-         * Changing the defaultAnchor at a later point of time will not update Sprite's anchor point.
-         * @type {PIXI.Point}
+         * Changing the `defaultAnchor` at a later point of time will not update Sprite's anchor point.
+         * @member {PIXI.Point}
          * @default {0,0}
-         * @private
          */
         this.defaultAnchor = anchor ? new Point(anchor.x, anchor.y) : new Point(0, 0);
 
@@ -166,7 +165,7 @@ export default class Texture extends EventEmitter
         /**
          * Contains data for uvs. May contain clamp settings and some matrices.
          * Its a bit heavy, so by default that object is not created.
-         * @type {PIXI.TextureMatrix}
+         * @member {PIXI.TextureMatrix}
          * @default null
          */
         this.transform = null;
