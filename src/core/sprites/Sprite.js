@@ -42,10 +42,10 @@ export default class Sprite extends Container
 
         /**
          * The anchor sets the origin point of the texture.
-         * The default is 0,0 or taken from the {@link PIXI.Texture|Texture} passed to the constructor.
-         * Setting the texture at a later point of time does not change the anchor.
-         *
-         * 0,0 means the texture's origin is the top left, 0.5,0.5 is the center, 1,1 the bottom right corner.
+         * The default is 0,0 or taken from the {@link PIXI.Texture#defaultAnchor|Texture} passed to the constructor.
+         * A value of 0,0 means the texture's origin is the top left.
+         * Setting the anchor to 0.5,0.5 means the texture's origin is centered.
+         * Setting the anchor to 1,1 would mean the texture's origin point will be the bottom right corner.
          *
          * @member {PIXI.ObservablePoint}
          * @private
