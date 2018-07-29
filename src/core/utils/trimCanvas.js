@@ -70,6 +70,16 @@ export default function trimCanvas(canvas)
         }
     }
 
+    if (bound.top === null)
+    {
+        // i.e. the entry canvas is empty
+        // lets just get one empty pixel
+        bound.top = 0;
+        bound.bottom = 0;
+        bound.right = 1;
+        bound.left = 0;
+    }
+
     width = bound.right - bound.left;
     height = bound.bottom - bound.top + 1;
 
