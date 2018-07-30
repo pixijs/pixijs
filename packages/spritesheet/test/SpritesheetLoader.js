@@ -75,6 +75,19 @@ describe('PIXI.SpritesheetLoader', function ()
             .with.keys(Object.keys(getJsonSpritesheet().frames))
             .and.has.property('0.png')
             .that.is.an.instanceof(Texture);
+
+        expect(res.textures['0.png'].frame.x).to.equal(14);
+        expect(res.textures['0.png'].frame.y).to.equal(28);
+        expect(res.textures['0.png'].defaultAnchor.x).to.equal(0.3);
+        expect(res.textures['0.png'].defaultAnchor.y).to.equal(0.4);
+        expect(res.textures['1.png'].defaultAnchor.x).to.equal(0.0); // default of defaultAnchor is 0,0
+        expect(res.textures['1.png'].defaultAnchor.y).to.equal(0.0);
+
+        expect(res).to.have.property('spritesheet')
+            .to.have.property('animations')
+            .to.have.property('png123');
+        expect(res.spritesheet.animations.png123.length).to.equal(3);
+        expect(res.spritesheet.animations.png123[0]).to.equal(res.textures['1.png']);
     });
 
     it('should not load binary images as an image loader type', function (done)
@@ -188,7 +201,8 @@ function getJsonSpritesheet()
         "rotated": false,
         "trimmed": false,
         "spriteSourceSize": {"x":0,"y":0,"w":14,"h":14},
-        "sourceSize": {"w":14,"h":14}
+        "sourceSize": {"w":14,"h":14},
+        "anchor": {"x":0.3,"y":0.4}
     },
     "1.png":
     {
@@ -262,6 +276,9 @@ function getJsonSpritesheet()
         "spriteSourceSize": {"x":0,"y":0,"w":14,"h":14},
         "sourceSize": {"w":14,"h":14}
     }},
+    "animations": {
+        "png123": [ "1.png", "2.png", "3.png" ]
+    },
     "meta": {
         "app": "http://www.texturepacker.com",
         "version": "1.0",
