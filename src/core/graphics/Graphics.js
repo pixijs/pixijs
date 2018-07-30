@@ -1224,7 +1224,7 @@ export default class Graphics extends Container
 
         if (data.type === SHAPES.POLY)
         {
-            data.shape.closed = data.shape.closed || this.filling;
+            data.shape.closed = data.shape.closed;
             this.currentPath = data;
         }
 
