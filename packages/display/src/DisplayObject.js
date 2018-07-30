@@ -1,7 +1,8 @@
 import EventEmitter from 'eventemitter3';
 import { Rectangle, Transform } from '@pixi/math';
 import Bounds from './Bounds';
-// _tempDisplayObjectParent = new DisplayObject();
+
+let updateOrder = 0;
 
 /**
  * The base class for all objects that are rendered on the screen.
@@ -73,6 +74,23 @@ export default class DisplayObject extends EventEmitter
          * @readonly
          */
         this.worldAlpha = 1;
+
+        /**
+         * The updateOrder of displayObjects. Initially by creation order; will be changed by the container it is within
+         *
+         * @member {number}
+         * @readOnly
+         */
+        this.updateOrder = updateOrder++;
+
+        /**
+         * The zIndex of the displayObject.
+         * A higher value will mean it will be rendered on top of other displayObjects within the same container
+         *
+         * @member {number}
+         * @private
+         */
+        this._zIndex = 0;
 
         /**
          * The area the filter is applied to. This is used as more of an optimization
@@ -551,6 +569,26 @@ export default class DisplayObject extends EventEmitter
     set rotation(value) // eslint-disable-line require-jsdoc
     {
         this.transform.rotation = value;
+    }
+
+    /**
+     * The zIndex of the displayObject.
+     * A higher value will mean it will be rendered on top of other displayObjects within the same container.
+     *
+     * @member {number}
+     */
+    get zIndex()
+    {
+        return this._zIndex;
+    }
+
+    set zIndex(value) // eslint-disable-line require-jsdoc
+    {
+        this._zIndex = value;
+        if (this.parent)
+        {
+            this.parent.onChildrenChange();
+        }
     }
 
     /**

@@ -1,6 +1,16 @@
 import removeItems from 'remove-array-items';
 import DisplayObject from './DisplayObject';
 
+function sortChildren(a, b)
+{
+    if (a.zIndex === b.zIndex)
+    {
+        return a.updateOrder - b.updateOrder;
+    }
+
+    return a.zIndex - b.zIndex;
+}
+
 /**
  * A Container represents a collection of display objects.
  * It is the base class of all display objects that act as a container for other objects.
@@ -33,13 +43,17 @@ export default class Container extends DisplayObject
     }
 
     /**
-     * Overridable method that can be used by Container subclasses whenever the children array is modified
-     *
-     * @private
+     * Overridable method that can be used by Container subclasses whenever the children array is modified.
+     * By default it will ensure that children are ordered by zIndex and updateOrder.
      */
     onChildrenChange()
     {
-        /* empty */
+        for (let i = 0, j = this.children.length; i < j; ++i)
+        {
+            this.children[i].updateOrder = i;
+        }
+
+        this.children.sort(sortChildren);
     }
 
     /**
