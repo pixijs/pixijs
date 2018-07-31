@@ -33,3 +33,4 @@ dist
 
 # VSCode ignores
 .vscode
+pixi.code-workspace
