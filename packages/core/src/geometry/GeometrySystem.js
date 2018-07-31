@@ -42,6 +42,11 @@ export default class GeometrySystem extends System
          * @private
          */
         this.cache = {};
+
+        /**
+         * A cache of currently bound buffer..
+         */
+        this.boundBuffers = {};
     }
 
     /**
@@ -197,7 +202,14 @@ export default class GeometrySystem extends System
                 const type = buffer.index ? gl.ELEMENT_ARRAY_BUFFER : gl.ARRAY_BUFFER;
                 const drawType = buffer.static ? gl.STATIC_DRAW : gl.DYNAMIC_DRAW;
 
-                gl.bindBuffer(type, glBuffer.buffer);
+                if (this.boundBuffers[type] !== glBuffer)
+                {
+                    this.boundBuffers[type] = glBuffer;
+
+                    gl.bindBuffer(type, glBuffer.buffer);
+                }
+
+                this._boundBuffer = glBuffer;
 
                 if (glBuffer.byteLength >= buffer.data.byteLength)
                 {
