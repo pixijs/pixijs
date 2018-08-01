@@ -5,6 +5,7 @@ import { BLEND_MODES } from '@pixi/constants';
 import { Container } from '@pixi/display';
 
 const tempPoint = new Point();
+const indices = new Uint16Array([0, 1, 2, 0, 2, 3]);
 
 /**
  * The Sprite object is the base for all textured objects that are rendered to the screen
@@ -123,6 +124,8 @@ export default class Sprite extends Container
 
         this._transformTrimmedID = -1;
         this._textureTrimmedID = -1;
+
+        this.indices = indices;
 
         /**
          * Plugin that is responsible for rendering this element.

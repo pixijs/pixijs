@@ -1,9 +1,8 @@
-import { Geometry,
-    Buffer,
+import { Geometry2d,
     ObjectRenderer,
     checkMaxIfStatementsInShader } from '@pixi/core';
 import { settings } from '@pixi/settings';
-import { createIndicesForQuads, premultiplyBlendMode, premultiplyTint } from '@pixi/utils';
+import { premultiplyBlendMode, premultiplyTint, createIndicesForQuads } from '@pixi/utils';
 import bitTwiddle from 'bit-twiddle';
 import BatchBuffer from './BatchBuffer';
 import generateMultiTextureShader from './generateMultiTextureShader';
@@ -35,7 +34,7 @@ export default class SpriteRenderer extends ObjectRenderer
          *
          * @member {number}
          */
-        this.vertSize = 5;
+        this.vertSize = 6;
 
         /**
          * The size of the vertex information in bytes.
@@ -49,24 +48,28 @@ export default class SpriteRenderer extends ObjectRenderer
          *
          * @member {number}
          */
-        this.size = settings.SPRITE_BATCH_SIZE; // 2000 is a nice balance between mobile / desktop
+        this.size = 2000 * 4 * 2;// settings.SPRITE_BATCH_SIZE; // 2000 is a nice balance between mobile / desktop
+
+        this.currentSize = 0;
+        this.currentIndexSize = 0;
 
         // the total number of bytes in our batch
         // let numVerts = this.size * 4 * this.vertByteSize;
 
-        this.buffers = [];
-        for (let i = 1; i <= bitTwiddle.nextPow2(this.size); i *= 2)
-        {
-            this.buffers.push(new BatchBuffer(i * 4 * this.vertByteSize));
-        }
+        this.attributeBuffers = {};
+        this.aBuffers = {};
+        this.iBuffers = {};
 
         /**
-         * Holds the indices of the geometry (quads) to draw
+         * Holds the defualt indices of the geometry (quads) to draw
          *
          * @member {Uint16Array}
          */
-        this.indices = createIndicesForQuads(this.size);
-        this.indexBuffer = new Buffer(this.indices, true, true);
+        // const indicies = createIndicesForQuads(this.size);
+
+        //  this.defaultQuadIndexBuffer = new Buffer(indicies, true, true);
+
+        this.onlySprites = false;
 
         /**
          * The default shaders that is used if a sprite doesn't have a more specific one.
@@ -79,14 +82,13 @@ export default class SpriteRenderer extends ObjectRenderer
         this.currentIndex = 0;
         this.groups = [];
 
-        for (let k = 0; k < this.size; k++)
+        for (let k = 0; k < this.size / 4; k++)
         {
             this.groups[k] = { textures: [], textureCount: 0, ids: [], size: 0, start: 0, blend: 0 };
         }
 
-        this.sprites = [];
+        this.elements = [];
 
-        this.vertexBuffers = [];
         this.vaos = [];
 
         this.vaoMax = 2;
@@ -124,18 +126,8 @@ export default class SpriteRenderer extends ObjectRenderer
         // as it is not used by the shader so is optimized out.
         for (let i = 0; i < this.vaoMax; i++)
         {
-            const buffer = new Buffer(null, false);
-
             /* eslint-disable max-len */
-            this.vaos[i] = new Geometry()
-                .addAttribute('aVertexPosition', buffer, 2, false, gl.FLOAT)
-                .addAttribute('aTextureCoord', buffer, 2, true, gl.UNSIGNED_SHORT)
-                .addAttribute('aColor', buffer, 4, true, gl.UNSIGNED_BYTE)
-                .addAttribute('aTextureId', buffer, 1, true, gl.FLOAT)
-                .addIndex(this.indexBuffer);
-            /* eslint-enable max-len */
-
-            this.vertexBuffers[i] = buffer;
+            this.vaos[i] = new Geometry2d();
         }
     }
 
@@ -153,26 +145,51 @@ export default class SpriteRenderer extends ObjectRenderer
      *
      * @param {PIXI.Sprite} sprite - the sprite to render when using this spritebatch
      */
-    render(sprite)
+    render(element)
     {
-        // TODO set blend modes..
-        // check texture..
-        if (this.currentIndex >= this.size)
-        {
-            this.flush();
-        }
-
-        // get the uvs for the texture
-
-        // if the uvs have not updated then no point rendering just yet!
-        if (!sprite._texture._uvs)
+        if (!element.isGraphics && !element._texture._uvs)
         {
             return;
         }
 
-        // push a texture.
-        // increment the batchsize
-        this.sprites[this.currentIndex++] = sprite;
+        if (this.currentSize + (element.vertexData.length / 2) > this.size)
+        {
+            this.flush();
+        }
+
+        //   console.log(this.currentIndexSize);
+        this.elements[this.currentIndex++] = element;
+
+        this.currentSize += element.vertexData.length / 2;
+        this.currentIndexSize += element.indices.length;
+    }
+
+    getIndexBuffer(size)
+    {
+        const roundedSize = Math.ceil(size / 100.0) * 100;
+
+        let buffer = this.iBuffers[roundedSize];
+
+        if (!buffer)
+        {
+            this.iBuffers[roundedSize] = buffer = new Uint16Array(roundedSize);
+        }
+
+        return buffer;
+    }
+
+    getAttributeBuffer(size)
+    {
+        const roundedSize = Math.ceil(size / 100.0) * 100;
+
+        let buffer = this.aBuffers[roundedSize];
+
+        if (!buffer)
+        {
+            this.aBuffers[roundedSize] = buffer = new BatchBuffer(roundedSize * this.vertByteSize);
+        }
+
+        return buffer;
     }
 
     /**
@@ -181,7 +198,7 @@ export default class SpriteRenderer extends ObjectRenderer
      */
     flush()
     {
-        if (this.currentIndex === 0)
+        if (this.currentSize === 0)
         {
             return;
         }
@@ -189,11 +206,10 @@ export default class SpriteRenderer extends ObjectRenderer
         const gl = this.renderer.gl;
         const MAX_TEXTURES = this.MAX_TEXTURES;
 
-        const np2 = bitTwiddle.nextPow2(this.currentIndex);
-        const log2 = bitTwiddle.log2(np2);
-        const buffer = this.buffers[log2];
+        const buffer = this.getAttributeBuffer(this.currentSize);
+        const indexBuffer = this.getIndexBuffer(this.currentIndexSize);
 
-        const sprites = this.sprites;
+        const elements = this.elements;
         const groups = this.groups;
 
         const float32View = buffer.float32View;
@@ -202,16 +218,17 @@ export default class SpriteRenderer extends ObjectRenderer
         const touch = this.renderer.textureGC.count;
 
         let index = 0;
+        let indexCount = 0;
         let nextTexture;
         let currentTexture;
-        let groupCount = 1;
-        let textureId = 0;
+        let groupCount = 0;
+
         let textureCount = 0;
         let currentGroup = groups[0];
-        let vertexData;
-        let uvs;
-        let blendMode = premultiplyBlendMode[
-            sprites[0]._texture.baseTexture.premultiplyAlpha ? 1 : 0][sprites[0].blendMode];
+
+        let blendMode = premultiplyBlendMode[1][elements[0].blendMode];
+        // premultiplyBlendMode[
+        //  sprites[0]._texture.baseTexture.premultiplyAlpha ? 1 : 0][sprites[0].blendMode];
 
         currentGroup.textureCount = 0;
         currentGroup.start = 0;
@@ -221,17 +238,23 @@ export default class SpriteRenderer extends ObjectRenderer
 
         let i;
 
+        // console.log("<>")
         for (i = 0; i < this.currentIndex; ++i)
         {
             // upload the sprite elements...
             // they have all ready been calculated so we just need to push them into the buffer.
 
-            const sprite = sprites[i];
+            const sprite = elements[i];
+
+            if (!sprite.isGraphics)
+            {
+                sprite.uvs = sprite._texture._uvs.uvsFloat32;
+            }
 
             nextTexture = sprite._texture.baseTexture;
-            textureId = nextTexture._id;
 
-            const spriteBlendMode = premultiplyBlendMode[Number(nextTexture.premultiplyAlpha)][sprite.blendMode];
+            //            const spriteBlendMode = premultiplyBlendMode[nextTexture.premultiplyAlpha ? 0 : 1][sprite.blendMode];
+            const spriteBlendMode = premultiplyBlendMode[nextTexture.premultiplyAlpha ? 0 : 1][sprite.blendMode];
 
             if (blendMode !== spriteBlendMode)
             {
@@ -255,12 +278,12 @@ export default class SpriteRenderer extends ObjectRenderer
 
                         textureCount = 0;
 
-                        currentGroup.size = i - currentGroup.start;
+                        currentGroup.size = indexCount - currentGroup.start;
 
                         currentGroup = groups[groupCount++];
                         currentGroup.textureCount = 0;
                         currentGroup.blend = blendMode;
-                        currentGroup.start = i;
+                        currentGroup.start = indexCount;
                     }
 
                     nextTexture.touched = touch;
@@ -272,69 +295,16 @@ export default class SpriteRenderer extends ObjectRenderer
                 }
             }
 
-            vertexData = sprite.vertexData;
+            this.renderGeometry(sprite, float32View, uint32View, indexBuffer, index, indexCount);// argb, nextTexture._id, float32View, uint32View, indexBuffer, index, indexCount);
 
-            // TODO this sum does not need to be set each frame..
-            uvs = sprite._texture._uvs.uvsUint32;
-            textureId = nextTexture._id;
-
-            if (this.renderer.roundPixels)
-            {
-                const resolution = this.renderer.resolution;
-
-                // xy
-                float32View[index] = ((vertexData[0] * resolution) | 0) / resolution;
-                float32View[index + 1] = ((vertexData[1] * resolution) | 0) / resolution;
-
-                // xy
-                float32View[index + 5] = ((vertexData[2] * resolution) | 0) / resolution;
-                float32View[index + 6] = ((vertexData[3] * resolution) | 0) / resolution;
-
-                // xy
-                float32View[index + 10] = ((vertexData[4] * resolution) | 0) / resolution;
-                float32View[index + 11] = ((vertexData[5] * resolution) | 0) / resolution;
-
-                // xy
-                float32View[index + 15] = ((vertexData[6] * resolution) | 0) / resolution;
-                float32View[index + 16] = ((vertexData[7] * resolution) | 0) / resolution;
-            }
-            else
-            {
-                // xy
-                float32View[index] = vertexData[0];
-                float32View[index + 1] = vertexData[1];
-
-                // xy
-                float32View[index + 5] = vertexData[2];
-                float32View[index + 6] = vertexData[3];
-
-                // xy
-                float32View[index + 10] = vertexData[4];
-                float32View[index + 11] = vertexData[5];
-
-                // xy
-                float32View[index + 15] = vertexData[6];
-                float32View[index + 16] = vertexData[7];
-            }
-
-            uint32View[index + 2] = uvs[0];
-            uint32View[index + 7] = uvs[1];
-            uint32View[index + 12] = uvs[2];
-            uint32View[index + 17] = uvs[3];
-            /* eslint-disable max-len */
-            const alpha = Math.min(sprite.worldAlpha, 1.0);
-            const argb = alpha < 1.0 && nextTexture.premultiplyAlpha ? premultiplyTint(sprite._tintRGB, alpha)
-                : sprite._tintRGB + (alpha * 255 << 24);
-
-            uint32View[index + 3] = uint32View[index + 8] = uint32View[index + 13] = uint32View[index + 18] = argb;
-
-            float32View[index + 4] = float32View[index + 9] = float32View[index + 14] = float32View[index + 19] = textureId;
-            /* eslint-enable max-len */
-
-            index += 20;
+            // push a graphics..
+            index += (sprite.vertexData.length / 2) * 6;
+            indexCount += sprite.indices.length;
         }
 
-        currentGroup.size = i - currentGroup.start;
+        currentGroup.size = indexCount - currentGroup.start;
+
+        //        this.indexBuffer.update();
 
         if (!settings.CAN_UPLOAD_SAME_BUFFER)
         {
@@ -343,30 +313,25 @@ export default class SpriteRenderer extends ObjectRenderer
             if (this.vaoMax <= this.vertexCount)
             {
                 this.vaoMax++;
-
-                const buffer = new Buffer(null, false);
-
                 /* eslint-disable max-len */
-                this.vaos[this.vertexCount] = new Geometry()
-                    .addAttribute('aVertexPosition', buffer, 2, false, gl.FLOAT)
-                    .addAttribute('aTextureCoord', buffer, 2, true, gl.UNSIGNED_SHORT)
-                    .addAttribute('aColor', buffer, 4, true, gl.UNSIGNED_BYTE)
-                    .addAttribute('aTextureId', buffer, 1, true, gl.FLOAT)
-                    .addIndex(this.indexBuffer);
-                /* eslint-enable max-len */
-
-                this.vertexBuffers[this.vertexCount] = buffer;
+                this.vaos[this.vertexCount] = new Geometry2d();
             }
 
-            this.vertexBuffers[this.vertexCount].update(buffer.vertices, 0);
+            this.vaos[this.vertexCount]._buffer.update(buffer.vertices, 0);
+            this.vaos[this.vertexCount]._indexBuffer.update(indexBuffer, 0);
+
+            //   this.vertexBuffers[this.vertexCount].update(buffer.vertices, 0);
             this.renderer.geometry.bind(this.vaos[this.vertexCount]);
+
+            this.renderer.geometry.updateBuffers();
 
             this.vertexCount++;
         }
         else
         {
             // lets use the faster option, always use buffer number 0
-            this.vertexBuffers[this.vertexCount].update(buffer.vertices, 0);
+            this.vaos[this.vertexCount]._buffer.update(buffer.vertices, 0);
+            this.vaos[this.vertexCount]._indexBuffer.update(indexBuffer, 0);
 
             this.renderer.geometry.updateBuffers();
         }
@@ -385,13 +350,83 @@ export default class SpriteRenderer extends ObjectRenderer
             // set the blend mode..
             this.renderer.state.setBlendMode(group.blend);
 
-            gl.drawElements(gl.TRIANGLES, group.size * 6, gl.UNSIGNED_SHORT, group.start * 6 * 2);
+            gl.drawElements(gl.TRIANGLES, group.size, gl.UNSIGNED_SHORT, group.start * 2);
         }
 
         // reset elements for the next flush
         this.currentIndex = 0;
+        this.currentSize = 0;
+        this.currentIndexSize = 0;
     }
 
+    renderGeometry(element, float32View, uint32View, indexBuffer, index, indexCount)
+    {
+        const p = index / 6;// float32View.length / 6 / 2;
+        const uvs = element.uvs;
+        const indicies = element.indices;// geometry.getIndex().data;// indicies;
+        const vertexData = element.vertexData;
+        const textureId = element._texture.baseTexture._id;
+
+        const alpha = Math.min(element.worldAlpha, 1.0);
+        const argb = 0xFFFFFF + (alpha * 255 << 24);// sprite.geometry.colors[0]
+
+        // lets not worry about tint! for now..
+        for (let i = 0; i < vertexData.length; i += 2)
+        {
+            float32View[index++] = vertexData[i];
+            float32View[index++] = vertexData[i + 1];
+            float32View[index++] = uvs[i];
+            float32View[index++] = uvs[i + 1];
+            uint32View[index++] = argb;
+            float32View[index++] = textureId;
+        }
+
+        for (let i = 0; i < indicies.length; i++)
+        {
+            indexBuffer[indexCount++] = p + indicies[i];
+        }
+    }
+    /*
+    renderQuad(vertexData, uvs, argb, textureId, float32View, uint32View, indexBuffer, index, indexCount)
+    {
+        const p = index / 6;
+
+        float32View[index++] = vertexData[0];
+        float32View[index++] = vertexData[1];
+        float32View[index++] = uvs.x0;
+        float32View[index++] = uvs.y0;
+        uint32View[index++] = argb;
+        float32View[index++] = textureId;
+
+        float32View[index++] = vertexData[2];
+        float32View[index++] = vertexData[3];
+        float32View[index++] = uvs.x1;
+        float32View[index++] = uvs.y1;
+        uint32View[index++] = argb;
+        float32View[index++] = textureId;
+
+        float32View[index++] = vertexData[4];
+        float32View[index++] = vertexData[5];
+        float32View[index++] = uvs.x2;
+        float32View[index++] = uvs.y2;
+        uint32View[index++] = argb;
+        float32View[index++] = textureId;
+
+        float32View[index++] = vertexData[6];
+        float32View[index++] = vertexData[7];
+        float32View[index++] = uvs.x3;
+        float32View[index++] = uvs.y3;
+        uint32View[index++] = argb;
+        float32View[index++] = textureId;
+
+        indexBuffer[indexCount++] = p + 0;
+        indexBuffer[indexCount++] = p + 1;
+        indexBuffer[indexCount++] = p + 2;
+        indexBuffer[indexCount++] = p + 0;
+        indexBuffer[indexCount++] = p + 2;
+        indexBuffer[indexCount++] = p + 3;
+    }
+*/
     /**
      * Starts a new sprite batch.
      */

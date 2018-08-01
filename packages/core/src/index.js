@@ -30,3 +30,4 @@ export { default as Filter } from './filters/Filter';
 export { default as Attribute } from './geometry/Attribute';
 export { default as Buffer } from './geometry/Buffer';
 export { default as Geometry } from './geometry/Geometry';
+export { default as Geometry2d } from './geometry/Geometry2d';

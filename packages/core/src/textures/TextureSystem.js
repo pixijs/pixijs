@@ -95,12 +95,6 @@ export default class TextureSystem extends System
     {
         const { gl } = this;
 
-        if (this.currentLocation !== location)
-        {
-            this.currentLocation = location;
-            gl.activeTexture(gl.TEXTURE0 + location);
-        }
-
         if (texture)
         {
             texture = texture.baseTexture || texture;
@@ -111,7 +105,16 @@ export default class TextureSystem extends System
 
                 const glTexture = texture._glTextures[this.CONTEXT_UID] || this.initTexture(texture);
 
-                gl.bindTexture(texture.target, glTexture.texture);
+                if (this.boundTextures[location] !== texture)
+                {
+                    if (this.currentLocation !== location)
+                    {
+                        this.currentLocation = location;
+                        gl.activeTexture(gl.TEXTURE0 + location);
+                    }
+
+                    gl.bindTexture(texture.target, glTexture.texture);
+                }
 
                 if (glTexture.dirtyId !== texture.dirtyId)
                 {
@@ -123,6 +126,12 @@ export default class TextureSystem extends System
         }
         else
         {
+            if (this.currentLocation !== location)
+            {
+                this.currentLocation = location;
+                gl.activeTexture(gl.TEXTURE0 + location);
+            }
+
             gl.bindTexture(gl.TEXTURE_2D, this.emptyTextures[gl.TEXTURE_2D].texture);
             this.boundTextures[location] = null;
         }

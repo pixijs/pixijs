@@ -60,6 +60,7 @@ export default class Mesh extends RawMesh
          * @member {Float32Array}
          */
         this.vertices = geometry.getAttribute('aVertexPosition').data;
+        this.indices = geometry.getIndex().data;
 
         this.uniforms = uniforms;
 
@@ -110,6 +111,13 @@ export default class Mesh extends RawMesh
          * @default true
          */
         this.autoUpdate = true;
+
+        this.isGraphics = true;
+
+        this.vertexDirty = true;
+        this.vertexData = new Float32Array(this.vertices.length);
+        this.batchable = true;
+        // this.vertexCache;
     }
 
     /**
@@ -192,7 +200,48 @@ export default class Mesh extends RawMesh
     {
         const baseTex = this._texture.baseTexture;
 
-        premultiplyRgba(this._tintRGB, this.worldAlpha, this.uniforms.uColor, baseTex.premultiplyAlpha);
+        // TODO benchmark check for attribute size..
+        if (this.batchable && this.vertices.length <= 200 * 2)
+        {
+            if (this.vertexDirty || this._transformID !== this.transform._worldID)
+            {
+                this._transformID = this.transform._worldID;
+
+                if (this.vertexData.length !== this.vertices.length)
+                {
+                    this.vertexData = new Float32Array(this.vertices.length);
+                }
+
+                const wt = this.transform.worldTransform;
+                const a = wt.a;
+                const b = wt.b;
+                const c = wt.c;
+                const d = wt.d;
+                const tx = wt.tx;
+                const ty = wt.ty;
+                const vertices = this.vertices;
+                const vertexData = this.vertexData;
+
+                for (let i = 0; i < vertexData.length / 2; i++)
+                {
+                    const x = vertices[(i * 2)];
+                    const y = vertices[(i * 2) + 1];
+
+                    vertexData[(i * 2)] = (a * x) + (c * y) + tx;
+                    vertexData[(i * 2) + 1] = (b * x) + (d * y) + ty;
+                }
+
+                this.vertexDirty = false;
+            }
+            // batch geometry..
+            this.pluginName = 'sprite';
+        }
+        else
+        {
+            this.pluginName = 'mesh';
+            premultiplyRgba(this._tintRGB, this.worldAlpha, this.uniforms.uColor, baseTex.premultiplyAlpha);
+        }
+
         super._render(renderer);
     }
     /**

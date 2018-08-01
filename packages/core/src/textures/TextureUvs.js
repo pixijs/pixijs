@@ -27,6 +27,7 @@ export default class TextureUvs
         this.y3 = 1;
 
         this.uvsUint32 = new Uint32Array(4);
+        this.uvsFloat32 = new Float32Array(8);
     }
 
     /**
@@ -87,5 +88,14 @@ export default class TextureUvs
         this.uvsUint32[1] = (((this.y1 * 65535) & 0xFFFF) << 16) | ((this.x1 * 65535) & 0xFFFF);
         this.uvsUint32[2] = (((this.y2 * 65535) & 0xFFFF) << 16) | ((this.x2 * 65535) & 0xFFFF);
         this.uvsUint32[3] = (((this.y3 * 65535) & 0xFFFF) << 16) | ((this.x3 * 65535) & 0xFFFF);
+
+        this.uvsFloat32[0] = this.x0;
+        this.uvsFloat32[1] = this.y0;
+        this.uvsFloat32[2] = this.x1;
+        this.uvsFloat32[3] = this.y1;
+        this.uvsFloat32[4] = this.x2;
+        this.uvsFloat32[5] = this.y2;
+        this.uvsFloat32[6] = this.x3;
+        this.uvsFloat32[7] = this.y3;
     }
 }
