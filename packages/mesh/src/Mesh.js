@@ -141,8 +141,9 @@ export default class Mesh extends RawMesh
     set tint(value)
     {
         this._tint = value;
+        this._tintRGB = (value >> 16) + (value & 0xff00) + ((value & 0xff) << 16);
 
-        hex2rgb(this._tint, this._tintRGB);
+        //        hex2rgb(this._tint, this._tintRGB);
     }
 
     /**

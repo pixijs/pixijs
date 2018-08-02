@@ -1,6 +1,7 @@
 import { Geometry2d,
     ObjectRenderer,
-    checkMaxIfStatementsInShader } from '@pixi/core';
+    checkMaxIfStatementsInShader,
+    Buffer } from '@pixi/core';
 import { settings } from '@pixi/settings';
 import { premultiplyBlendMode, premultiplyTint, createIndicesForQuads } from '@pixi/utils';
 import bitTwiddle from 'bit-twiddle';
@@ -59,6 +60,8 @@ export default class SpriteRenderer extends ObjectRenderer
         this.attributeBuffers = {};
         this.aBuffers = {};
         this.iBuffers = {};
+
+        this.defualtSpriteIndexBuffer = new Buffer(createIndicesForQuads(this.size), true, true);
 
         /**
          * Holds the defualt indices of the geometry (quads) to draw
@@ -333,6 +336,12 @@ export default class SpriteRenderer extends ObjectRenderer
             this.vaos[this.vertexCount]._buffer.update(buffer.vertices, 0);
             this.vaos[this.vertexCount]._indexBuffer.update(indexBuffer, 0);
 
+            //   if (true)// this.spriteOnly)
+            {
+                // this.vaos[this.vertexCount].indexBuffer = this.defualtSpriteIndexBuffer;
+                // this.vaos[this.vertexCount].buffers[1] = this.defualtSpriteIndexBuffer;
+            }
+
             this.renderer.geometry.updateBuffers();
         }
 
@@ -368,7 +377,9 @@ export default class SpriteRenderer extends ObjectRenderer
         const textureId = element._texture.baseTexture._id;
 
         const alpha = Math.min(element.worldAlpha, 1.0);
-        const argb = 0xFFFFFF + (alpha * 255 << 24);// sprite.geometry.colors[0]
+
+        const argb = alpha < 1.0 && element._texture.baseTexture.premultiplyAlpha ? premultiplyTint(element._tintRGB, alpha)
+            : element._tintRGB + (alpha * 255 << 24);
 
         // lets not worry about tint! for now..
         for (let i = 0; i < vertexData.length; i += 2)
