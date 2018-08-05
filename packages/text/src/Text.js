@@ -135,7 +135,7 @@ export default class Text extends Sprite
         this._font = this._style.toFontString();
 
         const context = this.context;
-        const measured = TextMetrics.measureText(this._text, this._style, this._style.wordWrap, this.canvas);
+        const measured = TextMetrics.measureText(this._text || ' ', this._style, this._style.wordWrap, this.canvas);
         const width = measured.width;
         const height = measured.height;
         const lines = measured.lines;
@@ -637,7 +637,7 @@ export default class Text extends Sprite
 
     set text(text) // eslint-disable-line require-jsdoc
     {
-        text = String(text === '' || text === null || text === undefined ? ' ' : text);
+        text = String(text === null || text === undefined ? '' : text);
 
         if (this._text === text)
         {
