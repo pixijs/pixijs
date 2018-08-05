@@ -75,6 +75,14 @@ export default class Mesh extends Container
         this._glDatas = {};
 
         /**
+         * Do we want to force this display component to be drawn at whole pixels only.
+         *
+         * @member {boolean}
+         * @default false
+         */
+        this.roundPixels = false;
+
+        /**
          * Plugin that is responsible for rendering this element.
          * Allows to customize the rendering process without overriding '_render' & '_renderCanvas' methods.
          *

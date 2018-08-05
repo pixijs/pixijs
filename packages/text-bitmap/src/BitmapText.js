@@ -135,6 +135,14 @@ export default class BitmapText extends Container
          */
         this.dirty = false;
 
+        /**
+         * Do we want to force this display component to be drawn at whole pixels only.
+         *
+         * @member {boolean}
+         * @default false
+         */
+        this.roundPixels = false;
+
         this.updateText();
     }
 
@@ -272,6 +280,7 @@ export default class BitmapText extends Container
             else
             {
                 c = new Sprite(chars[i].texture);
+                c.roundPixels = this.roundPixels;
                 this._glyphs.push(c);
             }
 
