@@ -15,12 +15,20 @@ describe('PIXI.Spritesheet', function ()
                 const width = Math.floor(spritesheet.data.frames[id].frame.w * spritesheet.baseTexture.sourceScale);
                 const height = Math.floor(spritesheet.data.frames[id].frame.h * spritesheet.baseTexture.sourceScale);
 
-                expect(Object.keys(textures).length).to.equal(1);
-                expect(Object.keys(spritesheet.textures).length).to.equal(1);
+                expect(Object.keys(textures).length).to.equal(5);
+                expect(Object.keys(spritesheet.textures).length).to.equal(5);
                 expect(textures[id]).to.be.an.instanceof(PIXI.Texture);
                 expect(textures[id].width).to.equal(width / spritesheet.resolution);
                 expect(textures[id].height).to.equal(height / spritesheet.resolution);
+                expect(textures[id].defaultAnchor.x).to.equal(0);
+                expect(textures[id].defaultAnchor.y).to.equal(0);
                 expect(textures[id].textureCacheIds.indexOf(id)).to.equal(0);
+
+                expect(this.animations).to.have.property('star').that.is.an('array');
+                expect(this.animations.star.length).to.equal(4);
+                expect(this.animations.star[0].defaultAnchor.x).to.equal(0.5);
+                expect(this.animations.star[0].defaultAnchor.y).to.equal(0.5);
+
                 spritesheet.destroy(true);
                 expect(spritesheet.textures).to.be.null;
                 expect(spritesheet.baseTexture).to.be.null;
