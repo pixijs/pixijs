@@ -1529,7 +1529,7 @@ export default class InteractionManager extends EventEmitter
         interactionEvent.data.originalEvent = event;
 
         // eslint-disable-next-line max-len
-        const hit = this.processInteractive(interactionEvent, this.renderer._lastObjectRendered, this.processPointerOverOut, false);
+        const hit = this.processInteractive(interactionEvent, this.renderer._lastObjectRendered, this.processPointerOverOut, true);
 
         if (hit > 0)
         {
