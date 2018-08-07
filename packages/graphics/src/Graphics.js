@@ -13,11 +13,14 @@ import { Texture } from '@pixi/core';
 import FillStyle from './styles/FillStyle';
 import GraphicsGeometry from './GraphicsGeometry';
 import LineStyle from './styles/LineStyle';
-import PrimitiveShader from './shaders/PrimitiveShader';
 import BezierUtils from './utils/BezierUtils';
 import QuadraticUtils from './utils/QuadraticUtils';
 import ArcUtils from './utils/ArcUtils';
 import Star from './utils/Star';
+import generateMultiTextureShader from './generateMultiTextureShader';
+// import BatchPart from '@pixi/core/src/geometry/BatchPart';
+
+let multiTextureShader = null;
 
 /**
  * The Graphics class contains methods used to draw primitive shapes such as lines, circles and
@@ -38,7 +41,9 @@ export default class Graphics extends RawMesh
         const ownsGeometry = geometry === null;
 
         geometry = geometry || new GraphicsGeometry();
-        const shader = new PrimitiveShader();
+
+        if (!multiTextureShader)multiTextureShader = generateMultiTextureShader(null, 3);
+        const shader = multiTextureShader;
 
         super(geometry, shader, null, 5); // DRAW_MODES.TRIANGLE_STRIP
 
@@ -50,6 +55,8 @@ export default class Graphics extends RawMesh
          * @default 0xFFFFFF
          */
         this.tint = 0xFFFFFF;
+
+        this.isGraphics = true;
 
         /**
          * Current display blend mode.
@@ -120,6 +127,12 @@ export default class Graphics extends RawMesh
          * @memberof PIXI.Graphics#
          * @default false
          */
+
+        // a collections of batches!
+        // these can be drawn by the pixi batcher
+        this.batches = [];
+
+        this.vertexData = [];
     }
 
     /**
@@ -130,6 +143,8 @@ export default class Graphics extends RawMesh
      */
     clone()
     {
+        this.finishPoly();
+
         return new Graphics(this.geometry);
     }
 
@@ -695,24 +710,80 @@ export default class Graphics extends RawMesh
      */
     _render(renderer)
     {
-        renderer.batch.flush();
-
         this.finishPoly();
 
         const geometry = this.geometry;
 
-        geometry.updateAttributes();
+        // console.log(geometry);
 
-        this.shader.uniforms.translationMatrix = this.transform.worldTransform.toArray(true);
+        // batch part..
+        // batch it!
+        geometry.updateBatches();
+        //        geometry.updateAttributes();
 
-        if (geometry.drawCalls.length)
+        if (geometry.batchable)
         {
+            // console.log(geometry.batches);
+
+            if (!this.____done)
+            {
+                this.batches = [];
+                this.____done = true;
+
+                this.vertexData = new Float32Array(geometry.points);
+
+                const blendMode = this.blendMode;
+
+                for (let i = 0; i < geometry.batches.length; i++)
+                {
+                    const gI = geometry.batches[i];
+
+                    const _tintRGB = gI.style.color;
+
+                    const vertexData = new Float32Array(this.vertexData.buffer, gI.attribStart * 4 * 2, gI.attribSize * 2); // new Float32Array(gI.vertices);
+                    const uvs = new Float32Array(geometry.uvsFloat32.buffer, gI.attribStart * 4 * 2, gI.attribSize * 2); // new Float32Array(gI.vertices);
+                    const indices = new Uint16Array(geometry.indicesUint16.buffer, gI.start * 2, gI.size); // new Float32Array(gI.vertices);
+
+                    const batch = {
+                        vertexData,
+                        blendMode,
+                        indices,
+                        uvs,
+                        _tintRGB,
+                        _texture: gI.style.texture,
+                        alpha: gI.style.alpha,
+                        worldAlpha: 1 };
+
+                    this.batches[i] = batch;
+                }
+            }
+
+            renderer.batch.setObjectRenderer(renderer.plugins.sprite);
+
+            this.calculateVerticies();
+
+            if (this.batches.length)
+            {
+                for (let i = 0; i < this.batches.length; i++)
+                {
+                    const batch = this.batches[i];
+
+                    batch.worldAlpha = this.worldAlpha * batch.alpha;
+
+                    renderer.plugins.sprite.render(batch);
+                }
+            }
+        }
+        else
+        {
+            // no batching...
+            renderer.batch.flush();
+
+            this.shader.uniforms.translationMatrix = this.transform.worldTransform.toArray(true);
+
             // the first draw call, we can set the uniforms of the shader directly here.
-            const firstCall = geometry.drawCalls[0];
 
             // this means that we can tack advantage of the sync function of pixi!
-            this.shader.uniforms.uSampler = firstCall.texture;
-
             // bind and sync uniforms..
             // there is a way to optimise this..
             renderer.shader.bind(this.shader);
@@ -723,18 +794,26 @@ export default class Graphics extends RawMesh
             // set state..
             renderer.state.setState(this.state);
 
-            renderer.geometry.draw(firstCall.type, firstCall.size, firstCall.start);
-
             // then render the rest of them...
-            for (let i = 1; i < geometry.drawCalls.length; i++)
+            for (let i = 0; i < geometry.drawCalls.length; i++)
             {
                 const drawCall = geometry.drawCalls[i];
 
-                renderer.texture.bind(drawCall.texture, 0);
+                const groupTextureCount = drawCall.textureCount;
+
+                //                console.log(drawCall);
+                for (let j = 0; j < groupTextureCount; j++)
+                {
+                    // console.log('bind');
+                    renderer.texture.bind(drawCall.textures[j], j);
+                }
+
+                // renderer.texture.bind(drawCall.texture, 0);
                 // bind the geometry...
                 renderer.geometry.draw(drawCall.type, drawCall.size, drawCall.start);
             }
         }
+
         // console.log('---')
     }
 
@@ -745,6 +824,7 @@ export default class Graphics extends RawMesh
      */
     _calculateBounds()
     {
+        this.finishPoly();
         const lb = this.geometry.bounds;
 
         this._bounds.addFrame(this.transform, lb.minX, lb.minY, lb.maxX, lb.maxY);
@@ -761,6 +841,44 @@ export default class Graphics extends RawMesh
         this.worldTransform.applyInverse(point, Graphics._TEMP_POINT);
 
         return this.geometry.containsPoint(Graphics._TEMP_POINT);
+    }
+
+    calculateVerticies()
+    {
+        if (this._transformID === this.transform._worldID)
+        {
+            return;
+        }
+
+        this._transformID = this.transform._worldID;
+
+        const wt = this.transform.worldTransform;
+        const a = wt.a;
+        const b = wt.b;
+        const c = wt.c;
+        const d = wt.d;
+        const tx = wt.tx;
+        const ty = wt.ty;
+
+        //  for (let i = 0; i < this.batches.length; i++)
+        {
+            //   const batch = this.batches[i];
+
+            const data = this.geometry.points;// batch.vertexDataOriginal;
+            const vertexData = this.vertexData;
+
+            let count = 0;
+
+            //  console.log('.,', data.length);
+            for (let i = 0; i < data.length; i += 2)
+            {
+                const x = data[i];
+                const y = data[i + 1];
+
+                vertexData[count++] = (a * x) + (c * y) + tx;
+                vertexData[count++] = (d * y) + (b * x) + ty;
+            }
+        }
     }
 
     /**

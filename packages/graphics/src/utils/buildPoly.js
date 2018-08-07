@@ -51,9 +51,7 @@ export default {
             for (let i = 0; i < triangles.length; i += 3)
             {
                 indices.push(triangles[i] + vertPos);
-                indices.push(triangles[i] + vertPos);
                 indices.push(triangles[i + 1] + vertPos);
-                indices.push(triangles[i + 2] + vertPos);
                 indices.push(triangles[i + 2] + vertPos);
             }
 

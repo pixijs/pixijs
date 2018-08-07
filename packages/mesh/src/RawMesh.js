@@ -51,7 +51,7 @@ export default class RawMesh extends Container
          * the webGL state the mesh requires to render
          * @type {PIXI.State}
          */
-        this.state = state || new State();
+        this.state = state || State.for2d();
 
         /**
          * The way the Mesh should be drawn, can be any of the {@link PIXI.RawMesh.DRAW_MODES} consts

@@ -29,8 +29,7 @@ export default {
         points.push(x, y,
             x + width, y,
             x + width, y + height,
-            x, y + height,
-            x, y);
+            x, y + height);
     },
 
     triangulate(graphicsData, graphicsGeometry)
@@ -45,7 +44,7 @@ export default {
             points[6], points[7],
             points[4], points[5]);
 
-        // insert 2 dead triangles..
-        graphicsGeometry.indices.push(vertPos, vertPos, vertPos + 1, vertPos + 2, vertPos + 3, vertPos + 3);
+        graphicsGeometry.indices.push(vertPos, vertPos + 1, vertPos + 2,
+            vertPos + 1, vertPos + 2, vertPos + 3);
     },
 };

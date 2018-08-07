@@ -8,6 +8,20 @@ import FillStyle from './FillStyle';
  */
 export default class LineStyle extends FillStyle
 {
+    toJSON()
+    {
+        return {
+            color: this.color,
+            alpha: this.alpha,
+            texture: this.texture,
+            matrix: this.matrix,
+            visible: this.visible,
+            width: this.width,
+            alignment: this.alignment,
+            native: this.native,
+        };
+    }
+
     /**
      * Reset the line style to default.
      */

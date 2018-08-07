@@ -1,3 +1,5 @@
+import { Texture } from '@pixi/core';
+
 /**
  * Fill style object for Graphics.
  * @class
@@ -17,20 +19,13 @@ export default class FillStyle
      */
     toJSON()
     {
-        if (!this.visible)
-        {
-            return null;
-        }
-
-        const keys = Object.keys(this);
-        const result = {};
-
-        for (const name in keys)
-        {
-            result[name] = this[name];
-        }
-
-        return result;
+        return {
+            color: this.color,
+            alpha: this.alpha,
+            texture: this.texture,
+            matrix: this.matrix,
+            visible: this.visible,
+        };
     }
 
     /**
@@ -60,7 +55,7 @@ export default class FillStyle
          * @member {string}
          * @default 0
          */
-        this.texture = null;
+        this.texture = Texture.WHITE;
 
         /**
          * The transform aplpied to the texture.

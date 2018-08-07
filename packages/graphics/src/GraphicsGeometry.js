@@ -1,6 +1,5 @@
-import { Buffer, Geometry } from '@pixi/core';
+import { Geometry2d } from '@pixi/core';
 import { Rectangle, SHAPES } from '@pixi/math';
-import { TYPES } from '@pixi/constants';
 
 import GraphicsData from './GraphicsData';
 import buildCircle from './utils/buildCircle';
@@ -8,6 +7,21 @@ import buildLine from './utils/buildLine';
 import buildPoly from './utils/buildPoly';
 import buildRectangle from './utils/buildRectangle';
 import buildRoundedRectangle from './utils/buildRoundedRectangle';
+
+let TICK = 0;
+/**
+ * Map of fill commands for each shape type.
+ *
+ * @member {Object}
+ * @private
+ */
+const fillCommands = {};
+
+fillCommands[SHAPES.POLY] = buildPoly;
+fillCommands[SHAPES.CIRC] = buildCircle;
+fillCommands[SHAPES.ELIP] = buildCircle;
+fillCommands[SHAPES.RECT] = buildRectangle;
+fillCommands[SHAPES.RREC] = buildRoundedRectangle;
 
 /**
  * The Graphics class contains methods used to draw primitive shapes such as lines, circles and
@@ -17,7 +31,7 @@ import buildRoundedRectangle from './utils/buildRoundedRectangle';
  * @extends PIXI.Container
  * @memberof PIXI
  */
-export default class GraphicsGeometry extends Geometry
+export default class GraphicsGeometry extends Geometry2d
 {
     /**
      *
@@ -26,18 +40,6 @@ export default class GraphicsGeometry extends Geometry
     constructor(multiTexture = false)
     {
         super();
-
-        /**
-         * The main buffer
-         * @member {WebGLBuffer}
-         */
-        this.buffer = new Buffer();
-
-        /**
-         * The main buffer
-         * @member {WebGLBuffer}
-         */
-        this.indexBuffer = new Buffer();
 
         /**
          * An array of points to draw
@@ -67,11 +69,7 @@ export default class GraphicsGeometry extends Geometry
          */
         this.indices = [];
 
-        this
-            .addAttribute('aVertexPosition', this.buffer, 2, false, TYPES.FLOAT)
-            .addAttribute('aTextureCoord', this.buffer, 2, true, TYPES.FLOAT)
-            .addAttribute('aColor', this.buffer, 4, true, TYPES.UNSIGNED_BYTE)
-            .addIndex(this.indexBuffer);
+        this.textureIds = [];
 
         if (multiTexture)
         {
@@ -125,6 +123,8 @@ export default class GraphicsGeometry extends Geometry
          */
         this.drawCalls = [];
 
+        this.batches = [];
+
         /**
          * Index of the current last shape in the stack of calls.
          *
@@ -132,19 +132,6 @@ export default class GraphicsGeometry extends Geometry
          * @private
          */
         this.shapeIndex = 0;
-
-        /**
-         * Map of fill commands for each shape type.
-         *
-         * @member {Object}
-         * @private
-         */
-        this.fillCommands = {};
-        this.fillCommands[SHAPES.POLY] = buildPoly;
-        this.fillCommands[SHAPES.CIRC] = buildCircle;
-        this.fillCommands[SHAPES.ELIP] = buildCircle;
-        this.fillCommands[SHAPES.RECT] = buildRectangle;
-        this.fillCommands[SHAPES.RREC] = buildRoundedRectangle;
 
         /**
          * Cache bounds
@@ -186,19 +173,6 @@ export default class GraphicsGeometry extends Geometry
         }
 
         return this._bounds;
-    }
-
-    /**
-     * Add a new draw call.
-     *
-     * @param {string} type
-     * @param {number} size
-     * @param {number} start
-     * @param {PIXI.Texture} texture
-     */
-    addDrawCall(type, size, start, texture)
-    {
-        this.drawCalls.push({ type, size, start, texture });
     }
 
     /**
@@ -335,7 +309,6 @@ export default class GraphicsGeometry extends Geometry
         this.graphicsDataHoles = null;
         this.drawCalls.length = 0;
         this.drawCalls = null;
-        this.fillCommands = null;
         this._bounds = null;
         // this.currentPath = null;
         this._webGL = null;
@@ -387,41 +360,40 @@ export default class GraphicsGeometry extends Geometry
         return false;
     }
 
-    /**
-     * Updates the graphics object
-     *
-     * @private
-     * @param {PIXI.Graphics} graphics - The graphics object to update
-     */
-    updateAttributes()
+    updateBatches()
     {
         if (this.dirty === this.cacheDirty) return;
         if (this.graphicsData.length === 0) return;
 
-        for (let i = 0; i < this.graphicsData.length; i++)
+        if (this.dirty !== this.cacheDirty)
         {
-            const data = this.graphicsData[i];
+            for (let i = 0; i < this.graphicsData.length; i++)
+            {
+                const data = this.graphicsData[i];
 
-            if (data.fillStyle && !data.fillStyle.texture.baseTexture.valid) return;
-            if (data.lineStyle && !data.lineStyle.texture.baseTexture.valid) return;
+                if (data.fillStyle && !data.fillStyle.texture.baseTexture.valid) return;
+                if (data.lineStyle && !data.lineStyle.texture.baseTexture.valid) return;
+            }
         }
 
         this.dirty = this.cacheDirty;
 
-        let lastTexture = null;
         let lastIndex = this.indices.length;
+        let lastAttrib = this.points.length;
 
         const uvs = this.uvs;
-        const colors = this.colors;
 
-        const lastDrawCall = this.drawCalls.pop();
+        let batchPart = this.batches.pop() || { style: null, size: 0, start: 0, attribStart: 0, attribSize: 0 };
 
-        // this is so we can batch the new call if possible..
-        if (lastDrawCall)
-        {
-            lastTexture = lastDrawCall.texture;
-            lastIndex = lastDrawCall.start;
-        }
+        batchPart.style = batchPart.style || this.graphicsData[0].fillStyle || this.graphicsData[0].lineStyle;
+
+        let currentTexture = batchPart.style.texture.baseTexture;
+        let currentColor = batchPart.style.color + batchPart.style.alpha;
+
+        lastIndex = batchPart.start;
+        lastAttrib = this.points.length / 2; // batchPart.attribStart;
+
+        this.batches.push(batchPart);
 
         // TODO - this can be simplified
         for (let i = this.shapeIndex; i < this.graphicsData.length; i++)
@@ -429,7 +401,7 @@ export default class GraphicsGeometry extends Geometry
             this.shapeIndex++;
 
             const data = this.graphicsData[i];
-            const command = this.fillCommands[data.type];
+            const command = fillCommands[data.type];
 
             const fillStyle = data.fillStyle;
             const lineStyle = data.lineStyle;
@@ -446,26 +418,37 @@ export default class GraphicsGeometry extends Geometry
             {
                 const style = (j === 0) ? fillStyle : lineStyle;
 
-                if (!style) continue;
+                if (!style.visible) continue;
 
                 const nextTexture = style.texture.baseTexture;
 
-                // last texture is null at the start..
-                lastTexture = lastTexture || nextTexture;
-
-                nextTexture.wrapMode = 10497;
-
-                if (lastTexture !== nextTexture)
+                if (currentTexture !== nextTexture || (style.color + style.alpha) !== currentColor)
                 {
-                    const index = this.indices.length;
+                    // TODO use a const
+                    nextTexture.wrapMode = 10497;
+                    currentTexture = nextTexture;
+                    currentColor = style.color + style.alpha;
 
-                    if (lastIndex - index)
-                    {
-                        // add a draw call..
-                        this.addDrawCall(5, index - lastIndex, lastIndex, lastTexture);
-                        lastTexture = nextTexture;
-                        lastIndex = index;
-                    }
+                    const index = this.indices.length;
+                    const attribIndex = this.points.length / 2;
+
+                    batchPart.size = index - lastIndex;
+                    batchPart.attribSize = attribIndex - lastAttrib;
+
+                    batchPart = { style, size: 0, start: 0, attribStart: 0, attribSize: 0 };
+
+                    //   batchPart.blend = blendMode;
+                    batchPart.start = index;
+                    batchPart.attribStart = attribIndex;
+
+                    this.batches.push(batchPart);
+
+                    lastIndex = index;
+                    lastAttrib = attribIndex;
+
+                    // TODO add this to the render part..
+
+                    batchPart.style = style;
                 }
 
                 const start = this.points.length / 2;
@@ -491,19 +474,141 @@ export default class GraphicsGeometry extends Geometry
                 const size = (this.points.length / 2) - start;
 
                 this.addUvs(this.points, uvs, style.texture, start, size, style.matrix);
-                this.addColors(colors, style.color, style.alpha, size);
             }
         }
 
         const index = this.indices.length;
+        const attrib = this.points.length / 2;
 
-        this.addDrawCall(5, index - lastIndex, lastIndex, lastTexture);
+        batchPart.size = index - lastIndex;
+        batchPart.attribSize = attrib - lastAttrib;
+
+        this.indicesUint16 = new Uint16Array(this.indices);
+
+        // TODO make this a const..
+        this.batchable = this.points.length < 100 * 2;
+
+        if (this.batchable)// this.) // convert everything to a batch
+        {
+            this.uvsFloat32 = new Float32Array(this.uvs);
+
+            //
+            // offset the indices so that it works with the batcher...
+            for (let i = 0; i < this.batches.length; i++)
+            {
+                const batch = this.batches[i];
+
+                for (let j = 0; j < batch.size; j++)
+                {
+                    const index = batch.start + j;
+
+                    this.indicesUint16[index] = this.indicesUint16[index] - batch.attribStart;
+                }
+            }
+        }
+        else
+        {
+            //   console.log(this.points, this.uvs, this.indices);
+            this.updateAttributes();
+        }
+    }
+
+    updateAttributes()
+    {
+        TICK++;
+
+        this.dirty = this.cacheDirty;
+
+        let lastIndex = this.indices.length;
+
+        const uvs = this.uvs;
+        const colors = this.colors;
+        const textureIds = this.textureIds;
+
+        let currentGroup = { textures: [], textureCount: 0, ids: [], size: 0, start: 0, blend: 0, type: 4 };
+
+        // for (let i = 0; i < currentGroup.textures.length; i++)
+        // {
+        //     currentGroup.textures[i]._enabled = TICK;
+        // }
+
+        let textureCount = currentGroup.textureCount;
+        let currentTexture = null;
+        let textureId = 0;
+
+        lastIndex = currentGroup.start;
+
+        this.drawCalls.push(currentGroup);
+        this.shapeIndex = 0;
+        // TODO - this can be simplified
+        for (let i = this.shapeIndex; i < this.batches.length; i++)
+        {
+            this.shapeIndex++;
+
+            const data = this.batches[i];
+
+            // console.log(data);
+            // TODO add some full on MAX_TEXTURE CODE..
+            const MAX_TEXTURES = 8;
+
+            const style = data.style;
+
+            const nextTexture = style.texture.baseTexture;
+
+            if (currentTexture !== nextTexture)
+            {
+                currentTexture = nextTexture;
+
+                if (nextTexture._enabled !== TICK)
+                {
+                    if (textureCount === MAX_TEXTURES)
+                    {
+                        TICK++;
+
+                        textureCount = 0;
+
+                        const index = data.start;
+
+                        currentGroup.size = index - lastIndex;
+
+                        currentGroup = { textures: [], textureCount: 0, ids: [], size: 0, start: 0, blend: 0, type: 4 };// groups[groupCount++];
+                        currentGroup.textureCount = 0;
+
+                        currentGroup.start = lastIndex;
+                        this.drawCalls.push(currentGroup);
+
+                        lastIndex = index;
+                    }
+
+                    // TODO add this to the render part..
+                    nextTexture.touched = 1;// touch;
+                    nextTexture._enabled = TICK;
+                    nextTexture._id = textureCount;
+                    nextTexture.wrapMode = 10497;
+
+                    currentGroup.textures[currentGroup.textureCount++] = nextTexture;
+                    textureCount++;
+                }
+            }
+
+            const size = data.attribSize;
+
+            textureId = nextTexture._id;
+
+            this.addColors(colors, style.color, style.alpha, size);
+            this.addTextureIds(textureIds, textureId, size);
+        }
+
+        const index = this.indices.length;
+
+        currentGroup.size = index - lastIndex;
 
         // upload..
         // merge for now!
         const verts = this.points;
 
-        const glPoints = new ArrayBuffer(verts.length * 8 * 4);
+        // verts are 2 positions.. so we * by 3 as there are 6 properties.. then 4 cos its bytes
+        const glPoints = new ArrayBuffer(verts.length * 3 * 4);
         const f32 = new Float32Array(glPoints);
         const u32 = new Uint32Array(glPoints);
 
@@ -518,13 +623,12 @@ export default class GraphicsGeometry extends Geometry
             f32[p++] = uvs[(i * 2) + 1];
 
             u32[p++] = colors[i];
+
+            f32[p++] = textureIds[i];
         }
 
-        this.buffer.update(glPoints);
-
-        const glIndices = new Uint16Array(this.indices);
-
-        this.indexBuffer.update(glIndices);
+        this._buffer.update(glPoints);
+        this._indexBuffer.update(this.indicesUint16);
     }
 
     /**
@@ -539,7 +643,7 @@ export default class GraphicsGeometry extends Geometry
         {
             const hole = holes[i];
 
-            const command = this.fillCommands[hole.type];
+            const command = fillCommands[hole.type];
 
             command.build(hole);
 
@@ -707,14 +811,23 @@ export default class GraphicsGeometry extends Geometry
      */
     addColors(colors, color, alpha, size)
     {
-        const tRGB = (color >> 16)
-        + (color & 0xff00)
-        + ((color & 0xff) << 16)
+        // TODO use the premultiply bits Ivan added
+        const tRGB = (color >> 16) * alpha
+        + (color & 0xff00) * alpha
+        + ((color & 0xff) << 16) * alpha
         + (alpha * 255 << 24);
 
         while (size-- > 0)
         {
             colors.push(tRGB);
+        }
+    }
+
+    addTextureIds(textureIds, id, size)
+    {
+        while (size-- > 0)
+        {
+            textureIds.push(id);
         }
     }
 

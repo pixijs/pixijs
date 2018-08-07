@@ -223,14 +223,14 @@ function buildLine(graphicsData, graphicsGeometry)
 
     const indices = graphicsGeometry.indices;
 
-    indices.push(indexStart);
+    // indices.push(indexStart);
 
-    for (let i = 0; i < indexCount; ++i)
+    for (let i = 0; i < indexCount - 2; ++i)
     {
-        indices.push(indexStart++);
-    }
+        indices.push(indexStart, indexStart + 1, indexStart + 2);
 
-    indices.push(indexStart - 1);
+        indexStart++;
+    }
 }
 
 /**

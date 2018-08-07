@@ -74,7 +74,7 @@ export default {
             verts.push(points[i], points[i + 1]);
 
             // add some uvs
-            indices.push(center, vertPos++);
+            indices.push(vertPos++, center, vertPos);
         }
     },
 };

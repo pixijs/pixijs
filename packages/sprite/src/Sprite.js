@@ -125,7 +125,11 @@ export default class Sprite extends Container
         this._transformTrimmedID = -1;
         this._textureTrimmedID = -1;
 
+        // Batchable stuff..
         this.indices = indices;
+        this.uvs = null;
+        this.size = 4;
+        this.start = 0;
 
         /**
          * Plugin that is responsible for rendering this element.
@@ -147,6 +151,8 @@ export default class Sprite extends Container
         this._textureID = -1;
         this._textureTrimmedID = -1;
         this.cachedTint = 0xFFFFFF;
+
+        this.uvs = this._texture._uvs.uvsFloat32;
 
         // so if _width is 0 then width was not set..
         if (this._width)

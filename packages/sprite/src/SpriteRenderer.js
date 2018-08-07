@@ -1,10 +1,10 @@
 import { Geometry2d,
     ObjectRenderer,
     checkMaxIfStatementsInShader,
-    Buffer } from '@pixi/core';
+    Buffer, State } from '@pixi/core';
 import { settings } from '@pixi/settings';
 import { premultiplyBlendMode, premultiplyTint, createIndicesForQuads } from '@pixi/utils';
-import bitTwiddle from 'bit-twiddle';
+
 import BatchBuffer from './BatchBuffer';
 import generateMultiTextureShader from './generateMultiTextureShader';
 import { ENV } from '@pixi/constants';
@@ -49,7 +49,7 @@ export default class SpriteRenderer extends ObjectRenderer
          *
          * @member {number}
          */
-        this.size = 2000 * 4 * 2;// settings.SPRITE_BATCH_SIZE; // 2000 is a nice balance between mobile / desktop
+        this.size = 2000 * 4;// settings.SPRITE_BATCH_SIZE; // 2000 is a nice balance between mobile / desktop
 
         this.currentSize = 0;
         this.currentIndexSize = 0;
@@ -61,7 +61,7 @@ export default class SpriteRenderer extends ObjectRenderer
         this.aBuffers = {};
         this.iBuffers = {};
 
-        this.defualtSpriteIndexBuffer = new Buffer(createIndicesForQuads(this.size), true, true);
+        //     this.defualtSpriteIndexBuffer = new Buffer(createIndicesForQuads(this.size), true, true);
 
         /**
          * Holds the defualt indices of the geometry (quads) to draw
@@ -98,6 +98,7 @@ export default class SpriteRenderer extends ObjectRenderer
         this.vertexCount = 0;
 
         this.renderer.on('prerender', this.onPrerender, this);
+        this.state = State.for2d();
     }
 
     /**
@@ -150,7 +151,7 @@ export default class SpriteRenderer extends ObjectRenderer
      */
     render(element)
     {
-        if (!element.isGraphics && !element._texture._uvs)
+        if (!element._texture._uvs)
         {
             return;
         }
@@ -229,9 +230,7 @@ export default class SpriteRenderer extends ObjectRenderer
         let textureCount = 0;
         let currentGroup = groups[0];
 
-        let blendMode = premultiplyBlendMode[1][elements[0].blendMode];
-        // premultiplyBlendMode[
-        //  sprites[0]._texture.baseTexture.premultiplyAlpha ? 1 : 0][sprites[0].blendMode];
+        let blendMode = -1;// premultiplyBlendMode[elements[0]._texture.baseTexture.premultiplyAlpha ? 0 : ][elements[0].blendMode];
 
         currentGroup.textureCount = 0;
         currentGroup.start = 0;
@@ -249,15 +248,9 @@ export default class SpriteRenderer extends ObjectRenderer
 
             const sprite = elements[i];
 
-            if (!sprite.isGraphics)
-            {
-                sprite.uvs = sprite._texture._uvs.uvsFloat32;
-            }
-
             nextTexture = sprite._texture.baseTexture;
 
-            //            const spriteBlendMode = premultiplyBlendMode[nextTexture.premultiplyAlpha ? 0 : 1][sprite.blendMode];
-            const spriteBlendMode = premultiplyBlendMode[nextTexture.premultiplyAlpha ? 0 : 1][sprite.blendMode];
+            const spriteBlendMode = premultiplyBlendMode[nextTexture.premultiplyAlpha ? 1 : 0][sprite.blendMode];
 
             if (blendMode !== spriteBlendMode)
             {
@@ -345,7 +338,13 @@ export default class SpriteRenderer extends ObjectRenderer
             this.renderer.geometry.updateBuffers();
         }
 
+        //   this.renderer.state.set(this.state);
+
+        const textureSystem = this.renderer.texture;
+        const stateSystem = this.renderer.state;
+        // e.log(groupCount);
         // / render the groups..
+
         for (i = 0; i < groupCount; i++)
         {
             const group = groups[i];
@@ -353,11 +352,15 @@ export default class SpriteRenderer extends ObjectRenderer
 
             for (let j = 0; j < groupTextureCount; j++)
             {
-                this.renderer.texture.bind(group.textures[j], j);
+                textureSystem.bind(group.textures[j], j);
             }
 
+            // this.state.blendMode = group.blend;
+            // this.state.blend = true;
+
+            // this.renderer.state.setState(this.state);
             // set the blend mode..
-            this.renderer.state.setBlendMode(group.blend);
+            stateSystem.setBlendMode(group.blend);
 
             gl.drawElements(gl.TRIANGLES, group.size, gl.UNSIGNED_SHORT, group.start * 2);
         }
@@ -381,6 +384,7 @@ export default class SpriteRenderer extends ObjectRenderer
         const argb = alpha < 1.0 && element._texture.baseTexture.premultiplyAlpha ? premultiplyTint(element._tintRGB, alpha)
             : element._tintRGB + (alpha * 255 << 24);
 
+        //        console.log(element._texture.baseTexture.premultiplyAlpha);
         // lets not worry about tint! for now..
         for (let i = 0; i < vertexData.length; i += 2)
         {
