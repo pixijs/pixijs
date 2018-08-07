@@ -1522,19 +1522,27 @@ export default class InteractionManager extends EventEmitter
         // Only mouse and pointer can call onPointerOut, so events will always be length 1
         const event = events[0];
 
-        if (event.pointerType === 'mouse')
-        {
-            this.mouseOverRenderer = false;
-            this.setCursorMode(null);
-        }
-
         const interactionData = this.getInteractionDataForPointerId(event);
 
         const interactionEvent = this.configureInteractionEventForDOMEvent(this.eventData, event, interactionData);
 
         interactionEvent.data.originalEvent = event;
 
-        this.processInteractive(interactionEvent, this.renderer._lastObjectRendered, this.processPointerOverOut, false);
+        // eslint-disable-next-line max-len
+        const hit = this.processInteractive(interactionEvent, this.renderer._lastObjectRendered, this.processPointerOverOut, true);
+
+        if (hit > 0)
+        {
+            this.setCursorMode(this.cursor);
+
+            return;
+        }
+
+        if (event.pointerType === 'mouse')
+        {
+            this.mouseOverRenderer = false;
+            this.setCursorMode(null);
+        }
 
         this.emit('pointerout', interactionEvent);
         if (event.pointerType === 'mouse' || event.pointerType === 'pen')
