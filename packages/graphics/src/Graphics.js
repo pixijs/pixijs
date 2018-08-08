@@ -6,11 +6,12 @@ import {
     Polygon,
     Rectangle,
     RoundedRectangle,
+    Matrix,
 } from '@pixi/math';
 import { hex2rgb } from '@pixi/utils';
 
 import { RawMesh } from '@pixi/mesh';
-import { Texture } from '@pixi/core';
+import { Texture, Shader, UniformGroup } from '@pixi/core';
 import FillStyle from './styles/FillStyle';
 import GraphicsGeometry from './GraphicsGeometry';
 import LineStyle from './styles/LineStyle';
@@ -746,34 +747,10 @@ export default class Graphics extends RawMesh
 
             renderer.batch.setObjectRenderer(renderer.plugins.sprite);
 
-            this.calculateVerticies();
-
             if (this.batches.length)
             {
-                if (this.batchTint !== this.tint)
-                {
-                    this.batchTint = this.tint;
-
-                    const tintRGB = hex2rgb(this.tint, temp);
-
-                    for (let i = 0; i < this.batches.length; i++)
-                    {
-                        const batch = this.batches[i];
-
-                        const batchTint = batch._batchRGB;
-
-                        const r = (tintRGB[0] * batchTint[0]) * 255;
-                        const g = (tintRGB[1] * batchTint[1]) * 255;
-                        const b = (tintRGB[2] * batchTint[2]) * 255;
-
-                        // TODO Ivan, can this be done in one go?
-                        const color = (r << 16) + (g << 8) + (b | 0);
-
-                        batch._tintRGB = (color >> 16)
-                        + (color & 0xff00)
-                        + ((color & 0xff) << 16);
-                    }
-                }
+                this.calculateVerticies();
+                this.calculateTints();
 
                 for (let i = 0; i < this.batches.length; i++)
                 {
@@ -790,17 +767,36 @@ export default class Graphics extends RawMesh
             // no batching...
             renderer.batch.flush();
 
-            this.shader.uniforms.translationMatrix = this.transform.worldTransform.toArray(true);
+            const s =  renderer.plugins.sprite.shader;
 
+            if (!this.__shader)
+            {
+                const sampleValues = new Int32Array(16);
+
+                for (let i = 0; i < 16; i++)
+                {
+                    sampleValues[i] = i;
+                }
+
+                const uniforms = {
+                    tint: new Float32Array([1, 1, 1]),
+                    translationMatrix: new Matrix(),
+                    default: UniformGroup.from({ uSamplers: sampleValues }, true),
+                };
+
+                this.__shader = new Shader(s.program, uniforms);
+            }
+
+            this.__shader.uniforms.translationMatrix = this.transform.worldTransform;// .toArray(true);
             // the first draw call, we can set the uniforms of the shader directly here.
 
             // this means that we can tack advantage of the sync function of pixi!
             // bind and sync uniforms..
             // there is a way to optimise this..
-            renderer.shader.bind(this.shader);
+            renderer.shader.bind(this.__shader);
 
             // then render it
-            renderer.geometry.bind(geometry, this.shader);
+            renderer.geometry.bind(geometry, this.__shader);
 
             // set state..
             renderer.state.setState(this.state);
@@ -820,9 +816,10 @@ export default class Graphics extends RawMesh
                 // bind the geometry...
                 renderer.geometry.draw(drawCall.type, drawCall.size, drawCall.start);
             }
-        }
 
-        // console.log('---')
+            // console.log(this.__shader.uniforms);
+            //  this.__shader.uniformGrpup.update();
+        }
     }
 
     /**
@@ -849,6 +846,34 @@ export default class Graphics extends RawMesh
         this.worldTransform.applyInverse(point, Graphics._TEMP_POINT);
 
         return this.geometry.containsPoint(Graphics._TEMP_POINT);
+    }
+
+    calculateTints()
+    {
+        if (this.batchTint !== this.tint)
+        {
+            this.batchTint = this.tint;
+
+            const tintRGB = hex2rgb(this.tint, temp);
+
+            for (let i = 0; i < this.batches.length; i++)
+            {
+                const batch = this.batches[i];
+
+                const batchTint = batch._batchRGB;
+
+                const r = (tintRGB[0] * batchTint[0]) * 255;
+                const g = (tintRGB[1] * batchTint[1]) * 255;
+                const b = (tintRGB[2] * batchTint[2]) * 255;
+
+                // TODO Ivan, can this be done in one go?
+                const color = (r << 16) + (g << 8) + (b | 0);
+
+                batch._tintRGB = (color >> 16)
+                        + (color & 0xff00)
+                        + ((color & 0xff) << 16);
+            }
+        }
     }
 
     calculateVerticies()
