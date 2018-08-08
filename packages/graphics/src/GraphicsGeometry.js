@@ -8,6 +8,9 @@ import buildPoly from './utils/buildPoly';
 import buildRectangle from './utils/buildRectangle';
 import buildRoundedRectangle from './utils/buildRoundedRectangle';
 
+const BATCH_POOL = [];
+const DRAW_CALL_POOL = [];
+
 let TICK = 0;
 /**
  * Map of fill commands for each shape type.
@@ -101,6 +104,8 @@ export default class GraphicsGeometry extends Geometry2d
          */
         this.dirty = 0;
 
+        this.batchDirty = -1;
+
         /**
          * Used to check if the cache is dirty.
          *
@@ -189,11 +194,30 @@ export default class GraphicsGeometry extends Geometry2d
             this.clearDirty++;
             this.graphicsData.length = 0;
             this.shapeIndex = 0;
-            this.drawCalls.length = 0;
+
             this.points.length = 0;
             this.colors.length = 0;
             this.uvs.length = 0;
             this.indices.length = 0;
+
+            for (let i = 0; i < DRAW_CALL_POOL.length; i++)
+            {
+                DRAW_CALL_POOL.push(this.drawCalls[i]);
+            }
+
+            this.drawCalls.length = 0;
+
+            for (let i = 0; i < this.batches.length; i++)
+            {
+                const batch =  this.batches[i];
+
+                batch.start = 0;
+                batch.attribStart = 0;
+                batch.style = null;
+                BATCH_POOL.push(batch);
+            }
+
+            this.batches.length = 0;
         }
 
         return this;
@@ -376,22 +400,18 @@ export default class GraphicsGeometry extends Geometry2d
             }
         }
 
-        this.dirty = this.cacheDirty;
+        this.cacheDirty = this.dirty;
 
-        let lastIndex = this.indices.length;
-        let lastAttrib = this.points.length;
+        // console.log('dirty');
 
         const uvs = this.uvs;
 
-        let batchPart = this.batches.pop() || { style: null, size: 0, start: 0, attribStart: 0, attribSize: 0 };
+        let batchPart = this.batches.pop() || BATCH_POOL.pop() || { uid: Math.random(), style: null, size: 0, start: 0, attribStart: 0, attribSize: 0 };
 
         batchPart.style = batchPart.style || this.graphicsData[0].fillStyle || this.graphicsData[0].lineStyle;
 
         let currentTexture = batchPart.style.texture.baseTexture;
         let currentColor = batchPart.style.color + batchPart.style.alpha;
-
-        lastIndex = batchPart.start;
-        lastAttrib = this.points.length / 2; // batchPart.attribStart;
 
         this.batches.push(batchPart);
 
@@ -432,19 +452,16 @@ export default class GraphicsGeometry extends Geometry2d
                     const index = this.indices.length;
                     const attribIndex = this.points.length / 2;
 
-                    batchPart.size = index - lastIndex;
-                    batchPart.attribSize = attribIndex - lastAttrib;
+                    batchPart.size = index - batchPart.start;
+                    batchPart.attribSize = attribIndex - batchPart.attribStart;
 
-                    batchPart = { style, size: 0, start: 0, attribStart: 0, attribSize: 0 };
+                    batchPart = BATCH_POOL.pop() || { style, size: 0, start: 0, attribStart: 0, attribSize: 0 };
 
                     //   batchPart.blend = blendMode;
                     batchPart.start = index;
                     batchPart.attribStart = attribIndex;
 
                     this.batches.push(batchPart);
-
-                    lastIndex = index;
-                    lastAttrib = attribIndex;
 
                     // TODO add this to the render part..
 
@@ -473,6 +490,7 @@ export default class GraphicsGeometry extends Geometry2d
 
                 const size = (this.points.length / 2) - start;
 
+                // console.log(size);
                 this.addUvs(this.points, uvs, style.texture, start, size, style.matrix);
             }
         }
@@ -480,19 +498,23 @@ export default class GraphicsGeometry extends Geometry2d
         const index = this.indices.length;
         const attrib = this.points.length / 2;
 
-        batchPart.size = index - lastIndex;
-        batchPart.attribSize = attrib - lastAttrib;
+        //  console.log(this.points);
 
+        batchPart.size = index - batchPart.start;
+        batchPart.attribSize = attrib - batchPart.attribStart;
+
+        // console.log(`attribut size ${batchPart.attribSize}`);
         this.indicesUint16 = new Uint16Array(this.indices);
 
         // TODO make this a const..
         this.batchable = this.points.length < 100 * 2;
 
-        if (this.batchable)// this.) // convert everything to a batch
+        if (this.batchable)
         {
+            this.batchDirty++;
+
             this.uvsFloat32 = new Float32Array(this.uvs);
 
-            //
             // offset the indices so that it works with the batcher...
             for (let i = 0; i < this.batches.length; i++)
             {
@@ -508,16 +530,20 @@ export default class GraphicsGeometry extends Geometry2d
         }
         else
         {
-            //   console.log(this.points, this.uvs, this.indices);
-            this.updateAttributes();
+            this.buildDrawCalls();
         }
     }
 
-    updateAttributes()
+    buildDrawCalls()
     {
         TICK++;
 
-        this.dirty = this.cacheDirty;
+        for (let i = 0; i < this.drawCalls.length; i++)
+        {
+            DRAW_CALL_POOL.push(this.drawCalls[i]);
+        }
+
+        this.drawCalls.length = 0;
 
         let lastIndex = this.indices.length;
 
@@ -525,26 +551,23 @@ export default class GraphicsGeometry extends Geometry2d
         const colors = this.colors;
         const textureIds = this.textureIds;
 
-        let currentGroup = { textures: [], textureCount: 0, ids: [], size: 0, start: 0, blend: 0, type: 4 };
+        let currentGroup =  DRAW_CALL_POOL.pop() || { textures: [], textureCount: 0, size: 0, start: 0, type: 4 };
 
-        // for (let i = 0; i < currentGroup.textures.length; i++)
-        // {
-        //     currentGroup.textures[i]._enabled = TICK;
-        // }
+        currentGroup.textureCount = 0;
+        currentGroup.start = 0;
 
-        let textureCount = currentGroup.textureCount;
+        let textureCount = 0;
         let currentTexture = null;
         let textureId = 0;
 
-        lastIndex = currentGroup.start;
+        lastIndex = 0;
 
         this.drawCalls.push(currentGroup);
-        this.shapeIndex = 0;
-        // TODO - this can be simplified
-        for (let i = this.shapeIndex; i < this.batches.length; i++)
-        {
-            this.shapeIndex++;
+        //  this.shapeIndex = 0;
 
+        // TODO - this can be simplified
+        for (let i = 0; i < this.batches.length; i++)
+        {
             const data = this.batches[i];
 
             // console.log(data);
@@ -564,14 +587,14 @@ export default class GraphicsGeometry extends Geometry2d
                     if (textureCount === MAX_TEXTURES)
                     {
                         TICK++;
-
                         textureCount = 0;
 
                         const index = data.start;
 
                         currentGroup.size = index - lastIndex;
 
-                        currentGroup = { textures: [], textureCount: 0, ids: [], size: 0, start: 0, blend: 0, type: 4 };// groups[groupCount++];
+                        currentGroup = DRAW_CALL_POOL.pop() || { textures: [], textureCount: 0, size: 0, start: 0, type: 4 };
+
                         currentGroup.textureCount = 0;
 
                         currentGroup.start = lastIndex;

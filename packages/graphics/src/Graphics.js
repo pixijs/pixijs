@@ -201,7 +201,7 @@ export default class Graphics extends RawMesh
     lineTextureStyle(width = 0, texture = Texture.WHITE, color = 0xFFFFFF, alpha = 1,
         matrix = null, alignment = 0.5, native = false)
     {
-        const visible = width > 0 || alpha > 0;
+        const visible = width > 0 && alpha > 0;
 
         if (!visible)
         {
@@ -723,12 +723,10 @@ export default class Graphics extends RawMesh
 
         if (geometry.batchable)
         {
-            // console.log(geometry.batches);
-
-            if (!this.____done)
+            if (!geometry.batchDirty !== this.batchDirty)
             {
                 this.batches = [];
-                this.____done = true;
+                this.batchDirty = geometry.batchDirty;
 
                 this.vertexData = new Float32Array(geometry.points);
 
@@ -738,7 +736,14 @@ export default class Graphics extends RawMesh
                 {
                     const gI = geometry.batches[i];
 
-                    const _tintRGB = gI.style.color;
+                    const color = gI.style.color;
+
+                    const _tintRGB  = (color >> 16)
+                    + (color & 0xff00)
+                    + ((color & 0xff) << 16);
+                    //        + (alpha * 255 << 24);
+
+                    gI.style.color;
 
                     const vertexData = new Float32Array(this.vertexData.buffer, gI.attribStart * 4 * 2, gI.attribSize * 2); // new Float32Array(gI.vertices);
                     const uvs = new Float32Array(geometry.uvsFloat32.buffer, gI.attribStart * 4 * 2, gI.attribSize * 2); // new Float32Array(gI.vertices);
