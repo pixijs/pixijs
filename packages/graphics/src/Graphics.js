@@ -1,4 +1,3 @@
-import { BLEND_MODES } from '@pixi/constants';
 import {
     Circle,
     Ellipse,
@@ -8,6 +7,8 @@ import {
     Rectangle,
     RoundedRectangle,
 } from '@pixi/math';
+import { hex2rgb } from '@pixi/utils';
+
 import { RawMesh } from '@pixi/mesh';
 import { Texture } from '@pixi/core';
 import FillStyle from './styles/FillStyle';
@@ -18,9 +19,9 @@ import QuadraticUtils from './utils/QuadraticUtils';
 import ArcUtils from './utils/ArcUtils';
 import Star from './utils/Star';
 import generateMultiTextureShader from './generateMultiTextureShader';
-// import BatchPart from '@pixi/core/src/geometry/BatchPart';
 
 let multiTextureShader = null;
+const temp = new Float32Array(3);
 
 /**
  * The Graphics class contains methods used to draw primitive shapes such as lines, circles and
@@ -45,26 +46,7 @@ export default class Graphics extends RawMesh
         if (!multiTextureShader)multiTextureShader = generateMultiTextureShader(null, 3);
         const shader = multiTextureShader;
 
-        super(geometry, shader, null, 5); // DRAW_MODES.TRIANGLE_STRIP
-
-        /**
-         * The tint applied to the graphic shape. This is a hex value. Apply a value of 0xFFFFFF to
-         * reset the tint.
-         *
-         * @member {number}
-         * @default 0xFFFFFF
-         */
-        this.tint = 0xFFFFFF;
-
-        this.isGraphics = true;
-
-        /**
-         * Current display blend mode.
-         *
-         * @member {PIXI.BLEND_MODES}
-         * @default PIXI.BLEND_MODES.NORMAL
-         */
-        this.blendMode = BLEND_MODES.NORMAL;
+        super(geometry, shader, null, 4); // DRAW_MODES.TRIANGLE_STRIP
 
         /**
          * If this Graphics object owns the GraphicsGeometry
@@ -132,6 +114,8 @@ export default class Graphics extends RawMesh
         // these can be drawn by the pixi batcher
         this.batches = [];
 
+        this.tint = 0xFFFFFF;
+        this.batchTint = -1;
         this.vertexData = [];
     }
 
@@ -726,6 +710,7 @@ export default class Graphics extends RawMesh
             if (!geometry.batchDirty !== this.batchDirty)
             {
                 this.batches = [];
+                this.batchTint = -1;
                 this.batchDirty = geometry.batchDirty;
 
                 this.vertexData = new Float32Array(geometry.points);
@@ -738,12 +723,7 @@ export default class Graphics extends RawMesh
 
                     const color = gI.style.color;
 
-                    const _tintRGB  = (color >> 16)
-                    + (color & 0xff00)
-                    + ((color & 0xff) << 16);
                     //        + (alpha * 255 << 24);
-
-                    gI.style.color;
 
                     const vertexData = new Float32Array(this.vertexData.buffer, gI.attribStart * 4 * 2, gI.attribSize * 2); // new Float32Array(gI.vertices);
                     const uvs = new Float32Array(geometry.uvsFloat32.buffer, gI.attribStart * 4 * 2, gI.attribSize * 2); // new Float32Array(gI.vertices);
@@ -754,7 +734,8 @@ export default class Graphics extends RawMesh
                         blendMode,
                         indices,
                         uvs,
-                        _tintRGB,
+                        _batchRGB: hex2rgb(color),
+                        _tintRGB: color,
                         _texture: gI.style.texture,
                         alpha: gI.style.alpha,
                         worldAlpha: 1 };
@@ -769,6 +750,31 @@ export default class Graphics extends RawMesh
 
             if (this.batches.length)
             {
+                if (this.batchTint !== this.tint)
+                {
+                    this.batchTint = this.tint;
+
+                    const tintRGB = hex2rgb(this.tint, temp);
+
+                    for (let i = 0; i < this.batches.length; i++)
+                    {
+                        const batch = this.batches[i];
+
+                        const batchTint = batch._batchRGB;
+
+                        const r = (tintRGB[0] * batchTint[0]) * 255;
+                        const g = (tintRGB[1] * batchTint[1]) * 255;
+                        const b = (tintRGB[2] * batchTint[2]) * 255;
+
+                        // TODO Ivan, can this be done in one go?
+                        const color = (r << 16) + (g << 8) + (b | 0);
+
+                        batch._tintRGB = (color >> 16)
+                        + (color & 0xff00)
+                        + ((color & 0xff) << 16);
+                    }
+                }
+
                 for (let i = 0; i < this.batches.length; i++)
                 {
                     const batch = this.batches[i];
@@ -806,14 +812,11 @@ export default class Graphics extends RawMesh
 
                 const groupTextureCount = drawCall.textureCount;
 
-                //                console.log(drawCall);
                 for (let j = 0; j < groupTextureCount; j++)
                 {
-                    // console.log('bind');
                     renderer.texture.bind(drawCall.textures[j], j);
                 }
 
-                // renderer.texture.bind(drawCall.texture, 0);
                 // bind the geometry...
                 renderer.geometry.draw(drawCall.type, drawCall.size, drawCall.start);
             }
@@ -865,24 +868,19 @@ export default class Graphics extends RawMesh
         const tx = wt.tx;
         const ty = wt.ty;
 
-        //  for (let i = 0; i < this.batches.length; i++)
+        const data = this.geometry.points;// batch.vertexDataOriginal;
+        const vertexData = this.vertexData;
+
+        let count = 0;
+
+        //  console.log('.,', data.length);
+        for (let i = 0; i < data.length; i += 2)
         {
-            //   const batch = this.batches[i];
+            const x = data[i];
+            const y = data[i + 1];
 
-            const data = this.geometry.points;// batch.vertexDataOriginal;
-            const vertexData = this.vertexData;
-
-            let count = 0;
-
-            //  console.log('.,', data.length);
-            for (let i = 0; i < data.length; i += 2)
-            {
-                const x = data[i];
-                const y = data[i + 1];
-
-                vertexData[count++] = (a * x) + (c * y) + tx;
-                vertexData[count++] = (d * y) + (b * x) + ty;
-            }
+            vertexData[count++] = (a * x) + (c * y) + tx;
+            vertexData[count++] = (d * y) + (b * x) + ty;
         }
     }
 

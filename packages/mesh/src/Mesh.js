@@ -112,8 +112,6 @@ export default class Mesh extends RawMesh
          */
         this.autoUpdate = true;
 
-        this.isGraphics = true;
-
         this.vertexDirty = true;
         this.vertexData = new Float32Array(this.vertices.length);
         this.batchable = true;

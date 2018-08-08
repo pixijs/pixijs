@@ -457,15 +457,13 @@ export default class GraphicsGeometry extends Geometry2d
 
                     batchPart = BATCH_POOL.pop() || { style, size: 0, start: 0, attribStart: 0, attribSize: 0 };
 
-                    //   batchPart.blend = blendMode;
+                    batchPart.style = style;
                     batchPart.start = index;
                     batchPart.attribStart = attribIndex;
 
                     this.batches.push(batchPart);
 
                     // TODO add this to the render part..
-
-                    batchPart.style = style;
                 }
 
                 const start = this.points.length / 2;
