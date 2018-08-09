@@ -126,6 +126,7 @@ export default class Sprite extends Container
         this._textureTrimmedID = -1;
 
         // Batchable stuff..
+        // TODO could make this a mixin?
         this.indices = indices;
         this.uvs = null;
         this.size = 4;
@@ -138,7 +139,7 @@ export default class Sprite extends Container
          * @member {string}
          * @default 'sprite'
          */
-        this.pluginName = 'sprite';
+        this.pluginName = 'batch';
     }
 
     /**

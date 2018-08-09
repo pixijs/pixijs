@@ -9,9 +9,11 @@ import {
     Matrix,
 } from '@pixi/math';
 import { hex2rgb } from '@pixi/utils';
-
 import { RawMesh } from '@pixi/mesh';
-import { Texture, Shader, UniformGroup } from '@pixi/core';
+import { Texture,
+    Shader,
+    UniformGroup,
+    generateMultiTextureShader } from '@pixi/core';
 import FillStyle from './styles/FillStyle';
 import GraphicsGeometry from './GraphicsGeometry';
 import LineStyle from './styles/LineStyle';
@@ -19,9 +21,7 @@ import BezierUtils from './utils/BezierUtils';
 import QuadraticUtils from './utils/QuadraticUtils';
 import ArcUtils from './utils/ArcUtils';
 import Star from './utils/Star';
-import generateMultiTextureShader from './generateMultiTextureShader';
 
-let multiTextureShader = null;
 const temp = new Float32Array(3);
 
 /**
@@ -44,10 +44,7 @@ export default class Graphics extends RawMesh
 
         geometry = geometry || new GraphicsGeometry();
 
-        if (!multiTextureShader)multiTextureShader = generateMultiTextureShader(null, 3);
-        const shader = multiTextureShader;
-
-        super(geometry, shader, null, 4); // DRAW_MODES.TRIANGLE_STRIP
+        super(geometry, null, null, 4); // DRAW_MODES.TRIANGLE_STRIP
 
         /**
          * If this Graphics object owns the GraphicsGeometry
@@ -745,7 +742,7 @@ export default class Graphics extends RawMesh
                 }
             }
 
-            renderer.batch.setObjectRenderer(renderer.plugins.sprite);
+            renderer.batch.setObjectRenderer(renderer.plugins.batch);
 
             if (this.batches.length)
             {
@@ -758,7 +755,7 @@ export default class Graphics extends RawMesh
 
                     batch.worldAlpha = this.worldAlpha * batch.alpha;
 
-                    renderer.plugins.sprite.render(batch);
+                    renderer.plugins.batch.render(batch);
                 }
             }
         }
@@ -767,9 +764,12 @@ export default class Graphics extends RawMesh
             // no batching...
             renderer.batch.flush();
 
-            const s =  renderer.plugins.sprite.shader;
+            const s =  renderer.plugins.batch.shader;
 
-            if (!this.__shader)
+            // lets only create a shader if we need to..
+            this.shader = generateMultiTextureShader(renderer.gl, renderer.plugins.batch.MAX_TEXTURES);
+
+            if (!this.shader)
             {
                 const sampleValues = new Int32Array(16);
 
@@ -784,19 +784,19 @@ export default class Graphics extends RawMesh
                     default: UniformGroup.from({ uSamplers: sampleValues }, true),
                 };
 
-                this.__shader = new Shader(s.program, uniforms);
+                this.shader = new Shader(s.program, uniforms);
             }
 
-            this.__shader.uniforms.translationMatrix = this.transform.worldTransform;// .toArray(true);
+            this.shader.uniforms.translationMatrix = this.transform.worldTransform;// .toArray(true);
             // the first draw call, we can set the uniforms of the shader directly here.
 
             // this means that we can tack advantage of the sync function of pixi!
             // bind and sync uniforms..
             // there is a way to optimise this..
-            renderer.shader.bind(this.__shader);
+            renderer.shader.bind(this.shader);
 
             // then render it
-            renderer.geometry.bind(geometry, this.__shader);
+            renderer.geometry.bind(geometry, this.shader);
 
             // set state..
             renderer.state.setState(this.state);
@@ -816,9 +816,6 @@ export default class Graphics extends RawMesh
                 // bind the geometry...
                 renderer.geometry.draw(drawCall.type, drawCall.size, drawCall.start);
             }
-
-            // console.log(this.__shader.uniforms);
-            //  this.__shader.uniformGrpup.update();
         }
     }
 

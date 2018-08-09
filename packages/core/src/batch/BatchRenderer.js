@@ -1,16 +1,16 @@
-import { Geometry2d,
-    ObjectRenderer,
-    checkMaxIfStatementsInShader,
-    Buffer, State } from '@pixi/core';
+import Geometry2d from '../geometry/Geometry2d';
+import State from '../state/State';
+import ObjectRenderer from './ObjectRenderer';
+import checkMaxIfStatementsInShader from '../shader/utils/checkMaxIfStatementsInShader';
+
 import { settings } from '@pixi/settings';
-import { premultiplyBlendMode, premultiplyTint, createIndicesForQuads } from '@pixi/utils';
+import { premultiplyBlendMode, premultiplyTint } from '@pixi/utils';
 
 import BatchBuffer from './BatchBuffer';
 import generateMultiTextureShader from './generateMultiTextureShader';
 import { ENV } from '@pixi/constants';
 
 let TICK = 0;
-// const TEXTURE_TICK = 0;
 
 /**
  * Renderer dedicated to drawing and batching sprites.
@@ -20,7 +20,7 @@ let TICK = 0;
  * @memberof PIXI
  * @extends PIXI.ObjectRenderer
  */
-export default class SpriteRenderer extends ObjectRenderer
+export default class BatchRenderer extends ObjectRenderer
 {
     /**
      * @param {PIXI.Renderer} renderer - The renderer this sprite batch works for.

@@ -233,7 +233,7 @@ export default class Mesh extends RawMesh
                 this.vertexDirty = false;
             }
             // batch geometry..
-            this.pluginName = 'sprite';
+            this.pluginName = 'batch';
         }
         else
         {
