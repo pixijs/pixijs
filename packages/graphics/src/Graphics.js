@@ -589,7 +589,8 @@ export default class Graphics extends RawMesh
 
         let closed = true;// !!this._fillStyle;
 
-        if (points instanceof Polygon)
+        // check if data has points..
+        if (points.points)
         {
             closed = points.closed;
             points = points.points;
@@ -696,16 +697,13 @@ export default class Graphics extends RawMesh
 
         const geometry = this.geometry;
 
-        // console.log(geometry);
-
         // batch part..
         // batch it!
         geometry.updateBatches();
-        //        geometry.updateAttributes();
 
         if (geometry.batchable)
         {
-            if (!geometry.batchDirty !== this.batchDirty)
+            if (geometry.batchDirty !== this.batchDirty)
             {
                 this.batches = [];
                 this.batchTint = -1;

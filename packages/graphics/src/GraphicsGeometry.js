@@ -470,7 +470,7 @@ export default class GraphicsGeometry extends Geometry2d
 
                 if (j === 0)
                 {
-                    if (data.holes)
+                    if (data.holes.length)
                     {
                         this.proccessHoles(data.holes);
 
@@ -496,12 +496,8 @@ export default class GraphicsGeometry extends Geometry2d
         const index = this.indices.length;
         const attrib = this.points.length / 2;
 
-        //  console.log(this.points);
-
         batchPart.size = index - batchPart.start;
         batchPart.attribSize = attrib - batchPart.attribStart;
-
-        // console.log(`attribut size ${batchPart.attribSize}`);
         this.indicesUint16 = new Uint16Array(this.indices);
 
         // TODO make this a const..
@@ -561,14 +557,12 @@ export default class GraphicsGeometry extends Geometry2d
         lastIndex = 0;
 
         this.drawCalls.push(currentGroup);
-        //  this.shapeIndex = 0;
 
         // TODO - this can be simplified
         for (let i = 0; i < this.batches.length; i++)
         {
             const data = this.batches[i];
 
-            // console.log(data);
             // TODO add some full on MAX_TEXTURE CODE..
             const MAX_TEXTURES = 8;
 
