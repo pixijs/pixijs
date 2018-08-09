@@ -709,6 +709,7 @@ export default class Graphics extends RawMesh
             {
                 this.batches = [];
                 this.batchTint = -1;
+                this._transformID = -1;
                 this.batchDirty = geometry.batchDirty;
 
                 this.vertexData = new Float32Array(geometry.points);
@@ -895,7 +896,7 @@ export default class Graphics extends RawMesh
 
         let count = 0;
 
-        //  console.log('.,', data.length);
+        // console.log('.,', data.length);
         for (let i = 0; i < data.length; i += 2)
         {
             const x = data[i];
