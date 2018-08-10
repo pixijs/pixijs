@@ -100,6 +100,8 @@ export default class Sprite extends Container
          */
         this.cachedTint = 0xFFFFFF;
 
+        this.uvs = null;
+
         // call texture setter
         this.texture = texture || Texture.EMPTY;
 
@@ -128,7 +130,6 @@ export default class Sprite extends Container
         // Batchable stuff..
         // TODO could make this a mixin?
         this.indices = indices;
-        this.uvs = null;
         this.size = 4;
         this.start = 0;
 
@@ -154,7 +155,7 @@ export default class Sprite extends Container
         this.cachedTint = 0xFFFFFF;
 
         this.uvs = this._texture._uvs.uvsFloat32;
-
+        //     console.log('>', this._texture._uvs.uvsFloat32);
         // so if _width is 0 then width was not set..
         if (this._width)
         {
