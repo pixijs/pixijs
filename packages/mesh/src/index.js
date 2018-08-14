@@ -3,3 +3,4 @@ export { default as MeshMaterial } from './MeshMaterial';
 export { default as MeshGeometry } from './MeshGeometry';
 
 export { default as PlaneGeometry } from './geometry/PlaneGeometry';
+export { default as RopeGeometry } from './geometry/RopeGeometry';
