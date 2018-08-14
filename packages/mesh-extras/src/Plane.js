@@ -1,4 +1,4 @@
-import Mesh from './Mesh';
+import Mesh2d from './Mesh2d';
 
 /**
  * The Plane allows you to draw a texture across several points and them manipulate these points
@@ -15,23 +15,25 @@ import Mesh from './Mesh';
  * @memberof PIXI
  *
  */
-export default class Plane extends Mesh
+export default class Plane extends Mesh2d
 {
     /**
      * @param {PIXI.Texture} texture - The texture to use on the Plane.
-     * @param {number} verticesX - The number of vertices in the x-axis
-     * @param {number} verticesY - The number of vertices in the y-axis
-     * @param {object} [opts] - an options object - add meshWidth and meshHeight, temporary object for PixiJS v5 alpha
+     * @param {number} [verticesX=10] - The number of vertices in the x-axis
+     * @param {number} [verticesY=10] - The number of vertices in the y-axis
+     * @param {object} [options] - an options object
+     * @param {number} [options.meshWidth=0] - The default mesh width
+     * @param {number} [options.meshHeight=0] - The default mesh height
      */
-    constructor(texture, verticesX, verticesY, opts = {})
+    constructor(texture, verticesX, verticesY, options = {})
     {
         super(texture, new Float32Array(1), new Float32Array(1), new Uint16Array(1), 4);
 
         this.verticesX = verticesX || 10;
         this.verticesY = verticesY || 10;
 
-        this.meshWidth = opts.meshWidth || 0;
-        this.meshHeight = opts.meshHeight || 0;
+        this.meshWidth = options.meshWidth || 0;
+        this.meshHeight = options.meshHeight || 0;
 
         this.refresh();
     }

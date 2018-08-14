@@ -1,6 +1,6 @@
 {
   "name": "@pixi/mesh",
-  "version": "5.0.0-alpha.2",
+  "version": "5.0.0-alpha.3",
   "main": "lib/mesh.js",
   "module": "lib/mesh.es.js",
   "description": "Support for legacy browser JavaScript environments",
@@ -18,22 +18,16 @@
   "publishConfig": {
     "access": "public"
   },
-  "scripts": {
-    "test": "floss --path test"
-  },
   "files": [
     "lib"
   ],
   "dependencies": {
-    "@pixi/canvas-renderer": "^5.0.0-alpha.2",
-    "@pixi/constants": "^5.0.0-alpha.2",
-    "@pixi/core": "^5.0.0-alpha.2",
-    "@pixi/display": "^5.0.0-alpha.2",
-    "@pixi/math": "^5.0.0-alpha.2",
-    "@pixi/utils": "^5.0.0-alpha.2"
+    "@pixi/constants": "^5.0.0-alpha.3",
+    "@pixi/core": "^5.0.0-alpha.3",
+    "@pixi/display": "^5.0.0-alpha.3",
+    "@pixi/math": "^5.0.0-alpha.3"
   },
   "devDependencies": {
-    "@pixi/loaders": "^5.0.0-alpha.2",
     "floss": "^2.1.3"
   }
 }

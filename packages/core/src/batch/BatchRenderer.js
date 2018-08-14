@@ -161,7 +161,6 @@ export default class BatchRenderer extends ObjectRenderer
             this.flush();
         }
 
-        //   console.log(this.currentIndexSize);
         this.elements[this.currentIndex++] = element;
 
         this.currentSize += element.vertexData.length / 2;
@@ -330,10 +329,10 @@ export default class BatchRenderer extends ObjectRenderer
             this.vaos[this.vertexCount]._indexBuffer.update(indexBuffer, 0);
 
             //   if (true)// this.spriteOnly)
-            {
-                // this.vaos[this.vertexCount].indexBuffer = this.defualtSpriteIndexBuffer;
-                // this.vaos[this.vertexCount].buffers[1] = this.defualtSpriteIndexBuffer;
-            }
+            // {
+            // this.vaos[this.vertexCount].indexBuffer = this.defualtSpriteIndexBuffer;
+            // this.vaos[this.vertexCount].buffers[1] = this.defualtSpriteIndexBuffer;
+            // }
 
             this.renderer.geometry.updateBuffers();
         }

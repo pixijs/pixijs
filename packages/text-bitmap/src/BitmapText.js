@@ -549,7 +549,8 @@ export default class BitmapText extends Container
      *
      * @static
      * @param {XMLDocument} xml - The XML document data.
-     * @param {PIXI.Texture|PIXI.Texture[]} textures - List of textures for each page.
+     * @param {Object.<string, PIXI.Texture>|PIXI.Texture|PIXI.Texture[]} textures - List of textures for each page.
+     *  If providing an object, the key is the `<page>` element's `file` attribute in the FNT file.
      * @return {Object} Result font object with font, size, lineHeight and char fields.
      */
     static registerFont(xml, textures)
@@ -557,50 +558,52 @@ export default class BitmapText extends Container
         const data = {};
         const info = xml.getElementsByTagName('info')[0];
         const common = xml.getElementsByTagName('common')[0];
-        const fileName = xml.getElementsByTagName('page')[0].getAttribute('file');
-        const res = getResolutionOfUrl(fileName, settings.RESOLUTION);
+        const pages = xml.getElementsByTagName('page');
+        const res = getResolutionOfUrl(pages[0].getAttribute('file'), settings.RESOLUTION);
+        const pagesTextures = {};
 
         data.font = info.getAttribute('face');
         data.size = parseInt(info.getAttribute('size'), 10);
         data.lineHeight = parseInt(common.getAttribute('lineHeight'), 10) / res;
         data.chars = {};
-        if (!(textures instanceof Array))
+
+        // Single texture, convert to list
+        if (textures instanceof Texture)
         {
             textures = [textures];
         }
 
+        // Convert the input Texture, Textures or object
+        // into a page Texture lookup by "id"
+        for (let i = 0; i < pages.length; i++)
+        {
+            const id = pages[i].getAttribute('id');
+            const file = pages[i].getAttribute('file');
+
+            pagesTextures[id] = textures instanceof Array ? textures[i] : textures[file];
+        }
+
         // parse letters
         const letters = xml.getElementsByTagName('char');
-        let page;
 
         for (let i = 0; i < letters.length; i++)
         {
             const letter = letters[i];
             const charCode = parseInt(letter.getAttribute('id'), 10);
-            let textureRect;
-
-            page = parseInt(letter.getAttribute('page'), 10);
-            if (isNaN(page))
-            {
-                textureRect = new Rectangle(0, 0, 0, 0);
-                page = 0;
-            }
-            else
-            {
-                textureRect = new Rectangle(
-                    (parseInt(letter.getAttribute('x'), 10) / res) + (textures[page].frame.x / res),
-                    (parseInt(letter.getAttribute('y'), 10) / res) + (textures[page].frame.y / res),
-                    parseInt(letter.getAttribute('width'), 10) / res,
-                    parseInt(letter.getAttribute('height'), 10) / res
-                );
-            }
+            const page = letter.getAttribute('page') || 0;
+            const textureRect = new Rectangle(
+                (parseInt(letter.getAttribute('x'), 10) / res) + (pagesTextures[page].frame.x / res),
+                (parseInt(letter.getAttribute('y'), 10) / res) + (pagesTextures[page].frame.y / res),
+                parseInt(letter.getAttribute('width'), 10) / res,
+                parseInt(letter.getAttribute('height'), 10) / res
+            );
 
             data.chars[charCode] = {
                 xOffset: parseInt(letter.getAttribute('xoffset'), 10) / res,
                 yOffset: parseInt(letter.getAttribute('yoffset'), 10) / res,
                 xAdvance: parseInt(letter.getAttribute('xadvance'), 10) / res,
                 kerning: {},
-                texture: new Texture(textures[page].baseTexture, textureRect),
+                texture: new Texture(pagesTextures[page].baseTexture, textureRect),
                 page,
             };
         }

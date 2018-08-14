@@ -9,7 +9,7 @@ import {
     Matrix,
 } from '@pixi/math';
 import { hex2rgb } from '@pixi/utils';
-import { RawMesh } from '@pixi/mesh';
+import { Mesh } from '@pixi/mesh';
 import { Texture,
     Shader,
     UniformGroup,
@@ -32,7 +32,7 @@ const temp = new Float32Array(3);
  * @extends PIXI.Mesh
  * @memberof PIXI
  */
-export default class Graphics extends RawMesh
+export default class Graphics extends Mesh
 {
     /**
      *
@@ -131,6 +131,29 @@ export default class Graphics extends RawMesh
     }
 
     /**
+     * The tint applied to the Rope. This is a hex value. A value of
+     * 0xFFFFFF will remove any tint effect.
+     *
+     * @member {number}
+     * @memberof PIXI.Sprite#
+     * @default 0xFFFFFF
+     */
+    get tint()
+    {
+        return this._tint;
+    }
+
+    /**
+     * Sets the tint of the rope.
+     *
+     * @param {number} value - The value to set to.
+     */
+    set tint(value)
+    {
+        this._tint = value;
+    }
+
+    /**
      * The current fill style.
      *
      * @member {PIXI.FillStyle}
@@ -176,7 +199,7 @@ export default class Graphics extends RawMesh
      * @param {number} [color=0] - color of the line to draw, will update the objects stored style
      * @param {number} [alpha=1] - alpha of the line to draw, will update the objects stored style
      * @param {PIXI.Matrix} [textureMatrix=null] Texture matrix to transform texture
-     * @param {number} [alignment=1] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outter)
+     * @param {number} [alignment=0.5] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outter)
      * @param {boolean} [native=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
@@ -667,6 +690,11 @@ export default class Graphics extends RawMesh
     {
         this.geometry.clear();
 
+        this._matrix = null;
+        this._holeMode = false;
+        this.currentPath = null;
+        this._spriteRect = null;
+
         return this;
     }
 
@@ -722,9 +750,17 @@ export default class Graphics extends RawMesh
 
                     //        + (alpha * 255 << 24);
 
-                    const vertexData = new Float32Array(this.vertexData.buffer, gI.attribStart * 4 * 2, gI.attribSize * 2); // new Float32Array(gI.vertices);
-                    const uvs = new Float32Array(geometry.uvsFloat32.buffer, gI.attribStart * 4 * 2, gI.attribSize * 2); // new Float32Array(gI.vertices);
-                    const indices = new Uint16Array(geometry.indicesUint16.buffer, gI.start * 2, gI.size); // new Float32Array(gI.vertices);
+                    const vertexData = new Float32Array(this.vertexData.buffer,
+                        gI.attribStart * 4 * 2,
+                        gI.attribSize * 2);
+
+                    const uvs = new Float32Array(geometry.uvsFloat32.buffer,
+                        gI.attribStart * 4 * 2,
+                        gI.attribSize * 2);
+
+                    const indices = new Uint16Array(geometry.indicesUint16.buffer,
+                        gI.start * 2,
+                        gI.size);
 
                     const batch = {
                         vertexData,

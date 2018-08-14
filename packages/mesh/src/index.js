@@ -1,6 +1,5 @@
 export { default as Mesh } from './Mesh';
-export { default as RawMesh } from './RawMesh';
-export { default as MeshRenderer } from './MeshRenderer';
-export { default as Plane } from './Plane';
-export { default as NineSlicePlane } from './NineSlicePlane';
-export { default as Rope } from './Rope';
+export { default as MeshMaterial } from './MeshMaterial';
+export { default as MeshGeometry } from './MeshGeometry';
+
+export { default as PlaneGeometry } from './geometry/PlaneGeometry';

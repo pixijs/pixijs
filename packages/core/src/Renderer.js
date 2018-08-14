@@ -268,8 +268,6 @@ export default class Renderer extends AbstractRenderer
             this.runners[i].add(system);
         }
 
-        return this;
-
         /**
          * Fired after rendering finishes.
          *
@@ -288,6 +286,8 @@ export default class Renderer extends AbstractRenderer
          * @event PIXI.Renderer#context
          * @param {WebGLRenderingContext} gl - WebGL context.
          */
+
+        return this;
     }
 
     /**
@@ -341,6 +341,7 @@ export default class Renderer extends AbstractRenderer
 
         // apply transform..
         this.batch.currentRenderer.flush();
+        // console.log(this.batch.currentRenderer);
 
         if (renderTexture)
         {

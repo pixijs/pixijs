@@ -263,15 +263,15 @@ export default function deprecated(PIXI)
     Object.defineProperties(PIXI.mesh, {
         /**
          * @class PIXI.mesh.Mesh
-         * @see PIXI.Mesh
+         * @see PIXI.Mesh2d
          * @deprecated since 5.0.0
          */
         Mesh: {
             get()
             {
-                warn('PIXI.mesh.Mesh has moved to PIXI.Mesh');
+                warn('PIXI.mesh.Mesh has moved to PIXI.Mesh2d');
 
-                return PIXI.Mesh;
+                return PIXI.Mesh2d;
             },
         },
         /**
@@ -315,15 +315,15 @@ export default function deprecated(PIXI)
         },
         /**
          * @class PIXI.mesh.RawMesh
-         * @see PIXI.RawMesh
+         * @see PIXI.Mesh
          * @deprecated since 5.0.0
          */
         RawMesh: {
             get()
             {
-                warn('PIXI.mesh.RawMesh has moved to PIXI.RawMesh');
+                warn('PIXI.mesh.RawMesh has moved to PIXI.Mesh');
 
-                return PIXI.RawMesh;
+                return PIXI.Mesh;
             },
         },
         /**

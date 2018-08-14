@@ -406,9 +406,13 @@ export default class GraphicsGeometry extends Geometry2d
 
         const uvs = this.uvs;
 
-        let batchPart = this.batches.pop() || BATCH_POOL.pop() || { uid: Math.random(), style: null, size: 0, start: 0, attribStart: 0, attribSize: 0 };
+        let batchPart = this.batches.pop()
+            || BATCH_POOL.pop()
+            || { uid: Math.random(), style: null, size: 0, start: 0, attribStart: 0, attribSize: 0 };
 
-        batchPart.style = batchPart.style || this.graphicsData[0].fillStyle || this.graphicsData[0].lineStyle;
+        batchPart.style = batchPart.style
+            || this.graphicsData[0].fillStyle
+            || this.graphicsData[0].lineStyle;
 
         let currentTexture = batchPart.style.texture.baseTexture;
         let currentColor = batchPart.style.color + batchPart.style.alpha;
@@ -827,9 +831,9 @@ export default class GraphicsGeometry extends Geometry2d
     addColors(colors, color, alpha, size)
     {
         // TODO use the premultiply bits Ivan added
-        const tRGB = (color >> 16) * alpha
-        + (color & 0xff00) * alpha
-        + ((color & 0xff) << 16) * alpha
+        const tRGB = ((color >> 16) * alpha)
+        + ((color & 0xff00) * alpha)
+        + (((color & 0xff) << 16) * alpha)
         + (alpha * 255 << 24);
 
         while (size-- > 0)

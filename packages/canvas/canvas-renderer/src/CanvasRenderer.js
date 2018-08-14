@@ -107,8 +107,6 @@ export default class CanvasRenderer extends AbstractRenderer
 
         sayHello('Canvas');
 
-        this.resize(this.options.width, this.options.height);
-
         /**
          * Fired after rendering finishes.
          *
@@ -120,6 +118,8 @@ export default class CanvasRenderer extends AbstractRenderer
          *
          * @event PIXI.CanvasRenderer#prerender
          */
+
+        this.resize(this.options.width, this.options.height);
     }
 
     /**

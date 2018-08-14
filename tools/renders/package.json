@@ -1,13 +1,13 @@
 {
   "name": "@internal/renders",
-  "version": "5.0.0-alpha.2",
+  "version": "5.0.0-alpha.3",
   "private": true,
   "main": "src/index.js",
   "devDependencies": {
     "chai": "^3.5.0",
     "electron": "^1.7.9",
     "js-md5": "^0.6.1",
-    "pixi.js": "^5.0.0-alpha.2",
+    "pixi.js": "^5.0.0-alpha.3",
     "sinon": "^1.17.6",
     "sinon-chai": "^2.8.0"
   },

@@ -9,6 +9,7 @@ import * as interaction from '@pixi/interaction';
 import * as loaders from '@pixi/loaders';
 import * as math from '@pixi/math';
 import * as mesh from '@pixi/mesh';
+import * as meshExtras from '@pixi/mesh-extras';
 import * as particles from '@pixi/particles';
 import * as prepare from '@pixi/prepare';
 import * as sprite from '@pixi/sprite';
@@ -26,7 +27,6 @@ import { ColorMatrixFilter } from '@pixi/filter-color-matrix';
 import { DisplacementFilter } from '@pixi/filter-displacement';
 import { FXAAFilter } from '@pixi/filter-fxaa';
 import { NoiseFilter } from '@pixi/filter-noise';
-import '@pixi/mixin-app-loader';
 import '@pixi/mixin-cache-as-bitmap';
 import '@pixi/mixin-get-child-by-name';
 import '@pixi/mixin-get-global-position';
@@ -35,16 +35,19 @@ import deprecated from './deprecated';
 // Install renderer plugins
 core.Renderer.registerPlugin('accessibility', accessibility.AccessibilityManager);
 core.Renderer.registerPlugin('extract', extract.Extract);
-// core.Renderer.registerPlugin('graphics', graphics.GraphicsRenderer);
+
 core.Renderer.registerPlugin('interaction', interaction.InteractionManager);
-core.Renderer.registerPlugin('mesh', mesh.MeshRenderer);
 core.Renderer.registerPlugin('particle', particles.ParticleRenderer);
 core.Renderer.registerPlugin('prepare', prepare.Prepare);
 core.Renderer.registerPlugin('batch', core.BatchRenderer);
+
 core.Renderer.registerPlugin('tilingSprite', spriteTiling.TilingSpriteRenderer);
 
 loaders.Loader.registerPlugin(textBitmap.BitmapFontLoader);
 loaders.Loader.registerPlugin(spritesheet.SpritesheetLoader);
+
+app.Application.registerPlugin(ticker.TickerPlugin);
+app.Application.registerPlugin(loaders.LoaderPlugin);
 
 // Apply deplayed mixins
 utils.mixins.performMixins();
@@ -126,6 +129,7 @@ if (typeof window !== 'undefined')
         loaders,
         math,
         mesh,
+        meshExtras,
         particles,
         sprite,
         spriteAnimated,
@@ -150,6 +154,7 @@ export * from '@pixi/graphics';
 export * from '@pixi/loaders';
 export * from '@pixi/math';
 export * from '@pixi/mesh';
+export * from '@pixi/mesh-extras';
 export * from '@pixi/particles';
 export * from '@pixi/sprite';
 export * from '@pixi/spritesheet';

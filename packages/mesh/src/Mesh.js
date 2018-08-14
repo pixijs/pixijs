@@ -1,121 +1,97 @@
-import RawMesh from './RawMesh';
-import { Geometry, Program, Shader, Texture, TextureMatrix } from '@pixi/core';
-import { Matrix } from '@pixi/math';
-import { BLEND_MODES } from '@pixi/constants';
-import { hex2rgb, premultiplyRgba } from '@pixi/utils';
-import vertex from './mesh.vert';
-import fragment from './mesh.frag';
+import { State } from '@pixi/core';
+import { Point, Polygon } from '@pixi/math';
+import { BLEND_MODES, DRAW_MODES } from '@pixi/constants';
+import { Container } from '@pixi/display';
 
-let meshProgram;
+const tempPoint = new Point();
+const tempPolygon = new Polygon();
 
 /**
  * Base mesh class
+ * The reason for this class is to empower you to have maximum flexibility to render any kind of webGL you can think of.
+ * This class assumes a certain level of webGL knowledge.
+ * If you know a bit this should abstract enough away to make you life easier!
+ * Pretty much ALL WebGL can be broken down into the following:
+ * Geometry - The structure and data for the mesh. This can include anything from positions, uvs, normals, colors etc..
+ * Shader - This is the shader that pixi will render the geometry with. (attributes in the shader must match the geometry!)
+ * State - This is the state of WebGL required to render the mesh.
+ * Through a combination of the above elements you can render anything you want, 2D or 3D!
+ *
  * @class
  * @extends PIXI.Container
  * @memberof PIXI
  */
-export default class Mesh extends RawMesh
+export default class Mesh extends Container
 {
     /**
-     * @param {PIXI.Texture} [texture=Texture.EMPTY] - The texture to use
-     * @param {Float32Array} [vertices] - if you want to specify the vertices
-     * @param {Float32Array} [uvs] - if you want to specify the uvs
-     * @param {Uint16Array} [indices] - if you want to specify the indices
-     * @param {number} [drawMode] - the drawMode, can be any of the Mesh.DRAW_MODES consts
+     * @param {PIXI.Geometry} geometry  the geometry the mesh will use
+     * @param {PIXI.Shader} shader  the shader the mesh will use
+     * @param {PIXI.State} state  the state that the webGL context is required to be in to render the mesh
+     * @param {number} drawMode  the drawMode, can be any of the PIXI.DRAW_MODES consts
      */
-    constructor(texture = Texture.EMPTY, vertices, uvs, indices, drawMode)
+    constructor(geometry, shader, state, drawMode = DRAW_MODES.TRIANGLES)// vertices, uvs, indices, drawMode)
     {
-        const geometry = new Geometry();
-
-        if (!meshProgram)
-        {
-            meshProgram = new Program(vertex, fragment);
-        }
-
-        geometry.addAttribute('aVertexPosition', vertices)
-            .addAttribute('aTextureCoord', uvs)
-            .addIndex(indices);
-
-        geometry.getAttribute('aVertexPosition').static = false;
-
-        const uniforms = {
-            uSampler: texture,
-            uTextureMatrix: Matrix.IDENTITY,
-            alpha: 1,
-            uColor: new Float32Array([1, 1, 1, 1]),
-        };
-
-        super(geometry, new Shader(meshProgram, uniforms), null, drawMode);
+        super();
 
         /**
-         * The Uvs of the Mesh
-         *
-         * @member {Float32Array}
+         * the geometry the mesh will use
+         * @type {PIXI.Geometry}
          */
-        this.uvs = geometry.getAttribute('aTextureCoord').data;
+        this.geometry = geometry;
 
         /**
-         * An array of vertices
-         *
-         * @member {Float32Array}
+         * the shader the mesh will use
+         * @type {PIXI.Shader}
          */
-        this.vertices = geometry.getAttribute('aVertexPosition').data;
-        this.indices = geometry.getIndex().data;
-
-        this.uniforms = uniforms;
+        this.shader = shader;
 
         /**
-         * The texture of the Mesh
-         *
-         * @member {PIXI.Texture}
-         * @default PIXI.Texture.EMPTY
-         * @private
+         * the webGL state the mesh requires to render
+         * @type {PIXI.State}
          */
-        this.texture = texture;
+        this.state = state || State.for2d();
 
         /**
-         * The tint applied to the mesh. This is a [r,g,b] value. A value of [1,1,1] will remove any
-         * tint effect.
+         * The way the Mesh should be drawn, can be any of the {@link PIXI.RawMesh.DRAW_MODES} consts
          *
          * @member {number}
-         * @private
+         * @see PIXI.RawMesh.DRAW_MODES
          */
-        this._tintRGB = new Float32Array([1, 1, 1]);
+        this.drawMode = drawMode;
 
-        // Set default tint
+        /**
+         * use these to only render parts of the geometry
+         */
+        this.start = 0;
+        this.size = 0;
+
         this.tint = 0xFFFFFF;
-
         this.blendMode = BLEND_MODES.NORMAL;
 
-        /**
-         * TextureMatrix instance for this Mesh, used to track Texture changes
-         *
-         * @member {PIXI.TextureMatrix}
-         * @readonly
-         */
-        this.uvMatrix = new TextureMatrix(this._texture);
-
-        /**
-         * whether or not upload uvMatrix to shader
-         * if its false, then uvs should be pre-multiplied
-         * if you change it for generated mesh, please call 'refresh(true)'
-         * @member {boolean}
-         * @default false
-         */
-        this.uploadUvMatrix = false;
-
-        /**
-         * Uploads vertices buffer every frame, like in PixiJS V3 and V4.
-         *
-         * @member {boolean}
-         * @default true
-         */
-        this.autoUpdate = true;
-
+        // thease are used as easy access for batching..
+        this.uvs = null;
+        this.indices = null;
+        // this is the cache used by the batcher
+        this.vertexData = new Float32Array(1);
         this.vertexDirty = true;
-        this.vertexData = new Float32Array(this.vertices.length);
-        this.batchable = true;
-        // this.vertexCache;
+    }
+
+    /**
+     * The blend mode to be applied to the graphic shape. Apply a value of
+     * `PIXI.BLEND_MODES.NORMAL` to reset the blend mode.
+     *
+     * @member {number}
+     * @default PIXI.BLEND_MODES.NORMAL;
+     * @see PIXI.BLEND_MODES
+     */
+    set blendMode(value)
+    {
+        this.state.blendMode = value;
+    }
+
+    get blendMode()
+    {
+        return this.state.blendMode;
     }
 
     /**
@@ -128,7 +104,7 @@ export default class Mesh extends RawMesh
      */
     get tint()
     {
-        return this._tint;
+        return this.shader.tint;
     }
 
     /**
@@ -138,27 +114,7 @@ export default class Mesh extends RawMesh
      */
     set tint(value)
     {
-        this._tint = value;
-        this._tintRGB = (value >> 16) + (value & 0xff00) + ((value & 0xff) << 16);
-
-        //        hex2rgb(this._tint, this._tintRGB);
-    }
-
-    /**
-     * The blend mode to be applied to the sprite. Set to `PIXI.BLEND_MODES.NORMAL` to remove any blend mode.
-     *
-     * @member {number}
-     * @default PIXI.BLEND_MODES.NORMAL
-     * @see PIXI.BLEND_MODES
-     */
-    get blendMode()
-    {
-        return this.state.blendMode;
-    }
-
-    set blendMode(value) // eslint-disable-line require-jsdoc
-    {
-        this.state.blendMode = value;
+        this.shader.tint = value;
     }
 
     /**
@@ -178,112 +134,101 @@ export default class Mesh extends RawMesh
             return;
         }
 
-        this._texture = value;
-        this.uniforms.uSampler = this.texture;
-
-        if (value)
-        {
-            // wait for the texture to load
-            if (value.baseTexture.valid)
-            {
-                this._onTextureUpdate();
-            }
-            else
-            {
-                value.once('update', this._onTextureUpdate, this);
-            }
-        }
+        this.shader.texture = this._texture;
     }
 
     _render(renderer)
     {
-        const baseTex = this._texture.baseTexture;
+        // set properties for batching..
+        // TODO could use a different way to grab verts?
+        const vertices = this.geometry.buffers[0].data;
 
         // TODO benchmark check for attribute size..
-        if (this.batchable && this.vertices.length <= 200 * 2)
+        if (this.shader.batchable && vertices.length <= 200 * 2)
         {
-            if (this.vertexDirty || this._transformID !== this.transform._worldID)
-            {
-                this._transformID = this.transform._worldID;
-
-                if (this.vertexData.length !== this.vertices.length)
-                {
-                    this.vertexData = new Float32Array(this.vertices.length);
-                }
-
-                const wt = this.transform.worldTransform;
-                const a = wt.a;
-                const b = wt.b;
-                const c = wt.c;
-                const d = wt.d;
-                const tx = wt.tx;
-                const ty = wt.ty;
-                const vertices = this.vertices;
-                const vertexData = this.vertexData;
-
-                for (let i = 0; i < vertexData.length / 2; i++)
-                {
-                    const x = vertices[(i * 2)];
-                    const y = vertices[(i * 2) + 1];
-
-                    vertexData[(i * 2)] = (a * x) + (c * y) + tx;
-                    vertexData[(i * 2) + 1] = (b * x) + (d * y) + ty;
-                }
-
-                this.vertexDirty = false;
-            }
-            // batch geometry..
-            this.pluginName = 'batch';
+            this.renderToBatch(renderer);
         }
         else
         {
-            this.pluginName = 'mesh';
-            premultiplyRgba(this._tintRGB, this.worldAlpha, this.uniforms.uColor, baseTex.premultiplyAlpha);
-        }
-
-        super._render(renderer);
-    }
-    /**
-     * When the texture is updated, this event will fire to update the scale and frame
-     *
-     * @private
-     */
-    _onTextureUpdate()
-    {
-        // constructor texture update stop
-        if (!this.uvMatrix)
-        {
-            return;
-        }
-        this.uvMatrix.texture = this._texture;
-        this.refresh();
-    }
-
-    /**
-     * multiplies uvs only if uploadUvMatrix is false
-     * call it after you change uvs manually
-     * make sure that texture is valid
-     */
-    multiplyUvs()
-    {
-        if (!this.uploadUvMatrix)
-        {
-            this.uvMatrix.multiplyUvs(this.uvs);
+            this.renderDefault(renderer);
         }
     }
 
-    /**
-     * Refreshes uvs for generated meshes (rope, plane)
-     * sometimes refreshes vertices too
-     *
-     * @param {boolean} [forceUpdate=false] if true, matrices will be updated any case
-     */
-    refresh(forceUpdate)
+    renderDefault(renderer)
     {
-        if (this.uvMatrix.update(forceUpdate))
+        const shader = this.shader;
+
+        if (shader.update)
         {
-            this._refresh();
+            shader.update();
         }
+
+        renderer.batch.flush();
+
+        if (shader.program.uniformData.translationMatrix)
+        {
+            shader.uniforms.translationMatrix = this.transform.worldTransform.toArray(true);
+        }
+
+        // bind and sync uniforms..
+        renderer.shader.bind(shader);
+
+        // set state..
+        renderer.state.setState(this.state);
+
+        // bind the geometry...
+        renderer.geometry.bind(this.geometry, shader);
+
+        // then render it
+        renderer.geometry.draw(this.drawMode, this.size, this.start, this.geometry.instanceCount);
+    }
+
+    renderToBatch(renderer)
+    {
+        const geometry = this.geometry;
+
+        // set properties for batching..
+        const vertices = geometry.buffers[0].data;
+
+        if (this.vertexDirty || this._transformID !== this.transform._worldID)
+        {
+            this._transformID = this.transform._worldID;
+
+            if (this.vertexData.length !== vertices.length)
+            {
+                this.vertexData = new Float32Array(vertices.length);
+            }
+
+            const wt = this.transform.worldTransform;
+            const a = wt.a;
+            const b = wt.b;
+            const c = wt.c;
+            const d = wt.d;
+            const tx = wt.tx;
+            const ty = wt.ty;
+
+            const vertexData = this.vertexData;
+
+            for (let i = 0; i < vertexData.length / 2; i++)
+            {
+                const x = vertices[(i * 2)];
+                const y = vertices[(i * 2) + 1];
+
+                vertexData[(i * 2)] = (a * x) + (c * y) + tx;
+                vertexData[(i * 2) + 1] = (b * x) + (d * y) + ty;
+            }
+
+            this.vertexDirty = false;
+        }
+
+        // set batchable bits..
+        this.uvs = geometry.buffers[1].data;
+        this.indices = geometry.indexBuffer.data;
+        this._tintRGB = this.shader._tintRGB;
+        this._texture = this.shader.texture;
+
+        renderer.batch.setObjectRenderer(renderer.plugins.batch);
+        renderer.plugins.batch.render(this);
     }
 
     /**
@@ -293,19 +238,91 @@ export default class Mesh extends RawMesh
      */
     updateTransform()
     {
-        if (this.autoUpdate)
-        {
-            this.geometry.buffers[0].update();
-        }
         this.containerUpdateTransform();
+
+        if (this.geometry.update)
+        {
+            this.geometry.update();
+        }
     }
 
     /**
-     * re-calculates mesh coords
+     * Updates the bounds of the mesh as a rectangle. The bounds calculation takes the worldTransform into account.
+     * there must be a aVertexPosition attribute present in the geometry for bounds to be calculated correctly.
+     *
      * @private
      */
-    _refresh()
+    _calculateBounds()
     {
-        /* empty */
+        // The position property could be set manually?
+        if (this.geometry.attributes.aVertexPosition)
+        {
+            const vertices = this.geometry.getAttribute('aVertexPosition').data;
+
+            // TODO - we can cache local bounds and use them if they are dirty (like graphics)
+            this._bounds.addVertices(this.transform, vertices, 0, vertices.length);
+        }
+    }
+
+    /**
+     * Tests if a point is inside this mesh. Works only for TRIANGLE_MESH
+     *
+     * @param {PIXI.Point} point the point to test
+     * @return {boolean} the result of the test
+     */
+    containsPoint(point)
+    {
+        if (!this.getBounds().contains(point.x, point.y))
+        {
+            return false;
+        }
+
+        this.worldTransform.applyInverse(point, tempPoint);
+
+        const vertices = this.geometry.getAttribute('aVertexPosition').data;
+
+        const points = tempPolygon.points;
+        const indices =  this.geometry.getIndex().data;
+        const len = indices.length;
+        const step = this.drawMode === 4 ? 3 : 1;
+
+        for (let i = 0; i + 2 < len; i += step)
+        {
+            const ind0 = indices[i] * 2;
+            const ind1 = indices[i + 1] * 2;
+            const ind2 = indices[i + 2] * 2;
+
+            points[0] = vertices[ind0];
+            points[1] = vertices[ind0 + 1];
+            points[2] = vertices[ind1];
+            points[3] = vertices[ind1 + 1];
+            points[4] = vertices[ind2];
+            points[5] = vertices[ind2 + 1];
+
+            if (tempPolygon.contains(tempPoint.x, tempPoint.y))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+    /**
+     * Destroys the RawMesh object.
+     *
+     * @param {object|boolean} [options] - Options parameter. A boolean will act as if all
+     *  options have been set to that value
+     * @param {boolean} [options.children=false] - if set to true, all the children will have
+     *  their destroy method called as well. 'options' will be passed on to those calls.
+     * @param {boolean} [options.texture=false] - Only used for child Sprites if options.children is set to true
+     *  Should it destroy the texture of the child sprite
+     * @param {boolean} [options.baseTexture=false] - Only used for child Sprites if options.children is set to true
+     *  Should it destroy the base texture of the child sprite
+     */
+    destroy()
+    {
+        this.geometry = null;
+        this.shader = null;
+        this.state = null;
     }
 }

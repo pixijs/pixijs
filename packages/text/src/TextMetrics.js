@@ -246,8 +246,10 @@ export default class TextMetrics
                         width = 0;
                     }
 
-                    // give it its own line
-                    lines += TextMetrics.addLine(token);
+                    const isLastToken = i === tokens.length - 1;
+
+                    // give it its own line if it's not the end
+                    lines += TextMetrics.addLine(token, !isLastToken);
                     canPrependSpaces = false;
                     line = '';
                     width = 0;
