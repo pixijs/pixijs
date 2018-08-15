@@ -1,4 +1,4 @@
-const { SpriteRenderer } = require('../');
+const { BatchRenderer } = require('../');
 
 const mockrunner = {
     contextChange: {
@@ -7,7 +7,7 @@ const mockrunner = {
     },
 };
 
-describe('SpriteRenderer', function ()
+describe('BatchRenderer', function ()
 {
     it('can be destroyed', function ()
     {
@@ -17,7 +17,7 @@ describe('SpriteRenderer', function ()
             runners: mockrunner,
             off: sinon.stub(),
         };
-        const renderer = new SpriteRenderer(webgl);
+        const renderer = new BatchRenderer(webgl);
 
         // simulate onContextChange
         renderer.vertexBuffers = [destroyable, destroyable];
@@ -36,7 +36,7 @@ describe('SpriteRenderer', function ()
             off: sinon.stub(),
         };
 
-        const renderer = new SpriteRenderer(webgl);
+        const renderer = new BatchRenderer(webgl);
 
         expect(() => renderer.destroy()).to.not.throw();
     });

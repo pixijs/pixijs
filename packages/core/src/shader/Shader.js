@@ -1,7 +1,6 @@
 import Program from './Program';
 import UniformGroup from './UniformGroup';
 
-// let math = require('../../../math');
 /**
  * @class
  * @memberof PIXI
@@ -10,8 +9,8 @@ import UniformGroup from './UniformGroup';
 class Shader
 {
     /**
-     * @param {PIXI.Program} [program] - The program the shader will use.
-     * @param {object} [uniforms] - Custom uniforms to use to augment the built-in ones.
+     * @param {PIXI.Program} [program] The program the shader will use.
+     * @param {object} [uniforms] Custom uniforms to use to augment the built-in ones.
      */
     constructor(program, uniforms)
     {
