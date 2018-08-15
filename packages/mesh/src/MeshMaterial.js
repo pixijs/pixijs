@@ -34,7 +34,7 @@ export default class MeshMaterial extends Shader
         this.uvMatrix = new TextureMatrix(this.uSampler);
 
         // this shader can batch with the main batcher..
-        this.batchable = false;
+        this.batchable = true;
     }
 
     get texture()

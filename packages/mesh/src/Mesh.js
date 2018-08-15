@@ -144,7 +144,7 @@ export default class Mesh extends Container
         const vertices = this.geometry.buffers[0].data;
 
         // TODO benchmark check for attribute size..
-        if (this.shader.batchable && vertices.length <= 200 * 2)
+        if (this.shader.batchable && this.drawMode === 4 && vertices.length <= 200 * 2)
         {
             this.renderToBatch(renderer);
         }
