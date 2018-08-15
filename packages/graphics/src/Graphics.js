@@ -659,6 +659,7 @@ export default class Graphics extends Mesh
         }
         else
         {
+            //  console.log('HOLE');
             this.geometry.drawHole(shape, this._matrix);
         }
 
@@ -980,6 +981,7 @@ export default class Graphics extends Mesh
      */
     beginHole()
     {
+        this.finishPoly();
         this._holeMode = true;
 
         return this;
@@ -991,6 +993,7 @@ export default class Graphics extends Mesh
      */
     endHole()
     {
+        this.finishPoly();
         this._holeMode = false;
 
         return this;
