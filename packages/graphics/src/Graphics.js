@@ -216,7 +216,24 @@ export default class Graphics extends Mesh
         }
         else
         {
-            this.finishPoly();
+            if (this.currentPath)
+            {
+                if (this.currentPath.points.length)
+                {
+                    // TODO we need to add a fix here for multiple lines
+                    // with different styles..
+
+                    // const shape = new Polygon(this.currentPath.points.slice(-2));
+
+                    // shape.closed = false;
+
+                    // this.drawShape(shape);
+                }
+                else
+                {
+                    //   this.currentPath.points.length = 0;
+                }
+            }
 
             Object.assign(this._lineStyle, {
                 color,

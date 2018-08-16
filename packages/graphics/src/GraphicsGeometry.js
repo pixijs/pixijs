@@ -353,7 +353,7 @@ export default class GraphicsGeometry extends Geometry2d
         {
             const data = graphicsData[i];
 
-            if (!data.fillStyle)
+            if (!data.fillStyle.visible)
             {
                 continue;
             }
@@ -402,13 +402,11 @@ export default class GraphicsGeometry extends Geometry2d
 
         this.cacheDirty = this.dirty;
 
-        // console.log('dirty');
-
         const uvs = this.uvs;
 
         let batchPart = this.batches.pop()
             || BATCH_POOL.pop()
-            || { uid: Math.random(), style: null, size: 0, start: 0, attribStart: 0, attribSize: 0 };
+            || { style: null, size: 0, start: 0, attribStart: 0, attribSize: 0 };
 
         batchPart.style = batchPart.style
             || this.graphicsData[0].fillStyle
@@ -459,13 +457,15 @@ export default class GraphicsGeometry extends Geometry2d
                     batchPart.size = index - batchPart.start;
                     batchPart.attribSize = attribIndex - batchPart.attribStart;
 
-                    batchPart = BATCH_POOL.pop() || { style, size: 0, start: 0, attribStart: 0, attribSize: 0 };
+                    if (batchPart.size > 0)
+                    {
+                        batchPart = BATCH_POOL.pop() || { style, size: 0, start: 0, attribStart: 0, attribSize: 0 };
+                        this.batches.push(batchPart);
+                    }
 
                     batchPart.style = style;
                     batchPart.start = index;
                     batchPart.attribStart = attribIndex;
-
-                    this.batches.push(batchPart);
 
                     // TODO add this to the render part..
                 }
@@ -786,6 +786,7 @@ export default class GraphicsGeometry extends Geometry2d
         }
         else
         {
+            console.log('HOP');
             minX = 0;
             maxX = 0;
             minY = 0;

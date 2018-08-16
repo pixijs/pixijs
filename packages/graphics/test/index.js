@@ -168,6 +168,35 @@ describe('PIXI.Graphics', function ()
         });
     });
 
+    describe('chaining', function ()
+    {
+        it('should chain draw commands', function ()
+        {
+            // complex drawing #1: draw triangle, rounder rect and an arc (issue #3433)
+            const graphics = new Graphics().beginFill(0xFF3300)
+                .lineStyle(4, 0xffd900, 1)
+                .moveTo(50, 50)
+                .lineTo(250, 50)
+                .endFill()
+                .drawRoundedRect(150, 450, 300, 100, 15)
+                .beginHole()
+                .endHole()
+                .quadraticCurveTo(1, 1, 1, 1)
+                .bezierCurveTo(1, 1, 1, 1)
+                .arcTo(1, 1, 1, 1, 1)
+                .arc(1, 1, 1, 1, 1, false)
+                .drawRect(1, 1, 1, 1)
+                .drawRoundedRect(1, 1, 1, 1, 0.1)
+                .drawCircle(1, 1, 20)
+                .drawEllipse(1, 1, 1, 1)
+                .drawPolygon([1, 1, 1, 1, 1, 1])
+                .drawStar(1, 1, 1, 1, 1, 1)
+                .clear();
+
+            expect(graphics).to.be.not.null;
+        });
+    });
+
     describe('arc', function ()
     {
         it('should draw an arc', function ()
