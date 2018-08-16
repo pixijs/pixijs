@@ -161,6 +161,11 @@ export default class Sprite extends Container
          * @default 'sprite'
          */
         this.pluginName = 'batch';
+
+        /**
+         * used to fast check if a sprite is.. a sprite!
+         */
+        this.isSprite = true;
     }
 
     /**

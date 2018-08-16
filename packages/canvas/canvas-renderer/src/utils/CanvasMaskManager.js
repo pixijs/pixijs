@@ -59,7 +59,8 @@ export default class CanvasMaskManager
     renderGraphicsShape(graphics)
     {
         const context = this.renderer.context;
-        const len = graphics.graphicsData.length;
+        const graphicsData = graphics.geometry.graphicsData;
+        const len = graphicsData.length;
 
         if (len === 0)
         {
@@ -70,7 +71,7 @@ export default class CanvasMaskManager
 
         for (let i = 0; i < len; i++)
         {
-            const data = graphics.graphicsData[i];
+            const data = graphicsData[i];
             const shape = data.shape;
 
             if (data.type === SHAPES.POLY)
