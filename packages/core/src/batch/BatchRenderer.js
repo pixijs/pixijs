@@ -472,10 +472,10 @@ export default class BatchRenderer extends ObjectRenderer
     {
         for (let i = 0; i < this.vaoMax; i++)
         {
-            if (this.vertexBuffers[i])
-            {
-                this.vertexBuffers[i].destroy();
-            }
+            // if (this.vertexBuffers[i])
+            // {
+            //     this.vertexBuffers[i].destroy();
+            // }
             if (this.vaos[i])
             {
                 this.vaos[i].destroy();
@@ -495,17 +495,16 @@ export default class BatchRenderer extends ObjectRenderer
             this.shader = null;
         }
 
-        this.vertexBuffers = null;
+        // this.vertexBuffers = null;
         this.vaos = null;
         this.indexBuffer = null;
         this.indices = null;
-
         this.sprites = null;
 
-        for (let i = 0; i < this.buffers.length; ++i)
-        {
-            this.buffers[i].destroy();
-        }
+        // for (let i = 0; i < this.buffers.length; ++i)
+        // {
+        //     this.buffers[i].destroy();
+        // }
 
         super.destroy();
     }

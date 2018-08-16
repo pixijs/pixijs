@@ -2,19 +2,9 @@
 const { Graphics } = require('../');
 const { BLEND_MODES } = require('@pixi/constants');
 const { Point } = require('@pixi/math');
-const { isWebGLSupported, skipHello } = require('@pixi/utils');
-const { Renderer } = require('@pixi/core');
-const { SpriteRenderer } = require('@pixi/sprite');
+const { skipHello } = require('@pixi/utils');
 
 skipHello();
-
-// Renderer.registerPlugin('graphics', GraphicsRenderer);
-Renderer.registerPlugin('sprite', SpriteRenderer);
-
-function withGL(fn)
-{
-    return isWebGLSupported() ? fn : undefined;
-}
 
 describe('PIXI.Graphics', function ()
 {
