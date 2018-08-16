@@ -189,6 +189,8 @@ export default class Graphics extends Mesh
     lineStyle(width = 0, color = 0, alpha = 1, alignment = 0.5, native = false)
     {
         this.lineTextureStyle(width, Texture.WHITE, color, alpha, null, alignment, native);
+
+        return this;
     }
 
     /**

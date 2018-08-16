@@ -45,6 +45,8 @@ Graphics.prototype.generateCanvasTexture = function generateCanvasTexture(scaleM
     return texture;
 };
 
+Graphics.prototype.cachedGraphicsData = [];
+
 /**
  * Renders the object using the Canvas renderer
  *
