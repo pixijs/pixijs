@@ -15,6 +15,18 @@ const tempPoint = new Point();
  * let sprite = new PIXI.Sprite.fromImage('assets/image.png');
  * ```
  *
+ * The more efficient way to create sprites is using a {@link PIXI.Spritesheet}:
+ *
+ * ```js
+ * PIXI.loader.add("assets/spritesheet.json").load(setup);
+ *
+ * function setup() {
+ *   let sheet = PIXI.loader.resources["assets/spritesheet.json"].spritesheet;
+ *   let sprite = new PIXI.Sprite(sheet.textures["image.png"]);
+ *   ...
+ * }
+ * ```
+ *
  * @class
  * @extends PIXI.Container
  * @memberof PIXI
@@ -30,14 +42,22 @@ export default class Sprite extends Container
 
         /**
          * The anchor sets the origin point of the texture.
-         * The default is 0,0 this means the texture's origin is the top left.
+         * The default is 0,0 or taken from the {@link PIXI.Texture#defaultAnchor|Texture}
+         * passed to the constructor. A value of 0,0 means the texture's origin is the top left.
          * Setting the anchor to 0.5,0.5 means the texture's origin is centered.
          * Setting the anchor to 1,1 would mean the texture's origin point will be the bottom right corner.
+         * Note: Updating the {@link PIXI.Texture#defaultAnchor} after a Texture is
+         * created does _not_ update the Sprite's anchor values.
          *
          * @member {PIXI.ObservablePoint}
          * @private
          */
-        this._anchor = new ObservablePoint(this._onAnchorUpdate, this);
+        this._anchor = new ObservablePoint(
+            this._onAnchorUpdate,
+            this,
+            (texture ? texture.defaultAnchor.x : 0),
+            (texture ? texture.defaultAnchor.y : 0)
+        );
 
         /**
          * The texture that the sprite is using
@@ -524,9 +544,10 @@ export default class Sprite extends Container
 
     /**
      * The anchor sets the origin point of the texture.
-     * The default is 0,0 this means the texture's origin is the top left
-     * Setting the anchor to 0.5,0.5 means the texture's origin is centered
-     * Setting the anchor to 1,1 would mean the texture's origin point will be the bottom right corner
+     * The default is 0,0 or taken from the {@link PIXI.Texture|Texture} passed to the constructor.
+     * Setting the texture at a later point of time does not change the anchor.
+     *
+     * 0,0 means the texture's origin is the top left, 0.5,0.5 is the center, 1,1 the bottom right corner.
      *
      * @member {PIXI.ObservablePoint}
      */
