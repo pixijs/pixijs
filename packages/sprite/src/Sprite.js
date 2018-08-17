@@ -180,7 +180,6 @@ export default class Sprite extends Container
         this.cachedTint = 0xFFFFFF;
 
         this.uvs = this._texture._uvs.uvsFloat32;
-        //     console.log('>', this._texture._uvs.uvsFloat32);
         // so if _width is 0 then width was not set..
         if (this._width)
         {
