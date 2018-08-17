@@ -1034,8 +1034,6 @@ export default class Graphics extends Mesh
      */
     destroy(options)
     {
-        super.destroy(options);
-
         const destroyGeometry = typeof options === 'boolean' ? options : options && options.geometry;
 
         if (destroyGeometry || this._ownsGeometry)
@@ -1051,6 +1049,8 @@ export default class Graphics extends Mesh
         this._fillStyle = null;
         this.geometry = null;
         this.shader = null;
+
+        super.destroy(options);
     }
 }
 

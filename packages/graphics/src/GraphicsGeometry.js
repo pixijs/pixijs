@@ -323,8 +323,6 @@ export default class GraphicsGeometry extends Geometry2d
         this.uvs = null;
         this.indices.length = 0;
         this.indices = null;
-        this.buffer.destroy();
-        this.buffer = null;
         this.indexBuffer.destroy();
         this.indexBuffer = null;
         this.graphicsData.length = 0;
