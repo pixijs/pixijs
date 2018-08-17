@@ -32,7 +32,7 @@ export default class GraphicsData
          * @member {number}
          * @default 0
          */
-        this.lineAlignment = lineAlignment;
+        this.lineAlignment = lineAlignment || 0;
 
         /**
          * if true the liens will be draw using LINES instead of TRIANGLE_STRIP
