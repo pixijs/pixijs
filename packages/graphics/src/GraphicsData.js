@@ -30,9 +30,8 @@ export default class GraphicsData
          * The alignment of any lines drawn (0.5 = middle, 1 = outter, 0 = inner).
          *
          * @member {number}
-         * @default 0
          */
-        this.lineAlignment = lineAlignment || 0;
+        this.lineAlignment = lineAlignment;
 
         /**
          * if true the liens will be draw using LINES instead of TRIANGLE_STRIP
