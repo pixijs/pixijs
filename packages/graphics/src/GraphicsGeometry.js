@@ -492,7 +492,6 @@ export default class GraphicsGeometry extends Geometry2d
 
                 const size = (this.points.length / 2) - start;
 
-                // console.log(size);
                 this.addUvs(this.points, uvs, style.texture, start, size, style.matrix);
             }
         }
@@ -786,7 +785,6 @@ export default class GraphicsGeometry extends Geometry2d
         }
         else
         {
-            console.log('HOP');
             minX = 0;
             maxX = 0;
             minY = 0;
