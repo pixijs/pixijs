@@ -271,7 +271,7 @@ export default class Texture extends EventEmitter
      */
     updateUvs()
     {
-        if (!this._uvs)
+        if (this._uvs === DEFAULT_UVS)
         {
             this._uvs = new TextureUvs();
         }

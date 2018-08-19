@@ -151,7 +151,7 @@ export default class BatchRenderer extends ObjectRenderer
      */
     render(element)
     {
-        if (!element._texture._uvs)
+        if (!element._texture.valid)
         {
             return;
         }
