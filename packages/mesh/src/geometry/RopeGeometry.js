@@ -25,7 +25,7 @@ export default class RopeGeometry extends MeshGeometry
     {
         super(new Float32Array(points.length * 4),
             new Float32Array(points.length * 4),
-            new Uint16Array(points.length * 2));
+            new Uint16Array((points.length - 1) * 6));
 
         /*
          * @member {PIXI.Point[]} An array of points that determine the rope
@@ -61,7 +61,7 @@ export default class RopeGeometry extends MeshGeometry
         {
             vertexBuffer.data = new Float32Array(points.length * 4);
             uvBuffer.data = new Float32Array(points.length * 4);
-            indexBuffer.data = new Uint16Array(points.length * 2);
+            indexBuffer.data = new Uint16Array((points.length - 1) * 6);
         }
 
         const uvs = uvBuffer.data;
@@ -72,15 +72,15 @@ export default class RopeGeometry extends MeshGeometry
         uvs[2] = 0;
         uvs[3] = 1;
 
-        indices[0] = 0;
-        indices[1] = 1;
+        // indices[0] = 0;
+        // indices[1] = 1;
 
-        const total = points.length;
+        const total = points.length; // - 1;
 
-        for (let i = 1; i < total; i++)
+        for (let i = 0; i < total; i++)
         {
             // time to do some smart drawing!
-            let index = i * 4;
+            const index = i * 4;
             const amount = i / (total - 1);
 
             uvs[index] = amount;
@@ -88,10 +88,21 @@ export default class RopeGeometry extends MeshGeometry
 
             uvs[index + 2] = amount;
             uvs[index + 3] = 1;
+        }
 
-            index = i * 2;
-            indices[index] = index;
-            indices[index + 1] = index + 1;
+        let indexCount = 0;
+
+        for (let i = 0; i < total - 1; i++)
+        {
+            const index = i * 2;
+
+            indices[indexCount++] = index;
+            indices[indexCount++] = index + 1;
+            indices[indexCount++] = index + 2;
+
+            indices[indexCount++] = index + 2;
+            indices[indexCount++] = index + 1;
+            indices[indexCount++] = index + 3;
         }
 
         // ensure that the changes are uploaded

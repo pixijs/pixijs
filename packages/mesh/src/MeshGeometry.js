@@ -38,4 +38,9 @@ export default class MeshGeometry extends Geometry
             .addAttribute('aTextureCoord', uvsBuffer, 2, false, TYPES.FLOAT)
             .addIndex(indexBuffer);
     }
+
+    get vertexDirtyId()
+    {
+        return this.buffers[0]._updateID;
+    }
 }

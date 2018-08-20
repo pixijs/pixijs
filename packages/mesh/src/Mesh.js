@@ -73,7 +73,7 @@ export default class Mesh extends Container
         this.indices = null;
         // this is the cache used by the batcher
         this.vertexData = new Float32Array(1);
-        this.vertexDirty = true;
+        this.vertexDirty = 0;
     }
 
     /**
@@ -190,7 +190,7 @@ export default class Mesh extends Container
         // set properties for batching..
         const vertices = geometry.buffers[0].data;
 
-        if (this.vertexDirty || this._transformID !== this.transform._worldID)
+        if (geometry.vertexDirtyId !== this.vertexDirty || this._transformID !== this.transform._worldID)
         {
             this._transformID = this.transform._worldID;
 
@@ -218,7 +218,7 @@ export default class Mesh extends Container
                 vertexData[(i * 2) + 1] = (b * x) + (d * y) + ty;
             }
 
-            this.vertexDirty = false;
+            this.vertexDirty = geometry.vertexDirtyId;
         }
 
         // set batchable bits..
