@@ -143,8 +143,14 @@ export default class Mesh extends Container
         // TODO could use a different way to grab verts?
         const vertices = this.geometry.buffers[0].data;
 
+        if (this.geometry.update && this.geometry._updateId !== renderer.tick)
+        {
+            this.geometry._updateId = renderer.tick;
+            this.geometry.update();
+        }
+
         // TODO benchmark check for attribute size..
-        if (this.shader.batchable && this.drawMode === 4 && vertices.length <= 200 * 2)
+        if (this.shader.batchable && this.drawMode === 4 && vertices.length <= 20 * 2)
         {
             this.renderToBatch(renderer);
         }
@@ -229,21 +235,6 @@ export default class Mesh extends Container
 
         renderer.batch.setObjectRenderer(renderer.plugins.batch);
         renderer.plugins.batch.render(this);
-    }
-
-    /**
-     * Updates the object transform for rendering
-     *
-     * @private
-     */
-    updateTransform()
-    {
-        this.containerUpdateTransform();
-
-        if (this.geometry.update)
-        {
-            this.geometry.update();
-        }
     }
 
     /**

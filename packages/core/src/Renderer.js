@@ -102,6 +102,11 @@ export default class Renderer extends AbstractRenderer
         };
 
         /**
+         * increments each time the renderer is called..
+         */
+        this.tick = 0;
+
+        /**
          * Global uniforms
          * @member {PIXI.UniformGroup}
          */
@@ -301,6 +306,8 @@ export default class Renderer extends AbstractRenderer
      */
     render(displayObject, renderTexture, clear, transform, skipUpdateTransform)
     {
+        this.tick++;
+
         // can be handy to know!
         this.renderingToScreen = !renderTexture;
 

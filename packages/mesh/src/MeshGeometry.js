@@ -37,6 +37,8 @@ export default class MeshGeometry extends Geometry
         this.addAttribute('aVertexPosition', verticesBuffer, 2, false, TYPES.FLOAT)
             .addAttribute('aTextureCoord', uvsBuffer, 2, false, TYPES.FLOAT)
             .addIndex(indexBuffer);
+
+        this._updateId = -1;
     }
 
     get vertexDirtyId()
