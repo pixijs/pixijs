@@ -318,9 +318,12 @@ export default class Text extends Sprite
         {
             const trimmed = trimCanvas(canvas);
 
-            canvas.width = trimmed.width;
-            canvas.height = trimmed.height;
-            this.context.putImageData(trimmed.data, 0, 0);
+            if (trimmed.data)
+            {
+                canvas.width = trimmed.width;
+                canvas.height = trimmed.height;
+                this.context.putImageData(trimmed.data, 0, 0);
+            }
         }
 
         const texture = this._texture;
