@@ -125,6 +125,13 @@ describe('PIXI.TextMetrics', function ()
                 expect(line[line - 1]).to.not.equal(' ', 'no lines should have a space at the end');
             });
         });
+
+        it('should be able to override wordWrap to false in measureText', function ()
+        {
+            const metrics = PIXI.TextMetrics.measureText(longText, new PIXI.TextStyle(defaultStyle), false);
+
+            expect(metrics.lines.length).to.equal(1);
+        });
     });
 
     describe('wordWrap with breakWords', function ()
