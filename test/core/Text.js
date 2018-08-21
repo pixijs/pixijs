@@ -109,7 +109,7 @@ describe('PIXI.Text', function ()
             expect(text.text).to.equal(' ');
         });
 
-        it('should trim and empty string', function ()
+        it('should trim an empty string', function ()
         {
             const text = new PIXI.Text('', { trim: true });
 
