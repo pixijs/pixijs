@@ -166,7 +166,7 @@ describe('PIXI.Text', function ()
         {
             const text = new Text('', { trim: true });
 
-            expect(text.text).to.equal(' ');
+            expect(text.text).to.equal('');
         });
 
         it('should allow setting \'\' for v5', function ()
