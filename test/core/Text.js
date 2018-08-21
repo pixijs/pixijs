@@ -109,6 +109,13 @@ describe('PIXI.Text', function ()
             expect(text.text).to.equal(' ');
         });
 
+        it('should trim an empty string', function ()
+        {
+            const text = new PIXI.Text('', { trim: true });
+
+            expect(text.text).to.equal(' ');
+        });
+
         it('should prevent setting \'\'', function ()
         {
             const text = new PIXI.Text('');
