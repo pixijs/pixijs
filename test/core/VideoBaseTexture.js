@@ -10,7 +10,7 @@ describe('PIXI.VideoBaseTexture', function ()
 
     it('should find correct video extension from Url', function ()
     {
-        this.texture = new PIXI.VideoBaseTexture.fromUrl('https://example.org/video.webm');
+        this.texture = PIXI.VideoBaseTexture.fromUrl('https://example.org/video.webm');
 
         expect(this.texture.source.firstChild.type).to.be.equals('video/webm');
 
@@ -19,7 +19,7 @@ describe('PIXI.VideoBaseTexture', function ()
 
     it('should get video extension without being thrown by query string', function ()
     {
-        this.texture = new PIXI.VideoBaseTexture.fromUrl('/test.mp4?123...');
+        this.texture = PIXI.VideoBaseTexture.fromUrl('/test.mp4?123...');
 
         expect(this.texture.source.firstChild.type).to.be.equals('video/mp4');
 
