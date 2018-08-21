@@ -43,12 +43,6 @@ export default class CanvasGraphicsRenderer
         const transform = graphics.transform.worldTransform;
         const resolution = renderer.resolution;
 
-         // if the tint has changed, set the graphics object to dirty.
-        if (graphics._prevTint !== graphics.tint)
-        {
-            graphics.dirty = true;
-        }
-
         context.setTransform(
             transform.a * resolution,
             transform.b * resolution,
@@ -58,10 +52,11 @@ export default class CanvasGraphicsRenderer
             transform.ty * resolution
         );
 
-        if (graphics.dirty)
+        // update tint if graphics was dirty
+        if (graphics.canvasTintDirty !== graphics.dirty
+            || graphics._prevTint !== graphics.tint)
         {
             this.updateGraphicsTint(graphics);
-            graphics.dirty = false;
         }
 
         renderer.setBlendMode(graphics.blendMode);
@@ -226,6 +221,7 @@ export default class CanvasGraphicsRenderer
     updateGraphicsTint(graphics)
     {
         graphics._prevTint = graphics.tint;
+        graphics.canvasTintDirty = graphics.dirty;
 
         const tintR = ((graphics.tint >> 16) & 0xFF) / 255;
         const tintG = ((graphics.tint >> 8) & 0xFF) / 255;
