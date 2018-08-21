@@ -50,9 +50,6 @@ export default class Text extends Sprite
 
         super(texture);
 
-        // base texture is already automatically added to the cache, now adding the actual texture
-        Texture.addToCache(this._texture, this._texture.baseTexture.textureCacheIds[0]);
-
         /**
          * The canvas element that everything is drawn to
          *
@@ -135,7 +132,7 @@ export default class Text extends Sprite
         this._font = this._style.toFontString();
 
         const context = this.context;
-        const measured = TextMetrics.measureText(this._text, this._style, this._style.wordWrap, this.canvas);
+        const measured = TextMetrics.measureText(this._text || ' ', this._style, this._style.wordWrap, this.canvas);
         const width = measured.width;
         const height = measured.height;
         const lines = measured.lines;
@@ -640,7 +637,7 @@ export default class Text extends Sprite
 
     set text(text) // eslint-disable-line require-jsdoc
     {
-        text = String(text === '' || text === null || text === undefined ? ' ' : text);
+        text = String(text === null || text === undefined ? '' : text);
 
         if (this._text === text)
         {

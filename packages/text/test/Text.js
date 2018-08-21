@@ -100,14 +100,14 @@ describe('PIXI.Text', function ()
         {
             const text = new Text(null);
 
-            expect(text.text).to.equal(' ');
+            expect(text.text).to.equal('');
         });
 
         it('should prevent setting undefined', function ()
         {
             const text = new Text();
 
-            expect(text.text).to.equal(' ');
+            expect(text.text).to.equal('');
         });
 
         it('should trim an empty string', function ()
@@ -117,11 +117,11 @@ describe('PIXI.Text', function ()
             expect(text.text).to.equal(' ');
         });
 
-        it('should prevent setting \'\'', function ()
+        it('should allow setting \'\' for v5', function ()
         {
             const text = new Text('');
 
-            expect(text.text).to.equal(' ');
+            expect(text.text).to.equal('');
         });
 
         it('should keep at least 1 pixel for canvas width and height', function ()
