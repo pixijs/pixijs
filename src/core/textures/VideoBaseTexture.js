@@ -317,6 +317,7 @@ function createSource(path, type)
 {
     if (!type)
     {
+        path = path.split('?').shift().toLowerCase();
         type = `video/${path.substr(path.lastIndexOf('.') + 1)}`;
     }
 
