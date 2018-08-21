@@ -1,34 +1,28 @@
 'use strict';
 
-const URL1 = 'https://example.org/video.webm';
-const URL2 = '/test.mp4?123...';
-
-function cleanCache()
-{
-    delete PIXI.utils.BaseTextureCache[URL1];
-    delete PIXI.utils.BaseTextureCache[URL2];
-
-    delete PIXI.utils.TextureCache[URL1];
-    delete PIXI.utils.TextureCache[URL2];
-}
-
 describe('PIXI.VideoBaseTexture', function ()
 {
+    afterEach(function ()
+    {
+        this.texture.destroy();
+        this.texture = null;
+    });
+
     it('should find correct video extension from Url', function ()
     {
-        cleanCache();
+        this.texture = new PIXI.VideoBaseTexture.fromUrl('https://example.org/video.webm');
 
-        const videoBaseTexture = new PIXI.VideoBaseTexture.fromUrl(URL1);
+        expect(this.texture.source.firstChild.type).to.be.equals('video/webm');
 
-        expect(videoBaseTexture.source.firstChild.type).to.be.equals('video/webm');
+        this.texture.destroy();
     });
 
     it('should get video extension without being thrown by query string', function ()
     {
-        cleanCache();
+        this.texture = new PIXI.VideoBaseTexture.fromUrl('/test.mp4?123...');
 
-        const videoBaseTexture = new PIXI.VideoBaseTexture.fromUrl(URL2);
+        expect(this.texture.source.firstChild.type).to.be.equals('video/mp4');
 
-        expect(videoBaseTexture.source.firstChild.type).to.be.equals('video/mp4');
+        this.texture.destroy();
     });
 });
