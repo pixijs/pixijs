@@ -40,7 +40,7 @@ export default class Transform extends TransformBase
         this.skew = new ObservablePoint(this.updateSkew, this, 0, 0);
 
         /**
-         * The pivot point of the displayObject that it rotates around
+         * The pivot point of the displayObject that it rotates around.
          *
          * @member {PIXI.Point}
          */

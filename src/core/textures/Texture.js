@@ -2,7 +2,7 @@ import BaseTexture from './BaseTexture';
 import VideoBaseTexture from './VideoBaseTexture';
 import TextureUvs from './TextureUvs';
 import EventEmitter from 'eventemitter3';
-import { Rectangle } from '../math';
+import { Rectangle, Point } from '../math';
 import { TextureCache, getResolutionOfUrl } from '../utils';
 import settings from '../settings';
 
@@ -40,8 +40,9 @@ export default class Texture extends EventEmitter
      * @param {PIXI.Rectangle} [orig] - The area of original texture
      * @param {PIXI.Rectangle} [trim] - Trimmed rectangle of original texture
      * @param {number} [rotate] - indicates how the texture was rotated by texture packer. See {@link PIXI.GroupD8}
+     * @param {PIXI.Point} [anchor] - Default anchor point used for sprite placement / rotation
      */
-    constructor(baseTexture, frame, orig, trim, rotate)
+    constructor(baseTexture, frame, orig, trim, rotate, anchor)
     {
         super();
 
@@ -144,6 +145,14 @@ export default class Texture extends EventEmitter
         }
 
         /**
+         * Anchor point that is used as default if sprite is created with this texture.
+         * Changing the `defaultAnchor` at a later point of time will not update Sprite's anchor point.
+         * @member {PIXI.Point}
+         * @default {0,0}
+         */
+        this.defaultAnchor = anchor ? new Point(anchor.x, anchor.y) : new Point(0, 0);
+
+        /**
          * Fired when the texture is updated. This happens if the frame or the baseTexture is updated.
          *
          * @event PIXI.Texture#update
@@ -156,7 +165,7 @@ export default class Texture extends EventEmitter
         /**
          * Contains data for uvs. May contain clamp settings and some matrices.
          * Its a bit heavy, so by default that object is not created.
-         * @type {PIXI.TextureMatrix}
+         * @member {PIXI.TextureMatrix}
          * @default null
          */
         this.transform = null;
