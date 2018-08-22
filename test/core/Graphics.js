@@ -104,6 +104,18 @@ describe('PIXI.Graphics', function ()
             expect(graphics.width).to.be.equals(70);
             expect(graphics.height).to.be.equals(70);
         });
+
+        it('should ignore duplicate calls', function ()
+        {
+            const graphics = new PIXI.Graphics();
+
+            graphics.moveTo(0, 0);
+            graphics.lineTo(0, 0);
+            graphics.lineTo(10, 0);
+            graphics.lineTo(10, 0);
+
+            expect(graphics.currentPath.shape.points.length).to.be.equals(4);
+        });
     });
 
     describe('containsPoint', function ()
