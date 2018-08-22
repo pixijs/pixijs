@@ -284,4 +284,31 @@ describe('PIXI.Graphics', function ()
             }
         }));
     });
+
+    describe('drawCircle', function ()
+    {
+        it('should have no gaps in line border', withGL(function ()
+        {
+            const renderer = new PIXI.WebGLRenderer(200, 200, {});
+
+            try
+            {
+                const graphics = new PIXI.Graphics();
+
+                graphics.lineStyle(15, 0x8FC7E6);
+                graphics.drawCircle(100, 100, 30);
+
+                renderer.render(graphics);
+
+                const points = graphics.graphicsData[0].points;
+
+                expect(points[0]).to.equals(points[points.length - 1]);
+                expect(points[1]).to.equals(points[points.length]);
+            }
+            finally
+            {
+                renderer.destroy();
+            }
+        }));
+    });
 });
