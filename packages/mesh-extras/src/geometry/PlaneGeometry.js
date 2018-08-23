@@ -1,16 +1,16 @@
-import MeshGeometry from '../MeshGeometry';
+import { MeshGeometry } from '@pixi/mesh';
 
 export default class PlaneGeometry extends MeshGeometry
 {
-    constructor(width, height, segWidth, segHeight)
+    constructor(width = 100, height = 100, segWidth = 10, segHeight = 10)
     {
         super();
 
-        this.segWidth = segWidth || 10;
-        this.segHeight = segHeight || 10;
+        this.segWidth = segWidth;
+        this.segHeight = segHeight;
 
-        this.width = width || 100;
-        this.height = height || 100;
+        this.width = width;
+        this.height = height;
 
         this.build();
     }

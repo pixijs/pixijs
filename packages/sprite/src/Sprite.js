@@ -9,7 +9,7 @@ const indices = new Uint16Array([0, 1, 2, 0, 2, 3]);
 
 /**
  * The Sprite object is the base for all textured objects that are rendered to the screen
- *
+*
  * A sprite can be created directly from an image like this:
  *
  * ```js

@@ -76,6 +76,16 @@ export default class Mesh extends Container
         this.vertexDirty = 0;
     }
 
+    set material(value)
+    {
+        this.shader = value;
+    }
+
+    get material()
+    {
+        return this.shader;
+    }
+
     /**
      * The blend mode to be applied to the graphic shape. Apply a value of
      * `PIXI.BLEND_MODES.NORMAL` to reset the blend mode.
@@ -150,7 +160,7 @@ export default class Mesh extends Container
         }
 
         // TODO benchmark check for attribute size..
-        if (this.shader.batchable && this.drawMode === 4 && vertices.length <= 20 * 2)
+        if (this.shader.batchable && this.drawMode === 4 && vertices.length < 100 * 2)
         {
             this.renderToBatch(renderer);
         }
