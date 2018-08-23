@@ -114,7 +114,7 @@ describe('PIXI.Graphics', function ()
             graphics.lineTo(10, 0);
             graphics.lineTo(10, 0);
 
-            expect(graphics.currentPath.shape.points.length).to.be.equals(4);
+            expect(graphics.currentPath.shape.points).to.deep.equal([0, 0, 10, 0]);
         });
     });
 
