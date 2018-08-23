@@ -25,7 +25,7 @@ export default class SimplePlane extends Mesh
      */
     constructor(texture, verticesX, verticesY)
     {
-        const planeGeometry = new PlaneGeometry(texture.width, verticesX, verticesY);
+        const planeGeometry = new PlaneGeometry(texture.width, texture.height, verticesX, verticesY);
         const meshMaterial = new MeshMaterial(texture);
 
         super(planeGeometry, meshMaterial);
@@ -33,12 +33,15 @@ export default class SimplePlane extends Mesh
         // wait for the texture to load
         if (!texture.baseTexture.hasLoaded)
         {
-            texture.once('update', () =>
-            {
-                planeGeometry.width = this.shader.texture.width;
-                planeGeometry.height = this.shader.texture.height;
-                planeGeometry.build();
-            });
+            texture.once('update', this.textureUpdated, this);
         }
+    }
+
+    textureUpdated()
+    {
+        this.geometry.width = this.shader.texture.width;
+        this.geometry.height = this.shader.texture.height;
+
+        this.geometry.build();
     }
 }

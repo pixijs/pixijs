@@ -134,17 +134,12 @@ export default class Mesh extends Container
      */
     get texture()
     {
-        return this._texture;
+        return this.shader.texture;
     }
 
-    set texture(value) // eslint-disable-line require-jsdoc
+    set texture(value)
     {
-        if (this._texture === value)
-        {
-            return;
-        }
-
-        this.shader.texture = this._texture;
+        this.shader.texture = value;
     }
 
     _render(renderer)

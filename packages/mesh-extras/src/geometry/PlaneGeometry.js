@@ -12,6 +12,7 @@ export default class PlaneGeometry extends MeshGeometry
         this.width = width;
         this.height = height;
 
+        // console.log('>>>>>', segWidth, segHeight);
         this.build();
     }
 
