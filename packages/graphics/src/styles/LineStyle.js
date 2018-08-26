@@ -8,6 +8,11 @@ import FillStyle from './FillStyle';
  */
 export default class LineStyle extends FillStyle
 {
+    /**
+     * Convert the object to JSON
+     *
+     * @return {object}
+     */
     toJSON()
     {
         return {

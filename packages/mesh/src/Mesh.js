@@ -25,57 +25,97 @@ export default class Mesh extends Container
 {
     /**
      * @param {PIXI.Geometry} geometry  the geometry the mesh will use
-     * @param {PIXI.Shader} shader  the shader the mesh will use
-     * @param {PIXI.State} state  the state that the webGL context is required to be in to render the mesh
-     * @param {number} drawMode  the drawMode, can be any of the PIXI.DRAW_MODES consts
+     * @param {PIXI.Shader|PIXI.MeshMaterial} shader  the shader the mesh will use
+     * @param {PIXI.State} [state] the state that the webGL context is required to be in to render the mesh
+     *        if no state is provided, uses {@link PIXI.State.for2d} to create a 2D state for PixiJS.
+     * @param {number} [drawMode=PIXI.DRAW_MODES.TRIANGLES] the drawMode, can be any of the PIXI.DRAW_MODES consts
      */
     constructor(geometry, shader, state, drawMode = DRAW_MODES.TRIANGLES)// vertices, uvs, indices, drawMode)
     {
         super();
 
         /**
-         * the geometry the mesh will use
-         * @type {PIXI.Geometry}
+         * Includes vertex positions, face indices, normals, colors, UVs, and
+         * custom attributes within buffers, reducing the cost of passing all
+         * this data to the GPU. Can be shared between multiple Mesh objects.
+         * @member {PIXI.Geometry}
          */
         this.geometry = geometry;
 
         /**
-         * the shader the mesh will use
-         * @type {PIXI.Shader}
+         * Represents the vertex and fragment shaders that processes the geometry and runs on the GPU.
+         * Can be shared between multiple Mesh objects.
+         * @member {PIXI.Shader|PIXI.MeshMaterial}
          */
         this.shader = shader;
 
         /**
-         * the webGL state the mesh requires to render
-         * @type {PIXI.State}
+         * Represents the webGL state the Mesh required to render, excludes shader and geometry. E.g.,
+         * blend mode, culling, depth testing, direction of rendering triangles, backface, etc.
+         * @member {PIXI.State}
          */
         this.state = state || State.for2d();
 
         /**
-         * The way the Mesh should be drawn, can be any of the {@link PIXI.RawMesh.DRAW_MODES} consts
+         * The way the Mesh should be drawn, can be any of the {@link PIXI.DRAW_MODES} constants.
          *
          * @member {number}
-         * @see PIXI.RawMesh.DRAW_MODES
+         * @see PIXI.DRAW_MODES
          */
         this.drawMode = drawMode;
 
         /**
-         * use these to only render parts of the geometry
+         * Typically the index of the IndexBuffer where to start drawing.
+         * @member {number}
+         * @default 0
          */
         this.start = 0;
+
+        /**
+         * How much of the geometry to draw, by default `0` renders everything.
+         * @member {number}
+         * @default 0
+         */
         this.size = 0;
 
+        /**
+         * thease are used as easy access for batching
+         * @member {Float32Array}
+         * @private
+         */
+        this.uvs = null;
+
+        /**
+         * thease are used as easy access for batching
+         * @member {Uint16Array}
+         * @private
+         */
+        this.indices = null;
+
+        /**
+         * this is the caching layer used by the batcher
+         * @member {Float32Array}
+         * @private
+         */
+        this.vertexData = new Float32Array(1);
+
+        /**
+         * If geometry is changed used to decide to re-transform
+         * the vertexData.
+         * @member {number}
+         * @private
+         */
+        this.vertexDirty = 0;
+
+        // Inherited from DisplayMode, set defaults
         this.tint = 0xFFFFFF;
         this.blendMode = BLEND_MODES.NORMAL;
-
-        // thease are used as easy access for batching..
-        this.uvs = null;
-        this.indices = null;
-        // this is the cache used by the batcher
-        this.vertexData = new Float32Array(1);
-        this.vertexDirty = 0;
     }
 
+    /**
+     * Alias for {@link PIXI.Mesh#shader}.
+     * @member {PIXI.Shader|PIXI.MeshMaterial}
+     */
     set material(value)
     {
         this.shader = value;
@@ -105,11 +145,10 @@ export default class Mesh extends Container
     }
 
     /**
-     * The tint applied to the Rope. This is a hex value. A value of
-     * 0xFFFFFF will remove any tint effect.
+     * The multiply tint applied to the Mesh. This is a hex value. A value of
+     * `0xFFFFFF` will remove any tint effect.
      *
      * @member {number}
-     * @memberof PIXI.Sprite#
      * @default 0xFFFFFF
      */
     get tint()
@@ -117,18 +156,13 @@ export default class Mesh extends Container
         return this.shader.tint;
     }
 
-    /**
-     * Sets the tint of the rope.
-     *
-     * @param {number} value - The value to set to.
-     */
     set tint(value)
     {
         this.shader.tint = value;
     }
 
     /**
-     * The texture that the mesh uses.
+     * The texture that the Mesh uses.
      *
      * @member {PIXI.Texture}
      */
@@ -142,6 +176,10 @@ export default class Mesh extends Container
         this.shader.texture = value;
     }
 
+    /**
+     * Standard renderer draw.
+     * @private
+     */
     _render(renderer)
     {
         // set properties for batching..
@@ -155,17 +193,22 @@ export default class Mesh extends Container
         }
 
         // TODO benchmark check for attribute size..
-        if (this.shader.batchable && this.drawMode === 4 && vertices.length < 100 * 2)
+        if (this.shader.batchable && this.drawMode === DRAW_MODES.TRIANGLES && vertices.length < Mesh.BATCHABLE_SIZE * 2)
         {
-            this.renderToBatch(renderer);
+            this._renderToBatch(renderer);
         }
         else
         {
-            this.renderDefault(renderer);
+            this._renderDefault(renderer);
         }
     }
 
-    renderDefault(renderer)
+    /**
+     * Standard non-batching way of rendering.
+     * @private
+     * @param {PIXI.Renderer} renderer - Instance to renderer.
+     */
+    _renderDefault(renderer)
     {
         const shader = this.shader;
 
@@ -194,7 +237,12 @@ export default class Mesh extends Container
         renderer.geometry.draw(this.drawMode, this.size, this.start, this.geometry.instanceCount);
     }
 
-    renderToBatch(renderer)
+    /**
+     * Rendering by using the Batch system.
+     * @private
+     * @param {PIXI.Renderer} renderer - Instance to renderer.
+     */
+    _renderToBatch(renderer)
     {
         const geometry = this.geometry;
 
@@ -261,7 +309,7 @@ export default class Mesh extends Container
     }
 
     /**
-     * Tests if a point is inside this mesh. Works only for TRIANGLE_MESH
+     * Tests if a point is inside this mesh. Works only for PIXI.DRAW_MODES.TRIANGLES.
      *
      * @param {PIXI.Point} point the point to test
      * @return {boolean} the result of the test
@@ -304,21 +352,31 @@ export default class Mesh extends Container
         return false;
     }
     /**
-     * Destroys the RawMesh object.
+     * Destroys the Mesh object.
      *
      * @param {object|boolean} [options] - Options parameter. A boolean will act as if all
      *  options have been set to that value
      * @param {boolean} [options.children=false] - if set to true, all the children will have
      *  their destroy method called as well. 'options' will be passed on to those calls.
-     * @param {boolean} [options.texture=false] - Only used for child Sprites if options.children is set to true
-     *  Should it destroy the texture of the child sprite
-     * @param {boolean} [options.baseTexture=false] - Only used for child Sprites if options.children is set to true
-     *  Should it destroy the base texture of the child sprite
      */
-    destroy()
+    destroy(options)
     {
+        super.destroy(options);
+
         this.geometry = null;
         this.shader = null;
         this.state = null;
+        this.uvs = null;
+        this.indices = null;
+        this.vertexData = null;
     }
 }
+
+/**
+ * The maximum number of vertices to consider batchable. Generally, the complexity
+ * of the geometry.
+ * @memberof PIXI.Mesh
+ * @static
+ * @member {number}
+ */
+Mesh.BATCHABLE_SIZE = 100;

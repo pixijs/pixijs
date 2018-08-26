@@ -2,9 +2,11 @@ import { Mesh, MeshGeometry, MeshMaterial } from '@pixi/mesh';
 import { Texture } from '@pixi/core';
 
 /**
- * Base mesh class
+ * Simple Mesh class mimics mesh in PixiJS v4, provides
+ * easy-to-use constructor arguments. For more robust
+ * customization, use {@link PIXI.Mesh}.
  * @class
- * @extends PIXI.Container
+ * @extends PIXI.Mesh
  * @memberof PIXI
  */
 export default class SimpleMesh extends Mesh
@@ -29,11 +31,14 @@ export default class SimpleMesh extends Mesh
         this.autoUpdate = true;
     }
 
+    /**
+     * Collection of vertices data.
+     * @member {Float32Array}
+     */
     get vertices()
     {
         return this.geometry.getAttribute('aVertexPosition').data;
     }
-
     set vertices(value)
     {
         this.geometry.getAttribute('aVertexPosition').data = value;

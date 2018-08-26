@@ -35,8 +35,8 @@ const temp = new Float32Array(3);
 export default class Graphics extends Mesh
 {
     /**
-     *
-     * @param {PIXI.GraphicsGeometry} [geometry] - Geometry to use
+     * @param {PIXI.GraphicsGeometry} [geometry=null] - Geometry to use, if omitted
+     *        will create a new GraphicsGeometry instance.
      */
     constructor(geometry = null)
     {
@@ -108,13 +108,33 @@ export default class Graphics extends Mesh
          * @default false
          */
 
-        // a collections of batches!
-        // these can be drawn by the pixi batcher
+        /**
+         * A collections of batches! These can be drawn by the renderer batch system.
+         *
+         * @private
+         * @member {object[]}
+         */
         this.batches = [];
 
-        this.tint = 0xFFFFFF;
+        /**
+         * Update dirty for limiting calculating tints for batches.
+         *
+         * @private
+         * @member {number}
+         * @default -1
+         */
         this.batchTint = -1;
-        this.vertexData = [];
+
+        /**
+         * Copy of the object vertex data.
+         *
+         * @private
+         * @member {Float32Array}
+         */
+        this.vertexData = null;
+
+        // Set default
+        this.tint = 0xFFFFFF;
     }
 
     /**
@@ -135,19 +155,12 @@ export default class Graphics extends Mesh
      * 0xFFFFFF will remove any tint effect.
      *
      * @member {number}
-     * @memberof PIXI.Sprite#
      * @default 0xFFFFFF
      */
     get tint()
     {
         return this._tint;
     }
-
-    /**
-     * Sets the tint of the rope.
-     *
-     * @param {number} value - The value to set to.
-     */
     set tint(value)
     {
         this._tint = value;
@@ -197,7 +210,7 @@ export default class Graphics extends Mesh
      * Like line style but support texture for line fill.
      *
      * @param {number} [width=0] - width of the line to draw, will update the objects stored style
-     * @param {PIXI.Texture} [texture] - Texture to use
+     * @param {PIXI.Texture} [texture=PIXI.Texture.WHITE] - Texture to use
      * @param {number} [color=0] - color of the line to draw, will update the objects stored style
      * @param {number} [alpha=1] - alpha of the line to draw, will update the objects stored style
      * @param {PIXI.Matrix} [textureMatrix=null] Texture matrix to transform texture
@@ -516,7 +529,7 @@ export default class Graphics extends Mesh
     /**
      * Begin the texture fill
      *
-     * @param {PIXI.Texture} texture - Texture to fill
+     * @param {PIXI.Texture} [texture=PIXI.Texture.WHITE] - Texture to fill
      * @param {number} [color=0xffffff] - Background to fill behind texture
      * @param {number} [alpha=1] - Alpha of fill
      * @param {PIXI.Matrix} [textureMatrix=null] - Transform matrix
@@ -564,6 +577,7 @@ export default class Graphics extends Mesh
     }
 
     /**
+     * Draws a rectangle shape.
      *
      * @param {number} x - The X coord of the top-left of the rectangle
      * @param {number} y - The Y coord of the top-left of the rectangle
@@ -577,6 +591,7 @@ export default class Graphics extends Mesh
     }
 
     /**
+     * Draw a rectangle shape with rounded/beveled corners.
      *
      * @param {number} x - The X coord of the top-left of the rectangle
      * @param {number} y - The Y coord of the top-left of the rectangle
@@ -801,7 +816,7 @@ export default class Graphics extends Mesh
 
             if (this.batches.length)
             {
-                this.calculateVerticies();
+                this.calculateVertices();
                 this.calculateTints();
 
                 for (let i = 0; i < this.batches.length; i++)
@@ -900,6 +915,10 @@ export default class Graphics extends Mesh
         return this.geometry.containsPoint(Graphics._TEMP_POINT);
     }
 
+    /**
+     * Recalcuate the tint by applying tin to batches using Graphics tint.
+     * @private
+     */
     calculateTints()
     {
         if (this.batchTint !== this.tint)
@@ -928,7 +947,12 @@ export default class Graphics extends Mesh
         }
     }
 
-    calculateVerticies()
+    /**
+     * If there's a transform update or a change to the shape of the
+     * geometry, recaculate the vertices.
+     * @private
+     */
+    calculateVertices()
     {
         if (this._transformID === this.transform._worldID)
         {
@@ -980,7 +1004,7 @@ export default class Graphics extends Mesh
     }
 
     /**
-     * Apply a matrix
+     * Apply a matrix to the positional data.
      *
      * @param {PIXI.Matrix} matrix - Matrix to use for transform current shape.
      * @return {PIXI.Graphics} Returns itself.
@@ -1049,6 +1073,9 @@ export default class Graphics extends Mesh
         this._fillStyle = null;
         this.geometry = null;
         this.shader = null;
+        this.vertexData = null;
+        this.batches.length = 0;
+        this.batches = null;
 
         super.destroy(options);
     }

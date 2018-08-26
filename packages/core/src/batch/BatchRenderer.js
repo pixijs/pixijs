@@ -1,4 +1,4 @@
-import Geometry2d from '../geometry/Geometry2d';
+import BatchGeometry from './BatchGeometry';
 import State from '../state/State';
 import ObjectRenderer from './ObjectRenderer';
 import checkMaxIfStatementsInShader from '../shader/utils/checkMaxIfStatementsInShader';
@@ -131,7 +131,7 @@ export default class BatchRenderer extends ObjectRenderer
         for (let i = 0; i < this.vaoMax; i++)
         {
             /* eslint-disable max-len */
-            this.vaos[i] = new Geometry2d();
+            this.vaos[i] = new BatchGeometry();
         }
     }
 
@@ -309,7 +309,7 @@ export default class BatchRenderer extends ObjectRenderer
             {
                 this.vaoMax++;
                 /* eslint-disable max-len */
-                this.vaos[this.vertexCount] = new Geometry2d();
+                this.vaos[this.vertexCount] = new BatchGeometry();
             }
 
             this.vaos[this.vertexCount]._buffer.update(buffer.vertices, 0);

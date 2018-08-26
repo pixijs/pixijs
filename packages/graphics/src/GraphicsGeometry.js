@@ -1,4 +1,4 @@
-import { Geometry2d } from '@pixi/core';
+import { BatchGeometry } from '@pixi/core';
 import { Rectangle, SHAPES } from '@pixi/math';
 
 import GraphicsData from './GraphicsData';
@@ -28,19 +28,18 @@ fillCommands[SHAPES.RREC] = buildRoundedRectangle;
 
 /**
  * The Graphics class contains methods used to draw primitive shapes such as lines, circles and
- * rectangles to the display, and to color and fill them.
+ * rectangles to the display, and to color and fill them. GraphicsGeometry
+ * is designed to not be continually update the geometry since it's expensive
+ * to re-tesselate using **earcut**. Consider using {@link PIXI.Mesh} for this
+ * use-case, it's much faster.
  *
  * @class
- * @extends PIXI.Container
+ * @extends PIXI.BatchGeometry
  * @memberof PIXI
  */
-export default class GraphicsGeometry extends Geometry2d
+export default class GraphicsGeometry extends BatchGeometry
 {
-    /**
-     *
-     * @param {boolean} [multiTexture=false] - `true` to support multiple textures
-     */
-    constructor(multiTexture = false)
+    constructor()
     {
         super();
 
@@ -72,12 +71,12 @@ export default class GraphicsGeometry extends Geometry2d
          */
         this.indices = [];
 
+        /**
+         * Reference to the texture IDs.
+         * @member {number[]}
+         * @private
+         */
         this.textureIds = [];
-
-        if (multiTexture)
-        {
-            // then add the extra attribute!
-        }
 
         /**
          * The collection of drawn shapes.
@@ -99,11 +98,17 @@ export default class GraphicsGeometry extends Geometry2d
          * Used to detect if the graphics object has changed. If this is set to true then the graphics
          * object will be recalculated.
          *
-         * @member {boolean}
+         * @member {number}
          * @private
          */
         this.dirty = 0;
 
+        /**
+         * Batches need to regenerated if the geometry is updated.
+         *
+         * @member {number}
+         * @private
+         */
         this.batchDirty = -1;
 
         /**
@@ -115,19 +120,29 @@ export default class GraphicsGeometry extends Geometry2d
         this.cacheDirty = -1;
 
         /**
-         * Used to detect if we clear the graphics webGL data
-         * @member {Number}
+         * Used to detect if we clear the graphics webGL data.
+         *
+         * @member {number}
+         * @default 0
+         * @private
          */
         this.clearDirty = 0;
 
         /**
-         * List of current draw calls.
+         * List of current draw calls drived from the batches.
          *
-         * @member {Array}
+         * @member {object[]}
          * @private
          */
         this.drawCalls = [];
 
+        /**
+         * Intermediate abstract format sent to batch system.
+         * Can be converted to drawCalls or to batchable objects.
+         *
+         * @member {object[]}
+         * @private
+         */
         this.batches = [];
 
         /**
@@ -139,7 +154,7 @@ export default class GraphicsGeometry extends Geometry2d
         this.shapeIndex = 0;
 
         /**
-         * Cache bounds
+         * Cached bounds.
          *
          * @member {PIXI.Rectangle}
          * @private
@@ -147,7 +162,7 @@ export default class GraphicsGeometry extends Geometry2d
         this._bounds = new Rectangle();
 
         /**
-         * The bounds dirty flag
+         * The bounds dirty flag.
          *
          * @member {number}
          * @private
@@ -183,7 +198,7 @@ export default class GraphicsGeometry extends Geometry2d
     /**
      * Clears the graphics that were drawn to this Graphics object, and resets fill and line style settings.
      *
-     * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
+     * @return {PIXI.GraphicsGeometry} This GraphicsGeometry object. Good for chaining method calls
      */
     clear()
     {
@@ -227,34 +242,16 @@ export default class GraphicsGeometry extends Geometry2d
      * Draws the given shape to this Graphics object. Can be any of Circle, Rectangle, Ellipse, Line or Polygon.
      *
      * @param {PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.Rectangle|PIXI.RoundedRectangle} shape - The shape object to draw.
-     * @return {PIXI.GraphicsData} The generated GraphicsData object.
+     * @param {PIXI.FillStyle} fillStyle - Defines style of the fill.
+     * @param {PIXI.LineStyle} lineStyle - Defines style of the lines.
+     * @param {PIXI.Matrix} matrix - Transform applied to the points of the shape.
+     * @return {PIXI.GraphicsGeomery} Returns geometry for chaining.
      */
     drawShape(shape, fillStyle, lineStyle, matrix)
     {
-        /*
-        if (this.currentPath)
-        {
-            // check current path!
-            if (this.currentPath.shape.points.length <= 2)
-            {
-                this.graphicsData.pop();
-            }
-        }
-        */
-
-        //        this.currentPath = null;
-
         const data = new GraphicsData(shape, fillStyle, lineStyle, matrix);
 
         this.graphicsData.push(data);
-        /*
-        if (data.type === SHAPES.POLY)
-        {
-            data.shape.closed = data.shape.closed || this.filling;
-            this.currentPath = data;
-        }
-        */
-
         this.dirty++;
 
         return this;
@@ -264,7 +261,8 @@ export default class GraphicsGeometry extends Geometry2d
      * Draws the given shape to this Graphics object. Can be any of Circle, Rectangle, Ellipse, Line or Polygon.
      *
      * @param {PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.Rectangle|PIXI.RoundedRectangle} shape - The shape object to draw.
-     * @return {PIXI.GraphicsData} The generated GraphicsData object.
+     * @param {PIXI.Matrix} matrix - Transform applied to the points of the shape.
+     * @return {PIXI.GraphicsGeomery} Returns geometry for chaining.
      */
     drawHole(shape, matrix)
     {
@@ -306,15 +304,6 @@ export default class GraphicsGeometry extends Geometry2d
             this.graphicsData[i].destroy();
         }
 
-        // for each webgl data entry, destroy the WebGLGraphicsData
-        for (const id in this._webGL)
-        {
-            for (let j = 0; j < this._webGL[id].data.length; ++j)
-            {
-                this._webGL[id].data[j].destroy();
-            }
-        }
-
         this.points.length = 0;
         this.points = null;
         this.colors.length = 0;
@@ -331,10 +320,9 @@ export default class GraphicsGeometry extends Geometry2d
         this.graphicsDataHoles = null;
         this.drawCalls.length = 0;
         this.drawCalls = null;
+        this.batches.length = 0;
+        this.batches = null;
         this._bounds = null;
-        // this.currentPath = null;
-        this._webGL = null;
-        this._localBounds = null;
     }
 
     /**
@@ -382,6 +370,11 @@ export default class GraphicsGeometry extends Geometry2d
         return false;
     }
 
+    /**
+     * Generates intermediate batch data. Either gets converted to drawCalls
+     * or used to convert to batch objects directly by the Graphics object.
+     * @private
+     */
     updateBatches()
     {
         if (this.dirty === this.cacheDirty) return;
@@ -502,7 +495,7 @@ export default class GraphicsGeometry extends Geometry2d
         this.indicesUint16 = new Uint16Array(this.indices);
 
         // TODO make this a const..
-        this.batchable = this.points.length < 100 * 2;
+        this.batchable = this.points.length < GraphicsGeometry.BATCHABLE_SIZE * 2;
 
         if (this.batchable)
         {
@@ -529,6 +522,10 @@ export default class GraphicsGeometry extends Geometry2d
         }
     }
 
+    /**
+     * Converts intermediate batches data to drawCalls.
+     * @private
+     */
     buildDrawCalls()
     {
         TICK++;
@@ -671,8 +668,8 @@ export default class GraphicsGeometry extends Geometry2d
     }
 
     /**
-     * Update the bounds of the object
-     *
+     * Update the local bounds of the object. Expensive to use performance-wise.
+     * @private
      */
     calculateBounds()
     {
@@ -820,10 +817,11 @@ export default class GraphicsGeometry extends Geometry2d
     /**
      * Add colors.
      *
+     * @private
      * @param {number[]} colors - List of colors to add to
      * @param {number} color - Color to add
      * @param {number} alpha - Alpha to use
-     * @param {number} Number of colors to add
+     * @param {number} size - Number of colors to add
      */
     addColors(colors, color, alpha, size)
     {
@@ -839,6 +837,14 @@ export default class GraphicsGeometry extends Geometry2d
         }
     }
 
+    /**
+     * Add texture id that the shader/fragment wants to use.
+     *
+     * @private
+     * @param {number[]} textureIds
+     * @param {number} id
+     * @param {number} size
+     */
     addTextureIds(textureIds, id, size)
     {
         while (size-- > 0)
@@ -848,14 +854,15 @@ export default class GraphicsGeometry extends Geometry2d
     }
 
     /**
-     * Add new UVs.
+     * Generates the UVs for a shape.
      *
+     * @private
      * @param {number[]} verts - Vertices
      * @param {number[]} uvs - UVs
-     * @param {PIXI.Texture} texture
-     * @param {number} start
-     * @param {number} size
-     * @param {PIXI.Matrix} matrix
+     * @param {PIXI.Texture} texture - Reference to Texture
+     * @param {number} start - Index buffer start index.
+     * @param {number} size - The size/length for index buffer.
+     * @param {PIXI.Matrix} [matrix] - Optional transform for all points.
      */
     addUvs(verts, uvs, texture, start, size, matrix)
     {
@@ -882,3 +889,14 @@ export default class GraphicsGeometry extends Geometry2d
         }
     }
 }
+
+/**
+ * The maximum number of points to consider an object "batchable",
+ * able to be batched by the renderer's batch system.
+ *
+ * @memberof PIXI.GraphicsGeometry
+ * @static
+ * @member {number}
+ * @default 100
+ */
+GraphicsGeometry.BATCHABLE_SIZE = 100;
