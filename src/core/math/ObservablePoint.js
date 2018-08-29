@@ -48,6 +48,7 @@ export default class ObservablePoint extends Point
     {
         const _cb = cb || this.cb;
         const _scope = scope || this.scope;
+        
         return new ObservablePoint(_cb, _scope, this._x, this._y);
     }
 
