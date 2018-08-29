@@ -300,10 +300,21 @@ describe('PIXI.Graphics', function ()
 
                 renderer.render(graphics);
 
-                const points = graphics.graphicsData[0].points;
+                const points = graphics._webGL[renderer.CONTEXT_UID].data[0].points;
+                const pointSize = 6; // Position Vec2 + Color/Alpha Vec4
+                const firstX = points[0];
+                const firstY = points[1];
+                const secondX = points[pointSize];
+                const secondY = points[pointSize + 1];
+                const secondToLastX = points[points.length - (pointSize * 2)];
+                const secondToLastY = points[points.length - (pointSize * 2) + 1];
+                const lastX = points[points.length - pointSize];
+                const lastY = points[points.length - pointSize + 1];
 
-                expect(points[0]).to.equals(points[points.length - 1]);
-                expect(points[1]).to.equals(points[points.length]);
+                expect(firstX).to.equals(secondToLastX);
+                expect(firstY).to.equals(secondToLastY);
+                expect(secondX).to.equals(lastX);
+                expect(secondY).to.equals(lastY);
             }
             finally
             {
