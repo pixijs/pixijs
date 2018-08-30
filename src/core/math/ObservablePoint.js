@@ -84,7 +84,7 @@ export default class ObservablePoint
      */
     equals(p)
     {
-        return (p.x === this.x) && (p.y === this.y);
+        return (p.x === this._x) && (p.y === this._y);
     }
 
     /**
