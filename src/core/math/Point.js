@@ -14,18 +14,16 @@ export default class Point
     constructor(x = 0, y = 0)
     {
         /**
-         * @protected
          * @member {number}
          * @default 0
          */
-        this._x = x;
+        this.x = x;
 
         /**
-         * @protected
          * @member {number}
          * @default 0
          */
-        this._y = y;
+        this.y = y;
     }
 
     /**
@@ -35,7 +33,7 @@ export default class Point
      */
     clone()
     {
-        return new Point(this._x, this._y);
+        return new Point(this.x, this.y);
     }
 
     /**
@@ -45,10 +43,7 @@ export default class Point
      */
     copy(p)
     {
-        if (!this.equals(p))
-        {
-            this.set(p.x, p.y);
-        }
+        this.set(p.x, p.y);
     }
 
     /**
@@ -59,7 +54,7 @@ export default class Point
      */
     equals(p)
     {
-        return (p.x === this._x) && (p.y === this._y);
+        return (p.x === this.x) && (p.y === this.y);
     }
 
     /**
@@ -71,38 +66,8 @@ export default class Point
      */
     set(x, y)
     {
-        this._x = x || 0;
-        this._y = y || ((y !== 0) ? this._x : 0);
-    }
-
-    /**
-     * The position of the point on the x axis
-     *
-     * @member {number}
-     */
-    get x()
-    {
-        return this._x;
-    }
-
-    set x(value) // eslint-disable-line require-jsdoc
-    {
-        this._x = value;
-    }
-
-    /**
-     * The position of the point on the y axis
-     *
-     * @member {number}
-     */
-    get y()
-    {
-        return this._y;
-    }
-
-    set y(value) // eslint-disable-line require-jsdoc
-    {
-        this._y = value;
+        this.x = x || 0;
+        this.y = y || ((y !== 0) ? this.x : 0);
     }
 
 }

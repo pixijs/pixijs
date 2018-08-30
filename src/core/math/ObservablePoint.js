@@ -1,5 +1,3 @@
-import Point from './Point';
-
 /**
  * The Point object represents a location in a two-dimensional coordinate system, where x represents
  * the horizontal axis and y represents the vertical axis.
@@ -7,9 +5,8 @@ import Point from './Point';
  *
  * @class
  * @memberof PIXI
- * @extends PIXI.Point
  */
-export default class ObservablePoint extends Point
+export default class ObservablePoint
 {
     /**
      * @param {Function} cb - callback when changed
@@ -19,18 +16,10 @@ export default class ObservablePoint extends Point
      */
     constructor(cb, scope, x = 0, y = 0)
     {
-        super(x, y);
+        this._x = x;
+        this._y = y;
 
-        /**
-         * @protected
-         * @member {Function}
-         */
         this.cb = cb;
-
-        /**
-         * @protected
-         * @member {object}
-         */
         this.scope = scope;
     }
 
@@ -56,7 +45,6 @@ export default class ObservablePoint extends Point
      * Sets the point to a new x and y position.
      * If y is omitted, both x and y will be set to x.
      *
-     * @override
      * @param {number} [x=0] - position of the point on the x axis
      * @param {number} [y=0] - position of the point on the y axis
      */
@@ -67,15 +55,41 @@ export default class ObservablePoint extends Point
 
         if (this._x !== _x || this._y !== _y)
         {
-            super.set(_x, _y);
+            this._x = _x;
+            this._y = _y;
             this.cb.call(this.scope);
         }
     }
 
     /**
+     * Copies the data from another point
+     *
+     * @param {PIXI.Point|PIXI.ObservablePoint} point - point to copy from
+     */
+    copy(point)
+    {
+        if (this._x !== point.x || this._y !== point.y)
+        {
+            this._x = point.x;
+            this._y = point.y;
+            this.cb.call(this.scope);
+        }
+    }
+
+    /**
+     * Returns true if the given point is equal to this point
+     *
+     * @param {PIXI.Point|PIXI.ObservablePoint} p - The point to check
+     * @returns {boolean} Whether the given point equal to this point
+     */
+    equals(p)
+    {
+        return (p.x === this.x) && (p.y === this.y);
+    }
+
+    /**
      * The position of the displayObject on the x axis relative to the local coordinates of the parent.
      *
-     * @override
      * @member {number}
      */
     get x()
@@ -95,7 +109,6 @@ export default class ObservablePoint extends Point
     /**
      * The position of the displayObject on the x axis relative to the local coordinates of the parent.
      *
-     * @override
      * @member {number}
      */
     get y()
