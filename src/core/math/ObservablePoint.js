@@ -80,14 +80,14 @@ export default class ObservablePoint extends Point
      */
     get x()
     {
-        return super.x;
+        return this._x;
     }
 
     set x(value) // eslint-disable-line require-jsdoc
     {
         if (this._x !== value)
         {
-            super.x = value;
+            this._x = value;
             this.cb.call(this.scope);
         }
     }
@@ -100,14 +100,14 @@ export default class ObservablePoint extends Point
      */
     get y()
     {
-        return super.y;
+        return this._y;
     }
 
     set y(value) // eslint-disable-line require-jsdoc
     {
         if (this._y !== value)
         {
-            super.y = value;
+            this._y = value;
             this.cb.call(this.scope);
         }
     }
