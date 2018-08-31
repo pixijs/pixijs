@@ -222,7 +222,7 @@ export default class Renderer extends AbstractRenderer
         {
             this.context.initFromOptions({
                 alpha: false, // this.transparent,
-                antialias: false, // options.antialias,
+                antialias: options.antialias,
                 premultipliedAlpha: this.transparent && this.transparent !== 'notMultiplied',
                 stencil: true,
                 preserveDrawingBuffer: options.preserveDrawingBuffer,
