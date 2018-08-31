@@ -219,7 +219,7 @@ export default class RenderTarget
      */
     activate()
     {
-        // TOOD refactor usage of frame..
+        // TODO refactor usage of frame..
         const gl = this.gl;
 
         // make sure the texture is unbound!
