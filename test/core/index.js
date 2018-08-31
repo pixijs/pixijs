@@ -32,5 +32,6 @@ require('./WebGLRenderer');
 require('./Ellipse');
 require('./BaseTexture');
 require('./Texture');
+require('./VideoBaseTexture');
 require('./Ticker');
 require('./filters');

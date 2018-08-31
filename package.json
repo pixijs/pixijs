@@ -73,7 +73,7 @@
     "babel-preset-es2015": "^6.14.0",
     "babelify": "^7.3.0",
     "del": "^2.2.0",
-    "electron": "^1.4.15",
+    "electron": "^1.8.8",
     "eslint": "^3.5.0",
     "floss": "^2.0.1",
     "js-md5": "^0.4.1",
