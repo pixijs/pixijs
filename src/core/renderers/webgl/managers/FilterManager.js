@@ -246,7 +246,7 @@ export default class FilterManager extends WebGLManager
 
         let shader = filter.glShaders[renderer.CONTEXT_UID];
 
-        // cacheing..
+        // caching..
         if (!shader)
         {
             if (filter.glShaderKey)
@@ -359,7 +359,7 @@ export default class FilterManager extends WebGLManager
             shader.uniforms.filterClamp = filterClamp;
         }
 
-        // TODO Cacheing layer..
+        // TODO Caching layer..
         for (const i in uniformData)
         {
             const type = uniformData[i].type;
@@ -556,7 +556,7 @@ export default class FilterManager extends WebGLManager
     /**
      * Gets a Power-of-Two render texture.
      *
-     * TODO move to a seperate class could be on renderer?
+     * TODO move to a separate class could be on renderer?
      * also - could cause issue with multiple contexts?
      *
      * @private

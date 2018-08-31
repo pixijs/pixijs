@@ -24,6 +24,24 @@ export default class ObservablePoint
     }
 
     /**
+     * Creates a clone of this point.
+     * The callback and scope params can be overidden otherwise they will default
+     * to the clone object's values.
+     *
+     * @override
+     * @param {Function} [cb=null] - callback when changed
+     * @param {object} [scope=null] - owner of callback
+     * @return {PIXI.ObservablePoint} a copy of the point
+     */
+    clone(cb = null, scope = null)
+    {
+        const _cb = cb || this.cb;
+        const _scope = scope || this.scope;
+
+        return new ObservablePoint(_cb, _scope, this._x, this._y);
+    }
+
+    /**
      * Sets the point to a new x and y position.
      * If y is omitted, both x and y will be set to x.
      *
@@ -56,6 +74,17 @@ export default class ObservablePoint
             this._y = point.y;
             this.cb.call(this.scope);
         }
+    }
+
+    /**
+     * Returns true if the given point is equal to this point
+     *
+     * @param {PIXI.Point|PIXI.ObservablePoint} p - The point to check
+     * @returns {boolean} Whether the given point equal to this point
+     */
+    equals(p)
+    {
+        return (p.x === this._x) && (p.y === this._y);
     }
 
     /**
