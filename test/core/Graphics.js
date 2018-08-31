@@ -296,4 +296,42 @@ describe('PIXI.Graphics', function ()
             }
         }));
     });
+
+    describe('drawCircle', function ()
+    {
+        it('should have no gaps in line border', withGL(function ()
+        {
+            const renderer = new PIXI.WebGLRenderer(200, 200, {});
+
+            try
+            {
+                const graphics = new PIXI.Graphics();
+
+                graphics.lineStyle(15, 0x8FC7E6);
+                graphics.drawCircle(100, 100, 30);
+
+                renderer.render(graphics);
+
+                const points = graphics._webGL[renderer.CONTEXT_UID].data[0].points;
+                const pointSize = 6; // Position Vec2 + Color/Alpha Vec4
+                const firstX = points[0];
+                const firstY = points[1];
+                const secondX = points[pointSize];
+                const secondY = points[pointSize + 1];
+                const secondToLastX = points[points.length - (pointSize * 2)];
+                const secondToLastY = points[points.length - (pointSize * 2) + 1];
+                const lastX = points[points.length - pointSize];
+                const lastY = points[points.length - pointSize + 1];
+
+                expect(firstX).to.equals(secondToLastX);
+                expect(firstY).to.equals(secondToLastY);
+                expect(secondX).to.equals(lastX);
+                expect(secondY).to.equals(lastY);
+            }
+            finally
+            {
+                renderer.destroy();
+            }
+        }));
+    });
 });
