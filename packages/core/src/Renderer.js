@@ -296,7 +296,7 @@ export default class Renderer extends AbstractRenderer
      * @param {PIXI.DisplayObject} displayObject - The object to be rendered.
      * @param {PIXI.RenderTexture} renderTexture - The render texture to render to.
      * @param {boolean} [clear] - Should the canvas be cleared before the new render.
-     * @param {PIXI.Transform} [transform] - A transform to apply to the render texture before rendering.
+     * @param {PIXI.Matrix} [transform] - A transform to apply to the render texture before rendering.
      * @param {boolean} [skipUpdateTransform] - Should we skip the update transform pass?
      */
     render(displayObject, renderTexture, clear, transform, skipUpdateTransform)

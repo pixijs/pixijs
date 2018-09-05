@@ -111,7 +111,10 @@ export default class TextureSystem extends System
 
                 const glTexture = texture._glTextures[this.CONTEXT_UID] || this.initTexture(texture);
 
-                gl.bindTexture(texture.target, glTexture.texture);
+                if (this.boundTextures[location] !== texture)
+                {
+                    gl.bindTexture(texture.target, glTexture.texture);
+                }
 
                 if (glTexture.dirtyId !== texture.dirtyId)
                 {

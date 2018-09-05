@@ -182,6 +182,9 @@ export default class Graphics extends Container
         this._spriteRect = null;
         this._fastRect = false;
 
+        this._prevRectTint = null;
+        this._prevRectFillColor = null;
+
         /**
          * When cacheAsBitmap is set to true the graphics object will be rendered as if it was a sprite.
          * This is useful if your graphics element does not change often, as it will speed up the rendering
@@ -417,8 +420,16 @@ export default class Graphics extends Container
      */
     lineTo(x, y)
     {
-        this.currentPath.shape.points.push(x, y);
-        this.dirty++;
+        const points = this.currentPath.shape.points;
+
+        const fromX = points[points.length - 2];
+        const fromY = points[points.length - 1];
+
+        if (fromX !== x || fromY !== y)
+        {
+            points.push(x, y);
+            this.dirty++;
+        }
 
         return this;
     }
@@ -637,7 +648,16 @@ export default class Graphics extends Container
 
         if (points)
         {
-            if (points[points.length - 2] !== startX || points[points.length - 1] !== startY)
+            // We check how far our start is from the last existing point
+            const xDiff = Math.abs(points[points.length - 2] - startX);
+            const yDiff = Math.abs(points[points.length - 1] - startY);
+
+            if (xDiff < 0.001 && yDiff < 0.001)
+            {
+                // If the point is very close, we don't add it, since this would lead to artifacts
+                // during tesselation due to floating point imprecision.
+            }
+            else
             {
                 points.push(startX, startY);
             }
@@ -939,17 +959,18 @@ export default class Graphics extends Container
         }
 
         const sprite = this._spriteRect;
+        const fillColor = this.graphicsData[0].fillColor;
 
         if (this.tint === 0xffffff)
         {
-            sprite.tint = this.graphicsData[0].fillColor;
+            sprite.tint = fillColor;
         }
-        else
+        else if (this.tint !== this._prevRectTint || fillColor !== this._prevRectFillColor)
         {
             const t1 = tempColor1;
             const t2 = tempColor2;
 
-            hex2rgb(this.graphicsData[0].fillColor, t1);
+            hex2rgb(fillColor, t1);
             hex2rgb(this.tint, t2);
 
             t1[0] *= t2[0];
@@ -957,7 +978,11 @@ export default class Graphics extends Container
             t1[2] *= t2[2];
 
             sprite.tint = rgb2hex(t1);
+
+            this._prevRectTint = this.tint;
+            this._prevRectFillColor = fillColor;
         }
+
         sprite.alpha = this.graphicsData[0].fillAlpha;
         sprite.worldAlpha = this.worldAlpha * sprite.alpha;
         sprite.blendMode = this.blendMode;
