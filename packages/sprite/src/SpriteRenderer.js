@@ -278,7 +278,7 @@ export default class SpriteRenderer extends ObjectRenderer
             uvs = sprite._texture._uvs.uvsUint32;
             textureId = nextTexture._id;
 
-            if (this.renderer.roundPixels || sprite.roundPixels)
+            if (sprite.roundPixels)
             {
                 const resolution = this.renderer.resolution;
 

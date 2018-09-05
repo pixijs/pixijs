@@ -18,7 +18,7 @@ NineSlicePlane.prototype._renderCanvas = function _renderCanvas(renderer)
     const transform = this.worldTransform;
     const res = renderer.resolution;
 
-    if (renderer.roundPixels || this.roundPixels)
+    if (this.roundPixels)
     {
         context.setTransform(
             transform.a * res,

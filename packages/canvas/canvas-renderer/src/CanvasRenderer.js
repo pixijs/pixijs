@@ -34,8 +34,6 @@ export default class CanvasRenderer extends AbstractRenderer
      *      not before the new render pass.
      * @param {number} [options.backgroundColor=0x000000] - The background color of the rendered area
      *  (shown if not transparent).
-     * @param {boolean} [options.roundPixels=false] - If true PixiJS will Math.floor() x/y values when rendering,
-     *  stopping pixel interpolation.
      */
     constructor(options, arg2, arg3)
     {

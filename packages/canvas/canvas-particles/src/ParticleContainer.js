@@ -76,7 +76,7 @@ ParticleContainer.prototype.renderCanvas = function renderCanvas(renderer)
 
             const childTransform = child.worldTransform;
 
-            if (renderer.roundPixels || this.roundPixels)
+            if (this.roundPixels)
             {
                 context.setTransform(
                     childTransform.a,

@@ -88,7 +88,6 @@ export default {
      * @property {number} backgroundColor=0x000000
      * @property {boolean} clearBeforeRender=true
      * @property {boolean} preserveDrawingBuffer=false
-     * @property {boolean} roundPixels=false
      * @property {number} width=800
      * @property {number} height=600
      * @property {boolean} legacy=false
@@ -102,7 +101,6 @@ export default {
         backgroundColor: 0x000000,
         clearBeforeRender: true,
         preserveDrawingBuffer: false,
-        roundPixels: false,
         width: 800,
         height: 600,
         legacy: false,
@@ -198,4 +196,17 @@ export default {
      * @default true
      */
     CREATE_IMAGE_BITMAP: true,
+
+    /**
+     * If true PixiJS will Math.floor() x/y values when rendering, stopping pixel interpolation.
+     * Advantages can include sharper image quality (like text) and faster rendering on canvas.
+     * The main disadvantage is movement of objects may appear less smooth.
+     *
+     * @static
+     * @constant
+     * @memberof PIXI.settings
+     * @type {boolean}
+     * @default false
+     */
+    ROUND_PIXELS: false,
 };

@@ -75,7 +75,6 @@ class Renderer
             backgroundColor: 0xffffff,
             antialias: false,
             preserveDrawingBuffer: true,
-            roundPixels: true,
         });
         this.canvas.smoothProperty = null;
         this.render();
