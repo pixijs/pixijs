@@ -6,6 +6,8 @@ import Shader from '../../../Shader';
 import * as filterTransforms from '../filters/filterTransforms';
 import bitTwiddle from 'bit-twiddle';
 
+const { hasOwnProperty } = Object.prototype;
+
 /**
  * @ignore
  * @class
@@ -362,6 +364,11 @@ export default class FilterManager extends WebGLManager
         // TODO Cacheing layer..
         for (const i in uniformData)
         {
+            if (hasOwnProperty.call(shader.uniforms, i))
+            {
+                continue;
+            }
+
             const type = uniformData[i].type;
 
             if (type === 'sampler2d' && uniforms[i] !== 0)
