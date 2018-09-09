@@ -84,7 +84,7 @@ export default class VideoBaseTexture extends BaseTexture
         }
         else
         {
-            this._onCanPlay();
+            setTimeout(this._onCanPlay, 0);
         }
     }
 
