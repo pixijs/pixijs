@@ -1,4 +1,4 @@
-import { hex2string, hex2rgb } from '@pixi/utils';
+import { deprecation, hex2string, hex2rgb } from '@pixi/utils';
 import { Matrix, Rectangle } from '@pixi/math';
 import { RENDERER_TYPE } from '@pixi/constants';
 import { settings } from '@pixi/settings';
@@ -58,7 +58,7 @@ export default class AbstractRenderer extends EventEmitter
         if (options.roundPixels)
         {
             // eslint-disable-next-line no-console
-            console.warn('As of v5, roundPixels is no longer a valid configuration setting passed to the renderer. '
+            deprecation('5.0.0', 'roundPixels is no longer a valid configuration setting passed to the renderer. '
             + 'Instead, each sprite/mesh has its own roundPixels property. '
             + 'Change PIXI.settings.ROUND_PIXELS to set the default roundPixels value for newly created sprites/meshes.');
         }

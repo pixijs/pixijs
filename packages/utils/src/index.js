@@ -72,5 +72,6 @@ export * from './data';
 export * from './media';
 export * from './network';
 export * from './const';
+export * from './logging';
 
 import './settings';
