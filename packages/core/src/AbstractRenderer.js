@@ -55,6 +55,14 @@ export default class AbstractRenderer extends EventEmitter
         // Add the default render options
         options = Object.assign({}, settings.RENDER_OPTIONS, options);
 
+        if (options.roundPixels)
+        {
+            // eslint-disable-next-line no-console
+            console.warn('As of v5, roundPixels is no longer a valid configuration setting passed to the renderer. '
+            + 'Instead, each sprite/mesh has its own roundPixels property. '
+            + 'Change PIXI.settings.ROUND_PIXELS to set the default roundPixels value for newly created sprites/meshes.');
+        }
+
         /**
          * The supplied constructor options.
          *
