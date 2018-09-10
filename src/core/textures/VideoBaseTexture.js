@@ -67,7 +67,7 @@ export default class VideoBaseTexture extends BaseTexture
          * @member {boolean}
          * @default true
          */
-        this.autoPlay = true;
+        this.autoPlay = source.autoplay;
 
         this.update = this.update.bind(this);
         this._onCanPlay = this._onCanPlay.bind(this);
