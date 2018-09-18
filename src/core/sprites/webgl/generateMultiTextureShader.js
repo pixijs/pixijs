@@ -36,7 +36,7 @@ export default function generateMultiTextureShader(gl, maxTextures)
 
     shader.bind();
     shader.uniforms.uSamplers = sampleValues;
-    shader.uniforms.uLODBiases = Array(maxTextures).fill(0);
+    shader.uniforms.uLODBiases = new Float32Array(maxTextures);
 
     return shader;
 }
