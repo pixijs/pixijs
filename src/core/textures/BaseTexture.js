@@ -177,6 +177,19 @@ export default class BaseTexture extends EventEmitter
         this.mipmap = settings.MIPMAP_TEXTURES;
 
         /**
+         * This bias will be added to the mipmap LOD calculation, as well as the bias provided by
+         * one of the texture sampling functions in GLSL. This LOD calculation is used to select
+         * the mipmap level or pair of mipmap levels to sample from. A positive bias means that
+         * larger mipmaps will be selected even when the texture is viewed from farther away.
+         * This can cause visual aliasing, but in small quantities it can make textures a bit
+         * more sharp.
+         * https://www.khronos.org/opengl/wiki/Sampler_Object#LOD_bias
+         *
+         * @member {number}
+         */
+        this.LODBias = -1
+
+        /**
          *
          * WebGL Texture wrap mode
          *

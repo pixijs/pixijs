@@ -453,6 +453,10 @@ export default class SpriteRenderer extends ObjectRenderer
                 // lets do a quick check..
                 if (rendererBoundTextures[group.ids[j]] !== currentTexture)
                 {
+                    const biases = this.shader.uniforms.uLODBiases
+                    biases[group.ids[_j]] = currentTexture.LODBias
+                    this.shader.uniforms.uLODBiases = biases
+
                     this.renderer.bindTexture(currentTexture, group.ids[j], true);
                 }
 
