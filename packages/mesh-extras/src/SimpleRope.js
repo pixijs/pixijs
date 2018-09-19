@@ -24,7 +24,7 @@ export default class SimpleRope extends Mesh
      */
     constructor(texture, points)
     {
-        const ropeGeometry = new RopeGeometry(texture.width, points);
+        const ropeGeometry = new RopeGeometry(texture.height, points);
         const meshMaterial = new MeshMaterial(texture);
 
         super(ropeGeometry, meshMaterial);
@@ -32,7 +32,7 @@ export default class SimpleRope extends Mesh
 
     _render(renderer)
     {
-        this.geometry.width = this.shader.texture.width;
+        this.geometry.width = this.shader.texture.height;
 
         super._render(renderer);
     }
