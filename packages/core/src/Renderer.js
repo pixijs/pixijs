@@ -336,6 +336,8 @@ export default class Renderer extends AbstractRenderer
             // displayObject.hitArea = //TODO add a temp hit area
         }
 
+        this.projection.transform = transform;
+
         this.renderTexture.bind(renderTexture);
         this.batch.currentRenderer.start();
 
@@ -358,6 +360,8 @@ export default class Renderer extends AbstractRenderer
         this.runners.postrender.run();
 
         this.emit('postrender');
+
+        this.projection.transform = null;
     }
 
     /**
