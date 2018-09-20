@@ -47,7 +47,6 @@ export default {
 
         totalSegs /= 2.3;
 
-        totalSegs = 5;
         const seg = (Math.PI * 2) / totalSegs;
 
         for (let i = 0; i < totalSegs; i++)
