@@ -191,7 +191,7 @@ export default class AccessibilityManager
 
         this.isActive = false;
 
-        window.document.removeEventListener('mousemove', this._onMouseMove);
+        window.document.removeEventListener('mousemove', this._onMouseMove, true);
         window.addEventListener('keydown', this._onKeyDown, false);
 
         this.renderer.off('postrender', this.update);
@@ -523,7 +523,7 @@ export default class AccessibilityManager
             this.children[i].div = null;
         }
 
-        window.document.removeEventListener('mousemove', this._onMouseMove);
+        window.document.removeEventListener('mousemove', this._onMouseMove, true);
         window.removeEventListener('keydown', this._onKeyDown);
 
         this.pool = null;

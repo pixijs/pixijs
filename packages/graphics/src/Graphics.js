@@ -341,7 +341,15 @@ export default class Graphics extends Mesh
             this.moveTo(0, 0);
         }
 
-        this.currentPath.points.push(x, y);
+        // remove duplicates..
+        const points = this.currentPath.points;
+        const fromX = points[points.length - 2];
+        const fromY = points[points.length - 1];
+
+        if (fromX !== x || fromY !== y)
+        {
+            points.push(x, y);
+        }
 
         return this;
     }

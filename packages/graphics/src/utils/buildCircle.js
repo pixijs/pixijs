@@ -47,15 +47,21 @@ export default {
 
         totalSegs /= 2.3;
 
+        totalSegs = 5;
         const seg = (Math.PI * 2) / totalSegs;
 
-        for (let i = 0; i < totalSegs + 2; i++)
+        for (let i = 0; i < totalSegs; i++)
         {
             points.push(
                 x + (Math.sin(seg * i) * width),
                 y + (Math.cos(seg * i) * height)
             );
         }
+
+        points.push(
+            points[0],
+            points[1]
+        );
     },
 
     triangulate(graphicsData, graphicsGeometry)

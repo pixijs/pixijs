@@ -1,10 +1,16 @@
 // const MockPointer = require('../interaction/MockPointer');
+const { Renderer } = require('@pixi/core');
 const { Graphics } = require('../');
 const { BLEND_MODES } = require('@pixi/constants');
 const { Point } = require('@pixi/math');
-const { skipHello } = require('@pixi/utils');
+const { isWebGLSupported, skipHello } = require('@pixi/utils');
 
 skipHello();
+
+function withGL(fn)
+{
+    return isWebGLSupported() ? (fn || true) : undefined;
+}
 
 describe('PIXI.Graphics', function ()
 {
@@ -108,6 +114,18 @@ describe('PIXI.Graphics', function ()
 
             expect(graphics.width).to.be.equals(70);
             expect(graphics.height).to.be.equals(70);
+        });
+
+        it('should ignore duplicate calls', function ()
+        {
+            const graphics = new Graphics();
+
+            graphics.moveTo(0, 0);
+            graphics.lineTo(0, 0);
+            graphics.lineTo(10, 0);
+            graphics.lineTo(10, 0);
+
+            expect(graphics.currentPath.points).to.deep.equal([0, 0, 10, 0]);
         });
     });
 
@@ -275,5 +293,43 @@ describe('PIXI.Graphics', function ()
 
             expect(spy).to.have.been.calledOnce;
         });
+    });
+
+    describe('drawCircle', function ()
+    {
+        it('should have no gaps in line border', withGL(function ()
+        {
+            const renderer = new Renderer(200, 200, {});
+
+            try
+            {
+                const graphics = new Graphics();
+
+                graphics.lineStyle(15, 0x8FC7E6);
+                graphics.drawCircle(100, 100, 30);
+
+                renderer.render(graphics);
+
+                const points = graphics.geometry.graphicsData[0].points;// ._webGL[0].data[0].points;
+                const pointSize = 6; // Position Vec2 + Color/Alpha Vec4
+                const firstX = points[0];
+                const firstY = points[1];
+                const secondX = points[pointSize];
+                const secondY = points[pointSize + 1];
+                const secondToLastX = points[points.length - (pointSize * 2)];
+                const secondToLastY = points[points.length - (pointSize * 2) + 1];
+                const lastX = points[points.length - pointSize];
+                const lastY = points[points.length - pointSize + 1];
+
+                expect(firstX).to.equals(secondToLastX);
+                expect(firstY).to.equals(secondToLastY);
+                expect(secondX).to.equals(lastX);
+                expect(secondY).to.equals(lastY);
+            }
+            finally
+            {
+                renderer.destroy();
+            }
+        }));
     });
 });
