@@ -37,29 +37,4 @@ describe('PIXI.resources.VideoResource', function ()
             resource.destroy();
         });
     });
-
-    it('should find correct video extension from Url', function ()
-    {
-        const resource = new VideoResource('https://example.org/video.webm', {
-            autoLoad: false,
-            autoPlay: false,
-        });
-
-        expect(resource.source.firstChild.type).to.be.equals('video/webm');
-
-        resource.destroy();
-    });
-
-    it('should get video extension without being thrown by query string', function ()
-    {
-        const resource = new VideoResource('/test.mp4?123...', {
-            autoLoad: false,
-            autoPlay: false,
-        });
-
-        expect(resource.source.firstChild.type).to.be.equals('video/mp4');
-
-        resource.destroy();
-    });
 });
-

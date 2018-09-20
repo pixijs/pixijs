@@ -46,7 +46,7 @@ export default class TextMetrics
      */
     static measureText(text, style, wordWrap, canvas = TextMetrics._canvas)
     {
-        wordWrap = (wordWrap === undefined || wordWrap === null) ? style.wordWrap : wordWrap;
+        wordWrap = wordWrap || style.wordWrap;
         const font = style.toFontString();
         const fontProperties = TextMetrics.measureFont(font);
         const context = canvas.getContext('2d');

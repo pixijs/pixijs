@@ -1,2 +1,4 @@
 export { default as Mesh } from './Mesh';
-export { default as MeshRenderer } from './MeshRenderer';
+export { default as MeshMaterial } from './MeshMaterial';
+export { default as MeshGeometry } from './MeshGeometry';
+

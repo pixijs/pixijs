@@ -1,78 +1,8 @@
 const { Text } = require('../');
 const { Sprite } = require('@pixi/sprite');
-const { skipHello } = require('@pixi/utils');
-const { settings } = require('@pixi/settings');
-const { CanvasRenderer } = require('@pixi/canvas-renderer');
-const { CanvasSpriteRenderer } = require('@pixi/canvas-sprite');
-
-require('@pixi/canvas-display');
-
-skipHello();
-
-CanvasRenderer.registerPlugin('sprite', CanvasSpriteRenderer);
 
 describe('PIXI.Text', function ()
 {
-    describe('properties', function ()
-    {
-        it('should modify the height of the object when setting height', function ()
-        {
-            const text = new Text('foo');
-
-            text.height = 300;
-
-            expect(text.height).to.equal(300);
-        });
-
-        it('should modify the width of the object when setting width', function ()
-        {
-            const text = new Text('foo');
-
-            text.width = 300;
-
-            expect(text.width).to.equal(300);
-        });
-
-        it('should set the text resolution to match the resolution setting when constructed time', function ()
-        {
-            const text = new Text('foo');
-
-            expect(text.resolution).to.equal(settings.RESOLUTION);
-        });
-
-        it('should update the text resolution to match the renderer resolution when being rendered to screen', function ()
-        {
-            const text = new Text('foo');
-
-            expect(text.resolution).to.equal(settings.RESOLUTION);
-
-            const renderer = new CanvasRenderer({ resolution: 2 });
-
-            renderer.render(text);
-
-            expect(text.resolution).to.equal(renderer.resolution);
-
-            renderer.destroy();
-        });
-
-        it('should use any manually set text resolution over the renderer resolution', function ()
-        {
-            const text = new Text('foo');
-
-            text.resolution = 3;
-
-            expect(text.resolution).to.equal(3);
-
-            const renderer = new CanvasRenderer({ resolution: 2 });
-
-            renderer.render(text);
-
-            expect(text.resolution).to.equal(3);
-
-            renderer.destroy();
-        });
-    });
-
     describe('destroy', function ()
     {
         it('should call through to Sprite.destroy', function ()
@@ -130,6 +60,24 @@ describe('PIXI.Text', function ()
             text.destroy({ children: true, texture: true });
             expect(childDestroyOpts).to.deep.equal({ children: true, texture: true, baseTexture: true });
         });
+
+        it('should modify the height of the object when setting height', function ()
+        {
+            const text = new Text('foo');
+
+            text.height = 300;
+
+            expect(text.height).to.equal(300);
+        });
+
+        it('should modify the width of the object when setting width', function ()
+        {
+            const text = new Text('foo');
+
+            text.width = 300;
+
+            expect(text.width).to.equal(300);
+        });
     });
 
     describe('text', function ()
@@ -152,28 +100,21 @@ describe('PIXI.Text', function ()
         {
             const text = new Text(null);
 
-            expect(text.text).to.equal('');
+            expect(text.text).to.equal(' ');
         });
 
         it('should prevent setting undefined', function ()
         {
             const text = new Text();
 
-            expect(text.text).to.equal('');
+            expect(text.text).to.equal(' ');
         });
 
-        it('should trim an empty string', function ()
-        {
-            const text = new Text('', { trim: true });
-
-            expect(text.text).to.equal('');
-        });
-
-        it('should allow setting \'\' for v5', function ()
+        it('should prevent setting \'\'', function ()
         {
             const text = new Text('');
 
-            expect(text.text).to.equal('');
+            expect(text.text).to.equal(' ');
         });
 
         it('should keep at least 1 pixel for canvas width and height', function ()

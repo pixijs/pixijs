@@ -25,7 +25,6 @@ export function trimCanvas(canvas)
         right: null,
         bottom: null,
     };
-    let data = null;
     let i;
     let x;
     let y;
@@ -71,12 +70,10 @@ export function trimCanvas(canvas)
         }
     }
 
-    if (bound.top !== null)
-    {
-        width = bound.right - bound.left;
-        height = bound.bottom - bound.top + 1;
-        data = context.getImageData(bound.left, bound.top, width, height);
-    }
+    width = bound.right - bound.left;
+    height = bound.bottom - bound.top + 1;
+
+    const data = context.getImageData(bound.left, bound.top, width, height);
 
     return {
         height,

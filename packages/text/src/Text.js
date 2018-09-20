@@ -50,6 +50,9 @@ export default class Text extends Sprite
 
         super(texture);
 
+        // base texture is already automatically added to the cache, now adding the actual texture
+        Texture.addToCache(this._texture, this._texture.baseTexture.textureCacheIds[0]);
+
         /**
          * The canvas element that everything is drawn to
          *
@@ -64,13 +67,11 @@ export default class Text extends Sprite
         this.context = this.canvas.getContext('2d');
 
         /**
-         * The resolution / device pixel ratio of the canvas.
-         * This is set to automatically match the renderer resolution by default, but can be overridden by setting manually.
+         * The resolution / device pixel ratio of the canvas. This is set automatically by the renderer.
          * @member {number}
          * @default 1
          */
-        this._resolution = settings.RESOLUTION;
-        this._autoResolution = true;
+        this.resolution = settings.RESOLUTION;
 
         /**
          * Private tracker for the current text.
@@ -134,7 +135,7 @@ export default class Text extends Sprite
         this._font = this._style.toFontString();
 
         const context = this.context;
-        const measured = TextMetrics.measureText(this._text || ' ', this._style, this._style.wordWrap, this.canvas);
+        const measured = TextMetrics.measureText(this._text, this._style, this._style.wordWrap, this.canvas);
         const width = measured.width;
         const height = measured.height;
         const lines = measured.lines;
@@ -143,10 +144,10 @@ export default class Text extends Sprite
         const maxLineWidth = measured.maxLineWidth;
         const fontProperties = measured.fontProperties;
 
-        this.canvas.width = Math.ceil((Math.max(1, width) + (style.padding * 2)) * this._resolution);
-        this.canvas.height = Math.ceil((Math.max(1, height) + (style.padding * 2)) * this._resolution);
+        this.canvas.width = Math.ceil((Math.max(1, width) + (style.padding * 2)) * this.resolution);
+        this.canvas.height = Math.ceil((Math.max(1, height) + (style.padding * 2)) * this.resolution);
 
-        context.scale(this._resolution, this._resolution);
+        context.scale(this.resolution, this.resolution);
 
         context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
@@ -317,12 +318,9 @@ export default class Text extends Sprite
         {
             const trimmed = trimCanvas(canvas);
 
-            if (trimmed.data)
-            {
-                canvas.width = trimmed.width;
-                canvas.height = trimmed.height;
-                this.context.putImageData(trimmed.data, 0, 0);
-            }
+            canvas.width = trimmed.width;
+            canvas.height = trimmed.height;
+            this.context.putImageData(trimmed.data, 0, 0);
         }
 
         const texture = this._texture;
@@ -330,8 +328,8 @@ export default class Text extends Sprite
         const padding = style.trim ? 0 : style.padding;
         const baseTexture = texture.baseTexture;
 
-        texture.trim.width = texture._frame.width = canvas.width / this._resolution;
-        texture.trim.height = texture._frame.height = canvas.height / this._resolution;
+        texture.trim.width = texture._frame.width = canvas.width / this.resolution;
+        texture.trim.height = texture._frame.height = canvas.height / this.resolution;
         texture.trim.x = -padding;
         texture.trim.y = -padding;
 
@@ -341,7 +339,7 @@ export default class Text extends Sprite
         // call sprite onTextureUpdate to update scale if _width or _height were set
         this._onTextureUpdate();
 
-        baseTexture.setRealSize(canvas.width, canvas.height, this._resolution);
+        baseTexture.setRealSize(canvas.width, canvas.height, this.resolution);
 
         this.dirty = false;
     }
@@ -353,9 +351,9 @@ export default class Text extends Sprite
      */
     render(renderer)
     {
-        if (this._autoResolution && this._resolution !== renderer.resolution)
+        if (this.resolution !== renderer.resolution)
         {
-            this._resolution = renderer.resolution;
+            this.resolution = renderer.resolution;
             this.dirty = true;
         }
 
@@ -372,9 +370,9 @@ export default class Text extends Sprite
      */
     _renderCanvas(renderer)
     {
-        if (this._autoResolution && this._resolution !== renderer.resolution)
+        if (this.resolution !== renderer.resolution)
         {
-            this._resolution = renderer.resolution;
+            this.resolution = renderer.resolution;
             this.dirty = true;
         }
 
@@ -444,8 +442,8 @@ export default class Text extends Sprite
         let currentIteration;
         let stop;
 
-        const width = this.canvas.width / this._resolution;
-        const height = this.canvas.height / this._resolution;
+        const width = this.canvas.width / this.resolution;
+        const height = this.canvas.height / this.resolution;
 
         // make a copy of the style settings, so we can manipulate them later
         const fill = style.fill.slice();
@@ -639,37 +637,13 @@ export default class Text extends Sprite
 
     set text(text) // eslint-disable-line require-jsdoc
     {
-        text = String(text === null || text === undefined ? '' : text);
+        text = String(text === '' || text === null || text === undefined ? ' ' : text);
 
         if (this._text === text)
         {
             return;
         }
         this._text = text;
-        this.dirty = true;
-    }
-
-    /**
-     * The resolution / device pixel ratio of the canvas.
-     * This is set to automatically match the renderer resolution by default, but can be overridden by setting manually.
-     * @member {number}
-     * @default 1
-     */
-    get resolution()
-    {
-        return this._resolution;
-    }
-
-    set resolution(value) // eslint-disable-line require-jsdoc
-    {
-        this._autoResolution = false;
-
-        if (this._resolution === value)
-        {
-            return;
-        }
-
-        this._resolution = value;
         this.dirty = true;
     }
 }
