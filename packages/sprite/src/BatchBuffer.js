@@ -33,7 +33,8 @@ export default class BatchBuffer
     destroy()
     {
         this.vertices = null;
-        this.float32View = null;
-        this.uint32View = null;
+        this.positions = null;
+        this.uvs = null;
+        this.colors = null;
     }
 }

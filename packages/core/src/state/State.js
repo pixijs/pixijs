@@ -159,15 +159,5 @@ export default class State
         this.offsets = !!value;
         this._polygonOffset = value;
     }
-
-    static for2d()
-    {
-        const state = new State();
-
-        state.depthTest = false;
-        state.blend = true;
-
-        return state;
-    }
 }
 

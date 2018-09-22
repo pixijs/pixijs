@@ -13,7 +13,6 @@ describe('PIXI.BitmapText', function ()
 
         const resolveURL = (url) => path.resolve(this.resources, url);
         const loadXML = (url) => new Promise((resolve) =>
-
             fs.readFile(resolveURL(url), 'utf8', (err, data) =>
             {
                 expect(err).to.be.null;

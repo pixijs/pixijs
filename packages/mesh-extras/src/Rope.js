@@ -1,4 +1,5 @@
-import { MeshGeometry } from '@pixi/mesh';
+import Mesh2d from './Mesh2d';
+
 /**
  * The rope allows you to draw a texture across several points and them manipulate these points
  *
@@ -10,47 +11,45 @@ import { MeshGeometry } from '@pixi/mesh';
  *  ```
  *
  * @class
- * @extends PIXI.MeshGeometry
+ * @extends PIXI.Mesh
  * @memberof PIXI
  *
  */
-export default class RopeGeometry extends MeshGeometry
+export default class Rope extends Mesh2d
 {
     /**
      * @param {PIXI.Texture} texture - The texture to use on the rope.
      * @param {PIXI.Point[]} points - An array of {@link PIXI.Point} objects to construct this rope.
      */
-    constructor(width = 200, points)
+    constructor(texture, points)
     {
-        super(new Float32Array(points.length * 4),
+        super(texture, new Float32Array(points.length * 4),
             new Float32Array(points.length * 4),
-            new Uint16Array((points.length - 1) * 6));
+            new Uint16Array(points.length * 2),
+            5);
 
         /*
          * @member {PIXI.Point[]} An array of points that determine the rope
          */
         this.points = points;
-
-        this.width = width;
-
-        this.build();
+        this.refresh();
     }
     /**
      * Refreshes Rope indices and uvs
      * @private
      */
-    build()
+    _refresh()
     {
         const points = this.points;
 
         if (!points) return;
 
-        const vertexBuffer = this.getAttribute('aVertexPosition');
-        const uvBuffer = this.getAttribute('aTextureCoord');
-        const indexBuffer = this.getIndex();
+        const vertexBuffer = this.geometry.getAttribute('aVertexPosition');
+        const uvBuffer = this.geometry.getAttribute('aTextureCoord');
+        const indexBuffer = this.geometry.getIndex();
 
         // if too little points, or texture hasn't got UVs set yet just move on.
-        if (points.length < 1)
+        if (points.length < 1 || !this.texture._uvs)
         {
             return;
         }
@@ -60,7 +59,7 @@ export default class RopeGeometry extends MeshGeometry
         {
             vertexBuffer.data = new Float32Array(points.length * 4);
             uvBuffer.data = new Float32Array(points.length * 4);
-            indexBuffer.data = new Uint16Array((points.length - 1) * 6);
+            indexBuffer.data = new Uint16Array(points.length * 2);
         }
 
         const uvs = uvBuffer.data;
@@ -71,15 +70,15 @@ export default class RopeGeometry extends MeshGeometry
         uvs[2] = 0;
         uvs[3] = 1;
 
-        // indices[0] = 0;
-        // indices[1] = 1;
+        indices[0] = 0;
+        indices[1] = 1;
 
-        const total = points.length; // - 1;
+        const total = points.length;
 
-        for (let i = 0; i < total; i++)
+        for (let i = 1; i < total; i++)
         {
             // time to do some smart drawing!
-            const index = i * 4;
+            let index = i * 4;
             const amount = i / (total - 1);
 
             uvs[index] = amount;
@@ -87,34 +86,24 @@ export default class RopeGeometry extends MeshGeometry
 
             uvs[index + 2] = amount;
             uvs[index + 3] = 1;
-        }
 
-        let indexCount = 0;
-
-        for (let i = 0; i < total - 1; i++)
-        {
-            const index = i * 2;
-
-            indices[indexCount++] = index;
-            indices[indexCount++] = index + 1;
-            indices[indexCount++] = index + 2;
-
-            indices[indexCount++] = index + 2;
-            indices[indexCount++] = index + 1;
-            indices[indexCount++] = index + 3;
+            index = i * 2;
+            indices[index] = index;
+            indices[index + 1] = index + 1;
         }
 
         // ensure that the changes are uploaded
         uvBuffer.update();
         indexBuffer.update();
 
-        this.updateVertices();
+        this.multiplyUvs();
+        this.refreshVertices();
     }
 
     /**
      * refreshes vertices of Rope mesh
      */
-    updateVertices()
+    refreshVertices()
     {
         const points = this.points;
 
@@ -130,7 +119,7 @@ export default class RopeGeometry extends MeshGeometry
 
         // this.count -= 0.2;
 
-        const vertices = this.buffers[0].data;
+        const vertices = this.vertices;
         const total = points.length;
 
         for (let i = 0; i < total; i++)
@@ -158,7 +147,7 @@ export default class RopeGeometry extends MeshGeometry
             }
 
             const perpLength = Math.sqrt((perpX * perpX) + (perpY * perpY));
-            const num = this.width / 2; // (20 + Math.abs(Math.sin((i + this.count) * 0.3) * 50) )* ratio;
+            const num = this._texture.height / 2; // (20 + Math.abs(Math.sin((i + this.count) * 0.3) * 50) )* ratio;
 
             perpX /= perpLength;
             perpY /= perpLength;
@@ -174,11 +163,20 @@ export default class RopeGeometry extends MeshGeometry
             lastPoint = point;
         }
 
-        this.buffers[0].update();
+        this.geometry.buffers[0].update();
     }
 
-    update()
+    /**
+     * Updates the object transform for rendering
+     *
+     * @private
+     */
+    updateTransform()
     {
-        this.updateVertices();
+        if (this.autoUpdate)
+        {
+            this.refreshVertices();
+        }
+        this.containerUpdateTransform();
     }
 }

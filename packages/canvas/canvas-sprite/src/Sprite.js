@@ -10,5 +10,5 @@ import { Sprite } from '@pixi/sprite';
 */
 Sprite.prototype._renderCanvas = function _renderCanvas(renderer)
 {
-    renderer.plugins.sprite.render(this);
+    renderer.plugins[this.pluginName].render(this);
 };

@@ -8,13 +8,83 @@ export default class GraphicsData
 {
     /**
      *
+     * @param {number} lineWidth - the width of the line to draw
+     * @param {number} lineColor - the color of the line to draw
+     * @param {number} lineAlpha - the alpha of the line to draw
+     * @param {number} fillColor - the color of the fill
+     * @param {number} fillAlpha - the alpha of the fill
+     * @param {boolean} fill - whether or not the shape is filled with a colour
+     * @param {boolean} nativeLines - the method for drawing lines
      * @param {PIXI.Circle|PIXI.Rectangle|PIXI.Ellipse|PIXI.Polygon} shape - The shape object to draw.
-     * @param {PIXI.FillStyle} [fillStyle] - the width of the line to draw
-     * @param {PIXI.LineStyle} [lineStyle] - the color of the line to draw
-     * @param {PIXI.Matrix} [matrix] - Transform matrix
+     * @param {number} lineAlignment - the alignment of the line.
      */
-    constructor(shape, fillStyle = null, lineStyle = null, matrix = null)
+    constructor(lineWidth, lineColor, lineAlpha, fillColor, fillAlpha, fill, nativeLines, shape, lineAlignment)
     {
+        /**
+         * the width of the line to draw
+         * @member {number}
+         */
+        this.lineWidth = lineWidth;
+
+        /**
+         * The alignment of any lines drawn (0.5 = middle, 1 = outter, 0 = inner).
+         *
+         * @member {number}
+         */
+        this.lineAlignment = lineAlignment;
+
+        /**
+         * if true the liens will be draw using LINES instead of TRIANGLE_STRIP
+         * @member {boolean}
+         */
+        this.nativeLines = nativeLines;
+
+        /**
+         * the color of the line to draw
+         * @member {number}
+         */
+        this.lineColor = lineColor;
+
+        /**
+         * the alpha of the line to draw
+         * @member {number}
+         */
+        this.lineAlpha = lineAlpha;
+
+        /**
+         * cached tint of the line to draw
+         * @member {number}
+         * @private
+         */
+        this._lineTint = lineColor;
+
+        /**
+         * the color of the fill
+         * @member {number}
+         */
+        this.fillColor = fillColor;
+
+        /**
+         * the alpha of the fill
+         * @member {number}
+         */
+        this.fillAlpha = fillAlpha;
+
+        /**
+         * cached tint of the fill
+         * @member {number}
+         * @private
+         */
+        this._fillTint = fillColor;
+
+        /**
+         * whether or not the shape is filled with a colour
+         * @member {boolean}
+         */
+        this.fill = fill;
+
+        this.holes = [];
+
         /**
          * The shape object to draw.
          * @member {PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.Rectangle|PIXI.RoundedRectangle}
@@ -22,40 +92,10 @@ export default class GraphicsData
         this.shape = shape;
 
         /**
-         * The style of the line.
-         * @member {PIXI.LineStyle}
-         */
-        this.lineStyle = lineStyle;
-
-        /**
-         * The style of the fill.
-         * @member {PIXI.FillStyle}
-         */
-        this.fillStyle = fillStyle;
-
-        /**
-         * The transform matrix.
-         * @member {PIXI.Matrix}
-         */
-        this.matrix = matrix;
-
-        /**
          * The type of the shape, see the Const.Shapes file for all the existing types,
          * @member {number}
          */
         this.type = shape.type;
-
-        /**
-         * The collection of points.
-         * @member {number[]}
-         */
-        this.points = [];
-
-        /**
-         * The collection of holes.
-         * @member {number[]}
-         */
-        this.holes = [];
     }
 
     /**
@@ -66,11 +106,25 @@ export default class GraphicsData
     clone()
     {
         return new GraphicsData(
-            this.shape,
-            this.lineStyle,
-            this.fillStyle,
-            this.matrix
+            this.lineWidth,
+            this.lineColor,
+            this.lineAlpha,
+            this.fillColor,
+            this.fillAlpha,
+            this.fill,
+            this.nativeLines,
+            this.shape
         );
+    }
+
+    /**
+     * Adds a hole to the shape.
+     *
+     * @param {PIXI.Rectangle|PIXI.Circle} shape - The shape of the hole.
+     */
+    addHole(shape)
+    {
+        this.holes.push(shape);
     }
 
     /**
@@ -79,11 +133,6 @@ export default class GraphicsData
     destroy()
     {
         this.shape = null;
-        this.holes.length = 0;
         this.holes = null;
-        this.points.length = 0;
-        this.points = null;
-        this.lineStyle = null;
-        this.fillStyle = null;
     }
 }
