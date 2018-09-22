@@ -356,16 +356,18 @@ export default class Texture extends EventEmitter
      * @static
      * @param {HTMLVideoElement|string} video - The URL or actual element of the video
      * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES} for possible values
+     * @param {boolean} [crossorigin=(auto)] - Should use anonymous CORS? Defaults to true if the URL is not a data-URI.
+     * @param {boolean} [autoPlay=true] - Start playing video as soon as it is loaded
      * @return {PIXI.Texture} The newly created texture
      */
-    static fromVideo(video, scaleMode)
+    static fromVideo(video, scaleMode, crossorigin, autoPlay)
     {
         if (typeof video === 'string')
         {
-            return Texture.fromVideoUrl(video, scaleMode);
+            return Texture.fromVideoUrl(video, scaleMode, crossorigin, autoPlay);
         }
 
-        return new Texture(VideoBaseTexture.fromVideo(video, scaleMode));
+        return new Texture(VideoBaseTexture.fromVideo(video, scaleMode, autoPlay));
     }
 
     /**
@@ -374,11 +376,13 @@ export default class Texture extends EventEmitter
      * @static
      * @param {string} videoUrl - URL of the video
      * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES} for possible values
+     * @param {boolean} [crossorigin=(auto)] - Should use anonymous CORS? Defaults to true if the URL is not a data-URI.
+     * @param {boolean} [autoPlay=true] - Start playing video as soon as it is loaded
      * @return {PIXI.Texture} The newly created texture
      */
-    static fromVideoUrl(videoUrl, scaleMode)
+    static fromVideoUrl(videoUrl, scaleMode, crossorigin, autoPlay)
     {
-        return new Texture(VideoBaseTexture.fromUrl(videoUrl, scaleMode));
+        return new Texture(VideoBaseTexture.fromUrl(videoUrl, scaleMode, crossorigin, autoPlay));
     }
 
     /**
