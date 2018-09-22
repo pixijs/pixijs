@@ -263,15 +263,15 @@ export default function deprecated(PIXI)
     Object.defineProperties(PIXI.mesh, {
         /**
          * @class PIXI.mesh.Mesh
-         * @see PIXI.Mesh2d
+         * @see PIXI.SimpleMesh
          * @deprecated since 5.0.0
          */
         Mesh: {
             get()
             {
-                warn('PIXI.mesh.Mesh has moved to PIXI.Mesh2d');
+                warn('PIXI.mesh.Mesh has moved to PIXI.SimpleMesh');
 
-                return PIXI.Mesh2d;
+                return PIXI.SimpleMesh;
             },
         },
         /**
@@ -289,41 +289,28 @@ export default function deprecated(PIXI)
         },
         /**
          * @class PIXI.mesh.Plane
-         * @see PIXI.Plane
+         * @see PIXI.SimplePlane
          * @deprecated since 5.0.0
          */
         Plane: {
             get()
             {
-                warn('PIXI.mesh.Plane has moved to PIXI.Plane');
+                warn('PIXI.mesh.Plane has moved to PIXI.SimplePlane');
 
-                return PIXI.Plane;
+                return PIXI.SimplePlane;
             },
         },
         /**
          * @class PIXI.mesh.Rope
-         * @see PIXI.Rope
+         * @see PIXI.SimpleRope
          * @deprecated since 5.0.0
          */
         Rope: {
             get()
             {
-                warn('PIXI.mesh.Rope has moved to PIXI.Rope');
+                warn('PIXI.mesh.Rope has moved to PIXI.SimpleRope');
 
-                return PIXI.Rope;
-            },
-        },
-        /**
-         * @class PIXI.mesh.RawMesh
-         * @see PIXI.Mesh
-         * @deprecated since 5.0.0
-         */
-        RawMesh: {
-            get()
-            {
-                warn('PIXI.mesh.RawMesh has moved to PIXI.Mesh');
-
-                return PIXI.Mesh;
+                return PIXI.SimpleRope;
             },
         },
         /**

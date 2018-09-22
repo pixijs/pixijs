@@ -115,6 +115,25 @@ export default class DisplayObject extends EventEmitter
         this._mask = null;
 
         /**
+<<<<<<< HEAD
+         * Whether this shape is being used as a mask.
+         *
+         * @member {boolean}
+         */
+        this.isMask = false;
+
+        /**
+         * If the object has been destroyed via destroy(). If true, it should not be used.
+         *
+         * @member {boolean}
+         * @private
+         * @readonly
+         */
+        this._destroyed = false;
+
+        /**
+=======
+>>>>>>> next
          * Fired when this DisplayObject is added to a Container.
          *
          * @event PIXI.DisplayObject#added

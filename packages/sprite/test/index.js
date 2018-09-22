@@ -1,2 +1,1 @@
 require('./Sprite');
-require('./SpriteRenderer');

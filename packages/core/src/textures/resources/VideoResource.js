@@ -40,12 +40,7 @@ export default class VideoResource extends BaseImageResource
                 let { src, mime } = source[i];
 
                 src = src || source[i];
-
-                const baseSrc = src.split('?').shift().toLowerCase();
-                const ext = baseSrc.substr(baseSrc.lastIndexOf('.') + 1);
-
-                mime = mime || `video/${ext}`;
-
+                mime = mime || `video/${src.substr(src.lastIndexOf('.') + 1)}`;
                 sourceElement.src = src;
                 sourceElement.type = mime;
 

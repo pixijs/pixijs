@@ -43,7 +43,7 @@ export default class Transform
         this.scale = new ObservablePoint(this.onChange, this, 1, 1);
 
         /**
-         * The pivot point of the displayObject that it rotates around.
+         * The pivot point of the displayObject that it rotates around
          *
          * @member {PIXI.ObservablePoint}
          */
