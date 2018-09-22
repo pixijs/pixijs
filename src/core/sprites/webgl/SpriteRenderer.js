@@ -455,7 +455,7 @@ export default class SpriteRenderer extends ObjectRenderer
                 {
                     const biases = this.shader.uniforms.uLODBiases;
 
-                    biases[group.ids[j]] = currentTexture.LODBias;
+                    biases[group.ids[j]] = currentTexture.lodBias;
                     this.shader.uniforms.uLODBiases = biases;
 
                     this.renderer.bindTexture(currentTexture, group.ids[j], true);

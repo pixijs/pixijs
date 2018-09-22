@@ -187,7 +187,7 @@ export default class BaseTexture extends EventEmitter
          *
          * @member {number}
          */
-        this.LODBias = -1;
+        this.lodBias = -1;
 
         /**
          *
