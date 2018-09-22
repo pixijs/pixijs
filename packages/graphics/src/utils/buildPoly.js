@@ -1,4 +1,5 @@
-import { earcut } from '@pixi/utils';
+import buildLine from './buildLine';
+import { hex2rgb, earcut } from '@pixi/utils';
 
 /**
  * Builds a polygon to draw
@@ -11,54 +12,67 @@ import { earcut } from '@pixi/utils';
  * @param {object} webGLData - an object containing all the webGL-specific information to create this shape
  * @param {object} webGLDataNativeLines - an object containing all the webGL-specific information to create nativeLines
  */
-export default {
+export default function buildPoly(graphicsData, webGLData, webGLDataNativeLines)
+{
+    graphicsData.points = graphicsData.shape.points.slice();
 
-    build(graphicsData)
-    {
-        graphicsData.points = graphicsData.shape.points.slice();
-    },
+    let points = graphicsData.points;
 
-    triangulate(graphicsData, graphicsGeometry)
+    if (graphicsData.fill && points.length >= 6)
     {
-        let points = graphicsData.points;
+        const holeArray = [];
+        // Process holes..
         const holes = graphicsData.holes;
-        const verts = graphicsGeometry.points;
-        const indices = graphicsGeometry.indices;
 
-        if (points.length >= 6)
+        for (let i = 0; i < holes.length; i++)
         {
-            const holeArray = [];
-            // Process holes..
+            const hole = holes[i];
 
-            for (let i = 0; i < holes.length; i++)
-            {
-                const hole = holes[i];
+            holeArray.push(points.length / 2);
 
-                holeArray.push(points.length / 2);
-                points = points.concat(hole.points);
-            }
-
-            // sort color
-            const triangles = earcut(points, holeArray, 2);
-
-            if (!triangles)
-            {
-                return;
-            }
-
-            const vertPos = verts.length / 2;
-
-            for (let i = 0; i < triangles.length; i += 3)
-            {
-                indices.push(triangles[i] + vertPos);
-                indices.push(triangles[i + 1] + vertPos);
-                indices.push(triangles[i + 2] + vertPos);
-            }
-
-            for (let i = 0; i < points.length; i++)
-            {
-                verts.push(points[i]);
-            }
+            points = points.concat(hole.points);
         }
-    },
-};
+
+        // get first and last point.. figure out the middle!
+        const verts = webGLData.points;
+        const indices = webGLData.indices;
+
+        const length = points.length / 2;
+
+        // sort color
+        const color = hex2rgb(graphicsData.fillColor);
+        const alpha = graphicsData.fillAlpha;
+        const r = color[0] * alpha;
+        const g = color[1] * alpha;
+        const b = color[2] * alpha;
+
+        const triangles = earcut(points, holeArray, 2);
+
+        if (!triangles)
+        {
+            return;
+        }
+
+        const vertPos = verts.length / 6;
+
+        for (let i = 0; i < triangles.length; i += 3)
+        {
+            indices.push(triangles[i] + vertPos);
+            indices.push(triangles[i] + vertPos);
+            indices.push(triangles[i + 1] + vertPos);
+            indices.push(triangles[i + 2] + vertPos);
+            indices.push(triangles[i + 2] + vertPos);
+        }
+
+        for (let i = 0; i < length; i++)
+        {
+            verts.push(points[i * 2], points[(i * 2) + 1],
+                r, g, b, alpha);
+        }
+    }
+
+    if (graphicsData.lineWidth > 0)
+    {
+        buildLine(graphicsData, webGLData, webGLDataNativeLines);
+    }
+}

@@ -7,8 +7,6 @@ import { settings } from '@pixi/settings';
 import { Rectangle, Point } from '@pixi/math';
 import { uid, TextureCache, getResolutionOfUrl } from '@pixi/utils';
 
-const DEFAULT_UVS = new TextureUvs();
-
 /**
  * A texture stores the information that represents an image or part of an image. It cannot be added
  * to the display list directly. Instead use it as the texture for a Sprite. If no frame is provided
@@ -110,7 +108,7 @@ export default class Texture extends EventEmitter
          * @member {PIXI.TextureUvs}
          * @private
          */
-        this._uvs = DEFAULT_UVS;
+        this._uvs = null;
 
         /**
          * Default TextureMatrix instance for this texture
@@ -148,7 +146,6 @@ export default class Texture extends EventEmitter
                 // if there is no frame we should monitor for any base texture changes..
                 baseTexture.on('update', this.onBaseTextureUpdated, this);
             }
-
             this.frame = frame;
         }
         else
@@ -271,7 +268,7 @@ export default class Texture extends EventEmitter
      */
     updateUvs()
     {
-        if (this._uvs === DEFAULT_UVS)
+        if (!this._uvs)
         {
             this._uvs = new TextureUvs();
         }

@@ -150,7 +150,7 @@ export default class BitmapText extends Container
         const pos = new Point();
         const chars = [];
         const lineWidths = [];
-        const text = this.text.replace(/(?:\r\n|\r)/g, '\n');
+        const text = this._text.replace(/(?:\r\n|\r)/g, '\n') || ' ';
         const textLength = text.length;
         const maxWidth = this._maxWidth * data.size / this._font.size;
 
@@ -450,14 +450,15 @@ export default class BitmapText extends Container
         return this._text;
     }
 
-    set text(value) // eslint-disable-line require-jsdoc
+    set text(text) // eslint-disable-line require-jsdoc
     {
-        value = value.toString() || ' ';
-        if (this._text === value)
+        text = String(text === null || text === undefined ? '' : text);
+
+        if (this._text === text)
         {
             return;
         }
-        this._text = value;
+        this._text = text;
         this.dirty = true;
     }
 
