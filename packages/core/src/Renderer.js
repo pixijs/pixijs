@@ -100,11 +100,6 @@ export default class Renderer extends AbstractRenderer
         };
 
         /**
-         * increments each time the renderer is called..
-         */
-        this.tick = 0;
-
-        /**
          * Global uniforms
          * @member {PIXI.UniformGroup}
          */
@@ -219,7 +214,7 @@ export default class Renderer extends AbstractRenderer
         else
         {
             this.context.initFromOptions({
-                alpha: false, // this.transparent,
+                alpha: this.transparent,
                 antialias: options.antialias,
                 premultipliedAlpha: this.transparent && this.transparent !== 'notMultiplied',
                 stencil: true,
@@ -299,13 +294,11 @@ export default class Renderer extends AbstractRenderer
      * @param {PIXI.DisplayObject} displayObject - The object to be rendered.
      * @param {PIXI.RenderTexture} renderTexture - The render texture to render to.
      * @param {boolean} [clear] - Should the canvas be cleared before the new render.
-     * @param {PIXI.Transform} [transform] - A transform to apply to the render texture before rendering.
+     * @param {PIXI.Matrix} [transform] - A transform to apply to the render texture before rendering.
      * @param {boolean} [skipUpdateTransform] - Should we skip the update transform pass?
      */
     render(displayObject, renderTexture, clear, transform, skipUpdateTransform)
     {
-        this.tick++;
-
         // can be handy to know!
         this.renderingToScreen = !renderTexture;
 
@@ -334,8 +327,6 @@ export default class Renderer extends AbstractRenderer
             // displayObject.hitArea = //TODO add a temp hit area
         }
 
-        this.projection.transform = transform;
-
         this.renderTexture.bind(renderTexture);
         this.batch.currentRenderer.start();
 
@@ -348,7 +339,6 @@ export default class Renderer extends AbstractRenderer
 
         // apply transform..
         this.batch.currentRenderer.flush();
-        // console.log(this.batch.currentRenderer);
 
         if (renderTexture)
         {
@@ -358,8 +348,6 @@ export default class Renderer extends AbstractRenderer
         this.runners.postrender.run();
 
         this.emit('postrender');
-
-        this.projection.transform = null;
     }
 
     /**

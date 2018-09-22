@@ -110,7 +110,7 @@ class Renderer
      */
     clear()
     {
-        this.stage.removeChildren().forEach((child) =>
+        this.stage.children.forEach((child) =>
         {
             child.destroy(true);
         });

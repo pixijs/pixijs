@@ -1,15 +1,19 @@
 // const MockPointer = require('../interaction/MockPointer');
-const { Renderer } = require('@pixi/core');
-const { Graphics } = require('../');
+const { Graphics, GraphicsRenderer } = require('../');
 const { BLEND_MODES } = require('@pixi/constants');
 const { Point } = require('@pixi/math');
 const { isWebGLSupported, skipHello } = require('@pixi/utils');
+const { Renderer } = require('@pixi/core');
+const { SpriteRenderer } = require('@pixi/sprite');
 
 skipHello();
 
+Renderer.registerPlugin('graphics', GraphicsRenderer);
+Renderer.registerPlugin('sprite', SpriteRenderer);
+
 function withGL(fn)
 {
-    return isWebGLSupported() ? (fn || true) : undefined;
+    return isWebGLSupported() ? fn : undefined;
 }
 
 describe('PIXI.Graphics', function ()
@@ -20,10 +24,9 @@ describe('PIXI.Graphics', function ()
         {
             const graphics = new Graphics();
 
-            expect(graphics.fill.color).to.be.equals(0xFFFFFF);
-            expect(graphics.fill.alpha).to.be.equals(1);
-            expect(graphics.line.width).to.be.equals(0);
-            expect(graphics.line.color).to.be.equals(0);
+            expect(graphics.fillAlpha).to.be.equals(1);
+            expect(graphics.lineWidth).to.be.equals(0);
+            expect(graphics.lineColor).to.be.equals(0);
             expect(graphics.tint).to.be.equals(0xFFFFFF);
             expect(graphics.blendMode).to.be.equals(BLEND_MODES.NORMAL);
         });
@@ -35,8 +38,8 @@ describe('PIXI.Graphics', function ()
         {
             const graphics = new Graphics();
 
-            graphics.lineStyle(1);
             graphics.moveTo(0, 0);
+            graphics.lineStyle(1);
             graphics.lineTo(0, 10);
 
             expect(graphics.width).to.be.below(1.00001);
@@ -125,7 +128,7 @@ describe('PIXI.Graphics', function ()
             graphics.lineTo(10, 0);
             graphics.lineTo(10, 0);
 
-            expect(graphics.currentPath.points).to.deep.equal([0, 0, 10, 0]);
+            expect(graphics.currentPath.shape.points).to.deep.equal([0, 0, 10, 0]);
         });
     });
 
@@ -174,44 +177,15 @@ describe('PIXI.Graphics', function ()
                 .lineTo(10, 0)
                 .lineTo(10, 10)
                 .lineTo(0, 10)
-                .beginHole()
+                // draw hole
                 .moveTo(2, 2)
                 .lineTo(8, 2)
                 .lineTo(8, 8)
                 .lineTo(2, 8)
-                .endHole();
+                .addHole();
 
             expect(graphics.containsPoint(point1)).to.be.true;
             expect(graphics.containsPoint(point2)).to.be.false;
-        });
-    });
-
-    describe('chaining', function ()
-    {
-        it('should chain draw commands', function ()
-        {
-            // complex drawing #1: draw triangle, rounder rect and an arc (issue #3433)
-            const graphics = new Graphics().beginFill(0xFF3300)
-                .lineStyle(4, 0xffd900, 1)
-                .moveTo(50, 50)
-                .lineTo(250, 50)
-                .endFill()
-                .drawRoundedRect(150, 450, 300, 100, 15)
-                .beginHole()
-                .endHole()
-                .quadraticCurveTo(1, 1, 1, 1)
-                .bezierCurveTo(1, 1, 1, 1)
-                .arcTo(1, 1, 1, 1, 1)
-                .arc(1, 1, 1, 1, 1, false)
-                .drawRect(1, 1, 1, 1)
-                .drawRoundedRect(1, 1, 1, 1, 0.1)
-                .drawCircle(1, 1, 20)
-                .drawEllipse(1, 1, 1, 1)
-                .drawPolygon([1, 1, 1, 1, 1, 1])
-                .drawStar(1, 1, 1, 1, 1, 1)
-                .clear();
-
-            expect(graphics).to.be.not.null;
         });
     });
 
@@ -283,7 +257,7 @@ describe('PIXI.Graphics', function ()
         it('should only call updateLocalBounds once', function ()
         {
             const graphics = new Graphics();
-            const spy = sinon.spy(graphics.geometry, 'calculateBounds');
+            const spy = sinon.spy(graphics, 'updateLocalBounds');
 
             graphics._calculateBounds();
 
@@ -293,6 +267,48 @@ describe('PIXI.Graphics', function ()
 
             expect(spy).to.have.been.calledOnce;
         });
+    });
+
+    describe('fastRect', function ()
+    {
+        it('should calculate tint, alpha and blendMode of fastRect correctly', withGL(function ()
+        {
+            const renderer = new Renderer(200, 200, {});
+
+            try
+            {
+                const graphics = new Graphics();
+
+                graphics.beginFill(0x102030, 0.6);
+                graphics.drawRect(2, 3, 100, 100);
+                graphics.endFill();
+                graphics.tint = 0x101010;
+                graphics.blendMode = 2;
+                graphics.alpha = 0.3;
+
+                renderer.render(graphics);
+
+                expect(graphics.isFastRect()).to.be.true;
+
+                const sprite = graphics._spriteRect;
+
+                expect(sprite).to.not.be.equals(null);
+                expect(sprite.worldAlpha).to.equals(0.18);
+                expect(sprite.blendMode).to.equals(2);
+                expect(sprite.tint).to.equals(0x010203);
+
+                const bounds = sprite.getBounds();
+
+                expect(bounds.x).to.equals(2);
+                expect(bounds.y).to.equals(3);
+                expect(bounds.width).to.equals(100);
+                expect(bounds.height).to.equals(100);
+            }
+            finally
+            {
+                renderer.destroy();
+            }
+        }));
     });
 
     describe('drawCircle', function ()
@@ -310,7 +326,7 @@ describe('PIXI.Graphics', function ()
 
                 renderer.render(graphics);
 
-                const points = graphics.geometry.graphicsData[0].points;// ._webGL[0].data[0].points;
+                const points = graphics._webGL[0].data[0].points;
                 const pointSize = 6; // Position Vec2 + Color/Alpha Vec4
                 const firstX = points[0];
                 const firstY = points[1];

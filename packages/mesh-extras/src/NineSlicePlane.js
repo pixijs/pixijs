@@ -1,4 +1,4 @@
-import SimplePlane from './SimplePlane';
+import Plane from './Plane';
 
 const DEFAULT_BORDER_SIZE = 10;
 
@@ -33,7 +33,7 @@ const DEFAULT_BORDER_SIZE = 10;
  * @memberof PIXI
  *
  */
-export default class NineSlicePlane extends SimplePlane
+export default class NineSlicePlane extends Plane
 {
     /**
      * @param {PIXI.Texture} texture - The texture to use on the NineSlicePlane.
@@ -102,21 +102,8 @@ export default class NineSlicePlane extends SimplePlane
          * @override
          */
         this._bottomHeight = typeof bottomHeight !== 'undefined' ? bottomHeight : DEFAULT_BORDER_SIZE;
-    }
 
-    textureUpdated()
-    {
-        this._refresh();
-    }
-
-    get vertices()
-    {
-        return this.geometry.getAttribute('aVertexPosition').data;
-    }
-
-    set vertices(value)
-    {
-        this.geometry.getAttribute('aVertexPosition').data = value;
+        this.refresh(true);
     }
 
     /**
@@ -252,9 +239,10 @@ export default class NineSlicePlane extends SimplePlane
      */
     _refresh()
     {
-        const texture = this.texture;
+        super._refresh();
 
-        const uvs = this.geometry.buffers[1].data;
+        const uvs = this.uvs;
+        const texture = this._texture;
 
         this._origWidth = texture.orig.width;
         this._origHeight = texture.orig.height;
@@ -275,7 +263,8 @@ export default class NineSlicePlane extends SimplePlane
         this.updateHorizontalVertices();
         this.updateVerticalVertices();
 
-        this.geometry.buffers[0].update();
         this.geometry.buffers[1].update();
+
+        this.multiplyUvs();
     }
 }

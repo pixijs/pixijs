@@ -55,24 +55,20 @@ export default class CanvasGraphicsRenderer
         if (graphics.canvasTintDirty !== graphics.dirty
             || graphics._prevTint !== graphics.tint)
         {
-        //    this.updateGraphicsTint(graphics);
+            this.updateGraphicsTint(graphics);
         }
 
         renderer.setBlendMode(graphics.blendMode);
 
-        const graphicsData = graphics.geometry.graphicsData;
-
-        for (let i = 0; i < graphicsData.length; i++)
+        for (let i = 0; i < graphics.graphicsData.length; i++)
         {
-            const data = graphicsData[i];
+            const data = graphics.graphicsData[i];
             const shape = data.shape;
-            const fillStyle = data.fillStyle;
-            const lineStyle = data.lineStyle;
 
-            const fillColor = fillStyle.color;// data._fillTint;
-            const lineColor = lineStyle.color;// data._lineTint;
+            const fillColor = data._fillTint;
+            const lineColor = data._lineTint;
 
-            context.lineWidth = lineStyle.width;
+            context.lineWidth = data.lineWidth;
 
             if (data.type === SHAPES.POLY)
             {
@@ -82,20 +78,18 @@ export default class CanvasGraphicsRenderer
 
                 for (let j = 0; j < data.holes.length; j++)
                 {
-                    //   this.renderPolygon(data.holes[j].points, true, context);
+                    this.renderPolygon(data.holes[j].points, true, context);
                 }
 
-                if (fillStyle.visible)
+                if (data.fill)
                 {
-                    context.globalAlpha = fillStyle.alpha * worldAlpha;
-
+                    context.globalAlpha = data.fillAlpha * worldAlpha;
                     context.fillStyle = `#${(`00000${(fillColor | 0).toString(16)}`).substr(-6)}`;
                     context.fill();
                 }
-
-                if (lineStyle.visible)
+                if (data.lineWidth)
                 {
-                    context.globalAlpha = lineStyle.alpha * worldAlpha;
+                    context.globalAlpha = data.lineAlpha * worldAlpha;
                     context.strokeStyle = `#${(`00000${(lineColor | 0).toString(16)}`).substr(-6)}`;
                     context.stroke();
                 }

@@ -72,7 +72,7 @@ export default class MaskSystem extends System
         // be used on render textures more info here:
         // https://github.com/pixijs/pixi.js/pull/3545
 
-        if (maskData.isSprite)
+        if (maskData.vertexData)
         {
             this.pushSpriteMask(target, maskData);
         }
@@ -112,7 +112,7 @@ export default class MaskSystem extends System
      */
     pop(target, maskData)
     {
-        if (maskData.isSprite)
+        if (maskData.vertexData)
         {
             this.popSpriteMask(target, maskData);
         }

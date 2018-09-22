@@ -6,11 +6,10 @@ import { Container } from '@pixi/display';
 import { settings } from '@pixi/settings';
 
 const tempPoint = new Point();
-const indices = new Uint16Array([0, 1, 2, 0, 2, 3]);
 
 /**
  * The Sprite object is the base for all textured objects that are rendered to the screen
-*
+ *
  * A sprite can be created directly from an image like this:
  *
  * ```js
@@ -121,8 +120,6 @@ export default class Sprite extends Container
          */
         this.cachedTint = 0xFFFFFF;
 
-        this.uvs = null;
-
         // call texture setter
         this.texture = texture || Texture.EMPTY;
 
@@ -148,12 +145,6 @@ export default class Sprite extends Container
         this._transformTrimmedID = -1;
         this._textureTrimmedID = -1;
 
-        // Batchable stuff..
-        // TODO could make this a mixin?
-        this.indices = indices;
-        this.size = 4;
-        this.start = 0;
-
         /**
          * If true PixiJS will Math.floor() x/y values when rendering, stopping pixel interpolation.
          * Advantages can include sharper image quality (like text) and faster rendering on canvas.
@@ -172,12 +163,7 @@ export default class Sprite extends Container
          * @member {string}
          * @default 'sprite'
          */
-        this.pluginName = 'batch';
-
-        /**
-         * used to fast check if a sprite is.. a sprite!
-         */
-        this.isSprite = true;
+        this.pluginName = 'sprite';
     }
 
     /**
@@ -191,7 +177,6 @@ export default class Sprite extends Container
         this._textureTrimmedID = -1;
         this.cachedTint = 0xFFFFFF;
 
-        this.uvs = this._texture._uvs.uvsFloat32;
         // so if _width is 0 then width was not set..
         if (this._width)
         {
