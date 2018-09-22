@@ -527,9 +527,11 @@ declare namespace PIXI {
 
     export class GraphicsData {
 
-        constructor(lineWidth: number, lineColor: number, lineAlpha: number, fillColor: number, fillAlpha: number, fill: boolean, nativeLines: boolean, shape: Circle | Rectangle | Ellipse | Polygon | RoundedRectangle | any);
+        constructor(lineWidth: number, lineColor: number, lineAlpha: number, fillColor: number, fillAlpha: number, fill: boolean, nativeLines: boolean, shape: Circle | Rectangle | Ellipse | Polygon | RoundedRectangle | any, lineAlignment: number);
 
         lineWidth: number;
+        /** The alignment of any lines drawn (0.5 = middle, 1 = outter, 0 = inner). */
+        lineAlignment: number;
         nativeLines: boolean;
         lineColor: number;
         lineAlpha: number;

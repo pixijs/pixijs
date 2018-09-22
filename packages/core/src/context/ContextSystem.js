@@ -27,7 +27,7 @@ export default class ContextSystem extends System
 
         /**
          * Extensions being used
-         * @member {object}
+         * @name {object}
          * @readonly
          * @property {WEBGL_draw_buffers} drawBuffers - WebGL v1 extension
          * @property {WEBKIT_WEBGL_depth_texture} depthTexture - WebGL v1 extension

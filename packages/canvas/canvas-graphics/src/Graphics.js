@@ -45,8 +45,6 @@ Graphics.prototype.generateCanvasTexture = function generateCanvasTexture(scaleM
     return texture;
 };
 
-Graphics.prototype.cachedGraphicsData = [];
-
 /**
  * Renders the object using the Canvas renderer
  *
@@ -62,6 +60,5 @@ Graphics.prototype._renderCanvas = function _renderCanvas(renderer)
         return;
     }
 
-    this.finishPoly();
     renderer.plugins.graphics.render(this);
 };
