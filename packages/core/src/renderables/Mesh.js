@@ -2,6 +2,7 @@ import { State } from '@pixi/core';
 import { DRAW_MODES } from '@pixi/constants';
 import { Point, Polygon } from '@pixi/math';
 import { Container } from '@pixi/display';
+import { settings } from '@pixi/settings';
 
 const tempPoint = new Point();
 const tempPolygon = new Polygon();
@@ -82,6 +83,17 @@ export default class RawMesh extends Container
          * @default 'mesh'
          */
         this.pluginName = 'mesh';
+
+        /**
+         * If true PixiJS will Math.floor() x/y values when rendering, stopping pixel interpolation.
+         * Advantages can include sharper image quality (like text) and faster rendering on canvas.
+         * The main disadvantage is movement of objects may appear less smooth.
+         * To set the global default, change {@link PIXI.settings.ROUND_PIXELS}
+         *
+         * @member {boolean}
+         * @default false
+         */
+        this.roundPixels = settings.ROUND_PIXELS;
 
         this.start = 0;
         this.size = 0;
