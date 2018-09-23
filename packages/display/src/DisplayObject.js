@@ -1,5 +1,5 @@
 import EventEmitter from 'eventemitter3';
-import { Rectangle, Transform } from '@pixi/math';
+import { Rectangle, Transform, RAD_TO_DEG, DEG_TO_RAD } from '@pixi/math';
 import Bounds from './Bounds';
 // _tempDisplayObjectParent = new DisplayObject();
 
@@ -540,6 +540,7 @@ export default class DisplayObject extends EventEmitter
 
     /**
      * The rotation of the object in radians.
+     * 'rotation' and 'angle' have the same effect on display object; rotation is in radians, angle is in degrees.
      *
      * @member {number}
      */
@@ -551,6 +552,22 @@ export default class DisplayObject extends EventEmitter
     set rotation(value) // eslint-disable-line require-jsdoc
     {
         this.transform.rotation = value;
+    }
+
+    /**
+     * The angle of the object in degrees.
+     * 'rotation' and 'angle' have the same effect on a display object; rotation is in radians, angle is in degrees.
+     *
+     * @member {number}
+     */
+    get angle()
+    {
+        return this.transform.rotation * RAD_TO_DEG;
+    }
+
+    set angle(value) // eslint-disable-line require-jsdoc
+    {
+        this.transform.rotation = value * DEG_TO_RAD;
     }
 
     /**
