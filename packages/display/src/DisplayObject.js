@@ -540,7 +540,7 @@ export default class DisplayObject extends EventEmitter
 
     /**
      * The rotation of the object in radians.
-     * 'rotation' and 'angle' have the same effect on display object; rotation is in radians, angle is in degrees.
+     * 'rotation' and 'angle' have the same effect on a display object; rotation is in radians, angle is in degrees.
      *
      * @member {number}
      */
