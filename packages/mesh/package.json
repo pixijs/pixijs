@@ -25,7 +25,8 @@
     "@pixi/constants": "^5.0.0-alpha.3",
     "@pixi/core": "^5.0.0-alpha.3",
     "@pixi/display": "^5.0.0-alpha.3",
-    "@pixi/math": "^5.0.0-alpha.3"
+    "@pixi/math": "^5.0.0-alpha.3",
+    "@pixi/utils": "^5.0.0-alpha.3"
   },
   "devDependencies": {
     "floss": "^2.1.3"
