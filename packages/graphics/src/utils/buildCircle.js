@@ -72,10 +72,7 @@ export default {
         let vertPos = verts.length / 2;
         const center = vertPos;
 
-        graphicsData.points.push(
-            graphicsData.points[0],
-            graphicsData.points[1]
-        );
+        verts.push(graphicsData.shape.x, graphicsData.shape.y);
 
         for (let i = 0; i < points.length; i += 2)
         {
