@@ -43,11 +43,11 @@ export default function generateVertBlurSource(kernelSize, x)
 
     if (x)
     {
-        template = 'vBlurTexCoords[%index%] =  min( textureCoord + vec2(%sampleIndex% * strength, 0.0), inputClamp.zw);';
+        template = 'vBlurTexCoords[%index%] =  textureCoord + vec2(%sampleIndex% * strength, 0.0);';
     }
     else
     {
-        template = 'vBlurTexCoords[%index%] =  min( textureCoord + vec2(0.0, %sampleIndex% * strength), inputClamp.zw);';
+        template = 'vBlurTexCoords[%index%] =  textureCoord + vec2(0.0, %sampleIndex% * strength);';
     }
 
     for (let i = 0; i < kernelSize; i++)
