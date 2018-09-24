@@ -1,72 +1,46 @@
-import Mesh2d from './Mesh2d';
+import { MeshGeometry } from '@pixi/mesh';
 
-/**
- * The Plane allows you to draw a texture across several points and them manipulate these points
- *
- *```js
- * for (let i = 0; i < 20; i++) {
- *     points.push(new PIXI.Point(i * 50, 0));
- * };
- * let Plane = new PIXI.Plane(PIXI.Texture.from("snake.png"), points);
- *  ```
- *
- * @class
- * @extends PIXI.Mesh
- * @memberof PIXI
- *
- */
-export default class Plane extends Mesh2d
+export default class PlaneGeometry extends MeshGeometry
 {
-    /**
-     * @param {PIXI.Texture} texture - The texture to use on the Plane.
-     * @param {number} [verticesX=10] - The number of vertices in the x-axis
-     * @param {number} [verticesY=10] - The number of vertices in the y-axis
-     * @param {object} [options] - an options object
-     * @param {number} [options.meshWidth=0] - The default mesh width
-     * @param {number} [options.meshHeight=0] - The default mesh height
-     */
-    constructor(texture, verticesX, verticesY, options = {})
+    constructor(width = 100, height = 100, segWidth = 10, segHeight = 10)
     {
-        super(texture, new Float32Array(1), new Float32Array(1), new Uint16Array(1), 4);
+        super();
 
-        this.verticesX = verticesX || 10;
-        this.verticesY = verticesY || 10;
+        this.segWidth = segWidth;
+        this.segHeight = segHeight;
 
-        this.meshWidth = options.meshWidth || 0;
-        this.meshHeight = options.meshHeight || 0;
+        this.width = width;
+        this.height = height;
 
-        this.refresh();
+        // console.log('>>>>>', segWidth, segHeight);
+        this.build();
     }
 
     /**
      * Refreshes plane coordinates
      * @private
      */
-    _refresh()
+    build()
     {
-        const texture = this._texture;
-        const total = this.verticesX * this.verticesY;
+        const total = this.segWidth * this.segHeight;
         const verts = [];
         const uvs = [];
         const indices = [];
 
-        const segmentsX = this.verticesX - 1;
-        const segmentsY = this.verticesY - 1;
+        const segmentsX = this.segWidth - 1;
+        const segmentsY = this.segHeight - 1;
 
-        const sizeX = (this.meshWidth || texture.width) / segmentsX;
-        const sizeY = (this.meshHeight || texture.height) / segmentsY;
+        const sizeX = (this.width) / segmentsX;
+        const sizeY = (this.height) / segmentsY;
 
         for (let i = 0; i < total; i++)
         {
-            const x = (i % this.verticesX);
-            const y = ((i / this.verticesX) | 0);
+            const x = (i % this.segWidth);
+            const y = ((i / this.segWidth) | 0);
 
             verts.push(x * sizeX, y * sizeY);
-
             uvs.push(x / segmentsX, y / segmentsY);
         }
-
-        //  cons
 
         const totalSub = segmentsX * segmentsY;
 
@@ -75,28 +49,22 @@ export default class Plane extends Mesh2d
             const xpos = i % segmentsX;
             const ypos = (i / segmentsX) | 0;
 
-            const value = (ypos * this.verticesX) + xpos;
-            const value2 = (ypos * this.verticesX) + xpos + 1;
-            const value3 = ((ypos + 1) * this.verticesX) + xpos;
-            const value4 = ((ypos + 1) * this.verticesX) + xpos + 1;
+            const value = (ypos * this.segWidth) + xpos;
+            const value2 = (ypos * this.segWidth) + xpos + 1;
+            const value3 = ((ypos + 1) * this.segWidth) + xpos;
+            const value4 = ((ypos + 1) * this.segWidth) + xpos + 1;
 
-            indices.push(value, value2, value3);
-            indices.push(value2, value4, value3);
+            indices.push(value, value2, value3,
+                value2, value4, value3);
         }
 
-        this.vertices = new Float32Array(verts);
-        this.uvs = new Float32Array(uvs);
-        this.indices = new Uint16Array(indices);
-
-        this.geometry.buffers[0].data = this.vertices;
-        this.geometry.buffers[1].data = this.uvs;
-        this.geometry.indexBuffer.data = this.indices;
+        this.buffers[0].data = new Float32Array(verts);
+        this.buffers[1].data = new Float32Array(uvs);
+        this.indexBuffer.data = new Uint16Array(indices);
 
         // ensure that the changes are uploaded
-        this.geometry.buffers[0].update();
-        this.geometry.buffers[1].update();
-        this.geometry.indexBuffer.update();
-
-        this.multiplyUvs();
+        this.buffers[0].update();
+        this.buffers[1].update();
+        this.indexBuffer.update();
     }
 }
