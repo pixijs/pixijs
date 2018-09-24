@@ -35,12 +35,10 @@ import deprecated from './deprecated';
 // Install renderer plugins
 core.Renderer.registerPlugin('accessibility', accessibility.AccessibilityManager);
 core.Renderer.registerPlugin('extract', extract.Extract);
-core.Renderer.registerPlugin('graphics', graphics.GraphicsRenderer);
 core.Renderer.registerPlugin('interaction', interaction.InteractionManager);
-core.Renderer.registerPlugin('mesh', mesh.MeshRenderer);
 core.Renderer.registerPlugin('particle', particles.ParticleRenderer);
 core.Renderer.registerPlugin('prepare', prepare.Prepare);
-core.Renderer.registerPlugin('sprite', sprite.SpriteRenderer);
+core.Renderer.registerPlugin('batch', core.BatchRenderer);
 core.Renderer.registerPlugin('tilingSprite', spriteTiling.TilingSpriteRenderer);
 
 loaders.Loader.registerPlugin(textBitmap.BitmapFontLoader);
