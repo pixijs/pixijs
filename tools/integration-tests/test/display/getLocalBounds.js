@@ -21,7 +21,6 @@ function withGL(fn)
     return isWebGLSupported() ? fn : undefined;
 }
 
-
 describe('getLocalBounds', function ()
 {
     it('should register correct local-bounds with a LOADED Sprite', function ()
