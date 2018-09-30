@@ -37,6 +37,16 @@ export default {
     MIPMAP_TEXTURES: true,
 
     /**
+     * Will set the default value for {@link PIXI.BaseTexture#lodBias}
+     *
+     * @static
+     * @memberof PIXI.settings
+     * @type {boolean}
+     * @default true
+     */
+    MIPMAP_LOD_BIAS: -1,
+
+    /**
      * Default resolution / device pixel ratio of the renderer.
      *
      * @static
