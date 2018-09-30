@@ -173,7 +173,7 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
     const bounds = this.getLocalBounds().clone();
 
     // add some padding!
-    if (this._filters)
+    if (this._filters && this._filters.length)
     {
         const padding = this._filters[0].padding;
 
