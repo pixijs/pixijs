@@ -41,8 +41,8 @@ export default {
      *
      * @static
      * @memberof PIXI.settings
-     * @type {boolean}
-     * @default true
+     * @type {number}
+     * @default -1
      */
     MIPMAP_LOD_BIAS: -1,
 
