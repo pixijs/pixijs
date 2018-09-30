@@ -183,7 +183,7 @@ export default class BaseTexture extends EventEmitter
          * larger mipmaps will be selected even when the texture is viewed from farther away.
          * This can cause visual aliasing, but in small quantities it can make textures a bit
          * more sharp.
-         * https://www.khronos.org/opengl/wiki/Sampler_Object#LOD_bias
+         * See {@link https://www.khronos.org/opengl/wiki/Sampler_Object#LOD_bias} for more info
          *
          * @member {number}
          */
