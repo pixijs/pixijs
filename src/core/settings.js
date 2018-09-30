@@ -42,9 +42,9 @@ export default {
      * @static
      * @memberof PIXI.settings
      * @type {number}
-     * @default -1
+     * @default 0
      */
-    MIPMAP_LOD_BIAS: -1,
+    MIPMAP_LOD_BIAS: 0,
 
     /**
      * Default resolution / device pixel ratio of the renderer.
