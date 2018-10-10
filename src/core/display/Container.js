@@ -477,7 +477,7 @@ export default class Container extends DisplayObject
             renderer.maskManager.pushMask(this, this._mask);
         }
 
-        //render all objects
+        // render all objects
         this._renderWebGLObjects(renderer);
 
         renderer.flush();
