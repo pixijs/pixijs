@@ -387,6 +387,31 @@ export default class Container extends DisplayObject
     }
 
     /**
+     * Renders all the object based on renderChildrenFirst
+     *
+     * @private
+     * @param {PIXI.WebGLRenderer} renderer - The renderer
+     */
+    _renderObjects(renderer)
+    {
+        if (!this.renderChildrenFirst)
+        {
+            this._renderWebGL(renderer);
+        }
+
+        // now loop through the children and make sure they get rendered
+        for (let i = 0, j = this.children.length; i < j; i++)
+        {
+            this.children[i].renderWebGL(renderer);
+        }
+
+        if (this.renderChildrenFirst)
+        {
+            this._renderWebGL(renderer);
+        }
+    }
+
+    /**
      * Renders the object using the WebGL renderer
      *
      * @param {PIXI.WebGLRenderer} renderer - The renderer
@@ -406,21 +431,7 @@ export default class Container extends DisplayObject
         }
         else
         {
-            if (!this.renderChildrenFirst)
-            {
-                this._renderWebGL(renderer);
-            }
-
-            // simple render children!
-            for (let i = 0, j = this.children.length; i < j; ++i)
-            {
-                this.children[i].renderWebGL(renderer);
-            }
-
-            if (this.renderChildrenFirst)
-            {
-                this._renderWebGL(renderer);
-            }
+            this._renderObjects(renderer);
         }
     }
 
@@ -466,22 +477,8 @@ export default class Container extends DisplayObject
             renderer.maskManager.pushMask(this, this._mask);
         }
 
-        // add this object to the batch, only rendered if it has a texture.
-        if (!this.renderChildrenFirst)
-        {
-            this._renderWebGL(renderer);
-        }
-
-        // now loop through the children and make sure they get rendered
-        for (let i = 0, j = this.children.length; i < j; i++)
-        {
-            this.children[i].renderWebGL(renderer);
-        }
-
-        if (this.renderChildrenFirst)
-        {
-            this._renderWebGL(renderer);
-        }
+        //render all objects
+        this._renderObjects(renderer);
 
         renderer.flush();
 
