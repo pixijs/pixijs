@@ -65,6 +65,13 @@ export default class DisplayObject extends EventEmitter
         this.renderable = true;
 
         /**
+         * All children will be rendered underneath the parent element
+         *
+         * @member {boolean}
+         */
+        this.renderChildrenFirst = false;
+
+        /**
          * The display object container that contains this display object.
          *
          * @member {PIXI.Container}
