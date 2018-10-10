@@ -392,7 +392,7 @@ export default class Container extends DisplayObject
      * @private
      * @param {PIXI.WebGLRenderer} renderer - The renderer
      */
-    _renderObjects(renderer)
+    _renderWebGLObjects(renderer)
     {
         if (!this.renderChildrenFirst)
         {
@@ -431,7 +431,7 @@ export default class Container extends DisplayObject
         }
         else
         {
-            this._renderObjects(renderer);
+            this._renderWebGLObjects(renderer);
         }
     }
 
@@ -478,7 +478,7 @@ export default class Container extends DisplayObject
         }
 
         //render all objects
-        this._renderObjects(renderer);
+        this._renderWebGLObjects(renderer);
 
         renderer.flush();
 
