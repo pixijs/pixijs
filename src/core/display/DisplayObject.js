@@ -65,7 +65,7 @@ export default class DisplayObject extends EventEmitter
         this.renderable = true;
 
         /**
-         * All children will be rendered underneath the parent element
+         * If renderChildrenFirst is set to true: all children will be rendered underneath their parent element
          *
          * @member {boolean}
          */
