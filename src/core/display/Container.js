@@ -387,6 +387,31 @@ export default class Container extends DisplayObject
     }
 
     /**
+     * Renders all the object based on renderChildrenFirst
+     *
+     * @private
+     * @param {PIXI.WebGLRenderer} renderer - The renderer
+     */
+    _renderWebGLObjects(renderer)
+    {
+        if (!this.renderChildrenFirst)
+        {
+            this._renderWebGL(renderer);
+        }
+
+        // now loop through the children and make sure they get rendered
+        for (let i = 0, j = this.children.length; i < j; i++)
+        {
+            this.children[i].renderWebGL(renderer);
+        }
+
+        if (this.renderChildrenFirst)
+        {
+            this._renderWebGL(renderer);
+        }
+    }
+
+    /**
      * Renders the object using the WebGL renderer
      *
      * @param {PIXI.WebGLRenderer} renderer - The renderer
@@ -406,13 +431,7 @@ export default class Container extends DisplayObject
         }
         else
         {
-            this._renderWebGL(renderer);
-
-            // simple render children!
-            for (let i = 0, j = this.children.length; i < j; ++i)
-            {
-                this.children[i].renderWebGL(renderer);
-            }
+            this._renderWebGLObjects(renderer);
         }
     }
 
@@ -458,14 +477,8 @@ export default class Container extends DisplayObject
             renderer.maskManager.pushMask(this, this._mask);
         }
 
-        // add this object to the batch, only rendered if it has a texture.
-        this._renderWebGL(renderer);
-
-        // now loop through the children and make sure they get rendered
-        for (let i = 0, j = this.children.length; i < j; i++)
-        {
-            this.children[i].renderWebGL(renderer);
-        }
+        // render all objects
+        this._renderWebGLObjects(renderer);
 
         renderer.flush();
 
@@ -520,10 +533,19 @@ export default class Container extends DisplayObject
             renderer.maskManager.pushMask(this._mask);
         }
 
-        this._renderCanvas(renderer);
+        if (!this.renderChildrenFirst)
+        {
+            this._renderCanvas(renderer);
+        }
+
         for (let i = 0, j = this.children.length; i < j; ++i)
         {
             this.children[i].renderCanvas(renderer);
+        }
+
+        if (this.renderChildrenFirst)
+        {
+            this._renderCanvas(renderer);
         }
 
         if (this._mask)
