@@ -1,3 +1,4 @@
+import Device from 'ismobilejs';
 import maxRecommendedTextures from './utils/maxRecommendedTextures';
 import canUploadSameBuffer from './utils/canUploadSameBuffer';
 
@@ -149,7 +150,7 @@ export default {
     WRAP_MODE: 33071,
 
     /**
-     * The scale modes that are supported by pixi.
+     * Default scale mode for textures.
      *
      * @static
      * @memberof PIXI.settings
@@ -176,7 +177,7 @@ export default {
      * @type {PIXI.PRECISION}
      * @default PIXI.PRECISION.MEDIUM
      */
-    PRECISION_FRAGMENT: 'mediump',
+    PRECISION_FRAGMENT: Device.apple.device ? 'highp' : 'mediump',
 
     /**
      * Can we upload the same buffer in a single frame?
