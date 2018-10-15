@@ -121,8 +121,8 @@ export default class TickerListener
         if (previous.next)
         {
             previous.next.previous = this;
+            this.next = previous.next;
         }
-        this.next = previous.next;
         previous.next = this;
     }
 
