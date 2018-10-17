@@ -320,8 +320,9 @@ function createSource(path, type)
 {
     if (!type)
     {
-        path = path.split('?').shift().toLowerCase();
-        type = `video/${path.substr(path.lastIndexOf('.') + 1)}`;
+        const purePath = path.split('?').shift().toLowerCase();
+
+        type = `video/${purePath.substr(purePath.lastIndexOf('.') + 1)}`;
     }
 
     const source = document.createElement('source');
