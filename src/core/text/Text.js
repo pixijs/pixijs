@@ -132,6 +132,8 @@ export default class Text extends Sprite
         {
             return;
         }
+        
+        this.resolution = 1;
 
         this._font = this._style.toFontString();
 
