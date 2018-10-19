@@ -36,7 +36,7 @@
     "prebuild": "npm run lint",
     "build": "npm run dist",
     "predist": "rimraf dist/**",
-    "dist": "pixify -d dist -n PIXI -o pixi -t babelify",
+    "dist": "pixify -d dist -n PIXI -o pixi -t babelify && node scripts/cayetano",
     "prelib": "rimraf lib/**",
     "lib": "babel src --out-dir lib -s",
     "predocs": "rimraf docs/**",
