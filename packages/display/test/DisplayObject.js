@@ -1,4 +1,5 @@
 const { DisplayObject, Container } = require('../');
+const { RAD_TO_DEG, DEG_TO_RAD } = require('@pixi/math');
 
 describe('PIXI.DisplayObject', function ()
 {
@@ -84,6 +85,27 @@ describe('PIXI.DisplayObject', function ()
             grandParent.visible = false;
 
             expect(child.worldVisible).to.be.false;
+        });
+    });
+
+    describe('rotation', function ()
+    {
+        it('rotation and angle are different units of the same transformation', function ()
+        {
+            const object = new DisplayObject();
+
+            expect(object.rotation).to.be.equal(0);
+            expect(object.angle).to.be.equal(0);
+
+            object.rotation = 2;
+
+            expect(object.rotation).to.be.equal(2);
+            expect(object.angle).to.be.equal(2 * RAD_TO_DEG);
+
+            object.angle = 180;
+
+            expect(object.rotation).to.be.equal(180 * DEG_TO_RAD);
+            expect(object.angle).to.be.equal(180);
         });
     });
 });
