@@ -102,15 +102,15 @@ export default class CanvasGraphicsRenderer
             }
             else if (data.type === SHAPES.RECT)
             {
-                if (data.fillColor || data.fillColor === 0)
+                if (fillStyle.visible)
                 {
-                    context.globalAlpha = data.fillAlpha * worldAlpha;
+                    context.globalAlpha = fillStyle.alpha * worldAlpha;
                     context.fillStyle = `#${(`00000${(fillColor | 0).toString(16)}`).substr(-6)}`;
                     context.fillRect(shape.x, shape.y, shape.width, shape.height);
                 }
-                if (data.lineWidth)
+                if (lineStyle.visible)
                 {
-                    context.globalAlpha = data.lineAlpha * worldAlpha;
+                    context.globalAlpha = lineStyle.alpha * worldAlpha;
                     context.strokeStyle = `#${(`00000${(lineColor | 0).toString(16)}`).substr(-6)}`;
                     context.strokeRect(shape.x, shape.y, shape.width, shape.height);
                 }
@@ -122,15 +122,16 @@ export default class CanvasGraphicsRenderer
                 context.arc(shape.x, shape.y, shape.radius, 0, 2 * Math.PI);
                 context.closePath();
 
-                if (data.fill)
+                if (fillStyle.visible)
                 {
-                    context.globalAlpha = data.fillAlpha * worldAlpha;
+                    context.globalAlpha = fillStyle.alpha * worldAlpha;
                     context.fillStyle = `#${(`00000${(fillColor | 0).toString(16)}`).substr(-6)}`;
                     context.fill();
                 }
-                if (data.lineWidth)
+
+                if (lineStyle.visible)
                 {
-                    context.globalAlpha = data.lineAlpha * worldAlpha;
+                    context.globalAlpha = lineStyle.alpha * worldAlpha;
                     context.strokeStyle = `#${(`00000${(lineColor | 0).toString(16)}`).substr(-6)}`;
                     context.stroke();
                 }
@@ -163,15 +164,15 @@ export default class CanvasGraphicsRenderer
 
                 context.closePath();
 
-                if (data.fill)
+                if (fillStyle.visible)
                 {
-                    context.globalAlpha = data.fillAlpha * worldAlpha;
+                    context.globalAlpha = fillStyle.alpha * worldAlpha;
                     context.fillStyle = `#${(`00000${(fillColor | 0).toString(16)}`).substr(-6)}`;
                     context.fill();
                 }
-                if (data.lineWidth)
+                if (lineStyle.visible)
                 {
-                    context.globalAlpha = data.lineAlpha * worldAlpha;
+                    context.globalAlpha = lineStyle.alpha * worldAlpha;
                     context.strokeStyle = `#${(`00000${(lineColor | 0).toString(16)}`).substr(-6)}`;
                     context.stroke();
                 }
@@ -200,16 +201,15 @@ export default class CanvasGraphicsRenderer
                 context.quadraticCurveTo(rx, ry, rx, ry + radius);
                 context.closePath();
 
-                if (data.fillColor || data.fillColor === 0)
+                if (fillStyle.visible)
                 {
-                    context.globalAlpha = data.fillAlpha * worldAlpha;
+                    context.globalAlpha = fillStyle.alpha * worldAlpha;
                     context.fillStyle = `#${(`00000${(fillColor | 0).toString(16)}`).substr(-6)}`;
                     context.fill();
                 }
-
-                if (data.lineWidth)
+                if (lineStyle.visible)
                 {
-                    context.globalAlpha = data.lineAlpha * worldAlpha;
+                    context.globalAlpha = lineStyle.alpha * worldAlpha;
                     context.strokeStyle = `#${(`00000${(lineColor | 0).toString(16)}`).substr(-6)}`;
                     context.stroke();
                 }
