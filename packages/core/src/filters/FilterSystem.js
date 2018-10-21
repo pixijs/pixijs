@@ -98,6 +98,13 @@ export default class FilterSystem extends System
         super(renderer);
 
         /**
+         * List of filters for the FilterSystem
+         * @member {Array}
+         * @readonly
+         */
+        this.defaultFilterStack = [{}];
+
+        /**
          * stores a bunch of PO2 textures used for filtering
          * @member {Object}
          */
@@ -169,7 +176,7 @@ export default class FilterSystem extends System
     push(target, filters)
     {
         const renderer = this.renderer;
-        const filterStack = this.renderer.renderTexture.defaultFilterStack;
+        const filterStack = this.defaultFilterStack;
         const state = this.statePool.pop() || new FilterState();
 
         let resolution = filters[0].resolution;
@@ -189,6 +196,11 @@ export default class FilterSystem extends System
             autoFit = autoFit || filter.autoFit;
 
             legacy = legacy || filter.legacy;
+        }
+
+        if (filterStack.length === 1)
+        {
+            this.defaultFilterStack[0].renderTexture = renderer.renderTexture.renderTexture;
         }
 
         filterStack.push(state);
@@ -217,6 +229,7 @@ export default class FilterSystem extends System
         state.destinationFrame.height = state.renderTexture.height;
 
         state.renderTexture.filterFrame = state.sourceFrame;
+
         renderer.renderTexture.bind(state.renderTexture, state.sourceFrame);// /, state.destinationFrame);
         renderer.renderTexture.clear();
     }
@@ -227,8 +240,7 @@ export default class FilterSystem extends System
      */
     pop()
     {
-        const renderer = this.renderer;
-        const filterStack = renderer.renderTexture.defaultFilterStack;
+        const filterStack = this.defaultFilterStack;
         const state = filterStack.pop();
         const filters = state.filters;
 

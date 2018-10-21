@@ -1,6 +1,3 @@
-import buildLine from './buildLine';
-import { hex2rgb } from '@pixi/utils';
-
 /**
  * Builds a rectangle to draw
  *
@@ -12,60 +9,42 @@ import { hex2rgb } from '@pixi/utils';
  * @param {object} webGLData - an object containing all the webGL-specific information to create this shape
  * @param {object} webGLDataNativeLines - an object containing all the webGL-specific information to create nativeLines
  */
-export default function buildRectangle(graphicsData, webGLData, webGLDataNativeLines)
-{
-    // --- //
-    // need to convert points to a nice regular data
-    //
-    const rectData = graphicsData.shape;
-    const x = rectData.x;
-    const y = rectData.y;
-    const width = rectData.width;
-    const height = rectData.height;
+export default {
 
-    if (graphicsData.fill)
+    build(graphicsData)
     {
-        const color = hex2rgb(graphicsData.fillColor);
-        const alpha = graphicsData.fillAlpha;
+        // --- //
+        // need to convert points to a nice regular data
+        //
+        const rectData = graphicsData.shape;
+        const x = rectData.x;
+        const y = rectData.y;
+        const width = rectData.width;
+        const height = rectData.height;
 
-        const r = color[0] * alpha;
-        const g = color[1] * alpha;
-        const b = color[2] * alpha;
+        const points = graphicsData.points;
 
-        const verts = webGLData.points;
-        const indices = webGLData.indices;
+        points.length = 0;
 
-        const vertPos = verts.length / 6;
-
-        // start
-        verts.push(x, y);
-        verts.push(r, g, b, alpha);
-
-        verts.push(x + width, y);
-        verts.push(r, g, b, alpha);
-
-        verts.push(x, y + height);
-        verts.push(r, g, b, alpha);
-
-        verts.push(x + width, y + height);
-        verts.push(r, g, b, alpha);
-
-        // insert 2 dead triangles..
-        indices.push(vertPos, vertPos, vertPos + 1, vertPos + 2, vertPos + 3, vertPos + 3);
-    }
-
-    if (graphicsData.lineWidth)
-    {
-        const tempPoints = graphicsData.points;
-
-        graphicsData.points = [x, y,
+        points.push(x, y,
             x + width, y,
             x + width, y + height,
-            x, y + height,
-            x, y];
+            x, y + height);
+    },
 
-        buildLine(graphicsData, webGLData, webGLDataNativeLines);
+    triangulate(graphicsData, graphicsGeometry)
+    {
+        const points = graphicsData.points;
+        const verts = graphicsGeometry.points;
 
-        graphicsData.points = tempPoints;
-    }
-}
+        const vertPos = verts.length / 2;
+
+        verts.push(points[0], points[1],
+            points[2], points[3],
+            points[6], points[7],
+            points[4], points[5]);
+
+        graphicsGeometry.indices.push(vertPos, vertPos + 1, vertPos + 2,
+            vertPos + 1, vertPos + 2, vertPos + 3);
+    },
+};

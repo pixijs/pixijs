@@ -9,8 +9,7 @@ npm install @pixi/sprite
 ## Usage
 
 ```js
-import { SpriteRenderer } from '@pixi/sprite';
-import { Renderer } from '@pixi/core';
+import { Sprite } from '@pixi/sprite';
 
-Renderer.registerPlugin('sprite', SpriteRenderer);
+const sprite = new Sprite();
 ```
