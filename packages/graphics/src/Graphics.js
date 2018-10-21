@@ -865,6 +865,9 @@ export default class Graphics extends Mesh
                 this.shader = new Shader(s.program, uniforms);
             }
 
+            // apply the tint..
+            hex2rgb(this.tint, this.shader.uniforms.tint);
+
             this.shader.uniforms.translationMatrix = this.transform.worldTransform;// .toArray(true);
             // the first draw call, we can set the uniforms of the shader directly here.
 
