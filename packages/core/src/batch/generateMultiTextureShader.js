@@ -44,7 +44,7 @@ export default function generateMultiTextureShader(gl, maxTextures)
     }
 
     const uniforms = {
-        tint: new Float32Array([1, 1, 1]),
+        tint: new Float32Array([1, 1, 1, 1]),
         translationMatrix: new Matrix(),
         default: defaultGroupCache[maxTextures],
     };

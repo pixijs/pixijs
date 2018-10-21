@@ -857,7 +857,7 @@ export default class Graphics extends Mesh
                 }
 
                 const uniforms = {
-                    tint: new Float32Array([1, 1, 1]),
+                    tint: new Float32Array([1, 1, 1, 1]),
                     translationMatrix: new Matrix(),
                     default: UniformGroup.from({ uSamplers: sampleValues }, true),
                 };
@@ -866,7 +866,14 @@ export default class Graphics extends Mesh
             }
 
             // apply the tint..
-            hex2rgb(this.tint, this.shader.uniforms.tint);
+            const tint =  this.shader.uniforms.tint;
+            const hexTint = this.tint;
+            const wa = this.worldAlpha;
+
+            tint[0] = (((hexTint >> 16) & 0xFF) / 255) * wa;
+            tint[1] = (((hexTint >> 8) & 0xFF) / 255) * wa;
+            tint[2] = ((hexTint & 0xFF) / 255) * wa;
+            tint[3] = wa;
 
             this.shader.uniforms.translationMatrix = this.transform.worldTransform;// .toArray(true);
             // the first draw call, we can set the uniforms of the shader directly here.
