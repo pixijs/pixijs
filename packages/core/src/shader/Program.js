@@ -23,8 +23,10 @@ class Program
      * @param {string} [vertexSrc] - The source of the vertex shader.
      * @param {string} [fragmentSrc] - The source of the fragment shader.
      */
-    constructor(vertexSrc, fragmentSrc)
+    constructor(vertexSrc, fragmentSrc, name = 'pixi-shader')
     {
+        this.id = UID++;
+
         /**
          * The vertex shader.
          *
@@ -42,6 +44,9 @@ class Program
         this.vertexSrc = setPrecision(this.vertexSrc, settings.PRECISION_VERTEX);
         this.fragmentSrc = setPrecision(this.fragmentSrc, settings.PRECISION_FRAGMENT);
 
+        this.vertexSrc = `#define SHADER_NAME ${name}-${this.id}\n${this.vertexSrc}`;
+        this.fragmentSrc = `#define SHADER_NAME ${name}-${this.id}\n${this.fragmentSrc}`;
+
         // currently this does not extract structs only default types
         this.extractData(this.vertexSrc, this.fragmentSrc);
 
@@ -49,8 +54,6 @@ class Program
         this.glPrograms = {};
 
         this.syncUniforms = null;
-
-        this.id = UID++;
     }
 
     /**
@@ -197,7 +200,7 @@ class Program
      *
      * @returns {PIXI.Shader} an shiny new pixi shader!
      */
-    static from(vertexSrc, fragmentSrc)
+    static from(vertexSrc, fragmentSrc, name)
     {
         const key = vertexSrc + fragmentSrc;
 
@@ -205,7 +208,7 @@ class Program
 
         if (!program)
         {
-            ProgramCache[key] = program = new Program(vertexSrc, fragmentSrc);
+            ProgramCache[key] = program = new Program(vertexSrc, fragmentSrc, name);
         }
 
         return program;
