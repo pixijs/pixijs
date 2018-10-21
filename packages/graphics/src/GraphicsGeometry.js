@@ -7,6 +7,7 @@ import buildLine from './utils/buildLine';
 import buildPoly from './utils/buildPoly';
 import buildRectangle from './utils/buildRectangle';
 import buildRoundedRectangle from './utils/buildRoundedRectangle';
+import { premultiplyTint } from '@pixi/utils';
 
 const BATCH_POOL = [];
 const DRAW_CALL_POOL = [];
@@ -826,14 +827,13 @@ export default class GraphicsGeometry extends BatchGeometry
     addColors(colors, color, alpha, size)
     {
         // TODO use the premultiply bits Ivan added
-        const tRGB = ((color >> 16) * alpha)
-        + ((color & 0xff00) * alpha)
-        + (((color & 0xff) << 16) * alpha)
-        + (alpha * 255 << 24);
+        const rgb = (color >> 16) + (color & 0xff00) + ((color & 0xff) << 16);
+
+        const rgba =  premultiplyTint(rgb, 0.5);
 
         while (size-- > 0)
         {
-            colors.push(tRGB);
+            colors.push(rgba);
         }
     }
 
