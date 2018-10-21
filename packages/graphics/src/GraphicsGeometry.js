@@ -829,7 +829,7 @@ export default class GraphicsGeometry extends BatchGeometry
         // TODO use the premultiply bits Ivan added
         const rgb = (color >> 16) + (color & 0xff00) + ((color & 0xff) << 16);
 
-        const rgba =  premultiplyTint(rgb, 0.5);
+        const rgba =  premultiplyTint(rgb, alpha);
 
         while (size-- > 0)
         {
