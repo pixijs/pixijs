@@ -554,13 +554,13 @@ function createWhiteTexture()
 {
     const canvas = document.createElement('canvas');
 
-    canvas.width = 10;
-    canvas.height = 10;
+    canvas.width = 16;
+    canvas.height = 16;
 
     const context = canvas.getContext('2d');
 
     context.fillStyle = 'white';
-    context.fillRect(0, 0, 10, 10);
+    context.fillRect(0, 0, 16, 16);
 
     return new Texture(new BaseTexture(new CanvasResource(canvas)));
 }
