@@ -1,3 +1,5 @@
+import { FONT_WEIGHT } from '../const';
+
 /**
  * The TextMetrics object represents the measurement of a block of text with a specified style.
  *
@@ -537,7 +539,7 @@ export default class TextMetrics
         context.fillStyle = '#f00';
         context.fillRect(0, 0, width, height);
 
-        context.font = font;
+        context.font = font.replace(FONT_WEIGHT, 'normal');
 
         context.textBaseline = 'alphabetic';
         context.fillStyle = '#000';
@@ -598,6 +600,8 @@ export default class TextMetrics
                 break;
             }
         }
+
+        context.font = font;
 
         properties.descent = i - baseline;
         properties.fontSize = properties.ascent + properties.descent;

@@ -336,3 +336,15 @@ export const UPDATE_PRIORITY = {
     LOW: -25,
     UTILITY: -50,
 };
+
+/**
+ * Regexp for fontWeight.
+ *
+ * @static
+ * @constant
+ * @name FONT_WEIGHT
+ * @memberof PIXI
+ * @type {RegExp|string}
+ * @example bold;
+ */
+export const FONT_WEIGHT = /\b(bold|bolder|lighter|100|200|300|400|500|600|700|800|900)\b/;
