@@ -324,6 +324,11 @@ export default class BaseTexture extends EventEmitter
         // Apply source if loaded. Otherwise setup appropriate loading monitors.
         if (((source.src && source.complete) || source.getContext) && source.width && source.height)
         {
+            if (!this.imageUrl)
+            {
+                this.imageUrl = source.src;
+            }
+
             this._updateImageType();
 
             if (this.imageType === 'svg')
