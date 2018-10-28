@@ -6,14 +6,20 @@ const { CanvasSpriteRenderer } = require('@pixi/canvas-sprite');
 const { Graphics } = require('@pixi/graphics');
 const { CanvasGraphicsRenderer } = require('@pixi/canvas-graphics');
 const { Text } = require('@pixi/text');
-const { Plane } = require('@pixi/mesh');
+const { SimplePlane } = require('@pixi/mesh-extras');
 const { CanvasMeshRenderer } = require('@pixi/canvas-mesh');
+const { isWebGLSupported } = require('@pixi/utils');
 
 require('@pixi/canvas-display');
 
 CanvasRenderer.registerPlugin('sprite', CanvasSpriteRenderer);
 CanvasRenderer.registerPlugin('graphics', CanvasGraphicsRenderer);
 CanvasRenderer.registerPlugin('mesh', CanvasMeshRenderer);
+
+function withGL(fn)
+{
+    return isWebGLSupported() ? fn : undefined;
+}
 
 describe('getLocalBounds', function ()
 {
@@ -165,13 +171,13 @@ describe('getLocalBounds', function ()
         expect(bounds.height).to.equal(10);
     });
 
-    it.skip('should register correct local-bounds with a Mesh', function ()
+    it('should register correct local-bounds with a Mesh', withGL(function ()
     {
         const parent = new Container();
 
         const texture = RenderTexture.create(10, 10);
 
-        const plane = new Plane(texture);
+        const plane = new SimplePlane(texture);
 
         parent.addChild(plane);
 
@@ -184,7 +190,7 @@ describe('getLocalBounds', function ()
         expect(bounds.y).to.equal(0);
         expect(bounds.width).to.equal(10);
         expect(bounds.height).to.equal(10);
-    });
+    }));
 
     it('should register correct local-bounds with a cachAsBitmap item inside after a render', function ()
     {

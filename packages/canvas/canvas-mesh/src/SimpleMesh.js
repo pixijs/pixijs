@@ -1,4 +1,4 @@
-import { Mesh2d } from '@pixi/mesh-extras';
+import { SimpleMesh } from '@pixi/mesh-extras';
 import { settings } from './settings';
 
 // IMPORTANT: Please do NOT use this as a precedent to use `settings` after the object is created
@@ -9,11 +9,11 @@ import { settings } from './settings';
  * Internal variable for `canvasPadding`.
  *
  * @private
- * @memberof PIXI.Mesh2d
+ * @memberof PIXI.SimpleMesh
  * @member {number}
  * @default null
  */
-Mesh2d.prototype._canvasPadding = null;
+SimpleMesh.prototype._canvasPadding = null;
 
 /**
  * Triangles in canvas mode are automatically antialiased, use this value to force triangles
@@ -21,10 +21,10 @@ Mesh2d.prototype._canvasPadding = null;
  *
  * @see PIXI.settings.MESH_CANVAS_PADDING
  * @member {number} canvasPadding
- * @memberof PIXI.Mesh2d#
+ * @memberof PIXI.SimpleMesh#
  * @default 0
  */
-Object.defineProperty(Mesh2d.prototype, 'canvasPadding', {
+Object.defineProperty(SimpleMesh.prototype, 'canvasPadding', {
     get()
     {
         return this._canvasPadding !== null ? this._canvasPadding : settings.MESH_CANVAS_PADDING;

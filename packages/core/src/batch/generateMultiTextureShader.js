@@ -1,5 +1,9 @@
-import { Shader, UniformGroup } from '@pixi/core';
+import Shader from '../shader/Shader';
+import Program from '../shader/Program';
+import UniformGroup from '../shader/UniformGroup';
+
 import vertex from './texture.vert';
+import { Matrix } from '@pixi/math';
 
 const fragTemplate = [
     'varying vec2 vTextureCoord;',
@@ -15,25 +19,37 @@ const fragTemplate = [
     '}',
 ].join('\n');
 
+const defaultGroupCache = {};
+const programCache = {};
+
 export default function generateMultiTextureShader(gl, maxTextures)
 {
-    const sampleValues = new Int32Array(maxTextures);
-
-    for (let i = 0; i < maxTextures; i++)
+    if (!programCache[maxTextures])
     {
-        sampleValues[i] = i;
+        const sampleValues = new Int32Array(maxTextures);
+
+        for (let i = 0; i < maxTextures; i++)
+        {
+            sampleValues[i] = i;
+        }
+
+        defaultGroupCache[maxTextures] = UniformGroup.from({ uSamplers: sampleValues }, true);
+
+        let fragmentSrc = fragTemplate;
+
+        fragmentSrc = fragmentSrc.replace(/%count%/gi, maxTextures);
+        fragmentSrc = fragmentSrc.replace(/%forloop%/gi, generateSampleSrc(maxTextures));
+
+        programCache[maxTextures] = new Program(vertex, fragmentSrc);
     }
 
     const uniforms = {
-        default: UniformGroup.from({ uSamplers: sampleValues }, true),
+        tint: new Float32Array([1, 1, 1, 1]),
+        translationMatrix: new Matrix(),
+        default: defaultGroupCache[maxTextures],
     };
 
-    let fragmentSrc = fragTemplate;
-
-    fragmentSrc = fragmentSrc.replace(/%count%/gi, maxTextures);
-    fragmentSrc = fragmentSrc.replace(/%forloop%/gi, generateSampleSrc(maxTextures));
-
-    const shader = Shader.from(vertex, fragmentSrc, uniforms);
+    const shader = new Shader(programCache[maxTextures], uniforms);
 
     return shader;
 }

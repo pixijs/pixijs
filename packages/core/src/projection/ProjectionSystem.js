@@ -43,6 +43,13 @@ export default class ProjectionSystem extends System
          * @readonly
          */
         this.projectionMatrix = new Matrix();
+
+        /**
+         * A transform that will be appended to the projection matrix
+         * if null, nothing will be applied
+         * @member {PIXI.Matrix}
+         */
+        this.transform = null;
     }
 
     /**
@@ -60,8 +67,22 @@ export default class ProjectionSystem extends System
 
         this.calculateProjection(this.destinationFrame, this.sourceFrame, resolution, root);
 
-        this.renderer.globalUniforms.uniforms.projectionMatrix = this.projectionMatrix;
-        this.renderer.globalUniforms.update();
+        if (this.transform)
+        {
+            this.projectionMatrix.append(this.transform);
+        }
+
+        const renderer =  this.renderer;
+
+        renderer.globalUniforms.uniforms.projectionMatrix = this.projectionMatrix;
+        renderer.globalUniforms.update();
+
+        // this will work for now
+        // but would be sweet to stick and even on the global uniforms..
+        if (renderer.shader.shader)
+        {
+            renderer.shader.syncUniformGroup(renderer.shader.shader.uniforms.globals);
+        }
     }
 
     /**

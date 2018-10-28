@@ -32,13 +32,6 @@ export default class RenderTextureSystem extends System
          */
         this.defaultMaskStack = [];
 
-        /**
-         * List of filters for the FilterSystem
-         * @member {Array}
-         * @readonly
-         */
-        this.defaultFilterStack = [{}];
-
         // empty render texture?
         /**
          * Render texture

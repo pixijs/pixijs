@@ -7,6 +7,8 @@ import { settings } from '@pixi/settings';
 import { Rectangle, Point } from '@pixi/math';
 import { uid, TextureCache, getResolutionOfUrl } from '@pixi/utils';
 
+const DEFAULT_UVS = new TextureUvs();
+
 /**
  * A texture stores the information that represents an image or part of an image. It cannot be added
  * to the display list directly. Instead use it as the texture for a Sprite. If no frame is provided
@@ -108,7 +110,7 @@ export default class Texture extends EventEmitter
          * @member {PIXI.TextureUvs}
          * @private
          */
-        this._uvs = null;
+        this._uvs = DEFAULT_UVS;
 
         /**
          * Default TextureMatrix instance for this texture
@@ -146,6 +148,7 @@ export default class Texture extends EventEmitter
                 // if there is no frame we should monitor for any base texture changes..
                 baseTexture.on('update', this.onBaseTextureUpdated, this);
             }
+
             this.frame = frame;
         }
         else
@@ -268,7 +271,7 @@ export default class Texture extends EventEmitter
      */
     updateUvs()
     {
-        if (!this._uvs)
+        if (this._uvs === DEFAULT_UVS)
         {
             this._uvs = new TextureUvs();
         }
@@ -551,13 +554,13 @@ function createWhiteTexture()
 {
     const canvas = document.createElement('canvas');
 
-    canvas.width = 10;
-    canvas.height = 10;
+    canvas.width = 16;
+    canvas.height = 16;
 
     const context = canvas.getContext('2d');
 
     context.fillStyle = 'white';
-    context.fillRect(0, 0, 10, 10);
+    context.fillRect(0, 0, 16, 16);
 
     return new Texture(new BaseTexture(new CanvasResource(canvas)));
 }
