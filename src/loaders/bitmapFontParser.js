@@ -2,6 +2,11 @@ import * as path from 'path';
 import { Resource } from 'resource-loader';
 import { BitmapText } from '../extras';
 
+function isAbsoluteUrl(url)
+{
+    return (/^[a-z][a-z0-9+.-]*:/).test(url);
+}
+
 /**
  * Register a BitmapText font from loader resource.
  *
@@ -85,7 +90,7 @@ export default function ()
         for (let i = 0; i < pages.length; ++i)
         {
             const pageFile = pages[i].getAttribute('file');
-            const url = xmlUrl + pageFile;
+            const url = isAbsoluteUrl(pageFile) ? pageFile : xmlUrl + pageFile;
             let exists = false;
 
             // incase the image is loaded outside
