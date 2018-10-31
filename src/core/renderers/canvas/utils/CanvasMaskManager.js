@@ -96,7 +96,7 @@ export default class CanvasMaskManager
                 if (holes.length > 0)
                 {
                     outerArea = 0;
-                    for (let j = 2; j < points.length; j += 2)
+                    for (let j = 0; j < points.length; j += 2)
                     {
                         outerArea += (points[j] * points[j + 3]) - (points[j + 1] * points[j + 2]);
                     }
@@ -106,7 +106,7 @@ export default class CanvasMaskManager
                         points = holes[k].points;
 
                         innerArea = 0;
-                        for (let j = 2; j < points.length; j += 2)
+                        for (let j = 0; j < points.length; j += 2)
                         {
                             innerArea += (points[j] * points[j + 3]) - (points[j + 1] * points[j + 2]);
                         }
