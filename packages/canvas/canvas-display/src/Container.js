@@ -18,6 +18,12 @@ Container.prototype._renderCanvas = function _renderCanvas(renderer) // eslint-d
  */
 Container.prototype.renderCanvas = function renderCanvas(renderer)
 {
+    if (this.sortChildrenNextRender)
+    {
+        this.sortChildren();
+        this.sortChildrenNextRender = false;
+    }
+
     // if not visible or the alpha is 0 then no need to render this
     if (!this.visible || this.worldAlpha <= 0 || !this.renderable)
     {

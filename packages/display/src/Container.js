@@ -1,6 +1,16 @@
 import removeItems from 'remove-array-items';
 import DisplayObject from './DisplayObject';
 
+function sortChildren(a, b)
+{
+    if (a.zIndex === b.zIndex)
+    {
+        return a.previousRenderIndex - b.previousRenderIndex;
+    }
+
+    return a.zIndex - b.zIndex;
+}
+
 /**
  * A Container represents a collection of display objects.
  * It is the base class of all display objects that act as a container for other objects.
@@ -30,6 +40,9 @@ export default class Container extends DisplayObject
          * @readonly
          */
         this.children = [];
+
+        this._sortRequired = false;
+        this.sortChildrenNextRender = false;
     }
 
     /**
@@ -73,6 +86,8 @@ export default class Container extends DisplayObject
             }
 
             child.parent = this;
+            this.sortChildrenNextRender = true;
+
             // ensure child transform will be recalculated
             child.transform._parentID = -1;
 
@@ -109,6 +124,8 @@ export default class Container extends DisplayObject
         }
 
         child.parent = this;
+        this.sortChildrenNextRender = true;
+
         // ensure child transform will be recalculated
         child.transform._parentID = -1;
 
@@ -386,6 +403,26 @@ export default class Container extends DisplayObject
         // FILL IN//
     }
 
+    sortChildren()
+    {
+        for (let i = 0, j = this.children.length; i < j; ++i)
+        {
+            const child = this.children[i];
+
+            child.previousRenderIndex = i;
+
+            if (!this._sortRequired && child.zIndex !== 0)
+            {
+                this._sortRequired = true;
+            }
+        }
+
+        if (this._sortRequired)
+        {
+            this.children.sort(sortChildren);
+        }
+    }
+
     /**
      * Renders the object using the WebGL renderer
      *
@@ -393,6 +430,12 @@ export default class Container extends DisplayObject
      */
     render(renderer)
     {
+        if (this.sortChildrenNextRender)
+        {
+            this.sortChildren();
+            this.sortChildrenNextRender = false;
+        }
+
         // if the object is not visible or the alpha is 0 then no need to render this element
         if (!this.visible || this.worldAlpha <= 0 || !this.renderable)
         {
@@ -507,6 +550,8 @@ export default class Container extends DisplayObject
     destroy(options)
     {
         super.destroy();
+
+        this.sortChildrenNextRender = false;
 
         const destroyChildren = typeof options === 'boolean' ? options : options && options.children;
 
