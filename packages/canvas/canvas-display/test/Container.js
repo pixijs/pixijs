@@ -51,4 +51,17 @@ describe('PIXI.Container', function ()
             expect(canvasSpy).to.have.been.called;
         });
     });
+    
+    describe('sortChildrenNextRender', function ()
+    {
+        it('should reset sortChildrenNextRender flag on render', function ()
+        {
+            const container = new Container();
+
+            container.sortChildrenNextRender = true;
+
+            container.render();
+            expect(container.sortChildrenNextRender).to.be.false;
+        });
+    });
 });
