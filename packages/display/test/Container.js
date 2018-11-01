@@ -595,42 +595,42 @@ describe('PIXI.Container', function ()
         });
     });
 
-    describe('sortChildrenNextRender', function ()
+    describe('sortDirty', function ()
     {
-        it('should set sortChildrenNextRender flag to true when adding a new child', function ()
+        it('should set sortDirty flag to true when adding a new child', function ()
         {
             const parent = new Container();
             const child = new DisplayObject();
 
-            expect(parent.sortChildrenNextRender).to.be.false;
+            expect(parent.sortDirty).to.be.false;
 
             parent.addChild(child);
 
-            expect(parent.sortChildrenNextRender).to.be.true;
+            expect(parent.sortDirty).to.be.true;
         });
 
-        it('should set sortChildrenNextRender flag to true when changing a child zIndex', function ()
+        it('should set sortDirty flag to true when changing a child zIndex', function ()
         {
             const parent = new Container();
             const child = new DisplayObject();
 
             parent.addChild(child);
 
-            parent.sortChildrenNextRender = false;
+            parent.sortDirty = false;
 
             child.zIndex = 10;
 
-            expect(parent.sortChildrenNextRender).to.be.true;
+            expect(parent.sortDirty).to.be.true;
         });
 
-        it('should reset sortChildrenNextRender flag on render', function ()
+        it('should reset sortDirty flag on render', function ()
         {
             const container = new Container();
 
-            container.sortChildrenNextRender = true;
+            container.sortDirty = true;
 
             container.render();
-            expect(container.sortChildrenNextRender).to.be.false;
+            expect(container.sortDirty).to.be.false;
         });
     });
 

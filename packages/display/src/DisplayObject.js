@@ -605,7 +605,7 @@ export default class DisplayObject extends EventEmitter
         this._zIndex = value;
         if (this.parent)
         {
-            this.parent.sortChildrenNextRender = true;
+            this.parent.sortDirty = true;
         }
     }
 

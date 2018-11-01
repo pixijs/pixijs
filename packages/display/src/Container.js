@@ -56,7 +56,7 @@ export default class Container extends DisplayObject
          *
          * @member {boolean}
          */
-        this.sortChildrenNextRender = false;
+        this.sortDirty = false;
     }
 
     /**
@@ -100,7 +100,7 @@ export default class Container extends DisplayObject
             }
 
             child.parent = this;
-            this.sortChildrenNextRender = true;
+            this.sortDirty = true;
 
             // ensure child transform will be recalculated
             child.transform._parentID = -1;
@@ -138,7 +138,7 @@ export default class Container extends DisplayObject
         }
 
         child.parent = this;
-        this.sortChildrenNextRender = true;
+        this.sortDirty = true;
 
         // ensure child transform will be recalculated
         child.transform._parentID = -1;
@@ -440,6 +440,8 @@ export default class Container extends DisplayObject
         {
             this.children.sort(sortChildren);
         }
+
+        this.sortDirty = false;
     }
 
     /**
@@ -449,11 +451,10 @@ export default class Container extends DisplayObject
      */
     render(renderer)
     {
-        if (this.sortChildrenNextRender && this.zIndexAutoSort)
+        if (this.sortDirty && this.zIndexAutoSort)
         {
             this.sortChildren();
         }
-        this.sortChildrenNextRender = false;
 
         // if the object is not visible or the alpha is 0 then no need to render this element
         if (!this.visible || this.worldAlpha <= 0 || !this.renderable)
@@ -570,7 +571,7 @@ export default class Container extends DisplayObject
     {
         super.destroy();
 
-        this.sortChildrenNextRender = false;
+        this.sortDirty = false;
 
         const destroyChildren = typeof options === 'boolean' ? options : options && options.children;
 

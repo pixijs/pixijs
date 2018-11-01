@@ -52,16 +52,16 @@ describe('PIXI.Container', function ()
         });
     });
 
-    describe('sortChildrenNextRender', function ()
+    describe('sortDirty', function ()
     {
-        it('should reset sortChildrenNextRender flag on render', function ()
+        it('should reset sortDirty flag on render', function ()
         {
             const container = new Container();
 
-            container.sortChildrenNextRender = true;
+            container.sortDirty = true;
 
             container.render();
-            expect(container.sortChildrenNextRender).to.be.false;
+            expect(container.sortDirty).to.be.false;
         });
     });
 });
