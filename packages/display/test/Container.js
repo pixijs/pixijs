@@ -595,7 +595,7 @@ describe('PIXI.Container', function ()
         });
     });
 
-    describe('sortChildrenNextRender', function()
+    describe('sortChildrenNextRender', function ()
     {
         it('should set sortChildrenNextRender flag to true when adding a new child', function ()
         {
@@ -626,14 +626,15 @@ describe('PIXI.Container', function ()
         it('should reset sortChildrenNextRender flag on render', function ()
         {
             const container = new Container();
+
             container.sortChildrenNextRender = true;
 
             container.render();
             expect(container.sortChildrenNextRender).to.be.false;
         });
-    })
+    });
 
-    describe('sortChildren', function()
+    describe('sortChildren', function ()
     {
         it('should call sort when at least one child has a zIndex', function ()
         {
@@ -770,7 +771,7 @@ describe('PIXI.Container', function ()
             expect(container.children.indexOf(child3)).to.be.equals(1);
             expect(container.children.indexOf(child4)).to.be.equals(0);
         });
-    })
+    });
 
     function assertRemovedFromParent(parent, container, child, functionToAssert)
     {
