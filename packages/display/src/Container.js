@@ -1,3 +1,4 @@
+import { settings } from '@pixi/settings';
 import removeItems from 'remove-array-items';
 import DisplayObject from './DisplayObject';
 
@@ -41,7 +42,20 @@ export default class Container extends DisplayObject
          */
         this.children = [];
 
-        this._sortRequired = false;
+        /**
+         * If enabled, containers will automatically sort their children by zIndex value
+         *
+         * @member {boolean}
+         * @private
+         */
+        this.zIndexAutoSort = settings.ZINDEX_AUTO_SORT;
+        
+        /**
+         * Should children be sorted by zIndex before the next render occurs.
+         * Will get automatically set to true if a new child is added, or if a child's zIndex changes
+         *
+         * @member {boolean}
+         */
         this.sortChildrenNextRender = false;
     }
 
@@ -405,19 +419,22 @@ export default class Container extends DisplayObject
 
     sortChildren()
     {
+
+        let sortRequired = false;
+
         for (let i = 0, j = this.children.length; i < j; ++i)
         {
             const child = this.children[i];
 
             child.previousRenderIndex = i;
 
-            if (!this._sortRequired && child.zIndex !== 0)
+            if (!sortRequired && child.zIndex !== 0)
             {
-                this._sortRequired = true;
+                sortRequired = true;
             }
         }
 
-        if (this._sortRequired)
+        if (sortRequired && this.children.length > 1)
         {
             this.children.sort(sortChildren);
         }
@@ -430,11 +447,11 @@ export default class Container extends DisplayObject
      */
     render(renderer)
     {
-        if (this.sortChildrenNextRender)
+        if (this.sortChildrenNextRender && this.zIndexAutoSort)
         {
             this.sortChildren();
-            this.sortChildrenNextRender = false;
         }
+        this.sortChildrenNextRender = false;
 
         // if the object is not visible or the alpha is 0 then no need to render this element
         if (!this.visible || this.worldAlpha <= 0 || !this.renderable)
