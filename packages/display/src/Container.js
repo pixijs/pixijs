@@ -6,7 +6,7 @@ function sortChildren(a, b)
 {
     if (a.zIndex === b.zIndex)
     {
-        return a.previousRenderIndex - b.previousRenderIndex;
+        return a._lastSortedIndex - b._lastSortedIndex;
     }
 
     return a.zIndex - b.zIndex;
@@ -428,7 +428,7 @@ export default class Container extends DisplayObject
         {
             const child = this.children[i];
 
-            child.previousRenderIndex = i;
+            child._lastSortedIndex = i;
 
             if (!sortRequired && child.zIndex !== 0)
             {

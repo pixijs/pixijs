@@ -714,10 +714,10 @@ describe('PIXI.Container', function ()
 
             container.sortChildren();
 
-            expect(child1.previousRenderIndex).to.be.equals(0);
-            expect(child2.previousRenderIndex).to.be.equals(1);
-            expect(child3.previousRenderIndex).to.be.equals(2);
-            expect(child4.previousRenderIndex).to.be.equals(3);
+            expect(child1._lastSortedIndex).to.be.equals(0);
+            expect(child2._lastSortedIndex).to.be.equals(1);
+            expect(child3._lastSortedIndex).to.be.equals(2);
+            expect(child4._lastSortedIndex).to.be.equals(3);
 
             expect(container.children.indexOf(child1)).to.be.equals(2);
             expect(container.children.indexOf(child2)).to.be.equals(3);
@@ -769,6 +769,84 @@ describe('PIXI.Container', function ()
             expect(container.children.indexOf(child1)).to.be.equals(2);
             expect(container.children.indexOf(child2)).to.be.equals(3);
             expect(container.children.indexOf(child3)).to.be.equals(1);
+            expect(container.children.indexOf(child4)).to.be.equals(0);
+        });
+
+        it('should sort new children added correctly', function ()
+        {
+            const container = new Container();
+            const child1 = new DisplayObject();
+            const child2 = new DisplayObject();
+            const child3 = new DisplayObject();
+            const child4 = new DisplayObject();
+
+            child1.zIndex = 20;
+            child2.zIndex = 10;
+            child3.zIndex = 15;
+
+            container.addChild(child1, child2, child3);
+
+            expect(container.children.indexOf(child1)).to.be.equals(0);
+            expect(container.children.indexOf(child2)).to.be.equals(1);
+            expect(container.children.indexOf(child3)).to.be.equals(2);
+
+            container.sortChildren();
+
+            expect(container.children.indexOf(child1)).to.be.equals(2);
+            expect(container.children.indexOf(child2)).to.be.equals(0);
+            expect(container.children.indexOf(child3)).to.be.equals(1);
+
+            container.addChild(child4);
+
+            expect(container.children.indexOf(child1)).to.be.equals(2);
+            expect(container.children.indexOf(child2)).to.be.equals(0);
+            expect(container.children.indexOf(child3)).to.be.equals(1);
+            expect(container.children.indexOf(child4)).to.be.equals(3);
+
+            container.sortChildren();
+
+            expect(container.children.indexOf(child1)).to.be.equals(3);
+            expect(container.children.indexOf(child2)).to.be.equals(1);
+            expect(container.children.indexOf(child3)).to.be.equals(2);
+            expect(container.children.indexOf(child4)).to.be.equals(0);
+        });
+
+        it('should sort children after a removal correctly', function ()
+        {
+            const container = new Container();
+            const child1 = new DisplayObject();
+            const child2 = new DisplayObject();
+            const child3 = new DisplayObject();
+            const child4 = new DisplayObject();
+
+            child1.zIndex = 20;
+            child2.zIndex = 10;
+            child3.zIndex = 15;
+
+            container.addChild(child1, child2, child3, child4);
+
+            expect(container.children.indexOf(child1)).to.be.equals(0);
+            expect(container.children.indexOf(child2)).to.be.equals(1);
+            expect(container.children.indexOf(child3)).to.be.equals(2);
+            expect(container.children.indexOf(child4)).to.be.equals(3);
+
+            container.sortChildren();
+
+            expect(container.children.indexOf(child1)).to.be.equals(3);
+            expect(container.children.indexOf(child2)).to.be.equals(1);
+            expect(container.children.indexOf(child3)).to.be.equals(2);
+            expect(container.children.indexOf(child4)).to.be.equals(0);
+
+            container.removeChild(child3);
+
+            expect(container.children.indexOf(child1)).to.be.equals(2);
+            expect(container.children.indexOf(child2)).to.be.equals(1);
+            expect(container.children.indexOf(child4)).to.be.equals(0);
+
+            container.sortChildren();
+
+            expect(container.children.indexOf(child1)).to.be.equals(2);
+            expect(container.children.indexOf(child2)).to.be.equals(1);
             expect(container.children.indexOf(child4)).to.be.equals(0);
         });
     });

@@ -75,17 +75,18 @@ export default class DisplayObject extends EventEmitter
         this.worldAlpha = 1;
 
         /**
-         * Which index in the children array the display component was in on the previous render.
-         * Used by containers to help sort objects with the same zIndex, by using previous render index as the decider
+         * Which index in the children array the display component was before the previous zIndex sort.
+         * Used by containers to help sort objects with the same zIndex, by using previous array index as the decider.
          *
          * @member {number}
+         * @private
          * @readOnly
          */
-        this.previousRenderIndex = 0;
+        this._lastSortedIndex = 0;
 
         /**
          * The zIndex of the displayObject.
-         * A higher value will mean it will be rendered on top of other displayObjects within the same container
+         * A higher value will mean it will be rendered on top of other displayObjects within the same container.
          *
          * @member {number}
          * @private
