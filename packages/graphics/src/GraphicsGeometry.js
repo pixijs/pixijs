@@ -215,9 +215,11 @@ export default class GraphicsGeometry extends BatchGeometry
             this.colors.length = 0;
             this.uvs.length = 0;
             this.indices.length = 0;
+            this.textureIds.length = 0;
 
-            for (let i = 0; i < DRAW_CALL_POOL.length; i++)
+            for (let i = 0; i < this.drawCalls.length; i++)
             {
+                this.drawCalls[i].textures.length = 0;
                 DRAW_CALL_POOL.push(this.drawCalls[i]);
             }
 
@@ -533,6 +535,7 @@ export default class GraphicsGeometry extends BatchGeometry
 
         for (let i = 0; i < this.drawCalls.length; i++)
         {
+            this.drawCalls[i].textures.length = 0;
             DRAW_CALL_POOL.push(this.drawCalls[i]);
         }
 
