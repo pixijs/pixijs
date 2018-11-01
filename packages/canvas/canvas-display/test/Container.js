@@ -51,7 +51,7 @@ describe('PIXI.Container', function ()
             expect(canvasSpy).to.have.been.called;
         });
     });
-    
+
     describe('sortChildrenNextRender', function ()
     {
         it('should reset sortChildrenNextRender flag on render', function ()
