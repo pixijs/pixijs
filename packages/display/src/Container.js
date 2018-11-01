@@ -49,7 +49,7 @@ export default class Container extends DisplayObject
          * @private
          */
         this.zIndexAutoSort = settings.ZINDEX_AUTO_SORT;
-        
+
         /**
          * Should children be sorted by zIndex before the next render occurs.
          * Will get automatically set to true if a new child is added, or if a child's zIndex changes
@@ -419,7 +419,6 @@ export default class Container extends DisplayObject
 
     sortChildren()
     {
-
         let sortRequired = false;
 
         for (let i = 0, j = this.children.length; i < j; ++i)
