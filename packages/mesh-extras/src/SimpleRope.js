@@ -34,8 +34,8 @@ export default class SimpleRope extends Mesh
 
     _render(renderer)
     {
-        if (this.autoUpdate ||
-            this.geometry.width !== this.shader.texture.height)
+        if (this.autoUpdate
+            || this.geometry.width !== this.shader.texture.height)
         {
             this.geometry.width = this.shader.texture.height;
             this.geometry.update();
