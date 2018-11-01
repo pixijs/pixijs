@@ -75,19 +75,59 @@ export default class CanvasMaskManager
 
             if (data.type === SHAPES.POLY)
             {
-                const points = shape.points;
+                let points = shape.points;
+                const holes = data.holes;
+                let outerArea;
+                let innerArea;
 
                 context.moveTo(points[0], points[1]);
 
-                for (let j = 1; j < points.length / 2; j++)
+                for (let j = 2; j < points.length; j += 2)
                 {
-                    context.lineTo(points[j * 2], points[(j * 2) + 1]);
+                    context.lineTo(points[j], points[j + 1]);
                 }
 
                 // if the first and last point are the same close the path - much neater :)
                 if (points[0] === points[points.length - 2] && points[1] === points[points.length - 1])
                 {
                     context.closePath();
+                }
+
+                if (holes.length > 0)
+                {
+                    outerArea = 0;
+                    for (let j = 0; j < points.length; j += 2)
+                    {
+                        outerArea += (points[j] * points[j + 3]) - (points[j + 1] * points[j + 2]);
+                    }
+
+                    for (let k = 0; k < holes.length; k++)
+                    {
+                        points = holes[k].points;
+
+                        innerArea = 0;
+                        for (let j = 0; j < points.length; j += 2)
+                        {
+                            innerArea += (points[j] * points[j + 3]) - (points[j + 1] * points[j + 2]);
+                        }
+
+                        context.moveTo(points[0], points[1]);
+
+                        if (innerArea * outerArea < 0)
+                        {
+                            for (let j = 2; j < points.length; j += 2)
+                            {
+                                context.lineTo(points[j], points[j + 1]);
+                            }
+                        }
+                        else
+                        {
+                            for (let j = points.length - 2; j >= 2; j -= 2)
+                            {
+                                context.lineTo(points[j], points[j + 1]);
+                            }
+                        }
+                    }
                 }
             }
             else if (data.type === SHAPES.RECT)
