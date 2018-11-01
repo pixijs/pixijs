@@ -417,6 +417,9 @@ export default class Container extends DisplayObject
         // FILL IN//
     }
 
+    /**
+     * Sorts children by zIndex
+     */
     sortChildren()
     {
         let sortRequired = false;
