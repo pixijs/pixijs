@@ -489,7 +489,7 @@ describe('PIXI.Container', function ()
             container.zIndexAutoSort = true;
 
             container.render();
-            
+
             expect(canvasSpy).to.have.been.called;
         });
 
@@ -505,7 +505,7 @@ describe('PIXI.Container', function ()
             container.zIndexAutoSort = true;
 
             container.render();
-            
+
             expect(canvasSpy).to.not.have.been.called;
         });
 
@@ -521,7 +521,7 @@ describe('PIXI.Container', function ()
             container.zIndexAutoSort = false;
 
             container.render();
-            
+
             expect(canvasSpy).to.not.have.been.called;
         });
     });
