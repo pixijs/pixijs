@@ -1,5 +1,6 @@
 import { BatchGeometry } from '@pixi/core';
-import { Bounds, SHAPES } from '@pixi/math';
+import { SHAPES } from '@pixi/math';
+import { Bounds } from '@pixi/display';
 
 import GraphicsData from './GraphicsData';
 import buildCircle from './utils/buildCircle';
@@ -177,6 +178,12 @@ export default class GraphicsGeometry extends BatchGeometry
          * @default 0
          */
         this.boundsPadding = 0;
+
+        this.batchable = false;
+
+        this.indicesUint16 = null;
+
+        this.uvsFloat32 = null;
     }
 
     /**
