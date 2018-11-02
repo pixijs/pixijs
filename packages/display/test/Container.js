@@ -476,6 +476,54 @@ describe('PIXI.Container', function ()
             container.render();
             expect(webGLSpy).to.have.been.called;
         });
+
+        it('should call sortChildren if sortDirty and zIndexAutoSort are true', function ()
+        {
+            const container = new Container();
+            const child = new Container();
+            const canvasSpy = sinon.spy(container, 'sortChildren');
+
+            container.addChild(child);
+
+            container.sortDirty = true;
+            container.zIndexAutoSort = true;
+
+            container.render();
+            
+            expect(canvasSpy).to.have.been.called;
+        });
+
+        it('should not call sortChildren if sortDirty is false', function ()
+        {
+            const container = new Container();
+            const child = new Container();
+            const canvasSpy = sinon.spy(container, 'sortChildren');
+
+            container.addChild(child);
+
+            container.sortDirty = false;
+            container.zIndexAutoSort = true;
+
+            container.render();
+            
+            expect(canvasSpy).to.not.have.been.called;
+        });
+
+        it('should not call sortChildren if zIndexAutoSort is false', function ()
+        {
+            const container = new Container();
+            const child = new Container();
+            const canvasSpy = sinon.spy(container, 'sortChildren');
+
+            container.addChild(child);
+
+            container.sortDirty = true;
+            container.zIndexAutoSort = false;
+
+            container.render();
+            
+            expect(canvasSpy).to.not.have.been.called;
+        });
     });
 
     describe('removeChildren', function ()
@@ -622,20 +670,21 @@ describe('PIXI.Container', function ()
 
             expect(parent.sortDirty).to.be.true;
         });
+    });
 
-        it('should reset sortDirty flag on render', function ()
+    describe('sortChildren', function ()
+    {
+        it('should reset sortDirty flag', function ()
         {
             const container = new Container();
 
             container.sortDirty = true;
 
-            container.render();
+            container.sortChildren();
+
             expect(container.sortDirty).to.be.false;
         });
-    });
 
-    describe('sortChildren', function ()
-    {
         it('should call sort when at least one child has a zIndex', function ()
         {
             const container = new Container();
