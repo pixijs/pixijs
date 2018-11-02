@@ -685,7 +685,7 @@ export default class GraphicsGeometry extends BatchGeometry
 
         if (this.graphicsData.length)
         {
-            let shape = 0;
+            let shape = null;
             let x = 0;
             let y = 0;
             let w = 0;
