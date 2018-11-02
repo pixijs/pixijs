@@ -1,5 +1,5 @@
 import { BatchGeometry } from '@pixi/core';
-import { Rectangle, SHAPES } from '@pixi/math';
+import { Bounds, SHAPES } from '@pixi/math';
 
 import GraphicsData from './GraphicsData';
 import buildCircle from './utils/buildCircle';
@@ -157,10 +157,10 @@ export default class GraphicsGeometry extends BatchGeometry
         /**
          * Cached bounds.
          *
-         * @member {PIXI.Rectangle}
+         * @member {PIXI.Bounds}
          * @private
          */
-        this._bounds = new Rectangle();
+        this._bounds = new Bounds();
 
         /**
          * The bounds dirty flag.
@@ -182,7 +182,7 @@ export default class GraphicsGeometry extends BatchGeometry
     /**
      * Get the current bounds of the graphic geometry.
      *
-     * @member {PIXI.Rectangle}
+     * @member {PIXI.Bounds}
      * @readonly
      */
     get bounds()
