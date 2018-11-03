@@ -430,6 +430,63 @@ describe('PIXI.Container', function ()
         });
     });
 
+    describe('updateTransform', function ()
+    {
+        it('should call sortChildren if sortDirty and zIndexAutoSort are true', function ()
+        {
+            const parent = new Container();
+            const container = new Container();
+            const child = new Container();
+            const canvasSpy = sinon.spy(container, 'sortChildren');
+
+            parent.addChild(container);
+            container.addChild(child);
+
+            container.sortDirty = true;
+            container.zIndexAutoSort = true;
+
+            container.updateTransform();
+
+            expect(canvasSpy).to.have.been.called;
+        });
+
+        it('should not call sortChildren if sortDirty is false', function ()
+        {
+            const parent = new Container();
+            const container = new Container();
+            const child = new Container();
+            const canvasSpy = sinon.spy(container, 'sortChildren');
+
+            parent.addChild(container);
+            container.addChild(child);
+
+            container.sortDirty = false;
+            container.zIndexAutoSort = true;
+
+            container.updateTransform();
+
+            expect(canvasSpy).to.not.have.been.called;
+        });
+
+        it('should not call sortChildren if zIndexAutoSort is false', function ()
+        {
+            const parent = new Container();
+            const container = new Container();
+            const child = new Container();
+            const canvasSpy = sinon.spy(container, 'sortChildren');
+
+            parent.addChild(container);
+            container.addChild(child);
+
+            container.sortDirty = true;
+            container.zIndexAutoSort = false;
+
+            container.updateTransform();
+
+            expect(canvasSpy).to.not.have.been.called;
+        });
+    });
+
     describe('render', function ()
     {
         it('should not render when object not visible', function ()
@@ -475,54 +532,6 @@ describe('PIXI.Container', function ()
 
             container.render();
             expect(webGLSpy).to.have.been.called;
-        });
-
-        it('should call sortChildren if sortDirty and zIndexAutoSort are true', function ()
-        {
-            const container = new Container();
-            const child = new Container();
-            const canvasSpy = sinon.spy(container, 'sortChildren');
-
-            container.addChild(child);
-
-            container.sortDirty = true;
-            container.zIndexAutoSort = true;
-
-            container.render();
-
-            expect(canvasSpy).to.have.been.called;
-        });
-
-        it('should not call sortChildren if sortDirty is false', function ()
-        {
-            const container = new Container();
-            const child = new Container();
-            const canvasSpy = sinon.spy(container, 'sortChildren');
-
-            container.addChild(child);
-
-            container.sortDirty = false;
-            container.zIndexAutoSort = true;
-
-            container.render();
-
-            expect(canvasSpy).to.not.have.been.called;
-        });
-
-        it('should not call sortChildren if zIndexAutoSort is false', function ()
-        {
-            const container = new Container();
-            const child = new Container();
-            const canvasSpy = sinon.spy(container, 'sortChildren');
-
-            container.addChild(child);
-
-            container.sortDirty = true;
-            container.zIndexAutoSort = false;
-
-            container.render();
-
-            expect(canvasSpy).to.not.have.been.called;
         });
     });
 

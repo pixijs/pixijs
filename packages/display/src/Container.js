@@ -349,6 +349,11 @@ export default class Container extends DisplayObject
      */
     updateTransform()
     {
+        if (this.sortDirty && this.zIndexAutoSort)
+        {
+            this.sortChildren();
+        }
+
         this._boundsID++;
 
         this.transform.updateTransform(this.parent.transform);
@@ -451,11 +456,6 @@ export default class Container extends DisplayObject
      */
     render(renderer)
     {
-        if (this.sortDirty && this.zIndexAutoSort)
-        {
-            this.sortChildren();
-        }
-
         // if the object is not visible or the alpha is 0 then no need to render this element
         if (!this.visible || this.worldAlpha <= 0 || !this.renderable)
         {

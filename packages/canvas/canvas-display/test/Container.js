@@ -50,53 +50,5 @@ describe('PIXI.Container', function ()
             container.renderCanvas();
             expect(canvasSpy).to.have.been.called;
         });
-
-        it('should call sortChildren if sortDirty and zIndexAutoSort are true', function ()
-        {
-            const container = new Container();
-            const child = new Container();
-            const canvasSpy = sinon.spy(container, 'sortChildren');
-
-            container.addChild(child);
-
-            container.sortDirty = true;
-            container.zIndexAutoSort = true;
-
-            container.renderCanvas();
-
-            expect(canvasSpy).to.have.been.called;
-        });
-
-        it('should not call sortChildren if sortDirty is false', function ()
-        {
-            const container = new Container();
-            const child = new Container();
-            const canvasSpy = sinon.spy(container, 'sortChildren');
-
-            container.addChild(child);
-
-            container.sortDirty = false;
-            container.zIndexAutoSort = true;
-
-            container.renderCanvas();
-
-            expect(canvasSpy).to.not.have.been.called;
-        });
-
-        it('should not call sortChildren if zIndexAutoSort is false', function ()
-        {
-            const container = new Container();
-            const child = new Container();
-            const canvasSpy = sinon.spy(container, 'sortChildren');
-
-            container.addChild(child);
-
-            container.sortDirty = true;
-            container.zIndexAutoSort = false;
-
-            container.renderCanvas();
-
-            expect(canvasSpy).to.not.have.been.called;
-        });
     });
 });
