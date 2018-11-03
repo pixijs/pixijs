@@ -345,6 +345,33 @@ export default class Container extends DisplayObject
     }
 
     /**
+     * Sorts children by zIndex
+     */
+    sortChildren()
+    {
+        let sortRequired = false;
+
+        for (let i = 0, j = this.children.length; i < j; ++i)
+        {
+            const child = this.children[i];
+
+            child._lastSortedIndex = i;
+
+            if (!sortRequired && child.zIndex !== 0)
+            {
+                sortRequired = true;
+            }
+        }
+
+        if (sortRequired && this.children.length > 1)
+        {
+            this.children.sort(sortChildren);
+        }
+
+        this.sortDirty = false;
+    }
+
+    /**
      * Updates the transform on all children of this container for rendering
      */
     updateTransform()
@@ -420,33 +447,6 @@ export default class Container extends DisplayObject
     _calculateBounds()
     {
         // FILL IN//
-    }
-
-    /**
-     * Sorts children by zIndex
-     */
-    sortChildren()
-    {
-        let sortRequired = false;
-
-        for (let i = 0, j = this.children.length; i < j; ++i)
-        {
-            const child = this.children[i];
-
-            child._lastSortedIndex = i;
-
-            if (!sortRequired && child.zIndex !== 0)
-            {
-                sortRequired = true;
-            }
-        }
-
-        if (sortRequired && this.children.length > 1)
-        {
-            this.children.sort(sortChildren);
-        }
-
-        this.sortDirty = false;
     }
 
     /**
