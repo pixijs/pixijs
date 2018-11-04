@@ -247,6 +247,8 @@ export default class BatchRenderer extends ObjectRenderer
 
             const sprite = elements[i];
 
+            elements[i] = null;
+
             nextTexture = sprite._texture.baseTexture;
 
             const spriteBlendMode = premultiplyBlendMode[nextTexture.premultiplyAlpha ? 1 : 0][sprite.blendMode];
@@ -352,6 +354,7 @@ export default class BatchRenderer extends ObjectRenderer
             for (let j = 0; j < groupTextureCount; j++)
             {
                 textureSystem.bind(group.textures[j], j);
+                group.textures[j] = null;
             }
 
             // this.state.blendMode = group.blend;

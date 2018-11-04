@@ -1,5 +1,6 @@
 import { BatchGeometry } from '@pixi/core';
-import { Rectangle, SHAPES } from '@pixi/math';
+import { SHAPES } from '@pixi/math';
+import { Bounds } from '@pixi/display';
 
 import GraphicsData from './GraphicsData';
 import buildCircle from './utils/buildCircle';
@@ -157,10 +158,10 @@ export default class GraphicsGeometry extends BatchGeometry
         /**
          * Cached bounds.
          *
-         * @member {PIXI.Rectangle}
+         * @member {PIXI.Bounds}
          * @private
          */
-        this._bounds = new Rectangle();
+        this._bounds = new Bounds();
 
         /**
          * The bounds dirty flag.
@@ -177,12 +178,18 @@ export default class GraphicsGeometry extends BatchGeometry
          * @default 0
          */
         this.boundsPadding = 0;
+
+        this.batchable = false;
+
+        this.indicesUint16 = null;
+
+        this.uvsFloat32 = null;
     }
 
     /**
      * Get the current bounds of the graphic geometry.
      *
-     * @member {PIXI.Rectangle}
+     * @member {PIXI.Bounds}
      * @readonly
      */
     get bounds()
@@ -215,9 +222,11 @@ export default class GraphicsGeometry extends BatchGeometry
             this.colors.length = 0;
             this.uvs.length = 0;
             this.indices.length = 0;
+            this.textureIds.length = 0;
 
-            for (let i = 0; i < DRAW_CALL_POOL.length; i++)
+            for (let i = 0; i < this.drawCalls.length; i++)
             {
+                this.drawCalls[i].textures.length = 0;
                 DRAW_CALL_POOL.push(this.drawCalls[i]);
             }
 
@@ -533,6 +542,7 @@ export default class GraphicsGeometry extends BatchGeometry
 
         for (let i = 0; i < this.drawCalls.length; i++)
         {
+            this.drawCalls[i].textures.length = 0;
             DRAW_CALL_POOL.push(this.drawCalls[i]);
         }
 
@@ -682,7 +692,7 @@ export default class GraphicsGeometry extends BatchGeometry
 
         if (this.graphicsData.length)
         {
-            let shape = 0;
+            let shape = null;
             let x = 0;
             let y = 0;
             let w = 0;
