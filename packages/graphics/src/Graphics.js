@@ -12,8 +12,7 @@ import { hex2rgb } from '@pixi/utils';
 import { Mesh } from '@pixi/mesh';
 import { Texture,
     Shader,
-    UniformGroup,
-    generateMultiTextureShader } from '@pixi/core';
+    UniformGroup } from '@pixi/core';
 import FillStyle from './styles/FillStyle';
 import GraphicsGeometry from './GraphicsGeometry';
 import LineStyle from './styles/LineStyle';
@@ -23,6 +22,11 @@ import ArcUtils from './utils/ArcUtils';
 import Star from './utils/Star';
 
 const temp = new Float32Array(3);
+
+/**
+ * a default shader used by graphics..
+ */
+let defaultShader = null;
 
 /**
  * The Graphics class contains methods used to draw primitive shapes such as lines, circles and
@@ -842,40 +846,36 @@ export default class Graphics extends Mesh
             // no batching...
             renderer.batch.flush();
 
-            const s =  renderer.plugins.batch.shader;
-
-            // lets only create a shader if we need to..
-            this.shader = generateMultiTextureShader(renderer.gl, renderer.plugins.batch.MAX_TEXTURES);
-
             if (!this.shader)
             {
-                const sampleValues = new Int32Array(16);
-
-                for (let i = 0; i < 16; i++)
+                // if there is no shader here, we can use the default shader.
+                // and that only gets created if we actually need it..
+                if (!defaultShader)
                 {
-                    sampleValues[i] = i;
+                    const sampleValues = new Int32Array(16);
+
+                    for (let i = 0; i < 16; i++)
+                    {
+                        sampleValues[i] = i;
+                    }
+
+                    const uniforms = {
+                        tint: new Float32Array([1, 1, 1, 1]),
+                        translationMatrix: new Matrix(),
+                        default: UniformGroup.from({ uSamplers: sampleValues }, true),
+                    };
+
+                    // we can bbase default shader of the batch renderers program
+                    const program =  renderer.plugins.batch.shader.program;
+
+                    defaultShader = new Shader(program, uniforms);
                 }
 
-                const uniforms = {
-                    tint: new Float32Array([1, 1, 1, 1]),
-                    translationMatrix: new Matrix(),
-                    default: UniformGroup.from({ uSamplers: sampleValues }, true),
-                };
-
-                this.shader = new Shader(s.program, uniforms);
+                this.shader = defaultShader;
             }
 
-            // apply the tint..
-            const tint =  this.shader.uniforms.tint;
-            const hexTint = this.tint;
-            const wa = this.worldAlpha;
+            this.shader.uniforms.translationMatrix = this.transform.worldTransform;
 
-            tint[0] = (((hexTint >> 16) & 0xFF) / 255) * wa;
-            tint[1] = (((hexTint >> 8) & 0xFF) / 255) * wa;
-            tint[2] = ((hexTint & 0xFF) / 255) * wa;
-            tint[3] = wa;
-
-            this.shader.uniforms.translationMatrix = this.transform.worldTransform;// .toArray(true);
             // the first draw call, we can set the uniforms of the shader directly here.
 
             // this means that we can tack advantage of the sync function of pixi!
