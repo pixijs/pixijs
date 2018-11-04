@@ -67,8 +67,8 @@ export default class GraphicsData
     {
         return new GraphicsData(
             this.shape,
-            this.lineStyle,
             this.fillStyle,
+            this.lineStyle,
             this.matrix
         );
     }

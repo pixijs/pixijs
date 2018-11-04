@@ -1,5 +1,6 @@
 import { BatchGeometry } from '@pixi/core';
-import { Rectangle, SHAPES } from '@pixi/math';
+import { SHAPES } from '@pixi/math';
+import { Bounds } from '@pixi/display';
 
 import GraphicsData from './GraphicsData';
 import buildCircle from './utils/buildCircle';
@@ -7,6 +8,7 @@ import buildLine from './utils/buildLine';
 import buildPoly from './utils/buildPoly';
 import buildRectangle from './utils/buildRectangle';
 import buildRoundedRectangle from './utils/buildRoundedRectangle';
+import { premultiplyTint } from '@pixi/utils';
 
 const BATCH_POOL = [];
 const DRAW_CALL_POOL = [];
@@ -156,10 +158,10 @@ export default class GraphicsGeometry extends BatchGeometry
         /**
          * Cached bounds.
          *
-         * @member {PIXI.Rectangle}
+         * @member {PIXI.Bounds}
          * @private
          */
-        this._bounds = new Rectangle();
+        this._bounds = new Bounds();
 
         /**
          * The bounds dirty flag.
@@ -176,12 +178,18 @@ export default class GraphicsGeometry extends BatchGeometry
          * @default 0
          */
         this.boundsPadding = 0;
+
+        this.batchable = false;
+
+        this.indicesUint16 = null;
+
+        this.uvsFloat32 = null;
     }
 
     /**
      * Get the current bounds of the graphic geometry.
      *
-     * @member {PIXI.Rectangle}
+     * @member {PIXI.Bounds}
      * @readonly
      */
     get bounds()
@@ -214,9 +222,11 @@ export default class GraphicsGeometry extends BatchGeometry
             this.colors.length = 0;
             this.uvs.length = 0;
             this.indices.length = 0;
+            this.textureIds.length = 0;
 
-            for (let i = 0; i < DRAW_CALL_POOL.length; i++)
+            for (let i = 0; i < this.drawCalls.length; i++)
             {
+                this.drawCalls[i].textures.length = 0;
                 DRAW_CALL_POOL.push(this.drawCalls[i]);
             }
 
@@ -495,7 +505,7 @@ export default class GraphicsGeometry extends BatchGeometry
         this.indicesUint16 = new Uint16Array(this.indices);
 
         // TODO make this a const..
-        this.batchable = this.points.length < GraphicsGeometry.BATCHABLE_SIZE * 2;
+        this.batchable = false;// this.points.length < GraphicsGeometry.BATCHABLE_SIZE * 2;
 
         if (this.batchable)
         {
@@ -532,6 +542,7 @@ export default class GraphicsGeometry extends BatchGeometry
 
         for (let i = 0; i < this.drawCalls.length; i++)
         {
+            this.drawCalls[i].textures.length = 0;
             DRAW_CALL_POOL.push(this.drawCalls[i]);
         }
 
@@ -681,7 +692,7 @@ export default class GraphicsGeometry extends BatchGeometry
 
         if (this.graphicsData.length)
         {
-            let shape = 0;
+            let shape = null;
             let x = 0;
             let y = 0;
             let w = 0;
@@ -826,14 +837,13 @@ export default class GraphicsGeometry extends BatchGeometry
     addColors(colors, color, alpha, size)
     {
         // TODO use the premultiply bits Ivan added
-        const tRGB = ((color >> 16) * alpha)
-        + ((color & 0xff00) * alpha)
-        + (((color & 0xff) << 16) * alpha)
-        + (alpha * 255 << 24);
+        const rgb = (color >> 16) + (color & 0xff00) + ((color & 0xff) << 16);
+
+        const rgba =  premultiplyTint(rgb, alpha);
 
         while (size-- > 0)
         {
-            colors.push(tRGB);
+            colors.push(rgba);
         }
     }
 

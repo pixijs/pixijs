@@ -31,7 +31,7 @@ export default class SimplePlane extends Mesh
         super(planeGeometry, meshMaterial);
 
         // wait for the texture to load
-        if (!texture.baseTexture.hasLoaded)
+        if (!texture.baseTexture.valid)
         {
             texture.once('update', this.textureUpdated, this);
         }

@@ -6,7 +6,7 @@ attribute float aTextureId;
 
 uniform mat3 projectionMatrix;
 uniform mat3 translationMatrix;
-uniform vec3 tint;
+uniform vec4 tint;
 
 varying vec2 vTextureCoord;
 varying vec4 vColor;
@@ -17,5 +17,5 @@ void main(void){
 
     vTextureCoord = aTextureCoord;
     vTextureId = aTextureId;
-    vColor = aColor * vec4(tint,1.);
+    vColor = aColor * tint;
 }

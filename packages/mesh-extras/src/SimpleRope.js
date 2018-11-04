@@ -28,11 +28,18 @@ export default class SimpleRope extends Mesh
         const meshMaterial = new MeshMaterial(texture);
 
         super(ropeGeometry, meshMaterial);
+
+        this.autoUpdate = true;
     }
 
     _render(renderer)
     {
-        this.geometry.width = this.shader.texture.height;
+        if (this.autoUpdate
+            || this.geometry.width !== this.shader.texture.height)
+        {
+            this.geometry.width = this.shader.texture.height;
+            this.geometry.update();
+        }
 
         super._render(renderer);
     }
