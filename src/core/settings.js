@@ -37,7 +37,13 @@ export default {
     MIPMAP_TEXTURES: true,
 
     /**
-     * Will set the default value for {@link PIXI.BaseTexture#lodBias}
+     * This bias will be added to the mipmap LOD calculation, as well as the bias provided by
+     * one of the texture sampling functions in GLSL. This LOD calculation is used to select
+     * the mipmap level or pair of mipmap levels to sample from. A positive bias means that
+     * larger mipmaps will be selected even when the texture is viewed from farther away.
+     * This can cause visual aliasing, but in small quantities it can make textures a bit
+     * more sharp.
+     * See {@link https://www.khronos.org/opengl/wiki/Sampler_Object#LOD_bias} for more info
      *
      * @static
      * @memberof PIXI.settings

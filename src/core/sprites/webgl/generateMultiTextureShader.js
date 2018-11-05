@@ -7,7 +7,6 @@ const fragTemplate = [
     'varying vec4 vColor;',
     'varying float vTextureId;',
     'uniform sampler2D uSamplers[%count%];',
-    'uniform float uLODBiases[%count%];',
 
     'void main(void){',
     'vec4 color;',
@@ -36,7 +35,6 @@ export default function generateMultiTextureShader(gl, maxTextures)
 
     shader.bind();
     shader.uniforms.uSamplers = sampleValues;
-    shader.uniforms.uLODBiases = new Float32Array(maxTextures);
 
     return shader;
 }
@@ -61,7 +59,7 @@ function generateSampleSrc(maxTextures)
         }
 
         src += '\n{';
-        src += `\n\tcolor = texture2D(uSamplers[${i}], vTextureCoord, uLODBiases[${i}]);`;
+        src += `\n\tcolor = texture2D(uSamplers[${i}], vTextureCoord, ${settings.MIPMAP_LOD_BIAS});`;
         src += '\n}';
     }
 
