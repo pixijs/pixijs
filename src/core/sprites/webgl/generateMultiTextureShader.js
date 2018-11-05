@@ -1,6 +1,7 @@
 import Shader from '../../Shader';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import settings from '../../settings';
 
 const fragTemplate = [
     'varying vec2 vTextureCoord;',
