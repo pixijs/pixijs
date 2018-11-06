@@ -13,33 +13,14 @@ export default class FillStyle
     }
 
     /**
-     * Convert the object to JSON
-     *
-     * @return {object}
-     */
-    toJSON()
-    {
-        return this.copyTo({});
-    }
-
-    /**
      * Clones the object
      *
      * @return {PIXI.FillStyle}
      */
     clone()
     {
-        return this.copyTo(new FillStyle());
-    }
+        const obj = new FillStyle();
 
-    /**
-     * Changes the values of the given fillStyle to be the same as the ones in this matrix
-     *
-     * @param {object} obj - The style to copy to.
-     * @return {object} The style given in parameter with its values updated.
-     */
-    copyTo(obj)
-    {
         obj.color = this.color;
         obj.alpha = this.alpha;
         obj.texture = this.texture;

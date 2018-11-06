@@ -15,17 +15,8 @@ export default class LineStyle extends FillStyle
      */
     clone()
     {
-        return this.copyTo(new LineStyle());
-    }
+        const obj = new LineStyle();
 
-    /**
-     * Changes the values of the given lineStyle to be the same as the ones in this matrix
-     *
-     * @param {object} obj - The style to copy to.
-     * @return {object} The style given in parameter with its values updated.
-     */
-    copyTo(obj)
-    {
         obj.color = this.color;
         obj.alpha = this.alpha;
         obj.texture = this.texture;
@@ -37,7 +28,6 @@ export default class LineStyle extends FillStyle
 
         return obj;
     }
-
     /**
      * Reset the line style to default.
      */
