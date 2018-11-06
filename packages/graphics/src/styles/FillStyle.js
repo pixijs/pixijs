@@ -19,7 +19,7 @@ export default class FillStyle
      */
     toJSON()
     {
-        return this.copy({});
+        return this.copyTo({});
     }
 
     /**
@@ -29,7 +29,7 @@ export default class FillStyle
      */
     clone()
     {
-        return this.copy(new FillStyle());
+        return this.copyTo(new FillStyle());
     }
 
     /**
@@ -38,7 +38,7 @@ export default class FillStyle
      * @param {object} obj - The style to copy to.
      * @return {object} The style given in parameter with its values updated.
      */
-    copy(obj)
+    copyTo(obj)
     {
         obj.color = this.color;
         obj.alpha = this.alpha;

@@ -15,7 +15,7 @@ export default class LineStyle extends FillStyle
      */
     clone()
     {
-        return this.copy(new LineStyle());
+        return this.copyTo(new LineStyle());
     }
 
     /**
@@ -24,7 +24,7 @@ export default class LineStyle extends FillStyle
      * @param {object} obj - The style to copy to.
      * @return {object} The style given in parameter with its values updated.
      */
-    copy(obj)
+    copyTo(obj)
     {
         obj.color = this.color;
         obj.alpha = this.alpha;
