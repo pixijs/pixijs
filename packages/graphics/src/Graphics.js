@@ -12,7 +12,7 @@ import { hex2rgb } from '@pixi/utils';
 import {
     Texture,
     Shader,
-    UniformGroup, State
+    UniformGroup, State,
 } from '@pixi/core';
 import FillStyle from './styles/FillStyle';
 import GraphicsGeometry from './GraphicsGeometry';
