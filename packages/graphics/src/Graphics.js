@@ -9,10 +9,11 @@ import {
     Matrix,
 } from '@pixi/math';
 import { hex2rgb } from '@pixi/utils';
-import { Mesh } from '@pixi/mesh';
-import { Texture,
+import {
+    Texture,
     Shader,
-    UniformGroup } from '@pixi/core';
+    UniformGroup, State
+} from '@pixi/core';
 import FillStyle from './styles/FillStyle';
 import GraphicsGeometry from './GraphicsGeometry';
 import LineStyle from './styles/LineStyle';
@@ -20,6 +21,8 @@ import BezierUtils from './utils/BezierUtils';
 import QuadraticUtils from './utils/QuadraticUtils';
 import ArcUtils from './utils/ArcUtils';
 import Star from './utils/Star';
+import { BLEND_MODES } from '@pixi/constants';
+import { Container } from '@pixi/display';
 
 const temp = new Float32Array(3);
 
@@ -36,7 +39,7 @@ let defaultShader = null;
  * @extends PIXI.Mesh
  * @memberof PIXI
  */
-export default class Graphics extends Mesh
+export default class Graphics extends Container
 {
     /**
      * @param {PIXI.GraphicsGeometry} [geometry=null] - Geometry to use, if omitted
@@ -44,11 +47,28 @@ export default class Graphics extends Mesh
      */
     constructor(geometry = null)
     {
-        const ownsGeometry = geometry === null;
+        super();
+        /**
+         * Includes vertex positions, face indices, normals, colors, UVs, and
+         * custom attributes within buffers, reducing the cost of passing all
+         * this data to the GPU. Can be shared between multiple Mesh or Graphics objects.
+         * @member {PIXI.Geometry}
+         */
+        this.geometry = geometry || new GraphicsGeometry();
 
-        geometry = geometry || new GraphicsGeometry();
+        /**
+         * Represents the vertex and fragment shaders that processes the geometry and runs on the GPU.
+         * Can be shared between multiple Graphics objects.
+         * @member {PIXI.Shader}
+         */
+        this.shader = null;
 
-        super(geometry, null, null, 4); // DRAW_MODES.TRIANGLE_STRIP
+        /**
+         * Represents the webGL state the Graphics required to render, excludes shader and geometry. E.g.,
+         * blend mode, culling, depth testing, direction of rendering triangles, backface, etc.
+         * @member {PIXI.State}
+         */
+        this.state = State.for2d();
 
         /**
          * If this Graphics object owns the GraphicsGeometry
@@ -56,7 +76,7 @@ export default class Graphics extends Mesh
          * @member {boolean}
          * @private
          */
-        this._ownsGeometry = ownsGeometry;
+        this._ownsGeometry = geometry === null;
 
         /**
          * Current fill style
@@ -139,6 +159,7 @@ export default class Graphics extends Mesh
 
         // Set default
         this.tint = 0xFFFFFF;
+        this.blendMode = BLEND_MODES.NORMAL;
     }
 
     /**
@@ -155,7 +176,25 @@ export default class Graphics extends Mesh
     }
 
     /**
-     * The tint applied to the Rope. This is a hex value. A value of
+     * The blend mode to be applied to the graphic shape. Apply a value of
+     * `PIXI.BLEND_MODES.NORMAL` to reset the blend mode.
+     *
+     * @member {number}
+     * @default PIXI.BLEND_MODES.NORMAL;
+     * @see PIXI.BLEND_MODES
+     */
+    set blendMode(value)
+    {
+        this.state.blendMode = value;
+    }
+
+    get blendMode()
+    {
+        return this.state.blendMode;
+    }
+
+    /**
+     * The tint applied to the graphic shape. This is a hex value. A value of
      * 0xFFFFFF will remove any tint effect.
      *
      * @member {number}
