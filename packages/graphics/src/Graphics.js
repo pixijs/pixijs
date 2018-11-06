@@ -157,6 +157,8 @@ export default class Graphics extends Container
          */
         this.vertexData = null;
 
+        this._transformID = -1;
+
         // Set default
         this.tint = 0xFFFFFF;
         this.blendMode = BLEND_MODES.NORMAL;
