@@ -442,8 +442,6 @@ export default class Graphics extends Container
 
         QuadraticUtils.curveTo(cpX, cpY, toX, toY, points);
 
-        this.dirty++;
-
         return this;
     }
 
@@ -463,8 +461,6 @@ export default class Graphics extends Container
         this._initCurve();
 
         BezierUtils.curveTo(cpX, cpY, cpX2, cpY2, toX, toY, this.currentPath.points);
-
-        this.dirty++;
 
         return this;
     }
@@ -495,8 +491,6 @@ export default class Graphics extends Container
 
             this.arc(cx, cy, radius, startAngle, endAngle, anticlockwise);
         }
-
-        this.dirty++;
 
         return this;
     }
@@ -558,8 +552,6 @@ export default class Graphics extends Container
         }
 
         ArcUtils.arc(startX, startY, cx, cy, radius, startAngle, endAngle, anticlockwise, points);
-
-        this.dirty++;
 
         return this;
     }
