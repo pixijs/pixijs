@@ -158,6 +158,7 @@ export default class Graphics extends Container
         this.vertexData = null;
 
         this._transformID = -1;
+        this.batchDirty = -1;
 
         // Set default
         this.tint = 0xFFFFFF;
@@ -811,7 +812,7 @@ export default class Graphics extends Container
 
         if (geometry.batchable)
         {
-            if (geometry.batchDirty !== this.batchDirty)
+            if (this.batchDirty !== geometry.batchDirty)
             {
                 this.batches = [];
                 this.batchTint = -1;
