@@ -9,22 +9,33 @@ import FillStyle from './FillStyle';
 export default class LineStyle extends FillStyle
 {
     /**
-     * Convert the object to JSON
+     * Clones the object
      *
-     * @return {object}
+     * @return {PIXI.LineStyle}
      */
-    toJSON()
+    clone()
     {
-        return {
-            color: this.color,
-            alpha: this.alpha,
-            texture: this.texture,
-            matrix: this.matrix,
-            visible: this.visible,
-            width: this.width,
-            alignment: this.alignment,
-            native: this.native,
-        };
+        return this.copyTo(new LineStyle());
+    }
+
+    /**
+     * Changes the values of the given lineStyle to be the same as the ones in this matrix
+     *
+     * @param {object} obj - The style to copy to.
+     * @return {object} The style given in parameter with its values updated.
+     */
+    copyTo(obj)
+    {
+        obj.color = this.color;
+        obj.alpha = this.alpha;
+        obj.texture = this.texture;
+        obj.matrix = this.matrix;
+        obj.visible = this.visible;
+        obj.width = this.width;
+        obj.alignment = this.alignment;
+        obj.native = this.native;
+
+        return obj;
     }
 
     /**
