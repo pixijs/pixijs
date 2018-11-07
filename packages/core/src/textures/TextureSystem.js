@@ -280,7 +280,7 @@ export default class TextureSystem extends System
         {
             return;
         }
-        
+
         if (this.webGLVersion !== 2 && !texture.isPowerOfTwo)
         {
             glTexture.mipmap = false;
