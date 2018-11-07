@@ -1,6 +1,7 @@
 import System from '../System';
 import GLTexture from './GLTexture';
 import { removeItems } from '@pixi/utils';
+import { WRAP_MODES } from '@pixi/constants';
 
 /**
  * @class
@@ -48,6 +49,8 @@ export default class TextureSystem extends System
         const gl = this.gl = this.renderer.gl;
 
         this.CONTEXT_UID = this.renderer.CONTEXT_UID;
+
+        this.webGLVersion = this.renderer.context.webGLVersion;
 
         const maxTextures = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
 
@@ -273,10 +276,20 @@ export default class TextureSystem extends System
     {
         const glTexture = texture._glTextures[this.CONTEXT_UID];
 
-        glTexture.mipmap = texture.mipmap && texture.isPowerOfTwo;
         if (!glTexture)
         {
             return;
+        }
+
+        if (this.webGLVersion !== 2 && !texture.isPowerOfTwo)
+        {
+            glTexture.mipmap = false;
+            glTexture.wrapMode = WRAP_MODES.CLAMP;
+        }
+        else
+        {
+            glTexture.mipmap = texture.mipmap;
+            glTexture.wrapMode = texture.wrapMode;
         }
 
         if (texture.resource && texture.resource.style(this.renderer, texture, glTexture))
@@ -307,8 +320,8 @@ export default class TextureSystem extends System
             gl.generateMipmap(texture.target);
         }
 
-        gl.texParameteri(texture.target, gl.TEXTURE_WRAP_S, texture.wrapMode);
-        gl.texParameteri(texture.target, gl.TEXTURE_WRAP_T, texture.wrapMode);
+        gl.texParameteri(texture.target, gl.TEXTURE_WRAP_S, glTexture.wrapMode);
+        gl.texParameteri(texture.target, gl.TEXTURE_WRAP_T, glTexture.wrapMode);
 
         if (glTexture.mipmap)
         {

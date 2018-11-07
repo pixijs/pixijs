@@ -20,14 +20,20 @@ export default class GLTexture
 
         /**
          * Texture style dirty flag
-         * @type {number}
+         * @member {number}
          */
         this.dirtyStyleId = -1;
 
         /**
          * Whether mip levels has to be generated
-         * @type {boolean}
+         * @member {boolean}
          */
         this.mipmap = false;
+
+        /**
+         * WrapMode copied from baseTexture
+         * @member {number}
+         */
+        this.wrapMode = 33071;
     }
 }
