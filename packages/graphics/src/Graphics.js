@@ -732,8 +732,8 @@ export default class Graphics extends Container
         {
             this.geometry.drawShape(
                 shape,
-                this._fillStyle.toJSON(),
-                this._lineStyle.toJSON(),
+                this._fillStyle.clone(),
+                this._lineStyle.clone(),
                 this._matrix
             );
         }

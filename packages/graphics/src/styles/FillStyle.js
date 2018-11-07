@@ -13,19 +13,21 @@ export default class FillStyle
     }
 
     /**
-     * Convert the object to JSON
+     * Clones the object
      *
-     * @return {object}
+     * @return {PIXI.FillStyle}
      */
-    toJSON()
+    clone()
     {
-        return {
-            color: this.color,
-            alpha: this.alpha,
-            texture: this.texture,
-            matrix: this.matrix,
-            visible: this.visible,
-        };
+        const obj = new FillStyle();
+
+        obj.color = this.color;
+        obj.alpha = this.alpha;
+        obj.texture = this.texture;
+        obj.matrix = this.matrix;
+        obj.visible = this.visible;
+
+        return obj;
     }
 
     /**
