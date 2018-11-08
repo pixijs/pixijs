@@ -1,7 +1,6 @@
 import Shader from '../../Shader';
 import { readFileSync } from 'fs';
 import { join } from 'path';
-import settings from '../../settings';
 
 const fragTemplate = [
     'varying vec2 vTextureCoord;',
@@ -60,7 +59,7 @@ function generateSampleSrc(maxTextures)
         }
 
         src += '\n{';
-        src += `\n\tcolor = texture2D(uSamplers[${i}], vTextureCoord, ${settings.MIPMAP_LOD_BIAS});`;
+        src += `\n\tcolor = texture2D(uSamplers[${i}], vTextureCoord);`;
         src += '\n}';
     }
 
