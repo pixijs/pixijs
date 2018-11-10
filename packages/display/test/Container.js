@@ -432,7 +432,7 @@ describe('PIXI.Container', function ()
 
     describe('updateTransform', function ()
     {
-        it('should call sortChildren if sortDirty and zIndexAutoSort are true', function ()
+        it('should call sortChildren if sortDirty and sortableChildren are true', function ()
         {
             const parent = new Container();
             const container = new Container();
@@ -443,7 +443,7 @@ describe('PIXI.Container', function ()
             container.addChild(child);
 
             container.sortDirty = true;
-            container.zIndexAutoSort = true;
+            container.sortableChildren = true;
 
             container.updateTransform();
 
@@ -461,14 +461,14 @@ describe('PIXI.Container', function ()
             container.addChild(child);
 
             container.sortDirty = false;
-            container.zIndexAutoSort = true;
+            container.sortableChildren = true;
 
             container.updateTransform();
 
             expect(canvasSpy).to.not.have.been.called;
         });
 
-        it('should not call sortChildren if zIndexAutoSort is false', function ()
+        it('should not call sortChildren if sortableChildren is false', function ()
         {
             const parent = new Container();
             const container = new Container();
@@ -479,7 +479,7 @@ describe('PIXI.Container', function ()
             container.addChild(child);
 
             container.sortDirty = true;
-            container.zIndexAutoSort = false;
+            container.sortableChildren = false;
 
             container.updateTransform();
 

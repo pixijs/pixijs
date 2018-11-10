@@ -591,7 +591,9 @@ export default class DisplayObject extends EventEmitter
 
     /**
      * The zIndex of the displayObject.
-     * A higher value will mean it will be rendered on top of other displayObjects within the same container.
+     * If a container has the sortableChildren property set to true, children will be automatically
+     * sorted by zIndex value; a higher value will mean it will be moved towards the end of the array,
+     * and thus rendered on top of other displayObjects within the same container.
      *
      * @member {number}
      */

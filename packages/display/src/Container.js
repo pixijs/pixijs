@@ -43,16 +43,25 @@ export default class Container extends DisplayObject
         this.children = [];
 
         /**
-         * If enabled, containers will automatically sort their children by zIndex value
+         * If set to true, the container will sort its children by zIndex value
+         * when updateTransform() is called, or manually if sortChildren() is called.
+         *
+         * This actually changes the order of elements in the array, so should be treated
+         * as a basic solution that is not performant compared to other solutions,
+         * such as @link https://github.com/pixijs/pixi-display
+         *
+         * Also be aware of that this may not work nicely with the addChildAt() function,
+         * as the zIndex sorting may cause the child to automatically sorted to another position.
+         *
+         * @see PIXI.settings.SORTABLE_CHILDREN
          *
          * @member {boolean}
-         * @private
          */
-        this.zIndexAutoSort = settings.ZINDEX_AUTO_SORT;
+        this.sortableChildren = settings.SORTABLE_CHILDREN;
 
         /**
-         * Should children be sorted by zIndex before the next render occurs.
-         * Will get automatically set to true if a new child is added, or if a child's zIndex changes
+         * Should children be sorted by zIndex at the next updateTransform call.
+         * Will get automatically set to true if a new child is added, or if a child's zIndex changes.
          *
          * @member {boolean}
          */
@@ -345,7 +354,7 @@ export default class Container extends DisplayObject
     }
 
     /**
-     * Sorts children by zIndex
+     * Sorts children by zIndex. Previous order is mantained for 2 children with the same zIndex.
      */
     sortChildren()
     {
@@ -376,7 +385,7 @@ export default class Container extends DisplayObject
      */
     updateTransform()
     {
-        if (this.sortDirty && this.zIndexAutoSort)
+        if (this.sortableChildren && this.sortDirty)
         {
             this.sortChildren();
         }
