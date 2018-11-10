@@ -80,8 +80,7 @@ describe('PIXI.SpritesheetLoader', function ()
         expect(res.textures['0.png'].frame.y).to.equal(28);
         expect(res.textures['0.png'].defaultAnchor.x).to.equal(0.3);
         expect(res.textures['0.png'].defaultAnchor.y).to.equal(0.4);
-        expect(res.textures['1.png'].defaultAnchor.x).to.equal(0.0); // default of defaultAnchor is 0,0
-        expect(res.textures['1.png'].defaultAnchor.y).to.equal(0.0);
+        expect(res.textures['1.png'].defaultAnchor).to.equal(null);
 
         expect(res).to.have.property('spritesheet')
             .to.have.property('animations')

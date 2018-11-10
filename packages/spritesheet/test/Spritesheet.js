@@ -20,8 +20,7 @@ describe('PIXI.Spritesheet', function ()
                 expect(textures[id]).to.be.an.instanceof(Texture);
                 expect(textures[id].width).to.equal(width / spritesheet.resolution);
                 expect(textures[id].height).to.equal(height / spritesheet.resolution);
-                expect(textures[id].defaultAnchor.x).to.equal(0);
-                expect(textures[id].defaultAnchor.y).to.equal(0);
+                expect(textures[id].defaultAnchor).to.equal(null);
                 expect(textures[id].textureCacheIds.indexOf(id)).to.equal(0);
 
                 expect(this.animations).to.have.property('star').that.is.an('array');
