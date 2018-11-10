@@ -36,7 +36,7 @@ let defaultShader = null;
  * rectangles to the display, and to color and fill them.
  *
  * @class
- * @extends PIXI.Mesh
+ * @extends PIXI.Container
  * @memberof PIXI
  */
 export default class Graphics extends Container
