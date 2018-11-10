@@ -9,24 +9,25 @@ import FillStyle from './FillStyle';
 export default class LineStyle extends FillStyle
 {
     /**
-     * Convert the object to JSON
+     * Clones the object
      *
-     * @return {object}
+     * @return {PIXI.LineStyle}
      */
-    toJSON()
+    clone()
     {
-        return {
-            color: this.color,
-            alpha: this.alpha,
-            texture: this.texture,
-            matrix: this.matrix,
-            visible: this.visible,
-            width: this.width,
-            alignment: this.alignment,
-            native: this.native,
-        };
-    }
+        const obj = new LineStyle();
 
+        obj.color = this.color;
+        obj.alpha = this.alpha;
+        obj.texture = this.texture;
+        obj.matrix = this.matrix;
+        obj.visible = this.visible;
+        obj.width = this.width;
+        obj.alignment = this.alignment;
+        obj.native = this.native;
+
+        return obj;
+    }
     /**
      * Reset the line style to default.
      */

@@ -129,7 +129,7 @@ export default class Mesh extends Container
     }
 
     /**
-     * The blend mode to be applied to the graphic shape. Apply a value of
+     * The blend mode to be applied to the Mesh. Apply a value of
      * `PIXI.BLEND_MODES.NORMAL` to reset the blend mode.
      *
      * @member {number}
