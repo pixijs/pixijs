@@ -17,11 +17,23 @@ export default class CubeResource extends ArrayResource
 {
     constructor(source, options)
     {
+        options = options || {};
+
         super(source, options);
 
         if (this.length !== CubeResource.SIDES)
         {
             throw new Error(`Invalid length. Got ${this.length}, expected 6`);
+        }
+
+        for (let i = 0; i < CubeResource.SIDES; i++)
+        {
+            this.items[i].target = TARGETS.TEXTURE_CUBE_MAP_POSITIVE_X + i;
+        }
+
+        if (options.autoLoad !== false)
+        {
+            this.load();
         }
     }
 
