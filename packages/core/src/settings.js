@@ -9,7 +9,6 @@ import { ENV } from '@pixi/constants';
  * baseline, prefer a lower environment.
  *
  * @static
- * @constant
  * @name PREFER_ENV
  * @memberof PIXI.settings
  * @type {number}
