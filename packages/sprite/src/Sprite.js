@@ -45,7 +45,7 @@ export default class Sprite extends Container
         /**
          * The anchor sets the origin point of the texture.
          * The default is either taken from the {@link PIXI.Texture#defaultAnchor|Texture}
-         * passed to the constructor, or from {@link PIXI.settings.DEFAULT_SPRITE_ANCHOR},
+         * passed to the constructor, or from {@link PIXI.settings.SPRITE_DEFAULT_ANCHOR},
          * which has a default of 0,0.
          *
          * Setting the anchor to `(0,0)`, means the texture's origin is the top left corner.
@@ -57,7 +57,7 @@ export default class Sprite extends Container
          * Note: Updating the {@link PIXI.Texture#defaultAnchor} after a Texture is
          * created does _not_ update the Sprite's anchor values.
          *
-         * Note: Updating {@link PIXI.settings.DEFAULT_SPRITE_ANCHOR} after a Sprite is already
+         * Note: Updating {@link PIXI.settings.SPRITE_DEFAULT_ANCHOR} after a Sprite is already
          * created also does _not_ update the Sprite's anchor values.
          *
          * @member {PIXI.ObservablePoint}
@@ -66,8 +66,8 @@ export default class Sprite extends Container
         this._anchor = new ObservablePoint(
             this._onAnchorUpdate,
             this,
-            (texture && texture.defaultAnchor ? texture.defaultAnchor.x : settings.DEFAULT_SPRITE_ANCHOR.x || 0),
-            (texture && texture.defaultAnchor ? texture.defaultAnchor.y : settings.DEFAULT_SPRITE_ANCHOR.y || 0)
+            (texture && texture.defaultAnchor ? texture.defaultAnchor.x : settings.SPRITE_DEFAULT_ANCHOR.x || 0),
+            (texture && texture.defaultAnchor ? texture.defaultAnchor.y : settings.SPRITE_DEFAULT_ANCHOR.y || 0)
         );
 
         /**
@@ -531,7 +531,7 @@ export default class Sprite extends Container
     /**
      * The anchor sets the origin point of the texture.
      * The default is either taken from the {@link PIXI.Texture#defaultAnchor|Texture}
-     * passed to the constructor, or from {@link PIXI.settings.DEFAULT_SPRITE_ANCHOR},
+     * passed to the constructor, or from {@link PIXI.settings.SPRITE_DEFAULT_ANCHOR},
      * which has a default of 0,0.
      *
      * Setting the anchor to `(0,0)`, means the texture's origin is the top left corner.
@@ -543,7 +543,7 @@ export default class Sprite extends Container
      * Note: Updating the {@link PIXI.Texture#defaultAnchor} after a Texture is
      * created does _not_ update the Sprite's anchor values.
      *
-     * Note: Updating {@link PIXI.settings.DEFAULT_SPRITE_ANCHOR} after a Sprite is already
+     * Note: Updating {@link PIXI.settings.SPRITE_DEFAULT_ANCHOR} after a Sprite is already
      * created also does _not_ update the Sprite's anchor values.
      *
      * If you pass only single parameter, it will set both x and y to the same value as shown in the example below.
