@@ -75,6 +75,25 @@ export default class DisplayObject extends EventEmitter
         this.worldAlpha = 1;
 
         /**
+         * Which index in the children array the display component was before the previous zIndex sort.
+         * Used by containers to help sort objects with the same zIndex, by using previous array index as the decider.
+         *
+         * @member {number}
+         * @private
+         * @readOnly
+         */
+        this._lastSortedIndex = 0;
+
+        /**
+         * The zIndex of the displayObject.
+         * A higher value will mean it will be rendered on top of other displayObjects within the same container.
+         *
+         * @member {number}
+         * @private
+         */
+        this._zIndex = 0;
+
+        /**
          * The area the filter is applied to. This is used as more of an optimization
          * rather than figuring out the dimensions of the displayObject each frame you can set this rectangle.
          *
@@ -568,6 +587,28 @@ export default class DisplayObject extends EventEmitter
     set angle(value) // eslint-disable-line require-jsdoc
     {
         this.transform.rotation = value * DEG_TO_RAD;
+    }
+
+    /**
+     * The zIndex of the displayObject.
+     * If a container has the sortableChildren property set to true, children will be automatically
+     * sorted by zIndex value; a higher value will mean it will be moved towards the end of the array,
+     * and thus rendered on top of other displayObjects within the same container.
+     *
+     * @member {number}
+     */
+    get zIndex()
+    {
+        return this._zIndex;
+    }
+
+    set zIndex(value) // eslint-disable-line require-jsdoc
+    {
+        this._zIndex = value;
+        if (this.parent)
+        {
+            this.parent.sortDirty = true;
+        }
     }
 
     /**

@@ -1,5 +1,16 @@
+import { settings } from '@pixi/settings';
 import removeItems from 'remove-array-items';
 import DisplayObject from './DisplayObject';
+
+function sortChildren(a, b)
+{
+    if (a.zIndex === b.zIndex)
+    {
+        return a._lastSortedIndex - b._lastSortedIndex;
+    }
+
+    return a.zIndex - b.zIndex;
+}
 
 /**
  * A Container represents a collection of display objects.
@@ -30,6 +41,31 @@ export default class Container extends DisplayObject
          * @readonly
          */
         this.children = [];
+
+        /**
+         * If set to true, the container will sort its children by zIndex value
+         * when updateTransform() is called, or manually if sortChildren() is called.
+         *
+         * This actually changes the order of elements in the array, so should be treated
+         * as a basic solution that is not performant compared to other solutions,
+         * such as @link https://github.com/pixijs/pixi-display
+         *
+         * Also be aware of that this may not work nicely with the addChildAt() function,
+         * as the zIndex sorting may cause the child to automatically sorted to another position.
+         *
+         * @see PIXI.settings.SORTABLE_CHILDREN
+         *
+         * @member {boolean}
+         */
+        this.sortableChildren = settings.SORTABLE_CHILDREN;
+
+        /**
+         * Should children be sorted by zIndex at the next updateTransform call.
+         * Will get automatically set to true if a new child is added, or if a child's zIndex changes.
+         *
+         * @member {boolean}
+         */
+        this.sortDirty = false;
     }
 
     /**
@@ -73,6 +109,8 @@ export default class Container extends DisplayObject
             }
 
             child.parent = this;
+            this.sortDirty = true;
+
             // ensure child transform will be recalculated
             child.transform._parentID = -1;
 
@@ -109,6 +147,8 @@ export default class Container extends DisplayObject
         }
 
         child.parent = this;
+        this.sortDirty = true;
+
         // ensure child transform will be recalculated
         child.transform._parentID = -1;
 
@@ -314,10 +354,42 @@ export default class Container extends DisplayObject
     }
 
     /**
+     * Sorts children by zIndex. Previous order is mantained for 2 children with the same zIndex.
+     */
+    sortChildren()
+    {
+        let sortRequired = false;
+
+        for (let i = 0, j = this.children.length; i < j; ++i)
+        {
+            const child = this.children[i];
+
+            child._lastSortedIndex = i;
+
+            if (!sortRequired && child.zIndex !== 0)
+            {
+                sortRequired = true;
+            }
+        }
+
+        if (sortRequired && this.children.length > 1)
+        {
+            this.children.sort(sortChildren);
+        }
+
+        this.sortDirty = false;
+    }
+
+    /**
      * Updates the transform on all children of this container for rendering
      */
     updateTransform()
     {
+        if (this.sortableChildren && this.sortDirty)
+        {
+            this.sortChildren();
+        }
+
         this._boundsID++;
 
         this.transform.updateTransform(this.parent.transform);
@@ -507,6 +579,8 @@ export default class Container extends DisplayObject
     destroy(options)
     {
         super.destroy();
+
+        this.sortDirty = false;
 
         const destroyChildren = typeof options === 'boolean' ? options : options && options.children;
 
