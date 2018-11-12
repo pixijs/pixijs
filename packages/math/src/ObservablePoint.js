@@ -69,6 +69,16 @@ export default class ObservablePoint
     }
 
     /**
+     * to trace the difference between current and cache points
+     *
+     * @return {PIXI.Point} - get valur between cache and current values
+     */
+    fromCache()
+    {
+        return new PIXI.Point(this._x-this._xx, this._y-this._yy);
+    }
+
+    /**
      * Copies x and y from the given point
      *
      * @param {PIXI.Point} p - The point to copy from.
