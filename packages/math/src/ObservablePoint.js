@@ -79,6 +79,20 @@ export default class ObservablePoint
     }
 
     /**
+     * retore to default cache values
+     *
+     */
+    restore()
+    {
+        if (this._x !== this._xx || this._y !== this._yy)
+        {
+            this._x = this._xx;
+            this._y = this._yy;
+            this.cb.call(this.scope);
+        }
+    }
+
+    /**
      * Copies x and y from the given point
      *
      * @param {PIXI.Point} p - The point to copy from.
