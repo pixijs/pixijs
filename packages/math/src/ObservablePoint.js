@@ -18,6 +18,8 @@ export default class ObservablePoint
     {
         this._x = x;
         this._y = y;
+        this._xx = x;
+        this._yy = y;
 
         this.cb = cb;
         this.scope = scope;
@@ -45,10 +47,11 @@ export default class ObservablePoint
      * Sets the point to a new x and y position.
      * If y is omitted, both x and y will be set to x.
      *
-     * @param {number} [x=0] - position of the point on the x axis
-     * @param {number} [y=0] - position of the point on the y axis
+     * @param {number}  [x=0] - position of the point on the x axis
+     * @param {number}  [y=0] - position of the point on the y axis
+     * @param {boolean} [cache=false] - store origin value to find it in a moment
      */
-    set(x, y)
+    set(x, y, cache)
     {
         const _x = x || 0;
         const _y = y || ((y !== 0) ? _x : 0);
@@ -57,6 +60,10 @@ export default class ObservablePoint
         {
             this._x = _x;
             this._y = _y;
+            if(cache){
+                this._xx = _x;
+                this._yy = _y;
+            };
             this.cb.call(this.scope);
         }
     }
