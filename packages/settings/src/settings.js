@@ -21,6 +21,7 @@ export default {
      * Mipmapping will only succeed if the base texture uploaded has power of two dimensions.
      *
      * @static
+     * @name MIPMAP_TEXTURES
      * @memberof PIXI.settings
      * @type {boolean}
      * @default true
@@ -31,6 +32,7 @@ export default {
      * Default resolution / device pixel ratio of the renderer.
      *
      * @static
+     * @name RESOLTION
      * @memberof PIXI.settings
      * @type {number}
      * @default 1
@@ -41,6 +43,7 @@ export default {
      * Default filter resolution.
      *
      * @static
+     * @name FILTER_RESOLUTION
      * @memberof PIXI.settings
      * @type {number}
      * @default 1
@@ -51,6 +54,7 @@ export default {
      * The maximum textures that this device supports.
      *
      * @static
+     * @name SPRITE_MAX_TEXTURES
      * @memberof PIXI.settings
      * @type {number}
      * @default 32
@@ -66,6 +70,7 @@ export default {
      * The default aims to balance desktop and mobile devices.
      *
      * @static
+     * @name SPRITE_BATCH_SIZE
      * @memberof PIXI.settings
      * @type {number}
      * @default 4096
@@ -77,7 +82,7 @@ export default {
      * or {@link PIXI.CanvasRenderer}.
      *
      * @static
-     * @constant
+     * @name RENDER_OPTIONS
      * @memberof PIXI.settings
      * @type {object}
      * @property {HTMLCanvasElement} view=null
@@ -113,6 +118,7 @@ export default {
      * Default Garbage Collection mode.
      *
      * @static
+     * @name GC_MODE
      * @memberof PIXI.settings
      * @type {PIXI.GC_MODES}
      * @default PIXI.GC_MODES.AUTO
@@ -123,6 +129,7 @@ export default {
      * Default Garbage Collection max idle.
      *
      * @static
+     * @name GC_MAX_IDLE
      * @memberof PIXI.settings
      * @type {number}
      * @default 3600
@@ -133,6 +140,7 @@ export default {
      * Default Garbage Collection maximum check count.
      *
      * @static
+     * @name GC_MAX_CHECK_COUNT
      * @memberof PIXI.settings
      * @type {number}
      * @default 600
@@ -143,6 +151,7 @@ export default {
      * Default wrap modes that are supported by pixi.
      *
      * @static
+     * @name WRAP_MODE
      * @memberof PIXI.settings
      * @type {PIXI.WRAP_MODES}
      * @default PIXI.WRAP_MODES.CLAMP
@@ -153,6 +162,7 @@ export default {
      * Default scale mode for textures.
      *
      * @static
+     * @name SCALE_MODE
      * @memberof PIXI.settings
      * @type {PIXI.SCALE_MODES}
      * @default PIXI.SCALE_MODES.LINEAR
@@ -163,6 +173,7 @@ export default {
      * Default specify float precision in vertex shader.
      *
      * @static
+     * @name PRECISION_VERTEX
      * @memberof PIXI.settings
      * @type {PIXI.PRECISION}
      * @default PIXI.PRECISION.HIGH
@@ -173,6 +184,7 @@ export default {
      * Default specify float precision in fragment shader.
      *
      * @static
+     * @name PRECISION_FRAGMENT
      * @memberof PIXI.settings
      * @type {PIXI.PRECISION}
      * @default PIXI.PRECISION.MEDIUM
@@ -183,7 +195,7 @@ export default {
      * Can we upload the same buffer in a single frame?
      *
      * @static
-     * @constant
+     * @name CAN_UPLOAD_SAME_BUFFER
      * @memberof PIXI.settings
      * @type {boolean}
      */
@@ -193,7 +205,7 @@ export default {
      * Enables bitmap creation before image load
      *
      * @static
-     * @constant
+     * @name CREATE_IMAGE_BITMAP
      * @memberof PIXI.settings
      * @type {boolean}
      * @default true
