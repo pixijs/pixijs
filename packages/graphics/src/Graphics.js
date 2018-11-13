@@ -918,7 +918,7 @@ export default class Graphics extends Container
 
             // and then lets set the tint..
             uniforms.tint[0] = (((tint >> 16) & 0xFF) / 255) * wa;
-            uniforms.tint[1] =  (((tint >> 8) & 0xFF) / 255) * wa;
+            uniforms.tint[1] = (((tint >> 8) & 0xFF) / 255) * wa;
             uniforms.tint[2] = ((tint & 0xFF) / 255) * wa;
             uniforms.tint[3] = wa;
 
