@@ -908,7 +908,19 @@ export default class Graphics extends Container
                 this.shader = defaultShader;
             }
 
-            this.shader.uniforms.translationMatrix = this.transform.worldTransform;
+            const uniforms = this.shader.uniforms;
+
+            // lets set the transfomr
+            uniforms.translationMatrix = this.transform.worldTransform;
+
+            const tint = this.tint;
+            const wa = this.worldAlpha;
+
+            // and then lets set the tint..
+            uniforms.tint[0] = (((tint >> 16) & 0xFF) / 255) * wa;
+            uniforms.tint[1] = (((tint >> 8) & 0xFF) / 255) * wa;
+            uniforms.tint[2] = ((tint & 0xFF) / 255) * wa;
+            uniforms.tint[3] = wa;
 
             // the first draw call, we can set the uniforms of the shader directly here.
 
