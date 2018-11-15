@@ -115,15 +115,12 @@ export default class Mesh extends Container
         this.blendMode = BLEND_MODES.NORMAL;
 
         /**
-         * If true PixiJS will Math.floor() x/y values when rendering, stopping pixel interpolation.
-         * Advantages can include sharper image quality (like text) and faster rendering on canvas.
-         * The main disadvantage is movement of objects may appear less smooth.
-         * To set the global default, change {@link PIXI.settings.ROUND_PIXELS}
+         * Internal roundPixels field
          *
          * @member {boolean}
-         * @default false
+         * @private
          */
-        this.roundPixels = settings.ROUND_PIXELS;
+        this._roundPixels = settings.ROUND_PIXELS;
     }
 
     /**
@@ -156,6 +153,29 @@ export default class Mesh extends Container
     get blendMode()
     {
         return this.state.blendMode;
+    }
+
+    /**
+     * If true PixiJS will Math.floor() x/y values when rendering, stopping pixel interpolation.
+     * Advantages can include sharper image quality (like text) and faster rendering on canvas.
+     * The main disadvantage is movement of objects may appear less smooth.
+     * To set the global default, change {@link PIXI.settings.ROUND_PIXELS}
+     *
+     * @member {boolean}
+     * @default false
+     */
+    set roundPixels(value)
+    {
+        if (this._roundPixels !== value)
+        {
+            this._transformID = -1;
+        }
+        this._roundPixels = value;
+    }
+
+    get roundPixels()
+    {
+        return this._roundPixels;
     }
 
     /**
@@ -289,6 +309,14 @@ export default class Mesh extends Container
 
                 vertexData[(i * 2)] = (a * x) + (c * y) + tx;
                 vertexData[(i * 2) + 1] = (b * x) + (d * y) + ty;
+            }
+
+            if (this._roundPixels)
+            {
+                for (let i = 0; i < vertexData.length; i++)
+                {
+                    vertexData[i] = Math.round(vertexData[i]);
+                }
             }
 
             this.vertexDirty = geometry.vertexDirtyId;
