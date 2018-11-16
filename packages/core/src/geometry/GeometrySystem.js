@@ -342,6 +342,10 @@ export default class GeometrySystem extends System
             }
         }
 
+        const vao = gl.createVertexArray();
+
+        gl.bindVertexArray(vao);
+
         // first update - and create the buffers!
         // only create a gl buffer if it actually gets
         for (let i = 0; i < buffers.length; i++)
@@ -356,16 +360,15 @@ export default class GeometrySystem extends System
 
         // TODO - maybe make this a data object?
         // lets wait to see if we need to first!
-        const vao = gl.createVertexArray();
-
-        gl.bindVertexArray(vao);
 
         this.activateVao(geometry, program);
 
-        gl.bindVertexArray(null);
+        gl.bindVertexArray(this._activeVao);
 
         // add it to the cache!
         geometry.glVertexArrayObjects[this.CONTEXT_UID][program.id] = vao;
+
+        this.cache[signature] = vao;
 
         return vao;
     }
