@@ -137,6 +137,7 @@ export default class RenderTarget
          * Whether this object is the root element or not
          *
          * @member {boolean}
+         * @default false
          */
         this.root = root || false;
 
