@@ -138,7 +138,7 @@ export default class RenderTarget
          *
          * @member {boolean}
          */
-        this.root = root;
+        this.root = root || false;
 
         if (!this.root)
         {
