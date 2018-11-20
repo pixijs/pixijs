@@ -730,6 +730,10 @@ export default class BaseTexture extends EventEmitter
             baseTexture = new BaseTexture(canvas, scaleMode);
             BaseTexture.addToCache(baseTexture, canvas._pixiId);
         }
+        else if (canvas.width !== baseTexture.source.width || canvas.height !== baseTexture.source.height)
+        {
+            baseTexture.update();
+        }
 
         return baseTexture;
     }
