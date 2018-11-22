@@ -36,7 +36,11 @@ export default class Filter
 
         this._blendMode = BLEND_MODES.NORMAL;
 
-        this.uniformData = uniformData || extractUniformsFromSrc(this.vertexSrc, this.fragmentSrc, 'projectionMatrix|uSampler');
+        this.uniformData = uniformData || extractUniformsFromSrc(
+            this.vertexSrc,
+            this.fragmentSrc,
+            'projectionMatrix|uSampler'
+        );
 
         /**
          * An object containing the current values of custom uniforms.
