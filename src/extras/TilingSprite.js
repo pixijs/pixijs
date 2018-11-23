@@ -179,18 +179,21 @@ export default class TilingSprite extends core.Sprite
         const context = renderer.context;
         const transform = this.worldTransform;
         const resolution = renderer.resolution;
+        const isTextureRotated = texture.rotate === 2;
         const baseTexture = texture.baseTexture;
         const baseTextureResolution = baseTexture.resolution;
-        const modX = ((this.tilePosition.x / this.tileScale.x) % texture._frame.width) * baseTextureResolution;
-        const modY = ((this.tilePosition.y / this.tileScale.y) % texture._frame.height) * baseTextureResolution;
+        const frameWidth = isTextureRotated ? texture._frame.height : texture._frame.width;
+        const frameHeight = isTextureRotated ? texture._frame.width : texture._frame.height;
+        const modX = ((this.tilePosition.x / this.tileScale.x) % frameWidth) * baseTextureResolution;
+        const modY = ((this.tilePosition.y / this.tileScale.y) % frameHeight) * baseTextureResolution;
 
         // create a nice shiny pattern!
         if (this._textureID !== this._texture._updateID || this.cachedTint !== this.tint)
         {
             this._textureID = this._texture._updateID;
             // cut an object from a spritesheet..
-            const tempCanvas = new core.CanvasRenderTarget(texture._frame.width,
-                                                        texture._frame.height,
+            const tempCanvas = new core.CanvasRenderTarget(frameWidth,
+                                                        frameHeight,
                                                         baseTextureResolution);
 
             // Tint the tiling sprite
@@ -198,6 +201,14 @@ export default class TilingSprite extends core.Sprite
             {
                 this.tintedTexture = CanvasTinter.getTintedTexture(this, this.tint);
                 tempCanvas.context.drawImage(this.tintedTexture, 0, 0);
+            }
+            else if (isTextureRotated)
+            {
+                // Apply rotation and transform
+                tempCanvas.context.rotate(-Math.PI / 2);
+                tempCanvas.context.drawImage(baseTexture.source,
+                    -(frameHeight + texture._frame.x) * baseTextureResolution,
+                    -texture._frame.y * baseTextureResolution);
             }
             else
             {
