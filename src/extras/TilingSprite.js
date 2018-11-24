@@ -236,8 +236,8 @@ export default class TilingSprite extends core.Sprite
         // TODO - this should be rolled into the setTransform above..
         context.scale(this.tileScale.x / baseTextureResolution, this.tileScale.y / baseTextureResolution);
 
-        const anchorX = this.anchor.x * -this._width;
-        const anchorY = this.anchor.y * -this._height;
+        const anchorX = this.anchor.x * -this._width * baseTextureResolution;
+        const anchorY = this.anchor.y * -this._height * baseTextureResolution;
 
         if (this.uvRespectAnchor)
         {
