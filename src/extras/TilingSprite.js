@@ -182,18 +182,16 @@ export default class TilingSprite extends core.Sprite
         const isTextureRotated = texture.rotate === 2;
         const baseTexture = texture.baseTexture;
         const baseTextureResolution = baseTexture.resolution;
-        const frameWidth = isTextureRotated ? texture._frame.height : texture._frame.width;
-        const frameHeight = isTextureRotated ? texture._frame.width : texture._frame.height;
-        const modX = ((this.tilePosition.x / this.tileScale.x) % frameWidth) * baseTextureResolution;
-        const modY = ((this.tilePosition.y / this.tileScale.y) % frameHeight) * baseTextureResolution;
+        const modX = ((this.tilePosition.x / this.tileScale.x) % texture.orig.width) * baseTextureResolution;
+        const modY = ((this.tilePosition.y / this.tileScale.y) % texture.orig.height) * baseTextureResolution;
 
         // create a nice shiny pattern!
         if (this._textureID !== this._texture._updateID || this.cachedTint !== this.tint)
         {
             this._textureID = this._texture._updateID;
             // cut an object from a spritesheet..
-            const tempCanvas = new core.CanvasRenderTarget(frameWidth,
-                                                        frameHeight,
+            const tempCanvas = new core.CanvasRenderTarget(texture.orig.width,
+                                                        texture.orig.height,
                                                         baseTextureResolution);
 
             // Tint the tiling sprite
@@ -202,19 +200,38 @@ export default class TilingSprite extends core.Sprite
                 this.tintedTexture = CanvasTinter.getTintedTexture(this, this.tint);
                 tempCanvas.context.drawImage(this.tintedTexture, 0, 0);
             }
-            else if (isTextureRotated)
-            {
-                // Apply rotation and transform
-                tempCanvas.context.rotate(-Math.PI / 2);
-                tempCanvas.context.drawImage(baseTexture.source,
-                    -(frameHeight + texture._frame.x) * baseTextureResolution,
-                    -texture._frame.y * baseTextureResolution);
-            }
             else
             {
-                tempCanvas.context.drawImage(baseTexture.source,
-                    -texture._frame.x * baseTextureResolution, -texture._frame.y * baseTextureResolution);
+                const sx = texture._frame.x * baseTextureResolution;
+                const sy = texture._frame.y * baseTextureResolution;
+                const sWidth = texture._frame.width * baseTextureResolution;
+                const sHeight = texture._frame.height * baseTextureResolution;
+                const dWidth = (texture.trim ? texture.trim.width : texture.orig.width) * baseTextureResolution;
+                const dHeight = (texture.trim ? texture.trim.height : texture.orig.height) * baseTextureResolution;
+                const dx = (texture.trim ? texture.trim.x : 0) * baseTextureResolution;
+                const dy = (texture.trim ? texture.trim.y : 0) * baseTextureResolution;
+
+                if (isTextureRotated)
+                {
+                    // Apply rotation and transform
+                    tempCanvas.context.rotate(-Math.PI / 2);
+                    tempCanvas.context.translate(-dHeight, 0);
+                    tempCanvas.context.drawImage(baseTexture.source,
+                                                sx, sy,
+                                                sWidth, sHeight,
+                                                -dy, dx,
+                                                dHeight, dWidth);
+                }
+                else
+                    {
+                    tempCanvas.context.drawImage(baseTexture.source,
+                                                sx, sy,
+                                                sWidth, sHeight,
+                                                dx, dy,
+                                                dWidth, dHeight);
+                }
             }
+
             this.cachedTint = this.tint;
             this._canvasPattern = tempCanvas.context.createPattern(tempCanvas.canvas, 'repeat');
         }
