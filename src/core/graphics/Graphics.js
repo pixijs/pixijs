@@ -1116,13 +1116,13 @@ export default class Graphics extends Container
 
                 let lineOffset = 0;
 
-                if (lineAlignment === 1)
-                {
-                    lineOffset = lineWidth;
-                }
-                else if (lineAlignment === 0.5)
+                if (lineAlignment === 0.5)
                 {
                     lineOffset = lineWidth / 2;
+                }
+                else if (lineAlignment === 1)
+                {
+                    lineOffset = lineWidth;
                 }
 
                 shape = data.shape;
