@@ -1114,16 +1114,7 @@ export default class Graphics extends Container
                 const lineWidth = data.lineWidth;
                 const lineAlignment = data.lineAlignment;
 
-                let lineOffset = 0;
-
-                if (lineAlignment === 0.5)
-                {
-                    lineOffset = lineWidth / 2;
-                }
-                else if (lineAlignment === 1)
-                {
-                    lineOffset = lineWidth;
-                }
+                const lineOffset = lineWidth * lineAlignment;
 
                 shape = data.shape;
 
