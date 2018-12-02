@@ -179,18 +179,19 @@ export default class TilingSprite extends core.Sprite
         const context = renderer.context;
         const transform = this.worldTransform;
         const resolution = renderer.resolution;
+        const isTextureRotated = texture.rotate === 2;
         const baseTexture = texture.baseTexture;
         const baseTextureResolution = baseTexture.resolution;
-        const modX = ((this.tilePosition.x / this.tileScale.x) % texture._frame.width) * baseTextureResolution;
-        const modY = ((this.tilePosition.y / this.tileScale.y) % texture._frame.height) * baseTextureResolution;
+        const modX = ((this.tilePosition.x / this.tileScale.x) % texture.orig.width) * baseTextureResolution;
+        const modY = ((this.tilePosition.y / this.tileScale.y) % texture.orig.height) * baseTextureResolution;
 
         // create a nice shiny pattern!
         if (this._textureID !== this._texture._updateID || this.cachedTint !== this.tint)
         {
             this._textureID = this._texture._updateID;
             // cut an object from a spritesheet..
-            const tempCanvas = new core.CanvasRenderTarget(texture._frame.width,
-                                                        texture._frame.height,
+            const tempCanvas = new core.CanvasRenderTarget(texture.orig.width,
+                                                        texture.orig.height,
                                                         baseTextureResolution);
 
             // Tint the tiling sprite
@@ -201,9 +202,36 @@ export default class TilingSprite extends core.Sprite
             }
             else
             {
-                tempCanvas.context.drawImage(baseTexture.source,
-                    -texture._frame.x * baseTextureResolution, -texture._frame.y * baseTextureResolution);
+                const sx = texture._frame.x * baseTextureResolution;
+                const sy = texture._frame.y * baseTextureResolution;
+                const sWidth = texture._frame.width * baseTextureResolution;
+                const sHeight = texture._frame.height * baseTextureResolution;
+                const dWidth = (texture.trim ? texture.trim.width : texture.orig.width) * baseTextureResolution;
+                const dHeight = (texture.trim ? texture.trim.height : texture.orig.height) * baseTextureResolution;
+                const dx = (texture.trim ? texture.trim.x : 0) * baseTextureResolution;
+                const dy = (texture.trim ? texture.trim.y : 0) * baseTextureResolution;
+
+                if (isTextureRotated)
+                {
+                    // Apply rotation and transform
+                    tempCanvas.context.rotate(-Math.PI / 2);
+                    tempCanvas.context.translate(-dHeight, 0);
+                    tempCanvas.context.drawImage(baseTexture.source,
+                                                sx, sy,
+                                                sWidth, sHeight,
+                                                -dy, dx,
+                                                dHeight, dWidth);
+                }
+                else
+                    {
+                    tempCanvas.context.drawImage(baseTexture.source,
+                                                sx, sy,
+                                                sWidth, sHeight,
+                                                dx, dy,
+                                                dWidth, dHeight);
+                }
             }
+
             this.cachedTint = this.tint;
             this._canvasPattern = tempCanvas.context.createPattern(tempCanvas.canvas, 'repeat');
         }
@@ -225,8 +253,8 @@ export default class TilingSprite extends core.Sprite
         // TODO - this should be rolled into the setTransform above..
         context.scale(this.tileScale.x / baseTextureResolution, this.tileScale.y / baseTextureResolution);
 
-        const anchorX = this.anchor.x * -this._width;
-        const anchorY = this.anchor.y * -this._height;
+        const anchorX = this.anchor.x * -this._width * baseTextureResolution;
+        const anchorY = this.anchor.y * -this._height * baseTextureResolution;
 
         if (this.uvRespectAnchor)
         {
