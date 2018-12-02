@@ -365,4 +365,49 @@ describe('PIXI.Graphics', function ()
             }
         }));
     });
+
+    describe('startPoly', function ()
+    {
+        it('should fill two triangles', withGL(function ()
+        {
+            const graphics = new PIXI.Graphics();
+
+            graphics.beginFill(0xffffff, 1.0);
+            graphics.moveTo(50, 50);
+            graphics.lineTo(250, 50);
+            graphics.lineTo(100, 100);
+            graphics.lineTo(50, 50);
+
+            graphics.moveTo(250, 50);
+            graphics.lineTo(450, 50);
+            graphics.lineTo(300, 100);
+            graphics.lineTo(250, 50);
+            graphics.endFill();
+
+            const data = graphics.geometry.graphicsData;
+
+            expect(data.length).to.equals(2);
+            expect(data[0].shape.points).to.eql([50, 50, 250, 50, 100, 100, 50, 50]);
+            expect(data[1].shape.points).to.eql([250, 50, 450, 50, 300, 100, 250, 50]);
+        }));
+
+        it('should honor lineStyle break', withGL(function ()
+        {
+            const graphics = new PIXI.Graphics();
+
+            graphics.lineStyle(1.0, 0xffffff);
+            graphics.moveTo(50, 50);
+            graphics.lineTo(250, 50);
+            graphics.lineStyle(2.0, 0xffffff);
+            graphics.lineTo(100, 100);
+            graphics.lineTo(50, 50);
+            graphics.lineStyle(0.0);
+
+            const data = graphics.geometry.graphicsData;
+
+            expect(data.length).to.equals(2);
+            expect(data[0].shape.points).to.eql([50, 50, 250, 50]);
+            expect(data[1].shape.points).to.eql([250, 50, 100, 100, 50, 50]);
+        }));
+    });
 });
