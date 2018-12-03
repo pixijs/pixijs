@@ -274,7 +274,7 @@ export default class Texture extends EventEmitter
      */
     clone()
     {
-        return new Texture(this.baseTexture, this.frame, this.orig, this.trim, this.rotate);
+        return new Texture(this.baseTexture, this.frame, this.orig, this.trim, this.rotate, this.defaultAnchor);
     }
 
     /**
