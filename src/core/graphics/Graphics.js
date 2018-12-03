@@ -1112,15 +1112,18 @@ export default class Graphics extends Container
                 const data = this.graphicsData[i];
                 const type = data.type;
                 const lineWidth = data.lineWidth;
+                const lineAlignment = data.lineAlignment;
+
+                const lineOffset = lineWidth * lineAlignment;
 
                 shape = data.shape;
 
                 if (type === SHAPES.RECT || type === SHAPES.RREC)
                 {
-                    x = shape.x - (lineWidth / 2);
-                    y = shape.y - (lineWidth / 2);
-                    w = shape.width + lineWidth;
-                    h = shape.height + lineWidth;
+                    x = shape.x - lineOffset;
+                    y = shape.y - lineOffset;
+                    w = shape.width + (lineOffset * 2);
+                    h = shape.height + (lineOffset * 2);
 
                     minX = x < minX ? x : minX;
                     maxX = x + w > maxX ? x + w : maxX;
@@ -1132,8 +1135,8 @@ export default class Graphics extends Container
                 {
                     x = shape.x;
                     y = shape.y;
-                    w = shape.radius + (lineWidth / 2);
-                    h = shape.radius + (lineWidth / 2);
+                    w = shape.radius + lineOffset;
+                    h = shape.radius + lineOffset;
 
                     minX = x - w < minX ? x - w : minX;
                     maxX = x + w > maxX ? x + w : maxX;
@@ -1145,8 +1148,8 @@ export default class Graphics extends Container
                 {
                     x = shape.x;
                     y = shape.y;
-                    w = shape.width + (lineWidth / 2);
-                    h = shape.height + (lineWidth / 2);
+                    w = shape.width + lineOffset;
+                    h = shape.height + lineOffset;
 
                     minX = x - w < minX ? x - w : minX;
                     maxX = x + w > maxX ? x + w : maxX;
@@ -1175,7 +1178,7 @@ export default class Graphics extends Container
                         y2 = points[j + 3];
                         dx = Math.abs(x2 - x);
                         dy = Math.abs(y2 - y);
-                        h = lineWidth;
+                        h = lineOffset * 2;
                         w = Math.sqrt((dx * dx) + (dy * dy));
 
                         if (w < 1e-9)
