@@ -204,13 +204,14 @@ export default class TextureManager
             return;
         }
 
-        const uid = this.renderer.CONTEXT_UID;
+        const renderer = this.renderer;
+        const uid = renderer.CONTEXT_UID;
         const glTextures = texture._glTextures;
         const glRenderTargets = texture._glRenderTargets;
 
         if (glTextures[uid])
         {
-            this.renderer.unbindTexture(texture);
+            renderer.unbindTexture(texture);
 
             glTextures[uid].destroy();
             texture.off('update', this.updateTexture, this);
@@ -231,6 +232,11 @@ export default class TextureManager
 
         if (glRenderTargets && glRenderTargets[uid])
         {
+            if (renderer._activeRenderTarget === glRenderTargets[uid])
+            {
+                renderer.bindRenderTarget(renderer.rootRenderTarget);
+            }
+
             glRenderTargets[uid].destroy();
             delete glRenderTargets[uid];
         }
