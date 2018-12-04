@@ -8,23 +8,24 @@ import FrameBuffer from '../framebuffer/FrameBuffer';
  * otherwise black rectangles will be drawn instead.
  *
  * A BaseRenderTexture takes a snapshot of any Display Object given to its render method. The position
- * and rotation of the given Display Objects are ignored. For example:
+ * and rotation of the given Display Objects is ignored. For example:
  *
  * ```js
- * let renderer = PIXI.autoDetectRenderer(1024, 1024, { view: canvas, ratio: 1 });
- * let baseRenderTexture = new PIXI.BaseRenderTexture(renderer, 800, 600);
- * let sprite = PIXI.Sprite.from("spinObj_01.png");
+ * let renderer = PIXI.autoDetectRenderer(1024, 1024);
+ * let baseRenderTexture = new PIXI.BaseRenderTexture(800, 600);
+ * let renderTexture = new PIXI.RenderTexture(baseRenderTexture);
+ * let sprite = PIXI.Sprite.fromImage("spinObj_01.png");
  *
  * sprite.position.x = 800/2;
  * sprite.position.y = 600/2;
  * sprite.anchor.x = 0.5;
  * sprite.anchor.y = 0.5;
  *
- * baseRenderTexture.render(sprite);
+ * renderer.render(sprite, renderTexture);
  * ```
  *
- * The Sprite, in this case, will be rendered using its local transform. To render this sprite at (0,0)
- * you can clear the transform.
+ * The Sprite in this case will be rendered using its local transform. To render this sprite at 0,0
+ * you can clear the transform
  *
  * ```js
  *
