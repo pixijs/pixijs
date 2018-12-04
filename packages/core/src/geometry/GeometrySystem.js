@@ -287,11 +287,14 @@ export default class GeometrySystem extends System
 
         const signature = this.getSignature(geometry, program);
 
-        if (this.cache[signature])
-        {
-            const vao = this.cache[signature];
+        const vaoObjectHash = geometry.glVertexArrayObjects[this.CONTEXT_UID];
 
-            geometry.glVertexArrayObjects[this.CONTEXT_UID][program.id] = vao;
+        let vao = vaoObjectHash[signature];
+
+        if (vao)
+        {
+            // this will give us easy access to the vao
+            vaoObjectHash[program.id] = vao;
 
             return vao;
         }
@@ -342,7 +345,7 @@ export default class GeometrySystem extends System
             }
         }
 
-        const vao = gl.createVertexArray();
+        vao = gl.createVertexArray();
 
         gl.bindVertexArray(vao);
 
@@ -366,7 +369,7 @@ export default class GeometrySystem extends System
         gl.bindVertexArray(this._activeVao);
 
         // add it to the cache!
-        geometry.glVertexArrayObjects[this.CONTEXT_UID][program.id] = vao;
+        vaoObjectHash[program.id] = vao;
 
         this.cache[signature] = vao;
 
