@@ -267,6 +267,11 @@ export default class Graphics extends Container
     lineTextureStyle(width = 0, texture = Texture.WHITE, color = 0xFFFFFF, alpha = 1,
         matrix = null, alignment = 0.5, native = false)
     {
+        if (this.currentPath)
+        {
+            this.startPoly();
+        }
+
         const visible = width > 0 && alpha > 0;
 
         if (!visible)
@@ -275,25 +280,6 @@ export default class Graphics extends Container
         }
         else
         {
-            if (this.currentPath)
-            {
-                if (this.currentPath.points.length)
-                {
-                    // TODO we need to add a fix here for multiple lines
-                    // with different styles..
-
-                    // const shape = new Polygon(this.currentPath.points.slice(-2));
-
-                    // shape.closed = false;
-
-                    // this.drawShape(shape);
-                }
-                else
-                {
-                    //   this.currentPath.points.length = 0;
-                }
-            }
-
             Object.assign(this._lineStyle, {
                 color,
                 width,
@@ -306,24 +292,6 @@ export default class Graphics extends Container
             });
         }
 
-        /* if (this.currentPath)
-        {
-            if (this.currentPath.shape.points.length)
-            {
-                // halfway through a line? start a new one!
-                const shape = new Polygon(this.currentPath.shape.points.slice(-2));
-
-                shape.closed = false;
-
-                this.drawShape(shape);
-            }
-            else
-            {
-                // otherwise its empty so lets just set the line properties
-                this.currentPath.lineStyle = style;
-            }
-        }*/
-
         return this;
     }
 
@@ -333,8 +301,24 @@ export default class Graphics extends Container
      */
     startPoly()
     {
-        this.currentPath = new Polygon();
-        this.currentPath.closed = false;
+        if (this.currentPath)
+        {
+            const points = this.currentPath.points;
+            const len = this.currentPath.points.length;
+
+            if (len > 2)
+            {
+                this.drawShape(this.currentPath);
+                this.currentPath = new Polygon();
+                this.currentPath.closed = false;
+                this.currentPath.points.push(points[len - 2], points[len - 1]);
+            }
+        }
+        else
+        {
+            this.currentPath = new Polygon();
+            this.currentPath.closed = false;
+        }
     }
 
     /**
@@ -367,7 +351,8 @@ export default class Graphics extends Container
     moveTo(x, y)
     {
         this.startPoly();
-        this.currentPath.points.push(x, y);
+        this.currentPath.points[0] = x;
+        this.currentPath.points[1] = y;
 
         return this;
     }
@@ -583,6 +568,11 @@ export default class Graphics extends Container
      */
     beginTextureFill(texture = Texture.WHITE, color = 0xFFFFFF, alpha = 1, matrix = null)
     {
+        if (this.currentPath)
+        {
+            this.startPoly();
+        }
+
         const visible = alpha > 0;
 
         if (!visible)
@@ -591,11 +581,6 @@ export default class Graphics extends Container
         }
         else
         {
-            if (this.currentPath)
-            {
-                this.finishPoly();
-            }
-
             Object.assign(this._fillStyle, {
                 color,
                 alpha,

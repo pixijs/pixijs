@@ -1,4 +1,5 @@
 const { BaseTextureCache, TextureCache } = require('@pixi/utils');
+const { Rectangle, Point } = require('@pixi/math');
 const { BaseTexture, Texture } = require('../');
 
 const URL = 'foo.png';
@@ -133,6 +134,29 @@ describe('PIXI.Texture', function ()
         const texture = new Texture(new BaseTexture());
 
         texture.destroy(true);
+        texture.destroy(true);
+    });
+
+    it('should clone a texture', function ()
+    {
+        const baseTexture = new BaseTexture();
+        const frame = new Rectangle();
+        const orig = new Rectangle();
+        const trim = new Rectangle();
+        const rotate = 2;
+        const anchor = new Point(1, 0.5);
+        const texture = new Texture(baseTexture, frame, orig, trim, rotate, anchor);
+        const clone = texture.clone();
+
+        expect(clone.baseTexture).to.equal(baseTexture);
+        expect(clone.defaultAnchor.x).to.equal(texture.defaultAnchor.x);
+        expect(clone.defaultAnchor.y).to.equal(texture.defaultAnchor.y);
+        expect(clone.frame).to.equal(texture.frame);
+        expect(clone.trim).to.equal(texture.trim);
+        expect(clone.orig).to.equal(texture.orig);
+        expect(clone.rotate).to.equal(texture.rotate);
+
+        clone.destroy();
         texture.destroy(true);
     });
 });
