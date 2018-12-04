@@ -505,7 +505,7 @@ export default class GraphicsGeometry extends BatchGeometry
         this.indicesUint16 = new Uint16Array(this.indices);
 
         // TODO make this a const..
-        this.batchable = false;// this.points.length < GraphicsGeometry.BATCHABLE_SIZE * 2;
+        this.batchable = this.points.length < GraphicsGeometry.BATCHABLE_SIZE * 2;
 
         if (this.batchable)
         {
