@@ -126,11 +126,13 @@ export default class ParticleContainer extends Container
         this.autoResize = autoResize;
 
         /**
-         * Used for canvas rendering. If true then the elements will be positioned at the
-         * nearest pixel. This provides a nice speed boost.
+         * If true PixiJS will Math.floor() x/y values when rendering, stopping pixel interpolation.
+         * Advantages can include sharper image quality (like text) and faster rendering on canvas.
+         * The main disadvantage is movement of objects may appear less smooth.
+         * Default to true here as performance is usually the priority for particles.
          *
          * @member {boolean}
-         * @default true;
+         * @default true
          */
         this.roundPixels = true;
 

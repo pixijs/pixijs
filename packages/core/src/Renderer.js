@@ -51,8 +51,6 @@ export default class Renderer extends AbstractRenderer
      *  preserveDrawingBuffer to `true`.
      * @param {boolean} [options.preserveDrawingBuffer=false] - Enables drawing buffer preservation,
      *  enable this if you need to call toDataUrl on the WebGL context.
-     * @param {boolean} [options.roundPixels=false] - If true PixiJS will Math.floor() x/y values when
-     *  rendering, stopping pixel interpolation.
      * @param {number} [options.backgroundColor=0x000000] - The background color of the rendered area
      *  (shown if not transparent).
      * @param {string} [options.powerPreference] - Parameter passed to WebGL context, set to "high-performance"
