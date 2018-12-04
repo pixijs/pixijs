@@ -45,8 +45,6 @@ export default class BatchSystem extends System
         this.currentRenderer.stop();
         this.currentRenderer = objectRenderer;
 
-        this.renderer.state.setState(objectRenderer.state);
-
         this.currentRenderer.start();
     }
 

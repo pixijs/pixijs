@@ -37,13 +37,6 @@ export default class GeometrySystem extends System
         this.hasInstance = true;
 
         /**
-         * A cache thats stores vaos linked to geometries.
-         * @member {Object}
-         * @private
-         */
-        this.cache = {};
-
-        /**
          * A cache of currently bound buffer..
          */
         this.boundBuffers = {};
@@ -287,11 +280,14 @@ export default class GeometrySystem extends System
 
         const signature = this.getSignature(geometry, program);
 
-        if (this.cache[signature])
-        {
-            const vao = this.cache[signature];
+        const vaoObjectHash = geometry.glVertexArrayObjects[this.CONTEXT_UID];
 
-            geometry.glVertexArrayObjects[this.CONTEXT_UID][program.id] = vao;
+        let vao = vaoObjectHash[signature];
+
+        if (vao)
+        {
+            // this will give us easy access to the vao
+            vaoObjectHash[program.id] = vao;
 
             return vao;
         }
@@ -342,6 +338,10 @@ export default class GeometrySystem extends System
             }
         }
 
+        vao = gl.createVertexArray();
+
+        gl.bindVertexArray(vao);
+
         // first update - and create the buffers!
         // only create a gl buffer if it actually gets
         for (let i = 0; i < buffers.length; i++)
@@ -356,16 +356,14 @@ export default class GeometrySystem extends System
 
         // TODO - maybe make this a data object?
         // lets wait to see if we need to first!
-        const vao = gl.createVertexArray();
-
-        gl.bindVertexArray(vao);
 
         this.activateVao(geometry, program);
 
-        gl.bindVertexArray(null);
+        gl.bindVertexArray(this._activeVao);
 
         // add it to the cache!
-        geometry.glVertexArrayObjects[this.CONTEXT_UID][program.id] = vao;
+        vaoObjectHash[program.id] = vao;
+        vaoObjectHash[signature] = vao;
 
         return vao;
     }
