@@ -370,8 +370,7 @@ export default class GeometrySystem extends System
 
         // add it to the cache!
         vaoObjectHash[program.id] = vao;
-
-        this.cache[signature] = vao;
+        vaoObjectHash[signature] = vao;
 
         return vao;
     }
