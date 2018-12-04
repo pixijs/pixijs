@@ -38,8 +38,6 @@ export default class AbstractRenderer extends EventEmitter
      *      not before the new render pass.
      * @param {number} [options.backgroundColor=0x000000] - The background color of the rendered area
      *  (shown if not transparent).
-     * @param {boolean} [options.roundPixels=false] - If true PixiJS will Math.floor() x/y values when rendering,
-     *  stopping pixel interpolation.
      */
     constructor(system, options, arg2, arg3)
     {
@@ -56,6 +54,11 @@ export default class AbstractRenderer extends EventEmitter
 
         // Add the default render options
         options = Object.assign({}, settings.RENDER_OPTIONS, options);
+
+        if (options.roundPixels)
+        {
+            // TODO - Log a warning to users telling them to use PIXI.settings.ROUND_PIXELS instead
+        }
 
         /**
          * The supplied constructor options.
@@ -139,14 +142,6 @@ export default class AbstractRenderer extends EventEmitter
          * @default
          */
         this.clearBeforeRender = options.clearBeforeRender;
-
-        /**
-         * If true PixiJS will Math.floor() x/y values when rendering, stopping pixel interpolation.
-         * Handy for crisp pixel art and speed on legacy devices.
-         *
-         * @member {boolean}
-         */
-        this.roundPixels = options.roundPixels;
 
         /**
          * The background color as a number.
@@ -325,8 +320,6 @@ export default class AbstractRenderer extends EventEmitter
 
         this.preserveDrawingBuffer = false;
         this.clearBeforeRender = false;
-
-        this.roundPixels = false;
 
         this._backgroundColor = 0;
         this._backgroundColorRgba = null;

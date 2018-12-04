@@ -3,6 +3,7 @@ import { sign } from '@pixi/utils';
 import { Texture } from '@pixi/core';
 import { BLEND_MODES } from '@pixi/constants';
 import { Container } from '@pixi/display';
+import { settings } from '@pixi/settings';
 
 const tempPoint = new Point();
 const indices = new Uint16Array([0, 1, 2, 0, 2, 3]);
@@ -166,6 +167,14 @@ export default class Sprite extends Container
          * used to fast check if a sprite is.. a sprite!
          */
         this.isSprite = true;
+
+        /**
+         * Internal roundPixels field
+         *
+         * @member {boolean}
+         * @private
+         */
+        this._roundPixels = settings.ROUND_PIXELS;
     }
 
     /**
@@ -271,8 +280,13 @@ export default class Sprite extends Container
         vertexData[6] = (a * w1) + (c * h0) + tx;
         vertexData[7] = (d * h0) + (b * w1) + ty;
 
-        //   console.log(orig.width)
-        //     console.log(vertexData, this.texture.baseTexture)
+        if (this._roundPixels)
+        {
+            for (let i = 0; i < 8; i++)
+            {
+                vertexData[i] = Math.round(vertexData[i]);
+            }
+        }
     }
 
     /**
@@ -480,6 +494,29 @@ export default class Sprite extends Container
             : new Texture.from(source, options);
 
         return new Sprite(texture);
+    }
+
+    /**
+     * If true PixiJS will Math.floor() x/y values when rendering, stopping pixel interpolation.
+     * Advantages can include sharper image quality (like text) and faster rendering on canvas.
+     * The main disadvantage is movement of objects may appear less smooth.
+     * To set the global default, change {@link PIXI.settings.ROUND_PIXELS}
+     *
+     * @member {boolean}
+     * @default false
+     */
+    set roundPixels(value)
+    {
+        if (this._roundPixels !== value)
+        {
+            this._transformID = -1;
+        }
+        this._roundPixels = value;
+    }
+
+    get roundPixels()
+    {
+        return this._roundPixels;
     }
 
     /**

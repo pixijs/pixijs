@@ -30,7 +30,7 @@ export default class CanvasMeshRenderer
         const transform = mesh.worldTransform;
         const res = renderer.resolution;
 
-        if (renderer.roundPixels)
+        if (mesh.roundPixels)
         {
             context.setTransform(
                 transform.a * res,
