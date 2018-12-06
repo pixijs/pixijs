@@ -120,6 +120,7 @@ export default class Text extends Sprite
     updateText(respectDirty)
     {
         const style = this._style;
+        const cache = {};
 
         // check if style has changed..
         if (this.localStyleID !== style.styleID)
@@ -136,7 +137,7 @@ export default class Text extends Sprite
         this._font = this._style.toFontString();
 
         const context = this.context;
-        const measured = TextMetrics.measureText(this._text, this._style, this._style.wordWrap, this.canvas);
+        const measured = TextMetrics.measureText(this._text, this._style, this._style.wordWrap, this.canvas, cache);
         const width = measured.width;
         const height = measured.height;
         const lines = measured.lines;
@@ -162,7 +163,7 @@ export default class Text extends Sprite
         let linePositionX;
         let linePositionY;
 
-        if (style.dropShadow)
+        if (style.dropShadow && style.fill)
         {
             context.fillStyle = style.dropShadowColor;
             context.globalAlpha = style.dropShadowAlpha;
@@ -190,23 +191,22 @@ export default class Text extends Sprite
                     linePositionX += (maxLineWidth - lineWidths[i]) / 2;
                 }
 
-                if (style.fill)
+                this.drawLetterSpacing(
+                    lines[i],
+                    linePositionX + xShadowOffset + style.padding, linePositionY + yShadowOffset + style.padding,
+                    cache
+                );
+
+                if (style.stroke && style.strokeThickness)
                 {
+                    context.strokeStyle = style.dropShadowColor;
                     this.drawLetterSpacing(
                         lines[i],
-                        linePositionX + xShadowOffset + style.padding, linePositionY + yShadowOffset + style.padding
+                        linePositionX + xShadowOffset + style.padding, linePositionY + yShadowOffset + style.padding,
+                        cache,
+                        true
                     );
-
-                    if (style.stroke && style.strokeThickness)
-                    {
-                        context.strokeStyle = style.dropShadowColor;
-                        this.drawLetterSpacing(
-                            lines[i],
-                            linePositionX + xShadowOffset + style.padding, linePositionY + yShadowOffset + style.padding,
-                            true
-                        );
-                        context.strokeStyle = style.stroke;
-                    }
+                    context.strokeStyle = style.stroke;
                 }
             }
         }
@@ -239,6 +239,7 @@ export default class Text extends Sprite
                     lines[i],
                     linePositionX + style.padding,
                     linePositionY + style.padding,
+                    cache,
                     true
                 );
             }
@@ -248,7 +249,8 @@ export default class Text extends Sprite
                 this.drawLetterSpacing(
                     lines[i],
                     linePositionX + style.padding,
-                    linePositionY + style.padding
+                    linePositionY + style.padding,
+                    cache
                 );
             }
         }
@@ -261,11 +263,12 @@ export default class Text extends Sprite
      * @param {string} text - The text to draw
      * @param {number} x - Horizontal position to draw the text
      * @param {number} y - Vertical position to draw the text
+     * @param {Object} cache - cache for measureText
      * @param {boolean} [isStroke=false] - Is this drawing for the outside stroke of the
      *  text? If not, it's for the inside fill
      * @private
      */
-    drawLetterSpacing(text, x, y, isStroke = false)
+    drawLetterSpacing(text, x, y, cache, isStroke)
     {
         const style = this._style;
 
@@ -286,14 +289,12 @@ export default class Text extends Sprite
             return;
         }
 
-        const characters = String.prototype.split.call(text, '');
         let currentPosition = x;
-        let index = 0;
-        let current = '';
 
-        while (index < text.length)
+        for (let index = 0, textLen = text.length; index < textLen; ++index)
         {
-            current = characters[index++];
+            const current = text.charAt(index);
+
             if (isStroke)
             {
                 this.context.strokeText(current, currentPosition, y);
@@ -302,7 +303,7 @@ export default class Text extends Sprite
             {
                 this.context.fillText(current, currentPosition, y);
             }
-            currentPosition += this.context.measureText(current).width + letterSpacing;
+            currentPosition += TextMetrics.getFromCache(current, letterSpacing, cache, this.context) + letterSpacing;
         }
     }
 

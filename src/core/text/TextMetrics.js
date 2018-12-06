@@ -42,9 +42,10 @@ export default class TextMetrics
      * @param {PIXI.TextStyle} style - the text style to use for measuring
      * @param {boolean} [wordWrap] - optional override for if word-wrap should be applied to the text.
      * @param {HTMLCanvasElement} [canvas] - optional specification of the canvas to use for measuring.
+     * @param {Object} cache - optional cache for measureText
      * @return {PIXI.TextMetrics} measured width and height of the text.
      */
-    static measureText(text, style, wordWrap, canvas = TextMetrics._canvas)
+    static measureText(text, style, wordWrap, canvas = TextMetrics._canvas, cache = {})
     {
         wordWrap = (wordWrap === undefined || wordWrap === null) ? style.wordWrap : wordWrap;
         const font = style.toFontString();
@@ -53,14 +54,14 @@ export default class TextMetrics
 
         context.font = font;
 
-        const outputText = wordWrap ? TextMetrics.wordWrap(text, style, canvas) : text;
+        const outputText = wordWrap ? TextMetrics.wordWrap(text, style, canvas, cache) : text;
         const lines = outputText.split(/(?:\r\n|\r|\n)/);
         const lineWidths = new Array(lines.length);
         let maxLineWidth = 0;
 
         for (let i = 0; i < lines.length; i++)
         {
-            const lineWidth = context.measureText(lines[i]).width + ((lines[i].length - 1) * style.letterSpacing);
+            const lineWidth = TextMetrics.getFromCache(lines[i], style.letterSpacing, cache, context);
 
             lineWidths[i] = lineWidth;
             maxLineWidth = Math.max(maxLineWidth, lineWidth);
@@ -102,17 +103,16 @@ export default class TextMetrics
      * @param {string} text - String to apply word wrapping to
      * @param {PIXI.TextStyle} style - the style to use when wrapping
      * @param {HTMLCanvasElement} [canvas] - optional specification of the canvas to use for measuring.
+     * @param {Object} cache - cache for measureText
      * @return {string} New string with new lines applied where required
      */
-    static wordWrap(text, style, canvas = TextMetrics._canvas)
+    static wordWrap(text, style, canvas = TextMetrics._canvas, cache)
     {
         const context = canvas.getContext('2d');
 
-        let width = 0;
         let line = '';
         let lines = '';
 
-        const cache = {};
         const { letterSpacing, whiteSpace } = style;
 
         // How to handle whitespaces
@@ -122,13 +122,7 @@ export default class TextMetrics
         // whether or not spaces may be added to the beginning of lines
         let canPrependSpaces = !collapseSpaces;
 
-        // There is letterSpacing after every char except the last one
-        // t_h_i_s_' '_i_s_' '_a_n_' '_e_x_a_m_p_l_e_' '_!
-        // so for convenience the above needs to be compared to width + 1 extra letterSpace
-        // t_h_i_s_' '_i_s_' '_a_n_' '_e_x_a_m_p_l_e_' '_!_
-        // ________________________________________________
-        // And then the final space is simply no appended to each line
-        const wordWrapWidth = style.wordWrapWidth + letterSpacing;
+        const wordWrapWidth = style.wordWrapWidth;
 
         // break text into words, spaces and newline chars
         const tokens = TextMetrics.tokenize(text);
@@ -147,7 +141,6 @@ export default class TextMetrics
                     lines += TextMetrics.addLine(line);
                     canPrependSpaces = !collapseSpaces;
                     line = '';
-                    width = 0;
                     continue;
                 }
 
@@ -181,7 +174,6 @@ export default class TextMetrics
                     // start newlines for overflow words
                     lines += TextMetrics.addLine(line);
                     line = '';
-                    width = 0;
                 }
 
                 // break large word over multiple lines
@@ -219,18 +211,14 @@ export default class TextMetrics
 
                         j += char.length - 1;
 
-                        const characterWidth = TextMetrics.getFromCache(char, letterSpacing, cache, context);
-
-                        if (characterWidth + width > wordWrapWidth)
+                        if (TextMetrics.getFromCache(line + char, letterSpacing, cache, context) > wordWrapWidth)
                         {
                             lines += TextMetrics.addLine(line);
                             canPrependSpaces = false;
                             line = '';
-                            width = 0;
                         }
 
                         line += char;
-                        width += characterWidth;
                     }
                 }
 
@@ -243,7 +231,6 @@ export default class TextMetrics
                     {
                         lines += TextMetrics.addLine(line);
                         line = '';
-                        width = 0;
                     }
 
                     const isLastToken = i === tokens.length - 1;
@@ -252,7 +239,6 @@ export default class TextMetrics
                     lines += TextMetrics.addLine(token, !isLastToken);
                     canPrependSpaces = false;
                     line = '';
-                    width = 0;
                 }
             }
 
@@ -261,7 +247,7 @@ export default class TextMetrics
             {
                 // word won't fit because of existing words
                 // start a new line
-                if (tokenWidth + width > wordWrapWidth)
+                if (TextMetrics.getFromCache(line + token, letterSpacing, cache, context) > wordWrapWidth)
                 {
                     // if its a space we don't want it
                     canPrependSpaces = false;
@@ -271,7 +257,6 @@ export default class TextMetrics
 
                     // start a new line
                     line = '';
-                    width = 0;
                 }
 
                 // don't add spaces to the beginning of lines
@@ -279,9 +264,6 @@ export default class TextMetrics
                 {
                     // add the word to the current line
                     line += token;
-
-                    // update width counter
-                    width += tokenWidth;
                 }
             }
         }
@@ -312,7 +294,6 @@ export default class TextMetrics
     /**
      * Gets & sets the widths of calculated characters in a cache object
      *
-     * @private
      * @param  {string}                    key            The key
      * @param  {number}                    letterSpacing  The letter spacing
      * @param  {object}                    cache          The cache
@@ -325,9 +306,29 @@ export default class TextMetrics
 
         if (width === undefined)
         {
-            const spacing = ((key.length) * letterSpacing);
+            width = (key.length - 1) * letterSpacing;
 
-            width = context.measureText(key).width + spacing;
+            if (letterSpacing !== 0 && key.length > 1)
+            {
+                const chars = key.split();
+
+                for (let index = 0, keyLen = chars.length; index < keyLen; ++index)
+                {
+                    const current = chars[index];
+                    let charWidth = cache[current];
+
+                    if (charWidth === undefined)
+                    {
+                        cache[key] = charWidth = context.measureText(current).width;
+                    }
+                    width += charWidth;
+                }
+            }
+            else
+            {
+                width += context.measureText(key).width;
+            }
+
             cache[key] = width;
         }
 

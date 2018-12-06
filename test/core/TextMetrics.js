@@ -8,7 +8,7 @@ enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia 
 consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro \
 quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, \
 sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam \
-quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam \
+quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitatione ullam \
 corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis \
 autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil \
 molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla \
@@ -231,9 +231,9 @@ describe('PIXI.TextMetrics', function ()
             expect(metrics.width).to.be.above(style.wordWrapWidth);
 
             expect(metrics.lines[0][0]).to.equal('S', '1st line should not start with a space');
-            expect(metrics.lines[4][0]).to.equal('m', '5th line should not start with 3 spaces (1)');
-            expect(metrics.lines[4][1]).to.equal('o', '5th line should not start with 3 spaces (2)');
-            expect(metrics.lines[4][2]).to.equal('r', '5th line should not start with 3 spaces (3)');
+            expect(metrics.lines[4][0]).to.equal('3', '5th line should not start with 3 spaces (1)');
+            expect(metrics.lines[4][1]).to.equal(' ', '5th line should not start with 3 spaces (2)');
+            expect(metrics.lines[4][2]).to.equal('m', '5th line should not start with 3 spaces (3)');
             expect(metrics.lines[17][0]).to.equal('a', '17th line should not have wrapped');
 
             metrics.lines.forEach((line) =>
@@ -279,9 +279,9 @@ describe('PIXI.TextMetrics', function ()
             expect(metrics.width).to.be.below(style.wordWrapWidth);
 
             expect(metrics.lines[0][0]).to.equal('S', '1st line should not start with a space');
-            expect(metrics.lines[4][0]).to.equal('m', '5th line should not start with 3 spaces (1)');
-            expect(metrics.lines[4][1]).to.equal('o', '5th line should not start with 3 spaces (2)');
-            expect(metrics.lines[4][2]).to.equal('r', '5th line should not start with 3 spaces (3)');
+            expect(metrics.lines[4][0]).to.equal('3', '5th line should not start with 3 spaces (1)');
+            expect(metrics.lines[4][1]).to.equal(' ', '5th line should not start with 3 spaces (2)');
+            expect(metrics.lines[4][2]).to.equal('m', '5th line should not start with 3 spaces (3)');
             expect(metrics.lines[17][0]).to.equal('a', '17th line should not have wrapped');
 
             metrics.lines.forEach((line) =>
