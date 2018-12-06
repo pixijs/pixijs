@@ -293,7 +293,7 @@ export default class Text extends Sprite
 
         for (let index = 0, textLen = text.length; index < textLen; ++index)
         {
-            const current = text.charAt(index);
+            const current = text[index];
 
             if (isStroke)
             {
@@ -303,6 +303,7 @@ export default class Text extends Sprite
             {
                 this.context.fillText(current, currentPosition, y);
             }
+
             currentPosition += TextMetrics.getFromCache(current, letterSpacing, cache, this.context) + letterSpacing;
         }
     }

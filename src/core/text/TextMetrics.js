@@ -306,15 +306,12 @@ export default class TextMetrics
 
         if (width === undefined)
         {
-            width = (key.length - 1) * letterSpacing;
-
             if (letterSpacing !== 0 && key.length > 1)
             {
-                const chars = key.split();
-
-                for (let index = 0, keyLen = chars.length; index < keyLen; ++index)
+                width = (key.length - 1) * letterSpacing;
+                for (let index = 0, keyLen = key.length; index < keyLen; ++index)
                 {
-                    const current = chars[index];
+                    const current = key[index];
                     let charWidth = cache[current];
 
                     if (charWidth === undefined)
@@ -326,7 +323,7 @@ export default class TextMetrics
             }
             else
             {
-                width += context.measureText(key).width;
+                width = context.measureText(key).width;
             }
 
             cache[key] = width;
@@ -438,11 +435,10 @@ export default class TextMetrics
         {
             return tokens;
         }
-        const chars = text.split();
 
-        for (let i = 0, l = chars.length; i < l; i++)
+        for (let i = 0, l = text.length; i < l; i++)
         {
-            const char = chars[i];
+            const char = text[i];
 
             if (TextMetrics.isBreakingSpace(char) || TextMetrics.isNewline(char))
             {
