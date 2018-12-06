@@ -179,20 +179,17 @@ export default class TextMetrics
                 // break large word over multiple lines
                 if (TextMetrics.canBreakWords(token, style.breakWords))
                 {
-                    // break word into characters
-                    const characters = token.split('');
-
                     // loop the characters
-                    for (let j = 0; j < characters.length; j++)
+                    for (let j = 0; j < token.length; j++)
                     {
-                        let char = characters[j];
+                        let char = token[j];
 
                         let k = 1;
                         // we are not at the end of the token
 
-                        while (characters[j + k])
+                        while (token[j + k])
                         {
-                            const nextChar = characters[j + k];
+                            const nextChar = token[j + k];
                             const lastChar = char[char.length - 1];
 
                             // should not split chars
