@@ -438,10 +438,11 @@ export default class TextMetrics
         {
             return tokens;
         }
+        const chars = text.split();
 
-        for (let i = 0; i < text.length; i++)
+        for (let i = 0, l = chars.length; i < l; i++)
         {
-            const char = text[i];
+            const char = chars[i];
 
             if (TextMetrics.isBreakingSpace(char) || TextMetrics.isNewline(char))
             {
