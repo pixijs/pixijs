@@ -80,7 +80,7 @@
     "jsdoc": "3.4.3",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
-    "parallelshell": "^2.0.0",
+    "parallelshell": "^3.0.2",
     "pixify": "^1.7.0",
     "rimraf": "^2.5.3",
     "watch": "^0.19.1"
