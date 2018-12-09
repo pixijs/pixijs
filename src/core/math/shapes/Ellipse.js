@@ -10,8 +10,8 @@ import { SHAPES } from '../../const';
 export default class Ellipse
 {
     /**
-     * @param {number} [x=0] - The X coordinate of the center of this circle
-     * @param {number} [y=0] - The Y coordinate of the center of this circle
+     * @param {number} [x=0] - The X coordinate of the center of this ellipse
+     * @param {number} [y=0] - The Y coordinate of the center of this ellipse
      * @param {number} [halfWidth=0] - The half width of this ellipse
      * @param {number} [halfHeight=0] - The half height of this ellipse
      */
