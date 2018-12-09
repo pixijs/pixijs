@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "devDependencies": {
     "chai": "^3.5.0",
-    "electron": "^1.7.9",
+    "electron": "^2.0.14",
     "js-md5": "^0.6.1",
     "pixi.js": "^5.0.0-alpha.3",
     "sinon": "^1.17.6",

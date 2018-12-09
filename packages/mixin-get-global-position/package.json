@@ -29,6 +29,6 @@
     "@pixi/math": "^5.0.0-alpha.3"
   },
   "devDependencies": {
-    "floss": "^2.1.3"
+    "floss": "^2.1.5"
   }
 }
