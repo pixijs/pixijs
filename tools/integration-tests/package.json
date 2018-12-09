@@ -7,7 +7,6 @@
     "test": "floss --path test"
   },
   "devDependencies": {
-    "@internal/renders": "^5.0.0-alpha.3",
     "@pixi/canvas-display": "^5.0.0-alpha.3",
     "@pixi/canvas-graphics": "^5.0.0-alpha.3",
     "@pixi/canvas-mesh": "^5.0.0-alpha.3",

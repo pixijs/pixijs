@@ -1,2 +1,1 @@
 require('./display');
-require('./renders');
