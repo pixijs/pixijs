@@ -10,12 +10,12 @@ import { SHAPES } from '../../const';
 export default class Ellipse
 {
     /**
-     * @param {number} [x=0] - The X coordinate of the center of this circle
-     * @param {number} [y=0] - The Y coordinate of the center of this circle
-     * @param {number} [width=0] - The half width of this ellipse
-     * @param {number} [height=0] - The half height of this ellipse
+     * @param {number} [x=0] - The X coordinate of the center of this ellipse
+     * @param {number} [y=0] - The Y coordinate of the center of this ellipse
+     * @param {number} [halfWidth=0] - The half width of this ellipse
+     * @param {number} [halfHeight=0] - The half height of this ellipse
      */
-    constructor(x = 0, y = 0, width = 0, height = 0)
+    constructor(x = 0, y = 0, halfWidth = 0, halfHeight = 0)
     {
         /**
          * @member {number}
@@ -33,13 +33,13 @@ export default class Ellipse
          * @member {number}
          * @default 0
          */
-        this.width = width;
+        this.width = halfWidth;
 
         /**
          * @member {number}
          * @default 0
          */
-        this.height = height;
+        this.height = halfHeight;
 
         /**
          * The type of the object, mainly used to avoid `instanceof` checks
