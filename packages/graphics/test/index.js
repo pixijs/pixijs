@@ -339,11 +339,11 @@ describe('PIXI.Graphics', function ()
     {
         it('should have no gaps in line border', withGL(function ()
         {
-            const renderer = new PIXI.WebGLRenderer(200, 200, {});
+            const renderer = new Renderer(200, 200, {});
 
             try
             {
-                const graphics = new PIXI.Graphics();
+                const graphics = new Graphics();
 
                 graphics.lineStyle(15, 0x8FC7E6);
                 graphics.drawCircle(100, 100, 30);
@@ -370,7 +370,7 @@ describe('PIXI.Graphics', function ()
     {
         it('should fill two triangles', withGL(function ()
         {
-            const graphics = new PIXI.Graphics();
+            const graphics = new Graphics();
 
             graphics.beginFill(0xffffff, 1.0);
             graphics.moveTo(50, 50);
@@ -393,7 +393,7 @@ describe('PIXI.Graphics', function ()
 
         it('should honor lineStyle break', withGL(function ()
         {
-            const graphics = new PIXI.Graphics();
+            const graphics = new Graphics();
 
             graphics.lineStyle(1.0, 0xffffff);
             graphics.moveTo(50, 50);
