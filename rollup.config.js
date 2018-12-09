@@ -79,21 +79,24 @@ sorted.forEach((group) =>
         const freeze = false;
 
         results.push({
-            banner,
             input,
-            freeze,
             output: [
                 {
+                    banner,
                     file: path.join(basePath, main),
                     format: 'cjs',
+                    freeze,
+                    sourcemap,
                 },
                 {
+                    banner,
                     file: path.join(basePath, module),
                     format: 'es',
+                    freeze,
+                    sourcemap,
                 },
             ],
             external,
-            sourcemap,
             plugins,
         });
 
@@ -103,16 +106,16 @@ sorted.forEach((group) =>
         if (args.bundles && bundle)
         {
             results.push({
-                banner,
                 input,
-                freeze,
                 output: {
+                    banner,
                     file: path.join(basePath, bundle),
                     format: 'umd',
+                    freeze,
+                    name: 'PIXI',
+                    sourcemap,
                 },
-                name: 'PIXI',
                 treeshake: false,
-                sourcemap,
                 plugins,
             });
         }

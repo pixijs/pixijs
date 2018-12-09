@@ -1,3 +1,12 @@
+import { INSTALLED, autoDetectResource } from './autoDetectResource';
+import ArrayResource from './ArrayResource';
+import BufferResource from './BufferResource';
+import CanvasResource from './CanvasResource';
+import CubeResource from './CubeResource';
+import ImageResource from './ImageResource';
+import SVGResource from './SVGResource';
+import VideoResource from './VideoResource';
+
 /**
  * Collection of base resource types supported by PixiJS.
  * Resources are used by {@link PIXI.BaseTexture} to handle different media types
@@ -8,13 +17,26 @@
  * const baseTexture = PIXI.BaseTexture.from('path/to/image.jpg');
  * @namespace PIXI.resources
  */
-export * from './autoDetectResource';
 export { default as Resource } from './Resource';
-export { default as ArrayResource } from './ArrayResource';
 export { default as BaseImageResource } from './BaseImageResource';
-export { default as BufferResource } from './BufferResource';
-export { default as CanvasResource } from './CanvasResource';
-export { default as CubeResource } from './CubeResource';
-export { default as ImageResource } from './ImageResource';
-export { default as SVGResource } from './SVGResource';
-export { default as VideoResource } from './VideoResource';
+
+INSTALLED.push(
+    ImageResource,
+    CanvasResource,
+    VideoResource,
+    SVGResource,
+    BufferResource,
+    CubeResource,
+    ArrayResource
+);
+
+export {
+    INSTALLED,
+    autoDetectResource,
+    ArrayResource,
+    BufferResource,
+    CanvasResource,
+    CubeResource,
+    ImageResource,
+    SVGResource,
+    VideoResource };

@@ -1,4 +1,4 @@
-import { uid, BaseTextureCache, TextureCache } from '@pixi/utils';
+import { uid, BaseTextureCache, TextureCache, isPow2 } from '@pixi/utils';
 import { FORMATS, TARGETS, TYPES, SCALE_MODES } from '@pixi/constants';
 
 import Resource from './resources/Resource';
@@ -7,7 +7,6 @@ import { autoDetectResource } from './resources/autoDetectResource';
 
 import { settings } from '@pixi/settings';
 import EventEmitter from 'eventemitter3';
-import bitTwiddle from 'bit-twiddle';
 
 const defaultBufferOptions = {
     scaleMode: SCALE_MODES.NEAREST,
@@ -376,7 +375,7 @@ export default class BaseTexture extends EventEmitter
      */
     _refreshPOT()
     {
-        this.isPowerOfTwo = bitTwiddle.isPow2(this.realWidth) && bitTwiddle.isPow2(this.realHeight);
+        this.isPowerOfTwo = isPow2(this.realWidth) && isPow2(this.realHeight);
     }
 
     /**

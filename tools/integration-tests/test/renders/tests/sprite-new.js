@@ -1,7 +1,7 @@
 module.exports.async = function (done)
 {
     const url = `file://${__dirname}/assets/bitmap-1.png`;
-    const loader = new PIXI.loaders.Loader();
+    const loader = new PIXI.Loader();
 
     loader.add('bitmap', url);
     loader.once('complete', (loader, resources) =>

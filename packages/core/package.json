@@ -31,7 +31,6 @@
     "@pixi/settings": "^5.0.0-alpha.3",
     "@pixi/ticker": "^5.0.0-alpha.3",
     "@pixi/utils": "^5.0.0-alpha.3",
-    "bit-twiddle": "^1.0.2",
     "eventemitter3": "^2.0.0",
     "ismobilejs": "^0.4.0",
     "mini-runner": "^1.0.1"
