@@ -3,8 +3,6 @@ import BaseTexture from '../BaseTexture';
 import { TARGETS } from '@pixi/constants';
 import { autoDetectResource } from './autoDetectResource';
 
-export const INSTALLED = [];
-
 /**
  * Resource for a CubeTexture which contains six resources.
  *
