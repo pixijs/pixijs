@@ -10,8 +10,10 @@ const warnings = {};
  * @function deprecation
  * @param {string} version - The version where the feature became deprecated
  * @param {string} message - Message should include what is deprecated, where, and the new solution
+ * @param {number} [ignoreDepth=3] - The number of steps to ignore at the top of the error stack
+ *        this is mostly to ignore internal deprecation calls.
  */
-export function deprecation(version, message)
+export function deprecation(version, message, ignoreDepth = 3)
 {
     // Ignore duplicat
     if (warnings[message])
@@ -30,7 +32,7 @@ export function deprecation(version, message)
     else
     {
         // chop off the stack trace which includes PixiJS internal calls
-        stack = stack.split('\n').splice(3).join('\n');
+        stack = stack.split('\n').splice(ignoreDepth).join('\n');
 
         if (console.groupCollapsed)
         {
