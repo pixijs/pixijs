@@ -17,11 +17,12 @@ export default class MeshMaterial extends Shader
      * @param {object} [options] - Additional options
      * @param {number} [options.alpha=1] - Default alpha.
      * @param {number} [options.tint=0xFFFFFF] - Default tint.
+     * @param {string} [options.pluginName='batch'] - Renderer plugin for batching.
+     * @param {PIXI.Program} [options.program=0xFFFFFF] - Custom program.
+     * @param {object} [options.uniforms] - Custom uniforms.
      */
     constructor(uSampler, options)
     {
-        const program = Program.from(vertex, fragment);
-
         const uniforms = {
             uSampler,
             alpha: 1,
@@ -29,7 +30,19 @@ export default class MeshMaterial extends Shader
             uColor: new Float32Array([1, 1, 1, 1]),
         };
 
-        super(program, uniforms);
+        // Set defaults
+        options = Object.assign({
+            tint: 0xFFFFFF,
+            alpha: 1,
+            pluginName: 'batch',
+        }, options);
+
+        if (options.uniforms)
+        {
+            Object.assign(uniforms, options.uniforms);
+        }
+
+        super(options.program || Program.from(vertex, fragment), uniforms);
 
         /**
          * Only do update if tint or alpha changes.
@@ -45,24 +58,25 @@ export default class MeshMaterial extends Shader
          * @member {PIXI.TextureMatrix}
          * @readonly
          */
-        // TODO get this back in!
-        this.uvMatrix = new TextureMatrix(this.uSampler);
+        this.uvMatrix = new TextureMatrix(uSampler);
 
         /**
          * `true` if shader can be batch with the renderer's batch system.
          * @member {boolean}
          * @default true
          */
-        this.batchable = true;
+        this.batchable = options.program === undefined;
 
-        // Set defaults
-        const { tint, alpha } = Object.assign({
-            tint: 0xFFFFFF,
-            alpha: 1,
-        }, options);
+        /**
+         * Renderer plugin for batching
+         *
+         * @member {string}
+         * @default 'batch'
+         */
+        this.pluginName = options.pluginName;
 
-        this.tint = tint;
-        this.alpha = alpha;
+        this.tint = options.tint;
+        this.alpha = options.alpha;
     }
 
     /**
@@ -75,11 +89,16 @@ export default class MeshMaterial extends Shader
     }
     set texture(value)
     {
-        this.uniforms.uSampler = value;
+        if (this.uniforms.uSampler !== value)
+        {
+            this.uniforms.uSampler = value;
+            this.uvMatrix.texture = value;
+        }
     }
 
     /**
      * This gets automatically set by the object using this.
+     *
      * @default 1
      * @member {number}
      */
@@ -125,6 +144,10 @@ export default class MeshMaterial extends Shader
             const baseTexture = this.texture.baseTexture;
 
             premultiplyTintToRgba(this._tintRGB, this._alpha, this.uniforms.uColor, baseTexture.premultiplyAlpha);
+        }
+        if (this.uvMatrix.update())
+        {
+            this.uniforms.uTextureMatrix = this.uvMatrix.mapCoord;
         }
     }
 }

@@ -3,6 +3,7 @@ import { Point, Polygon } from '@pixi/math';
 import { BLEND_MODES, DRAW_MODES } from '@pixi/constants';
 import { Container } from '@pixi/display';
 import { settings } from '@pixi/settings';
+import MeshBatchUvs from './MeshBatchUvs';
 
 const tempPoint = new Point();
 const tempPolygon = new Polygon();
@@ -121,6 +122,32 @@ export default class Mesh extends Container
          * @private
          */
         this._roundPixels = settings.ROUND_PIXELS;
+
+        /**
+         * Batched UV's are cached for atlas textures
+         * @member {PIXI.MeshBatchUvs}
+         * @private
+         */
+        this.batchUvs = null;
+    }
+
+    /**
+     * To change mesh uv's, change its uvBuffer data and increment its _updateID.
+     * @returns {PIXI.Buffer}
+     */
+    get uvBuffer()
+    {
+        return this.geometry.buffers[1].data;
+    }
+
+    /**
+     * To change mesh vertices, change its uvBuffer data and increment its _updateID.
+     * Incrementing _updateID is optional because most of Mesh objects do it anyway.
+     * @returns {PIXI.Buffer}
+     */
+    get verticesBuffer()
+    {
+        return this.geometry.buffers[0].data;
     }
 
     /**
@@ -220,12 +247,6 @@ export default class Mesh extends Container
         // TODO could use a different way to grab verts?
         const vertices = this.geometry.buffers[0].data;
 
-        if (this.geometry.update && this.geometry._updateId !== renderer.tick)
-        {
-            this.geometry._updateId = renderer.tick;
-            this.geometry.update();
-        }
-
         // TODO benchmark check for attribute size..
         if (this.shader.batchable && this.drawMode === DRAW_MODES.TRIANGLES && vertices.length < Mesh.BATCHABLE_SIZE * 2)
         {
@@ -246,6 +267,7 @@ export default class Mesh extends Container
     {
         const shader = this.shader;
 
+        shader.alpha = this.worldAlpha;
         if (shader.update)
         {
             shader.update();
@@ -281,55 +303,88 @@ export default class Mesh extends Container
         const geometry = this.geometry;
 
         // set properties for batching..
-        const vertices = geometry.buffers[0].data;
-
-        if (geometry.vertexDirtyId !== this.vertexDirty || this._transformID !== this.transform._worldID)
-        {
-            this._transformID = this.transform._worldID;
-
-            if (this.vertexData.length !== vertices.length)
-            {
-                this.vertexData = new Float32Array(vertices.length);
-            }
-
-            const wt = this.transform.worldTransform;
-            const a = wt.a;
-            const b = wt.b;
-            const c = wt.c;
-            const d = wt.d;
-            const tx = wt.tx;
-            const ty = wt.ty;
-
-            const vertexData = this.vertexData;
-
-            for (let i = 0; i < vertexData.length / 2; i++)
-            {
-                const x = vertices[(i * 2)];
-                const y = vertices[(i * 2) + 1];
-
-                vertexData[(i * 2)] = (a * x) + (c * y) + tx;
-                vertexData[(i * 2) + 1] = (b * x) + (d * y) + ty;
-            }
-
-            if (this._roundPixels)
-            {
-                for (let i = 0; i < vertexData.length; i++)
-                {
-                    vertexData[i] = Math.round(vertexData[i]);
-                }
-            }
-
-            this.vertexDirty = geometry.vertexDirtyId;
-        }
-
-        // set batchable bits..
-        this.uvs = geometry.buffers[1].data;
+        this.calculateVertices();
+        this.calculateUvs();
         this.indices = geometry.indexBuffer.data;
         this._tintRGB = this.shader._tintRGB;
         this._texture = this.shader.texture;
 
+        const pluginName = this.material.pluginName;
+
         renderer.batch.setObjectRenderer(renderer.plugins.batch);
-        renderer.plugins.batch.render(this);
+        renderer.plugins[pluginName].render(this);
+    }
+
+    /**
+     * Updates vertexData field based on transform and vertices
+     */
+    calculateVertices()
+    {
+        const geometry = this.geometry;
+        const vertices = geometry.buffers[0].data;
+
+        if (geometry.vertexDirtyId === this.vertexDirty && this._transformID === this.transform._worldID)
+        {
+            return;
+        }
+
+        this._transformID = this.transform._worldID;
+
+        if (this.vertexData.length !== vertices.length)
+        {
+            this.vertexData = new Float32Array(vertices.length);
+        }
+
+        const wt = this.transform.worldTransform;
+        const a = wt.a;
+        const b = wt.b;
+        const c = wt.c;
+        const d = wt.d;
+        const tx = wt.tx;
+        const ty = wt.ty;
+
+        const vertexData = this.vertexData;
+
+        for (let i = 0; i < vertexData.length / 2; i++)
+        {
+            const x = vertices[(i * 2)];
+            const y = vertices[(i * 2) + 1];
+
+            vertexData[(i * 2)] = (a * x) + (c * y) + tx;
+            vertexData[(i * 2) + 1] = (b * x) + (d * y) + ty;
+        }
+
+        if (this._roundPixels)
+        {
+            for (let i = 0; i < vertexData.length; i++)
+            {
+                vertexData[i] = Math.round(vertexData[i]);
+            }
+        }
+
+        this.vertexDirty = geometry.vertexDirtyId;
+    }
+
+    /**
+     * Updates uv field based on from geometry uv's or batchUvs
+     */
+    calculateUvs()
+    {
+        const geomUvs = this.geometry.buffers[1];
+
+        if (this.shader.uvMatrix && !this.shader.uvMatrix.isSimple)
+        {
+            if (!this.batchUvs)
+            {
+                this.batchUvs = new MeshBatchUvs(geomUvs, this.shader.uvMatrix);
+            }
+            this.batchUvs.update();
+            this.uvs = this.batchUvs.data;
+        }
+        else
+        {
+            this.uvs = geomUvs.data;
+        }
     }
 
     /**
@@ -340,14 +395,9 @@ export default class Mesh extends Container
      */
     _calculateBounds()
     {
-        // The position property could be set manually?
-        if (this.geometry.attributes.aVertexPosition)
-        {
-            const vertices = this.geometry.getAttribute('aVertexPosition').data;
+        this.calculateVertices();
 
-            // TODO - we can cache local bounds and use them if they are dirty (like graphics)
-            this._bounds.addVertices(this.transform, vertices, 0, vertices.length);
-        }
+        this._bounds.addVertexData(this.vertexData, 0, this.vertexData.length);
     }
 
     /**
