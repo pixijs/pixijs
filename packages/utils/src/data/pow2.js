@@ -5,7 +5,7 @@
  *
  * @function isPow2
  * @memberof PIXI.utils
- * @param {number} value
+ * @param {number} v input value
  * @return {number}
  */
 export function nextPow2(v)
@@ -26,10 +26,35 @@ export function nextPow2(v)
  *
  * @function isPow2
  * @memberof PIXI.utils
- * @param {number} value
- * @param {boolean} `true` if value is power of two
+ * @param {number} v input value
+ * @return {number} `true` if value is power of two
  */
 export function isPow2(v)
 {
     return !(v & (v - 1)) && (!!v);
+}
+
+/**
+ * Computes ceil of log base 2
+ *
+ * @function log2
+ * @memberof PIXI.utils
+ * @param {number} v input value
+ * @return {number} logarithm base 2
+ */
+export function log2(v)
+{
+    let r = (v > 0xFFFF) << 4;
+
+    v >>>= r;
+
+    let shift = (v > 0xFF) << 3;
+
+    v >>>= shift; r |= shift;
+    shift = (v > 0xF) << 2;
+    v >>>= shift; r |= shift;
+    shift = (v > 0x3) << 1;
+    v >>>= shift; r |= shift;
+
+    return r | (v >> 1);
 }
