@@ -8,7 +8,6 @@ const { CanvasGraphicsRenderer } = require('@pixi/canvas-graphics');
 const { Text } = require('@pixi/text');
 const { SimplePlane } = require('@pixi/mesh-extras');
 const { CanvasMeshRenderer } = require('@pixi/canvas-mesh');
-const { isWebGLSupported } = require('@pixi/utils');
 
 require('@pixi/canvas-display');
 
@@ -18,7 +17,7 @@ CanvasRenderer.registerPlugin('mesh', CanvasMeshRenderer);
 
 function withGL(fn)
 {
-    return isWebGLSupported() ? fn : undefined;
+    return !process.env.DISABLE_WEBGL ? fn : undefined;
 }
 
 describe('getLocalBounds', function ()
