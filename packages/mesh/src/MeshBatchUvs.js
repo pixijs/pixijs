@@ -18,6 +18,10 @@ export default class MeshBatchUvs
          */
         this.uvBuffer = uvBuffer;
 
+        /**
+         * Material UV matrix
+         * @member {PIXI.TextureMatrix}
+         */
         this.uvMatrix = uvMatrix;
 
         this.data = null;
