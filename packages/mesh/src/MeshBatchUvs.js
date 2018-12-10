@@ -24,6 +24,11 @@ export default class MeshBatchUvs
          */
         this.uvMatrix = uvMatrix;
 
+        /**
+         * UV Buffer data
+         * @member {Float32Array}
+         * @readonly
+         */
         this.data = null;
 
         this._bufferUpdateId = -1;
