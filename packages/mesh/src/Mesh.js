@@ -311,7 +311,7 @@ export default class Mesh extends Container
 
         const pluginName = this.material.pluginName;
 
-        renderer.batch.setObjectRenderer(renderer.plugins.batch);
+        renderer.batch.setObjectRenderer(renderer.plugins[pluginName]);
         renderer.plugins[pluginName].render(this);
     }
 
