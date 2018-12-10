@@ -12,6 +12,10 @@ export default class MeshBatchUvs
      */
     constructor(uvBuffer, uvMatrix)
     {
+        /**
+         * Buffer with normalized UV's
+         * @member {PIXI.Buffer}
+         */
         this.uvBuffer = uvBuffer;
 
         this.uvMatrix = uvMatrix;
