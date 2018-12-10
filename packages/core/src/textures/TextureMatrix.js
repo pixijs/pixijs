@@ -65,6 +65,8 @@ export default class TextureMatrix
 
         /**
          * If texture size is the same as baseTexture
+         * @member {boolean}
+         * @default false
          * @readonly
          */
         this.isSimple = false;
