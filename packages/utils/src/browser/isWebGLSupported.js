@@ -1,6 +1,3 @@
-// Cache local result
-let hasWebGL;
-
 /**
  * Helper for checking for WebGL support.
  *
@@ -10,19 +7,12 @@ let hasWebGL;
  */
 export function isWebGLSupported()
 {
-    if (hasWebGL !== undefined)
-    {
-        return hasWebGL;
-    }
-
     const contextOptions = { stencil: true, failIfMajorPerformanceCaveat: true };
 
     try
     {
         if (!window.WebGLRenderingContext)
         {
-            hasWebGL = false;
-
             return false;
         }
 
@@ -42,14 +32,11 @@ export function isWebGLSupported()
         }
 
         gl = null;
-        hasWebGL = success;
 
         return success;
     }
     catch (e)
     {
-        hasWebGL = false;
-
         return false;
     }
 }
