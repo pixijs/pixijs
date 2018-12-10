@@ -11,12 +11,11 @@ import { settings } from './settings';
  */
 Mesh.prototype._renderCanvas = function _renderCanvas(renderer)
 {
-    if (this.shader.update)
+    if (this.shader.uvMatrix)
     {
-        this.shader.update();
+        this.shader.uvMatrix.update();
+        this.calculateUvs();
     }
-
-    this.calculateUvs();
 
     this.material._renderCanvas(renderer, this);
 };

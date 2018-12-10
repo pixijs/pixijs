@@ -302,9 +302,14 @@ export default class Mesh extends Container
     {
         const geometry = this.geometry;
 
+        if (this.shader.uvMatrix)
+        {
+            this.shader.uvMatrix.update();
+            this.calculateUvs();
+        }
+
         // set properties for batching..
         this.calculateVertices();
-        this.calculateUvs();
         this.indices = geometry.indexBuffer.data;
         this._tintRGB = this.shader._tintRGB;
         this._texture = this.shader.texture;
@@ -372,7 +377,7 @@ export default class Mesh extends Container
     {
         const geomUvs = this.geometry.buffers[1];
 
-        if (this.shader.uvMatrix && !this.shader.uvMatrix.isSimple)
+        if (!this.shader.uvMatrix.isSimple)
         {
             if (!this.batchUvs)
             {
