@@ -39,6 +39,9 @@ export default class MeshBatchUvs
             return;
         }
 
+        this._bufferUpdateId = this.uvBuffer._updateID;
+        this._textureUpdateId = this.uvMatrix._updateID;
+
         const data = this.uvBuffer.data;
 
         if (!this.data || this.data.length !== data.length)
