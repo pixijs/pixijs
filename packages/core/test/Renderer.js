@@ -1,13 +1,13 @@
 const { Renderer } = require('../');
 const { settings } = require('@pixi/settings');
 const { ENV } = require('@pixi/constants');
-const { isWebGLSupported, skipHello } = require('@pixi/utils');
+const { skipHello } = require('@pixi/utils');
 
 skipHello();
 
 function withGL(fn)
 {
-    return isWebGLSupported() ? (fn || true) : undefined;
+    return !process.env.DISABLE_WEBGL ? (fn || true) : undefined;
 }
 
 describe('PIXI.Renderer', function ()

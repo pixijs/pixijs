@@ -71,7 +71,7 @@ export default class SVGResource extends BaseImageResource
             };
 
             // Convert SVG inline string to data-uri
-            if (/^\<svg/.test(this.svg.trim()))
+            if ((/^\<svg/).test(this.svg.trim()))
             {
                 this.svg = `data:image/svg+xml;utf8,${this.svg}`;
             }

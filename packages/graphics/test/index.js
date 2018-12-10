@@ -3,7 +3,7 @@ const { Renderer, BatchRenderer } = require('@pixi/core');
 const { Graphics } = require('../');
 const { BLEND_MODES } = require('@pixi/constants');
 const { Point } = require('@pixi/math');
-const { isWebGLSupported, skipHello } = require('@pixi/utils');
+const { skipHello } = require('@pixi/utils');
 
 Renderer.registerPlugin('batch', BatchRenderer);
 
@@ -11,7 +11,7 @@ skipHello();
 
 function withGL(fn)
 {
-    return isWebGLSupported() ? (fn || true) : undefined;
+    return !process.env.DISABLE_WEBGL ? (fn || true) : undefined;
 }
 
 describe('PIXI.Graphics', function ()
@@ -299,51 +299,13 @@ describe('PIXI.Graphics', function ()
 
     describe('drawCircle', function ()
     {
-        it.skip('should have no gaps in line border', withGL(function ()
+        it('should have no gaps in line border', withGL(function ()
         {
             const renderer = new Renderer(200, 200, {});
 
             try
             {
                 const graphics = new Graphics();
-
-                graphics.lineStyle(15, 0x8FC7E6);
-                graphics.drawCircle(100, 100, 30);
-
-                renderer.render(graphics);
-
-                const points = graphics.geometry.graphicsData[0].points;// ._webGL[0].data[0].points;
-                const pointSize = 6; // Position Vec2 + Color/Alpha Vec4
-                const firstX = points[0];
-                const firstY = points[1];
-                const secondX = points[pointSize];
-                const secondY = points[pointSize + 1];
-                const secondToLastX = points[points.length - (pointSize * 2)];
-                const secondToLastY = points[points.length - (pointSize * 2) + 1];
-                const lastX = points[points.length - pointSize];
-                const lastY = points[points.length - pointSize + 1];
-
-                expect(firstX).to.equals(secondToLastX);
-                expect(firstY).to.equals(secondToLastY);
-                expect(secondX).to.equals(lastX);
-                expect(secondY).to.equals(lastY);
-            }
-            finally
-            {
-                renderer.destroy();
-            }
-        }));
-    });
-
-    describe('drawCircle', function ()
-    {
-        it('should have no gaps in line border', withGL(function ()
-        {
-            const renderer = new PIXI.WebGLRenderer(200, 200, {});
-
-            try
-            {
-                const graphics = new PIXI.Graphics();
 
                 graphics.lineStyle(15, 0x8FC7E6);
                 graphics.drawCircle(100, 100, 30);
@@ -370,7 +332,7 @@ describe('PIXI.Graphics', function ()
     {
         it('should fill two triangles', withGL(function ()
         {
-            const graphics = new PIXI.Graphics();
+            const graphics = new Graphics();
 
             graphics.beginFill(0xffffff, 1.0);
             graphics.moveTo(50, 50);
@@ -393,7 +355,7 @@ describe('PIXI.Graphics', function ()
 
         it('should honor lineStyle break', withGL(function ()
         {
-            const graphics = new PIXI.Graphics();
+            const graphics = new Graphics();
 
             graphics.lineStyle(1.0, 0xffffff);
             graphics.moveTo(50, 50);

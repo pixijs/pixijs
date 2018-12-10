@@ -5,7 +5,7 @@ import Quad from '../utils/Quad';
 import QuadUv from '../utils/QuadUv';
 import { Rectangle } from '@pixi/math';
 import * as filterTransforms from './filterTransforms';
-import bitTwiddle from 'bit-twiddle';
+import { nextPow2 } from '@pixi/utils';
 import UniformGroup from '../shader/UniformGroup';
 import { DRAW_MODES } from '@pixi/constants';
 
@@ -449,8 +449,8 @@ export default class FilterSystem extends System
 
         if (minWidth !== this._pixelsWidth || minHeight !== this._pixelsHeight)
         {
-            minWidth = bitTwiddle.nextPow2(minWidth);
-            minHeight = bitTwiddle.nextPow2(minHeight);
+            minWidth = nextPow2(minWidth);
+            minHeight = nextPow2(minHeight);
             key = ((minWidth & 0xFFFF) << 16) | (minHeight & 0xFFFF);
         }
 

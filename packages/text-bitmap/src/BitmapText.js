@@ -179,7 +179,7 @@ export default class BitmapText extends Container
             const charCode = text.charCodeAt(i);
             const char = text.charAt(i);
 
-            if (/(?:\s)/.test(char))
+            if ((/(?:\s)/).test(char))
             {
                 lastBreakPos = i;
                 lastBreakWidth = lastLineWidth;
@@ -242,7 +242,7 @@ export default class BitmapText extends Container
 
         if (lastChar !== '\r' && lastChar !== '\n')
         {
-            if (/(?:\s)/.test(lastChar))
+            if ((/(?:\s)/).test(lastChar))
             {
                 lastLineWidth = lastBreakWidth;
             }

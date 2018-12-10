@@ -1,5 +1,5 @@
 const { SimplePlane } = require('../');
-const { isWebGLSupported, skipHello } = require('@pixi/utils');
+const { skipHello } = require('@pixi/utils');
 const { Loader } = require('@pixi/loaders');
 const { Point } = require('@pixi/math');
 const { RenderTexture, Texture } = require('@pixi/core');
@@ -8,7 +8,7 @@ skipHello();
 
 function withGL(fn)
 {
-    return isWebGLSupported() ? fn : undefined;
+    return !process.env.DISABLE_WEBGL ? fn : undefined;
 }
 
 // TODO: fix with webglrenderer
