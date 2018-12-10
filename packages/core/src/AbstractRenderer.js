@@ -1,4 +1,4 @@
-import { hex2string, hex2rgb } from '@pixi/utils';
+import { hex2string, hex2rgb, deprecation } from '@pixi/utils';
 import { Matrix, Rectangle } from '@pixi/math';
 import { RENDERER_TYPE } from '@pixi/constants';
 import { settings } from '@pixi/settings';
@@ -55,9 +55,11 @@ export default class AbstractRenderer extends EventEmitter
         // Add the default render options
         options = Object.assign({}, settings.RENDER_OPTIONS, options);
 
+        // Deprecation notice for renderer roundPixels option
         if (options.roundPixels)
         {
-            // TODO - Log a warning to users telling them to use PIXI.settings.ROUND_PIXELS instead
+            settings.ROUND_PIXELS = options.roundPixels;
+            deprecation('5.0.0', 'Renderer roundPixels option is deprecated, please use PIXI.settings.ROUND_PIXELS', 2);
         }
 
         /**
