@@ -3,7 +3,7 @@ const { Renderer, BatchRenderer } = require('@pixi/core');
 const { Graphics } = require('../');
 const { BLEND_MODES } = require('@pixi/constants');
 const { Point } = require('@pixi/math');
-const { isWebGLSupported, skipHello } = require('@pixi/utils');
+const { skipHello } = require('@pixi/utils');
 
 Renderer.registerPlugin('batch', BatchRenderer);
 
@@ -11,7 +11,7 @@ skipHello();
 
 function withGL(fn)
 {
-    return isWebGLSupported() ? (fn || true) : undefined;
+    return !process.env.DISABLE_WEBGL ? (fn || true) : undefined;
 }
 
 describe('PIXI.Graphics', function ()

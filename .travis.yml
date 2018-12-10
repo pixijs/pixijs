@@ -4,6 +4,7 @@ node_js:
 
 env:
   - CXX=g++-4.8
+  - DISABLE_WEBGL=true
 
 addons:
   apt:
