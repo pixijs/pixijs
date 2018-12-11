@@ -27,7 +27,7 @@ export function nextPow2(v)
  * @function isPow2
  * @memberof PIXI.utils
  * @param {number} v input value
- * @return {number} `true` if value is power of two
+ * @return {boolean} `true` if value is power of two
  */
 export function isPow2(v)
 {
