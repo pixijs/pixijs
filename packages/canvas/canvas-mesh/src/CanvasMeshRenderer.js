@@ -122,7 +122,7 @@ export default class CanvasMeshRenderer
     {
         const context = this.renderer.context;
         const vertices = mesh.geometry.buffers[0].data;
-        const {uvs, texture} = mesh;
+        const { uvs, texture } = mesh;
 
         if (!texture.valid)
         {
