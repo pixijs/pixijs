@@ -169,9 +169,10 @@ export default class BatchRenderer extends ObjectRenderer
 
     getIndexBuffer(size)
     {
-        const roundedP2 = nextPow2(Math.ceil(size / 8));
+        // 12 indices is enough for 2 quads
+        const roundedP2 = nextPow2(Math.ceil(size / 12));
         const roundedSizeIndex = log2(roundedP2);
-        const roundedSize = roundedP2 * 8;
+        const roundedSize = roundedP2 * 12;
 
         while (this.iBuffers.length < roundedSizeIndex)
         {
@@ -190,9 +191,10 @@ export default class BatchRenderer extends ObjectRenderer
 
     getAttributeBuffer(size)
     {
-        const roundedP2 = nextPow2(Math.ceil(size / 12));
+        // 8 vertices is enough for 2 quads
+        const roundedP2 = nextPow2(Math.ceil(size / 8));
         const roundedSizeIndex = log2(roundedP2);
-        const roundedSize = roundedP2 * 12;
+        const roundedSize = roundedP2 * 8;
 
         while (this.aBuffers.length < roundedSizeIndex)
         {
