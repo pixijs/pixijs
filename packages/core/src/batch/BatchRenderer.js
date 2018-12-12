@@ -174,9 +174,9 @@ export default class BatchRenderer extends ObjectRenderer
         const roundedSizeIndex = log2(roundedP2);
         const roundedSize = roundedP2 * 12;
 
-        while (this.iBuffers.length <= roundedSizeIndex)
+        if (this.iBuffers.length <= roundedSizeIndex)
         {
-            this.iBuffers.push(null);
+            this.iBuffers.length = roundedSizeIndex + 1;
         }
 
         let buffer = this.iBuffers[roundedSizeIndex];
@@ -196,9 +196,9 @@ export default class BatchRenderer extends ObjectRenderer
         const roundedSizeIndex = log2(roundedP2);
         const roundedSize = roundedP2 * 8;
 
-        while (this.aBuffers.length <= roundedSizeIndex)
+        if (this.aBuffers.length <= roundedSizeIndex)
         {
-            this.aBuffers.push(null);
+            this.iBuffers.length = roundedSizeIndex + 1;
         }
 
         let buffer = this.aBuffers[roundedSize];
