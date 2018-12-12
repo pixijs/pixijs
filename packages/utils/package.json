@@ -29,7 +29,7 @@
     "@pixi/settings": "^5.0.0-alpha.3",
     "earcut": "^2.1.3",
     "eventemitter3": "^2.0.0",
-    "ismobilejs": "^0.4.0",
+    "ismobilejs": "^0.5.1",
     "remove-array-items": "^1.0.0",
     "url": "^0.11.0"
   },
