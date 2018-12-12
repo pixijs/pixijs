@@ -1,4 +1,4 @@
-import { SimpleMesh } from '@pixi/mesh-extras';
+import { SimpleRope } from '@pixi/mesh-extras';
 
 /**
  * Renders the object using the Canvas renderer
@@ -8,11 +8,13 @@ import { SimpleMesh } from '@pixi/mesh-extras';
  * @memberof PIXI.Mesh#
  * @param {PIXI.CanvasRenderer} renderer - The canvas renderer.
  */
-SimpleMesh.prototype._renderCanvas = function _renderCanvas(renderer)
+SimpleRope.prototype._renderCanvas = function _renderCanvas(renderer)
 {
-    if (this.autoUpdate)
+    if (this.autoUpdate
+        || this.geometry.width !== this.shader.texture.height)
     {
-        this.geometry.getAttribute('aVertexPosition').update();
+        this.geometry.width = this.shader.texture.height;
+        this.geometry.update();
     }
 
     if (this.shader.update)

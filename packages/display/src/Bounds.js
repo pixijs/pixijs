@@ -210,12 +210,43 @@ export default class Bounds
     }
 
     /**
-     * Add an array of vertices
+     * Adds screen vertices from array
      *
-     * @param {PIXI.TransformBase} transform - TODO
-     * @param {Float32Array} vertices - TODO
-     * @param {number} beginOffset - TODO
-     * @param {number} endOffset - TODO
+     * @param {Float32Array} vertexData - calculated vertices
+     * @param {number} beginOffset - begin offset
+     * @param {number} endOffset - end offset, excluded
+     */
+    addVertexData(vertexData, beginOffset, endOffset)
+    {
+        let minX = this.minX;
+        let minY = this.minY;
+        let maxX = this.maxX;
+        let maxY = this.maxY;
+
+        for (let i = beginOffset; i < endOffset; i += 2)
+        {
+            const x = vertexData[i];
+            const y = vertexData[i + 1];
+
+            minX = x < minX ? x : minX;
+            minY = y < minY ? y : minY;
+            maxX = x > maxX ? x : maxX;
+            maxY = y > maxY ? y : maxY;
+        }
+
+        this.minX = minX;
+        this.minY = minY;
+        this.maxX = maxX;
+        this.maxY = maxY;
+    }
+
+    /**
+     * Add an array of mesh vertices
+     *
+     * @param {PIXI.TransformBase} transform - mesh transform
+     * @param {Float32Array} vertices - mesh coordinates in array
+     * @param {number} beginOffset - begin offset
+     * @param {number} endOffset - end offset, excluded
      */
     addVertices(transform, vertices, beginOffset, endOffset)
     {

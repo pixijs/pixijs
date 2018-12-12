@@ -41,7 +41,7 @@ export default class TextureMatrix
          * @member {number} Tracks Texture frame changes
          * @private
          */
-        this._lastTextureID = -1;
+        this._updateID = -1;
 
         /**
          * Changes frame clamping
@@ -62,6 +62,14 @@ export default class TextureMatrix
          * @member {number}
          */
         this.clampMargin = (typeof clampMargin === 'undefined') ? 0.5 : clampMargin;
+
+        /**
+         * If texture size is the same as baseTexture
+         * @member {boolean}
+         * @default false
+         * @readonly
+         */
+        this.isSimple = false;
     }
 
     /**
@@ -121,12 +129,12 @@ export default class TextureMatrix
         }
 
         if (!forceUpdate
-            && this._lastTextureID === tex._updateID)
+            && this._updateID === tex._updateID)
         {
             return false;
         }
 
-        this._lastTextureID = tex._updateID;
+        this._updateID = tex._updateID;
 
         const uvs = tex._uvs;
 
@@ -153,6 +161,10 @@ export default class TextureMatrix
         frame[3] = (tex._frame.y + tex._frame.height - margin + offset) / texBase.height;
         this.uClampOffset[0] = offset / texBase.realWidth;
         this.uClampOffset[1] = offset / texBase.realHeight;
+
+        this.isSimple = tex._frame.width === texBase.width
+            && tex._frame.height === texBase.height
+            && tex.rotate === 0;
 
         return true;
     }

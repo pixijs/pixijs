@@ -1,6 +1,8 @@
 export { default as CanvasMeshRenderer } from './CanvasMeshRenderer';
 
 import './settings';
-import './SimpleMesh';
+import './MeshMaterial';
 import './NineSlicePlane';
 import './Mesh';
+import './SimpleMesh';
+import './SimpleRope';
