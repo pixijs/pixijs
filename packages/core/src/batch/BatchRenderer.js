@@ -4,7 +4,7 @@ import ObjectRenderer from './ObjectRenderer';
 import checkMaxIfStatementsInShader from '../shader/utils/checkMaxIfStatementsInShader';
 
 import { settings } from '@pixi/settings';
-import { premultiplyBlendMode, premultiplyTint } from '@pixi/utils';
+import { premultiplyBlendMode, premultiplyTint, nextPow2, log2 } from '@pixi/utils';
 
 import BatchBuffer from './BatchBuffer';
 import generateMultiTextureShader from './generateMultiTextureShader';
@@ -169,13 +169,21 @@ export default class BatchRenderer extends ObjectRenderer
 
     getIndexBuffer(size)
     {
-        const roundedSize = Math.ceil(size / 100.0) * 100;
+        // 12 indices is enough for 2 quads
+        const roundedP2 = nextPow2(Math.ceil(size / 12));
+        const roundedSizeIndex = log2(roundedP2);
+        const roundedSize = roundedP2 * 12;
 
-        let buffer = this.iBuffers[roundedSize];
+        if (this.iBuffers.length <= roundedSizeIndex)
+        {
+            this.iBuffers.length = roundedSizeIndex + 1;
+        }
+
+        let buffer = this.iBuffers[roundedSizeIndex];
 
         if (!buffer)
         {
-            this.iBuffers[roundedSize] = buffer = new Uint16Array(roundedSize);
+            this.iBuffers[roundedSizeIndex] = buffer = new Uint16Array(roundedSize);
         }
 
         return buffer;
@@ -183,7 +191,15 @@ export default class BatchRenderer extends ObjectRenderer
 
     getAttributeBuffer(size)
     {
-        const roundedSize = Math.ceil(size / 100.0) * 100;
+        // 8 vertices is enough for 2 quads
+        const roundedP2 = nextPow2(Math.ceil(size / 8));
+        const roundedSizeIndex = log2(roundedP2);
+        const roundedSize = roundedP2 * 8;
+
+        if (this.aBuffers.length <= roundedSizeIndex)
+        {
+            this.iBuffers.length = roundedSizeIndex + 1;
+        }
 
         let buffer = this.aBuffers[roundedSize];
 
