@@ -363,7 +363,7 @@ export default class ParticleRenderer extends core.ObjectRenderer
      *
      * @param {PIXI.DisplayObject[]} children - the array of display objects to render
      * @param {number} startIndex - the index to start from in the children array
-     * @param {number} amount - the amount of children that will have their rotation uploaded
+     * @param {number} amount - the amount of children that will have their Uvs uploaded
      * @param {number[]} array - The vertices to upload.
      * @param {number} stride - Stride to use for iteration.
      * @param {number} offset - Offset to start at.
@@ -374,39 +374,22 @@ export default class ParticleRenderer extends core.ObjectRenderer
         {
             const textureUvs = children[startIndex + i]._texture._uvs;
 
-            if (textureUvs)
+            for (let j = 0; j < 4; j++)
             {
-                array[offset] = textureUvs.x0;
-                array[offset + 1] = textureUvs.y0;
+                let textureUvX = 0;
+                let textureUvY = 0;
 
-                array[offset + stride] = textureUvs.x1;
-                array[offset + stride + 1] = textureUvs.y1;
+                if (textureUvs)
+                {
+                    textureUvX = textureUvs[`x${j}`];
+                    textureUvY = textureUvs[`y${j}`];
+                }
 
-                array[offset + (stride * 2)] = textureUvs.x2;
-                array[offset + (stride * 2) + 1] = textureUvs.y2;
-
-                array[offset + (stride * 3)] = textureUvs.x3;
-                array[offset + (stride * 3) + 1] = textureUvs.y3;
-
-                offset += stride * 4;
+                array[offset + (stride * j)] = textureUvX;
+                array[offset + (stride * j) + 1] = textureUvY;
             }
-            else
-            {
-                // TODO you know this can be easier!
-                array[offset] = 0;
-                array[offset + 1] = 0;
 
-                array[offset + stride] = 0;
-                array[offset + stride + 1] = 0;
-
-                array[offset + (stride * 2)] = 0;
-                array[offset + (stride * 2) + 1] = 0;
-
-                array[offset + (stride * 3)] = 0;
-                array[offset + (stride * 3) + 1] = 0;
-
-                offset += stride * 4;
-            }
+            offset += stride * 4;
         }
     }
 
@@ -414,7 +397,7 @@ export default class ParticleRenderer extends core.ObjectRenderer
      *
      * @param {PIXI.DisplayObject[]} children - the array of display objects to render
      * @param {number} startIndex - the index to start from in the children array
-     * @param {number} amount - the amount of children that will have their rotation uploaded
+     * @param {number} amount - the amount of children that will have their tint uploaded
      * @param {number[]} array - The vertices to upload.
      * @param {number} stride - Stride to use for iteration.
      * @param {number} offset - Offset to start at.
