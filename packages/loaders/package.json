@@ -28,7 +28,7 @@
     "@pixi/core": "^5.0.0-alpha.3",
     "@pixi/utils": "^5.0.0-alpha.3",
     "eventemitter3": "^2.0.0",
-    "resource-loader": "^2.2.0"
+    "resource-loader": "^2.2.2"
   },
   "devDependencies": {
     "floss": "^2.1.5"
