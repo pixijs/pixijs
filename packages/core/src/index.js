@@ -21,6 +21,7 @@ export { default as State } from './state/State';
 export { default as ObjectRenderer } from './batch/ObjectRenderer';
 export { default as BatchRenderer } from './batch/BatchRenderer';
 export { default as BatchGeometry } from './batch/BatchGeometry';
+export { default as BatchDrawCall } from './batch/BatchDrawCall';
 export { default as generateMultiTextureShader } from './batch/generateMultiTextureShader';
 export { default as Quad } from './utils/Quad';
 export { default as QuadUv } from './utils/QuadUv';

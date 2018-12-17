@@ -1,4 +1,6 @@
 import BatchGeometry from './BatchGeometry';
+import BatchDrawCall from './BatchDrawCall';
+
 import State from '../state/State';
 import ObjectRenderer from './ObjectRenderer';
 import checkMaxIfStatementsInShader from '../shader/utils/checkMaxIfStatementsInShader';
@@ -87,7 +89,7 @@ export default class BatchRenderer extends ObjectRenderer
 
         for (let k = 0; k < this.size / 4; k++)
         {
-            this.groups[k] = { textures: [], textureCount: 0, ids: [], size: 0, start: 0, blend: 0 };
+            this.groups[k] = new BatchDrawCall();
         }
 
         this.elements = [];

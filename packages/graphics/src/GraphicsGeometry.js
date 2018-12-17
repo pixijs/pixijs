@@ -1,6 +1,6 @@
-import { BatchGeometry } from '@pixi/core';
 import { SHAPES } from '@pixi/math';
 import { Bounds } from '@pixi/display';
+import { BatchGeometry, BatchDrawCall } from '@pixi/core';
 
 import GraphicsData from './GraphicsData';
 import buildCircle from './utils/buildCircle';
@@ -27,6 +27,22 @@ fillCommands[SHAPES.CIRC] = buildCircle;
 fillCommands[SHAPES.ELIP] = buildCircle;
 fillCommands[SHAPES.RECT] = buildRectangle;
 fillCommands[SHAPES.RREC] = buildRoundedRectangle;
+
+/**
+ * A little internal structure to hold interim batch objects.
+ * @private
+ */
+class BatchPart
+{
+    constructor()
+    {
+        this.style = null;
+        this.size = 0;
+        this.start = 0;
+        this.attribStart = 0;
+        this.attribSize = 0;
+    }
+}
 
 /**
  * The Graphics class contains methods used to draw primitive shapes such as lines, circles and
@@ -407,7 +423,7 @@ export default class GraphicsGeometry extends BatchGeometry
 
         let batchPart = this.batches.pop()
             || BATCH_POOL.pop()
-            || { style: null, size: 0, start: 0, attribStart: 0, attribSize: 0 };
+            || new BatchPart();
 
         batchPart.style = batchPart.style
             || this.graphicsData[0].fillStyle
@@ -460,7 +476,8 @@ export default class GraphicsGeometry extends BatchGeometry
 
                     if (batchPart.size > 0)
                     {
-                        batchPart = BATCH_POOL.pop() || { style, size: 0, start: 0, attribStart: 0, attribSize: 0 };
+                        batchPart = BATCH_POOL.pop() || new BatchPart();
+
                         this.batches.push(batchPart);
                     }
 
@@ -548,13 +565,11 @@ export default class GraphicsGeometry extends BatchGeometry
 
         this.drawCalls.length = 0;
 
-        let lastIndex = this.indices.length;
-
         const uvs = this.uvs;
         const colors = this.colors;
         const textureIds = this.textureIds;
 
-        let currentGroup =  DRAW_CALL_POOL.pop() || { textures: [], textureCount: 0, size: 0, start: 0, type: 4 };
+        let currentGroup =  DRAW_CALL_POOL.pop() || new BatchDrawCall();
 
         currentGroup.textureCount = 0;
         currentGroup.start = 0;
@@ -562,8 +577,10 @@ export default class GraphicsGeometry extends BatchGeometry
         let textureCount = 0;
         let currentTexture = null;
         let textureId = 0;
+        let native = false;
+        let drawMode = 4;
 
-        lastIndex = 0;
+        let index = 0;
 
         this.drawCalls.push(currentGroup);
 
@@ -579,6 +596,17 @@ export default class GraphicsGeometry extends BatchGeometry
 
             const nextTexture = style.texture.baseTexture;
 
+            if (native !== style.native)
+            {
+                native = style.native;
+                drawMode = native ? 1 : 4;
+
+                // force the batch to break!
+                currentTexture = null;
+                textureCount = MAX_TEXTURES;
+                TICK++;
+            }
+
             if (currentTexture !== nextTexture)
             {
                 currentTexture = nextTexture;
@@ -588,20 +616,19 @@ export default class GraphicsGeometry extends BatchGeometry
                     if (textureCount === MAX_TEXTURES)
                     {
                         TICK++;
+
                         textureCount = 0;
 
-                        const index = data.start;
+                        if (currentGroup.size > 0)
+                        {
+                            currentGroup = DRAW_CALL_POOL.pop() || new BatchDrawCall();
+                            this.drawCalls.push(currentGroup);
+                        }
 
-                        currentGroup.size = index - lastIndex;
-
-                        currentGroup = DRAW_CALL_POOL.pop() || { textures: [], textureCount: 0, size: 0, start: 0, type: 4 };
-
+                        currentGroup.start = index;
+                        currentGroup.size = 0;
                         currentGroup.textureCount = 0;
-
-                        currentGroup.start = lastIndex;
-                        this.drawCalls.push(currentGroup);
-
-                        lastIndex = index;
+                        currentGroup.type = drawMode;
                     }
 
                     // TODO add this to the render part..
@@ -615,17 +642,14 @@ export default class GraphicsGeometry extends BatchGeometry
                 }
             }
 
-            const size = data.attribSize;
+            currentGroup.size += data.size;
+            index += data.size;
 
             textureId = nextTexture._id;
 
-            this.addColors(colors, style.color, style.alpha, size);
-            this.addTextureIds(textureIds, textureId, size);
+            this.addColors(colors, style.color, style.alpha, data.attribSize);
+            this.addTextureIds(textureIds, textureId, data.attribSize);
         }
-
-        const index = this.indices.length;
-
-        currentGroup.size = index - lastIndex;
 
         // upload..
         // merge for now!
