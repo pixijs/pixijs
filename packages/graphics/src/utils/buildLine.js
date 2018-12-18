@@ -246,7 +246,8 @@ function buildLine(graphicsData, graphicsGeometry)
 function buildNativeLine(graphicsData, graphicsGeometry)
 {
     let i = 0;
-    const points = graphicsData.points;
+
+    const points = graphicsData.points || graphicsData.shape.points;
 
     if (points.length === 0) return;
 
