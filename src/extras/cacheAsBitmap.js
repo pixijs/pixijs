@@ -138,7 +138,7 @@ DisplayObject.prototype._renderCachedWebGL = function _renderCachedWebGL(rendere
 
     this._initCachedDisplayObject(renderer);
 
-    this._cacheData.sprite._transformID = -1;
+    this._cacheData.sprite.transform._worldID = this.transform._worldID;
     this._cacheData.sprite.worldAlpha = this.worldAlpha;
     this._cacheData.sprite._renderWebGL(renderer);
 };
@@ -180,6 +180,8 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
         bounds.pad(padding);
     }
 
+    bounds.ceil(core.settings.RESOLUTION);
+
     // for now we cache the current renderTarget that the webGL renderer is currently using.
     // this could be more elegent..
     const cachedRenderTarget = renderer._activeRenderTarget;
@@ -188,7 +190,7 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
 
     // this renderTexture will be used to store the cached DisplayObject
 
-    const renderTexture = core.RenderTexture.create(bounds.width | 0, bounds.height | 0);
+    const renderTexture = core.RenderTexture.create(bounds.width, bounds.height);
 
     const textureCacheId = `cacheAsBitmap_${uid()}`;
 
@@ -271,8 +273,7 @@ DisplayObject.prototype._renderCachedCanvas = function _renderCachedCanvas(rende
     this._initCachedDisplayObjectCanvas(renderer);
 
     this._cacheData.sprite.worldAlpha = this.worldAlpha;
-
-    this._cacheData.sprite.renderCanvas(renderer);
+    this._cacheData.sprite._renderCanvas(renderer);
 };
 
 // TODO this can be the same as the webGL verison.. will need to do a little tweaking first though..
@@ -299,7 +300,9 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
 
     const cachedRenderTarget = renderer.context;
 
-    const renderTexture = core.RenderTexture.create(bounds.width | 0, bounds.height | 0);
+    bounds.ceil(core.settings.RESOLUTION);
+
+    const renderTexture = core.RenderTexture.create(bounds.width, bounds.height);
 
     const textureCacheId = `cacheAsBitmap_${uid()}`;
 
@@ -318,7 +321,7 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
     m.ty -= bounds.y;
 
     // m.append(this.transform.worldTransform.)
-     // set all properties to there original so we can render to a texture
+    // set all properties to there original so we can render to a texture
     this.renderCanvas = this._cacheData.originalRenderCanvas;
 
     // renderTexture.render(this, m, true);
@@ -328,7 +331,7 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
     renderer.context = cachedRenderTarget;
 
     this.renderCanvas = this._renderCachedCanvas;
-    this._calculateBounds = this._calculateCachedBounds;
+    this.calculateBounds = this._calculateCachedBounds;
 
     this._mask = null;
     this.filterArea = null;
@@ -367,7 +370,10 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
  */
 DisplayObject.prototype._calculateCachedBounds = function _calculateCachedBounds()
 {
+    this._bounds.clear();
+    this._cacheData.sprite.transform._worldID = this.transform._worldID;
     this._cacheData.sprite._calculateBounds();
+    this._lastBoundsID = this._boundsID;
 };
 
 /**
