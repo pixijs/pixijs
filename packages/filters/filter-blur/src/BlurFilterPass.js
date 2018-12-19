@@ -2,7 +2,6 @@ import { Filter } from '@pixi/core';
 import { settings } from '@pixi/settings';
 import generateBlurVertSource from './generateBlurVertSource';
 import generateBlurFragSource from './generateBlurFragSource';
-import getMaxBlurKernelSize from './getMaxBlurKernelSize';
 
 /**
  * The BlurFilterPass applies a horizontal or vertical Gaussian blur to an object.
@@ -42,23 +41,10 @@ export default class BlurFilterPass extends Filter
         this.quality = quality || 4;
 
         this.blur = strength || 8;
-
-        this.firstRun = true;
     }
 
     apply(filterManager, input, output, clear)
     {
-        if (this.firstRun)
-        {
-            const gl = filterManager.renderer.gl;
-            const kernelSize = getMaxBlurKernelSize(gl);
-
-            this.vertexSrc = generateBlurVertSource(kernelSize, true);
-            this.fragmentSrc = generateBlurFragSource(kernelSize);
-
-            this.firstRun = false;
-        }
-
         if (output)
         {
             if (this.horizontal)
