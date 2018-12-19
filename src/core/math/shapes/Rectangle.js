@@ -236,4 +236,22 @@ export default class Rectangle
         this.y = y1;
         this.height = y2 - y1;
     }
+
+    /**
+     * Enlarges rectangle that way its corners lie on grid
+     *
+     * @param {number} [resolution=1] resolution
+     * @param {number} [eps=0.001] precision
+     */
+    ceil(resolution = 1, eps = 0.001)
+    {
+        const x2 = Math.ceil((this.x + this.width - eps) * resolution) / resolution;
+        const y2 = Math.ceil((this.y + this.height - eps) * resolution) / resolution;
+
+        this.x = Math.floor((this.x + eps) * resolution) / resolution;
+        this.y = Math.floor((this.y + eps) * resolution) / resolution;
+
+        this.width = x2 - this.x;
+        this.height = y2 - this.y;
+    }
 }
