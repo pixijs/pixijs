@@ -563,7 +563,7 @@ export default class Graphics extends Container
      * @param {PIXI.Texture} [texture=PIXI.Texture.WHITE] - Texture to fill
      * @param {number} [color=0xffffff] - Background to fill behind texture
      * @param {number} [alpha=1] - Alpha of fill
-     * @param {PIXI.Matrix} [textureMatrix=null] - Transform matrix
+     * @param {PIXI.Matrix} [matrix=null] - Transform matrix
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
     beginTextureFill(texture = Texture.WHITE, color = 0xFFFFFF, alpha = 1, matrix = null)
@@ -581,6 +581,12 @@ export default class Graphics extends Container
         }
         else
         {
+            if (matrix)
+            {
+                matrix = matrix.clone();
+                matrix.invert();
+            }
+
             Object.assign(this._fillStyle, {
                 color,
                 alpha,
