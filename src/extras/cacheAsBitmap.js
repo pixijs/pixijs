@@ -180,6 +180,8 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
         bounds.pad(padding);
     }
 
+    bounds.ceil(core.settings.RESOLUTION);
+
     // for now we cache the current renderTarget that the webGL renderer is currently using.
     // this could be more elegent..
     const cachedRenderTarget = renderer._activeRenderTarget;
@@ -188,7 +190,7 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
 
     // this renderTexture will be used to store the cached DisplayObject
 
-    const renderTexture = core.RenderTexture.create(bounds.width | 0, bounds.height | 0);
+    const renderTexture = core.RenderTexture.create(bounds.width, bounds.height);
 
     const textureCacheId = `cacheAsBitmap_${uid()}`;
 
@@ -298,7 +300,9 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
 
     const cachedRenderTarget = renderer.context;
 
-    const renderTexture = core.RenderTexture.create(bounds.width | 0, bounds.height | 0);
+    bounds.ceil(core.settings.RESOLUTION);
+
+    const renderTexture = core.RenderTexture.create(bounds.width, bounds.height);
 
     const textureCacheId = `cacheAsBitmap_${uid()}`;
 
