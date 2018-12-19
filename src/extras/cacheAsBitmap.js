@@ -369,7 +369,6 @@ DisplayObject.prototype._calculateCachedBounds = function _calculateCachedBounds
 {
     this._cacheData.sprite.transform._worldID = this.transform._worldID;
     this._cacheData.sprite._calculateBounds();
-    this._lastBoundsID = this._boundsID;
 };
 
 /**
