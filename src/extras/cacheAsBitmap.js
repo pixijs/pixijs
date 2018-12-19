@@ -138,7 +138,7 @@ DisplayObject.prototype._renderCachedWebGL = function _renderCachedWebGL(rendere
 
     this._initCachedDisplayObject(renderer);
 
-    this._cacheData.sprite._transformID = -1;
+    this._cacheData.sprite.transform._worldID = this.transform._worldID;
     this._cacheData.sprite.worldAlpha = this.worldAlpha;
     this._cacheData.sprite._renderWebGL(renderer);
 };
@@ -318,7 +318,7 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
     m.ty -= bounds.y;
 
     // m.append(this.transform.worldTransform.)
-     // set all properties to there original so we can render to a texture
+    // set all properties to there original so we can render to a texture
     this.renderCanvas = this._cacheData.originalRenderCanvas;
 
     // renderTexture.render(this, m, true);
@@ -367,7 +367,9 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
  */
 DisplayObject.prototype._calculateCachedBounds = function _calculateCachedBounds()
 {
+    this._cacheData.sprite.transform._worldID = this.transform._worldID;
     this._cacheData.sprite._calculateBounds();
+    this._lastBoundsID = this._boundsID;
 };
 
 /**
