@@ -270,7 +270,6 @@ DisplayObject.prototype._renderCachedCanvas = function _renderCachedCanvas(rende
 
     this._initCachedDisplayObjectCanvas(renderer);
 
-    this._cacheData.sprite.transform._worldID = this.transform._worldID;
     this._cacheData.sprite.worldAlpha = this.worldAlpha;
     this._cacheData.sprite._renderCanvas(renderer);
 };
