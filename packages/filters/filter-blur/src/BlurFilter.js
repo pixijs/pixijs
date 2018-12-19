@@ -25,7 +25,6 @@ export default class BlurFilter extends Filter
         this.blurXFilter = new BlurFilterPass(true, strength, quality, resolution, kernelSize);
         this.blurYFilter = new BlurFilterPass(false, strength, quality, resolution, kernelSize);
 
-        this._padding = 0;
         this.resolution = resolution || settings.RESOLUTION;
         this.quality = quality || 4;
         this.blur = strength || 8;
