@@ -522,7 +522,7 @@ export default class GraphicsGeometry extends BatchGeometry
         this.indicesUint16 = new Uint16Array(this.indices);
 
         // TODO make this a const..
-        this.batchable = this.points.length < GraphicsGeometry.BATCHABLE_SIZE * 2;
+        this.batchable = this.isBatchable();
 
         if (this.batchable)
         {
@@ -547,6 +547,26 @@ export default class GraphicsGeometry extends BatchGeometry
         {
             this.buildDrawCalls();
         }
+    }
+
+    /**
+     * Checks to see if this graphics geometry can be batched.
+     * Currently it needs to be small enough and not contain any native lines.
+     * @private
+     */
+    isBatchable()
+    {
+        const batches = this.batches;
+
+        for (let i = 0; i < batches.length; i++)
+        {
+            if (batches[i].style.native)
+            {
+                return false;
+            }
+        }
+
+        return (this.points.length < GraphicsGeometry.BATCHABLE_SIZE * 2);
     }
 
     /**
