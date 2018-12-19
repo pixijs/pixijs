@@ -327,7 +327,7 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
     renderer.context = cachedRenderTarget;
 
     this.renderCanvas = this._renderCachedCanvas;
-    this._calculateBounds = this._calculateCachedBounds;
+    this.calculateBounds = this._calculateCachedBounds;
 
     this._mask = null;
     this.filterArea = null;
@@ -366,8 +366,10 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
  */
 DisplayObject.prototype._calculateCachedBounds = function _calculateCachedBounds()
 {
+    this._bounds.clear();
     this._cacheData.sprite.transform._worldID = this.transform._worldID;
     this._cacheData.sprite._calculateBounds();
+    this._lastBoundsID = this._boundsID;
 };
 
 /**
