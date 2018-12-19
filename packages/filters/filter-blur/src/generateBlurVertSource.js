@@ -31,7 +31,7 @@ const vertTemplate = `
         %blur%
     }`;
 
-export default function generateVertBlurSource(kernelSize, x)
+export default function generateBlurVertSource(kernelSize, x)
 {
     const halfLength = Math.ceil(kernelSize / 2);
 
