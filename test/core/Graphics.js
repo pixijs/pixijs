@@ -117,7 +117,7 @@ describe('PIXI.Graphics', function ()
             expect(graphics.currentPath.shape.points).to.deep.equal([0, 0, 10, 0]);
         });
 
-        describe('lineJoin', function ()
+        describe('lineJoin', withGL(function ()
         {
             const renderer = new PIXI.WebGLRenderer(200, 200, {});
 
@@ -954,7 +954,7 @@ describe('PIXI.Graphics', function ()
                     expect(points[31], 'y6').to.be.eql(-1);
                 });
             });
-        });
+        }));
     });
 
     describe('containsPoint', function ()
