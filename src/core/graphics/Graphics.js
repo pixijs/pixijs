@@ -74,6 +74,14 @@ export default class Graphics extends Container
         this.lineAlignment = 0.5;
 
         /**
+         * The style of line join ('miter', 'round', 'bevel')
+         *
+         * @member {string}
+         * @default 'miter'
+         */
+        this.lineJoin = 'miter';
+
+        /**
          * Graphics data
          *
          * @member {PIXI.GraphicsData[]}
@@ -225,6 +233,7 @@ export default class Graphics extends Container
         clone.boundsPadding = this.boundsPadding;
         clone.dirty = 0;
         clone.cachedSpriteDirty = this.cachedSpriteDirty;
+        clone.lineJoin = this.lineJoin;
 
         // copy graphics data
         for (let i = 0; i < this.graphicsData.length; ++i)
@@ -1245,7 +1254,8 @@ export default class Graphics extends Container
             this.filling,
             this.nativeLines,
             shape,
-            this.lineAlignment
+            this.lineAlignment,
+            this.lineJoin
         );
 
         this.graphicsData.push(data);

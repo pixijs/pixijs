@@ -116,6 +116,845 @@ describe('PIXI.Graphics', function ()
 
             expect(graphics.currentPath.shape.points).to.deep.equal([0, 0, 10, 0]);
         });
+
+        describe('lineJoin', function ()
+        {
+            const renderer = new PIXI.WebGLRenderer(200, 200, {});
+
+            describe('miter', function ()
+            {
+                it('is miter by default (backwards compatible)', function ()
+                {
+                    // given
+                    const graphics = new PIXI.Graphics();
+
+                    // then
+                    expect(graphics.lineJoin).to.be.equal('miter');
+                });
+
+                it('clockwise miter', function ()
+                {
+                    // given
+                    const graphics = new PIXI.Graphics();
+
+                    graphics.lineStyle(2, 0, 1, 0.5);
+                    graphics.lineJoin = 'miter';
+
+                    graphics.moveTo(0, 0);
+                    graphics.lineTo(50, 0);
+                    graphics.lineTo(50, 50);
+
+                    // when
+                    renderer.render(graphics);
+
+                    // then
+                    const glData = graphics._webGL[renderer.CONTEXT_UID].data[0];
+                    const points = glData.points;
+
+                    // 6 control points, xyrgba each
+                    expect(points.length / 6, 'number of control points is not right').to.be.equal(6);
+
+                    expect(points[0], 'x1').to.be.eql(0);
+                    expect(points[1], 'y1').to.be.eql(1);
+
+                    expect(points[6], 'x2').to.be.eql(0);
+                    expect(points[7], 'y2').to.be.eql(-1);
+
+                    expect(points[12], 'x3').to.be.eql(49);
+                    expect(points[13], 'y3').to.be.eql(1);
+
+                    expect(points[18], 'x4').to.be.eql(51);
+                    expect(points[19], 'y4').to.be.eql(-1);
+
+                    expect(points[24], 'x5').to.be.eql(49);
+                    expect(points[25], 'y5').to.be.eql(50);
+
+                    expect(points[30], 'x6').to.be.eql(51);
+                    expect(points[31], 'y6').to.be.eql(50);
+                });
+
+                it('counterclockwise miter', function ()
+                {
+                    // given
+                    const graphics = new PIXI.Graphics();
+
+                    graphics.lineStyle(2, 0, 1, 0.5);
+                    graphics.lineJoin = 'miter';
+
+                    graphics.moveTo(0, 0);
+                    graphics.lineTo(50, 0);
+                    graphics.lineTo(50, -50);
+
+                    // when
+                    renderer.render(graphics);
+
+                    // then
+                    const glData = graphics._webGL[renderer.CONTEXT_UID].data[0];
+                    const points = glData.points;
+
+                    // 6 control points, xyrgba each
+                    expect(points.length / 6, 'number of control points is not right').to.be.equal(6);
+
+                    expect(points[0], 'x1').to.be.eql(0);
+                    expect(points[1], 'y1').to.be.eql(1);
+
+                    expect(points[6], 'x2').to.be.eql(0);
+                    expect(points[7], 'y2').to.be.eql(-1);
+
+                    expect(points[12], 'x3').to.be.eql(51);
+                    expect(points[13], 'y3').to.be.eql(1);
+
+                    expect(points[18], 'x4').to.be.eql(49);
+                    expect(points[19], 'y4').to.be.eql(-1);
+
+                    expect(points[24], 'x5').to.be.eql(51);
+                    expect(points[25], 'y5').to.be.eql(-50);
+
+                    expect(points[30], 'x6').to.be.eql(49);
+                    expect(points[31], 'y6').to.be.eql(-50);
+                });
+
+                it('flat line miter', function ()
+                {
+                    // given
+                    const graphics = new PIXI.Graphics();
+
+                    graphics.lineStyle(2, 0, 1, 0.5);
+                    graphics.lineJoin = 'miter';
+
+                    graphics.moveTo(0, 0);
+                    graphics.lineTo(50, 0);
+                    graphics.lineTo(100, 0);
+
+                    // when
+                    renderer.render(graphics);
+
+                    // then
+                    const glData = graphics._webGL[renderer.CONTEXT_UID].data[0];
+                    const points = glData.points;
+
+                    // 6 control points, xyrgba each
+                    expect(points.length / 6, 'number of control points is not right').to.be.equal(6);
+
+                    expect(points[0], 'x1').to.be.eql(0);
+                    expect(points[1], 'y1').to.be.eql(1);
+
+                    expect(points[6], 'x2').to.be.eql(0);
+                    expect(points[7], 'y2').to.be.eql(-1);
+
+                    expect(points[12], 'x3').to.be.eql(50);
+                    expect(points[13], 'y3').to.be.eql(1);
+
+                    expect(points[18], 'x5').to.be.eql(50);
+                    expect(points[19], 'y5').to.be.eql(-1);
+
+                    expect(points[24], 'x7').to.be.eql(100);
+                    expect(points[25], 'y7').to.be.eql(1);
+
+                    expect(points[30], 'x8').to.be.eql(100);
+                    expect(points[31], 'y8').to.be.eql(-1);
+                });
+
+                it('very sharp clockwise miter falling back to bevel', function ()
+                {
+                    // given
+                    const p1 = [0, 0];
+                    const p2 = [50, 0];
+                    const p3 = [0, 2];
+                    // normalized perpendicular lines
+                    const perp1 = [0, 0.5];
+                    const perp2 = [0.019984019174435787, 0.4996004793608947]; // [0.039968038348871575, 0.9992009587217894];
+                    const anchor = [24.990003996803196, 0.5];
+                    const graphics = new PIXI.Graphics();
+
+                    graphics.lineStyle(1, 0, 1, 0.5);
+                    graphics.lineJoin = 'miter';
+
+                    graphics.moveTo(p1[0], p1[1]);
+                    graphics.lineTo(p2[0], p2[1]);
+
+                    // when
+                    graphics.lineTo(p3[0], p3[1]);
+                    renderer.render(graphics);
+
+                    // then
+                    const glData = graphics._webGL[renderer.CONTEXT_UID].data[0];
+                    const points = glData.points;
+
+                    // 8 control points, xyrgba each
+                    expect(points.length / 6, 'number of control points is not right').to.be.equal(8);
+
+                    expect(points[0], 'x1').to.be.eql(p1[0] + perp1[0]);
+                    expect(points[1], 'y1').to.be.eql(p1[1] + perp1[1]);
+
+                    expect(points[6], 'x2').to.be.eql(p1[0] - perp1[0]);
+                    expect(points[7], 'y2').to.be.eql(p1[1] - perp1[1]);
+
+                    expect(points[12], 'x3').to.be.eql(anchor[0]);
+                    expect(points[13], 'y3').to.be.eql(anchor[1]);
+
+                    expect(points[18], 'x4').to.be.eql(p2[0] - perp1[0]);
+                    expect(points[19], 'y4').to.be.eql(p2[1] - perp1[1]);
+
+                    expect(points[24], 'x5').to.be.eql(anchor[0]);
+                    expect(points[25], 'y5').to.be.eql(anchor[1]);
+
+                    expect(points[30], 'x6').to.be.eql(p2[0] + perp2[0]);
+                    expect(points[31], 'y6').to.be.eql(p2[1] + perp2[1]);
+
+                    expect(points[36], 'x7').to.be.eql(p3[0] - perp2[0]);
+                    expect(points[37], 'y7').to.be.eql(p3[1] - perp2[1]);
+
+                    expect(points[42], 'x8').to.be.eql(p3[0] + perp2[0]);
+                    expect(points[43], 'y8').to.be.eql(p3[1] + perp2[1]);
+                });
+
+                it('very sharp counterclockwise miter falling back to bevel', function ()
+                {
+                    // given
+                    const p1 = [0, 0];
+                    const p2 = [50, 0];
+                    const p3 = [0, -2];
+                    // normalized perpendicular vectors
+                    const perp1 = [0, 0.5];
+                    const perp2 = [0.019984019174435787, -0.4996004793608947];
+                    const anchor = [24.990003996803196, -0.5];
+                    const graphics = new PIXI.Graphics();
+
+                    graphics.lineStyle(1, 0, 1, 0.5);
+                    graphics.lineJoin = 'miter';
+
+                    graphics.moveTo(p1[0], p1[1]);
+                    graphics.lineTo(p2[0], p2[1]);
+
+                    // when
+                    graphics.lineTo(p3[0], p3[1]);
+                    renderer.render(graphics);
+
+                    // then
+                    const glData = graphics._webGL[renderer.CONTEXT_UID].data[0];
+                    const points = glData.points;
+
+                    // 8 control points, xyrgba each
+                    expect(points.length / 6, 'number of control points is not right').to.be.equal(8);
+
+                    expect(points[0], 'x1').to.be.eql(p1[0] + perp1[0]);
+                    expect(points[1], 'y1').to.be.eql(p1[1] + perp1[1]);
+
+                    expect(points[6], 'x2').to.be.eql(p1[0] - perp1[0]);
+                    expect(points[7], 'y2').to.be.eql(p1[1] - perp1[1]);
+
+                    expect(points[12], 'x3').to.be.eql(p2[0] + perp1[0]);
+                    expect(points[13], 'y3').to.be.eql(p2[1] + perp1[1]);
+
+                    expect(points[18], 'x4').to.be.eql(anchor[0]);
+                    expect(points[19], 'y4').to.be.eql(anchor[1]);
+
+                    expect(points[24], 'x5').to.be.eql(p2[0] + perp2[0]);
+                    expect(points[25], 'y5').to.be.eql(p2[1] + perp2[1]);
+
+                    expect(points[30], 'x6').to.be.eql(anchor[0]);
+                    expect(points[31], 'y6').to.be.eql(anchor[1]);
+
+                    expect(points[36], 'x7').to.be.eql(p3[0] + perp2[0]);
+                    expect(points[37], 'y7').to.be.eql(p3[1] + perp2[1]);
+
+                    expect(points[42], 'x8').to.be.eql(p3[0] - perp2[0]);
+                    expect(points[43], 'y8').to.be.eql(p3[1] - perp2[1]);
+                });
+
+                it('miter join paralel lines', function ()
+                {
+                    // given
+                    const p1 = [0, 0];
+                    const p2 = [50, 0];
+                    const p3 = [100, 0];
+                    // normalized perpendicular vectors
+                    const perp1 = [0, 1];
+                    const perp2 = [0, -1];
+                    const graphicsMiter = new PIXI.Graphics();
+
+                    graphicsMiter.lineStyle(2, 0, 1, 0.5);
+                    graphicsMiter.lineJoin = 'miter';
+
+                    graphicsMiter.moveTo(p1[0], p1[1]);
+                    graphicsMiter.lineTo(p2[0], p2[1]);
+                    graphicsMiter.lineTo(p3[0], p3[1]);
+
+                    // when
+                    renderer.render(graphicsMiter);
+
+                    // then
+                    const points = graphicsMiter._webGL[renderer.CONTEXT_UID].data[0].points;
+
+                    // 6 control points, xyrgba each
+                    expect(points.length / 6, 'number of control points is not right').to.be.equal(6);
+
+                    expect(points[0], 'x1').to.be.eql(p1[0] + perp1[0]);
+                    expect(points[1], 'y1').to.be.eql(p1[1] + perp1[1]);
+
+                    expect(points[6], 'x2').to.be.eql(p1[0] - perp1[0]);
+                    expect(points[7], 'y2').to.be.eql(p1[1] - perp1[1]);
+
+                    expect(points[12], 'x3').to.be.eql(p2[0] + perp1[0]);
+                    expect(points[13], 'y3').to.be.eql(p2[1] + perp1[1]);
+
+                    expect(points[18], 'x4').to.be.eql(p2[0] + perp2[0]);
+                    expect(points[19], 'y4').to.be.eql(p2[1] + perp2[1]);
+
+                    expect(points[24], 'x5').to.be.eql(p3[0] - perp2[0]);
+                    expect(points[25], 'y5').to.be.eql(p3[1] - perp2[1]);
+
+                    expect(points[30], 'x6').to.be.eql(p3[0] + perp2[0]);
+                    expect(points[31], 'y6').to.be.eql(p3[1] + perp2[1]);
+                });
+            });
+
+            describe('bevel', function ()
+            {
+                it('clockwise bevel', function ()
+                {
+                    // given
+                    const graphics = new PIXI.Graphics();
+
+                    graphics.lineStyle(2, 0, 1, 0.5);
+                    graphics.lineJoin = 'bevel';
+
+                    graphics.moveTo(0, 0);
+                    graphics.lineTo(50, 0);
+                    graphics.lineTo(50, 50);
+
+                    // when
+                    renderer.render(graphics);
+
+                    // then
+                    const glData = graphics._webGL[renderer.CONTEXT_UID].data[0];
+                    const points = glData.points;
+
+                    // 8 control points, xyrgba each
+                    expect(points.length / 6, 'number of control points is not right').to.be.equal(8);
+
+                    expect(points[0], 'x1').to.be.eql(0);
+                    expect(points[1], 'y1').to.be.eql(1);
+
+                    expect(points[6], 'x2').to.be.eql(0);
+                    expect(points[7], 'y2').to.be.eql(-1);
+
+                    expect(points[12], 'x3').to.be.eql(49);
+                    expect(points[13], 'y3').to.be.eql(1);
+
+                    expect(points[18], 'x4').to.be.eql(50);
+                    expect(points[19], 'y4').to.be.eql(-1);
+
+                    expect(points[24], 'x5').to.be.eql(49);
+                    expect(points[25], 'y5').to.be.eql(1);
+
+                    expect(points[30], 'x6').to.be.eql(51);
+                    expect(points[31], 'y6').to.be.eql(0);
+
+                    expect(points[36], 'x7').to.be.eql(49);
+                    expect(points[37], 'y7').to.be.eql(50);
+
+                    expect(points[42], 'x8').to.be.eql(51);
+                    expect(points[43], 'y8').to.be.eql(50);
+                });
+
+                it('counterclockwise bevel', function ()
+                {
+                    // given
+                    const graphics = new PIXI.Graphics();
+
+                    graphics.lineStyle(2, 0, 1, 0.5);
+                    graphics.lineJoin = 'bevel';
+
+                    graphics.moveTo(0, 0);
+                    graphics.lineTo(50, 0);
+                    graphics.lineTo(50, -50);
+
+                    // when
+                    renderer.render(graphics);
+
+                    // then
+                    const glData = graphics._webGL[renderer.CONTEXT_UID].data[0];
+                    const points = glData.points;
+
+                    // 8 control points, xyrgba each
+                    expect(points.length / 6, 'number of control points is not right').to.be.equal(8);
+
+                    expect(points[0], 'x1').to.be.eql(0);
+                    expect(points[1], 'y1').to.be.eql(1);
+
+                    expect(points[6], 'x2').to.be.eql(0);
+                    expect(points[7], 'y2').to.be.eql(-1);
+
+                    expect(points[12], 'x3').to.be.eql(50);
+                    expect(points[13], 'y3').to.be.eql(1);
+
+                    expect(points[18], 'x4').to.be.eql(49);
+                    expect(points[19], 'y4').to.be.eql(-1);
+
+                    expect(points[24], 'x5').to.be.eql(51);
+                    expect(points[25], 'y5').to.be.eql(0);
+
+                    expect(points[30], 'x6').to.be.eql(49);
+                    expect(points[31], 'y6').to.be.eql(-1);
+
+                    expect(points[36], 'x7').to.be.eql(51);
+                    expect(points[37], 'y7').to.be.eql(-50);
+
+                    expect(points[42], 'x8').to.be.eql(49);
+                    expect(points[43], 'y8').to.be.eql(-50);
+                });
+
+                it('bevel join paralel lines', function ()
+                {
+                    // given
+                    const p1 = [0, 0];
+                    const p2 = [50, 0];
+                    const p3 = [100, 0];
+                    // normalized perpendicular vectors
+                    const perp1 = [0, 1];
+                    const perp2 = [0, -1];
+                    const graphicsMiter = new PIXI.Graphics();
+
+                    graphicsMiter.lineStyle(2, 0, 1, 0.5);
+                    graphicsMiter.lineJoin = 'bevel';
+
+                    graphicsMiter.moveTo(p1[0], p1[1]);
+                    graphicsMiter.lineTo(p2[0], p2[1]);
+                    graphicsMiter.lineTo(p3[0], p3[1]);
+
+                    // when
+                    renderer.render(graphicsMiter);
+
+                    // then
+                    const points = graphicsMiter._webGL[renderer.CONTEXT_UID].data[0].points;
+
+                    // 6 control points, xyrgba each
+                    expect(points.length / 6, 'number of control points is not right').to.be.equal(6);
+
+                    expect(points[0], 'x1').to.be.eql(p1[0] + perp1[0]);
+                    expect(points[1], 'y1').to.be.eql(p1[1] + perp1[1]);
+
+                    expect(points[6], 'x2').to.be.eql(p1[0] - perp1[0]);
+                    expect(points[7], 'y2').to.be.eql(p1[1] - perp1[1]);
+
+                    expect(points[12], 'x3').to.be.eql(p2[0] + perp1[0]);
+                    expect(points[13], 'y3').to.be.eql(p2[1] + perp1[1]);
+
+                    expect(points[18], 'x4').to.be.eql(p2[0] + perp2[0]);
+                    expect(points[19], 'y4').to.be.eql(p2[1] + perp2[1]);
+
+                    expect(points[24], 'x5').to.be.eql(p3[0] - perp2[0]);
+                    expect(points[25], 'y5').to.be.eql(p3[1] - perp2[1]);
+
+                    expect(points[30], 'x6').to.be.eql(p3[0] + perp2[0]);
+                    expect(points[31], 'y6').to.be.eql(p3[1] + perp2[1]);
+                });
+
+                it('flat line bevel', function ()
+                {
+                    // given
+                    const graphics = new PIXI.Graphics();
+
+                    graphics.lineStyle(2, 0, 1, 0.5);
+                    graphics.lineJoin = 'bevel';
+
+                    graphics.moveTo(0, 0);
+                    graphics.lineTo(50, 0);
+                    graphics.lineTo(100, 0);
+
+                    // when
+                    renderer.render(graphics);
+
+                    // then
+                    const glData = graphics._webGL[renderer.CONTEXT_UID].data[0];
+                    const points = glData.points;
+
+                    // 6 control points, xyrgba each
+                    expect(points.length / 6, 'number of control points is not right').to.be.equal(6);
+
+                    expect(points[0], 'x1').to.be.eql(0);
+                    expect(points[1], 'y1').to.be.eql(1);
+
+                    expect(points[6], 'x2').to.be.eql(0);
+                    expect(points[7], 'y2').to.be.eql(-1);
+
+                    expect(points[12], 'x3').to.be.eql(50);
+                    expect(points[13], 'y3').to.be.eql(1);
+
+                    expect(points[18], 'x5').to.be.eql(50);
+                    expect(points[19], 'y5').to.be.eql(-1);
+
+                    expect(points[24], 'x7').to.be.eql(100);
+                    expect(points[25], 'y7').to.be.eql(1);
+
+                    expect(points[30], 'x8').to.be.eql(100);
+                    expect(points[31], 'y8').to.be.eql(-1);
+                });
+            });
+
+            describe('round', function ()
+            {
+                it('round join clockwise', function ()
+                {
+                    // given
+                    const p1 = [0, 0];
+                    const p2 = [50, 0];
+                    const p3 = [50, 50];
+                    // normalized perpendicular vectors
+                    const perp1 = [0, -1];
+                    const perp2 = [1, 0];
+                    const anchor = [p2[0] - perp1[0] - perp2[0], p2[1] - perp1[1] - perp2[1]];
+                    const noOfCtlPts = 6 * 2; // doubles cause every point is followed with center point
+                                            // 1 + 1 + 15 * absAngleDiff * Math.sqrt(radius) / Math.PI
+                    const r = 2.23606797749979; // sqrt(1^2 + 2^2)
+                    const angleIncrease = -0.12870022175865686; // anlge diff / 5
+                    let angle = 2.677945044588987; // Math.atan2(1, -2)
+                    const graphics = new PIXI.Graphics();
+
+                    graphics.lineStyle(2, 0, 1, 0.5);
+                    graphics.lineJoin = 'round';
+
+                    graphics.moveTo(p1[0], p1[1]);
+                    graphics.lineTo(p2[0], p2[1]);
+                    graphics.lineTo(p3[0], p3[1]);
+
+                    // when
+                    renderer.render(graphics);
+
+                    // then
+                    const glData = graphics._webGL[renderer.CONTEXT_UID].data[0];
+                    const points = glData.points;
+
+                    // 6 control points, xyrgba each
+                    expect(points.length / 6, 'number of control points is not right').to.be.equal((4 + noOfCtlPts));
+
+                    expect(points[0], 'x1').to.be.eql(p1[0] - perp1[0]);
+                    expect(points[1], 'y1').to.be.eql(p1[1] - perp1[1]);
+
+                    expect(points[6], 'x2').to.be.eql(p1[0] + perp1[0]);
+                    expect(points[7], 'y2').to.be.eql(p1[1] + perp1[1]);
+
+                    // center
+                    expect(points[12], 'center1 x').to.be.eql(anchor[0]);
+                    expect(points[13], 'center1 y').to.be.eql(anchor[1]);
+
+                    expect(points[24], 'center2 x').to.be.eql(anchor[0]);
+                    expect(points[25], 'center2 y').to.be.eql(anchor[1]);
+
+                    expect(points[36], 'center3 x').to.be.eql(anchor[0]);
+                    expect(points[37], 'center3 y').to.be.eql(anchor[1]);
+
+                    expect(points[48], 'center4 x').to.be.eql(anchor[0]);
+                    expect(points[49], 'center4 y').to.be.eql(anchor[1]);
+
+                    expect(points[60], 'center5 x').to.be.eql(anchor[0]);
+                    expect(points[61], 'center5 y').to.be.eql(anchor[1]);
+
+                    expect(points[72], 'center6 x').to.be.eql(anchor[0]);
+                    expect(points[73], 'center6 y').to.be.eql(anchor[1]);
+
+                    // peripheral pts
+                    expect(points[18], 'peripheral1 x').to.be.eql(p2[0] + perp1[0]);
+                    expect(points[19], 'peripheral1 y').to.be.eql(p2[1] + perp1[1]);
+
+                    angle += angleIncrease;
+                    expect(points[30], 'peripheral2 x').to.be.eql(anchor[0] + (Math.sin(angle) * r));
+                    expect(points[31], 'peripheral2 y').to.be.eql(anchor[1] + (Math.cos(angle) * r));
+
+                    angle += angleIncrease;
+                    expect(points[42], 'peripheral3 x').to.be.eql(anchor[0] + (Math.sin(angle) * r));
+                    expect(points[43], 'peripheral3 y').to.be.eql(anchor[1] + (Math.cos(angle) * r));
+
+                    angle += angleIncrease;
+                    expect(points[54], 'peripheral4 x').to.be.eql(anchor[0] + (Math.sin(angle) * r));
+                    expect(points[55], 'peripheral4 y').to.be.eql(anchor[1] + (Math.cos(angle) * r));
+
+                    angle += angleIncrease;
+                    expect(points[66], 'peripheral5 x').to.be.eql(anchor[0] + (Math.sin(angle) * r));
+                    expect(points[67], 'peripheral5 y').to.be.eql(anchor[1] + (Math.cos(angle) * r));
+
+                    expect(points[78], 'peripheral6 x').to.be.eql(p2[0] + perp2[0]);
+                    expect(points[79], 'peripheral6 y').to.be.eql(p2[1] + perp2[1]);
+
+                    expect(points[84], 'x[last-1]').to.be.eql(p3[0] - perp2[0]);
+                    expect(points[85], 'y[last-1]').to.be.eql(p3[1] - perp2[1]);
+
+                    expect(points[90], 'x[last]').to.be.eql(p3[0] + perp2[0]);
+                    expect(points[91], 'y[last]').to.be.eql(p3[1] + perp2[1]);
+                });
+
+                it('round join counterclockwise', function ()
+                {
+                    // given
+                    const p1 = [0, 0];
+                    const p2 = [50, 0];
+                    const p3 = [50, -50];
+                    // normalized perpendicular vectors
+                    const perp1 = [0, 1];
+                    const perp2 = [1, 0];
+                    const anchor = [p2[0] - perp1[0] - perp2[0], p2[1] - perp1[1] - perp2[1]];
+                    const noOfCtlPts = 6 * 2; // doubles cause every point is followed with center point
+                                            // 1 + 1 + 15 * absAngleDiff * Math.sqrt(radius) / Math.PI
+                    const r = 2.23606797749979; // sqrt(1^2 + 2^2)
+                    const angleIncrease = 0.12870022175865686; // anlge diff / 5
+                    let angle = 0.4636476090008061; // Math.atan2(1, -2)
+                    const graphics = new PIXI.Graphics();
+
+                    graphics.lineStyle(2, 0, 1, 0.5);
+                    graphics.lineJoin = 'round';
+
+                    graphics.moveTo(p1[0], p1[1]);
+                    graphics.lineTo(p2[0], p2[1]);
+                    graphics.lineTo(p3[0], p3[1]);
+
+                    // when
+                    renderer.render(graphics);
+
+                    // then
+                    const glData = graphics._webGL[renderer.CONTEXT_UID].data[0];
+                    const points = glData.points;
+
+                    // 6 control points, xyrgba each
+                    expect(points.length / 6, 'number of control points is not right').to.be.equal((4 + noOfCtlPts));
+
+                    expect(points[0], 'x1').to.be.eql(p1[0] + perp1[0]);
+                    expect(points[1], 'y1').to.be.eql(p1[1] + perp1[1]);
+
+                    expect(points[6], 'x2').to.be.eql(p1[0] - perp1[0]);
+                    expect(points[7], 'y2').to.be.eql(p1[1] - perp1[1]);
+
+                    // center
+                    expect(points[18], 'center1 x').to.be.eql(anchor[0]);
+                    expect(points[19], 'center1 y').to.be.eql(anchor[1]);
+
+                    expect(points[30], 'center2 x').to.be.eql(anchor[0]);
+                    expect(points[31], 'center2 y').to.be.eql(anchor[1]);
+
+                    expect(points[42], 'center3 x').to.be.eql(anchor[0]);
+                    expect(points[43], 'center3 y').to.be.eql(anchor[1]);
+
+                    expect(points[54], 'center4 x').to.be.eql(anchor[0]);
+                    expect(points[55], 'center4 y').to.be.eql(anchor[1]);
+
+                    expect(points[66], 'center5 x').to.be.eql(anchor[0]);
+                    expect(points[67], 'center5 y').to.be.eql(anchor[1]);
+
+                    expect(points[78], 'center6 x').to.be.eql(anchor[0]);
+                    expect(points[79], 'center6 y').to.be.eql(anchor[1]);
+
+                    // peripheral pts
+                    expect(points[12], 'peripheral1 x').to.be.eql(p2[0] + perp1[0]);
+                    expect(points[13], 'peripheral1 y').to.be.eql(p2[1] + perp1[1]);
+
+                    angle += angleIncrease;
+                    expect(points[24], 'peripheral2 x').to.be.eql(anchor[0] + (Math.sin(angle) * r));
+                    expect(points[25], 'peripheral2 y').to.be.eql(anchor[1] + (Math.cos(angle) * r));
+
+                    angle += angleIncrease;
+                    expect(points[36], 'peripheral3 x').to.be.eql(anchor[0] + (Math.sin(angle) * r));
+                    expect(points[37], 'peripheral3 y').to.be.eql(anchor[1] + (Math.cos(angle) * r));
+
+                    angle += angleIncrease;
+                    expect(points[48], 'peripheral4 x').to.be.eql(anchor[0] + (Math.sin(angle) * r));
+                    expect(points[49], 'peripheral4 y').to.be.eql(anchor[1] + (Math.cos(angle) * r));
+
+                    angle += angleIncrease;
+                    expect(points[60], 'peripheral5 x').to.be.eql(anchor[0] + (Math.sin(angle) * r));
+                    expect(points[61], 'peripheral5 y').to.be.eql(anchor[1] + (Math.cos(angle) * r));
+
+                    expect(points[72], 'peripheral6 x').to.be.eql(p2[0] + perp2[0]);
+                    expect(points[73], 'peripheral6 y').to.be.eql(p2[1] + perp2[1]);
+
+                    expect(points[84], 'x[last-1]').to.be.eql(p3[0] + perp2[0]);
+                    expect(points[85], 'y[last-1]').to.be.eql(p3[1] + perp2[1]);
+
+                    expect(points[90], 'x[last]').to.be.eql(p3[0] - perp2[0]);
+                    expect(points[91], 'y[last]').to.be.eql(p3[1] - perp2[1]);
+                });
+
+                it('round join back and forth', function ()
+                {
+                    // given
+                    const p1 = [0, 0];
+                    const p2 = [50, 0];
+                    const p3 = [10, 0];
+                    // normalized perpendicular vectors
+                    const perp1 = [0, -1];
+                    const perp2 = [0, 1];
+                    const anchor = [p2[0], p2[1]];
+                    const noOfCtlPts = 16 * 2; // doubles cause every point is followed with center point
+                                            // 1 + 1 + 15 * absAngleDiff * Math.sqrt(radius) / Math.PI
+                    const r = 1;
+                    const angleIncrease = -0.20943951023931953;
+                    let angle = 3.141592653589793;
+                    const graphics = new PIXI.Graphics();
+
+                    graphics.lineStyle(2, 0, 1, 0.5);
+                    graphics.lineJoin = 'round';
+
+                    graphics.moveTo(p1[0], p1[1]);
+                    graphics.lineTo(p2[0], p2[1]);
+                    graphics.lineTo(p3[0], p3[1]);
+
+                    // when
+                    renderer.render(graphics);
+
+                    // then
+                    const glData = graphics._webGL[renderer.CONTEXT_UID].data[0];
+                    const points = glData.points;
+                    const len = points.length;
+
+                    // 6 control points, xyrgba each
+                    expect(len / 6, 'number of control points is not right').to.be.equal((4 + noOfCtlPts));
+
+                    expect(points[0], 'x1').to.be.eql(p1[0] - perp1[0]);
+                    expect(points[1], 'y1').to.be.eql(p1[1] - perp1[1]);
+
+                    expect(points[6], 'x2').to.be.eql(p1[0] + perp1[0]);
+                    expect(points[7], 'y2').to.be.eql(p1[1] + perp1[1]);
+
+                    // center
+                    for (let i = 12, j = 1; j <= 16; i += 12, j++)
+                    {
+                        expect(points[i], `center${j} x`).to.be.eql(p2[0]);
+                        expect(points[i + 1], `center${j} y`).to.be.eql(p2[1]);
+                    }
+
+                    // peripheral pts
+
+                    expect(points[18], 'peripheral1 x').to.be.eql(p2[0] + perp1[0]);
+                    expect(points[19], 'peripheral1 y').to.be.eql(p2[1] + perp1[1]);
+
+                    for (let i = 30, j = 2; j < 16; i += 12, j++)
+                    {
+                        angle += angleIncrease;
+                        expect(points[i], `peripheral${j} x`).to.be.eql(anchor[0] + (Math.sin(angle) * r));
+                        expect(points[i + 1], `peripheral${j} y`).to.be.eql(anchor[1] + (Math.cos(angle) * r));
+                    }
+
+                    expect(points[len - 18], 'peripheral16 x').to.be.eql(p2[0] + perp2[0]);
+                    expect(points[len - 17], 'peripheral16 y').to.be.eql(p2[1] + perp2[1]);
+
+                    expect(points[len - 12], 'x[last-1]').to.be.eql(p3[0] - perp2[0]);
+                    expect(points[len - 11], 'y[last-1]').to.be.eql(p3[1] - perp2[1]);
+
+                    expect(points[len - 6], 'x[last]').to.be.eql(p3[0] + perp2[0]);
+                    expect(points[len - 5], 'y[last]').to.be.eql(p3[1] + perp2[1]);
+                });
+
+                it('round join back and forth other way around', function ()
+                {
+                    // given
+                    const p1 = [0, 0];
+                    const p2 = [-50, 0];
+                    const p3 = [10, 0];
+                    // normalized perpendicular vectors
+                    const perp1 = [0, 1];
+                    const perp2 = [0, -1];
+                    const anchor = [p2[0], p2[1]];
+                    const noOfCtlPts = 16 * 2; // doubles cause every point is followed with center point
+                                            // 1 + 1 + 15 * absAngleDiff * Math.sqrt(radius) / Math.PI
+                    const r = 1;
+                    const angleIncrease = -0.20943951023931953;
+                    let angle = 0;
+                    const graphics = new PIXI.Graphics();
+
+                    graphics.lineStyle(2, 0, 1, 0.5);
+                    graphics.lineJoin = 'round';
+
+                    graphics.moveTo(p1[0], p1[1]);
+                    graphics.lineTo(p2[0], p2[1]);
+                    graphics.lineTo(p3[0], p3[1]);
+
+                    // when
+                    renderer.render(graphics);
+
+                    // then
+                    const glData = graphics._webGL[renderer.CONTEXT_UID].data[0];
+                    const points = glData.points;
+                    const len = points.length;
+
+                    // 6 control points, xyrgba each
+                    expect(len / 6, 'number of control points is not right').to.be.equal((4 + noOfCtlPts));
+
+                    expect(points[0], 'x1').to.be.eql(p1[0] - perp1[0]);
+                    expect(points[1], 'y1').to.be.eql(p1[1] - perp1[1]);
+
+                    expect(points[6], 'x2').to.be.eql(p1[0] + perp1[0]);
+                    expect(points[7], 'y2').to.be.eql(p1[1] + perp1[1]);
+
+                    // center
+                    for (let i = 12, j = 1; j <= 16; i += 12, j++)
+                    {
+                        expect(points[i], `center${j} x`).to.be.eql(p2[0]);
+                        expect(points[i + 1], `center${j} y`).to.be.eql(p2[1]);
+                    }
+
+                    // peripheral pts
+
+                    expect(points[18], 'peripheral1 x').to.be.eql(p2[0] + perp1[0]);
+                    expect(points[19], 'peripheral1 y').to.be.eql(p2[1] + perp1[1]);
+
+                    for (let i = 30, j = 2; j < 16; i += 12, j++)
+                    {
+                        angle += angleIncrease;
+                        expect(points[i], `peripheral${j} x`).to.be.eql(anchor[0] + (Math.sin(angle) * r));
+                        expect(points[i + 1], `peripheral${j} y`).to.be.eql(anchor[1] + (Math.cos(angle) * r));
+                    }
+
+                    expect(points[len - 18], 'peripheral16 x').to.be.eql(p2[0] + perp2[0]);
+                    expect(points[len - 17], 'peripheral16 y').to.be.eql(p2[1] + perp2[1]);
+
+                    expect(points[len - 12], 'x[last-1]').to.be.eql(p3[0] - perp2[0]);
+                    expect(points[len - 11], 'y[last-1]').to.be.eql(p3[1] - perp2[1]);
+
+                    expect(points[len - 6], 'x[last]').to.be.eql(p3[0] + perp2[0]);
+                    expect(points[len - 5], 'y[last]').to.be.eql(p3[1] + perp2[1]);
+                });
+                it('flat line round', function ()
+                {
+                    // given
+                    const graphics = new PIXI.Graphics();
+
+                    graphics.lineStyle(2, 0, 1, 0.5);
+                    graphics.lineJoin = 'round';
+
+                    graphics.moveTo(0, 0);
+                    graphics.lineTo(50, 0);
+                    graphics.lineTo(100, 0);
+
+                    // when
+                    renderer.render(graphics);
+
+                    // then
+                    const glData = graphics._webGL[renderer.CONTEXT_UID].data[0];
+                    const points = glData.points;
+
+                    // 6 control points, xyrgba each
+                    expect(points.length / 6, 'number of control points is not right').to.be.equal(6);
+
+                    expect(points[0], 'x1').to.be.eql(0);
+                    expect(points[1], 'y1').to.be.eql(1);
+
+                    expect(points[6], 'x2').to.be.eql(0);
+                    expect(points[7], 'y2').to.be.eql(-1);
+
+                    expect(points[12], 'x3').to.be.eql(50);
+                    expect(points[13], 'y3').to.be.eql(1);
+
+                    expect(points[18], 'x4').to.be.eql(50);
+                    expect(points[19], 'y4').to.be.eql(-1);
+
+                    expect(points[24], 'x5').to.be.eql(100);
+                    expect(points[25], 'y5').to.be.eql(1);
+
+                    expect(points[30], 'x6').to.be.eql(100);
+                    expect(points[31], 'y6').to.be.eql(-1);
+                });
+            });
+        });
     });
 
     describe('containsPoint', function ()
@@ -323,10 +1162,10 @@ describe('PIXI.Graphics', function ()
                 const lastX = points[points.length - pointSize];
                 const lastY = points[points.length - pointSize + 1];
 
-                expect(firstX).to.equals(secondToLastX);
-                expect(firstY).to.equals(secondToLastY);
-                expect(secondX).to.equals(lastX);
-                expect(secondY).to.equals(lastY);
+                expect(firstX, '1st x').to.equals(secondToLastX);
+                expect(firstY, '1nd y').to.equals(secondToLastY);
+                expect(secondX, '2st x').to.equals(lastX);
+                expect(secondY, '2nd y').to.equals(lastY);
             }
             finally
             {

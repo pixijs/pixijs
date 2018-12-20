@@ -17,8 +17,9 @@ export default class GraphicsData
      * @param {boolean} nativeLines - the method for drawing lines
      * @param {PIXI.Circle|PIXI.Rectangle|PIXI.Ellipse|PIXI.Polygon} shape - The shape object to draw.
      * @param {number} lineAlignment - the alignment of the line.
+     * @param {string} lineJoin - the join style of the line.
      */
-    constructor(lineWidth, lineColor, lineAlpha, fillColor, fillAlpha, fill, nativeLines, shape, lineAlignment)
+    constructor(lineWidth, lineColor, lineAlpha, fillColor, fillAlpha, fill, nativeLines, shape, lineAlignment, lineJoin)
     {
         /**
          * the width of the line to draw
@@ -79,6 +80,12 @@ export default class GraphicsData
         this._fillTint = fillColor;
 
         /**
+         * style of line join
+         * @member {string}
+         */
+        this.lineJoin = lineJoin;
+
+        /**
          * whether or not the shape is filled with a colour
          * @member {boolean}
          */
@@ -114,7 +121,9 @@ export default class GraphicsData
             this.fillAlpha,
             this.fill,
             this.nativeLines,
-            this.shape
+            this.shape,
+            this.lineAlignment,
+            this.lineJoin
         );
     }
 
