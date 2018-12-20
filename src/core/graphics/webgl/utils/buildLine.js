@@ -363,12 +363,16 @@ function len(x, y)
  * Check turn direction. If counterclockwise, we must invert prep vectors, otherwise they point 'inwards' the angle,
  * resulting in funky looking lines.
  *
- * @param {number} p0x
- * @param {number} p0y
- * @param {number} p1x
- * @param {number} p1y
- * @param {number} p2x
- * @param {number} p2y
+ * @ignore
+ * @private
+ * @param {number} p0x - x of 1st point
+ * @param {number} p0y - y of 1st point
+ * @param {number} p1x - x of 2nd point
+ * @param {number} p1y - y of 2nd point
+ * @param {number} p2x - x of 3rd point
+ * @param {number} p2y - y of 3rd point
+ *
+ * @returns {boolean} true if perpendicular vectors should be flipped, otherwise false
  */
 function shouldFlip(p0x, p0y, p1x, p1y, p2x, p2y)
 {
