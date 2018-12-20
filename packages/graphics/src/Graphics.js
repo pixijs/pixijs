@@ -285,7 +285,7 @@ export default class Graphics extends Container
                 matrix = matrix.clone();
                 matrix.invert();
             }
-            
+
             Object.assign(this._lineStyle, {
                 color,
                 width,
