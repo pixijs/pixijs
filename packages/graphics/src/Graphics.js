@@ -259,7 +259,7 @@ export default class Graphics extends Container
      * @param {PIXI.Texture} [texture=PIXI.Texture.WHITE] - Texture to use
      * @param {number} [color=0] - color of the line to draw, will update the objects stored style
      * @param {number} [alpha=1] - alpha of the line to draw, will update the objects stored style
-     * @param {PIXI.Matrix} [textureMatrix=null] Texture matrix to transform texture
+     * @param {PIXI.Matrix} [matrix=null] Texture matrix to transform texture
      * @param {number} [alignment=0.5] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outter)
      * @param {boolean} [native=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
@@ -280,6 +280,12 @@ export default class Graphics extends Container
         }
         else
         {
+            if (matrix)
+            {
+                matrix = matrix.clone();
+                matrix.invert();
+            }
+
             Object.assign(this._lineStyle, {
                 color,
                 width,
@@ -563,7 +569,7 @@ export default class Graphics extends Container
      * @param {PIXI.Texture} [texture=PIXI.Texture.WHITE] - Texture to fill
      * @param {number} [color=0xffffff] - Background to fill behind texture
      * @param {number} [alpha=1] - Alpha of fill
-     * @param {PIXI.Matrix} [textureMatrix=null] - Transform matrix
+     * @param {PIXI.Matrix} [matrix=null] - Transform matrix
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
     beginTextureFill(texture = Texture.WHITE, color = 0xFFFFFF, alpha = 1, matrix = null)
@@ -581,6 +587,12 @@ export default class Graphics extends Container
         }
         else
         {
+            if (matrix)
+            {
+                matrix = matrix.clone();
+                matrix.invert();
+            }
+
             Object.assign(this._fillStyle, {
                 color,
                 alpha,
