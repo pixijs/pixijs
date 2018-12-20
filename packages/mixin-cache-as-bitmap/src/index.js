@@ -3,6 +3,7 @@ import { Sprite } from '@pixi/sprite';
 import { DisplayObject } from '@pixi/display';
 import { Matrix } from '@pixi/math';
 import { uid } from '@pixi/utils';
+import { settings } from '@pixi/settings';
 
 const _tempMatrix = new Matrix();
 
@@ -138,7 +139,7 @@ DisplayObject.prototype._renderCached = function _renderCached(renderer)
 
     this._initCachedDisplayObject(renderer);
 
-    this._cacheData.sprite._transformID = -1;
+    this._cacheData.sprite.transform._worldID = this.transform._worldID;
     this._cacheData.sprite.worldAlpha = this.worldAlpha;
     this._cacheData.sprite._render(renderer);
 };
@@ -180,6 +181,8 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
         bounds.pad(padding);
     }
 
+    bounds.ceil(settings.RESOLUTION);
+
     // for now we cache the current renderTarget that the webGL renderer is currently using.
     // this could be more elegant..
     const cachedRenderTarget = renderer._activeRenderTarget;
@@ -187,8 +190,7 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
     // const stack = renderer.filterManager.filterStack;
 
     // this renderTexture will be used to store the cached DisplayObject
-
-    const renderTexture = RenderTexture.create(bounds.width | 0, bounds.height | 0);
+    const renderTexture = RenderTexture.create(bounds.width, bounds.height);
 
     const textureCacheId = `cacheAsBitmap_${uid()}`;
 
@@ -271,8 +273,7 @@ DisplayObject.prototype._renderCachedCanvas = function _renderCachedCanvas(rende
     this._initCachedDisplayObjectCanvas(renderer);
 
     this._cacheData.sprite.worldAlpha = this.worldAlpha;
-
-    this._cacheData.sprite.renderCanvas(renderer);
+    this._cacheData.sprite._renderCanvas(renderer);
 };
 
 // TODO this can be the same as the webGL version.. will need to do a little tweaking first though..
@@ -299,7 +300,9 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
 
     const cachedRenderTarget = renderer.context;
 
-    const renderTexture = RenderTexture.create(bounds.width | 0, bounds.height | 0);
+    bounds.ceil(settings.RESOLUTION);
+
+    const renderTexture = RenderTexture.create(bounds.width, bounds.height);
 
     const textureCacheId = `cacheAsBitmap_${uid()}`;
 
@@ -328,7 +331,7 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
     renderer.context = cachedRenderTarget;
 
     this.renderCanvas = this._renderCachedCanvas;
-    this._calculateBounds = this._calculateCachedBounds;
+    this.calculateBounds = this._calculateCachedBounds;
 
     this._mask = null;
     this.filterArea = null;
@@ -367,7 +370,10 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
  */
 DisplayObject.prototype._calculateCachedBounds = function _calculateCachedBounds()
 {
+    this._bounds.clear();
+    this._cacheData.sprite.transform._worldID = this.transform._worldID;
     this._cacheData.sprite._calculateBounds();
+    this._lastBoundsID = this._boundsID;
 };
 
 /**

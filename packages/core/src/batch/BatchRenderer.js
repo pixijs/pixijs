@@ -310,7 +310,7 @@ export default class BatchRenderer extends ObjectRenderer
                 }
             }
 
-            this.renderGeometry(sprite, float32View, uint32View, indexBuffer, index, indexCount);// argb, nextTexture._id, float32View, uint32View, indexBuffer, index, indexCount);
+            this.packGeometry(sprite, float32View, uint32View, indexBuffer, index, indexCount);// argb, nextTexture._id, float32View, uint32View, indexBuffer, index, indexCount);
 
             // push a graphics..
             index += (sprite.vertexData.length / 2) * 6;
@@ -382,7 +382,7 @@ export default class BatchRenderer extends ObjectRenderer
             // set the blend mode..
             stateSystem.setBlendMode(group.blend);
 
-            gl.drawElements(gl.TRIANGLES, group.size, gl.UNSIGNED_SHORT, group.start * 2);
+            gl.drawElements(group.type, group.size, gl.UNSIGNED_SHORT, group.start * 2);
         }
 
         // reset elements for the next flush
@@ -391,7 +391,7 @@ export default class BatchRenderer extends ObjectRenderer
         this.currentIndexSize = 0;
     }
 
-    renderGeometry(element, float32View, uint32View, indexBuffer, index, indexCount)
+    packGeometry(element, float32View, uint32View, indexBuffer, index, indexCount)
     {
         const p = index / 6;// float32View.length / 6 / 2;
         const uvs = element.uvs;

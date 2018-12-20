@@ -25,7 +25,6 @@ export default class BlurFilter extends Filter
         this.blurXFilter = new BlurFilterPass(true, strength, quality, resolution, kernelSize);
         this.blurYFilter = new BlurFilterPass(false, strength, quality, resolution, kernelSize);
 
-        this._padding = 0;
         this.resolution = resolution || settings.RESOLUTION;
         this.quality = quality || 4;
         this.blur = strength || 8;
@@ -47,7 +46,7 @@ export default class BlurFilter extends Filter
 
         if (xStrength && yStrength)
         {
-            const renderTarget = filterManager.getFilterTexture(true);
+            const renderTarget = filterManager.getFilterTexture();
 
             this.blurXFilter.apply(filterManager, input, renderTarget, true);
             this.blurYFilter.apply(filterManager, renderTarget, output, false);
@@ -151,12 +150,12 @@ export default class BlurFilter extends Filter
      */
     get blendMode()
     {
-        return this.blurYFilter._blendMode;
+        return this.blurYFilter.blendMode;
     }
 
     set blendMode(value) // eslint-disable-line require-jsdoc
     {
-        this.blurYFilter._blendMode = value;
+        this.blurYFilter.blendMode = value;
     }
 
     /**
