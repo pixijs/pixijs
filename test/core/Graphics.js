@@ -119,8 +119,6 @@ describe('PIXI.Graphics', function ()
 
         describe('lineJoin', function ()
         {
-            const renderer = new PIXI.WebGLRenderer(200, 200, {});
-
             describe('miter', function ()
             {
                 it('is miter by default (backwards compatible)', function ()
@@ -135,6 +133,7 @@ describe('PIXI.Graphics', function ()
                 it('clockwise miter', withGL(function ()
                 {
                     // given
+                    const renderer = new PIXI.WebGLRenderer(200, 200, {});
                     const graphics = new PIXI.Graphics();
 
                     graphics.lineStyle(2, 0, 1, 0.5);
@@ -176,6 +175,7 @@ describe('PIXI.Graphics', function ()
                 it('counterclockwise miter', withGL(function ()
                 {
                     // given
+                    const renderer = new PIXI.WebGLRenderer(200, 200, {});
                     const graphics = new PIXI.Graphics();
 
                     graphics.lineStyle(2, 0, 1, 0.5);
@@ -217,6 +217,7 @@ describe('PIXI.Graphics', function ()
                 it('flat line miter', withGL(function ()
                 {
                     // given
+                    const renderer = new PIXI.WebGLRenderer(200, 200, {});
                     const graphics = new PIXI.Graphics();
 
                     graphics.lineStyle(2, 0, 1, 0.5);
@@ -265,6 +266,7 @@ describe('PIXI.Graphics', function ()
                     const perp1 = [0, 0.5];
                     const perp2 = [0.019984019174435787, 0.4996004793608947]; // [0.039968038348871575, 0.9992009587217894];
                     const anchor = [24.990003996803196, 0.5];
+                    const renderer = new PIXI.WebGLRenderer(200, 200, {});
                     const graphics = new PIXI.Graphics();
 
                     graphics.lineStyle(1, 0, 1, 0.5);
@@ -319,6 +321,7 @@ describe('PIXI.Graphics', function ()
                     const perp1 = [0, 0.5];
                     const perp2 = [0.019984019174435787, -0.4996004793608947];
                     const anchor = [24.990003996803196, -0.5];
+                    const renderer = new PIXI.WebGLRenderer(200, 200, {});
                     const graphics = new PIXI.Graphics();
 
                     graphics.lineStyle(1, 0, 1, 0.5);
@@ -372,6 +375,7 @@ describe('PIXI.Graphics', function ()
                     // normalized perpendicular vectors
                     const perp1 = [0, 1];
                     const perp2 = [0, -1];
+                    const renderer = new PIXI.WebGLRenderer(200, 200, {});
                     const graphicsMiter = new PIXI.Graphics();
 
                     graphicsMiter.lineStyle(2, 0, 1, 0.5);
@@ -415,6 +419,7 @@ describe('PIXI.Graphics', function ()
                 it('clockwise bevel', withGL(function ()
                 {
                     // given
+                    const renderer = new PIXI.WebGLRenderer(200, 200, {});
                     const graphics = new PIXI.Graphics();
 
                     graphics.lineStyle(2, 0, 1, 0.5);
@@ -462,6 +467,7 @@ describe('PIXI.Graphics', function ()
                 it('counterclockwise bevel', withGL(function ()
                 {
                     // given
+                    const renderer = new PIXI.WebGLRenderer(200, 200, {});
                     const graphics = new PIXI.Graphics();
 
                     graphics.lineStyle(2, 0, 1, 0.5);
@@ -515,6 +521,7 @@ describe('PIXI.Graphics', function ()
                     // normalized perpendicular vectors
                     const perp1 = [0, 1];
                     const perp2 = [0, -1];
+                    const renderer = new PIXI.WebGLRenderer(200, 200, {});
                     const graphicsMiter = new PIXI.Graphics();
 
                     graphicsMiter.lineStyle(2, 0, 1, 0.5);
@@ -555,6 +562,7 @@ describe('PIXI.Graphics', function ()
                 it('flat line bevel', withGL(function ()
                 {
                     // given
+                    const renderer = new PIXI.WebGLRenderer(200, 200, {});
                     const graphics = new PIXI.Graphics();
 
                     graphics.lineStyle(2, 0, 1, 0.5);
@@ -611,6 +619,7 @@ describe('PIXI.Graphics', function ()
                     const r = 2.23606797749979; // sqrt(1^2 + 2^2)
                     const angleIncrease = -0.12870022175865686; // anlge diff / 5
                     let angle = 2.677945044588987; // Math.atan2(1, -2)
+                    const renderer = new PIXI.WebGLRenderer(200, 200, {});
                     const graphics = new PIXI.Graphics();
 
                     graphics.lineStyle(2, 0, 1, 0.5);
@@ -700,6 +709,7 @@ describe('PIXI.Graphics', function ()
                     const r = 2.23606797749979; // sqrt(1^2 + 2^2)
                     const angleIncrease = 0.12870022175865686; // anlge diff / 5
                     let angle = 0.4636476090008061; // Math.atan2(1, -2)
+                    const renderer = new PIXI.WebGLRenderer(200, 200, {});
                     const graphics = new PIXI.Graphics();
 
                     graphics.lineStyle(2, 0, 1, 0.5);
@@ -789,6 +799,7 @@ describe('PIXI.Graphics', function ()
                     const r = 1;
                     const angleIncrease = -0.20943951023931953;
                     let angle = 3.141592653589793;
+                    const renderer = new PIXI.WebGLRenderer(200, 200, {});
                     const graphics = new PIXI.Graphics();
 
                     graphics.lineStyle(2, 0, 1, 0.5);
@@ -859,6 +870,7 @@ describe('PIXI.Graphics', function ()
                     const r = 1;
                     const angleIncrease = -0.20943951023931953;
                     let angle = 0;
+                    const renderer = new PIXI.WebGLRenderer(200, 200, {});
                     const graphics = new PIXI.Graphics();
 
                     graphics.lineStyle(2, 0, 1, 0.5);
@@ -917,6 +929,7 @@ describe('PIXI.Graphics', function ()
                 it('flat line round', withGL(function ()
                 {
                     // given
+                    const renderer = new PIXI.WebGLRenderer(200, 200, {});
                     const graphics = new PIXI.Graphics();
 
                     graphics.lineStyle(2, 0, 1, 0.5);
