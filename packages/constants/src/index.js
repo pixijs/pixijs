@@ -282,3 +282,22 @@ export const PRECISION = {
     MEDIUM: 'mediump',
     HIGH: 'highp',
 };
+
+/**
+ * Determines the shape used to join two line segments where they meet when drawn with use of {@link PIXI.Graphics}.
+ *
+ * IMPORTANT - The WebGL renderer only (at least for now)
+ *
+ * @static
+ * @constant
+ * @name LINE_JOIN
+ * @memberof PIXI
+ * @property {string} MITER - connected segments are joined by extending their outside edges to connect at a single point
+ * @property {string} BEVEL - fills an additional triangular area between the common endpoint of connected segments
+ * @property {string} ROUND - rounds off the corners of a shape by filling an additional sector of disc
+ */
+export const LINE_JOIN = {
+    MITER: 'miter',
+    BEVEL: 'bevel',
+    ROUND: 'round',
+};

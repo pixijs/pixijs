@@ -1,4 +1,9 @@
-import { Point } from '@pixi/math';
+import { Point, PI_2 } from '@pixi/math';
+import { LINE_JOIN } from '@pixi/constants';
+
+const TOLERANCE = 0.0001;
+const PI_LBOUND = Math.PI - TOLERANCE;
+const PI_UBOUND = Math.PI + TOLERANCE;
 
 /**
  * Builds a line to draw
@@ -96,8 +101,14 @@ function buildLine(graphicsData, graphicsGeometry)
     let perpy = p1x - p2x;
     let perp2x = 0;
     let perp2y = 0;
-    let perp3x = 0;
-    let perp3y = 0;
+
+    let midx = 0;
+    let midy = 0;
+
+    let dist12 = 0;
+    let dist23 = 0;
+    let distMid = 0;
+    let minDist = 0;
 
     let dist = Math.sqrt((perpx * perpx) + (perpy * perpy));
 
@@ -133,72 +144,157 @@ function buildLine(graphicsData, graphicsGeometry)
         perpx = -(p1y - p2y);
         perpy = p1x - p2x;
 
-        dist = Math.sqrt((perpx * perpx) + (perpy * perpy));
+        perp2x = -(p2y - p3y);
+        perp2y = p2x - p3x;
+
+        dist = len(perpx, perpy);
         perpx /= dist;
         perpy /= dist;
         perpx *= width;
         perpy *= width;
 
-        perp2x = -(p2y - p3y);
-        perp2y = p2x - p3x;
-
-        dist = Math.sqrt((perp2x * perp2x) + (perp2y * perp2y));
+        dist = len(perp2x, perp2y);
         perp2x /= dist;
         perp2y /= dist;
         perp2x *= width;
         perp2y *= width;
 
-        const a1 = (-perpy + p1y) - (-perpy + p2y);
-        const b1 = (-perpx + p2x) - (-perpx + p1x);
-        const c1 = ((-perpx + p1x) * (-perpy + p2y)) - ((-perpx + p2x) * (-perpy + p1y));
-        const a2 = (-perp2y + p3y) - (-perp2y + p2y);
-        const b2 = (-perp2x + p2x) - (-perp2x + p3x);
-        const c2 = ((-perp2x + p3x) * (-perp2y + p2y)) - ((-perp2x + p2x) * (-perp2y + p3y));
+        const a1 = p1y - p2y;
+        const b1 = p2x - p1x;
+        const a2 = p3y - p2y;
+        const b2 = p2x - p3x;
 
-        let denom = (a1 * b2) - (a2 * b1);
+        const denom = (a1 * b2) - (a2 * b1);
+        const join = style.lineJoin;
 
-        if (Math.abs(denom) < 0.1)
+        let px;
+        let py;
+        let pdist;
+
+        // parallel or almost parallel ~0 or ~180 deg
+        if (Math.abs(denom) < TOLERANCE)
         {
-            denom += 10.1;
-            verts.push(
-                p2x - (perpx * r1),
-                p2y - (perpy * r1));
+            // bevel, miter or round ~0deg
+            if (join !== LINE_JOIN.ROUND || Math.abs(angleDiff(perpx, perpy, perp2x, perp2y)) < TOLERANCE)
+            {
+                verts.push(
+                    p2x - (perpx * r1),
+                    p2y - (perpy * r1)
+                );
 
-            verts.push(
-                p2x + (perpx * r2),
-                p2y + (perpy * r2));
+                verts.push(
+                    p2x + (perpx * r2),
+                    p2y + (perpy * r2)
+                );
 
-            continue;
-        }
-
-        const px = ((b1 * c2) - (b2 * c1)) / denom;
-        const py = ((a2 * c1) - (a1 * c2)) / denom;
-        const pdist = ((px - p2x) * (px - p2x)) + ((py - p2y) * (py - p2y));
-
-        if (pdist > (196 * width * width))
-        {
-            perp3x = perpx - perp2x;
-            perp3y = perpy - perp2y;
-
-            dist = Math.sqrt((perp3x * perp3x) + (perp3y * perp3y));
-            perp3x /= dist;
-            perp3y /= dist;
-            perp3x *= width;
-            perp3y *= width;
-
-            verts.push(p2x - (perp3x * r1), p2y - (perp3y * r1));
-
-            verts.push(p2x + (perp3x * r2), p2y + (perp3y * r2));
-
-            verts.push(p2x - (perp3x * r2 * r1), p2y - (perp3y * r1));
-
-            indexCount++;
+                continue;
+            }
+            else // round ~180deg
+            {
+                px = p2x;
+                py = p2y;
+                pdist = 0;
+            }
         }
         else
+        {
+            const c1 = ((-perpx + p1x) * (-perpy + p2y)) - ((-perpx + p2x) * (-perpy + p1y));
+            const c2 = ((-perp2x + p3x) * (-perp2y + p2y)) - ((-perp2x + p2x) * (-perp2y + p3y));
+
+            px = ((b1 * c2) - (b2 * c1)) / denom;
+            py = ((a2 * c1) - (a1 * c2)) / denom;
+            pdist = ((px - p2x) * (px - p2x)) + ((py - p2y) * (py - p2y));
+        }
+
+        // funky comparison to have backwards compat which will fall back by default to miter
+        // TODO: introduce miterLimit
+        if (join !== LINE_JOIN.BEVEL && join !== LINE_JOIN.ROUND && pdist <= (196 * width * width))
         {
             verts.push(p2x + ((px - p2x) * r1), p2y + ((py - p2y) * r1));
 
             verts.push(p2x - ((px - p2x) * r2), p2y - ((py - p2y) * r2));
+        }
+        else
+        {
+            const flip = shouldFlip(p1x, p1y, p2x, p2y, p3x, p3y);
+
+            dist12 = len(p2x - p1x, p2y - p1y);
+            dist23 = len(p3x - p2x, p3y - p2y);
+            minDist = Math.min(dist12, dist23);
+
+            if (flip)
+            {
+                perpx = -perpx;
+                perpy = -perpy;
+                perp2x = -perp2x;
+                perp2y = -perp2y;
+
+                midx = (px - p2x) * r1;
+                midy = (py - p2y) * r1;
+                distMid = len(midx, midy);
+
+                if (minDist < distMid)
+                {
+                    midx /= distMid;
+                    midy /= distMid;
+                    midx *= minDist;
+                    midy *= minDist;
+                }
+
+                midx = p2x - midx;
+                midy = p2y - midy;
+            }
+            else
+            {
+                midx = (px - p2x) * r2;
+                midy = (py - p2y) * r2;
+                distMid = len(midx, midy);
+
+                if (minDist < distMid)
+                {
+                    midx /= distMid;
+                    midy /= distMid;
+                    midx *= minDist;
+                    midy *= minDist;
+                }
+
+                midx += p2x;
+                midy += p2y;
+            }
+
+            if (join === LINE_JOIN.ROUND)
+            {
+                const rad = flip ? r1 : r2;
+
+                // eslint-disable-next-line max-params
+                indexCount += buildRoundCap(midx, midy,
+                    p2x + (perpx * rad), p2y + (perpy * rad),
+                    p2x + (perp2x * rad), p2y + (perp2y * rad),
+                    p3x, p3y,
+                    verts,
+                    flip);
+            }
+            else if (join === LINE_JOIN.BEVEL || pdist > (196 * width * width)) // TODO: introduce miterLimit
+            {
+                if (flip)
+                {
+                    verts.push(p2x + (perpx * r2), p2y + (perpy * r2));
+                    verts.push(midx, midy);
+
+                    verts.push(p2x + (perp2x * r2), p2y + (perp2y * r2));
+                    verts.push(midx, midy);
+                }
+                else
+                {
+                    verts.push(midx, midy);
+                    verts.push(p2x + (perpx * r1), p2y + (perpy * r1));
+
+                    verts.push(midx, midy);
+                    verts.push(p2x + (perp2x * r1), p2y + (perp2y * r1));
+                }
+
+                indexCount += 2;
+            }
         }
     }
 
@@ -231,6 +327,136 @@ function buildLine(graphicsData, graphicsGeometry)
 
         indexStart++;
     }
+}
+
+function len(x, y)
+{
+    return Math.sqrt((x * x) + (y * y));
+}
+
+/**
+ * Check turn direction. If counterclockwise, we must invert prep vectors, otherwise they point 'inwards' the angle,
+ * resulting in funky looking lines.
+ *
+ * @ignore
+ * @private
+ * @param {number} p0x - x of 1st point
+ * @param {number} p0y - y of 1st point
+ * @param {number} p1x - x of 2nd point
+ * @param {number} p1y - y of 2nd point
+ * @param {number} p2x - x of 3rd point
+ * @param {number} p2y - y of 3rd point
+ *
+ * @returns {boolean} true if perpendicular vectors should be flipped, otherwise false
+ */
+function shouldFlip(p0x, p0y, p1x, p1y, p2x, p2y)
+{
+    return ((p1x - p0x) * (p2y - p0y)) - ((p2x - p0x) * (p1y - p0y)) < 0;
+}
+
+function angleDiff(p0x, p0y, p1x, p1y)
+{
+    const angle1 = Math.atan2(p0x, p0y);
+    const angle2 = Math.atan2(p1x, p1y);
+
+    if (angle2 > angle1)
+    {
+        if ((angle2 - angle1) >= PI_LBOUND)
+        {
+            return angle2 - PI_2 - angle1;
+        }
+    }
+    else if ((angle1 - angle2) >= PI_LBOUND)
+    {
+        return angle2 - (angle1 - PI_2);
+    }
+
+    return angle2 - angle1;
+}
+
+// eslint-disable-next-line max-params
+function buildRoundCap(cx, cy, p1x, p1y, p2x, p2y, nxtPx, nxtPy, verts, flipped)
+{
+    const cx2p0x = p1x - cx;
+    const cy2p0y = p1y - cy;
+
+    let angle0 = Math.atan2(cx2p0x, cy2p0y);
+    let angle1 = Math.atan2(p2x - cx, p2y - cy);
+
+    let startAngle = angle0;
+
+    if (angle1 > angle0)
+    {
+        if ((angle1 - angle0) >= PI_LBOUND)
+        {
+            angle1 = angle1 - PI_2;
+        }
+    }
+    else if ((angle0 - angle1) >= PI_LBOUND)
+    {
+        angle0 = angle0 - PI_2;
+    }
+
+    let angleDiff = angle1 - angle0;
+    const absAngleDiff = Math.abs(angleDiff);
+
+    if (absAngleDiff >= PI_LBOUND && absAngleDiff <= PI_UBOUND)
+    {
+        const r1x = cx - nxtPx;
+        const r1y = cy - nxtPy;
+
+        if (r1x === 0)
+        {
+            if (r1y > 0)
+            {
+                angleDiff = -angleDiff;
+            }
+        }
+        else if (r1x >= -TOLERANCE)
+        {
+            angleDiff = -angleDiff;
+        }
+    }
+
+    const radius = len(cx2p0x, cy2p0y);
+    const segCount = ((15 * absAngleDiff * Math.sqrt(radius) / Math.PI) >> 0) + 1;
+    const angleInc = angleDiff / segCount;
+
+    startAngle += angleInc;
+
+    if (flipped)
+    {
+        verts.push(p1x, p1y);
+        verts.push(cx, cy);
+
+        for (let i = 1, angle = startAngle; i < segCount; i++, angle += angleInc)
+        {
+            verts.push(cx + ((Math.sin(angle) * radius)),
+                cy + ((Math.cos(angle) * radius)));
+            verts.push(cx, cy);
+        }
+
+        verts.push(p2x, p2y);
+        verts.push(cx, cy);
+    }
+    else
+    {
+        verts.push(cx, cy);
+        verts.push(p1x, p1y);
+
+        for (let i = 1, angle = startAngle; i < segCount; i++, angle += angleInc)
+        {
+            verts.push(cx, cy);
+            verts.push(cx + ((Math.sin(angle) * radius)),
+                cy + ((Math.cos(angle) * radius)));
+        }
+
+        verts.push(cx, cy);
+        verts.push(cx + ((Math.sin(angle1) * radius)),
+            cy + ((Math.cos(angle1) * radius)));
+    }
+
+    return segCount + 2;
 }
 
 /**

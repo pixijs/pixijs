@@ -1,4 +1,5 @@
 import FillStyle from './FillStyle';
+import { LINE_JOIN } from '@pixi/constants';
 
 /**
  * Represents the line style for Graphics.
@@ -25,6 +26,7 @@ export default class LineStyle extends FillStyle
         obj.width = this.width;
         obj.alignment = this.alignment;
         obj.native = this.native;
+        obj.lineJoin = this.lineJoin;
 
         return obj;
     }
@@ -61,5 +63,13 @@ export default class LineStyle extends FillStyle
          * @default false
          */
         this.native = false;
+
+        /**
+         * Shape used to join two line segments where they meet.
+         *
+         * @member {string}
+         * @default 'miter'
+         */
+        this.lineJoin = LINE_JOIN.MITER;
     }
 }

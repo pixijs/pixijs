@@ -23,6 +23,7 @@ import ArcUtils from './utils/ArcUtils';
 import Star from './utils/Star';
 import { BLEND_MODES } from '@pixi/constants';
 import { Container } from '@pixi/display';
+import { LINE_JOIN } from '../../constants/src';
 
 const temp = new Float32Array(3);
 
@@ -262,10 +263,11 @@ export default class Graphics extends Container
      * @param {PIXI.Matrix} [matrix=null] Texture matrix to transform texture
      * @param {number} [alignment=0.5] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outter)
      * @param {boolean} [native=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
+     * @param {string} [lineJoin='miter'] - shape used to join two line segments where they meet
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
     lineTextureStyle(width = 0, texture = Texture.WHITE, color = 0xFFFFFF, alpha = 1,
-        matrix = null, alignment = 0.5, native = false)
+        matrix = null, alignment = 0.5, native = false, lineJoin = LINE_JOIN.MITER)
     {
         if (this.currentPath)
         {
@@ -295,6 +297,7 @@ export default class Graphics extends Container
                 alignment,
                 native,
                 visible,
+                lineJoin,
             });
         }
 
