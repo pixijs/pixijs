@@ -114,7 +114,8 @@ export default class GraphicsData
             this.fillAlpha,
             this.fill,
             this.nativeLines,
-            this.shape
+            this.shape,
+            this.lineAlignment
         );
     }
 
