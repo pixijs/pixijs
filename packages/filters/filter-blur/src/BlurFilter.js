@@ -39,7 +39,7 @@ export default class BlurFilter extends Filter
      * @param {PIXI.RenderTarget} input - The input target.
      * @param {PIXI.RenderTarget} output - The output target.
      */
-    apply(filterManager, input, output)
+    apply(filterManager, input, output, clear)
     {
         const xStrength = Math.abs(this.blurXFilter.strength);
         const yStrength = Math.abs(this.blurYFilter.strength);
@@ -49,17 +49,17 @@ export default class BlurFilter extends Filter
             const renderTarget = filterManager.getFilterTexture();
 
             this.blurXFilter.apply(filterManager, input, renderTarget, true);
-            this.blurYFilter.apply(filterManager, renderTarget, output, false);
+            this.blurYFilter.apply(filterManager, renderTarget, output, clear);
 
             filterManager.returnFilterTexture(renderTarget);
         }
         else if (yStrength)
         {
-            this.blurYFilter.apply(filterManager, input, output, false);
+            this.blurYFilter.apply(filterManager, input, output, clear);
         }
         else
         {
-            this.blurXFilter.apply(filterManager, input, output, false);
+            this.blurXFilter.apply(filterManager, input, output, clear);
         }
     }
 
