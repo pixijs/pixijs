@@ -8,7 +8,6 @@ const vertTemplate = `
     varying vec2 vBlurTexCoords[%size%];
 
     uniform vec4 inputSize;
-    uniform vec4 inputClamp;
     uniform vec4 outputFrame;
     
     vec4 filterVertexPosition( void )
