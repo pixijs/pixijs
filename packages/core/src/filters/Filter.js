@@ -147,7 +147,8 @@ export default class Filter extends Shader
      */
     constructor(vertexSrc, fragmentSrc, uniforms)
     {
-        const program = Program.from(vertexSrc, fragmentSrc);
+        const program = Program.from(vertexSrc || Filter.defaultVertexSrc,
+            fragmentSrc || Filter.defaultFragmentSrc);
 
         super(program, uniforms);
 
