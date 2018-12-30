@@ -1765,8 +1765,8 @@ export default class InteractionManager extends EventEmitter
                 if (typeof touch.pointerType === 'undefined') touch.pointerType = 'touch';
                 if (typeof touch.pointerId === 'undefined') touch.pointerId = touch.identifier || 0;
                 if (typeof touch.pressure === 'undefined') touch.pressure = touch.force || 0.5;
-                touch.twist = 0;
-                touch.tangentialPressure = 0;
+                if (typeof touch.twist === 'undefined') touch.twist = 0;
+                if (typeof touch.tangentialPressure === 'undefined') touch.tangentialPressure = 0;
                 // TODO: Remove these, as layerX/Y is not a standard, is deprecated, has uneven
                 // support, and the fill ins are not quite the same
                 // offsetX/Y might be okay, but is not the same as clientX/Y when the canvas's top
@@ -1791,8 +1791,8 @@ export default class InteractionManager extends EventEmitter
             if (typeof event.pointerType === 'undefined') event.pointerType = 'mouse';
             if (typeof event.pointerId === 'undefined') event.pointerId = MOUSE_POINTER_ID;
             if (typeof event.pressure === 'undefined') event.pressure = 0.5;
-            event.twist = 0;
-            event.tangentialPressure = 0;
+            if (typeof event.twist === 'undefined') event.twist = 0;
+            if (typeof event.tangentialPressure === 'undefined') event.tangentialPressure = 0;
 
             // mark the mouse event as normalized, just so that we know we did it
             event.isNormalized = true;
