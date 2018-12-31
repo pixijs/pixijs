@@ -106,6 +106,7 @@ export default class NineSlicePlane extends SimplePlane
 
     textureUpdated()
     {
+        this._textureID = this.shader.texture._updateID;
         this._refresh();
     }
 
