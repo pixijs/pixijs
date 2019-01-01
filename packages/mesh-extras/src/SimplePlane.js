@@ -72,4 +72,9 @@ export default class SimplePlane extends Mesh
             value.once('update', this.textureUpdated, this);
         }
     }
+
+    get texture()
+    {
+        return this._texture;
+    }
 }
