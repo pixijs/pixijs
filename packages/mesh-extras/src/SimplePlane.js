@@ -77,4 +77,14 @@ export default class SimplePlane extends Mesh
     {
         return this.shader.texture;
     }
+
+    _render(renderer)
+    {
+        if (this._textureID !== this.shader.texture._updateID)
+        {
+            this.textureUpdated();
+        }
+
+        super._render(renderer);
+    }
 }
