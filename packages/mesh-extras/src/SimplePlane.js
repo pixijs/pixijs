@@ -60,7 +60,7 @@ export default class SimplePlane extends Mesh
             return;
         }
 
-        this.material.texture = value;
+        this.shader.texture = value;
         this._textureID = -1;
 
         if (value.baseTexture.valid)
@@ -75,6 +75,6 @@ export default class SimplePlane extends Mesh
 
     get texture()
     {
-        return this._texture;
+        return this.shader.texture;
     }
 }
