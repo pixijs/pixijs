@@ -28,6 +28,10 @@ export default class SimpleMesh extends Mesh
 
         super(geometry, meshMaterial, null, drawMode);
 
+        /**
+         * upload vertices buffer each frame
+         * @member {boolean}
+         */
         this.autoUpdate = true;
     }
 

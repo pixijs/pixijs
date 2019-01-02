@@ -1,3 +1,4 @@
+import { Texture } from '@pixi/core';
 import SimplePlane from './SimplePlane';
 
 const DEFAULT_BORDER_SIZE = 10;
@@ -44,7 +45,7 @@ export default class NineSlicePlane extends SimplePlane
      */
     constructor(texture, leftWidth, topHeight, rightWidth, bottomHeight)
     {
-        super(texture, 4, 4);
+        super(Texture.WHITE, 4, 4);
 
         this._origWidth = texture.orig.width;
         this._origHeight = texture.orig.height;
@@ -102,10 +103,14 @@ export default class NineSlicePlane extends SimplePlane
          * @override
          */
         this._bottomHeight = typeof bottomHeight !== 'undefined' ? bottomHeight : DEFAULT_BORDER_SIZE;
+
+        // lets call the setter to ensure all necessary updates are performed
+        this.texture = texture;
     }
 
     textureUpdated()
     {
+        this._textureID = this.shader.texture._updateID;
         this._refresh();
     }
 
