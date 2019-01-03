@@ -60,6 +60,9 @@ export default class Renderer extends AbstractRenderer
     {
         super('WebGL', options, arg2, arg3);
 
+        // the options will have been modified here in the super constructor with pixi's default settings..
+        options = this.options;
+
         /**
          * The type of this renderer as a standardized const
          *
