@@ -35,7 +35,7 @@ export default class Extract
      * Will return a HTML Image of the target
      *
      * @param {PIXI.DisplayObject|PIXI.RenderTexture} target - A displayObject or renderTexture
-     *  to convert. If left empty will use use the main renderer
+     *  to convert. If left empty will use the main renderer
      * @return {HTMLImageElement} HTML Image of the target
      */
     image(target)
@@ -52,7 +52,7 @@ export default class Extract
      *  `Extract.getCanvas` and then running toDataURL on that.
      *
      * @param {PIXI.DisplayObject|PIXI.RenderTexture} target - A displayObject or renderTexture
-     *  to convert. If left empty will use use the main renderer
+     *  to convert. If left empty will use the main renderer
      * @return {string} A base64 encoded string of the texture.
      */
     base64(target)
@@ -64,7 +64,7 @@ export default class Extract
      * Creates a Canvas element, renders this target to it and then returns it.
      *
      * @param {PIXI.DisplayObject|PIXI.RenderTexture} target - A displayObject or renderTexture
-     *  to convert. If left empty will use use the main renderer
+     *  to convert. If left empty will use the main renderer
      * @return {HTMLCanvasElement} A Canvas element with the texture rendered on.
      */
     canvas(target)
@@ -157,7 +157,7 @@ export default class Extract
      * order, with integer values between 0 and 255 (included).
      *
      * @param {PIXI.DisplayObject|PIXI.RenderTexture} target - A displayObject or renderTexture
-     *  to convert. If left empty will use use the main renderer
+     *  to convert. If left empty will use the main renderer
      * @return {Uint8ClampedArray} One-dimensional array containing the pixel data of the entire texture
      */
     pixels(target)
