@@ -73,6 +73,7 @@ export default class CanvasGraphicsRenderer
             const lineColor = lineStyle.color;// data._lineTint;
 
             context.lineWidth = lineStyle.width;
+            context.lineJoin = lineStyle.lineJoin;
 
             if (data.type === SHAPES.POLY)
             {
