@@ -326,6 +326,10 @@ export default class RenderTarget
      */
     destroy()
     {
+        if (this.frameBuffer.stencil)
+        {
+            this.gl.deleteRenderBuffer(this.frameBuffer.stencil);
+        }
         this.frameBuffer.destroy();
 
         this.frameBuffer = null;
