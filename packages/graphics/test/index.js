@@ -14,7 +14,7 @@ function withGL(fn)
     return !process.env.DISABLE_WEBGL ? (fn || true) : undefined;
 }
 
-describe('PIXI.Graphics', function ()
+describe('Graphics', function ()
 {
     describe('constructor', function ()
     {
@@ -137,7 +137,7 @@ describe('PIXI.Graphics', function ()
                 it('is miter by default (backwards compatible)', function ()
                 {
                     // given
-                    const graphics = new PIXI.Graphics();
+                    const graphics = new Graphics();
 
                     // then
                     expect(graphics.line.lineJoin).to.be.equal('miter');
@@ -146,8 +146,8 @@ describe('PIXI.Graphics', function ()
                 it('clockwise miter', withGL(function ()
                 {
                     // given
-                    const renderer = new PIXI.WebGLRenderer(200, 200, {});
-                    const graphics = new PIXI.Graphics();
+                    const renderer = new Renderer({ width: 200, height: 200 });
+                    const graphics = new Graphics();
 
                     graphics.lineStyle(2, 0, 1, 0.5);
                     graphics.line.lineJoin = 'miter';
@@ -187,8 +187,8 @@ describe('PIXI.Graphics', function ()
                 it('counterclockwise miter', withGL(function ()
                 {
                     // given
-                    const renderer = new PIXI.WebGLRenderer(200, 200, {});
-                    const graphics = new PIXI.Graphics();
+                    const renderer = new Renderer({ width: 200, height: 200 });
+                    const graphics = new Graphics();
 
                     graphics.lineStyle(2, 0, 1, 0.5);
                     graphics.line.lineJoin = 'miter';
@@ -228,8 +228,8 @@ describe('PIXI.Graphics', function ()
                 it('flat line miter', withGL(function ()
                 {
                     // given
-                    const renderer = new PIXI.WebGLRenderer(200, 200, {});
-                    const graphics = new PIXI.Graphics();
+                    const renderer = new Renderer({ width: 200, height: 200 });
+                    const graphics = new Graphics();
 
                     graphics.lineStyle(2, 0, 1, 0.5);
                     graphics.line.lineJoin = 'miter';
@@ -276,8 +276,8 @@ describe('PIXI.Graphics', function ()
                     const perp1 = [0, 0.5];
                     const perp2 = [0.019984019174435787, 0.4996004793608947];
                     const anchor = [24.990003996803196, 0.5];
-                    const renderer = new PIXI.WebGLRenderer(200, 200, {});
-                    const graphics = new PIXI.Graphics();
+                    const renderer = new Renderer({ width: 200, height: 200 });
+                    const graphics = new Graphics();
 
                     graphics.lineStyle(1, 0, 1, 0.5);
                     graphics.line.lineJoin = 'miter';
@@ -330,8 +330,8 @@ describe('PIXI.Graphics', function ()
                     const perp1 = [0, 0.5];
                     const perp2 = [0.019984019174435787, -0.4996004793608947];
                     const anchor = [24.990003996803196, -0.5];
-                    const renderer = new PIXI.WebGLRenderer(200, 200, {});
-                    const graphics = new PIXI.Graphics();
+                    const renderer = new Renderer({ width: 200, height: 200 });
+                    const graphics = new Graphics();
 
                     graphics.lineStyle(1, 0, 1, 0.5);
                     graphics.line.lineJoin = 'miter';
@@ -383,8 +383,8 @@ describe('PIXI.Graphics', function ()
                     // normalized perpendicular vectors
                     const perp1 = [0, 1];
                     const perp2 = [0, -1];
-                    const renderer = new PIXI.WebGLRenderer(200, 200, {});
-                    const graphicsMiter = new PIXI.Graphics();
+                    const renderer = new Renderer({ width: 200, height: 200 });
+                    const graphicsMiter = new Graphics();
 
                     graphicsMiter.lineStyle(2, 0, 1, 0.5);
                     graphicsMiter.lineJoin = 'miter';
@@ -427,8 +427,8 @@ describe('PIXI.Graphics', function ()
                 it('clockwise bevel', withGL(function ()
                 {
                     // given
-                    const renderer = new PIXI.WebGLRenderer(200, 200, {});
-                    const graphics = new PIXI.Graphics();
+                    const renderer = new Renderer({ width: 200, height: 200 });
+                    const graphics = new Graphics();
 
                     graphics.lineStyle(2, 0, 1, 0.5);
                     graphics.line.lineJoin = 'bevel';
@@ -474,8 +474,8 @@ describe('PIXI.Graphics', function ()
                 it('counterclockwise bevel', withGL(function ()
                 {
                     // given
-                    const renderer = new PIXI.WebGLRenderer(200, 200, {});
-                    const graphics = new PIXI.Graphics();
+                    const renderer = new Renderer({ width: 200, height: 200 });
+                    const graphics = new Graphics();
 
                     graphics.lineStyle(2, 0, 1, 0.5);
                     graphics.line.lineJoin = 'bevel';
@@ -527,8 +527,8 @@ describe('PIXI.Graphics', function ()
                     // normalized perpendicular vectors
                     const perp1 = [0, 1];
                     const perp2 = [0, -1];
-                    const renderer = new PIXI.WebGLRenderer(200, 200, {});
-                    const graphicsMiter = new PIXI.Graphics();
+                    const renderer = new Renderer({ width: 200, height: 200 });
+                    const graphicsMiter = new Graphics();
 
                     graphicsMiter.lineStyle(2, 0, 1, 0.5);
                     graphicsMiter.line.lineJoin = 'bevel';
@@ -568,8 +568,8 @@ describe('PIXI.Graphics', function ()
                 it('flat line bevel', withGL(function ()
                 {
                     // given
-                    const renderer = new PIXI.WebGLRenderer(200, 200, {});
-                    const graphics = new PIXI.Graphics();
+                    const renderer = new Renderer({ width: 200, height: 200 });
+                    const graphics = new Graphics();
 
                     graphics.lineStyle(2, 0, 1, 0.5);
                     graphics.line.lineJoin = 'bevel';
@@ -625,8 +625,8 @@ describe('PIXI.Graphics', function ()
                     const r = 2.23606797749979; // sqrt(1^2 + 2^2)
                     const angleIncrease = -0.12870022175865686; // anlge diff / 5
                     let angle = 2.677945044588987; // Math.atan2(1, -2)
-                    const renderer = new PIXI.WebGLRenderer(200, 200, {});
-                    const graphics = new PIXI.Graphics();
+                    const renderer = new Renderer({ width: 200, height: 200 });
+                    const graphics = new Graphics();
 
                     graphics.lineStyle(2, 0, 1, 0.5);
                     graphics.line.lineJoin = 'round';
@@ -641,7 +641,7 @@ describe('PIXI.Graphics', function ()
                     // then
                     const points = graphics.geometry.points;
 
-                    // 6 control points, xy each
+                    // control points, xy each
                     expect(points.length / 2, 'number of control points is not right').to.be.equal((4 + noOfCtlPts));
 
                     expect(points[0], 'x1').to.be.eql(p1[0] - perp1[0]);
@@ -715,8 +715,8 @@ describe('PIXI.Graphics', function ()
                     const r = 2.23606797749979; // sqrt(1^2 + 2^2)
                     const angleIncrease = 0.12870022175865686; // anlge diff / 5
                     let angle = 0.4636476090008061; // Math.atan2(1, -2)
-                    const renderer = new PIXI.WebGLRenderer(200, 200, {});
-                    const graphics = new PIXI.Graphics();
+                    const renderer = new Renderer({ width: 200, height: 200 });
+                    const graphics = new Graphics();
 
                     graphics.lineStyle(2, 0, 1, 0.5);
                     graphics.line.lineJoin = 'round';
@@ -731,7 +731,7 @@ describe('PIXI.Graphics', function ()
                     // then
                     const points = graphics.geometry.points;
 
-                    // 6 control points, xy each
+                    // control points, xy each
                     expect(points.length / 2, 'number of control points is not right').to.be.equal((4 + noOfCtlPts));
 
                     expect(points[0], 'x1').to.be.eql(p1[0] + perp1[0]);
@@ -805,8 +805,8 @@ describe('PIXI.Graphics', function ()
                     const r = 1;
                     const angleIncrease = -0.20943951023931953;
                     let angle = 3.141592653589793;
-                    const renderer = new PIXI.WebGLRenderer(200, 200, {});
-                    const graphics = new PIXI.Graphics();
+                    const renderer = new Renderer({ width: 200, height: 200 });
+                    const graphics = new Graphics();
 
                     graphics.lineStyle(2, 0, 1, 0.5);
                     graphics.line.lineJoin = 'round';
@@ -822,7 +822,7 @@ describe('PIXI.Graphics', function ()
                     const points = graphics.geometry.points;
                     const len = points.length;
 
-                    // 6 control points, xy each
+                    // control points, xy each
                     expect(len / 2, 'number of control points is not right').to.be.equal((4 + noOfCtlPts));
 
                     expect(points[0], 'x1').to.be.eql(p1[0] - perp1[0]);
@@ -876,8 +876,8 @@ describe('PIXI.Graphics', function ()
                     const r = 1;
                     const angleIncrease = -0.20943951023931953;
                     let angle = 0;
-                    const renderer = new PIXI.WebGLRenderer(200, 200, {});
-                    const graphics = new PIXI.Graphics();
+                    const renderer = new Renderer({ width: 200, height: 200 });
+                    const graphics = new Graphics();
 
                     graphics.lineStyle(2, 0, 1, 0.5);
                     graphics.line.lineJoin = 'round';
@@ -893,7 +893,7 @@ describe('PIXI.Graphics', function ()
                     const points = graphics.geometry.points;
                     const len = points.length;
 
-                    // 6 control points, xy each
+                    // control points, xy each
                     expect(len / 2, 'number of control points is not right').to.be.equal((4 + noOfCtlPts));
 
                     expect(points[0], 'x1').to.be.eql(p1[0] - perp1[0]);
@@ -934,8 +934,8 @@ describe('PIXI.Graphics', function ()
                 it('flat line round', withGL(function ()
                 {
                     // given
-                    const renderer = new PIXI.WebGLRenderer(200, 200, {});
-                    const graphics = new PIXI.Graphics();
+                    const renderer = new Renderer({ width: 200, height: 200 });
+                    const graphics = new Graphics();
 
                     graphics.lineStyle(2, 0, 1, 0.5);
                     graphics.line.lineJoin = 'round';
@@ -1145,7 +1145,7 @@ describe('PIXI.Graphics', function ()
     {
         it('should have no gaps in line border', withGL(function ()
         {
-            const renderer = new Renderer(200, 200, {});
+            const renderer = new Renderer({ width: 200, height: 200 });
 
             try
             {
