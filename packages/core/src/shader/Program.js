@@ -23,7 +23,7 @@ class Program
      * @param {string} [vertexSrc] - The source of the vertex shader.
      * @param {string} [fragmentSrc] - The source of the fragment shader.
      */
-    constructor(vertexSrc, fragmentSrc, name = 'pixi-shader')
+    constructor(vertexSrc, fragmentSrc, name = 'pixi-shader', shaderLangVersion = '')
     {
         this.id = UID++;
 
@@ -44,8 +44,8 @@ class Program
         this.vertexSrc = setPrecision(this.vertexSrc, settings.PRECISION_VERTEX);
         this.fragmentSrc = setPrecision(this.fragmentSrc, settings.PRECISION_FRAGMENT);
 
-        this.vertexSrc = `#define SHADER_NAME ${name}-${this.id}\n${this.vertexSrc}`;
-        this.fragmentSrc = `#define SHADER_NAME ${name}-${this.id}\n${this.fragmentSrc}`;
+        this.vertexSrc = `${shaderLangVersion}\n#define SHADER_NAME ${name}-${this.id}\n${this.vertexSrc}`;
+        this.fragmentSrc = `${shaderLangVersion}\n#define SHADER_NAME ${name}-${this.id}\n${this.fragmentSrc}`;
 
         // currently this does not extract structs only default types
         this.extractData(this.vertexSrc, this.fragmentSrc);
