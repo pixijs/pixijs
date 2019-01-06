@@ -217,17 +217,18 @@ export default class Sprite extends Container
      */
     calculateVertices()
     {
-        if (this._transformID === this.transform._worldID && this._textureID === this._texture._updateID)
+        const texture = this._texture;
+
+        if (this._transformID === this.transform._worldID && this._textureID === texture._updateID)
         {
             return;
         }
 
         this._transformID = this.transform._worldID;
-        this._textureID = this._texture._updateID;
+        this._textureID = texture._updateID;
 
         // set the vertex data
 
-        const texture = this._texture;
         const wt = this.transform.worldTransform;
         const a = wt.a;
         const b = wt.b;
