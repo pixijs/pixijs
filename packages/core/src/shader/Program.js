@@ -41,11 +41,13 @@ class Program
          */
         this.fragmentSrc = fragmentSrc || Program.defaultFragmentSrc;
 
-        this.vertexSrc = setPrecision(this.vertexSrc, settings.PRECISION_VERTEX);
-        this.fragmentSrc = setPrecision(this.fragmentSrc, settings.PRECISION_FRAGMENT);
+        name = name.replace(/\s+/g, '-');
 
         this.vertexSrc = `#define SHADER_NAME ${name}-${this.id}\n${this.vertexSrc}`;
         this.fragmentSrc = `#define SHADER_NAME ${name}-${this.id}\n${this.fragmentSrc}`;
+
+        this.vertexSrc = setPrecision(this.vertexSrc, settings.PRECISION_VERTEX);
+        this.fragmentSrc = setPrecision(this.fragmentSrc, settings.PRECISION_FRAGMENT);
 
         // currently this does not extract structs only default types
         this.extractData(this.vertexSrc, this.fragmentSrc);
