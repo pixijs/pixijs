@@ -22,7 +22,7 @@
   },
   "scripts": {
     "test": "floss --path test",
-    "build:min": "uglifyjs dist/pixi-legacy.js -c -m -o dist/pixi-legacy.min.js --source-map \"content='dist/pixi-legacy.js.map',includeSources=true,filename='dist/pixi-legacy.min.js.map',url='pixi-legacy.min.js.map'\" --comments \"/pixi.js-legacy - /\""
+    "build:min": "terser dist/pixi-legacy.js -c -m -o dist/pixi-legacy.min.js --source-map \"content='dist/pixi-legacy.js.map',includeSources=true,filename='dist/pixi-legacy.min.js.map',url='pixi-legacy.min.js.map'\" --comments \"/pixi.js-legacy - /\""
   },
   "files": [
     "lib/",
@@ -44,6 +44,6 @@
   },
   "devDependencies": {
     "floss": "^2.1.5",
-    "uglify-es": "^3.3.9"
+    "terser": "^3.14.1"
   }
 }
