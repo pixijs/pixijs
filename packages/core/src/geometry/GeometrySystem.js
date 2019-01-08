@@ -313,7 +313,7 @@ export default class GeometrySystem extends System
             }
             else if (!attributes[j].size)
             {
-                console.warn(`PIXI Geometry attribut '${j}' size cannot be determined (likely the bound shader does not have the attribute)`);  // eslint-disable-line
+                console.warn(`PIXI Geometry attribute '${j}' size cannot be determined (likely the bound shader does not have the attribute)`);  // eslint-disable-line
             }
 
             tempStride[attributes[j].buffer] += attributes[j].size * byteSizeMap[attributes[j].type];
