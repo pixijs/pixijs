@@ -64,10 +64,21 @@ export default class BufferResource extends Resource
             glTexture.width = baseTexture.width;
             glTexture.height = baseTexture.height;
 
+            let internalFormat = baseTexture.format;
+
+            // guess sized format by type and format
+            // https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/texImage2D
+            if (renderer.context.webGLVersion === 2
+                && baseTexture.type === renderer.gl.FLOAT
+                && baseTexture.format === renderer.gl.RGBA)
+            {
+                internalFormat = renderer.gl.RGBA32F;
+            }
+
             gl.texImage2D(
                 baseTexture.target,
                 0,
-                baseTexture.format,
+                internalFormat,
                 baseTexture.width,
                 baseTexture.height,
                 0,
