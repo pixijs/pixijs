@@ -456,7 +456,7 @@ function buildRoundCap(cx, cy, p1x, p1y, p2x, p2y, nxtPx, nxtPy, verts, flipped)
             cy + ((Math.cos(angle1) * radius)));
     }
 
-    return segCount + 2;
+    return segCount * 2;
 }
 
 /**
