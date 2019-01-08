@@ -244,11 +244,12 @@ export default class Graphics extends Container
      * @param {number} [alpha=1] - alpha of the line to draw, will update the objects stored style
      * @param {number} [alignment=1] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outter)
      * @param {boolean} [native=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
+     * @param {string} [lineJoin='miter'] - shape used to join two line segments where they meet
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    lineStyle(width = 0, color = 0, alpha = 1, alignment = 0.5, native = false)
+    lineStyle(width = 0, color = 0, alpha = 1, alignment = 0.5, native = false, lineJoin = LINE_JOIN.MITER)
     {
-        this.lineTextureStyle(width, Texture.WHITE, color, alpha, null, alignment, native);
+        this.lineTextureStyle(width, Texture.WHITE, color, alpha, null, alignment, native, lineJoin);
 
         return this;
     }
