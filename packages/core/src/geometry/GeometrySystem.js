@@ -193,14 +193,14 @@ export default class GeometrySystem extends System
 
                 // TODO can cache this on buffer! maybe added a getter / setter?
                 const type = buffer.index ? gl.ELEMENT_ARRAY_BUFFER : gl.ARRAY_BUFFER;
-                const drawType = buffer.static ? gl.STATIC_DRAW : gl.DYNAMIC_DRAW;
 
-                if (this.boundBuffers[type] !== glBuffer)
-                {
-                    this.boundBuffers[type] = glBuffer;
-
-                    gl.bindBuffer(type, glBuffer.buffer);
-                }
+                // TODO this could change if the VAO changes...
+                // need to come up with a better way to cache..
+                // if (this.boundBuffers[type] !== glBuffer)
+                // {
+                // this.boundBuffers[type] = glBuffer;
+                gl.bindBuffer(type, glBuffer.buffer);
+                // }
 
                 this._boundBuffer = glBuffer;
 
@@ -211,6 +211,8 @@ export default class GeometrySystem extends System
                 }
                 else
                 {
+                    const drawType = buffer.static ? gl.STATIC_DRAW : gl.DYNAMIC_DRAW;
+
                     glBuffer.byteLength = buffer.data.byteLength;
                     gl.bufferData(type, buffer.data, drawType);
                 }
