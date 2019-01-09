@@ -1,5 +1,7 @@
 import System from '../System';
 import { Rectangle } from '@pixi/math';
+import { ENV } from '@pixi/constants';
+import { settings } from '../settings';
 
 /**
  * Framebuffer system
@@ -11,16 +13,41 @@ export default class FramebufferSystem extends System
 {
     /**
      * Sets up the renderer context and necessary buffers.
-     *
-     * @private
      */
     contextChange()
     {
-        this.gl = this.renderer.gl;
+        const gl = this.gl = this.renderer.gl;
+
         this.CONTEXT_UID = this.renderer.CONTEXT_UID;
         this.current = null;
         this.viewport = new Rectangle();
-        this.drawBufferExtension = this.renderer.context.extensions.drawBuffers;
+        this.hasMRT = true;
+
+        // webgl2
+        if (!gl.drawBuffers)
+        {
+            // webgl 1!
+            let nativeDrawBuffersExtension = this.renderer.context.extensions.drawBuffers;
+
+            if (settings.PREFER_ENV === ENV.WEBGL_LEGACY)
+            {
+                nativeDrawBuffersExtension = null;
+            }
+
+            if (nativeDrawBuffersExtension)
+            {
+                gl.drawBuffers = (activeTextures) =>
+                    nativeDrawBuffersExtension.drawBuffersWEBGL(activeTextures);
+            }
+            else
+            {
+                this.hasMRT = false;
+                gl.drawBuffers = () =>
+                {
+                    // empty
+                };
+            }
+        }
     }
 
     /**
@@ -39,7 +66,7 @@ export default class FramebufferSystem extends System
         {
             // TODO caching layer!
 
-            const fbo = framebuffer.glFrameBuffers[this.CONTEXT_UID] || this.initFramebuffer(framebuffer);
+            const fbo = framebuffer.glFramebuffers[this.CONTEXT_UID] || this.initFramebuffer(framebuffer);
 
             gl.bindFramebuffer(gl.FRAMEBUFFER, fbo.framebuffer);
             // make sure all textures are unbound..
@@ -162,7 +189,7 @@ export default class FramebufferSystem extends System
     /**
      * Initialize framebuffer
      *
-     * @private
+     * @protected
      * @param {PIXI.Framebuffer} framebuffer
      */
     initFramebuffer(framebuffer)
@@ -178,7 +205,7 @@ export default class FramebufferSystem extends System
             dirtySize: 0,
         };
 
-        framebuffer.glFrameBuffers[this.CONTEXT_UID] = fbo;
+        framebuffer.glFramebuffers[this.CONTEXT_UID] = fbo;
 
         return fbo;
     }
@@ -186,7 +213,7 @@ export default class FramebufferSystem extends System
     /**
      * Resize the framebuffer
      *
-     * @private
+     * @protected
      * @param {PIXI.Framebuffer} framebuffer
      */
     resizeFramebuffer(framebuffer)
@@ -203,14 +230,14 @@ export default class FramebufferSystem extends System
     /**
      * Update the framebuffer
      *
-     * @private
+     * @protected
      * @param {PIXI.Framebuffer} framebuffer
      */
     updateFramebuffer(framebuffer)
     {
         const { gl } = this;
 
-        const fbo = framebuffer.glFrameBuffers[this.CONTEXT_UID];
+        const fbo = framebuffer.glFramebuffers[this.CONTEXT_UID];
 
         // bind the color texture
         const colorTextures = framebuffer.colorTextures;
@@ -252,9 +279,9 @@ export default class FramebufferSystem extends System
             activeTextures.push(gl.COLOR_ATTACHMENT0 + i);
         }
 
-        if (this.drawBufferExtension && activeTextures.length > 1)
+        if (activeTextures.length > 1)
         {
-            this.drawBufferExtension.drawBuffersWEBGL(activeTextures);
+            gl.drawBuffers(activeTextures);
         }
 
         if (framebuffer.depthTexture)

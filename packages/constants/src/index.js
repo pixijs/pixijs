@@ -2,10 +2,9 @@
  * Different types of environments for WebGL.
  *
  * @static
- * @constant
  * @memberof PIXI
  * @name ENV
- * @type {object}
+ * @enum {number}
  * @property {number} WEBGL_LEGACY - Used for older v1 WebGL devices. PixiJS will aim to ensure compatibility
  *  with older / less advanced devices. If you experience unexplained flickering prefer this environment.
  * @property {number} WEBGL - Version 1 of WebGL
@@ -21,10 +20,9 @@ export const ENV = {
  * Constant to identify the Renderer Type.
  *
  * @static
- * @constant
  * @memberof PIXI
  * @name RENDERER_TYPE
- * @type {object}
+ * @enum {number}
  * @property {number} UNKNOWN - Unknown render type.
  * @property {number} WEBGL - WebGL render type.
  * @property {number} CANVAS - Canvas render type.
@@ -41,11 +39,9 @@ export const RENDERER_TYPE = {
  * IMPORTANT - The WebGL renderer only supports the NORMAL, ADD, MULTIPLY and SCREEN blend modes.
  * Anything else will silently act like NORMAL.
  *
- * @static
- * @constant
  * @memberof PIXI
  * @name BLEND_MODES
- * @type {object}
+ * @enum {number}
  * @property {number} NORMAL
  * @property {number} ADD
  * @property {number} MULTIPLY
@@ -91,11 +87,10 @@ export const BLEND_MODES = {
  * Various webgl draw modes. These can be used to specify which GL drawMode to use
  * under certain situations and renderers.
  *
- * @static
- * @constant
  * @memberof PIXI
+ * @static
  * @name DRAW_MODES
- * @type {object}
+ * @enum {number}
  * @property {number} POINTS
  * @property {number} LINES
  * @property {number} LINE_LOOP
@@ -117,11 +112,10 @@ export const DRAW_MODES = {
 /**
  * Various GL texture/resources formats.
  *
- * @static
- * @constant
  * @memberof PIXI
+ * @static
  * @name FORMATS
- * @type {object}
+ * @enum {number}
  * @property {number} RGBA=6408
  * @property {number} RGB=6407
  * @property {number} ALPHA=6406
@@ -143,11 +137,10 @@ export const FORMATS = {
 /**
  * Various GL target types.
  *
- * @static
- * @constant
  * @memberof PIXI
+ * @static
  * @name TARGETS
- * @type {object}
+ * @enum {number}
  * @property {number} TEXTURE_2D=3553
  * @property {number} TEXTURE_CUBE_MAP=34067
  * @property {number} TEXTURE_2D_ARRAY=35866
@@ -173,11 +166,10 @@ export const TARGETS = {
 /**
  * Various GL data format types.
  *
- * @static
- * @constant
  * @memberof PIXI
+ * @static
  * @name TYPES
- * @type {object}
+ * @enum {number}
  * @property {number} UNSIGNED_BYTE=5121
  * @property {number} UNSIGNED_SHORT=5123
  * @property {number} UNSIGNED_SHORT_5_6_5=33635
@@ -202,11 +194,10 @@ export const TYPES = {
  * The {@link PIXI.settings.SCALE_MODE} scale mode affects the default scaling mode of future operations.
  * It can be re-assigned to either LINEAR or NEAREST, depending upon suitability.
  *
- * @static
- * @constant
  * @memberof PIXI
+ * @static
  * @name SCALE_MODES
- * @type {object}
+ * @enum {number}
  * @property {number} LINEAR Smooth scaling
  * @property {number} NEAREST Pixelating scaling
  */
@@ -225,11 +216,10 @@ export const SCALE_MODES = {
  *
  * This property only affects WebGL.
  *
- * @static
- * @constant
  * @name WRAP_MODES
  * @memberof PIXI
- * @type {object}
+ * @static
+ * @enum {number}
  * @property {number} CLAMP - The textures uvs are clamped
  * @property {number} REPEAT - The texture uvs tile and repeat
  * @property {number} MIRRORED_REPEAT - The texture uvs tile and repeat with mirroring
@@ -252,11 +242,10 @@ export const WRAP_MODES = {
  * Handy for mobile devices!
  * This property only affects WebGL.
  *
- * @static
- * @constant
  * @name GC_MODES
+ * @enum {number}
+ * @static
  * @memberof PIXI
- * @type {object}
  * @property {number} AUTO - Garbage collection will happen periodically automatically
  * @property {number} MANUAL - Garbage collection will need to be called manually
  */
@@ -268,11 +257,11 @@ export const GC_MODES = {
 /**
  * Constants that specify float precision in shaders.
  *
- * @static
- * @constant
  * @name PRECISION
  * @memberof PIXI
- * @type {object}
+ * @static
+ * @enum {string}
+ * @constant
  * @property {string} LOW='lowp'
  * @property {string} MEDIUM='mediump'
  * @property {string} HIGH='highp'

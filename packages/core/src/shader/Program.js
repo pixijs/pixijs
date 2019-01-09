@@ -17,13 +17,13 @@ const nameCache = {};
 /**
  * @class
  * @memberof PIXI
- * @extends PIXI.Shader
  */
-class Program
+export default class Program
 {
     /**
      * @param {string} [vertexSrc] - The source of the vertex shader.
      * @param {string} [fragmentSrc] - The source of the fragment shader.
+     * @param {string} [name] - Name for shader
      */
     constructor(vertexSrc, fragmentSrc, name = 'pixi-shader')
     {
@@ -74,7 +74,7 @@ class Program
     /**
      * Extracts the data for a buy creating a small test program
      * or reading the src directly.
-     * @private
+     * @protected
      *
      * @param {string} [vertexSrc] - The source of the vertex shader.
      * @param {string} [fragmentSrc] - The source of the fragment shader.
@@ -103,8 +103,8 @@ class Program
      * returns the attribute data from the program
      * @private
      *
-     * @param {webGL-program} [program] - the webgl program
-     * @param {context} [gl] - the webGL context
+     * @param {WebGLProgram} [program] - the webgl program
+     * @param {WebGLRenderingContext} [gl] - the webGL context
      *
      * @returns {object} the attribute data for this program
      */
@@ -188,6 +188,7 @@ class Program
      *
      * @static
      * @constant
+     * @member {string}
      */
     static get defaultVertexSrc()
     {
@@ -199,6 +200,7 @@ class Program
      *
      * @static
      * @constant
+     * @member {string}
      */
     static get defaultFragmentSrc()
     {
@@ -229,5 +231,3 @@ class Program
         return program;
     }
 }
-
-export default Program;

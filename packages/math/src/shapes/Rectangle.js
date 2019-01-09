@@ -97,6 +97,7 @@ export default class Rectangle
      *
      * @static
      * @constant
+     * @member {PIXI.Rectangle}
      */
     static get EMPTY()
     {

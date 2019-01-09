@@ -422,7 +422,7 @@ export default class BitmapText extends Container
     /**
      * The font descriptor of the BitmapText object.
      *
-     * @member {string|object}
+     * @member {object}
      */
     get font()
     {

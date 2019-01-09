@@ -4,7 +4,7 @@ import { DRAW_MODES } from '@pixi/constants';
  * Renderer dedicated to meshes.
  *
  * @class
- * @private
+ * @protected
  * @memberof PIXI
  */
 export default class CanvasMeshRenderer

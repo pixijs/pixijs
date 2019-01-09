@@ -38,8 +38,9 @@ export default class TextureMatrix
         this.uClampOffset = new Float32Array(2);
 
         /**
-         * @member {number} Tracks Texture frame changes
-         * @private
+         * Tracks Texture frame changes
+         * @member {number}
+         * @protected
          */
         this._updateID = -1;
 

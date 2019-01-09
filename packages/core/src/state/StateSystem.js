@@ -49,8 +49,8 @@ export default class StateSystem extends System
          * Attribute state
          * @member {object}
          * @readonly
-         * @property {Array} tempAttribState
-         * @property {Array} attribState
+         * @property {number[]} tempAttribState
+         * @property {number[]} attribState
          */
         this.attribState = null;
 

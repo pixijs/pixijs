@@ -108,7 +108,7 @@ export default class Texture extends EventEmitter
          * The WebGL UV data cache. Can be used as quad UV
          *
          * @member {PIXI.TextureUvs}
-         * @private
+         * @protected
          */
         this._uvs = DEFAULT_UVS;
 
@@ -169,7 +169,7 @@ export default class Texture extends EventEmitter
          * Call updateUvs() to increment it.
          *
          * @member {number}
-         * @private
+         * @protected
          */
 
         this._updateID = 0;
@@ -196,7 +196,7 @@ export default class Texture extends EventEmitter
     /**
      * Called when the base texture is updated
      *
-     * @private
+     * @protected
      * @param {PIXI.BaseTexture} baseTexture - The base texture.
      */
     onBaseTextureUpdated(baseTexture)
@@ -333,7 +333,7 @@ export default class Texture extends EventEmitter
      * Create a new Texture with a BufferResource from a Float32Array.
      * RGBA values are floats from 0 to 1.
      * @static
-     * @param {Float32Array|UintArray} buffer The optional array to use, if no data
+     * @param {Float32Array|Uint8Array} buffer The optional array to use, if no data
      *        is provided, a new Float32Array is created.
      * @param {number} width - Width of the resource
      * @param {number} height - Height of the resource
@@ -579,6 +579,7 @@ function removeAllHandlers(tex)
  *
  * @static
  * @constant
+ * @member {PIXI.Texture}
  */
 Texture.EMPTY = new Texture(new BaseTexture());
 removeAllHandlers(Texture.EMPTY);
@@ -590,6 +591,7 @@ removeAllHandlers(Texture.EMPTY.baseTexture);
  *
  * @static
  * @constant
+ * @member {PIXI.Texture}
  */
 Texture.WHITE = createWhiteTexture();
 removeAllHandlers(Texture.WHITE);

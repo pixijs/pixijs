@@ -1,5 +1,5 @@
 import BaseTexture from '../textures/BaseTexture';
-import FrameBuffer from '../framebuffer/FrameBuffer';
+import Framebuffer from '../framebuffer/Framebuffer';
 
 /**
  * A BaseRenderTexture is a special texture that allows any PixiJS display object to be rendered to it.
@@ -76,24 +76,16 @@ export default class BaseRenderTexture extends BaseTexture
         this.valid = true;
 
         /**
-         * A map of renderer IDs to webgl renderTargets
-         *
-         * @private
-         * @member {object<number, WebGLTexture>}
-         */
-        //        this._glRenderTargets = {};
-
-        /**
          * A reference to the canvas render target (we only need one as this can be shared across renderers)
          *
-         * @private
-         * @member {object<number, WebGLTexture>}
+         * @protected
+         * @member {object}
          */
         this._canvasRenderTarget = null;
 
         this.clearColor = [0, 0, 0, 0];
 
-        this.frameBuffer = new FrameBuffer(this.width * this.resolution, this.height * this.resolution)
+        this.frameBuffer = new Framebuffer(this.width * this.resolution, this.height * this.resolution)
             .addColorTexture(0, this)
             .enableStencil();
 

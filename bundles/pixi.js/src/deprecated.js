@@ -6,10 +6,9 @@ export default function deprecated(PIXI)
 {
     Object.defineProperties(PIXI, {
         /**
-         * @constant
-         * @name SVG_SIZE
+         * @constant {RegExp|string} SVG_SIZE
          * @memberof PIXI
-         * @see PIXI.SVGResource.SVG_SIZE
+         * @see PIXI.resources.SVGResource.SVG_SIZE
          * @deprecated since 5.0.0
          */
         SVG_SIZE: {
@@ -56,7 +55,7 @@ export default function deprecated(PIXI)
          * @constant
          * @name TRANSFORM_MODE
          * @memberof PIXI
-         * @type {object}
+         * @enum {number}
          * @deprecated since 5.0.0
          * @property {number} STATIC
          * @property {number} DYNAMIC
@@ -195,7 +194,7 @@ export default function deprecated(PIXI)
     Object.defineProperties(PIXI.utils, {
         /**
          * @function PIXI.utils.getSvgSize
-         * @see PIXI.SVGResource.getSize
+         * @see PIXI.resources.SVGResource.getSize
          * @deprecated since 5.0.0
          */
         getSvgSize: {
@@ -309,7 +308,7 @@ export default function deprecated(PIXI)
         },
     });
 
-    /*
+    /**
      * This namespace has been removed and items have been moved to
      * the top-level `PIXI` object.
      * @namespace PIXI.particles
@@ -346,7 +345,7 @@ export default function deprecated(PIXI)
         },
     });
 
-    /*
+    /**
      * This namespace has been removed and items have been moved to
      * the top-level `PIXI` object.
      * @namespace PIXI.ticker
@@ -488,7 +487,7 @@ export default function deprecated(PIXI)
     /**
      * @class PIXI.extract.WebGLExtract
      * @deprecated since 5.0.0
-     * @see PIXI.extract.Prepare
+     * @see PIXI.extract.Extract
      */
     Object.defineProperty(PIXI.extract, 'WebGLExtract', {
         get()

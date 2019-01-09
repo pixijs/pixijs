@@ -1,3 +1,3 @@
 require('./Loader');
 require('./TextureLoader');
-require('./LoaderPlugin');
+require('./AppLoaderPlugin');

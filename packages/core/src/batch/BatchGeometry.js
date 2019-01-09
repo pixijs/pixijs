@@ -20,14 +20,14 @@ export default class BatchGeometry extends Geometry
         /**
          * Buffer used for position, color, texture IDs
          * @member {PIXI.Buffer}
-         * @private
+         * @protected
          */
         this._buffer = new Buffer(null, _static, false);
 
         /**
          * Index buffer data
          * @member {PIXI.Buffer}
-         * @private
+         * @protected
          */
         this._indexBuffer = new Buffer(null, _static, true);
 

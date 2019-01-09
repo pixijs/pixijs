@@ -55,6 +55,7 @@ export default class Renderer extends AbstractRenderer
      *  (shown if not transparent).
      * @param {string} [options.powerPreference] - Parameter passed to WebGL context, set to "high-performance"
      *  for devices with dual graphics card.
+     * @param {object} [options.context] If WebGL context already exists, all parameters must be taken from it.
      */
     constructor(options = {}, arg2, arg3)
     {
@@ -82,6 +83,7 @@ export default class Renderer extends AbstractRenderer
          * are assigned to each system created.
          * @see https://github.com/GoodBoyDigital/mini-runner
          * @name PIXI.Renderer#runners
+         * @private
          * @type {object}
          * @readonly
          * @property {Runner} destroy - Destroy runner
@@ -206,9 +208,6 @@ export default class Renderer extends AbstractRenderer
 
         /**
          * The options passed in to create a new WebGL context.
-         *
-         * @member {object}
-         * @private
          */
         if (options.context)
         {
@@ -241,7 +240,7 @@ export default class Renderer extends AbstractRenderer
 
     /**
      * Add a new system to the renderer.
-     * @param {class} ClassRef - Class reference
+     * @param {Function} ClassRef - Class reference
      * @param {string} [name] - Property name for system, if not specified
      *        will use a static `name` property on the class itself. This
      *        name will be assigned as s property on the Renderer so make
@@ -412,9 +411,9 @@ export default class Renderer extends AbstractRenderer
      * @type {object}
      * @readonly
      * @property {PIXI.accessibility.AccessibilityManager} accessibility Support tabbing interactive elements.
-     * @property {PIXI.extract.WebGLExtract} extract Extract image data from renderer.
+     * @property {PIXI.extract.Extract} extract Extract image data from renderer.
      * @property {PIXI.interaction.InteractionManager} interaction Handles mouse, touch and pointer events.
-     * @property {PIXI.prepare.WebGLPrepare} prepare Pre-render display objects.
+     * @property {PIXI.prepare.Prepare} prepare Pre-render display objects.
      */
 
     /**

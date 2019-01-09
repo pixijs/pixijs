@@ -26,9 +26,7 @@ import { Container } from '@pixi/display';
 
 const temp = new Float32Array(3);
 
-/**
- * a default shader used by graphics..
- */
+// a default shader used by graphics..
 let defaultShader = null;
 
 /**
@@ -74,7 +72,7 @@ export default class Graphics extends Container
          * If this Graphics object owns the GraphicsGeometry
          *
          * @member {boolean}
-         * @private
+         * @protected
          */
         this._ownsGeometry = geometry === null;
 
@@ -82,7 +80,7 @@ export default class Graphics extends Container
          * Current fill style
          *
          * @member {PIXI.FillStyle}
-         * @private
+         * @protected
          */
         this._fillStyle = new FillStyle();
 
@@ -90,7 +88,7 @@ export default class Graphics extends Container
          * Current line style
          *
          * @member {PIXI.LineStyle}
-         * @private
+         * @protected
          */
         this._lineStyle = new LineStyle();
 
@@ -98,7 +96,7 @@ export default class Graphics extends Container
          * Current shape transform matrix.
          *
          * @member {PIXI.Matrix}
-         * @private
+         * @protected
          */
         this._matrix = null;
 
@@ -107,7 +105,7 @@ export default class Graphics extends Container
          *
          * @member {boolean}
          * @default false
-         * @private
+         * @protected
          */
         this._holeMode = false;
 
@@ -115,7 +113,7 @@ export default class Graphics extends Container
          * Current path
          *
          * @member {PIXI.Polygon}
-         * @private
+         * @protected
          */
         this.currentPath = null;
 
@@ -135,7 +133,7 @@ export default class Graphics extends Container
         /**
          * A collections of batches! These can be drawn by the renderer batch system.
          *
-         * @private
+         * @protected
          * @member {object[]}
          */
         this.batches = [];
@@ -143,7 +141,7 @@ export default class Graphics extends Container
         /**
          * Update dirty for limiting calculating tints for batches.
          *
-         * @private
+         * @protected
          * @member {number}
          * @default -1
          */
@@ -152,7 +150,7 @@ export default class Graphics extends Container
         /**
          * Copy of the object vertex data.
          *
-         * @private
+         * @protected
          * @member {Float32Array}
          */
         this.vertexData = null;
@@ -303,7 +301,7 @@ export default class Graphics extends Container
 
     /**
      * Start a polygon object internally
-     * @private
+     * @protected
      */
     startPoly()
     {
@@ -329,7 +327,7 @@ export default class Graphics extends Container
 
     /**
      * Finish the polygon object.
-     * @private
+     * @protected
      */
     finishPoly()
     {
@@ -394,7 +392,7 @@ export default class Graphics extends Container
     /**
      * Initialize the curve
      *
-     * @private
+     * @protected
      * @param {number} [x=0]
      * @param {number} [y=0]
      */
@@ -794,7 +792,7 @@ export default class Graphics extends Container
     /**
      * Renders the object using the WebGL renderer
      *
-     * @private
+     * @protected
      * @param {PIXI.Renderer} renderer - The renderer
      */
     _render(renderer)
@@ -953,7 +951,7 @@ export default class Graphics extends Container
     /**
      * Retrieves the bounds of the graphic shape as a rectangle object
      *
-     * @private
+     * @protected
      */
     _calculateBounds()
     {
@@ -978,7 +976,7 @@ export default class Graphics extends Container
 
     /**
      * Recalcuate the tint by applying tin to batches using Graphics tint.
-     * @private
+     * @protected
      */
     calculateTints()
     {
@@ -1011,7 +1009,7 @@ export default class Graphics extends Container
     /**
      * If there's a transform update or a change to the shape of the
      * geometry, recaculate the vertices.
-     * @private
+     * @protected
      */
     calculateVertices()
     {

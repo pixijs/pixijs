@@ -64,8 +64,8 @@ export default class ObservablePoint
     /**
      * Copies x and y from the given point
      *
-     * @param {PIXI.Point} p - The point to copy from.
-     * @returns Returns itself.
+     * @param {PIXI.IPoint} p - The point to copy from.
+     * @returns {PIXI.IPoint} Returns itself.
      */
     copyFrom(p)
     {
@@ -82,8 +82,8 @@ export default class ObservablePoint
     /**
      * Copies x and y into the given point
      *
-     * @param {PIXI.Point} p - The point to copy.
-     * @returns Given point with values updated
+     * @param {PIXI.IPoint} p - The point to copy.
+     * @returns {PIXI.IPoint} Given point with values updated
      */
     copyTo(p)
     {
@@ -95,7 +95,7 @@ export default class ObservablePoint
     /**
      * Returns true if the given point is equal to this point
      *
-     * @param {PIXI.Point|PIXI.ObservablePoint} p - The point to check
+     * @param {PIXI.IPoint} p - The point to check
      * @returns {boolean} Whether the given point equal to this point
      */
     equals(p)
@@ -141,3 +141,9 @@ export default class ObservablePoint
         }
     }
 }
+
+/**
+ * A number, or a string containing a number.
+ * @memberof PIXI
+ * @typedef {(PIXI.Point|PIXI.ObservablePoint)} IPoint
+ */

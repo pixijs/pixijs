@@ -71,6 +71,7 @@ class FilterState
 
     /**
      * clears the state
+     * @private
      */
     clear()
     {
@@ -99,7 +100,7 @@ export default class FilterSystem extends System
 
         /**
          * List of filters for the FilterSystem
-         * @member {Array}
+         * @member {Object[]}
          * @readonly
          */
         this.defaultFilterStack = [{}];
@@ -112,7 +113,7 @@ export default class FilterSystem extends System
 
         /**
          * a pool for storing filter states, save us creating new ones each tick
-         * @member {Array}
+         * @member {Object[]}
          */
         this.statePool = [];
 
@@ -330,8 +331,8 @@ export default class FilterSystem extends System
      * Draws a filter.
      *
      * @param {PIXI.Filter} filter - The filter to draw.
-     * @param {PIXI.RenderTarget} input - The input render target.
-     * @param {PIXI.RenderTarget} output - The target to output to.
+     * @param {PIXI.RenderTexture} input - The input render target.
+     * @param {PIXI.RenderTexture} output - The target to output to.
      * @param {boolean} clear - Should the output be cleared before rendering to it
      */
     applyFilter(filter, input, output, clear)
@@ -434,7 +435,7 @@ export default class FilterSystem extends System
      *
      * TODO move to a separate class could be on renderer?
      *
-     * @private
+     * @protected
      * @param {number} minWidth - The minimum width of the render texture in real pixels.
      * @param {number} minHeight - The minimum height of the render texture in real pixels.
      * @param {number} [resolution=1] - The resolution of the render texture.
@@ -497,7 +498,7 @@ export default class FilterSystem extends System
     /**
      * Frees a render texture back into the pool.
      *
-     * @param {PIXI.RenderTarget} renderTexture - The renderTarget to free
+     * @param {PIXI.RenderTexture} renderTexture - The renderTarget to free
      */
     returnFilterTexture(renderTexture)
     {
