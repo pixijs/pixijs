@@ -89,14 +89,14 @@ export default class RenderTexture extends Texture
 
         /**
          * FilterSystem temporary storage
-         * @private
+         * @protected
          * @member {PIXI.Rectangle}
          */
         this.filterFrame = null;
 
         /**
         * The key for pooled texture of FilterSystem
-        * @private
+        * @protected
         * @member {string}
         */
         this.filterPoolKey = null;

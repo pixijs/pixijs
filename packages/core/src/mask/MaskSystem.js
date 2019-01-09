@@ -129,7 +129,7 @@ export default class MaskSystem extends System
     /**
      * Applies the Mask and adds it to the current filter stack.
      *
-     * @param {PIXI.RenderTarget} target - Display Object to push the sprite mask to
+     * @param {PIXI.RenderTexture} target - Display Object to push the sprite mask to
      * @param {PIXI.Sprite} maskData - Sprite to be used as the mask
      */
     pushSpriteMask(target, maskData)

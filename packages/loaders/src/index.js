@@ -9,4 +9,4 @@ import { Resource } from 'resource-loader';
 export const LoaderResource = Resource;
 export { default as Loader } from './Loader';
 export { default as TextureLoader } from './TextureLoader';
-export { default as LoaderPlugin } from './LoaderPlugin';
+export { default as AppLoaderPlugin } from './AppLoaderPlugin';

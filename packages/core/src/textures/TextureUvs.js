@@ -4,7 +4,7 @@ import { GroupD8 } from '@pixi/math';
  * A standard object to store the Uvs of a texture
  *
  * @class
- * @private
+ * @protected
  * @memberof PIXI
  */
 export default class TextureUvs
@@ -32,7 +32,7 @@ export default class TextureUvs
     /**
      * Sets the texture Uvs based on the given frame information.
      *
-     * @private
+     * @protected
      * @param {PIXI.Rectangle} frame - The frame of the texture
      * @param {PIXI.Rectangle} baseFrame - The base frame of the texture
      * @param {number} rotate - Rotation of frame, see {@link PIXI.GroupD8}

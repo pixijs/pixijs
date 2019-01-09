@@ -4,6 +4,7 @@
  *
  * @private
  * @name interactiveTarget
+ * @type {Object}
  * @memberof PIXI.interaction
  * @example
  *      function MyObject() {}

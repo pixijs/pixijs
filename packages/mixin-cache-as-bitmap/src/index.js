@@ -127,6 +127,7 @@ Object.defineProperties(DisplayObject.prototype, {
  * Renders a cached version of the sprite with WebGL
  *
  * @private
+ * @function _renderCached
  * @memberof PIXI.DisplayObject#
  * @param {PIXI.Renderer} renderer - the WebGL renderer
  */
@@ -148,6 +149,7 @@ DisplayObject.prototype._renderCached = function _renderCached(renderer)
  * Prepares the WebGL renderer to cache the sprite
  *
  * @private
+ * @function _initCachedDisplayObject
  * @memberof PIXI.DisplayObject#
  * @param {PIXI.Renderer} renderer - the WebGL renderer
  */
@@ -260,6 +262,7 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
  * Renders a cached version of the sprite with canvas
  *
  * @private
+ * @function _renderCachedCanvas
  * @memberof PIXI.DisplayObject#
  * @param {PIXI.Renderer} renderer - the WebGL renderer
  */
@@ -281,6 +284,7 @@ DisplayObject.prototype._renderCachedCanvas = function _renderCachedCanvas(rende
  * Prepares the Canvas renderer to cache the sprite
  *
  * @private
+ * @function _initCachedDisplayObjectCanvas
  * @memberof PIXI.DisplayObject#
  * @param {PIXI.Renderer} renderer - the WebGL renderer
  */

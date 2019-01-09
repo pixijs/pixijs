@@ -398,6 +398,7 @@ export default class Text extends Sprite
 
     /**
      * calculates the bounds of the Text as a rectangle. The bounds calculation takes the worldTransform into account.
+     * @protected
      */
     _calculateBounds()
     {

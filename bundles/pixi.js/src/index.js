@@ -45,7 +45,7 @@ loaders.Loader.registerPlugin(textBitmap.BitmapFontLoader);
 loaders.Loader.registerPlugin(spritesheet.SpritesheetLoader);
 
 app.Application.registerPlugin(ticker.TickerPlugin);
-app.Application.registerPlugin(loaders.LoaderPlugin);
+app.Application.registerPlugin(loaders.AppLoaderPlugin);
 
 // Apply deplayed mixins
 utils.mixins.performMixins();

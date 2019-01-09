@@ -5,6 +5,7 @@ import Device from 'ismobilejs';
  * Apparent on iOS so only check for that at the moment
  * This check may become more complex if this issue pops up elsewhere.
  *
+ * @private
  * @returns {boolean}
  */
 export default function canUploadSameBuffer()

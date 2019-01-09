@@ -6,7 +6,7 @@ import { FORMATS, TYPES } from '@pixi/constants';
  * @class
  * @memberof PIXI
  */
-export default class FrameBuffer
+export default class Framebuffer
 {
     constructor(width, height)
     {
@@ -23,7 +23,7 @@ export default class FrameBuffer
         this.depthTexture = null;
         this.colorTextures = [];
 
-        this.glFrameBuffers = {};
+        this.glFramebuffers = {};
     }
 
     get colorTexture()

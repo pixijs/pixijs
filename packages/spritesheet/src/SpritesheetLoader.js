@@ -9,13 +9,13 @@ import Spritesheet from './Spritesheet';
  * Texture resources.
  * @class
  * @memberof PIXI
- * @extends PIXI.Loader~LoaderPlugin
+ * @implements PIXI.ILoaderPlugin
  */
 export default class SpritesheetLoader
 {
     /**
      * Called after a resource is loaded.
-     * @see PIXI.Loader~loaderMiddleware
+     * @see PIXI.Loader.loaderMiddleware
      * @param {PIXI.LoaderResource} resource
      * @param {function} next
      */

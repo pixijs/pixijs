@@ -8,7 +8,7 @@ import Bounds from './Bounds';
  * This is an abstract class and should not be used on its own rather it should be extended.
  *
  * @class
- * @extends EventEmitter
+ * @extends PIXI.utils.EventEmitter
  * @memberof PIXI
  */
 export default class DisplayObject extends EventEmitter
@@ -27,7 +27,7 @@ export default class DisplayObject extends EventEmitter
          * World transform and local transform of this object.
          * This will become read-only later, please do not assign anything there unless you know what are you doing.
          *
-         * @member {PIXI.TransformBase}
+         * @member {PIXI.Transform}
          */
         this.transform = new Transform();
 
@@ -79,8 +79,7 @@ export default class DisplayObject extends EventEmitter
          * Used by containers to help sort objects with the same zIndex, by using previous array index as the decider.
          *
          * @member {number}
-         * @private
-         * @readOnly
+         * @protected
          */
         this._lastSortedIndex = 0;
 
@@ -89,7 +88,7 @@ export default class DisplayObject extends EventEmitter
          * A higher value will mean it will be rendered on top of other displayObjects within the same container.
          *
          * @member {number}
-         * @private
+         * @protected
          */
         this._zIndex = 0;
 
@@ -117,7 +116,7 @@ export default class DisplayObject extends EventEmitter
          * The bounds object, this is used to calculate and store the bounds of the displayObject.
          *
          * @member {PIXI.Rectangle}
-         * @private
+         * @protected
          */
         this._bounds = new Bounds();
         this._boundsID = 0;
@@ -129,7 +128,7 @@ export default class DisplayObject extends EventEmitter
          * The original, cached mask of the object.
          *
          * @member {PIXI.Graphics|PIXI.Sprite}
-         * @private
+         * @protected
          */
         this._mask = null;
 
@@ -151,14 +150,19 @@ export default class DisplayObject extends EventEmitter
          * If the object has been destroyed via destroy(). If true, it should not be used.
          *
          * @member {boolean}
-         * @private
-         * @readonly
+         * @protected
          */
         this._destroyed = false;
+
+        /**
+         * used to fast check if a sprite is.. a sprite!
+         * @member {boolean}
+         */
+        this.isSprite = true;
     }
 
     /**
-     * @private
+     * @protected
      * @member {PIXI.DisplayObject}
      */
     get _tempDisplayObjectParent()
@@ -281,11 +285,11 @@ export default class DisplayObject extends EventEmitter
     /**
      * Calculates the global position of the display object.
      *
-     * @param {PIXI.Point} position - The world origin to calculate from.
-     * @param {PIXI.Point} [point] - A Point object in which to store the value, optional
+     * @param {PIXI.IPoint} position - The world origin to calculate from.
+     * @param {PIXI.IPoint} [point] - A Point object in which to store the value, optional
      *  (otherwise will create a new Point).
      * @param {boolean} [skipUpdate=false] - Should we skip the update transform.
-     * @return {PIXI.Point} A point object representing the position of this object.
+     * @return {PIXI.IPoint} A point object representing the position of this object.
      */
     toGlobal(position, point, skipUpdate = false)
     {
@@ -315,12 +319,12 @@ export default class DisplayObject extends EventEmitter
     /**
      * Calculates the local position of the display object relative to another point.
      *
-     * @param {PIXI.Point} position - The world origin to calculate from.
+     * @param {PIXI.IPoint} position - The world origin to calculate from.
      * @param {PIXI.DisplayObject} [from] - The DisplayObject to calculate the global position from.
-     * @param {PIXI.Point} [point] - A Point object in which to store the value, optional
+     * @param {PIXI.IPoint} [point] - A Point object in which to store the value, optional
      *  (otherwise will create a new Point).
      * @param {boolean} [skipUpdate=false] - Should we skip the update transform
-     * @return {PIXI.Point} A point object representing the position of this object
+     * @return {PIXI.IPoint} A point object representing the position of this object
      */
     toLocal(position, from, point, skipUpdate)
     {
@@ -497,7 +501,7 @@ export default class DisplayObject extends EventEmitter
      * The coordinate of the object relative to the local coordinates of the parent.
      * Assignment by value since pixi-v4.
      *
-     * @member {PIXI.Point|PIXI.ObservablePoint}
+     * @member {PIXI.IPoint}
      */
     get position()
     {
@@ -513,7 +517,7 @@ export default class DisplayObject extends EventEmitter
      * The scale factor of the object.
      * Assignment by value since pixi-v4.
      *
-     * @member {PIXI.Point|PIXI.ObservablePoint}
+     * @member {PIXI.IPoint}
      */
     get scale()
     {
@@ -529,7 +533,7 @@ export default class DisplayObject extends EventEmitter
      * The pivot point of the displayObject that it rotates around.
      * Assignment by value since pixi-v4.
      *
-     * @member {PIXI.Point|PIXI.ObservablePoint}
+     * @member {PIXI.IPoint}
      */
     get pivot()
     {

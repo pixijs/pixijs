@@ -3,7 +3,7 @@ import { SimpleRope } from '@pixi/mesh-extras';
 /**
  * Renders the object using the Canvas renderer
  *
- * @private
+ * @protected
  * @method _renderCanvas
  * @memberof PIXI.Mesh#
  * @param {PIXI.CanvasRenderer} renderer - The canvas renderer.

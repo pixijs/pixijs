@@ -51,6 +51,7 @@ export default class QuadraticUtils
      * Calculate the points for a quadratic bezier curve and then draws it.
      * Based on: https://stackoverflow.com/questions/785097/how-do-i-implement-a-bezier-curve-in-c
      *
+     * @private
      * @param {number} cpX - Control point x
      * @param {number} cpY - Control point y
      * @param {number} toX - Destination point x

@@ -64,35 +64,35 @@ export default class GraphicsGeometry extends BatchGeometry
         /**
          * An array of points to draw
          * @member {PIXI.Point[]}
-         * @private
+         * @protected
          */
         this.points = [];
 
         /**
          * The collection of colors
          * @member {number[]}
-         * @private
+         * @protected
          */
         this.colors = [];
 
         /**
          * The UVs collection
          * @member {number[]}
-         * @private
+         * @protected
          */
         this.uvs = [];
 
         /**
          * The indices of the vertices
          * @member {number[]}
-         * @private
+         * @protected
          */
         this.indices = [];
 
         /**
          * Reference to the texture IDs.
          * @member {number[]}
-         * @private
+         * @protected
          */
         this.textureIds = [];
 
@@ -100,7 +100,7 @@ export default class GraphicsGeometry extends BatchGeometry
          * The collection of drawn shapes.
          *
          * @member {PIXI.GraphicsData[]}
-         * @private
+         * @protected
          */
         this.graphicsData = [];
 
@@ -108,7 +108,7 @@ export default class GraphicsGeometry extends BatchGeometry
          * Graphics data representing holes in the graphicsData.
          *
          * @member {PIXI.GraphicsData[]}
-         * @private
+         * @protected
          */
         this.graphicsDataHoles = [];
 
@@ -117,7 +117,7 @@ export default class GraphicsGeometry extends BatchGeometry
          * object will be recalculated.
          *
          * @member {number}
-         * @private
+         * @protected
          */
         this.dirty = 0;
 
@@ -125,7 +125,7 @@ export default class GraphicsGeometry extends BatchGeometry
          * Batches need to regenerated if the geometry is updated.
          *
          * @member {number}
-         * @private
+         * @protected
          */
         this.batchDirty = -1;
 
@@ -133,7 +133,7 @@ export default class GraphicsGeometry extends BatchGeometry
          * Used to check if the cache is dirty.
          *
          * @member {number}
-         * @private
+         * @protected
          */
         this.cacheDirty = -1;
 
@@ -142,7 +142,7 @@ export default class GraphicsGeometry extends BatchGeometry
          *
          * @member {number}
          * @default 0
-         * @private
+         * @protected
          */
         this.clearDirty = 0;
 
@@ -150,7 +150,7 @@ export default class GraphicsGeometry extends BatchGeometry
          * List of current draw calls drived from the batches.
          *
          * @member {object[]}
-         * @private
+         * @protected
          */
         this.drawCalls = [];
 
@@ -159,7 +159,7 @@ export default class GraphicsGeometry extends BatchGeometry
          * Can be converted to drawCalls or to batchable objects.
          *
          * @member {object[]}
-         * @private
+         * @protected
          */
         this.batches = [];
 
@@ -167,7 +167,7 @@ export default class GraphicsGeometry extends BatchGeometry
          * Index of the current last shape in the stack of calls.
          *
          * @member {number}
-         * @private
+         * @protected
          */
         this.shapeIndex = 0;
 
@@ -175,7 +175,7 @@ export default class GraphicsGeometry extends BatchGeometry
          * Cached bounds.
          *
          * @member {PIXI.Bounds}
-         * @private
+         * @protected
          */
         this._bounds = new Bounds();
 
@@ -183,7 +183,7 @@ export default class GraphicsGeometry extends BatchGeometry
          * The bounds dirty flag.
          *
          * @member {number}
-         * @private
+         * @protected
          */
         this.boundsDirty = -1;
 
@@ -271,7 +271,7 @@ export default class GraphicsGeometry extends BatchGeometry
      * @param {PIXI.FillStyle} fillStyle - Defines style of the fill.
      * @param {PIXI.LineStyle} lineStyle - Defines style of the lines.
      * @param {PIXI.Matrix} matrix - Transform applied to the points of the shape.
-     * @return {PIXI.GraphicsGeomery} Returns geometry for chaining.
+     * @return {PIXI.GraphicsGeometry} Returns geometry for chaining.
      */
     drawShape(shape, fillStyle, lineStyle, matrix)
     {
@@ -288,7 +288,7 @@ export default class GraphicsGeometry extends BatchGeometry
      *
      * @param {PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.Rectangle|PIXI.RoundedRectangle} shape - The shape object to draw.
      * @param {PIXI.Matrix} matrix - Transform applied to the points of the shape.
-     * @return {PIXI.GraphicsGeomery} Returns geometry for chaining.
+     * @return {PIXI.GraphicsGeometry} Returns geometry for chaining.
      */
     drawHole(shape, matrix)
     {
@@ -399,7 +399,7 @@ export default class GraphicsGeometry extends BatchGeometry
     /**
      * Generates intermediate batch data. Either gets converted to drawCalls
      * or used to convert to batch objects directly by the Graphics object.
-     * @private
+     * @protected
      */
     updateBatches()
     {
@@ -552,7 +552,7 @@ export default class GraphicsGeometry extends BatchGeometry
     /**
      * Checks to see if this graphics geometry can be batched.
      * Currently it needs to be small enough and not contain any native lines.
-     * @private
+     * @protected
      */
     isBatchable()
     {
@@ -571,7 +571,7 @@ export default class GraphicsGeometry extends BatchGeometry
 
     /**
      * Converts intermediate batches data to drawCalls.
-     * @private
+     * @protected
      */
     buildDrawCalls()
     {
@@ -703,7 +703,7 @@ export default class GraphicsGeometry extends BatchGeometry
      * Process the holes data.
      *
      * @param {PIXI.GraphicsData[]} holes - Holes to render
-     * @private
+     * @protected
      */
     proccessHoles(holes)
     {
@@ -724,7 +724,7 @@ export default class GraphicsGeometry extends BatchGeometry
 
     /**
      * Update the local bounds of the object. Expensive to use performance-wise.
-     * @private
+     * @protected
      */
     calculateBounds()
     {
@@ -853,7 +853,7 @@ export default class GraphicsGeometry extends BatchGeometry
     /**
      * Transform points using matrix.
      *
-     * @private
+     * @protected
      * @param {number[]} points - Points to transform
      * @param {PIXI.Matrix} matrix - Transform matrix
      */
@@ -872,7 +872,7 @@ export default class GraphicsGeometry extends BatchGeometry
     /**
      * Add colors.
      *
-     * @private
+     * @protected
      * @param {number[]} colors - List of colors to add to
      * @param {number} color - Color to add
      * @param {number} alpha - Alpha to use
@@ -894,7 +894,7 @@ export default class GraphicsGeometry extends BatchGeometry
     /**
      * Add texture id that the shader/fragment wants to use.
      *
-     * @private
+     * @protected
      * @param {number[]} textureIds
      * @param {number} id
      * @param {number} size
@@ -910,7 +910,7 @@ export default class GraphicsGeometry extends BatchGeometry
     /**
      * Generates the UVs for a shape.
      *
-     * @private
+     * @protected
      * @param {number[]} verts - Vertices
      * @param {number[]} uvs - UVs
      * @param {PIXI.Texture} texture - Reference to Texture
@@ -950,7 +950,7 @@ export default class GraphicsGeometry extends BatchGeometry
  *
  * @memberof PIXI.GraphicsGeometry
  * @static
- * @member {number}
+ * @member {number} BATCHABLE_SIZE
  * @default 100
  */
 GraphicsGeometry.BATCHABLE_SIZE = 100;

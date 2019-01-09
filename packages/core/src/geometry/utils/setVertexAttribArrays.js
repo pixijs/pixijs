@@ -4,6 +4,7 @@
  * @param gl {WebGLRenderingContext} The current WebGL context
  * @param attribs {*}
  * @param state {*}
+ * @private
  */
 export default function setVertexAttribArrays(gl, attribs, state)
 {

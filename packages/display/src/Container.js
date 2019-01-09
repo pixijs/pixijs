@@ -71,7 +71,7 @@ export default class Container extends DisplayObject
     /**
      * Overridable method that can be used by Container subclasses whenever the children array is modified
      *
-     * @private
+     * @protected
      */
     onChildrenChange()
     {
@@ -452,6 +452,7 @@ export default class Container extends DisplayObject
      * Recalculates the bounds of the object. Override this to
      * calculate the bounds of the specific object (not including children).
      *
+     * @protected
      */
     _calculateBounds()
     {
@@ -491,7 +492,7 @@ export default class Container extends DisplayObject
     /**
      * Render the object using the WebGL renderer and advanced features.
      *
-     * @private
+     * @protected
      * @param {PIXI.Renderer} renderer - The renderer
      */
     renderAdvanced(renderer)
@@ -555,7 +556,7 @@ export default class Container extends DisplayObject
     /**
      * To be overridden by the subclasses.
      *
-     * @private
+     * @protected
      * @param {PIXI.Renderer} renderer - The renderer
      */
     _render(renderer) // eslint-disable-line no-unused-vars
