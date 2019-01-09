@@ -1,5 +1,7 @@
 import System from '../System';
 import { Rectangle } from '@pixi/math';
+import { ENV } from '@pixi/constants';
+import { settings } from '../settings';
 
 /**
  * Framebuffer system
@@ -16,11 +18,38 @@ export default class FramebufferSystem extends System
      */
     contextChange()
     {
-        this.gl = this.renderer.gl;
+        const gl = this.gl = this.renderer.gl;
+
         this.CONTEXT_UID = this.renderer.CONTEXT_UID;
         this.current = null;
         this.viewport = new Rectangle();
-        this.drawBufferExtension = this.renderer.context.extensions.drawBuffers;
+        this.hasMRT = true;
+
+        // webgl2
+        if (!gl.drawBuffers)
+        {
+            // webgl 1!
+            let nativeDrawBuffersExtension = this.renderer.context.extensions.drawBuffers;
+
+            if (settings.PREFER_ENV === ENV.WEBGL_LEGACY)
+            {
+                nativeDrawBuffersExtension = null;
+            }
+
+            if (nativeDrawBuffersExtension)
+            {
+                gl.drawBuffers = (activeTextures) =>
+                    nativeDrawBuffersExtension.drawBuffersWEBGL(activeTextures);
+            }
+            else
+            {
+                this.hasMRT = false;
+                gl.drawBuffers = () =>
+                {
+                    // empty
+                };
+            }
+        }
     }
 
     /**
@@ -252,9 +281,9 @@ export default class FramebufferSystem extends System
             activeTextures.push(gl.COLOR_ATTACHMENT0 + i);
         }
 
-        if (this.drawBufferExtension && activeTextures.length > 1)
+        if (activeTextures.length > 1)
         {
-            this.drawBufferExtension.drawBuffersWEBGL(activeTextures);
+            gl.drawBuffers(activeTextures);
         }
 
         if (framebuffer.depthTexture)
