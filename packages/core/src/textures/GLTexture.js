@@ -1,7 +1,7 @@
 /**
  * Internal texture for WebGL context
  * @class
- * @memberOf PIXI
+ * @memberof PIXI
  */
 export default class GLTexture
 {

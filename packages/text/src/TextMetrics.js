@@ -7,7 +7,7 @@
  * ```
  *
  * @class
- * @memberOf PIXI
+ * @memberof PIXI
  */
 export default class TextMetrics
 {

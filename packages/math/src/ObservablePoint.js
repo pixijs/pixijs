@@ -144,6 +144,6 @@ export default class ObservablePoint
 
 /**
  * A number, or a string containing a number.
- * @memberOf PIXI
+ * @memberof PIXI
  * @typedef {(PIXI.Point|PIXI.ObservablePoint)} IPoint
  */
