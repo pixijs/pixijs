@@ -30,7 +30,7 @@ export default class ContextSystem extends System
          * @member {object}
          * @readonly
          * @property {WEBGL_draw_buffers} drawBuffers - WebGL v1 extension
-         * @property {WEBKIT_WEBGL_depth_texture} depthTexture - WebGL v1 extension
+         * @property {WEBGL_depth_texture} depthTexture - WebGL v1 extension
          * @property {OES_texture_float} floatTexture - WebGL v1 extension
          * @property {WEBGL_lose_context} loseContext - WebGL v1 extension
          * @property {OES_vertex_array_object} vertexArrayObject - WebGL v1 extension
@@ -57,6 +57,7 @@ export default class ContextSystem extends System
 
     /**
      * Handle the context change event
+     * @param {WebGLRenderingContext} gl new webgl context
      */
     contextChange(gl)
     {
@@ -72,7 +73,7 @@ export default class ContextSystem extends System
     /**
      * Initialize the context
      *
-     * @private
+     * @protected
      * @param {WebGLRenderingContext} gl - WebGL context
      */
     initFromContext(gl)
@@ -87,7 +88,7 @@ export default class ContextSystem extends System
     /**
      * Initialize from context options
      *
-     * @private
+     * @protected
      * @see https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/getContext
      * @param {object} options - context attributes
      */
@@ -143,7 +144,7 @@ export default class ContextSystem extends System
     /**
      * Auto-populate the extensions
      *
-     * @private
+     * @protected
      */
     getExtensions()
     {
@@ -169,7 +170,7 @@ export default class ContextSystem extends System
     /**
      * Handles a lost webgl context
      *
-     * @private
+     * @protected
      * @param {WebGLContextEvent} event - The context lost event.
      */
     handleContextLost(event)
@@ -180,7 +181,7 @@ export default class ContextSystem extends System
     /**
      * Handles a restored webgl context
      *
-     * @private
+     * @protected
      */
     handleContextRestored()
     {
@@ -206,7 +207,7 @@ export default class ContextSystem extends System
     /**
      * Handle the post-render runner event
      *
-     * @private
+     * @protected
      */
     postrender()
     {
@@ -216,7 +217,7 @@ export default class ContextSystem extends System
     /**
      * Validate context
      *
-     * @private
+     * @protected
      * @param {WebGLRenderingContext} gl - Render context
      */
     validateContext(gl)

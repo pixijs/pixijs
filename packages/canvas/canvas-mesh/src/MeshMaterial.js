@@ -3,7 +3,7 @@ import { MeshMaterial } from '@pixi/mesh';
 /**
  * Renders the mesh using the Canvas renderer
  *
- * @private
+ * @protected
  * @method render
  * @memberof PIXI.MeshMaterial#
  * @param {PIXI.CanvasRenderer} renderer - The canvas renderer.

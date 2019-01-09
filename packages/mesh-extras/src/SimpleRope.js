@@ -29,6 +29,10 @@ export default class SimpleRope extends Mesh
 
         super(ropeGeometry, meshMaterial);
 
+        /**
+         * re-calculate vertices by rope points each frame
+         * @member {boolean}
+         */
         this.autoUpdate = true;
     }
 

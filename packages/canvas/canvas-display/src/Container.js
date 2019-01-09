@@ -2,8 +2,9 @@ import { Container } from '@pixi/display';
 
 /**
  * To be overridden by the subclass
- *
- * @private
+ * @method _renderCanvas
+ * @memberof PIXI.Container#
+ * @protected
  * @param {PIXI.CanvasRenderer} renderer - The renderer
  */
 Container.prototype._renderCanvas = function _renderCanvas(renderer) // eslint-disable-line no-unused-vars
@@ -13,7 +14,8 @@ Container.prototype._renderCanvas = function _renderCanvas(renderer) // eslint-d
 
 /**
  * Renders the object using the Canvas renderer
- *
+ * @method renderCanvas
+ * @memberof PIXI.Container#
  * @param {PIXI.CanvasRenderer} renderer - The renderer
  */
 Container.prototype.renderCanvas = function renderCanvas(renderer)

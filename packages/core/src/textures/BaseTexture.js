@@ -136,7 +136,7 @@ export default class BaseTexture extends EventEmitter
          * Global unique identifier for this BaseTexture
          *
          * @member {string}
-         * @private
+         * @protected
          */
         this.uid = uid();
 
@@ -144,7 +144,7 @@ export default class BaseTexture extends EventEmitter
          * TODO: fill in description
          *
          * @member {number}
-         * @private
+         * @protected
          */
         this.touched = 0;
 
@@ -170,7 +170,7 @@ export default class BaseTexture extends EventEmitter
         /**
          * Used by TextureSystem to only update texture to the GPU when needed.
          *
-         * @private
+         * @protected
          * @member {number}
          */
         this.dirtyId = 0;
@@ -178,7 +178,7 @@ export default class BaseTexture extends EventEmitter
         /**
          * Used by TextureSystem to only update texture style when needed.
          *
-         * @private
+         * @protected
          * @member {number}
          */
         this.dirtyStyleId = 0;
@@ -301,7 +301,6 @@ export default class BaseTexture extends EventEmitter
     /**
      * Changes style options of BaseTexture
      *
-     * @param {object} options
      * @param {PIXI.SCALE_MODES} [scaleMode] - pixi scalemode
      * @param {boolean} [mipmap] - enable mipmaps
      * @returns {BaseTexture} this
@@ -512,7 +511,7 @@ export default class BaseTexture extends EventEmitter
      * @param {string|HTMLImageElement|HTMLCanvasElement|SVGElement|HTMLVideoElement} source - The
      *        source to create base texture from.
      * @param {object} [options] See {@link PIXI.BaseTexture}'s constructor for options.
-     * @return {PIXI.BaseTexture} The new base texture.
+     * @returns {PIXI.BaseTexture} The new base texture.
      */
     static from(source, options)
     {
@@ -548,7 +547,7 @@ export default class BaseTexture extends EventEmitter
      * Create a new BaseTexture with a BufferResource from a Float32Array.
      * RGBA values are floats from 0 to 1.
      * @static
-     * @param {Float32Array|UintArray} buffer The optional array to use, if no data
+     * @param {Float32Array|Uint8Array} buffer The optional array to use, if no data
      *        is provided, a new Float32Array is created.
      * @param {number} width - Width of the resource
      * @param {number} height - Height of the resource

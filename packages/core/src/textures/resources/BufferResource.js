@@ -1,6 +1,10 @@
 import Resource from './Resource';
 
 /**
+ * @interface SharedArrayBuffer
+ */
+
+/**
  * Buffer resource with data of typed array.
  * @class
  * @extends PIXI.resources.Resource
@@ -38,6 +42,8 @@ export default class BufferResource extends Resource
      * Upload the texture to the GPU.
      * @param {PIXI.Renderer} renderer Upload to the renderer
      * @param {PIXI.BaseTexture} baseTexture Reference to parent texture
+     * @param {PIXI.GLTexture} glTexture glTexture
+     * @returns {boolean} true is success
      */
     upload(renderer, baseTexture, glTexture)
     {

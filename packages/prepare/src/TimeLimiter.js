@@ -3,7 +3,7 @@
  * number of milliseconds per frame.
  *
  * @class
- * @memberof PIXI
+ * @memberof PIXI.prepare
  */
 export default class TimeLimiter
 {
@@ -14,6 +14,7 @@ export default class TimeLimiter
     {
         /**
          * The maximum milliseconds that can be spent preparing items each frame.
+         * @type {number}
          * @private
          */
         this.maxMilliseconds = maxMilliseconds;

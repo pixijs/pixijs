@@ -52,7 +52,7 @@ export default class ShaderSystem extends System
      *
      * @param {PIXI.Shader} shader - the new shader
      * @param {boolean} dontSync - false if the shader should automatically sync its uniforms.
-     * @returns {PIXI.glCore.glProgram} the glProgram that belongs to the shader.
+     * @returns {PIXI.GLProgram} the glProgram that belongs to the shader.
      */
     bind(shader, dontSync)
     {
@@ -149,7 +149,7 @@ export default class ShaderSystem extends System
      * Returns the underlying GLShade rof the currently bound shader.
      * This can be handy for when you to have a little more control over the setting of your uniforms.
      *
-     * @return {PIXI.glCore.Shader} the glProgram for the currently bound Shader for this context
+     * @return {PIXI.GLProgram} the glProgram for the currently bound Shader for this context
      */
     getglProgram()
     {
@@ -166,7 +166,7 @@ export default class ShaderSystem extends System
      *
      * @private
      * @param {PIXI.Shader} shader the shader that the glProgram will be based on.
-     * @return {PIXI.glCore.glProgram} A shiny new glProgram!
+     * @return {PIXI.GLProgram} A shiny new glProgram!
      */
     generateShader(shader)
     {

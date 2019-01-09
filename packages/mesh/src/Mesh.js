@@ -133,7 +133,8 @@ export default class Mesh extends Container
 
     /**
      * To change mesh uv's, change its uvBuffer data and increment its _updateID.
-     * @returns {PIXI.Buffer}
+     * @member {PIXI.Buffer}
+     * @readonly
      */
     get uvBuffer()
     {
@@ -143,7 +144,8 @@ export default class Mesh extends Container
     /**
      * To change mesh vertices, change its uvBuffer data and increment its _updateID.
      * Incrementing _updateID is optional because most of Mesh objects do it anyway.
-     * @returns {PIXI.Buffer}
+     * @member {PIXI.Buffer}
+     * @readonly
      */
     get verticesBuffer()
     {
@@ -239,7 +241,7 @@ export default class Mesh extends Container
 
     /**
      * Standard renderer draw.
-     * @private
+     * @protected
      */
     _render(renderer)
     {
@@ -260,7 +262,7 @@ export default class Mesh extends Container
 
     /**
      * Standard non-batching way of rendering.
-     * @private
+     * @protected
      * @param {PIXI.Renderer} renderer - Instance to renderer.
      */
     _renderDefault(renderer)
@@ -295,7 +297,7 @@ export default class Mesh extends Container
 
     /**
      * Rendering by using the Batch system.
-     * @private
+     * @protected
      * @param {PIXI.Renderer} renderer - Instance to renderer.
      */
     _renderToBatch(renderer)
@@ -396,7 +398,7 @@ export default class Mesh extends Container
      * Updates the bounds of the mesh as a rectangle. The bounds calculation takes the worldTransform into account.
      * there must be a aVertexPosition attribute present in the geometry for bounds to be calculated correctly.
      *
-     * @private
+     * @protected
      */
     _calculateBounds()
     {
@@ -474,6 +476,6 @@ export default class Mesh extends Container
  * of the geometry.
  * @memberof PIXI.Mesh
  * @static
- * @member {number}
+ * @member {number} BATCHABLE_SIZE
  */
 Mesh.BATCHABLE_SIZE = 100;

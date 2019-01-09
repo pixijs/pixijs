@@ -91,7 +91,7 @@ export default class Application
     /**
      * Register a middleware plugin for the application
      * @static
-     * @param {PIXI.Application~Plugin} plugin - Plugin being installed
+     * @param {PIXI.Application.Plugin} plugin - Plugin being installed
      */
     static registerPlugin(plugin)
     {
@@ -172,7 +172,8 @@ export default class Application
 }
 
 /**
- * @typedef {object} PIXI.Application~Plugin
+ * @memberof PIXI.Application
+ * @typedef {object} Plugin
  * @property {function} init - Called when Application is constructed, scoped to Application instance.
  *  Passes in `options` as the only argument, which are Application constructor options.
  * @property {function} destroy - Called when destroying Application, scoped to Application instance
@@ -182,6 +183,6 @@ export default class Application
  * Collection of installed plugins.
  * @static
  * @private
- * @type {PIXI.Application~Plugin[]}
+ * @type {PIXI.Application.Plugin[]}
  */
 Application._plugins = [];

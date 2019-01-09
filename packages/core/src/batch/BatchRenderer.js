@@ -18,7 +18,7 @@ let TICK = 0;
  * Renderer dedicated to drawing and batching sprites.
  *
  * @class
- * @private
+ * @protected
  * @memberof PIXI
  * @extends PIXI.ObjectRenderer
  */
@@ -105,8 +105,6 @@ export default class BatchRenderer extends ObjectRenderer
 
     /**
      * Sets up the renderer context and necessary buffers.
-     *
-     * @private
      */
     contextChange()
     {

@@ -1,5 +1,6 @@
 /**
  * @method compileProgram
+ * @private
  * @memberof PIXI.glCore.shader
  * @param gl {WebGLRenderingContext} The current WebGL context {WebGLProgram}
  * @param vertexSrc {string|string[]} The vertex shader source as an array of strings.

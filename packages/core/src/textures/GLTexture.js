@@ -1,10 +1,14 @@
+/**
+ * Internal texture for WebGL context
+ * @class
+ * @memberOf PIXI
+ */
 export default class GLTexture
 {
     constructor(texture)
     {
         /**
          * The WebGL texture
-         *
          * @member {WebGLTexture}
          */
         this.texture = texture;

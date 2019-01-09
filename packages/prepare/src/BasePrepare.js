@@ -240,7 +240,7 @@ export default class BasePrepare
      *
      * @param {Function} addHook - Function call that takes two parameters: `item:*, queue:Array`
      *          function must return `true` if it was able to add item to the queue.
-     * @return {PIXI.BasePrepare} Instance of plugin for chaining.
+     * @return {PIXI.prepare.BasePrepare} Instance of plugin for chaining.
      */
     registerFindHook(addHook)
     {
@@ -257,7 +257,7 @@ export default class BasePrepare
      *
      * @param {Function} uploadHook - Function call that takes two parameters: `prepare:CanvasPrepare, item:*` and
      *          function must return `true` if it was able to handle upload of item.
-     * @return {PIXI.BasePrepare} Instance of plugin for chaining.
+     * @return {PIXI.prepare.BasePrepare} Instance of plugin for chaining.
      */
     registerUploadHook(uploadHook)
     {
@@ -274,7 +274,7 @@ export default class BasePrepare
      *
      * @param {PIXI.DisplayObject|PIXI.Container|PIXI.BaseTexture|PIXI.Texture|PIXI.Graphics|PIXI.Text|*} item - Object to
      *        add to the queue
-     * @return {PIXI.CanvasPrepare} Instance of plugin for chaining.
+     * @return {PIXI.prepare.BasePrepare} Instance of plugin for chaining.
      */
     add(item)
     {

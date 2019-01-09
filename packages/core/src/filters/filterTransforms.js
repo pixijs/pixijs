@@ -4,10 +4,9 @@ import { Matrix } from '@pixi/math';
  * Calculates the mapped matrix
  * @param filterArea {Rectangle} The filter area
  * @param sprite {Sprite} the target sprite
- * @param outputMatrix {Matrix} @alvin
+ * @param outputMatrix {Matrix} matrix that will normalize map filter cords in the filter to screen space
  * @private
  */
-// this returns a matrix that will normalize map filter cords in the filter to screen space
 export function calculateScreenSpaceMatrix(outputMatrix, filterArea, textureSize)
 {
     // TODO unwrap?

@@ -24,6 +24,7 @@ import { TYPES } from '@pixi/constants';
 export default class ParticleBuffer
 {
     /**
+     * @private
      * @param {object} properties - The properties to upload.
      * @param {boolean[]} dynamicPropertyFlags - Flags for which properties are dynamic.
      * @param {number} size - The size of the batch.
@@ -37,6 +38,7 @@ export default class ParticleBuffer
         /**
          * The number of particles the buffer can hold
          *
+         * @private
          * @member {number}
          */
         this.size = size;
@@ -44,6 +46,7 @@ export default class ParticleBuffer
         /**
          * A list of the properties that are dynamic.
          *
+         * @private
          * @member {object[]}
          */
         this.dynamicProperties = [];
@@ -51,6 +54,7 @@ export default class ParticleBuffer
         /**
          * A list of the properties that are static.
          *
+         * @private
          * @member {object[]}
          */
         this.staticProperties = [];
@@ -109,6 +113,7 @@ export default class ParticleBuffer
          * Holds the indices of the geometry (quads) to draw
          *
          * @member {Uint16Array}
+         * @private
          */
         this.indexBuffer = new Buffer(createIndicesForQuads(this.size), true, true);
         geometry.addIndex(this.indexBuffer);
@@ -184,6 +189,7 @@ export default class ParticleBuffer
     /**
      * Uploads the dynamic properties.
      *
+     * @private
      * @param {PIXI.DisplayObject[]} children - The children to upload.
      * @param {number} startIndex - The index to start at.
      * @param {number} amount - The number to upload.
@@ -205,6 +211,7 @@ export default class ParticleBuffer
     /**
      * Uploads the static properties.
      *
+     * @private
      * @param {PIXI.DisplayObject[]} children - The children to upload.
      * @param {number} startIndex - The index to start at.
      * @param {number} amount - The number to upload.
@@ -226,6 +233,7 @@ export default class ParticleBuffer
     /**
      * Destroys the ParticleBuffer.
      *
+     * @private
      */
     destroy()
     {

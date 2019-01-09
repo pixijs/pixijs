@@ -12,7 +12,7 @@ import defaultFragment from './defaultFilter.frag';
  *
  * ### Usage
  * Filters can be applied to any DisplayObject or Container. PixiJS' `FilterSystem`
- * renders the container into temporary FrameBuffer, then filter
+ * renders the container into temporary Framebuffer, then filter
  * renders it to the screen. Multiple filters can be added to the `filters` property
  * and stacked on each other.
  *
@@ -30,7 +30,7 @@ import defaultFragment from './defaultFilter.frag';
  * had to create a set of uniforms to deal with coordinates.
  *
  * In PixiJS **v5** combines _both approaches_, developers can use normal coordinates of
- * v3 and then allow filter to use partial FrameBuffers, bringing those extra
+ * v3 and then allow filter to use partial Framebuffers, bringing those extra
  * uniforms into account.
  *
  * ### Built-in Uniforms
@@ -41,10 +41,10 @@ import defaultFragment from './defaultFilter.frag';
  * **uSampler**
  *
  * The most important uniform is the input texture that container was rendered into.
- * _Important note: as with all PixiJS' FrameBuffers, both input and output are
+ * _Important note: as with all PixiJS' Framebuffers, both input and output are
  * premultiplied by alpha._
  *
- * By default, input FrameBuffer space coordinates are passed to fragment shader with `vTextureCoord`.
+ * By default, input Framebuffer space coordinates are passed to fragment shader with `vTextureCoord`.
  * Use it to sample the input.
  *
  * ```
@@ -66,7 +66,7 @@ import defaultFragment from './defaultFilter.frag';
  *
  * The `outputFrame` holds the rectangle where filter is applied in screen (CSS) coordinates.
  * It's the same as `renderer.screen` for a fullscreen filter.
- * Only a part of  `outputFrame.zw` size of temporary FrameBuffer is used,
+ * Only a part of  `outputFrame.zw` size of temporary Framebuffer is used,
  * `(0, 0, outputFrame.width, outputFrame.height)`,
  *
  * Filters uses this quad to normalized (0-1) space, its passed into `aVertexPosition` attribute.
@@ -82,15 +82,15 @@ import defaultFragment from './defaultFilter.frag';
  *
  * **inputSize**
  *
- * Temporary FrameBuffer is different, it can be either the size of screen, either power-of-two.
- * The `inputSize.xy` are size of temporary FrameBuffer that holds input.
+ * Temporary Framebuffer is different, it can be either the size of screen, either power-of-two.
+ * The `inputSize.xy` are size of temporary Framebuffer that holds input.
  * The `inputSize.zw` is inverted, it's a shortcut to evade division inside the shader.
  *
  * Set `inputSize.xy = outputFrame.zw` for a fullscreen filter.
  *
- * To calculate input texture coordinate in 0-1 space, you have to map it to FrameBuffer normalized space.
- * Multiply by `outputFrame.zw` to get pixel coordinate in part of FrameBuffer.
- * Divide by `inputSize.xy` to get FrameBuffer normalized space (input sampler space)
+ * To calculate input texture coordinate in 0-1 space, you have to map it to Framebuffer normalized space.
+ * Multiply by `outputFrame.zw` to get pixel coordinate in part of Framebuffer.
+ * Divide by `inputSize.xy` to get Framebuffer normalized space (input sampler space)
  *
  * ```
  * vec2 filterTextureCoord( void )
@@ -111,10 +111,10 @@ import defaultFragment from './defaultFilter.frag';
  *
  * **inputClamp**
  *
- * If you try to get info from outside of used part of FrameBuffer - you'll get undefined behaviour.
+ * If you try to get info from outside of used part of Framebuffer - you'll get undefined behaviour.
  * For displacements, coordinates has to be clamped.
  *
- * The `inputClamp.xy` is left-top pixel center, you may ignore it, because we use left-top part of FrameBuffer
+ * The `inputClamp.xy` is left-top pixel center, you may ignore it, because we use left-top part of Framebuffer
  * `inputClamp.zw` is bottom-right pixel center.
  *
  * ```
@@ -201,9 +201,9 @@ export default class Filter extends Shader
     /**
      * Applies the filter
      *
-     * @param {PIXI.FilterManager} filterManager - The renderer to retrieve the filter from
-     * @param {PIXI.RenderTarget} input - The input render target.
-     * @param {PIXI.RenderTarget} output - The target to output to.
+     * @param {PIXI.systems.FilterSystem} filterManager - The renderer to retrieve the filter from
+     * @param {PIXI.RenderTexture} input - The input render target.
+     * @param {PIXI.RenderTexture} output - The target to output to.
      * @param {boolean} clear - Should the output be cleared before rendering to it
      * @param {object} [currentState] - It's current state of filter.
      *        There are some useful properties in the currentState :
@@ -263,7 +263,8 @@ export default class Filter extends Shader
  * Used for caching shader IDs
  *
  * @static
- * @private
+ * @type {object}
+ * @protected
  */
 Filter.SOURCE_KEY_MAP = {};
 
