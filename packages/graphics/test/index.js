@@ -138,7 +138,7 @@ describe('PIXI.Graphics', function ()
                     expect(graphics.line.lineJoin).to.be.equal('miter');
                 });
 
-                it('clockwise miter', withGL(function ()
+                it('clockwise miter', function ()
                 {
                     // given
                     const renderer = new Renderer({ width: 200, height: 200 });
@@ -177,9 +177,9 @@ describe('PIXI.Graphics', function ()
 
                     expect(points[10], 'x6').to.be.eql(51);
                     expect(points[11], 'y6').to.be.eql(50);
-                }));
+                });
 
-                it('counterclockwise miter', withGL(function ()
+                it('counterclockwise miter', function ()
                 {
                     // given
                     const renderer = new Renderer({ width: 200, height: 200 });
@@ -218,9 +218,9 @@ describe('PIXI.Graphics', function ()
 
                     expect(points[10], 'x6').to.be.eql(49);
                     expect(points[11], 'y6').to.be.eql(-50);
-                }));
+                });
 
-                it('flat line miter', withGL(function ()
+                it('flat line miter', function ()
                 {
                     // given
                     const renderer = new Renderer({ width: 200, height: 200 });
@@ -259,9 +259,9 @@ describe('PIXI.Graphics', function ()
 
                     expect(points[10], 'x8').to.be.eql(100);
                     expect(points[11], 'y8').to.be.eql(-1);
-                }));
+                });
 
-                it('very sharp clockwise miter falling back to bevel', withGL(function ()
+                it('very sharp clockwise miter falling back to bevel', function ()
                 {
                     // given
                     const p1 = [0, 0];
@@ -313,9 +313,9 @@ describe('PIXI.Graphics', function ()
 
                     expect(points[14], 'x8').to.be.eql(p3[0] + perp2[0]);
                     expect(points[15], 'y8').to.be.eql(p3[1] + perp2[1]);
-                }));
+                });
 
-                it('very sharp counterclockwise miter falling back to bevel', withGL(function ()
+                it('very sharp counterclockwise miter falling back to bevel', function ()
                 {
                     // given
                     const p1 = [0, 0];
@@ -367,9 +367,9 @@ describe('PIXI.Graphics', function ()
 
                     expect(points[14], 'x8').to.be.eql(p3[0] - perp2[0]);
                     expect(points[15], 'y8').to.be.eql(p3[1] - perp2[1]);
-                }));
+                });
 
-                it('miter join paralel lines', withGL(function ()
+                it('miter join paralel lines', function ()
                 {
                     // given
                     const p1 = [0, 0];
@@ -414,12 +414,12 @@ describe('PIXI.Graphics', function ()
 
                     expect(points[10], 'x6').to.be.eql(p3[0] + perp2[0]);
                     expect(points[11], 'y6').to.be.eql(p3[1] + perp2[1]);
-                }));
+                });
             });
 
             describe('bevel', function ()
             {
-                it('clockwise bevel', withGL(function ()
+                it('clockwise bevel', function ()
                 {
                     // given
                     const renderer = new Renderer({ width: 200, height: 200 });
@@ -464,9 +464,9 @@ describe('PIXI.Graphics', function ()
 
                     expect(points[14], 'x8').to.be.eql(51);
                     expect(points[15], 'y8').to.be.eql(50);
-                }));
+                });
 
-                it('counterclockwise bevel', withGL(function ()
+                it('counterclockwise bevel', function ()
                 {
                     // given
                     const renderer = new Renderer({ width: 200, height: 200 });
@@ -511,9 +511,9 @@ describe('PIXI.Graphics', function ()
 
                     expect(points[14], 'x8').to.be.eql(49);
                     expect(points[15], 'y8').to.be.eql(-50);
-                }));
+                });
 
-                it('bevel join paralel lines', withGL(function ()
+                it('bevel join paralel lines', function ()
                 {
                     // given
                     const p1 = [0, 0];
@@ -558,9 +558,9 @@ describe('PIXI.Graphics', function ()
 
                     expect(points[10], 'x6').to.be.eql(p3[0] + perp2[0]);
                     expect(points[11], 'y6').to.be.eql(p3[1] + perp2[1]);
-                }));
+                });
 
-                it('flat line bevel', withGL(function ()
+                it('flat line bevel', function ()
                 {
                     // given
                     const renderer = new Renderer({ width: 200, height: 200 });
@@ -599,12 +599,12 @@ describe('PIXI.Graphics', function ()
 
                     expect(points[10], 'x6').to.be.eql(100);
                     expect(points[11], 'y6').to.be.eql(-1);
-                }));
+                });
             });
 
             describe('round', function ()
             {
-                it('round join clockwise', withGL(function ()
+                it('round join clockwise', function ()
                 {
                     // given
                     const p1 = [0, 0];
@@ -692,9 +692,9 @@ describe('PIXI.Graphics', function ()
 
                     expect(points[30], 'x[last]').to.be.eql(p3[0] + perp2[0]);
                     expect(points[31], 'y[last]').to.be.eql(p3[1] + perp2[1]);
-                }));
+                });
 
-                it('round join counterclockwise', withGL(function ()
+                it('round join counterclockwise', function ()
                 {
                     // given
                     const p1 = [0, 0];
@@ -782,9 +782,9 @@ describe('PIXI.Graphics', function ()
 
                     expect(points[30], 'x[last]').to.be.eql(p3[0] - perp2[0]);
                     expect(points[31], 'y[last]').to.be.eql(p3[1] - perp2[1]);
-                }));
+                });
 
-                it('round join back and forth', withGL(function ()
+                it('round join back and forth', function ()
                 {
                     // given
                     const p1 = [0, 0];
@@ -853,9 +853,9 @@ describe('PIXI.Graphics', function ()
 
                     expect(points[len - 2], 'x[last]').to.be.eql(p3[0] + perp2[0]);
                     expect(points[len - 1], 'y[last]').to.be.eql(p3[1] + perp2[1]);
-                }));
+                });
 
-                it('round join back and forth other way around', withGL(function ()
+                it('round join back and forth other way around', function ()
                 {
                     // given
                     const p1 = [0, 0];
@@ -924,9 +924,9 @@ describe('PIXI.Graphics', function ()
 
                     expect(points[len - 2], 'x[last]').to.be.eql(p3[0] + perp2[0]);
                     expect(points[len - 1], 'y[last]').to.be.eql(p3[1] + perp2[1]);
-                }));
+                });
 
-                it('flat line round', withGL(function ()
+                it('flat line round', function ()
                 {
                     // given
                     const renderer = new Renderer({ width: 200, height: 200 });
@@ -965,7 +965,7 @@ describe('PIXI.Graphics', function ()
 
                     expect(points[10], 'x6').to.be.eql(100);
                     expect(points[11], 'y6').to.be.eql(-1);
-                }));
+                });
             });
         });
     });
