@@ -58,7 +58,6 @@ export default class Program
         this.vertexSrc = `#define SHADER_NAME ${name}\n${this.vertexSrc}`;
         this.fragmentSrc = `#define SHADER_NAME ${name}\n${this.fragmentSrc}`;
 
-
         this.vertexSrc = setPrecision(this.vertexSrc, settings.PRECISION_VERTEX);
         this.fragmentSrc = setPrecision(this.fragmentSrc, settings.PRECISION_FRAGMENT);
 
