@@ -49,6 +49,15 @@ export default class TextMetrics
         wordWrap = (wordWrap === undefined || wordWrap === null) ? style.wordWrap : wordWrap;
         const font = style.toFontString();
         const fontProperties = TextMetrics.measureFont(font);
+
+        // fallback in case UA disallow canvas data extraction
+        // (toDataURI, getImageData functions)
+        if (fontProperties.fontSize === 0)
+        {
+            fontProperties.fontSize = style.fontSize;
+            fontProperties.ascent = style.fontSize;
+        }
+
         const context = canvas.getContext('2d');
 
         context.font = font;

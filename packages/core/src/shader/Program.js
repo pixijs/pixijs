@@ -12,6 +12,8 @@ import { settings } from '@pixi/settings';
 
 let UID = 0;
 
+const nameCache = {};
+
 /**
  * @class
  * @memberof PIXI
@@ -43,8 +45,18 @@ export default class Program
 
         name = name.replace(/\s+/g, '-');
 
-        this.vertexSrc = `#define SHADER_NAME ${name}-${this.id}\n${this.vertexSrc}`;
-        this.fragmentSrc = `#define SHADER_NAME ${name}-${this.id}\n${this.fragmentSrc}`;
+        if (nameCache[name])
+        {
+            nameCache[name]++;
+            name += `-${nameCache[name]}`;
+        }
+        else
+        {
+            nameCache[name] = 1;
+        }
+
+        this.vertexSrc = `#define SHADER_NAME ${name}\n${this.vertexSrc}`;
+        this.fragmentSrc = `#define SHADER_NAME ${name}\n${this.fragmentSrc}`;
 
         this.vertexSrc = setPrecision(this.vertexSrc, settings.PRECISION_VERTEX);
         this.fragmentSrc = setPrecision(this.fragmentSrc, settings.PRECISION_FRAGMENT);
