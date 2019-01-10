@@ -43,23 +43,29 @@ export default class Program
          */
         this.fragmentSrc = fragmentSrc || Program.defaultFragmentSrc;
 
-        name = name.replace(/\s+/g, '-');
+        this.vertexSrc = this.vertexSrc.trim();
+        this.fragmentSrc = this.fragmentSrc.trim();
 
-        if (nameCache[name])
+        if (this.vertexSrc.substring(0, 8) !== '#version')
         {
-            nameCache[name]++;
-            name += `-${nameCache[name]}`;
-        }
-        else
-        {
-            nameCache[name] = 1;
-        }
+            name = name.replace(/\s+/g, '-');
 
-        this.vertexSrc = `#define SHADER_NAME ${name}\n${this.vertexSrc}`;
-        this.fragmentSrc = `#define SHADER_NAME ${name}\n${this.fragmentSrc}`;
+            if (nameCache[name])
+            {
+                nameCache[name]++;
+                name += `-${nameCache[name]}`;
+            }
+            else
+            {
+                nameCache[name] = 1;
+            }
 
-        this.vertexSrc = setPrecision(this.vertexSrc, settings.PRECISION_VERTEX);
-        this.fragmentSrc = setPrecision(this.fragmentSrc, settings.PRECISION_FRAGMENT);
+            this.vertexSrc = `#define SHADER_NAME ${name}\n${this.vertexSrc}`;
+            this.fragmentSrc = `#define SHADER_NAME ${name}\n${this.fragmentSrc}`;
+
+            this.vertexSrc = setPrecision(this.vertexSrc, settings.PRECISION_VERTEX);
+            this.fragmentSrc = setPrecision(this.fragmentSrc, settings.PRECISION_FRAGMENT);
+        }
 
         // currently this does not extract structs only default types
         this.extractData(this.vertexSrc, this.fragmentSrc);
