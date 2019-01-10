@@ -165,6 +165,7 @@ export default class Sprite extends Container
 
         /**
          * used to fast check if a sprite is.. a sprite!
+         * @member {boolean}
          */
         this.isSprite = true;
 
@@ -350,7 +351,7 @@ export default class Sprite extends Container
     *
     * Renders the object using the WebGL renderer
     *
-    * @private
+    * @protected
     * @param {PIXI.Renderer} renderer - The webgl renderer to use.
     */
     _render(renderer)
@@ -364,7 +365,7 @@ export default class Sprite extends Container
     /**
      * Updates the bounds of the sprite.
      *
-     * @private
+     * @protected
      */
     _calculateBounds()
     {

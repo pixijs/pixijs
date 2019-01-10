@@ -9,7 +9,7 @@ export default class TickerListener
 {
     /**
      * Constructor
-     *
+     * @private
      * @param {Function} fn - The listener function to be added for one update
      * @param {Function} [context=null] - The listener context
      * @param {number} [priority=0] - The priority for emitting
@@ -19,36 +19,42 @@ export default class TickerListener
     {
         /**
          * The handler function to execute.
+         * @private
          * @member {Function}
          */
         this.fn = fn;
 
         /**
          * The calling to execute.
+         * @private
          * @member {Function}
          */
         this.context = context;
 
         /**
          * The current priority.
+         * @private
          * @member {number}
          */
         this.priority = priority;
 
         /**
          * If this should only execute once.
+         * @private
          * @member {boolean}
          */
         this.once = once;
 
         /**
          * The next item in chain.
+         * @private
          * @member {TickerListener}
          */
         this.next = null;
 
         /**
          * The previous item in chain.
+         * @private
          * @member {TickerListener}
          */
         this.previous = null;
@@ -63,7 +69,7 @@ export default class TickerListener
 
     /**
      * Simple compare function to figure out if a function and context match.
-     *
+     * @private
      * @param {Function} fn - The listener function to be added for one update
      * @param {Function} context - The listener context
      * @return {boolean} `true` if the listener match the arguments
@@ -77,6 +83,7 @@ export default class TickerListener
 
     /**
      * Emit by calling the current function.
+     * @private
      * @param {number} deltaTime - time since the last emit.
      * @return {TickerListener} Next ticker
      */
@@ -113,6 +120,7 @@ export default class TickerListener
 
     /**
      * Connect to the list.
+     * @private
      * @param {TickerListener} previous - Input node, previous listener
      */
     connect(previous)
@@ -128,6 +136,7 @@ export default class TickerListener
 
     /**
      * Destroy and don't use after this.
+     * @private
      * @param {boolean} [hard = false] `true` to remove the `next` reference, this
      *        is considered a hard destroy. Soft destroy maintains the next reference.
      * @return {TickerListener} The listener to redirect while emitting or removing.

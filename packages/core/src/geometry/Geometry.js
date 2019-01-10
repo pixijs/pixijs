@@ -40,7 +40,7 @@ const map = {
 export default class Geometry
 {
     /**
-     * @param {array} [buffers]  an array of buffers. optional.
+     * @param {PIXI.Buffer[]} [buffers]  an array of buffers. optional.
      * @param {object} [attributes] of the geometry, optional structure of the attributes layout
      */
     constructor(buffers = [], attributes = {})
@@ -54,8 +54,8 @@ export default class Geometry
         /**
          * A map of renderer IDs to webgl VAOs
          *
-         * @private
-         * @type {Array<VertexArrayObject>}
+         * @protected
+         * @type {Array<OES_vertex_array_object>}
          */
         this.glVertexArrayObjects = {};
 
@@ -310,7 +310,7 @@ export default class Geometry
      * merges an array of geometries into a new single one
      * geometry attribute styles must match for this operation to work
      *
-     * @param {array|PIXI.Geometry} geometries array of geometries to merge
+     * @param {PIXI.Geometry[]} geometries array of geometries to merge
      * @returns {PIXI.Geometry} shiny new geometry!
      */
     static merge(geometries)

@@ -1,5 +1,6 @@
 /**
  * Sets the float precision on the shader. If the precision is already present this function will do nothing
+ * @private
  * @param {string} src       the shader source
  * @param {string} precision The float precision of the shader. Options are 'lowp', 'mediump' or 'highp'.
  *

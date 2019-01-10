@@ -17,6 +17,7 @@ export default class CubeTexture extends BaseTexture
      * @param {object} [options] - Optional options passed to the resources being loaded.
      *        See {@PIXI.resources.autoDetectResource autoDetectResource} for more info
      *        on the options available to each resource.
+     * @returns {PIXI.CubeTexture} new cube texture
      */
     static from(resources, options)
     {

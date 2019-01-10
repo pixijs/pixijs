@@ -13,6 +13,7 @@ export default class ArcUtils
      *
      * "borrowed" from https://code.google.com/p/fxcanvas/ - thanks google!
      *
+     * @private
      * @param {number} x1 - The x-coordinate of the beginning of the arc
      * @param {number} y1 - The y-coordinate of the beginning of the arc
      * @param {number} x2 - The x-coordinate of the end of the arc
@@ -70,6 +71,7 @@ export default class ArcUtils
     /**
      * The arc method creates an arc/curve (used to create circles, or parts of circles).
      *
+     * @private
      * @param {number} startX - Start x location of arc
      * @param {number} startY - Start y location of arc
      * @param {number} cx - The x-coordinate of the center of the circle

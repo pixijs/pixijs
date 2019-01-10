@@ -7,7 +7,7 @@
  * ```
  *
  * @class
- * @memberOf PIXI
+ * @memberof PIXI
  */
 export default class TextMetrics
 {
@@ -16,8 +16,8 @@ export default class TextMetrics
      * @param {PIXI.TextStyle} style - the style that was measured
      * @param {number} width - the measured width of the text
      * @param {number} height - the measured height of the text
-     * @param {array} lines - an array of the lines of text broken by new lines and wrapping if specified in style
-     * @param {array} lineWidths - an array of the line widths for each line matched to `lines`
+     * @param {string[]} lines - an array of the lines of text broken by new lines and wrapping if specified in style
+     * @param {number[]} lineWidths - an array of the line widths for each line matched to `lines`
      * @param {number} lineHeight - the measured line height for this style
      * @param {number} maxLineWidth - the maximum line width for all measured lines
      * @param {Object} fontProperties - the font properties object from TextMetrics.measureFont
@@ -435,7 +435,7 @@ export default class TextMetrics
      *
      * @private
      * @param  {string}  text       The text
-     * @return {array}  A tokenized array
+     * @return {string[]}  A tokenized array
      */
     static tokenize(text)
     {
@@ -516,7 +516,7 @@ export default class TextMetrics
      *
      * @static
      * @param {string} font - String representing the style of the font
-     * @return {PIXI.TextMetrics~FontMetrics} Font properties object
+     * @return {PIXI.TextMetrics.FontMetrics} Font properties object
      */
     static measureFont(font)
     {
@@ -638,7 +638,7 @@ export default class TextMetrics
 /**
  * Internal return object for {@link PIXI.TextMetrics.measureFont `TextMetrics.measureFont`}.
  * @class FontMetrics
- * @memberof PIXI.TextMetrics~
+ * @memberof PIXI.TextMetrics
  * @property {number} ascent - The ascent distance
  * @property {number} descent - The descent distance
  * @property {number} fontSize - Font size from ascent to descent
@@ -665,7 +665,7 @@ TextMetrics._canvas = canvas;
 TextMetrics._context = canvas.getContext('2d');
 
 /**
- * Cache of PIXI.TextMetrics~FontMetrics objects.
+ * Cache of {@see PIXI.TextMetrics.FontMetrics} objects.
  * @memberof PIXI.TextMetrics
  * @type {Object}
  * @private

@@ -1,24 +1,30 @@
 /**
  * @todo Describe property usage
  *
+ * @static
+ * @name ProgramCache
  * @memberof PIXI.utils
- * @private
+ * @type {Object}
  */
 export const ProgramCache = {};
 
 /**
  * @todo Describe property usage
  *
+ * @static
+ * @name TextureCache
  * @memberof PIXI.utils
- * @private
+ * @type {Object}
  */
 export const TextureCache = Object.create(null);
 
 /**
  * @todo Describe property usage
  *
+ * @static
+ * @name BaseTextureCache
  * @memberof PIXI.utils
- * @private
+ * @type {Object}
  */
 
 export const BaseTextureCache = Object.create(null);

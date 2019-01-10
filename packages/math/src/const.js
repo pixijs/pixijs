@@ -2,9 +2,8 @@
  * Two Pi.
  *
  * @static
- * @constant
+ * @constant {number} PI_2
  * @memberof PIXI
- * @type {number}
  */
 export const PI_2 = Math.PI * 2;
 
@@ -12,9 +11,8 @@ export const PI_2 = Math.PI * 2;
  * Conversion factor for converting radians to degrees.
  *
  * @static
- * @constant
+ * @constant {number} RAD_TO_DEG
  * @memberof PIXI
- * @type {number}
  */
 export const RAD_TO_DEG = 180 / Math.PI;
 
@@ -22,9 +20,8 @@ export const RAD_TO_DEG = 180 / Math.PI;
  * Conversion factor for converting degrees to radians.
  *
  * @static
- * @constant
+ * @constant {number} DEG_TO_RAD
  * @memberof PIXI
- * @type {number}
  */
 export const DEG_TO_RAD = Math.PI / 180;
 

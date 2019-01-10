@@ -23,9 +23,9 @@ export default class System
 
     /**
      * Generic method called when there is a WebGL context change.
-     * @param {WebGLRenderingContext} gl - WebGL context
+     * @param {WebGLRenderingContext} gl new webgl context
      */
-    contextChange()
+    contextChange(gl) // eslint-disable-line no-unused-vars
     {
         // do some codes init!
     }

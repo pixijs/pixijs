@@ -18,7 +18,7 @@ export default class DisplacementFilter extends Filter
 {
     /**
      * @param {PIXI.Sprite} sprite - The sprite used for the displacement map. (make sure its added to the scene!)
-     * @param {number} scale - The scale of the displacement
+     * @param {number} [scale] - The scale of the displacement
      */
     constructor(sprite, scale)
     {
@@ -40,15 +40,19 @@ export default class DisplacementFilter extends Filter
             scale = 20;
         }
 
+        /**
+         * scaleX, scaleY for displacements
+         * @member {PIXI.Point}
+         */
         this.scale = new Point(scale, scale);
     }
 
     /**
      * Applies the filter.
      *
-     * @param {PIXI.FilterManager} filterManager - The manager.
-     * @param {PIXI.RenderTarget} input - The input target.
-     * @param {PIXI.RenderTarget} output - The output target.
+     * @param {PIXI.systems.FilterSystem} filterManager - The manager.
+     * @param {PIXI.RenderTexture} input - The input target.
+     * @param {PIXI.RenderTexture} output - The output target.
      */
     apply(filterManager, input, output)
     {

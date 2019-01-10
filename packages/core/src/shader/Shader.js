@@ -5,7 +5,6 @@ import UniformGroup from './UniformGroup';
 /**
  * @class
  * @memberof PIXI
- * @extends PIXI.Shader
  */
 class Shader
 {
@@ -78,6 +77,11 @@ class Shader
         this.uniformGroup = null;
     }
 
+    /**
+     * Shader uniform values, shortcut for `uniformGroup.uniforms`
+     * @readonly
+     * @member {object}
+     */
     get uniforms()
     {
         return this.uniformGroup.uniforms;
