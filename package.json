@@ -10,12 +10,16 @@
     "pretest": "npm run lint && npm run build",
     "test": "floss --path test",
     "unit-test": "floss --path test",
-    "docs": "jsdoc -c jsdoc.conf.json -R README.md",
+    "docs": "mkdirp dist && jsdoc -c jsdoc.conf.json -R README.md",
+    "types": "npm run types:legacy && npm run types:default",
+    "types:default": "mkdirp dist/types/pixi.js && jsdoc -c types/jsdoc.conf.json && node types/assemble pixi.js",
+    "types:legacy": "mkdirp dist/types/pixi.js-legacy && jsdoc -c types/jsdoc-legacy.conf.json && node types/assemble pixi.js-legacy",
     "lint": "eslint *.js test bundles packages tools --ignore-path .gitignore --max-warnings 0",
     "lintfix": "npm run lint -- --fix",
     "prebuild": "npm run clean:build",
     "build:min": "lerna run build:min --concurrency 1 --scope pixi*",
     "build": "rollup -c",
+    "postbuild": "npm run types",
     "watch": "rollup -cw",
     "lerna": "lerna",
     "predist": "rimraf dist/*",
@@ -49,6 +53,7 @@
     "rollup-plugin-node-resolve": "^4.0.0",
     "rollup-plugin-replace": "^2.1.0",
     "rollup-plugin-sourcemaps": "^0.4.2",
-    "rollup-plugin-string": "^2.0.2"
+    "rollup-plugin-string": "^2.0.2",
+    "tsd-jsdoc": "^2.1.1"
   }
 }
