@@ -105,18 +105,31 @@ export default class AccessibilityManager
         /**
          * pre-bind the functions
          *
+         * @type {Function}
          * @private
          */
         this._onKeyDown = this._onKeyDown.bind(this);
+
+        /**
+         * pre-bind the functions
+         *
+         * @type {Function}
+         * @private
+         */
         this._onMouseMove = this._onMouseMove.bind(this);
 
         /**
-         * stores the state of the manager. If there are no accessible objects or the mouse is moving, this will be false.
-         *
-         * @member {Array<*>}
-         * @private
+         * A flag
+         * @type {boolean}
+         * @readonly
          */
         this.isActive = false;
+
+        /**
+         * A flag
+         * @type {boolean}
+         * @readonly
+         */
         this.isMobileAccessibility = false;
 
         // let listen for tab.. once pressed we can fire up and show the accessibility layer

@@ -11,6 +11,7 @@ import ImageResource from './ImageResource';
  *   }
  *   upload(renderer, baseTexture, glTexture) {
  *     // upload with GL
+ *     return true;
  *   }
  *   // used to auto-detect resource
  *   static test(source, extension) {

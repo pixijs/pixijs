@@ -9,12 +9,7 @@ Renderer.registerPlugin('batch', BatchRenderer);
 
 skipHello();
 
-function withGL(fn)
-{
-    return !process.env.DISABLE_WEBGL ? (fn || true) : undefined;
-}
-
-describe('Graphics', function ()
+describe('PIXI.Graphics', function ()
 {
     describe('constructor', function ()
     {
@@ -1143,7 +1138,7 @@ describe('Graphics', function ()
 
     describe('drawCircle', function ()
     {
-        it('should have no gaps in line border', withGL(function ()
+        it('should have no gaps in line border', function ()
         {
             const renderer = new Renderer({ width: 200, height: 200 });
 
@@ -1169,12 +1164,12 @@ describe('Graphics', function ()
             {
                 renderer.destroy();
             }
-        }));
+        });
     });
 
     describe('startPoly', function ()
     {
-        it('should fill two triangles', withGL(function ()
+        it('should fill two triangles', function ()
         {
             const graphics = new Graphics();
 
@@ -1195,9 +1190,9 @@ describe('Graphics', function ()
             expect(data.length).to.equals(2);
             expect(data[0].shape.points).to.eql([50, 50, 250, 50, 100, 100, 50, 50]);
             expect(data[1].shape.points).to.eql([250, 50, 450, 50, 300, 100, 250, 50]);
-        }));
+        });
 
-        it('should honor lineStyle break', withGL(function ()
+        it('should honor lineStyle break', function ()
         {
             const graphics = new Graphics();
 
@@ -1214,6 +1209,6 @@ describe('Graphics', function ()
             expect(data.length).to.equals(2);
             expect(data[0].shape.points).to.eql([50, 50, 250, 50]);
             expect(data[1].shape.points).to.eql([250, 50, 100, 100, 50, 50]);
-        }));
+        });
     });
 });

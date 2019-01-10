@@ -13,9 +13,9 @@ import BlurFilterPass from './BlurFilterPass';
 export default class BlurFilter extends Filter
 {
     /**
-     * @param {number} strength - The strength of the blur filter.
-     * @param {number} quality - The quality of the blur filter.
-     * @param {number} resolution - The resolution of the blur filter.
+     * @param {number} [strength=8] - The strength of the blur filter.
+     * @param {number} [quality=4] - The quality of the blur filter.
+     * @param {number} [resolution] - The resolution of the blur filter.
      * @param {number} [kernelSize=5] - The kernelSize of the blur filter.Options: 5, 7, 9, 11, 13, 15.
      */
     constructor(strength, quality, resolution, kernelSize)
@@ -35,9 +35,9 @@ export default class BlurFilter extends Filter
     /**
      * Applies the filter.
      *
-     * @param {PIXI.FilterManager} filterManager - The manager.
-     * @param {PIXI.RenderTarget} input - The input target.
-     * @param {PIXI.RenderTarget} output - The output target.
+     * @param {PIXI.systems.FilterSystem} filterManager - The manager.
+     * @param {PIXI.RenderTexture} input - The input target.
+     * @param {PIXI.RenderTexture} output - The output target.
      */
     apply(filterManager, input, output, clear)
     {

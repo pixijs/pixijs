@@ -72,7 +72,7 @@ export default class VideoResource extends BaseImageResource
 
         /**
          * Promise when loading
-         * @member {Promise}
+         * @member {Promise<void>}
          * @private
          * @default null
          */

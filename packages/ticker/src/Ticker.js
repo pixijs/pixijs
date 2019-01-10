@@ -28,6 +28,7 @@ export default class Ticker
 
         /**
          * Internal current frame request ID
+         * @type {?number}
          * @private
          */
         this._requestId = null;
@@ -35,6 +36,7 @@ export default class Ticker
         /**
          * Internal value managed by minFPS property setter and getter.
          * This is the maximum allowed milliseconds between updates.
+         * @type {number}
          * @private
          */
         this._maxElapsedMS = 100;

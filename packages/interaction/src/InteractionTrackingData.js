@@ -9,6 +9,7 @@ export default class InteractionTrackingData
 {
     /**
      * @param {number} pointerId - Unique pointer id of the event
+     * @private
      */
     constructor(pointerId)
     {
@@ -38,6 +39,7 @@ export default class InteractionTrackingData
      * Unique pointer id of the event
      *
      * @readonly
+     * @private
      * @member {number}
      */
     get pointerId()
@@ -48,20 +50,15 @@ export default class InteractionTrackingData
     /**
      * State of the tracking data, expressed as bit flags
      *
+     * @private
      * @member {number}
-     * @memberof PIXI.interaction.InteractionTrackingData#
      */
     get flags()
     {
         return this._flags;
     }
 
-    /**
-     * Set the flags for the tracking data
-     *
-     * @param {number} flags - Flags to set
-     */
-    set flags(flags)
+    set flags(flags) // eslint-disable-line require-jsdoc
     {
         this._flags = flags;
     }
@@ -69,8 +66,8 @@ export default class InteractionTrackingData
     /**
      * Is the tracked event inactive (not over or down)?
      *
+     * @private
      * @member {number}
-     * @memberof PIXI.interaction.InteractionTrackingData#
      */
     get none()
     {
@@ -80,20 +77,15 @@ export default class InteractionTrackingData
     /**
      * Is the tracked event over the DisplayObject?
      *
+     * @private
      * @member {boolean}
-     * @memberof PIXI.interaction.InteractionTrackingData#
      */
     get over()
     {
         return (this._flags & this.constructor.FLAGS.OVER) !== 0;
     }
 
-    /**
-     * Set the over flag
-     *
-     * @param {boolean} yn - Is the event over?
-     */
-    set over(yn)
+    set over(yn) // eslint-disable-line require-jsdoc
     {
         this._doSet(this.constructor.FLAGS.OVER, yn);
     }
@@ -101,20 +93,15 @@ export default class InteractionTrackingData
     /**
      * Did the right mouse button come down in the DisplayObject?
      *
+     * @private
      * @member {boolean}
-     * @memberof PIXI.interaction.InteractionTrackingData#
      */
     get rightDown()
     {
         return (this._flags & this.constructor.FLAGS.RIGHT_DOWN) !== 0;
     }
 
-    /**
-     * Set the right down flag
-     *
-     * @param {boolean} yn - Is the right mouse button down?
-     */
-    set rightDown(yn)
+    set rightDown(yn) // eslint-disable-line require-jsdoc
     {
         this._doSet(this.constructor.FLAGS.RIGHT_DOWN, yn);
     }
@@ -122,20 +109,15 @@ export default class InteractionTrackingData
     /**
      * Did the left mouse button come down in the DisplayObject?
      *
+     * @private
      * @member {boolean}
-     * @memberof PIXI.interaction.InteractionTrackingData#
      */
     get leftDown()
     {
         return (this._flags & this.constructor.FLAGS.LEFT_DOWN) !== 0;
     }
 
-    /**
-     * Set the left down flag
-     *
-     * @param {boolean} yn - Is the left mouse button down?
-     */
-    set leftDown(yn)
+    set leftDown(yn) // eslint-disable-line require-jsdoc
     {
         this._doSet(this.constructor.FLAGS.LEFT_DOWN, yn);
     }

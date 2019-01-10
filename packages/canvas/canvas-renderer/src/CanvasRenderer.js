@@ -98,6 +98,11 @@ export default class CanvasRenderer extends AbstractRenderer
 
         this.initPlugins(CanvasRenderer.__plugins);
 
+        /**
+         * Tracks the blend modes useful for this renderer.
+         *
+         * @member {object<number, string>}
+         */
         this.blendModes = mapCanvasBlendModesToPixi();
         this._activeBlendMode = null;
 

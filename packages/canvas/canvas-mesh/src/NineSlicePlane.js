@@ -65,7 +65,7 @@ NineSlicePlane.prototype._renderCanvas = function _renderCanvas(renderer)
  * @method drawSegment
  * @memberof PIXI.NineSlicePlane#
  * @param {CanvasRenderingContext2D} context - The context to draw with.
- * @param {CanvasImageSource} textureSource - The source to draw.
+ * @param {ICanvasImageSource} textureSource - The source to draw.
  * @param {number} w - width of the texture
  * @param {number} h - height of the texture
  * @param {number} x1 - x index 1

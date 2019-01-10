@@ -3,13 +3,6 @@ import { Sprite } from '@pixi/sprite';
 import { Ticker, UPDATE_PRIORITY } from '@pixi/ticker';
 
 /**
- * @typedef PIXI.extras.AnimatedSprite~FrameObject
- * @type {object}
- * @property {PIXI.Texture} texture - The {@link PIXI.Texture} of the frame
- * @property {number} time - the duration of the frame in ms
- */
-
-/**
  * An AnimatedSprite is a simple way to display an animation depicted by a list of textures.
  *
  * ```js
@@ -22,7 +15,7 @@ import { Ticker, UPDATE_PRIORITY } from '@pixi/ticker';
  *      textureArray.push(texture);
  * };
  *
- * let animatedSprite = new PIXI.extras.AnimatedSprite(textureArray);
+ * let animatedSprite = new PIXI.AnimatedSprite(textureArray);
  * ```
  *
  * The more efficient and simpler way to create an animated sprite is using a {@link PIXI.Spritesheet}
@@ -33,7 +26,7 @@ import { Ticker, UPDATE_PRIORITY } from '@pixi/ticker';
  *
  * function setup() {
  *   let sheet = PIXI.loader.resources["assets/spritesheet.json"].spritesheet;
- *   animatedSprite = new PIXI.extras.AnimatedSprite(sheet.animations["image_sequence"]);
+ *   animatedSprite = new PIXI.AnimatedSprite(sheet.animations["image_sequence"]);
  *   ...
  * }
  * ```
@@ -45,7 +38,7 @@ import { Ticker, UPDATE_PRIORITY } from '@pixi/ticker';
 export default class AnimatedSprite extends Sprite
 {
     /**
-     * @param {PIXI.Texture[]|PIXI.extras.AnimatedSprite~FrameObject[]} textures - An array of {@link PIXI.Texture} or frame
+     * @param {PIXI.Texture[]|PIXI.AnimatedSprite.FrameObject[]} textures - An array of {@link PIXI.Texture} or frame
      *  objects that make up the animation.
      * @param {boolean} [autoUpdate=true] - Whether to use PIXI.Ticker.shared to auto update animation time.
      */
@@ -54,11 +47,13 @@ export default class AnimatedSprite extends Sprite
         super(textures[0] instanceof Texture ? textures[0] : textures[0].texture);
 
         /**
+         * @type {PIXI.Texture[]}
          * @private
          */
         this._textures = null;
 
         /**
+         * @type {number[]}
          * @private
          */
         this._durations = null;
@@ -413,3 +408,11 @@ export default class AnimatedSprite extends Sprite
         return currentFrame;
     }
 }
+
+/**
+ * @memberof PIXI.AnimatedSprite
+ * @typedef {object} FrameObject
+ * @type {object}
+ * @property {PIXI.Texture} texture - The {@link PIXI.Texture} of the frame
+ * @property {number} time - the duration of the frame in ms
+ */

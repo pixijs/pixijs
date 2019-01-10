@@ -5,13 +5,13 @@ import { Texture } from '@pixi/core';
  * Loader plugin for handling Texture resources.
  * @class
  * @memberof PIXI
- * @extends PIXI.Loader~LoaderPlugin
+ * @implements PIXI.ILoaderPlugin
  */
 export default class TextureLoader
 {
     /**
      * Called after a resource is loaded.
-     * @see PIXI.Loader~loaderMiddleware
+     * @see PIXI.Loader.loaderMiddleware
      * @param {PIXI.LoaderResource} resource
      * @param {function} next
      */

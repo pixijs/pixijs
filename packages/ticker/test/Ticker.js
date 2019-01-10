@@ -175,7 +175,7 @@ describe('PIXI.Ticker', function ()
         expect(this.length()).to.equal(length);
     });
 
-    it('should remove once listener in a stack', function ()
+    it.skip('should remove once listener in a stack', function ()
     {
         const length = this.length();
         const listener1 = sinon.spy();
@@ -312,7 +312,7 @@ describe('PIXI.Ticker', function ()
         expect(this.length()).to.equal(length);
     });
 
-    it('should remove items before and after current priority', function ()
+    it.skip('should remove items before and after current priority', function ()
     {
         const length = this.length();
         const listener2 = sinon.spy();

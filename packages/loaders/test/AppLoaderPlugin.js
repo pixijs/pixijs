@@ -1,17 +1,17 @@
-const { LoaderPlugin, Loader } = require('../');
+const { AppLoaderPlugin, Loader } = require('../');
 
-describe('PIXI.LoaderPlugin', function ()
+describe('PIXI.AppLoaderPlugin', function ()
 {
     it('should contain loader property', function ()
     {
         const obj = {};
 
-        LoaderPlugin.init.call(obj);
+        AppLoaderPlugin.init.call(obj);
 
         expect(obj.loader).to.be.not.undefined;
         expect(obj.loader).to.be.instanceof(Loader);
 
-        LoaderPlugin.destroy.call(obj);
+        AppLoaderPlugin.destroy.call(obj);
 
         expect(obj.loader).to.be.null;
     });
@@ -20,13 +20,13 @@ describe('PIXI.LoaderPlugin', function ()
     {
         const obj = {};
 
-        LoaderPlugin.init.call(obj, { sharedLoader: true });
+        AppLoaderPlugin.init.call(obj, { sharedLoader: true });
 
         expect(obj.loader).to.be.not.undefined;
         expect(obj.loader).to.be.instanceof(Loader);
         expect(obj.loader).to.equal(Loader.shared);
 
-        LoaderPlugin.destroy.call(obj);
+        AppLoaderPlugin.destroy.call(obj);
 
         expect(obj.loader).to.be.null;
     });

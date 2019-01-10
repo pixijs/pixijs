@@ -66,9 +66,9 @@ export default class Spritesheet
 
         /**
          * A map containing the textures for each animation.
-         * Can be used to create an {@link PIXI.extras.AnimatedSprite|AnimatedSprite}:
+         * Can be used to create an {@link PIXI.AnimatedSprite|AnimatedSprite}:
          * ```js
-         * new PIXI.extras.AnimatedSprite(sheet.animations["anim_name"])
+         * new PIXI.AnimatedSprite(sheet.animations["anim_name"])
          * ```
          * @member {Object}
          */

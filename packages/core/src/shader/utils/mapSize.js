@@ -22,6 +22,7 @@ const GLSL_TO_SIZE = {
 };
 
 /**
+ * @private
  * @method mapSize
  * @memberof PIXI.glCore.shader
  * @param type {String}

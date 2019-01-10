@@ -23,6 +23,7 @@ function createColoredCanvas(color)
 /**
  * Checks whether the Canvas BlendModes are supported by the current browser
  *
+ * @private
  * @return {boolean} whether they are supported
  */
 export default function canUseNewCanvasBlendModes()
