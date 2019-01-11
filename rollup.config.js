@@ -1,5 +1,3 @@
-import PackageUtilities from 'lerna/lib/PackageUtilities';
-import Repository from 'lerna/lib/Repository';
 import path from 'path';
 import transpile from 'rollup-plugin-buble';
 import resolve from 'rollup-plugin-node-resolve';
@@ -8,59 +6,65 @@ import sourcemaps from 'rollup-plugin-sourcemaps';
 import minimist from 'minimist';
 import commonjs from 'rollup-plugin-commonjs';
 import replace from 'rollup-plugin-replace';
+import batchPackages from '@lerna/batch-packages';
+import filterPackages from '@lerna/filter-packages';
+import { getPackages } from '@lerna/project';
+import repo from './lerna.json';
 
-// Support --scope and --ignore globs
-const args = minimist(process.argv.slice(2), {
-    boolean: ['bundles'],
-    default: {
-        bundles: true,
-    },
-    alias: {
-        b: 'bundles',
-    },
-});
-
-// Standard Lerna plumbing getting packages
-const repo = new Repository(__dirname);
-const packages = PackageUtilities.getPackages(repo);
-const filtered = PackageUtilities.filterPackages(packages, args);
-const sorted = PackageUtilities.topologicallyBatchPackages(filtered);
-
-const plugins = [
-    sourcemaps(),
-    resolve({
-        browser: true,
-        preferBuiltins: false,
-    }),
-    commonjs({
-        namedExports: {
-            'resource-loader': ['Resource'],
-        },
-    }),
-    string({
-        include: [
-            '**/*.frag',
-            '**/*.vert',
-        ],
-    }),
-    replace({
-        __VERSION__: repo.version,
-    }),
-    transpile(),
-];
-
-const compiled = (new Date()).toUTCString().replace(/GMT/g, 'UTC');
-const sourcemap = true;
-const results = [];
-
-sorted.forEach((group) =>
+/**
+ * Get a list of the non-private sorted packages with Lerna v3
+ * @see https://github.com/lerna/lerna/issues/1848
+ * @return {Promise<Package[]>} List of packages
+ */
+async function getSortedPackages(scope, ignore)
 {
-    group.forEach((pkg) =>
+    const packages = await getPackages(__dirname);
+    const filtered = filterPackages(
+        packages,
+        scope,
+        ignore,
+        false
+    );
+
+    return batchPackages(filtered)
+        .reduce((arr, batch) => arr.concat(batch), []);
+}
+
+async function main()
+{
+    const plugins = [
+        sourcemaps(),
+        resolve({
+            browser: true,
+            preferBuiltins: false,
+        }),
+        commonjs({
+            namedExports: {
+                'resource-loader': ['Resource'],
+            },
+        }),
+        string({
+            include: [
+                '**/*.frag',
+                '**/*.vert',
+            ],
+        }),
+        replace({
+            __VERSION__: repo.version,
+        }),
+        transpile(),
+    ];
+
+    const compiled = (new Date()).toUTCString().replace(/GMT/g, 'UTC');
+    const sourcemap = true;
+    const results = [];
+
+    // Support --scope and --ignore globs if passed in via commandline
+    const { scope, ignore } = minimist(process.argv.slice(2));
+    const packages = await getSortedPackages(scope, ignore);
+
+    packages.forEach((pkg) =>
     {
-        if (pkg.isPrivate())
-        {
-            return;
-        }
         const banner = [
             `/*!`,
             ` * ${pkg.name} - v${pkg.version}`,
@@ -75,7 +79,7 @@ sorted.forEach((group) =>
         const external = Object.keys(pkg.dependencies || []);
         const basePath = path.relative(__dirname, pkg.location);
         const input = path.join(basePath, 'src/index.js');
-        const { main, module, bundle } = pkg._package;
+        const { main, module, bundle } = pkg.toJSON();
         const freeze = false;
 
         results.push({
@@ -103,7 +107,7 @@ sorted.forEach((group) =>
         // The package.json file has a bundle field
         // we'll use this to generate the bundle file
         // this will package all dependencies
-        if (args.bundles && bundle)
+        if (bundle)
         {
             results.push({
                 input,
@@ -120,6 +124,8 @@ sorted.forEach((group) =>
             });
         }
     });
-});
 
-export default results;
+    return results;
+}
+
+export default main();

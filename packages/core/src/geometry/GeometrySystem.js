@@ -37,15 +37,16 @@ export default class GeometrySystem extends System
         this.hasInstance = true;
 
         /**
-         * A cache of currently bound buffer..
+         * A cache of currently bound buffer,
+         * contains only two members with keys ARRAY_BUFFER and ELEMENT_ARRAY_BUFFER
+         * @member {Object.<number, PIXI.Buffer>}
+         * @readonly
          */
         this.boundBuffers = {};
     }
 
     /**
      * Sets up the renderer context and necessary buffers.
-     *
-     * @private
      */
     contextChange()
     {
@@ -119,7 +120,7 @@ export default class GeometrySystem extends System
 
     /**
      * Binds geometry so that is can be drawn. Creating a Vao if required
-     * @private
+     * @protected
      * @param {PIXI.Geometry} geometry instance of geometry to bind
      * @param {PIXI.Shader} shader instance of shader to bind
      */
@@ -174,7 +175,7 @@ export default class GeometrySystem extends System
 
     /**
      * Update buffers
-     * @private
+     * @protected
      */
     updateBuffers()
     {
@@ -193,14 +194,14 @@ export default class GeometrySystem extends System
 
                 // TODO can cache this on buffer! maybe added a getter / setter?
                 const type = buffer.index ? gl.ELEMENT_ARRAY_BUFFER : gl.ARRAY_BUFFER;
-                const drawType = buffer.static ? gl.STATIC_DRAW : gl.DYNAMIC_DRAW;
 
-                if (this.boundBuffers[type] !== glBuffer)
-                {
-                    this.boundBuffers[type] = glBuffer;
-
-                    gl.bindBuffer(type, glBuffer.buffer);
-                }
+                // TODO this could change if the VAO changes...
+                // need to come up with a better way to cache..
+                // if (this.boundBuffers[type] !== glBuffer)
+                // {
+                // this.boundBuffers[type] = glBuffer;
+                gl.bindBuffer(type, glBuffer.buffer);
+                // }
 
                 this._boundBuffer = glBuffer;
 
@@ -211,6 +212,8 @@ export default class GeometrySystem extends System
                 }
                 else
                 {
+                    const drawType = buffer.static ? gl.STATIC_DRAW : gl.DYNAMIC_DRAW;
+
                     glBuffer.byteLength = buffer.data.byteLength;
                     gl.bufferData(type, buffer.data, drawType);
                 }
@@ -220,7 +223,7 @@ export default class GeometrySystem extends System
 
     /**
      * Check compability between a geometry and a program
-     * @private
+     * @protected
      * @param {PIXI.Geometry} geometry - Geometry instance
      * @param {PIXI.Program} program - Program instance
      */
@@ -245,7 +248,7 @@ export default class GeometrySystem extends System
      * @param {PIXI.Geometry} geometry to get signature from
      * @param {PIXI.Program} prgram to test geometry against
      * @returns {String} Unique signature of the geometry and program
-     * @private
+     * @protected
      */
     getSignature(geometry, program)
     {
@@ -267,7 +270,7 @@ export default class GeometrySystem extends System
 
     /**
      * Creates a Vao with the same structure as the geometry and stores it on the geometry.
-     * @private
+     * @protected
      * @param {PIXI.Geometry} geometry - Instance of geometry to to generate Vao for
      * @param {PIXI.Program} program - Instance of program
      */
@@ -308,6 +311,10 @@ export default class GeometrySystem extends System
             if (!attributes[j].size && program.attributeData[j])
             {
                 attributes[j].size = program.attributeData[j].size;
+            }
+            else if (!attributes[j].size)
+            {
+                console.warn(`PIXI Geometry attribute '${j}' size cannot be determined (likely the bound shader does not have the attribute)`);  // eslint-disable-line
             }
 
             tempStride[attributes[j].buffer] += attributes[j].size * byteSizeMap[attributes[j].type];
@@ -371,7 +378,7 @@ export default class GeometrySystem extends System
     /**
      * Activate vertex array object
      *
-     * @private
+     * @protected
      * @param {PIXI.Geometry} geometry - Geometry instance
      * @param {PIXI.Program} program - Shader program instance
      */
@@ -478,7 +485,7 @@ export default class GeometrySystem extends System
 
     /**
      * Unbind/reset everything
-     * @private
+     * @protected
      */
     unbind()
     {

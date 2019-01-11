@@ -1,14 +1,10 @@
-const PackageUtilities = require('lerna/lib/PackageUtilities');
-const Repository = require('lerna/lib/Repository');
 const path = require('path');
+const { execFileSync } = require('child_process');
 
-// Standard Lerna plumbing getting packages
-const repo = new Repository(path.dirname(__dirname));
-const packages = PackageUtilities.getPackages(repo);
+// Synchronously generate the list of testable packages
+const script = path.join(__dirname, './packages.js');
+const packages = execFileSync('node', [script]).toString();
 
-// Look for tests in the packages
-packages.filter((pkg) => !!pkg.scripts.test).forEach((pkg) =>
-{
-    // eslint-disable-next-line global-require
-    require(`${pkg.location}/test`);
-});
+// Require the test
+// eslint-disable-next-line global-require
+JSON.parse(packages).forEach((pkg) => require(pkg));

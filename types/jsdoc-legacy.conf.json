@@ -1,0 +1,18 @@
+{
+    "source": {
+        "include": [
+            "bundles",
+            "packages"
+        ],
+        "excludePattern": "(node_modules|lib|dist|test|deprecated)"
+    },
+    "plugins": [
+        "@pixi/jsdoc-template/plugins/es6-fix"
+    ],
+    "opts": {
+        "recurse": true,
+        "destination": "./dist/types",
+        "outFile": "pixi.js-legacy.d.ts",
+        "template": "./node_modules/tsd-jsdoc/dist"
+    }
+}

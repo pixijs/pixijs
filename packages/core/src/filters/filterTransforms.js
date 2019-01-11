@@ -2,12 +2,12 @@ import { Matrix } from '@pixi/math';
 
 /**
  * Calculates the mapped matrix
- * @param filterArea {Rectangle} The filter area
- * @param sprite {Sprite} the target sprite
- * @param outputMatrix {Matrix} @alvin
+ * @param {PIXI.Matrix} outputMatrix matrix that will normalize map filter cords in the filter to screen space
+ * @param {PIXI.Rectangle} filterArea filter area
+ * @param {PIXI.Rectangle} textureSize texture size
+ * @returns {PIXI.Matrix} same as outputMatrix
  * @private
  */
-// this returns a matrix that will normalize map filter cords in the filter to screen space
 export function calculateScreenSpaceMatrix(outputMatrix, filterArea, textureSize)
 {
     // TODO unwrap?

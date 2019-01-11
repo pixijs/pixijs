@@ -187,6 +187,7 @@ export default class ParticleRenderer extends ObjectRenderer
      *
      * @param {PIXI.ParticleContainer} container - The container to render using this ParticleRenderer
      * @return {PIXI.ParticleBuffer[]} The buffers
+     * @private
      */
     generateBuffers(container)
     {

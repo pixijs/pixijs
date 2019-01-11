@@ -5,14 +5,9 @@ const { skipHello } = require('@pixi/utils');
 
 skipHello();
 
-function withGL(fn)
-{
-    return !process.env.DISABLE_WEBGL ? (fn || true) : undefined;
-}
-
 describe('PIXI.Renderer', function ()
 {
-    it('setting option legacy should disable VAOs and SPRITE_MAX_TEXTURES', withGL(function ()
+    it('setting option legacy should disable VAOs and SPRITE_MAX_TEXTURES', function ()
     {
         settings.PREFER_ENV = ENV.WEBGL_LEGACY;
         const renderer = new Renderer(1, 1);
@@ -27,9 +22,9 @@ describe('PIXI.Renderer', function ()
             renderer.destroy();
         }
         settings.PREFER_ENV = ENV.WEBGL2;
-    }));
+    });
 
-    it('should allow clear() to work despite no containers added to the renderer', withGL(function ()
+    it('should allow clear() to work despite no containers added to the renderer', function ()
     {
         const renderer = new Renderer(1, 1);
 
@@ -41,53 +36,50 @@ describe('PIXI.Renderer', function ()
         {
             renderer.destroy();
         }
-    }));
+    });
 
     describe('.setObjectRenderer()', function ()
     {
-        if (withGL())
+        before(function ()
         {
-            before(function ()
-            {
-                this.renderer = new Renderer();
-            });
+            this.renderer = new Renderer();
+        });
 
-            beforeEach(function ()
-            {
-                this.curRenderer = {
-                    start: sinon.spy(),
-                    stop: sinon.spy(),
-                };
-                this.objRenderer = {
-                    start: sinon.spy(),
-                    stop: sinon.spy(),
-                };
-                this.renderer.batch.currentRenderer = this.curRenderer;
-            });
+        beforeEach(function ()
+        {
+            this.curRenderer = {
+                start: sinon.spy(),
+                stop: sinon.spy(),
+            };
+            this.objRenderer = {
+                start: sinon.spy(),
+                stop: sinon.spy(),
+            };
+            this.renderer.batch.currentRenderer = this.curRenderer;
+        });
 
-            after(function ()
-            {
-                this.renderer.destroy();
-                this.renderer = null;
-                this.curRenderer = null;
-                this.objRenderer = null;
-            });
-        }
+        after(function ()
+        {
+            this.renderer.destroy();
+            this.renderer = null;
+            this.curRenderer = null;
+            this.objRenderer = null;
+        });
 
-        it('should set objectRenderer as new current renderer', withGL(function ()
+        it('should set objectRenderer as new current renderer', function ()
         {
             this.renderer.batch.setObjectRenderer(this.objRenderer);
             expect(this.curRenderer.stop).to.be.calledOnce;
             expect(this.renderer.batch.currentRenderer).to.be.equal(this.objRenderer);
             expect(this.objRenderer.start).to.be.calledOnce;
-        }));
+        });
 
-        it('should do nothing if objectRenderer is already used as current', withGL(function ()
+        it('should do nothing if objectRenderer is already used as current', function ()
         {
             this.renderer.batch.setObjectRenderer(this.curRenderer);
             expect(this.renderer.batch.currentRenderer).to.be.equal(this.curRenderer);
             expect(this.curRenderer.stop).to.not.be.called;
             expect(this.curRenderer.start).to.not.be.called;
-        }));
+        });
     });
 });

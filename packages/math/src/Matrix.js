@@ -482,6 +482,7 @@ export default class Matrix
      *
      * @static
      * @const
+     * @member {PIXI.Matrix}
      */
     static get IDENTITY()
     {
@@ -493,6 +494,7 @@ export default class Matrix
      *
      * @static
      * @const
+     * @member {PIXI.Matrix}
      */
     static get TEMP_MATRIX()
     {

@@ -51,7 +51,6 @@ import TextureLoader from './TextureLoader';
  * @see https://github.com/englercj/resource-loader
  *
  * @class Loader
- * @extends module:resource-loader.ResourceLoader
  * @memberof PIXI
  * @param {string} [baseUrl=''] - The base url for all resources loaded by this loader.
  * @param {number} [concurrency=10] - The number of resources to load concurrently.
@@ -97,6 +96,7 @@ export default class Loader extends ResourceLoader
 
     /**
      * Destroy the loader, removes references.
+     * @private
      */
     destroy()
     {
@@ -136,7 +136,7 @@ Object.assign(Loader.prototype, EventEmitter.prototype);
  * Collection of all installed `use` middleware for Loader.
  *
  * @static
- * @member {Array<PIXI.Loader~LoaderPlugin>}
+ * @member {Array<PIXI.ILoaderPlugin>} _plugins
  * @memberof PIXI.Loader
  * @private
  */
@@ -149,7 +149,7 @@ Loader._plugins = [];
  * @static
  * @method registerPlugin
  * @memberof PIXI.Loader
- * @param {PIXI.Loader~LoaderPlugin} plugin - The plugin to add
+ * @param {PIXI.ILoaderPlugin} plugin - The plugin to add
  * @return {PIXI.Loader} Reference to PIXI.Loader for chaining
  */
 Loader.registerPlugin = function registerPlugin(plugin)
@@ -172,16 +172,19 @@ Loader.registerPlugin(TextureLoader);
 
 /**
  * Plugin to be installed for handling specific Loader resources.
- * @typedef {object} PIXI.Loader~LoaderPlugin
- * @property {function} [plugin.add] - Function to call immediate after registering plugin.
- * @property {PIXI.Loader~loaderMiddleware} [plugin.pre] - Middleware function to run before load, the
+ *
+ * @memberof PIXI
+ * @typedef ILoaderPlugin
+ * @property {function} [add] - Function to call immediate after registering plugin.
+ * @property {PIXI.Loader.loaderMiddleware} [pre] - Middleware function to run before load, the
  *           arguments for this are `(resource, next)`
- * @property {PIXI.Loader~loaderMiddleware} [plugin.use] - Middleware function to run after load, the
+ * @property {PIXI.Loader.loaderMiddleware} [use] - Middleware function to run after load, the
  *           arguments for this are `(resource, next)`
  */
 
 /**
- * @callback PIXI.Loader~loaderMiddleware
+ * @memberof PIXI.Loader
+ * @callback loaderMiddleware
  * @param {PIXI.LoaderResource} resource
  * @param {function} next
  */

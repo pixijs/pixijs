@@ -12,16 +12,18 @@ import { settings } from '@pixi/settings';
 
 let UID = 0;
 
+const nameCache = {};
+
 /**
  * @class
  * @memberof PIXI
- * @extends PIXI.Shader
  */
-class Program
+export default class Program
 {
     /**
      * @param {string} [vertexSrc] - The source of the vertex shader.
      * @param {string} [fragmentSrc] - The source of the fragment shader.
+     * @param {string} [name] - Name for shader
      */
     constructor(vertexSrc, fragmentSrc, name = 'pixi-shader')
     {
@@ -41,11 +43,23 @@ class Program
          */
         this.fragmentSrc = fragmentSrc || Program.defaultFragmentSrc;
 
+        name = name.replace(/\s+/g, '-');
+
+        if (nameCache[name])
+        {
+            nameCache[name]++;
+            name += `-${nameCache[name]}`;
+        }
+        else
+        {
+            nameCache[name] = 1;
+        }
+
+        this.vertexSrc = `#define SHADER_NAME ${name}\n${this.vertexSrc}`;
+        this.fragmentSrc = `#define SHADER_NAME ${name}\n${this.fragmentSrc}`;
+
         this.vertexSrc = setPrecision(this.vertexSrc, settings.PRECISION_VERTEX);
         this.fragmentSrc = setPrecision(this.fragmentSrc, settings.PRECISION_FRAGMENT);
-
-        this.vertexSrc = `#define SHADER_NAME ${name}-${this.id}\n${this.vertexSrc}`;
-        this.fragmentSrc = `#define SHADER_NAME ${name}-${this.id}\n${this.fragmentSrc}`;
 
         // currently this does not extract structs only default types
         this.extractData(this.vertexSrc, this.fragmentSrc);
@@ -59,7 +73,7 @@ class Program
     /**
      * Extracts the data for a buy creating a small test program
      * or reading the src directly.
-     * @private
+     * @protected
      *
      * @param {string} [vertexSrc] - The source of the vertex shader.
      * @param {string} [fragmentSrc] - The source of the fragment shader.
@@ -88,8 +102,8 @@ class Program
      * returns the attribute data from the program
      * @private
      *
-     * @param {webGL-program} [program] - the webgl program
-     * @param {context} [gl] - the webGL context
+     * @param {WebGLProgram} [program] - the webgl program
+     * @param {WebGLRenderingContext} [gl] - the webGL context
      *
      * @returns {object} the attribute data for this program
      */
@@ -173,6 +187,7 @@ class Program
      *
      * @static
      * @constant
+     * @member {string}
      */
     static get defaultVertexSrc()
     {
@@ -184,6 +199,7 @@ class Program
      *
      * @static
      * @constant
+     * @member {string}
      */
     static get defaultFragmentSrc()
     {
@@ -214,5 +230,3 @@ class Program
         return program;
     }
 }
-
-export default Program;

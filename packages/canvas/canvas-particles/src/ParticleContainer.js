@@ -2,7 +2,8 @@ import { ParticleContainer } from '@pixi/particles';
 
 /**
  * Renders the object using the Canvas renderer
- *
+ * @method renderCanvas
+ * @memberof PIXI.ParticleContainer#
  * @private
  * @param {PIXI.CanvasRenderer} renderer - a reference to the canvas renderer
  */

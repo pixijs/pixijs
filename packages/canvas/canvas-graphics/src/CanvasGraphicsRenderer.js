@@ -16,7 +16,7 @@ import { SHAPES } from '@pixi/math';
  * Renderer dedicated to drawing and batching graphics objects.
  *
  * @class
- * @private
+ * @protected
  * @memberof PIXI
  */
 export default class CanvasGraphicsRenderer
@@ -220,7 +220,7 @@ export default class CanvasGraphicsRenderer
     /**
      * Updates the tint of a graphics object
      *
-     * @private
+     * @protected
      * @param {PIXI.Graphics} graphics - the graphics that will have its tint updated
      */
     updateGraphicsTint(graphics)
