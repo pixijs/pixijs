@@ -27,6 +27,7 @@ docs
 coverage
 lib
 dist
+bundles/*/*.d.ts
 
 # jetBrains IDE ignores
 .idea
