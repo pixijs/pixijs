@@ -244,7 +244,7 @@ export default class FramebufferSystem extends System
 
         let count = colorTextures.length;
 
-        if (!this.drawBufferExtension)
+        if (!gl.drawBuffers)
         {
             count = Math.min(count, 1);
         }
