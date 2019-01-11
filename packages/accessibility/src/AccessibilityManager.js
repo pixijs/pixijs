@@ -41,6 +41,11 @@ export default class AccessibilityManager
      */
     constructor(renderer)
     {
+        /**
+         * @type {?HTMLElement}
+         * @private
+         */
+        this._hookDiv = null;
         if ((Device.tablet || Device.phone) && !navigator.isCocoonJS)
         {
             this.createTouchHook();
@@ -157,10 +162,25 @@ export default class AccessibilityManager
         {
             this.isMobileAccessibility = true;
             this.activate();
-            document.body.removeChild(hookDiv);
+            this.destroyTouchHook();
         });
 
         document.body.appendChild(hookDiv);
+        this._hookDiv = hookDiv;
+    }
+
+    /**
+     * Destroys the touch hooks.
+     *
+     */
+    destroyTouchHook()
+    {
+        if (!this._hookDiv)
+        {
+            return;
+        }
+        document.body.removeChild(this._hookDiv);
+        this._hookDiv = null;
     }
 
     /**
@@ -529,6 +549,7 @@ export default class AccessibilityManager
      */
     destroy()
     {
+        this.destroyTouchHook();
         this.div = null;
 
         for (let i = 0; i < this.children.length; i++)
