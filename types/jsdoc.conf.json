@@ -11,7 +11,8 @@
     ],
     "opts": {
         "recurse": true,
-        "destination": "./dist/types/pixi.js",
+        "destination": "./dist/types",
+        "outFile": "pixi.js.d.ts",
         "template": "./node_modules/tsd-jsdoc/dist"
     }
 }
