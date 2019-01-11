@@ -10,8 +10,8 @@
         "excludePattern": "(node_modules|lib|dist|test)"
     },
     "plugins": [
-        "./node_modules/jsdoc/plugins/markdown",
-        "./node_modules/@pixi/jsdoc-template/plugins/es6-fix.js"
+        "plugins/markdown",
+        "@pixi/jsdoc-template/plugins/es6-fix"
     ],
     "templates": {
         "cleverLinks"   : false,
@@ -45,7 +45,6 @@
     "opts": {
         "encoding"      : "utf8",
         "recurse"       : true,
-        "private"       : false,
         "lenient"       : true,
         "destination"   : "./dist/docs",
         "template"      : "./node_modules/@pixi/jsdoc-template"
