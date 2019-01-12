@@ -144,6 +144,7 @@ export default class AccessibilityManager
     /**
      * Creates the touch hooks.
      *
+     * @private
      */
     createTouchHook()
     {
@@ -172,6 +173,7 @@ export default class AccessibilityManager
     /**
      * Destroys the touch hooks.
      *
+     * @private
      */
     destroyTouchHook()
     {
