@@ -80,7 +80,7 @@ export default class Geometry
 
     /**
      * Marks this buffer as shared, it wont be destroyed at the same time as meshes
-     * @returns {PIXI.Buffer}
+     * @returns {PIXI.Geometry}
      */
     markShared()
     {
