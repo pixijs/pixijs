@@ -1,3 +1,5 @@
+import Runner from 'mini-runner';
+
 let UID = 0;
 /* eslint-disable max-len */
 
@@ -11,8 +13,11 @@ export default class Buffer
 {
     /**
      * @param {ArrayBuffer| SharedArrayBuffer|ArrayBufferView} data the data to store in the buffer.
+     * @param {boolean} [_static=true] `true` for static buffer
+     * @param {boolean} [index=false] `true` for index buffer
+     * @param {boolean} [shared=false] if `true`, buffer will stay alive when geometry is disposed
      */
-    constructor(data, _static = true, index = false)
+    constructor(data, _static = true, index = false, shared = false)
     {
         /**
          * The data in the buffer, as a typed array
@@ -35,7 +40,15 @@ export default class Buffer
 
         this.static = _static;
 
+        /**
+         * If `true`, it wont be destroyed at the same time as geometry
+         * @member {boolean}
+         */
+        this.shared = shared;
+
         this.id = UID++;
+
+        this.disposeRunner = new Runner('disposeBuffer', 2);
     }
 
     // TODO could explore flagging only a partial upload?
@@ -49,16 +62,32 @@ export default class Buffer
     }
 
     /**
+     * disposes WebGL resources that are connected to this geometry
+     */
+    dispose()
+    {
+        this.disposeRunner.run(this, false);
+    }
+
+    /**
      * Destroys the buffer
      */
     destroy()
     {
-        for (let i = 0; i < this._glBuffers.length; i++)
-        {
-            this._glBuffers[i].destroy();
-        }
+        this.dispose();
 
         this.data = null;
+    }
+
+    /**
+     * Marks this buffer as shared, it wont be disposed at the same time as geometry
+     * @returns {PIXI.Buffer}
+     */
+    markShared()
+    {
+        this.shared = true;
+
+        return this;
     }
 
     /**

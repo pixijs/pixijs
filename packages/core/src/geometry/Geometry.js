@@ -2,6 +2,7 @@ import Attribute from './Attribute';
 import Buffer from './Buffer';
 import interleaveTypedArrays from './utils/interleaveTypedArrays';
 import getBufferType from './utils/getBufferType';
+import Runner from 'mini-runner';
 
 const byteSizeMap = { 5126: 4, 5123: 2, 5121: 1 };
 let UID = 0;
@@ -42,8 +43,9 @@ export default class Geometry
     /**
      * @param {PIXI.Buffer[]} [buffers]  an array of buffers. optional.
      * @param {object} [attributes] of the geometry, optional structure of the attributes layout
+     * @param {boolean} [shared=false] Geometry is shared between multiple meshes
      */
-    constructor(buffers = [], attributes = {})
+    constructor(buffers = [], attributes = {}, shared = false)
     {
         this.buffers = buffers;
 
@@ -55,7 +57,7 @@ export default class Geometry
          * A map of renderer IDs to webgl VAOs
          *
          * @protected
-         * @type {Array<OES_vertex_array_object>}
+         * @type {object}
          */
         this.glVertexArrayObjects = {};
 
@@ -66,6 +68,25 @@ export default class Geometry
         this.instanceCount = 1;
 
         this._size = null;
+
+        this.disposeRunner = new Runner('disposeGeometry', 2);
+
+        /**
+         * If `true`, it wont be destroyed at the same time as mesh
+         * @member {boolean}
+         */
+        this.shared = shared;
+    }
+
+    /**
+     * Marks this buffer as shared, it wont be destroyed at the same time as meshes
+     * @returns {PIXI.Buffer}
+     */
+    markShared()
+    {
+        this.shared = true;
+
+        return this;
     }
 
     /**
@@ -246,20 +267,34 @@ export default class Geometry
     }
 
     /**
+     * disposes WebGL resources that are connected to this geometry
+     */
+    dispose()
+    {
+        this.disposeRunner.run(this, false);
+
+        for (let i = 0; i < this.buffers.length; i++)
+        {
+            if (!this.buffers[i].shared)
+            {
+                this.buffers[i].dispose();
+            }
+        }
+    }
+
+    /**
      * Destroys the geometry.
      */
     destroy()
     {
-        for (let i = 0; i < this.glVertexArrayObjects.length; i++)
-        {
-            this.glVertexArrayObjects[i].destroy();
-        }
-
-        this.glVertexArrayObjects = null;
+        this.dispose();
 
         for (let i = 0; i < this.buffers.length; i++)
         {
-            this.buffers[i].destroy();
+            if (!this.buffers[i].shared)
+            {
+                this.buffers[i].destroy();
+            }
         }
 
         this.buffers = null;

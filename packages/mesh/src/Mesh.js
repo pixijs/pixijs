@@ -462,6 +462,11 @@ export default class Mesh extends Container
     {
         super.destroy(options);
 
+        if (!this.geometry.shared)
+        {
+            this.geometry.destroy();
+        }
+
         this.geometry = null;
         this.shader = null;
         this.state = null;

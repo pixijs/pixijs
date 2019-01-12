@@ -69,14 +69,6 @@ export default class Graphics extends Container
         this.state = State.for2d();
 
         /**
-         * If this Graphics object owns the GraphicsGeometry
-         *
-         * @member {boolean}
-         * @protected
-         */
-        this._ownsGeometry = geometry === null;
-
-        /**
          * Current fill style
          *
          * @member {PIXI.FillStyle}
@@ -1112,14 +1104,10 @@ export default class Graphics extends Container
      *  Should it destroy the texture of the child sprite
      * @param {boolean} [options.baseTexture=false] - Only used for child Sprites if options.children is set to true
      *  Should it destroy the base texture of the child sprite
-     * @param {boolean} [options.geometry=false] - if set to true, the geometry object will be
-     *  be destroyed.
      */
     destroy(options)
     {
-        const destroyGeometry = typeof options === 'boolean' ? options : options && options.geometry;
-
-        if (destroyGeometry || this._ownsGeometry)
+        if (!this.geometry.shared)
         {
             this.geometry.destroy();
         }
