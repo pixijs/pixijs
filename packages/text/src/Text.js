@@ -43,7 +43,7 @@ export default class Text extends Sprite
         canvas.width = 3;
         canvas.height = 3;
 
-        const texture = Texture.from(canvas, settings.SCALE_MODE, 'text');
+        const texture = Texture.from(canvas);
 
         texture.orig = new Rectangle();
         texture.trim = new Rectangle();
