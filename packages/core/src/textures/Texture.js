@@ -287,7 +287,7 @@ export default class Texture extends EventEmitter
      *
      * @static
      * @param {number|string|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|PIXI.BaseTexture} source
-     *        source - Source to create texture from
+     *        Source to create texture from
      * @param {object} [options] See {@link PIXI.BaseTexture}'s constructor for options.
      * @return {PIXI.Texture} The newly created texture
      */
