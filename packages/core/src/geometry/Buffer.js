@@ -80,17 +80,6 @@ export default class Buffer
     }
 
     /**
-     * Marks this buffer as shared, it wont be disposed at the same time as geometry
-     * @returns {PIXI.Buffer}
-     */
-    markShared()
-    {
-        this.shared = true;
-
-        return this;
-    }
-
-    /**
      * Helper function that creates a buffer based on an array or TypedArray
      *
      * @static

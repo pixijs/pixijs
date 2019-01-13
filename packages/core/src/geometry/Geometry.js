@@ -79,17 +79,6 @@ export default class Geometry
     }
 
     /**
-     * Marks this buffer as shared, it wont be destroyed at the same time as meshes
-     * @returns {PIXI.Geometry}
-     */
-    markShared()
-    {
-        this.shared = true;
-
-        return this;
-    }
-
-    /**
     *
     * Adds an attribute to the geometry
     *
