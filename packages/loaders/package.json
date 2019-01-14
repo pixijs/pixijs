@@ -3,7 +3,7 @@
   "version": "5.0.0-alpha.3",
   "main": "lib/loaders.js",
   "module": "lib/loaders.es.js",
-  "description": "Support for legacy browser JavaScript environments",
+  "description": "Load assets and resources",
   "author": "Mat Groves",
   "contributors": [
     "Matt Karl <matt@mattkarl.com>"

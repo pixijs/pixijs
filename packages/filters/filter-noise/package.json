@@ -3,7 +3,7 @@
   "version": "5.0.0-alpha.3",
   "main": "lib/filter-noise.js",
   "module": "lib/filter-noise.es.js",
-  "description": "Support for legacy browser JavaScript environments",
+  "description": "Filter that applies noise to a display object",
   "author": "Mat Groves",
   "contributors": [
     "Matt Karl <matt@mattkarl.com>"

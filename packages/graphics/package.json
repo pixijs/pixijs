@@ -3,7 +3,7 @@
   "version": "5.0.0-alpha.3",
   "main": "lib/graphics.js",
   "module": "lib/graphics.es.js",
-  "description": "PixiJS Application",
+  "description": "Draw primitive shapes such as lines, circles and rectangles to the display",
   "author": "Mat Groves",
   "contributors": [
     "Matt Karl <matt@mattkarl.com>"
