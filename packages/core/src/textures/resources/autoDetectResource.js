@@ -52,6 +52,9 @@ export const INSTALLED = [];
  * @param {number} [options.scale=1] - SVG source scale
  * @param {boolean} [options.createBitmap=true] - Image option to create Bitmap object
  * @param {boolean} [options.crossorigin=true] - Image and Video option to set crossOrigin
+ * @param {boolean} [options.autoPlay=true] - Video option to start playing video immediately
+ * @param {number} [options.updateFPS=0] - Video option to update how many times a second the
+ *        texture should be updated from the video. Leave at 0 to update at every render
  * @return {PIXI.resources.Resource} The created resource.
  */
 export function autoDetectResource(source, options)
