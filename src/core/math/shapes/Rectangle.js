@@ -202,7 +202,7 @@ export default class Rectangle
 
         if (this.x + this.width > rectangle.x + rectangle.width)
         {
-            this.width = rectangle.width - this.x;
+            this.width = rectangle.x + rectangle.width - this.x;
             if (this.width < 0)
             {
                 this.width = 0;
@@ -211,7 +211,7 @@ export default class Rectangle
 
         if (this.y + this.height > rectangle.y + rectangle.height)
         {
-            this.height = rectangle.height - this.y;
+            this.height = rectangle.y + rectangle.height - this.y;
             if (this.height < 0)
             {
                 this.height = 0;
