@@ -84,7 +84,7 @@ export default class FramebufferSystem extends System
                 else if (fbo.dirtySize !== framebuffer.dirtySize)
                 {
                     fbo.dirtySize = framebuffer.dirtySize;
-                    this.resizeFramebuffer(framebuffer);
+                    this.resizeFramebuffer(framebuffer, fbo);
                 }
             }
 
@@ -215,14 +215,15 @@ export default class FramebufferSystem extends System
      *
      * @protected
      * @param {PIXI.Framebuffer} framebuffer
+     * @param {object} fbo Framebuffer object corresponding to renderer context
      */
-    resizeFramebuffer(framebuffer)
+    resizeFramebuffer(framebuffer, fbo)
     {
         const { gl } = this;
 
-        if (framebuffer.stencil || framebuffer.depth)
+        if (fbo.stencil)
         {
-            gl.bindRenderbuffer(gl.RENDERBUFFER, this.stencil);
+            gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.stencil);
             gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, framebuffer.width, framebuffer.height);
         }
     }
