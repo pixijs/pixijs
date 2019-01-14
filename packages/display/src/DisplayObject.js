@@ -115,7 +115,7 @@ export default class DisplayObject extends EventEmitter
         /**
          * The bounds object, this is used to calculate and store the bounds of the displayObject.
          *
-         * @member {PIXI.Rectangle}
+         * @member {PIXI.Bounds}
          * @protected
          */
         this._bounds = new Bounds();
