@@ -179,44 +179,15 @@ export default class Rectangle
      */
     fit(rectangle)
     {
-        if (this.x < rectangle.x)
-        {
-            this.width += this.x;
-            if (this.width < 0)
-            {
-                this.width = 0;
-            }
+        const x1 = Math.max(this.x, rectangle.x);
+        const x2 = Math.min(this.x + this.width, rectangle.x + rectangle.width);
+        const y1 = Math.max(this.y, rectangle.y);
+        const y2 = Math.min(this.y + this.height, rectangle.y + rectangle.height);
 
-            this.x = rectangle.x;
-        }
-
-        if (this.y < rectangle.y)
-        {
-            this.height += this.y;
-            if (this.height < 0)
-            {
-                this.height = 0;
-            }
-            this.y = rectangle.y;
-        }
-
-        if (this.x + this.width > rectangle.x + rectangle.width)
-        {
-            this.width = rectangle.width - this.x;
-            if (this.width < 0)
-            {
-                this.width = 0;
-            }
-        }
-
-        if (this.y + this.height > rectangle.y + rectangle.height)
-        {
-            this.height = rectangle.height - this.y;
-            if (this.height < 0)
-            {
-                this.height = 0;
-            }
-        }
+        this.x = x1;
+        this.width = Math.max(x2 - x1, 0);
+        this.y = y1;
+        this.height = Math.max(y2 - y1, 0);
     }
 
     /**
