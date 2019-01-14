@@ -61,5 +61,23 @@ describe('PIXI.resources.VideoResource', function ()
 
         resource.destroy();
     });
+
+    it('should respect the updateFPS settings property and getter / setter', function ()
+    {
+        const resource = new VideoResource(this.videoUrl, {
+            autoLoad: false,
+            autoPlay: false,
+            updateFPS: 30,
+        });
+
+        return resource.load().then((res) =>
+        {
+            expect(res).to.equal(resource);
+            expect(res.updateFPS).to.equal(30);
+            res.updateFPS = 20;
+            expect(res.updateFPS).to.equal(20);
+            resource.destroy();
+        });
+    });
 });
 
