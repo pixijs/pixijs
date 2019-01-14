@@ -158,7 +158,7 @@ export default class DisplayObject extends EventEmitter
          * used to fast check if a sprite is.. a sprite!
          * @member {boolean}
          */
-        this.isSprite = true;
+        this.isSprite = false;
     }
 
     /**
