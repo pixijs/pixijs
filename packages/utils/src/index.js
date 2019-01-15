@@ -63,6 +63,8 @@ export { mixins };
  * @param {number} [dimensions=2] The number of coordinates per vertex in the input array
  * @return {number[]} Triangulated polygon
  */
+import './settings';
+
 import earcut from 'earcut';
 export { earcut };
 
@@ -73,5 +75,3 @@ export * from './media';
 export * from './network';
 export * from './const';
 export * from './logging';
-
-import './settings';
