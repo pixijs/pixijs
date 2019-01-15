@@ -10,9 +10,10 @@ import { uid, TextureCache, getResolutionOfUrl } from '@pixi/utils';
 const DEFAULT_UVS = new TextureUvs();
 
 /**
- * A texture stores the information that represents an image or part of an image. It cannot be added
- * to the display list directly. Instead use it as the texture for a Sprite. If no frame is provided
- * then the whole image is used.
+ * A texture stores the information that represents an image or part of an image.
+ *
+ * It cannot be added to the display list directly; instead use it as the texture for a Sprite.
+ * If no frame is provided for a texture, then the whole image is used.
  *
  * You can directly create a texture from an image and then reuse it multiple times like this :
  *
@@ -98,7 +99,7 @@ export default class Texture extends EventEmitter
         this.valid = false;
 
         /**
-         * This will let a renderer know that a texture has been updated (used mainly for webGL uv updates)
+         * This will let a renderer know that a texture has been updated (used mainly for WebGL uv updates)
          *
          * @member {boolean}
          */
@@ -357,12 +358,10 @@ export default class Texture extends EventEmitter
      */
     static fromLoader(source, imageUrl, name)
     {
-        // console.log('added from loader...')
         const resource = new ImageResource(source);
 
         resource.url = imageUrl;
 
-        //  console.log('base resource ' + resource.width);
         const baseTexture = new BaseTexture(resource, {
             scaleMode: settings.SCALE_MODE,
             resolution: getResolutionOfUrl(imageUrl),

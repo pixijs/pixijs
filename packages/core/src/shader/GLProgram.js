@@ -1,5 +1,5 @@
 /**
- * Helper class to create a webGL Program
+ * Helper class to create a WebGL Program
  *
  * @class
  * @memberof PIXI
@@ -7,7 +7,8 @@
 export default class GLProgram
 {
     /**
-     * makes new pixi program
+     * Makes a new Pixi program
+     *
      * @param program {WebGLProgram} webgl program
      * @param uniformData {Object} uniforms
      */
@@ -37,7 +38,6 @@ export default class GLProgram
 
     /**
      * Destroys this program
-     * TODO
      */
     destroy()
     {

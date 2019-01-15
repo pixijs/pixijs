@@ -1,6 +1,6 @@
 /**
- * Used by the batcher to draw batches
- * each one of these contains all information required to draw a bound geometry.
+ * Used by the batcher to draw batches.
+ * Each one of these contains all information required to draw a bound geometry.
  *
  * @class
  * @memberof PIXI

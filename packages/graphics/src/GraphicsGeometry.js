@@ -30,6 +30,7 @@ fillCommands[SHAPES.RREC] = buildRoundedRectangle;
 
 /**
  * A little internal structure to hold interim batch objects.
+ *
  * @private
  */
 class BatchPart
@@ -46,10 +47,10 @@ class BatchPart
 
 /**
  * The Graphics class contains methods used to draw primitive shapes such as lines, circles and
- * rectangles to the display, and to color and fill them. GraphicsGeometry
- * is designed to not be continually update the geometry since it's expensive
- * to re-tesselate using **earcut**. Consider using {@link PIXI.Mesh} for this
- * use-case, it's much faster.
+ * rectangles to the display, and to color and fill them.
+ *
+ * GraphicsGeometry is designed to not be continually updating the geometry since it's expensive
+ * to re-tesselate using **earcut**. Consider using {@link PIXI.Mesh} for this use-case, it's much faster.
  *
  * @class
  * @extends PIXI.BatchGeometry
@@ -63,6 +64,7 @@ export default class GraphicsGeometry extends BatchGeometry
 
         /**
          * An array of points to draw
+         *
          * @member {PIXI.Point[]}
          * @protected
          */
@@ -70,6 +72,7 @@ export default class GraphicsGeometry extends BatchGeometry
 
         /**
          * The collection of colors
+         *
          * @member {number[]}
          * @protected
          */
@@ -77,6 +80,7 @@ export default class GraphicsGeometry extends BatchGeometry
 
         /**
          * The UVs collection
+         *
          * @member {number[]}
          * @protected
          */
@@ -84,6 +88,7 @@ export default class GraphicsGeometry extends BatchGeometry
 
         /**
          * The indices of the vertices
+         *
          * @member {number[]}
          * @protected
          */
@@ -91,6 +96,7 @@ export default class GraphicsGeometry extends BatchGeometry
 
         /**
          * Reference to the texture IDs.
+         *
          * @member {number[]}
          * @protected
          */
@@ -138,7 +144,7 @@ export default class GraphicsGeometry extends BatchGeometry
         this.cacheDirty = -1;
 
         /**
-         * Used to detect if we clear the graphics webGL data.
+         * Used to detect if we clear the graphics WebGL data.
          *
          * @member {number}
          * @default 0

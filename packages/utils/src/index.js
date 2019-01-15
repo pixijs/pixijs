@@ -18,6 +18,8 @@
  */
 
 /**
+ * A simple JS library that detects mobile devices
+ *
  * @see {@link https://github.com/kaimallea/isMobile}
  *
  * @memberof PIXI.utils
@@ -28,6 +30,8 @@ import isMobile from 'ismobilejs';
 export { isMobile };
 
 /**
+ * Remove items from a javascript array without generating garbage
+ *
  * @see {@link https://github.com/mreinstein/remove-array-items}
  *
  * @memberof PIXI.utils
@@ -38,6 +42,8 @@ import removeItems from 'remove-array-items';
 export { removeItems };
 
 /**
+ * A high performance event emitter
+ *
  * @see {@link https://github.com/primus/eventemitter3}
  *
  * @memberof PIXI.utils
@@ -54,6 +60,8 @@ import * as mixins from './mixins';
 export { mixins };
 
 /**
+ * A polygon triangulation library
+ *
  * @see {@link https://github.com/mapbox/earcut}
  *
  * @memberof PIXI.utils

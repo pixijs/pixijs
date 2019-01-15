@@ -2,12 +2,14 @@ import Point from './Point';
 import { PI_2 } from './const';
 
 /**
- * The PixiJS Matrix class as an object, which makes it a lot faster,
- * here is a representation of it :
+ * The PixiJS Matrix as a class makes it a lot faster.
+ *
+ * Here is a representation of it:
+ * ```js
  * | a | c | tx|
  * | b | d | ty|
  * | 0 | 0 | 1 |
- *
+ * ```
  * @class
  * @memberof PIXI
  */

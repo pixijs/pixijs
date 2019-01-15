@@ -19,7 +19,6 @@ const tempMatrix = new Matrix();
  */
 export default class AbstractRenderer extends EventEmitter
 {
-    // eslint-disable-next-line valid-jsdoc
     /**
      * @param {string} system - The name of the system this renderer is for.
      * @param {object} [options] - The optional renderer parameters.

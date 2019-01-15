@@ -19,6 +19,7 @@ import fragment from './particles.frag';
  */
 
 /**
+ * Renderer for Particles that is designer for speed over feature set.
  *
  * @class
  * @memberof PIXI
@@ -281,6 +282,7 @@ export default class ParticleRenderer extends ObjectRenderer
     }
 
     /**
+     * Uploads the position.
      *
      * @param {PIXI.DisplayObject[]} children - the array of display objects to render
      * @param {number} startIndex - the index to start from in the children array
@@ -312,6 +314,7 @@ export default class ParticleRenderer extends ObjectRenderer
     }
 
     /**
+     * Uploads the rotiation.
      *
      * @param {PIXI.DisplayObject[]} children - the array of display objects to render
      * @param {number} startIndex - the index to start from in the children array
@@ -336,6 +339,7 @@ export default class ParticleRenderer extends ObjectRenderer
     }
 
     /**
+     * Uploads the Uvs
      *
      * @param {PIXI.DisplayObject[]} children - the array of display objects to render
      * @param {number} startIndex - the index to start from in the children array
@@ -387,6 +391,7 @@ export default class ParticleRenderer extends ObjectRenderer
     }
 
     /**
+     * Uploads the tint.
      *
      * @param {PIXI.DisplayObject[]} children - the array of display objects to render
      * @param {number} startIndex - the index to start from in the children array
@@ -417,7 +422,6 @@ export default class ParticleRenderer extends ObjectRenderer
 
     /**
      * Destroys the ParticleRenderer.
-     *
      */
     destroy()
     {

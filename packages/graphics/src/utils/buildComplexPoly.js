@@ -8,7 +8,7 @@ import { hex2rgb } from '@pixi/utils';
  * @ignore
  * @private
  * @param {PIXI.Graphics} graphicsData - The graphics object containing all the necessary properties
- * @param {object} webGLData - an object containing all the webGL-specific information to create this shape
+ * @param {object} webGLData - an object containing all the WebGL-specific information to create this shape
  */
 export default function buildComplexPoly(graphicsData, webGLData)
 {

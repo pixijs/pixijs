@@ -39,6 +39,7 @@ export default class CubeResource extends ArrayResource
 
     /**
      * Add binding
+     *
      * @override
      * @param {PIXI.BaseTexture} baseTexture - parent base texture
      */
@@ -51,6 +52,7 @@ export default class CubeResource extends ArrayResource
 
     /**
      * Upload the resource
+     *
      * @returns {boolean} true is success
      */
     upload(renderer, baseTexture, glTexture)
@@ -81,6 +83,7 @@ export default class CubeResource extends ArrayResource
 
 /**
  * Number of texture sides to store for CubeResources
+ *
  * @name PIXI.resources.CubeResource.SIDES
  * @static
  * @member {number}

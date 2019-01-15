@@ -4,7 +4,7 @@ import { TARGETS } from '@pixi/constants';
 import { autoDetectResource } from './autoDetectResource';
 
 /**
- * Resource for a CubeTexture which contains six resources.
+ * A resource that contains a number of sources.
  *
  * @class
  * @extends PIXI.resources.Resource

@@ -1,5 +1,6 @@
 /**
  * System is a base class used for extending systems used by the {@link PIXI.Renderer}
+ *
  * @see PIXI.Renderer#addSystem
  * @class
  * @memberof PIXI
@@ -23,6 +24,7 @@ export default class System
 
     /**
      * Generic method called when there is a WebGL context change.
+     *
      * @param {WebGLRenderingContext} gl new webgl context
      */
     contextChange(gl) // eslint-disable-line no-unused-vars
@@ -32,7 +34,6 @@ export default class System
 
     /**
      * Generic destroy methods to be overridden by the subclass
-     *
      */
     destroy()
     {
