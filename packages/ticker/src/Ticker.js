@@ -4,10 +4,9 @@ import TickerListener from './TickerListener';
 
 /**
  * A Ticker class that runs an update loop that other objects listen to.
- * This class is composed around listeners
- * meant for execution on the next requested animation frame.
- * Animation frames are requested only when necessary,
- * e.g. When the ticker is started and the emitter has listeners.
+ *
+ * This class is composed around listeners meant for execution on the next requested animation frame.
+ * Animation frames are requested only when necessary, e.g. When the ticker is started and the emitter has listeners.
  *
  * @class
  * @memberof PIXI

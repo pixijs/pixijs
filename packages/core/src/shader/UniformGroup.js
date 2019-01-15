@@ -1,15 +1,14 @@
 let UID = 0;
 
-// let math = require('../../../math');
 /**
+ * Uniform group holds uniform map and some ID's for work
+ *
  * @class
  * @memberof PIXI
  */
 class UniformGroup
 {
     /**
-     * Uniform group holds uniform map and some ID's for work
-     *
      * @param {object} [uniforms] - Custom uniforms to use to augment the built-in ones.
      * @param {boolean} [_static] - Uniforms wont be changed after creation
      */
@@ -21,6 +20,7 @@ class UniformGroup
          * @readonly
          */
         this.uniforms = uniforms;
+
         /**
          * Its a group and not a single uniforms
          * @member {boolean}
@@ -28,8 +28,10 @@ class UniformGroup
          * @default true
          */
         this.group = true;
+
         // lets generate this when the shader ?
         this.syncUniforms = {};
+
         /**
          * dirty version
          * @protected

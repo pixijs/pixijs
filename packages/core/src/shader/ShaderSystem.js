@@ -7,7 +7,7 @@ import { generateUniformsSync,
 let UID = 0;
 
 /**
- * Helper class to create a WebGL Texture
+ * System plugin to the renderer to manage shaders.
  *
  * @class
  * @memberof PIXI.systems
@@ -16,7 +16,7 @@ let UID = 0;
 export default class ShaderSystem extends System
 {
     /**
-     * @param {PIXI.Renderer} renderer - A reference to the current renderer
+     * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
     constructor(renderer)
     {

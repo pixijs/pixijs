@@ -3,8 +3,8 @@ import { GC_MODES } from '@pixi/constants';
 import { settings } from '@pixi/settings';
 
 /**
- * TextureGarbageCollector. This class manages the GPU and ensures that it does not get clogged
- * up with textures that are no longer being used.
+ * System plugin to the renderer to manage texture garbage collection on the GPU,
+ * ensuring that it does not get clogged up with textures that are no longer being used.
  *
  * @class
  * @memberof PIXI.systems

@@ -4,6 +4,8 @@ import { removeItems } from '@pixi/utils';
 import { WRAP_MODES } from '@pixi/constants';
 
 /**
+ * System plugin to the renderer to manage textures.
+ *
  * @class
  * @extends PIXI.System
  * @memberof PIXI.systems

@@ -5,6 +5,8 @@ import { ENV } from '@pixi/constants';
 let CONTEXT_UID = 0;
 
 /**
+ * System plugin to the renderer to manage the context.
+ *
  * @class
  * @extends PIXI.System
  * @memberof PIXI.systems

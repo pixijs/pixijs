@@ -196,6 +196,7 @@ export default class Renderer extends AbstractRenderer
              * @readonly
              */
             .addSystem(RenderTextureSystem, 'renderTexture')
+
             /**
              * Batch system instance
              * @member {PIXI.systems.BatchSystem} batch

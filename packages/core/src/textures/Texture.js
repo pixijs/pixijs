@@ -10,9 +10,10 @@ import { uid, TextureCache, getResolutionOfUrl } from '@pixi/utils';
 const DEFAULT_UVS = new TextureUvs();
 
 /**
- * A texture stores the information that represents an image or part of an image. It cannot be added
- * to the display list directly. Instead use it as the texture for a Sprite. If no frame is provided
- * then the whole image is used.
+ * A texture stores the information that represents an image or part of an image.
+ *
+ * It cannot be added to the display list directly; instead use it as the texture for a Sprite.
+ * If no frame is provided for a texture, then the whole image is used.
  *
  * You can directly create a texture from an image and then reuse it multiple times like this :
  *
