@@ -3,7 +3,8 @@ import Geometry from '../geometry/Geometry';
 import Buffer from '../geometry/Buffer';
 
 /**
- * Geometry used to batch standard PixiJS content (e.g., Mesh, Sprite, Graphics objects).
+ * Geometry used to batch standard PIXI content (e.g. Mesh, Sprite, Graphics objects).
+ *
  * @class
  * @memberof PIXI
  */
@@ -19,6 +20,7 @@ export default class BatchGeometry extends Geometry
 
         /**
          * Buffer used for position, color, texture IDs
+         *
          * @member {PIXI.Buffer}
          * @protected
          */
@@ -26,6 +28,7 @@ export default class BatchGeometry extends Geometry
 
         /**
          * Index buffer data
+         *
          * @member {PIXI.Buffer}
          * @protected
          */

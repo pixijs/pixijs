@@ -1,7 +1,7 @@
 import { settings } from '@pixi/settings';
 
 /**
- * Creates a Canvas element of the given size.
+ * Creates a Canvas element of the given size to be used as a target for rendering to.
  *
  * @class
  * @memberof PIXI.utils

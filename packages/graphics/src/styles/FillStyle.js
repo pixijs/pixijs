@@ -2,6 +2,7 @@ import { Texture } from '@pixi/core';
 
 /**
  * Fill style object for Graphics.
+ *
  * @class
  * @memberof PIXI
  */

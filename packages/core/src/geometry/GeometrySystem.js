@@ -6,6 +6,8 @@ import { settings } from '../settings';
 const byteSizeMap = { 5126: 4, 5123: 2, 5121: 1 };
 
 /**
+ * System plugin to the renderer to manage geometry.
+ *
  * @class
  * @extends PIXI.System
  * @memberof PIXI.systems

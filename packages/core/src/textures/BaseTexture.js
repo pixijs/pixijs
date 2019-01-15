@@ -15,7 +15,9 @@ const defaultBufferOptions = {
 };
 
 /**
- * A texture stores the information that represents an image. All textures have a base texture.
+ * A Texture stores the information that represents an image.
+ * All textures have a base texture, which contains information about the source.
+ * Therefore you can have many textures all using a single BaseTexture
  *
  * @class
  * @extends PIXI.utils.EventEmitter
@@ -301,7 +303,7 @@ export default class BaseTexture extends EventEmitter
     /**
      * Changes style options of BaseTexture
      *
-     * @param {PIXI.SCALE_MODES} [scaleMode] - pixi scalemode
+     * @param {PIXI.SCALE_MODES} [scaleMode] - Pixi scalemode
      * @param {boolean} [mipmap] - enable mipmaps
      * @returns {BaseTexture} this
      */
@@ -480,7 +482,7 @@ export default class BaseTexture extends EventEmitter
             this.cacheId = null;
         }
 
-        // finally let the webGL renderer know..
+        // finally let the WebGL renderer know..
         this.dispose();
 
         BaseTexture.removeFromCache(this);

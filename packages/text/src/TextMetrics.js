@@ -637,11 +637,13 @@ export default class TextMetrics
 
 /**
  * Internal return object for {@link PIXI.TextMetrics.measureFont `TextMetrics.measureFont`}.
- * @class FontMetrics
- * @memberof PIXI.TextMetrics
+ *
+ * @typedef {object} FontMetrics
  * @property {number} ascent - The ascent distance
  * @property {number} descent - The descent distance
  * @property {number} fontSize - Font size from ascent to descent
+ * @memberof PIXI.TextMetrics
+ * @private
  */
 
 const canvas = document.createElement('canvas');

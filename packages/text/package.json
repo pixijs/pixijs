@@ -3,7 +3,7 @@
   "version": "5.0.0-alpha.3",
   "main": "lib/text.js",
   "module": "lib/text.es.js",
-  "description": "PixiJS Application",
+  "description": "Text via the Canvas API",
   "author": "Mat Groves",
   "contributors": [
     "Matt Karl <matt@mattkarl.com>"

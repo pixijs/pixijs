@@ -3,6 +3,8 @@ import { SHAPES } from '@pixi/math';
 /**
  * A set of functions used to handle masking.
  *
+ * Sprite masking is not supported on the CanvasRenderer.
+ *
  * @class
  * @memberof PIXI
  */

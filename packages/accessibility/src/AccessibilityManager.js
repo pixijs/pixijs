@@ -22,14 +22,13 @@ const DIV_HOOK_POS_Y = -1000;
 const DIV_HOOK_ZINDEX = 2;
 
 /**
- * The Accessibility manager recreates the ability to tab and have content read by screen
- * readers. This is very important as it can possibly help people with disabilities access pixi
- * content.
+ * The Accessibility manager recreates the ability to tab and have content read by screen readers.
+ * This is very important as it can possibly help people with disabilities access PixiJS content.
  *
- * Much like interaction any DisplayObject can be made accessible. This manager will map the
+ * A DisplayObject can be made accessible just like it can be made interactive. This manager will map the
  * events as if the mouse was being used, minimizing the effort required to implement.
  *
- * An instance of this class is automatically created by default, and can be found at renderer.plugins.accessibility
+ * An instance of this class is automatically created by default, and can be found at `renderer.plugins.accessibility`
  *
  * @class
  * @memberof PIXI.accessibility
@@ -41,6 +40,11 @@ export default class AccessibilityManager
      */
     constructor(renderer)
     {
+        /**
+         * @type {?HTMLElement}
+         * @private
+         */
+        this._hookDiv = null;
         if ((Device.tablet || Device.phone) && !navigator.isCocoonJS)
         {
             this.createTouchHook();
@@ -139,6 +143,7 @@ export default class AccessibilityManager
     /**
      * Creates the touch hooks.
      *
+     * @private
      */
     createTouchHook()
     {
@@ -157,15 +162,31 @@ export default class AccessibilityManager
         {
             this.isMobileAccessibility = true;
             this.activate();
-            document.body.removeChild(hookDiv);
+            this.destroyTouchHook();
         });
 
         document.body.appendChild(hookDiv);
+        this._hookDiv = hookDiv;
     }
 
     /**
-     * Activating will cause the Accessibility layer to be shown. This is called when a user
-     * presses the tab key.
+     * Destroys the touch hooks.
+     *
+     * @private
+     */
+    destroyTouchHook()
+    {
+        if (!this._hookDiv)
+        {
+            return;
+        }
+        document.body.removeChild(this._hookDiv);
+        this._hookDiv = null;
+    }
+
+    /**
+     * Activating will cause the Accessibility layer to be shown.
+     * This is called when a user presses the tab key.
      *
      * @private
      */
@@ -190,8 +211,8 @@ export default class AccessibilityManager
     }
 
     /**
-     * Deactivating will cause the Accessibility layer to be hidden. This is called when a user moves
-     * the mouse.
+     * Deactivating will cause the Accessibility layer to be hidden.
+     * This is called when a user moves the mouse.
      *
      * @private
      */
@@ -338,9 +359,9 @@ export default class AccessibilityManager
     }
 
     /**
-     * TODO: docs.
+     * Adjust the hit area based on the bounds of a display object
      *
-     * @param {Rectangle} hitArea - TODO docs
+     * @param {Rectangle} hitArea - Bounds of the child
      */
     capHitArea(hitArea)
     {
@@ -529,6 +550,7 @@ export default class AccessibilityManager
      */
     destroy()
     {
+        this.destroyTouchHook();
         this.div = null;
 
         for (let i = 0; i < this.children.length; i++)

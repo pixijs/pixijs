@@ -6,9 +6,10 @@ import { RENDERER_TYPE, SCALE_MODES, BLEND_MODES } from '@pixi/constants';
 import { settings } from '@pixi/settings';
 
 /**
- * The CanvasRenderer draws the scene and all its content onto a 2d canvas. This renderer should
- * be used for browsers that do not support WebGL. Don't forget to add the CanvasRenderer.view to
- * your DOM or you will not see anything :)
+ * The CanvasRenderer draws the scene and all its content onto a 2d canvas.
+ *
+ * This renderer should be used for browsers that do not support WebGL.
+ * Don't forget to add the CanvasRenderer.view to your DOM or you will not see anything!
  *
  * @class
  * @memberof PIXI
@@ -16,7 +17,6 @@ import { settings } from '@pixi/settings';
  */
 export default class CanvasRenderer extends AbstractRenderer
 {
-    // eslint-disable-next-line valid-jsdoc
     /**
      * @param {object} [options] - The optional renderer parameters
      * @param {number} [options.width=800] - the width of the screen

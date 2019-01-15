@@ -5,7 +5,8 @@ import Bounds from './Bounds';
 
 /**
  * The base class for all objects that are rendered on the screen.
- * This is an abstract class and should not be used on its own rather it should be extended.
+ *
+ * This is an abstract class and should not be used on its own; rather it should be extended.
  *
  * @class
  * @extends PIXI.utils.EventEmitter
@@ -13,9 +14,6 @@ import Bounds from './Bounds';
  */
 export default class DisplayObject extends EventEmitter
 {
-    /**
-     *
-     */
     constructor()
     {
         super();
@@ -98,7 +96,7 @@ export default class DisplayObject extends EventEmitter
          *
          * Also works as an interaction mask.
          *
-         * @member {PIXI.Rectangle}
+         * @member {?PIXI.Rectangle}
          */
         this.filterArea = null;
 
@@ -107,7 +105,7 @@ export default class DisplayObject extends EventEmitter
          * * IMPORTANT: This is a WebGL only feature and will be ignored by the canvas renderer.
          * To remove filters simply set this property to `'null'`.
          *
-         * @member {PIXI.Filter[]}
+         * @member {?PIXI.Filter[]}
          */
         this.filters = null;
         this._enabledFilters = null;
@@ -640,7 +638,7 @@ export default class DisplayObject extends EventEmitter
 
     /**
      * Sets a mask for the displayObject. A mask is an object that limits the visibility of an
-     * object to the shape of the mask applied to it. In PIXI a regular mask must be a
+     * object to the shape of the mask applied to it. In PixiJS a regular mask must be a
      * {@link PIXI.Graphics} or a {@link PIXI.Sprite} object. This allows for much faster masking in canvas as it
      * utilities shape clipping. To remove a mask, set this property to `null`.
      *

@@ -25,11 +25,13 @@ const hitTestEvent = {
 };
 
 /**
- * The interaction manager deals with mouse, touch and pointer events. Any DisplayObject can be interactive
- * if its interactive parameter is set to true
+ * The interaction manager deals with mouse, touch and pointer events.
+ *
+ * Any DisplayObject can be interactive if its `interactive` property is set to true.
+ *
  * This manager also supports multitouch.
  *
- * An instance of this class is automatically created by default, and can be found at renderer.plugins.interaction
+ * An instance of this class is automatically created by default, and can be found at `renderer.plugins.interaction`
  *
  * @class
  * @extends PIXI.utils.EventEmitter

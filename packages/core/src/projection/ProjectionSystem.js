@@ -2,6 +2,8 @@ import System from '../System';
 import { Matrix } from '@pixi/math';
 
 /**
+ * System plugin to the renderer to manage the projection matrix.
+ *
  * @class
  * @extends PIXI.System
  * @memberof PIXI.systems

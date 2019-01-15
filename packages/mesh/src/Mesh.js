@@ -9,14 +9,17 @@ const tempPoint = new Point();
 const tempPolygon = new Polygon();
 
 /**
- * Base mesh class
- * The reason for this class is to empower you to have maximum flexibility to render any kind of webGL you can think of.
- * This class assumes a certain level of webGL knowledge.
+ * Base mesh class.
+ *
+ * This class empowers you to have maximum flexibility to render any kind of WebGL visuals you can think of.
+ * This class assumes a certain level of WebGL knowledge.
  * If you know a bit this should abstract enough away to make you life easier!
+ *
  * Pretty much ALL WebGL can be broken down into the following:
- * Geometry - The structure and data for the mesh. This can include anything from positions, uvs, normals, colors etc..
- * Shader - This is the shader that pixi will render the geometry with. (attributes in the shader must match the geometry!)
- * State - This is the state of WebGL required to render the mesh.
+ * - Geometry - The structure and data for the mesh. This can include anything from positions, uvs, normals, colors etc..
+ * - Shader - This is the shader that PixiJS will render the geometry with (attributes in the shader must match the geometry)
+ * - State - This is the state of WebGL required to render the mesh.
+ *
  * Through a combination of the above elements you can render anything you want, 2D or 3D!
  *
  * @class
@@ -28,7 +31,7 @@ export default class Mesh extends Container
     /**
      * @param {PIXI.Geometry} geometry  the geometry the mesh will use
      * @param {PIXI.Shader|PIXI.MeshMaterial} shader  the shader the mesh will use
-     * @param {PIXI.State} [state] the state that the webGL context is required to be in to render the mesh
+     * @param {PIXI.State} [state] the state that the WebGL context is required to be in to render the mesh
      *        if no state is provided, uses {@link PIXI.State.for2d} to create a 2D state for PixiJS.
      * @param {number} [drawMode=PIXI.DRAW_MODES.TRIANGLES] the drawMode, can be any of the PIXI.DRAW_MODES consts
      */
@@ -52,7 +55,7 @@ export default class Mesh extends Container
         this.shader = shader;
 
         /**
-         * Represents the webGL state the Mesh required to render, excludes shader and geometry. E.g.,
+         * Represents the WebGL state the Mesh required to render, excludes shader and geometry. E.g.,
          * blend mode, culling, depth testing, direction of rendering triangles, backface, etc.
          * @member {PIXI.State}
          */

@@ -15,6 +15,8 @@ let UID = 0;
 const nameCache = {};
 
 /**
+ * Helper class to create a shader program.
+ *
  * @class
  * @memberof PIXI
  */
@@ -108,8 +110,8 @@ export default class Program
      * returns the attribute data from the program
      * @private
      *
-     * @param {WebGLProgram} [program] - the webgl program
-     * @param {WebGLRenderingContext} [gl] - the webGL context
+     * @param {WebGLProgram} [program] - the WebGL program
+     * @param {WebGLRenderingContext} [gl] - the WebGL context
      *
      * @returns {object} the attribute data for this program
      */
@@ -153,7 +155,7 @@ export default class Program
      * @private
      *
      * @param {webGL-program} [program] - the webgl program
-     * @param {context} [gl] - the webGL context
+     * @param {context} [gl] - the WebGL context
      *
      * @returns {object} the uniform data for this program
      */
@@ -220,7 +222,7 @@ export default class Program
      * @param {string} [fragmentSrc] - The source of the fragment shader.
      * @param {object} [uniforms] - Custom uniforms to use to augment the built-in ones.
      *
-     * @returns {PIXI.Shader} an shiny new pixi shader!
+     * @returns {PIXI.Shader} an shiny new Pixi shader!
      */
     static from(vertexSrc, fragmentSrc, name)
     {

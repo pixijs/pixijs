@@ -4,7 +4,6 @@ import { blobMiddlewareFactory } from 'resource-loader/lib/middlewares/parsing/b
 import TextureLoader from './TextureLoader';
 
 /**
- *
  * The new loader, extends Resource Loader by Chad Engler: https://github.com/englercj/resource-loader
  *
  * ```js

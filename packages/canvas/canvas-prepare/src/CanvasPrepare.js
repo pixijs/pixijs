@@ -4,12 +4,12 @@ import { BasePrepare } from '@pixi/prepare';
 const CANVAS_START_SIZE = 16;
 
 /**
- * The prepare manager provides functionality to upload content to the GPU
- * This cannot be done directly for Canvas like in WebGL, but the effect can be achieved by drawing
- * textures to an offline canvas.
- * This draw call will force the texture to be moved onto the GPU.
+ * The prepare manager provides functionality to upload content to the GPU.
  *
- * An instance of this class is automatically created by default, and can be found at renderer.plugins.prepare
+ * This cannot be done directly for Canvas like in WebGL, but the effect can be achieved by drawing
+ * textures to an offline canvas. This draw call will force the texture to be moved onto the GPU.
+ *
+ * An instance of this class is automatically created by default, and can be found at `renderer.plugins.prepare`
  *
  * @class
  * @extends PIXI.prepare.BasePrepare
