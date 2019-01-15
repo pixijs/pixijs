@@ -217,14 +217,28 @@ export default class FramebufferSystem extends System
      * @param {PIXI.Framebuffer} framebuffer
      * @param {object} fbo Framebuffer object corresponding to renderer context
      */
-    resizeFramebuffer(framebuffer, fbo)
+    resizeFramebuffer(framebuffer)
     {
         const { gl } = this;
+
+        const fbo = framebuffer.glFramebuffers[this.CONTEXT_UID];
 
         if (fbo.stencil)
         {
             gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.stencil);
             gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, framebuffer.width, framebuffer.height);
+        }
+
+        const colorTextures = framebuffer.colorTextures;
+
+        for (let i = 0; i < colorTextures.length; i++)
+        {
+            this.renderer.texture.bind(colorTextures[i], 0);
+        }
+
+        if (framebuffer.depthTexture)
+        {
+            this.renderer.texture.bind(framebuffer.depthTexture, 0);
         }
     }
 
@@ -303,7 +317,7 @@ export default class FramebufferSystem extends System
             }
         }
 
-        if (framebuffer.stencil || framebuffer.depth)
+        if (!fbo.stencil && (framebuffer.stencil || framebuffer.depth))
         {
             fbo.stencil = gl.createRenderbuffer();
 
