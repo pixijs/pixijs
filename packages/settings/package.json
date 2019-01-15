@@ -3,7 +3,7 @@
   "version": "5.0.0-alpha.3",
   "main": "lib/settings.js",
   "module": "lib/settings.es.js",
-  "description": "PixiJS Application",
+  "description": "Collecting of user configurable settings used throughout PixiJS",
   "author": "Mat Groves",
   "contributors": [
     "Matt Karl <matt@mattkarl.com>"

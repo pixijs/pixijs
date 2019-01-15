@@ -2,7 +2,7 @@ import { Mesh, MeshMaterial } from '@pixi/mesh';
 import RopeGeometry from './geometry/RopeGeometry';
 
 /**
- * The rope allows you to draw a texture across several points and them manipulate these points
+ * The rope allows you to draw a texture across several points and then manipulate these points
  *
  *```js
  * for (let i = 0; i < 20; i++) {
@@ -31,6 +31,7 @@ export default class SimpleRope extends Mesh
 
         /**
          * re-calculate vertices by rope points each frame
+         *
          * @member {boolean}
          */
         this.autoUpdate = true;

@@ -3,7 +3,7 @@
   "version": "5.0.0-alpha.3",
   "main": "lib/sprite-animated.js",
   "module": "lib/sprite-animated.es.js",
-  "description": "Support for legacy browser JavaScript environments",
+  "description": "Sprite Animations as depicted by playing a series of Textures",
   "author": "Mat Groves",
   "contributors": [
     "Matt Karl <matt@mattkarl.com>"

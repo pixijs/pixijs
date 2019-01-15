@@ -3,7 +3,7 @@
   "version": "5.0.0-alpha.3",
   "main": "lib/filter-blur.js",
   "module": "lib/filter-blur.es.js",
-  "description": "Support for legacy browser JavaScript environments",
+  "description": "Filter that blurs the display object",
   "author": "Mat Groves",
   "contributors": [
     "Matt Karl <matt@mattkarl.com>"

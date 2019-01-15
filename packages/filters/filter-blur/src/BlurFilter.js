@@ -4,7 +4,8 @@ import BlurFilterPass from './BlurFilterPass';
 
 /**
  * The BlurFilter applies a Gaussian blur to an object.
- * The strength of the blur can be set for x- and y-axis separately.
+ *
+ * The strength of the blur can be set for the x-axis and y-axis separately.
  *
  * @class
  * @extends PIXI.Filter

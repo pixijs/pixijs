@@ -2,6 +2,8 @@ import Point from '../Point';
 import { SHAPES } from '../const';
 
 /**
+ * A class to define a shape via user defined co-orinates.
+ *
  * @class
  * @memberof PIXI
  */

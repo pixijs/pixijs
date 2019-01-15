@@ -3,7 +3,7 @@
   "version": "5.0.0-alpha.3",
   "main": "lib/sprite.js",
   "module": "lib/sprite.es.js",
-  "description": "PixiJS Application",
+  "description": "Base object for textured objects rendered to the screen",
   "author": "Mat Groves",
   "contributors": [
     "Matt Karl <matt@mattkarl.com>"

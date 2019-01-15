@@ -7,8 +7,9 @@ const DEPTH_TEST = 3;
 const WINDING = 4;
 
 /**
- * This is a webGL state. It is passed The WebGL StateManager.
- * Each mesh rendered may require webGL to be in a different state.
+ * This is a WebGL state, and is is passed The WebGL StateManager.
+ *
+ * Each mesh rendered may require WebGL to be in a different state.
  * For example you may want different blend mode or to enable polygon offsets
  *
  * @class
@@ -16,9 +17,6 @@ const WINDING = 4;
  */
 export default class State
 {
-    /**
-     *
-     */
     constructor()
     {
         this.data = 0;

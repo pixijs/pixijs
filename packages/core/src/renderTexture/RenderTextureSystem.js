@@ -4,6 +4,8 @@ import { Rectangle } from '@pixi/math';
 const tempRect = new Rectangle();
 
 /**
+ * System plugin to the renderer to manage render textures.
+ *
  * @class
  * @extends PIXI.System
  * @memberof PIXI.systems

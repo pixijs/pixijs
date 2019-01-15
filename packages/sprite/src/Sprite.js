@@ -17,7 +17,8 @@ const indices = new Uint16Array([0, 1, 2, 0, 2, 3]);
  * let sprite = new PIXI.Sprite.from('assets/image.png');
  * ```
  *
- * The more efficient way to create sprites is using a {@link PIXI.Spritesheet}:
+ * The more efficient way to create sprites is using a {@link PIXI.Spritesheet},
+ * as swapping base textures when rendering to the screen is inefficient.
  *
  * ```js
  * PIXI.loader.add("assets/spritesheet.json").load(setup);

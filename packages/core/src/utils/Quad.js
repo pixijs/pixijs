@@ -8,9 +8,6 @@ import Geometry from '../geometry/Geometry';
  */
 export default class Quad extends Geometry
 {
-    /**
-     * just a quad
-     */
     constructor()
     {
         super();

@@ -3,7 +3,7 @@ import { defaultVertex } from '@pixi/fragments';
 import fragment from './alpha.frag';
 
 /**
- * Simplest filter - applies alpha
+ * Simplest filter - applies alpha.
  *
  * Use this instead of Container's alpha property to avoid visual layering of individual elements.
  * AlphaFilter applies alpha evenly across the entire display object and any opaque elements it contains.

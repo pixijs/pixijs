@@ -1,8 +1,10 @@
 import Runner from 'mini-runner';
 
 /**
- * Base Texture resource class, manages validation and upload depends on its type.
- * upload is required.
+ * Base resource class for textures that manages validation and uploading, depending on its type.
+ *
+ * Uploading of a base texture to the GPU is required.
+ *
  * @class
  * @memberof PIXI.resources
  */

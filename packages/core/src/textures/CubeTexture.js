@@ -2,7 +2,7 @@ import BaseTexture from './BaseTexture';
 import CubeResource from './resources/CubeResource';
 
 /**
- * Texture that depends on six other resources.
+ * A Texture that depends on six other resources.
  *
  * @class
  * @extends PIXI.BaseTexture

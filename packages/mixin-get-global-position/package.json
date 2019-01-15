@@ -3,7 +3,7 @@
   "version": "5.0.0-alpha.3",
   "main": "lib/mixin-get-global-position.js",
   "module": "lib/mixin-get-global-position.es.js",
-  "description": "Support for legacy browser JavaScript environments",
+  "description": "Mixin to find the global position of a DisplayObject",
   "author": "Mat Groves",
   "contributors": [
     "Matt Karl <matt@mattkarl.com>"

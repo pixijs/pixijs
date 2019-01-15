@@ -3,7 +3,7 @@
   "version": "5.0.0-alpha.3",
   "main": "lib/filter-color-matrix.js",
   "module": "lib/filter-color-matrix.es.js",
-  "description": "Support for legacy browser JavaScript environments",
+  "description": "Filter that lets you change RGBA via a 5x4 matrix transformation",
   "author": "Mat Groves",
   "contributors": [
     "Matt Karl <matt@mattkarl.com>"

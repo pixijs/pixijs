@@ -4,7 +4,8 @@ import { ENV } from '@pixi/constants';
 import { settings } from '../settings';
 
 /**
- * Framebuffer system
+ * System plugin to the renderer to manage framebuffers.
+ *
  * @class
  * @extends PIXI.System
  * @memberof PIXI.systems

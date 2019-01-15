@@ -3,7 +3,7 @@
   "version": "5.0.0-alpha.3",
   "main": "lib/filter-alpha.js",
   "module": "lib/filter-alpha.es.js",
-  "description": "Support for legacy browser JavaScript environments",
+  "description": "Filter that applies alpha evenly across the entire display object and any opaque elements it contains",
   "author": "Mat Groves",
   "contributors": [
     "Matt Karl <matt@mattkarl.com>"
