@@ -4,13 +4,15 @@ import { Container } from '@pixi/display';
 
 /**
  * The ParticleContainer class is a really fast version of the Container built solely for speed,
- * so use when you need a lot of sprites or particles. The tradeoff of the ParticleContainer is that most advanced
- * functionality will not work. ParticleContainer implements the basic object transform (position, scale, rotation)
+ * so use when you need a lot of sprites or particles.
+ *
+ * The tradeoff of the ParticleContainer is that most advanced functionality will not work.
+ * ParticleContainer implements the basic object transform (position, scale, rotation)
  * and some advanced functionality like tint (as of v4.5.6).
+ *
  * Other more advanced functionality like masking, children, filters, etc will not work on sprites in this batch.
  *
- * It's extremely easy to use :
- *
+ * It's extremely easy to use:
  * ```js
  * let container = new ParticleContainer();
  *
@@ -193,7 +195,7 @@ export default class ParticleContainer extends Container
     /**
      * The tint applied to the container. This is a hex value.
      * A value of 0xFFFFFF will remove any tint effect.
-     ** IMPORTANT: This is a webGL only feature and will be ignored by the canvas renderer.
+     ** IMPORTANT: This is a WebGL only feature and will be ignored by the canvas renderer.
      * @member {number}
      * @default 0xFFFFFF
      */

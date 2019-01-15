@@ -9,9 +9,6 @@ import { GroupD8 } from '@pixi/math';
  */
 export default class TextureUvs
 {
-    /**
-     *
-     */
     constructor()
     {
         this.x0 = 0;

@@ -10,7 +10,8 @@ import UniformGroup from '../shader/UniformGroup';
 import { DRAW_MODES } from '@pixi/constants';
 
 /**
- * Internal class to manage filter state
+ * System plugin to the renderer to manage filter states.
+ *
  * @class
  * @private
  */
@@ -84,7 +85,8 @@ class FilterState
 const screenKey = 'screen';
 
 /**
- * Manage the rendering of filters within PixiJS
+ * System plugin to the renderer to manage the filters.
+ *
  * @class
  * @memberof PIXI.systems
  * @extends PIXI.System

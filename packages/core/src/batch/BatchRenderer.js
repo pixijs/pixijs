@@ -255,7 +255,6 @@ export default class BatchRenderer extends ObjectRenderer
 
         let i;
 
-        // console.log("<>")
         for (i = 0; i < this.currentIndex; ++i)
         {
             // upload the sprite elements...
@@ -402,7 +401,6 @@ export default class BatchRenderer extends ObjectRenderer
         const argb = alpha < 1.0 && element._texture.baseTexture.premultiplyAlpha ? premultiplyTint(element._tintRGB, alpha)
             : element._tintRGB + (alpha * 255 << 24);
 
-        //        console.log(element._texture.baseTexture.premultiplyAlpha);
         // lets not worry about tint! for now..
         for (let i = 0; i < vertexData.length; i += 2)
         {

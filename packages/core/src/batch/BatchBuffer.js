@@ -1,4 +1,6 @@
 /**
+ * Used by the BatchRenderer
+ *
  * @class
  * @memberof PIXI
  */

@@ -1,18 +1,16 @@
 import { Rectangle } from '@pixi/math';
 
 /**
- * 'Builder' pattern for bounds rectangles
- * Axis-Aligned Bounding Box
- * It is not a shape! Its mutable thing, no 'EMPTY' or that kind of problems
+ * 'Builder' pattern for bounds rectangles.
+ *
+ * This could be called an Axis-Aligned Bounding Box.
+ * It is not an actual shape. It is a mutable thing; no 'EMPTY' or those kind of problems.
  *
  * @class
  * @memberof PIXI
  */
 export default class Bounds
 {
-    /**
-     *
-     */
     constructor()
     {
         /**

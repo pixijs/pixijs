@@ -1,6 +1,5 @@
 /**
- * This namespace contains a renderer plugin for interaction accessibility for end-users
- * with physical impairments which require screen-renders, keyboard navigation, etc.
+ * This namespace contains an accessibility plugin for allowing interaction via the keyboard.
  *
  * Do not instantiate this plugin directly. It is available from the `renderer.plugins` property.
  * See {@link PIXI.CanvasRenderer#plugins} or {@link PIXI.Renderer#plugins}.

@@ -2,6 +2,8 @@ import System from '../System';
 import SpriteMaskFilter from '../filters/spriteMask/SpriteMaskFilter';
 
 /**
+ * System plugin to the renderer to manage masks.
+ *
  * @class
  * @extends PIXI.System
  * @memberof PIXI.systems

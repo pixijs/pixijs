@@ -4,8 +4,8 @@ const tempMat = new Matrix();
 
 /**
  * Class controls uv mapping from Texture normal space to BaseTexture normal space.
- * Takes `trim` and `rotate` into account.
- * May contain clamp settings for Meshes and TilingSprite.
+ *
+ * Takes `trim` and `rotate` into account. May contain clamp settings for Meshes and TilingSprite.
  *
  * Can be used in Texture `uvMatrix` field, or separately, you can use different clamp settings on the same texture.
  * If you want to add support for texture region of certain feature or filter, that's what you're looking for.

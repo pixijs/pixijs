@@ -8,9 +8,6 @@ import { Point } from '@pixi/math';
  */
 export default class InteractionData
 {
-    /**
-     *
-     */
     constructor()
     {
         /**

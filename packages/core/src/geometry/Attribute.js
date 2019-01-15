@@ -1,9 +1,10 @@
 /* eslint-disable max-len */
 
 /**
- * holds the information for a single attribute structure required to render geometry.
- * this does not contain the actual data, but instead has a buffer id that maps to a {@link PIXI.Buffer}
- * This can include anything from positions, uvs, normals, colors etc..
+ * Holds the information for a single attribute structure required to render geometry.
+ *
+ * This does not contain the actual data, but instead has a buffer id that maps to a {@link PIXI.Buffer}
+ * This can include anything from positions, uvs, normals, colors etc.
  *
  * @class
  * @memberof PIXI

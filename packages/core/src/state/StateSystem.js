@@ -9,7 +9,7 @@ const DEPTH_TEST = 3;
 const WINDING = 4;
 
 /**
- * A WebGL state machines
+ * System plugin to the renderer to manage WebGL state machines.
  *
  * @class
  * @extends PIXI.System
@@ -18,7 +18,7 @@ const WINDING = 4;
 export default class StateSystem extends System
 {
     /**
-     * @param {PIXI.Renderer} renderer - Reference to renderer
+     * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
     constructor(renderer)
     {

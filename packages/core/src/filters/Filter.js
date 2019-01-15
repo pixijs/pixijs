@@ -6,15 +6,16 @@ import defaultVertex from './defaultFilter.vert';
 import defaultFragment from './defaultFilter.frag';
 
 /**
- * Filter is a special type of shader that is applied to the screen.
+ * Filter is a special type of WebGL shader that is applied to the screen.
+ *
  * {@link http://pixijs.io/examples/#/filters/blur-filter.js Example} of the
  * {@link PIXI.filters.BlurFilter BlurFilter}.
  *
  * ### Usage
- * Filters can be applied to any DisplayObject or Container. PixiJS' `FilterSystem`
- * renders the container into temporary Framebuffer, then filter
- * renders it to the screen. Multiple filters can be added to the `filters` property
- * and stacked on each other.
+ * Filters can be applied to any DisplayObject or Container.
+ * PixiJS' `FilterSystem` renders the container into temporary Framebuffer,
+ * then filter renders it to the screen.
+ * Multiple filters can be added to the `filters` array property and stacked on each other.
  *
  * ```
  * const filter = new PIXI.Filter(myShaderVert, myShaderFrag, { myUniform: 0.5 });
@@ -26,12 +27,12 @@ import defaultFragment from './defaultFilter.frag';
  *
  * In PixiJS **v3**, a filter was always applied to _whole screen_.
  *
- * In PixiJS **v4**, a filter can be applied _only part of the screen_, developers
- * had to create a set of uniforms to deal with coordinates.
+ * In PixiJS **v4**, a filter can be applied _only part of the screen_.
+ * Developers had to create a set of uniforms to deal with coordinates.
  *
- * In PixiJS **v5** combines _both approaches_, developers can use normal coordinates of
- * v3 and then allow filter to use partial Framebuffers, bringing those extra
- * uniforms into account.
+ * In PixiJS **v5** combines _both approaches_.
+ * Developers can use normal coordinates of v3 and then allow filter to use partial Framebuffers,
+ * bringing those extra uniforms into account.
  *
  * ### Built-in Uniforms
  *
@@ -41,7 +42,7 @@ import defaultFragment from './defaultFilter.frag';
  * **uSampler**
  *
  * The most important uniform is the input texture that container was rendered into.
- * _Important note: as with all PixiJS' Framebuffers, both input and output are
+ * _Important note: as with all Framebuffers in PixiJS, both input and output are
  * premultiplied by alpha._
  *
  * By default, input Framebuffer space coordinates are passed to fragment shader with `vTextureCoord`.
@@ -127,12 +128,11 @@ import defaultFragment from './defaultFilter.frag';
  *
  * ### Additional Information
  *
- * Complete documentation on Filter usage is located in
+ * Complete documentation on Filter usage is located in the
  * {@link https://github.com/pixijs/pixi.js/wiki/v5-Creating-filters Wiki}.
  *
- * Since PixiJS only had a handful of built-in filters, additional filters
- * can be downloaded {@link https://github.com/pixijs/pixi-filters here} from the
- * PixiJS Filters repository.
+ * Since PixiJS only had a handful of built-in filters, additional filters can be downloaded
+ * {@link https://github.com/pixijs/pixi-filters here} from the PixiJS Filters repository.
  *
  * @class
  * @memberof PIXI
@@ -192,7 +192,7 @@ export default class Filter extends Shader
         this.legacy = !!this.program.attributeData.aTextureCoord;
 
         /**
-         * the webGL state the filter requires to render
+         * The WebGL state the filter requires to render
          * @member {PIXI.State}
          */
         this.state = new State();
