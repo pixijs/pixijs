@@ -9,9 +9,6 @@ import Matrix from './Matrix';
  */
 export default class Transform
 {
-    /**
-     *
-     */
     constructor()
     {
         /**

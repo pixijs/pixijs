@@ -19,10 +19,12 @@ import { Matrix } from '@pixi/math';
 import Runner from 'mini-runner';
 
 /**
- * The Renderer draws the scene and all its content onto a WebGL enabled canvas. This renderer
- * should be used for browsers that support WebGL. This renderer works by automatically managing WebGLBatches.
- * So no need for Sprite Batches or Sprite Clouds.
- * Don't forget to add the view to your DOM or you will not see anything :).
+ * The Renderer draws the scene and all its content onto a WebGL enabled canvas.
+ *
+ * This renderer should be used for browsers that support WebGL.
+ *
+ * This renderer works by automatically managing WebGLBatchesm, so no need for Sprite Batches or Sprite Clouds.
+ * Don't forget to add the view to your DOM or you will not see anything!
  *
  * @class
  * @memberof PIXI
@@ -30,9 +32,7 @@ import Runner from 'mini-runner';
  */
 export default class Renderer extends AbstractRenderer
 {
-    // eslint-disable-next-line valid-jsdoc
     /**
-     *
      * @param {object} [options] - The optional renderer parameters.
      * @param {number} [options.width=800] - The width of the screen.
      * @param {number} [options.height=600] - The height of the screen.

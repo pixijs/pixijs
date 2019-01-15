@@ -224,8 +224,5 @@ export default function generateUniformsSync(group, uniformData)
         }
     }
 
-    // console.log(' --------------- ')
-    // console.log(func);
-
     return new Function('ud', 'uv', 'renderer', func); // eslint-disable-line no-new-func
 }

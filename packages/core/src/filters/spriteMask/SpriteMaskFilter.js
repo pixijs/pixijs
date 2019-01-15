@@ -5,7 +5,9 @@ import fragment from './spriteMaskFilter.frag';
 import { default as TextureMatrix } from '../../textures/TextureMatrix';
 
 /**
- * The SpriteMaskFilter class
+ * This handles a Sprite acting as a mask, as opposed to a Graphic.
+ *
+ * WebGL only.
  *
  * @class
  * @extends PIXI.Filter

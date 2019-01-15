@@ -2,9 +2,9 @@ import { Mesh, MeshGeometry, MeshMaterial } from '@pixi/mesh';
 import { Texture } from '@pixi/core';
 
 /**
- * Simple Mesh class mimics mesh in PixiJS v4, provides
- * easy-to-use constructor arguments. For more robust
- * customization, use {@link PIXI.Mesh}.
+ * The Simple Mesh class mimics Mesh in PixiJS v4, providing easy-to-use constructor arguments.
+ * For more robust customization, use {@link PIXI.Mesh}.
+ *
  * @class
  * @extends PIXI.Mesh
  * @memberof PIXI

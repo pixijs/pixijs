@@ -98,7 +98,7 @@ export default class Texture extends EventEmitter
         this.valid = false;
 
         /**
-         * This will let a renderer know that a texture has been updated (used mainly for webGL uv updates)
+         * This will let a renderer know that a texture has been updated (used mainly for WebGL uv updates)
          *
          * @member {boolean}
          */
@@ -357,12 +357,10 @@ export default class Texture extends EventEmitter
      */
     static fromLoader(source, imageUrl, name)
     {
-        // console.log('added from loader...')
         const resource = new ImageResource(source);
 
         resource.url = imageUrl;
 
-        //  console.log('base resource ' + resource.width);
         const baseTexture = new BaseTexture(resource, {
             scaleMode: settings.SCALE_MODE,
             resolution: getResolutionOfUrl(imageUrl),

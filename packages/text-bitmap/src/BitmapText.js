@@ -7,7 +7,11 @@ import { removeItems, getResolutionOfUrl } from '@pixi/utils';
 
 /**
  * A BitmapText object will create a line or multiple lines of text using bitmap font. To
- * split a line you can use '\n', '\r' or '\r\n' in your string. You can generate the fnt files using:
+ * split a line you can use '\n', '\r' or '\r\n' in your string.
+ *
+ * You can generate the fnt files using
+ * http://www.angelcode.com/products/bmfont/ for Windows or
+ * http://www.bmglyph.com/ for Mac.
  *
  * A BitmapText can only be created when the font is loaded
  *
@@ -16,9 +20,7 @@ import { removeItems, getResolutionOfUrl } from '@pixi/utils';
  * let bitmapText = new PIXI.BitmapText("text using a fancy font!", {font: "35px Desyrel", align: "right"});
  * ```
  *
- * http://www.angelcode.com/products/bmfont/ for Windows or
- *
- * http://www.bmglyph.com/ for Mac.
+
  *
  * @class
  * @extends PIXI.Container

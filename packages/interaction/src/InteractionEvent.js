@@ -6,9 +6,6 @@
  */
 export default class InteractionEvent
 {
-    /**
-     *
-     */
     constructor()
     {
         /**

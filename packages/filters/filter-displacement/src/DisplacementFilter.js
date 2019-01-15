@@ -5,10 +5,11 @@ import fragment from './displacement.frag';
 
 /**
  * The DisplacementFilter class uses the pixel values from the specified texture
- * (called the displacement map) to perform a displacement of an object. You can
- * use this filter to apply all manor of crazy warping effects. Currently the r
- * property of the texture is used to offset the x and the g property of the texture
- * is used to offset the y.
+ * (called the displacement map) to perform a displacement of an object.
+ *
+ * You can use this filter to apply all manor of crazy warping effects.
+ * Currently the `r` property of the texture is used to offset the `x`
+ * and the `g` property of the texture is used to offset the `y`.
  *
  * @class
  * @extends PIXI.Filter

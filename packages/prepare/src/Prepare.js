@@ -5,7 +5,7 @@ import BasePrepare from './BasePrepare';
 /**
  * The prepare manager provides functionality to upload content to the GPU.
  *
- * An instance of this class is automatically created by default, and can be found at renderer.plugins.prepare
+ * An instance of this class is automatically created by default, and can be found at `renderer.plugins.prepare`
  *
  * @class
  * @extends PIXI.prepare.BasePrepare

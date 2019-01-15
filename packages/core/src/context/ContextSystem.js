@@ -100,7 +100,7 @@ export default class ContextSystem extends System
     }
 
     /**
-     * Helper class to create a webGL Context
+     * Helper class to create a WebGL Context
      *
      * @param canvas {HTMLCanvasElement} the canvas element that we will get the context from
      * @param options {object} An options object that gets passed in to the canvas element containing the context attributes
@@ -130,7 +130,7 @@ export default class ContextSystem extends System
             if (!gl)
             {
                 // fail, not able to get a context
-                throw new Error('This browser does not support webGL. Try using the canvas renderer');
+                throw new Error('This browser does not support WebGL. Try using the canvas renderer');
             }
         }
 
@@ -148,7 +148,7 @@ export default class ContextSystem extends System
      */
     getExtensions()
     {
-        // time to set up default extensions that pixi uses..
+        // time to set up default extensions that Pixi uses.
         const { gl } = this;
 
         if (this.webGLVersion === 1)

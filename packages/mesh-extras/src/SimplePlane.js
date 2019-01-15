@@ -3,7 +3,7 @@ import { Mesh, MeshMaterial } from '@pixi/mesh';
 import PlaneGeometry from './geometry/PlaneGeometry';
 
 /**
- * The Plane allows you to draw a texture across several points and them manipulate these points
+ * The Plane allows you to draw a texture across several points and then manipulate these points
  *
  *```js
  * for (let i = 0; i < 20; i++) {

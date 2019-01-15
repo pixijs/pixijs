@@ -14,9 +14,6 @@ import TickerListener from './TickerListener';
  */
 export default class Ticker
 {
-    /**
-     *
-     */
     constructor()
     {
         /**

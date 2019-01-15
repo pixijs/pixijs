@@ -4,8 +4,8 @@ import { Renderer } from '@pixi/core';
 
 /**
  * Convenience class to create a new PIXI application.
- * This class automatically creates the renderer, ticker
- * and root container.
+ *
+ * This class automatically creates the renderer, ticker and root container.
  *
  * @example
  * // Create the application
@@ -22,7 +22,6 @@ import { Renderer } from '@pixi/core';
  */
 export default class Application
 {
-    // eslint-disable-next-line valid-jsdoc
     /**
      * @param {object} [options] - The optional renderer parameters.
      * @param {boolean} [options.autoStart=true] - Automatically starts the rendering after the construction.

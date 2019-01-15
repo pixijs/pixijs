@@ -2,7 +2,7 @@ import Rectangle from './Rectangle';
 import { SHAPES } from '../const';
 
 /**
- * The Circle object can be used to specify a hit area for displayObjects
+ * The Circle object is used to help draw graphics and can also be used to specify a hit area for displayObjects.
  *
  * @class
  * @memberof PIXI
