@@ -3,7 +3,7 @@
   "version": "5.0.0-alpha.3",
   "main": "lib/constants.js",
   "module": "lib/constants.es.js",
-  "description": "PixiJS Application",
+  "description": "Constants used across PixiJS",
   "author": "Mat Groves",
   "contributors": [
     "Matt Karl <matt@mattkarl.com>"

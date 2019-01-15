@@ -3,7 +3,7 @@
   "version": "5.0.0-alpha.3",
   "main": "lib/math.js",
   "module": "lib/math.es.js",
-  "description": "PixiJS Application",
+  "description": "Collection of math utilities",
   "author": "Mat Groves",
   "contributors": [
     "Matt Karl <matt@mattkarl.com>"

@@ -3,7 +3,7 @@
   "version": "5.0.0-alpha.3",
   "main": "lib/canvas-sprite-tiling.js",
   "module": "lib/canvas-sprite-tiling.es.js",
-  "description": "Support for legacy browser JavaScript environments",
+  "description": "Canvas mixin for the particles package",
   "author": "Mat Groves",
   "contributors": [
     "Matt Karl <matt@mattkarl.com>"

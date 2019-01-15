@@ -3,7 +3,7 @@
   "version": "5.0.0-alpha.3",
   "main": "lib/spritesheet.js",
   "module": "lib/spritesheet.es.js",
-  "description": "PixiJS Application",
+  "description": "Spritesheets maintain a collection of Textures on a single image",
   "author": "Mat Groves",
   "contributors": [
     "Matt Karl <matt@mattkarl.com>"
