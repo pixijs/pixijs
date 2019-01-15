@@ -305,6 +305,10 @@ export default class AnimatedSprite extends Sprite
     {
         this.stop();
         super.destroy(options);
+
+        this.onComplete = null;
+        this.onFrameChange = null;
+        this.onLoop = null;
     }
 
     /**
