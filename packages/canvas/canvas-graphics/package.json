@@ -3,7 +3,7 @@
   "version": "5.0.0-alpha.3",
   "main": "lib/canvas-graphics.js",
   "module": "lib/canvas-graphics.es.js",
-  "description": "PixiJS Application",
+  "description": "Canvas mixin for the graphics package",
   "author": "Mat Groves",
   "contributors": [
     "Matt Karl <matt@mattkarl.com>"

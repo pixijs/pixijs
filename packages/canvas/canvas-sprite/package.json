@@ -3,7 +3,7 @@
   "version": "5.0.0-alpha.3",
   "main": "lib/canvas-sprite.js",
   "module": "lib/canvas-sprite.es.js",
-  "description": "PixiJS Application",
+  "description": "Canvas mixin for the sprite package",
   "author": "Mat Groves",
   "contributors": [
     "Matt Karl <matt@mattkarl.com>"

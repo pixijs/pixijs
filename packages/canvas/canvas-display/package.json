@@ -3,7 +3,7 @@
   "version": "5.0.0-alpha.3",
   "main": "lib/canvas-display.js",
   "module": "lib/canvas-display.es.js",
-  "description": "PixiJS Application",
+  "description": "Canvas mixin for the display package",
   "author": "Mat Groves",
   "contributors": [
     "Matt Karl <matt@mattkarl.com>"

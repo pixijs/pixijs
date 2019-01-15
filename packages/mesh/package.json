@@ -3,7 +3,7 @@
   "version": "5.0.0-alpha.3",
   "main": "lib/mesh.js",
   "module": "lib/mesh.es.js",
-  "description": "Support for legacy browser JavaScript environments",
+  "description": "Core Mesh functionality",
   "author": "Mat Groves",
   "contributors": [
     "Matt Karl <matt@mattkarl.com>"
