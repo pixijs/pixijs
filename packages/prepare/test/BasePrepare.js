@@ -159,7 +159,7 @@ describe('PIXI.prepare.BasePrepare', function ()
         prep.destroy();
     });
 
-    it('should attach to SharedTicker', function (done)
+    it('should attach to the system ticker', function (done)
     {
         const prep = new BasePrepare();
 
