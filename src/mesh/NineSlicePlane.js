@@ -1,4 +1,5 @@
 import Plane from './Plane';
+import CanvasTinter from '../core';
 
 const DEFAULT_BORDER_SIZE = 10;
 
@@ -103,6 +104,30 @@ export default class NineSlicePlane extends Plane
          */
         this._bottomHeight = typeof bottomHeight !== 'undefined' ? bottomHeight : DEFAULT_BORDER_SIZE;
 
+        /**
+         * Tint to be used on the nine slice.
+         *
+         * @member {number}
+         * @memberof PIXI.NineSlicePlane#
+         */
+        this._tint = 0xFFFFFF;
+
+        /**
+         * Cached tint value so we can tell when the tint is changed.
+         *
+         * @member {number}
+         * @memberof PIXI.NineSlicePlane#
+         */
+        this._cachedTint = 0xFFFFFF;
+
+        /**
+         * Cached tinted texture.
+         *
+         * @member {undefined|PIXI.Texture}
+         * @memberof PIXI.NineSlicePlane#
+         */
+        this._tintedTexture = undefined;
+
         this.refresh(true);
     }
 
@@ -148,6 +173,20 @@ export default class NineSlicePlane extends Plane
     {
         const context = renderer.context;
 
+        // Work out tinting
+        if (this.tint !== 0xFFFFFF)
+        {
+            if (this.tint !== this._cachedTint)
+            {
+                // Tint has changed, need to update the tinted texture and use that instead
+
+                this._cachedTint = this.tint;
+
+                this._tintedTexture = CanvasTinter.getTintedTexture(this, this.tint);
+                this._refresh();
+            }
+        }
+
         context.globalAlpha = this.worldAlpha;
         renderer.setBlendMode(this.blendMode);
 
@@ -177,10 +216,11 @@ export default class NineSlicePlane extends Plane
             );
         }
 
+        const isTinted = this.tint !== 0xFFFFFF;
         const base = this._texture.baseTexture;
-        const textureSource = base.source;
-        const w = base.width * base.resolution;
-        const h = base.height * base.resolution;
+        const textureSource = !isTinted ? base.source : this._tintedTexture;
+        const w = (!isTinted ? base.width : this._tintedTexture.width) * base.resolution;
+        const h = (!isTinted ? base.height : this._tintedTexture.height) * base.resolution;
 
         this.drawSegment(context, textureSource, w, h, 0, 1, 10, 11);
         this.drawSegment(context, textureSource, w, h, 2, 3, 12, 13);
@@ -342,6 +382,24 @@ export default class NineSlicePlane extends Plane
     }
 
     /**
+     * The tint for this nine slice
+     *
+     * @member {number}
+     */
+    get tint()
+    {
+        return this._tint;
+    }
+
+    set tint(value) // eslint-disable-line require-jsdoc
+    {
+        this._tint = value;
+
+        // Need to refresh on tint change, as if switching between tinted or not, we'll need to update the UVs
+        this._refresh();
+    }
+
+    /**
      * Refreshes NineSlicePlane coords. All of them.
      */
     _refresh()
@@ -372,6 +430,11 @@ export default class NineSlicePlane extends Plane
 
         this.dirty++;
 
-        this.multiplyUvs();
+        // If not tinted, we'll use the original texture, which might be on a sheet, so mult UVs
+        // Otherwise, don't mult as it'll be a single image and the UVs above will already be correct
+        if (this.tint === 0xFFFFFF)
+        {
+            this.multiplyUvs();
+        }
     }
 }
