@@ -1,5 +1,5 @@
 const { Ticker, UPDATE_PRIORITY } = require('../');
-const { shared } = Ticker;
+const { shared, system } = Ticker;
 
 describe('PIXI.Ticker', function ()
 {
@@ -31,6 +31,7 @@ describe('PIXI.Ticker', function ()
     {
         expect(Ticker).to.be.a.function;
         expect(shared).to.be.an.instanceof(Ticker);
+        expect(system).to.be.an.instanceof(Ticker);
     });
 
     it('should create a new ticker and destroy it', function ()
@@ -62,6 +63,16 @@ describe('PIXI.Ticker', function ()
         shared.destroy();
         expect(shared._head).to.not.be.null;
         expect(shared.started).to.be.true;
+    });
+
+    it('should protect destroying system ticker', function ()
+    {
+        const listener = sinon.spy();
+
+        system.add(listener); // needed to autoStart
+        system.destroy();
+        expect(system._head).to.not.be.null;
+        expect(system.started).to.be.true;
     });
 
     it('should add and remove listener', function ()

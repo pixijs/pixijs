@@ -537,11 +537,13 @@ export default class Ticker
     }
 
     /**
-     * The shared ticker instance used by {@link PIXI.AnimatedSprite}.
-     * and by {@link PIXI.interaction.InteractionManager}.
-     * The property {@link PIXI.Ticker#autoStart} is set to `true`
-     * for this instance. Please follow the examples for usage, including
-     * how to opt-out of auto-starting the shared ticker.
+     * The shared ticker instance used by {@link PIXI.AnimatedSprite} and by
+     * {@link PIXI.VideoResource} to update animation frames / video textures.
+     *
+     * It may also be used by {@link PIXI.Application} if created with the `sharedTicker` option property set to true.
+     *
+     * The property {@link PIXI.Ticker#autoStart} is set to `true` for this instance.
+     * Please follow the examples for usage, including how to opt-out of auto-starting the shared ticker.
      *
      * @example
      * let ticker = PIXI.Ticker.shared;
@@ -558,7 +560,6 @@ export default class Ticker
      * // You may use the shared ticker to render...
      * let renderer = PIXI.autoDetectRenderer(800, 600);
      * let stage = new PIXI.Container();
-     * let interactionManager = PIXI.interaction.InteractionManager(renderer);
      * document.body.appendChild(renderer.view);
      * ticker.add(function (time) {
      *     renderer.render(stage);
@@ -589,5 +590,28 @@ export default class Ticker
         }
 
         return Ticker._shared;
+    }
+
+    /**
+     * The system ticker instance used by {@link PIXI.interaction.InteractionManager} and by
+     * {@link PIXI.BasePrepare} for core timing functionality that shouldn't usually need to be paused,
+     * unlike the `shared` ticker which drives visual animations and rendering which may want to be paused.
+     *
+     * The property {@link PIXI.Ticker#autoStart} is set to `true` for this instance.
+     *
+     * @member {PIXI.Ticker}
+     * @static
+     */
+    static get system()
+    {
+        if (!Ticker._system)
+        {
+            const system = Ticker._system = new Ticker();
+
+            system.autoStart = true;
+            system._protected = true;
+        }
+
+        return Ticker._system;
     }
 }

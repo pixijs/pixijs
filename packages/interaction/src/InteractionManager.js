@@ -711,7 +711,7 @@ export default class InteractionManager extends EventEmitter
             return;
         }
 
-        Ticker.shared.add(this.update, this, UPDATE_PRIORITY.INTERACTION);
+        Ticker.system.add(this.update, this, UPDATE_PRIORITY.INTERACTION);
 
         if (window.navigator.msPointerEnabled)
         {
@@ -774,7 +774,7 @@ export default class InteractionManager extends EventEmitter
             return;
         }
 
-        Ticker.shared.remove(this.update, this);
+        Ticker.system.remove(this.update, this);
 
         if (window.navigator.msPointerEnabled)
         {
@@ -819,7 +819,7 @@ export default class InteractionManager extends EventEmitter
 
     /**
      * Updates the state of interactive objects.
-     * Invoked by a throttled ticker update from {@link PIXI.Ticker.shared}.
+     * Invoked by a throttled ticker update from {@link PIXI.Ticker.system}.
      *
      * @param {number} deltaTime - time delta since last tick
      */
