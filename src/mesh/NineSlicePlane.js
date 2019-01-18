@@ -1,5 +1,5 @@
 import Plane from './Plane';
-import CanvasTinter from '../core';
+import CanvasTinter from '../core/sprites/canvas/CanvasTinter';
 
 const DEFAULT_BORDER_SIZE = 10;
 
@@ -105,14 +105,6 @@ export default class NineSlicePlane extends Plane
         this._bottomHeight = typeof bottomHeight !== 'undefined' ? bottomHeight : DEFAULT_BORDER_SIZE;
 
         /**
-         * Tint to be used on the nine slice.
-         *
-         * @member {number}
-         * @memberof PIXI.NineSlicePlane#
-         */
-        this._tint = 0xFFFFFF;
-
-        /**
          * Cached tint value so we can tell when the tint is changed.
          *
          * @member {number}
@@ -127,6 +119,11 @@ export default class NineSlicePlane extends Plane
          * @memberof PIXI.NineSlicePlane#
          */
         this._tintedTexture = undefined;
+
+        /**
+         * Track if we're using canvas rendering or not
+         */
+        this._isCanvas = false;
 
         this.refresh(true);
     }
@@ -164,6 +161,22 @@ export default class NineSlicePlane extends Plane
     }
 
     /**
+     * Renders the object using the WebGL renderer
+     * @param {PIXI.WebGLRenderer} renderer - The WebGL renderer to render with.
+     */
+    renderWebGL(renderer)
+    {
+        // Check to if we're currently using canvas UVs, if so, update
+        if (this._isCanvas)
+        {
+            this._isCanvas = false;
+            this._refresh();
+        }
+
+        super.renderWebGL(renderer);
+    }
+
+    /**
      * Renders the object using the Canvas renderer
      *
      * @private
@@ -171,6 +184,13 @@ export default class NineSlicePlane extends Plane
      */
     _renderCanvas(renderer)
     {
+        // Check to if we're currently using WebGL UVs, if so, update
+        if (!this._isCanvas)
+        {
+            this._isCanvas = true;
+            this._refresh();
+        }
+
         const context = renderer.context;
 
         // Work out tinting
@@ -382,24 +402,6 @@ export default class NineSlicePlane extends Plane
     }
 
     /**
-     * The tint for this nine slice
-     *
-     * @member {number}
-     */
-    get tint()
-    {
-        return this._tint;
-    }
-
-    set tint(value) // eslint-disable-line require-jsdoc
-    {
-        this._tint = value;
-
-        // Need to refresh on tint change, as if switching between tinted or not, we'll need to update the UVs
-        this._refresh();
-    }
-
-    /**
      * Refreshes NineSlicePlane coords. All of them.
      */
     _refresh()
@@ -432,7 +434,7 @@ export default class NineSlicePlane extends Plane
 
         // If not tinted, we'll use the original texture, which might be on a sheet, so mult UVs
         // Otherwise, don't mult as it'll be a single image and the UVs above will already be correct
-        if (this.tint === 0xFFFFFF)
+        if (!this._isCanvas || this.tint === 0xFFFFFF)
         {
             this.multiplyUvs();
         }
