@@ -161,7 +161,7 @@ export default class BasePrepare
             if (!this.ticking)
             {
                 this.ticking = true;
-                Ticker.shared.addOnce(this.tick, this, UPDATE_PRIORITY.UTILITY);
+                Ticker.system.addOnce(this.tick, this, UPDATE_PRIORITY.UTILITY);
             }
         }
         else if (done)
@@ -231,7 +231,7 @@ export default class BasePrepare
         else
         {
             // if we are not finished, on the next rAF do this again
-            Ticker.shared.addOnce(this.tick, this, UPDATE_PRIORITY.UTILITY);
+            Ticker.system.addOnce(this.tick, this, UPDATE_PRIORITY.UTILITY);
         }
     }
 
@@ -308,7 +308,7 @@ export default class BasePrepare
     {
         if (this.ticking)
         {
-            Ticker.shared.remove(this.tick, this);
+            Ticker.system.remove(this.tick, this);
         }
         this.ticking = false;
         this.addHooks = null;
