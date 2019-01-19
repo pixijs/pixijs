@@ -121,9 +121,22 @@ export default class NineSlicePlane extends Plane
         this._tintedTexture = undefined;
 
         /**
-         * Track if we're using canvas rendering or not
+         * Cache a copy of premultiplied UV coords for the canvas renderer
+         *
+         * @member {Float32Array}
+         * @memberof PIXI.NineSlicePlane
+         * @private
          */
-        this._isCanvas = false;
+        this._canvasPreMultUvs = undefined;
+
+        /**
+         * Cache a copy of non-premultiplied UV coords for the canvas renderer
+         *
+         * @member {Float32Array}
+         * @memberof PIXI.NineSlicePlane
+         * @private
+         */
+        this._canvasNonPreMultUvs = undefined;
 
         this.refresh(true);
     }
@@ -161,22 +174,6 @@ export default class NineSlicePlane extends Plane
     }
 
     /**
-     * Renders the object using the WebGL renderer
-     * @param {PIXI.WebGLRenderer} renderer - The WebGL renderer to render with.
-     */
-    renderWebGL(renderer)
-    {
-        // Check to if we're currently using canvas UVs, if so, update
-        if (this._isCanvas)
-        {
-            this._isCanvas = false;
-            this._refresh();
-        }
-
-        super.renderWebGL(renderer);
-    }
-
-    /**
      * Renders the object using the Canvas renderer
      *
      * @private
@@ -184,13 +181,6 @@ export default class NineSlicePlane extends Plane
      */
     _renderCanvas(renderer)
     {
-        // Check to if we're currently using WebGL UVs, if so, update
-        if (!this._isCanvas)
-        {
-            this._isCanvas = true;
-            this._refresh();
-        }
-
         const context = renderer.context;
 
         // Work out tinting
@@ -270,8 +260,9 @@ export default class NineSlicePlane extends Plane
      */
     drawSegment(context, textureSource, w, h, x1, y1, x2, y2)
     {
-        // otherwise you get weird results when using slices of that are 0 wide or high.
-        const uvs = this.uvs;
+        // Pick pre-mult or non-premult based on if we're currently tinted
+        // Tinted will use a canvas containing just that texture, so uses non-premult UVs
+        const uvs = this.tint === 0xFFFFFF ? this._canvasPreMultUvs : this._canvasNonPreMultUvs;
         const vertices = this.vertices;
 
         let sw = (uvs[x2] - uvs[x1]) * w;
@@ -432,11 +423,14 @@ export default class NineSlicePlane extends Plane
 
         this.dirty++;
 
-        // If not tinted, we'll use the original texture, which might be on a sheet, so mult UVs
-        // Otherwise, don't mult as it'll be a single image and the UVs above will already be correct
-        if (!this._isCanvas || this.tint === 0xFFFFFF)
-        {
-            this.multiplyUvs();
-        }
+        // Get copies of the UVs for the canvas renderer before we do any premult
+        this._canvasPreMultUvs = Float32Array.from(this.uvs);
+        this._canvasNonPreMultUvs = Float32Array.from(this.uvs);
+
+        // Normal mult UVs behaviour for WebGL renderer
+        this.multiplyUvs();
+
+        // Manually apply uvs for stored canvas premults
+        this._uvTransform.multiplyUvs(this._canvasPreMultUvs);
     }
 }
