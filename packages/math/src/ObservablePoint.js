@@ -103,6 +103,58 @@ export default class ObservablePoint
     {
         return (p.x === this._x) && (p.y === this._y);
     }
+    
+    /**
+     * Store zero x, y in ObservablePoint
+     *
+     * @param {number} [x=this._x] - store zero x from parent, value or PIXI.Point
+     * @param {number} [y=this._y] - store zero y from parent, value or PIXI.Point
+     * @returns {scope} Return ObservablePoint scope for chaining.
+     */
+    zeroSet(x, y, z)
+    {   
+        this.zero = this.zero || new PIXI.Point();
+        if(!arguments.length){
+            this.zero.copy(this);
+        }else
+        if(isNaN(x)){
+            this.zero.copy.copy(x);
+        }else{
+            this.zero.set(...arguments);
+        };
+        return this;
+    }
+
+    /**
+     * Compute difference between zero and current values
+     *
+     * @param {boolean} continuity - store current value in zero point
+     * @returns {scope} Return ObservablePoint scope for chaining.
+     */
+    zeroApply(continuity)
+    {       
+        !this.zero && this.zeroSet();
+        continuity = continuity? this.clone() : this.zero;
+        this.copy(this.zero);
+        this.zero = continuity;
+        return this;
+    }
+
+    /**
+     * Compute difference between zero and current values
+     *
+     * @param {boolean} abs - use Math.abs on values
+     * @returns {PIXI.Point} Return values in PIXI.Point.
+     */
+    zeroDiff(abs)
+    {   
+        !this.zero && this.zeroSet();
+        let x = this.zero && this.zero.x || this._x;
+        let y = this.zero && this.zero.y || this._y;
+        x = abs? Math.abs(this._x-x):this._x-x;
+        y = abs? Math.abs(this._y-y):this._y-y;
+        return new PIXI.Point(x,y);
+    }
 
     /**
      * The position of the displayObject on the x axis relative to the local coordinates of the parent.
