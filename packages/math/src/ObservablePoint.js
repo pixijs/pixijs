@@ -136,7 +136,7 @@ export default class ObservablePoint
         !this.zero && this.zeroSet();
         continuity = continuity? this.clone() : this.zero;
         this.copy(this.zero);
-        this.zero = continuity;
+        this.zero.copy(continuity);
         return this;
     }
 
