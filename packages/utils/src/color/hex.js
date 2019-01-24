@@ -35,6 +35,24 @@ export function hex2string(hex)
 }
 
 /**
+ * Converts a hex string to a hex color number.
+ *
+ * @memberof PIXI.utils
+ * @function string2hex
+ * @param {string} The string color that starts with #
+ * @return {number} hex - Number in hex
+ */
+export function string2hex(string)
+{
+    if (typeof string === 'string' && string[0] === '#')
+    {
+        string = string.substr(1);
+    }
+
+    return parseInt(string, 16);
+}
+
+/**
  * Converts a color as an [R, G, B] array to a hex number
  *
  * @memberof PIXI.utils
