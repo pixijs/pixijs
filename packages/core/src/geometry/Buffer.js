@@ -15,9 +15,8 @@ export default class Buffer
      * @param {ArrayBuffer| SharedArrayBuffer|ArrayBufferView} data the data to store in the buffer.
      * @param {boolean} [_static=true] `true` for static buffer
      * @param {boolean} [index=false] `true` for index buffer
-     * @param {boolean} [shared=false] if `true`, buffer will stay alive when geometry is disposed
      */
-    constructor(data, _static = true, index = false, shared = false)
+    constructor(data, _static = true, index = false)
     {
         /**
          * The data in the buffer, as a typed array
@@ -41,10 +40,10 @@ export default class Buffer
         this.static = _static;
 
         /**
-         * If `true`, it wont be destroyed at the same time as geometry
+         * How many geometries with existing VAO's referenced this Buffer
          * @member {boolean}
          */
-        this.shared = shared;
+        this.refCount = 0;
 
         this.id = UID++;
 

@@ -42,9 +42,8 @@ export default class Geometry
     /**
      * @param {PIXI.Buffer[]} [buffers]  an array of buffers. optional.
      * @param {object} [attributes] of the geometry, optional structure of the attributes layout
-     * @param {boolean} [shared=false] Geometry is shared between multiple meshes
      */
-    constructor(buffers = [], attributes = {}, shared = false)
+    constructor(buffers = [], attributes = {})
     {
         this.buffers = buffers;
 
@@ -71,10 +70,10 @@ export default class Geometry
         this.disposeRunner = new Runner('disposeGeometry', 2);
 
         /**
-         * If `true`, it wont be destroyed at the same time as mesh
+         * Count of existing (not destroyed) meshes that reference this geometry
          * @member {boolean}
          */
-        this.shared = shared;
+        this.refCount = 0;
     }
 
     /**
@@ -263,7 +262,9 @@ export default class Geometry
 
         for (let i = 0; i < this.buffers.length; i++)
         {
-            if (!this.buffers[i].shared)
+            this.buffers[i].refCount--;
+
+            if (this.buffers[i].refCount === 0)
             {
                 this.buffers[i].dispose();
             }
@@ -276,14 +277,6 @@ export default class Geometry
     destroy()
     {
         this.dispose();
-
-        for (let i = 0; i < this.buffers.length; i++)
-        {
-            if (!this.buffers[i].shared)
-            {
-                this.buffers[i].destroy();
-            }
-        }
 
         this.buffers = null;
         this.indexBuffer.destroy();

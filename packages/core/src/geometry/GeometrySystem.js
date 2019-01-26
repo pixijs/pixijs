@@ -375,6 +375,8 @@ export default class GeometrySystem extends System
         {
             const buffer = buffers[i];
 
+            buffer.refCount++;
+
             if (!buffer._glBuffers[CONTEXT_UID])
             {
                 buffer._glBuffers[CONTEXT_UID] = new GLBuffer(gl.createBuffer());

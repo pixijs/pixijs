@@ -54,6 +54,8 @@ export default class Graphics extends Container
          */
         this.geometry = geometry || new GraphicsGeometry();
 
+        this.geometry.refCount++;
+
         /**
          * Represents the vertex and fragment shaders that processes the geometry and runs on the GPU.
          * Can be shared between multiple Graphics objects.
@@ -1105,9 +1107,9 @@ export default class Graphics extends Container
      */
     destroy(options)
     {
-        if (!this.geometry.shared)
+        if (this.geometry.refCount === 0)
         {
-            this.geometry.destroy();
+            this.geometry.dispose();
         }
 
         this._matrix = null;

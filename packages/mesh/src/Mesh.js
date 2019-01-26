@@ -47,6 +47,8 @@ export default class Mesh extends Container
          */
         this.geometry = geometry;
 
+        geometry.refCount++;
+
         /**
          * Represents the vertex and fragment shaders that processes the geometry and runs on the GPU.
          * Can be shared between multiple Mesh objects.
@@ -465,9 +467,10 @@ export default class Mesh extends Container
     {
         super.destroy(options);
 
-        if (!this.geometry.shared)
+        this.geometry.refCount--;
+        if (this.geometry.refCount === 0)
         {
-            this.geometry.destroy();
+            this.geometry.dispose();
         }
 
         this.geometry = null;
