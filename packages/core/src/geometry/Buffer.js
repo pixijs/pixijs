@@ -39,12 +39,6 @@ export default class Buffer
 
         this.static = _static;
 
-        /**
-         * How many geometries with existing VAO's referenced this Buffer
-         * @member {boolean}
-         */
-        this.refCount = 0;
-
         this.id = UID++;
 
         this.disposeRunner = new Runner('disposeBuffer', 2);

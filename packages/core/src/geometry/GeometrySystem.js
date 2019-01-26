@@ -375,14 +375,14 @@ export default class GeometrySystem extends System
         {
             const buffer = buffers[i];
 
-            buffer.refCount++;
-
             if (!buffer._glBuffers[CONTEXT_UID])
             {
                 buffer._glBuffers[CONTEXT_UID] = new GLBuffer(gl.createBuffer());
                 this.managedBuffers[buffer.id] = buffer;
                 buffer.disposeRunner.add(this);
             }
+
+            buffer._glBuffers[CONTEXT_UID].refCount++;
         }
 
         // TODO - maybe make this a data object?
@@ -447,12 +447,24 @@ export default class GeometrySystem extends System
 
         const vaos = geometry.glVertexArrayObjects[this.CONTEXT_UID];
         const gl = this.gl;
+        const buffers = geometry.buffers;
 
         geometry.disposeRunner.remove(this);
 
         if (!vaos)
         {
             return;
+        }
+
+        for (let i = 0; i < buffers.length; i++)
+        {
+            const buf = buffers[i]._glBuffers[this.CONTEXT_UID];
+
+            buf.refCount--;
+            if (buf.refCount === 0 && !contextLost)
+            {
+                this.disposeBuffer(buffers[i], contextLost);
+            }
         }
 
         if (!contextLost)

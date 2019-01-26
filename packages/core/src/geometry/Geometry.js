@@ -259,16 +259,6 @@ export default class Geometry
     dispose()
     {
         this.disposeRunner.run(this, false);
-
-        for (let i = 0; i < this.buffers.length; i++)
-        {
-            this.buffers[i].refCount--;
-
-            if (this.buffers[i].refCount === 0)
-            {
-                this.buffers[i].dispose();
-            }
-        }
     }
 
     /**
