@@ -226,6 +226,7 @@ export default class FramebufferSystem extends System
         framebuffer.glFramebuffers[this.CONTEXT_UID] = fbo;
 
         this.managedFramebuffers.push(framebuffer);
+        framebuffer.disposeRunner.add(this);
 
         return fbo;
     }
