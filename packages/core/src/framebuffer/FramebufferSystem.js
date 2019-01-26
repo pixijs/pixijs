@@ -387,7 +387,7 @@ export default class FramebufferSystem extends System
     }
 
     /**
-     * Disposes all framebuffers, but not their textures
+     * Disposes all framebuffers, but not textures bound to them
      * @param {boolean} [contextLost=false] If context was lost, we suppress all delete function calls
      */
     disposeAll(contextLost)
