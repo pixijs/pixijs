@@ -376,7 +376,7 @@ export default class FramebufferSystem extends System
 
         framebuffer.disposeRunner.remove(this);
 
-        if (contextLost)
+        if (!contextLost)
         {
             gl.deleteFramebuffer(fbo.framebuffer);
             if (fbo.stencil)
