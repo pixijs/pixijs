@@ -1,3 +1,4 @@
+import Runner from 'mini-runner';
 import Texture from '../textures/BaseTexture';
 import { FORMATS, TYPES } from '@pixi/constants';
 
@@ -29,6 +30,8 @@ export default class Framebuffer
         this.colorTextures = [];
 
         this.glFramebuffers = {};
+
+        this.disposeRunner = new Runner('disposeFramebuffer', 2);
     }
 
     /**
@@ -139,5 +142,13 @@ export default class Framebuffer
         {
             this.depthTexture.setSize(width, height);
         }
+    }
+
+    /**
+     * disposes WebGL resources that are connected to this geometry
+     */
+    dispose()
+    {
+        this.disposeRunner.run(this, false);
     }
 }

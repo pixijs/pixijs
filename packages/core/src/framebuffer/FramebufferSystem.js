@@ -13,6 +13,21 @@ import { settings } from '../settings';
 export default class FramebufferSystem extends System
 {
     /**
+     * @param {PIXI.Renderer} renderer - The renderer this System works for.
+     */
+    constructor(renderer)
+    {
+        super(renderer);
+
+        /**
+         * A list of managed framebuffers
+         * @member {PIXI.Framebuffer[]}
+         * @readonly
+         */
+        this.managedFramebuffers = [];
+    }
+
+    /**
      * Sets up the renderer context and necessary buffers.
      */
     contextChange()
@@ -23,6 +38,8 @@ export default class FramebufferSystem extends System
         this.current = null;
         this.viewport = new Rectangle();
         this.hasMRT = true;
+
+        this.disposeAll(true);
 
         // webgl2
         if (!gl.drawBuffers)
@@ -85,7 +102,7 @@ export default class FramebufferSystem extends System
                 else if (fbo.dirtySize !== framebuffer.dirtySize)
                 {
                     fbo.dirtySize = framebuffer.dirtySize;
-                    this.resizeFramebuffer(framebuffer, fbo);
+                    this.resizeFramebuffer(framebuffer);
                 }
             }
 
@@ -208,6 +225,8 @@ export default class FramebufferSystem extends System
 
         framebuffer.glFramebuffers[this.CONTEXT_UID] = fbo;
 
+        this.managedFramebuffers.push(framebuffer);
+
         return fbo;
     }
 
@@ -216,7 +235,6 @@ export default class FramebufferSystem extends System
      *
      * @protected
      * @param {PIXI.Framebuffer} framebuffer
-     * @param {object} fbo Framebuffer object corresponding to renderer context
      */
     resizeFramebuffer(framebuffer)
     {
@@ -328,6 +346,58 @@ export default class FramebufferSystem extends System
             gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, fbo.stencil);
             gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, framebuffer.width, framebuffer.height);
             // fbo.enableStencil();
+        }
+    }
+
+    /**
+     * Disposes framebuffer
+     * @param {PIXI.Framebuffer} framebuffer framebuffer that has to be disposed of
+     * @param {boolean} [contextLost=false] If context was lost, we suppress all delete function calls
+     */
+    disposeFramebuffer(framebuffer, contextLost)
+    {
+        const fbo = framebuffer.glFramebuffers[this.CONTEXT_UID];
+        const gl = this.gl;
+
+        if (!fbo)
+        {
+            return;
+        }
+
+        delete framebuffer.glFramebuffers[this.CONTEXT_UID];
+
+        const index = this.managedFramebuffers.indexOf(framebuffer);
+
+        if (index >= 0)
+        {
+            this.managedFramebuffers.splice(index, 1);
+        }
+
+        framebuffer.disposeRunner.remove(this);
+
+        if (contextLost)
+        {
+            gl.deleteFramebuffer(fbo.framebuffer);
+            if (fbo.stencil)
+            {
+                gl.deleteRenderbuffer(fbo.stencil);
+            }
+        }
+    }
+
+    /**
+     * Disposes all framebuffers, but not their textures
+     * @param {boolean} [contextLost=false] If context was lost, we suppress all delete function calls
+     */
+    disposeAll(contextLost)
+    {
+        const list = this.managedFramebuffers;
+
+        this.managedFramebuffers = [];
+
+        for (let i = 0; i < list.count; i++)
+        {
+            this.disposeFramebuffer(list[i], contextLost);
         }
     }
 }
