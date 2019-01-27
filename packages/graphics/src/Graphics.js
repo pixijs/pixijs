@@ -1108,6 +1108,9 @@ export default class Graphics extends Container
      */
     destroy(options)
     {
+        super.destroy(options);
+
+        this.geometry.refCount--;
         if (this.geometry.refCount === 0)
         {
             this.geometry.dispose();
