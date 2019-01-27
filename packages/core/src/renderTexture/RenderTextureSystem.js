@@ -92,7 +92,7 @@ export default class RenderTextureSystem extends System
                 sourceFrame = destinationFrame;
             }
 
-            this.renderer.framebuffer.bind(baseTexture.frameBuffer, destinationFrame);
+            this.renderer.framebuffer.bind(baseTexture.framebuffer, destinationFrame);
 
             this.renderer.projection.update(destinationFrame, sourceFrame, resolution, false);
             this.renderer.stencil.setMaskStack(baseTexture.stencilMaskStack);
