@@ -74,6 +74,8 @@ export { mixins };
 import earcut from 'earcut';
 export { earcut };
 
+import './settings';
+
 export * from './browser';
 export * from './color';
 export * from './data';
@@ -81,5 +83,3 @@ export * from './media';
 export * from './network';
 export * from './const';
 export * from './logging';
-
-import './settings';
