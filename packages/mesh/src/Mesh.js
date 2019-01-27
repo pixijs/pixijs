@@ -44,6 +44,7 @@ export default class Mesh extends Container
          * custom attributes within buffers, reducing the cost of passing all
          * this data to the GPU. Can be shared between multiple Mesh objects.
          * @member {PIXI.Geometry}
+         * @readonly
          */
         this.geometry = geometry;
 

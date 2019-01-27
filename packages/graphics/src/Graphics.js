@@ -51,6 +51,7 @@ export default class Graphics extends Container
          * custom attributes within buffers, reducing the cost of passing all
          * this data to the GPU. Can be shared between multiple Mesh or Graphics objects.
          * @member {PIXI.Geometry}
+         * @readonly
          */
         this.geometry = geometry || new GraphicsGeometry();
 
