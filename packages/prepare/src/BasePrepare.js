@@ -6,19 +6,10 @@ import { Text, TextStyle, TextMetrics } from '@pixi/text';
 import CountLimiter from './CountLimiter';
 
 /**
- * Default number of uploads per frame using prepare plugin.
+ * The prepare manager provides functionality to upload content to the GPU.
  *
- * @static
- * @memberof PIXI.settings
- * @name UPLOADS_PER_FRAME
- * @type {number}
- * @default 4
- */
-settings.UPLOADS_PER_FRAME = 4;
-
-/**
- * The prepare manager provides functionality to upload content to the GPU. BasePrepare handles
- * basic queuing functionality and is extended by {@link PIXI.prepare.WebGLPrepare} and {@link PIXI.prepare.CanvasPrepare}
+ * BasePrepare handles basic queuing functionality and is extended by
+ * {@link PIXI.prepare.WebGLPrepare} and {@link PIXI.prepare.CanvasPrepare}
  * to provide preparation capabilities specific to their respective renderers.
  *
  * @example
