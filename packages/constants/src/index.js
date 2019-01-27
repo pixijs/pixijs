@@ -59,6 +59,10 @@ export const RENDERER_TYPE = {
  * @property {number} SATURATION
  * @property {number} COLOR
  * @property {number} LUMINOSITY
+ * @property {number} NORMAL_NPM
+ * @property {number} ADD_NPM
+ * @property {number} SCREEN_NPM
+ * @property {number} NONE
  */
 export const BLEND_MODES = {
     NORMAL:         0,
@@ -81,6 +85,7 @@ export const BLEND_MODES = {
     NORMAL_NPM:     17,
     ADD_NPM:        18,
     SCREEN_NPM:     19,
+    NONE:           20,
 };
 
 /**
