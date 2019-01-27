@@ -85,7 +85,7 @@ export const BLEND_MODES = {
     NORMAL_NPM:     17,
     ADD_NPM:        18,
     SCREEN_NPM:     19,
-    NONE:           20
+    NONE:           20,
 };
 
 /**
