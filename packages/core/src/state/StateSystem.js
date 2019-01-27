@@ -71,10 +71,10 @@ export default class StateSystem extends System
         /**
          * Blend mode
          * @member {number}
-         * @default 17
+         * @default 20
          * @readonly
          */
-        this.blendMode = 17;
+        this.blendMode = 20;
 
         /**
          * Collection of calls
@@ -239,14 +239,23 @@ export default class StateSystem extends System
         this.blendMode = value;
 
         const mode = this.blendModes[value];
+        const gl = this.gl;
 
         if (mode.length === 2)
         {
-            this.gl.blendFunc(mode[0], mode[1]);
+            gl.blendFuncSeparate(mode[0], mode[1], gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
         }
         else
         {
-            this.gl.blendFuncSeparate(mode[0], mode[1], mode[2], mode[3]);
+            gl.blendFuncSeparate(mode[0], mode[1], mode[2], mode[3]);
+        }
+        if (mode.length === 6)
+        {
+            gl.blendEquationSeparate(mode[4], mode[5]);
+        }
+        else
+        {
+            gl.blendEquationSeparate(gl.FUNC_ADD, gl.FUNC_ADD);
         }
     }
 

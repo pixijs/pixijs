@@ -63,6 +63,14 @@ export const RENDERER_TYPE = {
  * @property {number} ADD_NPM
  * @property {number} SCREEN_NPM
  * @property {number} NONE
+ * @property {number} SOURCE_IN
+ * @property {number} SOURCE_OUT
+ * @property {number} SOURCE_ATOP
+ * @property {number} DESTINATION_OVER
+ * @property {number} DESTINATION_IN
+ * @property {number} DESTINATION_OUT
+ * @property {number} DESTINATION_ATOP
+ * @property {number} SUBTRACT
  */
 export const BLEND_MODES = {
     NORMAL:         0,
@@ -86,6 +94,16 @@ export const BLEND_MODES = {
     ADD_NPM:        18,
     SCREEN_NPM:     19,
     NONE:           20,
+
+    SOURCE_IN:      21,
+    SOURCE_OUT:     22,
+    SOURCE_ATOP:    23,
+    DESTINATION_OVER: 24,
+    DESTINATION_IN:   25,
+    DESTINATION_OUT:  26,
+    DESTINATION_ATOP: 27,
+
+    SUBTRACT:       28,
 };
 
 /**

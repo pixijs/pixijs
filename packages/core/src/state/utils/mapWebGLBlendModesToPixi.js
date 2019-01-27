@@ -43,5 +43,25 @@ export default function mapWebGLBlendModesToPixi(gl, array = [])
     array[BLEND_MODES.ADD_NPM] = [gl.SRC_ALPHA, gl.DST_ALPHA, gl.ONE, gl.DST_ALPHA];
     array[BLEND_MODES.SCREEN_NPM] = [gl.SRC_ALPHA, gl.ONE_MINUS_SRC_COLOR, gl.ONE, gl.ONE_MINUS_SRC_COLOR];
 
+    // composite operations
+    array[BLEND_MODES.SOURCE_IN] = [gl.DST_ALPHA, gl.ZERO, gl.DST_ALPHA, gl.ZERO];
+    array[BLEND_MODES.SOURCE_OUT] = [gl.ONE_MINUS_DST_ALPHA, gl.ZERO, gl.ONE_MINUS_DST_ALPHA, gl.ZERO];
+    array[BLEND_MODES.SOURCE_ATOP] = [gl.DST_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.DST_ALPHA, gl.ONE_MINUS_SRC_ALPHA];
+    array[BLEND_MODES.DESTINATION_OVER] = [gl.ONE_MINUS_DST_ALPHA, gl.ONE, gl.ONE_MINUS_DST_ALPHA, gl.ONE];
+    array[BLEND_MODES.DESTINATION_IN] = [gl.ZERO, gl.SRC_ALPHA, gl.ZERO, gl.SRC_ALPHA];
+    array[BLEND_MODES.DESTINATION_OUT] = [gl.ZERO, gl.ONE_MINUS_SRC_ALPHA, gl.ZERO, gl.ONE_MINUS_SRC_ALPHA];
+    array[BLEND_MODES.DESTINATION_ATOP] = [gl.ONE_MINUS_DST_ALPHA, gl.SRC_ALPHA, gl.ONE_MINUS_DST_ALPHA, gl.SRC_ALPHA];
+
+    // SUBTRACT from flash
+    array[BLEND_MODES.SUBTRACT] = [gl.ONE, gl.ONE, gl.ONE, gl.ONE, gl.FUNC_REVERSE_SUBTRACT, gl.FUNC_ADD];
+
+    // SOURCE_IN:      21,
+    //     SOURCE_OUT:     22,
+    // SOURCE_ATOP:    23,
+    // DESTINATION_OVER: 24,
+    // DESTINATION_IN:   25,
+    // DESTINATION_OUT:  26,
+    // DESTINATION_ATOP: 27,
+
     return array;
 }
