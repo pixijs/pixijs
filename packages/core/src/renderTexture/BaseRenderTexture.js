@@ -85,7 +85,7 @@ export default class BaseRenderTexture extends BaseTexture
 
         this.clearColor = [0, 0, 0, 0];
 
-        this.frameBuffer = new Framebuffer(this.width * this.resolution, this.height * this.resolution)
+        this.framebuffer = new Framebuffer(this.width * this.resolution, this.height * this.resolution)
             .addColorTexture(0, this)
             .enableStencil();
 
@@ -116,7 +116,21 @@ export default class BaseRenderTexture extends BaseTexture
     {
         width = Math.ceil(width);
         height = Math.ceil(height);
-        this.frameBuffer.resize(width * this.resolution, height * this.resolution);
+        this.framebuffer.resize(width * this.resolution, height * this.resolution);
+    }
+
+    /**
+     * Frees the texture and framebuffer from WebGL memory without destroying this texture object.
+     * This means you can still use the texture later which will upload it to GPU
+     * memory again.
+     *
+     * @fires PIXI.BaseTexture#dispose
+     */
+    dispose()
+    {
+        this.framebuffer.dispose();
+
+        super.dispose();
     }
 
     /**
@@ -126,6 +140,9 @@ export default class BaseRenderTexture extends BaseTexture
     destroy()
     {
         super.destroy(true);
+
+        this.framebuffer = null;
+
         this.renderer = null;
     }
 }
