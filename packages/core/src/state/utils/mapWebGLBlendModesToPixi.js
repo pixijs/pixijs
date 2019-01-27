@@ -55,13 +55,5 @@ export default function mapWebGLBlendModesToPixi(gl, array = [])
     // SUBTRACT from flash
     array[BLEND_MODES.SUBTRACT] = [gl.ONE, gl.ONE, gl.ONE, gl.ONE, gl.FUNC_REVERSE_SUBTRACT, gl.FUNC_ADD];
 
-    // SOURCE_IN:      21,
-    //     SOURCE_OUT:     22,
-    // SOURCE_ATOP:    23,
-    // DESTINATION_OVER: 24,
-    // DESTINATION_IN:   25,
-    // DESTINATION_OUT:  26,
-    // DESTINATION_ATOP: 27,
-
     return array;
 }
