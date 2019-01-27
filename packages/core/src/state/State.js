@@ -1,3 +1,5 @@
+import { BLEND_MODES } from '@pixi/constants';
+
 /* eslint-disable max-len */
 
 const BLEND = 0;
@@ -21,7 +23,7 @@ export default class State
     {
         this.data = 0;
 
-        this.blendMode = 0;
+        this.blendMode = BLEND_MODES.NORMAL;
         this.polygonOffset = 0;
 
         this.blend = true;
@@ -136,8 +138,7 @@ export default class State
 
     set blendMode(value) // eslint-disable-line require-jsdoc
     {
-        // 17 is NO BLEND
-        this.blend = (value !== 17);
+        this.blend = (value !== BLEND_MODES.NONE);
         this._blendMode = value;
     }
 
