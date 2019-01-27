@@ -1,13 +1,19 @@
+import Runner from 'mini-runner';
 import Texture from '../textures/BaseTexture';
 import { FORMATS, TYPES } from '@pixi/constants';
 
 /**
- * Frame buffer
+ * Frame buffer used by the BaseRenderTexture
+ *
  * @class
  * @memberof PIXI
  */
 export default class Framebuffer
 {
+    /**
+     * @param {number} width - Width of the frame buffer
+     * @param {number} height - Height of the frame buffer
+     */
     constructor(width, height)
     {
         this.width = Math.ceil(width || 100);
@@ -24,17 +30,31 @@ export default class Framebuffer
         this.colorTextures = [];
 
         this.glFramebuffers = {};
+
+        this.disposeRunner = new Runner('disposeFramebuffer', 2);
     }
 
+    /**
+     * Reference to the colorTexture.
+     *
+     * @member {PIXI.Texture[]}
+     * @readonly
+     */
     get colorTexture()
     {
         return this.colorTextures[0];
     }
 
-    addColorTexture(index, texture)
+    /**
+     * Add texture to the colorTexture array
+     *
+     * @param {number} [index=0] - Index of the array to add the texture to
+     * @param {PIXI.Texture} [texture] - Texture to add to the array
+     */
+    addColorTexture(index = 0, texture)
     {
         // TODO add some validation to the texture - same width / height etc?
-        this.colorTextures[index || 0] = texture || new Texture(null, { scaleMode: 0,
+        this.colorTextures[index] = texture || new Texture(null, { scaleMode: 0,
             resolution: 1,
             mipmap: false,
             width: this.width,
@@ -46,6 +66,11 @@ export default class Framebuffer
         return this;
     }
 
+    /**
+     * Add a depth texture to the frame buffer
+     *
+     * @param {PIXI.Texture} [texture] - Texture to add
+     */
     addDepthTexture(texture)
     {
         /* eslint-disable max-len */
@@ -63,6 +88,9 @@ export default class Framebuffer
         return this;
     }
 
+    /**
+     * Enable depth on the frame buffer
+     */
     enableDepth()
     {
         this.depth = true;
@@ -73,6 +101,9 @@ export default class Framebuffer
         return this;
     }
 
+    /**
+     * Enable stencil on the frame buffer
+     */
     enableStencil()
     {
         this.stencil = true;
@@ -83,6 +114,12 @@ export default class Framebuffer
         return this;
     }
 
+    /**
+     * Resize the frame buffer
+     *
+     * @param {number} width - Width of the frame buffer to resize to
+     * @param {number} height - Height of the frame buffer to resize to
+     */
     resize(width, height)
     {
         width = Math.ceil(width);
@@ -105,5 +142,13 @@ export default class Framebuffer
         {
             this.depthTexture.setSize(width, height);
         }
+    }
+
+    /**
+     * disposes WebGL resources that are connected to this geometry
+     */
+    dispose()
+    {
+        this.disposeRunner.run(this, false);
     }
 }

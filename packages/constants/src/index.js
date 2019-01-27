@@ -59,6 +59,10 @@ export const RENDERER_TYPE = {
  * @property {number} SATURATION
  * @property {number} COLOR
  * @property {number} LUMINOSITY
+ * @property {number} NORMAL_NPM
+ * @property {number} ADD_NPM
+ * @property {number} SCREEN_NPM
+ * @property {number} NONE
  */
 export const BLEND_MODES = {
     NORMAL:         0,
@@ -81,6 +85,7 @@ export const BLEND_MODES = {
     NORMAL_NPM:     17,
     ADD_NPM:        18,
     SCREEN_NPM:     19,
+    NONE:           20,
 };
 
 /**
@@ -211,7 +216,7 @@ export const SCALE_MODES = {
  *
  * The {@link PIXI.settings.WRAP_MODE} wrap mode affects the default wrapping mode of future operations.
  * It can be re-assigned to either CLAMP or REPEAT, depending upon suitability.
- * If the texture is non power of two then clamp will be used regardless as webGL can
+ * If the texture is non power of two then clamp will be used regardless as WebGL can
  * only use REPEAT if the texture is po2.
  *
  * This property only affects WebGL.

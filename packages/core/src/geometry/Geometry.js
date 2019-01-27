@@ -19,10 +19,9 @@ const map = {
 
 /**
  * The Geometry represents a model. It consists of two components:
- * GeometryStyle - The structure of the model such as the attributes layout
- * GeometryData - the data of the model - this consists of buffers.
- *
- * This can include anything from positions, uvs, normals, colors etc..
+ * - GeometryStyle - The structure of the model such as the attributes layout
+ * - GeometryData - the data of the model - this consists of buffers.
+ * This can include anything from positions, uvs, normals, colors etc.
  *
  * Geometry can be defined without passing in a style or data if required (thats how I prefer!)
  *

@@ -19,9 +19,6 @@ import fragment from './colorMatrix.frag';
  */
 export default class ColorMatrixFilter extends Filter
 {
-    /**
-     *
-     */
     constructor()
     {
         const uniforms = {

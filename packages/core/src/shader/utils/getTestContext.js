@@ -4,7 +4,7 @@ import { ENV } from '@pixi/constants';
 let context = null;
 
 /**
- * returns a little webGL context to use for program inspection.
+ * returns a little WebGL context to use for program inspection.
  *
  * @static
  * @private
@@ -31,7 +31,7 @@ export default function getTestContext()
             if (!gl)
             {
                 // fail, not able to get a context
-                throw new Error('This browser does not support webGL. Try using the canvas renderer');
+                throw new Error('This browser does not support WebGL. Try using the canvas renderer');
             }
             else
             {

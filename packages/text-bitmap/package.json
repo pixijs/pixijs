@@ -3,7 +3,7 @@
   "version": "5.0.0-alpha.3",
   "main": "lib/text-bitmap.js",
   "module": "lib/text-bitmap.es.js",
-  "description": "Support for legacy browser JavaScript environments",
+  "description": "Text via bitmap fonts",
   "author": "Mat Groves",
   "contributors": [
     "Matt Karl <matt@mattkarl.com>"

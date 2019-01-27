@@ -1,5 +1,5 @@
 /**
- * A GraphicsData object.
+ * A class to contain data useful for Graphics objects
  *
  * @class
  * @memberof PIXI

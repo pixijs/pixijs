@@ -3,7 +3,7 @@ import { Sprite } from '@pixi/sprite';
 import { Texture } from '@pixi/core';
 import { settings } from '@pixi/settings';
 import { Rectangle } from '@pixi/math';
-import { sign, trimCanvas } from '@pixi/utils';
+import { sign, trimCanvas, hex2rgb, string2hex } from '@pixi/utils';
 import { TEXT_GRADIENT } from './const';
 import TextStyle from './TextStyle';
 import TextMetrics from './TextMetrics';
@@ -15,8 +15,18 @@ const defaultDestroyOptions = {
 };
 
 /**
- * A Text Object will create a line or multiple lines of text. To split a line you can use '\n' in your text string,
- * or add a wordWrap property set to true and and wordWrapWidth property with a value in the style object.
+ * A Text Object will create a line or multiple lines of text.
+ *
+ * The text is created using the [Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API).
+ *
+ * The primary advantage of this class over BitmapText is that you have great control over the style of the next,
+ * which you can change at runtime.
+ *
+ * The primary disadvantages is that each piece of text has it's own texture, which can use more memory.
+ * When text changes, this texture has to be re-generated and re-uploaded to the GPU, taking up time.
+ *
+ * To split a line you can use '\n' in your text string, or, on the `style` object,
+ * change its `wordWrap` property to true and and give the `wordWrapWidth` property a value.
  *
  * A Text can be created directly from a string and a style object,
  * which can be generated [here](https://pixijs.io/pixi-text-style).
@@ -43,7 +53,7 @@ export default class Text extends Sprite
         canvas.width = 3;
         canvas.height = 3;
 
-        const texture = Texture.from(canvas, settings.SCALE_MODE, 'text');
+        const texture = Texture.from(canvas);
 
         texture.orig = new Rectangle();
         texture.trim = new Rectangle();
@@ -162,56 +172,21 @@ export default class Text extends Sprite
 
         if (style.dropShadow)
         {
-            context.fillStyle = style.dropShadowColor;
-            context.globalAlpha = style.dropShadowAlpha;
+            const dropShadowColor = style.dropShadowColor;
+            const rgb = hex2rgb(typeof dropShadowColor === 'number' ? dropShadowColor : string2hex(dropShadowColor));
+
+            context.shadowColor = `rgba(${rgb[0] * 255},${rgb[1] * 255},${rgb[2] * 255},${style.dropShadowAlpha})`;
             context.shadowBlur = style.dropShadowBlur;
-
-            if (style.dropShadowBlur > 0)
-            {
-                context.shadowColor = style.dropShadowColor;
-            }
-
-            const xShadowOffset = Math.cos(style.dropShadowAngle) * style.dropShadowDistance;
-            const yShadowOffset = Math.sin(style.dropShadowAngle) * style.dropShadowDistance;
-
-            for (let i = 0; i < lines.length; i++)
-            {
-                linePositionX = style.strokeThickness / 2;
-                linePositionY = ((style.strokeThickness / 2) + (i * lineHeight)) + fontProperties.ascent;
-
-                if (style.align === 'right')
-                {
-                    linePositionX += maxLineWidth - lineWidths[i];
-                }
-                else if (style.align === 'center')
-                {
-                    linePositionX += (maxLineWidth - lineWidths[i]) / 2;
-                }
-
-                if (style.fill)
-                {
-                    this.drawLetterSpacing(
-                        lines[i],
-                        linePositionX + xShadowOffset + style.padding, linePositionY + yShadowOffset + style.padding
-                    );
-
-                    if (style.stroke && style.strokeThickness)
-                    {
-                        context.strokeStyle = style.dropShadowColor;
-                        this.drawLetterSpacing(
-                            lines[i],
-                            linePositionX + xShadowOffset + style.padding, linePositionY + yShadowOffset + style.padding,
-                            true
-                        );
-                        context.strokeStyle = style.stroke;
-                    }
-                }
-            }
+            context.shadowOffsetX = Math.cos(style.dropShadowAngle) * style.dropShadowDistance;
+            context.shadowOffsetY = Math.sin(style.dropShadowAngle) * style.dropShadowDistance;
         }
-
-        // reset the shadow blur and alpha that was set by the drop shadow, for the regular text
-        context.shadowBlur = 0;
-        context.globalAlpha = 1;
+        else
+        {
+            context.shadowColor = 0;
+            context.shadowBlur = 0;
+            context.shadowOffsetX = 0;
+            context.shadowOffsetY = 0;
+        }
 
         // set canvas text styles
         context.fillStyle = this._generateFillStyle(style, lines);

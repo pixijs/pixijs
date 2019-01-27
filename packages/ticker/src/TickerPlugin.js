@@ -3,10 +3,12 @@ import { UPDATE_PRIORITY } from './const';
 
 /**
  * Middleware for for Application Ticker.
+ *
  * @example
  * import {TickerPlugin} from '@pixi/ticker';
  * import {Application} from '@pixi/app';
  * Application.registerPlugin(TickerPlugin);
+ *
  * @class
  * @memberof PIXI
  */
@@ -14,6 +16,7 @@ export default class TickerPlugin
 {
     /**
      * Initialize the plugin with scope of application instance
+     *
      * @static
      * @private
      * @param {object} [options] - See application options
@@ -49,6 +52,7 @@ export default class TickerPlugin
 
         /**
          * Convenience method for stopping the render.
+         *
          * @method PIXI.Application#stop
          */
         this.stop = () =>
@@ -58,6 +62,7 @@ export default class TickerPlugin
 
         /**
          * Convenience method for starting the render.
+         *
          * @method PIXI.Application#start
          */
         this.start = () =>
@@ -66,7 +71,8 @@ export default class TickerPlugin
         };
 
         /**
-         * Internal reference to the ticker
+         * Internal reference to the ticker.
+         *
          * @type {PIXI.Ticker}
          * @name _ticker
          * @memberof PIXI.Application#
@@ -76,6 +82,7 @@ export default class TickerPlugin
 
         /**
          * Ticker for doing render updates.
+         *
          * @type {PIXI.Ticker}
          * @name ticker
          * @memberof PIXI.Application#
@@ -91,7 +98,8 @@ export default class TickerPlugin
     }
 
     /**
-     * Clean up the ticker, scoped to application
+     * Clean up the ticker, scoped to application.
+     *
      * @static
      * @private
      */

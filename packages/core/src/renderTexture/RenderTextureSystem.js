@@ -4,6 +4,8 @@ import { Rectangle } from '@pixi/math';
 const tempRect = new Rectangle();
 
 /**
+ * System plugin to the renderer to manage render textures.
+ *
  * @class
  * @extends PIXI.System
  * @memberof PIXI.systems
@@ -90,7 +92,7 @@ export default class RenderTextureSystem extends System
                 sourceFrame = destinationFrame;
             }
 
-            this.renderer.framebuffer.bind(baseTexture.frameBuffer, destinationFrame);
+            this.renderer.framebuffer.bind(baseTexture.framebuffer, destinationFrame);
 
             this.renderer.projection.update(destinationFrame, sourceFrame, resolution, false);
             this.renderer.stencil.setMaskStack(baseTexture.stencilMaskStack);

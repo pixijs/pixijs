@@ -1,3 +1,5 @@
+import { BLEND_MODES } from '@pixi/constants';
+
 /* eslint-disable max-len */
 
 const BLEND = 0;
@@ -7,8 +9,9 @@ const DEPTH_TEST = 3;
 const WINDING = 4;
 
 /**
- * This is a webGL state. It is passed The WebGL StateManager.
- * Each mesh rendered may require webGL to be in a different state.
+ * This is a WebGL state, and is is passed The WebGL StateManager.
+ *
+ * Each mesh rendered may require WebGL to be in a different state.
  * For example you may want different blend mode or to enable polygon offsets
  *
  * @class
@@ -16,14 +19,11 @@ const WINDING = 4;
  */
 export default class State
 {
-    /**
-     *
-     */
     constructor()
     {
         this.data = 0;
 
-        this.blendMode = 0;
+        this.blendMode = BLEND_MODES.NORMAL;
         this.polygonOffset = 0;
 
         this.blend = true;
@@ -138,8 +138,7 @@ export default class State
 
     set blendMode(value) // eslint-disable-line require-jsdoc
     {
-        // 17 is NO BLEND
-        this.blend = (value !== 17);
+        this.blend = (value !== BLEND_MODES.NONE);
         this._blendMode = value;
     }
 

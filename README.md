@@ -33,7 +33,7 @@ PixiJS has full [WebGL](https://en.wikipedia.org/wiki/WebGL) support and seamles
 - Wiki: Other misc tutorials and resources are [on the Wiki](https://github.com/pixijs/pixi.js/wiki).
 
 ### Community ###
-- Forums: Check out the [forum](http://www.html5gamedevs.com/forum/15-pixijs/) and [Stackoverflow](http://stackoverflow.com/search?q=pixi.js), both friendly places to ask your pixi questions.
+- Forums: Check out the [forum](http://www.html5gamedevs.com/forum/15-pixijs/) and [Stackoverflow](http://stackoverflow.com/search?q=pixi.js), both friendly places to ask your PixiJS questions.
 - Inspiration: Check out the [gallery](http://www.pixijs.com/gallery) to see some of the amazing things people have created!
 - Chat: You can join us on [Gitter](https://gitter.im/pixijs/pixi.js) To chat about PixiJS. We also now have a Slack channel. If you would like to join it please Send me an email (mat@goodboydigital.com) and I will invite you in.
 
@@ -123,7 +123,7 @@ const app = new PIXI.Application();
 document.body.appendChild(app.view);
 
 // load the texture we need
-PIXI.loader.add('bunny', 'bunny.png').load((loader, resources) => {
+PIXI.Loader.shared.add('bunny', 'bunny.png').load((loader, resources) => {
     // This creates a texture from a 'bunny.png' image
     const bunny = new PIXI.Sprite(resources.bunny.texture);
 

@@ -14,7 +14,8 @@ function sortChildren(a, b)
 
 /**
  * A Container represents a collection of display objects.
- * It is the base class of all display objects that act as a container for other objects.
+ *
+ * It is the base class of all display objects that act as a container for other objects (like Sprites).
  *
  *```js
  * let container = new PIXI.Container();
@@ -27,9 +28,6 @@ function sortChildren(a, b)
  */
 export default class Container extends DisplayObject
 {
-    /**
-     *
-     */
     constructor()
     {
         super();

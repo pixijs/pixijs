@@ -63,7 +63,7 @@ export default class Graphics extends Container
         this.shader = null;
 
         /**
-         * Represents the webGL state the Graphics required to render, excludes shader and geometry. E.g.,
+         * Represents the WebGL state the Graphics required to render, excludes shader and geometry. E.g.,
          * blend mode, culling, depth testing, direction of rendering triangles, backface, etc.
          * @member {PIXI.State}
          */
@@ -738,7 +738,6 @@ export default class Graphics extends Container
         }
         else
         {
-            //  console.log('HOLE');
             this.geometry.drawHole(shape, this._matrix);
         }
 
@@ -1037,7 +1036,6 @@ export default class Graphics extends Container
 
         let count = 0;
 
-        // console.log('.,', data.length);
         for (let i = 0; i < data.length; i += 2)
         {
             const x = data[i];

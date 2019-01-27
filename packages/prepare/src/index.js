@@ -1,6 +1,6 @@
 /**
  * The prepare namespace provides renderer-specific plugins for pre-rendering DisplayObjects. These plugins are useful for
- * asynchronously preparing assets, textures, graphics waiting to be displayed.
+ * asynchronously preparing and uploading to the GPU assets, textures, graphics waiting to be displayed.
  *
  * Do not instantiate these plugins directly. It is available from the `renderer.plugins` property.
  * See {@link PIXI.CanvasRenderer#plugins} or {@link PIXI.Renderer#plugins}.
@@ -26,6 +26,8 @@
  * });
  * @namespace PIXI.prepare
  */
+import './settings';
+
 export { default as Prepare } from './Prepare';
 export { default as BasePrepare } from './BasePrepare';
 export { default as CountLimiter } from './CountLimiter';

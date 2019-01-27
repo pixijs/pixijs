@@ -7,7 +7,7 @@ const TEMP_RECT = new Rectangle();
 /**
  * The extract manager provides functionality to export content from the renderers.
  *
- * An instance of this class is automatically created by default, and can be found at renderer.plugins.extract
+ * An instance of this class is automatically created by default, and can be found at `renderer.plugins.extract`
  *
  * @class
  * @memberof PIXI.extract
@@ -95,7 +95,7 @@ export default class CanvasExtract
         else
         {
             context = renderer.rootContext;
-
+            resolution = renderer.resolution;
             frame = TEMP_RECT;
             frame.width = this.renderer.width;
             frame.height = this.renderer.height;

@@ -4,19 +4,15 @@ import TickerListener from './TickerListener';
 
 /**
  * A Ticker class that runs an update loop that other objects listen to.
- * This class is composed around listeners
- * meant for execution on the next requested animation frame.
- * Animation frames are requested only when necessary,
- * e.g. When the ticker is started and the emitter has listeners.
+ *
+ * This class is composed around listeners meant for execution on the next requested animation frame.
+ * Animation frames are requested only when necessary, e.g. When the ticker is started and the emitter has listeners.
  *
  * @class
  * @memberof PIXI
  */
 export default class Ticker
 {
-    /**
-     *
-     */
     constructor()
     {
         /**
@@ -42,6 +38,13 @@ export default class Ticker
         this._maxElapsedMS = 100;
 
         /**
+         * Internal value managed by maxFPS property setter and getter.
+         * This is the minimum allowed milliseconds between updates.
+         * @private
+         */
+        this._minElapsedMS = 0;
+
+        /**
          * Whether or not this ticker should invoke the method
          * {@link PIXI.Ticker#start} automatically
          * when a listener is added.
@@ -61,6 +64,20 @@ export default class Ticker
          * @default 1
          */
         this.deltaTime = 1;
+
+        /**
+         * Scaler time elapsed in milliseconds from last frame to this frame.
+         * This value is capped by setting {@link PIXI.Ticker#minFPS}
+         * and is scaled with {@link PIXI.Ticker#speed}.
+         * **Note:** The cap may be exceeded by scaling.
+         * If the platform supports DOMHighResTimeStamp,
+         * this value will have a precision of 1 µs.
+         * Defaults to target frame time
+         *
+         * @member {number}
+         * @default 16.66
+         */
+        this.deltaMS = 1 / settings.TARGET_FPMS;
 
         /**
          * Time elapsed in milliseconds from last frame to this frame.
@@ -400,7 +417,19 @@ export default class Ticker
                 elapsedMS = this._maxElapsedMS;
             }
 
-            this.deltaTime = elapsedMS * settings.TARGET_FPMS * this.speed;
+            elapsedMS *= this.speed;
+
+            // if not enough time has passed, exit the function.
+            // We give an extra ms to elapsedMS for this check, because the nature of
+            // request animation frame means that not all browsers will return precise values.
+            // However, because rAF works based on v-sync, it's won't change the effective FPS.
+            if (this._minElapsedMS && elapsedMS + 1 < this._minElapsedMS)
+            {
+                return;
+            }
+
+            this.deltaMS = elapsedMS;
+            this.deltaTime = this.deltaMS * settings.TARGET_FPMS;
 
             // Cache a local reference, in-case ticker is destroyed
             // during the emit, we can still check for head.next
@@ -421,7 +450,7 @@ export default class Ticker
         }
         else
         {
-            this.deltaTime = this.elapsedMS = 0;
+            this.deltaTime = this.deltaMS = this.elapsedMS = 0;
         }
 
         this.lastTime = currentTime;
@@ -460,18 +489,61 @@ export default class Ticker
 
     set minFPS(fps) // eslint-disable-line require-jsdoc
     {
-        // Clamp: 0 to TARGET_FPMS
-        const minFPMS = Math.min(Math.max(0, fps) / 1000, settings.TARGET_FPMS);
+        // Minimum must be below the maxFPS
+        const minFPS = Math.min(this.maxFPS, fps);
+
+        // Must be at least 0, but below 1 / settings.TARGET_FPMS
+        const minFPMS = Math.min(Math.max(0, minFPS) / 1000, settings.TARGET_FPMS);
 
         this._maxElapsedMS = 1 / minFPMS;
     }
 
     /**
-     * The shared ticker instance used by {@link PIXI.AnimatedSprite}.
-     * and by {@link PIXI.interaction.InteractionManager}.
-     * The property {@link PIXI.Ticker#autoStart} is set to `true`
-     * for this instance. Please follow the examples for usage, including
-     * how to opt-out of auto-starting the shared ticker.
+     * Manages the minimum amount of milliseconds allowed to
+     * elapse between invoking {@link PIXI.Ticker#update}.
+     * This will effect the measured value of {@link PIXI.ticker.Ticker#FPS}.
+     * When setting this property it is clamped to a value between
+     * `1` and `TARGET_FPMS * 1000`.
+     *
+     * @member {number}
+     * @default 60
+     */
+    get maxFPS()
+    {
+        if (this._minElapsedMS)
+        {
+            return 1000 / this._minElapsedMS;
+        }
+
+        return settings.TARGET_FPMS * 1000;
+    }
+
+    set maxFPS(fps)
+    {
+        if (fps / 1000 >= settings.TARGET_FPMS)
+        {
+            this._minElapsedMS = 0;
+        }
+        else
+        {
+            // Max must be at least the minFPS
+            const maxFPS = Math.max(this.minFPS, fps);
+
+            // Must be at least 1, but below 1 / settings.TARGET_FPMS
+            const maxFPMS = Math.min(Math.max(1, maxFPS) / 1000, settings.TARGET_FPMS);
+
+            this._minElapsedMS = 1 / maxFPMS;
+        }
+    }
+
+    /**
+     * The shared ticker instance used by {@link PIXI.AnimatedSprite} and by
+     * {@link PIXI.VideoResource} to update animation frames / video textures.
+     *
+     * It may also be used by {@link PIXI.Application} if created with the `sharedTicker` option property set to true.
+     *
+     * The property {@link PIXI.Ticker#autoStart} is set to `true` for this instance.
+     * Please follow the examples for usage, including how to opt-out of auto-starting the shared ticker.
      *
      * @example
      * let ticker = PIXI.Ticker.shared;
@@ -488,7 +560,6 @@ export default class Ticker
      * // You may use the shared ticker to render...
      * let renderer = PIXI.autoDetectRenderer(800, 600);
      * let stage = new PIXI.Container();
-     * let interactionManager = PIXI.interaction.InteractionManager(renderer);
      * document.body.appendChild(renderer.view);
      * ticker.add(function (time) {
      *     renderer.render(stage);
@@ -519,5 +590,28 @@ export default class Ticker
         }
 
         return Ticker._shared;
+    }
+
+    /**
+     * The system ticker instance used by {@link PIXI.interaction.InteractionManager} and by
+     * {@link PIXI.BasePrepare} for core timing functionality that shouldn't usually need to be paused,
+     * unlike the `shared` ticker which drives visual animations and rendering which may want to be paused.
+     *
+     * The property {@link PIXI.Ticker#autoStart} is set to `true` for this instance.
+     *
+     * @member {PIXI.Ticker}
+     * @static
+     */
+    static get system()
+    {
+        if (!Ticker._system)
+        {
+            const system = Ticker._system = new Ticker();
+
+            system.autoStart = true;
+            system._protected = true;
+        }
+
+        return Ticker._system;
     }
 }

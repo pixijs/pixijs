@@ -25,11 +25,13 @@ const hitTestEvent = {
 };
 
 /**
- * The interaction manager deals with mouse, touch and pointer events. Any DisplayObject can be interactive
- * if its interactive parameter is set to true
+ * The interaction manager deals with mouse, touch and pointer events.
+ *
+ * Any DisplayObject can be interactive if its `interactive` property is set to true.
+ *
  * This manager also supports multitouch.
  *
- * An instance of this class is automatically created by default, and can be found at renderer.plugins.interaction
+ * An instance of this class is automatically created by default, and can be found at `renderer.plugins.interaction`
  *
  * @class
  * @extends PIXI.utils.EventEmitter
@@ -709,7 +711,7 @@ export default class InteractionManager extends EventEmitter
             return;
         }
 
-        Ticker.shared.add(this.update, this, UPDATE_PRIORITY.INTERACTION);
+        Ticker.system.add(this.update, this, UPDATE_PRIORITY.INTERACTION);
 
         if (window.navigator.msPointerEnabled)
         {
@@ -772,7 +774,7 @@ export default class InteractionManager extends EventEmitter
             return;
         }
 
-        Ticker.shared.remove(this.update, this);
+        Ticker.system.remove(this.update, this);
 
         if (window.navigator.msPointerEnabled)
         {
@@ -817,7 +819,7 @@ export default class InteractionManager extends EventEmitter
 
     /**
      * Updates the state of interactive objects.
-     * Invoked by a throttled ticker update from {@link PIXI.Ticker.shared}.
+     * Invoked by a throttled ticker update from {@link PIXI.Ticker.system}.
      *
      * @param {number} deltaTime - time delta since last tick
      */

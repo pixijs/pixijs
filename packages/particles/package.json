@@ -3,7 +3,7 @@
   "version": "5.0.0-alpha.3",
   "main": "lib/particles.js",
   "module": "lib/particles.es.js",
-  "description": "Support for legacy browser JavaScript environments",
+  "description": "Render many sprite particles as efficiently as possible",
   "author": "Mat Groves",
   "contributors": [
     "Matt Karl <matt@mattkarl.com>"

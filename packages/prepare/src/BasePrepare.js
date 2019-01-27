@@ -6,19 +6,10 @@ import { Text, TextStyle, TextMetrics } from '@pixi/text';
 import CountLimiter from './CountLimiter';
 
 /**
- * Default number of uploads per frame using prepare plugin.
+ * The prepare manager provides functionality to upload content to the GPU.
  *
- * @static
- * @memberof PIXI.settings
- * @name UPLOADS_PER_FRAME
- * @type {number}
- * @default 4
- */
-settings.UPLOADS_PER_FRAME = 4;
-
-/**
- * The prepare manager provides functionality to upload content to the GPU. BasePrepare handles
- * basic queuing functionality and is extended by {@link PIXI.prepare.WebGLPrepare} and {@link PIXI.prepare.CanvasPrepare}
+ * BasePrepare handles basic queuing functionality and is extended by
+ * {@link PIXI.prepare.WebGLPrepare} and {@link PIXI.prepare.CanvasPrepare}
  * to provide preparation capabilities specific to their respective renderers.
  *
  * @example
@@ -161,7 +152,7 @@ export default class BasePrepare
             if (!this.ticking)
             {
                 this.ticking = true;
-                Ticker.shared.addOnce(this.tick, this, UPDATE_PRIORITY.UTILITY);
+                Ticker.system.addOnce(this.tick, this, UPDATE_PRIORITY.UTILITY);
             }
         }
         else if (done)
@@ -231,7 +222,7 @@ export default class BasePrepare
         else
         {
             // if we are not finished, on the next rAF do this again
-            Ticker.shared.addOnce(this.tick, this, UPDATE_PRIORITY.UTILITY);
+            Ticker.system.addOnce(this.tick, this, UPDATE_PRIORITY.UTILITY);
         }
     }
 
@@ -308,7 +299,7 @@ export default class BasePrepare
     {
         if (this.ticking)
         {
-            Ticker.shared.remove(this.tick, this);
+            Ticker.system.remove(this.tick, this);
         }
         this.ticking = false;
         this.addHooks = null;

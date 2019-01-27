@@ -1,7 +1,7 @@
 const { CanvasRenderer } = require('@pixi/canvas-renderer');
 const { Ticker } = require('@pixi/ticker');
 const { Rectangle } = require('@pixi/math');
-const { shared } = Ticker;
+const { system } = Ticker;
 
 /**
  * Use this to mock mouse/touch/pointer events
@@ -39,7 +39,7 @@ class MockPointer
         this.renderer.sayHello = () => { /* empty */ };
         this.interaction = this.renderer.plugins.interaction;
         this.interaction.supportsTouchEvents = true;
-        shared.remove(this.interaction.update, this.interaction);
+        system.remove(this.interaction.update, this.interaction);
     }
 
     /**
