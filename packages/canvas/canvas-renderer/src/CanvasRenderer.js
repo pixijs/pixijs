@@ -276,7 +276,7 @@ export default class CanvasRenderer extends AbstractRenderer
      * Sets the blend mode of the renderer.
      *
      * @param {number} blendMode - See {@link PIXI.BLEND_MODES} for valid values.
-     * @param {boolean} readyForOuterBlend - Some blendModes are dangerous, they affect outer space of sprite.
+     * @param {boolean} [readyForOuterBlend=false] - Some blendModes are dangerous, they affect outer space of sprite.
      * Pass `true` only if you are ready to use them.
      */
     setBlendMode(blendMode, readyForOuterBlend)
