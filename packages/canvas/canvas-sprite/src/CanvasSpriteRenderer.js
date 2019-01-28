@@ -137,6 +137,7 @@ export default class CanvasSpriteRenderer
         if (outerBlend)
         {
             context.save();
+            context.beginPath();
             context.rect(
                 dx * renderer.resolution,
                 dy * renderer.resolution,
@@ -186,8 +187,9 @@ export default class CanvasSpriteRenderer
         if (outerBlend)
         {
             context.restore();
-            renderer.setBlendMode(BLEND_MODES.NORMAL);
         }
+        // just in case, leaking outer blend here will be catastrophic!
+        renderer.setBlendMode(BLEND_MODES.NORMAL);
     }
 
     /**

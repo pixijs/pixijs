@@ -227,8 +227,9 @@ export default class CanvasGraphicsRenderer
         if (outerBlend)
         {
             renderer.maskManager.popMask(renderer);
-            renderer.setBlendMode(BLEND_MODES.NORMAL);
         }
+        // just in case, leaking outer blend here will be catastrophic!
+        renderer.setBlendMode(BLEND_MODES.NORMAL);
     }
 
     /**
