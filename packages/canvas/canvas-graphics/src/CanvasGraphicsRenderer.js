@@ -1,5 +1,4 @@
 import { SHAPES } from '@pixi/math';
-import { BLEND_MODES } from '@pixi/constants';
 
 /**
  * @author Mat Groves
@@ -43,15 +42,6 @@ export default class CanvasGraphicsRenderer
         const transform = graphics.transform.worldTransform;
         const resolution = renderer.resolution;
 
-        renderer.setBlendMode(graphics.blendMode, true);
-
-        const outerBlend = renderer.outerBlend;
-
-        if (outerBlend)
-        {
-            renderer.maskManager.pushMask(graphics);
-        }
-
         context.setTransform(
             transform.a * resolution,
             transform.b * resolution,
@@ -67,6 +57,8 @@ export default class CanvasGraphicsRenderer
         {
         //    this.updateGraphicsTint(graphics);
         }
+
+        renderer.setBlendMode(graphics.blendMode, true);
 
         const graphicsData = graphics.geometry.graphicsData;
 
@@ -223,13 +215,6 @@ export default class CanvasGraphicsRenderer
                 }
             }
         }
-
-        if (outerBlend)
-        {
-            renderer.maskManager.popMask(renderer);
-        }
-        // just in case, leaking outer blend here will be catastrophic!
-        renderer.setBlendMode(BLEND_MODES.NORMAL);
     }
 
     /**
