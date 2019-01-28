@@ -120,7 +120,13 @@ export default class NineSlicePlane extends Plane
          */
         this._tintedTexture = null;
 
-        this._canvasCoords = null;
+        /**
+         * Temporary storage for canvas source coords
+         *
+         * @member {number[]}
+         * @private
+         */
+        this._canvasUvs = null;
 
         this.refresh(true);
     }
