@@ -320,7 +320,7 @@ export default class StateSystem extends System
 
         this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, false);
 
-        this.blendEq = true;
+        this._blendEq = true;
 
         this.setBlendMode(0);
 
