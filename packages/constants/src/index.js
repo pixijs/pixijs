@@ -95,13 +95,13 @@ export const BLEND_MODES = {
     SCREEN_NPM:     19,
     NONE:           20,
 
-    SOURCE_IN:      21,
-    SOURCE_OUT:     22,
-    SOURCE_ATOP:    23,
-    DESTINATION_OVER: 24,
-    DESTINATION_IN:   25,
-    DESTINATION_OUT:  26,
-    DESTINATION_ATOP: 27,
+    SRC_IN:         21,
+    SRC_OUT:        22,
+    SRC_ATOP:       23,
+    DST_OVER:       24,
+    DST_IN:         25,
+    DST_OUT:        26,
+    DST_ATOP:       27,
 
     SUBTRACT:       28,
 };
