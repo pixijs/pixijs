@@ -1,4 +1,5 @@
 import { SHAPES } from '@pixi/math';
+import { BLEND_MODES } from '@pixi/constants';
 
 /**
  * @author Mat Groves
@@ -225,7 +226,8 @@ export default class CanvasGraphicsRenderer
 
         if (outerBlend)
         {
-            renderer.maskManager.popMask(graphics);
+            renderer.maskManager.popMask(renderer);
+            renderer.setBlendMode(BLEND_MODES.NORMAL);
         }
     }
 

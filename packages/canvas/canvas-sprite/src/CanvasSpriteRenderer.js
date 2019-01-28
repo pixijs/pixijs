@@ -1,4 +1,4 @@
-import { SCALE_MODES } from '@pixi/constants';
+import { SCALE_MODES, BLEND_MODES } from '@pixi/constants';
 import { Matrix, GroupD8 } from '@pixi/math';
 import CanvasTinter from './CanvasTinter';
 
@@ -143,7 +143,7 @@ export default class CanvasSpriteRenderer
                 width * renderer.resolution,
                 height * renderer.resolution
             );
-            renderer.context.clip();
+            context.clip();
         }
 
         if (sprite.tint !== 0xFFFFFF)
@@ -186,6 +186,7 @@ export default class CanvasSpriteRenderer
         if (outerBlend)
         {
             context.restore();
+            renderer.setBlendMode(BLEND_MODES.NORMAL);
         }
     }
 
