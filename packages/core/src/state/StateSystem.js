@@ -1,6 +1,7 @@
 import mapWebGLBlendModesToPixi from './utils/mapWebGLBlendModesToPixi';
 import System from '../System';
 import State from './State';
+import { BLEND_MODES } from '@pixi/constants';
 
 const BLEND = 0;
 const OFFSET = 1;
@@ -71,10 +72,10 @@ export default class StateSystem extends System
         /**
          * Blend mode
          * @member {number}
-         * @default 17
+         * @default PIXI.BLEND_MODES.NONE
          * @readonly
          */
-        this.blendMode = 17;
+        this.blendMode = BLEND_MODES.NONE;
 
         /**
          * Collection of calls
