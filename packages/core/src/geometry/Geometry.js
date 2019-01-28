@@ -2,6 +2,7 @@ import Attribute from './Attribute';
 import Buffer from './Buffer';
 import interleaveTypedArrays from './utils/interleaveTypedArrays';
 import getBufferType from './utils/getBufferType';
+import Runner from 'mini-runner';
 
 const byteSizeMap = { 5126: 4, 5123: 2, 5121: 1 };
 let UID = 0;
@@ -54,7 +55,7 @@ export default class Geometry
          * A map of renderer IDs to webgl VAOs
          *
          * @protected
-         * @type {Array<OES_vertex_array_object>}
+         * @type {object}
          */
         this.glVertexArrayObjects = {};
 
@@ -65,6 +66,14 @@ export default class Geometry
         this.instanceCount = 1;
 
         this._size = null;
+
+        this.disposeRunner = new Runner('disposeGeometry', 2);
+
+        /**
+         * Count of existing (not destroyed) meshes that reference this geometry
+         * @member {boolean}
+         */
+        this.refCount = 0;
     }
 
     /**
@@ -245,21 +254,19 @@ export default class Geometry
     }
 
     /**
+     * disposes WebGL resources that are connected to this geometry
+     */
+    dispose()
+    {
+        this.disposeRunner.run(this, false);
+    }
+
+    /**
      * Destroys the geometry.
      */
     destroy()
     {
-        for (let i = 0; i < this.glVertexArrayObjects.length; i++)
-        {
-            this.glVertexArrayObjects[i].destroy();
-        }
-
-        this.glVertexArrayObjects = null;
-
-        for (let i = 0; i < this.buffers.length; i++)
-        {
-            this.buffers[i].destroy();
-        }
+        this.dispose();
 
         this.buffers = null;
         this.indexBuffer.destroy();

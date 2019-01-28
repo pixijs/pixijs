@@ -1,3 +1,5 @@
+import Runner from 'mini-runner';
+
 let UID = 0;
 /* eslint-disable max-len */
 
@@ -11,6 +13,8 @@ export default class Buffer
 {
     /**
      * @param {ArrayBuffer| SharedArrayBuffer|ArrayBufferView} data the data to store in the buffer.
+     * @param {boolean} [_static=true] `true` for static buffer
+     * @param {boolean} [index=false] `true` for index buffer
      */
     constructor(data, _static = true, index = false)
     {
@@ -36,6 +40,8 @@ export default class Buffer
         this.static = _static;
 
         this.id = UID++;
+
+        this.disposeRunner = new Runner('disposeBuffer', 2);
     }
 
     // TODO could explore flagging only a partial upload?
@@ -49,14 +55,19 @@ export default class Buffer
     }
 
     /**
+     * disposes WebGL resources that are connected to this geometry
+     */
+    dispose()
+    {
+        this.disposeRunner.run(this, false);
+    }
+
+    /**
      * Destroys the buffer
      */
     destroy()
     {
-        for (let i = 0; i < this._glBuffers.length; i++)
-        {
-            this._glBuffers[i].destroy();
-        }
+        this.dispose();
 
         this.data = null;
     }
