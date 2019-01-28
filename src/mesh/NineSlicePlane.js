@@ -108,15 +108,15 @@ export default class NineSlicePlane extends Plane
          * Cached tint value so we can tell when the tint is changed.
          *
          * @member {number}
-         * @memberof PIXI.NineSlicePlane#
+         * @protected
          */
         this._cachedTint = 0xFFFFFF;
 
         /**
          * Cached tinted texture.
          *
-         * @member {undefined|PIXI.Texture}
-         * @memberof PIXI.NineSlicePlane#
+         * @member {HTMLCanvasElement}
+         * @protected
          */
         this._tintedTexture = null;
 
@@ -381,7 +381,6 @@ export default class NineSlicePlane extends Plane
 
         this.dirty++;
 
-        // Normal mult UVs behaviour for WebGL renderer
         this.multiplyUvs();
     }
 }
