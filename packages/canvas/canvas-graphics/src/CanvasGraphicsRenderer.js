@@ -42,6 +42,15 @@ export default class CanvasGraphicsRenderer
         const transform = graphics.transform.worldTransform;
         const resolution = renderer.resolution;
 
+        renderer.setBlendMode(graphics.blendMode, true);
+
+        const outerBlend = renderer.outerBlend;
+
+        if (outerBlend)
+        {
+            renderer.maskManager.pushMask(graphics);
+        }
+
         context.setTransform(
             transform.a * resolution,
             transform.b * resolution,
@@ -57,8 +66,6 @@ export default class CanvasGraphicsRenderer
         {
         //    this.updateGraphicsTint(graphics);
         }
-
-        renderer.setBlendMode(graphics.blendMode);
 
         const graphicsData = graphics.geometry.graphicsData;
 
@@ -214,6 +221,11 @@ export default class CanvasGraphicsRenderer
                     context.stroke();
                 }
             }
+        }
+
+        if (outerBlend)
+        {
+            renderer.maskManager.popMask(graphics);
         }
     }
 
