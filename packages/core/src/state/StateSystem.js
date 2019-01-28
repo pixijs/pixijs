@@ -78,6 +78,13 @@ export default class StateSystem extends System
         this.blendMode = BLEND_MODES.NONE;
 
         /**
+         * Whether current blend equation is different
+         * @member {boolean}
+         * @protected
+         */
+        this._blendEq = false;
+
+        /**
          * Collection of calls
          * @member {function[]}
          * @readonly
@@ -244,7 +251,7 @@ export default class StateSystem extends System
 
         if (mode.length === 2)
         {
-            gl.blendFuncSeparate(mode[0], mode[1], gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+            gl.blendFuncSeparate(mode[0], mode[1]);
         }
         else
         {
@@ -252,10 +259,12 @@ export default class StateSystem extends System
         }
         if (mode.length === 6)
         {
+            this._blendEq = true;
             gl.blendEquationSeparate(mode[4], mode[5]);
         }
-        else
+        else if (this._blendEq)
         {
+            this._blendEq = false;
             gl.blendEquationSeparate(gl.FUNC_ADD, gl.FUNC_ADD);
         }
     }
@@ -310,6 +319,8 @@ export default class StateSystem extends System
         this.resetAttributes();
 
         this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, false);
+
+        this.blendEq = true;
 
         this.setBlendMode(0);
 
