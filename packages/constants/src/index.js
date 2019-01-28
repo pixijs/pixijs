@@ -63,13 +63,13 @@ export const RENDERER_TYPE = {
  * @property {number} ADD_NPM
  * @property {number} SCREEN_NPM
  * @property {number} NONE
- * @property {number} SOURCE_IN
- * @property {number} SOURCE_OUT
- * @property {number} SOURCE_ATOP
- * @property {number} DESTINATION_OVER
- * @property {number} DESTINATION_IN
- * @property {number} DESTINATION_OUT
- * @property {number} DESTINATION_ATOP
+ * @property {number} SRC_IN
+ * @property {number} SRC_OUT
+ * @property {number} SRC_ATOP
+ * @property {number} DST_OVER
+ * @property {number} DST_IN
+ * @property {number} DST_OUT
+ * @property {number} DST_ATOP
  * @property {number} SUBTRACT
  */
 export const BLEND_MODES = {
