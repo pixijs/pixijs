@@ -45,6 +45,20 @@ export default class GeometrySystem extends System
          * @readonly
          */
         this.boundBuffers = {};
+
+        /**
+         * Cache for all geometries by id, used in case renderer gets destroyed or for profiling
+         * @member {object}
+         * @readonly
+         */
+        this.managedGeometries = {};
+
+        /**
+         * Cache for all buffers by id, used in case renderer gets destroyed or for profiling
+         * @member {object}
+         * @readonly
+         */
+        this.managedBuffers = {};
     }
 
     /**
@@ -52,6 +66,8 @@ export default class GeometrySystem extends System
      */
     contextChange()
     {
+        this.disposeAll(true);
+
         const gl = this.gl = this.renderer.gl;
 
         this.CONTEXT_UID = this.renderer.CONTEXT_UID;
@@ -140,6 +156,8 @@ export default class GeometrySystem extends System
 
         if (!vaos)
         {
+            this.managedGeometries[geometry.id] = geometry;
+            geometry.disposeRunner.add(this);
             geometry.glVertexArrayObjects[this.CONTEXT_UID] = vaos = {};
         }
 
@@ -248,7 +266,7 @@ export default class GeometrySystem extends System
      * Takes a geometry and program and generates a unique signature for them.
      *
      * @param {PIXI.Geometry} geometry to get signature from
-     * @param {PIXI.Program} prgram to test geometry against
+     * @param {PIXI.Program} program to test geometry against
      * @returns {String} Unique signature of the geometry and program
      * @protected
      */
@@ -257,7 +275,7 @@ export default class GeometrySystem extends System
         const attribs = geometry.attributes;
         const shaderAttributes = program.attributeData;
 
-        const strings = [geometry.id];
+        const strings = ['g', geometry.id];
 
         for (const i in attribs)
         {
@@ -360,7 +378,11 @@ export default class GeometrySystem extends System
             if (!buffer._glBuffers[CONTEXT_UID])
             {
                 buffer._glBuffers[CONTEXT_UID] = new GLBuffer(gl.createBuffer());
+                this.managedBuffers[buffer.id] = buffer;
+                buffer.disposeRunner.add(this);
             }
+
+            buffer._glBuffers[CONTEXT_UID].refCount++;
         }
 
         // TODO - maybe make this a data object?
@@ -375,6 +397,108 @@ export default class GeometrySystem extends System
         vaoObjectHash[signature] = vao;
 
         return vao;
+    }
+
+    /**
+     * Disposes buffer
+     * @param {PIXI.Buffer} buffer buffer with data
+     * @param {boolean} [contextLost=false] If context was lost, we suppress deleteVertexArray
+     */
+    disposeBuffer(buffer, contextLost)
+    {
+        if (!this.managedBuffers[buffer.id])
+        {
+            return;
+        }
+
+        delete this.managedBuffers[buffer.id];
+
+        const glBuffer = buffer._glBuffers[this.CONTEXT_UID];
+        const gl = this.gl;
+
+        buffer.disposeRunner.remove(this);
+
+        if (!glBuffer)
+        {
+            return;
+        }
+
+        if (!contextLost)
+        {
+            gl.deleteBuffer(glBuffer.buffer);
+        }
+
+        delete buffer._glBuffers[this.CONTEXT_UID];
+    }
+
+    /**
+     * Disposes geometry
+     * @param {PIXI.Geometry} geometry Geometry with buffers. Only VAO will be disposed
+     * @param {boolean} [contextLost=false] If context was lost, we suppress deleteVertexArray
+     */
+    disposeGeometry(geometry, contextLost)
+    {
+        if (!this.managedGeometries[geometry.id])
+        {
+            return;
+        }
+
+        delete this.managedGeometries[geometry.id];
+
+        const vaos = geometry.glVertexArrayObjects[this.CONTEXT_UID];
+        const gl = this.gl;
+        const buffers = geometry.buffers;
+
+        geometry.disposeRunner.remove(this);
+
+        if (!vaos)
+        {
+            return;
+        }
+
+        for (let i = 0; i < buffers.length; i++)
+        {
+            const buf = buffers[i]._glBuffers[this.CONTEXT_UID];
+
+            buf.refCount--;
+            if (buf.refCount === 0 && !contextLost)
+            {
+                this.disposeBuffer(buffers[i], contextLost);
+            }
+        }
+
+        if (!contextLost)
+        {
+            for (const vaoId in vaos)
+            {
+                // delete only signatures, everything else are copies
+                if (vaoId[0] === 'g')
+                {
+                    gl.deleteVertexArray(vaos[vaoId]);
+                }
+            }
+        }
+
+        delete geometry.glVertexArrayObjects[this.CONTEXT_UID];
+    }
+
+    /**
+     * dispose all WebGL resources of all managed geometries and buffers
+     * @param {boolean} [contextLost=false] If context was lost, we suppress `gl.delete` calls
+     */
+    disposeAll(contextLost)
+    {
+        let all = Object.keys(this.managedGeometries);
+
+        for (let i = 0; i < all.length; i++)
+        {
+            this.disposeGeometry(this.managedGeometries[all[i]], contextLost);
+        }
+        all = Object.keys(this.managedBuffers);
+        for (let i = 0; i < all.length; i++)
+        {
+            this.disposeBuffer(this.managedBuffers[all[i]], contextLost);
+        }
     }
 
     /**

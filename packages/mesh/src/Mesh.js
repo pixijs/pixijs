@@ -44,8 +44,11 @@ export default class Mesh extends Container
          * custom attributes within buffers, reducing the cost of passing all
          * this data to the GPU. Can be shared between multiple Mesh objects.
          * @member {PIXI.Geometry}
+         * @readonly
          */
         this.geometry = geometry;
+
+        geometry.refCount++;
 
         /**
          * Represents the vertex and fragment shaders that processes the geometry and runs on the GPU.
@@ -464,6 +467,12 @@ export default class Mesh extends Container
     destroy(options)
     {
         super.destroy(options);
+
+        this.geometry.refCount--;
+        if (this.geometry.refCount === 0)
+        {
+            this.geometry.dispose();
+        }
 
         this.geometry = null;
         this.shader = null;

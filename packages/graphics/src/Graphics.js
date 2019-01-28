@@ -51,8 +51,11 @@ export default class Graphics extends Container
          * custom attributes within buffers, reducing the cost of passing all
          * this data to the GPU. Can be shared between multiple Mesh or Graphics objects.
          * @member {PIXI.Geometry}
+         * @readonly
          */
         this.geometry = geometry || new GraphicsGeometry();
+
+        this.geometry.refCount++;
 
         /**
          * Represents the vertex and fragment shaders that processes the geometry and runs on the GPU.
@@ -67,14 +70,6 @@ export default class Graphics extends Container
          * @member {PIXI.State}
          */
         this.state = State.for2d();
-
-        /**
-         * If this Graphics object owns the GraphicsGeometry
-         *
-         * @member {boolean}
-         * @protected
-         */
-        this._ownsGeometry = geometry === null;
 
         /**
          * Current fill style
@@ -1110,16 +1105,15 @@ export default class Graphics extends Container
      *  Should it destroy the texture of the child sprite
      * @param {boolean} [options.baseTexture=false] - Only used for child Sprites if options.children is set to true
      *  Should it destroy the base texture of the child sprite
-     * @param {boolean} [options.geometry=false] - if set to true, the geometry object will be
-     *  be destroyed.
      */
     destroy(options)
     {
-        const destroyGeometry = typeof options === 'boolean' ? options : options && options.geometry;
+        super.destroy(options);
 
-        if (destroyGeometry || this._ownsGeometry)
+        this.geometry.refCount--;
+        if (this.geometry.refCount === 0)
         {
-            this.geometry.destroy();
+            this.geometry.dispose();
         }
 
         this._matrix = null;
