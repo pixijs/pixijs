@@ -58,7 +58,7 @@ export default class CanvasGraphicsRenderer
         //    this.updateGraphicsTint(graphics);
         }
 
-        renderer.setBlendMode(graphics.blendMode, true);
+        renderer.setBlendMode(graphics.blendMode);
 
         const graphicsData = graphics.geometry.graphicsData;
 
