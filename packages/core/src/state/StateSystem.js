@@ -251,7 +251,7 @@ export default class StateSystem extends System
 
         if (mode.length === 2)
         {
-            gl.blendFuncSeparate(mode[0], mode[1]);
+            gl.blendFunc(mode[0], mode[1]);
         }
         else
         {
