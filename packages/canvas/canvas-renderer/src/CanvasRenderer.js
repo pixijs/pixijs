@@ -105,7 +105,7 @@ export default class CanvasRenderer extends AbstractRenderer
          */
         this.blendModes = mapCanvasBlendModesToPixi();
         this._activeBlendMode = null;
-        this.outerBlend = false;
+        this._outerBlend = false;
 
         this.renderingToScreen = false;
 
@@ -209,7 +209,7 @@ export default class CanvasRenderer extends AbstractRenderer
         context.setTransform(1, 0, 0, 1, 0, 0);
         context.globalAlpha = 1;
         this._activeBlendMode = BLEND_MODES.NORMAL;
-        this.outerBlend = false;
+        this._outerBlend = false;
         context.globalCompositeOperation = this.blendModes[BLEND_MODES.NORMAL];
 
         if (navigator.isCocoonJS && this.view.screencanvas)
@@ -297,8 +297,8 @@ export default class CanvasRenderer extends AbstractRenderer
         }
 
         this._activeBlendMode = blendMode;
+        this._outerBlend = outerBlend;
         this.context.globalCompositeOperation = this.blendModes[blendMode];
-        this.outerBlend = outerBlend;
     }
 
     /**

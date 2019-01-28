@@ -132,7 +132,7 @@ export default class CanvasSpriteRenderer
         }
 
         const resolution = texture.baseTexture.resolution;
-        const outerBlend = renderer.outerBlend;
+        const outerBlend = renderer._outerBlend;
 
         if (outerBlend)
         {
