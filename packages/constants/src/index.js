@@ -71,6 +71,8 @@ export const RENDERER_TYPE = {
  * @property {number} DST_OUT
  * @property {number} DST_ATOP
  * @property {number} SUBTRACT
+ * @property {number} SRC_OVER
+ * @property {number} ERASE
  */
 export const BLEND_MODES = {
     NORMAL:         0,
@@ -95,6 +97,7 @@ export const BLEND_MODES = {
     SCREEN_NPM:     19,
     NONE:           20,
 
+    SRC_OVER:       0,
     SRC_IN:         21,
     SRC_OUT:        22,
     SRC_ATOP:       23,
@@ -102,7 +105,7 @@ export const BLEND_MODES = {
     DST_IN:         25,
     DST_OUT:        26,
     DST_ATOP:       27,
-
+    ERASE:          26,
     SUBTRACT:       28,
 };
 
