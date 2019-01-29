@@ -105,6 +105,7 @@ export default class CanvasRenderer extends AbstractRenderer
          */
         this.blendModes = mapCanvasBlendModesToPixi();
         this._activeBlendMode = null;
+        this._outerBlend = false;
 
         this.renderingToScreen = false;
 
@@ -208,6 +209,7 @@ export default class CanvasRenderer extends AbstractRenderer
         context.setTransform(1, 0, 0, 1, 0, 0);
         context.globalAlpha = 1;
         this._activeBlendMode = BLEND_MODES.NORMAL;
+        this._outerBlend = false;
         context.globalCompositeOperation = this.blendModes[BLEND_MODES.NORMAL];
 
         if (navigator.isCocoonJS && this.view.screencanvas)
@@ -274,15 +276,28 @@ export default class CanvasRenderer extends AbstractRenderer
      * Sets the blend mode of the renderer.
      *
      * @param {number} blendMode - See {@link PIXI.BLEND_MODES} for valid values.
+     * @param {boolean} [readyForOuterBlend=false] - Some blendModes are dangerous, they affect outer space of sprite.
+     * Pass `true` only if you are ready to use them.
      */
-    setBlendMode(blendMode)
+    setBlendMode(blendMode, readyForOuterBlend)
     {
+        const outerBlend = blendMode === BLEND_MODES.SRC_IN
+            || blendMode === BLEND_MODES.SRC_OUT
+            || blendMode === BLEND_MODES.DST_IN
+            || blendMode === BLEND_MODES.DST_ATOP;
+
+        if (!readyForOuterBlend && outerBlend)
+        {
+            blendMode = BLEND_MODES.NORMAL;
+        }
+
         if (this._activeBlendMode === blendMode)
         {
             return;
         }
 
         this._activeBlendMode = blendMode;
+        this._outerBlend = outerBlend;
         this.context.globalCompositeOperation = this.blendModes[blendMode];
     }
 

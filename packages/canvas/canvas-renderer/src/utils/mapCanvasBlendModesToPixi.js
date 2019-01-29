@@ -58,5 +58,17 @@ export default function mapCanvasBlendModesToPixi(array = [])
     array[BLEND_MODES.ADD_NPM] = array[BLEND_MODES.ADD];
     array[BLEND_MODES.SCREEN_NPM] = array[BLEND_MODES.SCREEN];
 
+    // composite operations
+    array[BLEND_MODES.SRC_IN] = 'source-in';
+    array[BLEND_MODES.SRC_OUT] = 'source-out';
+    array[BLEND_MODES.SRC_ATOP] = 'source-atop';
+    array[BLEND_MODES.DST_OVER] = 'destination-over';
+    array[BLEND_MODES.DST_IN] = 'destination-in';
+    array[BLEND_MODES.DST_OUT] = 'destination-out';
+    array[BLEND_MODES.DST_ATOP] = 'destination-atop';
+
+    // SUBTRACT from flash, does not exist in canvas
+    array[BLEND_MODES.SUBTRACT] = 'source-over';
+
     return array;
 }
