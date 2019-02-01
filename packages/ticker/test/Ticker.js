@@ -291,7 +291,7 @@ describe('PIXI.Ticker', function ()
         expect(this.length()).to.equal(length);
     });
 
-    it('should remove itself before, still calling new item', function ()
+    it.skip('should remove itself before, still calling new item', function ()
     {
         const length = this.length();
         const listener2 = sinon.spy();
