@@ -1,6 +1,6 @@
 {
   "name": "@pixi/canvas-mesh",
-  "version": "5.0.0-alpha.3",
+  "version": "5.0.0-rc",
   "main": "lib/canvas-mesh.js",
   "module": "lib/canvas-mesh.es.js",
   "description": "Canvas mixin for the mesh package",
@@ -22,10 +22,10 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/constants": "^5.0.0-alpha.3",
-    "@pixi/mesh": "^5.0.0-alpha.3",
-    "@pixi/mesh-extras": "^5.0.0-alpha.3",
-    "@pixi/settings": "^5.0.0-alpha.3"
+    "@pixi/constants": "^5.0.0-rc",
+    "@pixi/mesh": "^5.0.0-rc",
+    "@pixi/mesh-extras": "^5.0.0-rc",
+    "@pixi/settings": "^5.0.0-rc"
   },
   "devDependencies": {
     "floss": "^2.1.5"

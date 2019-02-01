@@ -1,6 +1,6 @@
 {
   "name": "@pixi/constants",
-  "version": "5.0.0-alpha.3",
+  "version": "5.0.0-rc",
   "main": "lib/constants.js",
   "module": "lib/constants.es.js",
   "description": "Constants used across PixiJS",

@@ -1,6 +1,6 @@
 {
   "name": "@pixi/mesh-extras",
-  "version": "5.0.0-alpha.3",
+  "version": "5.0.0-rc",
   "main": "lib/mesh-extras.js",
   "module": "lib/mesh-extras.es.js",
   "description": "Custom Mesh display objects, like Rope and Plane",
@@ -25,14 +25,14 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/constants": "^5.0.0-alpha.3",
-    "@pixi/core": "^5.0.0-alpha.3",
-    "@pixi/math": "^5.0.0-alpha.3",
-    "@pixi/mesh": "^5.0.0-alpha.3",
-    "@pixi/utils": "^5.0.0-alpha.3"
+    "@pixi/constants": "^5.0.0-rc",
+    "@pixi/core": "^5.0.0-rc",
+    "@pixi/math": "^5.0.0-rc",
+    "@pixi/mesh": "^5.0.0-rc",
+    "@pixi/utils": "^5.0.0-rc"
   },
   "devDependencies": {
-    "@pixi/loaders": "^5.0.0-alpha.3",
+    "@pixi/loaders": "^5.0.0-rc",
     "floss": "^2.1.5"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@pixi/fragments",
-  "version": "5.0.0-alpha.3",
+  "version": "5.0.0-rc",
   "main": "lib/fragments.js",
   "module": "lib/fragments.es.js",
   "description": "Core fragment shaders",
@@ -22,7 +22,7 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/core": "^5.0.0-alpha.3"
+    "@pixi/core": "^5.0.0-rc"
   },
   "devDependencies": {
     "floss": "^2.1.5"

@@ -1,6 +1,6 @@
 {
   "name": "@pixi/canvas-display",
-  "version": "5.0.0-alpha.3",
+  "version": "5.0.0-rc",
   "main": "lib/canvas-display.js",
   "module": "lib/canvas-display.es.js",
   "description": "Canvas mixin for the display package",
@@ -25,7 +25,7 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/display": "^5.0.0-alpha.3"
+    "@pixi/display": "^5.0.0-rc"
   },
   "devDependencies": {
     "floss": "^2.1.5"

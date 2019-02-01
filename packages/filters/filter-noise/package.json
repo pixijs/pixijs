@@ -1,6 +1,6 @@
 {
   "name": "@pixi/filter-noise",
-  "version": "5.0.0-alpha.3",
+  "version": "5.0.0-rc",
   "main": "lib/filter-noise.js",
   "module": "lib/filter-noise.es.js",
   "description": "Filter that applies noise to a display object",
@@ -22,8 +22,8 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/core": "^5.0.0-alpha.3",
-    "@pixi/fragments": "^5.0.0-alpha.3"
+    "@pixi/core": "^5.0.0-rc",
+    "@pixi/fragments": "^5.0.0-rc"
   },
   "devDependencies": {
     "floss": "^2.1.5"

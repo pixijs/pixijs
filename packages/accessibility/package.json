@@ -1,6 +1,6 @@
 {
   "name": "@pixi/accessibility",
-  "version": "5.0.0-alpha.3",
+  "version": "5.0.0-rc",
   "main": "lib/accessibility.js",
   "module": "lib/accessibility.es.js",
   "description": "Accessibility Plugin for visually impared users",
@@ -25,13 +25,13 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/core": "^5.0.0-alpha.3",
-    "@pixi/display": "^5.0.0-alpha.3",
-    "@pixi/utils": "^5.0.0-alpha.3",
+    "@pixi/core": "^5.0.0-rc",
+    "@pixi/display": "^5.0.0-rc",
+    "@pixi/utils": "^5.0.0-rc",
     "ismobilejs": "^0.5.1"
   },
   "devDependencies": {
-    "@pixi/canvas-renderer": "^5.0.0-alpha.3",
+    "@pixi/canvas-renderer": "^5.0.0-rc",
     "floss": "^2.1.5"
   }
 }

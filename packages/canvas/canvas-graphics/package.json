@@ -1,6 +1,6 @@
 {
   "name": "@pixi/canvas-graphics",
-  "version": "5.0.0-alpha.3",
+  "version": "5.0.0-rc",
   "main": "lib/canvas-graphics.js",
   "module": "lib/canvas-graphics.es.js",
   "description": "Canvas mixin for the graphics package",
@@ -22,10 +22,10 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/canvas-renderer": "^5.0.0-alpha.3",
-    "@pixi/core": "^5.0.0-alpha.3",
-    "@pixi/graphics": "^5.0.0-alpha.3",
-    "@pixi/math": "^5.0.0-alpha.3"
+    "@pixi/canvas-renderer": "^5.0.0-rc",
+    "@pixi/core": "^5.0.0-rc",
+    "@pixi/graphics": "^5.0.0-rc",
+    "@pixi/math": "^5.0.0-rc"
   },
   "devDependencies": {
     "floss": "^2.1.5"

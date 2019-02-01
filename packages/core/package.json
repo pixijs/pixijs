@@ -1,6 +1,6 @@
 {
   "name": "@pixi/core",
-  "version": "5.0.0-alpha.3",
+  "version": "5.0.0-rc",
   "main": "lib/core.js",
   "module": "lib/core.es.js",
   "description": "Core PixiJS",
@@ -25,12 +25,12 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/constants": "^5.0.0-alpha.3",
-    "@pixi/display": "^5.0.0-alpha.3",
-    "@pixi/math": "^5.0.0-alpha.3",
-    "@pixi/settings": "^5.0.0-alpha.3",
-    "@pixi/ticker": "^5.0.0-alpha.3",
-    "@pixi/utils": "^5.0.0-alpha.3",
+    "@pixi/constants": "^5.0.0-rc",
+    "@pixi/display": "^5.0.0-rc",
+    "@pixi/math": "^5.0.0-rc",
+    "@pixi/settings": "^5.0.0-rc",
+    "@pixi/ticker": "^5.0.0-rc",
+    "@pixi/utils": "^5.0.0-rc",
     "eventemitter3": "^2.0.0",
     "ismobilejs": "^0.5.1",
     "mini-runner": "^1.0.1"

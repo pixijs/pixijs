@@ -1,6 +1,6 @@
 {
   "name": "@pixi/prepare",
-  "version": "5.0.0-alpha.3",
+  "version": "5.0.0-rc",
   "main": "lib/prepare.js",
   "module": "lib/prepare.es.js",
   "description": "Plugin to allow uploading textures to the GPU",
@@ -25,13 +25,13 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/canvas-renderer": "^5.0.0-alpha.3",
-    "@pixi/core": "^5.0.0-alpha.3",
-    "@pixi/display": "^5.0.0-alpha.3",
-    "@pixi/graphics": "^5.0.0-alpha.3",
-    "@pixi/settings": "^5.0.0-alpha.3",
-    "@pixi/text": "^5.0.0-alpha.3",
-    "@pixi/ticker": "^5.0.0-alpha.3"
+    "@pixi/canvas-renderer": "^5.0.0-rc",
+    "@pixi/core": "^5.0.0-rc",
+    "@pixi/display": "^5.0.0-rc",
+    "@pixi/graphics": "^5.0.0-rc",
+    "@pixi/settings": "^5.0.0-rc",
+    "@pixi/text": "^5.0.0-rc",
+    "@pixi/ticker": "^5.0.0-rc"
   },
   "devDependencies": {
     "floss": "^2.1.5"

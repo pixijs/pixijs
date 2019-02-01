@@ -1,6 +1,6 @@
 {
   "name": "@pixi/sprite-animated",
-  "version": "5.0.0-alpha.3",
+  "version": "5.0.0-rc",
   "main": "lib/sprite-animated.js",
   "module": "lib/sprite-animated.es.js",
   "description": "Sprite Animations as depicted by playing a series of Textures",
@@ -25,9 +25,9 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/core": "^5.0.0-alpha.3",
-    "@pixi/sprite": "^5.0.0-alpha.3",
-    "@pixi/ticker": "^5.0.0-alpha.3"
+    "@pixi/core": "^5.0.0-rc",
+    "@pixi/sprite": "^5.0.0-rc",
+    "@pixi/ticker": "^5.0.0-rc"
   },
   "devDependencies": {
     "floss": "^2.1.5"

@@ -1,6 +1,6 @@
 {
   "name": "@pixi/filter-fxaa",
-  "version": "5.0.0-alpha.3",
+  "version": "5.0.0-rc",
   "main": "lib/filter-fxaa.js",
   "module": "lib/filter-fxaa.es.js",
   "description": "Filter for fast approximate anti-aliasing",
@@ -22,7 +22,7 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/core": "^5.0.0-alpha.3"
+    "@pixi/core": "^5.0.0-rc"
   },
   "devDependencies": {
     "floss": "^2.1.5"

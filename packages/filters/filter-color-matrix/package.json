@@ -1,6 +1,6 @@
 {
   "name": "@pixi/filter-color-matrix",
-  "version": "5.0.0-alpha.3",
+  "version": "5.0.0-rc",
   "main": "lib/filter-color-matrix.js",
   "module": "lib/filter-color-matrix.es.js",
   "description": "Filter that lets you change RGBA via a 5x4 matrix transformation",
@@ -22,8 +22,8 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/core": "^5.0.0-alpha.3",
-    "@pixi/fragments": "^5.0.0-alpha.3"
+    "@pixi/core": "^5.0.0-rc",
+    "@pixi/fragments": "^5.0.0-rc"
   },
   "devDependencies": {
     "floss": "^2.1.5"

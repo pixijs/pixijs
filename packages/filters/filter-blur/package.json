@@ -1,6 +1,6 @@
 {
   "name": "@pixi/filter-blur",
-  "version": "5.0.0-alpha.3",
+  "version": "5.0.0-rc",
   "main": "lib/filter-blur.js",
   "module": "lib/filter-blur.es.js",
   "description": "Filter that blurs the display object",
@@ -22,8 +22,8 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/core": "^5.0.0-alpha.3",
-    "@pixi/settings": "^5.0.0-alpha.3"
+    "@pixi/core": "^5.0.0-rc",
+    "@pixi/settings": "^5.0.0-rc"
   },
   "devDependencies": {
     "floss": "^2.1.5"

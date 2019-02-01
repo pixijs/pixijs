@@ -1,6 +1,6 @@
 {
   "name": "@pixi/app",
-  "version": "5.0.0-alpha.3",
+  "version": "5.0.0-rc",
   "main": "lib/app.js",
   "module": "lib/app.es.js",
   "description": "Convenience class to create a new PixiJS application",
@@ -25,13 +25,13 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/core": "^5.0.0-alpha.3",
-    "@pixi/display": "^5.0.0-alpha.3",
-    "@pixi/settings": "^5.0.0-alpha.3"
+    "@pixi/core": "^5.0.0-rc",
+    "@pixi/display": "^5.0.0-rc",
+    "@pixi/settings": "^5.0.0-rc"
   },
   "devDependencies": {
-    "@pixi/canvas-renderer": "^5.0.0-alpha.3",
-    "@pixi/utils": "^5.0.0-alpha.3",
+    "@pixi/canvas-renderer": "^5.0.0-rc",
+    "@pixi/utils": "^5.0.0-rc",
     "floss": "^2.1.5"
   }
 }

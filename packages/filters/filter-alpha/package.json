@@ -1,6 +1,6 @@
 {
   "name": "@pixi/filter-alpha",
-  "version": "5.0.0-alpha.3",
+  "version": "5.0.0-rc",
   "main": "lib/filter-alpha.js",
   "module": "lib/filter-alpha.es.js",
   "description": "Filter that applies alpha evenly across the entire display object and any opaque elements it contains",
@@ -22,8 +22,8 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/core": "^5.0.0-alpha.3",
-    "@pixi/fragments": "^5.0.0-alpha.3"
+    "@pixi/core": "^5.0.0-rc",
+    "@pixi/fragments": "^5.0.0-rc"
   },
   "devDependencies": {
     "floss": "^2.1.5"

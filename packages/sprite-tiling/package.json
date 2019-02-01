@@ -1,6 +1,6 @@
 {
   "name": "@pixi/sprite-tiling",
-  "version": "5.0.0-alpha.3",
+  "version": "5.0.0-rc",
   "main": "lib/sprite-tiling.js",
   "module": "lib/sprite-tiling.es.js",
   "description": "Tiling Sprites for faster rendering a tiling image",
@@ -25,12 +25,12 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/constants": "^5.0.0-alpha.3",
-    "@pixi/core": "^5.0.0-alpha.3",
-    "@pixi/display": "^5.0.0-alpha.3",
-    "@pixi/math": "^5.0.0-alpha.3",
-    "@pixi/sprite": "^5.0.0-alpha.3",
-    "@pixi/utils": "^5.0.0-alpha.3"
+    "@pixi/constants": "^5.0.0-rc",
+    "@pixi/core": "^5.0.0-rc",
+    "@pixi/display": "^5.0.0-rc",
+    "@pixi/math": "^5.0.0-rc",
+    "@pixi/sprite": "^5.0.0-rc",
+    "@pixi/utils": "^5.0.0-rc"
   },
   "devDependencies": {
     "floss": "^2.1.5"
