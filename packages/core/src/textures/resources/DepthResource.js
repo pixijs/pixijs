@@ -8,7 +8,6 @@ import BufferResource from './BufferResource';
  */
 export default class DepthResource extends BufferResource
 {
-
     /**
      * Upload the texture to the GPU.
      * @param {PIXI.Renderer} renderer Upload to the renderer
