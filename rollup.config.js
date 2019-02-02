@@ -114,7 +114,8 @@ async function main()
                 output: {
                     banner,
                     file: path.join(basePath, bundle),
-                    format: 'umd',
+                    format: 'iife',
+                    footer: 'PIXI.useDeprecated();',
                     freeze,
                     name: 'PIXI',
                     sourcemap,

@@ -1,6 +1,6 @@
 import '@pixi/polyfill';
 
-import { PIXI } from 'pixi.js';
+import { Application, accessibility, interaction, prepare, extract } from 'pixi.js';
 import { autoDetectRenderer, CanvasRenderer } from '@pixi/canvas-renderer';
 import { CanvasMeshRenderer } from '@pixi/canvas-mesh';
 import { CanvasGraphicsRenderer } from '@pixi/canvas-graphics';
@@ -11,28 +11,18 @@ import '@pixi/canvas-sprite-tiling';
 import '@pixi/canvas-particles';
 import '@pixi/canvas-display';
 
-CanvasRenderer.registerPlugin('accessibility', PIXI.accessibility.AccessibilityManager);
+CanvasRenderer.registerPlugin('accessibility', accessibility.AccessibilityManager);
 CanvasRenderer.registerPlugin('extract', canvasExtract.CanvasExtract);
 CanvasRenderer.registerPlugin('graphics', CanvasGraphicsRenderer);
-CanvasRenderer.registerPlugin('interaction', PIXI.interaction.InteractionManager);
+CanvasRenderer.registerPlugin('interaction', interaction.InteractionManager);
 CanvasRenderer.registerPlugin('mesh', CanvasMeshRenderer);
 CanvasRenderer.registerPlugin('prepare', canvasPrepare.CanvasPrepare);
 CanvasRenderer.registerPlugin('sprite', CanvasSpriteRenderer);
 
-Object.assign(PIXI.prepare, canvasPrepare);
-Object.assign(PIXI.extract, canvasExtract);
+Object.assign(prepare, canvasPrepare);
+Object.assign(extract, canvasExtract);
 
-PIXI.Application.prototype.createRenderer = autoDetectRenderer;
-
-// Add to namespace window object for people doing `import 'pixi.js-legacy'`
-Object.assign(PIXI, {
-    autoDetectRenderer,
-    CanvasRenderer,
-    CanvasGraphicsRenderer,
-    CanvasMeshRenderer,
-    CanvasSpriteRenderer,
-    CanvasTinter,
-});
+Application.prototype.createRenderer = autoDetectRenderer;
 
 // Export ES for those importing specifically by name,
 // e.g., `import {autoDetectRenderer} from 'pixi.js-legacy'`

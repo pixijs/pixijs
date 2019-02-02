@@ -1,26 +1,16 @@
 import * as accessibility from '@pixi/accessibility';
-import * as app from '@pixi/app';
-import * as constants from '@pixi/constants';
-import * as core from '@pixi/core';
-import * as display from '@pixi/display';
 import * as extract from '@pixi/extract';
-import * as graphics from '@pixi/graphics';
 import * as interaction from '@pixi/interaction';
-import * as loaders from '@pixi/loaders';
-import * as math from '@pixi/math';
-import * as mesh from '@pixi/mesh';
-import * as meshExtras from '@pixi/mesh-extras';
-import * as particles from '@pixi/particles';
 import * as prepare from '@pixi/prepare';
-import * as sprite from '@pixi/sprite';
-import * as spriteAnimated from '@pixi/sprite-animated';
-import * as spritesheet from '@pixi/spritesheet';
-import * as spriteTiling from '@pixi/sprite-tiling';
-import * as text from '@pixi/text';
-import * as textBitmap from '@pixi/text-bitmap';
-import * as ticker from '@pixi/ticker';
 import * as utils from '@pixi/utils';
-import { settings } from '@pixi/settings';
+import { Application } from '@pixi/app';
+import { Renderer, BatchRenderer } from '@pixi/core';
+import { Loader, AppLoaderPlugin } from '@pixi/loaders';
+import { ParticleRenderer } from '@pixi/particles';
+import { SpritesheetLoader } from '@pixi/spritesheet';
+import { TilingSpriteRenderer } from '@pixi/sprite-tiling';
+import { BitmapFontLoader } from '@pixi/text-bitmap';
+import { TickerPlugin } from '@pixi/ticker';
 import { AlphaFilter } from '@pixi/filter-alpha';
 import { BlurFilter, BlurFilterPass } from '@pixi/filter-blur';
 import { ColorMatrixFilter } from '@pixi/filter-color-matrix';
@@ -30,22 +20,26 @@ import { NoiseFilter } from '@pixi/filter-noise';
 import '@pixi/mixin-cache-as-bitmap';
 import '@pixi/mixin-get-child-by-name';
 import '@pixi/mixin-get-global-position';
-import deprecated from './deprecated';
+
+// Export deprecations so Rollup can call it
+// in the footer after global is defined
+// other module must call this manually
+import useDeprecated from './useDeprecated';
 
 // Install renderer plugins
-core.Renderer.registerPlugin('accessibility', accessibility.AccessibilityManager);
-core.Renderer.registerPlugin('extract', extract.Extract);
-core.Renderer.registerPlugin('interaction', interaction.InteractionManager);
-core.Renderer.registerPlugin('particle', particles.ParticleRenderer);
-core.Renderer.registerPlugin('prepare', prepare.Prepare);
-core.Renderer.registerPlugin('batch', core.BatchRenderer);
-core.Renderer.registerPlugin('tilingSprite', spriteTiling.TilingSpriteRenderer);
+Renderer.registerPlugin('accessibility', accessibility.AccessibilityManager);
+Renderer.registerPlugin('extract', extract.Extract);
+Renderer.registerPlugin('interaction', interaction.InteractionManager);
+Renderer.registerPlugin('particle', ParticleRenderer);
+Renderer.registerPlugin('prepare', prepare.Prepare);
+Renderer.registerPlugin('batch', BatchRenderer);
+Renderer.registerPlugin('tilingSprite', TilingSpriteRenderer);
 
-loaders.Loader.registerPlugin(textBitmap.BitmapFontLoader);
-loaders.Loader.registerPlugin(spritesheet.SpritesheetLoader);
+Loader.registerPlugin(BitmapFontLoader);
+Loader.registerPlugin(SpritesheetLoader);
 
-app.Application.registerPlugin(ticker.TickerPlugin);
-app.Application.registerPlugin(loaders.AppLoaderPlugin);
+Application.registerPlugin(TickerPlugin);
+Application.registerPlugin(AppLoaderPlugin);
 
 // Apply deplayed mixins
 utils.mixins.performMixins();
@@ -59,12 +53,11 @@ utils.mixins.performMixins();
  * @name VERSION
  * @type {string}
  */
-const VERSION = '__VERSION__';
+export const VERSION = '__VERSION__';
 
 /**
  * @namespace PIXI
  */
-const PIXI = { VERSION };
 
 /**
  * This namespace contains WebGL-only display filters that can be applied
@@ -93,7 +86,7 @@ const PIXI = { VERSION };
  * document.body.appendChild(app.view);
  * @namespace PIXI.filters
  */
-const filters = {
+export const filters = {
     AlphaFilter,
     BlurFilter,
     BlurFilterPass,
@@ -103,47 +96,7 @@ const filters = {
     NoiseFilter,
 };
 
-// Add to namespace window object for people doing `import 'pixi.js'`
-if (typeof window !== 'undefined')
-{
-    const namespaces = {
-        accessibility,
-        extract,
-        filters,
-        interaction,
-        prepare,
-        settings,
-        utils,
-    };
-
-    window.PIXI = Object.assign(
-        PIXI,
-        namespaces,
-        app,
-        constants,
-        core,
-        display,
-        graphics,
-        loaders,
-        math,
-        mesh,
-        meshExtras,
-        particles,
-        sprite,
-        spriteAnimated,
-        spritesheet,
-        spriteTiling,
-        text,
-        textBitmap,
-        ticker
-    );
-
-    // Deprecations only apply to Window object
-    deprecated(PIXI);
-}
-
 // Export ES for those importing specifically by name,
-// e.g., `import {autoDetectRenderer} from 'pixi.js'`
 export * from '@pixi/app';
 export * from '@pixi/constants';
 export * from '@pixi/core';
@@ -161,14 +114,12 @@ export * from '@pixi/sprite-tiling';
 export * from '@pixi/text';
 export * from '@pixi/text-bitmap';
 export * from '@pixi/ticker';
+export * from '@pixi/settings';
 export {
-    PIXI,
-    VERSION,
     accessibility,
     extract,
-    filters,
     interaction,
     prepare,
-    settings,
     utils,
+    useDeprecated,
 };
