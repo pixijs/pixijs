@@ -2,8 +2,20 @@ import { deprecation } from '@pixi/utils';
 
 const v5 = '5.0.0';
 
-export default function deprecated(PIXI)
+/**
+ * Deprecations (backward compatibilities) are automatically applied for browser bundles
+ * in the UMD module format. If using Webpack or Rollup, you'll need to apply these
+ * deprecations manually by doing something like this:
+ * @example
+ * import * as PIXI from 'pixi.js';
+ * PIXI.useDeprecated(); // MUST be bound to namespace
+ * @memberof PIXI
+ * @function useDeprecated
+ */
+export default function useDeprecated()
 {
+    const PIXI = this;
+
     Object.defineProperties(PIXI, {
         /**
          * @constant {RegExp|string} SVG_SIZE

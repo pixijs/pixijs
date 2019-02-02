@@ -165,8 +165,8 @@ describe('PIXI.Rectangle', function ()
         expect(rect3.right).to.equal(20);
         expect(rect3.bottom).to.equal(20);
 
-        const rect5 = new PIXI.Rectangle(10, 10, 20, 25);
-        const rect6 = new PIXI.Rectangle(22, 24, 20, 20);
+        const rect5 = new Rectangle(10, 10, 20, 25);
+        const rect6 = new Rectangle(22, 24, 20, 20);
 
         rect5.fit(rect6);
 
@@ -175,8 +175,8 @@ describe('PIXI.Rectangle', function ()
         expect(rect5.right).to.equal(30);
         expect(rect5.bottom).to.equal(35);
 
-        const rect7 = new PIXI.Rectangle(11, 10, 20, 25);
-        const rect8 = new PIXI.Rectangle(10, 9, 13, 10);
+        const rect7 = new Rectangle(11, 10, 20, 25);
+        const rect8 = new Rectangle(10, 9, 13, 10);
 
         rect7.fit(rect8);
 
