@@ -241,7 +241,7 @@ describe('PIXI.utils', function ()
     {
         it('should exist', function ()
         {
-            expect(PIXI.utils.earcut).to.be.a('function');
+            expect(utils.earcut).to.be.a('function');
         });
     });
 });
