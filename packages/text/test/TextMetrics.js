@@ -128,7 +128,7 @@ describe('PIXI.TextMetrics', function ()
 
         it('should be able to override wordWrap to false in measureText', function ()
         {
-            const metrics = PIXI.TextMetrics.measureText(longText, new PIXI.TextStyle(defaultStyle), false);
+            const metrics = TextMetrics.measureText(longText, new TextStyle(defaultStyle), false);
 
             expect(metrics.lines.length).to.equal(1);
         });

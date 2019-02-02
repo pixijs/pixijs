@@ -1,8 +1,23 @@
 /* eslint-disable global-require */
-const PIXI = require('../');
-
 describe('PIXI', function ()
 {
+    before(function (done)
+    {
+        this.head = document.querySelector('head');
+        this.script = document.createElement('script');
+        this.script.onload = () => done();
+        this.script.src = require.resolve('../dist/pixi');
+        this.head.appendChild(this.script);
+    });
+
+    after(function ()
+    {
+        this.head.removeChild(this.script);
+        delete this.script;
+        delete this.head;
+        delete window.PIXI;
+    });
+
     it('should exist as a global object', function ()
     {
         expect(window.PIXI).to.not.be.undefined;
@@ -16,7 +31,6 @@ describe('PIXI', function ()
 
     it('should contain deprecations on window, not import', function ()
     {
-        expect(PIXI.extras).to.be.undefined;
-        expect(window.PIXI.extras).to.not.be.undefined;
+        expect(PIXI.extras).to.not.be.undefined;
     });
 });
