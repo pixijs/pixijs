@@ -1,5 +1,5 @@
 import { TilingSprite } from '@pixi/sprite-tiling';
-import { CanvasTinter } from '@pixi/canvas-sprite';
+import { CanvasTinter } from '@pixi/canvas-renderer';
 import { CanvasRenderTarget } from '@pixi/utils';
 
 /**

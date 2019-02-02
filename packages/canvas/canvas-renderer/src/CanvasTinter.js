@@ -1,5 +1,5 @@
 import { hex2rgb, rgb2hex } from '@pixi/utils';
-import { canUseNewCanvasBlendModes } from '@pixi/canvas-renderer';
+import canUseNewCanvasBlendModes from './utils/canUseNewCanvasBlendModes';
 
 /**
  * Utility methods for Sprite/Texture tinting.

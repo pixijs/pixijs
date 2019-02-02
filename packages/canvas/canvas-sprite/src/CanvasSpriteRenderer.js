@@ -1,6 +1,6 @@
 import { SCALE_MODES, BLEND_MODES } from '@pixi/constants';
 import { Matrix, GroupD8 } from '@pixi/math';
-import CanvasTinter from './CanvasTinter';
+import { CanvasTinter } from '@pixi/canvas-renderer';
 
 const canvasRenderWorldTransform = new Matrix();
 
