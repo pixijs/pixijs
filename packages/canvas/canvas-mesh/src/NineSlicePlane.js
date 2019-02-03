@@ -85,7 +85,7 @@ NineSlicePlane.prototype._renderCanvas = function _renderCanvas(renderer)
     context.globalAlpha = this.worldAlpha;
     renderer.setBlendMode(this.blendMode);
 
-    if (renderer.roundPixels)
+    if (this.roundPixels)
     {
         context.setTransform(
             transform.a * res,
