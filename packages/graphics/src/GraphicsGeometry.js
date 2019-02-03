@@ -1,6 +1,7 @@
 import { SHAPES } from '@pixi/math';
 import { Bounds } from '@pixi/display';
 import { BatchGeometry, BatchDrawCall } from '@pixi/core';
+import { DRAW_MODES } from '@pixi/constants';
 
 import GraphicsData from './GraphicsData';
 import buildCircle from './utils/buildCircle';
@@ -600,13 +601,13 @@ export default class GraphicsGeometry extends BatchGeometry
         currentGroup.textureCount = 0;
         currentGroup.start = 0;
         currentGroup.size = 0;
-        currentGroup.type = 4;
+        currentGroup.type = DRAW_MODES.TRIANGLES;
 
         let textureCount = 0;
         let currentTexture = null;
         let textureId = 0;
         let native = false;
-        let drawMode = 4;
+        let drawMode = DRAW_MODES.TRIANGLES;
 
         let index = 0;
 
@@ -627,7 +628,7 @@ export default class GraphicsGeometry extends BatchGeometry
             if (native !== style.native)
             {
                 native = style.native;
-                drawMode = native ? 1 : 4;
+                drawMode = native ? DRAW_MODES.LINES : DRAW_MODES.TRIANGLES;
 
                 // force the batch to break!
                 currentTexture = null;
