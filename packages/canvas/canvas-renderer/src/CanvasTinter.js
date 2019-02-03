@@ -19,7 +19,7 @@ const CanvasTinter = {
      * @param {number} color - the color to use to tint the sprite with
      * @return {HTMLCanvasElement} The tinted canvas
      */
-    getTintedTexture: (sprite, color) =>
+    getTintedCanvas: (sprite, color) =>
     {
         const texture = sprite._texture;
 
@@ -29,13 +29,13 @@ const CanvasTinter = {
 
         texture.tintCache = texture.tintCache || {};
 
-        const cachedTexture = texture.tintCache[stringColor];
+        const cachedCanvas = texture.tintCache[stringColor];
 
         let canvas;
 
-        if (cachedTexture)
+        if (cachedCanvas)
         {
-            if (cachedTexture.tintId === texture._updateID)
+            if (cachedCanvas.tintId === texture._updateID)
             {
                 return texture.tintCache[stringColor];
             }
