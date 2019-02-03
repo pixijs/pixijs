@@ -599,6 +599,8 @@ export default class GraphicsGeometry extends BatchGeometry
 
         currentGroup.textureCount = 0;
         currentGroup.start = 0;
+        currentGroup.size = 0;
+        currentGroup.type = 4;
 
         let textureCount = 0;
         let currentTexture = null;
