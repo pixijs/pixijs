@@ -1,10 +1,10 @@
 import '@pixi/polyfill';
 
 import { Application, accessibility, interaction, prepare, extract } from 'pixi.js';
-import { autoDetectRenderer, CanvasRenderer } from '@pixi/canvas-renderer';
+import { autoDetectRenderer, CanvasRenderer, CanvasTinter } from '@pixi/canvas-renderer';
 import { CanvasMeshRenderer } from '@pixi/canvas-mesh';
 import { CanvasGraphicsRenderer } from '@pixi/canvas-graphics';
-import { CanvasSpriteRenderer, CanvasTinter } from '@pixi/canvas-sprite';
+import { CanvasSpriteRenderer } from '@pixi/canvas-sprite';
 import * as canvasExtract from '@pixi/canvas-extract';
 import * as canvasPrepare from '@pixi/canvas-prepare';
 import '@pixi/canvas-sprite-tiling';
