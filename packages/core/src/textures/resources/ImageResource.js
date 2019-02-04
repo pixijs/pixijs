@@ -197,21 +197,40 @@ export default class ImageResource extends BaseImageResource
     {
         baseTexture.premultiplyAlpha = this.premultiplyAlpha;
 
-        if (this.createBitmap)
+        if (!this.createBitmap)
         {
+            return super.upload(renderer, baseTexture, glTexture);
+        }
+        if (!this.bitmap)
+        {
+            // yeah, ignore the output
+            this.process();
             if (!this.bitmap)
             {
-                // yeah, ignore the output
-                this.process();
-                if (!this.bitmap)
+                return false;
+            }
+        }
+
+        super.upload(renderer, baseTexture, glTexture, this.bitmap);
+
+        if (!this.preserveBitmap)
+        {
+            // checks if there are other renderers that possibly need this bitmap
+
+            let flag = true;
+
+            for (const key in baseTexture._glTextures)
+            {
+                const otherTex = baseTexture._glTextures[key];
+
+                if (otherTex !== glTexture && otherTex.dirtyId !== baseTexture.dirtyId)
                 {
-                    return false;
+                    flag = false;
+                    break;
                 }
             }
 
-            super.upload(renderer, baseTexture, glTexture, this.bitmap);
-
-            if (!this.preserveBitmap)
+            if (flag)
             {
                 if (this.bitmap.close)
                 {
@@ -220,10 +239,6 @@ export default class ImageResource extends BaseImageResource
 
                 this.bitmap = null;
             }
-        }
-        else
-        {
-            super.upload(renderer, baseTexture, glTexture);
         }
 
         return true;
