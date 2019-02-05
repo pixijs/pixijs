@@ -212,12 +212,6 @@ export default class CanvasRenderer extends AbstractRenderer
         this._outerBlend = false;
         context.globalCompositeOperation = this.blendModes[BLEND_MODES.NORMAL];
 
-        if (navigator.isCocoonJS && this.view.screencanvas)
-        {
-            context.fillStyle = 'black';
-            context.clear();
-        }
-
         if (clear !== undefined ? clear : this.clearBeforeRender)
         {
             if (this.renderingToScreen)
