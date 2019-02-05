@@ -407,12 +407,6 @@ export default class Text extends Sprite
             return style.fill;
         }
 
-        // cocoon on canvas+ cannot generate textures, so use the first colour instead
-        if (navigator.isCocoonJS)
-        {
-            return style.fill[0];
-        }
-
         // the gradient will be evenly spaced out according to how large the array is.
         // ['#FF0000', '#00FF00', '#0000FF'] would created stops at 0.25, 0.5 and 0.75
         let gradient;

@@ -45,7 +45,7 @@ export default class AccessibilityManager
          * @private
          */
         this._hookDiv = null;
-        if ((Device.tablet || Device.phone) && !navigator.isCocoonJS)
+        if (Device.tablet || Device.phone)
         {
             this.createTouchHook();
         }
