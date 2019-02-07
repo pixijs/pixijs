@@ -33,7 +33,7 @@ export default class Application
      * @param {boolean} [options.transparent=false] - If the render view is transparent.
      * @param {boolean} [options.autoDensity=false] - Resizes renderer view in CSS pixels to allow for
      *   resolutions other than 1.
-     * @param {boolean} [options.antialias=false] - Sets antialias (only applicable in Chrome at the moment).
+     * @param {boolean} [options.antialias=false] - Sets antialias
      * @param {boolean} [options.preserveDrawingBuffer=false] - Enables drawing buffer preservation, enable this if you
      *  need to call toDataUrl on the WebGL context.
      * @param {number} [options.resolution=1] - The resolution / device pixel ratio of the renderer, retina would be 2.
