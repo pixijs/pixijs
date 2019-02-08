@@ -88,6 +88,14 @@ export default class AnimatedSprite extends core.Sprite
         this.loop = true;
 
         /**
+         * Update anchor to [Texture's defaultAnchor]{@link PIXI.Texture#defaultAnchor} when frame changes.
+         *
+         * @member {boolean}
+         * @default false
+         */
+        this.animateAnchor = false;
+
+        /**
          * Function to call when a AnimatedSprite finishes playing
          *
          * @member {Function}
@@ -285,6 +293,11 @@ export default class AnimatedSprite extends core.Sprite
         this._texture = this._textures[this.currentFrame];
         this._textureID = -1;
         this.cachedTint = 0xFFFFFF;
+
+        if (this.animateAnchor)
+        {
+            this._anchor.copy(this._texture.defaultAnchor);
+        }
 
         if (this.onFrameChange)
         {
