@@ -85,6 +85,20 @@ export default class AnimatedSprite extends Sprite
         this.loop = true;
 
         /**
+         * Update anchor to [Texture's defaultAnchor]{@link PIXI.Texture#defaultAnchor} when frame changes.
+         *
+         * Useful with [sprite sheet animations]{@link PIXI.Spritesheet#animations} created with tools.
+         * Changing anchor for each frame allows to pin sprite origin to certain moving feature
+         * of the frame (e.g. left foot).
+         *
+         * Note: Enabling this will override any previously set `anchor` on each frame change.
+         *
+         * @member {boolean}
+         * @default false
+         */
+        this.updateAnchor = false;
+
+        /**
          * Function to call when a AnimatedSprite finishes playing.
          *
          * @member {Function}
@@ -284,6 +298,11 @@ export default class AnimatedSprite extends Sprite
         this._textureTrimmedID = -1;
         this.cachedTint = 0xFFFFFF;
         this.uvs = this._texture._uvs.uvsFloat32;
+
+        if (this.updateAnchor)
+        {
+            this._anchor.copy(this._texture.defaultAnchor);
+        }
 
         if (this.onFrameChange)
         {
