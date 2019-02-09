@@ -1,7 +1,7 @@
 import System from '../System';
 import GLTexture from './GLTexture';
 import { removeItems } from '@pixi/utils';
-import { WRAP_MODES } from '@pixi/constants';
+import { MIPMAP_MODES, WRAP_MODES } from '@pixi/constants';
 
 /**
  * System plugin to the renderer to manage textures.
@@ -282,14 +282,14 @@ export default class TextureSystem extends System
             return;
         }
 
-        if (this.webGLVersion !== 2 && !texture.isPowerOfTwo)
+        if ((texture.mipmap === MIPMAP_MODES.POW2 || this.webGLVersion !== 2) && !texture.isPowerOfTwo)
         {
-            glTexture.mipmap = false;
+            glTexture.mipmap = 0;
             glTexture.wrapMode = WRAP_MODES.CLAMP;
         }
         else
         {
-            glTexture.mipmap = texture.mipmap;
+            glTexture.mipmap = texture.mipmap >= 1;
             glTexture.wrapMode = texture.wrapMode;
         }
 

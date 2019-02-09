@@ -26,7 +26,7 @@ const defaultBufferOptions = {
  *        The current resource to use, for things that aren't Resource objects, will be converted
  *        into a Resource.
  * @param {Object} [options] - Collection of options
- * @param {boolean} [options.mipmap=PIXI.settings.MIPMAP_TEXTURES] - If mipmapping is enabled for texture
+ * @param {PIXI.MIPMAP_MODES} [options.mipmap=PIXI.settings.MIPMAP_TEXTURES] - If mipmapping is enabled for texture
  * @param {PIXI.WRAP_MODES} [options.wrapMode=PIXI.settings.WRAP_MODE] - Wrap mode for textures
  * @param {PIXI.SCALE_MODES} [options.scaleMode=PIXI.settings.SCALE_MODE] - Default scale mode, linear, nearest
  * @param {PIXI.FORMATS} [options.format=PIXI.FORMATS.RGBA] - GL format type
@@ -81,9 +81,10 @@ export default class BaseTexture extends EventEmitter
         this.resolution = resolution || settings.RESOLUTION;
 
         /**
-         * If mipmapping was used for this texture, enable and disable with enableMipmap()
+         * Mipmap mode of the texture, affects downscaled images
          *
-         * @member {boolean}
+         * @member {PIXI.MIPMAP_MODES}
+         * @default PIXI.settings.MIPMAP_TEXTURES
          */
         this.mipmap = mipmap !== undefined ? mipmap : settings.MIPMAP_TEXTURES;
 
@@ -96,9 +97,8 @@ export default class BaseTexture extends EventEmitter
         /**
          * The scale mode to apply when scaling this texture
          *
-         * @member {number}
+         * @member {PIXI.SCALE_MODES}
          * @default PIXI.settings.SCALE_MODE
-         * @see PIXI.SCALE_MODES
          */
         this.scaleMode = scaleMode !== undefined ? scaleMode : settings.SCALE_MODE;
 
@@ -304,7 +304,7 @@ export default class BaseTexture extends EventEmitter
      * Changes style options of BaseTexture
      *
      * @param {PIXI.SCALE_MODES} [scaleMode] - Pixi scalemode
-     * @param {boolean} [mipmap] - enable mipmaps
+     * @param {PIXI.MIPMAP_MODES} [mipmap] - enable mipmaps
      * @returns {BaseTexture} this
      */
     setStyle(scaleMode, mipmap)
