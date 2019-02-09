@@ -257,9 +257,9 @@ export const WRAP_MODES = {
 };
 
 /**
- * The wrap modes that are supported by pixi.
+ * Mipmap filtering modes that are supported by pixi.
  *
- * The {@link PIXI.settings.MIPMAP_TEXTURES} affects the texture filtering.
+ * The {@link PIXI.settings.MIPMAP_TEXTURES} affects default texture filtering.
  * Mipmaps are generated for a baseTexture if its `mipmap` field is `ON`,
  * or its `POW2` and texture dimensions are powers of 2.
  * Due to platform restriction, `ON` option will work like `POW2` for webgl-1.
