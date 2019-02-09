@@ -28,7 +28,6 @@ class CacheData
         this.originalRenderWebGL = null;
         this.originalRenderCanvas = null;
         this.originalCalculateBounds = null;
-        this.originalCalculateBounds2 = null;
         this.originalGetLocalBounds = null;
 
         this.originalUpdateTransform = null;
