@@ -28,6 +28,7 @@ class CacheData
         this.originalRenderWebGL = null;
         this.originalRenderCanvas = null;
         this.originalCalculateBounds = null;
+        this.originalCalculateBounds2 = null;
         this.originalGetLocalBounds = null;
 
         this.originalUpdateTransform = null;
@@ -81,7 +82,8 @@ Object.defineProperties(DisplayObject.prototype, {
                 data.originalRenderCanvas = this.renderCanvas;
 
                 data.originalUpdateTransform = this.updateTransform;
-                data.originalCalculateBounds = this._calculateBounds;
+                data.originalCalculateBounds = this.calculateBounds;
+                data.originalCalculateBounds2 = this._calculateBounds;
                 data.originalGetLocalBounds = this.getLocalBounds;
 
                 data.originalDestroy = this.destroy;
@@ -107,7 +109,8 @@ Object.defineProperties(DisplayObject.prototype, {
 
                 this.renderWebGL = data.originalRenderWebGL;
                 this.renderCanvas = data.originalRenderCanvas;
-                this._calculateBounds = data.originalCalculateBounds;
+                this.calculateBounds = data.originalCalculateBounds;
+                this._calculateBounds = data.originalCalculateBounds2;
                 this.getLocalBounds = data.originalGetLocalBounds;
 
                 this.destroy = data.originalDestroy;
