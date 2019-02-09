@@ -83,7 +83,6 @@ Object.defineProperties(DisplayObject.prototype, {
 
                 data.originalUpdateTransform = this.updateTransform;
                 data.originalCalculateBounds = this.calculateBounds;
-                data.originalCalculateBounds2 = this._calculateBounds;
                 data.originalGetLocalBounds = this.getLocalBounds;
 
                 data.originalDestroy = this.destroy;
@@ -110,7 +109,6 @@ Object.defineProperties(DisplayObject.prototype, {
                 this.renderWebGL = data.originalRenderWebGL;
                 this.renderCanvas = data.originalRenderCanvas;
                 this.calculateBounds = data.originalCalculateBounds;
-                this._calculateBounds = data.originalCalculateBounds2;
                 this.getLocalBounds = data.originalGetLocalBounds;
 
                 this.destroy = data.originalDestroy;
@@ -237,7 +235,7 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
     cachedSprite._bounds = this._bounds;
 
     // easy bounds..
-    this._calculateBounds = this._calculateCachedBounds;
+    this.calculateBounds = this._calculateCachedBounds;
     this.getLocalBounds = this._getCachedLocalBounds;
 
     this._cacheData.sprite = cachedSprite;
