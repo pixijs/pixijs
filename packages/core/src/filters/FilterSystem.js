@@ -203,7 +203,7 @@ export default class FilterSystem extends System
 
         if (filterStack.length === 1)
         {
-            this.defaultFilterStack[0].renderTexture = renderer.renderTexture.renderTexture;
+            this.defaultFilterStack[0].renderTexture = renderer.renderTexture.current;
         }
 
         filterStack.push(state);

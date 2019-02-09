@@ -40,7 +40,7 @@ export default class RenderTextureSystem extends System
          * @member {PIXI.RenderTexture}
          * @readonly
          */
-        this.renderTexture = null;
+        this.current = null;
 
         /**
          * Source frame
@@ -66,8 +66,8 @@ export default class RenderTextureSystem extends System
     bind(renderTexture, sourceFrame, destinationFrame)
     {
         // TODO - do we want this??
-        if (this.renderTexture === renderTexture) return;
-        this.renderTexture = renderTexture;
+        if (this.current === renderTexture) return;
+        this.current = renderTexture;
 
         const renderer = this.renderer;
 
@@ -140,9 +140,9 @@ export default class RenderTextureSystem extends System
      */
     clear(clearColor)
     {
-        if (this.renderTexture)
+        if (this.current)
         {
-            clearColor = clearColor || this.renderTexture.baseTexture.clearColor;
+            clearColor = clearColor || this.current.baseTexture.clearColor;
         }
         else
         {
