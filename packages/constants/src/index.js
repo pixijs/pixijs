@@ -270,9 +270,9 @@ export const WRAP_MODES = {
  * @memberof PIXI
  * @static
  * @enum {number}
- * @property {number} OFF - The textures uvs are clamped
- * @property {number} POW2 - Only pow2
- * @property {number} ON - Texture has mipmaps
+ * @property {number} OFF - No mipmaps
+ * @property {number} POW2 - Generate mipmaps if texture dimensions are pow2
+ * @property {number} ON - Always generate mipmaps
  */
 export const MIPMAP_MODES = {
     OFF: 0,
