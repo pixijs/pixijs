@@ -25,7 +25,7 @@ export default class CanvasRenderer extends AbstractRenderer
      * @param {boolean} [options.transparent=false] - If the render view is transparent, default false
      * @param {boolean} [options.autoDensity=false] - Resizes renderer view in CSS pixels to allow for
      *   resolutions other than 1
-     * @param {boolean} [options.antialias=false] - sets antialias (only applicable in chrome at the moment)
+     * @param {boolean} [options.antialias=false] - sets antialias
      * @param {number} [options.resolution=1] - The resolution / device pixel ratio of the renderer. The
      *  resolution of the renderer retina would be 2.
      * @param {boolean} [options.preserveDrawingBuffer=false] - enables drawing buffer preservation,
@@ -211,12 +211,6 @@ export default class CanvasRenderer extends AbstractRenderer
         this._activeBlendMode = BLEND_MODES.NORMAL;
         this._outerBlend = false;
         context.globalCompositeOperation = this.blendModes[BLEND_MODES.NORMAL];
-
-        if (navigator.isCocoonJS && this.view.screencanvas)
-        {
-            context.fillStyle = 'black';
-            context.clear();
-        }
 
         if (clear !== undefined ? clear : this.clearBeforeRender)
         {

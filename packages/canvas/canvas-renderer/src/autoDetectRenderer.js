@@ -16,7 +16,7 @@ import CanvasRenderer from './CanvasRenderer';
  * @param {boolean} [options.transparent=false] - If the render view is transparent, default false
  * @param {boolean} [options.autoDensity=false] - Resizes renderer view in CSS pixels to allow for
  *   resolutions other than 1
- * @param {boolean} [options.antialias=false] - sets antialias (only applicable in chrome at the moment)
+ * @param {boolean} [options.antialias=false] - sets antialias
  * @param {boolean} [options.preserveDrawingBuffer=false] - enables drawing buffer preservation, enable this if you
  *  need to call toDataUrl on the webgl context
  * @param {number} [options.backgroundColor=0x000000] - The background color of the rendered area
