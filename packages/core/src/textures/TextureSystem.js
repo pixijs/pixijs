@@ -98,6 +98,8 @@ export default class TextureSystem extends System
     /**
      * Bind a texture to a specific location
      *
+     * If you want to unbind something, please use `unbind(texture)` instead of `bind(null, textureLocation)`
+     *
      * @param {PIXI.Texture|PIXI.BaseTexture} texture - Texture to bind
      * @param {number} [location=0] - Location to bind at
      */
@@ -150,6 +152,7 @@ export default class TextureSystem extends System
     reset()
     {
         this._unknownBoundTextures = true;
+        this.currentLocation = -1;
 
         for (let i = 0; i < this.boundTextures.length; i++)
         {
