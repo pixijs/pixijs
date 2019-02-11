@@ -146,6 +146,13 @@ export default class WebGLRenderer extends SystemRenderer
         this.boundTextures = null;
 
         /**
+         * Did someone temper with textures state? We'll overwrite them when we need to unbind something.
+         * @member {boolean}
+         * @private
+         */
+        this._unknownBoundTextures = false;
+
+        /**
          * Holds the current shader
          *
          * @member {PIXI.Shader}
@@ -528,6 +535,22 @@ export default class WebGLRenderer extends SystemRenderer
 
         texture = texture.baseTexture || texture;
 
+        if (this._unknownBoundTextures)
+        {
+            this._unknownBoundTextures = false;
+            // someone changed webGL state,
+            // we have to be sure that our texture does not appear in multitexture renderer samplers
+
+            for (let i = 0; i < this.boundTextures.length; i++)
+            {
+                if (this.boundTextures[i] === this.emptyTextures[i])
+                {
+                    gl.activeTexture(gl.TEXTURE0 + i);
+                    gl.bindTexture(gl.TEXTURE_2D, this.emptyTextures[i]._glTextures[this.CONTEXT_UID].texture);
+                }
+            }
+        }
+
         for (let i = 0; i < this.boundTextures.length; i++)
         {
             if (this.boundTextures[i] === texture)
@@ -596,6 +619,13 @@ export default class WebGLRenderer extends SystemRenderer
         this.rootRenderTarget.activate();
 
         this.state.resetToDefault();
+
+        this._unknownBoundTextures = true;
+
+        for (let i = 0; i < this.boundTextures.length; i++)
+        {
+            this.boundTextures[i] = this.emptyTextures[i];
+        }
 
         return this;
     }
