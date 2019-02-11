@@ -155,6 +155,17 @@ export default class RenderTextureSystem extends System
     resize()// screenWidth, screenHeight)
     {
         // resize the root only!
+        this.current = {};
+        this.bind(null);
+    }
+
+    /**
+     * Resets renderTexture state
+     */
+    reset()
+    {
+        // Use empty object to force the change
+        this.current = {};
         this.bind(null);
     }
 }

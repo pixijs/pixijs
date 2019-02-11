@@ -149,6 +149,11 @@ export default class TextureSystem extends System
         }
     }
 
+    /**
+     * Resets texture location and bound textures
+     *
+     * Actual `bind(null, i)` calls will be performed at next `unbind()` call
+     */
     reset()
     {
         this._unknownBoundTextures = true;
