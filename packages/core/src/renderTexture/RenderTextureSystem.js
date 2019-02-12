@@ -65,8 +65,6 @@ export default class RenderTextureSystem extends System
      */
     bind(renderTexture = null, sourceFrame, destinationFrame)
     {
-        // TODO - do we want this??
-        if (this.current === renderTexture) return;
         this.current = renderTexture;
 
         const renderer = this.renderer;
@@ -154,7 +152,6 @@ export default class RenderTextureSystem extends System
 
     resize()// screenWidth, screenHeight)
     {
-        this.current = {};
         // resize the root only!
         this.bind(null);
     }
