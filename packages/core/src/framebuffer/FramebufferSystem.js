@@ -2,6 +2,7 @@ import System from '../System';
 import { Rectangle } from '@pixi/math';
 import { ENV } from '@pixi/constants';
 import { settings } from '../settings';
+import Framebuffer from './Framebuffer';
 
 /**
  * System plugin to the renderer to manage framebuffers.
@@ -25,6 +26,13 @@ export default class FramebufferSystem extends System
          * @readonly
          */
         this.managedFramebuffers = [];
+
+        /**
+         * Framebuffer value that shows that we don't know what is bound
+         * @member {Framebuffer}
+         * @readonly
+         */
+        this.undefinedFramebuffer = new Framebuffer(10, 10);
     }
 
     /**
@@ -35,7 +43,7 @@ export default class FramebufferSystem extends System
         const gl = this.gl = this.renderer.gl;
 
         this.CONTEXT_UID = this.renderer.CONTEXT_UID;
-        this.current = {};
+        this.current = this.undefinedFramebuffer;
         this.viewport = new Rectangle();
         this.hasMRT = true;
 
@@ -409,7 +417,7 @@ export default class FramebufferSystem extends System
      */
     reset()
     {
-        this.current = {};
+        this.current = this.undefinedFramebuffer;
         this.viewport = new Rectangle();
     }
 }

@@ -1,4 +1,5 @@
 import System from '../System';
+import BaseTexture from './BaseTexture';
 import GLTexture from './GLTexture';
 import { removeItems } from '@pixi/utils';
 import { WRAP_MODES } from '@pixi/constants';
@@ -45,7 +46,14 @@ export default class TextureSystem extends System
          * @member {boolean}
          * @private
          */
-        this._unknownBoundTextures = false;
+        this._undefinedBoundTextures = false;
+
+        /**
+         * BaseTexture value that shows that we don't know what is bound
+         * @member {PIXI.BaseTexture}
+         * @readonly
+         */
+        this.undefinedTexture = new BaseTexture();
     }
 
     /**
@@ -156,12 +164,12 @@ export default class TextureSystem extends System
      */
     reset()
     {
-        this._unknownBoundTextures = true;
+        this._undefinedBoundTextures = true;
         this.currentLocation = -1;
 
         for (let i = 0; i < this.boundTextures.length; i++)
         {
-            this.boundTextures[i] = null;
+            this.boundTextures[i] = this.undefinedTexture;
         }
     }
 
@@ -173,14 +181,14 @@ export default class TextureSystem extends System
     {
         const { gl, boundTextures } = this;
 
-        if (this._unknownBoundTextures)
+        if (this._undefinedBoundTextures)
         {
-            this._unknownBoundTextures = false;
+            this._undefinedBoundTextures = false;
             // someone changed webGL state,
             // we have to be sure that our texture does not appear in multi-texture renderer samplers
             for (let i = 0; i < boundTextures.length; i++)
             {
-                if (!boundTextures[i])
+                if (boundTextures[i] === this.undefinedTexture)
                 {
                     this.bind(null, i);
                 }
