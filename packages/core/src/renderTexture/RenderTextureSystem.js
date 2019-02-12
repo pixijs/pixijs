@@ -65,10 +65,8 @@ export default class RenderTextureSystem extends System
      * @param {PIXI.Rectangle} sourceFrame
      * @param {PIXI.Rectangle} destinationFrame
      */
-    bind(renderTexture, sourceFrame, destinationFrame)
+    bind(renderTexture = null, sourceFrame, destinationFrame)
     {
-        // TODO - do we want this??
-        if (this.current === renderTexture) return;
         this.current = renderTexture;
 
         const renderer = this.renderer;
