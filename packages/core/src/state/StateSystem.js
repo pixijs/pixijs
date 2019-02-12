@@ -148,9 +148,10 @@ export default class StateSystem extends System
      *
      * @param {*} state - The state to set
      */
-    forceState(state) {
+    forceState(state)
+    {
         state = state || this.defaultState;
-        for (let i=0; i<this.map.length; i++)
+        for (let i = 0; i < this.map.length; i++)
         {
             this.map[i].call(this, !!(state.data & (1 << i)));
         }
