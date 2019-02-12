@@ -35,7 +35,7 @@ export default class FramebufferSystem extends System
         const gl = this.gl = this.renderer.gl;
 
         this.CONTEXT_UID = this.renderer.CONTEXT_UID;
-        this.current = null;
+        this.current = {};
         this.viewport = new Rectangle();
         this.hasMRT = true;
 
@@ -72,7 +72,7 @@ export default class FramebufferSystem extends System
      * Bind a framebuffer
      *
      * @param {PIXI.Framebuffer} framebuffer
-     * @param {PIXI.Rectangle} frame
+     * @param {PIXI.Rectangle} [frame] frame, default is framebuffer size
      */
     bind(framebuffer, frame)
     {
@@ -400,5 +400,16 @@ export default class FramebufferSystem extends System
         {
             this.disposeFramebuffer(list[i], contextLost);
         }
+    }
+
+    /**
+     * resets framebuffer stored state, binds screen framebuffer
+     *
+     * should be called before renderTexture reset()
+     */
+    reset()
+    {
+        this.current = {};
+        this.viewport = new Rectangle();
     }
 }

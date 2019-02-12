@@ -6,6 +6,8 @@ const tempRect = new Rectangle();
 /**
  * System plugin to the renderer to manage render textures.
  *
+ * Should be added after FramebufferSystem
+ *
  * @class
  * @extends PIXI.System
  * @memberof PIXI.systems
@@ -163,8 +165,6 @@ export default class RenderTextureSystem extends System
      */
     reset()
     {
-        // Use empty object to force the change
-        this.current = {};
         this.bind(null);
     }
 }
