@@ -1,6 +1,6 @@
 // const MockPointer = require('../interaction/MockPointer');
 const { Renderer, BatchRenderer } = require('@pixi/core');
-const { Graphics } = require('../');
+const { Graphics, GRAPHICS_CURVES } = require('../');
 const { BLEND_MODES } = require('@pixi/constants');
 const { Point } = require('@pixi/math');
 const { skipHello } = require('@pixi/utils');
@@ -366,5 +366,29 @@ describe('PIXI.Graphics', function ()
             expect(data[0].shape.points).to.eql([50, 50, 250, 50]);
             expect(data[1].shape.points).to.eql([250, 50, 100, 100, 50, 50]);
         });
+    });
+
+    describe('should support adaptive curves', function ()
+    {
+        const defMode = GRAPHICS_CURVES.adaptive;
+        const defMaxLen = GRAPHICS_CURVES.maxLength;
+        const myMaxLen = GRAPHICS_CURVES.maxLength = 1.0;
+        const graphics = new Graphics();
+
+        GRAPHICS_CURVES.adaptive = true;
+
+        graphics.beginFill(0xffffff, 1.0);
+        graphics.moveTo(610, 500);
+        graphics.quadraticCurveTo(600, 510, 590, 500);
+        graphics.endFill();
+
+        const pointsLen = graphics.geometry.graphicsData[0].shape.points.length / 2;
+        const arcLen = Math.PI / 2 * Math.sqrt(200);
+        const estimate = Math.ceil(arcLen / myMaxLen) + 1;
+
+        expect(pointsLen).to.be.closeTo(estimate, 2.0);
+
+        GRAPHICS_CURVES.adaptive = defMode;
+        GRAPHICS_CURVES.maxLength = defMaxLen;
     });
 });

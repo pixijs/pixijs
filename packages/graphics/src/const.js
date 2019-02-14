@@ -14,13 +14,13 @@
  * @property {number} maxSegments=2048 - maximal number of segments in the curve (if adaptive = false, ignored)
  */
 export const GRAPHICS_CURVES = {
-    adaptive: false,
+    adaptive: true,
     maxLength: 10,
     minSegments: 8,
     maxSegments: 2048,
     _segmentsCount(length, defaultSegments = 20)
     {
-        if (this.adaptive)
+        if (!this.adaptive)
         {
             return defaultSegments;
         }
