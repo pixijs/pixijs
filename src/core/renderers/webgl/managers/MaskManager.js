@@ -110,10 +110,11 @@ export default class MaskManager extends WebGLManager
         alphaMaskFilter[0].resolution = this.renderer.resolution;
         alphaMaskFilter[0].maskSprite = maskData;
 
-        // TODO - may cause issues!
-        target.filterArea = maskData.getBounds(true);
+        const stashFilterArea = target.filterArea;
 
+        target.filterArea = maskData.getBounds(true);
         this.renderer.filterManager.pushFilter(target, alphaMaskFilter);
+        target.filterArea = stashFilterArea;
 
         this.alphaMaskIndex++;
     }
