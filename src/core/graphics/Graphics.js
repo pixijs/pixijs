@@ -255,10 +255,10 @@ export default class Graphics extends Container
      */
     _quadraticCurveLength(fromX, fromY, cpX, cpY, toX, toY)
     {
-        const ax = fromX - ((2.0 * cpX) + toX);
-        const ay = fromY - ((2.0 * cpY) + toY);
-        const bx = 2.0 * ((cpX - 2.0) * fromX);
-        const by = 2.0 * ((cpY - 2.0) * fromY);
+        const ax = fromX - (2.0 * cpX) + toX;
+        const ay = fromY - (2.0 * cpY) + toY;
+        const bx = (2.0 * cpX) - (2.0 * fromX);
+        const by = (2.0 * cpY) - (2.0 * fromY);
         const a = 4.0 * ((ax * ax) + (ay * ay));
         const b = 4.0 * ((ax * bx) + (ay * by));
         const c = (bx * bx) + (by * by);
