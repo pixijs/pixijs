@@ -385,28 +385,28 @@ export default class DisplayObject extends EventEmitter
     /**
      * Convenience function to set the position, scale, skew and pivot at once.
      *
-     * @param {number} [x=0] - The X position
-     * @param {number} [y=0] - The Y position
-     * @param {number} [scaleX=1] - The X scale value
-     * @param {number} [scaleY=1] - The Y scale value
-     * @param {number} [rotation=0] - The rotation
-     * @param {number} [skewX=0] - The X skew value
-     * @param {number} [skewY=0] - The Y skew value
-     * @param {number} [pivotX=0] - The X pivot value
-     * @param {number} [pivotY=0] - The Y pivot value
+     * @param {number} [x] - The X position
+     * @param {number} [y] - The Y position
+     * @param {number} [scaleX] - The X scale value
+     * @param {number} [scaleY] - The Y scale value
+     * @param {number} [rotation] - The rotation
+     * @param {number} [skewX] - The X skew value
+     * @param {number} [skewY] - The Y skew value
+     * @param {number} [pivotX- The X pivot value
+     * @param {number} [pivotY] - The Y pivot value
      * @return {PIXI.DisplayObject} The DisplayObject instance
      */
-    setTransform(x = 0, y = 0, scaleX = 1, scaleY = 1, rotation = 0, skewX = 0, skewY = 0, pivotX = 0, pivotY = 0)
+    setTransform(x, y, scaleX, scaleY, rotation, skewX, skewY, pivotX, pivotY)
     {
-        this.position.x = x;
-        this.position.y = y;
-        this.scale.x = !scaleX ? 1 : scaleX;
-        this.scale.y = !scaleY ? 1 : scaleY;
-        this.rotation = rotation;
-        this.skew.x = skewX;
-        this.skew.y = skewY;
-        this.pivot.x = pivotX;
-        this.pivot.y = pivotY;
+        this.position.x = x | 0;
+        this.position.y = y | 0;
+        this.scale.x = scaleX | 1;
+        this.scale.y = scaleY | 1;
+        this.rotation = rotation | 0;
+        this.skew.x = skewX | 0;
+        this.skew.y = skewY | 0;
+        this.pivot.x = pivotX | 0;
+        this.pivot.y = pivotY | 0;
 
         return this;
     }
