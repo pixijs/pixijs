@@ -86,15 +86,17 @@ export default class FramebufferSystem extends System
     {
         const { gl } = this;
 
-        this.current = framebuffer;
-
         if (framebuffer)
         {
             // TODO caching layer!
 
             const fbo = framebuffer.glFramebuffers[this.CONTEXT_UID] || this.initFramebuffer(framebuffer);
 
-            gl.bindFramebuffer(gl.FRAMEBUFFER, fbo.framebuffer);
+            if (this.current !== framebuffer)
+            {
+                this.current = framebuffer;
+                gl.bindFramebuffer(gl.FRAMEBUFFER, fbo.framebuffer);
+            }
             // make sure all textures are unbound..
 
             // now check for updates...
@@ -142,7 +144,11 @@ export default class FramebufferSystem extends System
         }
         else
         {
-            gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+            if (this.current)
+            {
+                this.current = null;
+                gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+            }
 
             if (frame)
             {
