@@ -11,7 +11,7 @@ export default class TickerListener
      * Constructor
      * @private
      * @param {Function} fn - The listener function to be added for one update
-     * @param {Function} [context=null] - The listener context
+     * @param {object} [context=null] - The listener context
      * @param {number} [priority=0] - The priority for emitting
      * @param {boolean} [once=false] - If the handler should fire once
      */
@@ -27,7 +27,7 @@ export default class TickerListener
         /**
          * The calling to execute.
          * @private
-         * @member {Function}
+         * @member {object}
          */
         this.context = context;
 

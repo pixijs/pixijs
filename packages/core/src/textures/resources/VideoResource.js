@@ -103,7 +103,7 @@ export default class VideoResource extends BaseImageResource
      *
      * @param {number} [deltaTime=0] - time delta since last tick
      */
-    update(deltaTime=0)
+    update(deltaTime = 0)
     {
         if (!this.destroyed)
         {

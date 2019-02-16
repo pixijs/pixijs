@@ -223,7 +223,7 @@ export default class Ticker
      * it is removed or the ticker is stopped.
      *
      * @param {Function} fn - The listener function to be added for updates
-     * @param {Function} [context] - The listener context
+     * @param {object} [context] - The listener context
      * @param {number} [priority=PIXI.UPDATE_PRIORITY.NORMAL] - The priority for emitting
      * @returns {PIXI.Ticker} This instance of a ticker
      */
@@ -236,7 +236,7 @@ export default class Ticker
      * Add a handler for the tick event which is only execute once.
      *
      * @param {Function} fn - The listener function to be added for one update
-     * @param {Function} [context] - The listener context
+     * @param {object} [context] - The listener context
      * @param {number} [priority=PIXI.UPDATE_PRIORITY.NORMAL] - The priority for emitting
      * @returns {PIXI.Ticker} This instance of a ticker
      */
