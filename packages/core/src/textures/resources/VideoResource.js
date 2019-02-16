@@ -101,9 +101,9 @@ export default class VideoResource extends BaseImageResource
     /**
      * Trigger updating of the texture
      *
-     * @param {number} deltaTime - time delta since last tick
+     * @param {number} [deltaTime=0] - time delta since last tick
      */
-    update(deltaTime)
+    update(deltaTime = 0)
     {
         if (!this.destroyed)
         {
@@ -123,7 +123,7 @@ export default class VideoResource extends BaseImageResource
      * Start preloading the video resource.
      *
      * @protected
-     * @return {Promise} Handle the validate event
+     * @return {Promise<void>} Handle the validate event
      */
     load()
     {
