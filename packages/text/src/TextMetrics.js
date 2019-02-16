@@ -516,7 +516,7 @@ export default class TextMetrics
      *
      * @static
      * @param {string} font - String representing the style of the font
-     * @return {PIXI.TextMetrics.FontMetrics} Font properties object
+     * @return {PIXI.IFontMetrics} Font properties object
      */
     static measureFont(font)
     {
@@ -737,3 +737,13 @@ TextMetrics._breakingSpaces = [
     0x205F, // medium mathematical space
     0x3000, // ideographic space
 ];
+
+/**
+ * A number, or a string containing a number.
+ * @memberof PIXI
+ * @typedef IFontMetrics
+ * @property {number} ascent - Font ascent
+ * @property {number} descent - Font descent
+ * @property {number} fontSize - Font size
+ */
+
