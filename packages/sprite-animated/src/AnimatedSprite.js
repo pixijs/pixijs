@@ -340,8 +340,9 @@ export default class AnimatedSprite extends Sprite
     static fromFrames(frames)
     {
         const textures = [];
+        const len = frames.length;
 
-        for (let i = 0; i < frames.length; ++i)
+        for (let i = 0; i < len; ++i)
         {
             textures.push(Texture.from(frames[i]));
         }
@@ -359,8 +360,9 @@ export default class AnimatedSprite extends Sprite
     static fromImages(images)
     {
         const textures = [];
+        const len = images.length;
 
-        for (let i = 0; i < images.length; ++i)
+        for (let i = 0; i < len; ++i)
         {
             textures.push(Texture.from(images[i]));
         }
@@ -403,7 +405,9 @@ export default class AnimatedSprite extends Sprite
             this._textures = [];
             this._durations = [];
 
-            for (let i = 0; i < value.length; i++)
+            const len = value.length;
+
+            for (let i = 0; i < len; i++)
             {
                 this._textures.push(value[i].texture);
                 this._durations.push(value[i].time);
