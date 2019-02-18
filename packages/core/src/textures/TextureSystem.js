@@ -46,14 +46,14 @@ export default class TextureSystem extends System
          * @member {boolean}
          * @private
          */
-        this._undefinedBoundTextures = false;
+        this._unknownBoundTextures = false;
 
         /**
          * BaseTexture value that shows that we don't know what is bound
          * @member {PIXI.BaseTexture}
          * @readonly
          */
-        this.undefinedTexture = new BaseTexture();
+        this.unknownTexture = new BaseTexture();
     }
 
     /**
@@ -164,12 +164,12 @@ export default class TextureSystem extends System
      */
     reset()
     {
-        this._undefinedBoundTextures = true;
+        this._unknownBoundTextures = true;
         this.currentLocation = -1;
 
         for (let i = 0; i < this.boundTextures.length; i++)
         {
-            this.boundTextures[i] = this.undefinedTexture;
+            this.boundTextures[i] = this.unknownTexture;
         }
     }
 
@@ -181,14 +181,14 @@ export default class TextureSystem extends System
     {
         const { gl, boundTextures } = this;
 
-        if (this._undefinedBoundTextures)
+        if (this._unknownBoundTextures)
         {
-            this._undefinedBoundTextures = false;
+            this._unknownBoundTextures = false;
             // someone changed webGL state,
             // we have to be sure that our texture does not appear in multi-texture renderer samplers
             for (let i = 0; i < boundTextures.length; i++)
             {
-                if (boundTextures[i] === this.undefinedTexture)
+                if (boundTextures[i] === this.unknownTexture)
                 {
                     this.bind(null, i);
                 }

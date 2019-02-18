@@ -32,7 +32,7 @@ export default class FramebufferSystem extends System
          * @member {Framebuffer}
          * @readonly
          */
-        this.undefinedFramebuffer = new Framebuffer(10, 10);
+        this.unknownFramebuffer = new Framebuffer(10, 10);
     }
 
     /**
@@ -43,7 +43,7 @@ export default class FramebufferSystem extends System
         const gl = this.gl = this.renderer.gl;
 
         this.CONTEXT_UID = this.renderer.CONTEXT_UID;
-        this.current = this.undefinedFramebuffer;
+        this.current = this.unknownFramebuffer;
         this.viewport = new Rectangle();
         this.hasMRT = true;
 
@@ -423,7 +423,7 @@ export default class FramebufferSystem extends System
      */
     reset()
     {
-        this.current = this.undefinedFramebuffer;
+        this.current = this.unknownFramebuffer;
         this.viewport = new Rectangle();
     }
 }
