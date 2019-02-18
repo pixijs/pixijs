@@ -1,6 +1,6 @@
 {
   "name": "@pixi/display",
-  "version": "5.0.0-rc",
+  "version": "5.0.0-rc.2",
   "main": "lib/display.js",
   "module": "lib/display.es.js",
   "description": "Core display functionality",
@@ -25,9 +25,9 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/math": "^5.0.0-rc",
-    "@pixi/settings": "^5.0.0-rc",
-    "@pixi/utils": "^5.0.0-rc",
+    "@pixi/math": "^5.0.0-rc.2",
+    "@pixi/settings": "^5.0.0-rc.2",
+    "@pixi/utils": "^5.0.0-rc.2",
     "eventemitter3": "^2.0.0",
     "remove-array-items": "^1.0.0"
   },

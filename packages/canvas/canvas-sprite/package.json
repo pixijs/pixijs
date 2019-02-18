@@ -1,6 +1,6 @@
 {
   "name": "@pixi/canvas-sprite",
-  "version": "5.0.0-rc",
+  "version": "5.0.0-rc.2",
   "main": "lib/canvas-sprite.js",
   "module": "lib/canvas-sprite.es.js",
   "description": "Canvas mixin for the sprite package",
@@ -22,11 +22,11 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/canvas-renderer": "^5.0.0-rc",
-    "@pixi/constants": "^5.0.0-rc",
-    "@pixi/math": "^5.0.0-rc",
-    "@pixi/sprite": "^5.0.0-rc",
-    "@pixi/utils": "^5.0.0-rc"
+    "@pixi/canvas-renderer": "^5.0.0-rc.2",
+    "@pixi/constants": "^5.0.0-rc.2",
+    "@pixi/math": "^5.0.0-rc.2",
+    "@pixi/sprite": "^5.0.0-rc.2",
+    "@pixi/utils": "^5.0.0-rc.2"
   },
   "devDependencies": {
     "floss": "^2.1.5"

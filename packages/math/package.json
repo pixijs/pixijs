@@ -1,6 +1,6 @@
 {
   "name": "@pixi/math",
-  "version": "5.0.0-rc",
+  "version": "5.0.0-rc.2",
   "main": "lib/math.js",
   "module": "lib/math.es.js",
   "description": "Collection of math utilities",

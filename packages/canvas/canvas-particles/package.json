@@ -1,6 +1,6 @@
 {
   "name": "@pixi/canvas-particles",
-  "version": "5.0.0-rc",
+  "version": "5.0.0-rc.2",
   "main": "lib/canvas-sprite-tiling.js",
   "module": "lib/canvas-sprite-tiling.es.js",
   "description": "Canvas mixin for the particles package",
@@ -22,7 +22,7 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/particles": "^5.0.0-rc"
+    "@pixi/particles": "^5.0.0-rc.2"
   },
   "devDependencies": {
     "floss": "^2.1.5"

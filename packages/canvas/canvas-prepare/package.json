@@ -1,6 +1,6 @@
 {
   "name": "@pixi/canvas-prepare",
-  "version": "5.0.0-rc",
+  "version": "5.0.0-rc.2",
   "main": "lib/canvas-prepare.js",
   "module": "lib/canvas-prepare.es.js",
   "description": "Canvas mixin for the prepare package",
@@ -22,9 +22,9 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/canvas-renderer": "^5.0.0-rc",
-    "@pixi/core": "^5.0.0-rc",
-    "@pixi/prepare": "^5.0.0-rc"
+    "@pixi/canvas-renderer": "^5.0.0-rc.2",
+    "@pixi/core": "^5.0.0-rc.2",
+    "@pixi/prepare": "^5.0.0-rc.2"
   },
   "devDependencies": {
     "floss": "^2.1.5"

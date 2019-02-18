@@ -1,6 +1,6 @@
 {
   "name": "@pixi/loaders",
-  "version": "5.0.0-rc",
+  "version": "5.0.0-rc.2",
   "main": "lib/loaders.js",
   "module": "lib/loaders.es.js",
   "description": "Load assets and resources",
@@ -25,8 +25,8 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/core": "^5.0.0-rc",
-    "@pixi/utils": "^5.0.0-rc",
+    "@pixi/core": "^5.0.0-rc.2",
+    "@pixi/utils": "^5.0.0-rc.2",
     "eventemitter3": "^2.0.0",
     "resource-loader": "^2.2.3"
   },

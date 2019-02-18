@@ -1,6 +1,6 @@
 {
   "name": "@pixi/settings",
-  "version": "5.0.0-rc",
+  "version": "5.0.0-rc.2",
   "main": "lib/settings.js",
   "module": "lib/settings.es.js",
   "description": "Collecting of user configurable settings used throughout PixiJS",

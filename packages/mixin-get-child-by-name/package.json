@@ -1,6 +1,6 @@
 {
   "name": "@pixi/mixin-get-child-by-name",
-  "version": "5.0.0-rc",
+  "version": "5.0.0-rc.2",
   "main": "lib/mixin-get-child-by-name.js",
   "module": "lib/mixin-get-child-by-name.es.js",
   "description": "Mixin function to find a child DisplayObject by name",
@@ -25,7 +25,7 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/display": "^5.0.0-rc"
+    "@pixi/display": "^5.0.0-rc.2"
   },
   "devDependencies": {
     "floss": "^2.1.5"

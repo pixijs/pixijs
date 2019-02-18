@@ -1,6 +1,6 @@
 {
   "name": "@pixi/graphics",
-  "version": "5.0.0-rc",
+  "version": "5.0.0-rc.2",
   "main": "lib/graphics.js",
   "module": "lib/graphics.es.js",
   "description": "Draw primitive shapes such as lines, circles and rectangles to the display",
@@ -25,12 +25,12 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/constants": "^5.0.0-rc",
-    "@pixi/core": "^5.0.0-rc",
-    "@pixi/display": "^5.0.0-rc",
-    "@pixi/math": "^5.0.0-rc",
-    "@pixi/sprite": "^5.0.0-rc",
-    "@pixi/utils": "^5.0.0-rc"
+    "@pixi/constants": "^5.0.0-rc.2",
+    "@pixi/core": "^5.0.0-rc.2",
+    "@pixi/display": "^5.0.0-rc.2",
+    "@pixi/math": "^5.0.0-rc.2",
+    "@pixi/sprite": "^5.0.0-rc.2",
+    "@pixi/utils": "^5.0.0-rc.2"
   },
   "devDependencies": {
     "floss": "^2.1.5"

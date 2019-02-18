@@ -1,6 +1,6 @@
 {
   "name": "@pixi/interaction",
-  "version": "5.0.0-rc",
+  "version": "5.0.0-rc.2",
   "main": "lib/interaction.js",
   "module": "lib/interaction.es.js",
   "description": "Plugin for handling mouse, touch and pointer events",
@@ -25,20 +25,20 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/core": "^5.0.0-rc",
-    "@pixi/display": "^5.0.0-rc",
-    "@pixi/math": "^5.0.0-rc",
-    "@pixi/ticker": "^5.0.0-rc",
-    "@pixi/utils": "^5.0.0-rc",
+    "@pixi/core": "^5.0.0-rc.2",
+    "@pixi/display": "^5.0.0-rc.2",
+    "@pixi/math": "^5.0.0-rc.2",
+    "@pixi/ticker": "^5.0.0-rc.2",
+    "@pixi/utils": "^5.0.0-rc.2",
     "eventemitter3": "^2.0.0"
   },
   "devDependencies": {
-    "@pixi/canvas-display": "^5.0.0-rc",
-    "@pixi/canvas-graphics": "^5.0.0-rc",
-    "@pixi/canvas-renderer": "^5.0.0-rc",
-    "@pixi/canvas-sprite": "^5.0.0-rc",
-    "@pixi/graphics": "^5.0.0-rc",
-    "@pixi/sprite": "^5.0.0-rc",
+    "@pixi/canvas-display": "^5.0.0-rc.2",
+    "@pixi/canvas-graphics": "^5.0.0-rc.2",
+    "@pixi/canvas-renderer": "^5.0.0-rc.2",
+    "@pixi/canvas-sprite": "^5.0.0-rc.2",
+    "@pixi/graphics": "^5.0.0-rc.2",
+    "@pixi/sprite": "^5.0.0-rc.2",
     "floss": "^2.1.5"
   }
 }

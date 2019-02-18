@@ -1,6 +1,6 @@
 {
   "name": "@pixi/sprite",
-  "version": "5.0.0-rc",
+  "version": "5.0.0-rc.2",
   "main": "lib/sprite.js",
   "module": "lib/sprite.es.js",
   "description": "Base object for textured objects rendered to the screen",
@@ -25,13 +25,13 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/canvas-renderer": "^5.0.0-rc",
-    "@pixi/constants": "^5.0.0-rc",
-    "@pixi/core": "^5.0.0-rc",
-    "@pixi/display": "^5.0.0-rc",
-    "@pixi/math": "^5.0.0-rc",
-    "@pixi/settings": "^5.0.0-rc",
-    "@pixi/utils": "^5.0.0-rc"
+    "@pixi/canvas-renderer": "^5.0.0-rc.2",
+    "@pixi/constants": "^5.0.0-rc.2",
+    "@pixi/core": "^5.0.0-rc.2",
+    "@pixi/display": "^5.0.0-rc.2",
+    "@pixi/math": "^5.0.0-rc.2",
+    "@pixi/settings": "^5.0.0-rc.2",
+    "@pixi/utils": "^5.0.0-rc.2"
   },
   "devDependencies": {
     "floss": "^2.1.5"

@@ -1,6 +1,6 @@
 {
   "name": "@pixi/mixin-get-global-position",
-  "version": "5.0.0-rc",
+  "version": "5.0.0-rc.2",
   "main": "lib/mixin-get-global-position.js",
   "module": "lib/mixin-get-global-position.es.js",
   "description": "Mixin to find the global position of a DisplayObject",
@@ -25,8 +25,8 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/display": "^5.0.0-rc",
-    "@pixi/math": "^5.0.0-rc"
+    "@pixi/display": "^5.0.0-rc.2",
+    "@pixi/math": "^5.0.0-rc.2"
   },
   "devDependencies": {
     "floss": "^2.1.5"

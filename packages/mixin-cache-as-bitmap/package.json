@@ -1,6 +1,6 @@
 {
   "name": "@pixi/mixin-cache-as-bitmap",
-  "version": "5.0.0-rc",
+  "version": "5.0.0-rc.2",
   "main": "lib/mixin-cache-as-bitmap.js",
   "module": "lib/mixin-cache-as-bitmap.es.js",
   "description": "Mixin to allow caching container and its children to a bitmap texture",
@@ -25,12 +25,12 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/core": "^5.0.0-rc",
-    "@pixi/display": "^5.0.0-rc",
-    "@pixi/math": "^5.0.0-rc",
-    "@pixi/settings": "^5.0.0-rc",
-    "@pixi/sprite": "^5.0.0-rc",
-    "@pixi/utils": "^5.0.0-rc"
+    "@pixi/core": "^5.0.0-rc.2",
+    "@pixi/display": "^5.0.0-rc.2",
+    "@pixi/math": "^5.0.0-rc.2",
+    "@pixi/settings": "^5.0.0-rc.2",
+    "@pixi/sprite": "^5.0.0-rc.2",
+    "@pixi/utils": "^5.0.0-rc.2"
   },
   "devDependencies": {
     "floss": "^2.1.5"
