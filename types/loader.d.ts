@@ -82,6 +82,7 @@ declare namespace PIXI {
         texture: Texture;
         spineAtlas: any;
         spineData: any;
+        spritesheet?: Spritesheet;
         textures?: ITextureDictionary;
     }
 
