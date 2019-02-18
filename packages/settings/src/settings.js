@@ -23,16 +23,16 @@ export default {
      * @static
      * @name MIPMAP_TEXTURES
      * @memberof PIXI.settings
-     * @type {boolean}
-     * @default true
+     * @type {PIXI.MIPMAP_MODES}
+     * @default PIXI.MIPMAP_MODES.POW2
      */
-    MIPMAP_TEXTURES: true,
+    MIPMAP_TEXTURES: 1,
 
     /**
      * Default resolution / device pixel ratio of the renderer.
      *
      * @static
-     * @name RESOLTION
+     * @name RESOLUTION
      * @memberof PIXI.settings
      * @type {number}
      * @default 1
