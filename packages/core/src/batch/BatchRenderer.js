@@ -310,7 +310,7 @@ export default class BatchRenderer extends ObjectRenderer
             this.packGeometry(sprite, float32View, uint32View, indexBuffer, index, indexCount);// argb, nextTexture._id, float32View, uint32View, indexBuffer, index, indexCount);
 
             // push a graphics..
-            index += (sprite.vertexData.length / 2) * 6;
+            index += (sprite.vertexData.length / 2) * this.vertSize;
             indexCount += sprite.indices.length;
         }
 
@@ -390,7 +390,7 @@ export default class BatchRenderer extends ObjectRenderer
 
     packGeometry(element, float32View, uint32View, indexBuffer, index, indexCount)
     {
-        const p = index / 6;// float32View.length / 6 / 2;
+        const p = index / this.vertSize;// float32View.length / 6 / 2;
         const uvs = element.uvs;
         const indicies = element.indices;// geometry.getIndex().data;// indicies;
         const vertexData = element.vertexData;
