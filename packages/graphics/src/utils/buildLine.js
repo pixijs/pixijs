@@ -66,7 +66,7 @@ function buildLine(graphicsData, graphicsGeometry)
         // need to clone as we are going to slightly modify the shape..
         points = points.slice();
 
-        if (!closedPath)
+        if (closedPath)
         {
             points.pop();
             points.pop();
