@@ -202,6 +202,15 @@ export default class ShaderSystem extends System
     }
 
     /**
+     * Resets ShaderSystem state, does not affect WebGL state
+     */
+    reset()
+    {
+        this.program = null;
+        this.shader = null;
+    }
+
+    /**
      * Destroys this System and removes all its textures
      */
     destroy()

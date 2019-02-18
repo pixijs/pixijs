@@ -33,29 +33,6 @@ export default class StateSystem extends System
         this.gl = null;
 
         /**
-         * Return from MAX_VERTEX_ATTRIBS
-         * @member {number}
-         * @readonly
-         */
-        this.maxAttribs = null;
-
-        /**
-         * Check we have vao
-         * @member {OES_vertex_array_object}
-         * @readonly
-         */
-        this.nativeVaoExtension = null;
-
-        /**
-         * Attribute state
-         * @member {object}
-         * @readonly
-         * @property {number[]} tempAttribState
-         * @property {number[]} attribState
-         */
-        this.attribState = null;
-
-        /**
          * State ID
          * @member {number}
          * @readonly
@@ -119,20 +96,6 @@ export default class StateSystem extends System
     {
         this.gl = gl;
 
-        this.maxAttribs = gl.getParameter(gl.MAX_VERTEX_ATTRIBS);
-
-        // check we have vao..
-        this.nativeVaoExtension = (
-            gl.getExtension('OES_vertex_array_object')
-            || gl.getExtension('MOZ_OES_vertex_array_object')
-            || gl.getExtension('WEBKIT_OES_vertex_array_object')
-        );
-
-        this.attribState = {
-            tempAttribState: new Array(this.maxAttribs),
-            attribState: new Array(this.maxAttribs),
-        };
-
         this.blendModes = mapWebGLBlendModesToPixi(gl);
 
         this.setState(this.defaultState);
@@ -178,6 +141,26 @@ export default class StateSystem extends System
         {
             this.checks[i](this, state);
         }
+    }
+
+    /**
+     * Sets the state, when previous state is unknown
+     *
+     * @param {*} state - The state to set
+     */
+    forceState(state)
+    {
+        state = state || this.defaultState;
+        for (let i = 0; i < this.map.length; i++)
+        {
+            this.map[i].call(this, !!(state.data & (1 << i)));
+        }
+        for (let i = 0; i < this.checks.length; i++)
+        {
+            this.checks[i](this, state);
+        }
+
+        this.stateId = state.data;
     }
 
     /**
@@ -280,52 +263,19 @@ export default class StateSystem extends System
         this.gl.polygonOffset(value, scale);
     }
 
-    /**
-     * Disables all the vaos in use
-     *
-     */
-    resetAttributes()
-    {
-        for (let i = 0; i < this.attribState.tempAttribState.length; i++)
-        {
-            this.attribState.tempAttribState[i] = 0;
-        }
-
-        for (let i = 0; i < this.attribState.attribState.length; i++)
-        {
-            this.attribState.attribState[i] = 0;
-        }
-
-        // im going to assume one is always active for performance reasons.
-        for (let i = 1; i < this.maxAttribs; i++)
-        {
-            this.gl.disableVertexAttribArray(i);
-        }
-    }
-
     // used
     /**
      * Resets all the logic and disables the vaos
      */
     reset()
     {
-        // unbind any VAO if they exist..
-        if (this.nativeVaoExtension)
-        {
-            this.nativeVaoExtension.bindVertexArrayOES(null);
-        }
-
-        // reset all attributes..
-        this.resetAttributes();
-
         this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, false);
 
+        this.forceState(0);
+
         this._blendEq = true;
-
+        this.blendMode = -1;
         this.setBlendMode(0);
-
-        // TODO?
-        // this.setState(this.defaultState);
     }
 
     /**

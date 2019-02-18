@@ -2,6 +2,7 @@ import System from '../System';
 import { Rectangle } from '@pixi/math';
 import { ENV } from '@pixi/constants';
 import { settings } from '../settings';
+import Framebuffer from './Framebuffer';
 
 /**
  * System plugin to the renderer to manage framebuffers.
@@ -25,6 +26,13 @@ export default class FramebufferSystem extends System
          * @readonly
          */
         this.managedFramebuffers = [];
+
+        /**
+         * Framebuffer value that shows that we don't know what is bound
+         * @member {Framebuffer}
+         * @readonly
+         */
+        this.unknownFramebuffer = new Framebuffer(10, 10);
     }
 
     /**
@@ -35,7 +43,7 @@ export default class FramebufferSystem extends System
         const gl = this.gl = this.renderer.gl;
 
         this.CONTEXT_UID = this.renderer.CONTEXT_UID;
-        this.current = null;
+        this.current = this.unknownFramebuffer;
         this.viewport = new Rectangle();
         this.hasMRT = true;
         this.writeDepthTexture = true;
@@ -80,7 +88,7 @@ export default class FramebufferSystem extends System
      * Bind a framebuffer
      *
      * @param {PIXI.Framebuffer} framebuffer
-     * @param {PIXI.Rectangle} frame
+     * @param {PIXI.Rectangle} [frame] frame, default is framebuffer size
      */
     bind(framebuffer, frame)
     {
@@ -417,5 +425,16 @@ export default class FramebufferSystem extends System
         {
             this.disposeFramebuffer(list[i], contextLost);
         }
+    }
+
+    /**
+     * resets framebuffer stored state, binds screen framebuffer
+     *
+     * should be called before renderTexture reset()
+     */
+    reset()
+    {
+        this.current = this.unknownFramebuffer;
+        this.viewport = new Rectangle();
     }
 }
