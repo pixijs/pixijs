@@ -6,6 +6,8 @@ const tempRect = new Rectangle();
 /**
  * System plugin to the renderer to manage render textures.
  *
+ * Should be added after FramebufferSystem
+ *
  * @class
  * @extends PIXI.System
  * @memberof PIXI.systems
@@ -153,6 +155,14 @@ export default class RenderTextureSystem extends System
     resize()// screenWidth, screenHeight)
     {
         // resize the root only!
+        this.bind(null);
+    }
+
+    /**
+     * Resets renderTexture state
+     */
+    reset()
+    {
         this.bind(null);
     }
 }
