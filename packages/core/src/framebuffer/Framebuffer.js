@@ -1,5 +1,6 @@
 import Runner from 'mini-runner';
 import Texture from '../textures/BaseTexture';
+import DepthResource from '../textures/resources/DepthResource';
 import { FORMATS, TYPES } from '@pixi/constants';
 
 /**
@@ -74,7 +75,7 @@ export default class Framebuffer
     addDepthTexture(texture)
     {
         /* eslint-disable max-len */
-        this.depthTexture = texture || new Texture(null, { scaleMode: 0,
+        this.depthTexture = texture || new Texture(new DepthResource(null, { width: this.width, height: this.height }), { scaleMode: 0,
             resolution: 1,
             width: this.width,
             height: this.height,

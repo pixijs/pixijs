@@ -46,18 +46,21 @@ export default class FramebufferSystem extends System
         this.current = this.unknownFramebuffer;
         this.viewport = new Rectangle();
         this.hasMRT = true;
+        this.writeDepthTexture = true;
 
         this.disposeAll(true);
 
         // webgl2
-        if (!gl.drawBuffers)
+        if (this.renderer.context.webGLVersion === 1)
         {
             // webgl 1!
             let nativeDrawBuffersExtension = this.renderer.context.extensions.drawBuffers;
+            let nativeDepthTextureExtension = this.renderer.context.extensions.depthTexture;
 
             if (settings.PREFER_ENV === ENV.WEBGL_LEGACY)
             {
                 nativeDrawBuffersExtension = null;
+                nativeDepthTextureExtension = null;
             }
 
             if (nativeDrawBuffersExtension)
@@ -72,6 +75,11 @@ export default class FramebufferSystem extends System
                 {
                     // empty
                 };
+            }
+
+            if (!nativeDepthTextureExtension)
+            {
+                this.writeDepthTexture = false;
             }
         }
     }
@@ -335,9 +343,9 @@ export default class FramebufferSystem extends System
 
         if (framebuffer.depthTexture)
         {
-            const depthTextureExt = this.renderer.context.extensions.depthTexture;
+            const writeDepthTexture = this.writeDepthTexture;
 
-            if (depthTextureExt)
+            if (writeDepthTexture)
             {
                 const depthTexture = framebuffer.depthTexture;
 
@@ -358,7 +366,10 @@ export default class FramebufferSystem extends System
             gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.stencil);
 
             // TODO.. this is depth AND stencil?
-            gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, fbo.stencil);
+            if (!framebuffer.depthTexture)
+            { // you can't have both, so one should take priority if enabled
+                gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, fbo.stencil);
+            }
             gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, framebuffer.width, framebuffer.height);
             // fbo.enableStencil();
         }
