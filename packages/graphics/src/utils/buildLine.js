@@ -1,4 +1,4 @@
-import { Point } from '@pixi/math';
+import { Point, SHAPES } from '@pixi/math';
 
 /**
  * Builds a line to draw
@@ -30,13 +30,13 @@ export default function (graphicsData, graphicsGeometry)
  *
  * @ignore
  * @private
- * @param {PIXI.WebGLGraphicsData} graphicsData - The graphics object containing all the necessary properties
- * @param {object} webGLData - an object containing all the WebGL-specific information to create this shape
+ * @param {PIXI.GraphicsData} graphicsData - The graphics object containing all the necessary properties
+ * @param {PIXI.GraphicsGeometry} graphicsGeometry - Geometry where to append output
  */
 function buildLine(graphicsData, graphicsGeometry)
 {
-    // TODO OPTIMISE!
-    let points = graphicsData.points || graphicsData.shape.points.slice();
+    const shape = graphicsData.shape;
+    let points = graphicsData.points || shape.points.slice();
 
     if (points.length === 0)
     {
@@ -56,18 +56,22 @@ function buildLine(graphicsData, graphicsGeometry)
 
     // get first and last point.. figure out the middle!
     const firstPoint = new Point(points[0], points[1]);
-    let lastPoint = new Point(points[points.length - 2], points[points.length - 1]);
+    const lastPoint = new Point(points[points.length - 2], points[points.length - 1]);
+    const closedShape = shape.type !== SHAPES.POLY;
+    const closedPath = firstPoint.x === lastPoint.x && firstPoint.y === lastPoint.y;
 
     // if the first point is the last point - gonna have issues :)
-    if (firstPoint.x === lastPoint.x && firstPoint.y === lastPoint.y)
+    if (closedPath || closedShape)
     {
         // need to clone as we are going to slightly modify the shape..
         points = points.slice();
 
-        points.pop();
-        points.pop();
-
-        lastPoint = new Point(points[points.length - 2], points[points.length - 1]);
+        if (closedPath)
+        {
+            points.pop();
+            points.pop();
+            lastPoint.set(points[points.length - 2], points[points.length - 1]);
+        }
 
         const midPointX = lastPoint.x + ((firstPoint.x - lastPoint.x) * 0.5);
         const midPointY = lastPoint.y + ((firstPoint.y - lastPoint.y) * 0.5);
