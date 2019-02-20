@@ -1,8 +1,10 @@
 import System from '../System';
 import GLProgram from './GLProgram';
 import { generateUniformsSync,
+    staticUniformsSync,
     defaultValue,
     compileProgram } from './utils';
+import { settings } from '@pixi/settings';
 
 let UID = 0;
 
@@ -98,9 +100,19 @@ export default class ShaderSystem extends System
         if (!group.static || group.dirtyId !== glProgram.uniformGroups[group.id])
         {
             glProgram.uniformGroups[group.id] = group.dirtyId;
-            const syncFunc = group.syncUniforms[this.shader.program.id] || this.createSyncGroups(group);
 
-            syncFunc(glProgram.uniformData, group.uniforms, this.renderer);
+            if (settings.CAN_GENERATE_NEW_FUNCTION)
+            {
+                const syncFunc = group.syncUniforms[this.shader.program.id] || this.createSyncGroups(group);
+
+                syncFunc(glProgram.uniformData, group.uniforms, this.renderer);
+            }
+            else
+            {
+                /* eslint-disable max-len */
+                staticUniformsSync(group, this.shader.program.uniformData, glProgram.uniformData, group.uniforms, this.renderer);
+                /* eslint-disable max-len */
+            }
         }
     }
 

@@ -16,4 +16,6 @@ import { ENV } from '@pixi/constants';
  */
 settings.PREFER_ENV = ENV.WEBGL2;
 
+settings.JS_NEW_FUNCTION_AVAILABLE = true;
+
 export { settings };

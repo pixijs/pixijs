@@ -4,5 +4,6 @@ export { default as setPrecision } from './setPrecision';
 export { default as mapSize } from './mapSize';
 export { default as mapType } from './mapType';
 export { default as generateUniformsSync } from './generateUniformsSync';
+export { default as staticUniformsSync } from './staticUniformsSync';
 export { default as getTestContext } from './getTestContext';
 export { default as checkMaxIfStatementsInShader } from './checkMaxIfStatementsInShader';
