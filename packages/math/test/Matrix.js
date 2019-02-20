@@ -197,4 +197,23 @@ describe('PIXI.Matrix', function ()
             expect(transformInitial.ty).to.equal(transformDecomposed.ty);
         }
     });
+
+    it('should decompose corner case', function ()
+    {
+        const matrix = new Matrix();
+        const transform  = new Transform();
+        const result = transform.localTransform;
+
+        matrix.a = -0.00001;
+        matrix.b = -1;
+        matrix.c = 1;
+        matrix.d = 0;
+        matrix.decompose(transform);
+        transform.updateLocalTransform();
+
+        expect(result.a).to.closeTo(matrix.a, 0.001);
+        expect(result.b).to.closeTo(matrix.b, 0.001);
+        expect(result.c).to.closeTo(matrix.c, 0.001);
+        expect(result.d).to.closeTo(matrix.d, 0.001);
+    });
 });
