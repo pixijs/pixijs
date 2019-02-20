@@ -25,16 +25,28 @@ export default class Star extends Polygon
         const delta = PI_2 / len;
         const polygon = [];
 
+        let r = 0;
+        let angle = 0;
+
         for (let i = 0; i < len; i++)
         {
-            const r = i % 2 ? innerRadius : radius;
-            const angle = (i * delta) + startAngle;
+            r = i % 2 ? innerRadius : radius;
+            angle = (i * delta) + startAngle;
 
             polygon.push(
                 x + (r * Math.cos(angle)),
                 y + (r * Math.sin(angle))
             );
         }
+
+        // The last point to close path
+        r = radius;
+        angle = startAngle;
+
+        polygon.push(
+            x + (r * Math.cos(angle)),
+            y + (r * Math.sin(angle))
+        );
 
         super(polygon);
     }
