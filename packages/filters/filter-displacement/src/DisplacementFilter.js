@@ -11,6 +11,12 @@ import fragment from './displacement.frag';
  * Currently the `r` property of the texture is used to offset the `x`
  * and the `g` property of the texture is used to offset the `y`.
  *
+ * The way it works is it uses the values of the displacement map to look up the
+ * correct pixels to output. This means it's not technically moving the original.
+ * Instead, it's starting at the output and asking "which pixel from the original goes here".
+ * For example, if a displacement map pixel has `red = 1` and the filter scale is `20`,
+ * this filter will output the pixel approximately 20 pixels to the right of the original.
+ *
  * @class
  * @extends PIXI.Filter
  * @memberof PIXI.filters
