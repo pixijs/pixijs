@@ -64,6 +64,22 @@ export default class Container extends DisplayObject
          * @member {boolean}
          */
         this.sortDirty = false;
+
+        /**
+         * Fired when a DisplayObject is added to this Container.
+         *
+         * @event PIXI.Container#addedTo
+         * @param {PIXI.DisplayObject} child - The child added to the Container.
+         * @param {PIXI.Container} container - The container that added the child.
+         */
+
+        /**
+         * Fired when a DisplayObject is removed from this Container.
+         *
+         * @event PIXI.DisplayObject#removedFrom
+         * @param {PIXI.DisplayObject} child - The child removed from the Container.
+         * @param {PIXI.Container} container - The container that removed removed the child.
+         */
     }
 
     /**
@@ -119,6 +135,7 @@ export default class Container extends DisplayObject
 
             // TODO - lets either do all callbacks or all events.. not both!
             this.onChildrenChange(this.children.length - 1);
+            this.emit('addedTo', child, this);
             child.emit('added', this);
         }
 
@@ -158,6 +175,7 @@ export default class Container extends DisplayObject
         // TODO - lets either do all callbacks or all events.. not both!
         this.onChildrenChange(index);
         child.emit('added', this);
+        this.emit('addedTo', child, this);
 
         return child;
     }
@@ -275,6 +293,7 @@ export default class Container extends DisplayObject
             // TODO - lets either do all callbacks or all events.. not both!
             this.onChildrenChange(index);
             child.emit('removed', this);
+            this.emit('removedFrom', child, this);
         }
 
         return child;
@@ -301,6 +320,7 @@ export default class Container extends DisplayObject
         // TODO - lets either do all callbacks or all events.. not both!
         this.onChildrenChange(index);
         child.emit('removed', this);
+        this.emit('removedFrom', child, this);
 
         return child;
     }
@@ -339,6 +359,7 @@ export default class Container extends DisplayObject
             for (let i = 0; i < removed.length; ++i)
             {
                 removed[i].emit('removed', this);
+                this.emit('removedFrom', removed[i], this);
             }
 
             return removed;
