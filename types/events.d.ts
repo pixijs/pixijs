@@ -16,17 +16,15 @@ declare namespace PIXI {
              * @returns {Function[]}
              */
             //tslint:disable-next-line:ban-types forbidden-types
-            listeners(event: string | symbol): Function[];
+            listeners(event: string | symbol): Array<Function>;
 
             /**
-             * Check if there listeners for a given event.
-             * If `exists` argument is not `true` lists listeners.
+             * Return the number of listeners listening to a given event.
              *
              * @param {(string | symbol)} event The event name.
-             * @param {boolean} exists Only check if there are listeners.
-             * @returns {boolean}
+             * @returns {number}
              */
-            listeners(event: string | symbol, exists: boolean): boolean;
+            listenerCount(event: string | symbol): number;
 
             /**
              * Calls each of the listeners registered for a given event.
@@ -90,12 +88,6 @@ declare namespace PIXI {
              */
             //tslint:disable-next-line:ban-types forbidden-types
             addListener(event: string | symbol, fn: Function, context?: any): this;
-
-            /**
-             * This function doesn't apply anymore.
-             * @deprecated
-             */
-            setMaxListeners(): this;
         }
     }
 
