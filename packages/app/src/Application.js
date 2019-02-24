@@ -38,6 +38,7 @@ export default class Application
      *  need to call toDataUrl on the WebGL context.
      * @param {number} [options.resolution=1] - The resolution / device pixel ratio of the renderer, retina would be 2.
      * @param {boolean} [options.forceCanvas=false] - Prevents selection of WebGL renderer, even if such is present.
+     *   This option is only available in the `pixi.js-legacy` package.
      * @param {number} [options.backgroundColor=0x000000] - The background color of the rendered area
      *  (shown if not transparent).
      * @param {boolean} [options.clearBeforeRender=true] - This sets if the renderer will clear the canvas or
