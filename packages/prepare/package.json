@@ -25,7 +25,6 @@
     "lib"
   ],
   "dependencies": {
-    "@pixi/canvas-renderer": "^5.0.0-rc.2",
     "@pixi/core": "^5.0.0-rc.2",
     "@pixi/display": "^5.0.0-rc.2",
     "@pixi/graphics": "^5.0.0-rc.2",
