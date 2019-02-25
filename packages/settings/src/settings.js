@@ -1,7 +1,6 @@
 import Device from 'ismobilejs';
 import maxRecommendedTextures from './utils/maxRecommendedTextures';
 import canUploadSameBuffer from './utils/canUploadSameBuffer';
-import canGenerateNewFunction from './utils/canGenerateNewFunction';
 
 /**
  * User's customizable globals for overriding the default PIXI settings, such
@@ -223,16 +222,4 @@ export default {
      * @default false
      */
     ROUND_PIXELS: false,
-
-    /**
-     * PixiJS generates some efficient webgl-related functions, but not all platforms support it.
-     * Default value is auto-detected.
-     *
-     * @static
-     * @constant
-     * @memberof PIXI.settings
-     * @type {boolean}
-     * @default true
-     */
-    CAN_GENERATE_NEW_FUNCTION: canGenerateNewFunction(),
 };

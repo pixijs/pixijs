@@ -17,7 +17,7 @@
     "lint": "eslint *.js test bundles packages tools --ignore-path .gitignore --max-warnings 0",
     "lintfix": "npm run lint -- --fix",
     "prebuild": "npm run clean:build",
-    "build:min": "lerna run build:min --concurrency 1 --scope pixi*",
+    "build:min": "lerna run build:min --concurrency 1",
     "build": "rollup -c",
     "postbuild": "npm run types",
     "watch": "rollup -cw",

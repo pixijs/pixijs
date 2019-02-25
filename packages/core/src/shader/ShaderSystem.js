@@ -1,10 +1,9 @@
 import System from '../System';
 import GLProgram from './GLProgram';
 import { generateUniformsSync,
-    staticUniformsSync,
+    unsafeEvalSupported,
     defaultValue,
     compileProgram } from './utils';
-import { settings } from '@pixi/settings';
 
 let UID = 0;
 
@@ -24,6 +23,9 @@ export default class ShaderSystem extends System
     {
         super(renderer);
 
+        // Validation check that this environment support `new Function`
+        this.systemCheck();
+
         /**
          * The current WebGL rendering context
          *
@@ -42,6 +44,21 @@ export default class ShaderSystem extends System
         this.cache = {};
 
         this.id = UID++;
+    }
+
+    /**
+     * Overrideable function by `@pixi/unsafe-eval` to silence
+     * throwing an error if platform doesn't support unsafe-evals.
+     *
+     * @private
+     */
+    systemCheck()
+    {
+        if (!unsafeEvalSupported())
+        {
+            throw new Error('Current environment does not allow unsafe-eval, '
+                + 'please use @pixi/unsafe-eval module to enable support.');
+        }
     }
 
     contextChange(gl)
@@ -101,19 +118,21 @@ export default class ShaderSystem extends System
         {
             glProgram.uniformGroups[group.id] = group.dirtyId;
 
-            if (settings.CAN_GENERATE_NEW_FUNCTION)
-            {
-                const syncFunc = group.syncUniforms[this.shader.program.id] || this.createSyncGroups(group);
-
-                syncFunc(glProgram.uniformData, group.uniforms, this.renderer);
-            }
-            else
-            {
-                /* eslint-disable max-len */
-                staticUniformsSync(group, this.shader.program.uniformData, glProgram.uniformData, group.uniforms, this.renderer);
-                /* eslint-disable max-len */
-            }
+            this.syncUniforms(group, glProgram);
         }
+    }
+
+    /**
+     * Overrideable by the @pixi/unsafe-eval package to use static
+     * syncUnforms instead.
+     *
+     * @private
+     */
+    syncUniforms(group, glProgram)
+    {
+        const syncFunc = group.syncUniforms[this.shader.program.id] || this.createSyncGroups(group);
+
+        syncFunc(glProgram.uniformData, group.uniforms, this.renderer);
     }
 
     createSyncGroups(group)

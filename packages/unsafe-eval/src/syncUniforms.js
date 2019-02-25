@@ -6,7 +6,7 @@
 
 /* eslint-disable max-len */
 const GLSL_TO_SINGLE_SETTERS = {
-    float: function setSingleFloat(gl, location, cv, v)
+    float(gl, location, cv, v)
     {
         if (cv !== v)
         {
@@ -14,7 +14,7 @@ const GLSL_TO_SINGLE_SETTERS = {
             gl.uniform1f(location, v);
         }
     },
-    vec2: function setSingleVec2(gl, location, cv, v)
+    vec2(gl, location, cv, v)
     {
         if (cv[0] !== v[0] || cv[1] !== v[1])
         {
@@ -23,7 +23,7 @@ const GLSL_TO_SINGLE_SETTERS = {
             gl.uniform2f(location, v[0], v[1]);
         }
     },
-    vec3: function setSingleVec3(gl, location, cv, v)
+    vec3(gl, location, cv, v)
     {
         if (cv[0] !== v[0] || cv[1] !== v[1] || cv[2] !== v[2])
         {
@@ -34,45 +34,45 @@ const GLSL_TO_SINGLE_SETTERS = {
             gl.uniform3f(location, v[0], v[1], v[2]);
         }
     },
-    int: function setSingleInt(gl, location, cv, value) { gl.uniform1i(location, value); },
-    ivec2: function setSingleIvec2(gl, location, cv, value) { gl.uniform2i(location, value[0], value[1]); },
-    ivec3: function setSingleIvec3(gl, location, cv, value) { gl.uniform3i(location, value[0], value[1], value[2]); },
-    ivec4: function setSingleIvec4(gl, location, cv, value) { gl.uniform4i(location, value[0], value[1], value[2], value[3]); },
+    int(gl, location, cv, value) { gl.uniform1i(location, value); },
+    ivec2(gl, location, cv, value) { gl.uniform2i(location, value[0], value[1]); },
+    ivec3(gl, location, cv, value) { gl.uniform3i(location, value[0], value[1], value[2]); },
+    ivec4(gl, location, cv, value) { gl.uniform4i(location, value[0], value[1], value[2], value[3]); },
 
-    bool: function setSingleBool(gl, location, cv, value) { gl.uniform1i(location, value); },
-    bvec2: function setSingleBvec2(gl, location, cv, value) { gl.uniform2i(location, value[0], value[1]); },
-    bvec3: function setSingleBvec3(gl, location, cv, value) { gl.uniform3i(location, value[0], value[1], value[2]); },
-    bvec4: function setSingleBvec4(gl, location, cv, value) { gl.uniform4i(location, value[0], value[1], value[2], value[3]); },
+    bool(gl, location, cv, value) { gl.uniform1i(location, value); },
+    bvec2(gl, location, cv, value) { gl.uniform2i(location, value[0], value[1]); },
+    bvec3(gl, location, cv, value) { gl.uniform3i(location, value[0], value[1], value[2]); },
+    bvec4(gl, location, cv, value) { gl.uniform4i(location, value[0], value[1], value[2], value[3]); },
 
-    mat2: function setSingleMat2(gl, location, cv, value) { gl.uniformMatrix2fv(location, false, value); },
-    mat3: function setSingleMat3(gl, location, cv, value) { gl.uniformMatrix3fv(location, false, value); },
-    mat4: function setSingleMat4(gl, location, cv, value) { gl.uniformMatrix4fv(location, false, value); },
+    mat2(gl, location, cv, value) { gl.uniformMatrix2fv(location, false, value); },
+    mat3(gl, location, cv, value) { gl.uniformMatrix3fv(location, false, value); },
+    mat4(gl, location, cv, value) { gl.uniformMatrix4fv(location, false, value); },
 
-    sampler2D: function setSingleSampler2D(gl, location, cv, value) { gl.uniform1i(location, value); },
-    samplerCube: function setSingleSampler2D(gl, location, cv, value) { gl.uniform1i(location, value); },
-    sampler2DArray: function setSingleSampler2D(gl, location, cv, value) { gl.uniform1i(location, value); },
+    sampler2D(gl, location, cv, value) { gl.uniform1i(location, value); },
+    samplerCube(gl, location, cv, value) { gl.uniform1i(location, value); },
+    sampler2DArray(gl, location, cv, value) { gl.uniform1i(location, value); },
 };
 
 const GLSL_TO_ARRAY_SETTERS = {
-    float: function setFloatArray(gl, location, cv, value) { gl.uniform1fv(location, value); },
-    vec2: function setVec2Array(gl, location, cv, value) { gl.uniform2fv(location, value); },
-    vec3: function setVec3Array(gl, location, cv, value) { gl.uniform3fv(location, value); },
-    vec4: function setVec4Array(gl, location, cv, value) { gl.uniform4fv(location, value); },
-    int: function setIntArray(gl, location, cv, value) { gl.uniform1iv(location, value); },
-    ivec2: function setIvec2Array(gl, location, cv, value) { gl.uniform2iv(location, value); },
-    ivec3: function setIvec3Array(gl, location, cv, value) { gl.uniform3iv(location, value); },
-    ivec4: function setIvec4Array(gl, location, cv, value) { gl.uniform4iv(location, value); },
-    bool: function setBoolArray(gl, location, cv, value) { gl.uniform1iv(location, value); },
-    bvec2: function setBvec2Array(gl, location, cv, value) { gl.uniform2iv(location, value); },
-    bvec3: function setBvec3Array(gl, location, cv, value) { gl.uniform3iv(location, value); },
-    bvec4: function setBvec4Array(gl, location, cv, value) { gl.uniform4iv(location, value); },
-    sampler2D: function setSampler2DArray(gl, location, cv, value) { gl.uniform1iv(location, value); },
-    samplerCube: function setSampler2DArray(gl, location, cv, value) { gl.uniform1iv(location, value); },
-    sampler2DArray: function setSampler2DArray(gl, location, cv, value) { gl.uniform1iv(location, value); },
+    float(gl, location, cv, value) { gl.uniform1fv(location, value); },
+    vec2(gl, location, cv, value) { gl.uniform2fv(location, value); },
+    vec3(gl, location, cv, value) { gl.uniform3fv(location, value); },
+    vec4(gl, location, cv, value) { gl.uniform4fv(location, value); },
+    int(gl, location, cv, value) { gl.uniform1iv(location, value); },
+    ivec2(gl, location, cv, value) { gl.uniform2iv(location, value); },
+    ivec3(gl, location, cv, value) { gl.uniform3iv(location, value); },
+    ivec4(gl, location, cv, value) { gl.uniform4iv(location, value); },
+    bool(gl, location, cv, value) { gl.uniform1iv(location, value); },
+    bvec2(gl, location, cv, value) { gl.uniform2iv(location, value); },
+    bvec3(gl, location, cv, value) { gl.uniform3iv(location, value); },
+    bvec4(gl, location, cv, value) { gl.uniform4iv(location, value); },
+    sampler2D(gl, location, cv, value) { gl.uniform1iv(location, value); },
+    samplerCube(gl, location, cv, value) { gl.uniform1iv(location, value); },
+    sampler2DArray(gl, location, cv, value) { gl.uniform1iv(location, value); },
 };
 /* eslint-disable max-len */
 
-export default function staticUniformsSync(group, uniformData, ud, uv, renderer)
+export function syncUniforms(group, uniformData, ud, uv, renderer)
 {
     let textureCount = 0;
     let v = null;
