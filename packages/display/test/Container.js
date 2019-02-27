@@ -52,12 +52,14 @@ describe('PIXI.Container', function ()
 
     describe('events', function ()
     {
-        it('should trigger "added" and "removed" events on its children', function ()
+        it('should trigger "added", "removed", "childAdded", and "childRemoved" events on itself and children', function ()
         {
             const container = new Container();
             const child = new DisplayObject();
             let triggeredAdded = false;
             let triggeredRemoved = false;
+            let triggeredChildAdded = false;
+            let triggeredChildRemoved = false;
 
             child.on('added', (to) =>
             {
@@ -73,12 +75,30 @@ describe('PIXI.Container', function ()
                 expect(container).to.be.equals(from);
             });
 
+            container.on('childAdded', (childAdded, containerFrom, index) =>
+            {
+                triggeredChildAdded = true;
+                expect(child).to.be.equals(childAdded);
+                expect(container).to.be.equals(containerFrom);
+                expect(index).to.be.equals(0);
+            });
+            container.on('childRemoved', (childRemoved, containerFrom, index) =>
+            {
+                triggeredChildRemoved = true;
+                expect(child).to.be.equals(childRemoved);
+                expect(container).to.be.equals(containerFrom);
+                expect(index).to.be.equals(0);
+            });
+
             container.addChild(child);
             expect(triggeredAdded).to.be.true;
             expect(triggeredRemoved).to.be.false;
+            expect(triggeredChildAdded).to.be.true;
+            expect(triggeredChildRemoved).to.be.false;
 
             container.removeChild(child);
             expect(triggeredRemoved).to.be.true;
+            expect(triggeredChildRemoved).to.be.true;
         });
     });
 
