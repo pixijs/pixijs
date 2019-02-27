@@ -13,7 +13,6 @@ const fragTemplate = [
 
     'void main(void){',
     'vec4 color;',
-    'float textureId = floor(vTextureId+0.5);',
     '%forloop%',
     'gl_FragColor = color * vColor;',
     '}',
@@ -70,7 +69,7 @@ function generateSampleSrc(maxTextures)
 
         if (i < maxTextures - 1)
         {
-            src += `if(textureId == ${i}.0)`;
+            src += `if(vTextureId < ${i}.5)`;
         }
 
         src += '\n{';

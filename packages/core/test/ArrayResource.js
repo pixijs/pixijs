@@ -42,7 +42,10 @@ describe('PIXI.resources.ArrayResource', function ()
             height: 100,
             autoLoad: false,
         });
-        const baseTexture = { setRealSize: sinon.stub() };
+        const baseTexture = {
+            setRealSize: sinon.stub(),
+            update: sinon.stub(),
+        };
 
         resource.bind(baseTexture);
 
