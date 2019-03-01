@@ -1,5 +1,5 @@
 /**
- * Converts a hexadecimal color number to an [R, G, B] array of floats (numbers from 0 to 1).
+ * Converts a hexadecimal color number to an [R, G, B] array of floats (numbers from 0.0 to 1.0).
  *
  * @example
  * PIXI.utils.hex2rgb(0xffffff); // returns [1, 1, 1]
@@ -65,7 +65,7 @@ export function string2hex(string)
  * PIXI.utils.rgb2hex([1, 1, 1]); // returns 0xffffff
  * @memberof PIXI.utils
  * @function rgb2hex
- * @param {number[]} rgb - Array of numbers where all values are floats from 0 to 1.
+ * @param {number[]} rgb - Array of numbers where all values are floats from 0.0 to 1.0.
  * @return {number} Number in hexadecimal.
  */
 export function rgb2hex(rgb)
