@@ -1,11 +1,13 @@
 /**
- * Converts a hex color number to an [R, G, B] array
+ * Converts a hexadecimal color number to an [R, G, B] array of floats (numbers from 0 to 1).
  *
+ * @example
+ * PIXI.utils.hex2rgb(0xffffff); // returns [1, 1, 1]
  * @memberof PIXI.utils
  * @function hex2rgb
- * @param {number} hex - The number to convert
+ * @param {number} hex - The hexadecimal number to convert
  * @param  {number[]} [out=[]] If supplied, this array will be used rather than returning a new one
- * @return {number[]} An array representing the [R, G, B] of the color.
+ * @return {number[]} An array representing the [R, G, B] of the color where all values are floats.
  */
 export function hex2rgb(hex, out)
 {
@@ -19,12 +21,14 @@ export function hex2rgb(hex, out)
 }
 
 /**
- * Converts a hex color number to a string.
+ * Converts a hexadecimal color number to a string.
  *
+ * @example
+ * PIXI.utils.hex2string(0xffffff); // returns "#ffffff"
  * @memberof PIXI.utils
  * @function hex2string
- * @param {number} hex - Number in hex
- * @return {string} The string color.
+ * @param {number} hex - Number in hex (e.g., `0xffffff`)
+ * @return {string} The string color (e.g., `"#ffffff"`).
  */
 export function hex2string(hex)
 {
@@ -35,12 +39,14 @@ export function hex2string(hex)
 }
 
 /**
- * Converts a hex string to a hex color number.
+ * Converts a hexadecimal string to a hexadecimal color number.
  *
+ * @example
+ * PIXI.utils.string2hex("#ffffff"); // returns 0xffffff
  * @memberof PIXI.utils
  * @function string2hex
- * @param {string} The string color that starts with #
- * @return {number} hex - Number in hex
+ * @param {string} The string color (e.g., `"#ffffff"`)
+ * @return {number} Number in hexadecimal.
  */
 export function string2hex(string)
 {
@@ -53,12 +59,14 @@ export function string2hex(string)
 }
 
 /**
- * Converts a color as an [R, G, B] array to a hex number
+ * Converts a color as an [R, G, B] array of floats to a hexadecimal number.
  *
+ * @example
+ * PIXI.utils.rgb2hex([1, 1, 1]); // returns 0xffffff
  * @memberof PIXI.utils
  * @function rgb2hex
- * @param {number[]} rgb - rgb array
- * @return {number} The color number
+ * @param {number[]} rgb - Array of numbers where all values are floats from 0 to 1.
+ * @return {number} Number in hexadecimal.
  */
 export function rgb2hex(rgb)
 {
