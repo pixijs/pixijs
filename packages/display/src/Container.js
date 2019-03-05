@@ -64,6 +64,24 @@ export default class Container extends DisplayObject
          * @member {boolean}
          */
         this.sortDirty = false;
+
+        /**
+         * Fired when a DisplayObject is added to this Container.
+         *
+         * @event PIXI.Container#childAdded
+         * @param {PIXI.DisplayObject} child - The child added to the Container.
+         * @param {PIXI.Container} container - The container that added the child.
+         * @param {number} index - The children's index of the added child.
+         */
+
+        /**
+         * Fired when a DisplayObject is removed from this Container.
+         *
+         * @event PIXI.DisplayObject#removedFrom
+         * @param {PIXI.DisplayObject} child - The child removed from the Container.
+         * @param {PIXI.Container} container - The container that removed removed the child.
+         * @param {number} index - The former children's index of the removed child
+         */
     }
 
     /**
@@ -119,6 +137,7 @@ export default class Container extends DisplayObject
 
             // TODO - lets either do all callbacks or all events.. not both!
             this.onChildrenChange(this.children.length - 1);
+            this.emit('childAdded', child, this, this.children.length - 1);
             child.emit('added', this);
         }
 
@@ -158,6 +177,7 @@ export default class Container extends DisplayObject
         // TODO - lets either do all callbacks or all events.. not both!
         this.onChildrenChange(index);
         child.emit('added', this);
+        this.emit('childAdded', child, this, index);
 
         return child;
     }
@@ -275,6 +295,7 @@ export default class Container extends DisplayObject
             // TODO - lets either do all callbacks or all events.. not both!
             this.onChildrenChange(index);
             child.emit('removed', this);
+            this.emit('childRemoved', child, this, index);
         }
 
         return child;
@@ -301,6 +322,7 @@ export default class Container extends DisplayObject
         // TODO - lets either do all callbacks or all events.. not both!
         this.onChildrenChange(index);
         child.emit('removed', this);
+        this.emit('childRemoved', child, this, index);
 
         return child;
     }
@@ -339,6 +361,7 @@ export default class Container extends DisplayObject
             for (let i = 0; i < removed.length; ++i)
             {
                 removed[i].emit('removed', this);
+                this.emit('childRemoved', removed[i], this, i);
             }
 
             return removed;
