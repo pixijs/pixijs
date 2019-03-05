@@ -222,7 +222,7 @@ export default class Program
      * @param {string} [fragmentSrc] - The source of the fragment shader.
      * @param {object} [uniforms] - Custom uniforms to use to augment the built-in ones.
      *
-     * @returns {PIXI.Shader} an shiny new Pixi shader!
+     * @returns {PIXI.Program} an shiny new Pixi shader!
      */
     static from(vertexSrc, fragmentSrc, name)
     {
