@@ -134,7 +134,7 @@ export default class Framebuffer
         this.dirtyId++;
         this.dirtySize++;
 
-         for (let i = 0; i < this.colorTextures.length; i++)
+        for (let i = 0; i < this.colorTextures.length; i++)
         {
             const texture = this.colorTextures[i];
             const resolution = texture.resolution;
