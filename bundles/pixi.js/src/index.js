@@ -107,6 +107,7 @@ export * from '@pixi/math';
 export * from '@pixi/mesh';
 export * from '@pixi/mesh-extras';
 export * from '@pixi/particles';
+export * from '@pixi/runner';
 export * from '@pixi/sprite';
 export * from '@pixi/spritesheet';
 export * from '@pixi/sprite-animated';

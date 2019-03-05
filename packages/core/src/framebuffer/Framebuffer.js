@@ -1,4 +1,4 @@
-import Runner from 'mini-runner';
+import { Runner } from '@pixi/runner';
 import Texture from '../textures/BaseTexture';
 import DepthResource from '../textures/resources/DepthResource';
 import { FORMATS, TYPES } from '@pixi/constants';
