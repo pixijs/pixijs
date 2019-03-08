@@ -223,6 +223,7 @@ export default class BatchRenderer extends ObjectRenderer
         }
 
         const gl = this.renderer.gl;
+
         const MAX_TEXTURES = this.MAX_TEXTURES;
 
         const buffer = this.getAttributeBuffer(this.currentSize);
