@@ -12,6 +12,10 @@
   "main": "lib/pixi.js",
   "module": "lib/pixi.es.js",
   "bundle": "dist/pixi.js",
+  "bundleOutput": {
+    "footer": "PIXI.useDeprecated();",
+    "name": "PIXI"
+  },
   "types": "pixi.js.d.ts",
   "homepage": "http://www.pixijs.com/",
   "bugs": "https://github.com/pixijs/pixi.js/issues",
@@ -55,6 +59,7 @@
     "@pixi/mixin-get-global-position": "^5.0.0-rc.2",
     "@pixi/particles": "^5.0.0-rc.2",
     "@pixi/prepare": "^5.0.0-rc.2",
+    "@pixi/runner": "^5.0.0-rc.2",
     "@pixi/settings": "^5.0.0-rc.2",
     "@pixi/sprite": "^5.0.0-rc.2",
     "@pixi/sprite-animated": "^5.0.0-rc.2",

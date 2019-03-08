@@ -79,7 +79,7 @@ async function main()
         const external = Object.keys(pkg.dependencies || []);
         const basePath = path.relative(__dirname, pkg.location);
         const input = path.join(basePath, 'src/index.js');
-        const { main, module, bundle } = pkg.toJSON();
+        const { main, module, bundle, bundleInput, bundleOutput } = pkg.toJSON();
         const freeze = false;
 
         results.push({
@@ -110,16 +110,14 @@ async function main()
         if (bundle)
         {
             results.push({
-                input,
-                output: {
+                input: path.join(basePath, bundleInput || 'src/index.js'),
+                output: Object.assign({
                     banner,
                     file: path.join(basePath, bundle),
                     format: 'iife',
-                    footer: 'PIXI.useDeprecated();',
                     freeze,
-                    name: 'PIXI',
                     sourcemap,
-                },
+                }, bundleOutput),
                 treeshake: false,
                 plugins,
             });

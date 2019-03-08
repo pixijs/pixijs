@@ -1,6 +1,7 @@
 import System from '../System';
 import GLProgram from './GLProgram';
 import { generateUniformsSync,
+    unsafeEvalSupported,
     defaultValue,
     compileProgram } from './utils';
 
@@ -22,6 +23,9 @@ export default class ShaderSystem extends System
     {
         super(renderer);
 
+        // Validation check that this environment support `new Function`
+        this.systemCheck();
+
         /**
          * The current WebGL rendering context
          *
@@ -40,6 +44,21 @@ export default class ShaderSystem extends System
         this.cache = {};
 
         this.id = UID++;
+    }
+
+    /**
+     * Overrideable function by `@pixi/unsafe-eval` to silence
+     * throwing an error if platform doesn't support unsafe-evals.
+     *
+     * @private
+     */
+    systemCheck()
+    {
+        if (!unsafeEvalSupported())
+        {
+            throw new Error('Current environment does not allow unsafe-eval, '
+                + 'please use @pixi/unsafe-eval module to enable support.');
+        }
     }
 
     contextChange(gl)
@@ -98,10 +117,22 @@ export default class ShaderSystem extends System
         if (!group.static || group.dirtyId !== glProgram.uniformGroups[group.id])
         {
             glProgram.uniformGroups[group.id] = group.dirtyId;
-            const syncFunc = group.syncUniforms[this.shader.program.id] || this.createSyncGroups(group);
 
-            syncFunc(glProgram.uniformData, group.uniforms, this.renderer);
+            this.syncUniforms(group, glProgram);
         }
+    }
+
+    /**
+     * Overrideable by the @pixi/unsafe-eval package to use static
+     * syncUnforms instead.
+     *
+     * @private
+     */
+    syncUniforms(group, glProgram)
+    {
+        const syncFunc = group.syncUniforms[this.shader.program.id] || this.createSyncGroups(group);
+
+        syncFunc(glProgram.uniformData, group.uniforms, this.renderer);
     }
 
     createSyncGroups(group)
