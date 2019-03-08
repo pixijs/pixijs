@@ -1,0 +1,42 @@
+{
+  "name": "@pixi/runner",
+  "version": "5.0.0-rc.2",
+  "main": "lib/runner.js",
+  "module": "lib/runner.es.js",
+  "description": "A simple alternative to events and signals with an emphasis on performance.",
+  "author": "Mat Groves",
+  "contributors": [
+    "Matt Karl <matt@mattkarl.com>"
+  ],
+  "homepage": "http://pixijs.com/",
+  "bugs": "https://github.com/pixijs/pixi.js/issues",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pixijs/pixi.js.git"
+  },
+  "keywords": [
+    "runner",
+    "signals",
+    "event",
+    "messaging",
+    "publish",
+    "subscribe",
+    "observer",
+    "pub/sub",
+    "fast"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "floss --path test",
+    "benchmark": "cd benchmark && npm start"
+  },
+  "files": [
+    "lib"
+  ],
+  "devDependencies": {
+    "floss": "^2.1.5"
+  }
+}

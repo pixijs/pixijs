@@ -1,4 +1,4 @@
-import Runner from 'mini-runner';
+import { Runner } from '@pixi/runner';
 
 let UID = 0;
 /* eslint-disable max-len */

@@ -2,7 +2,7 @@ import Attribute from './Attribute';
 import Buffer from './Buffer';
 import interleaveTypedArrays from './utils/interleaveTypedArrays';
 import getBufferType from './utils/getBufferType';
-import Runner from 'mini-runner';
+import { Runner } from '@pixi/runner';
 
 const byteSizeMap = { 5126: 4, 5123: 2, 5121: 1 };
 let UID = 0;
