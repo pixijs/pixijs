@@ -10,7 +10,7 @@ import { isMobile } from '@pixi/utils';
  * baseline, prefer a lower environment.
  *
  * Due to {@link https://bugs.chromium.org/p/chromium/issues/detail?id=934823|bug in chromium}
- * we disabled webgl2 by default for all mobile devices.
+ * we disabled webgl2 by default on non-apple devices.
  *
  * @static
  * @name PREFER_ENV
