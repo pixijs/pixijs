@@ -18,6 +18,6 @@ import { isMobile } from '@pixi/utils';
  * @type {number}
  * @default PIXI.ENV.WEBGL2
  */
-settings.PREFER_ENV = isMobile.any ? ENV.WEBGL : ENV.WEBGL2;
+settings.PREFER_ENV = !isMobile.any || isMobile.apple.device ? ENV.WEBGL2 : ENV.WEBGL;
 
 export { settings };
