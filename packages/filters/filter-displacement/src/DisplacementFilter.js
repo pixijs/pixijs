@@ -37,6 +37,7 @@ export default class DisplacementFilter extends Filter
             mapSampler: sprite._texture,
             filterMatrix: maskMatrix,
             scale: { x: 1, y: 1 },
+            rotation: new Float32Array([1, 0, 0, 1]),
         });
 
         this.maskSprite = sprite;
@@ -66,6 +67,19 @@ export default class DisplacementFilter extends Filter
         this.uniforms.filterMatrix = filterManager.calculateSpriteMatrix(this.maskMatrix, this.maskSprite);
         this.uniforms.scale.x = this.scale.x;
         this.uniforms.scale.y = this.scale.y;
+
+        // Extract rotation from world transform
+        const wt = this.maskSprite.transform.worldTransform;
+        const lenX = Math.sqrt((wt.a * wt.a) + (wt.b * wt.b));
+        const lenY = Math.sqrt((wt.c * wt.c) + (wt.d * wt.d));
+
+        if (lenX !== 0 && lenY !== 0)
+        {
+            this.uniforms.rotation[0] = wt.a / lenX;
+            this.uniforms.rotation[1] = wt.b / lenX;
+            this.uniforms.rotation[2] = wt.c / lenY;
+            this.uniforms.rotation[3] = wt.d / lenY;
+        }
 
         // draw the filter...
         filterManager.applyFilter(this, input, output);
