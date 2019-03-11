@@ -1,9 +1,9 @@
 {
-  "name": "@pixi/utils",
+  "name": "@pixi/runner",
   "version": "5.0.0-rc.2",
-  "main": "lib/utils.js",
-  "module": "lib/utils.es.js",
-  "description": "Collection of utilities used by PixiJS",
+  "main": "lib/runner.js",
+  "module": "lib/runner.es.js",
+  "description": "A simple alternative to events and signals with an emphasis on performance.",
   "author": "Mat Groves",
   "contributors": [
     "Matt Karl <matt@mattkarl.com>"
@@ -15,24 +15,27 @@
     "type": "git",
     "url": "https://github.com/pixijs/pixi.js.git"
   },
+  "keywords": [
+    "runner",
+    "signals",
+    "event",
+    "messaging",
+    "publish",
+    "subscribe",
+    "observer",
+    "pub/sub",
+    "fast"
+  ],
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "test": "floss --path test"
+    "test": "floss --path test",
+    "benchmark": "cd benchmark && npm start"
   },
   "files": [
     "lib"
   ],
-  "dependencies": {
-    "@pixi/constants": "^5.0.0-rc.2",
-    "@pixi/settings": "^5.0.0-rc.2",
-    "earcut": "^2.1.3",
-    "eventemitter3": "^3.1.0",
-    "ismobilejs": "^0.5.1",
-    "remove-array-items": "^1.0.0",
-    "url": "^0.11.0"
-  },
   "devDependencies": {
     "floss": "^2.1.5"
   }

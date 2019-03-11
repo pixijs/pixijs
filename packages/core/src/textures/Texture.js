@@ -299,11 +299,6 @@ export default class Texture extends EventEmitter
         if (typeof source === 'string')
         {
             cacheId = source;
-
-            if (!options.resolution)
-            {
-                options.resolution = getResolutionOfUrl(source);
-            }
         }
         else
         {
@@ -319,6 +314,11 @@ export default class Texture extends EventEmitter
 
         if (!texture)
         {
+            if (!options.resolution)
+            {
+                options.resolution = getResolutionOfUrl(source);
+            }
+
             texture = new Texture(new BaseTexture(source, options));
             texture.baseTexture.cacheId = cacheId;
 

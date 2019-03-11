@@ -12,6 +12,10 @@
   "main": "lib/pixi-legacy.js",
   "module": "lib/pixi-legacy.es.js",
   "bundle": "dist/pixi-legacy.js",
+  "bundleOutput": {
+    "footer": "PIXI.useDeprecated();",
+    "name": "PIXI"
+  },
   "types": "pixi.js-legacy.d.ts",
   "homepage": "http://www.pixijs.com/",
   "bugs": "https://github.com/pixijs/pixi.js/issues",

@@ -1,4 +1,4 @@
-import Runner from 'mini-runner';
+import { Runner } from '@pixi/runner';
 import Texture from '../textures/BaseTexture';
 import DepthResource from '../textures/resources/DepthResource';
 import { FORMATS, TYPES } from '@pixi/constants';
@@ -136,12 +136,18 @@ export default class Framebuffer
 
         for (let i = 0; i < this.colorTextures.length; i++)
         {
-            this.colorTextures[i].setSize(width, height);
+            const texture = this.colorTextures[i];
+            const resolution = texture.resolution;
+
+            // take into acount the fact the texture may have a different resolution..
+            texture.setSize(width / resolution, height / resolution);
         }
 
         if (this.depthTexture)
         {
-            this.depthTexture.setSize(width, height);
+            const resolution = this.depthTexture.resolution;
+
+            this.depthTexture.setSize(width / resolution, height / resolution);
         }
     }
 

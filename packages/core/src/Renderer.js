@@ -16,7 +16,7 @@ import TextureGCSystem from './textures/TextureGCSystem';
 import { RENDERER_TYPE } from '@pixi/constants';
 import UniformGroup from './shader/UniformGroup';
 import { Matrix } from '@pixi/math';
-import Runner from 'mini-runner';
+import { Runner } from '@pixi/runner';
 
 /**
  * The Renderer draws the scene and all its content onto a WebGL enabled canvas.
@@ -79,20 +79,20 @@ export default class Renderer extends AbstractRenderer
         // TODO legacy!
 
         /**
-         * Internal signal instances of **mini-runner**, these
+         * Internal signal instances of **runner**, these
          * are assigned to each system created.
-         * @see https://github.com/GoodBoyDigital/mini-runner
+         * @see PIXI.Runner
          * @name PIXI.Renderer#runners
          * @private
          * @type {object}
          * @readonly
-         * @property {Runner} destroy - Destroy runner
-         * @property {Runner} contextChange - Context change runner
-         * @property {Runner} reset - Reset runner
-         * @property {Runner} update - Update runner
-         * @property {Runner} postrender - Post-render runner
-         * @property {Runner} prerender - Pre-render runner
-         * @property {Runner} resize - Resize runner
+         * @property {PIXI.Runner} destroy - Destroy runner
+         * @property {PIXI.Runner} contextChange - Context change runner
+         * @property {PIXI.Runner} reset - Reset runner
+         * @property {PIXI.Runner} update - Update runner
+         * @property {PIXI.Runner} postrender - Post-render runner
+         * @property {PIXI.Runner} prerender - Pre-render runner
+         * @property {PIXI.Runner} resize - Resize runner
          */
         this.runners = {
             destroy: new Runner('destroy'),
