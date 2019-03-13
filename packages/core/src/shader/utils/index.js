@@ -6,3 +6,4 @@ export { default as mapType } from './mapType';
 export { default as generateUniformsSync } from './generateUniformsSync';
 export { default as getTestContext } from './getTestContext';
 export { default as checkMaxIfStatementsInShader } from './checkMaxIfStatementsInShader';
+export { default as unsafeEvalSupported } from './unsafeEvalSupported';

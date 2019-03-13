@@ -1,9 +1,9 @@
 {
-  "name": "@pixi/display",
+  "name": "@pixi/runner",
   "version": "5.0.0-rc.2",
-  "main": "lib/display.js",
-  "module": "lib/display.es.js",
-  "description": "Core display functionality",
+  "main": "lib/runner.js",
+  "module": "lib/runner.es.js",
+  "description": "A simple alternative to events and signals with an emphasis on performance.",
   "author": "Mat Groves",
   "contributors": [
     "Matt Karl <matt@mattkarl.com>"
@@ -15,21 +15,27 @@
     "type": "git",
     "url": "https://github.com/pixijs/pixi.js.git"
   },
+  "keywords": [
+    "runner",
+    "signals",
+    "event",
+    "messaging",
+    "publish",
+    "subscribe",
+    "observer",
+    "pub/sub",
+    "fast"
+  ],
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "test": "floss --path test"
+    "test": "floss --path test",
+    "benchmark": "cd benchmark && npm start"
   },
   "files": [
     "lib"
   ],
-  "dependencies": {
-    "@pixi/math": "^5.0.0-rc.2",
-    "@pixi/settings": "^5.0.0-rc.2",
-    "@pixi/utils": "^5.0.0-rc.2",
-    "eventemitter3": "^3.1.0"
-  },
   "devDependencies": {
     "floss": "^2.1.5"
   }

@@ -1,4 +1,4 @@
-import Runner from 'mini-runner';
+import { Runner } from '@pixi/runner';
 
 /**
  * Base resource class for textures that manages validation and uploading, depending on its type.

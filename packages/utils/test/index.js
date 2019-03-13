@@ -188,6 +188,38 @@ describe('PIXI.utils', function ()
         {
             expect(utils.removeItems).to.be.a('function');
         });
+
+        it('should return if the start index is greater than or equal to the length of the array', function ()
+        {
+            const arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+            utils.removeItems(arr, arr.length + 1, 5);
+            expect(arr.length).to.equal(10);
+        });
+
+        it('should return if the remove count is 0', function ()
+        {
+            const arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+            utils.removeItems(arr, 2, 0);
+            expect(arr.length).to.equal(10);
+        });
+
+        it('should remove the number of elements specified from the array, starting from the start index', function ()
+        {
+            const arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+            utils.removeItems(arr, 3, 4);
+            expect(arr).to.deep.equal([1, 2, 3, 8, 9, 10]);
+        });
+
+        it('should remove other elements if delete count is > than the number of elements after start index', function ()
+        {
+            const arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+            utils.removeItems(arr, 7, 10);
+            expect(arr).to.deep.equal([1, 2, 3, 4, 5, 6, 7]);
+        });
     });
 
     describe('EventEmitter', function ()
