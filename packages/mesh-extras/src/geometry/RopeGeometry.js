@@ -1,13 +1,13 @@
 import { MeshGeometry } from '@pixi/mesh';
 /**
- * The rope allows you to draw a texture across several points and then manipulate these points
+ * RopeGeometry allows you to draw a geometry across several points and then manipulate these points.
  *
- *```js
+ * ```js
  * for (let i = 0; i < 20; i++) {
  *     points.push(new PIXI.Point(i * 50, 0));
  * };
- * let rope = new PIXI.Rope(PIXI.Texture.from("snake.png"), points);
- *  ```
+ * const rope = new PIXI.RopeGeometry(100, points);
+ * ```
  *
  * @class
  * @extends PIXI.MeshGeometry
@@ -17,7 +17,7 @@ import { MeshGeometry } from '@pixi/mesh';
 export default class RopeGeometry extends MeshGeometry
 {
     /**
-     * @param {PIXI.Texture} texture - The texture to use on the rope.
+     * @param {number} [width=200] - The width (i.e., thickness) of the rope.
      * @param {PIXI.Point[]} points - An array of {@link PIXI.Point} objects to construct this rope.
      */
     constructor(width = 200, points)
@@ -32,6 +32,11 @@ export default class RopeGeometry extends MeshGeometry
          */
         this.points = points;
 
+        /**
+         * The width (i.e., thickness) of the rope.
+         * @member {number}
+         * @readOnly
+         */
         this.width = width;
 
         this.build();
