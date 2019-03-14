@@ -308,6 +308,8 @@ export default class GraphicsGeometry extends BatchGeometry
 
         const lastShape = this.graphicsData[this.graphicsData.length - 1];
 
+        data.lineStyle = lastShape.lineStyle;
+
         lastShape.holes.push(data);
 
         this.dirty++;
