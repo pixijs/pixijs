@@ -78,11 +78,53 @@ export default class CanvasGraphicsRenderer
             {
                 context.beginPath();
 
-                this.renderPolygon(shape.points, shape.closed, context);
+                let points = shape.points;
+                const holes = data.holes;
+                let outerArea;
+                let innerArea;
 
-                for (let j = 0; j < data.holes.length; j++)
+                context.moveTo(points[0], points[1]);
+
+                for (let j = 2; j < points.length; j += 2)
                 {
-                    //   this.renderPolygon(data.holes[j].points, true, context);
+                    context.lineTo(points[j], points[j + 1]);
+                }
+
+                if (holes.length > 0)
+                {
+                    outerArea = 0;
+                    for (let j = 0; j < points.length; j += 2)
+                    {
+                        outerArea += (points[j] * points[j + 3]) - (points[j + 1] * points[j + 2]);
+                    }
+
+                    for (let k = 0; k < holes.length; k++)
+                    {
+                        points = holes[k].points;
+
+                        innerArea = 0;
+                        for (let j = 0; j < points.length; j += 2)
+                        {
+                            innerArea += (points[j] * points[j + 3]) - (points[j + 1] * points[j + 2]);
+                        }
+
+                        context.moveTo(points[0], points[1]);
+
+                        if (innerArea * outerArea < 0)
+                        {
+                            for (let j = 2; j < points.length; j += 2)
+                            {
+                                context.lineTo(points[j], points[j + 1]);
+                            }
+                        }
+                        else
+                        {
+                            for (let j = points.length - 2; j >= 2; j -= 2)
+                            {
+                                context.lineTo(points[j], points[j + 1]);
+                            }
+                        }
+                    }
                 }
 
                 if (fillStyle.visible)
@@ -251,28 +293,6 @@ export default class CanvasGraphicsRenderer
                 + (((lineColor >> 8) & 0xFF) / 255 * tintG * 255 << 8)
                 + (((lineColor & 0xFF) / 255) * tintB * 255)
             );
-        }
-    }
-
-    /**
-     * Renders a polygon.
-     *
-     * @param {PIXI.Point[]} points - The points to render
-     * @param {boolean} close - Should the polygon be closed
-     * @param {CanvasRenderingContext2D} context - The rendering context to use
-     */
-    renderPolygon(points, close, context)
-    {
-        context.moveTo(points[0], points[1]);
-
-        for (let j = 1; j < points.length / 2; ++j)
-        {
-            context.lineTo(points[j * 2], points[(j * 2) + 1]);
-        }
-
-        if (close)
-        {
-            context.closePath();
         }
     }
 

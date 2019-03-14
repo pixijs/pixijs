@@ -36,8 +36,6 @@ export default class Polygon
             points = p;
         }
 
-        this.closed = true;
-
         /**
          * An array of the points of this polygon
          *

@@ -1044,7 +1044,6 @@ export default class Graphics extends Container
      */
     closePath()
     {
-        // ok so close path assumes next one is a hole!
         const currentPath = this.currentPath;
 
         if (currentPath && currentPath.shape)

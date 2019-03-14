@@ -501,7 +501,7 @@ export default class GraphicsGeometry extends BatchGeometry
                 {
                     if (data.holes.length)
                     {
-                        this.proccessHoles(data.holes);
+                        this.processHoles(data.holes);
 
                         buildPoly.triangulate(data, this);
                     }
@@ -513,6 +513,11 @@ export default class GraphicsGeometry extends BatchGeometry
                 else
                 {
                     buildLine(data, this);
+
+                    for (let i = 0; i < data.holes.length; i++)
+                    {
+                        buildLine(data.holes[i], this);
+                    }
                 }
 
                 const size = (this.points.length / 2) - start;
@@ -714,7 +719,7 @@ export default class GraphicsGeometry extends BatchGeometry
      * @param {PIXI.GraphicsData[]} holes - Holes to render
      * @protected
      */
-    proccessHoles(holes)
+    processHoles(holes)
     {
         for (let i = 0; i < holes.length; i++)
         {

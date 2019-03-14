@@ -7,9 +7,8 @@ import { Point, SHAPES } from '@pixi/math';
  *
  * @ignore
  * @private
- * @param {PIXI.WebGLGraphicsData} graphicsData - The graphics object containing all the necessary properties
- * @param {object} webGLData - an object containing all the WebGL-specific information to create this shape
- * @param {object} webGLDataNativeLines - an object containing all the WebGL-specific information to create nativeLines
+ * @param {PIXI.GraphicsData} graphicsData - The graphics object containing all the necessary properties
+ * @param {PIXI.GraphicsGeometry} graphicsGeometry - Geometry where to append output
  */
 export default function (graphicsData, graphicsGeometry)
 {
@@ -244,8 +243,8 @@ function buildLine(graphicsData, graphicsGeometry)
  *
  * @ignore
  * @private
- * @param {PIXI.WebGLGraphicsData} graphicsData - The graphics object containing all the necessary properties
- * @param {object} webGLData - an object containing all the WebGL-specific information to create this shape
+ * @param {PIXI.GraphicsData} graphicsData - The graphics object containing all the necessary properties
+ * @param {PIXI.GraphicsGeometry} graphicsGeometry - Geometry where to append output
  */
 function buildNativeLine(graphicsData, graphicsGeometry)
 {
