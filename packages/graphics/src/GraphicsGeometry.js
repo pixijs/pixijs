@@ -238,6 +238,7 @@ export default class GraphicsGeometry extends BatchGeometry
             this.boundsDirty = -1;
             this.dirty++;
             this.clearDirty++;
+            this.batchDirty++;
             this.graphicsData.length = 0;
             this.shapeIndex = 0;
 

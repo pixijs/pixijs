@@ -1046,9 +1046,9 @@ export default class Graphics extends Container
     {
         const currentPath = this.currentPath;
 
-        if (currentPath && currentPath.shape)
+        if (currentPath && currentPath.close)
         {
-            currentPath.shape.close();
+            currentPath.close();
         }
 
         return this;
