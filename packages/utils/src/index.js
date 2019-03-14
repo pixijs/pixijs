@@ -30,18 +30,6 @@ import isMobile from 'ismobilejs';
 export { isMobile };
 
 /**
- * Remove items from a javascript array without generating garbage
- *
- * @see {@link https://github.com/mreinstein/remove-array-items}
- *
- * @memberof PIXI.utils
- * @function removeItems
- * @type {Object}
- */
-import removeItems from 'remove-array-items';
-export { removeItems };
-
-/**
  * A high performance event emitter
  *
  * @see {@link https://github.com/primus/eventemitter3}
