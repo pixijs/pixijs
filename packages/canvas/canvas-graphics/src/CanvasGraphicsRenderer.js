@@ -108,10 +108,10 @@ export default class CanvasGraphicsRenderer
                             innerArea += (points[j] * points[j + 3]) - (points[j + 1] * points[j + 2]);
                         }
 
-                        context.moveTo(points[0], points[1]);
-
                         if (innerArea * outerArea < 0)
                         {
+                            context.moveTo(points[0], points[1]);
+
                             for (let j = 2; j < points.length; j += 2)
                             {
                                 context.lineTo(points[j], points[j + 1]);
@@ -119,7 +119,9 @@ export default class CanvasGraphicsRenderer
                         }
                         else
                         {
-                            for (let j = points.length - 2; j >= 2; j -= 2)
+                            context.moveTo(points[points.length - 2], points[points.length - 1]);
+
+                            for (let j = points.length - 4; j >= 0; j -= 2)
                             {
                                 context.lineTo(points[j], points[j + 1]);
                             }
