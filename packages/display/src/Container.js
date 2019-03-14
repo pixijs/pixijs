@@ -1,5 +1,5 @@
 import { settings } from '@pixi/settings';
-import removeItems from 'remove-array-items';
+import { removeItems } from '@pixi/utils';
 import DisplayObject from './DisplayObject';
 
 function sortChildren(a, b)

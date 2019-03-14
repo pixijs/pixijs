@@ -28,8 +28,7 @@
     "@pixi/math": "^5.0.0-rc.2",
     "@pixi/settings": "^5.0.0-rc.2",
     "@pixi/utils": "^5.0.0-rc.2",
-    "eventemitter3": "^3.1.0",
-    "remove-array-items": "^1.0.0"
+    "eventemitter3": "^3.1.0"
   },
   "devDependencies": {
     "floss": "^2.1.5"
