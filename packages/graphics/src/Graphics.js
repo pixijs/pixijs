@@ -309,14 +309,14 @@ export default class Graphics extends Container
             {
                 this.drawShape(this.currentPath);
                 this.currentPath = new Polygon();
-                this.currentPath.closed = false;
+                this.currentPath.closedStroke = false;
                 this.currentPath.points.push(points[len - 2], points[len - 1]);
             }
         }
         else
         {
             this.currentPath = new Polygon();
-            this.currentPath.closed = false;
+            this.currentPath.closedStroke = false;
         }
     }
 
@@ -1046,9 +1046,10 @@ export default class Graphics extends Container
     {
         const currentPath = this.currentPath;
 
-        if (currentPath && currentPath.close)
+        if (currentPath)
         {
-            currentPath.close();
+            // we don't need to add extra point in the end because buildLine will take care of that
+            currentPath.closeStroke = true;
         }
 
         return this;
@@ -1071,6 +1072,8 @@ export default class Graphics extends Container
      * Begin adding holes to the last draw shape
      * IMPORTANT: holes must be fully inside a shape to work
      * Also weirdness ensues if holes overlap!
+     * Ellipses, Circles, Rectangles and Rounded Rectangles cannot be holes,
+     * please use `moveTo` `lineTo`, `quadraticCurveTo` instead.
      * @return {PIXI.Graphics} Returns itself.
      */
     beginHole()

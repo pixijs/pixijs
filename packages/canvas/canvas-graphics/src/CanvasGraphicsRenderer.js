@@ -90,6 +90,11 @@ export default class CanvasGraphicsRenderer
                     context.lineTo(points[j], points[j + 1]);
                 }
 
+                if (shape.closeStroke)
+                {
+                    context.closePath();
+                }
+
                 if (holes.length > 0)
                 {
                     outerArea = 0;
@@ -125,6 +130,11 @@ export default class CanvasGraphicsRenderer
                             {
                                 context.lineTo(points[j], points[j + 1]);
                             }
+                        }
+
+                        if (holes[k].closeStroke)
+                        {
+                            context.closePath();
                         }
                     }
                 }

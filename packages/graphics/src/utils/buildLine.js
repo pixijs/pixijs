@@ -56,11 +56,11 @@ function buildLine(graphicsData, graphicsGeometry)
     // get first and last point.. figure out the middle!
     const firstPoint = new Point(points[0], points[1]);
     const lastPoint = new Point(points[points.length - 2], points[points.length - 1]);
-    const closedShape = shape.type !== SHAPES.POLY;
+    const closedShape = shape.type !== SHAPES.POLY && shape.closeStroke;
     const closedPath = firstPoint.x === lastPoint.x && firstPoint.y === lastPoint.y;
 
     // if the first point is the last point - gonna have issues :)
-    if (closedPath || closedShape)
+    if (closedShape)
     {
         // need to clone as we are going to slightly modify the shape..
         points = points.slice();
