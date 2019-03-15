@@ -7,9 +7,8 @@ import { Point, SHAPES } from '@pixi/math';
  *
  * @ignore
  * @private
- * @param {PIXI.WebGLGraphicsData} graphicsData - The graphics object containing all the necessary properties
- * @param {object} webGLData - an object containing all the WebGL-specific information to create this shape
- * @param {object} webGLDataNativeLines - an object containing all the WebGL-specific information to create nativeLines
+ * @param {PIXI.GraphicsData} graphicsData - The graphics object containing all the necessary properties
+ * @param {PIXI.GraphicsGeometry} graphicsGeometry - Geometry where to append output
  */
 export default function (graphicsData, graphicsGeometry)
 {
@@ -57,11 +56,11 @@ function buildLine(graphicsData, graphicsGeometry)
     // get first and last point.. figure out the middle!
     const firstPoint = new Point(points[0], points[1]);
     const lastPoint = new Point(points[points.length - 2], points[points.length - 1]);
-    const closedShape = shape.type !== SHAPES.POLY;
+    const closedShape = shape.type !== SHAPES.POLY || shape.closeStroke;
     const closedPath = firstPoint.x === lastPoint.x && firstPoint.y === lastPoint.y;
 
     // if the first point is the last point - gonna have issues :)
-    if (closedPath || closedShape)
+    if (closedShape)
     {
         // need to clone as we are going to slightly modify the shape..
         points = points.slice();
@@ -244,8 +243,8 @@ function buildLine(graphicsData, graphicsGeometry)
  *
  * @ignore
  * @private
- * @param {PIXI.WebGLGraphicsData} graphicsData - The graphics object containing all the necessary properties
- * @param {object} webGLData - an object containing all the WebGL-specific information to create this shape
+ * @param {PIXI.GraphicsData} graphicsData - The graphics object containing all the necessary properties
+ * @param {PIXI.GraphicsGeometry} graphicsGeometry - Geometry where to append output
  */
 function buildNativeLine(graphicsData, graphicsGeometry)
 {
