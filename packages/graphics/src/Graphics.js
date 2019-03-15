@@ -309,14 +309,14 @@ export default class Graphics extends Container
             {
                 this.drawShape(this.currentPath);
                 this.currentPath = new Polygon();
-                this.currentPath.closed = false;
+                this.currentPath.closeStroke = false;
                 this.currentPath.points.push(points[len - 2], points[len - 1]);
             }
         }
         else
         {
             this.currentPath = new Polygon();
-            this.currentPath.closed = false;
+            this.currentPath.closeStroke = false;
         }
     }
 
@@ -680,12 +680,12 @@ export default class Graphics extends Container
         // see section 3.1: https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#3-managing-arguments
         let points = path;
 
-        let closed = true;// !!this._fillStyle;
+        let closeStroke = true;// !!this._fillStyle;
 
         // check if data has points..
         if (points.points)
         {
-            closed = points.closed;
+            closeStroke = points.closeStroke;
             points = points.points;
         }
 
@@ -703,7 +703,7 @@ export default class Graphics extends Container
 
         const shape = new Polygon(points);
 
-        shape.closed = closed;
+        shape.closeStroke = closeStroke;
 
         this.drawShape(shape);
 
@@ -1044,12 +1044,12 @@ export default class Graphics extends Container
      */
     closePath()
     {
-        // ok so close path assumes next one is a hole!
         const currentPath = this.currentPath;
 
-        if (currentPath && currentPath.shape)
+        if (currentPath)
         {
-            currentPath.shape.close();
+            // we don't need to add extra point in the end because buildLine will take care of that
+            currentPath.closeStroke = true;
         }
 
         return this;
@@ -1072,6 +1072,8 @@ export default class Graphics extends Container
      * Begin adding holes to the last draw shape
      * IMPORTANT: holes must be fully inside a shape to work
      * Also weirdness ensues if holes overlap!
+     * Ellipses, Circles, Rectangles and Rounded Rectangles cannot be holes or host for holes in CanvasRenderer,
+     * please use `moveTo` `lineTo`, `quadraticCurveTo` if you rely on pixi-legacy bundle.
      * @return {PIXI.Graphics} Returns itself.
      */
     beginHole()

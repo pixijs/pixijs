@@ -46,6 +46,9 @@ describe('PIXI.Polygon', function ()
         it('should create a copy', function ()
         {
             const polygon1 = new Polygon(0, 0, 10, 0, 0, 10);
+
+            polygon1.closeStroke = !polygon1.closeStroke;
+
             const polygon2 = polygon1.clone();
 
             expect(polygon1.points.length).to.be.equals(6);
@@ -56,37 +59,11 @@ describe('PIXI.Polygon', function ()
                 expect(polygon1.points[i]).to.be.equals(polygon2.points[i]);
             }
 
-            polygon2.close();
+            expect(polygon1.closeStroke).to.be.equals(polygon2.closeStroke);
+            polygon2.points.push(0, 0);
 
             expect(polygon1.points.length).to.be.equals(6);
             expect(polygon2.points.length).to.be.equals(8);
-        });
-    });
-
-    describe('close', function ()
-    {
-        it('should close the polygon if open', function ()
-        {
-            const polygon = new Polygon(0, 0, 10, 0, 0, 10);
-
-            expect(polygon.points.length).to.be.equals(6);
-
-            polygon.close();
-
-            expect(polygon.points.length).to.be.equals(8);
-            expect(polygon.points[6]).to.be.equals(0);
-            expect(polygon.points[7]).to.be.equals(0);
-        });
-
-        it('should do nothing if already closed', function ()
-        {
-            const polygon = new Polygon(0, 0, 10, 0, 0, 10, 0, 0);
-
-            expect(polygon.points.length).to.be.equals(8);
-
-            polygon.close();
-
-            expect(polygon.points.length).to.be.equals(8);
         });
     });
 
