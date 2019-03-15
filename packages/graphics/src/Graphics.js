@@ -309,14 +309,14 @@ export default class Graphics extends Container
             {
                 this.drawShape(this.currentPath);
                 this.currentPath = new Polygon();
-                this.currentPath.closedStroke = false;
+                this.currentPath.closeStroke = false;
                 this.currentPath.points.push(points[len - 2], points[len - 1]);
             }
         }
         else
         {
             this.currentPath = new Polygon();
-            this.currentPath.closedStroke = false;
+            this.currentPath.closeStroke = false;
         }
     }
 
