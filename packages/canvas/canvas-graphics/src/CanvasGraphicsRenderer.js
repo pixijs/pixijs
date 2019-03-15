@@ -132,7 +132,7 @@ export default class CanvasGraphicsRenderer
                             }
                         }
 
-                        if (holes[k].closeStroke)
+                        if (holes[k].shape.closeStroke)
                         {
                             context.closePath();
                         }
