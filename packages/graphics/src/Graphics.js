@@ -680,12 +680,12 @@ export default class Graphics extends Container
         // see section 3.1: https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#3-managing-arguments
         let points = path;
 
-        let closed = true;// !!this._fillStyle;
+        let closeStroke = true;// !!this._fillStyle;
 
         // check if data has points..
         if (points.points)
         {
-            closed = points.closed;
+            closeStroke = points.closeStroke;
             points = points.points;
         }
 
@@ -703,7 +703,7 @@ export default class Graphics extends Container
 
         const shape = new Polygon(points);
 
-        shape.closed = closed;
+        shape.closeStroke = closeStroke;
 
         this.drawShape(shape);
 

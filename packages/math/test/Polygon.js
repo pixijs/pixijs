@@ -63,33 +63,6 @@ describe('PIXI.Polygon', function ()
         });
     });
 
-    describe('close', function ()
-    {
-        it('should close the polygon if open', function ()
-        {
-            const polygon = new Polygon(0, 0, 10, 0, 0, 10);
-
-            expect(polygon.points.length).to.be.equals(6);
-
-            polygon.close();
-
-            expect(polygon.points.length).to.be.equals(8);
-            expect(polygon.points[6]).to.be.equals(0);
-            expect(polygon.points[7]).to.be.equals(0);
-        });
-
-        it('should do nothing if already closed', function ()
-        {
-            const polygon = new Polygon(0, 0, 10, 0, 0, 10, 0, 0);
-
-            expect(polygon.points.length).to.be.equals(8);
-
-            polygon.close();
-
-            expect(polygon.points.length).to.be.equals(8);
-        });
-    });
-
     describe('contains', function ()
     {
         it('should include points inside', function ()
