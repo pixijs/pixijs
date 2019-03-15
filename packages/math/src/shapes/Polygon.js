@@ -68,7 +68,7 @@ export default class Polygon
      */
     clone()
     {
-        let polygon = new Polygon(this.points.slice());
+        const polygon = new Polygon(this.points.slice());
 
         polygon.closeStroke = this.closeStroke;
 
