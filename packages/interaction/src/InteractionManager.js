@@ -1160,7 +1160,12 @@ export default class InteractionManager extends EventEmitter
 
         if (this.autoPreventDefault && events[0].isNormalized)
         {
-            originalEvent.preventDefault();
+            const cancelable = originalEvent.cancelable || !('cancelable' in originalEvent);
+
+            if (cancelable)
+            {
+                originalEvent.preventDefault();
+            }
         }
 
         const eventLen = events.length;
