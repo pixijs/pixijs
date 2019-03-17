@@ -1,6 +1,4 @@
-import { isWebGLSupported } from '@pixi/utils';
-import { Renderer } from '@pixi/core';
-import CanvasRenderer from './CanvasRenderer';
+import { default as Renderer } from './Renderer';
 
 /**
  * This helper function will automatically detect which renderer you should be using.
@@ -24,27 +22,16 @@ import CanvasRenderer from './CanvasRenderer';
  * @param {boolean} [options.clearBeforeRender=true] - This sets if the renderer will clear the canvas or
  *   not before the new render pass.
  * @param {number} [options.resolution=1] - The resolution / device pixel ratio of the renderer, retina would be 2
- * @param {boolean} [options.forceCanvas=false] - prevents selection of WebGL renderer, even if such is present
+ * @param {boolean} [options.forceCanvas=false] - prevents selection of WebGL renderer, even if such is present, this
+ *   option only is available when using **pixi.js-legacy** or **@pixi/canvas-renderer** modules, otherwise
+ *   it is ignored.
  * @param {boolean} [options.forceFXAA=false] - forces FXAA antialiasing to be used over native.
  *  FXAA is faster, but may not always look as great **webgl only**
  * @param {string} [options.powerPreference] - Parameter passed to webgl context, set to "high-performance"
  *  for devices with dual graphics card **webgl only**
  * @return {PIXI.Renderer|PIXI.CanvasRenderer} Returns WebGL renderer if available, otherwise CanvasRenderer
  */
-export function autoDetectRenderer(options, arg1, arg2, arg3)
+export function autoDetectRenderer(options)
 {
-    // Backward-compatible support for noWebGL option
-    let forceCanvas = options && options.forceCanvas;
-
-    if (arg3 !== undefined)
-    {
-        forceCanvas = arg3;
-    }
-
-    if (!forceCanvas && isWebGLSupported())
-    {
-        return new Renderer(options, arg1, arg2);
-    }
-
-    return new CanvasRenderer(options, arg1, arg2);
+    return Renderer.create(options);
 }

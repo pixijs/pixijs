@@ -1,5 +1,5 @@
 import AbstractRenderer from './AbstractRenderer';
-import { sayHello } from '@pixi/utils';
+import { sayHello, isWebGLSupported } from '@pixi/utils';
 import MaskSystem from './mask/MaskSystem';
 import StencilSystem from './mask/StencilSystem';
 import FilterSystem from './filters/FilterSystem';
@@ -33,6 +33,23 @@ import { Runner } from '@pixi/runner';
 export default class Renderer extends AbstractRenderer
 {
     /**
+     * Create renderer if WebGL is available. Overrideable
+     * by the **@pixi/canvas-renderer** package to allow fallback.
+     * throws error if WebGL is not available.
+     * @static
+     * @private
+     */
+    static create(options)
+    {
+        if (isWebGLSupported())
+        {
+            return new Renderer(options);
+        }
+
+        throw new Error('WebGL unsupported in this browser, use "pixi.js-legacy" for fallback canvas2d support.');
+    }
+
+    /**
      * @param {object} [options] - The optional renderer parameters.
      * @param {number} [options.width=800] - The width of the screen.
      * @param {number} [options.height=600] - The height of the screen.
@@ -57,9 +74,9 @@ export default class Renderer extends AbstractRenderer
      *  for devices with dual graphics card.
      * @param {object} [options.context] If WebGL context already exists, all parameters must be taken from it.
      */
-    constructor(options = {}, arg2, arg3)
+    constructor(options = {})
     {
-        super('WebGL', options, arg2, arg3);
+        super('WebGL', options);
 
         // the options will have been modified here in the super constructor with pixi's default settings..
         options = this.options;

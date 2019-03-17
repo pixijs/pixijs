@@ -38,18 +38,9 @@ export default class AbstractRenderer extends EventEmitter
      * @param {number} [options.backgroundColor=0x000000] - The background color of the rendered area
      *  (shown if not transparent).
      */
-    constructor(system, options, arg2, arg3)
+    constructor(system, options)
     {
         super();
-
-        // Support for constructor(system, screenWidth, screenHeight, options)
-        if (typeof options === 'number')
-        {
-            options = Object.assign({
-                width: options,
-                height: arg2 || settings.RENDER_OPTIONS.height,
-            }, arg3);
-        }
 
         // Add the default render options
         options = Object.assign({}, settings.RENDER_OPTIONS, options);
