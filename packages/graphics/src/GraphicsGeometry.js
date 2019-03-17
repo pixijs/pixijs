@@ -982,20 +982,21 @@ export default class GraphicsGeometry extends BatchGeometry
         const eps = 1e-6;
         const resizeX = texture.frame.width / baseTexture.width;
         const resizeY = texture.frame.height / baseTexture.height;
+        const finish = start + (size * 2);
 
         let minX = Math.floor(uvs[start] + eps);
         let minY = Math.floor(uvs[start + 1] + eps);
 
-        for (let i = 0; i < size; i++)
+        for (let i = start + 2; i < finish; i += 2)
         {
-            minX = Math.min(minX, Math.floor(uvs[i * 2] + eps));
-            minY = Math.min(minY, Math.floor(uvs[(i * 2) + 1] + eps));
+            minX = Math.min(minX, Math.floor(uvs[i] + eps));
+            minY = Math.min(minY, Math.floor(uvs[i + 1] + eps));
         }
 
-        for (let i = 0; i < size; i++)
+        for (let i = start; i < finish; i += 2)
         {
-            uvs[i * 2] = (uvs[i] - minX) * resizeX;
-            uvs[(i * 2) + 1] = (uvs[(i * 2) + 1] - minY) * resizeY;
+            uvs[i] = (uvs[i] - minX) * resizeX;
+            uvs[i + 1] = (uvs[i + 1] - minY) * resizeY;
         }
     }
 }
