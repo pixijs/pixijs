@@ -43,7 +43,6 @@
     "@pixi/canvas-renderer": "^5.0.0-rc.2",
     "@pixi/canvas-sprite": "^5.0.0-rc.2",
     "@pixi/canvas-sprite-tiling": "^5.0.0-rc.2",
-    "@pixi/polyfill": "^5.0.0-rc.2",
     "pixi.js": "^5.0.0-rc.2"
   },
   "devDependencies": {
