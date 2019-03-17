@@ -7,7 +7,8 @@ let canvasRenderer;
 const tempMatrix = new Matrix();
 
 /**
- * Generates a canvas texture.
+ * Generates a canvas texture. Only available with **pixi.js-legacy** bundle
+ * or the **@pixi/canvas-graphics** package.
  * @method generateCanvasTexture
  * @memberof PIXI.Graphics#
  * @param {number} scaleMode - The scale mode of the texture.

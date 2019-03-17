@@ -791,7 +791,17 @@ export default function useDeprecated()
         BlurYFilter,
     });
 
-    const { Sprite, Texture } = PIXI;
+    const { Sprite, Texture, Graphics } = PIXI;
+
+    // Support for pixi.js-legacy bifurcation
+    // give users a friendly assist to use legacy
+    if (!Graphics.prototype.generateCanvasTexture)
+    {
+        Graphics.prototype.generateCanvasTexture = function generateCanvasTexture()
+        {
+            deprecation(v5, 'PIXI.Graphics#generateCanvasTexture is only available in "pixi.js-legacy"');
+        };
+    }
 
     // Use these to deprecate all the Sprite from* methods
     function spriteFrom(name, source, crossorigin, scaleMode)

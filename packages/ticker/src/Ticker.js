@@ -558,7 +558,7 @@ export default class Ticker
      *
      * @example
      * // You may use the shared ticker to render...
-     * let renderer = PIXI.autoDetectRenderer(800, 600);
+     * let renderer = PIXI.autoDetectRenderer();
      * let stage = new PIXI.Container();
      * document.body.appendChild(renderer.view);
      * ticker.add(function (time) {

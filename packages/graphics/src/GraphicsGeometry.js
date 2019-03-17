@@ -938,6 +938,8 @@ export default class GraphicsGeometry extends BatchGeometry
     addUvs(verts, uvs, texture, start, size, matrix)
     {
         let index = 0;
+        const uvsStart = uvs.length;
+        const frame = texture.frame;
 
         while (index < size)
         {
@@ -954,9 +956,50 @@ export default class GraphicsGeometry extends BatchGeometry
 
             index++;
 
-            const frame = texture.frame;
-
             uvs.push(x / frame.width, y / frame.height);
+        }
+
+        const baseTexture = texture.baseTexture;
+
+        if (frame.width < baseTexture.width
+            || frame.height < baseTexture.height)
+        {
+            this.adjustUvs(uvs, texture, uvsStart, size);
+        }
+    }
+
+    /**
+     * Modify uvs array according to position of texture region
+     * Does not work with rotated or trimmed textures
+     * @param {number} uvs array
+     * @param {PIXI.Texture} texture region
+     * @param {number} start starting index for uvs
+     * @param {number} size how many points to adjust
+     */
+    adjustUvs(uvs, texture, start, size)
+    {
+        const baseTexture = texture.baseTexture;
+        const eps = 1e-6;
+        const finish = start + (size * 2);
+        const frame = texture.frame;
+        const scaleX = frame.width / baseTexture.width;
+        const scaleY = frame.height / baseTexture.height;
+        let offsetX = frame.x / frame.width;
+        let offsetY = frame.y / frame.width;
+        let minX = Math.floor(uvs[start] + eps);
+        let minY = Math.floor(uvs[start + 1] + eps);
+
+        for (let i = start + 2; i < finish; i += 2)
+        {
+            minX = Math.min(minX, Math.floor(uvs[i] + eps));
+            minY = Math.min(minY, Math.floor(uvs[i + 1] + eps));
+        }
+        offsetX -= minX;
+        offsetY -= minY;
+        for (let i = start; i < finish; i += 2)
+        {
+            uvs[i] = (uvs[i] + offsetX) * scaleX;
+            uvs[i + 1] = (uvs[i + 1] + offsetY) * scaleY;
         }
     }
 }
