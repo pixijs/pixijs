@@ -27,8 +27,6 @@ import { removeItems, getResolutionOfUrl } from '@pixi/utils';
  * let bitmapText = new PIXI.BitmapText("text using a fancy font!", {font: "35px Desyrel", align: "right"});
  * ```
  *
-
- *
  * @class
  * @extends PIXI.Container
  * @memberof PIXI
