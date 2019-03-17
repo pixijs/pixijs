@@ -970,7 +970,7 @@ export default class GraphicsGeometry extends BatchGeometry
 
     /**
      * Modify uvs array according to position of texture region
-     * Does not work with
+     * Does not work with rotated or trimmed textures
      * @param {number} uvs array
      * @param {PIXI.Texture} texture region
      * @param {number} start starting index for uvs
