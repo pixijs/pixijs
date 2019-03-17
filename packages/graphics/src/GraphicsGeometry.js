@@ -435,12 +435,12 @@ export default class GraphicsGeometry extends BatchGeometry
             || BATCH_POOL.pop()
             || new BatchPart();
 
-        batchPart.style = batchPart.style
-            || this.graphicsData[0].fillStyle
-            || this.graphicsData[0].lineStyle;
+        batchPart.style = this.graphicsData[0].fillStyle
+            || this.graphicsData[0].lineStyle
+            || batchPart.style;
 
         let currentTexture = batchPart.style.texture.baseTexture;
-        let currentColor = batchPart.style.color + batchPart.style.alpha;
+        let currentColor = (batchPart.style.color * 2) + batchPart.style.alpha;
 
         this.batches.push(batchPart);
 
@@ -471,12 +471,12 @@ export default class GraphicsGeometry extends BatchGeometry
 
                 const nextTexture = style.texture.baseTexture;
 
-                if (currentTexture !== nextTexture || (style.color + style.alpha) !== currentColor)
+                if (currentTexture !== nextTexture || ((style.color * 2) + style.alpha) !== currentColor)
                 {
                     // TODO use a const
                     nextTexture.wrapMode = 10497;
                     currentTexture = nextTexture;
-                    currentColor = style.color + style.alpha;
+                    currentColor = (style.color * 2) + style.alpha;
 
                     const index = this.indices.length;
                     const attribIndex = this.points.length / 2;
