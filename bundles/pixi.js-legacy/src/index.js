@@ -1,7 +1,7 @@
 import '@pixi/polyfill';
 
-import { Application, accessibility, interaction, prepare, extract } from 'pixi.js';
-import { autoDetectRenderer, CanvasRenderer, CanvasTinter } from '@pixi/canvas-renderer';
+import { accessibility, interaction, prepare, extract } from 'pixi.js';
+import { CanvasRenderer, CanvasTinter } from '@pixi/canvas-renderer';
 import { CanvasMeshRenderer } from '@pixi/canvas-mesh';
 import { CanvasGraphicsRenderer } from '@pixi/canvas-graphics';
 import { CanvasSpriteRenderer } from '@pixi/canvas-sprite';
@@ -22,13 +22,10 @@ CanvasRenderer.registerPlugin('sprite', CanvasSpriteRenderer);
 Object.assign(prepare, canvasPrepare);
 Object.assign(extract, canvasExtract);
 
-Application.prototype.createRenderer = autoDetectRenderer;
-
 // Export ES for those importing specifically by name,
 // e.g., `import {autoDetectRenderer} from 'pixi.js-legacy'`
 export * from 'pixi.js';
 export {
-    autoDetectRenderer,
     CanvasRenderer,
     CanvasGraphicsRenderer,
     CanvasMeshRenderer,

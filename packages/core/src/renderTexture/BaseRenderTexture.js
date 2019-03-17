@@ -11,7 +11,7 @@ import Framebuffer from '../framebuffer/Framebuffer';
  * and rotation of the given Display Objects is ignored. For example:
  *
  * ```js
- * let renderer = PIXI.autoDetectRenderer(1024, 1024);
+ * let renderer = PIXI.autoDetectRenderer();
  * let baseRenderTexture = new PIXI.BaseRenderTexture(800, 600);
  * let renderTexture = new PIXI.RenderTexture(baseRenderTexture);
  * let sprite = PIXI.Sprite.fromImage("spinObj_01.png");

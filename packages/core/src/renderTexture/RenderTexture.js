@@ -10,7 +10,7 @@ import Texture from '../textures/Texture';
  * A RenderTexture takes a snapshot of any Display Object given to its render method. For example:
  *
  * ```js
- * let renderer = PIXI.autoDetectRenderer(1024, 1024);
+ * let renderer = PIXI.autoDetectRenderer();
  * let renderTexture = PIXI.RenderTexture.create(800, 600);
  * let sprite = PIXI.Sprite.from("spinObj_01.png");
  *

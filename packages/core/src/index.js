@@ -6,6 +6,7 @@ import './settings';
 export { systems };
 export { resources };
 
+export * from './autoDetectRenderer';
 export { default as System } from './System';
 export { default as Renderer } from './Renderer';
 export { default as AbstractRenderer } from './AbstractRenderer';
