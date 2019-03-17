@@ -1,3 +1,5 @@
+import '@pixi/polyfill';
+
 import * as accessibility from '@pixi/accessibility';
 import * as extract from '@pixi/extract';
 import * as interaction from '@pixi/interaction';

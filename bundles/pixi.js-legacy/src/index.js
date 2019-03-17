@@ -1,5 +1,3 @@
-import '@pixi/polyfill';
-
 import { accessibility, interaction, prepare, extract } from 'pixi.js';
 import { CanvasRenderer, CanvasTinter } from '@pixi/canvas-renderer';
 import { CanvasMeshRenderer } from '@pixi/canvas-mesh';
