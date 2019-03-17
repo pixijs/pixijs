@@ -1,6 +1,5 @@
-import { settings } from '@pixi/settings';
 import { Container } from '@pixi/display';
-import { Renderer } from '@pixi/core';
+import { autoDetectRenderer } from '@pixi/core';
 
 /**
  * Convenience class to create a new PIXI application.
@@ -37,8 +36,9 @@ export default class Application
      * @param {boolean} [options.preserveDrawingBuffer=false] - Enables drawing buffer preservation, enable this if you
      *  need to call toDataUrl on the WebGL context.
      * @param {number} [options.resolution=1] - The resolution / device pixel ratio of the renderer, retina would be 2.
-     * @param {boolean} [options.forceCanvas=false] - Prevents selection of WebGL renderer, even if such is present.
-     *   This option is only available in the `pixi.js-legacy` package.
+     * @param {boolean} [options.forceCanvas=false] - prevents selection of WebGL renderer, even if such is present, this
+     *   option only is available when using **pixi.js-legacy** or **@pixi/canvas-renderer** modules, otherwise
+     *   it is ignored.
      * @param {number} [options.backgroundColor=0x000000] - The background color of the rendered area
      *  (shown if not transparent).
      * @param {boolean} [options.clearBeforeRender=true] - This sets if the renderer will clear the canvas or
@@ -51,19 +51,8 @@ export default class Application
      * @param {boolean} [options.sharedLoader=false] - `true` to use PIXI.Loaders.shared, `false` to create new Loader.
      * @param {Window|HTMLElement} [options.resizeTo] - Element to automatically resize stage to.
      */
-    constructor(options, arg2, arg3, arg4, arg5)
+    constructor(options)
     {
-        // Support for constructor(width, height, options, noWebGL, useSharedTicker)
-        if (typeof options === 'number')
-        {
-            options = Object.assign({
-                width: options,
-                height: arg2 || settings.RENDER_OPTIONS.height,
-                forceCanvas: !!arg4,
-                sharedTicker: !!arg5,
-            }, arg3);
-        }
-
         // The default options
         options = Object.assign({
             forceCanvas: false,
@@ -73,7 +62,7 @@ export default class Application
          * WebGL renderer if available, otherwise CanvasRenderer.
          * @member {PIXI.Renderer|PIXI.CanvasRenderer}
          */
-        this.renderer = this.createRenderer(options);
+        this.renderer = autoDetectRenderer(options);
 
         /**
          * The root display container that's rendered.
@@ -96,17 +85,6 @@ export default class Application
     static registerPlugin(plugin)
     {
         Application._plugins.push(plugin);
-    }
-
-    /**
-     * Create the new renderer, this is here to overridden to support Canvas.
-     *
-     * @protected
-     * @param {Object} [options] See constructor for complete arguments
-     */
-    createRenderer(options)
-    {
-        return new Renderer(options);
     }
 
     /**
