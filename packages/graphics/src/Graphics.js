@@ -527,7 +527,18 @@ export default class Graphics extends Container
 
         if (points)
         {
-            if (points[points.length - 2] !== startX || points[points.length - 1] !== startY)
+            // TODO: make a better fix.
+
+            // We check how far our start is from the last existing point
+            const xDiff = Math.abs(points[points.length - 2] - startX);
+            const yDiff = Math.abs(points[points.length - 1] - startY);
+
+            if (xDiff < 0.001 && yDiff < 0.001)
+            {
+                // If the point is very close, we don't add it, since this would lead to artifacts
+                // during tessellation due to floating point imprecision.
+            }
+            else
             {
                 points.push(startX, startY);
             }
