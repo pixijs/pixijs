@@ -24,7 +24,8 @@
     "test": "floss --path test"
   },
   "files": [
-    "lib"
+    "lib",
+    "dist"
   ],
   "dependencies": {
     "@pixi/core": "^5.0.0-rc.2",

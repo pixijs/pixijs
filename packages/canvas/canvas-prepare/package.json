@@ -22,7 +22,8 @@
     "access": "public"
   },
   "files": [
-    "lib"
+    "lib",
+    "dist"
   ],
   "dependencies": {
     "@pixi/canvas-renderer": "^5.0.0-rc.2",

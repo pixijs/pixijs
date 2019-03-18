@@ -36,7 +36,8 @@
     "benchmark": "cd benchmark && npm start"
   },
   "files": [
-    "lib"
+    "lib",
+    "dist"
   ],
   "devDependencies": {
     "floss": "^2.1.5"

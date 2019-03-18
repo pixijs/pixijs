@@ -24,7 +24,8 @@
     "test": "floss --path test"
   },
   "files": [
-    "lib"
+    "lib",
+    "dist"
   ],
   "devDependencies": {
     "floss": "^2.1.5"

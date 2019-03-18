@@ -24,7 +24,8 @@
     "test": "floss --path test"
   },
   "files": [
-    "lib"
+    "lib",
+    "dist"
   ],
   "dependencies": {
     "ismobilejs": "^0.5.1"

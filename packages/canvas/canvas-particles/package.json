@@ -20,7 +20,8 @@
     "access": "public"
   },
   "files": [
-    "lib"
+    "lib",
+    "dist"
   ],
   "dependencies": {
     "@pixi/particles": "^5.0.0-rc.2"

@@ -21,7 +21,8 @@
     "access": "public"
   },
   "files": [
-    "lib"
+    "lib",
+    "dist"
   ],
   "dependencies": {
     "@pixi/constants": "^5.0.0-rc.2",

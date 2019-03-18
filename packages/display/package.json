@@ -24,7 +24,8 @@
     "test": "floss --path test"
   },
   "files": [
-    "lib"
+    "lib",
+    "dist"
   ],
   "dependencies": {
     "@pixi/math": "^5.0.0-rc.2",
