@@ -20,11 +20,5 @@
   "files": [
     "lib/",
     "dist/"
-  ],
-  "scripts": {
-    "build:min": "terser dist/unsafe-eval.js -c -m -o dist/unsafe-eval.min.js --source-map \"content='dist/unsafe-eval.js.map',includeSources=true,filename='dist/unsafe-eval.min.js.map',url='unsafe-eval.min.js.map'\" --comments \"/^!/\""
-  },
-  "devDependencies": {
-    "terser": "^3.14.1"
-  }
+  ]
 }

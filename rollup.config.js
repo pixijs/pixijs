@@ -6,6 +6,7 @@ import sourcemaps from 'rollup-plugin-sourcemaps';
 import minimist from 'minimist';
 import commonjs from 'rollup-plugin-commonjs';
 import replace from 'rollup-plugin-replace';
+import { terser } from 'rollup-plugin-terser';
 import batchPackages from '@lerna/batch-packages';
 import filterPackages from '@lerna/filter-packages';
 import { getPackages } from '@lerna/project';
@@ -129,10 +130,12 @@ async function main()
         // this will package all dependencies
         if (bundle)
         {
+            const input = path.join(basePath, bundleInput || 'src/index.js');
+            const file = path.join(basePath, bundle);
             const external = standalone ? null : Object.keys(namespaces);
             const globals = standalone ? null : namespaces;
-            let name; let
-                footer;
+            let name;
+            let footer;
 
             if (namespaceInject)
             {
@@ -155,11 +158,11 @@ async function main()
             }
 
             results.push({
-                input: path.join(basePath, bundleInput || 'src/index.js'),
+                input,
                 external,
                 output: Object.assign({
                     banner,
-                    file: path.join(basePath, bundle),
+                    file,
                     format: 'iife',
                     freeze,
                     globals,
@@ -170,6 +173,30 @@ async function main()
                 treeshake: false,
                 plugins,
             });
+
+            if (process.env.NODE_ENV === 'production')
+            {
+                results.push({
+                    input,
+                    external,
+                    output: Object.assign({
+                        banner,
+                        file: file.replace(/\.js$/, '.min.js'),
+                        format: 'iife',
+                        freeze,
+                        globals,
+                        name,
+                        footer,
+                        sourcemap,
+                    }, bundleOutput),
+                    treeshake: false,
+                    plugins: [...plugins, terser({
+                        output: {
+                            comments: (node, comment) => comment.line === 1,
+                        },
+                    })],
+                });
+            }
         }
     });
 

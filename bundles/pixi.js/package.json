@@ -27,8 +27,7 @@
   },
   "scripts": {
     "test": "floss --path test",
-    "postinstall": "node scripts/support-pixi.js",
-    "build:min": "terser dist/pixi.js -c -m -o dist/pixi.min.js --source-map \"content='dist/pixi.js.map',includeSources=true,filename='dist/pixi.min.js.map',url='pixi.min.js.map'\" --comments \"/pixi.js - /\""
+    "postinstall": "node scripts/support-pixi.js"
   },
   "files": [
     "lib/",
@@ -73,7 +72,6 @@
     "@pixi/utils": "^5.0.0-rc.2"
   },
   "devDependencies": {
-    "floss": "^2.1.5",
-    "terser": "^3.14.1"
+    "floss": "^2.1.5"
   }
 }

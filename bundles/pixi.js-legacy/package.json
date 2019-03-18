@@ -26,8 +26,7 @@
     "url": "https://github.com/pixijs/pixi.js.git"
   },
   "scripts": {
-    "test": "floss --path test",
-    "build:min": "terser dist/pixi-legacy.js -c -m -o dist/pixi-legacy.min.js --source-map \"content='dist/pixi-legacy.js.map',includeSources=true,filename='dist/pixi-legacy.min.js.map',url='pixi-legacy.min.js.map'\" --comments \"/pixi.js-legacy - /\""
+    "test": "floss --path test"
   },
   "files": [
     "lib/",
@@ -47,7 +46,6 @@
     "pixi.js": "^5.0.0-rc.2"
   },
   "devDependencies": {
-    "floss": "^2.1.5",
-    "terser": "^3.14.1"
+    "floss": "^2.1.5"
   }
 }
