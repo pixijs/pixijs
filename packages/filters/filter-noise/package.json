@@ -26,8 +26,7 @@
     "dist"
   ],
   "dependencies": {
-    "@pixi/core": "^5.0.0-rc.2",
-    "@pixi/fragments": "^5.0.0-rc.2"
+    "@pixi/core": "^5.0.0-rc.2"
   },
   "devDependencies": {
     "floss": "^2.1.5"
