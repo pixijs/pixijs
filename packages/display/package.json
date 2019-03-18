@@ -3,6 +3,8 @@
   "version": "5.0.0-rc.2",
   "main": "lib/display.js",
   "module": "lib/display.es.js",
+  "bundle": "dist/display.js",
+  "namespaceInject": true,
   "description": "Core display functionality",
   "author": "Mat Groves",
   "contributors": [

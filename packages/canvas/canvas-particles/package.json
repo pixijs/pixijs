@@ -3,6 +3,7 @@
   "version": "5.0.0-rc.2",
   "main": "lib/canvas-sprite-tiling.js",
   "module": "lib/canvas-sprite-tiling.es.js",
+  "bundle": "dist/canvas-graphics.js",
   "description": "Canvas mixin for the particles package",
   "author": "Mat Groves",
   "contributors": [

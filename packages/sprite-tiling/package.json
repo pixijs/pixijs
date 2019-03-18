@@ -3,6 +3,8 @@
   "version": "5.0.0-rc.2",
   "main": "lib/sprite-tiling.js",
   "module": "lib/sprite-tiling.es.js",
+  "bundle": "dist/sprite-tiling.js",
+  "namespaceInject": true,
   "description": "Tiling Sprites for faster rendering a tiling image",
   "author": "Mat Groves",
   "contributors": [

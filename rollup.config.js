@@ -63,9 +63,21 @@ async function main()
     const { scope, ignore } = minimist(process.argv.slice(2));
     const packages = await getSortedPackages(scope, ignore);
 
+    const namespaces = {};
+    const pkgData = {};
+
+    // Create a map of globals to use for bundled packages
     packages.forEach((pkg) =>
     {
-        const banner = [
+        const data = pkg.toJSON();
+
+        pkgData[pkg.name] = data;
+        namespaces[pkg.name] = data.namespace || 'PIXI';
+    });
+
+    packages.forEach((pkg) =>
+    {
+        let banner = [
             `/*!`,
             ` * ${pkg.name} - v${pkg.version}`,
             ` * Compiled ${compiled}`,
@@ -79,7 +91,15 @@ async function main()
         const external = Object.keys(pkg.dependencies || []);
         const basePath = path.relative(__dirname, pkg.location);
         const input = path.join(basePath, 'src/index.js');
-        const { main, module, bundle, bundleInput, bundleOutput } = pkg.toJSON();
+        const {
+            main,
+            module,
+            bundle,
+            bundleInput,
+            bundleOutput,
+            namespaceInject,
+            namespaceCreate,
+            standalone } = pkgData[pkg.name];
         const freeze = false;
 
         results.push({
@@ -95,7 +115,7 @@ async function main()
                 {
                     banner,
                     file: path.join(basePath, module),
-                    format: 'es',
+                    format: 'esm',
                     freeze,
                     sourcemap,
                 },
@@ -109,13 +129,42 @@ async function main()
         // this will package all dependencies
         if (bundle)
         {
+            const external = standalone ? null : Object.keys(namespaces);
+            const globals = standalone ? null : namespaces;
+            let name; let
+                footer;
+
+            if (namespaceInject)
+            {
+                const ns = namespaces[pkg.name];
+
+                if (ns.includes('.'))
+                {
+                    const base = ns.split('.')[0];
+
+                    banner += `\nthis.${base} = this.${base} || {};`;
+                }
+
+                banner += `\nthis.${ns} = this.${ns} || {};`;
+                name = pkg.name.replace(/[^a-z]+/g, '_');
+                footer = `Object.assign(this.${ns}, ${name});`;
+            }
+            else if (namespaceCreate)
+            {
+                name = namespaces[pkg.name];
+            }
+
             results.push({
                 input: path.join(basePath, bundleInput || 'src/index.js'),
+                external,
                 output: Object.assign({
                     banner,
                     file: path.join(basePath, bundle),
                     format: 'iife',
                     freeze,
+                    globals,
+                    name,
+                    footer,
                     sourcemap,
                 }, bundleOutput),
                 treeshake: false,

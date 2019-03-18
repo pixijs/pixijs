@@ -3,6 +3,9 @@
   "version": "5.0.0-rc.2",
   "main": "lib/canvas-prepare.js",
   "module": "lib/canvas-prepare.es.js",
+  "bundle": "dist/canvas-prepare.js",
+  "namespace": "PIXI.prepare",
+  "namespaceInject": true,
   "description": "Canvas mixin for the prepare package",
   "author": "Mat Groves",
   "contributors": [

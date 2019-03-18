@@ -3,6 +3,8 @@
   "version": "5.0.0-rc.2",
   "main": "lib/graphics.js",
   "module": "lib/graphics.es.js",
+  "bundle": "dist/graphics.js",
+  "namespaceInject": true,
   "description": "Draw primitive shapes such as lines, circles and rectangles to the display",
   "author": "Mat Groves",
   "contributors": [

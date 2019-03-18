@@ -3,6 +3,8 @@
   "version": "5.0.0-rc.2",
   "main": "lib/fragments.js",
   "module": "lib/fragments.es.js",
+  "bundle": "dist/fragments.js",
+  "namespaceInject": true,
   "description": "Core fragment shaders",
   "author": "Mat Groves",
   "contributors": [

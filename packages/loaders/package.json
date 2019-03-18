@@ -3,6 +3,8 @@
   "version": "5.0.0-rc.2",
   "main": "lib/loaders.js",
   "module": "lib/loaders.es.js",
+  "bundle": "dist/loaders.js",
+  "namespaceInject": true,
   "description": "Load assets and resources",
   "author": "Mat Groves",
   "contributors": [

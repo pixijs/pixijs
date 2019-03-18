@@ -3,6 +3,8 @@
   "version": "5.0.0-rc.2",
   "main": "lib/canvas-sprite.js",
   "module": "lib/canvas-sprite.es.js",
+  "bundle": "dist/canvas-sprite.js",
+  "namespaceInject": true,
   "description": "Canvas mixin for the sprite package",
   "author": "Mat Groves",
   "contributors": [

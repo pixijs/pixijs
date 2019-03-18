@@ -3,6 +3,8 @@
   "version": "5.0.0-rc.2",
   "main": "lib/sprite.js",
   "module": "lib/sprite.es.js",
+  "bundle": "dist/sprite.js",
+  "namespaceInject": true,
   "description": "Base object for textured objects rendered to the screen",
   "author": "Mat Groves",
   "contributors": [

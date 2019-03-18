@@ -3,6 +3,9 @@
   "version": "5.0.0-rc.2",
   "main": "lib/filter-noise.js",
   "module": "lib/filter-noise.es.js",
+  "bundle": "dist/filter-noise.js",
+  "namespace": "PIXI.filters",
+  "namespaceInject": true,
   "description": "Filter that applies noise to a display object",
   "author": "Mat Groves",
   "contributors": [

@@ -3,6 +3,8 @@
   "version": "5.0.0-rc.2",
   "main": "lib/settings.js",
   "module": "lib/settings.es.js",
+  "bundle": "dist/settings.js",
+  "namespaceInject": true,
   "description": "Collecting of user configurable settings used throughout PixiJS",
   "author": "Mat Groves",
   "contributors": [

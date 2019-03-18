@@ -3,6 +3,7 @@
   "version": "5.0.0-rc.2",
   "main": "lib/polyfill.js",
   "module": "lib/polyfill.es.js",
+  "bundle": "dist/polyfill.js",
   "description": "Support for legacy browser JavaScript environments",
   "author": "Mat Groves",
   "contributors": [

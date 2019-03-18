@@ -3,6 +3,8 @@
   "version": "5.0.0-rc.2",
   "main": "lib/core.js",
   "module": "lib/core.es.js",
+  "bundle": "dist/core.js",
+  "namespaceInject": true,
   "description": "Core PixiJS",
   "author": "Mat Groves",
   "contributors": [

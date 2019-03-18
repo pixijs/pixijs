@@ -9,6 +9,7 @@
     "Chad Engler <chad@pantherdev.com>",
     "Richard Davey <rdavey@gmail.com>"
   ],
+  "standalone": true,
   "main": "lib/pixi-legacy.js",
   "module": "lib/pixi-legacy.es.js",
   "bundle": "dist/pixi-legacy.js",

@@ -3,6 +3,9 @@
   "version": "5.0.0-rc.2",
   "main": "lib/utils.js",
   "module": "lib/utils.es.js",
+  "bundle": "dist/utils.js",
+  "namespace": "PIXI.utils",
+  "namespaceCreate": true,
   "description": "Collection of utilities used by PixiJS",
   "author": "Mat Groves",
   "contributors": [

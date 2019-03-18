@@ -3,6 +3,8 @@
   "version": "5.0.0-rc.2",
   "main": "lib/canvas-renderer.js",
   "module": "lib/canvas-renderer.es.js",
+  "bundle": "dist/canvas-renderer.js",
+  "namespaceInject": true,
   "description": "Rendering using the Canvas API",
   "author": "Mat Groves",
   "contributors": [

@@ -5,9 +5,6 @@
   "module": "lib/unsafe-eval.es.js",
   "bundle": "dist/unsafe-eval.js",
   "bundleInput": "src/bundle.js",
-  "bundleOutput": {
-    "format": "umd"
-  },
   "description": "Adds support for environments that disallow support of new Function",
   "author": "Matt Karl <matt@mattkarl.com>",
   "homepage": "http://pixijs.com/",

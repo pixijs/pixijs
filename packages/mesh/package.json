@@ -3,6 +3,8 @@
   "version": "5.0.0-rc.2",
   "main": "lib/mesh.js",
   "module": "lib/mesh.es.js",
+  "bundle": "dist/mesh.js",
+  "namespaceInject": true,
   "description": "Core Mesh functionality",
   "author": "Mat Groves",
   "contributors": [

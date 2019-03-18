@@ -3,6 +3,8 @@
   "version": "5.0.0-rc.2",
   "main": "lib/spritesheet.js",
   "module": "lib/spritesheet.es.js",
+  "bundle": "dist/spritesheet.js",
+  "namespaceInject": true,
   "description": "Spritesheets maintain a collection of Textures on a single image",
   "author": "Mat Groves",
   "contributors": [

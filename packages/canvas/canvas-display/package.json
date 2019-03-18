@@ -3,6 +3,7 @@
   "version": "5.0.0-rc.2",
   "main": "lib/canvas-display.js",
   "module": "lib/canvas-display.es.js",
+  "bundle": "dist/canvas-display.js",
   "description": "Canvas mixin for the display package",
   "author": "Mat Groves",
   "contributors": [
