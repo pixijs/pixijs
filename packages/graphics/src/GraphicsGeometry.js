@@ -112,14 +112,6 @@ export default class GraphicsGeometry extends BatchGeometry
         this.graphicsData = [];
 
         /**
-         * Graphics data representing holes in the graphicsData.
-         *
-         * @member {PIXI.GraphicsData[]}
-         * @protected
-         */
-        this.graphicsDataHoles = [];
-
-        /**
          * Used to detect if the graphics object has changed. If this is set to true then the graphics
          * object will be recalculated.
          *
@@ -352,8 +344,6 @@ export default class GraphicsGeometry extends BatchGeometry
         this.indexBuffer = null;
         this.graphicsData.length = 0;
         this.graphicsData = null;
-        this.graphicsDataHoles.length = 0;
-        this.graphicsDataHoles = null;
         this.drawCalls.length = 0;
         this.drawCalls = null;
         this.batches.length = 0;
