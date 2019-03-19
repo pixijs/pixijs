@@ -5,7 +5,6 @@
   "module": "lib/utils.es.js",
   "bundle": "dist/utils.js",
   "namespace": "PIXI.utils",
-  "namespaceCreate": true,
   "description": "Collection of utilities used by PixiJS",
   "author": "Mat Groves",
   "contributors": [

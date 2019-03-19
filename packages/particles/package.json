@@ -4,7 +4,6 @@
   "main": "lib/particles.js",
   "module": "lib/particles.es.js",
   "bundle": "dist/particles.js",
-  "namespaceInject": true,
   "description": "Render many sprite particles as efficiently as possible",
   "author": "Mat Groves",
   "contributors": [

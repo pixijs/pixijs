@@ -4,6 +4,7 @@
   "main": "lib/polyfill.js",
   "module": "lib/polyfill.es.js",
   "bundle": "dist/polyfill.js",
+  "bundleHasExports": false,
   "description": "Support for legacy browser JavaScript environments",
   "author": "Mat Groves",
   "contributors": [

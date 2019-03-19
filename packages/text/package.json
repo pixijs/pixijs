@@ -4,7 +4,6 @@
   "main": "lib/text.js",
   "module": "lib/text.es.js",
   "bundle": "dist/text.js",
-  "namespaceInject": true,
   "description": "Text via the Canvas API",
   "author": "Mat Groves",
   "contributors": [

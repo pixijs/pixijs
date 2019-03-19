@@ -98,8 +98,7 @@ async function main()
             bundle,
             bundleInput,
             bundleOutput,
-            namespaceInject,
-            namespaceCreate,
+            bundleHasExports,
             standalone } = pkgData[pkg.name];
         const freeze = false;
 
@@ -134,12 +133,15 @@ async function main()
             const file = path.join(basePath, bundle);
             const external = standalone ? null : Object.keys(namespaces);
             const globals = standalone ? null : namespaces;
-            let name;
+            const ns = namespaces[pkg.name];
+            const name = pkg.name.replace(/[^a-z]+/g, '_');
             let footer;
 
-            if (namespaceInject)
+            // Ignore self-contained packages like polyfills and unsafe-eval
+            // as well as the bundles pixi.js and pixi.js-legacy
+            if (bundleHasExports !== false && !standalone)
             {
-                const ns = namespaces[pkg.name];
+                footer = `Object.assign(this.${ns}, ${name});`;
 
                 if (ns.includes('.'))
                 {
@@ -149,12 +151,6 @@ async function main()
                 }
 
                 banner += `\nthis.${ns} = this.${ns} || {};`;
-                name = pkg.name.replace(/[^a-z]+/g, '_');
-                footer = `Object.assign(this.${ns}, ${name});`;
-            }
-            else if (namespaceCreate)
-            {
-                name = namespaces[pkg.name];
             }
 
             results.push({

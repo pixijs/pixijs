@@ -5,7 +5,6 @@
   "module": "lib/filter-blur.es.js",
   "bundle": "dist/filter-blur.js",
   "namespace": "PIXI.filters",
-  "namespaceInject": true,
   "description": "Filter that blurs the display object",
   "author": "Mat Groves",
   "contributors": [

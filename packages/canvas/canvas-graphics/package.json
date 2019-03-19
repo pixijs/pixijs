@@ -4,7 +4,6 @@
   "main": "lib/canvas-graphics.js",
   "module": "lib/canvas-graphics.es.js",
   "bundle": "dist/canvas-graphics.js",
-  "namespaceInject": true,
   "description": "Canvas mixin for the graphics package",
   "author": "Mat Groves",
   "contributors": [

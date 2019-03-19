@@ -5,7 +5,6 @@
   "module": "lib/filter-alpha.es.js",
   "bundle": "dist/filter-alpha.js",
   "namespace": "PIXI.filters",
-  "namespaceInject": true,
   "description": "Filter that applies alpha evenly across the entire display object and any opaque elements it contains",
   "author": "Mat Groves",
   "contributors": [

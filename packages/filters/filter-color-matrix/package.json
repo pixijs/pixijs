@@ -5,7 +5,6 @@
   "module": "lib/filter-color-matrix.es.js",
   "bundle": "dist/filter-color-matrix.js",
   "namespace": "PIXI.filters",
-  "namespaceInject": true,
   "description": "Filter that lets you change RGBA via a 5x4 matrix transformation",
   "author": "Mat Groves",
   "contributors": [

@@ -5,7 +5,6 @@
   "module": "lib/filter-fxaa.es.js",
   "bundle": "dist/filter-fxaa.js",
   "namespace": "PIXI.filters",
-  "namespaceInject": true,
   "description": "Filter for fast approximate anti-aliasing",
   "author": "Mat Groves",
   "contributors": [

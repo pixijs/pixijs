@@ -4,7 +4,6 @@
   "main": "lib/app.js",
   "module": "lib/app.es.js",
   "bundle": "dist/app.js",
-  "namespaceInject": true,
   "description": "Convenience class to create a new PixiJS application",
   "author": "Mat Groves",
   "contributors": [

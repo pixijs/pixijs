@@ -4,7 +4,6 @@
   "main": "lib/runner.js",
   "module": "lib/runner.es.js",
   "bundle": "dist/runner.js",
-  "namespaceInject": true,
   "description": "A simple alternative to events and signals with an emphasis on performance.",
   "author": "Mat Groves",
   "contributors": [

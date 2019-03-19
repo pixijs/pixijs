@@ -4,7 +4,6 @@
   "main": "lib/text-bitmap.js",
   "module": "lib/text-bitmap.es.js",
   "bundle": "dist/text-bitmap.js",
-  "namespaceInject": true,
   "description": "Text via bitmap fonts",
   "author": "Mat Groves",
   "contributors": [
