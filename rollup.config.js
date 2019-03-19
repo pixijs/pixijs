@@ -98,7 +98,6 @@ async function main()
             bundle,
             bundleInput,
             bundleOutput,
-            bundleHasExports,
             standalone } = pkgData[pkg.name];
         const freeze = false;
 
@@ -139,7 +138,7 @@ async function main()
 
             // Ignore self-contained packages like polyfills and unsafe-eval
             // as well as the bundles pixi.js and pixi.js-legacy
-            if (bundleHasExports !== false && !standalone)
+            if (!standalone)
             {
                 footer = `Object.assign(this.${ns}, ${name});`;
 
