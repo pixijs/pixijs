@@ -53,7 +53,7 @@ export default class GraphicsData
 
         /**
          * The collection of holes.
-         * @member {number[]}
+         * @member {PIXI.GraphicsData[]}
          */
         this.holes = [];
     }
