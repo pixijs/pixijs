@@ -5,7 +5,7 @@ import { BaseTexture } from '@pixi/core';
  * for rendering with CanvasRenderer. Provided by **@pixi/canvas-renderer** package.
  * @method getDrawableSource
  * @memberof PIXI.BaseTexture#
- * @return {ICanvasImageSource} Source to render with CanvasRenderer
+ * @return {PIXI.ICanvasImageSource} Source to render with CanvasRenderer
  */
 BaseTexture.prototype.getDrawableSource = function getDrawableSource()
 {
