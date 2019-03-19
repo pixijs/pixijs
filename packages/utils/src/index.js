@@ -42,12 +42,6 @@ import EventEmitter from 'eventemitter3';
 export { EventEmitter };
 
 /**
- * @namespace PIXI.utils.mixins
- */
-import * as mixins from './mixins';
-export { mixins };
-
-/**
  * A polygon triangulation library
  *
  * @see {@link https://github.com/mapbox/earcut}

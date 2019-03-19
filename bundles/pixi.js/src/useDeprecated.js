@@ -928,4 +928,38 @@ export default function useDeprecated()
             this.autoDensity = value;
         },
     });
+
+    /**
+     * @namespace PIXI.utils.mixins
+     * @deprecated since 5.0.0
+     */
+    PIXI.utils.mixins = {
+        /**
+         * @memberof PIXI.utils.mixins
+         * @function mixin
+         * @deprecated since 5.0.0
+         */
+        mixin()
+        {
+            deprecation(v5, 'PIXI.utils.mixins.mixin no longer available');
+        },
+        /**
+         * @memberof PIXI.utils.mixins
+         * @function delayMixin
+         * @deprecated since 5.0.0
+         */
+        delayMixin()
+        {
+            deprecation(v5, 'PIXI.utils.mixins.delayMixin no longer available');
+        },
+        /**
+         * @memberof PIXI.utils.mixins
+         * @function performMixins
+         * @deprecated since 5.0.0
+         */
+        performMixins()
+        {
+            deprecation(v5, 'PIXI.utils.mixins.performMixins no longer available');
+        },
+    };
 }

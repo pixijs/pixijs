@@ -243,32 +243,6 @@ describe('PIXI.utils', function ()
         });
     });
 
-    describe('mixins', function ()
-    {
-        it('should exist', function ()
-        {
-            expect(utils.mixins).to.be.an('object');
-        });
-
-        it('should perform mixins', function ()
-        {
-            // eslint-disable-next-line
-            const target = function () {};
-            const source = {
-                foo: true,
-                bar: 1,
-            };
-
-            utils.mixins.delayMixin(target.prototype, source);
-            expect(target.prototype.foo).to.be.undefined;
-            expect(target.prototype.bar).to.be.undefined;
-
-            utils.mixins.performMixins();
-            expect(target.prototype.foo).to.equal(true);
-            expect(target.prototype.bar).to.equal(1);
-        });
-    });
-
     describe('earcut', function ()
     {
         it('should exist', function ()

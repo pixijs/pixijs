@@ -2,7 +2,6 @@ const MockPointer = require('./MockPointer');
 const { Container } = require('@pixi/display');
 const { Graphics } = require('@pixi/graphics');
 const { Point, Rectangle } = require('@pixi/math');
-const { mixins } = require('@pixi/utils');
 const { CanvasRenderer } = require('@pixi/canvas-renderer');
 const { InteractionManager } = require('../');
 const { CanvasGraphicsRenderer } = require('@pixi/canvas-graphics');
@@ -14,8 +13,6 @@ require('@pixi/canvas-display');
 CanvasRenderer.registerPlugin('interaction', InteractionManager);
 CanvasRenderer.registerPlugin('graphics', CanvasGraphicsRenderer);
 CanvasRenderer.registerPlugin('sprite', CanvasSpriteRenderer);
-
-mixins.performMixins();
 
 describe('PIXI.interaction.InteractionManager', function ()
 {

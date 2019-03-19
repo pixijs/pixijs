@@ -1,18 +1,15 @@
 import { Ticker, UPDATE_PRIORITY } from '@pixi/ticker';
 import { Point } from '@pixi/math';
 import { DisplayObject } from '@pixi/display';
-import { mixins } from '@pixi/utils';
 import InteractionData from './InteractionData';
 import InteractionEvent from './InteractionEvent';
 import InteractionTrackingData from './InteractionTrackingData';
 import EventEmitter from 'eventemitter3';
 import interactiveTarget from './interactiveTarget';
 
-// Mix interactiveTarget into DisplayObject.prototype, after deprecation has been handled
-mixins.delayMixin(
-    DisplayObject.prototype,
-    interactiveTarget
-);
+// Mix interactiveTarget into DisplayObject.prototype,
+// after deprecation has been handled
+DisplayObject.mixin(interactiveTarget);
 
 const MOUSE_POINTER_ID = 1;
 
