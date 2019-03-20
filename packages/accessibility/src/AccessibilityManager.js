@@ -1,5 +1,5 @@
 import accessibleTarget from './accessibleTarget';
-import { removeItems, isMobile as Device } from '@pixi/utils';
+import { removeItems, isMobile } from '@pixi/utils';
 import { DisplayObject } from '@pixi/display';
 
 // add some extra variables to the container..
@@ -41,7 +41,7 @@ export default class AccessibilityManager
          * @private
          */
         this._hookDiv = null;
-        if (Device.tablet || Device.phone)
+        if (isMobile.tablet || isMobile.phone)
         {
             this.createTouchHook();
         }

@@ -1,4 +1,4 @@
-import Device from 'ismobilejs';
+import isMobile from 'ismobilejs';
 
 /**
  * Uploading the same buffer multiple times in a single frame can cause performance issues.
@@ -10,5 +10,5 @@ import Device from 'ismobilejs';
  */
 export default function canUploadSameBuffer()
 {
-    return !Device.apple.device;
+    return !isMobile.apple.device;
 }

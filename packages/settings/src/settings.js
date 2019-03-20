@@ -1,4 +1,4 @@
-import Device from 'ismobilejs';
+import isMobile from 'ismobilejs';
 import maxRecommendedTextures from './utils/maxRecommendedTextures';
 import canUploadSameBuffer from './utils/canUploadSameBuffer';
 
@@ -187,7 +187,7 @@ export default {
      * @type {PIXI.PRECISION}
      * @default PIXI.PRECISION.MEDIUM
      */
-    PRECISION_FRAGMENT: Device.apple.device ? 'highp' : 'mediump',
+    PRECISION_FRAGMENT: isMobile.apple.device ? 'highp' : 'mediump',
 
     /**
      * Can we upload the same buffer in a single frame?

@@ -1,6 +1,6 @@
 const { AccessibilityManager } = require('../');
 const { CanvasRenderer } = require('@pixi/canvas-renderer');
-const Device = require('@pixi/utils').isMobile;
+const { isMobile } = require('@pixi/utils');
 
 describe('PIXI.accessibility.AccessibilityManager', function ()
 {
@@ -29,9 +29,9 @@ describe('PIXI.accessibility.AccessibilityManager', function ()
 
     it('should remove touch hook when destroyed', function ()
     {
-        const phone = Device.phone;
+        const phone = isMobile.phone;
 
-        Device.phone = true;
+        isMobile.phone = true;
         const manager = new AccessibilityManager();
         const hookDiv = manager._hookDiv;
 
@@ -39,6 +39,6 @@ describe('PIXI.accessibility.AccessibilityManager', function ()
         expect(document.body.contains(hookDiv)).to.be.true;
         manager.destroy();
         expect(document.body.contains(hookDiv)).to.be.false;
-        Device.phone = phone;
+        isMobile.phone = phone;
     });
 });
