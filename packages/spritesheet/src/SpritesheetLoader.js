@@ -1,4 +1,4 @@
-import url from 'url';
+import { url } from '@pixi/utils';
 import { LoaderResource } from '@pixi/loaders';
 import Spritesheet from './Spritesheet';
 

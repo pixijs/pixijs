@@ -57,8 +57,7 @@ export { isMobile } from '@pixi/settings';
  * @class EventEmitter
  * @type {EventEmitter}
  */
-import EventEmitter from 'eventemitter3';
-export { EventEmitter };
+export { default as EventEmitter } from 'eventemitter3';
 
 /**
  * A polygon triangulation library
@@ -72,8 +71,18 @@ export { EventEmitter };
  * @param {number} [dimensions=2] The number of coordinates per vertex in the input array
  * @return {number[]} Triangulated polygon
  */
-import earcut from 'earcut';
-export { earcut };
+export { default as earcut } from 'earcut';
+
+/**
+ * Node.js compatible URL utilities.
+ *
+ * @see https://www.npmjs.com/package/url
+ *
+ * @memberof PIXI.utils
+ * @name url
+ * @type {object}
+ */
+export { default as url } from 'url';
 
 import './settings';
 
