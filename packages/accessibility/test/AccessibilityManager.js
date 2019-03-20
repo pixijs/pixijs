@@ -1,6 +1,6 @@
 const { AccessibilityManager } = require('../');
 const { CanvasRenderer } = require('@pixi/canvas-renderer');
-const Device = require('ismobilejs');
+const Device = require('@pixi/utils').isMobile;
 
 describe('PIXI.accessibility.AccessibilityManager', function ()
 {

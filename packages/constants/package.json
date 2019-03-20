@@ -26,9 +26,6 @@
     "lib",
     "dist"
   ],
-  "dependencies": {
-    "ismobilejs": "^0.5.1"
-  },
   "devDependencies": {
     "floss": "^2.1.5"
   }

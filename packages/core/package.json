@@ -33,8 +33,7 @@
     "@pixi/runner": "^5.0.0-rc.2",
     "@pixi/settings": "^5.0.0-rc.2",
     "@pixi/ticker": "^5.0.0-rc.2",
-    "@pixi/utils": "^5.0.0-rc.2",
-    "ismobilejs": "^0.5.1"
+    "@pixi/utils": "^5.0.0-rc.2"
   },
   "devDependencies": {
     "floss": "^2.1.5"

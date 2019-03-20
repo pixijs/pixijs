@@ -1,6 +1,5 @@
-import Device from 'ismobilejs';
 import accessibleTarget from './accessibleTarget';
-import { removeItems } from '@pixi/utils';
+import { removeItems, isMobile as Device } from '@pixi/utils';
 import { DisplayObject } from '@pixi/display';
 
 // add some extra variables to the container..

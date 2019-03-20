@@ -30,8 +30,7 @@
   "dependencies": {
     "@pixi/core": "^5.0.0-rc.2",
     "@pixi/display": "^5.0.0-rc.2",
-    "@pixi/utils": "^5.0.0-rc.2",
-    "ismobilejs": "^0.5.1"
+    "@pixi/utils": "^5.0.0-rc.2"
   },
   "devDependencies": {
     "@pixi/canvas-renderer": "^5.0.0-rc.2",
