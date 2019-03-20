@@ -4,7 +4,7 @@ import { DisplayObject } from '@pixi/display';
 import InteractionData from './InteractionData';
 import InteractionEvent from './InteractionEvent';
 import InteractionTrackingData from './InteractionTrackingData';
-import EventEmitter from 'eventemitter3';
+import { EventEmitter } from '@pixi/utils';
 import interactiveTarget from './interactiveTarget';
 
 // Mix interactiveTarget into DisplayObject.prototype,

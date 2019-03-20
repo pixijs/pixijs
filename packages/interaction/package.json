@@ -32,8 +32,7 @@
     "@pixi/display": "^5.0.0-rc.2",
     "@pixi/math": "^5.0.0-rc.2",
     "@pixi/ticker": "^5.0.0-rc.2",
-    "@pixi/utils": "^5.0.0-rc.2",
-    "eventemitter3": "^3.1.0"
+    "@pixi/utils": "^5.0.0-rc.2"
   },
   "devDependencies": {
     "@pixi/canvas-display": "^5.0.0-rc.2",

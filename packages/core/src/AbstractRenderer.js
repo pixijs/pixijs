@@ -1,10 +1,9 @@
-import { hex2string, hex2rgb, deprecation } from '@pixi/utils';
+import { hex2string, hex2rgb, deprecation, EventEmitter } from '@pixi/utils';
 import { Matrix, Rectangle } from '@pixi/math';
 import { RENDERER_TYPE } from '@pixi/constants';
 import { settings } from '@pixi/settings';
 import { Container } from '@pixi/display';
 import RenderTexture from './renderTexture/RenderTexture';
-import EventEmitter from 'eventemitter3';
 
 const tempMatrix = new Matrix();
 
