@@ -3,6 +3,7 @@
   "version": "5.0.0-rc.2",
   "main": "lib/runner.js",
   "module": "lib/runner.es.js",
+  "bundle": "dist/runner.js",
   "description": "A simple alternative to events and signals with an emphasis on performance.",
   "author": "Mat Groves",
   "contributors": [
@@ -34,7 +35,8 @@
     "benchmark": "cd benchmark && npm start"
   },
   "files": [
-    "lib"
+    "lib",
+    "dist"
   ],
   "devDependencies": {
     "floss": "^2.1.5"

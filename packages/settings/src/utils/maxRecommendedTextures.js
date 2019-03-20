@@ -1,4 +1,4 @@
-import Device from 'ismobilejs';
+import isMobile from 'ismobilejs';
 
 /**
  * The maximum recommended texture units to use.
@@ -17,11 +17,11 @@ export default function maxRecommendedTextures(max)
 {
     let allowMax = true;
 
-    if (Device.tablet || Device.phone)
+    if (isMobile.tablet || isMobile.phone)
     {
         allowMax = false;
 
-        if (Device.apple.device)
+        if (isMobile.apple.device)
         {
             const match = (navigator.userAgent).match(/OS (\d+)_(\d+)?/);
 
@@ -36,7 +36,7 @@ export default function maxRecommendedTextures(max)
                 }
             }
         }
-        if (Device.android.device)
+        if (isMobile.android.device)
         {
             const match = (navigator.userAgent).match(/Android\s([0-9.]*)/);
 

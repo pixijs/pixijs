@@ -3,6 +3,7 @@
   "version": "5.0.0-rc.2",
   "main": "lib/core.js",
   "module": "lib/core.es.js",
+  "bundle": "dist/core.js",
   "description": "Core PixiJS",
   "author": "Mat Groves",
   "contributors": [
@@ -22,7 +23,8 @@
     "test": "floss --path test"
   },
   "files": [
-    "lib"
+    "lib",
+    "dist"
   ],
   "dependencies": {
     "@pixi/constants": "^5.0.0-rc.2",
@@ -31,9 +33,7 @@
     "@pixi/runner": "^5.0.0-rc.2",
     "@pixi/settings": "^5.0.0-rc.2",
     "@pixi/ticker": "^5.0.0-rc.2",
-    "@pixi/utils": "^5.0.0-rc.2",
-    "eventemitter3": "^3.1.0",
-    "ismobilejs": "^0.5.1"
+    "@pixi/utils": "^5.0.0-rc.2"
   },
   "devDependencies": {
     "floss": "^2.1.5"

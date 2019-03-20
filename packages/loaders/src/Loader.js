@@ -1,5 +1,5 @@
 import ResourceLoader from 'resource-loader';
-import EventEmitter from 'eventemitter3';
+import { EventEmitter } from '@pixi/utils';
 import { blobMiddlewareFactory } from 'resource-loader/lib/middlewares/parsing/blob';
 import TextureLoader from './TextureLoader';
 

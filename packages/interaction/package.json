@@ -3,6 +3,8 @@
   "version": "5.0.0-rc.2",
   "main": "lib/interaction.js",
   "module": "lib/interaction.es.js",
+  "bundle": "dist/interaction.js",
+  "namespace": "PIXI.interaction",
   "description": "Plugin for handling mouse, touch and pointer events",
   "author": "Mat Groves",
   "contributors": [
@@ -22,15 +24,15 @@
     "test": "floss --path test"
   },
   "files": [
-    "lib"
+    "lib",
+    "dist"
   ],
   "dependencies": {
     "@pixi/core": "^5.0.0-rc.2",
     "@pixi/display": "^5.0.0-rc.2",
     "@pixi/math": "^5.0.0-rc.2",
     "@pixi/ticker": "^5.0.0-rc.2",
-    "@pixi/utils": "^5.0.0-rc.2",
-    "eventemitter3": "^3.1.0"
+    "@pixi/utils": "^5.0.0-rc.2"
   },
   "devDependencies": {
     "@pixi/canvas-display": "^5.0.0-rc.2",

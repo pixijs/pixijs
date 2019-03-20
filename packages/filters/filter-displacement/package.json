@@ -3,6 +3,8 @@
   "version": "5.0.0-rc.2",
   "main": "lib/filter-displacement.js",
   "module": "lib/filter-displacement.es.js",
+  "bundle": "dist/filter-displacement.js",
+  "namespace": "PIXI.filters",
   "description": "Filter that allows offsetting of pixel values to create warping effects",
   "author": "Mat Groves",
   "contributors": [
@@ -19,7 +21,8 @@
     "access": "public"
   },
   "files": [
-    "lib"
+    "lib",
+    "dist"
   ],
   "dependencies": {
     "@pixi/core": "^5.0.0-rc.2",

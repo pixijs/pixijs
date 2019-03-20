@@ -3,6 +3,8 @@
   "version": "5.0.0-rc.2",
   "main": "lib/prepare.js",
   "module": "lib/prepare.es.js",
+  "bundle": "dist/prepare.js",
+  "namespace": "PIXI.prepare",
   "description": "Plugin to allow uploading textures to the GPU",
   "author": "Mat Groves",
   "contributors": [
@@ -22,7 +24,8 @@
     "test": "floss --path test"
   },
   "files": [
-    "lib"
+    "lib",
+    "dist"
   ],
   "dependencies": {
     "@pixi/core": "^5.0.0-rc.2",

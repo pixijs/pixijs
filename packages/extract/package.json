@@ -3,6 +3,8 @@
   "version": "5.0.0-rc.2",
   "main": "lib/extract.js",
   "module": "lib/extract.es.js",
+  "bundle": "dist/extract.js",
+  "namespace": "PIXI.extract",
   "description": "Extract raw graphics data from renderer",
   "author": "Mat Groves",
   "contributors": [
@@ -19,7 +21,8 @@
     "access": "public"
   },
   "files": [
-    "lib"
+    "lib",
+    "dist"
   ],
   "dependencies": {
     "@pixi/core": "^5.0.0-rc.2",

@@ -3,6 +3,7 @@
   "version": "5.0.0-rc.2",
   "main": "lib/spritesheet.js",
   "module": "lib/spritesheet.es.js",
+  "bundle": "dist/spritesheet.js",
   "description": "Spritesheets maintain a collection of Textures on a single image",
   "author": "Mat Groves",
   "contributors": [
@@ -22,14 +23,14 @@
     "test": "floss --path test"
   },
   "files": [
-    "lib"
+    "lib",
+    "dist"
   ],
   "dependencies": {
     "@pixi/core": "^5.0.0-rc.2",
     "@pixi/loaders": "^5.0.0-rc.2",
     "@pixi/math": "^5.0.0-rc.2",
-    "@pixi/utils": "^5.0.0-rc.2",
-    "url": "^0.11.0"
+    "@pixi/utils": "^5.0.0-rc.2"
   },
   "devDependencies": {
     "floss": "^2.1.5"

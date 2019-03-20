@@ -3,6 +3,7 @@
   "version": "5.0.0-rc.2",
   "main": "lib/canvas-sprite-tiling.js",
   "module": "lib/canvas-sprite-tiling.es.js",
+  "bundle": "dist/canvas-sprite-tiling.js",
   "description": "Canvas mixin for the sprite-tiling package",
   "author": "Mat Groves",
   "contributors": [
@@ -19,7 +20,8 @@
     "access": "public"
   },
   "files": [
-    "lib"
+    "lib",
+    "dist"
   ],
   "dependencies": {
     "@pixi/canvas-renderer": "^5.0.0-rc.2",

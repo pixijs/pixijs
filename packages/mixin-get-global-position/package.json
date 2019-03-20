@@ -3,6 +3,7 @@
   "version": "5.0.0-rc.2",
   "main": "lib/mixin-get-global-position.js",
   "module": "lib/mixin-get-global-position.es.js",
+  "bundle": "dist/mixin-get-global-position.js",
   "description": "Mixin to find the global position of a DisplayObject",
   "author": "Mat Groves",
   "contributors": [
@@ -22,7 +23,8 @@
     "test": "floss --path test"
   },
   "files": [
-    "lib"
+    "lib",
+    "dist"
   ],
   "dependencies": {
     "@pixi/display": "^5.0.0-rc.2",

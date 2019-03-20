@@ -3,6 +3,7 @@
   "version": "5.0.0-rc.2",
   "main": "lib/loaders.js",
   "module": "lib/loaders.es.js",
+  "bundle": "dist/loaders.js",
   "description": "Load assets and resources",
   "author": "Mat Groves",
   "contributors": [
@@ -22,12 +23,12 @@
     "test": "floss --path test"
   },
   "files": [
-    "lib"
+    "lib",
+    "dist"
   ],
   "dependencies": {
     "@pixi/core": "^5.0.0-rc.2",
     "@pixi/utils": "^5.0.0-rc.2",
-    "eventemitter3": "^3.1.0",
     "resource-loader": "^2.2.3"
   },
   "devDependencies": {

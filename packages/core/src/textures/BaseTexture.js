@@ -1,4 +1,4 @@
-import { uid, BaseTextureCache, TextureCache, isPow2 } from '@pixi/utils';
+import { uid, BaseTextureCache, TextureCache, isPow2, EventEmitter } from '@pixi/utils';
 import { FORMATS, TARGETS, TYPES, SCALE_MODES } from '@pixi/constants';
 
 import Resource from './resources/Resource';
@@ -6,7 +6,6 @@ import BufferResource from './resources/BufferResource';
 import { autoDetectResource } from './resources/autoDetectResource';
 
 import { settings } from '@pixi/settings';
-import EventEmitter from 'eventemitter3';
 
 const defaultBufferOptions = {
     scaleMode: SCALE_MODES.NEAREST,

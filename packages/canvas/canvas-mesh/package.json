@@ -3,6 +3,7 @@
   "version": "5.0.0-rc.2",
   "main": "lib/canvas-mesh.js",
   "module": "lib/canvas-mesh.es.js",
+  "bundle": "dist/canvas-mesh.js",
   "description": "Canvas mixin for the mesh package",
   "author": "Mat Groves",
   "contributors": [
@@ -19,7 +20,8 @@
     "access": "public"
   },
   "files": [
-    "lib"
+    "lib",
+    "dist"
   ],
   "dependencies": {
     "@pixi/canvas-renderer": "^5.0.0-rc.2",

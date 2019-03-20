@@ -6,6 +6,7 @@ import sourcemaps from 'rollup-plugin-sourcemaps';
 import minimist from 'minimist';
 import commonjs from 'rollup-plugin-commonjs';
 import replace from 'rollup-plugin-replace';
+import { terser } from 'rollup-plugin-terser';
 import batchPackages from '@lerna/batch-packages';
 import filterPackages from '@lerna/filter-packages';
 import { getPackages } from '@lerna/project';
@@ -63,9 +64,21 @@ async function main()
     const { scope, ignore } = minimist(process.argv.slice(2));
     const packages = await getSortedPackages(scope, ignore);
 
+    const namespaces = {};
+    const pkgData = {};
+
+    // Create a map of globals to use for bundled packages
     packages.forEach((pkg) =>
     {
-        const banner = [
+        const data = pkg.toJSON();
+
+        pkgData[pkg.name] = data;
+        namespaces[pkg.name] = data.namespace || 'PIXI';
+    });
+
+    packages.forEach((pkg) =>
+    {
+        let banner = [
             `/*!`,
             ` * ${pkg.name} - v${pkg.version}`,
             ` * Compiled ${compiled}`,
@@ -79,7 +92,13 @@ async function main()
         const external = Object.keys(pkg.dependencies || []);
         const basePath = path.relative(__dirname, pkg.location);
         const input = path.join(basePath, 'src/index.js');
-        const { main, module, bundle, bundleInput, bundleOutput } = pkg.toJSON();
+        const {
+            main,
+            module,
+            bundle,
+            bundleInput,
+            bundleOutput,
+            standalone } = pkgData[pkg.name];
         const freeze = false;
 
         results.push({
@@ -95,7 +114,7 @@ async function main()
                 {
                     banner,
                     file: path.join(basePath, module),
-                    format: 'es',
+                    format: 'esm',
                     freeze,
                     sourcemap,
                 },
@@ -109,18 +128,70 @@ async function main()
         // this will package all dependencies
         if (bundle)
         {
+            const input = path.join(basePath, bundleInput || 'src/index.js');
+            const file = path.join(basePath, bundle);
+            const external = standalone ? null : Object.keys(namespaces);
+            const globals = standalone ? null : namespaces;
+            const ns = namespaces[pkg.name];
+            const name = pkg.name.replace(/[^a-z]+/g, '_');
+            let footer;
+
+            // Ignore self-contained packages like polyfills and unsafe-eval
+            // as well as the bundles pixi.js and pixi.js-legacy
+            if (!standalone)
+            {
+                footer = `Object.assign(this.${ns}, ${name});`;
+
+                if (ns.includes('.'))
+                {
+                    const base = ns.split('.')[0];
+
+                    banner += `\nthis.${base} = this.${base} || {};`;
+                }
+
+                banner += `\nthis.${ns} = this.${ns} || {};`;
+            }
+
             results.push({
-                input: path.join(basePath, bundleInput || 'src/index.js'),
+                input,
+                external,
                 output: Object.assign({
                     banner,
-                    file: path.join(basePath, bundle),
+                    file,
                     format: 'iife',
                     freeze,
+                    globals,
+                    name,
+                    footer,
                     sourcemap,
                 }, bundleOutput),
                 treeshake: false,
                 plugins,
             });
+
+            if (process.env.NODE_ENV === 'production')
+            {
+                results.push({
+                    input,
+                    external,
+                    output: Object.assign({
+                        banner,
+                        file: file.replace(/\.js$/, '.min.js'),
+                        format: 'iife',
+                        freeze,
+                        globals,
+                        name,
+                        footer,
+                        sourcemap,
+                    }, bundleOutput),
+                    treeshake: false,
+                    plugins: [...plugins, terser({
+                        output: {
+                            comments: (node, comment) => comment.line === 1,
+                        },
+                    })],
+                });
+            }
         }
     });
 

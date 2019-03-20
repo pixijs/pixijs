@@ -3,6 +3,7 @@
   "version": "5.0.0-rc.2",
   "main": "lib/mesh-extras.js",
   "module": "lib/mesh-extras.es.js",
+  "bundle": "dist/mesh-extras.js",
   "description": "Custom Mesh display objects, like Rope and Plane",
   "author": "Mat Groves",
   "contributors": [
@@ -22,7 +23,8 @@
     "test": "floss --path test"
   },
   "files": [
-    "lib"
+    "lib",
+    "dist"
   ],
   "dependencies": {
     "@pixi/constants": "^5.0.0-rc.2",

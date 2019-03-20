@@ -1,4 +1,4 @@
-import EventEmitter from 'eventemitter3';
+import { EventEmitter } from '@pixi/utils';
 import { Rectangle, Transform, RAD_TO_DEG, DEG_TO_RAD } from '@pixi/math';
 import Bounds from './Bounds';
 // _tempDisplayObjectParent = new DisplayObject();

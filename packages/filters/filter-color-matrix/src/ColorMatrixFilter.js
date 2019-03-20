@@ -1,5 +1,4 @@
-import { Filter } from '@pixi/core';
-import { defaultFilterVertex } from '@pixi/fragments';
+import { Filter, defaultFilterVertex } from '@pixi/core';
 import fragment from './colorMatrix.frag';
 
 /**

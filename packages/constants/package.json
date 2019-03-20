@@ -3,6 +3,7 @@
   "version": "5.0.0-rc.2",
   "main": "lib/constants.js",
   "module": "lib/constants.es.js",
+  "bundle": "dist/constants.js",
   "description": "Constants used across PixiJS",
   "author": "Mat Groves",
   "contributors": [
@@ -22,11 +23,9 @@
     "test": "floss --path test"
   },
   "files": [
-    "lib"
+    "lib",
+    "dist"
   ],
-  "dependencies": {
-    "ismobilejs": "^0.5.1"
-  },
   "devDependencies": {
     "floss": "^2.1.5"
   }
