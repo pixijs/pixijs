@@ -43,9 +43,6 @@ Loader.registerPlugin(SpritesheetLoader);
 Application.registerPlugin(TickerPlugin);
 Application.registerPlugin(AppLoaderPlugin);
 
-// Apply deplayed mixins
-utils.mixins.performMixins();
-
 /**
  * String of the current PIXI version.
  *

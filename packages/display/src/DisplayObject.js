@@ -14,6 +14,33 @@ import Bounds from './Bounds';
  */
 export default class DisplayObject extends EventEmitter
 {
+    /**
+     * Mixes all enumerable properties and methods from a source object to DisplayObject.
+     *
+     * @param {object} source The source of properties and methods to mix in.
+     */
+    static mixin(source)
+    {
+        // in ES8/ES2017, this would be really easy:
+        // Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
+
+        // get all the enumerable property keys
+        const keys = Object.keys(source);
+
+        // loop through properties
+        for (let i = 0; i < keys.length; ++i)
+        {
+            const propertyName = keys[i];
+
+            // Set the property using the property descriptor - this works for accessors and normal value properties
+            Object.defineProperty(
+                DisplayObject.prototype,
+                propertyName,
+                Object.getOwnPropertyDescriptor(source, propertyName)
+            );
+        }
+    }
+
     constructor()
     {
         super();

@@ -1,13 +1,10 @@
 import Device from 'ismobilejs';
 import accessibleTarget from './accessibleTarget';
-import { removeItems, mixins } from '@pixi/utils';
+import { removeItems } from '@pixi/utils';
 import { DisplayObject } from '@pixi/display';
 
 // add some extra variables to the container..
-mixins.delayMixin(
-    DisplayObject.prototype,
-    accessibleTarget
-);
+DisplayObject.mixin(accessibleTarget);
 
 const KEY_CODE_TAB = 9;
 
