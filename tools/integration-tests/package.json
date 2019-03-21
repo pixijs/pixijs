@@ -21,6 +21,6 @@
     "@pixi/sprite": "^5.0.0-rc.2",
     "@pixi/text": "^5.0.0-rc.2",
     "@pixi/utils": "^5.0.0-rc.2",
-    "floss": "^2.1.5"
+    "floss": "^2.2.0"
   }
 }

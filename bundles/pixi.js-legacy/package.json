@@ -46,6 +46,6 @@
     "pixi.js": "^5.0.0-rc.2"
   },
   "devDependencies": {
-    "floss": "^2.1.5"
+    "floss": "^2.2.0"
   }
 }

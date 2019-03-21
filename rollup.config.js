@@ -1,7 +1,7 @@
 import path from 'path';
 import transpile from 'rollup-plugin-buble';
 import resolve from 'rollup-plugin-node-resolve';
-import string from 'rollup-plugin-string';
+import { string } from 'rollup-plugin-string';
 import sourcemaps from 'rollup-plugin-sourcemaps';
 import minimist from 'minimist';
 import commonjs from 'rollup-plugin-commonjs';
