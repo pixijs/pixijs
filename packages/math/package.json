@@ -1,6 +1,6 @@
 {
   "name": "@pixi/math",
-  "version": "5.0.0-rc.2",
+  "version": "5.0.0-rc.3",
   "main": "lib/math.js",
   "module": "lib/math.es.js",
   "bundle": "dist/math.js",
@@ -27,6 +27,6 @@
     "dist"
   ],
   "devDependencies": {
-    "floss": "^2.1.5"
+    "floss": "^2.2.0"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@pixi/settings",
-  "version": "5.0.0-rc.2",
+  "version": "5.0.0-rc.3",
   "main": "lib/settings.js",
   "module": "lib/settings.es.js",
   "bundle": "dist/settings.js",
@@ -30,6 +30,6 @@
     "ismobilejs": "^0.5.1"
   },
   "devDependencies": {
-    "floss": "^2.1.5"
+    "floss": "^2.2.0"
   }
 }
