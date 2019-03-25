@@ -18,7 +18,7 @@ export default class RopeGeometry extends MeshGeometry
 {
     /**
      * @param {number} [width=200] - The width (i.e., thickness) of the rope.
-     * @param {PIXI.Point[]} points - An array of {@link PIXI.Point} objects to construct this rope.
+     * @param {PIXI.Point[]} [points] - An array of {@link PIXI.Point} objects to construct this rope.
      */
     constructor(width = 200, points)
     {
