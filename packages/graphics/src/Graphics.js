@@ -36,7 +36,7 @@ let defaultShader = null;
  * Note that because Graphics can share a GraphicsGeometry with other instances,
  * it is necessary to call `destroy()` to properly dereference the underlying
  * GraphicsGeometry and avoid a memory leak. Alternatively, keep using the same
- * Graphics instance and call `clear()` between frames.
+ * Graphics instance and call `clear()` between redraws.
  *
  * @class
  * @extends PIXI.Container
