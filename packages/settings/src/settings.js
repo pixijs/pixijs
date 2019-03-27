@@ -38,7 +38,7 @@ export default {
      * @type {number}
      * @default 16
      */
-    ANISOTROPIC_LEVEL: 16,
+    ANISOTROPIC_LEVEL: 0,
 
     /**
      * Default resolution / device pixel ratio of the renderer.
