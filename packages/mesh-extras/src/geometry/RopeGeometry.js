@@ -19,8 +19,15 @@ export default class RopeGeometry extends MeshGeometry
     /**
      * @param {number} [width=200] - The width (i.e., thickness) of the rope.
      * @param {PIXI.Point[]} [points] - An array of {@link PIXI.Point} objects to construct this rope.
+     * @param {boolean}  [stretch=true] - Specifies if the texture will be stretched across full rope length.
+     *     When set to false, texture aspect ratio is preserved (UVs can be greater than zero).
+     *     This allows to create a tiling rope - set baseTexture.wrapMode to {@link PIXI.WRAP_MODES.REPEAT}
+     *     and use a power of two texture.
+     * @param {number} [textureScale] -  If stretch set to false, allows to scale rope texture
+     *     keeping its aspect ratio. Set to reduce alpha channel artifacts by providing
+     *     a larger texture and downsampling.
      */
-    constructor(width = 200, points)
+    constructor(width = 200, points, stretch = true, textureScale = 1)
     {
         super(new Float32Array(points.length * 4),
             new Float32Array(points.length * 4),
@@ -38,6 +45,20 @@ export default class RopeGeometry extends MeshGeometry
          * @readOnly
          */
         this.width = width;
+
+        /**
+         * If true then the rope texture is stretched.
+         * @member {boolean}
+         * @readOnly
+         */
+        this.stretch = stretch;
+
+        /**
+         * Rope texture scale if stretch set to false.
+         * @member {number}
+         * @readOnly
+         */
+        this.textureScale = textureScale;
 
         this.build();
     }
@@ -79,14 +100,30 @@ export default class RopeGeometry extends MeshGeometry
 
         // indices[0] = 0;
         // indices[1] = 1;
-
+        let amount = 0;
+        let prev = points[0];
+        const textureWidth = this.width * this.textureScale;
         const total = points.length; // - 1;
 
         for (let i = 0; i < total; i++)
         {
             // time to do some smart drawing!
             const index = i * 4;
-            const amount = i / (total - 1);
+
+            if (this.stretch)
+            {
+                amount = i / (total - 1);
+            }
+            else
+            {
+                // pixels from previous point
+                const dx = prev.x - points[i].x;
+                const dy = prev.y - points[i].y;
+                const distance = Math.sqrt((dx * dx) + (dy * dy));
+
+                prev = points[i];
+                amount += distance / textureWidth;
+            }
 
             uvs[index] = amount;
             uvs[index + 1] = 0;
@@ -164,7 +201,8 @@ export default class RopeGeometry extends MeshGeometry
             }
 
             const perpLength = Math.sqrt((perpX * perpX) + (perpY * perpY));
-            const num = this.width / 2; // (20 + Math.abs(Math.sin((i + this.count) * 0.3) * 50) )* ratio;
+            const num = this.textureScale * this.width / 2;
+            // (20 + Math.abs(Math.sin((i + this.count) * 0.3) * 50) )* ratio;
 
             perpX /= perpLength;
             perpY /= perpLength;
@@ -185,6 +223,13 @@ export default class RopeGeometry extends MeshGeometry
 
     update()
     {
-        this.updateVertices();
+        if (this.textureScale > 0)
+        {
+            this.build(); // we need to update UV
+        }
+        else
+        {
+            this.updateVertices();
+        }
     }
 }
