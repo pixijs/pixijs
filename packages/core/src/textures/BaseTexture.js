@@ -142,7 +142,7 @@ export default class BaseTexture extends EventEmitter
         this.uid = uid();
 
         /**
-         * TODO: fill in description
+         * Used by automatic texture Garbage Collection, stores last GC tick when it was bound
          *
          * @member {number}
          * @protected
@@ -224,6 +224,13 @@ export default class BaseTexture extends EventEmitter
          * @readonly
          */
         this.resource = null;
+
+        /**
+         * Global number of the texture batch, used by multi-texture renderers
+         *
+         * @member {number}
+         */
+        this._batchEnabled = 0;
 
         /**
          * Fired when a not-immediately-available source finishes loading.
@@ -632,4 +639,29 @@ export default class BaseTexture extends EventEmitter
 
         return null;
     }
+
+    /**
+     * Called from multi-texture rendered to get a new batch number.
+     *
+     * @static
+     * @return {number} new texture batch number
+     */
+    static _batchBegin()
+    {
+        return ++BaseTexture._globalBatch;
+    }
+
+    /**
+     * Called from multi-texture rendered to save the last batch number.
+     * Only first 32 bits matter.
+     *
+     * @static
+     * @param {number} savedValue last used batch number
+     */
+    static _batchEnd(savedValue)
+    {
+        BaseTexture._globalBatch = savedValue | 0;
+    }
 }
+
+BaseTexture._globalBatch = 0;
