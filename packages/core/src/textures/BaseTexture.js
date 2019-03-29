@@ -653,14 +653,13 @@ export default class BaseTexture extends EventEmitter
 
     /**
      * Called from multi-texture rendered to save the last batch number.
-     * Only first 32 bits matter.
      *
      * @static
      * @param {number} savedValue last used batch number
      */
     static _batchEnd(savedValue)
     {
-        BaseTexture._globalBatch = savedValue | 0;
+        BaseTexture._globalBatch = savedValue;
     }
 }
 
