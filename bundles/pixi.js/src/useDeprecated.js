@@ -604,6 +604,23 @@ export default function useDeprecated()
     const { BaseTexture } = PIXI;
 
     /**
+     * @method loadSource
+     * @memberof PIXI.BaseTexture#
+     * @deprecated since 5.0.0
+     */
+    BaseTexture.prototype.loadSource = function loadSource(image)
+    {
+        deprecation(v5, 'PIXI.BaseTexture#loadSource has been deprecated');
+
+        const resource = PIXI.resources.autoDetectResource(image);
+
+        resource.internal = true;
+
+        this.setResource(resource);
+        this.update();
+    };
+
+    /**
      * @method fromImage
      * @static
      * @memberof PIXI.BaseTexture
