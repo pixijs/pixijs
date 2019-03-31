@@ -45,7 +45,7 @@ import defaultFragment from './defaultFilter.frag';
  * _Important note: as with all Framebuffers in PixiJS, both input and output are
  * premultiplied by alpha._
  *
- * By default, input Framebuffer space coordinates are passed to fragment shader with `vTextureCoord`.
+ * By default, input normalized coordinates are passed to fragment shader with `vTextureCoord`.
  * Use it to sample the input.
  *
  * ```
@@ -83,15 +83,15 @@ import defaultFragment from './defaultFilter.frag';
  *
  * **inputSize**
  *
- * Temporary Framebuffer is different, it can be either the size of screen, either power-of-two.
- * The `inputSize.xy` are size of temporary Framebuffer that holds input.
+ * Temporary framebuffer is different, it can be either the size of screen, either power-of-two.
+ * The `inputSize.xy` are size of temporary framebuffer that holds input.
  * The `inputSize.zw` is inverted, it's a shortcut to evade division inside the shader.
  *
  * Set `inputSize.xy = outputFrame.zw` for a fullscreen filter.
  *
- * To calculate input texture coordinate in 0-1 space, you have to map it to Framebuffer normalized space.
- * Multiply by `outputFrame.zw` to get pixel coordinate in part of Framebuffer.
- * Divide by `inputSize.xy` to get Framebuffer normalized space (input sampler space)
+ * To calculate input normalized coordinate, you have to map it to filter normalized space.
+ * Multiply by `outputFrame.zw` to get input coordinate.
+ * Divide by `inputSize.xy` to get input normalized coordinate.
  *
  * ```
  * vec2 filterTextureCoord( void )
@@ -209,11 +209,11 @@ export default class Filter extends Shader
      *        There are some useful properties in the currentState :
      *        target, filters, sourceFrame, destinationFrame, renderTarget, resolution
      */
-    apply(filterManager, input, output, clear, currentState, derp) // eslint-disable-line no-unused-vars
+    apply(filterManager, input, output, clear, currentState)
     {
         // do as you please!
 
-        filterManager.applyFilter(this, input, output, clear, currentState, derp);
+        filterManager.applyFilter(this, input, output, clear, currentState);
 
         // or just do a regular render..
     }

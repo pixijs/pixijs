@@ -378,9 +378,11 @@ export default class FilterSystem extends System
     /**
      * Calculates the mapped matrix.
      *
-     * TODO playing around here.. this is temporary - (will end up in the shader)
-     * this returns a matrix that will normalize map filter cords in the filter to screen space
+     * Multiply input normalized coordinates to this matrix to get screen coordinates.
      *
+     * Please use `(vTextureCoord * inputSize.xy) + outputFrame.xy` instead
+     *
+     * @deprecated since 5.0.0
      * @param {PIXI.Matrix} outputMatrix - the matrix to output to.
      * @return {PIXI.Matrix} The mapped matrix.
      */
@@ -396,7 +398,9 @@ export default class FilterSystem extends System
     }
 
     /**
-     * This will map the filter coord so that a texture can be used based on the transform of a sprite
+     * Multiply input normalized coordinates to this matrix to get sprite texture normalized coordinates.
+     *
+     * Use `outputMatrix * vTextureCoord` in the shader.
      *
      * @param {PIXI.Matrix} outputMatrix - The matrix to output to.
      * @param {PIXI.Sprite} sprite - The sprite to map to.
@@ -411,6 +415,26 @@ export default class FilterSystem extends System
             currentState.sourceFrame,
             currentState.destinationFrame,
             sprite
+        );
+    }
+
+    /**
+     * Multiply input normalized coordinates to this matrix to get screen normalized coordinates.
+     *
+     * Please use `((vTextureCoord * inputSize.xy) + outputFrame.xy) / outputFrame.zw` instead.
+     *
+     * @deprecated since 5.0.0
+     * @param {PIXI.Matrix} outputMatrix - The matrix to output to.
+     * @return {PIXI.Matrix} The mapped matrix.
+     */
+    calculateNormalizedScreenSpaceMatrix(outputMatrix)
+    {
+        const currentState = this.activeState;
+
+        return filterTransforms.calculateNormalizedScreenSpaceMatrix(
+            outputMatrix,
+            currentState.sourceFrame,
+            currentState.destinationFrame
         );
     }
 
