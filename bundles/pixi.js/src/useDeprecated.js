@@ -620,6 +620,39 @@ export default function useDeprecated()
         this.update();
     };
 
+    Object.defineProperties(BaseTexture.prototype, {
+        /**
+         * @name PIXI.BaseTexture#hasLoaded
+         * @type {boolean}
+         * @deprecated since 5.0.0
+         * @readonly
+         * @see PIXI.BaseTexture#valid
+         */
+        hasLoaded: {
+            get()
+            {
+                deprecation(v5, 'PIXI.BaseTexture#hasLoaded has been removed, used valid.');
+
+                return this.valid;
+            },
+        },
+        /**
+         * @name PIXI.BaseTexture#imageUrl
+         * @type {string}
+         * @deprecated since 5.0.0
+         * @readonly
+         * @see PIXI.resource.ImageResource#url
+         */
+        imageUrl: {
+            get()
+            {
+                deprecation(v5, 'PIXI.BaseTexture#imageUrl has been removed, used resource.url.');
+
+                return this.resource && this.resource.url;
+            },
+        },
+    });
+
     /**
      * @method fromImage
      * @static
