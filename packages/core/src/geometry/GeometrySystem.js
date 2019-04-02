@@ -289,7 +289,9 @@ export default class GeometrySystem extends System
     }
 
     /**
-     * Creates a Vao with the same structure as the geometry and stores it on the geometry.
+     * Creates or gets Vao with the same structure as the geometry and stores it on the geometry.
+     * If vao is created, it is bound automatically.
+     *
      * @protected
      * @param {PIXI.Geometry} geometry - Instance of geometry to to generate Vao for
      * @param {PIXI.Program} program - Instance of program
@@ -390,7 +392,7 @@ export default class GeometrySystem extends System
 
         this.activateVao(geometry, program);
 
-        gl.bindVertexArray(this._activeVao);
+        this._activeVao = vao;
 
         // add it to the cache!
         vaoObjectHash[program.id] = vao;
@@ -474,7 +476,13 @@ export default class GeometrySystem extends System
                 // delete only signatures, everything else are copies
                 if (vaoId[0] === 'g')
                 {
-                    gl.deleteVertexArray(vaos[vaoId]);
+                    const vao = vaos[vaoId];
+
+                    if (this._activeVao === vao)
+                    {
+                        this.unbind();
+                    }
+                    gl.deleteVertexArray(vao);
                 }
             }
         }
