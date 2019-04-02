@@ -604,6 +604,56 @@ export default function useDeprecated()
     const { BaseTexture } = PIXI;
 
     /**
+     * @method loadSource
+     * @memberof PIXI.BaseTexture#
+     * @deprecated since 5.0.0
+     */
+    BaseTexture.prototype.loadSource = function loadSource(image)
+    {
+        deprecation(v5, 'PIXI.BaseTexture#loadSource has been deprecated');
+
+        const resource = PIXI.resources.autoDetectResource(image);
+
+        resource.internal = true;
+
+        this.setResource(resource);
+        this.update();
+    };
+
+    Object.defineProperties(BaseTexture.prototype, {
+        /**
+         * @name PIXI.BaseTexture#hasLoaded
+         * @type {boolean}
+         * @deprecated since 5.0.0
+         * @readonly
+         * @see PIXI.BaseTexture#valid
+         */
+        hasLoaded: {
+            get()
+            {
+                deprecation(v5, 'PIXI.BaseTexture#hasLoaded has been removed, used valid.');
+
+                return this.valid;
+            },
+        },
+        /**
+         * @name PIXI.BaseTexture#imageUrl
+         * @type {string}
+         * @deprecated since 5.0.0
+         * @readonly
+         * @see PIXI.resource.ImageResource#url
+         */
+        imageUrl: {
+            get()
+            {
+                deprecation(v5, 'PIXI.BaseTexture#imageUrl has been removed, used resource.url.');
+
+                return this.resource && this.resource.url;
+            },
+        },
+    });
+
+    /**
      * @method fromImage
      * @static
      * @memberof PIXI.BaseTexture
