@@ -30,7 +30,6 @@ export default {
             x, y,
             x + radius, y,
             points);
-
         quadraticBezierCurve(x + width - radius,
             y, x + width, y,
             x + width, y + radius,
