@@ -579,7 +579,7 @@ export default class GraphicsGeometry extends BatchGeometry
      */
     buildDrawCalls()
     {
-        let TICK = BaseTexture._batchBegin();
+        let TICK = ++BaseTexture._globalBatch;
 
         for (let i = 0; i < this.drawCalls.length; i++)
         {
@@ -677,7 +677,7 @@ export default class GraphicsGeometry extends BatchGeometry
             this.addTextureIds(textureIds, textureId, data.attribSize);
         }
 
-        BaseTexture._batchEnd(TICK);
+        BaseTexture._globalBatch = TICK;
 
         // upload..
         // merge for now!

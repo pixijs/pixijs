@@ -226,7 +226,7 @@ export default class BaseTexture extends EventEmitter
         this.resource = null;
 
         /**
-         * Global number of the texture batch, used by multi-texture renderers
+         * Number of the texture batch, used by multi-texture renderers
          *
          * @member {number}
          */
@@ -639,28 +639,12 @@ export default class BaseTexture extends EventEmitter
 
         return null;
     }
-
-    /**
-     * Called from multi-texture rendered to get a new batch number.
-     *
-     * @static
-     * @return {number} new texture batch number
-     */
-    static _batchBegin()
-    {
-        return ++BaseTexture._globalBatch;
-    }
-
-    /**
-     * Called from multi-texture rendered to save the last batch number.
-     *
-     * @static
-     * @param {number} savedValue last used batch number
-     */
-    static _batchEnd(savedValue)
-    {
-        BaseTexture._globalBatch = savedValue;
-    }
 }
 
+/**
+ * Global number of the texture batch, used by multi-texture renderers
+ *
+ * @static
+ * @member {number} new texture batch number
+ */
 BaseTexture._globalBatch = 0;

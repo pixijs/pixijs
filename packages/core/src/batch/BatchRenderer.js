@@ -250,7 +250,7 @@ export default class BatchRenderer extends ObjectRenderer
         currentGroup.start = 0;
         currentGroup.blend = blendMode;
 
-        let TICK = BaseTexture._batchBegin();
+        let TICK = ++BaseTexture._globalBatch;
 
         let i;
 
@@ -313,7 +313,7 @@ export default class BatchRenderer extends ObjectRenderer
             indexCount += sprite.indices.length;
         }
 
-        BaseTexture._batchEnd(TICK);
+        BaseTexture._globalBatch = TICK;
 
         currentGroup.size = indexCount - currentGroup.start;
 
