@@ -1,6 +1,6 @@
 import { SHAPES } from '@pixi/math';
 import { Bounds } from '@pixi/display';
-import { BatchGeometry, BatchDrawCall } from '@pixi/core';
+import { BatchGeometry, BatchDrawCall, BaseTexture } from '@pixi/core';
 import { DRAW_MODES } from '@pixi/constants';
 
 import GraphicsData from './GraphicsData';
@@ -14,7 +14,6 @@ import { premultiplyTint } from '@pixi/utils';
 const BATCH_POOL = [];
 const DRAW_CALL_POOL = [];
 
-let TICK = 0;
 /**
  * Map of fill commands for each shape type.
  *
@@ -580,7 +579,7 @@ export default class GraphicsGeometry extends BatchGeometry
      */
     buildDrawCalls()
     {
-        TICK++;
+        let TICK = ++BaseTexture._globalBatch;
 
         for (let i = 0; i < this.drawCalls.length; i++)
         {
@@ -638,7 +637,7 @@ export default class GraphicsGeometry extends BatchGeometry
             {
                 currentTexture = nextTexture;
 
-                if (nextTexture._enabled !== TICK)
+                if (nextTexture._batchEnabled !== TICK)
                 {
                     if (textureCount === MAX_TEXTURES)
                     {
@@ -660,7 +659,7 @@ export default class GraphicsGeometry extends BatchGeometry
 
                     // TODO add this to the render part..
                     nextTexture.touched = 1;// touch;
-                    nextTexture._enabled = TICK;
+                    nextTexture._batchEnabled = TICK;
                     nextTexture._id = textureCount;
                     nextTexture.wrapMode = 10497;
 
@@ -677,6 +676,8 @@ export default class GraphicsGeometry extends BatchGeometry
             this.addColors(colors, style.color, style.alpha, data.attribSize);
             this.addTextureIds(textureIds, textureId, data.attribSize);
         }
+
+        BaseTexture._globalBatch = TICK;
 
         // upload..
         // merge for now!
