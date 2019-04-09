@@ -26,11 +26,22 @@ export default {
 
         points.length = 0;
 
-        points.push(x, y + radius);
-        quadraticBezierCurve(x, y + height - radius, x, y + height, x + radius, y + height, points);
-        quadraticBezierCurve(x + width - radius, y + height, x + width, y + height, x + width, y + height - radius, points);
-        quadraticBezierCurve(x + width, y + radius, x + width, y, x + width - radius, y, points);
-        quadraticBezierCurve(x + radius, y, x, y, x, y + radius + 0.0000000001, points);
+        quadraticBezierCurve(x, y + radius,
+            x, y,
+            x + radius, y,
+            points);
+        quadraticBezierCurve(x + width - radius,
+            y, x + width, y,
+            x + width, y + radius,
+            points);
+        quadraticBezierCurve(x + width, y + height - radius,
+            x + width, y + height,
+            x + width - radius, y + height,
+            points);
+        quadraticBezierCurve(x + radius, y + height,
+            x, y + height,
+            x, y + height - radius,
+            points);
 
         // this tiny number deals with the issue that occurs when points overlap and earcut fails to triangulate the item.
         // TODO - fix this properly, this is not very elegant.. but it works for now.
