@@ -25,7 +25,7 @@
     "lerna": "lerna",
     "predist": "rimraf dist/* && npm run build:prod",
     "dist": "npm run docs",
-    "postdist": "copyfiles -f bundles/*/dist/* dist && copyfiles -f packages/*/dist/* dist/packages",
+    "postdist": "copyfiles -f bundles/*/dist/* dist && copyfiles -f \"packages/**/dist/*\" dist/packages",
     "prerelease": "npm run clean:build && npm test",
     "postversion": "npm run build:prod",
     "release": "lerna publish"
