@@ -3,8 +3,7 @@ import System from '../System';
 import RenderTexture from '../renderTexture/RenderTexture';
 import Quad from '../utils/Quad';
 import QuadUv from '../utils/QuadUv';
-import { Rectangle } from '@pixi/math';
-import * as filterTransforms from './filterTransforms';
+import { Rectangle, Matrix } from '@pixi/math';
 import { nextPow2 } from '@pixi/utils';
 import UniformGroup from '../shader/UniformGroup';
 import { DRAW_MODES } from '@pixi/constants';
@@ -376,28 +375,6 @@ export default class FilterSystem extends System
     }
 
     /**
-     * Calculates the mapped matrix.
-     *
-     * Multiply input normalized coordinates to this matrix to get screen coordinates.
-     *
-     * Please use `(vTextureCoord * inputSize.xy) + outputFrame.xy` instead
-     *
-     * @deprecated since 5.0.0
-     * @param {PIXI.Matrix} outputMatrix - the matrix to output to.
-     * @return {PIXI.Matrix} The mapped matrix.
-     */
-    calculateScreenSpaceMatrix(outputMatrix)
-    {
-        const currentState = this.activeState;
-
-        return filterTransforms.calculateScreenSpaceMatrix(
-            outputMatrix,
-            currentState.sourceFrame,
-            currentState.destinationFrame
-        );
-    }
-
-    /**
      * Multiply input normalized coordinates to this matrix to get sprite texture normalized coordinates.
      *
      * Use `outputMatrix * vTextureCoord` in the shader.
@@ -408,34 +385,18 @@ export default class FilterSystem extends System
      */
     calculateSpriteMatrix(outputMatrix, sprite)
     {
-        const currentState = this.activeState;
+        const { sourceFrame, destinationFrame } = this.activeState;
+        const { orig } = sprite._texture;
+        const mappedMatrix = outputMatrix.set(destinationFrame.width, 0, 0,
+            destinationFrame.height, sourceFrame.x, sourceFrame.y);
+        const worldTransform = sprite.worldTransform.copyTo(Matrix.TEMP_MATRIX);
 
-        return filterTransforms.calculateSpriteMatrix(
-            outputMatrix,
-            currentState.sourceFrame,
-            currentState.destinationFrame,
-            sprite
-        );
-    }
+        worldTransform.invert();
+        mappedMatrix.prepend(worldTransform);
+        mappedMatrix.scale(1.0 / orig.width, 1.0 / orig.height);
+        mappedMatrix.translate(sprite.anchor.x, sprite.anchor.y);
 
-    /**
-     * Multiply input normalized coordinates to this matrix to get screen normalized coordinates.
-     *
-     * Please use `((vTextureCoord * inputSize.xy) + outputFrame.xy) / outputFrame.zw` instead.
-     *
-     * @deprecated since 5.0.0
-     * @param {PIXI.Matrix} outputMatrix - The matrix to output to.
-     * @return {PIXI.Matrix} The mapped matrix.
-     */
-    calculateNormalizedScreenSpaceMatrix(outputMatrix)
-    {
-        const currentState = this.activeState;
-
-        return filterTransforms.calculateNormalizedScreenSpaceMatrix(
-            outputMatrix,
-            currentState.sourceFrame,
-            currentState.destinationFrame
-        );
+        return mappedMatrix;
     }
 
     /**

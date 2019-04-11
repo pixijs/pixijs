@@ -135,7 +135,7 @@ export default function useDeprecated()
             {
                 deprecation(v5, 'PIXI.FilterManager has moved to PIXI.systems.FilterSystem');
 
-                return PIXI.systems.FilterManager;
+                return PIXI.systems.FilterSystem;
             },
         },
     });
@@ -770,6 +770,50 @@ export default function useDeprecated()
             deprecation(v5, 'FilterManager#returnRenderTarget has been replaced with FilterSystem#returnFilterTexture');
 
             this.returnFilterTexture(renderTexture);
+        },
+
+        /**
+         * @method PIXI.systems.FilterSystem#calculateScreenSpaceMatrix
+         * @deprecated since 5.0.0
+         * @param {PIXI.Matrix} outputMatrix - the matrix to output to.
+         * @return {PIXI.Matrix} The mapped matrix.
+         */
+        calculateScreenSpaceMatrix(outputMatrix)
+        {
+            deprecation(v5, 'FilterSystem#calculateScreenSpaceMatrix is removed, '
+                + 'use `(vTextureCoord * inputSize.xy) + outputFrame.xy` instead');
+
+            const mappedMatrix = outputMatrix.identity();
+            const { sourceFrame, destinationFrame } = this.activeState;
+
+            mappedMatrix.translate(sourceFrame.x / destinationFrame.width, sourceFrame.y / destinationFrame.height);
+            mappedMatrix.scale(destinationFrame.width, destinationFrame.height);
+
+            return mappedMatrix;
+        },
+
+        /**
+         * @method PIXI.systems.FilterSystem#calculateNormalizedScreenSpaceMatrix
+         * @deprecated since 5.0.0
+         * @param {PIXI.Matrix} outputMatrix - The matrix to output to.
+         * @return {PIXI.Matrix} The mapped matrix.
+         */
+        calculateNormalizedScreenSpaceMatrix(outputMatrix)
+        {
+            deprecation(v5, 'FilterManager#calculateNormalizedScreenSpaceMatrix is removed, '
+                + 'use `((vTextureCoord * inputSize.xy) + outputFrame.xy) / outputFrame.zw` instead.');
+
+            const { sourceFrame, destinationFrame } = this.activeState;
+            const mappedMatrix = outputMatrix.identity();
+
+            mappedMatrix.translate(sourceFrame.x / destinationFrame.width, sourceFrame.y / destinationFrame.height);
+
+            const translateScaleX = (destinationFrame.width / sourceFrame.width);
+            const translateScaleY = (destinationFrame.height / sourceFrame.height);
+
+            mappedMatrix.scale(translateScaleX, translateScaleY);
+
+            return mappedMatrix;
         },
     });
 
