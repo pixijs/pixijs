@@ -98,6 +98,7 @@ async function main()
             bundle,
             bundleInput,
             bundleOutput,
+            bundleNoExports,
             standalone } = pkgData[pkg.name];
         const freeze = false;
 
@@ -140,7 +141,10 @@ async function main()
             // as well as the bundles pixi.js and pixi.js-legacy
             if (!standalone)
             {
-                footer = `Object.assign(this.${ns}, ${name});`;
+                if (bundleNoExports !== true)
+                {
+                    footer = `Object.assign(this.${ns}, ${name});`;
+                }
 
                 if (ns.includes('.'))
                 {
