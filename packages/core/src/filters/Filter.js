@@ -34,6 +34,9 @@ import defaultFragment from './defaultFilter.frag';
  * Developers can use normal coordinates of v3 and then allow filter to use partial Framebuffers,
  * bringing those extra uniforms into account.
  *
+ * Also be aware that we have changed default vertex shader, please consult
+ * {@link https://github.com/pixijs/pixi.js/wiki/v5-Creating-filters Wiki}.
+ *
  * ### Built-in Uniforms
  *
  * PixiJS viewport uses screen (CSS) coordinates, `(0, 0, renderer.screen.width, renderer.screen.height)`,
