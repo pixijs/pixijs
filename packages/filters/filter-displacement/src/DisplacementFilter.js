@@ -65,6 +65,7 @@ export default class DisplacementFilter extends Filter
      */
     apply(filterManager, input, output, clear)
     {
+        // fill maskMatrix with _normalized sprite texture coords_
         this.uniforms.filterMatrix = filterManager.calculateSpriteMatrix(this.maskMatrix, this.maskSprite);
         this.uniforms.scale.x = this.scale.x;
         this.uniforms.scale.y = this.scale.y;

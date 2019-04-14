@@ -375,7 +375,7 @@ export default class FilterSystem extends System
     }
 
     /**
-     * Multiply input normalized coordinates to this matrix to get sprite texture normalized coordinates.
+     * Multiply _input normalized coordinates_ to this matrix to get _sprite texture normalized coordinates_.
      *
      * Use `outputMatrix * vTextureCoord` in the shader.
      *

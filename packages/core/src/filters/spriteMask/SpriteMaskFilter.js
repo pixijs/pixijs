@@ -66,6 +66,7 @@ export default class SpriteMaskFilter extends Filter
 
         this.uniforms.npmAlpha = tex.baseTexture.premultiplyAlpha ? 0.0 : 1.0;
         this.uniforms.mask = tex;
+        // get _normalized sprite texture coords_ and convert them to _normalized atlas texture coords_ with `prepend`
         this.uniforms.otherMatrix = filterManager.calculateSpriteMatrix(this.maskMatrix, maskSprite)
             .prepend(tex.transform.mapCoord);
         this.uniforms.alpha = maskSprite.worldAlpha;
