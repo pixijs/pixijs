@@ -22,7 +22,7 @@ export default class SimpleMesh extends Mesh
     {
         const geometry = new MeshGeometry(vertices, uvs, indices);
 
-        geometry.getAttribute('aVertexPosition').static = false;
+        geometry.getBuffer('aVertexPosition').static = false;
 
         const meshMaterial = new MeshMaterial(texture);
 
@@ -41,18 +41,18 @@ export default class SimpleMesh extends Mesh
      */
     get vertices()
     {
-        return this.geometry.getAttribute('aVertexPosition').data;
+        return this.geometry.getBuffer('aVertexPosition').data;
     }
     set vertices(value)
     {
-        this.geometry.getAttribute('aVertexPosition').data = value;
+        this.geometry.getBuffer('aVertexPosition').data = value;
     }
 
     _render(renderer)
     {
         if (this.autoUpdate)
         {
-            this.geometry.getAttribute('aVertexPosition').update();
+            this.geometry.getBuffer('aVertexPosition').update();
         }
 
         super._render(renderer);
