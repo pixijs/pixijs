@@ -36,8 +36,8 @@ export default class Extract
      *
      * @param {PIXI.DisplayObject|PIXI.RenderTexture} target - A displayObject or renderTexture
      *  to convert. If left empty will use the main renderer
-     * @param {string} [format] - Image format, e.g. "image/jpeg".
-     * @param {number} [quality] - JPEG compression from 0 to 1, must specify format.
+     * @param {string} [format] - Image format, e.g. "image/jpeg" or "image/webp".
+     * @param {number} [quality] - JPEG or Webp compression from 0 to 1. Default is 0.92.
      * @return {HTMLImageElement} HTML Image of the target
      */
     image(target, format, quality)
@@ -55,8 +55,8 @@ export default class Extract
      *
      * @param {PIXI.DisplayObject|PIXI.RenderTexture} target - A displayObject or renderTexture
      *  to convert. If left empty will use the main renderer
-     * @param {string} [format] - Image format, e.g. "image/jpeg".
-     * @param {number} [quality] - JPEG compression from 0 to 1, must specify format.
+     * @param {string} [format] - Image format, e.g. "image/jpeg" or "image/webp".
+     * @param {number} [quality] - JPEG or Webp compression from 0 to 1. Default is 0.92.
      * @return {string} A base64 encoded string of the texture.
      */
     base64(target, format, quality)
