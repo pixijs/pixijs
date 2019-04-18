@@ -145,7 +145,18 @@ export default class Geometry
      */
     getAttribute(id)
     {
-        return this.buffers[this.attributes[id].buffer];
+        return this.attributes[id];
+    }
+
+    /**
+     * returns the requested buffer
+     *
+     * @param {String} id  the name of the buffer required
+     * @return {PIXI.Buffer} the buffer requested.
+     */
+    getBuffer(id)
+    {
+        return this.buffers[this.getAttribute(id).buffer];
     }
 
     /**
