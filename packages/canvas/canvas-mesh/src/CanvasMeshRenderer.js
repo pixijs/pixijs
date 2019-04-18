@@ -236,7 +236,7 @@ export default class CanvasMeshRenderer
     renderMeshFlat(mesh)
     {
         const context = this.renderer.context;
-        const vertices = mesh.geometry.getAttribute('aVertexPosition').data;
+        const vertices = mesh.geometry.getBuffer('aVertexPosition').data;
         const length = vertices.length / 2;
 
         // this.count++;
