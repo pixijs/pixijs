@@ -12,7 +12,7 @@ SimpleMesh.prototype._renderCanvas = function _renderCanvas(renderer)
 {
     if (this.autoUpdate)
     {
-        this.geometry.getAttribute('aVertexPosition').update();
+        this.geometry.getBuffer('aVertexPosition').update();
     }
 
     if (this.shader.update)

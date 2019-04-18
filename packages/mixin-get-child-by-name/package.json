@@ -4,6 +4,7 @@
   "main": "lib/mixin-get-child-by-name.js",
   "module": "lib/mixin-get-child-by-name.es.js",
   "bundle": "dist/mixin-get-child-by-name.js",
+  "bundleNoExports": true,
   "description": "Mixin function to find a child DisplayObject by name",
   "author": "Mat Groves",
   "contributors": [

@@ -428,7 +428,7 @@ export default class Mesh extends Container
 
         this.worldTransform.applyInverse(point, tempPoint);
 
-        const vertices = this.geometry.getAttribute('aVertexPosition').data;
+        const vertices = this.geometry.getBuffer('aVertexPosition').data;
 
         const points = tempPolygon.points;
         const indices =  this.geometry.getIndex().data;
