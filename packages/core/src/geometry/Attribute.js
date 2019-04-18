@@ -50,8 +50,8 @@ export default class Attribute
      *
      * @returns {PIXI.Attribute} A new {@link PIXI.Attribute} based on the information provided
      */
-    static from(buffer, size, normalized, start, stride)
+    static from(buffer, size, normalized, type, stride)
     {
-        return new Attribute(buffer, size, normalized, start, stride);
+        return new Attribute(buffer, size, normalized, type, stride);
     }
 }
