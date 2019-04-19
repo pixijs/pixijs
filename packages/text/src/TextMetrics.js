@@ -652,6 +652,7 @@ canvas.width = canvas.height = 10;
 
 /**
  * Cached canvas element for measuring text
+ *
  * @memberof PIXI.TextMetrics
  * @type {HTMLCanvasElement}
  * @private
@@ -660,6 +661,7 @@ TextMetrics._canvas = canvas;
 
 /**
  * Cache for context to use.
+ *
  * @memberof PIXI.TextMetrics
  * @type {CanvasRenderingContext2D}
  * @private
@@ -668,6 +670,7 @@ TextMetrics._context = canvas.getContext('2d');
 
 /**
  * Cache of {@see PIXI.TextMetrics.FontMetrics} objects.
+ *
  * @memberof PIXI.TextMetrics
  * @type {Object}
  * @private
@@ -676,16 +679,19 @@ TextMetrics._fonts = {};
 
 /**
  * String used for calculate font metrics.
+ * These characters are all tall to help calculate the height required for text.
+ *
  * @static
  * @memberof PIXI.TextMetrics
  * @name METRICS_STRING
  * @type {string}
- * @default |Éq
+ * @default |ÉqÅ
  */
-TextMetrics.METRICS_STRING = '|Éq';
+TextMetrics.METRICS_STRING = '|ÉqÅ';
 
 /**
  * Baseline symbol for calculate font metrics.
+ *
  * @static
  * @memberof PIXI.TextMetrics
  * @name BASELINE_SYMBOL
@@ -696,6 +702,7 @@ TextMetrics.BASELINE_SYMBOL = 'M';
 
 /**
  * Baseline multiplier for calculate font metrics.
+ *
  * @static
  * @memberof PIXI.TextMetrics
  * @name BASELINE_MULTIPLIER
@@ -706,6 +713,7 @@ TextMetrics.BASELINE_MULTIPLIER = 1.4;
 
 /**
  * Cache of new line chars.
+ *
  * @memberof PIXI.TextMetrics
  * @type {number[]}
  * @private
@@ -717,6 +725,7 @@ TextMetrics._newlines = [
 
 /**
  * Cache of breaking spaces.
+ *
  * @memberof PIXI.TextMetrics
  * @type {number[]}
  * @private
@@ -740,6 +749,7 @@ TextMetrics._breakingSpaces = [
 
 /**
  * A number, or a string containing a number.
+ *
  * @memberof PIXI
  * @typedef IFontMetrics
  * @property {number} ascent - Font ascent
