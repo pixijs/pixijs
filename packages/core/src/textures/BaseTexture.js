@@ -645,6 +645,6 @@ export default class BaseTexture extends EventEmitter
  * Global number of the texture batch, used by multi-texture renderers
  *
  * @static
- * @member {number} new texture batch number
+ * @member {number}
  */
 BaseTexture._globalBatch = 0;
