@@ -1041,7 +1041,9 @@ export default class InteractionManager extends EventEmitter
             }
             interactiveParent = false;
         }
-        // If there is a mask, no need to test against anything else if the pointer is not within the mask
+        // If there is a mask, no need to hitTest against anything else if the pointer is not within the mask.
+        // We still want to hitTestChildren, however, to ensure a mouseout can still be generated.
+        // https://github.com/pixijs/pixi.js/issues/5135
         else if (displayObject._mask)
         {
             if (hitTest)
@@ -1049,7 +1051,6 @@ export default class InteractionManager extends EventEmitter
                 if (!(displayObject._mask.containsPoint && displayObject._mask.containsPoint(point)))
                 {
                     hitTest = false;
-                    hitTestChildren = false;
                 }
             }
         }
