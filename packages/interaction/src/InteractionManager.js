@@ -1445,6 +1445,27 @@ export default class InteractionManager extends EventEmitter
         // if we support touch events, then only use those for touch events, not pointer events
         if (this.supportsTouchEvents && originalEvent.pointerType === 'touch') return;
 
+        // Native pointer events only send a 'pointerdown' on the initial button being pressed.
+        // Hold one mouse button down and press another, and you get a 'pointermove' instead.
+        // Release that second mouse button whilst still holding the first, and again you get a 'pointermove' event.
+        // So here, we will detect any change in the 'buttons' being pressed from last event to this move event.
+        // If the number has changed, we know it's due to multiple mouse presses.
+        // https://github.com/pixijs/pixi.js/issues/4048
+        if (this.supportsPointerEvents && (originalEvent.pointerType === 'mouse' || originalEvent.pointerType === 'pen'))
+        {
+            if (this.eventData.data)
+            {
+                if (originalEvent.buttons > this.eventData.data.buttons)
+                {
+                    this.onPointerDown(originalEvent);
+                }
+                else if (originalEvent.buttons < this.eventData.data.buttons)
+                {
+                    this.onPointerUp(originalEvent);
+                }
+            }
+        }
+
         const events = this.normalizeToPointerData(originalEvent);
 
         if (events[0].pointerType === 'mouse' || events[0].pointerType === 'pen')
