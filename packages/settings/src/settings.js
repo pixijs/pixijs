@@ -180,6 +180,7 @@ export default {
 
     /**
      * Default specify float precision in fragment shader.
+     * iOS is best set at highp due to https://github.com/pixijs/pixi.js/issues/3742
      *
      * @static
      * @name PRECISION_FRAGMENT
