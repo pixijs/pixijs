@@ -325,6 +325,9 @@ export default class Renderer extends AbstractRenderer
         this.runners.prerender.run();
         this.emit('prerender');
 
+        // apply a transform at a GPU level
+        this.projection.transform = transform;
+
         // no point rendering if our context has been blown up!
         if (this.context.isLost)
         {
@@ -366,6 +369,9 @@ export default class Renderer extends AbstractRenderer
         }
 
         this.runners.postrender.run();
+
+        // reset transform after render
+        this.projection.transform = null;
 
         this.emit('postrender');
     }
