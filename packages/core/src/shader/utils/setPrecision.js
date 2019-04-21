@@ -29,7 +29,7 @@ export default function setPrecision(src, requestedPrecision, maxSupportedPrecis
     else if (maxSupportedPrecision !== PRECISION.HIGH && src.substring(0, 15) === 'precision highp')
     {
         // precision was supplied, but at a level this device does not support, so downgrading to mediump.
-        src.replace('precision highp', 'precision mediump');
+        return src.replace('precision highp', 'precision mediump');
     }
 
     return src;
