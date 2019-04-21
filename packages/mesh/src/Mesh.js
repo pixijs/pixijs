@@ -144,7 +144,7 @@ export default class Mesh extends Container
      */
     get uvBuffer()
     {
-        return this.geometry.buffers[1].data;
+        return this.geometry.buffers[1];
     }
 
     /**
@@ -155,7 +155,7 @@ export default class Mesh extends Container
      */
     get verticesBuffer()
     {
-        return this.geometry.buffers[0].data;
+        return this.geometry.buffers[0];
     }
 
     /**
