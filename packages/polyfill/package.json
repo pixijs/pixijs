@@ -26,7 +26,7 @@
   ],
   "dependencies": {
     "es6-promise-polyfill": "^1.2.0",
-    "object-assign": "^4.0.1"
+    "object-assign": "^4.1.1"
   },
   "devDependencies": {
     "floss": "^2.2.0"
