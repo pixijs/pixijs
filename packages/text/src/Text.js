@@ -261,9 +261,12 @@ export default class Text extends Sprite
 
         let currentPosition = x;
 
-        // using Array.from correctly splits characters whilst keeping emoji together
-        // https://medium.com/@giltayar/iterating-over-emoji-characters-the-es6-way-f06e4589516
-        const stringArray = Array.from(text);
+        // Using Array.from correctly splits characters whilst keeping emoji together.
+        // This is not supported on IE as it requires ES6, so regular text splitting occurs.
+        // This also doesn't account for emoji that are multiple emoji put together to make something else.
+        // Handling all of this would require a big library itself.
+        // https://github.com/orling/grapheme-splitter
+        const stringArray = Array.from ? Array.from(text) : text.split('');
 
         for (let i = 0; i < stringArray.length; ++i)
         {
