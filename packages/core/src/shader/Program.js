@@ -4,11 +4,13 @@ import { setPrecision,
     compileProgram,
     mapSize,
     mapType,
-    getTestContext } from './utils';
+    getTestContext,
+    getMaxFragmentPrecision } from './utils';
 import { ProgramCache } from '@pixi/utils';
 import defaultFragment from './defaultProgram.frag';
 import defaultVertex from './defaultProgram.vert';
 import { settings } from '@pixi/settings';
+import { PRECISION } from '@pixi/constants';
 
 let UID = 0;
 
@@ -65,8 +67,8 @@ export default class Program
             this.vertexSrc = `#define SHADER_NAME ${name}\n${this.vertexSrc}`;
             this.fragmentSrc = `#define SHADER_NAME ${name}\n${this.fragmentSrc}`;
 
-            this.vertexSrc = setPrecision(this.vertexSrc, settings.PRECISION_VERTEX);
-            this.fragmentSrc = setPrecision(this.fragmentSrc, settings.PRECISION_FRAGMENT);
+            this.vertexSrc = setPrecision(this.vertexSrc, settings.PRECISION_VERTEX, PRECISION.HIGH);
+            this.fragmentSrc = setPrecision(this.fragmentSrc, settings.PRECISION_FRAGMENT, getMaxFragmentPrecision());
         }
 
         // currently this does not extract structs only default types
