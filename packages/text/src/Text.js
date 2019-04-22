@@ -265,6 +265,7 @@ export default class Text extends Sprite
         // This is not supported on IE as it requires ES6, so regular text splitting occurs.
         // This also doesn't account for emoji that are multiple emoji put together to make something else.
         // Handling all of this would require a big library itself.
+        // https://medium.com/@giltayar/iterating-over-emoji-characters-the-es6-way-f06e4589516
         // https://github.com/orling/grapheme-splitter
         const stringArray = Array.from ? Array.from(text) : text.split('');
 
