@@ -1,10 +1,11 @@
 import { Ticker, UPDATE_PRIORITY } from '@pixi/ticker';
 import { Point } from '@pixi/math';
 import { DisplayObject } from '@pixi/display';
+import { EventEmitter } from '@pixi/utils';
+import { settings } from '@pixi/settings';
 import InteractionData from './InteractionData';
 import InteractionEvent from './InteractionEvent';
 import InteractionTrackingData from './InteractionTrackingData';
-import { EventEmitter } from '@pixi/utils';
 import interactiveTarget from './interactiveTarget';
 
 // Mix interactiveTarget into DisplayObject.prototype,
@@ -157,13 +158,14 @@ export default class InteractionManager extends EventEmitter
         this.supportsTouchEvents = 'ontouchstart' in window;
 
         /**
-         * Does the device support pointer events
+         * Should the PointEvent API be used for 'mouse' and 'pointer' events.
+         * If not, MouseEvents will be used instead.
          * https://www.w3.org/Submission/pointer-events/
          *
          * @readonly
          * @member {boolean}
          */
-        this.supportsPointerEvents = !!window.PointerEvent;
+        this.usePointerEventAPI = settings.USE_POINTER_EVENT_API && !!window.PointerEvent;
 
         // this will make it so that you don't have to call bind all the time
 
@@ -342,12 +344,26 @@ export default class InteractionManager extends EventEmitter
         /**
          * Fired when a pointer device button is pressed on the display object.
          *
+         * If {@link PIXI.settings.USE_POINTER_EVENT_API} is true and supported, then a pointerdown event
+         * is not fired when a button is pressed whilst another is already held down.
+         * According to the pointer spec, a [pointermove]{@link PIXI.interaction.InteractionManager#event:pointermove}
+         * event is emitted in this scenario, with the 'buttons' property updated.
+         * If you wish for pointerdown to be fired for in this scenario, then change
+         * {@link PIXI.settings.USE_POINTER_EVENT_API} to false.
+         *
          * @event PIXI.interaction.InteractionManager#pointerdown
          * @param {PIXI.interaction.InteractionEvent} event - Interaction event
          */
 
         /**
-         * Fired when a pointer device button is released over the display object.
+         * Fired when a pointer device button is released on the display object.
+         *
+         * If {@link PIXI.settings.USE_POINTER_EVENT_API} is true and supported, then a pointerup event
+         * is not fired when a button is released whilst another is still held down.
+         * According to the pointer spec, a [pointermove]{@link PIXI.interaction.InteractionManager#event:pointermove}
+         * event is emitted in this scenario, with the 'buttons' property updated.
+         * If you wish for pointerup to be fired in this scenario, then change
+         * {@link PIXI.settings.USE_POINTER_EVENT_API} to false.
          *
          * @event PIXI.interaction.InteractionManager#pointerup
          * @param {PIXI.interaction.InteractionEvent} event - Interaction event
@@ -712,7 +728,7 @@ export default class InteractionManager extends EventEmitter
             this.interactionDOMElement.style['-ms-content-zooming'] = 'none';
             this.interactionDOMElement.style['-ms-touch-action'] = 'none';
         }
-        else if (this.supportsPointerEvents)
+        else if (window.PointerEvent)
         {
             this.interactionDOMElement.style['touch-action'] = 'none';
         }
@@ -721,7 +737,7 @@ export default class InteractionManager extends EventEmitter
          * These events are added first, so that if pointer events are normalized, they are fired
          * in the same order as non-normalized events. ie. pointer event 1st, mouse / touch 2nd
          */
-        if (this.supportsPointerEvents)
+        if (this.usePointerEventAPI)
         {
             window.document.addEventListener('pointermove', this.onPointerMove, true);
             this.interactionDOMElement.addEventListener('pointerdown', this.onPointerDown, true);
@@ -775,12 +791,12 @@ export default class InteractionManager extends EventEmitter
             this.interactionDOMElement.style['-ms-content-zooming'] = '';
             this.interactionDOMElement.style['-ms-touch-action'] = '';
         }
-        else if (this.supportsPointerEvents)
+        else if (window.PointerEvent)
         {
             this.interactionDOMElement.style['touch-action'] = '';
         }
 
-        if (this.supportsPointerEvents)
+        if (this.usePointerEventAPI)
         {
             window.document.removeEventListener('pointermove', this.onPointerMove, true);
             this.interactionDOMElement.removeEventListener('pointerdown', this.onPointerDown, true);
@@ -1443,27 +1459,6 @@ export default class InteractionManager extends EventEmitter
         // if we support touch events, then only use those for touch events, not pointer events
         if (this.supportsTouchEvents && originalEvent.pointerType === 'touch') return;
 
-        // Native pointer events only send a 'pointerdown' on the initial button being pressed.
-        // Hold one mouse button down and press another, and you get a 'pointermove' instead.
-        // Release that second mouse button whilst still holding the first, and again you get a 'pointermove' event.
-        // So here, we will detect any change in the 'buttons' being pressed from last event to this move event.
-        // If the number has changed, we know it's due to multiple mouse presses.
-        // https://github.com/pixijs/pixi.js/issues/4048
-        if (this.supportsPointerEvents && (originalEvent.pointerType === 'mouse' || originalEvent.pointerType === 'pen'))
-        {
-            if (this.eventData.data)
-            {
-                if (originalEvent.buttons > this.eventData.data.buttons)
-                {
-                    this.onPointerDown(originalEvent);
-                }
-                else if (originalEvent.buttons < this.eventData.data.buttons)
-                {
-                    this.onPointerUp(originalEvent);
-                }
-            }
-        }
-
         const events = this.normalizeToPointerData(originalEvent);
 
         if (events[0].pointerType === 'mouse' || events[0].pointerType === 'pen')
@@ -1798,7 +1793,7 @@ export default class InteractionManager extends EventEmitter
             }
         }
         // apparently PointerEvent subclasses MouseEvent, so yay
-        else if (event instanceof MouseEvent && (!this.supportsPointerEvents || !(event instanceof window.PointerEvent)))
+        else if (event instanceof MouseEvent && (!this.usePointerEventAPI || !(event instanceof window.PointerEvent)))
         {
             if (typeof event.isPrimary === 'undefined') event.isPrimary = true;
             if (typeof event.width === 'undefined') event.width = 1;

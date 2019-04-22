@@ -250,7 +250,7 @@ describe('PIXI.interaction.InteractionManager', function ()
             const removeSpy = sinon.spy(window.document, 'removeEventListener');
 
             manager.interactionDOMElement = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
-            manager.supportsPointerEvents = true;
+            manager.usePointerEventAPI = true;
 
             manager.addEvents();
 
@@ -273,7 +273,7 @@ describe('PIXI.interaction.InteractionManager', function ()
             const removeSpy = sinon.spy(window, 'removeEventListener');
 
             manager.interactionDOMElement = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
-            manager.supportsPointerEvents = true;
+            manager.usePointerEventAPI = true;
 
             manager.addEvents();
 
@@ -297,7 +297,7 @@ describe('PIXI.interaction.InteractionManager', function ()
             const element = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
 
             manager.interactionDOMElement = element;
-            manager.supportsPointerEvents = true;
+            manager.usePointerEventAPI = true;
             manager.supportsTouchEvents = true;
 
             manager.addEvents();
@@ -331,7 +331,7 @@ describe('PIXI.interaction.InteractionManager', function ()
             const element = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
 
             manager.interactionDOMElement = element;
-            manager.supportsPointerEvents = true;
+            manager.usePointerEventAPI = true;
             manager.supportsTouchEvents = false;
 
             manager.addEvents();
@@ -356,7 +356,7 @@ describe('PIXI.interaction.InteractionManager', function ()
             const removeSpy = sinon.spy(window.document, 'removeEventListener');
 
             manager.interactionDOMElement = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
-            manager.supportsPointerEvents = false;
+            manager.usePointerEventAPI = false;
 
             manager.addEvents();
 
@@ -379,7 +379,7 @@ describe('PIXI.interaction.InteractionManager', function ()
             const removeSpy = sinon.spy(window, 'removeEventListener');
 
             manager.interactionDOMElement = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
-            manager.supportsPointerEvents = false;
+            manager.usePointerEventAPI = false;
 
             manager.addEvents();
 
@@ -401,7 +401,7 @@ describe('PIXI.interaction.InteractionManager', function ()
             const element = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
 
             manager.interactionDOMElement = element;
-            manager.supportsPointerEvents = false;
+            manager.usePointerEventAPI = false;
             manager.supportsTouchEvents = false;
 
             manager.addEvents();
@@ -425,7 +425,7 @@ describe('PIXI.interaction.InteractionManager', function ()
             const element = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
 
             manager.interactionDOMElement = element;
-            manager.supportsPointerEvents = false;
+            manager.usePointerEventAPI = false;
             manager.supportsTouchEvents = true;
 
             manager.addEvents();
@@ -449,7 +449,7 @@ describe('PIXI.interaction.InteractionManager', function ()
             const element = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
 
             manager.interactionDOMElement = element;
-            manager.supportsPointerEvents = true;
+            manager.usePointerEventAPI = true;
             manager.supportsTouchEvents = true;
 
             manager.addEvents();
