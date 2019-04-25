@@ -374,7 +374,7 @@ export default class Texture extends EventEmitter
             name = imageUrl;
         }
 
-        // lets also add the frame to pixi's global cache for fromFrame and fromImage functions
+        // lets also add the frame to pixi's global cache for 'fromLoader' function
         BaseTexture.addToCache(texture.baseTexture, name);
         Texture.addToCache(texture, name);
 

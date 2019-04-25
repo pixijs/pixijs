@@ -9,10 +9,10 @@ import { getResolutionOfUrl } from '@pixi/utils';
  * To access a sprite sheet from your code pass its JSON data file to Pixi's loader:
  *
  * ```js
- * PIXI.loader.add("images/spritesheet.json").load(setup);
+ * PIXI.Loader.shared.add("images/spritesheet.json").load(setup);
  *
  * function setup() {
- *   let sheet = PIXI.loader.resources["images/spritesheet.json"].spritesheet;
+ *   let sheet = PIXI.Loader.shared.resources["images/spritesheet.json"].spritesheet;
  *   ...
  * }
  * ```
@@ -244,7 +244,7 @@ export default class Spritesheet
                     data.anchor
                 );
 
-                // lets also add the frame to pixi's global cache for fromFrame and fromImage functions
+                // lets also add the frame to pixi's global cache for 'from' and 'fromLoader' functions
                 Texture.addToCache(this.textures[i], i);
             }
 

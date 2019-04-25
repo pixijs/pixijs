@@ -89,7 +89,7 @@ export default {
      * @property {number} resolution=1
      * @property {boolean} antialias=false
      * @property {boolean} forceFXAA=false
-     * @property {boolean} autoResize=false
+     * @property {boolean} autoDensity=false
      * @property {boolean} transparent=false
      * @property {number} backgroundColor=0x000000
      * @property {boolean} clearBeforeRender=true
@@ -102,7 +102,7 @@ export default {
         view: null,
         antialias: false,
         forceFXAA: false,
-        autoResize: false,
+        autoDensity: false,
         transparent: false,
         backgroundColor: 0x000000,
         clearBeforeRender: true,

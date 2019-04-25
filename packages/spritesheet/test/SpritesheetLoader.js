@@ -95,7 +95,7 @@ describe('PIXI.SpritesheetLoader', function ()
         const loader = new Loader();
 
         // provide a mock pre-loader that creates an empty base texture for compressed texture assets
-        // this is necessary because the spritesheetParser expects a baseTexture on the resource
+        // this is necessary because the SpriteSheetLoader expects a baseTexture on the resource
         loader.pre((resource, next) =>
         {
             if (resource.extension === 'crn')
