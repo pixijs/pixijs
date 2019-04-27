@@ -14,7 +14,7 @@ import Framebuffer from '../framebuffer/Framebuffer';
  * let renderer = PIXI.autoDetectRenderer();
  * let baseRenderTexture = new PIXI.BaseRenderTexture(800, 600);
  * let renderTexture = new PIXI.RenderTexture(baseRenderTexture);
- * let sprite = PIXI.Sprite.fromImage("spinObj_01.png");
+ * let sprite = PIXI.Sprite.from("spinObj_01.png");
  *
  * sprite.position.x = 800/2;
  * sprite.position.y = 600/2;

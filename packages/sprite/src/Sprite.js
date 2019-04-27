@@ -21,10 +21,10 @@ const indices = new Uint16Array([0, 1, 2, 0, 2, 3]);
  * as swapping base textures when rendering to the screen is inefficient.
  *
  * ```js
- * PIXI.loader.add("assets/spritesheet.json").load(setup);
+ * PIXI.Loader.shared.add("assets/spritesheet.json").load(setup);
  *
  * function setup() {
- *   let sheet = PIXI.loader.resources["assets/spritesheet.json"].spritesheet;
+ *   let sheet = PIXI.Loader.shared.resources["assets/spritesheet.json"].spritesheet;
  *   let sprite = new PIXI.Sprite(sheet.textures["image.png"]);
  *   ...
  * }

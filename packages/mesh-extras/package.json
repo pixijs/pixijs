@@ -4,7 +4,7 @@
   "main": "lib/mesh-extras.js",
   "module": "lib/mesh-extras.es.js",
   "bundle": "dist/mesh-extras.js",
-  "description": "Custom Mesh display objects, like Rope and Plane",
+  "description": "Custom Mesh display objects, like Rope and SimplePlane",
   "author": "Mat Groves",
   "contributors": [
     "Matt Karl <matt@mattkarl.com>"

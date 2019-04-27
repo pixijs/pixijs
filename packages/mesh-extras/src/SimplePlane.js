@@ -3,13 +3,13 @@ import { Mesh, MeshMaterial } from '@pixi/mesh';
 import PlaneGeometry from './geometry/PlaneGeometry';
 
 /**
- * The Plane allows you to draw a texture across several points and then manipulate these points
+ * The SimplePlane allows you to draw a texture across several points and then manipulate these points
  *
  *```js
  * for (let i = 0; i < 20; i++) {
  *     points.push(new PIXI.Point(i * 50, 0));
  * };
- * let Plane = new PIXI.Plane(PIXI.Texture.from("snake.png"), points);
+ * let SimplePlane = new PIXI.SimplePlane(PIXI.Texture.from("snake.png"), points);
  *  ```
  *
  * @class
@@ -20,7 +20,7 @@ import PlaneGeometry from './geometry/PlaneGeometry';
 export default class SimplePlane extends Mesh
 {
     /**
-     * @param {PIXI.Texture} texture - The texture to use on the Plane.
+     * @param {PIXI.Texture} texture - The texture to use on the SimplePlane.
      * @param {number} verticesX - The number of vertices in the x-axis
      * @param {number} verticesY - The number of vertices in the y-axis
      */
