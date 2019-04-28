@@ -364,11 +364,6 @@ export default class GraphicsGeometry extends BatchGeometry
         {
             const data = graphicsData[i];
 
-            if (!data.fillStyle.visible)
-            {
-                continue;
-            }
-
             // only deal with fills..
             if (data.shape)
             {
