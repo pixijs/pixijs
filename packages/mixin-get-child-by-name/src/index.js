@@ -42,7 +42,7 @@ Container.prototype.childrenToName = function childrenToName()
     for (let i = 0; i < this.children.length; i++){
         const name = this.children[i].name;
         if(name){
-            if(object1.hasOwnProperty(name)){ throw console.error(`Conflic name alrealy exist ${name}`,this) };
+            if(this.child.hasOwnProperty(name)){ throw console.error(`Conflic name alrealy exist ${name}`,this) };
             this.child[name] = this.children[i]; // ref obj
         }
     };
