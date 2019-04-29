@@ -28,3 +28,23 @@ Container.prototype.getChildByName = function getChildByName(name)
 
     return null;
 };
+
+/**
+ * Add reference by name from children in child.
+ *
+ * @method childrenToName
+ * @memberof PIXI.Container#
+ * @return {Object.keys} Keys name.
+ */
+Container.prototype.childrenToName = function childrenToName()
+{   
+    this.child = {}; // clear
+    for (let i = 0; i < this.children.length; i++){
+        const name = this.children[i].name;
+        if(name){
+            if(object1.hasOwnProperty(name)){ throw console.error(`Conflic name alrealy exist ${name}`,this) };
+            this.child[name] = this.children[i]; // ref obj
+        }
+    };
+    return Object.keys(this.child);
+};
