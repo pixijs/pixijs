@@ -178,7 +178,8 @@ export default class SVGResource extends BaseImageResource
             const svgWidth = svgSize.width;
             const svgHeight = svgSize.height;
 
-            if (!svgWidth || !svgHeight) {
+            if (!svgWidth || !svgHeight)
+            {
                 throw new Error('The SVG image must have width and height defined (in pixels), canvas API needs them.');
             }
 
