@@ -173,32 +173,33 @@ export default class SVGResource extends BaseImageResource
 
         tempImage.src = `data:image/svg+xml,${svgString}`;
 
-        const svgWidth = svgSize.width;
-        const svgHeight = svgSize.height;
+        tempImage.onload(() => {
+            const svgWidth = svgSize.width;
+            const svgHeight = svgSize.height;
 
-        if (!svgWidth || !svgHeight)
-        {
-            throw new Error('The SVG image must have width and height defined (in pixels), canvas API needs them.');
-        }
+            if (!svgWidth || !svgHeight) {
+                throw new Error('The SVG image must have width and height defined (in pixels), canvas API needs them.');
+            }
 
-        // Scale realWidth and realHeight
-        this._width = Math.round(svgWidth * this.scale);
-        this._height = Math.round(svgHeight * this.scale);
+            // Scale realWidth and realHeight
+            this._width = Math.round(svgWidth * this.scale);
+            this._height = Math.round(svgHeight * this.scale);
 
-        // Create a canvas element
-        const canvas = this.source;
+            // Create a canvas element
+            const canvas = this.source;
 
-        canvas.width = this._width;
-        canvas.height = this._height;
-        canvas._pixiId = `canvas_${uid()}`;
+            canvas.width = this._width;
+            canvas.height = this._height;
+            canvas._pixiId = `canvas_${uid()}`;
 
-        // Draw the Svg to the canvas
-        canvas
-            .getContext('2d')
-            .drawImage(tempImage, 0, 0, svgWidth, svgHeight, 0, 0, this.width, this.height);
+            // Draw the Svg to the canvas
+            canvas
+                .getContext('2d')
+                .drawImage(tempImage, 0, 0, svgWidth, svgHeight, 0, 0, this.width, this.height);
 
-        this._resolve();
-        this._resolve = null;
+            this._resolve();
+            this._resolve = null;
+        });
     }
 
     /**
