@@ -1,6 +1,6 @@
 {
   "name": "pixi.js-legacy",
-  "version": "5.0.0-rc.3",
+  "version": "5.0.0",
   "description": "The HTML5 Creation Engine: Create beautiful digital content with the fastest, most flexible 2D WebGL renderer.",
   "author": "Mat Groves",
   "contributors": [
@@ -34,16 +34,16 @@
     "pixi.js-legacy.d.ts"
   ],
   "dependencies": {
-    "@pixi/canvas-display": "^5.0.0-rc.3",
-    "@pixi/canvas-extract": "^5.0.0-rc.3",
-    "@pixi/canvas-graphics": "^5.0.0-rc.3",
-    "@pixi/canvas-mesh": "^5.0.0-rc.3",
-    "@pixi/canvas-particles": "^5.0.0-rc.3",
-    "@pixi/canvas-prepare": "^5.0.0-rc.3",
-    "@pixi/canvas-renderer": "^5.0.0-rc.3",
-    "@pixi/canvas-sprite": "^5.0.0-rc.3",
-    "@pixi/canvas-sprite-tiling": "^5.0.0-rc.3",
-    "pixi.js": "^5.0.0-rc.3"
+    "@pixi/canvas-display": "^5.0.0",
+    "@pixi/canvas-extract": "^5.0.0",
+    "@pixi/canvas-graphics": "^5.0.0",
+    "@pixi/canvas-mesh": "^5.0.0",
+    "@pixi/canvas-particles": "^5.0.0",
+    "@pixi/canvas-prepare": "^5.0.0",
+    "@pixi/canvas-renderer": "^5.0.0",
+    "@pixi/canvas-sprite": "^5.0.0",
+    "@pixi/canvas-sprite-tiling": "^5.0.0",
+    "pixi.js": "^5.0.0"
   },
   "devDependencies": {
     "floss": "^2.2.0"
