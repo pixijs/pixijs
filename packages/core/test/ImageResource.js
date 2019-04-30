@@ -55,7 +55,7 @@ describe('PIXI.resources.ImageResource', function ()
 
         const resource = new ImageResource(image, {
             autoLoad: false,
-            createImage: true,
+            createBitmap: true,
         });
 
         return resource.load().then((res) =>
