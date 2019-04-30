@@ -50,7 +50,7 @@ export const INSTALLED = [];
  * @param {number} [options.height] - BufferResource's height
  * @param {boolean} [options.autoLoad=true] - Image, SVG and Video flag to start loading
  * @param {number} [options.scale=1] - SVG source scale
- * @param {boolean} [options.createBitmap=true] - Image option to create Bitmap object
+ * @param {boolean} [options.createBitmap=false] - Image option to create Bitmap object
  * @param {boolean} [options.crossorigin=true] - Image and Video option to set crossOrigin
  * @param {boolean} [options.autoPlay=true] - Video option to start playing video immediately
  * @param {number} [options.updateFPS=0] - Video option to update how many times a second the
