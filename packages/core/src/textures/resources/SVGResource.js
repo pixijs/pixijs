@@ -173,7 +173,8 @@ export default class SVGResource extends BaseImageResource
 
         tempImage.src = `data:image/svg+xml,${svgString}`;
 
-        tempImage.onload(() => {
+        tempImage.onload = () =>
+        {
             const svgWidth = svgSize.width;
             const svgHeight = svgSize.height;
 
@@ -199,7 +200,7 @@ export default class SVGResource extends BaseImageResource
 
             this._resolve();
             this._resolve = null;
-        });
+        };
     }
 
     /**
