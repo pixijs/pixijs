@@ -53,7 +53,10 @@ describe('PIXI.resources.ImageResource', function ()
 
         image.src = this.slugUrl;
 
-        const resource = new ImageResource(image, { autoLoad: false });
+        const resource = new ImageResource(image, {
+            autoLoad: false,
+            createImage: true,
+        });
 
         return resource.load().then((res) =>
         {
