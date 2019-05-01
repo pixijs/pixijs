@@ -58,7 +58,8 @@ export default class ImageResource extends BaseImageResource
          * @member {boolean}
          * @default PIXI.settings.CREATE_IMAGE_BITMAP
          */
-        this.createBitmap = (options.createBitmap || settings.CREATE_IMAGE_BITMAP) && !!window.createImageBitmap;
+        this.createBitmap = (options.createBitmap !== undefined
+            ? options.createBitmap : settings.CREATE_IMAGE_BITMAP) && !!window.createImageBitmap;
 
         /**
          * Controls texture premultiplyAlpha field
