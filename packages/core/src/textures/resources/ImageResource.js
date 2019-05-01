@@ -12,8 +12,8 @@ export default class ImageResource extends BaseImageResource
     /**
      * @param {HTMLImageElement|string} source - image source or URL
      * @param {boolean} [options.autoLoad=true] start loading process
-     * @param {boolean} [options.createBitmap=false] whether its required to create
-     *        a bitmap before upload defaults true
+     * @param {boolean} [options.createBitmap=PIXI.settings.CREATE_IMAGE_BITMAP] whether its required to create
+     *        a bitmap before upload
      * @param {boolean} [options.crossorigin=true] - Load image using cross origin
      * @param {boolean} [options.premultiplyAlpha=true] - Premultiply image alpha in bitmap
      */
