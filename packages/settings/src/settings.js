@@ -201,15 +201,15 @@ export default {
     CAN_UPLOAD_SAME_BUFFER: canUploadSameBuffer(),
 
     /**
-     * Enables bitmap creation before image load
+     * Enables bitmap creation before image load. This feature is experimental.
      *
      * @static
      * @name CREATE_IMAGE_BITMAP
      * @memberof PIXI.settings
      * @type {boolean}
-     * @default true
+     * @default false
      */
-    CREATE_IMAGE_BITMAP: true,
+    CREATE_IMAGE_BITMAP: false,
 
     /**
      * If true PixiJS will Math.floor() x/y values when rendering, stopping pixel interpolation.

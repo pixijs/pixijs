@@ -229,11 +229,13 @@ export default class Texture extends EventEmitter
         {
             if (destroyBase)
             {
+                const { resource } = this.baseTexture;
+
                 // delete the texture if it exists in the texture cache..
                 // this only needs to be removed if the base texture is actually destroyed too..
-                if (TextureCache[this.baseTexture.imageUrl])
+                if (resource && TextureCache[resource.url])
                 {
-                    Texture.removeFromCache(this.baseTexture.imageUrl);
+                    Texture.removeFromCache(resource.url);
                 }
 
                 this.baseTexture.destroy();
