@@ -24,14 +24,67 @@ export default class TextMetrics
      */
     constructor(text, style, width, height, lines, lineWidths, lineHeight, maxLineWidth, fontProperties)
     {
+        /**
+         * The text that was measured
+         *
+         * @member {string}
+         */
         this.text = text;
+
+        /**
+         * The style that was measured
+         *
+         * @member {PIXI.TextStyle}
+         */
         this.style = style;
+
+        /**
+         * The measured width of the text
+         *
+         * @member {number}
+         */
         this.width = width;
+
+        /**
+         * The measured height of the text
+         *
+         * @member {number}
+         */
         this.height = height;
+
+        /**
+         * An array of lines of the text broken by new lines and wrapping is specified in style
+         *
+         * @member {string[]}
+         */
         this.lines = lines;
+
+        /**
+         * An array of the line widths for each line matched to `lines`
+         *
+         * @member {number[]}
+         */
         this.lineWidths = lineWidths;
+
+        /**
+         * The measured line height for this style
+         *
+         * @member {number}
+         */
         this.lineHeight = lineHeight;
+
+        /**
+         * The maximum line width for all measured lines
+         *
+         * @member {number}
+         */
         this.maxLineWidth = maxLineWidth;
+
+        /**
+         * The font properties object from TextMetrics.measureFont
+         *
+         * @member {PIXI.IFontMetrics}
+         */
         this.fontProperties = fontProperties;
     }
 
