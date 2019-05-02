@@ -166,12 +166,14 @@ export default class SVGResource extends BaseImageResource
     {
         const svgSize = SVGResource.getSize(svgString);
 
-        // TODO do we need to wait for this to load?
-        // seems instant!
-        //
         const tempImage = new Image();
 
         tempImage.src = `data:image/svg+xml,${svgString}`;
+
+        tempImage.onerror = () =>
+        {
+            throw new Error(`Unable to load image from: ${tempImage.src}`);
+        };
 
         tempImage.onload = () =>
         {
