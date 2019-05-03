@@ -187,3 +187,28 @@ Loader.registerPlugin(TextureLoader);
  * @param {PIXI.LoaderResource} resource
  * @param {function} next
  */
+
+/**
+ * @memberof PIXI.Loader#
+ * @member {object} onStart
+ */
+
+/**
+ * @memberof PIXI.Loader#
+ * @member {object} onProgress
+ */
+
+/**
+ * @memberof PIXI.Loader#
+ * @member {object} onError
+ */
+
+/**
+ * @memberof PIXI.Loader#
+ * @member {object} onLoad
+ */
+
+/**
+ * @memberof PIXI.Loader#
+ * @member {object} onComplete
+ */

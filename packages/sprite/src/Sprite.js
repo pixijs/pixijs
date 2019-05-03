@@ -391,7 +391,7 @@ export default class Sprite extends Container
     /**
      * Gets the local bounds of the sprite object.
      *
-     * @param {PIXI.Rectangle} rect - The output rectangle.
+     * @param {PIXI.Rectangle} [rect] - The output rectangle.
      * @return {PIXI.Rectangle} The bounds.
      */
     getLocalBounds(rect)
