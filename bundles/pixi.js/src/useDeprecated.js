@@ -653,6 +653,30 @@ export default function useDeprecated()
                 return this.resource && this.resource.url;
             },
         },
+        /**
+         * @name PIXI.BaseTexture#source
+         * @type {HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|SVGElement}
+         * @deprecated since 5.0.0
+         * @readonly
+         * @see PIXI.resources.BaseImageResource#source
+         */
+        source: {
+            get()
+            {
+                deprecation(v5, 'PIXI.BaseTexture.source property has been moved, use resource.source');
+
+                return this.resource && this.resource.source;
+            },
+            set(source)
+            {
+                deprecation(v5, 'PIXI.BaseTexture.source property has been moved, use resource.source');
+
+                if (this.resource)
+                {
+                    this.resource.source = source;
+                }
+            },
+        },
     });
 
     /**
