@@ -187,10 +187,17 @@ export default class Texture extends EventEmitter
     /**
      * Updates this texture on the gpu.
      *
+     * Calls the TextureResource update.
+     *
+     * If you adjusted `frame` manually, please call `updateUvs()` instead.
+     *
      */
     update()
     {
-        this.baseTexture.update();
+        if (this.baseTexture.resource)
+        {
+            this.baseTexture.resource.update();
+        }
     }
 
     /**
