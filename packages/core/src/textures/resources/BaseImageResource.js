@@ -77,8 +77,8 @@ export default class BaseImageResource extends Resource
     }
 
     /**
-     * Checks if source width/height was changed.
-     * Triggers update in any case.
+     * Checks if source width/height was changed, resize can cause extra baseTexture update.
+     * Triggers one update in any case.
      */
     update()
     {
