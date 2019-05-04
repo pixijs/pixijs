@@ -663,13 +663,14 @@ export default function useDeprecated()
         source: {
             get()
             {
-                deprecation(v5, 'PIXI.BaseTexture.source property has been moved, use resource.source');
+                deprecation(v5, 'PIXI.BaseTexture.source property has been moved, use `resource.source`');
 
                 return this.resource && this.resource.source;
             },
             set(source)
             {
-                deprecation(v5, 'PIXI.BaseTexture.source property has been moved, use resource.source');
+                deprecation(v5, 'PIXI.BaseTexture.source property has been moved, use `resource.source` '
+                    + 'if you want to set HTMLCanvasElement. Otherwise, create new BaseTexture.');
 
                 if (this.resource)
                 {
