@@ -139,26 +139,6 @@ export default class Texture extends EventEmitter
             throw new Error('attempt to use diamond-shaped UVs. If you are sure, set rotation manually');
         }
 
-        if (baseTexture.valid)
-        {
-            if (this.noFrame)
-            {
-                this.frame = new Rectangle(0, 0, baseTexture.width, baseTexture.height);
-                this.noFrame = true;
-
-                // if there is no frame we should monitor for any base texture changes..
-                baseTexture.on('update', this.onBaseTextureUpdated, this);
-            }
-            else
-            {
-                this.frame = frame;
-            }
-        }
-        else
-        {
-            baseTexture.once('loaded', this.onBaseTextureUpdated, this);
-        }
-
         /**
          * Anchor point that is used as default if sprite is created with this texture.
          * Changing the `defaultAnchor` at a later point of time will not update Sprite's anchor point.
@@ -185,6 +165,24 @@ export default class Texture extends EventEmitter
          * @member {string[]}
          */
         this.textureCacheIds = [];
+
+        if (this.noFrame)
+        {
+            // if there is no frame we should monitor for any base texture changes..
+            if (baseTexture.valid)
+            {
+                this.onBaseTextureUpdated(baseTexture);
+            }
+            baseTexture.on('update', this.onBaseTextureUpdated, this);
+        }
+        else if (!baseTexture.valid)
+        {
+            baseTexture.once('loaded', this.onBaseTextureUpdated, this);
+        }
+        else
+        {
+            this.frame = frame;
+        }
     }
 
     /**
@@ -211,18 +209,23 @@ export default class Texture extends EventEmitter
      */
     onBaseTextureUpdated(baseTexture)
     {
-        this._updateID++;
-
-        // TODO this code looks confusing.. boo to abusing getters and setters!
         if (this.noFrame)
         {
-            this.frame = new Rectangle(0, 0, baseTexture.width, baseTexture.height);
-            this.noFrame = true;
+            if (!this.baseTexture.valid)
+            {
+                return;
+            }
+
+            this._frame.width = baseTexture.width;
+            this._frame.height = baseTexture.height;
+            this.valid = true;
+            this.updateUvs();
         }
         else
         {
-            this.frame = this._frame;
+            // TODO this code looks confusing.. boo to abusing getters and setters!
             // if user gave us frame that has bigger size than resized texture it can be a problem
+            this.frame = this._frame;
         }
 
         this.emit('update', this);
