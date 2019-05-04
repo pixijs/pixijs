@@ -212,7 +212,8 @@ export default class Texture extends EventEmitter
         // TODO this code looks confusing.. boo to abusing getters and setters!
         if (this.noFrame)
         {
-            if (this._frame.width !== baseTexture.width
+            if (!this.frame
+                || this._frame.width !== baseTexture.width
                 || this._frame.height !== baseTexture.height)
             {
                 this.frame = new Rectangle(0, 0, baseTexture.width, baseTexture.height);
