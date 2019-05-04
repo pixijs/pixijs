@@ -143,13 +143,12 @@ export default class Texture extends EventEmitter
         {
             if (this.noFrame)
             {
-                frame = new Rectangle(0, 0, baseTexture.width, baseTexture.height);
+                this.frame = new Rectangle(0, 0, baseTexture.width, baseTexture.height);
+                this.noFrame = true;
 
                 // if there is no frame we should monitor for any base texture changes..
                 baseTexture.on('update', this.onBaseTextureUpdated, this);
             }
-
-            this.frame = frame;
         }
         else
         {
@@ -213,13 +212,17 @@ export default class Texture extends EventEmitter
         // TODO this code looks confusing.. boo to abusing getters and setters!
         if (this.noFrame)
         {
-            this.frame = new Rectangle(0, 0, baseTexture.width, baseTexture.height);
+            if (this._frame.width !== baseTexture.width
+                || this._frame.height !== baseTexture.height)
+            {
+                this.frame = new Rectangle(0, 0, baseTexture.width, baseTexture.height);
+                this.noFrame = true;
+            }
         }
         else
         {
             this.frame = this._frame;
-            // TODO maybe watch out for the no frame option
-            // updating the texture will should update the frame if it was set to no frame..
+            // if user gave us frame that has bigger size than resized texture it can be a problem
         }
 
         this.emit('update', this);
