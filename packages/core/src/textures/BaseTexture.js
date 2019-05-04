@@ -406,7 +406,7 @@ export default class BaseTexture extends EventEmitter
         {
             this.width = this.width * oldResolution / resolution;
             this.height = this.height * oldResolution / resolution;
-            this.emit('update');
+            this.emit('update', this);
         }
 
         this._refreshPOT();
