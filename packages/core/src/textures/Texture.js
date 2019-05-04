@@ -149,6 +149,10 @@ export default class Texture extends EventEmitter
                 // if there is no frame we should monitor for any base texture changes..
                 baseTexture.on('update', this.onBaseTextureUpdated, this);
             }
+            else
+            {
+                this.frame = frame;
+            }
         }
         else
         {
