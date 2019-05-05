@@ -77,6 +77,22 @@ export default class BaseImageResource extends Resource
     }
 
     /**
+     * Checks if source width/height was changed, resize can cause extra baseTexture update.
+     * Triggers one update in any case.
+     */
+    update()
+    {
+        if (this.destroyed)
+        {
+            return;
+        }
+
+        this.resize(this.source.width, this.source.height);
+
+        super.update();
+    }
+
+    /**
      * Destroy this BaseImageResource
      * @override
      * @param {PIXI.BaseTexture} [fromTexture] Optional base texture
