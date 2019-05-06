@@ -1,6 +1,6 @@
 {
   "name": "@pixi/canvas-prepare",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "main": "lib/canvas-prepare.js",
   "module": "lib/canvas-prepare.es.js",
   "bundle": "dist/canvas-prepare.js",
@@ -25,9 +25,9 @@
     "dist"
   ],
   "dependencies": {
-    "@pixi/canvas-renderer": "^5.0.0",
-    "@pixi/core": "^5.0.0",
-    "@pixi/prepare": "^5.0.0"
+    "@pixi/canvas-renderer": "^5.0.1",
+    "@pixi/core": "^5.0.1",
+    "@pixi/prepare": "^5.0.1"
   },
   "devDependencies": {
     "floss": "^2.2.0"
