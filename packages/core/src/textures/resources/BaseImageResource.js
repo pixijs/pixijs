@@ -14,7 +14,10 @@ export default class BaseImageResource extends Resource
      */
     constructor(source)
     {
-        super(source.width, source.height);
+        const width = source.naturalWidth || source.videoWidth || source.width;
+        const height = source.naturalHeight || source.videoHeight || source.height;
+
+        super(width, height);
 
         /**
          * The source element
@@ -87,7 +90,10 @@ export default class BaseImageResource extends Resource
             return;
         }
 
-        this.resize(this.source.width, this.source.height);
+        const width = this.source.naturalWidth || this.source.videoWidth || this.source.width;
+        const height = this.source.naturalHeight || this.source.videoHeight || this.source.height;
+
+        this.resize(width, height);
 
         super.update();
     }
