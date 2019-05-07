@@ -1,6 +1,6 @@
 {
   "name": "@pixi/filter-blur",
-  "version": "5.0.1",
+  "version": "5.0.2",
   "main": "lib/filter-blur.js",
   "module": "lib/filter-blur.es.js",
   "bundle": "dist/filter-blur.js",
@@ -25,7 +25,7 @@
     "dist"
   ],
   "dependencies": {
-    "@pixi/core": "^5.0.1",
+    "@pixi/core": "^5.0.2",
     "@pixi/settings": "^5.0.1"
   },
   "devDependencies": {

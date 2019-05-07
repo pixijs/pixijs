@@ -1,6 +1,6 @@
 {
   "name": "@pixi/spritesheet",
-  "version": "5.0.1",
+  "version": "5.0.2",
   "main": "lib/spritesheet.js",
   "module": "lib/spritesheet.es.js",
   "bundle": "dist/spritesheet.js",
@@ -27,8 +27,8 @@
     "dist"
   ],
   "dependencies": {
-    "@pixi/core": "^5.0.1",
-    "@pixi/loaders": "^5.0.1",
+    "@pixi/core": "^5.0.2",
+    "@pixi/loaders": "^5.0.2",
     "@pixi/math": "^5.0.0-rc.3",
     "@pixi/utils": "^5.0.1"
   },

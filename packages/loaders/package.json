@@ -1,6 +1,6 @@
 {
   "name": "@pixi/loaders",
-  "version": "5.0.1",
+  "version": "5.0.2",
   "main": "lib/loaders.js",
   "module": "lib/loaders.es.js",
   "bundle": "dist/loaders.js",
@@ -27,7 +27,7 @@
     "dist"
   ],
   "dependencies": {
-    "@pixi/core": "^5.0.1",
+    "@pixi/core": "^5.0.2",
     "@pixi/utils": "^5.0.1",
     "resource-loader": "^2.2.4"
   },
