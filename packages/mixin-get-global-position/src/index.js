@@ -6,8 +6,8 @@ import { Point } from '@pixi/math';
  *
  * @method getGlobalPosition
  * @memberof PIXI.DisplayObject#
- * @param {Point} point - The point to write the global value to. If null a new point will be returned
- * @param {boolean} skipUpdate - Setting to true will stop the transforms of the scene graph from
+ * @param {Point} [point=new Point()] - The point to write the global value to.
+ * @param {boolean} [skipUpdate=false] - Setting to true will stop the transforms of the scene graph from
  *  being updated. This means the calculation returned MAY be out of date BUT will give you a
  *  nice performance boost.
  * @return {Point} The updated point.
