@@ -6,11 +6,11 @@ import { Point } from '@pixi/math';
  *
  * @method getGlobalPosition
  * @memberof PIXI.DisplayObject#
- * @param {Point} [point=new Point()] - The point to write the global value to.
+ * @param {PIXI.Point} [point=new PIXI.Point()] - The point to write the global value to.
  * @param {boolean} [skipUpdate=false] - Setting to true will stop the transforms of the scene graph from
  *  being updated. This means the calculation returned MAY be out of date BUT will give you a
  *  nice performance boost.
- * @return {Point} The updated point.
+ * @return {PIXI.Point} The updated point.
  */
 DisplayObject.prototype.getGlobalPosition = function getGlobalPosition(point = new Point(), skipUpdate = false)
 {
