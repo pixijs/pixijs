@@ -123,13 +123,13 @@ export default class RenderTextureSystem extends System
             this.renderer.stencil.setMaskStack(this.defaultMaskStack);
         }
 
-        this.sourceFrame.copyFrom(sourceFrame);
-
         this.destinationFrame.x = destinationFrame.x / resolution;
         this.destinationFrame.y = destinationFrame.y / resolution;
 
         this.destinationFrame.width = destinationFrame.width / resolution;
         this.destinationFrame.height = destinationFrame.height / resolution;
+
+        this.sourceFrame.copyFrom(sourceFrame);
     }
 
     /**
