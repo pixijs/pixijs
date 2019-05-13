@@ -1,9 +1,10 @@
 {
   "name": "@pixi/canvas-particles",
-  "version": "5.0.0-rc.3",
-  "main": "lib/canvas-sprite-tiling.js",
-  "module": "lib/canvas-sprite-tiling.es.js",
-  "bundle": "dist/canvas-graphics.js",
+  "version": "5.0.2",
+  "main": "lib/canvas-particles.js",
+  "module": "lib/canvas-particles.es.js",
+  "bundle": "dist/canvas-particles.js",
+  "bundleNoExports": true,
   "description": "Canvas mixin for the particles package",
   "author": "Mat Groves",
   "contributors": [
@@ -24,7 +25,7 @@
     "dist"
   ],
   "dependencies": {
-    "@pixi/particles": "^5.0.0-rc.3"
+    "@pixi/particles": "^5.0.2"
   },
   "devDependencies": {
     "floss": "^2.2.0"

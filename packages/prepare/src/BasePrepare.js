@@ -9,7 +9,7 @@ import CountLimiter from './CountLimiter';
  * The prepare manager provides functionality to upload content to the GPU.
  *
  * BasePrepare handles basic queuing functionality and is extended by
- * {@link PIXI.prepare.WebGLPrepare} and {@link PIXI.prepare.CanvasPrepare}
+ * {@link PIXI.prepare.Prepare} and {@link PIXI.prepare.CanvasPrepare}
  * to provide preparation capabilities specific to their respective renderers.
  *
  * @example
@@ -49,7 +49,7 @@ export default class BasePrepare
         this.renderer = renderer;
 
         /**
-         * The only real difference between CanvasPrepare and WebGLPrepare is what they pass
+         * The only real difference between CanvasPrepare and Prepare is what they pass
          * to upload hooks. That different parameter is stored here.
          * @type {PIXI.prepare.CanvasPrepare|PIXI.Renderer}
          * @protected

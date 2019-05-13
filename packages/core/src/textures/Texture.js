@@ -139,23 +139,6 @@ export default class Texture extends EventEmitter
             throw new Error('attempt to use diamond-shaped UVs. If you are sure, set rotation manually');
         }
 
-        if (baseTexture.valid)
-        {
-            if (this.noFrame)
-            {
-                frame = new Rectangle(0, 0, baseTexture.width, baseTexture.height);
-
-                // if there is no frame we should monitor for any base texture changes..
-                baseTexture.on('update', this.onBaseTextureUpdated, this);
-            }
-
-            this.frame = frame;
-        }
-        else
-        {
-            baseTexture.once('loaded', this.onBaseTextureUpdated, this);
-        }
-
         /**
          * Anchor point that is used as default if sprite is created with this texture.
          * Changing the `defaultAnchor` at a later point of time will not update Sprite's anchor point.
@@ -182,15 +165,40 @@ export default class Texture extends EventEmitter
          * @member {string[]}
          */
         this.textureCacheIds = [];
+
+        if (this.noFrame)
+        {
+            // if there is no frame we should monitor for any base texture changes..
+            if (baseTexture.valid)
+            {
+                this.onBaseTextureUpdated(baseTexture);
+            }
+            baseTexture.on('update', this.onBaseTextureUpdated, this);
+        }
+        else if (!baseTexture.valid)
+        {
+            baseTexture.once('loaded', this.onBaseTextureUpdated, this);
+        }
+        else
+        {
+            this.frame = frame;
+        }
     }
 
     /**
      * Updates this texture on the gpu.
      *
+     * Calls the TextureResource update.
+     *
+     * If you adjusted `frame` manually, please call `updateUvs()` instead.
+     *
      */
     update()
     {
-        this.baseTexture.update();
+        if (this.baseTexture.resource)
+        {
+            this.baseTexture.resource.update();
+        }
     }
 
     /**
@@ -201,18 +209,23 @@ export default class Texture extends EventEmitter
      */
     onBaseTextureUpdated(baseTexture)
     {
-        this._updateID++;
-
-        // TODO this code looks confusing.. boo to abusing getters and setters!
         if (this.noFrame)
         {
-            this.frame = new Rectangle(0, 0, baseTexture.width, baseTexture.height);
+            if (!this.baseTexture.valid)
+            {
+                return;
+            }
+
+            this._frame.width = baseTexture.width;
+            this._frame.height = baseTexture.height;
+            this.valid = true;
+            this.updateUvs();
         }
         else
         {
+            // TODO this code looks confusing.. boo to abusing getters and setters!
+            // if user gave us frame that has bigger size than resized texture it can be a problem
             this.frame = this._frame;
-            // TODO maybe watch out for the no frame option
-            // updating the texture will should update the frame if it was set to no frame..
         }
 
         this.emit('update', this);
@@ -229,11 +242,13 @@ export default class Texture extends EventEmitter
         {
             if (destroyBase)
             {
+                const { resource } = this.baseTexture;
+
                 // delete the texture if it exists in the texture cache..
                 // this only needs to be removed if the base texture is actually destroyed too..
-                if (TextureCache[this.baseTexture.imageUrl])
+                if (resource && TextureCache[resource.url])
                 {
-                    Texture.removeFromCache(this.baseTexture.imageUrl);
+                    Texture.removeFromCache(resource.url);
                 }
 
                 this.baseTexture.destroy();
@@ -374,7 +389,7 @@ export default class Texture extends EventEmitter
             name = imageUrl;
         }
 
-        // lets also add the frame to pixi's global cache for fromFrame and fromImage functions
+        // lets also add the frame to pixi's global cache for 'fromLoader' function
         BaseTexture.addToCache(texture.baseTexture, name);
         Texture.addToCache(texture, name);
 

@@ -51,8 +51,8 @@ export default class RopeGeometry extends MeshGeometry
 
         if (!points) return;
 
-        const vertexBuffer = this.getAttribute('aVertexPosition');
-        const uvBuffer = this.getAttribute('aTextureCoord');
+        const vertexBuffer = this.getBuffer('aVertexPosition');
+        const uvBuffer = this.getBuffer('aTextureCoord');
         const indexBuffer = this.getIndex();
 
         // if too little points, or texture hasn't got UVs set yet just move on.

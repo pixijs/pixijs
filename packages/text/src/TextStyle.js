@@ -36,6 +36,15 @@ const defaultStyle = {
     leading: 0,
 };
 
+const genericFontFamilies = [
+    'serif',
+    'sans-serif',
+    'monospace',
+    'cursive',
+    'fantasy',
+    'system-ui',
+]
+
 /**
  * A TextStyle Object contains information to decorate a Text objects.
  *
@@ -698,7 +707,7 @@ export default class TextStyle
             let fontFamily = fontFamilies[i].trim();
 
             // Check if font already contains strings
-            if (!(/([\"\'])[^\'\"]+\1/).test(fontFamily))
+            if (!(/([\"\'])[^\'\"]+\1/).test(fontFamily) && genericFontFamilies.indexOf(fontFamily) < 0)
             {
                 fontFamily = `"${fontFamily}"`;
             }

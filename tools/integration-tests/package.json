@@ -1,26 +1,26 @@
 {
   "name": "@internal/integration-tests",
   "private": true,
-  "version": "5.0.0-rc.3",
+  "version": "5.0.2",
   "description": "Integration tests for PixiJS packages",
   "scripts": {
     "test": "floss --path test"
   },
   "devDependencies": {
-    "@pixi/canvas-display": "^5.0.0-rc.3",
-    "@pixi/canvas-graphics": "^5.0.0-rc.3",
-    "@pixi/canvas-mesh": "^5.0.0-rc.3",
-    "@pixi/canvas-renderer": "^5.0.0-rc.3",
-    "@pixi/canvas-sprite": "^5.0.0-rc.3",
-    "@pixi/core": "^5.0.0-rc.3",
-    "@pixi/display": "^5.0.0-rc.3",
-    "@pixi/graphics": "^5.0.0-rc.3",
+    "@pixi/canvas-display": "^5.0.1",
+    "@pixi/canvas-graphics": "^5.0.2",
+    "@pixi/canvas-mesh": "^5.0.2",
+    "@pixi/canvas-renderer": "^5.0.2",
+    "@pixi/canvas-sprite": "^5.0.2",
+    "@pixi/core": "^5.0.2",
+    "@pixi/display": "^5.0.1",
+    "@pixi/graphics": "^5.0.2",
     "@pixi/math": "^5.0.0-rc.3",
-    "@pixi/mesh": "^5.0.0-rc.3",
-    "@pixi/mesh-extras": "^5.0.0-rc.3",
-    "@pixi/sprite": "^5.0.0-rc.3",
-    "@pixi/text": "^5.0.0-rc.3",
-    "@pixi/utils": "^5.0.0-rc.3",
+    "@pixi/mesh": "^5.0.2",
+    "@pixi/mesh-extras": "^5.0.2",
+    "@pixi/sprite": "^5.0.2",
+    "@pixi/text": "^5.0.2",
+    "@pixi/utils": "^5.0.1",
     "floss": "^2.2.0"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@pixi/polyfill",
-  "version": "5.0.0-rc.3",
+  "version": "5.0.0",
   "main": "lib/polyfill.js",
   "module": "lib/polyfill.es.js",
   "bundle": "dist/polyfill.js",
@@ -26,7 +26,7 @@
   ],
   "dependencies": {
     "es6-promise-polyfill": "^1.2.0",
-    "object-assign": "^4.0.1"
+    "object-assign": "^4.1.1"
   },
   "devDependencies": {
     "floss": "^2.2.0"

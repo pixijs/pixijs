@@ -20,8 +20,8 @@ describe('PIXI.resources.SVGResource', function ()
 
             resource.load().then(function ()
             {
-                expect(resource.width).to.equal(16);
-                expect(resource.height).to.equal(16);
+                expect(resource.width).to.equal(100);
+                expect(resource.height).to.equal(100);
 
                 done();
             });

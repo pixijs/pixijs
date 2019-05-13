@@ -61,9 +61,11 @@ export default class DisplacementFilter extends Filter
      * @param {PIXI.systems.FilterSystem} filterManager - The manager.
      * @param {PIXI.RenderTexture} input - The input target.
      * @param {PIXI.RenderTexture} output - The output target.
+     * @param {boolean} clear - Should the output be cleared before rendering to it.
      */
-    apply(filterManager, input, output)
+    apply(filterManager, input, output, clear)
     {
+        // fill maskMatrix with _normalized sprite texture coords_
         this.uniforms.filterMatrix = filterManager.calculateSpriteMatrix(this.maskMatrix, this.maskSprite);
         this.uniforms.scale.x = this.scale.x;
         this.uniforms.scale.y = this.scale.y;
@@ -82,7 +84,7 @@ export default class DisplacementFilter extends Filter
         }
 
         // draw the filter...
-        filterManager.applyFilter(this, input, output);
+        filterManager.applyFilter(this, input, output, clear);
     }
 
     /**

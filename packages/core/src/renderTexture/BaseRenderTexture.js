@@ -12,9 +12,9 @@ import Framebuffer from '../framebuffer/Framebuffer';
  *
  * ```js
  * let renderer = PIXI.autoDetectRenderer();
- * let baseRenderTexture = new PIXI.BaseRenderTexture(800, 600);
+ * let baseRenderTexture = new PIXI.BaseRenderTexture({ width: 800, height: 600 });
  * let renderTexture = new PIXI.RenderTexture(baseRenderTexture);
- * let sprite = PIXI.Sprite.fromImage("spinObj_01.png");
+ * let sprite = PIXI.Sprite.from("spinObj_01.png");
  *
  * sprite.position.x = 800/2;
  * sprite.position.y = 600/2;
@@ -31,7 +31,7 @@ import Framebuffer from '../framebuffer/Framebuffer';
  *
  * sprite.setTransform()
  *
- * let baseRenderTexture = new PIXI.BaseRenderTexture(100, 100);
+ * let baseRenderTexture = new PIXI.BaseRenderTexture({ width: 100, height: 100 });
  * let renderTexture = new PIXI.RenderTexture(baseRenderTexture);
  *
  * renderer.render(sprite, renderTexture);  // Renders to center of RenderTexture
