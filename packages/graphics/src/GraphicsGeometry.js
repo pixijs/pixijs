@@ -976,7 +976,7 @@ export default class GraphicsGeometry extends BatchGeometry
         const scaleX = frame.width / baseTexture.width;
         const scaleY = frame.height / baseTexture.height;
         let offsetX = frame.x / frame.width;
-        let offsetY = frame.y / frame.width;
+        let offsetY = frame.y / frame.height;
         let minX = Math.floor(uvs[start] + eps);
         let minY = Math.floor(uvs[start + 1] + eps);
 

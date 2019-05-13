@@ -1,6 +1,6 @@
 {
   "name": "@pixi/app",
-  "version": "5.0.0-rc.3",
+  "version": "5.0.2",
   "main": "lib/app.js",
   "module": "lib/app.es.js",
   "bundle": "dist/app.js",
@@ -27,12 +27,12 @@
     "dist"
   ],
   "dependencies": {
-    "@pixi/core": "^5.0.0-rc.3",
-    "@pixi/display": "^5.0.0-rc.3"
+    "@pixi/core": "^5.0.2",
+    "@pixi/display": "^5.0.1"
   },
   "devDependencies": {
-    "@pixi/canvas-renderer": "^5.0.0-rc.3",
-    "@pixi/utils": "^5.0.0-rc.3",
+    "@pixi/canvas-renderer": "^5.0.2",
+    "@pixi/utils": "^5.0.1",
     "floss": "^2.2.0"
   }
 }

@@ -159,4 +159,50 @@ describe('PIXI.Texture', function ()
         clone.destroy();
         texture.destroy(true);
     });
+
+    it('should update frame if its backed by canvas that was resized', function ()
+    {
+        const canvas = document.createElement('canvas');
+
+        canvas.width = 50;
+        canvas.height = 50;
+
+        const texture = new Texture.from(canvas);
+
+        expect(texture.width).to.equal(50);
+        canvas.width = 100;
+        texture.update();
+        expect(texture.width).to.equal(100);
+        canvas.height = 70;
+        texture.update();
+        expect(texture.height).to.equal(70);
+        texture.destroy(true);
+    });
+
+    it('should update frame on baseTexture update only if user set it in constructor or in setter', function ()
+    {
+        let baseTexture = new BaseTexture();
+
+        baseTexture.setSize(50, 50);
+
+        let texture = new Texture(baseTexture);
+
+        expect(texture.width).to.equal(50);
+        baseTexture.setSize(100, 70);
+        expect(texture.width).to.equal(100);
+        expect(texture.height).to.equal(70);
+
+        texture.frame = new Rectangle(1, 1, 10, 20);
+        baseTexture.setSize(110, 80);
+        expect(texture.width).to.equal(10);
+        expect(texture.height).to.equal(20);
+        texture.destroy(true);
+
+        baseTexture = new BaseTexture();
+        texture = new Texture(baseTexture, new Rectangle(1, 1, 10, 20));
+        baseTexture.setSize(50, 50);
+        expect(texture.width).to.equal(10);
+        expect(texture.height).to.equal(20);
+        texture.destroy(true);
+    });
 });

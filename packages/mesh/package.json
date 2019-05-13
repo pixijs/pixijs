@@ -1,6 +1,6 @@
 {
   "name": "@pixi/mesh",
-  "version": "5.0.0-rc.3",
+  "version": "5.0.2",
   "main": "lib/mesh.js",
   "module": "lib/mesh.es.js",
   "bundle": "dist/mesh.js",
@@ -25,11 +25,11 @@
   ],
   "dependencies": {
     "@pixi/constants": "^5.0.0-rc.3",
-    "@pixi/core": "^5.0.0-rc.3",
-    "@pixi/display": "^5.0.0-rc.3",
+    "@pixi/core": "^5.0.2",
+    "@pixi/display": "^5.0.1",
     "@pixi/math": "^5.0.0-rc.3",
-    "@pixi/settings": "^5.0.0-rc.3",
-    "@pixi/utils": "^5.0.0-rc.3"
+    "@pixi/settings": "^5.0.1",
+    "@pixi/utils": "^5.0.1"
   },
   "devDependencies": {
     "floss": "^2.2.0"

@@ -142,7 +142,7 @@ export default class ParticleContainer extends Container
          * The texture used to render the children.
          *
          * @readonly
-         * @member {BaseTexture}
+         * @member {PIXI.BaseTexture}
          */
         this.baseTexture = null;
 

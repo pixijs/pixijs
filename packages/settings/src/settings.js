@@ -89,7 +89,7 @@ export default {
      * @property {number} resolution=1
      * @property {boolean} antialias=false
      * @property {boolean} forceFXAA=false
-     * @property {boolean} autoResize=false
+     * @property {boolean} autoDensity=false
      * @property {boolean} transparent=false
      * @property {number} backgroundColor=0x000000
      * @property {boolean} clearBeforeRender=true
@@ -102,7 +102,7 @@ export default {
         view: null,
         antialias: false,
         forceFXAA: false,
-        autoResize: false,
+        autoDensity: false,
         transparent: false,
         backgroundColor: 0x000000,
         clearBeforeRender: true,
@@ -180,6 +180,7 @@ export default {
 
     /**
      * Default specify float precision in fragment shader.
+     * iOS is best set at highp due to https://github.com/pixijs/pixi.js/issues/3742
      *
      * @static
      * @name PRECISION_FRAGMENT
@@ -200,15 +201,15 @@ export default {
     CAN_UPLOAD_SAME_BUFFER: canUploadSameBuffer(),
 
     /**
-     * Enables bitmap creation before image load
+     * Enables bitmap creation before image load. This feature is experimental.
      *
      * @static
      * @name CREATE_IMAGE_BITMAP
      * @memberof PIXI.settings
      * @type {boolean}
-     * @default true
+     * @default false
      */
-    CREATE_IMAGE_BITMAP: true,
+    CREATE_IMAGE_BITMAP: false,
 
     /**
      * If true PixiJS will Math.floor() x/y values when rendering, stopping pixel interpolation.

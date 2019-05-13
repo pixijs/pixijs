@@ -332,7 +332,7 @@ export default class Container extends DisplayObject
      *
      * @param {number} [beginIndex=0] - The beginning position.
      * @param {number} [endIndex=this.children.length] - The ending position. Default value is size of the container.
-     * @returns {DisplayObject[]} List of removed children
+     * @returns {PIXI.DisplayObject[]} List of removed children
      */
     removeChildren(beginIndex = 0, endIndex)
     {

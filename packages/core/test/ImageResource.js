@@ -1,4 +1,5 @@
 const { resources } = require('../');
+const { settings } = require('@pixi/settings');
 const { ImageResource } = resources;
 const path = require('path');
 
@@ -53,7 +54,10 @@ describe('PIXI.resources.ImageResource', function ()
 
         image.src = this.slugUrl;
 
-        const resource = new ImageResource(image, { autoLoad: false });
+        const resource = new ImageResource(image, {
+            autoLoad: false,
+            createBitmap: true,
+        });
 
         return resource.load().then((res) =>
         {
@@ -83,6 +87,50 @@ describe('PIXI.resources.ImageResource', function ()
             expect(resource.height).to.equal(100);
             expect(resource.valid).to.be.true;
             expect(resource.bitmap).to.be.null;
+        });
+    });
+
+    it('should handle the loaded event with createBitmapImage using global setting', function ()
+    {
+        const old = settings.CREATE_IMAGE_BITMAP;
+        const image = new Image();
+
+        settings.CREATE_IMAGE_BITMAP = true;
+        image.src = this.slugUrl;
+
+        const resource = new ImageResource(image, { autoLoad: false });
+
+        return resource.load().then((res) =>
+        {
+            expect(res).to.equal(resource);
+            expect(resource.createBitmap).to.equal(true);
+            expect(resource.width).to.equal(100);
+            expect(resource.height).to.equal(100);
+            expect(resource.valid).to.be.true;
+            expect(resource.bitmap).to.be.instanceof(ImageBitmap);
+            settings.CREATE_IMAGE_BITMAP = old;
+        });
+    });
+
+    it('should handle the loaded event with no createBitmapImage using global setting', function ()
+    {
+        const old = settings.CREATE_IMAGE_BITMAP;
+        const image = new Image();
+
+        settings.CREATE_IMAGE_BITMAP = false;
+        image.src = this.slugUrl;
+
+        const resource = new ImageResource(image, { autoLoad: false });
+
+        return resource.load().then((res) =>
+        {
+            expect(res).to.equal(resource);
+            expect(resource.createBitmap).to.equal(false);
+            expect(resource.width).to.equal(100);
+            expect(resource.height).to.equal(100);
+            expect(resource.valid).to.be.true;
+            expect(resource.bitmap).to.be.null;
+            settings.CREATE_IMAGE_BITMAP = old;
         });
     });
 });

@@ -1,5 +1,5 @@
-import { uid, BaseTextureCache, TextureCache, isPow2, EventEmitter } from '@pixi/utils';
-import { FORMATS, TARGETS, TYPES, SCALE_MODES } from '@pixi/constants';
+import { BaseTextureCache, EventEmitter, isPow2, TextureCache, uid } from '@pixi/utils';
+import { FORMATS, SCALE_MODES, TARGETS, TYPES } from '@pixi/constants';
 
 import Resource from './resources/Resource';
 import BufferResource from './resources/BufferResource';
@@ -311,7 +311,7 @@ export default class BaseTexture extends EventEmitter
      *
      * @param {PIXI.SCALE_MODES} [scaleMode] - Pixi scalemode
      * @param {PIXI.MIPMAP_MODES} [mipmap] - enable mipmaps
-     * @returns {BaseTexture} this
+     * @returns {PIXI.BaseTexture} this
      */
     setStyle(scaleMode, mipmap)
     {
@@ -343,7 +343,7 @@ export default class BaseTexture extends EventEmitter
      * @param {number} width Visual width
      * @param {number} height Visual height
      * @param {number} [resolution] Optionally set resolution
-     * @returns {BaseTexture} this
+     * @returns {PIXI.BaseTexture} this
      */
     setSize(width, height, resolution)
     {
@@ -362,7 +362,7 @@ export default class BaseTexture extends EventEmitter
      * @param {number} realWidth Full rendered width
      * @param {number} realHeight Full rendered height
      * @param {number} [resolution] Optionally set resolution
-     * @returns {BaseTexture} this
+     * @returns {PIXI.BaseTexture} this
      */
     setRealSize(realWidth, realHeight, resolution)
     {
@@ -389,7 +389,7 @@ export default class BaseTexture extends EventEmitter
      * Changes resolution
      *
      * @param {number} [resolution] res
-     * @returns {BaseTexture} this
+     * @returns {PIXI.BaseTexture} this
      */
     setResolution(resolution)
     {
@@ -406,7 +406,7 @@ export default class BaseTexture extends EventEmitter
         {
             this.width = this.width * oldResolution / resolution;
             this.height = this.height * oldResolution / resolution;
-            this.emit('update');
+            this.emit('update', this);
         }
 
         this._refreshPOT();
@@ -418,7 +418,7 @@ export default class BaseTexture extends EventEmitter
      * Sets the resource if it wasn't set. Throws error if resource already present
      *
      * @param {PIXI.resources.Resource} resource - that is managing this BaseTexture
-     * @returns {BaseTexture} this
+     * @returns {PIXI.BaseTexture} this
      */
     setResource(resource)
     {
@@ -645,6 +645,6 @@ export default class BaseTexture extends EventEmitter
  * Global number of the texture batch, used by multi-texture renderers
  *
  * @static
- * @member {number} new texture batch number
+ * @member {number}
  */
 BaseTexture._globalBatch = 0;

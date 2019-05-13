@@ -1,4 +1,4 @@
-const { resources } = require('../');
+const { resources, BaseTexture } = require('../');
 const { CanvasResource } = resources;
 
 describe('PIXI.resources.CanvasResource', function ()
@@ -61,6 +61,26 @@ describe('PIXI.resources.CanvasResource', function ()
         expect(baseTexture.update.calledOnce).to.be.true;
 
         resource.unbind(baseTexture);
+        resource.destroy();
+    });
+
+    it('should change BaseTexture size on update', function ()
+    {
+        const canvas = document.createElement('canvas');
+
+        canvas.width = 50;
+        canvas.height = 50;
+
+        const resource = new CanvasResource(canvas);
+        const baseTexture = new BaseTexture(resource);
+
+        expect(baseTexture.width).to.equal(50);
+        canvas.width = 100;
+        resource.update();
+        expect(baseTexture.width).to.equal(100);
+        canvas.height = 70;
+        resource.update();
+        expect(baseTexture.height).to.equal(70);
         resource.destroy();
     });
 });

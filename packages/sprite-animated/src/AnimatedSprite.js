@@ -22,10 +22,10 @@ import { Ticker, UPDATE_PRIORITY } from '@pixi/ticker';
  * containing the animation definitions:
  *
  * ```js
- * PIXI.loader.add("assets/spritesheet.json").load(setup);
+ * PIXI.Loader.shared.add("assets/spritesheet.json").load(setup);
  *
  * function setup() {
- *   let sheet = PIXI.loader.resources["assets/spritesheet.json"].spritesheet;
+ *   let sheet = PIXI.Loader.shared.resources["assets/spritesheet.json"].spritesheet;
  *   animatedSprite = new PIXI.AnimatedSprite(sheet.animations["image_sequence"]);
  *   ...
  * }
@@ -99,14 +99,14 @@ export default class AnimatedSprite extends Sprite
         this.updateAnchor = false;
 
         /**
-         * Function to call when a AnimatedSprite finishes playing.
+         * Function to call when an AnimatedSprite finishes playing.
          *
          * @member {Function}
          */
         this.onComplete = null;
 
         /**
-         * Function to call when a AnimatedSprite changes which texture is being rendered.
+         * Function to call when an AnimatedSprite changes which texture is being rendered.
          *
          * @member {Function}
          */
@@ -331,10 +331,10 @@ export default class AnimatedSprite extends Sprite
     }
 
     /**
-     * A short hand way of creating a movieclip from an array of frame ids.
+     * A short hand way of creating an AnimatedSprite from an array of frame ids.
      *
      * @static
-     * @param {string[]} frames - The array of frames ids the movieclip will use as its texture frames.
+     * @param {string[]} frames - The array of frames ids the AnimatedSprite will use as its texture frames.
      * @return {AnimatedSprite} The new animated sprite with the specified frames.
      */
     static fromFrames(frames)
@@ -350,10 +350,10 @@ export default class AnimatedSprite extends Sprite
     }
 
     /**
-     * A short hand way of creating a movieclip from an array of image ids.
+     * A short hand way of creating an AnimatedSprite from an array of image ids.
      *
      * @static
-     * @param {string[]} images - The array of image urls the movieclip will use as its texture frames.
+     * @param {string[]} images - The array of image urls the AnimatedSprite will use as its texture frames.
      * @return {AnimatedSprite} The new animate sprite with the specified images as frames.
      */
     static fromImages(images)

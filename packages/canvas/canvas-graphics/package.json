@@ -1,6 +1,6 @@
 {
   "name": "@pixi/canvas-graphics",
-  "version": "5.0.0-rc.3",
+  "version": "5.0.2",
   "main": "lib/canvas-graphics.js",
   "module": "lib/canvas-graphics.es.js",
   "bundle": "dist/canvas-graphics.js",
@@ -24,9 +24,9 @@
     "dist"
   ],
   "dependencies": {
-    "@pixi/canvas-renderer": "^5.0.0-rc.3",
-    "@pixi/core": "^5.0.0-rc.3",
-    "@pixi/graphics": "^5.0.0-rc.3",
+    "@pixi/canvas-renderer": "^5.0.2",
+    "@pixi/core": "^5.0.2",
+    "@pixi/graphics": "^5.0.2",
     "@pixi/math": "^5.0.0-rc.3"
   },
   "devDependencies": {

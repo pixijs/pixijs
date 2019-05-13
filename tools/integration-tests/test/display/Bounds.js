@@ -4,7 +4,7 @@ const { Sprite } = require('@pixi/sprite');
 const { Rectangle } = require('@pixi/math');
 const { Graphics } = require('@pixi/graphics');
 const { Text } = require('@pixi/text');
-// const { Plane } = require('@pixi/mesh');
+// const { SimplePlane } = require('@pixi/mesh-extras');
 
 describe('getBounds', function ()
 {
@@ -199,7 +199,7 @@ describe('getBounds', function ()
 
         const texture = RenderTexture.create(10, 10);
 
-        const plane = new Plane(texture);
+        const plane = new SimplePlane(texture);
 
         parent.addChild(plane);
 
