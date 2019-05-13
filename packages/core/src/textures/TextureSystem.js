@@ -357,7 +357,7 @@ export default class TextureSystem extends System
      *
      * @private
      * @param {PIXI.BaseTexture} texture - Texture to update
-     * @param {glTexture} glTexture
+     * @param {PIXI.GLTexture} glTexture
      */
     setStyle(texture, glTexture)
     {

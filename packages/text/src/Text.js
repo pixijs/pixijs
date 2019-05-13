@@ -367,8 +367,8 @@ export default class Text extends Sprite
     /**
      * Gets the local bounds of the text object.
      *
-     * @param {Rectangle} rect - The output rectangle.
-     * @return {Rectangle} The bounds.
+     * @param {PIXI.Rectangle} rect - The output rectangle.
+     * @return {PIXI.Rectangle} The bounds.
      */
     getLocalBounds(rect)
     {

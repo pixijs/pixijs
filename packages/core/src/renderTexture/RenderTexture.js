@@ -41,7 +41,7 @@ import Texture from '../textures/Texture';
 export default class RenderTexture extends Texture
 {
     /**
-     * @param {PIXI.BaseRenderTexture} baseRenderTexture - The renderer used for this RenderTexture
+     * @param {PIXI.BaseRenderTexture} baseRenderTexture - The base texture object that this texture uses
      * @param {PIXI.Rectangle} [frame] - The rectangle frame of the texture to show
      */
     constructor(baseRenderTexture, frame)
@@ -74,7 +74,7 @@ export default class RenderTexture extends Texture
         /**
          * The base texture object that this texture uses
          *
-         * @member {BaseTexture}
+         * @member {PIXI.BaseTexture}
          */
         super(baseRenderTexture, frame);
 
@@ -95,10 +95,10 @@ export default class RenderTexture extends Texture
         this.filterFrame = null;
 
         /**
-        * The key for pooled texture of FilterSystem
-        * @protected
-        * @member {string}
-        */
+         * The key for pooled texture of FilterSystem
+         * @protected
+         * @member {string}
+         */
         this.filterPoolKey = null;
 
         this.updateUvs();
