@@ -357,7 +357,7 @@ export default class AccessibilityManager
     /**
      * Adjust the hit area based on the bounds of a display object
      *
-     * @param {Rectangle} hitArea - Bounds of the child
+     * @param {PIXI.Rectangle} hitArea - Bounds of the child
      */
     capHitArea(hitArea)
     {
@@ -388,7 +388,7 @@ export default class AccessibilityManager
      * Adds a DisplayObject to the accessibility manager
      *
      * @private
-     * @param {DisplayObject} displayObject - The child to make accessible.
+     * @param {PIXI.DisplayObject} displayObject - The child to make accessible.
      */
     addChild(displayObject)
     {
