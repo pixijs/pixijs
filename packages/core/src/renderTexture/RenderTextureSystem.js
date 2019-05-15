@@ -130,6 +130,11 @@ export default class RenderTextureSystem extends System
 
         this.destinationFrame.width = destinationFrame.width / resolution;
         this.destinationFrame.height = destinationFrame.height / resolution;
+
+        if (sourceFrame === destinationFrame)
+        {
+            this.sourceFrame.copyFrom(this.destinationFrame);
+        }
     }
 
     /**
