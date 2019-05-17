@@ -37,7 +37,7 @@ const indices = new Uint16Array([0, 1, 2, 0, 2, 3]);
 export default class Sprite extends Container
 {
     /**
-     * @param {PIXI.Texture} texture - The texture for this sprite.
+     * @param {PIXI.Texture} [texture] - The texture for this sprite.
      */
     constructor(texture)
     {
