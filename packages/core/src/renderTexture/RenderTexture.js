@@ -131,6 +131,24 @@ export default class RenderTexture extends Texture
     }
 
     /**
+     * changes the resolution of baseTexture, but does not change framebuffer size
+     *
+     * @param {number} resolution
+     */
+    setResolution(resolution)
+    {
+        const baseTexture = this.baseTexture;
+
+        if (baseTexture.resolution === resolution)
+        {
+            return;
+        }
+
+        baseTexture.setResolution(resolution);
+        this.resize(baseTexture.width, baseTexture.height, false);
+    }
+
+    /**
      * A short hand way of creating a render texture.
      *
      * @param {object} [options] - Options
