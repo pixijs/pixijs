@@ -186,20 +186,20 @@ export default class SVGResource extends BaseImageResource
             }
 
             // Scale realWidth and realHeight
-            this._width = Math.round(svgWidth * this.scale);
-            this._height = Math.round(svgHeight * this.scale);
+            const width = Math.round(svgWidth * this.scale);
+            const height = Math.round(svgHeight * this.scale);
 
             // Create a canvas element
             const canvas = this.source;
 
-            canvas.width = this._width;
-            canvas.height = this._height;
+            canvas.width = width;
+            canvas.height = height;
             canvas._pixiId = `canvas_${uid()}`;
 
             // Draw the Svg to the canvas
             canvas
                 .getContext('2d')
-                .drawImage(tempImage, 0, 0, svgWidth, svgHeight, 0, 0, this.width, this.height);
+                .drawImage(tempImage, 0, 0, svgWidth, svgHeight, 0, 0, width, height);
 
             this._resolve();
             this._resolve = null;
