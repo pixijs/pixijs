@@ -458,6 +458,7 @@ export default class FilterSystem extends System
         }
 
         renderTexture.filterPoolKey = key;
+        renderTexture.setResolution(resolution);
 
         return renderTexture;
     }

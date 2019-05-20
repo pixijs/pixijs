@@ -1,6 +1,6 @@
 {
   "name": "@pixi/filter-fxaa",
-  "version": "5.0.2",
+  "version": "5.0.3",
   "main": "lib/filter-fxaa.js",
   "module": "lib/filter-fxaa.es.js",
   "bundle": "dist/filter-fxaa.js",
@@ -25,7 +25,7 @@
     "dist"
   ],
   "dependencies": {
-    "@pixi/core": "^5.0.2"
+    "@pixi/core": "^5.0.3"
   },
   "devDependencies": {
     "floss": "^2.2.0"
