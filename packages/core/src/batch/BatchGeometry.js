@@ -41,3 +41,13 @@ export default class BatchGeometry extends Geometry
             .addIndex(this._indexBuffer);
     }
 }
+
+/**
+ * Number of values sent in the vertex buffer.
+ * aVertexPosition(2), aTextureCoord(1), aColor(1), aTextureId(1) = 5
+ *
+ * @memberof PIXI.BatchGeometry
+ * @static
+ * @member {number} VERT_SIZE
+ */
+BatchGeometry.vertSize = 6;
