@@ -137,6 +137,36 @@ export default class SVGResource extends BaseImageResource
     }
 
     /**
+     * Typedef for Size object.
+     *
+     * @memberof PIXI.resources.SVGResource
+     * @typedef {object} Size
+     * @property {number} width - Width component
+     * @property {number} height - Height component
+     */
+
+    /**
+     * Get size from an svg string using regexp.
+     *
+     * @method
+     * @param {string} svgString - a serialized svg element
+     * @return {PIXI.resources.SVGResource.Size} image extension
+     */
+    static getSize(svgString)
+    {
+        const sizeMatch = SVGResource.SVG_SIZE.exec(svgString);
+        const size = {};
+
+        if (sizeMatch)
+        {
+            size[sizeMatch[1]] = Math.round(parseFloat(sizeMatch[3]));
+            size[sizeMatch[5]] = Math.round(parseFloat(sizeMatch[7]));
+        }
+
+        return size;
+    }
+
+    /**
      * Destroys this texture
      * @override
      */
@@ -164,3 +194,13 @@ export default class SVGResource extends BaseImageResource
             || (typeof source === 'string' && source.indexOf('<svg') === 0);
     }
 }
+
+/**
+ * RegExp for SVG size.
+ *
+ * @static
+ * @constant {RegExp|string} SVG_SIZE
+ * @memberof PIXI.resources.SVGResource
+ * @example &lt;svg width="100" height="100"&gt;&lt;/svg&gt;
+ */
+SVGResource.SVG_SIZE = /<svg[^>]*(?:\s(width|height)=('|")(\d*(?:\.\d+)?)(?:px)?('|"))[^>]*(?:\s(width|height)=('|")(\d*(?:\.\d+)?)(?:px)?('|"))[^>]*>/i; // eslint-disable-line max-len
