@@ -589,11 +589,13 @@ export default class GeometrySystem extends System
             {
                 /* eslint-disable max-len */
                 gl.drawElementsInstanced(type, size || geometry.indexBuffer.data.length, gl.UNSIGNED_SHORT, (start || 0) * 2, instanceCount || 1);
+                gl.drawElementsInstanced(type, size || geometry.indexBuffer.data.length, gl.UNSIGNED_INT, (start || 0) * 2, instanceCount || 1);
                 /* eslint-enable max-len */
             }
             else
             {
                 gl.drawElements(type, size || geometry.indexBuffer.data.length, gl.UNSIGNED_SHORT, (start || 0) * 2);
+                gl.drawElements(type, size || geometry.indexBuffer.data.length, gl.UNSIGNED_INT, (start || 0) * 2);
             }
         }
         else if (geometry.instanced)
