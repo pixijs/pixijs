@@ -1,6 +1,6 @@
 {
   "name": "@pixi/canvas-mesh",
-  "version": "5.0.0-rc.3",
+  "version": "5.0.3",
   "main": "lib/canvas-mesh.js",
   "module": "lib/canvas-mesh.es.js",
   "bundle": "dist/canvas-mesh.js",
@@ -24,11 +24,11 @@
     "dist"
   ],
   "dependencies": {
-    "@pixi/canvas-renderer": "^5.0.0-rc.3",
-    "@pixi/constants": "^5.0.0-rc.3",
-    "@pixi/mesh": "^5.0.0-rc.3",
-    "@pixi/mesh-extras": "^5.0.0-rc.3",
-    "@pixi/settings": "^5.0.0-rc.3"
+    "@pixi/canvas-renderer": "^5.0.3",
+    "@pixi/constants": "^5.0.3",
+    "@pixi/mesh": "^5.0.3",
+    "@pixi/mesh-extras": "^5.0.3",
+    "@pixi/settings": "^5.0.3"
   },
   "devDependencies": {
     "floss": "^2.2.0"

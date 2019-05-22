@@ -21,7 +21,7 @@ export default class TilingSpriteRenderer extends ObjectRenderer
     /**
      * constructor for renderer
      *
-     * @param {Renderer} renderer The renderer this tiling awesomeness works for.
+     * @param {PIXI.Renderer} renderer The renderer this tiling awesomeness works for.
      */
     constructor(renderer)
     {

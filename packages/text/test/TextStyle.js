@@ -39,7 +39,7 @@ describe('PIXI.TextStyle', function ()
             fontFamily: ['Georgia', 'Arial', 'sans-serif'],
         });
 
-        expect(style.toFontString()).to.have.string('"Georgia","Arial","sans-serif"');
+        expect(style.toFontString()).to.have.string('"Georgia","Arial",sans-serif');
     });
 
     it('should handle multiple fonts as string', function ()
@@ -48,7 +48,7 @@ describe('PIXI.TextStyle', function ()
             fontFamily: 'Georgia, "Arial", sans-serif',
         });
 
-        expect(style.toFontString()).to.have.string('"Georgia","Arial","sans-serif"');
+        expect(style.toFontString()).to.have.string('"Georgia","Arial",sans-serif');
     });
 
     it('should not shared array / object references between different instances', function ()
@@ -59,5 +59,34 @@ describe('PIXI.TextStyle', function ()
         expect(defaultStyle.fillGradientStops.length).to.equal(style.fillGradientStops.length);
         style.fillGradientStops.push(0);
         expect(defaultStyle.fillGradientStops.length).to.not.equal(style.fillGradientStops.length);
+    });
+
+    it('should not quote generic font families when calling toFontString', function ()
+    {
+        // Should match the list in TextStyle
+        const genericFontFamilies = [
+            'serif',
+            'sans-serif',
+            'monospace',
+            'cursive',
+            'fantasy',
+            'system-ui',
+        ];
+
+        // Regex to find any of the generic families surrounded by either type of quote mark
+        const incorrectRegexTemplate = '["\']FAMILY["\']';
+
+        for (const genericFamily of genericFontFamilies)
+        {
+            const style = new TextStyle({
+                fontFamily: ['Georgia', 'Arial', genericFamily],
+            });
+
+            // Create regex from template substituting target family
+            const regex = new RegExp(incorrectRegexTemplate.replace('FAMILY', genericFamily));
+            const result = style.toFontString().match(regex);
+
+            expect(result).to.be.null;
+        }
     });
 });

@@ -1,6 +1,6 @@
 {
   "name": "@pixi/extract",
-  "version": "5.0.0-rc.3",
+  "version": "5.0.3",
   "main": "lib/extract.js",
   "module": "lib/extract.es.js",
   "bundle": "dist/extract.js",
@@ -25,9 +25,9 @@
     "dist"
   ],
   "dependencies": {
-    "@pixi/core": "^5.0.0-rc.3",
-    "@pixi/math": "^5.0.0-rc.3",
-    "@pixi/utils": "^5.0.0-rc.3"
+    "@pixi/core": "^5.0.3",
+    "@pixi/math": "^5.0.3",
+    "@pixi/utils": "^5.0.3"
   },
   "devDependencies": {
     "floss": "^2.2.0"

@@ -47,6 +47,7 @@ export default class Buffer
     // TODO could explore flagging only a partial upload?
     /**
      * flags this buffer as requiring an upload to the GPU
+     * @param {ArrayBuffer|SharedArrayBuffer|ArrayBufferView} [data] the data to update in the buffer.
      */
     update(data)
     {

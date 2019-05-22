@@ -1,5 +1,6 @@
 import BatchGeometry from './BatchGeometry';
 import BatchDrawCall from './BatchDrawCall';
+import BaseTexture from '../textures/BaseTexture';
 
 import State from '../state/State';
 import ObjectRenderer from './ObjectRenderer';
@@ -11,8 +12,6 @@ import { premultiplyBlendMode, premultiplyTint, nextPow2, log2 } from '@pixi/uti
 import BatchBuffer from './BatchBuffer';
 import generateMultiTextureShader from './generateMultiTextureShader';
 import { ENV } from '@pixi/constants';
-
-let TICK = 0;
 
 /**
  * Renderer dedicated to drawing and batching sprites.
@@ -251,7 +250,7 @@ export default class BatchRenderer extends ObjectRenderer
         currentGroup.start = 0;
         currentGroup.blend = blendMode;
 
-        TICK++;
+        let TICK = ++BaseTexture._globalBatch;
 
         let i;
 
@@ -282,7 +281,7 @@ export default class BatchRenderer extends ObjectRenderer
             {
                 currentTexture = nextTexture;
 
-                if (nextTexture._enabled !== TICK)
+                if (nextTexture._batchEnabled !== TICK)
                 {
                     if (textureCount === MAX_TEXTURES)
                     {
@@ -299,7 +298,7 @@ export default class BatchRenderer extends ObjectRenderer
                     }
 
                     nextTexture.touched = touch;
-                    nextTexture._enabled = TICK;
+                    nextTexture._batchEnabled = TICK;
                     nextTexture._id = textureCount;
 
                     currentGroup.textures[currentGroup.textureCount++] = nextTexture;
@@ -313,6 +312,8 @@ export default class BatchRenderer extends ObjectRenderer
             index += (sprite.vertexData.length / 2) * this.vertSize;
             indexCount += sprite.indices.length;
         }
+
+        BaseTexture._globalBatch = TICK;
 
         currentGroup.size = indexCount - currentGroup.start;
 

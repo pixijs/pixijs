@@ -123,7 +123,7 @@ const app = new PIXI.Application();
 document.body.appendChild(app.view);
 
 // load the texture we need
-PIXI.Loader.shared.add('bunny', 'bunny.png').load((loader, resources) => {
+app.loader.add('bunny', 'bunny.png').load((loader, resources) => {
     // This creates a texture from a 'bunny.png' image
     const bunny = new PIXI.Sprite(resources.bunny.texture);
 

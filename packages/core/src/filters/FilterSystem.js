@@ -3,8 +3,7 @@ import System from '../System';
 import RenderTexture from '../renderTexture/RenderTexture';
 import Quad from '../utils/Quad';
 import QuadUv from '../utils/QuadUv';
-import { Rectangle } from '@pixi/math';
-import * as filterTransforms from './filterTransforms';
+import { Rectangle, Matrix } from '@pixi/math';
 import { nextPow2 } from '@pixi/utils';
 import UniformGroup from '../shader/UniformGroup';
 import { DRAW_MODES } from '@pixi/constants';
@@ -376,27 +375,9 @@ export default class FilterSystem extends System
     }
 
     /**
-     * Calculates the mapped matrix.
+     * Multiply _input normalized coordinates_ to this matrix to get _sprite texture normalized coordinates_.
      *
-     * TODO playing around here.. this is temporary - (will end up in the shader)
-     * this returns a matrix that will normalize map filter cords in the filter to screen space
-     *
-     * @param {PIXI.Matrix} outputMatrix - the matrix to output to.
-     * @return {PIXI.Matrix} The mapped matrix.
-     */
-    calculateScreenSpaceMatrix(outputMatrix)
-    {
-        const currentState = this.activeState;
-
-        return filterTransforms.calculateScreenSpaceMatrix(
-            outputMatrix,
-            currentState.sourceFrame,
-            currentState.destinationFrame
-        );
-    }
-
-    /**
-     * This will map the filter coord so that a texture can be used based on the transform of a sprite
+     * Use `outputMatrix * vTextureCoord` in the shader.
      *
      * @param {PIXI.Matrix} outputMatrix - The matrix to output to.
      * @param {PIXI.Sprite} sprite - The sprite to map to.
@@ -404,14 +385,18 @@ export default class FilterSystem extends System
      */
     calculateSpriteMatrix(outputMatrix, sprite)
     {
-        const currentState = this.activeState;
+        const { sourceFrame, destinationFrame } = this.activeState;
+        const { orig } = sprite._texture;
+        const mappedMatrix = outputMatrix.set(destinationFrame.width, 0, 0,
+            destinationFrame.height, sourceFrame.x, sourceFrame.y);
+        const worldTransform = sprite.worldTransform.copyTo(Matrix.TEMP_MATRIX);
 
-        return filterTransforms.calculateSpriteMatrix(
-            outputMatrix,
-            currentState.sourceFrame,
-            currentState.destinationFrame,
-            sprite
-        );
+        worldTransform.invert();
+        mappedMatrix.prepend(worldTransform);
+        mappedMatrix.scale(1.0 / orig.width, 1.0 / orig.height);
+        mappedMatrix.translate(sprite.anchor.x, sprite.anchor.y);
+
+        return mappedMatrix;
     }
 
     /**
@@ -476,6 +461,7 @@ export default class FilterSystem extends System
         }
 
         renderTexture.filterPoolKey = key;
+        renderTexture.setResolution(resolution);
 
         return renderTexture;
     }

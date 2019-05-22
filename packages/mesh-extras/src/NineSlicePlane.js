@@ -110,12 +110,12 @@ export default class NineSlicePlane extends SimplePlane
 
     get vertices()
     {
-        return this.geometry.getAttribute('aVertexPosition').data;
+        return this.geometry.getBuffer('aVertexPosition').data;
     }
 
     set vertices(value)
     {
-        this.geometry.getAttribute('aVertexPosition').data = value;
+        this.geometry.getBuffer('aVertexPosition').data = value;
     }
 
     /**

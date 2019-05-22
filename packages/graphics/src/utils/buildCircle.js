@@ -52,8 +52,8 @@ export default {
         for (let i = 0; i < totalSegs; i++)
         {
             points.push(
-                x + (Math.sin(seg * i) * width),
-                y + (Math.cos(seg * i) * height)
+                x + (Math.sin(-seg * i) * width),
+                y + (Math.cos(-seg * i) * height)
             );
         }
 

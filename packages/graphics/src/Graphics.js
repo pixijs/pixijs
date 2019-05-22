@@ -33,6 +33,11 @@ let defaultShader = null;
  * The Graphics class contains methods used to draw primitive shapes such as lines, circles and
  * rectangles to the display, and to color and fill them.
  *
+ * Note that because Graphics can share a GraphicsGeometry with other instances,
+ * it is necessary to call `destroy()` to properly dereference the underlying
+ * GraphicsGeometry and avoid a memory leak. Alternatively, keep using the same
+ * Graphics instance and call `clear()` between redraws.
+ *
  * @class
  * @extends PIXI.Container
  * @memberof PIXI
@@ -50,7 +55,7 @@ export default class Graphics extends Container
          * Includes vertex positions, face indices, normals, colors, UVs, and
          * custom attributes within buffers, reducing the cost of passing all
          * this data to the GPU. Can be shared between multiple Mesh or Graphics objects.
-         * @member {PIXI.Geometry}
+         * @member {PIXI.GraphicsGeometry}
          * @readonly
          */
         this.geometry = geometry || new GraphicsGeometry();

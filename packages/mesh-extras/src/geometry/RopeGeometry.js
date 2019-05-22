@@ -18,7 +18,7 @@ export default class RopeGeometry extends MeshGeometry
 {
     /**
      * @param {number} [width=200] - The width (i.e., thickness) of the rope.
-     * @param {PIXI.Point[]} points - An array of {@link PIXI.Point} objects to construct this rope.
+     * @param {PIXI.Point[]} [points] - An array of {@link PIXI.Point} objects to construct this rope.
      */
     constructor(width = 200, points)
     {
@@ -51,8 +51,8 @@ export default class RopeGeometry extends MeshGeometry
 
         if (!points) return;
 
-        const vertexBuffer = this.getAttribute('aVertexPosition');
-        const uvBuffer = this.getAttribute('aTextureCoord');
+        const vertexBuffer = this.getBuffer('aVertexPosition');
+        const uvBuffer = this.getBuffer('aTextureCoord');
         const indexBuffer = this.getIndex();
 
         // if too little points, or texture hasn't got UVs set yet just move on.

@@ -293,14 +293,14 @@ export default class TextureSystem extends System
 
         texture = texture.baseTexture || texture;
 
-        if (texture._glTextures[this.renderer.CONTEXT_UID])
+        if (texture._glTextures[this.CONTEXT_UID])
         {
             this.unbind(texture);
 
-            gl.deleteTexture(texture._glTextures[this.renderer.CONTEXT_UID].texture);
+            gl.deleteTexture(texture._glTextures[this.CONTEXT_UID].texture);
             texture.off('dispose', this.destroyTexture, this);
 
-            delete texture._glTextures[this.renderer.CONTEXT_UID];
+            delete texture._glTextures[this.CONTEXT_UID];
 
             if (!skipRemove)
             {
@@ -357,7 +357,7 @@ export default class TextureSystem extends System
      *
      * @private
      * @param {PIXI.BaseTexture} texture - Texture to update
-     * @param {glTexture} glTexture
+     * @param {PIXI.GLTexture} glTexture
      */
     setStyle(texture, glTexture)
     {

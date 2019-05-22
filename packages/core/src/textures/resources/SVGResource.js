@@ -166,39 +166,44 @@ export default class SVGResource extends BaseImageResource
     {
         const svgSize = SVGResource.getSize(svgString);
 
-        // TODO do we need to wait for this to load?
-        // seems instant!
-        //
         const tempImage = new Image();
 
         tempImage.src = `data:image/svg+xml,${svgString}`;
 
-        const svgWidth = svgSize.width;
-        const svgHeight = svgSize.height;
-
-        if (!svgWidth || !svgHeight)
+        tempImage.onerror = () =>
         {
-            throw new Error('The SVG image must have width and height defined (in pixels), canvas API needs them.');
-        }
+            throw new Error(`Unable to load image from: ${tempImage.src}`);
+        };
 
-        // Scale realWidth and realHeight
-        this._width = Math.round(svgWidth * this.scale);
-        this._height = Math.round(svgHeight * this.scale);
+        tempImage.onload = () =>
+        {
+            const svgWidth = svgSize.width;
+            const svgHeight = svgSize.height;
 
-        // Create a canvas element
-        const canvas = this.source;
+            if (!svgWidth || !svgHeight)
+            {
+                throw new Error('The SVG image must have width and height defined (in pixels), canvas API needs them.');
+            }
 
-        canvas.width = this._width;
-        canvas.height = this._height;
-        canvas._pixiId = `canvas_${uid()}`;
+            // Scale realWidth and realHeight
+            const width = Math.round(svgWidth * this.scale);
+            const height = Math.round(svgHeight * this.scale);
 
-        // Draw the Svg to the canvas
-        canvas
-            .getContext('2d')
-            .drawImage(tempImage, 0, 0, svgWidth, svgHeight, 0, 0, this.width, this.height);
+            // Create a canvas element
+            const canvas = this.source;
 
-        this._resolve();
-        this._resolve = null;
+            canvas.width = width;
+            canvas.height = height;
+            canvas._pixiId = `canvas_${uid()}`;
+
+            // Draw the Svg to the canvas
+            canvas
+                .getContext('2d')
+                .drawImage(tempImage, 0, 0, svgWidth, svgHeight, 0, 0, width, height);
+
+            this._resolve();
+            this._resolve = null;
+        };
     }
 
     /**

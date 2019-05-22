@@ -501,7 +501,7 @@ export default class Ticker
     /**
      * Manages the minimum amount of milliseconds allowed to
      * elapse between invoking {@link PIXI.Ticker#update}.
-     * This will effect the measured value of {@link PIXI.ticker.Ticker#FPS}.
+     * This will effect the measured value of {@link PIXI.Ticker#FPS}.
      * When setting this property it is clamped to a value between
      * `1` and `TARGET_FPMS * 1000`.
      *
