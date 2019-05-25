@@ -59,11 +59,6 @@ export default class ParticleContainer extends Container
             batchSize = maxBatchSize;
         }
 
-        if (batchSize > maxSize)
-        {
-            batchSize = maxSize;
-        }
-
         /**
          * Set properties to be dynamic (true) / static (false)
          *
