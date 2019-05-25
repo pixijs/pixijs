@@ -604,7 +604,7 @@ export default class GeometrySystem extends System
                 /* eslint-disable max-len */
                 gl.drawElementsInstanced(type, size || geometry.indexBuffer.data.length, gl.UNSIGNED_INT, (start || 0) * 4, instanceCount || 1);
             }
-            else if(!geometry.instanced && gl.UNSIGNED_SHORT)
+            else if (!geometry.instanced && gl.UNSIGNED_SHORT)
             {
                 /* eslint-disable max-len */
                 gl.drawElements(type, size || geometry.indexBuffer.data.length, gl.UNSIGNED_SHORT, (start || 0) * 2);
