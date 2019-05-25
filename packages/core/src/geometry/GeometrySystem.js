@@ -588,6 +588,7 @@ export default class GeometrySystem extends System
     {
         const { gl } = this;
         const geometry = this._activeGeometry;
+        const uints_for_indices = gl.getExtension("OES_element_index_uint");
 
         // TODO.. this should not change so maybe cache the function?
 
@@ -598,30 +599,20 @@ export default class GeometrySystem extends System
                 /* eslint-disable max-len */
                 gl.drawElementsInstanced(type, size || geometry.indexBuffer.data.length, gl.UNSIGNED_SHORT, (start || 0) * 2, instanceCount || 1);
             }
-            else if (geometry.instanced && OES_element_index_uint && gl.UNSIGNED_INT32)
+            else if (geometry.instanced && uints_for_indices && gl.UNSIGNED_INT)
             {
                 /* eslint-disable max-len */
-                gl.drawElementsInstanced(type, size || geometry.indexBuffer.data.length, gl.UNSIGNED_INT32, (start || 0) * 2, instanceCount || 1);
-            }
-            else if (geometry.instanced && OES_element_index_uint && gl.UNSIGNED_INT64)
-            {
-                /* eslint-disable max-len */
-                gl.drawElementsInstanced(type, size || geometry.indexBuffer.data.length, gl.UNSIGNED_INT64, (start || 0) * 4, instanceCount || 1);
+                gl.drawElementsInstanced(type, size || geometry.indexBuffer.data.length, gl.UNSIGNED_INT, (start || 0) * 4, instanceCount || 1);
             }
             else if(!geometry.instanced && gl.UNSIGNED_SHORT)
             {
                 /* eslint-disable max-len */
                 gl.drawElements(type, size || geometry.indexBuffer.data.length, gl.UNSIGNED_SHORT, (start || 0) * 2);
             }
-            else if(!geometry.instanced && OES_element_index_uint && gl.UNSIGNED_INT32 )
-            {
-                /* eslint-disable max-len */
-                gl.drawElements(type, size || geometry.indexBuffer.data.length, gl.UNSIGNED_INT32, (start || 0) * 2);   
-            }
             else
             {
                 /* eslint-disable max-len */
-                gl.drawElements(type, size || geometry.indexBuffer.data.length, gl.UNSIGNED_INT64, (start || 0) * 4);
+                gl.drawElements(type, size || geometry.indexBuffer.data.length, gl.UNSIGNED_INT, (start || 0) * 4);   
             }
         }
         else if (geometry.instanced)
