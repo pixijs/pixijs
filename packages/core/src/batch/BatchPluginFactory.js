@@ -51,17 +51,17 @@ export class BatchPluginFactory
             vertexSize: 6,
         }, options);
 
-        function BatchPlugin(renderer)
+        return class BatchPlugin extends BaseBatchRenderer
         {
-            BaseBatchRenderer.call(this, renderer);
-            this.shaderGenerator = new BatchShaderGenerator(vertex, fragment);
-            this.geometryClass = geometryClass;
-            this.vertexSize = vertexSize;
-        }
+            constructor(renderer)
+            {
+                super(renderer);
 
-        BatchPlugin.prototype = BaseBatchRenderer.prototype;
-
-        return BatchPlugin;
+                this.shaderGenerator = new BatchShaderGenerator(vertex, fragment);
+                this.geometryClass = geometryClass;
+                this.vertexSize = vertexSize;
+            }
+        };
     }
 
     /**
