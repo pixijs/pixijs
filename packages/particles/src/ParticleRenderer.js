@@ -109,7 +109,7 @@ export default class ParticleRenderer extends ObjectRenderer
         {
             return;
         }
-        else if (totalChildren > maxSize)
+        else if (totalChildren > maxSize && !container.autoResize)
         {
             totalChildren = maxSize;
         }
@@ -155,10 +155,6 @@ export default class ParticleRenderer extends ObjectRenderer
 
             if (j >= buffers.length)
             {
-                if (!container.autoResize)
-                {
-                    break;
-                }
                 buffers.push(this._generateOneMoreBuffer(container));
             }
 
