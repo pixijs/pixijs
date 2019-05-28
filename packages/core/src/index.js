@@ -22,7 +22,7 @@ export { default as BaseRenderTexture } from './renderTexture/BaseRenderTexture'
 export { default as TextureUvs } from './textures/TextureUvs';
 export { default as State } from './state/State';
 export { default as ObjectRenderer } from './batch/ObjectRenderer';
-export * from './batch/BatchRendererFactory';
+export * from './batch/BatchPluginFactory';
 export { default as BatchShaderGenerator } from './batch/BatchShaderGenerator';
 export { default as BatchGeometry } from './batch/BatchGeometry';
 export { default as BatchDrawCall } from './batch/BatchDrawCall';

@@ -20,7 +20,7 @@ import defaultFragment from './texture.frag';
  *     gl_FragColor = vColor * vec4(color.a - color.rgb, color.a);
  * }
  * `;
- * const InvertBatchRenderer = PIXI.BatchRendererFactory.create({ fragment });
+ * const InvertBatchRenderer = PIXI.BatchPluginFactory.create({ fragment });
  * PIXI.Renderer.registerPlugin('invert', InvertBatchRenderer);
  * const sprite = new PIXI.Sprite();
  * sprite.pluginName = 'invert';
@@ -28,7 +28,7 @@ import defaultFragment from './texture.frag';
  * @class
  * @memberof PIXI
  */
-export class BatchRendererFactory
+export class BatchPluginFactory
 {
     /**
      * Create a new BatchRenderer plugin for Renderer. this convenience can provide an easy way
@@ -36,8 +36,8 @@ export class BatchRendererFactory
      *
      * @static
      * @param {object} [options]
-     * @param {string} [options.vertex=PIXI.BatchRendererFactory.defaultVertexSrc] - Vertex shader source
-     * @param {string} [options.fragment=PIXI.BatchRendererFactory.defaultFragmentTemplate] - Fragment shader template
+     * @param {string} [options.vertex=PIXI.BatchPluginFactory.defaultVertexSrc] - Vertex shader source
+     * @param {string} [options.fragment=PIXI.BatchPluginFactory.defaultFragmentTemplate] - Fragment shader template
      * @param {number} [options.vertexSize=6] - Vertex size
      * @param {object} [options.geometryClass=PIXI.BatchGeometry]
      * @return {PIXI.BatchRenderer} New batch renderer plugin.
@@ -91,4 +91,4 @@ export class BatchRendererFactory
 
 // Setup the default BatchRenderer plugin, this is what
 // we'll actually export at the root level
-export const BatchRenderer = BatchRendererFactory.create();
+export const BatchRenderer = BatchPluginFactory.create();
