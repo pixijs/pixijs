@@ -1,15 +1,10 @@
-import BatchShaderGen from './BatchShaderGen';
-import BatchGeometry from './BatchGeometry';
 import BatchDrawCall from './BatchDrawCall';
 import BaseTexture from '../textures/BaseTexture';
-
 import State from '../state/State';
 import ObjectRenderer from './ObjectRenderer';
 import checkMaxIfStatementsInShader from '../shader/utils/checkMaxIfStatementsInShader';
-
 import { settings } from '@pixi/settings';
 import { premultiplyBlendMode, premultiplyTint, nextPow2, log2 } from '@pixi/utils';
-
 import BatchBuffer from './BatchBuffer';
 import { ENV } from '@pixi/constants';
 
@@ -88,17 +83,26 @@ export default class BatchRenderer extends ObjectRenderer
 
         /**
          * MultiTexture shader generator.
-         * Please override it in constructor
-         * @member {PIXI.BatchShaderGen}
+         *
+         * @member {PIXI.BatchShaderGenerator}
          */
-        this.shaderGen = BatchRenderer.defaultShaderGen;
+        this.shaderGenerator = null;
 
         /**
          * The class we use to create geometries.
          * Please override it in constructor
          * @member {object}
+         * @default PIXI.BatchGeometry
          */
-        this.geomClass = BatchGeometry;
+        this.geometryClass = null;
+
+        /**
+         * Number of values sent in the vertex buffer.
+         * aVertexPosition(2), aTextureCoord(1), aColor(1), aTextureId(1) = 5
+         *
+         * @member {number} vertSize
+         */
+        this.vertexSize = null;
     }
 
     /**
@@ -121,14 +125,14 @@ export default class BatchRenderer extends ObjectRenderer
             this.MAX_TEXTURES = checkMaxIfStatementsInShader(this.MAX_TEXTURES, gl);
         }
 
-        this.shader = this.shaderGen.generateShader(this.MAX_TEXTURES);
+        this.shader = this.shaderGenerator.generateShader(this.MAX_TEXTURES);
 
         // we use the second shader as the first one depending on your browser may omit aTextureId
         // as it is not used by the shader so is optimized out.
         for (let i = 0; i < this.vaoMax; i++)
         {
             /* eslint-disable max-len */
-            this.vaos[i] = new (this.geomClass)();
+            this.vaos[i] = new (this.geometryClass)();
         }
     }
 
@@ -202,7 +206,7 @@ export default class BatchRenderer extends ObjectRenderer
 
         if (!buffer)
         {
-            this.aBuffers[roundedSize] = buffer = new BatchBuffer(roundedSize * this.geomClass.vertSize * 4);
+            this.aBuffers[roundedSize] = buffer = new BatchBuffer(roundedSize * this.vertexSize * 4);
         }
 
         return buffer;
@@ -221,7 +225,7 @@ export default class BatchRenderer extends ObjectRenderer
 
         const gl = this.renderer.gl;
         const MAX_TEXTURES = this.MAX_TEXTURES;
-        const vertSize = this.geomClass.vertSize;
+        const vertSize = this.vertexSize;
 
         const buffer = this.getAttributeBuffer(this.currentSize);
         const indexBuffer = this.getIndexBuffer(this.currentIndexSize);
@@ -326,7 +330,7 @@ export default class BatchRenderer extends ObjectRenderer
             {
                 this.vaoMax++;
                 /* eslint-disable max-len */
-                this.vaos[this.vertexCount] = new (this.geomClass)();
+                this.vaos[this.vertexCount] = new (this.geometryClass)();
             }
 
             this.vaos[this.vertexCount]._buffer.update(buffer.vertices, 0);
@@ -390,7 +394,7 @@ export default class BatchRenderer extends ObjectRenderer
 
     packGeometry(element, float32View, uint32View, indexBuffer, index, indexCount)
     {
-        const p = index / this.geomClass.vertSize;// float32View.length / 6 / 2;
+        const p = index / this.vertexSize;// float32View.length / 6 / 2;
         const uvs = element.uvs;
         const indicies = element.indices;// geometry.getIndex().data;// indicies;
         const vertexData = element.vertexData;
@@ -528,13 +532,3 @@ export default class BatchRenderer extends ObjectRenderer
         super.destroy();
     }
 }
-
-/**
- * default multi-texture shader generator
- *
- * @memberof PIXI.BatchRenderer
- * @static
- * @readonly
- * @member {PIXI.BatchShaderGen} defaultShaderGen
- */
-BatchRenderer.defaultShaderGen = new BatchShaderGen();

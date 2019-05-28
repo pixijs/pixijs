@@ -3,27 +3,46 @@ import Program from '../shader/Program';
 import UniformGroup from '../shader/UniformGroup';
 import { Matrix } from '@pixi/math';
 
-import defaultVertex from './texture.vert';
-import defaultFragment from './texture.frag';
-
 /**
  * Helper that generates batching multi-texture shader. Use it with your new BatchRenderer
  *
  * @class
  * @memberof PIXI
  */
-export default class BatchShaderGen
+export default class BatchShaderGenerator
 {
     /**
-     * @param {string} vertexSrc
-     * @param {string} fragTemplate
+     * @param {string} vertexSrc - Vertex shader
+     * @param {string} fragTemplate - Fragment shader template
      */
-    constructor(vertexSrc = BatchShaderGen.defaultVertexSrc, fragTemplate = BatchShaderGen.defaultFragmentTemplate)
+    constructor(vertexSrc, fragTemplate)
     {
+        /**
+         * Reference to the vertex shader source.
+         *
+         * @member {string}
+         */
         this.vertexSrc = vertexSrc;
+
+        /**
+         * Reference to the fragement shader template. Must contain "%count%" and "%forloop%".
+         *
+         * @member {string}
+         */
         this.fragTemplate = fragTemplate;
+
         this.programCache = {};
         this.defaultGroupCache = {};
+
+        if (fragTemplate.indexOf('%count%') < 0)
+        {
+            throw new Error('Fragment template must contain "%count%".');
+        }
+
+        if (fragTemplate.indexOf('%forloop%') < 0)
+        {
+            throw new Error('Fragment template must contain "%forloop%".');
+        }
     }
 
     generateShader(maxTextures)
@@ -84,29 +103,5 @@ export default class BatchShaderGen
         src += '\n';
 
         return src;
-    }
-
-    /**
-     * The default vertex shader source
-     *
-     * @static
-     * @type {string}
-     * @constant
-     */
-    static get defaultVertexSrc()
-    {
-        return defaultVertex;
-    }
-
-    /**
-     * The default fragment shader source
-     *
-     * @static
-     * @type {string}
-     * @constant
-     */
-    static get defaultFragmentTemplate()
-    {
-        return defaultFragment;
     }
 }
