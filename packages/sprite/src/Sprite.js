@@ -114,13 +114,14 @@ export default class Sprite extends Container
         this.shader = null;
 
         /**
-         * An internal cached value of the tint.
+         * Cached tint value so we can tell when the tint is changed.
+         * Value is used for 2d CanvasRenderer.
          *
-         * @private
+         * @protected
          * @member {number}
          * @default 0xFFFFFF
          */
-        this.cachedTint = 0xFFFFFF;
+        this._cachedTint = 0xFFFFFF;
 
         this.uvs = null;
 
@@ -188,7 +189,7 @@ export default class Sprite extends Container
     {
         this._textureID = -1;
         this._textureTrimmedID = -1;
-        this.cachedTint = 0xFFFFFF;
+        this._cachedTint = 0xFFFFFF;
 
         this.uvs = this._texture._uvs.uvsFloat32;
         // so if _width is 0 then width was not set..
@@ -622,7 +623,7 @@ export default class Sprite extends Container
         }
 
         this._texture = value || Texture.EMPTY;
-        this.cachedTint = 0xFFFFFF;
+        this._cachedTint = 0xFFFFFF;
 
         this._textureID = -1;
         this._textureTrimmedID = -1;
