@@ -79,6 +79,8 @@ export default class CanvasGraphicsRenderer
                 const holes = data.holes;
                 let outerArea;
                 let innerArea;
+                let px;
+                let py;
 
                 context.moveTo(points[0], points[1]);
 
@@ -96,25 +98,36 @@ export default class CanvasGraphicsRenderer
                 if (holes.length > 0)
                 {
                     outerArea = 0;
-                    for (let j = 0; j < points.length; j += 2)
+                    px = points[0];
+                    py = points[1];
+                    for (let j = 2; j + 2 < points.length; j += 2)
                     {
-                        outerArea += (points[j] * points[j + 3]) - (points[j + 1] * points[j + 2]);
+                        outerArea += ((points[j] - px) * (points[j + 3] - py))
+                            - ((points[j + 2] - px) * (points[j + 1] - py));
                     }
 
                     for (let k = 0; k < holes.length; k++)
                     {
                         points = holes[k].points;
 
-                        innerArea = 0;
-                        for (let j = 0; j < points.length; j += 2)
+                        if (!points)
                         {
-                            innerArea += (points[j] * points[j + 3]) - (points[j + 1] * points[j + 2]);
+                            continue;
                         }
 
-                        context.moveTo(points[0], points[1]);
+                        innerArea = 0;
+                        px = points[0];
+                        py = points[1];
+                        for (let j = 2; j + 2 < points.length; j += 2)
+                        {
+                            innerArea += ((points[j] - px) * (points[j + 3] - py))
+                                - ((points[j + 2] - px) * (points[j + 1] - py));
+                        }
 
                         if (innerArea * outerArea < 0)
                         {
+                            context.moveTo(points[0], points[1]);
+
                             for (let j = 2; j < points.length; j += 2)
                             {
                                 context.lineTo(points[j], points[j + 1]);
@@ -122,13 +135,15 @@ export default class CanvasGraphicsRenderer
                         }
                         else
                         {
-                            for (let j = points.length - 2; j >= 2; j -= 2)
+                            context.moveTo(points[points.length - 2], points[points.length - 1]);
+
+                            for (let j = points.length - 4; j >= 0; j -= 2)
                             {
                                 context.lineTo(points[j], points[j + 1]);
                             }
                         }
 
-                        if (holes[k].closed)
+                        if (holes[k].close)
                         {
                             context.closePath();
                         }
