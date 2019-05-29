@@ -586,22 +586,48 @@ export default class GeometrySystem extends System
      */
     draw(type, size, start, instanceCount)
     {
-        const { gl } = this;
+        const { gl, renderer: { context } } = this;
         const geometry = this._activeGeometry;
 
         // TODO.. this should not change so maybe cache the function?
 
         if (geometry.indexBuffer)
         {
-            if (geometry.instanced)
+            const byteSize = geometry.indexBuffer.data.BYTES_PER_ELEMENT;
+
+            if (byteSize === 2)
             {
-                /* eslint-disable max-len */
-                gl.drawElementsInstanced(type, size || geometry.indexBuffer.data.length, gl.UNSIGNED_SHORT, (start || 0) * 2, instanceCount || 1);
-                /* eslint-enable max-len */
+                if (geometry.instanced)
+                {
+                    /* eslint-disable max-len */
+                    gl.drawElementsInstanced(type, size || geometry.indexBuffer.data.length, gl.UNSIGNED_SHORT, (start || 0) * byteSize, instanceCount || 1);
+                    /* eslint-enable max-len */
+                }
+                else
+                {
+                    /* eslint-disable max-len */
+                    gl.drawElements(type, size || geometry.indexBuffer.data.length, gl.UNSIGNED_SHORT, (start || 0) * byteSize);
+                    /* eslint-enable max-len */
+                }
+            }
+            else if (context.webGLVersion === 2 || context.extensions.uintElementIndex)
+            {
+                if (geometry.instanced)
+                {
+                    /* eslint-disable max-len */
+                    gl.drawElementsInstanced(type, size || geometry.indexBuffer.data.length, gl.UNSIGNED_INT, (start || 0) * byteSize, instanceCount || 1);
+                    /* eslint-enable max-len */
+                }
+                else
+                {
+                    /* eslint-disable max-len */
+                    gl.drawElements(type, size || geometry.indexBuffer.data.length, gl.UNSIGNED_INT, (start || 0) * byteSize);
+                    /* eslint-enable max-len */
+                }
             }
             else
             {
-                gl.drawElements(type, size || geometry.indexBuffer.data.length, gl.UNSIGNED_SHORT, (start || 0) * 2);
+                console.warn('unsupported index buffer type: uint32');
             }
         }
         else if (geometry.instanced)
