@@ -39,6 +39,13 @@ export default class GeometrySystem extends System
         this.hasInstance = true;
 
         /**
+         * `true` if support `gl.UNSIGNED_INT` in `gl.drawElements` or `gl.drawElementsInstanced`
+         * @member {boolean}
+         * @readonly
+         */
+        this.canUseUInt32ElementIndex = false;
+
+        /**
          * A cache of currently bound buffer,
          * contains only two members with keys ARRAY_BUFFER and ELEMENT_ARRAY_BUFFER
          * @member {Object.<number, PIXI.Buffer>}
@@ -69,6 +76,7 @@ export default class GeometrySystem extends System
         this.disposeAll(true);
 
         const gl = this.gl = this.renderer.gl;
+        const context = this.renderer.context;
 
         this.CONTEXT_UID = this.renderer.CONTEXT_UID;
 
@@ -134,6 +142,8 @@ export default class GeometrySystem extends System
                 this.hasInstance = false;
             }
         }
+
+        this.canUseUInt32ElementIndex = context.webGLVersion === 2 || !!context.extensions.uint32ElementIndex;
     }
 
     /**
@@ -586,7 +596,7 @@ export default class GeometrySystem extends System
      */
     draw(type, size, start, instanceCount)
     {
-        const { gl, renderer: { context } } = this;
+        const { gl } = this;
         const geometry = this._activeGeometry;
 
         // TODO.. this should not change so maybe cache the function?
@@ -596,7 +606,7 @@ export default class GeometrySystem extends System
             const byteSize = geometry.indexBuffer.data.BYTES_PER_ELEMENT;
             const glType = byteSize === 2 ? gl.UNSIGNED_SHORT : gl.UNSIGNED_INT;
 
-            if (byteSize === 2 || context.webGLVersion === 2 || context.extensions.uintElementIndex)
+            if (byteSize === 2 || (byteSize === 4 && this.canUseUInt32ElementIndex))
             {
                 if (geometry.instanced)
                 {
