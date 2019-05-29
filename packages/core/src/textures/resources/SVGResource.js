@@ -45,7 +45,7 @@ export default class SVGResource extends BaseImageResource
          * @private
          * @member {boolean|string}
          */
-        this._crossorigin = options.crossorigin || true;
+        this._crossorigin = options.crossorigin;
 
         /**
          * Promise when loading
