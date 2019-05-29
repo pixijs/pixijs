@@ -163,6 +163,7 @@ export default class ContextSystem extends System
                 vertexArrayObject: gl.getExtension('OES_vertex_array_object')
                     || gl.getExtension('MOZ_OES_vertex_array_object')
                     || gl.getExtension('WEBKIT_OES_vertex_array_object'),
+                uint32ElementIndex: gl.getExtension('OES_element_index_uint'),
             });
         }
 
