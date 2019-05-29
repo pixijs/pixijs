@@ -137,7 +137,7 @@ export default class TilingSprite extends Sprite
         {
             this.uvMatrix.texture = this._texture;
         }
-        this.cachedTint = 0xFFFFFF;
+        this._cachedTint = 0xFFFFFF;
     }
 
     /**
