@@ -594,34 +594,20 @@ export default class GeometrySystem extends System
         if (geometry.indexBuffer)
         {
             const byteSize = geometry.indexBuffer.data.BYTES_PER_ELEMENT;
+            const glType = byteSize === 2 ? gl.UNSIGNED_SHORT : gl.UNSIGNED_INT;
 
-            if (byteSize === 2)
+            if (byteSize === 2 || context.webGLVersion === 2 || context.extensions.uintElementIndex)
             {
                 if (geometry.instanced)
                 {
                     /* eslint-disable max-len */
-                    gl.drawElementsInstanced(type, size || geometry.indexBuffer.data.length, gl.UNSIGNED_SHORT, (start || 0) * byteSize, instanceCount || 1);
+                    gl.drawElementsInstanced(type, size || geometry.indexBuffer.data.length, glType, (start || 0) * byteSize, instanceCount || 1);
                     /* eslint-enable max-len */
                 }
                 else
                 {
                     /* eslint-disable max-len */
-                    gl.drawElements(type, size || geometry.indexBuffer.data.length, gl.UNSIGNED_SHORT, (start || 0) * byteSize);
-                    /* eslint-enable max-len */
-                }
-            }
-            else if (context.webGLVersion === 2 || context.extensions.uintElementIndex)
-            {
-                if (geometry.instanced)
-                {
-                    /* eslint-disable max-len */
-                    gl.drawElementsInstanced(type, size || geometry.indexBuffer.data.length, gl.UNSIGNED_INT, (start || 0) * byteSize, instanceCount || 1);
-                    /* eslint-enable max-len */
-                }
-                else
-                {
-                    /* eslint-disable max-len */
-                    gl.drawElements(type, size || geometry.indexBuffer.data.length, gl.UNSIGNED_INT, (start || 0) * byteSize);
+                    gl.drawElements(type, size || geometry.indexBuffer.data.length, glType, (start || 0) * byteSize);
                     /* eslint-enable max-len */
                 }
             }
