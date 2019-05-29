@@ -159,7 +159,7 @@ export default class CanvasSpriteRenderer
             }
 
             context.drawImage(
-                source,
+                sprite._tintedCanvas,
                 0,
                 0,
                 width * resolution,
