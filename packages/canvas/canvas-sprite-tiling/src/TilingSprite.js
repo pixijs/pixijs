@@ -29,7 +29,7 @@ TilingSprite.prototype._renderCanvas = function _renderCanvas(renderer)
     const modY = ((this.tilePosition.y / this.tileScale.y) % texture._frame.height) * baseTextureResolution;
 
     // create a nice shiny pattern!
-    if (this._textureID !== this._texture._updateID || this.cachedTint !== this.tint)
+    if (this._textureID !== this._texture._updateID || this._cachedTint !== this.tint)
     {
         this._textureID = this._texture._updateID;
         // cut an object from a spritesheet..
@@ -48,7 +48,7 @@ TilingSprite.prototype._renderCanvas = function _renderCanvas(renderer)
             tempCanvas.context.drawImage(source,
                 -texture._frame.x * baseTextureResolution, -texture._frame.y * baseTextureResolution);
         }
-        this.cachedTint = this.tint;
+        this._cachedTint = this.tint;
         this._canvasPattern = tempCanvas.context.createPattern(tempCanvas.canvas, 'repeat');
     }
 
