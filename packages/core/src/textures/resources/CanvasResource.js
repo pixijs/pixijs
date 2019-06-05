@@ -19,8 +19,8 @@ export default class CanvasResource extends BaseImageResource
     static test(source)
     {
         return (source && (
-            source instanceof HTMLCanvasElement ||
-            source instanceof global.OffscreenCanvas
+            source instanceof HTMLCanvasElement
+            || source instanceof global.OffscreenCanvas
         ));
     }
 }
