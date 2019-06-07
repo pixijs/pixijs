@@ -296,7 +296,7 @@ export default class AnimatedSprite extends Sprite
         this._texture = this._textures[this.currentFrame];
         this._textureID = -1;
         this._textureTrimmedID = -1;
-        this.cachedTint = 0xFFFFFF;
+        this._cachedTint = 0xFFFFFF;
         this.uvs = this._texture._uvs.uvsFloat32;
 
         if (this.updateAnchor)
