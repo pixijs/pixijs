@@ -1,6 +1,6 @@
 {
   "name": "@pixi/canvas-renderer",
-  "version": "5.0.3",
+  "version": "5.0.4",
   "main": "lib/canvas-renderer.js",
   "module": "lib/canvas-renderer.es.js",
   "bundle": "dist/canvas-renderer.js",
@@ -27,11 +27,11 @@
     "dist"
   ],
   "dependencies": {
-    "@pixi/constants": "^5.0.3",
-    "@pixi/core": "^5.0.3",
-    "@pixi/math": "^5.0.3",
-    "@pixi/settings": "^5.0.3",
-    "@pixi/utils": "^5.0.3"
+    "@pixi/constants": "^5.0.4",
+    "@pixi/core": "^5.0.4",
+    "@pixi/math": "^5.0.4",
+    "@pixi/settings": "^5.0.4",
+    "@pixi/utils": "^5.0.4"
   },
   "devDependencies": {
     "floss": "^2.2.0"

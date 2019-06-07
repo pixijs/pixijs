@@ -1,6 +1,6 @@
 {
   "name": "@pixi/polyfill",
-  "version": "5.0.3",
+  "version": "5.0.4",
   "main": "lib/polyfill.js",
   "module": "lib/polyfill.es.js",
   "bundle": "dist/polyfill.js",
