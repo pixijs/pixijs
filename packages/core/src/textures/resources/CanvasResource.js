@@ -20,7 +20,7 @@ export default class CanvasResource extends BaseImageResource
     {
         return (source && (
             source instanceof HTMLCanvasElement
-            || source instanceof global.OffscreenCanvas
+            || source instanceof window.OffscreenCanvas
         ));
     }
 }
