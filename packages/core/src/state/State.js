@@ -127,7 +127,7 @@ export default class State
      * The blend mode to be applied when this state is set. Apply a value of `PIXI.BLEND_MODES.NORMAL` to reset the blend mode.
      * Setting this mode to anything other than NO_BLEND will automatically switch blending on.
      *
-     * @member {boolean}
+     * @member {number}
      * @default PIXI.BLEND_MODES.NORMAL
      * @see PIXI.BLEND_MODES
      */
