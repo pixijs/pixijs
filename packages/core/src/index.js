@@ -22,10 +22,10 @@ export { default as BaseRenderTexture } from './renderTexture/BaseRenderTexture'
 export { default as TextureUvs } from './textures/TextureUvs';
 export { default as State } from './state/State';
 export { default as ObjectRenderer } from './batch/ObjectRenderer';
-export { default as BatchRenderer } from './batch/BatchRenderer';
+export * from './batch/BatchPluginFactory';
+export { default as BatchShaderGenerator } from './batch/BatchShaderGenerator';
 export { default as BatchGeometry } from './batch/BatchGeometry';
 export { default as BatchDrawCall } from './batch/BatchDrawCall';
-export { default as generateMultiTextureShader } from './batch/generateMultiTextureShader';
 export { default as Quad } from './utils/Quad';
 export { default as QuadUv } from './utils/QuadUv';
 export { default as checkMaxIfStatementsInShader } from './shader/utils/checkMaxIfStatementsInShader';

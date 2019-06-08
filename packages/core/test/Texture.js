@@ -167,7 +167,7 @@ describe('PIXI.Texture', function ()
         canvas.width = 50;
         canvas.height = 50;
 
-        const texture = new Texture.from(canvas);
+        const texture = Texture.from(canvas);
 
         expect(texture.width).to.equal(50);
         canvas.width = 100;
