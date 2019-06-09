@@ -1,10 +1,9 @@
 import System from '../System';
 
-import RenderTexture from '../renderTexture/RenderTexture';
+import RenderTexturePool from '../renderTexture/RenderTexturePool';
 import Quad from '../utils/Quad';
 import QuadUv from '../utils/QuadUv';
 import { Rectangle, Matrix } from '@pixi/math';
-import { nextPow2 } from '@pixi/utils';
 import UniformGroup from '../shader/UniformGroup';
 import { DRAW_MODES } from '@pixi/constants';
 
@@ -81,8 +80,6 @@ class FilterState
     }
 }
 
-const screenKey = 'screen';
-
 /**
  * System plugin to the renderer to manage the filters.
  *
@@ -110,7 +107,7 @@ export default class FilterSystem extends System
          * stores a bunch of PO2 textures used for filtering
          * @member {Object}
          */
-        this.texturePool = {};
+        this.texturePool = new RenderTexturePool();
 
         /**
          * a pool for storing filter states, save us creating new ones each tick
@@ -407,20 +404,11 @@ export default class FilterSystem extends System
      */
     destroy(contextLost = false)
     {
-        if (!contextLost)
-        {
-            this.emptyPool();
-        }
-        else
-        {
-            this.texturePool = {};
-        }
+        this.texturePool.clear(!contextLost);
     }
 
     /**
      * Gets a Power-of-Two render texture or fullScreen texture
-     *
-     * TODO move to a separate class could be on renderer?
      *
      * @protected
      * @param {number} minWidth - The minimum width of the render texture in real pixels.
@@ -430,37 +418,7 @@ export default class FilterSystem extends System
      */
     getOptimalFilterTexture(minWidth, minHeight, resolution = 1)
     {
-        let key = screenKey;
-
-        minWidth *= resolution;
-        minHeight *= resolution;
-
-        if (minWidth !== this._pixelsWidth || minHeight !== this._pixelsHeight)
-        {
-            minWidth = nextPow2(minWidth);
-            minHeight = nextPow2(minHeight);
-            key = ((minWidth & 0xFFFF) << 16) | (minHeight & 0xFFFF);
-        }
-
-        if (!this.texturePool[key])
-        {
-            this.texturePool[key] = [];
-        }
-
-        let renderTexture = this.texturePool[key].pop();
-
-        if (!renderTexture)
-        {
-            renderTexture = RenderTexture.create({
-                width: minWidth,
-                height: minHeight,
-            });
-        }
-
-        renderTexture.filterPoolKey = key;
-        renderTexture.setResolution(resolution);
-
-        return renderTexture;
+        return this.texturePool.getOptimalTexture(minWidth, minHeight, resolution);
     }
 
     /**
@@ -473,11 +431,7 @@ export default class FilterSystem extends System
     {
         const rt = this.activeState.renderTexture;
 
-        const filterTexture = this.getOptimalFilterTexture(rt.width, rt.height, resolution || rt.baseTexture.resolution);
-
-        filterTexture.filterFrame = rt.filterFrame;
-
-        return filterTexture;
+        return this.texturePool.getOptimalTexture(rt.width, rt.height, resolution || rt.resolution);
     }
 
     /**
@@ -487,48 +441,22 @@ export default class FilterSystem extends System
      */
     returnFilterTexture(renderTexture)
     {
-        const key = renderTexture.filterPoolKey;
-
-        renderTexture.filterFrame = null;
-        this.texturePool[key].push(renderTexture);
+        this.texturePool.returnTexture(renderTexture);
     }
 
     /**
      * Empties the texture pool.
-     *
      */
     emptyPool()
     {
-        for (const i in this.texturePool)
-        {
-            const textures = this.texturePool[i];
-
-            if (textures)
-            {
-                for (let j = 0; j < textures.length; j++)
-                {
-                    textures[j].destroy(true);
-                }
-            }
-        }
-
-        this.texturePool = {};
+        this.texturePool.clear(true);
     }
 
+    /**
+     * calls `texturePool.resize()`, affects fullScreen renderTextures
+     */
     resize()
     {
-        const textures = this.texturePool[screenKey];
-
-        if (textures)
-        {
-            for (let j = 0; j < textures.length; j++)
-            {
-                textures[j].destroy(true);
-            }
-        }
-        this.texturePool[screenKey] = [];
-
-        this._pixelsWidth = this.renderer.view.width;
-        this._pixelsHeight = this.renderer.view.height;
+        this.texturePool.resize();
     }
 }
