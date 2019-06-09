@@ -107,7 +107,7 @@ export default class FilterSystem extends System
          * stores a bunch of PO2 textures used for filtering
          * @member {Object}
          */
-        this.texturePool = new RenderTexturePool();
+        this.texturePool = new RenderTexturePool(renderer);
 
         /**
          * a pool for storing filter states, save us creating new ones each tick

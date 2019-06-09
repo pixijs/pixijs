@@ -10,7 +10,7 @@ export default class RenderTexturePool
 {
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
-     * @param {object} textureOptions - options that will be passed to BaseRenderTexture constructor
+     * @param {object} [textureOptions] - options that will be passed to BaseRenderTexture constructor
      */
     constructor(renderer, textureOptions)
     {
@@ -23,6 +23,23 @@ export default class RenderTexturePool
          * @member {boolean} [enableFullScreen=true]
          */
         this.enableFullScreen = true;
+    }
+
+    /**
+     * creates of texture with params that were specified in pool constructor
+     *
+     * @param {number} realWidth width of texture in pixels
+     * @param {number} realHeight height of texture in pixels
+     * @returns {RenderTexture}
+     */
+    createTexture(realWidth, realHeight)
+    {
+        const baseRenderTexture = new BaseRenderTexture(Object.assign({
+            width: realWidth,
+            height: realHeight,
+        }, this.textureOptions));
+
+        return new RenderTexture(baseRenderTexture);
     }
 
     /**
@@ -57,12 +74,7 @@ export default class RenderTexturePool
 
         if (!renderTexture)
         {
-            const baseRenderTexture = new BaseRenderTexture(Object.assign({
-                width: minWidth,
-                height: minHeight,
-            }, this.textureOptions));
-
-            renderTexture = new RenderTexture(baseRenderTexture);
+            renderTexture = this.createTexture(minWidth, minHeight);
         }
 
         renderTexture.filterPoolKey = key;
