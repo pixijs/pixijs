@@ -430,8 +430,11 @@ export default class FilterSystem extends System
     getFilterTexture(resolution)
     {
         const rt = this.activeState.renderTexture;
+        const filterTexture = this.texturePool.getOptimalTexture(rt.width, rt.height, resolution || rt.resolution);
 
-        return this.texturePool.getOptimalTexture(rt.width, rt.height, resolution || rt.resolution);
+        filterTexture.filterFrame = rt.filterFrame;
+
+        return filterTexture;
     }
 
     /**
