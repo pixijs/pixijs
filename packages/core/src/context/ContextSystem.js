@@ -159,19 +159,27 @@ export default class ContextSystem extends System
             Object.assign(this.extensions, {
                 drawBuffers: gl.getExtension('WEBGL_draw_buffers'),
                 depthTexture: gl.getExtension('WEBKIT_WEBGL_depth_texture'),
-                floatTexture: gl.getExtension('OES_texture_float'),
                 loseContext: gl.getExtension('WEBGL_lose_context'),
                 vertexArrayObject: gl.getExtension('OES_vertex_array_object')
                     || gl.getExtension('MOZ_OES_vertex_array_object')
                     || gl.getExtension('WEBKIT_OES_vertex_array_object'),
                 anisotropicFiltering: gl.getExtension('EXT_texture_filter_anisotropic'),
                 uint32ElementIndex: gl.getExtension('OES_element_index_uint'),
+                // Floats and half-floats
+                floatTexture: gl.getExtension('OES_texture_float'),
+                floatTextureLinear: gl.getExtension('OES_texture_float_linear'),
+                textureHalfFloat: gl.getExtension('OES_texture_half_float'),
+                textureHalfFloatLinear: gl.getExtension('OES_texture_half_float_linear'),
             });
         }
         else if (this.webGLVersion === 2)
         {
             Object.assign(this.extensions, {
                 anisotropicFiltering: gl.getExtension('EXT_texture_filter_anisotropic'),
+                // Floats and half-floats
+                colorBufferFloat: gl.getExtension('EXT_color_buffer_float'),
+                textureHalfFloat: gl.getExtension('OES_texture_float_linear'),
+                textureHalfFloatLinear: gl.getExtension('OES_texture_half_float_linear'),
             });
         }
     }
