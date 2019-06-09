@@ -398,13 +398,11 @@ export default class FilterSystem extends System
 
     /**
      * Destroys this Filter System.
-     *
-     * @param {boolean} [contextLost=false] context was lost, do not free shaders
-     *
      */
-    destroy(contextLost = false)
+    destroy()
     {
-        this.texturePool.clear(!contextLost);
+        // Those textures has to be destroyed by RenderTextureSystem or FramebufferSystem
+        this.texturePool.clear(false);
     }
 
     /**
