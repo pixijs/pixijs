@@ -3,6 +3,8 @@ import BaseRenderTexture from './BaseRenderTexture';
 import { nextPow2 } from '@pixi/utils';
 
 /**
+ * Experimental!
+ *
  * Texture pool, used by FilterSystem and plugins
  * Stores collection of temporary pow2 or screen-sized renderTextures
  */
