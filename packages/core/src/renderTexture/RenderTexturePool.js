@@ -93,7 +93,7 @@ export default class RenderTexturePool
     {
         const rt = this.renderer.renderTexture.current;
 
-        const filterTexture = this.getOptimalFilterTexture(rt.width, rt.height, resolution || rt.baseTexture.resolution);
+        const filterTexture = this.getOptimalTexture(rt.width, rt.height, resolution || rt.baseTexture.resolution);
 
         filterTexture.filterFrame = rt.filterFrame;
 
@@ -101,8 +101,7 @@ export default class RenderTexturePool
     }
 
     /**
-     * Frees a render texture back into the pool.
-     *
+     * Place a render texture back into the pool.
      * @param {PIXI.RenderTexture} renderTexture - The renderTexture to free
      */
     returnTexture(renderTexture)
@@ -111,6 +110,15 @@ export default class RenderTexturePool
 
         renderTexture.filterFrame = null;
         this.texturePool[key].push(renderTexture);
+    }
+
+    /**
+     * Alias for returnTexture, to be compliant with FilterSystem interface
+     * @param {PIXI.RenderTexture} renderTexture - The renderTexture to free
+     */
+    returnFilterTexture(renderTexture)
+    {
+        this.returnTexture(renderTexture);
     }
 
     /**
