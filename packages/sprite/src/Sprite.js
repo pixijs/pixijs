@@ -463,20 +463,23 @@ export default class Sprite extends Container
     {
         super.destroy(options);
 
-        this._texture.off('update', this._onTextureUpdate, this);
-
-        this._anchor = null;
-
-        const destroyTexture = typeof options === 'boolean' ? options : options && options.texture;
-
-        if (destroyTexture)
+        if (this._texture)
         {
-            const destroyBaseTexture = typeof options === 'boolean' ? options : options && options.baseTexture;
+            this._texture.off('update', this._onTextureUpdate, this);
 
-            this._texture.destroy(!!destroyBaseTexture);
+            const destroyTexture = typeof options === 'boolean' ? options : options && options.texture;
+
+            if (destroyTexture)
+            {
+                const destroyBaseTexture = typeof options === 'boolean' ? options : options && options.baseTexture;
+
+                this._texture.destroy(!!destroyBaseTexture);
+            }
+
+            this._texture = null;
         }
 
-        this._texture = null;
+        this._anchor = null;
         this.shader = null;
     }
 
