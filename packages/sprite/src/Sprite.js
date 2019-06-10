@@ -14,7 +14,7 @@ const indices = new Uint16Array([0, 1, 2, 0, 2, 3]);
  * A sprite can be created directly from an image like this:
  *
  * ```js
- * let sprite = new PIXI.Sprite.from('assets/image.png');
+ * let sprite = PIXI.Sprite.from('assets/image.png');
  * ```
  *
  * The more efficient way to create sprites is using a {@link PIXI.Spritesheet},
@@ -161,7 +161,7 @@ export default class Sprite extends Container
          * Allows to customize the rendering process without overriding '_render' & '_renderCanvas' methods.
          *
          * @member {string}
-         * @default 'sprite'
+         * @default 'batch'
          */
         this.pluginName = 'batch';
 
@@ -495,7 +495,7 @@ export default class Sprite extends Container
     {
         const texture = (source instanceof Texture)
             ? source
-            : new Texture.from(source, options);
+            : Texture.from(source, options);
 
         return new Sprite(texture);
     }

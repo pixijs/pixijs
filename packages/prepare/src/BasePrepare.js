@@ -14,7 +14,7 @@ import CountLimiter from './CountLimiter';
  *
  * @example
  * // Create a sprite
- * const sprite = new PIXI.Sprite.from('something.png');
+ * const sprite = PIXI.Sprite.from('something.png');
  *
  * // Load object into GPU
  * app.renderer.plugins.prepare.upload(sprite, () => {
