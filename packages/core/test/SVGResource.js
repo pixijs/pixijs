@@ -27,7 +27,7 @@ describe('PIXI.resources.SVGResource', function ()
             });
         });
 
-        it('should create resource from SVG URL', function (done)
+        it('should create resource from SVG URL (heart.svg)', function (done)
         {
             const resource = new SVGResource(
                 path.join(this.resources, 'heart.svg'),
@@ -38,6 +38,22 @@ describe('PIXI.resources.SVGResource', function ()
             {
                 expect(resource.width).to.equal(100);
                 expect(resource.height).to.equal(100);
+
+                done();
+            });
+        });
+
+        it('should create resource from SVG URL (ai_export.svg)', function (done)
+        {
+            const resource = new SVGResource(
+                path.join(this.resources, 'ai_export.svg'),
+                { autoLoad: false }
+            );
+
+            resource.load().then(function ()
+            {
+                expect(resource.width).to.equal(18);
+                expect(resource.height).to.equal(18);
 
                 done();
             });
