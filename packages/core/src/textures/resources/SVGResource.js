@@ -9,6 +9,8 @@ import BaseImageResource from './BaseImageResource';
  * @param {string} source - Base64 encoded SVG element or URL for SVG file.
  * @param {object} [options] - Options to use
  * @param {number} [options.scale=1] Scale to apply to SVG.
+ * @param {number} [options.width] Render SVG this wide. Overrides options.scale.
+ * @param {number} [options.height] Render SVG this high. Overrides options.scale.
  * @param {boolean} [options.autoLoad=true] Start loading right away.
  */
 export default class SVGResource extends BaseImageResource
@@ -32,6 +34,20 @@ export default class SVGResource extends BaseImageResource
          * @member {number}
          */
         this.scale = options.scale || 1;
+
+        /**
+         * A width override for render
+         * @readonly
+         * @member {number}
+         */
+        this._overrideWidth = options.width;
+
+        /**
+         * A height override for render
+         * @readonly
+         * @member {number}
+         */
+        this._overrideHeight = options.height;
 
         /**
          * Call when completely loaded
@@ -116,8 +132,8 @@ export default class SVGResource extends BaseImageResource
             }
 
             // Scale realWidth and realHeight
-            const width = Math.round(svgWidth * this.scale);
-            const height = Math.round(svgHeight * this.scale);
+            const width = this._overrideWidth ? this._overrideWidth : Math.round(svgWidth * this.scale);
+            const height = this._overrideHeight ? this._overrideHeight : Math.round(svgHeight * this.scale);
 
             // Create a canvas element
             const canvas = this.source;
