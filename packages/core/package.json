@@ -1,6 +1,6 @@
 {
   "name": "@pixi/core",
-  "version": "5.0.2",
+  "version": "5.0.4",
   "main": "lib/core.js",
   "module": "lib/core.es.js",
   "bundle": "dist/core.js",
@@ -27,13 +27,13 @@
     "dist"
   ],
   "dependencies": {
-    "@pixi/constants": "^5.0.0-rc.3",
-    "@pixi/display": "^5.0.1",
-    "@pixi/math": "^5.0.0-rc.3",
-    "@pixi/runner": "^5.0.0",
-    "@pixi/settings": "^5.0.1",
-    "@pixi/ticker": "^5.0.1",
-    "@pixi/utils": "^5.0.1"
+    "@pixi/constants": "^5.0.4",
+    "@pixi/display": "^5.0.4",
+    "@pixi/math": "^5.0.4",
+    "@pixi/runner": "^5.0.4",
+    "@pixi/settings": "^5.0.4",
+    "@pixi/ticker": "^5.0.4",
+    "@pixi/utils": "^5.0.4"
   },
   "devDependencies": {
     "floss": "^2.2.0"

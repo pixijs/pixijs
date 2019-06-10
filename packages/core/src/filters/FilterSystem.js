@@ -451,16 +451,14 @@ export default class FilterSystem extends System
 
         if (!renderTexture)
         {
-            // temporary bypass cache..
-            // internally - this will cause a texture to be bound..
             renderTexture = RenderTexture.create({
-                width: minWidth / resolution,
-                height: minHeight / resolution,
-                resolution,
+                width: minWidth,
+                height: minHeight,
             });
         }
 
         renderTexture.filterPoolKey = key;
+        renderTexture.setResolution(resolution);
 
         return renderTexture;
     }

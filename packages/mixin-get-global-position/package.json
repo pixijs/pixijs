@@ -1,6 +1,6 @@
 {
   "name": "@pixi/mixin-get-global-position",
-  "version": "5.0.1",
+  "version": "5.0.4",
   "main": "lib/mixin-get-global-position.js",
   "module": "lib/mixin-get-global-position.es.js",
   "bundle": "dist/mixin-get-global-position.js",
@@ -28,8 +28,8 @@
     "dist"
   ],
   "dependencies": {
-    "@pixi/display": "^5.0.1",
-    "@pixi/math": "^5.0.0-rc.3"
+    "@pixi/display": "^5.0.4",
+    "@pixi/math": "^5.0.4"
   },
   "devDependencies": {
     "floss": "^2.2.0"

@@ -165,6 +165,7 @@ export default class ContextSystem extends System
                     || gl.getExtension('MOZ_OES_vertex_array_object')
                     || gl.getExtension('WEBKIT_OES_vertex_array_object'),
                 anisotropicFiltering: gl.getExtension('EXT_texture_filter_anisotropic'),
+                uint32ElementIndex: gl.getExtension('OES_element_index_uint'),
             });
         }
         else if (this.webGLVersion === 2)

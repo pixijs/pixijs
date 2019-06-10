@@ -51,7 +51,7 @@ declare namespace PIXI {
         crossOrigin?: boolean | string;
         loadType?: number;
         xhrType?: string;
-        metaData?: {
+        metadata?: {
             loadElement?: HTMLImageElement | HTMLAudioElement | HTMLVideoElement;
             skipSource?: boolean;
             mimeType?: string | string[];

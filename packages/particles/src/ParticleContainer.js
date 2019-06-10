@@ -18,7 +18,7 @@ import { Container } from '@pixi/display';
  *
  * for (let i = 0; i < 100; ++i)
  * {
- *     let sprite = new PIXI.Sprite.from("myImage.png");
+ *     let sprite = PIXI.Sprite.from("myImage.png");
  *     container.addChild(sprite);
  * }
  * ```
@@ -57,11 +57,6 @@ export default class ParticleContainer extends Container
         if (batchSize > maxBatchSize)
         {
             batchSize = maxBatchSize;
-        }
-
-        if (batchSize > maxSize)
-        {
-            batchSize = maxSize;
         }
 
         /**

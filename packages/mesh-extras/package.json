@@ -1,6 +1,6 @@
 {
   "name": "@pixi/mesh-extras",
-  "version": "5.0.2",
+  "version": "5.0.4",
   "main": "lib/mesh-extras.js",
   "module": "lib/mesh-extras.es.js",
   "bundle": "dist/mesh-extras.js",
@@ -27,14 +27,14 @@
     "dist"
   ],
   "dependencies": {
-    "@pixi/constants": "^5.0.0-rc.3",
-    "@pixi/core": "^5.0.2",
-    "@pixi/math": "^5.0.0-rc.3",
-    "@pixi/mesh": "^5.0.2",
-    "@pixi/utils": "^5.0.1"
+    "@pixi/constants": "^5.0.4",
+    "@pixi/core": "^5.0.4",
+    "@pixi/math": "^5.0.4",
+    "@pixi/mesh": "^5.0.4",
+    "@pixi/utils": "^5.0.4"
   },
   "devDependencies": {
-    "@pixi/loaders": "^5.0.2",
+    "@pixi/loaders": "^5.0.4",
     "floss": "^2.2.0"
   }
 }

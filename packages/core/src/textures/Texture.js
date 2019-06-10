@@ -22,6 +22,9 @@ const DEFAULT_UVS = new TextureUvs();
  * let sprite2 = new PIXI.Sprite(texture);
  * ```
  *
+ * If you didnt pass the texture frame to constructor, it enables `noFrame` mode:
+ * it subscribes on baseTexture events, it automatically resizes at the same time as baseTexture.
+ *
  * Textures made from SVGs, loaded or not, cannot be used before the file finishes processing.
  * You can check for this by checking the sprite's _textureID property.
  * ```js
@@ -51,6 +54,19 @@ export default class Texture extends EventEmitter
 
         /**
          * Does this Texture have any frame data assigned to it?
+         *
+         * This mode is enabled automatically if no frame was passed inside constructor.
+         *
+         * In this mode texture is subscribed to baseTexture events, and fires `update` on any change.
+         *
+         * Beware, after loading or resize of baseTexture event can fired two times!
+         * If you want more control, subscribe on baseTexture itself.
+         *
+         * ```js
+         * texture.on('update', () => {});
+         * ```
+         *
+         * Any assignment of `frame` switches off `noFrame` mode.
          *
          * @member {boolean}
          */
@@ -166,22 +182,26 @@ export default class Texture extends EventEmitter
          */
         this.textureCacheIds = [];
 
-        if (this.noFrame)
+        if (!baseTexture.valid)
+        {
+            baseTexture.once('loaded', this.onBaseTextureUpdated, this);
+        }
+        else if (this.noFrame)
         {
             // if there is no frame we should monitor for any base texture changes..
             if (baseTexture.valid)
             {
                 this.onBaseTextureUpdated(baseTexture);
             }
-            baseTexture.on('update', this.onBaseTextureUpdated, this);
-        }
-        else if (!baseTexture.valid)
-        {
-            baseTexture.once('loaded', this.onBaseTextureUpdated, this);
         }
         else
         {
             this.frame = frame;
+        }
+
+        if (this.noFrame)
+        {
+            baseTexture.on('update', this.onBaseTextureUpdated, this);
         }
     }
 

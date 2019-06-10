@@ -7,6 +7,9 @@ import Texture from '../textures/Texture';
  * __Hint__: All DisplayObjects (i.e. Sprites) that render to a RenderTexture should be preloaded
  * otherwise black rectangles will be drawn instead.
  *
+ * __Hint-2__: The actual memory allocation will happen on first render.
+ * You shouldn't create renderTextures each frame just to delete them after, try to reuse them.
+ *
  * A RenderTexture takes a snapshot of any Display Object given to its render method. For example:
  *
  * ```js
@@ -128,6 +131,24 @@ export default class RenderTexture extends Texture
         }
 
         this.updateUvs();
+    }
+
+    /**
+     * Changes the resolution of baseTexture, but does not change framebuffer size.
+     *
+     * @param {number} resolution - The new resolution to apply to RenderTexture
+     */
+    setResolution(resolution)
+    {
+        const { baseTexture } = this;
+
+        if (baseTexture.resolution === resolution)
+        {
+            return;
+        }
+
+        baseTexture.setResolution(resolution);
+        this.resize(baseTexture.width, baseTexture.height, false);
     }
 
     /**

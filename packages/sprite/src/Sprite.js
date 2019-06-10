@@ -14,7 +14,7 @@ const indices = new Uint16Array([0, 1, 2, 0, 2, 3]);
  * A sprite can be created directly from an image like this:
  *
  * ```js
- * let sprite = new PIXI.Sprite.from('assets/image.png');
+ * let sprite = PIXI.Sprite.from('assets/image.png');
  * ```
  *
  * The more efficient way to create sprites is using a {@link PIXI.Spritesheet},
@@ -37,7 +37,7 @@ const indices = new Uint16Array([0, 1, 2, 0, 2, 3]);
 export default class Sprite extends Container
 {
     /**
-     * @param {PIXI.Texture} texture - The texture for this sprite.
+     * @param {PIXI.Texture} [texture] - The texture for this sprite.
      */
     constructor(texture)
     {
@@ -114,13 +114,14 @@ export default class Sprite extends Container
         this.shader = null;
 
         /**
-         * An internal cached value of the tint.
+         * Cached tint value so we can tell when the tint is changed.
+         * Value is used for 2d CanvasRenderer.
          *
-         * @private
+         * @protected
          * @member {number}
          * @default 0xFFFFFF
          */
-        this.cachedTint = 0xFFFFFF;
+        this._cachedTint = 0xFFFFFF;
 
         this.uvs = null;
 
@@ -160,7 +161,7 @@ export default class Sprite extends Container
          * Allows to customize the rendering process without overriding '_render' & '_renderCanvas' methods.
          *
          * @member {string}
-         * @default 'sprite'
+         * @default 'batch'
          */
         this.pluginName = 'batch';
 
@@ -188,7 +189,7 @@ export default class Sprite extends Container
     {
         this._textureID = -1;
         this._textureTrimmedID = -1;
-        this.cachedTint = 0xFFFFFF;
+        this._cachedTint = 0xFFFFFF;
 
         this.uvs = this._texture._uvs.uvsFloat32;
         // so if _width is 0 then width was not set..
@@ -494,7 +495,7 @@ export default class Sprite extends Container
     {
         const texture = (source instanceof Texture)
             ? source
-            : new Texture.from(source, options);
+            : Texture.from(source, options);
 
         return new Sprite(texture);
     }
@@ -622,7 +623,7 @@ export default class Sprite extends Container
         }
 
         this._texture = value || Texture.EMPTY;
-        this.cachedTint = 0xFFFFFF;
+        this._cachedTint = 0xFFFFFF;
 
         this._textureID = -1;
         this._textureTrimmedID = -1;
