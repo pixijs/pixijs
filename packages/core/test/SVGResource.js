@@ -95,6 +95,18 @@ describe('PIXI.resources.SVGResource', function ()
                 .to.equal(32);
         });
 
+        it('should return a size object with width and height inferred from viewBox in an SVG string', function ()
+        {
+            const svgSize = SVGResource.getSize('<svg viewBox="0 0 64 32"></svg>');
+
+            expect(svgSize)
+                .to.be.an('object');
+            expect(svgSize.width)
+                .to.equal(64);
+            expect(svgSize.height)
+                .to.equal(32);
+        });
+
         it('should return a size object from an SVG string with inverted quotes', function ()
         {
             const svgSize = SVGResource.getSize("<svg height='32' width='64'></svg>"); // eslint-disable-line quotes
