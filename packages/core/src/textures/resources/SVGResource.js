@@ -154,13 +154,25 @@ export default class SVGResource extends BaseImageResource
      */
     static getSize(svgString)
     {
-        const sizeMatch = SVGResource.SVG_SIZE.exec(svgString);
         const size = {};
+        const sizeMatch = SVGResource.SVG_SIZE.exec(svgString);
 
         if (sizeMatch)
         {
             size[sizeMatch[1]] = Math.round(parseFloat(sizeMatch[3]));
             size[sizeMatch[5]] = Math.round(parseFloat(sizeMatch[7]));
+
+            return size;
+        }
+
+        const viewBoxMatch = SVGResource.SVG_VIEWBOX.exec(svgString);
+
+        if (viewBoxMatch)
+        {
+            size.width = Math.round(parseFloat(viewBoxMatch[3]));
+            size.height = Math.round(parseFloat(viewBoxMatch[4]));
+
+            return size;
         }
 
         return size;
@@ -204,3 +216,13 @@ export default class SVGResource extends BaseImageResource
  * @example &lt;svg width="100" height="100"&gt;&lt;/svg&gt;
  */
 SVGResource.SVG_SIZE = /<svg[^>]*(?:\s(width|height)=('|")(\d*(?:\.\d+)?)(?:px)?('|"))[^>]*(?:\s(width|height)=('|")(\d*(?:\.\d+)?)(?:px)?('|"))[^>]*>/i; // eslint-disable-line max-len
+
+/**
+ * RegExp for SVG viewBox.
+ *
+ * @static
+ * @constant {RegExp|string} SVG_SIZE
+ * @memberof PIXI.resources.SVGResource
+ * @example &lt;svg viewBox"0 0 100 100"&gt;&lt;/svg&gt;
+ */
+SVGResource.SVG_VIEWBOX = /<svg[^>]*viewBox=(?:'|")(\d*(?:\.\d+)?(?:\s|,))(\d*(?:\.\d+)?(?:\s|,))(\d*(?:\.\d+)?(?:\s|,))(\d*(?:\.\d+)?)(?:'|")[^>]*>/i; // eslint-disable-line max-len
