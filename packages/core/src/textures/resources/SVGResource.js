@@ -8,9 +8,9 @@ import BaseImageResource from './BaseImageResource';
  * @memberof PIXI.resources
  * @param {string} source - Base64 encoded SVG element or URL for SVG file.
  * @param {object} [options] - Options to use
- * @param {number} [options.scale=1] Scale to apply to SVG.
- * @param {number} [options.width] Render SVG this wide. Overrides options.scale.
- * @param {number} [options.height] Render SVG this high. Overrides options.scale.
+ * @param {number} [options.scale=1] Scale to apply to SVG. Overridden by...
+ * @param {number} [options.width] Render SVG this wide. Aspect ratio preserved if height not specified.
+ * @param {number} [options.height] Render SVG this high. Aspect ratio preserved if width not specified.
  * @param {boolean} [options.autoLoad=true] Start loading right away.
  */
 export default class SVGResource extends BaseImageResource
@@ -131,9 +131,27 @@ export default class SVGResource extends BaseImageResource
                 throw new Error('The SVG image must have width and height defined (in pixels), canvas API needs them.');
             }
 
-            // Scale realWidth and realHeight
-            const width = this._overrideWidth ? this._overrideWidth : Math.round(svgWidth * this.scale);
-            const height = this._overrideHeight ? this._overrideHeight : Math.round(svgHeight * this.scale);
+            // Set render size
+            let width = svgWidth * this.scale;
+            let height = svgHeight * this.scale;
+
+            if (this._overrideWidth && this._overrideHeight)
+            {
+                width = this._overrideWidth;
+                height = this._overrideHeight;
+            }
+            else if (this._overrideWidth)
+            {
+                width = this._overrideWidth;
+                height = this._overrideWidth / svgWidth * svgHeight;
+            }
+            else if (this._overrideHeight)
+            {
+                width = this._overrideHeight / svgHeight * svgWidth;
+                height = this._overrideHeight;
+            }
+            width = Math.round(width);
+            height = Math.round(height);
 
             // Create a canvas element
             const canvas = this.source;
