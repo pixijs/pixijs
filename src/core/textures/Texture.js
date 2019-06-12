@@ -223,8 +223,11 @@ export default class Texture extends EventEmitter
     {
         this._updateID++;
 
-        this._frame.width = baseTexture.width;
-        this._frame.height = baseTexture.height;
+        if (this.noFrame)
+        {
+            this._frame.width = baseTexture.width;
+            this._frame.height = baseTexture.height;
+        }
 
         this.emit('update', this);
     }
