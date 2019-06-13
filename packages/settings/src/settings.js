@@ -29,6 +29,18 @@ export default {
     MIPMAP_TEXTURES: 1,
 
     /**
+     * Default anisotropic filtering level of textures.
+     * Usually from 0 to 16
+     *
+     * @static
+     * @name ANISOTROPIC_LEVEL
+     * @memberof PIXI.settings
+     * @type {number}
+     * @default 16
+     */
+    ANISOTROPIC_LEVEL: 0,
+
+    /**
      * Default resolution / device pixel ratio of the renderer.
      *
      * @static

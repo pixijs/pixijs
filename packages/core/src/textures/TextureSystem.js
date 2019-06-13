@@ -2,7 +2,7 @@ import System from '../System';
 import BaseTexture from './BaseTexture';
 import GLTexture from './GLTexture';
 import { removeItems } from '@pixi/utils';
-import { MIPMAP_MODES, WRAP_MODES } from '@pixi/constants';
+import { MIPMAP_MODES, WRAP_MODES, SCALE_MODES } from '@pixi/constants';
 
 /**
  * System plugin to the renderer to manage textures.
@@ -376,6 +376,15 @@ export default class TextureSystem extends System
             /* eslint-disable max-len */
             gl.texParameteri(texture.target, gl.TEXTURE_MIN_FILTER, texture.scaleMode ? gl.LINEAR_MIPMAP_LINEAR : gl.NEAREST_MIPMAP_NEAREST);
             /* eslint-disable max-len */
+
+            const anisotropicExt = this.renderer.context.extensions.anisotropicFiltering;
+
+            if (anisotropicExt && texture.anisotropicLevel > 0 && texture.scaleMode === SCALE_MODES.LINEAR)
+            {
+                const level = Math.min(texture.anisotropicLevel, gl.getParameter(anisotropicExt.MAX_TEXTURE_MAX_ANISOTROPY_EXT));
+
+                gl.texParameterf(texture.target, anisotropicExt.TEXTURE_MAX_ANISOTROPY_EXT, level);
+            }
         }
         else
         {

@@ -36,6 +36,7 @@ export default class ContextSystem extends System
          * @property {OES_texture_float} floatTexture - WebGL v1 extension
          * @property {WEBGL_lose_context} loseContext - WebGL v1 extension
          * @property {OES_vertex_array_object} vertexArrayObject - WebGL v1 extension
+         * @property {EXT_texture_filter_anisotropic} anisotropicFiltering - WebGL v1 and v2 extension
          */
         this.extensions = {};
 
@@ -163,11 +164,16 @@ export default class ContextSystem extends System
                 vertexArrayObject: gl.getExtension('OES_vertex_array_object')
                     || gl.getExtension('MOZ_OES_vertex_array_object')
                     || gl.getExtension('WEBKIT_OES_vertex_array_object'),
+                anisotropicFiltering: gl.getExtension('EXT_texture_filter_anisotropic'),
                 uint32ElementIndex: gl.getExtension('OES_element_index_uint'),
             });
         }
-
-        // we don't use any specific WebGL 2 ones yet!
+        else if (this.webGLVersion === 2)
+        {
+            Object.assign(this.extensions, {
+                anisotropicFiltering: gl.getExtension('EXT_texture_filter_anisotropic'),
+            });
+        }
     }
 
     /**
