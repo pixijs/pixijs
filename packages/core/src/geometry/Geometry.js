@@ -71,7 +71,7 @@ export default class Geometry
 
         /**
          * Count of existing (not destroyed) meshes that reference this geometry
-         * @member {boolean}
+         * @member {number}
          */
         this.refCount = 0;
     }
