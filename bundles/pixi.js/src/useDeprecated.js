@@ -774,6 +774,18 @@ export default function useDeprecated()
         return this.copyTo(p);
     };
 
+    /**
+     * @method PIXI.systems.StateSystem#setState
+     * @deprecated since 5.1.0
+     * @see PIXI.systems.StateSystem#set
+     */
+    PIXI.systems.StateSystem.prototype.setState = function setState(s)
+    {
+        deprecation('v5.1.0', 'StateSystem.setState has been renamed to StateSystem.set');
+
+        return this.set(s);
+    };
+
     Object.assign(PIXI.systems.FilterSystem.prototype, {
         /**
          * @method PIXI.FilterManager#getRenderTarget
