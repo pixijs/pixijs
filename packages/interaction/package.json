@@ -41,6 +41,6 @@
     "@pixi/canvas-sprite": "^5.0.4",
     "@pixi/graphics": "^5.0.4",
     "@pixi/sprite": "^5.0.4",
-    "floss": "^2.2.0"
+    "floss": "^3.0.0"
   }
 }

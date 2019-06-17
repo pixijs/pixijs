@@ -30,6 +30,6 @@
     "ismobilejs": "^0.5.1"
   },
   "devDependencies": {
-    "floss": "^2.2.0"
+    "floss": "^3.0.0"
   }
 }

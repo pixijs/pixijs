@@ -27,6 +27,6 @@
     "dist"
   ],
   "devDependencies": {
-    "floss": "^2.2.0"
+    "floss": "^3.0.0"
   }
 }
