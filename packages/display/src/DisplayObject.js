@@ -710,6 +710,6 @@ export default class DisplayObject extends EventEmitter
  * Will crash if there's no parent element.
  *
  * @memberof PIXI.DisplayObject#
- * @function
+ * @function displayObjectUpdateTransform
  */
 DisplayObject.prototype.displayObjectUpdateTransform = DisplayObject.prototype.updateTransform;
