@@ -357,7 +357,7 @@ export default class FilterSystem extends System
         // because it does at the moment cos of global uniforms.
         // they need to get resynced
 
-        renderer.state.set(filter.state);
+        renderer.state.setState(filter.state);
         renderer.shader.bind(filter);
 
         if (filter.legacy)

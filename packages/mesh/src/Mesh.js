@@ -292,7 +292,7 @@ export default class Mesh extends Container
         renderer.shader.bind(shader);
 
         // set state..
-        renderer.state.set(this.state);
+        renderer.state.setState(this.state);
 
         // bind the geometry...
         renderer.geometry.bind(this.geometry, shader);

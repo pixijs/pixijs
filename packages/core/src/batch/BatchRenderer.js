@@ -467,7 +467,7 @@ export default class BatchRenderer extends ObjectRenderer
      */
     start()
     {
-        this.renderer.state.set(this.state);
+        this.renderer.state.setState(this.state);
 
         this.renderer.shader.bind(this.shader);
 

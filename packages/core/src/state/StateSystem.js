@@ -90,11 +90,6 @@ export default class StateSystem extends System
         this.defaultState = new State();
         this.defaultState.blend = true;
         this.defaultState.depth = true;
-
-        /**
-         * alias for set
-         */
-        this.setState = this.set;
     }
 
     contextChange(gl)
@@ -103,7 +98,7 @@ export default class StateSystem extends System
 
         this.blendModes = mapWebGLBlendModesToPixi(gl);
 
-        this.set(this.defaultState);
+        this.setState(this.defaultState);
 
         this.reset();
     }
@@ -113,7 +108,7 @@ export default class StateSystem extends System
      *
      * @param {*} state - The state to set.
      */
-    set(state)
+    setState(state)
     {
         state = state || this.defaultState;
 
