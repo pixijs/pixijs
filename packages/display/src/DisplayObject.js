@@ -705,5 +705,11 @@ export default class DisplayObject extends EventEmitter
     }
 }
 
-// performance increase to avoid using call.. (10x faster)
+/**
+ * DisplayObject default updateTransform, does not update children of container.
+ * Will crash if there's no parent element.
+ *
+ * @memberof PIXI.DisplayObject#
+ * @function displayObjectUpdateTransform
+ */
 DisplayObject.prototype.displayObjectUpdateTransform = DisplayObject.prototype.updateTransform;
