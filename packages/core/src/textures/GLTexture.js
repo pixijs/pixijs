@@ -13,7 +13,16 @@ export default class GLTexture
          */
         this.texture = texture;
 
+        /**
+         * Width of texture that was used in texImage2D
+         * @member {number}
+         */
         this.width = -1;
+
+        /**
+         * Height of texture that was used in texImage2D
+         * @member {number}
+         */
         this.height = -1;
 
         /**
