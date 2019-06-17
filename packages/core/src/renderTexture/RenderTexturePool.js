@@ -7,6 +7,8 @@ import { nextPow2 } from '@pixi/utils';
  *
  * Texture pool, used by FilterSystem and plugins
  * Stores collection of temporary pow2 or screen-sized renderTextures
+ *
+ * @class
  */
 export default class RenderTexturePool
 {
