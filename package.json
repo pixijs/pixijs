@@ -24,7 +24,7 @@
     "postbuild": "npm run types",
     "watch": "rollup -cw",
     "lerna": "lerna",
-    "predist": "rimraf dist/* && npm run build:prod",
+    "predist": "rimraf dist/* && npm run build:prod && npm run types",
     "dist": "npm run docs",
     "postdist": "copyfiles -f bundles/*/dist/* dist && copyfiles -f \"packages/**/dist/*\" dist/packages",
     "prerelease": "npm run clean:build && npm test",

@@ -18,9 +18,14 @@ export default class CanvasResource extends BaseImageResource
      */
     static test(source)
     {
-        return (source && (
-            source instanceof HTMLCanvasElement
-            || source instanceof window.OffscreenCanvas
-        ));
+        const { OffscreenCanvas } = window;
+
+        // Check for browsers that don't yet support OffscreenCanvas
+        if (OffscreenCanvas && source instanceof OffscreenCanvas)
+        {
+            return true;
+        }
+
+        return source instanceof HTMLCanvasElement;
     }
 }

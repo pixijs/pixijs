@@ -179,8 +179,9 @@ export default class BaseTexture extends EventEmitter
 
         /**
          * Used by TextureSystem to only update texture to the GPU when needed.
+         * Please call `update()` to increment it.
          *
-         * @protected
+         * @readonly
          * @member {number}
          */
         this.dirtyId = 0;
