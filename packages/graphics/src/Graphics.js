@@ -775,11 +775,12 @@ export default class Graphics extends Container
     clear()
     {
         this.geometry.clear();
+        this._lineStyle.reset();
+        this._fillStyle.reset();
 
         this._matrix = null;
         this._holeMode = false;
         this.currentPath = null;
-        this._spriteRect = null;
 
         return this;
     }
@@ -938,7 +939,7 @@ export default class Graphics extends Container
             renderer.geometry.bind(geometry, this.shader);
 
             // set state..
-            renderer.state.setState(this.state);
+            renderer.state.set(this.state);
 
             // then render the rest of them...
             for (let i = 0; i < geometry.drawCalls.length; i++)
