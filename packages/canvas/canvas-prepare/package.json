@@ -28,8 +28,5 @@
     "@pixi/canvas-renderer": "^5.0.4",
     "@pixi/core": "^5.0.4",
     "@pixi/prepare": "^5.0.4"
-  },
-  "devDependencies": {
-    "floss": "^3.0.0"
   }
 }

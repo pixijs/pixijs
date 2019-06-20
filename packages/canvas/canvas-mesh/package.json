@@ -29,8 +29,5 @@
     "@pixi/mesh": "^5.0.4",
     "@pixi/mesh-extras": "^5.0.4",
     "@pixi/settings": "^5.0.4"
-  },
-  "devDependencies": {
-    "floss": "^3.0.0"
   }
 }

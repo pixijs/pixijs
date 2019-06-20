@@ -19,9 +19,6 @@
   "publishConfig": {
     "access": "public"
   },
-  "scripts": {
-    "test": "floss --path test"
-  },
   "files": [
     "lib",
     "dist"
@@ -32,7 +29,6 @@
   },
   "devDependencies": {
     "@pixi/canvas-renderer": "^5.0.4",
-    "@pixi/utils": "^5.0.4",
-    "floss": "^3.0.0"
+    "@pixi/utils": "^5.0.4"
   }
 }

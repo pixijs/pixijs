@@ -20,9 +20,6 @@
   "publishConfig": {
     "access": "public"
   },
-  "scripts": {
-    "test": "floss --path test"
-  },
   "files": [
     "lib",
     "dist"
@@ -34,8 +31,5 @@
     "@pixi/settings": "^5.0.4",
     "@pixi/text": "^5.0.4",
     "@pixi/ticker": "^5.0.4"
-  },
-  "devDependencies": {
-    "floss": "^3.0.0"
   }
 }
