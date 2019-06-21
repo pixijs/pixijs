@@ -775,11 +775,12 @@ export default class Graphics extends Container
     clear()
     {
         this.geometry.clear();
+        this._lineStyle.reset();
+        this._fillStyle.reset();
 
         this._matrix = null;
         this._holeMode = false;
         this.currentPath = null;
-        this._spriteRect = null;
 
         return this;
     }
