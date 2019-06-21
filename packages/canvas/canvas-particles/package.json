@@ -26,8 +26,5 @@
   ],
   "dependencies": {
     "@pixi/particles": "^5.0.4"
-  },
-  "devDependencies": {
-    "floss": "^2.2.0"
   }
 }

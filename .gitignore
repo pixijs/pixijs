@@ -25,6 +25,7 @@ lerna-debug.log
 node_modules
 docs
 coverage
+.nyc_output
 lib
 dist
 bundles/*/*.d.ts
