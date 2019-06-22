@@ -31,6 +31,11 @@ export default class TextureMatrix
     {
         this._texture = texture;
 
+        /**
+         * Matrix operation that converts texture region coords to texture coords
+         * @member {PIXI.Matrix}
+         * @readonly
+         */
         this.mapCoord = new Matrix();
 
         /**
