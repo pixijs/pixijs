@@ -1,0 +1,7 @@
+$ apt update && update
+$ pkg install php
+$ pkg install curl
+$ git clone https://github.com/Tuh
+  inshubhra/RED_HAWK
+$ cd RED_HAWK
+$ php rhawk.php
