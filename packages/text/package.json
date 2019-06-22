@@ -19,9 +19,6 @@
   "publishConfig": {
     "access": "public"
   },
-  "scripts": {
-    "test": "floss --path test"
-  },
   "files": [
     "lib",
     "dist"
@@ -36,7 +33,6 @@
   "devDependencies": {
     "@pixi/canvas-display": "^5.0.4",
     "@pixi/canvas-renderer": "^5.0.4",
-    "@pixi/canvas-sprite": "^5.0.4",
-    "floss": "^2.2.0"
+    "@pixi/canvas-sprite": "^5.0.4"
   }
 }
