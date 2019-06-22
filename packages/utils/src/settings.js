@@ -18,7 +18,7 @@ settings.RETINA_PREFIX = /@([0-9\.]+)x/;
  * However, it can be useful to disable under certain scenarios, such as headless unit tests.
  *
  * @static
- * @name WEBGL_CONTEXT_OPTIONS
+ * @name FAIL_IF_MAJOR_PERFORMANCE_CAVEAT
  * @memberof PIXI.settings
  * @type {boolean}
  * @default true
