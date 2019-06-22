@@ -1,6 +1,10 @@
 import BaseImageResource from './BaseImageResource';
 
 /**
+ * @interface OffscreenCanvas
+ */
+
+/**
  * Resource type for HTMLCanvasElement.
  * @class
  * @extends PIXI.resources.BaseImageResource
