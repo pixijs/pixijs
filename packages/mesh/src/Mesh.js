@@ -248,6 +248,7 @@ export default class Mesh extends Container
     /**
      * Standard renderer draw.
      * @protected
+     * @param {PIXI.Renderer} renderer - Instance to renderer.
      */
     _render(renderer)
     {
