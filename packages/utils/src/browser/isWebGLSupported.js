@@ -1,3 +1,5 @@
+import { settings } from '../settings';
+
 let supported;
 
 /**
@@ -13,7 +15,10 @@ export function isWebGLSupported()
     {
         supported = (function supported()
         {
-            const contextOptions = { stencil: true, failIfMajorPerformanceCaveat: true };
+            const contextOptions = {
+                stencil: true,
+                failIfMajorPerformanceCaveat: settings.FAIL_IF_MAJOR_PERFORMANCE_CAVEAT,
+            };
 
             try
             {
