@@ -26,6 +26,7 @@ const defaultBufferOptions = {
  *        into a Resource.
  * @param {Object} [options] - Collection of options
  * @param {PIXI.MIPMAP_MODES} [options.mipmap=PIXI.settings.MIPMAP_TEXTURES] - If mipmapping is enabled for texture
+ * @param {number} [options.anisotropicLevel=PIXI.settings.ANISOTROPIC_LEVEL] - Anisotropic filtering level of texture
  * @param {PIXI.WRAP_MODES} [options.wrapMode=PIXI.settings.WRAP_MODE] - Wrap mode for textures
  * @param {PIXI.SCALE_MODES} [options.scaleMode=PIXI.settings.SCALE_MODE] - Default scale mode, linear, nearest
  * @param {PIXI.FORMATS} [options.format=PIXI.FORMATS.RGBA] - GL format type
@@ -45,7 +46,7 @@ export default class BaseTexture extends EventEmitter
 
         options = options || {};
 
-        const { premultiplyAlpha, mipmap, scaleMode, width, height,
+        const { premultiplyAlpha, mipmap, anisotropicLevel, scaleMode, width, height,
             wrapMode, format, type, target, resolution, resourceOptions } = options;
 
         // Convert the resource to a Resource object
@@ -86,6 +87,14 @@ export default class BaseTexture extends EventEmitter
          * @default PIXI.settings.MIPMAP_TEXTURES
          */
         this.mipmap = mipmap !== undefined ? mipmap : settings.MIPMAP_TEXTURES;
+
+        /**
+         * Anisotropic filtering level of texture
+         *
+         * @member {number}
+         * @default PIXI.settings.ANISOTROPIC_LEVEL
+         */
+        this.anisotropicLevel = anisotropicLevel !== undefined ? anisotropicLevel : settings.ANISOTROPIC_LEVEL;
 
         /**
          * How the texture wraps
@@ -170,8 +179,9 @@ export default class BaseTexture extends EventEmitter
 
         /**
          * Used by TextureSystem to only update texture to the GPU when needed.
+         * Please call `update()` to increment it.
          *
-         * @protected
+         * @readonly
          * @member {number}
          */
         this.dirtyId = 0;

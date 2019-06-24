@@ -403,7 +403,12 @@ export default class GraphicsGeometry extends BatchGeometry
     updateBatches()
     {
         if (this.dirty === this.cacheDirty) return;
-        if (this.graphicsData.length === 0) return;
+        if (this.graphicsData.length === 0)
+        {
+            this.batchable = true;
+
+            return;
+        }
 
         if (this.dirty !== this.cacheDirty)
         {

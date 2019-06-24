@@ -161,7 +161,7 @@ export default class Sprite extends Container
          * Allows to customize the rendering process without overriding '_render' & '_renderCanvas' methods.
          *
          * @member {string}
-         * @default 'sprite'
+         * @default 'batch'
          */
         this.pluginName = 'batch';
 

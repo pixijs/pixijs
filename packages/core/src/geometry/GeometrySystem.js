@@ -148,9 +148,9 @@ export default class GeometrySystem extends System
 
     /**
      * Binds geometry so that is can be drawn. Creating a Vao if required
-     * @protected
+     *
      * @param {PIXI.Geometry} geometry instance of geometry to bind
-     * @param {PIXI.Shader} shader instance of shader to bind
+     * @param {PIXI.Shader} [shader] instance of shader to use vao for
      */
     bind(geometry, shader)
     {
