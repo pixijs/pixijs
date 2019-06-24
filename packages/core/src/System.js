@@ -18,8 +18,6 @@ export default class System
          * @member {PIXI.Renderer}
          */
         this.renderer = renderer;
-
-        this.renderer.runners.contextChange.add(this);
     }
 
     /**
