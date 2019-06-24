@@ -18,8 +18,10 @@ describe('PIXI.resources.SVGResource', function ()
             const buffer = fs.readFileSync(url, 'utf8');
             const resource = new SVGResource(buffer, { autoLoad: false });
 
+            expect(resource.valid).to.equal(false);
             resource.load().then(function ()
             {
+                expect(resource.valid).to.equal(true);
                 expect(resource.width).to.equal(100);
                 expect(resource.height).to.equal(100);
 
@@ -34,8 +36,10 @@ describe('PIXI.resources.SVGResource', function ()
                 { autoLoad: false }
             );
 
+            expect(resource.valid).to.equal(false);
             resource.load().then(function ()
             {
+                expect(resource.valid).to.equal(true);
                 expect(resource.width).to.equal(100);
                 expect(resource.height).to.equal(100);
 
@@ -49,8 +53,10 @@ describe('PIXI.resources.SVGResource', function ()
             const buffer = fs.readFileSync(url, 'utf8');
             const resource = new SVGResource(buffer, { autoLoad: false });
 
+            expect(resource.valid).to.equal(false);
             resource.load().then(function ()
             {
+                expect(resource.valid).to.equal(true);
                 expect(resource.width).to.equal(100);
                 expect(resource.height).to.equal(100);
 
