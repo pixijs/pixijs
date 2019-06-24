@@ -135,20 +135,10 @@ export default class SVGResource extends BaseImageResource
             let width = svgWidth * this.scale;
             let height = svgHeight * this.scale;
 
-            if (this._overrideWidth && this._overrideHeight)
+            if (this._overrideWidth || this._overrideHeight)
             {
-                width = this._overrideWidth;
-                height = this._overrideHeight;
-            }
-            else if (this._overrideWidth)
-            {
-                width = this._overrideWidth;
-                height = this._overrideWidth / svgWidth * svgHeight;
-            }
-            else if (this._overrideHeight)
-            {
-                width = this._overrideHeight / svgHeight * svgWidth;
-                height = this._overrideHeight;
+                width = this._overrideWidth || this._overrideHeight / svgHeight * svgWidth;
+                height = this._overrideHeight || this._overrideWidth / svgWidth * svgHeight;
             }
             width = Math.round(width);
             height = Math.round(height);
