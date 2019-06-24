@@ -391,4 +391,16 @@ describe('PIXI.Graphics', function ()
         GRAPHICS_CURVES.adaptive = defMode;
         GRAPHICS_CURVES.maxLength = defMaxLen;
     });
+
+    describe('geometry', function ()
+    {
+        it('should be batchable if graphicsData is empty', function ()
+        {
+            const graphics = new Graphics();
+            const geometry = graphics.geometry;
+
+            geometry.updateBatches();
+            expect(geometry.batchable).to.be.true;
+        });
+    });
 });
