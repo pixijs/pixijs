@@ -16,8 +16,12 @@ export default class SVGResource extends BaseImageResource
     constructor(source, options)
     {
         options = options || {};
+
         const canvas = document.createElement('canvas');
-        canvas.width = canvas.height = 0;
+
+        canvas.width = 0;
+        canvas.height = 0;
+
         super(canvas);
 
         /**
