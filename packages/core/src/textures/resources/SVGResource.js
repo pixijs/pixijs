@@ -9,8 +9,8 @@ import BaseImageResource from './BaseImageResource';
  * @param {string} source - Base64 encoded SVG element or URL for SVG file.
  * @param {object} [options] - Options to use
  * @param {number} [options.scale=1] Scale to apply to SVG. Overridden by...
- * @param {number} [options.width] Render SVG this wide. Aspect ratio preserved if height not specified.
- * @param {number} [options.height] Render SVG this high. Aspect ratio preserved if width not specified.
+ * @param {number} [options.width] Rasterize SVG this wide. Aspect ratio preserved if height not specified.
+ * @param {number} [options.height] Rasterize SVG this high. Aspect ratio preserved if width not specified.
  * @param {boolean} [options.autoLoad=true] Start loading right away.
  */
 export default class SVGResource extends BaseImageResource
@@ -29,21 +29,21 @@ export default class SVGResource extends BaseImageResource
         this.svg = source;
 
         /**
-         * The source scale to apply to render
+         * The source scale to apply when rasterizing on load
          * @readonly
          * @member {number}
          */
         this.scale = options.scale || 1;
 
         /**
-         * A width override for render
+         * A width override for rasterization on load
          * @readonly
          * @member {number}
          */
         this._overrideWidth = options.width;
 
         /**
-         * A height override for render
+         * A height override for rasterization on load
          * @readonly
          * @member {number}
          */
