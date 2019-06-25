@@ -17,12 +17,9 @@ export default class SVGResource extends BaseImageResource
     {
         options = options || {};
 
-        const canvas = document.createElement('canvas');
-
-        canvas.width = 0;
-        canvas.height = 0;
-
-        super(canvas);
+        super(document.createElement('canvas'));
+        this._width = 0;
+        this._height = 0;
 
         /**
          * Base64 encoded SVG element or URL for SVG file
