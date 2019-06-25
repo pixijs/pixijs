@@ -53,17 +53,84 @@ export default class Transform
          */
         this.skew = new ObservablePoint(this.updateSkew, this, 0, 0);
 
+
+        /**
+         * The rotation amount.
+         *
+         * @protected
+         * @member {number}
+         */
         this._rotation = 0;
 
-        this._cx = 1; // cos rotation + skewY;
-        this._sx = 0; // sin rotation + skewY;
-        this._cy = 0; // cos rotation + Math.PI/2 - skewX;
-        this._sy = 1; // sin rotation + Math.PI/2 - skewX;
 
+        /**
+         * The computed value of the expression `Math.cos( this.rotation + this.skew.y )`.
+         * The value is automatically updated when the rotation or the skew is changed.
+         *
+         * @protected
+         * @member {number}
+         */
+        this._cx = 1;
+
+        /**
+         * The computed value of the expression `Math.sin( this.rotation + this.skew.y )`.
+         * The value is automatically updated when the rotation or the skew is changed.
+         *
+         * @protected
+         * @member {number}
+         */
+        this._sx = 0;
+
+        /**
+         * The computed value of the expression `Math.cos( this.rotation + Math.PI/2 - this.skew.x )`.
+         * The value is automatically updated when the rotation or the skew is changed.
+         *
+         * @protected
+         * @member {number}
+         */
+        this._cy = 0;
+
+        /**
+         * The computed value of the expression `Math.sin( this.rotation + Math.PI/2 - this.skew.x )`.
+         * The value is automatically updated when the rotation or the skew is changed.
+         *
+         * @protected
+         * @member {number}
+         */
+        this._sy = 1;
+
+        /**
+         * The unique ID of the local transform.
+         *
+         * @protected
+         * @member {number}
+         */
         this._localID = 0;
+
+        /**
+         * The unique ID of the local transform
+         * used for the current local transformation matrix.
+         *
+         * @protected
+         * @member {number}
+         */
         this._currentLocalID = 0;
 
+        /**
+         * The unique ID of the world transform.
+         *
+         * @protected
+         * @member {number}
+         */
         this._worldID = 0;
+
+        /**
+         * The unique ID of the parent's world transform
+         * used for the current world transformation matrix.
+         *
+         * @protected
+         * @member {number}
+         */
         this._parentID = 0;
     }
 
@@ -192,4 +259,11 @@ export default class Transform
     }
 }
 
+/**
+ * A default (identity) transform
+ *
+ * @static
+ * @constant
+ * @member {PIXI.Transform}
+ */
 Transform.IDENTITY = new Transform();
