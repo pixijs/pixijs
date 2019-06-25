@@ -504,11 +504,11 @@ export default class Ticker
     }
 
     /**
-     * Manages the minimum amount of milliseconds allowed to
+     * Manages the minimum amount of milliseconds required to
      * elapse between invoking {@link PIXI.Ticker#update}.
      * This will effect the measured value of {@link PIXI.Ticker#FPS}.
-     * When setting this property it is at least it could be `0` which means 'there is no max limit',
-     * or otherwise it will be at least `minFPS`
+     * If it is set to `0`, then there is no limit; PixiJS will render as many frames as it can.
+     * Otherwise it will be at least `minFPS`
      *
      * @member {number}
      * @default 0
