@@ -302,7 +302,7 @@ export default class BaseTexture extends EventEmitter
      */
     get realWidth()
     {
-        return this.width * this.resolution;
+        return Math.ceil(this.width * this.resolution);
     }
 
     /**
@@ -313,7 +313,7 @@ export default class BaseTexture extends EventEmitter
      */
     get realHeight()
     {
-        return this.height * this.resolution;
+        return Math.ceil(this.height * this.resolution);
     }
 
     /**
@@ -377,8 +377,8 @@ export default class BaseTexture extends EventEmitter
     setRealSize(realWidth, realHeight, resolution)
     {
         this.resolution = resolution || this.resolution;
-        this.width = realWidth / this.resolution;
-        this.height = realHeight / this.resolution;
+        this.width = Math.ceil(realWidth / this.resolution);
+        this.height = Math.ceil(realHeight / this.resolution);
         this._refreshPOT();
         this.update();
 
@@ -414,8 +414,8 @@ export default class BaseTexture extends EventEmitter
 
         if (this.valid)
         {
-            this.width = this.width * oldResolution / resolution;
-            this.height = this.height * oldResolution / resolution;
+            this.width = Math.ceil(this.width * oldResolution / resolution);
+            this.height = Math.ceil(this.height * oldResolution / resolution);
             this.emit('update', this);
         }
 
