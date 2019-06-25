@@ -48,7 +48,7 @@ export default {
      * const sprite = new PIXI.Sprite(texture);
      * sprite.interactive = true;
      * sprite.hitArea = new PIXI.Rectangle(0, 0, 100, 100);
-     * @member {PIXI.Rectangle|PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.RoundedRectangle}
+     * @member {PIXI.IHitArea}
      * @memberof PIXI.DisplayObject#
      */
     hitArea: null,
