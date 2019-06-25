@@ -10,4 +10,3 @@ export { default as InteractionManager } from './InteractionManager';
 export { default as interactiveTarget } from './interactiveTarget';
 export { default as InteractionTrackingData } from './InteractionTrackingData';
 export { default as InteractionEvent } from './InteractionEvent';
-import './IHitArea';
