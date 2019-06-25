@@ -11,16 +11,60 @@ export default class TextureUvs
 {
     constructor()
     {
+        /**
+         * The position of the top-left corner on the x axis.
+         *
+         * @member {number}
+         */
         this.x0 = 0;
+
+        /**
+         * The position of the top-left corner on the y axis.
+         *
+         * @member {number}
+         */
         this.y0 = 0;
 
+        /**
+         * The position of the top-right corner on the x axis.
+         *
+         * @member {number}
+         */
         this.x1 = 1;
+
+        /**
+         * The position of the top-right corner on the y axis.
+         *
+         * @member {number}
+         */
         this.y1 = 0;
 
+        /**
+         * The position of the bottom-right corner on the x axis.
+         *
+         * @member {number}
+         */
         this.x2 = 1;
+
+        /**
+         * The position of the bottom-right corner on the y axis.
+         *
+         * @member {number}
+         */
         this.y2 = 1;
 
+        /**
+         * The position of the bottom-left corner on the x axis.
+         *
+         * @member {number}
+         */
         this.x3 = 0;
+
+        /**
+         * The position of the bottom-left corner on the y axis.
+         *
+         * @member {number}
+         */
         this.y3 = 1;
 
         this.uvsFloat32 = new Float32Array(8);

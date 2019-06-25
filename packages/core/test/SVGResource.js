@@ -43,6 +43,64 @@ describe('PIXI.resources.SVGResource', function ()
             });
         });
 
+        it('should create resource from SVG URL with {scale: 2.123}', function (done)
+        {
+            const resource = new SVGResource(
+                path.join(this.resources, 'heart.svg'),
+                {
+                    autoLoad: false,
+                    scale: 2.123,
+                }
+            );
+
+            resource.load().then(function ()
+            {
+                expect(resource.width).to.equal(212);
+                expect(resource.height).to.equal(212);
+
+                done();
+            });
+        });
+
+        it('should create resource from SVG URL with {width: 10}', function (done)
+        {
+            const resource = new SVGResource(
+                path.join(this.resources, 'heart.svg'),
+                {
+                    autoLoad: false,
+                    width: 10,
+                }
+            );
+
+            resource.load().then(function ()
+            {
+                expect(resource.width).to.equal(10);
+                expect(resource.height).to.equal(10);
+
+                done();
+            });
+        });
+
+        it('should create resource from SVG URL with {width: 10, height: 10}', function (done)
+        {
+            const resource = new SVGResource(
+                path.join(this.resources, 'heart.svg'),
+                {
+                    autoLoad: false,
+                    width: 10,
+                    height: 10,
+                }
+            );
+
+            resource.load().then(function ()
+            {
+                expect(resource.width).to.equal(10);
+                expect(resource.height).to.equal(10);
+
+                done();
+            });
+        });
+
         it('should create resource from inline SVG', function (done)
         {
             const url = path.join(this.resources, 'heart.svg');
