@@ -269,6 +269,12 @@ export default class TextureSystem extends System
     updateTexture(texture)
     {
         const glTexture = texture._glTextures[this.CONTEXT_UID];
+
+        if (!glTexture)
+        {
+            return;
+        }
+
         const renderer = this.renderer;
 
         this.initTextureType(texture, glTexture);
