@@ -6,7 +6,7 @@ import { settings } from '../settings';
 const byteSizeMap = { 5126: 4, 5123: 2, 5121: 1 };
 
 /**
- * System plugin to the renderer to manage geometry.
+ * Renderer system that manages geometry.
  *
  * @class
  * @extends PIXI.System
@@ -148,6 +148,9 @@ export default class GeometrySystem extends System
 
     /**
      * Binds geometry so that is can be drawn. Creating a Vao if required
+     *
+     * Binds attributes and indicies to the WebGL context and buffers
+     * them. A VAO may be used if available.
      *
      * @param {PIXI.Geometry} geometry instance of geometry to bind
      * @param {PIXI.Shader} [shader] instance of shader to use vao for

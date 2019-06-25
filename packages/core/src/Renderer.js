@@ -85,7 +85,7 @@ export default class Renderer extends AbstractRenderer
          * The type of this renderer as a standardized const
          *
          * @member {number}
-         * @see PIXI.RENDERER_TYPE
+         * PIXI.RENDERER_TYPE
          */
         this.type = RENDERER_TYPE.WEBGL;
 
@@ -98,7 +98,7 @@ export default class Renderer extends AbstractRenderer
         /**
          * Internal signal instances of **runner**, these
          * are assigned to each system created.
-         * @see PIXI.Runner
+         * PIXI.Runner
          * @name PIXI.Renderer#runners
          * @private
          * @type {object}
@@ -258,6 +258,26 @@ export default class Renderer extends AbstractRenderer
 
     /**
      * Add a new system to the renderer.
+     *
+     * The features of renderer are provided by individual systems
+     * that can be accessed using their name via `renderer.name`.
+     *
+     * | Name          | Class                    |
+     * |---------------|--------------------------|
+     * | mask          | PIXI.MaskSystem          |
+     * | context       | PIXI.ContextSystem       |
+     * | state         | PIXI.StateSystem         |
+     * | shader        | PIXI.ShaderSystem        |
+     * | texture       | PIXI.TextureSystem       |
+     * | geometry      | PIXI.GeometrySystem      |
+     * | framebuffer   | PIXI.FramebufferSystem   |
+     * | stencil       | PIXI.StencilSystem       |
+     * | projection    | PIXI.ProjectionSystem    |
+     * | textureGC     | PIXI.TextureGCSystem     |
+     * | filter        | PIXI.FilterSystem        |
+     * | renderTexture | PIXI.RenderTextureSystem |
+     * | batch         | PIXI.BatchSystem         |
+     *
      * @param {Function} ClassRef - Class reference
      * @param {string} [name] - Property name for system, if not specified
      *        will use a static `name` property on the class itself. This
