@@ -53,7 +53,6 @@ export default class Transform
          */
         this.skew = new ObservablePoint(this.updateSkew, this, 0, 0);
 
-
         /**
          * The rotation amount.
          *
@@ -61,7 +60,6 @@ export default class Transform
          * @member {number}
          */
         this._rotation = 0;
-
 
         /**
          * The computed value of the expression `Math.cos( this.rotation + this.skew.y )`.
@@ -137,7 +135,7 @@ export default class Transform
     /**
      * Called when a value changes.
      *
-     * @private
+     * @protected
      */
     onChange()
     {
@@ -147,7 +145,7 @@ export default class Transform
     /**
      * Called when skew or rotation changes
      *
-     * @private
+     * @protected
      */
     updateSkew()
     {
