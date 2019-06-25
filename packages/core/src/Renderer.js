@@ -85,7 +85,7 @@ export default class Renderer extends AbstractRenderer
          * The type of this renderer as a standardized const
          *
          * @member {number}
-         * PIXI.RENDERER_TYPE
+         * @see PIXI.RENDERER_TYPE
          */
         this.type = RENDERER_TYPE.WEBGL;
 
@@ -98,7 +98,7 @@ export default class Renderer extends AbstractRenderer
         /**
          * Internal signal instances of **runner**, these
          * are assigned to each system created.
-         * PIXI.Runner
+         * @see PIXI.Runner
          * @name PIXI.Renderer#runners
          * @private
          * @type {object}
