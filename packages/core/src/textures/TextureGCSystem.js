@@ -41,7 +41,7 @@ export default class TextureGCSystem extends System
         this.maxIdle = settings.GC_MAX_IDLE;
 
         /**
-         * Maximum number of itesm to check
+         * Maximum number of item to check
          * @member {number}
          * @see PIXI.settings.GC_MAX_CHECK_COUNT
          */
