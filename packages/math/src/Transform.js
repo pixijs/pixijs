@@ -62,8 +62,7 @@ export default class Transform
         this._rotation = 0;
 
         /**
-         * The computed value of the expression `Math.cos( this.rotation + this.skew.y )`.
-         * The value is automatically updated when the rotation or the skew is changed.
+         * The computed value of the expression `cos( rotation + skew.y )`.
          *
          * @protected
          * @member {number}
@@ -71,8 +70,7 @@ export default class Transform
         this._cx = 1;
 
         /**
-         * The computed value of the expression `Math.sin( this.rotation + this.skew.y )`.
-         * The value is automatically updated when the rotation or the skew is changed.
+         * The computed value of the expression `sin( rotation + skew.y )`.
          *
          * @protected
          * @member {number}
@@ -80,8 +78,7 @@ export default class Transform
         this._sx = 0;
 
         /**
-         * The computed value of the expression `Math.cos( this.rotation + Math.PI/2 - this.skew.x )`.
-         * The value is automatically updated when the rotation or the skew is changed.
+         * The computed value of the expression `cos( rotation + PI/2 - skew.x )`.
          *
          * @protected
          * @member {number}
@@ -89,8 +86,7 @@ export default class Transform
         this._cy = 0;
 
         /**
-         * The computed value of the expression `Math.sin( this.rotation + Math.PI/2 - this.skew.x )`.
-         * The value is automatically updated when the rotation or the skew is changed.
+         * The computed value of the expression `sin( rotation + PI/2 - skew.x )`.
          *
          * @protected
          * @member {number}
@@ -106,8 +102,7 @@ export default class Transform
         this._localID = 0;
 
         /**
-         * The unique ID of the local transform
-         * used for the current local transformation matrix.
+         * The unique ID of the local transform used to calculate the current local transformation matrix.
          *
          * @protected
          * @member {number}
@@ -123,8 +118,7 @@ export default class Transform
         this._worldID = 0;
 
         /**
-         * The unique ID of the parent's world transform
-         * used for the current world transformation matrix.
+         * The unique ID of the parent's world transform used to calculate the current world transformation matrix.
          *
          * @protected
          * @member {number}
