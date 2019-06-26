@@ -184,7 +184,9 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
 
     // for now we cache the current renderTarget that the WebGL renderer is currently using.
     // this could be more elegant..
-    const cachedRenderTarget = renderer._activeRenderTarget;
+    const cachedRenderTarget = renderer.renderTexture.current;
+    const cachedProjectionTransform = renderer.projection.transform;
+
     // We also store the filter stack - I will definitely look to change how this works a little later down the line.
     // const stack = renderer.filterManager.filterStack;
 
@@ -211,8 +213,9 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
     this.render = this._cacheData.originalRender;
 
     renderer.render(this, renderTexture, true, m, true);
-    // now restore the state be setting the new properties
 
+    // now restore the state be setting the new properties
+    renderer.projection.transform = cachedProjectionTransform;
     renderer.renderTexture.bind(cachedRenderTarget);
 
     // renderer.filterManager.filterStack = stack;
