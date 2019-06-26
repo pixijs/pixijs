@@ -165,6 +165,12 @@ Then, to build the source, run:
 npm run build
 ```
 
+### Run in Gitpod
+
+You can also run the development server in Gitpod ( a free online dev environment for GitHub ) with a single click.
+
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/pixijs/pixi.js/)
+
 ### How to generate the documentation ###
 
 The docs can be generated using npm:
