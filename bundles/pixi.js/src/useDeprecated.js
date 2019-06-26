@@ -1068,6 +1068,20 @@ export default function useDeprecated()
     });
 
     /**
+     * @deprecated since 5.0.0
+     * @member {PIXI.systems.TextureSystem} PIXI.Renderer#textureManager
+     * @see PIXI.Renderer#texture
+     */
+    Object.defineProperty(PIXI.Renderer.prototype, 'textureManager', {
+        get()
+        {
+            deprecation(v5, 'PIXI.Renderer.textureManager property is deprecated, use texture');
+
+            return this.texture;
+        },
+    });
+
+    /**
      * @namespace PIXI.utils.mixins
      * @deprecated since 5.0.0
      */
