@@ -440,6 +440,11 @@ export default class Renderer extends AbstractRenderer
     {
         this.runners.destroy.run();
 
+        for (const r in this.runners)
+        {
+            r.destroy();
+        }
+
         // call base destroy
         super.destroy(removeView);
 
