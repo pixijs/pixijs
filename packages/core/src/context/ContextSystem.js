@@ -178,8 +178,7 @@ export default class ContextSystem extends System
                 anisotropicFiltering: gl.getExtension('EXT_texture_filter_anisotropic'),
                 // Floats and half-floats
                 colorBufferFloat: gl.getExtension('EXT_color_buffer_float'),
-                textureHalfFloat: gl.getExtension('OES_texture_float_linear'),
-                textureHalfFloatLinear: gl.getExtension('OES_texture_half_float_linear'),
+                floatTextureLinear: gl.getExtension('OES_texture_float_linear'),
             });
         }
     }
