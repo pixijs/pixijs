@@ -12,14 +12,14 @@ export default class Transform
     constructor()
     {
         /**
-         * The global matrix transform. It can be swapped temporarily by some functions like getLocalBounds()
+         * The world transformation matrix.
          *
          * @member {PIXI.Matrix}
          */
         this.worldTransform = new Matrix();
 
         /**
-         * The local matrix transform
+         * The local transformation matrix.
          *
          * @member {PIXI.Matrix}
          */
@@ -62,7 +62,8 @@ export default class Transform
         this._rotation = 0;
 
         /**
-         * The computed value of the expression `cos( rotation + skew.y )`.
+         * The X-coordinate value of the normalized local X axis,
+         * the first column of the local transformation matrix without a scale.
          *
          * @protected
          * @member {number}
@@ -70,7 +71,8 @@ export default class Transform
         this._cx = 1;
 
         /**
-         * The computed value of the expression `sin( rotation + skew.y )`.
+         * The Y-coordinate value of the normalized local X axis,
+         * the first column of the local transformation matrix without a scale.
          *
          * @protected
          * @member {number}
@@ -78,7 +80,8 @@ export default class Transform
         this._sx = 0;
 
         /**
-         * The computed value of the expression `cos( rotation + PI/2 - skew.x )`.
+         * The X-coordinate value of the normalized local Y axis,
+         * the second column of the local transformation matrix without a scale.
          *
          * @protected
          * @member {number}
@@ -86,7 +89,8 @@ export default class Transform
         this._cy = 0;
 
         /**
-         * The computed value of the expression `sin( rotation + PI/2 - skew.x )`.
+         * The Y-coordinate value of the normalized local Y axis,
+         * the second column of the local transformation matrix without a scale.
          *
          * @protected
          * @member {number}
@@ -94,7 +98,7 @@ export default class Transform
         this._sy = 1;
 
         /**
-         * The unique ID of the local transform.
+         * The locally unique ID of the local transform.
          *
          * @protected
          * @member {number}
@@ -102,7 +106,8 @@ export default class Transform
         this._localID = 0;
 
         /**
-         * The unique ID of the local transform used to calculate the current local transformation matrix.
+         * The locally unique ID of the local transform
+         * used to calculate the current local transformation matrix.
          *
          * @protected
          * @member {number}
@@ -110,7 +115,7 @@ export default class Transform
         this._currentLocalID = 0;
 
         /**
-         * The unique ID of the world transform.
+         * The locally unique ID of the world transform.
          *
          * @protected
          * @member {number}
@@ -118,7 +123,8 @@ export default class Transform
         this._worldID = 0;
 
         /**
-         * The unique ID of the parent's world transform used to calculate the current world transformation matrix.
+         * The locally unique ID of the parent's world transform
+         * used to calculate the current world transformation matrix.
          *
          * @protected
          * @member {number}
@@ -137,7 +143,7 @@ export default class Transform
     }
 
     /**
-     * Called when skew or rotation changes
+     * Called when the skew or the rotation changes.
      *
      * @protected
      */
@@ -152,7 +158,7 @@ export default class Transform
     }
 
     /**
-     * Updates only local matrix
+     * Updates the local transformation matrix.
      */
     updateLocalTransform()
     {
@@ -176,9 +182,9 @@ export default class Transform
     }
 
     /**
-     * Updates the values of the object and applies the parent's transform.
+     * Updates the local and the world transformation matrices.
      *
-     * @param {PIXI.Transform} parentTransform - The transform of the parent of this object
+     * @param {PIXI.Transform} parentTransform - The parent transform
      */
     updateTransform(parentTransform)
     {
