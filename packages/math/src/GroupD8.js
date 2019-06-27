@@ -33,17 +33,14 @@ const vy = [1, 1, 0, -1, -1, -1, 0, 1, -1, -1, 0, 1, 1, 1, 0, -1];
  * [Cayley Table]{@link https://en.wikipedia.org/wiki/Cayley_table}
  * for the composition of each rotation in the dihederal group D8.
  *
- * It is a 2D array as follows:
- * |    | E  | SE | S  | SW | W  | NW | N  | NE |
- * |----|----|----|----|----|----|----|----|----|
- * | E  | E  | SE | S  | SW | W  | NW | N  | NE |
- * | SE | SE | S  | SW | W  | NW | N  | NE | E  |
- * | S  | S  | SW | W  | NW | N  | NE | E  | SE |
- * | SW | SW | W  | NW | N  | NE | E  | SE | S  |
- * | W  | W  | NW | N  | NE | E  | SE | S  | SW |
- * | NW | NW | N  | NE | E  | SE | S  | SW | W  |
- * | N  | N  | NE | E  | SE | S  | SW | W  | NW |
- * | NE | NE | E  | SE | S  | SW | W  | NW | N  |
+ * It is a 2D array, which looks like this:
+ * |      | E=0  | SE=1 | S=2  | SW=3 | W=4  | ...  |
+ * |------|------|------|------|------|------| ...  |
+ * | E    | E    | SE   | S    | SW   | W    | ...  |
+ * | SE   | SE   | S    | SW   | W    | NW   | ...  |
+ * | S    | S    | SW   | W    | NW   | N    | ...  |
+ * | SW   | SW   | W    | NW   | N    | NE   | ...  |
+ * | ...  | ...  | ...  | ...  | ...  | ...  | ...  |
  */
 const rotationCayley = [];
 
@@ -274,7 +271,7 @@ const GroupD8 = {
      */
     inv: (rotation) =>
     {
-        if (rotation & 8)// true only if 8 or 12
+        if (rotation & 8)// true only if between 8 & 15 (reflections)
         {
             return rotation & 15;// or rotation % 16
         }
