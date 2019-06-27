@@ -18,18 +18,6 @@ export default class System
          * @member {PIXI.Renderer}
          */
         this.renderer = renderer;
-
-        this.renderer.runners.contextChange.add(this);
-    }
-
-    /**
-     * Generic method called when there is a WebGL context change.
-     *
-     * @param {WebGLRenderingContext} gl new webgl context
-     */
-    contextChange(gl) // eslint-disable-line no-unused-vars
-    {
-        // do some codes init!
     }
 
     /**
@@ -37,7 +25,6 @@ export default class System
      */
     destroy()
     {
-        this.renderer.runners.contextChange.remove(this);
         this.renderer = null;
     }
 }

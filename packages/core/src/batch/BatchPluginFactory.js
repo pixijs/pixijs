@@ -59,6 +59,8 @@ export default class BatchPluginFactory
                 this.shaderGenerator = new BatchShaderGenerator(vertex, fragment);
                 this.geometryClass = geometryClass;
                 this.vertexSize = vertexSize;
+
+                renderer.runners.contextChange.add(this);
             }
         };
     }
