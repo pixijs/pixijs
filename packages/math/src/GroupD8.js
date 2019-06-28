@@ -14,24 +14,32 @@ import Matrix from './Matrix';
 /**
  * Maps each `PIXI.GD8Symmetry` to the direction of
  * the X-component of the new U-axis.
+ *
+ * @type number[]
  */
 const ux = [1, 1, 0, -1, -1, -1, 0, 1, 1, 1, 0, -1, -1, -1, 0, 1];
 
 /**
  * Maps each `PIXI.GD8Symmetry` rotation to the direction of
  * the Y-component of the new U-axis.
+ *
+ * @type number[]
  */
 const uy = [0, 1, 1, 1, 0, -1, -1, -1, 0, 1, 1, 1, 0, -1, -1, -1];
 
 /**
  * Maps each `PIXI.GD8Symmetry` rotation to the direction of
  * the X-component of the new V-axis.
+ *
+ * @type number[]
  */
 const vx = [0, -1, -1, -1, 0, 1, 1, 1, 0, 1, 1, 1, 0, -1, -1, -1];
 
 /**
  * Maps each `PIXI.GD8Symmetry` rotation to the direction of
  * the Y-component of the new V-axis.
+ *
+ * @type number[]
  */
 const vy = [1, 1, 0, -1, -1, -1, 0, 1, -1, -1, 0, 1, 1, 1, 0, -1];
 
@@ -52,11 +60,15 @@ const vy = [1, 1, 0, -1, -1, -1, 0, 1, -1, -1, 0, 1, 1, 1, 0, -1];
  * | S^=10 | S^  | E^  | N^  | W^  | S    | E     | N     | W     |
  * | W^=12 | W^  | S^  | E^  | N^  | W    | S     | E     | N     |
  * | N^=14 | N^  | W^  | S^  | E^  | N    | W     | S     | E     |
+ *
+ * @type number[][]
  */
 const rotationCayley = [];
 
 /**
  * Matrices for each `GD8Symmetry` rotation.
+ *
+ * @type Matrix[]
  */
 const rotationMatrices = [];
 
