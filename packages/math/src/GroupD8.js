@@ -5,6 +5,12 @@
 
 import Matrix from './Matrix';
 
+/*
+ * Transform matrix for operation n is:
+ * | ux | vx |
+ * | uy | vy |
+ */
+
 /**
  * Maps each `PIXI.GD8Symmetry` to the direction of
  * the X-component of the new U-axis.
@@ -33,14 +39,19 @@ const vy = [1, 1, 0, -1, -1, -1, 0, 1, -1, -1, 0, 1, 1, 1, 0, -1];
  * [Cayley Table]{@link https://en.wikipedia.org/wiki/Cayley_table}
  * for the composition of each rotation in the dihederal group D8.
  *
- * It is a 2D array, which looks like this:
- * |      | E=0  | SE=1 | S=2  | SW=3 | W=4  | ...  |
- * |------|------|------|------|------|------| ...  |
- * | E    | E    | SE   | S    | SW   | W    | ...  |
- * | SE   | SE   | S    | SW   | W    | NW   | ...  |
- * | S    | S    | SW   | W    | NW   | N    | ...  |
- * | SW   | SW   | W    | NW   | N    | NE   | ...  |
- * | ...  | ...  | ...  | ...  | ...  | ...  | ...  |
+ * Taking shortand `^` for reflection on vertical axis, it is a 2D array,
+ * which looks like this:
+ *
+ * |       | E=0 | S=2 | W=4 | N=6 | E^=8 | S^=10 | W^=12 | N^=14 |
+ * |-------|-----|-----|-----|-----|------|-------|-------|-------|
+ * | E=0   | E   | S   | W   | N   | E^   | S^    | W^    | N^    |
+ * | S=2   | S   | W   | N   | E   | S^   | W^    | N^    | E^    |
+ * | W=4   | W   | N   | E   | S   | W^   | N^    | E^    | S^    |
+ * | N=6   | N   | E   | S   | W   | N^   | E^    | S^    | W^    |
+ * | E^=8  | E^  | N^  | W^  | S^  | E    | N     | W     | S     |
+ * | S^=10 | S^  | E^  | N^  | W^  | S    | E     | N     | W     |
+ * | W^=12 | W^  | S^  | E^  | N^  | W    | S     | E     | N     |
+ * | N^=14 | N^  | W^  | S^  | E^  | N    | W     | S     | E     |
  */
 const rotationCayley = [];
 
@@ -60,9 +71,11 @@ const signum = Math.sign;
  */
 function init()
 {
+    console.log("GD8 Init");// eslint-disable-line
     for (let i = 0; i < 16; i++)
     {
         const row = [];
+        let s = '';
 
         rotationCayley.push(row);
 
@@ -80,11 +93,14 @@ function init()
                 if (ux[k] === _ux && uy[k] === _uy
                       && vx[k] === _vx && vy[k] === _vy)
                 {
+                    s += k;
+                    s += ' ';
                     row.push(k);
                     break;
                 }
             }
         }
+        console.log(s);// eslint-disable-line
     }
 
     for (let i = 0; i < 16; i++)
