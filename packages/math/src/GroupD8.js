@@ -11,36 +11,9 @@ import Matrix from './Matrix';
  * | uy | vy |
  */
 
-/**
- * Maps each `PIXI.GD8Symmetry` to the direction of
- * the X-component of the new U-axis.
- *
- * @type number[]
- */
 const ux = [1, 1, 0, -1, -1, -1, 0, 1, 1, 1, 0, -1, -1, -1, 0, 1];
-
-/**
- * Maps each `PIXI.GD8Symmetry` rotation to the direction of
- * the Y-component of the new U-axis.
- *
- * @type number[]
- */
 const uy = [0, 1, 1, 1, 0, -1, -1, -1, 0, 1, 1, 1, 0, -1, -1, -1];
-
-/**
- * Maps each `PIXI.GD8Symmetry` rotation to the direction of
- * the X-component of the new V-axis.
- *
- * @type number[]
- */
 const vx = [0, -1, -1, -1, 0, 1, 1, 1, 0, 1, 1, 1, 0, -1, -1, -1];
-
-/**
- * Maps each `PIXI.GD8Symmetry` rotation to the direction of
- * the Y-component of the new V-axis.
- *
- * @type number[]
- */
 const vy = [1, 1, 0, -1, -1, -1, 0, 1, -1, -1, 0, 1, 1, 1, 0, -1];
 
 /**
@@ -62,6 +35,7 @@ const vy = [1, 1, 0, -1, -1, -1, 0, 1, -1, -1, 0, 1, 1, 1, 0, -1];
  * | N^=14 | N^  | W^  | S^  | E^  | N    | W     | S     | E     |
  *
  * @type number[][]
+ * @private
  */
 const rotationCayley = [];
 
@@ -69,6 +43,7 @@ const rotationCayley = [];
  * Matrices for each `GD8Symmetry` rotation.
  *
  * @type Matrix[]
+ * @private
  */
 const rotationMatrices = [];
 
@@ -306,8 +281,8 @@ const GroupD8 = {
      * Composes the two D8 operations.
      *
      * @memberof PIXI.GroupD8
-     * @param {PIXI.GD8Symmetry} second - second operation
-     * @param {PIXI.GD8Symmetry} first - first operation
+     * @param {PIXI.GD8Symmetry} rotationSecond - second operation
+     * @param {PIXI.GD8Symmetry} rotationFirst - first operation
      * @return {PIXI.GD8Symmetry} Composed operation
      */
     add: (rotationSecond, rotationFirst) => (
@@ -318,8 +293,8 @@ const GroupD8 = {
      * Reverse of `add`.
      *
      * @memberof PIXI.GroupD8
-     * @param {PIXI.GD8Symmetry} second - second operation
-     * @param {PIXI.GD8Symmetry} first - first operation
+     * @param {PIXI.GD8Symmetry} rotationSecond - second operation
+     * @param {PIXI.GD8Symmetry} rotationFirst - first operation
      * @return {PIXI.GD8Symmetry} Result
      */
     sub: (rotationSecond, rotationFirst) => (
