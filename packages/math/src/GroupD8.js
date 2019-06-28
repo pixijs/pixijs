@@ -71,11 +71,9 @@ const signum = Math.sign;
  */
 function init()
 {
-    console.log("GD8 Init");// eslint-disable-line
     for (let i = 0; i < 16; i++)
     {
         const row = [];
-        let s = '';
 
         rotationCayley.push(row);
 
@@ -93,14 +91,11 @@ function init()
                 if (ux[k] === _ux && uy[k] === _uy
                       && vx[k] === _vx && vy[k] === _vy)
                 {
-                    s += k;
-                    s += ' ';
                     row.push(k);
                     break;
                 }
             }
         }
-        console.log(s);// eslint-disable-line
     }
 
     for (let i = 0; i < 16; i++)
