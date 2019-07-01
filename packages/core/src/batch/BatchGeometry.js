@@ -1,6 +1,7 @@
-import { TYPES } from '@pixi/constants';
-import Geometry from '../geometry/Geometry';
 import Buffer from '../geometry/Buffer';
+import builtinAttributeSizes from './utils/builtinAttributeSizes';
+import Geometry from '../geometry/Geometry';
+import { TYPES } from '@pixi/constants';
 
 /**
  * Geometry used to batch standard PIXI content (e.g. Mesh, Sprite,
@@ -14,8 +15,9 @@ export default class BatchGeometry extends Geometry
     /**
      * @param {boolean} [_static=false] Optimization flag, where `false`
      *        is updated every frame, `true` doesn't change frame-to-frame.
+     * @param {Object[]} attributeDefinitions - attribute definitions
      */
-    constructor(_static = false)
+    constructor(_static = false, attributeDefinitions)
     {
         super();
 
@@ -36,10 +38,22 @@ export default class BatchGeometry extends Geometry
         this._indexBuffer = new Buffer(null, _static, true);
 
         /* These are automatically interleaved by GeometrySystem. */
-        this.addAttribute('aVertexPosition', this._buffer, 2, false, TYPES.FLOAT)
-            .addAttribute('aTextureCoord', this._buffer, 2, false, TYPES.FLOAT)
-            .addAttribute('aColor', this._buffer, 4, true, TYPES.UNSIGNED_BYTE)
-            .addAttribute('aTextureId', this._buffer, 1, true, TYPES.FLOAT)
-            .addIndex(this._indexBuffer);
+        attributeDefinitions.forEach((def) =>
+        {
+            if (def === 'aColor')
+            { // special
+                this.addAttribute('aColor', this._buffer, 4, true, TYPES.UNSIGNED_BYTE);
+
+                return;
+            }
+
+            const isBuiltin = (typeof def === 'string');
+            const identifier = isBuiltin ? def : def.name;
+            const size = isBuiltin ? builtinAttributeSizes[identifier] : def.size;
+
+            this.addAttribute(identifier, this._buffer, size, def === 'aTextureId', TYPES.FLOAT);
+        });
+
+        this.addIndex(this._indexBuffer);
     }
 }

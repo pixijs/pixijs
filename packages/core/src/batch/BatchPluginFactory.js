@@ -52,7 +52,7 @@ export default class BatchPluginFactory
             vertex,
         } = Object.assign({
             attributeDefinitions: [
-                { property: 'vertexData', name: 'aTexturePosition', size: 2 },
+                { property: 'vertexData', name: 'aVertexPosition', size: 2 },
                 { property: 'uvs', name: 'aTextureCoord', size: 2 },
                 'aColor', // built-in attribute
                 'aTextureId',

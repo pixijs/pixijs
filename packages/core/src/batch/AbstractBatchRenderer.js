@@ -1,5 +1,6 @@
 import BatchDrawCall from './BatchDrawCall';
 import BaseTexture from '../textures/BaseTexture';
+import builtinAttributeSizes from './utils/builtinAttributeSizes';
 import State from '../state/State';
 import ObjectRenderer from './ObjectRenderer';
 import checkMaxIfStatementsInShader from '../shader/utils/checkMaxIfStatementsInShader';
@@ -7,18 +8,6 @@ import { settings } from '@pixi/settings';
 import { premultiplyBlendMode, premultiplyTint, nextPow2, log2 } from '@pixi/utils';
 import BatchBuffer from './BatchBuffer';
 import { ENV } from '@pixi/constants';
-
-/**
- * Sizes of built-in attributes provided by `BatchRenderer`,
- * which includes the required `aTextureId` attribute.
- *
- * @type Map<string, number>
- * @see {AbstractBatchRenderer#vertexSizeOf}
- */
-const builtinAttributeSizes = {
-    aColor: 1,
-    aTextureId: 1,
-};
 
 /**
  * Renderer dedicated to drawing and batching sprites.
@@ -82,12 +71,12 @@ export default class AbstractBatchRenderer extends ObjectRenderer
          * | Property   | Description                                   |
          * |------------|-----------------------------------------------|
          * | property   | Property name in objects for attribute data   |
-         * | identifier | Name of attribute variable used in the shader |
+         * | name       | Name of attribute variable used in the shader |
          * | size       | Size of each attribute element in floats      |
          *
          * `BatchRenderer` provides a few built-in attributes
          * that you can use like `aColor`. Instead of the
-         * attribute definition, just give the identifier to
+         * attribute definition, just give the name to
          * use them.
          *
          * The `attribute float aTextureId` attribute should
@@ -101,12 +90,12 @@ export default class AbstractBatchRenderer extends ObjectRenderer
          * for each vertex.
          *
          * @default
-         * | Index | AttributeDefinition                                                |
-         * |-------|--------------------------------------------------------------------|
-         * | 0     | `{ property: vertexData, identifier: 'aVertexPosition', size: 2 }` |
-         * | 1     | `{ property: uvs, identifier: 'aTextureCoord', size: 2 }`          |
-         * | 2     | `'aColor'`                                                         |
-         * | 3     | `'aTextureId'` // mandatory                                        |
+         * | Index | AttributeDefinition                                          |
+         * |-------|--------------------------------------------------------------|
+         * | 0     | `{ property: vertexData, name: 'aVertexPosition', size: 2 }` |
+         * | 1     | `{ property: uvs, name: 'aTextureCoord', size: 2 }`          |
+         * | 2     | `'aColor'`                                                   |
+         * | 3     | `'aTextureId'` // mandatory                                  |
          *
          * @readonly
          */
@@ -326,7 +315,7 @@ export default class AbstractBatchRenderer extends ObjectRenderer
         for (let i = 0; i < this._packedGeometryPoolSize; i++)
         {
             /* eslint-disable max-len */
-            this._packedGeometries[i] = new (this.geometryClass)();
+            this._packedGeometries[i] = new (this.geometryClass)(false, this.attributeDefinitions);
         }
     }
 
@@ -478,7 +467,8 @@ export default class AbstractBatchRenderer extends ObjectRenderer
             if (this._packedGeometryPoolSize <= this._flushId)
             {
                 this._packedGeometryPoolSize++;// expand geometry pool
-                this._packedGeometries[this._flushId] = new (this.geometryClass)();
+                this._packedGeometries[this._flushId]
+                  = new (this.geometryClass)(false, this.attributeDefinitions);
             }
 
             packedGeometries[this._flushId]._buffer.update(
@@ -735,7 +725,10 @@ export default class AbstractBatchRenderer extends ObjectRenderer
 
                 for (let float = 0; float < size; float++)
                 {
-                    float32View[aIndex++] = source[offset++ % source.length];
+                    if (attribute === 'aColor')
+                    { uint32View[aIndex++] = source[offset++ % source.length]; }
+                    else
+                    { float32View[aIndex++] = source[offset++ % source.length]; }
                 }
 
                 sourceOffsets[s] = offset;
