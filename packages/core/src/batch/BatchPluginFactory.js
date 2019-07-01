@@ -10,7 +10,7 @@ import defaultFragment from './texture.frag';
  * @memberof PIXI
  * @hideconstructor
  */
-export default class BatchRendererFactory
+export default class BatchPluginFactory
 {
     /**
      * Create a new BatchRenderer plugin for Renderer. this convenience can provide an easy way
@@ -105,4 +105,4 @@ export default class BatchRendererFactory
 
 // Setup the default BatchRenderer plugin, this is what
 // we'll actually export at the root level
-export const BatchRenderer = BatchRendererFactory.create();
+export const BatchRenderer = BatchPluginFactory.create();
