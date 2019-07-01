@@ -179,7 +179,7 @@ export default class BatchRenderer extends ObjectRenderer
         this._flushId = 0;
 
         /**
-         * Pool of `BatchDrawCall` objects that `flush` used
+         * Pool of `BatchDrawCall` objects that `flush` uses
          * to create "batches" of the objects being rendered.
          *
          * These are never re-allocated again.
@@ -313,7 +313,6 @@ export default class BatchRenderer extends ObjectRenderer
 
     /**
      * Renders the content and empties the current batch.
-     *
      */
     flush()
     {
@@ -323,28 +322,30 @@ export default class BatchRenderer extends ObjectRenderer
         }
 
         const gl = this.renderer.gl;
-        const MAX_TEXTURES = this.MAX_TEXTURES;
-        const vertSize = this.vertexSize;
-
-        const buffer = this.getAttributeBuffer(this._vertexCount);
+        const attrBuffer = this.getAttributeBuffer(this._vertexCount);
         const indexBuffer = this.getIndexBuffer(this._indexCount);
 
-        const elements = this._bufferedElements;
-        const _drawCalls = this._drawCalls;
+        const {
+            _bufferedElements: elements,
+            _drawCalls: drawCalls,
+            MAX_TEXTURES,
+            vertexSize,
+        } = this;
 
-        const float32View = buffer.float32View;
-        const uint32View = buffer.uint32View;
+        const {
+            float32View, uint32View,
+        } = attrBuffer;
 
         const touch = this.renderer.textureGC.count;
+        let attrIndex = 0;
+        let iIndex = 0;
 
-        let index = 0;
-        let _indexCount = 0;
         let nextTexture;
         let currentTexture;
-        let groupCount = 0;
-
         let textureCount = 0;
-        let currentGroup = _drawCalls[0];
+
+        let currentGroup = drawCalls[0];
+        let groupCount = 0;
 
         let blendMode = -1;// premultiplyBlendMode[elements[0]._texture.baseTexture.premultiplyAlpha ? 0 : ][elements[0].blendMode];
 
@@ -353,27 +354,24 @@ export default class BatchRenderer extends ObjectRenderer
         currentGroup.blend = blendMode;
 
         let TICK = ++BaseTexture._globalBatch;
-
         let i;
 
+        /* Interleaves and appends each object's geometry into the
+           attribute buffer (`buffer`) and indices into `indexBuffer`. It
+           also groups them into homogenous draw-calls. */
         for (i = 0; i < this._bufferSize; ++i)
         {
-            // upload the sprite elements...
-            // they have all ready been calculated so we just need to push them into the buffer.
-
             const sprite = elements[i];
 
             elements[i] = null;
-
             nextTexture = sprite._texture.baseTexture;
 
-            const spriteBlendMode = premultiplyBlendMode[nextTexture.premultiplyAlpha ? 1 : 0][sprite.blendMode];
+            const spriteBlendMode = premultiplyBlendMode[
+                nextTexture.premultiplyAlpha ? 1 : 0][sprite.blendMode];
 
             if (blendMode !== spriteBlendMode)
-            {
+            { /* Must finish this group, since blend modes conflict. */
                 blendMode = spriteBlendMode;
-
-                // force the batch to break!
                 currentTexture = null;
                 textureCount = MAX_TEXTURES;
                 TICK++;
@@ -388,15 +386,13 @@ export default class BatchRenderer extends ObjectRenderer
                     if (textureCount === MAX_TEXTURES)
                     {
                         TICK++;
-
                         textureCount = 0;
+                        currentGroup.size = iIndex - currentGroup.start;
 
-                        currentGroup.size = _indexCount - currentGroup.start;
-
-                        currentGroup = _drawCalls[groupCount++];
+                        currentGroup = drawCalls[groupCount++];
                         currentGroup.textureCount = 0;
                         currentGroup.blend = blendMode;
-                        currentGroup.start = _indexCount;
+                        currentGroup.start = iIndex;
                     }
 
                     nextTexture.touched = touch;
@@ -408,63 +404,47 @@ export default class BatchRenderer extends ObjectRenderer
                 }
             }
 
-            this.packInterleavedGeometry(sprite, float32View, uint32View, indexBuffer, index, _indexCount);// argb, nextTexture._id, float32View, uint32View, indexBuffer, index, _indexCount);
+            this.packInterleavedGeometry(sprite, float32View, uint32View,
+                indexBuffer, attrIndex, iIndex);
 
             // push a graphics..
-            index += (sprite.vertexData.length / 2) * vertSize;
-            _indexCount += sprite.indices.length;
+            attrIndex += (sprite.vertexData.length / 2) * vertexSize;
+            iIndex += sprite.indices.length;
         }
 
         BaseTexture._globalBatch = TICK;
+        currentGroup.size = iIndex - currentGroup.start;
 
-        currentGroup.size = _indexCount - currentGroup.start;
-
-        if (!settings.CAN_UPLOAD_SAME_BUFFER)
+        if (!settings.CAN_UPLOAD_SAME_BUFFER)// we must use new buffers
         {
-            // this is still needed for IOS performance..
-            // it really does not like uploading to the same buffer in a single frame!
             if (this._packedGeometryPoolSize <= this._flushId)
             {
-                this._packedGeometryPoolSize++;
-                /* eslint-disable max-len */
+                this._packedGeometryPoolSize++;// expand geometry pool
                 this._packedGeometries[this._flushId] = new (this.geometryClass)();
             }
 
-            this._packedGeometries[this._flushId]._buffer.update(buffer.vertices, 0);
+            this._packedGeometries[this._flushId]._buffer.update(attrBuffer.vertices, 0);
             this._packedGeometries[this._flushId]._indexBuffer.update(indexBuffer, 0);
 
-            //   this.vertexBuffers[this._flushId].update(buffer.vertices, 0);
             this.renderer.geometry.bind(this._packedGeometries[this._flushId]);
-
             this.renderer.geometry.updateBuffers();
-
             this._flushId++;
         }
         else
         {
             // lets use the faster option, always use buffer number 0
-            this._packedGeometries[this._flushId]._buffer.update(buffer.vertices, 0);
+            this._packedGeometries[this._flushId]._buffer.update(attrBuffer.vertices, 0);
             this._packedGeometries[this._flushId]._indexBuffer.update(indexBuffer, 0);
-
-            //   if (true)// this.spriteOnly)
-            // {
-            // this._packedGeometries[this._flushId].indexBuffer = this.defualtSpriteIndexBuffer;
-            // this._packedGeometries[this._flushId].buffers[1] = this.defualtSpriteIndexBuffer;
-            // }
 
             this.renderer.geometry.updateBuffers();
         }
 
-        //   this.renderer.state.set(this.state);
-
         const textureSystem = this.renderer.texture;
         const stateSystem = this.renderer.state;
-        // e.log(groupCount);
-        // / render the _drawCalls..
 
         for (i = 0; i < groupCount; i++)
         {
-            const group = _drawCalls[i];
+            const group = drawCalls[i];
             const groupTextureCount = group.textureCount;
 
             for (let j = 0; j < groupTextureCount; j++)
@@ -473,13 +453,7 @@ export default class BatchRenderer extends ObjectRenderer
                 group.textures[j] = null;
             }
 
-            // this.state.blendMode = group.blend;
-            // this.state.blend = true;
-
-            // this.renderer.state.setState(this.state);
-            // set the blend mode..
             stateSystem.setBlendMode(group.blend);
-
             gl.drawElements(group.type, group.size, gl.UNSIGNED_SHORT, group.start * 2);
         }
 
@@ -507,7 +481,6 @@ export default class BatchRenderer extends ObjectRenderer
 
     /**
      * Stops and flushes the current batch.
-     *
      */
     stop()
     {
@@ -540,6 +513,7 @@ export default class BatchRenderer extends ObjectRenderer
             this._shader = null;
         }
 
+        this.state = null;
         super.destroy();
     }
 
@@ -613,7 +587,7 @@ export default class BatchRenderer extends ObjectRenderer
      * present.
      *
      * @param {PIXI.Sprite} element - element being rendered
-     * @param {FLoat32Array} float32View - float32-view of the attribute buffer
+     * @param {Float32Array} float32View - float32-view of the attribute buffer
      * @param {Uint32Array} uint32View - uint32-view of the attribute buffer
      * @param {Uint16Array} indexBuffer - index buffer
      * @param {number} aIndex - number of floats already in the attribute buffer
