@@ -26,14 +26,14 @@ export default class BatchBuffer
          *
          * @member {Float32Array}
          */
-        this.float32View = new Float32Array(this.vertices);
+        this.float32View = new Float32Array(this.rawBinaryData);
 
         /**
          * View on the raw binary data as a `Uint32Array`.
          *
          * @member {Uint32Array}
          */
-        this.uint32View = new Uint32Array(this.vertices);
+        this.uint32View = new Uint32Array(this.rawBinaryData);
     }
 
     /**

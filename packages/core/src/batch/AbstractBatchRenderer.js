@@ -730,8 +730,10 @@ export default class AbstractBatchRenderer extends ObjectRenderer
                 }
 
                 let offset = sourceOffsets[s];
+                const size = (typeof attribute !== 'string')
+                    ? attribute.size : builtinAttributeSizes[attribute];
 
-                for (let float = 0; float < attribute.size; float++)
+                for (let float = 0; float < size; float++)
                 {
                     float32View[aIndex++] = source[offset++ % source.length];
                 }
