@@ -10,7 +10,7 @@ import defaultFragment from './texture.frag';
  * @memberof PIXI
  * @hideconstructor
  */
-export default class BatchPluginFactory
+export default class BatchRendererFactory
 {
     /**
      * Create a new BatchRenderer plugin for Renderer. this convenience can provide an easy way
@@ -43,12 +43,24 @@ export default class BatchPluginFactory
      */
     static create(options)
     {
-        const { vertex, fragment, vertexSize, geometryClass } = Object.assign({
+        const {
+            attributeDefinitions,
+            fragment,
+            geometryClass,
+            vertex,
+        } = Object.assign({
+            attributeDefinitions: [
+                { property: 'vertexData', name: 'aTexturePosition', size: 2 },
+                { property: 'uvs', name: 'aTextureCoord', size: 2 },
+                'aColor', // built-in attribute
+                'aTextureId',
+            ],
             vertex: defaultVertex,
             fragment: defaultFragment,
             geometryClass: BatchGeometry,
-            vertexSize: 6,
         }, options);
+
+        const vertexSize = AbstractBatchRenderer.vertexSizeOf(attributeDefinitions);
 
         return class BatchPlugin extends AbstractBatchRenderer
         {
@@ -56,6 +68,7 @@ export default class BatchPluginFactory
             {
                 super(renderer);
 
+                this.attributeDefinitions = attributeDefinitions;
                 this.shaderGenerator = new BatchShaderGenerator(vertex, fragment);
                 this.geometryClass = geometryClass;
                 this.vertexSize = vertexSize;
@@ -90,4 +103,4 @@ export default class BatchPluginFactory
 
 // Setup the default BatchRenderer plugin, this is what
 // we'll actually export at the root level
-export const BatchRenderer = BatchPluginFactory.create();
+export const BatchRenderer = BatchRendererFactory.create();

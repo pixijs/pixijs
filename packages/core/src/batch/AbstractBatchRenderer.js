@@ -9,6 +9,18 @@ import BatchBuffer from './BatchBuffer';
 import { ENV } from '@pixi/constants';
 
 /**
+ * Sizes of built-in attributes provided by `BatchRenderer`,
+ * which includes the required `aTextureId` attribute.
+ *
+ * @type Map<string, number>
+ * @see {AbstractBatchRenderer#vertexSizeOf}
+ */
+const builtinAttributeSizes = {
+    aColor: 1,
+    aTextureId: 1,
+};
+
+/**
  * Renderer dedicated to drawing and batching sprites.
  *
  * This is the default batch renderer. It buffers objects
@@ -60,15 +72,57 @@ export default class AbstractBatchRenderer extends ObjectRenderer
         this.geometryClass = null;
 
         /**
+         * Array of attribute definitions that are described
+         * below. These are used to pass attribute data
+         * from your objects to the vertex shader.
+         *
+         * An attribute definition is an object with the
+         * following properties:
+         *
+         * | Property   | Description                                   |
+         * |------------|-----------------------------------------------|
+         * | property   | Property name in objects for attribute data   |
+         * | identifier | Name of attribute variable used in the shader |
+         * | size       | Size of each attribute element in floats      |
+         *
+         * `BatchRenderer` provides a few built-in attributes
+         * that you can use like `aColor`. Instead of the
+         * attribute definition, just give the identifier to
+         * use them.
+         *
+         * The `attribute float aTextureId` attribute should
+         * _always_ be present in your shader. See
+         * `PIXI.BatchShaderGenerator` for more details.
+         *
+         * NOTE: It is expected that the attribute buffers
+         * store an equal number of elements. For example,
+         * `object.vertexData.length = object.uvs.length`. Otherwise,
+         * wrapping will occur so that the attribute data is repeated
+         * for each vertex.
+         *
+         * @default
+         * | Index | AttributeDefinition                                                |
+         * |-------|--------------------------------------------------------------------|
+         * | 0     | `{ property: vertexData, identifier: 'aVertexPosition', size: 2 }` |
+         * | 1     | `{ property: uvs, identifier: 'aTextureCoord', size: 2 }`          |
+         * | 2     | `'aColor'`                                                         |
+         * | 3     | `'aTextureId'` // mandatory                                        |
+         *
+         * @readonly
+         */
+        this.attributeDefinitions = null;
+
+        /**
          * Size of data being buffered per vertex in the
          * attribute buffers (in floats). By default, the
          * batch-renderer plugin uses 6:
          *
-         * | aVertexPosition | 2 |
-         * |-----------------|---|
-         * | aTextureCoords  | 2 |
-         * | aColor          | 1 |
-         * | aTextureId      | 1 |
+         * | Attribute       | Size |
+         * |-----------------|------|
+         * | aVertexPosition | 2    |
+         * | aTextureCoords  | 2    |
+         * | aColor          | 1    |
+         * | aTextureId      | 1    |
          *
          * @member {number} vertexSize
          * @readonly
@@ -593,12 +647,10 @@ export default class AbstractBatchRenderer extends ObjectRenderer
     }
 
     /**
-     * Takes the four batching parameters of `element`, interleaves
-     * and pushes them into the batching attribute/index buffers given.
-     *
-     * It uses these properties: `vertexData` `uvs`, `textureId` and
-     * `indicies`. It also uses the "tint" of the base-texture, if
-     * present.
+     * Takes all the attributes sources of the element being
+     * drawn, interleaves them, and appends them to the
+     * attribute buffer. It also appends the indices of the
+     * element into the index buffer.
      *
      * @param {PIXI.Sprite} element - element being rendered
      * @param {Float32Array} float32View - float32-view of the attribute buffer
@@ -610,32 +662,119 @@ export default class AbstractBatchRenderer extends ObjectRenderer
     packInterleavedGeometry(element,
         float32View, uint32View, indexBuffer, aIndex, iIndex)
     {
-        const p = aIndex / this.vertexSize;
-        const uvs = element.uvs;
+        const packedVerticies = aIndex / this.vertexSize;
         const indicies = element.indices;
-        const vertexData = element.vertexData;
         const textureId = element._texture.baseTexture._id;
 
-        const alpha = Math.min(element.worldAlpha, 1.0);
-        const argb = (alpha < 1.0
-          && element._texture.baseTexture.premultiplyAlpha)
-            ? premultiplyTint(element._tintRGB, alpha)
-            : element._tintRGB + (alpha * 255 << 24);
+        const attributeDefinitions = this.attributeDefinitions;
+        const attributeSources = [];
+        let highestAttributeLength = 0;
 
-        // lets not worry about tint! for now..
-        for (let i = 0; i < vertexData.length; i += 2)
+        for (let i = 0; i < attributeDefinitions.length; i++)
         {
-            float32View[aIndex++] = vertexData[i];
-            float32View[aIndex++] = vertexData[i + 1];
-            float32View[aIndex++] = uvs[i];
-            float32View[aIndex++] = uvs[i + 1];
-            uint32View[aIndex++] = argb;
-            float32View[aIndex++] = textureId;
+            const attribute = attributeDefinitions[i];
+
+            if (typeof attributeDefinitions[i] !== 'string')
+            {
+                const source = element[attributeDefinitions[i].property];
+
+                attributeSources.push(source);
+                highestAttributeLength = Math.max(
+                    highestAttributeLength, source.length / attribute.size);
+            }
+            else
+            {
+                switch (attributeDefinitions[i])
+                {
+                    case 'aColor':
+                    {
+                        const alpha = Math.min(element.worldAlpha, 1.0);
+                        const argb = (alpha < 1.0
+                        && element._texture.baseTexture.premultiplyAlpha)
+                            ? premultiplyTint(element._tintRGB, alpha)
+                            : element._tintRGB + (alpha * 255 << 24);
+
+                        attributeSources.push([Math.round(argb)]);
+                        highestAttributeLength
+                            = Math.max(highestAttributeLength, 1);
+                        break;
+                    }
+                    case 'aTextureId':
+                    {
+                        attributeSources.push(null);
+                        break;
+                    }
+                    default:
+                    {
+                        throw new Error(`Unknown built-in attribute `
+                          + `given to AbstractBatchRenderer: `
+                          + `${attributeDefinitions[i]}`);
+                    }
+                }
+            }
+        }
+
+        for (let d = 0; d < attributeDefinitions.length; d++)
+        {
+            attributeDefinitions[d].offset = 0;
+        }
+
+        for (let i = 0; i < highestAttributeLength; i++)
+        {
+            for (let s = 0; s < attributeSources.length; s++)
+            {
+                const attribute = attributeDefinitions[s];
+                const source = attributeSources[s];
+
+                if (!source)// Only aTextureId has no source!
+                {
+                    float32View[aIndex++] = textureId;
+                    continue;
+                }
+
+                for (let float = 0; float < attribute.size; float++)
+                {
+                    float32View[aIndex++] = source[attribute.offset++ % source.length];
+                }
+            }
         }
 
         for (let i = 0; i < indicies.length; i++)
         {
-            indexBuffer[iIndex++] = p + indicies[i];
+            indexBuffer[iIndex++] = packedVerticies + indicies[i];
         }
+    }
+
+    /**
+     * Calculates the vertex size for the given attribute
+     * definitions. It also accounts for built-in attributes.
+     *
+     * @param {Array<Object>} attributeDefinitions - attribute definitions
+     * @return sum of all attribute sizes
+     */
+    static vertexSizeOf(attributeDefinitions)
+    {
+        let vertexSize = 0;
+
+        for (let d = 0; d < attributeDefinitions.length; d++)
+        {
+            const definition = attributeDefinitions[d];
+
+            if (typeof definition !== 'string')
+            {
+                vertexSize += attributeDefinitions[d].size;
+            }
+            else
+            {
+                if (!builtinAttributeSizes[definition])
+                {
+                    throw new Error(`${definition} is not a builtin attribute!`);
+                }
+
+                vertexSize += builtinAttributeSizes[definition];
+            }
+        }
+
+        return vertexSize;
     }
 }

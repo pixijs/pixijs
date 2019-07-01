@@ -3,7 +3,8 @@ import Geometry from '../geometry/Geometry';
 import Buffer from '../geometry/Buffer';
 
 /**
- * Geometry used to batch standard PIXI content (e.g. Mesh, Sprite, Graphics objects).
+ * Geometry used to batch standard PIXI content (e.g. Mesh, Sprite,
+ * Graphics objects).
  *
  * @class
  * @memberof PIXI
@@ -34,6 +35,7 @@ export default class BatchGeometry extends Geometry
          */
         this._indexBuffer = new Buffer(null, _static, true);
 
+        /* These are automatically interleaved by GeometrySystem. */
         this.addAttribute('aVertexPosition', this._buffer, 2, false, TYPES.FLOAT)
             .addAttribute('aTextureCoord', this._buffer, 2, false, TYPES.FLOAT)
             .addAttribute('aColor', this._buffer, 4, true, TYPES.UNSIGNED_BYTE)
