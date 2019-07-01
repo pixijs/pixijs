@@ -668,10 +668,12 @@ export default class AbstractBatchRenderer extends ObjectRenderer
 
         const attributeDefinitions = this.attributeDefinitions;
         const attributeSources = [];
+        const sourceOffsets = [];
         let highestAttributeLength = 0;
 
         for (let i = 0; i < attributeDefinitions.length; i++)
         {
+            sourceOffsets.push(0);
             const attribute = attributeDefinitions[i];
 
             if (typeof attributeDefinitions[i] !== 'string')
@@ -714,11 +716,6 @@ export default class AbstractBatchRenderer extends ObjectRenderer
             }
         }
 
-        for (let d = 0; d < attributeDefinitions.length; d++)
-        {
-            attributeDefinitions[d].offset = 0;
-        }
-
         for (let i = 0; i < highestAttributeLength; i++)
         {
             for (let s = 0; s < attributeSources.length; s++)
@@ -732,10 +729,14 @@ export default class AbstractBatchRenderer extends ObjectRenderer
                     continue;
                 }
 
+                let offset = sourceOffsets[s];
+
                 for (let float = 0; float < attribute.size; float++)
                 {
-                    float32View[aIndex++] = source[attribute.offset++ % source.length];
+                    float32View[aIndex++] = source[offset++ % source.length];
                 }
+
+                sourceOffsets[s] = offset;
             }
         }
 
@@ -750,7 +751,10 @@ export default class AbstractBatchRenderer extends ObjectRenderer
      * definitions. It also accounts for built-in attributes.
      *
      * @param {Array<Object>} attributeDefinitions - attribute definitions
-     * @return sum of all attribute sizes
+     * @return sum of all attribute sizes\
+     * @function
+     * @memberof PIXI.AbstractBatchRenderer
+     * @static
      */
     static vertexSizeOf(attributeDefinitions)
     {
