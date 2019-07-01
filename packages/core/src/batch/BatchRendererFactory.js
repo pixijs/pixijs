@@ -35,6 +35,8 @@ export default class BatchRendererFactory
      *
      * @static
      * @param {object} [options]
+     * @param {object} [option.attributeDefinitions=Array<Object>] -
+     *     Attribute definitions, see PIXI.AbstractBatchRenderer#attributeDefinitions
      * @param {string} [options.vertex=PIXI.BatchPluginFactory.defaultVertexSrc] - Vertex shader source
      * @param {string} [options.fragment=PIXI.BatchPluginFactory.defaultFragmentTemplate] - Fragment shader template
      * @param {number} [options.vertexSize=6] - Vertex size
