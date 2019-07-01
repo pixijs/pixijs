@@ -1,5 +1,5 @@
 import path from 'path';
-import transpile from 'rollup-plugin-buble';
+import transpile from 'rollup-plugin-babel';
 import resolve from 'rollup-plugin-node-resolve';
 import { string } from 'rollup-plugin-string';
 import sourcemaps from 'rollup-plugin-sourcemaps';
