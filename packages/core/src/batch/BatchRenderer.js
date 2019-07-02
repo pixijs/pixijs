@@ -45,7 +45,7 @@ export default class BatchRenderer extends ObjectRenderer
          * custom shader generator.
          *
          * @member {PIXI.BatchShaderGenerator}
-         * @readonly
+         * @protected
          */
         this.shaderGenerator = null;
 
@@ -55,7 +55,7 @@ export default class BatchRenderer extends ObjectRenderer
          *
          * @member {object}
          * @default PIXI.BatchGeometry
-         * @readonly
+         * @protected
          */
         this.geometryClass = null;
 
@@ -134,7 +134,7 @@ export default class BatchRenderer extends ObjectRenderer
          * number of textures being batched together.
          *
          * @member {PIXI.Shader}
-         * @private
+         * @protected
          */
         this._shader = null;
 
