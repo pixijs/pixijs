@@ -18,7 +18,7 @@ export default class CanvasResource extends BaseImageResource
      *
      * @static
      * @param {HTMLCanvasElement|OffscreenCanvas} source - The source object
-     * @return {boolean} `true` if <canvas>
+     * @return {boolean} `true` if source is HTMLCanvasElement or OffscreenCanvas
      */
     static test(source)
     {
