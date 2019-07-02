@@ -1,7 +1,16 @@
 import { GroupD8 } from '@pixi/math';
 
 /**
- * A standard object to store the Uvs of a texture
+ * Stores a texture's frame in UV coordinates, in
+ * which everything lies in the rectangle `[(0,0), (1,0),
+ * (1,1), (0,1)]`.
+ *
+ * | Corner       | Coordinates |
+ * |--------------|-------------|
+ * | Top-Left     | `(x0,y0)`   |
+ * | Top-Right    | `(x1,y1)`   |
+ * | Bottom-Right | `(x2,y2)`   |
+ * | Bottom-Left  | `(x3,y3)`   |
  *
  * @class
  * @protected
@@ -12,56 +21,56 @@ export default class TextureUvs
     constructor()
     {
         /**
-         * The position of the top-left corner on the x axis.
+         * X-component of top-left corner `(x0,y0)`.
          *
          * @member {number}
          */
         this.x0 = 0;
 
         /**
-         * The position of the top-left corner on the y axis.
+         * Y-component of top-left corner `(x0,y0)`.
          *
          * @member {number}
          */
         this.y0 = 0;
 
         /**
-         * The position of the top-right corner on the x axis.
+         * X-component of top-right corner `(x1,y1)`.
          *
          * @member {number}
          */
         this.x1 = 1;
 
         /**
-         * The position of the top-right corner on the y axis.
+         * Y-component of top-right corner `(x1,y1)`.
          *
          * @member {number}
          */
         this.y1 = 0;
 
         /**
-         * The position of the bottom-right corner on the x axis.
+         * X-component of bottom-right corner `(x2,y2)`.
          *
          * @member {number}
          */
         this.x2 = 1;
 
         /**
-         * The position of the bottom-right corner on the y axis.
+         * Y-component of bottom-right corner `(x2,y2)`.
          *
          * @member {number}
          */
         this.y2 = 1;
 
         /**
-         * The position of the bottom-left corner on the x axis.
+         * X-component of bottom-left corner `(x3,y3)`.
          *
          * @member {number}
          */
         this.x3 = 0;
 
         /**
-         * The position of the bottom-left corner on the y axis.
+         * Y-component of bottom-right corner `(x3,y3)`.
          *
          * @member {number}
          */

@@ -246,7 +246,7 @@ export default class AbstractRenderer extends EventEmitter
      * @param {number} resolution - The resolution / device pixel ratio of the texture being generated.
      * @param {PIXI.Rectangle} [region] - The region of the displayObject, that shall be rendered,
      *        if no region is specified, defaults to the local bounds of the displayObject.
-     * @return {PIXI.Texture} A texture of the graphics object.
+     * @return {PIXI.RenderTexture} A texture of the graphics object.
      */
     generateTexture(displayObject, scaleMode, resolution, region)
     {
