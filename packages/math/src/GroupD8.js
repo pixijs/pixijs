@@ -375,7 +375,7 @@ const GroupD8 = {
      *
      * @memberof PIXI.GroupD8
      * @param {PIXI.Matrix} matrix - sprite world matrix
-     * @param {PIXI.GroupD8Symmetry} rotation - The rotation factor to use.
+     * @param {PIXI.GD8Symmetry} rotation - The rotation factor to use.
      * @param {number} tx - sprite anchoring
      * @param {number} ty - sprite anchoring
      */
