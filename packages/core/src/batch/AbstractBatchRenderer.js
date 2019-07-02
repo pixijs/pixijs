@@ -1,3 +1,4 @@
+import builtinAttributeDefinitions from './utils/builtinAttributeDefinitions';
 import BatchDrawCall from './BatchDrawCall';
 import BaseTexture from '../textures/BaseTexture';
 import builtinAttributeSizes from './utils/builtinAttributeSizes';
@@ -6,7 +7,7 @@ import ObjectRenderer from './ObjectRenderer';
 import checkMaxIfStatementsInShader from '../shader/utils/checkMaxIfStatementsInShader';
 import { settings } from '@pixi/settings';
 import { premultiplyBlendMode, premultiplyTint, nextPow2, log2 } from '@pixi/utils';
-import BatchBuffer from './BatchBuffer';
+import ViewableBuffer from '../geometry/ViewableBuffer';
 import { ENV } from '@pixi/constants';
 
 /**
@@ -90,12 +91,12 @@ export default class AbstractBatchRenderer extends ObjectRenderer
          * for each vertex.
          *
          * @default
-         * | Index | AttributeDefinition                                          |
-         * |-------|--------------------------------------------------------------|
-         * | 0     | `{ property: vertexData, name: 'aVertexPosition', size: 2 }` |
-         * | 1     | `{ property: uvs, name: 'aTextureCoord', size: 2 }`          |
-         * | 2     | `'aColor'`                                                   |
-         * | 3     | `'aTextureId'` // mandatory                                  |
+         * | Index | property   | name            | type      | size | glType               | glSize |
+         * |-------|------------|-----------------|-----------|------|----------------------|--------|
+         * | 1     | vertexData | aVertexPosition | `float32` | 2    | TYPES.FLOAT          | 1      |
+         * | 2     | uvs        | aTextureCoord   | `float32` | 2    | TYPES.FLOAT          | 1      |
+         * | 3     | undefined  | aColor          | `uint32`  | 1    | TYPES.UNSIGNED_BYTE  | 4      |
+         * | 4     | undefined  | aTextureId      | `float32` | 1    | TYPES.FLOAT          | 1      |
          *
          * @readonly
          */
@@ -238,7 +239,7 @@ export default class AbstractBatchRenderer extends ObjectRenderer
         }
 
         /**
-         * Pool of `BatchBuffer` objects that are sorted in
+         * Pool of `ViewableBuffer` objects that are sorted in
          * order of increasing size. The flush method uses
          * the buffer with the least size above the amount
          * it requires. These are used for passing attributes.
@@ -246,7 +247,7 @@ export default class AbstractBatchRenderer extends ObjectRenderer
          * The first buffer has a size of 8; each subsequent
          * buffer has double capacity of its previous.
          *
-         * @member {PIXI.BatchBuffer}
+         * @member {PIXI.ViewableBuffer}
          * @private
          * @see PIXI.BatchRenderer#getAttributeBuffer
          */
@@ -379,10 +380,6 @@ export default class AbstractBatchRenderer extends ObjectRenderer
             vertexSize,
         } = this;
 
-        const {
-            float32View, uint32View,
-        } = attrBuffer;
-
         const touch = this.renderer.textureGC.count;
         let attrIndex = 0;
         let iIndex = 0;
@@ -451,7 +448,7 @@ export default class AbstractBatchRenderer extends ObjectRenderer
                 }
             }
 
-            this.packInterleavedGeometry(sprite, float32View, uint32View,
+            this.packInterleavedGeometry(sprite, attrBuffer,
                 indexBuffer, attrIndex, iIndex);
 
             // push a graphics..
@@ -580,7 +577,7 @@ export default class AbstractBatchRenderer extends ObjectRenderer
      * can hold atleast `size` floats.
      *
      * @param {number} size - minimum capacity required
-     * @return {BatchBuffer} - buffer than can hold atleast `size` floats
+     * @return {ViewableBuffer} - buffer than can hold atleast `size` floats
      * @private
      */
     getAttributeBuffer(size)
@@ -599,7 +596,7 @@ export default class AbstractBatchRenderer extends ObjectRenderer
 
         if (!buffer)
         {
-            this._aBuffers[roundedSize] = buffer = new BatchBuffer(roundedSize * this.vertexSize * 4);
+            this._aBuffers[roundedSize] = buffer = new ViewableBuffer(roundedSize * this.vertexSize * 4);
         }
 
         return buffer;
@@ -643,14 +640,12 @@ export default class AbstractBatchRenderer extends ObjectRenderer
      * element into the index buffer.
      *
      * @param {PIXI.Sprite} element - element being rendered
-     * @param {Float32Array} float32View - float32-view of the attribute buffer
-     * @param {Uint32Array} uint32View - uint32-view of the attribute buffer
+     * @param {PIXI.ViewableBuffer} attributeBuffer - attribute buffer
      * @param {Uint16Array} indexBuffer - index buffer
      * @param {number} aIndex - number of floats already in the attribute buffer
      * @param {number} iIndex - number of indices already in `indexBuffer`
      */
-    packInterleavedGeometry(element,
-        float32View, uint32View, indexBuffer, aIndex, iIndex)
+    packInterleavedGeometry(element, attributeBuffer, indexBuffer, aIndex, iIndex)
     {
         const packedVerticies = aIndex / this.vertexSize;
         const indicies = element.indices;
@@ -715,23 +710,29 @@ export default class AbstractBatchRenderer extends ObjectRenderer
 
                 if (!source)// Only aTextureId has no source!
                 {
-                    float32View[aIndex++] = textureId;
+                    attributeBuffer.float32View[aIndex++] = textureId;
                     continue;
                 }
 
-                let offset = sourceOffsets[s];
-                const size = (typeof attribute !== 'string')
-                    ? attribute.size : builtinAttributeSizes[attribute];
+                const isBuiltin = (typeof attribute === 'string');
+                const type = (isBuiltin) ? builtinAttributeDefinitions[attribute].type
+                    : attribute.type;
+                const size = (isBuiltin) ? builtinAttributeDefinitions[attribute].size
+                    : attribute.size;
+                const wordSize = (isBuiltin) ? builtinAttributeDefinitions[attribute]._wordSize
+                    : attribute._wordSize;// size of each attribute in words
+                const typeWordSize = wordSize / size;// size of type in words
 
-                for (let float = 0; float < size; float++)
+                let offset = sourceOffsets[s];
+                let globalOffset = aIndex / typeWordSize;
+
+                for (let localOffset = 0; localOffset < size; localOffset++)
                 {
-                    if (attribute === 'aColor')
-                    { uint32View[aIndex++] = source[offset++ % source.length]; }
-                    else
-                    { float32View[aIndex++] = source[offset++ % source.length]; }
+                    attributeBuffer.view(type)[globalOffset++] = source[offset++ % source.length];
                 }
 
                 sourceOffsets[s] = offset;
+                aIndex = globalOffset * typeWordSize;
             }
         }
 
