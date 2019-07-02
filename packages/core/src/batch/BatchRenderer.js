@@ -613,7 +613,7 @@ export default class BatchRenderer extends ObjectRenderer
      * present.
      *
      * @param {PIXI.Sprite} element - element being rendered
-     * @param {FLoat32Array} float32View - float32-view of the attribute buffer
+     * @param {Float32Array} float32View - float32-view of the attribute buffer
      * @param {Uint32Array} uint32View - uint32-view of the attribute buffer
      * @param {Uint16Array} indexBuffer - index buffer
      * @param {number} aIndex - number of floats already in the attribute buffer
