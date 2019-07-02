@@ -906,7 +906,7 @@ export default class Graphics extends Container
                     };
 
                     // we can bbase default shader of the batch renderers program
-                    const program =  renderer.plugins.batch.shader.program;
+                    const program =  renderer.plugins.batch._shader.program;
 
                     defaultShader = new Shader(program, uniforms);
                 }
