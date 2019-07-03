@@ -3,8 +3,9 @@ import { TYPES } from '@pixi/constants';
 /**
  * Returns the size of any type in the `TYPES` enum.
  *
+ * @function sizeOfType
  * @param {number} glint - TYPES enum constant
- * @return size of `glint` in bytes
+ * @return {number} size of `glint` in bytes
  */
 export function sizeOfType(glint)
 {

@@ -746,7 +746,7 @@ export default class AbstractBatchRenderer extends ObjectRenderer
      * definitions. It also accounts for built-in attributes.
      *
      * @param {Array<Object>} attributeDefinitions - attribute definitions
-     * @return sum of all attribute sizes
+     * @return {number} sum of all attribute sizes
      * @static
      */
     static vertexSizeOf(attributeDefinitions)
