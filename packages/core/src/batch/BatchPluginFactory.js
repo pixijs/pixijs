@@ -39,7 +39,7 @@ export default class BatchPluginFactory
      * @param {string} [options.fragment=PIXI.BatchPluginFactory.defaultFragmentTemplate] - Fragment shader template
      * @param {number} [options.vertexSize=6] - Vertex size
      * @param {object} [options.geometryClass=PIXI.BatchGeometry]
-     * @return {PIXI.BatchRenderer} New batch renderer plugin.
+     * @return {*} New batch renderer plugin
      */
     static create(options)
     {

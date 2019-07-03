@@ -26,6 +26,6 @@
   "dependencies": {
     "@pixi/core": "^5.0.4",
     "@pixi/utils": "^5.0.4",
-    "resource-loader": "^2.2.4"
+    "resource-loader": "^3.0.1"
   }
 }
