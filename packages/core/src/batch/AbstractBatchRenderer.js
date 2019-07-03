@@ -370,6 +370,7 @@ export default class AbstractBatchRenderer extends ObjectRenderer
         const gl = this.renderer.gl;
         const attrBuffer = this.getAttributeBuffer(this._vertexCount);
         const indexBuffer = this.getIndexBuffer(this._indexCount);
+        const primaryAttribute = this.attributeDefinitions[0];
 
         const {
             _bufferedElements: elements,
@@ -378,6 +379,11 @@ export default class AbstractBatchRenderer extends ObjectRenderer
             _packedGeometries: packedGeometries,
             vertexSize,
         } = this;
+
+        const {
+            property: primaryProperty,
+            size: primaryAttributeSize,
+        } = primaryAttribute;
 
         const touch = this.renderer.textureGC.count;
         let attrIndex = 0;
@@ -451,7 +457,7 @@ export default class AbstractBatchRenderer extends ObjectRenderer
                 indexBuffer, attrIndex, iIndex);
 
             // push a graphics..
-            attrIndex += (sprite.vertexData.length / 2) * vertexSize;
+            attrIndex += (sprite[primaryProperty].length / primaryAttributeSize) * vertexSize;
             iIndex += sprite.indices.length;
         }
 
