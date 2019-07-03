@@ -65,6 +65,8 @@ export default class ContextSystem extends System
     contextChange(gl)
     {
         this.gl = gl;
+        this.renderer.gl = gl;
+        this.renderer.CONTEXT_UID = CONTEXT_UID++;
 
         // restore a context if it was previously lost
         if (gl.isContextLost() && gl.getExtension('WEBGL_lose_context'))
