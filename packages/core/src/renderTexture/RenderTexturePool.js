@@ -9,6 +9,7 @@ import { nextPow2 } from '@pixi/utils';
  * Stores collection of temporary pow2 or screen-sized renderTextures
  *
  * @class
+ * @memberof PIXI
  */
 export default class RenderTexturePool
 {
@@ -174,4 +175,10 @@ export default class RenderTexturePool
     }
 }
 
+/**
+ * Key that is used to store fullscreen renderTextures in a pool
+ *
+ * @static
+ * @const {string}
+ */
 RenderTexturePool.SCREEN_KEY = 'screen';
