@@ -49,9 +49,9 @@ export default class BatchGeometry extends Geometry
 
             const isBuiltin = (typeof def === 'string');
             const identifier = isBuiltin ? def : def.name;
-            const size = isBuiltin ? builtinAttributeSizes[identifier] : def.size;
+            const size = isBuiltin ? builtinAttributeSizes[identifier] : def.glSize;
 
-            this.addAttribute(identifier, this._buffer, size, def === 'aTextureId', TYPES.FLOAT);
+            this.addAttribute(identifier, this._buffer, size, def === 'aTextureId', def.glType);
         });
 
         this.addIndex(this._indexBuffer);

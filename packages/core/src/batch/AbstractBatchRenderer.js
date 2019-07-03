@@ -647,7 +647,7 @@ export default class AbstractBatchRenderer extends ObjectRenderer
      */
     packInterleavedGeometry(element, attributeBuffer, indexBuffer, aIndex, iIndex)
     {
-        const packedVerticies = aIndex / this.vertexSize;
+        const packedVertices = aIndex / this.vertexSize;
         const indicies = element.indices;
         const textureId = element._texture.baseTexture._id;
 
@@ -738,7 +738,7 @@ export default class AbstractBatchRenderer extends ObjectRenderer
 
         for (let i = 0; i < indicies.length; i++)
         {
-            indexBuffer[iIndex++] = packedVerticies + indicies[i];
+            indexBuffer[iIndex++] = packedVertices + indicies[i];
         }
     }
 
