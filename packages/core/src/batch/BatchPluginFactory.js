@@ -6,33 +6,32 @@ import defaultVertex from './texture.vert';
 import defaultFragment from './texture.frag';
 
 /**
- * Used to create new, custom BatchRenderer plugins for the Renderer.
- * @example
- * const fragment = `
- * varying vec2 vTextureCoord;
- * varying vec4 vColor;
- * varying float vTextureId;
- * uniform sampler2D uSamplers[%count%];
- *
- * void main(void){
- *     vec4 color;
- *     %forloop%
- *     gl_FragColor = vColor * vec4(color.a - color.rgb, color.a);
- * }
- * `;
- * const InvertBatchRenderer = PIXI.BatchPluginFactory.create({ fragment });
- * PIXI.Renderer.registerPlugin('invert', InvertBatchRenderer);
- * const sprite = new PIXI.Sprite();
- * sprite.pluginName = 'invert';
- *
  * @class
  * @memberof PIXI
+ * @hideconstructor
  */
-export class BatchPluginFactory
+export default class BatchPluginFactory
 {
     /**
      * Create a new BatchRenderer plugin for Renderer. this convenience can provide an easy way
      * to extend BatchRenderer with all the necessary pieces.
+     * @example
+     * const fragment = `
+     * varying vec2 vTextureCoord;
+     * varying vec4 vColor;
+     * varying float vTextureId;
+     * uniform sampler2D uSamplers[%count%];
+     *
+     * void main(void){
+     *     vec4 color;
+     *     %forloop%
+     *     gl_FragColor = vColor * vec4(color.a - color.rgb, color.a);
+     * }
+     * `;
+     * const InvertBatchRenderer = PIXI.BatchPluginFactory.create({ fragment });
+     * PIXI.Renderer.registerPlugin('invert', InvertBatchRenderer);
+     * const sprite = new PIXI.Sprite();
+     * sprite.pluginName = 'invert';
      *
      * @static
      * @param {object} [options]
@@ -40,7 +39,7 @@ export class BatchPluginFactory
      * @param {string} [options.fragment=PIXI.BatchPluginFactory.defaultFragmentTemplate] - Fragment shader template
      * @param {number} [options.vertexSize=6] - Vertex size
      * @param {object} [options.geometryClass=PIXI.BatchGeometry]
-     * @return {PIXI.BatchRenderer} New batch renderer plugin.
+     * @return {*} New batch renderer plugin
      */
     static create(options)
     {

@@ -774,6 +774,18 @@ export default function useDeprecated()
         return this.copyTo(p);
     };
 
+    /**
+     * @method PIXI.systems.StateSystem#setState
+     * @deprecated since 5.1.0
+     * @see PIXI.systems.StateSystem#set
+     */
+    PIXI.systems.StateSystem.prototype.setState = function setState(s)
+    {
+        deprecation('v5.1.0', 'StateSystem.setState has been renamed to StateSystem.set');
+
+        return this.set(s);
+    };
+
     Object.assign(PIXI.systems.FilterSystem.prototype, {
         /**
          * @method PIXI.FilterManager#getRenderTarget
@@ -1052,6 +1064,20 @@ export default function useDeprecated()
             deprecation(v5, 'PIXI.AbstractRenderer.autoResize property is deprecated, use autoDensity');
 
             this.autoDensity = value;
+        },
+    });
+
+    /**
+     * @deprecated since 5.0.0
+     * @member {PIXI.systems.TextureSystem} PIXI.Renderer#textureManager
+     * @see PIXI.Renderer#texture
+     */
+    Object.defineProperty(PIXI.Renderer.prototype, 'textureManager', {
+        get()
+        {
+            deprecation(v5, 'PIXI.Renderer.textureManager property is deprecated, use texture');
+
+            return this.texture;
         },
     });
 

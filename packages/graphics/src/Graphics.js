@@ -775,11 +775,12 @@ export default class Graphics extends Container
     clear()
     {
         this.geometry.clear();
+        this._lineStyle.reset();
+        this._fillStyle.reset();
 
         this._matrix = null;
         this._holeMode = false;
         this.currentPath = null;
-        this._spriteRect = null;
 
         return this;
     }
@@ -905,7 +906,7 @@ export default class Graphics extends Container
                     };
 
                     // we can bbase default shader of the batch renderers program
-                    const program =  renderer.plugins.batch.shader.program;
+                    const program =  renderer.plugins.batch._shader.program;
 
                     defaultShader = new Shader(program, uniforms);
                 }
@@ -938,7 +939,7 @@ export default class Graphics extends Container
             renderer.geometry.bind(geometry, this.shader);
 
             // set state..
-            renderer.state.setState(this.state);
+            renderer.state.set(this.state);
 
             // then render the rest of them...
             for (let i = 0; i < geometry.drawCalls.length; i++)

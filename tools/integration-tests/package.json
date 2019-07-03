@@ -3,9 +3,6 @@
   "private": true,
   "version": "5.0.4",
   "description": "Integration tests for PixiJS packages",
-  "scripts": {
-    "test": "floss --path test"
-  },
   "devDependencies": {
     "@pixi/canvas-display": "^5.0.4",
     "@pixi/canvas-graphics": "^5.0.4",
@@ -20,7 +17,6 @@
     "@pixi/mesh-extras": "^5.0.4",
     "@pixi/sprite": "^5.0.4",
     "@pixi/text": "^5.0.4",
-    "@pixi/utils": "^5.0.4",
-    "floss": "^2.2.0"
+    "@pixi/utils": "^5.0.4"
   }
 }
