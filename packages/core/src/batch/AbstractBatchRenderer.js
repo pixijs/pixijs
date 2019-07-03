@@ -1,7 +1,6 @@
 import builtinAttributeDefinitions from './utils/builtinAttributeDefinitions';
 import BatchDrawCall from './BatchDrawCall';
 import BaseTexture from '../textures/BaseTexture';
-import builtinAttributeSizes from './utils/builtinAttributeSizes';
 import State from '../state/State';
 import ObjectRenderer from './ObjectRenderer';
 import checkMaxIfStatementsInShader from '../shader/utils/checkMaxIfStatementsInShader';
@@ -11,7 +10,7 @@ import ViewableBuffer from '../geometry/ViewableBuffer';
 import { ENV } from '@pixi/constants';
 
 /**
- * @typedef Object AttributeDefinition
+ * @typedef {Object} AttributeDefinition
  * @memberof PIXI
  *
  * @description
@@ -30,6 +29,8 @@ import { ENV } from '@pixi/constants';
  *    to the geometry.
  * @property {number} glSize - number of elements as glType which
  *    compose one attribute.
+ *
+ * @see PIXI.AbstractBatchRenderer#attributeDefinitions
  */
 
 /**
@@ -86,9 +87,8 @@ export default class AbstractBatchRenderer extends ObjectRenderer
         /**
          * Array of attribute definitions that are used to
          * pass attribute data from your objects to the vertex
-         * shader.
+         * shader. Default values are given below:
          *
-         * @default
          * | Index | property   | name            | type      | size | glType               | glSize |
          * |-------|------------|-----------------|-----------|------|----------------------|--------|
          * | 1     | vertexData | aVertexPosition | `float32` | 2    | TYPES.FLOAT          | 1      |
@@ -765,16 +765,16 @@ export default class AbstractBatchRenderer extends ObjectRenderer
 
             if (typeof definition !== 'string')
             {
-                vertexSize += attributeDefinitions[d].size;
+                vertexSize += attributeDefinitions[d]._wordSize;
             }
             else
             {
-                if (!builtinAttributeSizes[definition])
+                if (!builtinAttributeDefinitions[definition])
                 {
                     throw new Error(`${definition} is not a builtin attribute!`);
                 }
 
-                vertexSize += builtinAttributeSizes[definition];
+                vertexSize += builtinAttributeDefinitions[definition]._wordSize;
             }
         }
 
