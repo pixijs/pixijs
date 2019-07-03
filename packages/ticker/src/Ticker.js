@@ -420,12 +420,17 @@ export default class Ticker
             elapsedMS *= this.speed;
 
             // if not enough time has passed, exit the function.
-            // We give an extra ms to elapsedMS for this check, because the nature of
-            // request animation frame means that not all browsers will return precise values.
+            // We give a padding (5% of minElapsedMS) to elapsedMS for this check, because the
+            // nature of request animation frame means that not all browsers will return precise values.
             // However, because rAF works based on v-sync, it's won't change the effective FPS.
-            if (this._minElapsedMS && elapsedMS + 1 < this._minElapsedMS)
+            if (this._minElapsedMS)
             {
-                return;
+                const elapsedMSPadding = this._minElapsedMS * 0.05;
+
+                if (elapsedMS + elapsedMSPadding < this._minElapsedMS)
+                {
+                    return;
+                }
             }
 
             this.deltaMS = elapsedMS;
@@ -499,28 +504,28 @@ export default class Ticker
     }
 
     /**
-     * Manages the minimum amount of milliseconds allowed to
+     * Manages the minimum amount of milliseconds required to
      * elapse between invoking {@link PIXI.Ticker#update}.
      * This will effect the measured value of {@link PIXI.Ticker#FPS}.
-     * When setting this property it is clamped to a value between
-     * `1` and `TARGET_FPMS * 1000`.
+     * If it is set to `0`, then there is no limit; PixiJS will render as many frames as it can.
+     * Otherwise it will be at least `minFPS`
      *
      * @member {number}
-     * @default 60
+     * @default 0
      */
     get maxFPS()
     {
         if (this._minElapsedMS)
         {
-            return 1000 / this._minElapsedMS;
+            return Math.round(1000 / this._minElapsedMS);
         }
 
-        return settings.TARGET_FPMS * 1000;
+        return 0;
     }
 
     set maxFPS(fps)
     {
-        if (fps / 1000 >= settings.TARGET_FPMS)
+        if (fps === 0)
         {
             this._minElapsedMS = 0;
         }
@@ -529,10 +534,7 @@ export default class Ticker
             // Max must be at least the minFPS
             const maxFPS = Math.max(this.minFPS, fps);
 
-            // Must be at least 1, but below 1 / settings.TARGET_FPMS
-            const maxFPMS = Math.min(Math.max(1, maxFPS) / 1000, settings.TARGET_FPMS);
-
-            this._minElapsedMS = 1 / maxFPMS;
+            this._minElapsedMS = 1 / (maxFPS / 1000);
         }
     }
 

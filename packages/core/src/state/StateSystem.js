@@ -98,7 +98,7 @@ export default class StateSystem extends System
 
         this.blendModes = mapWebGLBlendModesToPixi(gl);
 
-        this.setState(this.defaultState);
+        this.set(this.defaultState);
 
         this.reset();
     }
@@ -108,7 +108,7 @@ export default class StateSystem extends System
      *
      * @param {*} state - The state to set.
      */
-    setState(state)
+    set(state)
     {
         state = state || this.defaultState;
 

@@ -1,6 +1,10 @@
 import BaseImageResource from './BaseImageResource';
 
 /**
+ * @interface OffscreenCanvas
+ */
+
+/**
  * Resource type for HTMLCanvasElement.
  * @class
  * @extends PIXI.resources.BaseImageResource
@@ -14,13 +18,18 @@ export default class CanvasResource extends BaseImageResource
      *
      * @static
      * @param {HTMLCanvasElement|OffscreenCanvas} source - The source object
-     * @return {boolean} `true` if <canvas>
+     * @return {boolean} `true` if source is HTMLCanvasElement or OffscreenCanvas
      */
     static test(source)
     {
-        return (source && (
-            source instanceof HTMLCanvasElement
-            || source instanceof window.OffscreenCanvas
-        ));
+        const { OffscreenCanvas } = window;
+
+        // Check for browsers that don't yet support OffscreenCanvas
+        if (OffscreenCanvas && source instanceof OffscreenCanvas)
+        {
+            return true;
+        }
+
+        return source instanceof HTMLCanvasElement;
     }
 }

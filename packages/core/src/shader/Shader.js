@@ -15,6 +15,11 @@ class Shader
      */
     constructor(program, uniforms)
     {
+        /**
+         * Program that the shader uses
+         *
+         * @member {PIXI.Program}
+         */
         this.program = program;
 
         // lets see whats been passed in

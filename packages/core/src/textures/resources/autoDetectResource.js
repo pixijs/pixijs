@@ -46,10 +46,10 @@ export const INSTALLED = [];
  *        or any other resource that can be auto-detected. If not resource is
  *        detected, it's assumed to be an ImageResource.
  * @param {object} [options] - Pass-through options to use for Resource
- * @param {number} [options.width] - BufferResource's width
- * @param {number} [options.height] - BufferResource's height
+ * @param {number} [options.width] - Width of BufferResource or SVG rasterization
+ * @param {number} [options.height] - Height of BufferResource or SVG rasterization
  * @param {boolean} [options.autoLoad=true] - Image, SVG and Video flag to start loading
- * @param {number} [options.scale=1] - SVG source scale
+ * @param {number} [options.scale=1] - SVG source scale. Overridden by width, height
  * @param {boolean} [options.createBitmap=PIXI.settings.CREATE_IMAGE_BITMAP] - Image option to create Bitmap object
  * @param {boolean} [options.crossorigin=true] - Image and Video option to set crossOrigin
  * @param {boolean} [options.autoPlay=true] - Video option to start playing video immediately

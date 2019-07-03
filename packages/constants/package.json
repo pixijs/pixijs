@@ -19,14 +19,8 @@
   "publishConfig": {
     "access": "public"
   },
-  "scripts": {
-    "test": "floss --path test"
-  },
   "files": [
     "lib",
     "dist"
-  ],
-  "devDependencies": {
-    "floss": "^2.2.0"
-  }
+  ]
 }

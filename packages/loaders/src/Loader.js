@@ -1,6 +1,5 @@
-import ResourceLoader from 'resource-loader';
+import { Loader as ResourceLoader, middleware } from 'resource-loader';
 import { EventEmitter } from '@pixi/utils';
-import { blobMiddlewareFactory } from 'resource-loader/lib/middlewares/parsing/blob';
 import TextureLoader from './TextureLoader';
 
 /**
@@ -164,7 +163,7 @@ Loader.registerPlugin = function registerPlugin(plugin)
 };
 
 // parse any blob into more usable objects (e.g. Image)
-Loader.registerPlugin({ use: blobMiddlewareFactory() });
+Loader.registerPlugin({ use: middleware.parsing });
 
 // parse any Image objects into textures
 Loader.registerPlugin(TextureLoader);
