@@ -11,6 +11,28 @@ import ViewableBuffer from '../geometry/ViewableBuffer';
 import { ENV } from '@pixi/constants';
 
 /**
+ * @typedef Object AttributeDefinition
+ * @memberof PIXI
+ *
+ * @description
+ * Holds the information required to pass attributes from
+ * renderable objects to the WebGL vertex shader.
+ *
+ * @property {string} property - the property of rendered objects
+ *    that hold the attributes.
+ * @property {string} name - attribute identifier in the GLSL
+ *    vertex shader.
+ * @property {string} type - type of the attribute. It can be
+ *    any of the view types of `PIXI.ViewableBuffer`.
+ * @property {number} size - number of elements in the property
+ *    array that compose one attribute.
+ * @property {PIXI.TYPES} glType - type of the attribute as given
+ *    to the geometry.
+ * @property {number} glSize - number of elements as glType which
+ *    compose one attribute.
+ */
+
+/**
  * Renderer dedicated to drawing and batching sprites.
  *
  * This is the default batch renderer. It buffers objects
@@ -62,33 +84,9 @@ export default class AbstractBatchRenderer extends ObjectRenderer
         this.geometryClass = null;
 
         /**
-         * Array of attribute definitions that are described
-         * below. These are used to pass attribute data
-         * from your objects to the vertex shader.
-         *
-         * An attribute definition is an object with the
-         * following properties:
-         *
-         * | Property   | Description                                   |
-         * |------------|-----------------------------------------------|
-         * | property   | Property name in objects for attribute data   |
-         * | name       | Name of attribute variable used in the shader |
-         * | size       | Size of each attribute element in floats      |
-         *
-         * `BatchRenderer` provides a few built-in attributes
-         * that you can use like `aColor`. Instead of the
-         * attribute definition, just give the name to
-         * use them.
-         *
-         * The `attribute float aTextureId` attribute should
-         * _always_ be present in your shader. See
-         * `PIXI.BatchShaderGenerator` for more details.
-         *
-         * NOTE: It is expected that the attribute buffers
-         * store an equal number of elements. For example,
-         * `object.vertexData.length = object.uvs.length`. Otherwise,
-         * wrapping will occur so that the attribute data is repeated
-         * for each vertex.
+         * Array of attribute definitions that are used to
+         * pass attribute data from your objects to the vertex
+         * shader.
          *
          * @default
          * | Index | property   | name            | type      | size | glType               | glSize |
@@ -98,6 +96,7 @@ export default class AbstractBatchRenderer extends ObjectRenderer
          * | 3     | undefined  | aColor          | `uint32`  | 1    | TYPES.UNSIGNED_BYTE  | 4      |
          * | 4     | undefined  | aTextureId      | `float32` | 1    | TYPES.FLOAT          | 1      |
          *
+         * @type {PIXI.AttributeDefinitions[]}
          * @readonly
          */
         this.attributeDefinitions = null;
@@ -747,9 +746,7 @@ export default class AbstractBatchRenderer extends ObjectRenderer
      * definitions. It also accounts for built-in attributes.
      *
      * @param {Array<Object>} attributeDefinitions - attribute definitions
-     * @return sum of all attribute sizes\
-     * @function
-     * @memberof PIXI.AbstractBatchRenderer
+     * @return sum of all attribute sizes
      * @static
      */
     static vertexSizeOf(attributeDefinitions)

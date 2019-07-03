@@ -2,6 +2,8 @@ import BatchShaderGenerator from './BatchShaderGenerator';
 import BatchGeometry from './BatchGeometry';
 import AbstractBatchRenderer from './AbstractBatchRenderer';
 import ViewableBuffer from '../geometry/ViewableBuffer';
+
+import { sizeOfType } from '@pixi/utils';
 import { TYPES } from '@pixi/constants';
 
 import defaultVertex from './texture.vert';
@@ -140,7 +142,7 @@ export default class BatchPluginFactory
                     + 'your elements with additional bytes.');
             }
 
-            const outputSize = TYPES.sizeOf(def.glType) * def.glSize;
+            const outputSize = sizeOfType(def.glType) * def.glSize;
 
             if (outputSize !== inputSize)
             {
