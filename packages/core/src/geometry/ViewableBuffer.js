@@ -27,7 +27,6 @@ export default class ViewableBuffer
          */
         this.uint32View = new Uint32Array(this.rawBinaryData);
 
-
         /**
          * View on the raw binary data as a `Float32Array`.
          *
