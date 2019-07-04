@@ -245,8 +245,8 @@ export default class Extract
     /**
      * Takes premultiplied pixel data and produces regular pixel data
      *
-     * @param pixels {*} array of pixel data
-     * @param out {*} output array
+     * @param pixels {number[] | Uint8Array | Uint8ClampedArray} array of pixel data
+     * @param out {number[] | Uint8Array | Uint8ClampedArray} output array
      */
     static arrayPostDivide(pixels, out)
     {
