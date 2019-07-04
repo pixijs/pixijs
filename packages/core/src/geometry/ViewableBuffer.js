@@ -134,8 +134,8 @@ export default class ViewableBuffer
         this._int16View = null;
         this._uint16View = null;
         this._int32View = null;
-        this._uint32View = null;
-        this._float32View = null;
+        this.uint32View = null;
+        this.float32View = null;
     }
 
     static sizeOf(type)
