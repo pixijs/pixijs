@@ -158,6 +158,14 @@ export default class Graphics extends Container
         this._transformID = -1;
         this.batchDirty = -1;
 
+        /**
+         * Renderer plugin for batching
+         *
+         * @member {string}
+         * @default 'batch'
+         */
+        this.pluginName = 'batch';
+
         // Set default
         this.tint = 0xFFFFFF;
         this.blendMode = BLEND_MODES.NORMAL;
@@ -864,7 +872,7 @@ export default class Graphics extends Container
                 }
             }
 
-            renderer.batch.setObjectRenderer(renderer.plugins.batch);
+            renderer.batch.setObjectRenderer(renderer.plugins[this.pluginName]);
 
             if (this.batches.length)
             {
@@ -877,7 +885,7 @@ export default class Graphics extends Container
 
                     batch.worldAlpha = this.worldAlpha * batch.alpha;
 
-                    renderer.plugins.batch.render(batch);
+                    renderer.plugins[this.pluginName].render(batch);
                 }
             }
         }
