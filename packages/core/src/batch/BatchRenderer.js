@@ -425,7 +425,7 @@ export default class BatchRenderer extends ObjectRenderer
                 packedGeometries[this._flushId] = new (this.geometryClass)();
             }
 
-            packedGeometries[this._flushId]._buffer.update(attributeBuffer.vertices, 0);
+            packedGeometries[this._flushId]._buffer.update(attributeBuffer.rawBinaryData, 0);
             packedGeometries[this._flushId]._indexBuffer.update(indexBuffer, 0);
 
             this.renderer.geometry.bind(packedGeometries[this._flushId]);
@@ -435,7 +435,7 @@ export default class BatchRenderer extends ObjectRenderer
         else
         {
             // lets use the faster option, always use buffer number 0
-            packedGeometries[this._flushId]._buffer.update(attributeBuffer.vertices, 0);
+            packedGeometries[this._flushId]._buffer.update(attributeBuffer.rawBinaryData, 0);
             packedGeometries[this._flushId]._indexBuffer.update(indexBuffer, 0);
 
             this.renderer.geometry.updateBuffers();
