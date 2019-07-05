@@ -505,6 +505,19 @@ describe('PIXI.Container', function ()
 
             expect(canvasSpy).to.not.have.been.called;
         });
+
+        it('should succeed when called on a top level container', function ()
+        {
+            const container = new Container();
+            const child = new Container();
+            const canvasSpy = sinon.spy(child, 'updateTransform');
+
+            container.addChild(child);
+
+            container.updateTransform();
+
+            expect(canvasSpy).to.have.been.called;
+        });
     });
 
     describe('render', function ()

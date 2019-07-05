@@ -419,7 +419,7 @@ export default class Container extends DisplayObject
         }
 
         // TODO: check render flags, how to process stuff here
-        this.worldAlpha = this.alpha * this.parent.worldAlpha;
+        this.worldAlpha = this.alpha * (this.parent ? this.parent.worldAlpha : 1);
 
         for (let i = 0, j = this.children.length; i < j; ++i)
         {
