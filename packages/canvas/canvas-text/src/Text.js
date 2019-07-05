@@ -9,7 +9,7 @@ import { Sprite } from '@pixi/sprite';
  * @private
  * @param {PIXI.CanvasRenderer} renderer - The renderer
  */
-Text.prototype._renderCanvas = function _renderCanvas(renderer) // eslint-disable-line no-unused-vars
+Text.prototype._renderCanvas = function _renderCanvas(renderer)
 {
     if (this._autoResolution && this._resolution !== renderer.resolution)
     {

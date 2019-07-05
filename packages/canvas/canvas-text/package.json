@@ -4,7 +4,7 @@
   "main": "lib/canvas-text.js",
   "module": "lib/canvas-text.es.js",
   "bundle": "dist/canvas-text.js",
-  "bundleNoExports": false,
+  "bundleNoExports": true,
   "description": "Canvas mixin for the text package",
   "author": "Dave Moore",
   "homepage": "http://pixijs.com/",
@@ -22,7 +22,7 @@
     "dist"
   ],
   "dependencies": {
-	  "@pixi/sprite": "^5.0.4",
+    "@pixi/sprite": "^5.0.4",
     "@pixi/text": "^5.0.4"
   }
 }
