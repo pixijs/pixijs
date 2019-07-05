@@ -6,6 +6,7 @@ const { CanvasRenderer } = require('@pixi/canvas-renderer');
 const { CanvasSpriteRenderer } = require('@pixi/canvas-sprite');
 
 require('@pixi/canvas-display');
+require('@pixi/canvas-text');
 
 skipHello();
 
