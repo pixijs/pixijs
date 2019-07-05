@@ -413,7 +413,10 @@ export default class Container extends DisplayObject
 
         this._boundsID++;
 
-        this.transform.updateTransform(this.parent.transform);
+        if (this.parent)
+        {
+            this.transform.updateTransform(this.parent.transform);
+        }
 
         // TODO: check render flags, how to process stuff here
         this.worldAlpha = this.alpha * this.parent.worldAlpha;
