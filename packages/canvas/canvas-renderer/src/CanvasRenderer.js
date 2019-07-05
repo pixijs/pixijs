@@ -191,7 +191,7 @@ export default class CanvasRenderer extends AbstractRenderer
                 transform.copyTo(tempWt);
 
                 // lets not forget to flag the parent transform as dirty...
-                this._tempDisplayObjectParent.transform._worldID = -1;
+                this._tempDisplayObjectParent.transform._parentID = -1;
             }
             else
             {
