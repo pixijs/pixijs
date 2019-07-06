@@ -21,7 +21,7 @@ const CanvasTinter = {
      */
     getTintedCanvas: (sprite, color) =>
     {
-        const texture = sprite._texture;
+        const texture = sprite.texture;
 
         color = CanvasTinter.roundColor(color);
 
