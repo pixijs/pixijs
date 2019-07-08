@@ -39,3 +39,4 @@ export { default as Filter } from './filters/Filter';
 export { default as Attribute } from './geometry/Attribute';
 export { default as Buffer } from './geometry/Buffer';
 export { default as Geometry } from './geometry/Geometry';
+export { default as ViewableBuffer } from './geometry/ViewableBuffer';

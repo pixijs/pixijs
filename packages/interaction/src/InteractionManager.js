@@ -682,7 +682,7 @@ export default class InteractionManager extends EventEmitter
      * other DOM elements on top of the renderers Canvas element. With this you'll be bale to delegate
      * another DOM element to receive those events.
      *
-     * @param {HTMLCanvasElement} element - the DOM element which will receive mouse and touch events.
+     * @param {HTMLElement} element - the DOM element which will receive mouse and touch events.
      * @param {number} [resolution=1] - The resolution / device pixel ratio of the new element (relative to the canvas).
      */
     setTargetElement(element, resolution = 1)
@@ -875,8 +875,6 @@ export default class InteractionManager extends EventEmitter
         }
 
         this.setCursorMode(this.cursor);
-
-        // TODO
     }
 
     /**
@@ -1467,14 +1465,8 @@ export default class InteractionManager extends EventEmitter
 
             interactionEvent.data.originalEvent = originalEvent;
 
-            const interactive = event.pointerType === 'touch' ? this.moveWhenInside : true;
+            this.processInteractive(interactionEvent, this.renderer._lastObjectRendered, this.processPointerMove, true);
 
-            this.processInteractive(
-                interactionEvent,
-                this.renderer._lastObjectRendered,
-                this.processPointerMove,
-                interactive
-            );
             this.emit('pointermove', interactionEvent);
             if (event.pointerType === 'touch') this.emit('touchmove', interactionEvent);
             if (event.pointerType === 'mouse' || event.pointerType === 'pen') this.emit('mousemove', interactionEvent);
