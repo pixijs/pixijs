@@ -421,7 +421,7 @@ export default class FramebufferSystem extends System
 
         this.managedFramebuffers = [];
 
-        for (let i = 0; i < list.count; i++)
+        for (let i = 0; i < list.length; i++)
         {
             this.disposeFramebuffer(list[i], contextLost);
         }
