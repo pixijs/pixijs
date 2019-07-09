@@ -330,9 +330,10 @@ export default class Text extends Sprite
     /**
      * Renders the object using the WebGL renderer
      *
+     * @private
      * @param {PIXI.Renderer} renderer - The renderer
      */
-    render(renderer)
+    _render(renderer)
     {
         if (this._autoResolution && this._resolution !== renderer.resolution)
         {
@@ -342,26 +343,7 @@ export default class Text extends Sprite
 
         this.updateText(true);
 
-        super.render(renderer);
-    }
-
-    /**
-     * Renders the object using the Canvas renderer
-     *
-     * @private
-     * @param {PIXI.CanvasRenderer} renderer - The renderer
-     */
-    _renderCanvas(renderer)
-    {
-        if (this._autoResolution && this._resolution !== renderer.resolution)
-        {
-            this._resolution = renderer.resolution;
-            this.dirty = true;
-        }
-
-        this.updateText(true);
-
-        super._renderCanvas(renderer);
+        super._render(renderer);
     }
 
     /**

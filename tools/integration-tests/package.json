@@ -9,6 +9,7 @@
     "@pixi/canvas-mesh": "^5.0.4",
     "@pixi/canvas-renderer": "^5.0.4",
     "@pixi/canvas-sprite": "^5.0.4",
+    "@pixi/canvas-text": "^5.0.4",
     "@pixi/core": "^5.0.4",
     "@pixi/display": "^5.0.4",
     "@pixi/graphics": "^5.0.4",
