@@ -417,6 +417,10 @@ export default class Container extends DisplayObject
         {
             this.transform.updateTransform(this.parent.transform);
         }
+        else
+        {
+            this.transform.updateLocalTransform();
+        }
 
         // TODO: check render flags, how to process stuff here
         this.worldAlpha = this.alpha * (this.parent ? this.parent.worldAlpha : 1);
