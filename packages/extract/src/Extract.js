@@ -113,8 +113,8 @@ export default class Extract
             renderer.renderTexture.bind(null);
         }
 
-        const width = frame.width * resolution;
-        const height = frame.height * resolution;
+        const width = Math.floor(frame.width * resolution);
+        const height = Math.floor(frame.height * resolution);
 
         const canvasBuffer = new CanvasRenderTarget(width, height, 1);
 
