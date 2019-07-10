@@ -40,6 +40,7 @@
     "@pixi/canvas-renderer": "^5.0.4",
     "@pixi/canvas-sprite": "^5.0.4",
     "@pixi/canvas-sprite-tiling": "^5.0.4",
+    "@pixi/canvas-text": "^5.0.4",
     "pixi.js": "^5.0.4"
   }
 }

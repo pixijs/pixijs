@@ -19,6 +19,20 @@ export default class ViewableBuffer
          * @member {ArrayBuffer}
          */
         this.rawBinaryData = new ArrayBuffer(size);
+
+        /**
+         * View on the raw binary data as a `Uint32Array`.
+         *
+         * @member {Uint32Array}
+         */
+        this.uint32View = new Uint32Array(this.rawBinaryData);
+
+        /**
+         * View on the raw binary data as a `Float32Array`.
+         *
+         * @member {Float32Array}
+         */
+        this.float32View = new Float32Array(this.rawBinaryData);
     }
 
     /**
@@ -97,36 +111,6 @@ export default class ViewableBuffer
     }
 
     /**
-     * View on the raw binary data as a `Uint32Array`.
-     *
-     * @member {Float32Array}
-     */
-    get uint32View()
-    {
-        if (!this._uint32View)
-        {
-            this._uint32View = new Uint32Array(this.rawBinaryData);
-        }
-
-        return this._uint32View;
-    }
-
-    /**
-     * View on the raw binary data as a `Float32Array`.
-     *
-     * @member {Float32Array}
-     */
-    get float32View()
-    {
-        if (!this._float32View)
-        {
-            this._float32View = new Float32Array(this.rawBinaryData);
-        }
-
-        return this._float32View;
-    }
-
-    /**
      * Returns the view of the given type.
      *
      * @param {string} type - One of `int8`, `uint8`, `int16`,
@@ -150,8 +134,8 @@ export default class ViewableBuffer
         this._int16View = null;
         this._uint16View = null;
         this._int32View = null;
-        this._uint32View = null;
-        this._float32View = null;
+        this.uint32View = null;
+        this.float32View = null;
     }
 
     static sizeOf(type)
