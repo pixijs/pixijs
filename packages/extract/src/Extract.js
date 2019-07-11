@@ -136,7 +136,7 @@ export default class Extract
         // add the pixels to the canvas
         const canvasData = canvasBuffer.context.getImageData(0, 0, width, height);
 
-        canvasData.data.set(webglPixels);
+        Extract.arrayPostDivide(webglPixels, canvasData.data);
 
         canvasBuffer.context.putImageData(canvasData, 0, 0);
 
@@ -162,7 +162,7 @@ export default class Extract
      *
      * @param {PIXI.DisplayObject|PIXI.RenderTexture} target - A displayObject or renderTexture
      *  to convert. If left empty will use the main renderer
-     * @return {Uint8ClampedArray} One-dimensional array containing the pixel data of the entire texture
+     * @return {Uint8Array} One-dimensional array containing the pixel data of the entire texture
      */
     pixels(target)
     {
@@ -227,6 +227,8 @@ export default class Extract
             renderTexture.destroy(true);
         }
 
+        Extract.arrayPostDivide(webglPixels, webglPixels);
+
         return webglPixels;
     }
 
@@ -238,5 +240,33 @@ export default class Extract
     {
         this.renderer.extract = null;
         this.renderer = null;
+    }
+
+    /**
+     * Takes premultiplied pixel data and produces regular pixel data
+     *
+     * @private
+     * @param pixels {number[] | Uint8Array | Uint8ClampedArray} array of pixel data
+     * @param out {number[] | Uint8Array | Uint8ClampedArray} output array
+     */
+    static arrayPostDivide(pixels, out)
+    {
+        for (let i = 0; i < pixels.length; i += 4)
+        {
+            const alpha = out[i + 3] = pixels[i + 3];
+
+            if (alpha !== 0)
+            {
+                out[i] = Math.round(Math.min(pixels[i] * 255.0 / alpha, 255.0));
+                out[i + 1] = Math.round(Math.min(pixels[i + 1] * 255.0 / alpha, 255.0));
+                out[i + 2] = Math.round(Math.min(pixels[i + 2] * 255.0 / alpha, 255.0));
+            }
+            else
+            {
+                out[i] = pixels[i];
+                out[i + 1] = pixels[i + 1];
+                out[i + 2] = pixels[i + 2];
+            }
+        }
     }
 }
