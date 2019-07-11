@@ -473,6 +473,7 @@ export default class AccessibilityManager
 
         interactionManager.dispatchEvent(e.target.displayObject, 'click', interactionManager.eventData);
         interactionManager.dispatchEvent(e.target.displayObject, 'pointertap', interactionManager.eventData);
+        interactionManager.dispatchEvent(e.target.displayObject, 'tap', interactionManager.eventData);
     }
 
     /**
