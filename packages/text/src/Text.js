@@ -311,8 +311,8 @@ export default class Text extends Sprite
         const padding = style.trim ? 0 : style.padding;
         const baseTexture = texture.baseTexture;
 
-        texture.trim.width = texture._frame.width = canvas.width / this._resolution;
-        texture.trim.height = texture._frame.height = canvas.height / this._resolution;
+        texture.trim.width = texture._frame.width = Math.ceil(canvas.width / this._resolution);
+        texture.trim.height = texture._frame.height = Math.ceil(canvas.height / this._resolution);
         texture.trim.x = -padding;
         texture.trim.y = -padding;
 
@@ -330,9 +330,10 @@ export default class Text extends Sprite
     /**
      * Renders the object using the WebGL renderer
      *
+     * @private
      * @param {PIXI.Renderer} renderer - The renderer
      */
-    render(renderer)
+    _render(renderer)
     {
         if (this._autoResolution && this._resolution !== renderer.resolution)
         {
@@ -342,26 +343,7 @@ export default class Text extends Sprite
 
         this.updateText(true);
 
-        super.render(renderer);
-    }
-
-    /**
-     * Renders the object using the Canvas renderer
-     *
-     * @private
-     * @param {PIXI.CanvasRenderer} renderer - The renderer
-     */
-    _renderCanvas(renderer)
-    {
-        if (this._autoResolution && this._resolution !== renderer.resolution)
-        {
-            this._resolution = renderer.resolution;
-            this.dirty = true;
-        }
-
-        this.updateText(true);
-
-        super._renderCanvas(renderer);
+        super._render(renderer);
     }
 
     /**
@@ -412,6 +394,10 @@ export default class Text extends Sprite
         {
             return style.fill;
         }
+        else if (style.fill.length === 1)
+        {
+            return style.fill[0];
+        }
 
         // the gradient will be evenly spaced out according to how large the array is.
         // ['#FF0000', '#00FF00', '#0000FF'] would created stops at 0.25, 0.5 and 0.75
@@ -420,8 +406,8 @@ export default class Text extends Sprite
         let currentIteration;
         let stop;
 
-        const width = this.canvas.width / this._resolution;
-        const height = this.canvas.height / this._resolution;
+        const width = Math.ceil(this.canvas.width / this._resolution);
+        const height = Math.ceil(this.canvas.height / this._resolution);
 
         // make a copy of the style settings, so we can manipulate them later
         const fill = style.fill.slice();

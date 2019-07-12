@@ -17,7 +17,7 @@ describe('PIXI.resources.autoDetectResource', function ()
     it('should have installed resources', function ()
     {
         expect(INSTALLED).to.be.an.array;
-        expect(INSTALLED.length).to.equal(7);
+        expect(INSTALLED.length).to.equal(8);
     });
 
     it('should auto-detect canvas element', function ()

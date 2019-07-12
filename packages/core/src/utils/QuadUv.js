@@ -6,6 +6,7 @@ import Buffer from '../geometry/Buffer';
  *
  * @class
  * @memberof PIXI
+ * @extends PIXI.Geometry
  */
 export default class QuadUv extends Geometry
 {

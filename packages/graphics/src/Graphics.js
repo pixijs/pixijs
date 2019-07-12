@@ -158,6 +158,14 @@ export default class Graphics extends Container
         this._transformID = -1;
         this.batchDirty = -1;
 
+        /**
+         * Renderer plugin for batching
+         *
+         * @member {string}
+         * @default 'batch'
+         */
+        this.pluginName = 'batch';
+
         // Set default
         this.tint = 0xFFFFFF;
         this.blendMode = BLEND_MODES.NORMAL;
@@ -239,7 +247,7 @@ export default class Graphics extends Container
      * @param {number} [width=0] - width of the line to draw, will update the objects stored style
      * @param {number} [color=0] - color of the line to draw, will update the objects stored style
      * @param {number} [alpha=1] - alpha of the line to draw, will update the objects stored style
-     * @param {number} [alignment=1] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outter)
+     * @param {number} [alignment=0.5] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outter)
      * @param {boolean} [native=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
@@ -864,7 +872,7 @@ export default class Graphics extends Container
                 }
             }
 
-            renderer.batch.setObjectRenderer(renderer.plugins.batch);
+            renderer.batch.setObjectRenderer(renderer.plugins[this.pluginName]);
 
             if (this.batches.length)
             {
@@ -877,7 +885,7 @@ export default class Graphics extends Container
 
                     batch.worldAlpha = this.worldAlpha * batch.alpha;
 
-                    renderer.plugins.batch.render(batch);
+                    renderer.plugins[this.pluginName].render(batch);
                 }
             }
         }
@@ -906,7 +914,7 @@ export default class Graphics extends Container
                     };
 
                     // we can bbase default shader of the batch renderers program
-                    const program =  renderer.plugins.batch.shader.program;
+                    const program =  renderer.plugins.batch._shader.program;
 
                     defaultShader = new Shader(program, uniforms);
                 }

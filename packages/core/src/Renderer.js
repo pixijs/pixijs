@@ -384,7 +384,7 @@ export default class Renderer extends AbstractRenderer
      */
     resize(screenWidth, screenHeight)
     {
-        AbstractRenderer.prototype.resize.call(this, screenWidth, screenHeight);
+        super.resize(screenWidth, screenHeight);
 
         this.runners.resize.run(screenWidth, screenHeight);
     }
@@ -419,6 +419,11 @@ export default class Renderer extends AbstractRenderer
     destroy(removeView)
     {
         this.runners.destroy.run();
+
+        for (const r in this.runners)
+        {
+            this.runners[r].destroy();
+        }
 
         // call base destroy
         super.destroy(removeView);

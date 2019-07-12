@@ -48,5 +48,17 @@ export default class GLTexture
          * @member {number}
          */
         this.wrapMode = 33071;
+
+        /**
+         * Type copied from baseTexture
+         * @member {number}
+         */
+        this.type = 6408;
+
+        /**
+         * Type copied from baseTexture
+         * @member {number}
+         */
+        this.internalFormat = 5121;
     }
 }
