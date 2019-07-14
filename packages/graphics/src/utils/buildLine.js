@@ -268,13 +268,13 @@ function buildNativeLine(graphicsData, graphicsGeometry)
     for (i = 1; i < length; i++)
     {
         verts.push(points[i * 2], points[(i * 2) + 1]);
-        indices.push(currentIndex - 1, currentIndex);
+        indices.push(currentIndex, currentIndex + 1);
 
         currentIndex++;
     }
 
     if (closedShape)
     {
-        indices.push(currentIndex - 1, startIndex);
+        indices.push(currentIndex, startIndex);
     }
 }
