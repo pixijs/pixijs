@@ -63,9 +63,9 @@ export default class GraphicsGeometry extends BatchGeometry
         super();
 
         /**
-         * An array of points to draw
+         * An array of points to draw, 2 numbers per point
          *
-         * @member {PIXI.Point[]}
+         * @member {number[]}
          * @protected
          */
         this.points = [];
