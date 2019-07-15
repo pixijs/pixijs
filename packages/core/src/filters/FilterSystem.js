@@ -107,7 +107,9 @@ export default class FilterSystem extends System
          * stores a bunch of PO2 textures used for filtering
          * @member {Object}
          */
-        this.texturePool = new RenderTexturePool(renderer);
+        this.texturePool = new RenderTexturePool();
+
+        this.texturePool.setScreenSize(renderer.view);
 
         /**
          * a pool for storing filter states, save us creating new ones each tick
@@ -458,6 +460,6 @@ export default class FilterSystem extends System
      */
     resize()
     {
-        this.texturePool.resize();
+        this.texturePool.setScreenSize(this.renderer.view);
     }
 }

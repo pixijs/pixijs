@@ -14,20 +14,23 @@ import { nextPow2 } from '@pixi/utils';
 export default class RenderTexturePool
 {
     /**
-     * @param {PIXI.Renderer} renderer - The renderer this System works for.
      * @param {object} [textureOptions] - options that will be passed to BaseRenderTexture constructor
      */
-    constructor(renderer, textureOptions)
+    constructor(textureOptions)
     {
-        this.renderer = renderer;
         this.texturePool = {};
         this.textureOptions = textureOptions || {};
         /**
          * Allow renderTextures of the same size as screen, not just pow2
          *
-         * @member {boolean} [enableFullScreen=true]
+         * Automatically sets to true after `setScreenSize`
+         *
+         * @member {boolean} [enableFullScreen=false]
          */
-        this.enableFullScreen = true;
+        this.enableFullScreen = false;
+
+        this._pixelsWidth = 0;
+        this._pixelsHeight = 0;
     }
 
     /**
@@ -154,12 +157,25 @@ export default class RenderTexturePool
     }
 
     /**
-     * resizes all textures who has the same size as screen
+     * If screen size was changed, drops all screen-sized textures,
+     * sets new screen size, sets `enableFullScreen` to true
+     *
+     * Size is measured in pixels, `renderer.view` can be passed here.
+     *
+     * @param {PIXI.ISize} size - Initial size of screen
      */
-    resize()
+    setScreenSize(size)
     {
+        if (size.width === this._pixelsWidth
+            && size.height === this._pixelsHeight)
+        {
+            return;
+        }
+
         const screenKey = RenderTexturePool.SCREEN_KEY;
         const textures = this.texturePool[screenKey];
+
+        this.enableFullScreen = size.width > 0 && size.height > 0;
 
         if (textures)
         {
@@ -170,8 +186,8 @@ export default class RenderTexturePool
         }
         this.texturePool[screenKey] = [];
 
-        this._pixelsWidth = this.renderer.view.width;
-        this._pixelsHeight = this.renderer.view.height;
+        this._pixelsWidth = size.width;
+        this._pixelsHeight = size.height;
     }
 }
 
