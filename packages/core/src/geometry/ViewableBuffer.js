@@ -115,7 +115,7 @@ export default class ViewableBuffer
      *
      * @param {string} type - One of `int8`, `uint8`, `int16`,
      *    `uint16`, `int32`, `uint32`, and `float32`.
-     * @return typed array of given type
+     * @return {object} typed array of given type
      */
     view(type)
     {
