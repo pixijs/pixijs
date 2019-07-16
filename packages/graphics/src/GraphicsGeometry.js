@@ -532,7 +532,7 @@ export default class GraphicsGeometry extends BatchGeometry
 
         const index = this.indices.length;
         const attrib = this.points.length / 2;
-        
+
         if (!batchPart)
         {
             // there are no visible styles in GraphicsData
