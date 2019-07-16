@@ -872,10 +872,10 @@ export default class Graphics extends Container
                 }
             }
 
-            renderer.batch.setObjectRenderer(renderer.plugins[this.pluginName]);
-
             if (this.batches.length)
             {
+                renderer.batch.setObjectRenderer(renderer.plugins[this.pluginName]);
+
                 this.calculateVertices();
                 this.calculateTints();
 
