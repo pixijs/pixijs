@@ -532,11 +532,7 @@ export default class GraphicsGeometry extends BatchGeometry
 
         const index = this.indices.length;
         const attrib = this.points.length / 2;
-
-        batchPart.size = index - batchPart.start;
-        batchPart.attribSize = attrib - batchPart.attribStart;
-        this.indicesUint16 = new Uint16Array(this.indices);
-
+        
         if (!batchPart)
         {
             // there are no visible styles in GraphicsData
@@ -545,6 +541,10 @@ export default class GraphicsGeometry extends BatchGeometry
 
             return;
         }
+
+        batchPart.size = index - batchPart.start;
+        batchPart.attribSize = attrib - batchPart.attribStart;
+        this.indicesUint16 = new Uint16Array(this.indices);
 
         // TODO make this a const..
         this.batchable = this.isBatchable();
