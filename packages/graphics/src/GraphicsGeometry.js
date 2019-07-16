@@ -537,14 +537,14 @@ export default class GraphicsGeometry extends BatchGeometry
         batchPart.attribSize = attrib - batchPart.attribStart;
         this.indicesUint16 = new Uint16Array(this.indices);
 
-        if (!batchPart) {
+        if (!batchPart)
+        {
             // there are no visible styles in GraphicsData
             // its possible that someone wants Graphics just for the bounds
             this.batchable = true;
 
             return;
         }
-
 
         // TODO make this a const..
         this.batchable = this.isBatchable();
