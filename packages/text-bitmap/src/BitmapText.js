@@ -329,9 +329,9 @@ export default class BitmapText extends Container
     /**
      * Updates the transform of this object
      *
-     * @private
+     * @override
      */
-    updateTransform()
+    _updateTransform()
     {
         this.validate();
         this.containerUpdateTransform();

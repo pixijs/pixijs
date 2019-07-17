@@ -200,7 +200,8 @@ export default class CanvasRenderer extends AbstractRenderer
 
             displayObject.parent = this._tempDisplayObjectParent;
 
-            displayObject.updateTransform();
+            // Use the internal version that doesn't check for the existence of a parent
+            displayObject._updateTransform();
             displayObject.parent = cacheParent;
             // displayObject.hitArea = //TODO add a temp hit area
         }

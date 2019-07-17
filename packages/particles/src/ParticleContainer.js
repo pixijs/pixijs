@@ -176,18 +176,6 @@ export default class ParticleContainer extends Container
     }
 
     /**
-     * Updates the object transform for rendering
-     *
-     * @private
-     */
-    updateTransform()
-    {
-        // TODO don't need to!
-        this.displayObjectUpdateTransform();
-        //  PIXI.Container.prototype.updateTransform.call( this );
-    }
-
-    /**
      * The tint applied to the container. This is a hex value.
      * A value of 0xFFFFFF will remove any tint effect.
      ** IMPORTANT: This is a WebGL only feature and will be ignored by the canvas renderer.

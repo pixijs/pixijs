@@ -207,6 +207,24 @@ export default class DisplayObject extends EventEmitter
      */
     updateTransform()
     {
+        if (!this.parent)
+        {
+            // Add an empty parent container to avoid checking for its existence before performing transform updates
+            this.parent = this._tempDisplayObjectParent;
+            this._updateTransform();
+            this.parent = null;
+        }
+        else
+        {
+            this._updateTransform();
+        }
+    }
+
+    /**
+     * Updates the object transform for rendering. Will crash if there is no parent element. Used internally.
+     */
+    _updateTransform()
+    {
         this.transform.updateTransform(this.parent.transform);
         // multiply the alphas..
         this.worldAlpha = this.alpha * this.parent.worldAlpha;
@@ -247,13 +265,13 @@ export default class DisplayObject extends EventEmitter
             if (!this.parent)
             {
                 this.parent = this._tempDisplayObjectParent;
-                this.updateTransform();
+                this._updateTransform();
                 this.parent = null;
             }
             else
             {
                 this._recursivePostUpdateTransform();
-                this.updateTransform();
+                this._updateTransform();
             }
         }
 

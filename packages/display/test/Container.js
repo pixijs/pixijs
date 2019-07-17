@@ -510,16 +510,13 @@ describe('PIXI.Container', function ()
         {
             const container = new Container();
             const child = new Container();
-            const containerSpy = sinon.spy(child, 'updateTransform');
-            // The transform has no parent so it should call updateLocalTransform
-            const transformSpy = sinon.spy(container.transform, 'updateLocalTransform');
+            const containerSpy = sinon.spy(child, '_updateTransform');
 
             container.addChild(child);
 
             container.updateTransform();
 
             expect(containerSpy).to.have.been.called;
-            expect(transformSpy).to.have.been.called;
         });
     });
 

@@ -402,9 +402,11 @@ export default class Container extends DisplayObject
     }
 
     /**
-     * Updates the transform on all children of this container for rendering
+     * Updates the transform on all children of this container for rendering. Used internally.
+     *
+     * @override
      */
-    updateTransform()
+    _updateTransform()
     {
         if (this.sortableChildren && this.sortDirty)
         {
@@ -413,17 +415,10 @@ export default class Container extends DisplayObject
 
         this._boundsID++;
 
-        if (this.parent)
-        {
-            this.transform.updateTransform(this.parent.transform);
-        }
-        else
-        {
-            this.transform.updateLocalTransform();
-        }
+        this.transform.updateTransform(this.parent.transform);
 
         // TODO: check render flags, how to process stuff here
-        this.worldAlpha = this.alpha * (this.parent ? this.parent.worldAlpha : 1);
+        this.worldAlpha = this.alpha * this.parent.worldAlpha;
 
         for (let i = 0, j = this.children.length; i < j; ++i)
         {
@@ -431,7 +426,7 @@ export default class Container extends DisplayObject
 
             if (child.visible)
             {
-                child.updateTransform();
+                child._updateTransform();
             }
         }
     }
