@@ -23,7 +23,7 @@ import { ENV } from '@pixi/constants';
  * @memberof PIXI
  * @extends PIXI.ObjectRenderer
  */
-export default class BatchRenderer extends ObjectRenderer
+export default class AbstractBatchRenderer extends ObjectRenderer
 {
     /**
      * This will hook onto the renderer's `contextChange`
@@ -151,7 +151,7 @@ export default class BatchRenderer extends ObjectRenderer
          *
          * @member {PIXI.Geometry[]}
          * @private
-         * @see PIXI.BatchRenderer.contextChange
+         * @see PIXI.AbstractBatchRenderer.contextChange
          */
         this._packedGeometries = [];
 
@@ -207,7 +207,7 @@ export default class BatchRenderer extends ObjectRenderer
          *
          * @member {PIXI.ViewableBuffer}
          * @private
-         * @see PIXI.BatchRenderer#getAttributeBuffer
+         * @see PIXI.AbstractBatchRenderer#getAttributeBuffer
          */
         this._aBuffers = {};
 
@@ -222,7 +222,7 @@ export default class BatchRenderer extends ObjectRenderer
          *
          * @member {Uint16Array[]}
          * @private
-         * @see PIXI.BatchRenderer#getIndexBuffer
+         * @see PIXI.AbstractBatchRenderer#getIndexBuffer
          */
         this._iBuffers = {};
 
@@ -232,7 +232,7 @@ export default class BatchRenderer extends ObjectRenderer
          * properly in `this.contextChange`.
          *
          * @member {number}
-         * @see PIXI.BatchRenderer#contextChange
+         * @see PIXI.AbstractBatchRenderer#contextChange
          * @readonly
          */
         this.MAX_TEXTURES = 1;
@@ -491,7 +491,7 @@ export default class BatchRenderer extends ObjectRenderer
     }
 
     /**
-     * Destroys this `BatchRenderer`. It cannot be used again.
+     * Destroys this `AbstractBatchRenderer`. It cannot be used again.
      */
     destroy()
     {

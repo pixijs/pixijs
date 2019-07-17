@@ -67,24 +67,28 @@ export default class DisplayObject extends EventEmitter
          * The visibility of the object. If false the object will not be drawn, and
          * the updateTransform function will not be called.
          *
-         * Only affects recursive calls from parent. You can ask for bounds or call updateTransform manually.
+         * Only affects recursive calls from parent. You can ask for bounds or
+         * call updateTransform manually.
          *
          * @member {boolean}
          */
         this.visible = true;
 
         /**
-         * Can this object be rendered, if false the object will not be drawn but the updateTransform
-         * methods will still be called.
+         * Can this object be rendered; if false, the object
+         * will not be drawn but the `updateTransform` method
+         * will still be called.
          *
-         * Only affects recursive calls from parent. You can ask for bounds manually.
+         * Only affects recursive calls from parent. You can
+         * ask for bounds manually.
          *
          * @member {boolean}
          */
         this.renderable = true;
 
         /**
-         * The display object container that contains this display object.
+         * The display object container that contains this
+         * display object.
          *
          * @member {PIXI.Container}
          * @readonly
@@ -100,8 +104,12 @@ export default class DisplayObject extends EventEmitter
         this.worldAlpha = 1;
 
         /**
-         * Which index in the children array the display component was before the previous zIndex sort.
-         * Used by containers to help sort objects with the same zIndex, by using previous array index as the decider.
+         * Which index in the children array the display
+         * component was before the previous zIndex sort.
+         *
+         * Used by containers to help sort objects with
+         * the same zIndex, by using previous array index
+         * as the decider.
          *
          * @member {number}
          * @protected
@@ -109,8 +117,11 @@ export default class DisplayObject extends EventEmitter
         this._lastSortedIndex = 0;
 
         /**
-         * The zIndex of the displayObject.
-         * A higher value will mean it will be rendered on top of other displayObjects within the same container.
+         * The zIndex of this `DisplayObject`.
+         *
+         * A higher value will mean it will be
+         * rendered on top of other display objects
+         * within the same container.
          *
          * @member {number}
          * @protected
@@ -118,8 +129,10 @@ export default class DisplayObject extends EventEmitter
         this._zIndex = 0;
 
         /**
-         * The area the filter is applied to. This is used as more of an optimization
-         * rather than figuring out the dimensions of the displayObject each frame you can set this rectangle.
+         * The area the filter is applied to. This is used
+         * as more of an optimization rather than figuring
+         * out the dimensions of the displayObject each frame
+         * you can set this rectangle.
          *
          * Also works as an interaction mask.
          *
@@ -138,7 +151,8 @@ export default class DisplayObject extends EventEmitter
         this._enabledFilters = null;
 
         /**
-         * The bounds object, this is used to calculate and store the bounds of the displayObject.
+         * The bounds object, this is used to calculate
+         * and store the bounds of the displayObject.
          *
          * @member {PIXI.Bounds}
          * @protected
@@ -172,7 +186,8 @@ export default class DisplayObject extends EventEmitter
          */
 
         /**
-         * If the object has been destroyed via destroy(). If true, it should not be used.
+         * If the object has been destroyed via destroy();
+         * if true, it should not be used.
          *
          * @member {boolean}
          * @protected
@@ -215,8 +230,8 @@ export default class DisplayObject extends EventEmitter
     }
 
     /**
-     * Recursively updates transform of all objects from the root to this one
-     * internal function for toLocal()
+     * Recursively updates transform of all objects from
+     * the root to this one internal function for toLocal()
      */
     _recursivePostUpdateTransform()
     {
@@ -234,10 +249,12 @@ export default class DisplayObject extends EventEmitter
     /**
      * Retrieves the bounds of the displayObject as a rectangle object.
      *
-     * @param {boolean} [skipUpdate] - Setting to `true` will stop the transforms of the scene graph from
-     *  being updated. This means the calculation returned MAY be out of date BUT will give you a
-     *  nice performance boost.
-     * @param {PIXI.Rectangle} [rect] - Optional rectangle to store the result of the bounds calculation.
+     * @param {boolean} [skipUpdate] - Setting to `true` will
+     *    stop the transforms of the scene graph from being
+     *    updated. This means the calculation returned MAY be
+     *    out of date BUT will give you a nice performance boost.
+     * @param {PIXI.Rectangle} [rect] - Optional rectangle to
+     *    store the result of the bounds calculation.
      * @return {PIXI.Rectangle} The rectangular bounding area.
      */
     getBounds(skipUpdate, rect)
