@@ -472,6 +472,8 @@ export default class AccessibilityManager
         const interactionManager = this.renderer.plugins.interaction;
 
         interactionManager.dispatchEvent(e.target.displayObject, 'click', interactionManager.eventData);
+        interactionManager.dispatchEvent(e.target.displayObject, 'pointertap', interactionManager.eventData);
+        interactionManager.dispatchEvent(e.target.displayObject, 'tap', interactionManager.eventData);
     }
 
     /**
