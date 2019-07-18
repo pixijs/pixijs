@@ -163,20 +163,11 @@ export default class SVGResource extends BaseImageResource
     }
 
     /**
-     * Typedef for Size object.
-     *
-     * @memberof PIXI.resources.SVGResource
-     * @typedef {object} Size
-     * @property {number} width - Width component
-     * @property {number} height - Height component
-     */
-
-    /**
      * Get size from an svg string using regexp.
      *
      * @method
      * @param {string} svgString - a serialized svg element
-     * @return {PIXI.resources.SVGResource.Size} image extension
+     * @return {PIXI.ISize} image extension
      */
     static getSize(svgString)
     {

@@ -18,6 +18,7 @@ export { default as GLTexture } from './textures/BaseTexture';
 export { default as Texture } from './textures/Texture';
 export { default as TextureMatrix } from './textures/TextureMatrix';
 export { default as RenderTexture } from './renderTexture/RenderTexture';
+export { default as RenderTexturePool } from './renderTexture/RenderTexturePool';
 export { default as BaseRenderTexture } from './renderTexture/BaseRenderTexture';
 export { default as TextureUvs } from './textures/TextureUvs';
 export { default as State } from './state/State';
