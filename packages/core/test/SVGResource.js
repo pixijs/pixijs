@@ -18,8 +18,10 @@ describe('PIXI.resources.SVGResource', function ()
             const buffer = fs.readFileSync(url, 'utf8');
             const resource = new SVGResource(buffer, { autoLoad: false });
 
+            expect(resource.valid).to.equal(false);
             resource.load().then(function ()
             {
+                expect(resource.valid).to.equal(true);
                 expect(resource.width).to.equal(100);
                 expect(resource.height).to.equal(100);
 
@@ -34,10 +36,70 @@ describe('PIXI.resources.SVGResource', function ()
                 { autoLoad: false }
             );
 
+            expect(resource.valid).to.equal(false);
             resource.load().then(function ()
             {
+                expect(resource.valid).to.equal(true);
                 expect(resource.width).to.equal(100);
                 expect(resource.height).to.equal(100);
+
+                done();
+            });
+        });
+
+        it('should create resource from SVG URL with {scale: 2.123}', function (done)
+        {
+            const resource = new SVGResource(
+                path.join(this.resources, 'heart.svg'),
+                {
+                    autoLoad: false,
+                    scale: 2.123,
+                }
+            );
+
+            resource.load().then(function ()
+            {
+                expect(resource.width).to.equal(212);
+                expect(resource.height).to.equal(212);
+
+                done();
+            });
+        });
+
+        it('should create resource from SVG URL with {width: 10}', function (done)
+        {
+            const resource = new SVGResource(
+                path.join(this.resources, 'heart.svg'),
+                {
+                    autoLoad: false,
+                    width: 10,
+                }
+            );
+
+            resource.load().then(function ()
+            {
+                expect(resource.width).to.equal(10);
+                expect(resource.height).to.equal(10);
+
+                done();
+            });
+        });
+
+        it('should create resource from SVG URL with {width: 10, height: 10}', function (done)
+        {
+            const resource = new SVGResource(
+                path.join(this.resources, 'heart.svg'),
+                {
+                    autoLoad: false,
+                    width: 10,
+                    height: 10,
+                }
+            );
+
+            resource.load().then(function ()
+            {
+                expect(resource.width).to.equal(10);
+                expect(resource.height).to.equal(10);
 
                 done();
             });
@@ -49,8 +111,10 @@ describe('PIXI.resources.SVGResource', function ()
             const buffer = fs.readFileSync(url, 'utf8');
             const resource = new SVGResource(buffer, { autoLoad: false });
 
+            expect(resource.valid).to.equal(false);
             resource.load().then(function ()
             {
+                expect(resource.valid).to.equal(true);
                 expect(resource.width).to.equal(100);
                 expect(resource.height).to.equal(100);
 

@@ -19,17 +19,11 @@
   "publishConfig": {
     "access": "public"
   },
-  "scripts": {
-    "test": "floss --path test"
-  },
   "files": [
     "lib",
     "dist"
   ],
   "dependencies": {
     "ismobilejs": "^0.5.1"
-  },
-  "devDependencies": {
-    "floss": "^2.2.0"
   }
 }

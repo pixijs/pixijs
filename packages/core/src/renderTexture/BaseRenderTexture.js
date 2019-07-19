@@ -142,7 +142,5 @@ export default class BaseRenderTexture extends BaseTexture
         super.destroy(true);
 
         this.framebuffer = null;
-
-        this.renderer = null;
     }
 }

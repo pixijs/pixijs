@@ -1,30 +1,34 @@
 /**
  * Generic Mask Stack data structure
  *
- * @memberof PIXI
+ * @memberof PIXI.utils
  * @function createIndicesForQuads
- * @private
  * @param {number} size - Number of quads
- * @return {Uint16Array} indices
+ * @param {Uint16Array|Uint32Array} [outBuffer] - Buffer for output, length has to be `6 * size`
+ * @return {Uint16Array|Uint32Array} - Resulting index buffer
  */
-export function createIndicesForQuads(size)
+export function createIndicesForQuads(size, outBuffer = null)
 {
     // the total number of indices in our array, there are 6 points per quad.
-
     const totalIndices = size * 6;
 
-    const indices = new Uint16Array(totalIndices);
+    outBuffer = outBuffer || new Uint16Array(totalIndices);
+
+    if (outBuffer.length !== totalIndices)
+    {
+        throw new Error(`Out buffer length is incorrect, got ${outBuffer.length} and expected ${totalIndices}`);
+    }
 
     // fill the indices with the quads to draw
     for (let i = 0, j = 0; i < totalIndices; i += 6, j += 4)
     {
-        indices[i + 0] = j + 0;
-        indices[i + 1] = j + 1;
-        indices[i + 2] = j + 2;
-        indices[i + 3] = j + 0;
-        indices[i + 4] = j + 2;
-        indices[i + 5] = j + 3;
+        outBuffer[i + 0] = j + 0;
+        outBuffer[i + 1] = j + 1;
+        outBuffer[i + 2] = j + 2;
+        outBuffer[i + 3] = j + 0;
+        outBuffer[i + 4] = j + 2;
+        outBuffer[i + 5] = j + 3;
     }
 
-    return indices;
+    return outBuffer;
 }

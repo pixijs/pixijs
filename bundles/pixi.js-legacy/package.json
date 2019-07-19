@@ -25,9 +25,6 @@
     "type": "git",
     "url": "https://github.com/pixijs/pixi.js.git"
   },
-  "scripts": {
-    "test": "floss --path test"
-  },
   "files": [
     "lib/",
     "dist/",
@@ -43,9 +40,7 @@
     "@pixi/canvas-renderer": "^5.0.4",
     "@pixi/canvas-sprite": "^5.0.4",
     "@pixi/canvas-sprite-tiling": "^5.0.4",
+    "@pixi/canvas-text": "^5.0.4",
     "pixi.js": "^5.0.4"
-  },
-  "devDependencies": {
-    "floss": "^2.2.0"
   }
 }

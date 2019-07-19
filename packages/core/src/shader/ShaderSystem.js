@@ -64,6 +64,7 @@ export default class ShaderSystem extends System
     contextChange(gl)
     {
         this.gl = gl;
+        this.reset();
     }
 
     /**

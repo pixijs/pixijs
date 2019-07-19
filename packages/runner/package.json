@@ -37,8 +37,5 @@
   "files": [
     "lib",
     "dist"
-  ],
-  "devDependencies": {
-    "floss": "^2.2.0"
-  }
+  ]
 }

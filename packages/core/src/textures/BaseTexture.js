@@ -26,6 +26,7 @@ const defaultBufferOptions = {
  *        into a Resource.
  * @param {Object} [options] - Collection of options
  * @param {PIXI.MIPMAP_MODES} [options.mipmap=PIXI.settings.MIPMAP_TEXTURES] - If mipmapping is enabled for texture
+ * @param {number} [options.anisotropicLevel=PIXI.settings.ANISOTROPIC_LEVEL] - Anisotropic filtering level of texture
  * @param {PIXI.WRAP_MODES} [options.wrapMode=PIXI.settings.WRAP_MODE] - Wrap mode for textures
  * @param {PIXI.SCALE_MODES} [options.scaleMode=PIXI.settings.SCALE_MODE] - Default scale mode, linear, nearest
  * @param {PIXI.FORMATS} [options.format=PIXI.FORMATS.RGBA] - GL format type
@@ -34,6 +35,7 @@ const defaultBufferOptions = {
  * @param {boolean} [options.premultiplyAlpha=true] - Pre multiply the image alpha
  * @param {number} [options.width=0] - Width of the texture
  * @param {number} [options.height=0] - Height of the texture
+ * @param {number} [options.resolution] - Resolution of the base texture
  * @param {object} [options.resourceOptions] - Optional resource options,
  *        see {@link PIXI.resources.autoDetectResource autoDetectResource}
  */
@@ -45,7 +47,7 @@ export default class BaseTexture extends EventEmitter
 
         options = options || {};
 
-        const { premultiplyAlpha, mipmap, scaleMode, width, height,
+        const { premultiplyAlpha, mipmap, anisotropicLevel, scaleMode, width, height,
             wrapMode, format, type, target, resolution, resourceOptions } = options;
 
         // Convert the resource to a Resource object
@@ -86,6 +88,14 @@ export default class BaseTexture extends EventEmitter
          * @default PIXI.settings.MIPMAP_TEXTURES
          */
         this.mipmap = mipmap !== undefined ? mipmap : settings.MIPMAP_TEXTURES;
+
+        /**
+         * Anisotropic filtering level of texture
+         *
+         * @member {number}
+         * @default PIXI.settings.ANISOTROPIC_LEVEL
+         */
+        this.anisotropicLevel = anisotropicLevel !== undefined ? anisotropicLevel : settings.ANISOTROPIC_LEVEL;
 
         /**
          * How the texture wraps
@@ -170,8 +180,9 @@ export default class BaseTexture extends EventEmitter
 
         /**
          * Used by TextureSystem to only update texture to the GPU when needed.
+         * Please call `update()` to increment it.
          *
-         * @protected
+         * @readonly
          * @member {number}
          */
         this.dirtyId = 0;
@@ -292,7 +303,7 @@ export default class BaseTexture extends EventEmitter
      */
     get realWidth()
     {
-        return this.width * this.resolution;
+        return Math.ceil(this.width * this.resolution);
     }
 
     /**
@@ -303,7 +314,7 @@ export default class BaseTexture extends EventEmitter
      */
     get realHeight()
     {
-        return this.height * this.resolution;
+        return Math.ceil(this.height * this.resolution);
     }
 
     /**
@@ -367,8 +378,8 @@ export default class BaseTexture extends EventEmitter
     setRealSize(realWidth, realHeight, resolution)
     {
         this.resolution = resolution || this.resolution;
-        this.width = realWidth / this.resolution;
-        this.height = realHeight / this.resolution;
+        this.width = Math.ceil(realWidth / this.resolution);
+        this.height = Math.ceil(realHeight / this.resolution);
         this._refreshPOT();
         this.update();
 
@@ -404,8 +415,8 @@ export default class BaseTexture extends EventEmitter
 
         if (this.valid)
         {
-            this.width = this.width * oldResolution / resolution;
-            this.height = this.height * oldResolution / resolution;
+            this.width = Math.ceil(this.width * oldResolution / resolution);
+            this.height = Math.ceil(this.height * oldResolution / resolution);
             this.emit('update', this);
         }
 

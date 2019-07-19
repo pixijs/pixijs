@@ -248,6 +248,7 @@ export default class Mesh extends Container
     /**
      * Standard renderer draw.
      * @protected
+     * @param {PIXI.Renderer} renderer - Instance to renderer.
      */
     _render(renderer)
     {
@@ -292,7 +293,7 @@ export default class Mesh extends Container
         renderer.shader.bind(shader);
 
         // set state..
-        renderer.state.setState(this.state);
+        renderer.state.set(this.state);
 
         // bind the geometry...
         renderer.geometry.bind(this.geometry, shader);

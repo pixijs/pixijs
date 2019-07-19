@@ -8,7 +8,9 @@ import BaseImageResource from './BaseImageResource';
  * @memberof PIXI.resources
  * @param {string} source - Base64 encoded SVG element or URL for SVG file.
  * @param {object} [options] - Options to use
- * @param {number} [options.scale=1] Scale to apply to SVG.
+ * @param {number} [options.scale=1] Scale to apply to SVG. Overridden by...
+ * @param {number} [options.width] Rasterize SVG this wide. Aspect ratio preserved if height not specified.
+ * @param {number} [options.height] Rasterize SVG this high. Aspect ratio preserved if width not specified.
  * @param {boolean} [options.autoLoad=true] Start loading right away.
  */
 export default class SVGResource extends BaseImageResource
@@ -18,6 +20,8 @@ export default class SVGResource extends BaseImageResource
         options = options || {};
 
         super(document.createElement('canvas'));
+        this._width = 0;
+        this._height = 0;
 
         /**
          * Base64 encoded SVG element or URL for SVG file
@@ -27,11 +31,25 @@ export default class SVGResource extends BaseImageResource
         this.svg = source;
 
         /**
-         * The source scale to apply to render
+         * The source scale to apply when rasterizing on load
          * @readonly
          * @member {number}
          */
         this.scale = options.scale || 1;
+
+        /**
+         * A width override for rasterization on load
+         * @readonly
+         * @member {number}
+         */
+        this._overrideWidth = options.width;
+
+        /**
+         * A height override for rasterization on load
+         * @readonly
+         * @member {number}
+         */
+        this._overrideHeight = options.height;
 
         /**
          * Call when completely loaded
@@ -115,9 +133,17 @@ export default class SVGResource extends BaseImageResource
                 throw new Error('The SVG image must have width and height defined (in pixels), canvas API needs them.');
             }
 
-            // Scale realWidth and realHeight
-            const width = Math.round(svgWidth * this.scale);
-            const height = Math.round(svgHeight * this.scale);
+            // Set render size
+            let width = svgWidth * this.scale;
+            let height = svgHeight * this.scale;
+
+            if (this._overrideWidth || this._overrideHeight)
+            {
+                width = this._overrideWidth || this._overrideHeight / svgHeight * svgWidth;
+                height = this._overrideHeight || this._overrideWidth / svgWidth * svgHeight;
+            }
+            width = Math.round(width);
+            height = Math.round(height);
 
             // Create a canvas element
             const canvas = this.source;
@@ -137,20 +163,11 @@ export default class SVGResource extends BaseImageResource
     }
 
     /**
-     * Typedef for Size object.
-     *
-     * @memberof PIXI.resources.SVGResource
-     * @typedef {object} Size
-     * @property {number} width - Width component
-     * @property {number} height - Height component
-     */
-
-    /**
      * Get size from an svg string using regexp.
      *
      * @method
      * @param {string} svgString - a serialized svg element
-     * @return {PIXI.resources.SVGResource.Size} image extension
+     * @return {PIXI.ISize} image extension
      */
     static getSize(svgString)
     {

@@ -8,6 +8,7 @@ import * as canvasPrepare from '@pixi/canvas-prepare';
 import '@pixi/canvas-sprite-tiling';
 import '@pixi/canvas-particles';
 import '@pixi/canvas-display';
+import '@pixi/canvas-text';
 
 CanvasRenderer.registerPlugin('accessibility', accessibility.AccessibilityManager);
 CanvasRenderer.registerPlugin('extract', canvasExtract.CanvasExtract);
