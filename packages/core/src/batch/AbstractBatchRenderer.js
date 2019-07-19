@@ -72,7 +72,7 @@ export default class AbstractBatchRenderer extends ObjectRenderer
          * | aColor          | 1 |
          * | aTextureId      | 1 |
          *
-         * @member {number} vertexSize
+         * @member {number}
          * @readonly
          */
         this.vertexSize = null;

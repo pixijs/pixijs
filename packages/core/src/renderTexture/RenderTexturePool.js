@@ -25,7 +25,8 @@ export default class RenderTexturePool
          *
          * Automatically sets to true after `setScreenSize`
          *
-         * @member {boolean} [enableFullScreen=false]
+         * @member {boolean}
+         * @default false
          */
         this.enableFullScreen = false;
 
@@ -132,7 +133,7 @@ export default class RenderTexturePool
     /**
      * Clears the pool
      *
-     * @member {boolean} [destroyTextures=true] destroy all stored textures
+     * @param {boolean} [destroyTextures=true] destroy all stored textures
      */
     clear(destroyTextures)
     {
