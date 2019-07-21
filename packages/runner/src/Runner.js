@@ -62,8 +62,9 @@ export default class Runner
         }
 
         const { name, items } = this;
+        let i = items.length;
 
-        for (let i = 0, len = items.length; i < len; i++)
+        while (i--)
         {
             items[i][name](a0, a1, a2, a3, a4, a5, a6, a7);
         }
