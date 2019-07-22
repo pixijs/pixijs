@@ -139,11 +139,12 @@ export default class Ticker
 
         /**
          * The last time keyframe was executed.
+         * Maintains a relatively fixed interval with the previous value.
          * @member {number}
          * @default -1
          * @private
          */
-        this._lastKey = -1;
+        this._lastFrame = -1;
 
         /**
          * Internal tick method bound to ticker instance.
@@ -186,6 +187,7 @@ export default class Ticker
         {
             // ensure callbacks get correct delta
             this.lastTime = performance.now();
+            this._lastFrame = this.lastTime;
             this._requestId = requestAnimationFrame(this._tick);
         }
     }
@@ -433,14 +435,14 @@ export default class Ticker
             // However, because rAF works based on v-sync, it's won't change the effective FPS.
             if (this._minElapsedMS)
             {
-                const delta = currentTime - this._lastKey;
+                const delta = currentTime - this._lastFrame;
 
                 if (delta < this._minElapsedMS)
                 {
                     return;
                 }
 
-                this._lastKey = currentTime - (delta % this._minElapsedMS) | 0;
+                this._lastFrame = currentTime - (delta % this._minElapsedMS) | 0;
             }
 
             this.deltaMS = elapsedMS;
