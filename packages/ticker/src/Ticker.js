@@ -139,11 +139,12 @@ export default class Ticker
 
         /**
          * The last time keyframe was executed.
+         * Maintains a relatively fixed interval with the previous value.
          * @member {number}
          * @default -1
          * @private
          */
-        this._lastKey = -1;
+        this._lastFrame = -1;
 
         /**
          * Internal tick method bound to ticker instance.
@@ -186,6 +187,7 @@ export default class Ticker
         {
             // ensure callbacks get correct delta
             this.lastTime = performance.now();
+            this._lastFrame = this.lastTime;
             this._requestId = requestAnimationFrame(this._tick);
         }
     }
