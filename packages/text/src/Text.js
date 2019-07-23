@@ -4,7 +4,7 @@ import { Texture } from '@pixi/core';
 import { settings } from '@pixi/settings';
 import { Rectangle } from '@pixi/math';
 import { sign, trimCanvas, hex2rgb, string2hex } from '@pixi/utils';
-import { TEXT_GRADIENT } from './const';
+import { TEXT_DROPSHADOWLOCATION, TEXT_GRADIENT } from './const';
 import TextStyle from './TextStyle';
 import TextMetrics from './TextMetrics';
 
@@ -170,24 +170,6 @@ export default class Text extends Sprite
         let linePositionX;
         let linePositionY;
 
-        if (style.dropShadow)
-        {
-            const dropShadowColor = style.dropShadowColor;
-            const rgb = hex2rgb(typeof dropShadowColor === 'number' ? dropShadowColor : string2hex(dropShadowColor));
-
-            context.shadowColor = `rgba(${rgb[0] * 255},${rgb[1] * 255},${rgb[2] * 255},${style.dropShadowAlpha})`;
-            context.shadowBlur = style.dropShadowBlur;
-            context.shadowOffsetX = Math.cos(style.dropShadowAngle) * style.dropShadowDistance;
-            context.shadowOffsetY = Math.sin(style.dropShadowAngle) * style.dropShadowDistance;
-        }
-        else
-        {
-            context.shadowColor = 0;
-            context.shadowBlur = 0;
-            context.shadowOffsetX = 0;
-            context.shadowOffsetY = 0;
-        }
-
         // set canvas text styles
         context.fillStyle = this._generateFillStyle(style, lines);
 
@@ -208,6 +190,8 @@ export default class Text extends Sprite
 
             if (style.stroke && style.strokeThickness)
             {
+                this._applyDropShadow(true);
+
                 this.drawLetterSpacing(
                     lines[i],
                     linePositionX + style.padding,
@@ -218,6 +202,8 @@ export default class Text extends Sprite
 
             if (style.fill)
             {
+                this._applyDropShadow();
+
                 this.drawLetterSpacing(
                     lines[i],
                     linePositionX + style.padding,
@@ -485,6 +471,40 @@ export default class Text extends Sprite
         }
 
         return gradient;
+    }
+
+    /**
+     * Apply drop shadow settings to the canvas
+     *
+     * @param {boolean} [isStroke=false] - Is this creating drop shadows for the outside stroke of the
+     *  text? If not, it's for the inside fill
+     * @private
+     */
+    _applyDropShadow(isStroke = false)
+    {
+        const style = this._style;
+        const context = this.context;
+        const DSL = TEXT_DROPSHADOWLOCATION;
+
+        const correctDSL = isStroke ? style.dropShadowLocation === DSL.STROKE : style.dropShadowLocation === DSL.FILL;
+
+        if (style.dropShadow && (style.dropShadowLocation === DSL.BOTH || correctDSL))
+        {
+            const dropShadowColor = style.dropShadowColor;
+            const rgb = hex2rgb(typeof dropShadowColor === 'number' ? dropShadowColor : string2hex(dropShadowColor));
+
+            context.shadowColor = `rgba(${rgb[0] * 255},${rgb[1] * 255},${rgb[2] * 255},${style.dropShadowAlpha})`;
+            context.shadowBlur = style.dropShadowBlur;
+            context.shadowOffsetX = Math.cos(style.dropShadowAngle) * style.dropShadowDistance;
+            context.shadowOffsetY = Math.sin(style.dropShadowAngle) * style.dropShadowDistance;
+        }
+        else
+        {
+            context.shadowColor = 0;
+            context.shadowBlur = 0;
+            context.shadowOffsetX = 0;
+            context.shadowOffsetY = 0;
+        }
     }
 
     /**

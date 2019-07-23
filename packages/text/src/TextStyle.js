@@ -1,7 +1,7 @@
 // disabling eslint for now, going to rewrite this in v5
 /* eslint-disable */
 
-import { TEXT_GRADIENT } from './const';
+import { TEXT_DROPSHADOWLOCATION, TEXT_GRADIENT } from './const';
 import { hex2string } from '@pixi/utils';
 
 const defaultStyle = {
@@ -13,6 +13,7 @@ const defaultStyle = {
     dropShadowBlur: 0,
     dropShadowColor: 'black',
     dropShadowDistance: 5,
+    dropShadowLocation: TEXT_DROPSHADOWLOCATION.FILL,
     fill: 'black',
     fillGradientType: TEXT_GRADIENT.LINEAR_VERTICAL,
     fillGradientStops: [],
@@ -21,6 +22,7 @@ const defaultStyle = {
     fontStyle: 'normal',
     fontVariant: 'normal',
     fontWeight: 'normal',
+    leading: 0,
     letterSpacing: 0,
     lineHeight: 0,
     lineJoin: 'miter',
@@ -33,7 +35,6 @@ const defaultStyle = {
     whiteSpace: 'pre',
     wordWrap: false,
     wordWrapWidth: 100,
-    leading: 0,
 };
 
 const genericFontFamilies = [
@@ -69,6 +70,8 @@ export default class TextStyle
      * @param {number} [style.dropShadowBlur=0] - Set a shadow blur radius
      * @param {string|number} [style.dropShadowColor='black'] - A fill style to be used on the dropshadow e.g 'red', '#00FF00'
      * @param {number} [style.dropShadowDistance=5] - Set a distance of the drop shadow
+     * @param {number} [style.dropShadowLocation=PIXI.TEXT_DROPSHADOWLOCATION.FILL] - Decides where the drop shadow is applied.
+     *  You can drop shadow just the 'fill', just the 'stroke', or apply it to 'both'. See {@link PIXI.TEXT_DROPSHADOWLOCATION}
      * @param {string|string[]|number|number[]|CanvasGradient|CanvasPattern} [style.fill='black'] - A canvas
      *  fillstyle that will be used on the text e.g 'red', '#00FF00'. Can be an array to create a gradient
      *  eg ['#000000','#FFFFFF']
@@ -278,6 +281,26 @@ export default class TextStyle
         if (this._dropShadowDistance !== dropShadowDistance)
         {
             this._dropShadowDistance = dropShadowDistance;
+            this.styleID++;
+        }
+    }
+
+    /**
+     * Decides where the drop shadow is applied.
+     * You can drop shadow just the 'fill', just the 'stroke', or apply it to 'both'.
+     * See {@link PIXI.TEXT_DROPSHADOWLOCATION}
+     *
+     * @member {number}
+     */
+    get dropShadowLocation()
+    {
+        return this._dropShadowLocation;
+    }
+    set dropShadowLocation(dropShadowLocation) // eslint-disable-line require-jsdoc
+    {
+        if (this._dropShadowLocation !== dropShadowLocation)
+        {
+            this._dropShadowLocation = dropShadowLocation;
             this.styleID++;
         }
     }
