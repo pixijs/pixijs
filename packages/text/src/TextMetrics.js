@@ -705,11 +705,7 @@ const canvas = (() =>
     {
         // OffscreenCanvas2D measureText can be up to 40% faster.
         const c = new OffscreenCanvas(0, 0);
-
-        if (c.getContext('2d')===null)
-            throw('context null');
-
-        return c;
+        return c.getContext('2d') ? c : document.createElement('canvas');
     }
     catch (ex)
     {
