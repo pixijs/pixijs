@@ -433,14 +433,14 @@ export default class Ticker
             // However, because rAF works based on v-sync, it's won't change the effective FPS.
             if (this._minElapsedMS)
             {
-                const delta = currentTime - this._lastKey;
+                const delta = currentTime - this._lastKey | 0;
 
                 if (delta < this._minElapsedMS)
                 {
                     return;
                 }
 
-                this._lastKey = currentTime - (delta % this._minElapsedMS) | 0;
+                this._lastKey = currentTime - (delta % this._minElapsedMS);
             }
 
             this.deltaMS = elapsedMS;
