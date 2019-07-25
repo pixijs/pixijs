@@ -161,7 +161,6 @@ export default class Text extends Sprite
         context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
         context.font = this._font;
-        context.strokeStyle = style.stroke;
         context.lineWidth = style.strokeThickness;
         context.textBaseline = style.textBaseline;
         context.lineJoin = style.lineJoin;
@@ -169,9 +168,6 @@ export default class Text extends Sprite
 
         let linePositionX;
         let linePositionY;
-
-        // set canvas text styles
-        context.fillStyle = this._generateFillStyle(style, lines);
 
         // require 2 passes if a shadow; the first to draw the drop shadow, the second to draw the text
         const passesCount = style.dropShadow ? 2 : 1;
@@ -195,6 +191,12 @@ export default class Text extends Sprite
 
             if (isShadowPass)
             {
+                // On Safari, text with gradient and drop shadows together do not position correctly
+                // if the scale of the canvas is not 1: https://bugs.webkit.org/show_bug.cgi?id=197689
+                // Therefore we'll set the styles to be a plain black whilst generating this drop shadow
+                context.fillStyle = 'black';
+                context.strokeStyle = 'black';
+
                 const dropShadowColor = style.dropShadowColor;
                 const rgb = hex2rgb(typeof dropShadowColor === 'number' ? dropShadowColor : string2hex(dropShadowColor));
 
@@ -205,6 +207,10 @@ export default class Text extends Sprite
             }
             else
             {
+                // set canvas text styles
+                context.fillStyle = this._generateFillStyle(style, lines);
+                context.strokeStyle = style.stroke;
+
                 context.shadowColor = 0;
                 context.shadowBlur = 0;
                 context.shadowOffsetX = 0;
