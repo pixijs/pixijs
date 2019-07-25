@@ -170,59 +170,79 @@ export default class Text extends Sprite
         let linePositionX;
         let linePositionY;
 
-        if (style.dropShadow)
-        {
-            const dropShadowColor = style.dropShadowColor;
-            const rgb = hex2rgb(typeof dropShadowColor === 'number' ? dropShadowColor : string2hex(dropShadowColor));
-
-            context.shadowColor = `rgba(${rgb[0] * 255},${rgb[1] * 255},${rgb[2] * 255},${style.dropShadowAlpha})`;
-            context.shadowBlur = style.dropShadowBlur;
-            context.shadowOffsetX = Math.cos(style.dropShadowAngle) * style.dropShadowDistance;
-            context.shadowOffsetY = Math.sin(style.dropShadowAngle) * style.dropShadowDistance;
-        }
-        else
-        {
-            context.shadowColor = 0;
-            context.shadowBlur = 0;
-            context.shadowOffsetX = 0;
-            context.shadowOffsetY = 0;
-        }
-
         // set canvas text styles
         context.fillStyle = this._generateFillStyle(style, lines);
 
-        // draw lines line by line
-        for (let i = 0; i < lines.length; i++)
+        // require 2 passes if a shadow; the first to draw the drop shadow, the second to draw the text
+        const passesCount = style.dropShadow ? 2 : 1;
+
+        // For v4, we drew text at the colours of the drop shadow underneath the normal text. This gave the correct zIndex,
+        // but features such as alpha and shadowblur did not look right at all, since we were using actual text as a shadow.
+        //
+        // For v5.0.0, we moved over to just use the canvas API for drop shadows, which made them look much nicer and more
+        // visually please, but now because the stroke is drawn and then the fill, drop shadows would appear on both the fill
+        // and the stroke; and fill drop shadows would appear over the top of the stroke.
+        //
+        // For v5.1.1, the new route is to revert to v4 style of drawing text first to get the drop shadows underneath normal
+        // text, but instead drawing text in the correct location, we'll draw it off screen (-paddingY), and then adjust the
+        // drop shadow so only that appears on screen (+paddingY). Now we'll have the correct draw order of the shadow
+        // beneath the text, whilst also having the proper text shadow styling.
+        for (let i = 0; i < passesCount; ++i)
         {
-            linePositionX = style.strokeThickness / 2;
-            linePositionY = ((style.strokeThickness / 2) + (i * lineHeight)) + fontProperties.ascent;
+            const isShadowPass = style.dropShadow && i === 0;
+            const dropShadowOffset = isShadowPass ? height : 0;
 
-            if (style.align === 'right')
+            if (isShadowPass)
             {
-                linePositionX += maxLineWidth - lineWidths[i];
+                const dropShadowColor = style.dropShadowColor;
+                const rgb = hex2rgb(typeof dropShadowColor === 'number' ? dropShadowColor : string2hex(dropShadowColor));
+
+                context.shadowColor = `rgba(${rgb[0] * 255},${rgb[1] * 255},${rgb[2] * 255},${style.dropShadowAlpha})`;
+                context.shadowBlur = style.dropShadowBlur;
+                context.shadowOffsetX = Math.cos(style.dropShadowAngle) * style.dropShadowDistance;
+                context.shadowOffsetY = (Math.sin(style.dropShadowAngle) * style.dropShadowDistance) + dropShadowOffset;
             }
-            else if (style.align === 'center')
+            else
             {
-                linePositionX += (maxLineWidth - lineWidths[i]) / 2;
+                context.shadowColor = 0;
+                context.shadowBlur = 0;
+                context.shadowOffsetX = 0;
+                context.shadowOffsetY = 0;
             }
 
-            if (style.stroke && style.strokeThickness)
+            // draw lines line by line
+            for (let i = 0; i < lines.length; i++)
             {
-                this.drawLetterSpacing(
-                    lines[i],
-                    linePositionX + style.padding,
-                    linePositionY + style.padding,
-                    true
-                );
-            }
+                linePositionX = style.strokeThickness / 2;
+                linePositionY = ((style.strokeThickness / 2) + (i * lineHeight)) + fontProperties.ascent;
 
-            if (style.fill)
-            {
-                this.drawLetterSpacing(
-                    lines[i],
-                    linePositionX + style.padding,
-                    linePositionY + style.padding
-                );
+                if (style.align === 'right')
+                {
+                    linePositionX += maxLineWidth - lineWidths[i];
+                }
+                else if (style.align === 'center')
+                {
+                    linePositionX += (maxLineWidth - lineWidths[i]) / 2;
+                }
+
+                if (style.stroke && style.strokeThickness)
+                {
+                    this.drawLetterSpacing(
+                        lines[i],
+                        linePositionX + style.padding,
+                        linePositionY + style.padding - dropShadowOffset,
+                        true
+                    );
+                }
+
+                if (style.fill)
+                {
+                    this.drawLetterSpacing(
+                        lines[i],
+                        linePositionX + style.padding,
+                        linePositionY + style.padding - dropShadowOffset
+                    );
+                }
             }
         }
 
