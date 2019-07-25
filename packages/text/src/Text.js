@@ -190,7 +190,8 @@ export default class Text extends Sprite
         for (let i = 0; i < passesCount; ++i)
         {
             const isShadowPass = style.dropShadow && i === 0;
-            const dropShadowOffset = isShadowPass ? height : 0;
+            const dsOffsetText = isShadowPass ? height : 0;
+            const dsOffsetShadow = dsOffsetText * this.resolution;
 
             if (isShadowPass)
             {
@@ -200,7 +201,7 @@ export default class Text extends Sprite
                 context.shadowColor = `rgba(${rgb[0] * 255},${rgb[1] * 255},${rgb[2] * 255},${style.dropShadowAlpha})`;
                 context.shadowBlur = style.dropShadowBlur;
                 context.shadowOffsetX = Math.cos(style.dropShadowAngle) * style.dropShadowDistance;
-                context.shadowOffsetY = (Math.sin(style.dropShadowAngle) * style.dropShadowDistance) + dropShadowOffset;
+                context.shadowOffsetY = (Math.sin(style.dropShadowAngle) * style.dropShadowDistance) + dsOffsetShadow;
             }
             else
             {
@@ -230,7 +231,7 @@ export default class Text extends Sprite
                     this.drawLetterSpacing(
                         lines[i],
                         linePositionX + style.padding,
-                        linePositionY + style.padding - dropShadowOffset,
+                        linePositionY + style.padding - dsOffsetText,
                         true
                     );
                 }
@@ -240,7 +241,7 @@ export default class Text extends Sprite
                     this.drawLetterSpacing(
                         lines[i],
                         linePositionX + style.padding,
-                        linePositionY + style.padding - dropShadowOffset
+                        linePositionY + style.padding - dsOffsetText
                     );
                 }
             }
