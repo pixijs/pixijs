@@ -1,7 +1,7 @@
 import { SHAPES } from '@pixi/math';
 import { Bounds } from '@pixi/display';
 import { BatchGeometry, BatchDrawCall, BaseTexture } from '@pixi/core';
-import { DRAW_MODES } from '@pixi/constants';
+import { DRAW_MODES, WRAP_MODES } from '@pixi/constants';
 
 import GraphicsData from './GraphicsData';
 import buildCircle from './utils/buildCircle';
@@ -63,9 +63,9 @@ export default class GraphicsGeometry extends BatchGeometry
         super();
 
         /**
-         * An array of points to draw
+         * An array of points to draw, 2 numbers per point
          *
-         * @member {PIXI.Point[]}
+         * @member {number[]}
          * @protected
          */
         this.points = [];
@@ -306,7 +306,7 @@ export default class GraphicsGeometry extends BatchGeometry
 
         this.dirty++;
 
-        return data;
+        return this;
     }
 
     /**
@@ -425,20 +425,22 @@ export default class GraphicsGeometry extends BatchGeometry
 
         const uvs = this.uvs;
 
-        let batchPart = this.batches.pop()
-            || BATCH_POOL.pop()
-            || new BatchPart();
+        let batchPart = null;
+        let currentTexture = null;
+        let currentColor = 0;
+        let currentNative = false;
 
-        batchPart.style = batchPart.style
-            || this.graphicsData[0].fillStyle
-            || this.graphicsData[0].lineStyle;
+        if (this.batches.length > 0)
+        {
+            batchPart = this.batches[this.batches.length - 1];
 
-        let currentTexture = batchPart.style.texture.baseTexture;
-        let currentColor = batchPart.style.color + batchPart.style.alpha;
+            const style = batchPart.style;
 
-        this.batches.push(batchPart);
+            currentTexture = style.texture.baseTexture;
+            currentColor = style.color + style.alpha;
+            currentNative = style.native;
+        }
 
-        // TODO - this can be simplified
         for (let i = this.shapeIndex; i < this.graphicsData.length; i++)
         {
             this.shapeIndex++;
@@ -465,31 +467,36 @@ export default class GraphicsGeometry extends BatchGeometry
 
                 const nextTexture = style.texture.baseTexture;
 
-                if (currentTexture !== nextTexture || (style.color + style.alpha) !== currentColor)
+                const index = this.indices.length;
+                const attribIndex = this.points.length / 2;
+
+                // close batch if style is different
+                if (batchPart
+                    && (currentTexture !== nextTexture
+                    || currentColor !== (style.color + style.alpha)
+                    || currentNative !== style.native))
                 {
-                    // TODO use a const
-                    nextTexture.wrapMode = 10497;
-                    currentTexture = nextTexture;
-                    currentColor = style.color + style.alpha;
-
-                    const index = this.indices.length;
-                    const attribIndex = this.points.length / 2;
-
                     batchPart.size = index - batchPart.start;
                     batchPart.attribSize = attribIndex - batchPart.attribStart;
 
                     if (batchPart.size > 0)
                     {
-                        batchPart = BATCH_POOL.pop() || new BatchPart();
-
-                        this.batches.push(batchPart);
+                        batchPart = null;
                     }
+                }
+                // spawn new batch if its first batch or previous was closed
+                if (!batchPart)
+                {
+                    batchPart = BATCH_POOL.pop() || new BatchPart();
+                    this.batches.push(batchPart);
+                    nextTexture.wrapMode = WRAP_MODES.REPEAT;
+                    currentTexture = nextTexture;
+                    currentColor = style.color + style.alpha;
+                    currentNative = style.native;
 
                     batchPart.style = style;
                     batchPart.start = index;
                     batchPart.attribStart = attribIndex;
-
-                    // TODO add this to the render part..
                 }
 
                 const start = this.points.length / 2;
@@ -525,6 +532,15 @@ export default class GraphicsGeometry extends BatchGeometry
 
         const index = this.indices.length;
         const attrib = this.points.length / 2;
+
+        if (!batchPart)
+        {
+            // there are no visible styles in GraphicsData
+            // its possible that someone wants Graphics just for the bounds
+            this.batchable = true;
+
+            return;
+        }
 
         batchPart.size = index - batchPart.start;
         batchPart.attribSize = attrib - batchPart.attribStart;

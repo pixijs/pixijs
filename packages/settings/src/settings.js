@@ -36,7 +36,7 @@ export default {
      * @name ANISOTROPIC_LEVEL
      * @memberof PIXI.settings
      * @type {number}
-     * @default 16
+     * @default 0
      */
     ANISOTROPIC_LEVEL: 0,
 
