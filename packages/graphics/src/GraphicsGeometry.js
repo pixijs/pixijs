@@ -111,8 +111,7 @@ export default class GraphicsGeometry extends BatchGeometry
         this.graphicsData = [];
 
         /**
-         * Used to detect if the graphics object has changed. If this is set to true then the graphics
-         * object will be recalculated.
+         * Used to detect if the graphics object has changed.
          *
          * @member {number}
          * @protected
@@ -136,7 +135,7 @@ export default class GraphicsGeometry extends BatchGeometry
         this.cacheDirty = -1;
 
         /**
-         * Used to detect if we clear the graphics WebGL data.
+         * Used to detect if we cleared the graphicsData.
          *
          * @member {number}
          * @default 0
@@ -265,6 +264,7 @@ export default class GraphicsGeometry extends BatchGeometry
         if (this.graphicsData.length > 0)
         {
             this.invalidate();
+            this.clearDirty++;
             this.graphicsData.length = 0;
         }
 
