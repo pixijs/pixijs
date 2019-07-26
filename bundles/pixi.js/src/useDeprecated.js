@@ -642,7 +642,6 @@ export default function useDeprecated()
          * @name PIXI.BaseTexture#imageUrl
          * @type {string}
          * @deprecated since 5.0.0
-         * @readonly
          * @see PIXI.resource.ImageResource#url
          */
         imageUrl: {
@@ -651,6 +650,16 @@ export default function useDeprecated()
                 deprecation(v5, 'PIXI.BaseTexture.imageUrl property has been removed, use resource.url');
 
                 return this.resource && this.resource.url;
+            },
+
+            set(imageUrl)
+            {
+                deprecation(v5, 'PIXI.BaseTexture.imageUrl property has been removed, use resource.url');
+
+                if (this.resource)
+                {
+                    this.resource.url = imageUrl;
+                }
             },
         },
         /**
@@ -940,6 +949,20 @@ export default function useDeprecated()
             deprecation(v5, 'PIXI.Graphics.generateCanvasTexture method is only available in "pixi.js-legacy"');
         };
     }
+
+    /**
+     * @deprecated since 5.0.0
+     * @member {PIXI.Graphics} PIXI.Graphics#graphicsData
+     * @see PIXI.Graphics#geometry
+     */
+    Object.defineProperty(PIXI.Graphics.prototype, 'graphicsData', {
+        get()
+        {
+            deprecation(v5, 'PIXI.Graphics.graphicsData property is deprecated, use geometry.graphicsData');
+
+            return this.geometry.graphicsData;
+        },
+    });
 
     // Use these to deprecate all the Sprite from* methods
     function spriteFrom(name, source, crossorigin, scaleMode)
