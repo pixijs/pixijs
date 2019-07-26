@@ -110,7 +110,6 @@ declare namespace PIXI {
         //tslint:disable-next-line:ban-types forbidden-types
         removeListener(event: string | symbol, fn?: Function, context?: any): this;
         removeAllListeners(event?: interaction.InteractionEventTypes): this;
-        //tslint:disable-next-line:ban-types forbidden-types
         removeAllListeners(event?: string | symbol): this;
         off(event: interaction.InteractionEventTypes, fn?: (event: interaction.InteractionEvent) => void, context?: any): this;
         //tslint:disable-next-line:ban-types forbidden-types
