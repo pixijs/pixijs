@@ -162,7 +162,7 @@ export default class GraphicsGeometry extends BatchGeometry
         this.batches = [];
 
         /**
-         * Index of the current last shape in the stack of calls.
+         * Index of the last batched shape in the stack of calls.
          *
          * @member {number}
          * @protected
@@ -218,6 +218,44 @@ export default class GraphicsGeometry extends BatchGeometry
     }
 
     /**
+     * Call if you changed graphicsData manually.
+     * Empties all batch buffers.
+     */
+    invalidate()
+    {
+        this.boundsDirty = -1;
+        this.dirty++;
+        this.batchDirty++;
+        this.shapeIndex = 0;
+
+        this.points.length = 0;
+        this.colors.length = 0;
+        this.uvs.length = 0;
+        this.indices.length = 0;
+        this.textureIds.length = 0;
+
+        for (let i = 0; i < this.drawCalls.length; i++)
+        {
+            this.drawCalls[i].textures.length = 0;
+            DRAW_CALL_POOL.push(this.drawCalls[i]);
+        }
+
+        this.drawCalls.length = 0;
+
+        for (let i = 0; i < this.batches.length; i++)
+        {
+            const batch =  this.batches[i];
+
+            batch.start = 0;
+            batch.attribStart = 0;
+            batch.style = null;
+            BATCH_POOL.push(batch);
+        }
+
+        this.batches.length = 0;
+    }
+
+    /**
      * Clears the graphics that were drawn to this Graphics object, and resets fill and line style settings.
      *
      * @return {PIXI.GraphicsGeometry} This GraphicsGeometry object. Good for chaining method calls
@@ -226,38 +264,8 @@ export default class GraphicsGeometry extends BatchGeometry
     {
         if (this.graphicsData.length > 0)
         {
-            this.boundsDirty = -1;
-            this.dirty++;
-            this.clearDirty++;
-            this.batchDirty++;
+            this.invalidate();
             this.graphicsData.length = 0;
-            this.shapeIndex = 0;
-
-            this.points.length = 0;
-            this.colors.length = 0;
-            this.uvs.length = 0;
-            this.indices.length = 0;
-            this.textureIds.length = 0;
-
-            for (let i = 0; i < this.drawCalls.length; i++)
-            {
-                this.drawCalls[i].textures.length = 0;
-                DRAW_CALL_POOL.push(this.drawCalls[i]);
-            }
-
-            this.drawCalls.length = 0;
-
-            for (let i = 0; i < this.batches.length; i++)
-            {
-                const batch =  this.batches[i];
-
-                batch.start = 0;
-                batch.attribStart = 0;
-                batch.style = null;
-                BATCH_POOL.push(batch);
-            }
-
-            this.batches.length = 0;
         }
 
         return this;
@@ -398,7 +406,6 @@ export default class GraphicsGeometry extends BatchGeometry
     /**
      * Generates intermediate batch data. Either gets converted to drawCalls
      * or used to convert to batch objects directly by the Graphics object.
-     * @protected
      */
     updateBatches()
     {
