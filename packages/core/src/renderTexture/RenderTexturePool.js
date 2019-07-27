@@ -15,6 +15,8 @@ export default class RenderTexturePool
 {
     /**
      * @param {object} [textureOptions] - options that will be passed to BaseRenderTexture constructor
+     * @param {PIXI.SCALE_MODES} [textureOptions.scaleMode] - See {@link PIXI.SCALE_MODES} for possible values.
+     * @param {number} [textureOptions.resolution=1] - The resolution / device pixel ratio of the texture being generated.
      */
     constructor(textureOptions)
     {
