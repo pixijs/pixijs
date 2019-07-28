@@ -260,7 +260,6 @@ export default class DisplayObject extends EventEmitter
         if (this._boundsID !== this._lastBoundsID)
         {
             this.calculateBounds();
-            this._lastBoundsID = this._boundsID;
         }
 
         if (!rect)
