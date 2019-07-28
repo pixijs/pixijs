@@ -1,8 +1,8 @@
 // const MockPointer = require('../interaction/MockPointer');
-const { Renderer, BatchRenderer } = require('@pixi/core');
+const { Renderer, BatchRenderer, Texture } = require('@pixi/core');
 const { Graphics, GRAPHICS_CURVES } = require('../');
 const { BLEND_MODES } = require('@pixi/constants');
-const { Point } = require('@pixi/math');
+const { Point, Matrix } = require('@pixi/math');
 const { skipHello } = require('@pixi/utils');
 
 Renderer.registerPlugin('batch', BatchRenderer);
@@ -23,6 +23,97 @@ describe('PIXI.Graphics', function ()
             expect(graphics.line.color).to.be.equals(0);
             expect(graphics.tint).to.be.equals(0xFFFFFF);
             expect(graphics.blendMode).to.be.equals(BLEND_MODES.NORMAL);
+        });
+    });
+
+    describe('lineStyle', function ()
+    {
+        it('should support a list of parameters', function ()
+        {
+            const graphics = new Graphics();
+
+            graphics.lineStyle(1, 0xff0000, 0.5, 1, true);
+
+            expect(graphics.line.width).to.equal(1);
+            expect(graphics.line.color).to.equal(0xff0000);
+            expect(graphics.line.alignment).to.equal(1);
+            expect(graphics.line.alpha).to.equal(0.5);
+            expect(graphics.line.native).to.equal(true);
+
+            graphics.destroy();
+        });
+
+        it('should support object parameter', function ()
+        {
+            const graphics = new Graphics();
+
+            graphics.lineStyle({
+                width: 1,
+                alpha: 0.5,
+                color: 0xff0000,
+                alignment: 1,
+                native: true,
+            });
+
+            expect(graphics.line.width).to.equal(1);
+            expect(graphics.line.color).to.equal(0xff0000);
+            expect(graphics.line.alignment).to.equal(1);
+            expect(graphics.line.alpha).to.equal(0.5);
+            expect(graphics.line.native).to.equal(true);
+            expect(graphics.line.visible).to.equal(true);
+
+            graphics.lineStyle();
+
+            expect(graphics.line.width).to.equal(0);
+            expect(graphics.line.color).to.equal(0);
+            expect(graphics.line.alignment).to.equal(0.5);
+            expect(graphics.line.alpha).to.equal(1);
+            expect(graphics.line.native).to.equal(false);
+            expect(graphics.line.visible).to.equal(false);
+
+            graphics.destroy();
+        });
+    });
+
+    describe('lineTextureStyle', function ()
+    {
+        it('should support object parameter', function ()
+        {
+            const graphics = new Graphics();
+            const matrix = new Matrix();
+            const texture = Texture.BLACK;
+
+            graphics.lineTextureStyle({
+                width: 1,
+                alpha: 0.5,
+                color: 0xff0000,
+                matrix,
+                texture,
+                alignment: 1,
+                native: true,
+            });
+
+            expect(graphics.line.width).to.equal(1);
+            expect(graphics.line.texture).to.equal(texture);
+            expect(graphics.line.matrix).to.be.okay;
+            expect(graphics.line.color).to.equal(0xff0000);
+            expect(graphics.line.alignment).to.equal(1);
+            expect(graphics.line.alpha).to.equal(0.5);
+            expect(graphics.line.native).to.equal(true);
+            expect(graphics.line.visible).to.equal(true);
+
+            graphics.lineTextureStyle();
+
+            expect(graphics.line.width).to.equal(0);
+            expect(graphics.line.texture).to.equal(Texture.WHITE);
+            expect(graphics.line.matrix).to.equal(null);
+            expect(graphics.line.color).to.equal(0);
+            expect(graphics.line.alignment).to.equal(0.5);
+            expect(graphics.line.alpha).to.equal(1);
+            expect(graphics.line.native).to.equal(false);
+            expect(graphics.line.visible).to.equal(false);
+
+            graphics.destroy();
         });
     });
 

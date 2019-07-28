@@ -8,7 +8,7 @@ import {
     RoundedRectangle,
     Matrix,
 } from '@pixi/math';
-import { hex2rgb } from '@pixi/utils';
+import { hex2rgb, deprecation } from '@pixi/utils';
 import {
     Texture,
     Shader,
@@ -244,41 +244,91 @@ export default class Graphics extends Container
      * Specifies the line style used for subsequent calls to Graphics methods such as the lineTo()
      * method or the drawCircle() method.
      *
+     * @method PIXI.Graphics#lineStyle
      * @param {number} [width=0] - width of the line to draw, will update the objects stored style
-     * @param {number} [color=0] - color of the line to draw, will update the objects stored style
+     * @param {number} [color=0x0] - color of the line to draw, will update the objects stored style
      * @param {number} [alpha=1] - alpha of the line to draw, will update the objects stored style
      * @param {number} [alignment=0.5] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outter)
      * @param {boolean} [native=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    lineStyle(width = 0, color = 0, alpha = 1, alignment = 0.5, native = false)
+    /**
+     * Specifies the line style used for subsequent calls to Graphics methods such as the lineTo()
+     * method or the drawCircle() method.
+     *
+     * @param {object} [options] - Line style options
+     * @param {number} [options.width=0] - width of the line to draw, will update the objects stored style
+     * @param {number} [options.color=0x0] - color of the line to draw, will update the objects stored style
+     * @param {number} [options.alpha=1] - alpha of the line to draw, will update the objects stored style
+     * @param {number} [options.alignment=0.5] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outter)
+     * @param {boolean} [options.native=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
+     * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
+     */
+    lineStyle(options)
     {
-        this.lineTextureStyle(width, Texture.WHITE, color, alpha, null, alignment, native);
+        // Support non-object params: (width, color, alpha, alignment, native)
+        if (typeof options === 'number')
+        {
+            const args = arguments;
 
-        return this;
+            options = {
+                width: args[0] || 0,
+                color: args[1] || 0x0,
+                alpha: args[2] !== undefined ? args[2] : 1,
+                alignment: args[3] !== undefined ? args[3] : 0.5,
+                native: !!args[4],
+            };
+        }
+
+        return this.lineTextureStyle(options);
     }
 
     /**
      * Like line style but support texture for line fill.
      *
-     * @param {number} [width=0] - width of the line to draw, will update the objects stored style
-     * @param {PIXI.Texture} [texture=PIXI.Texture.WHITE] - Texture to use
-     * @param {number} [color=0] - color of the line to draw, will update the objects stored style
-     * @param {number} [alpha=1] - alpha of the line to draw, will update the objects stored style
-     * @param {PIXI.Matrix} [matrix=null] Texture matrix to transform texture
-     * @param {number} [alignment=0.5] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outter)
-     * @param {boolean} [native=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
+     * @param {object} [options] - Collection of options for setting line style.
+     * @param {number} [options.width=0] - width of the line to draw, will update the objects stored style
+     * @param {PIXI.Texture} [options.texture=PIXI.Texture.WHITE] - Texture to use
+     * @param {number} [options.color=0x0] - color of the line to draw, will update the objects stored style
+     * @param {number} [options.alpha=1] - alpha of the line to draw, will update the objects stored style
+     * @param {PIXI.Matrix} [options.matrix=null] Texture matrix to transform texture
+     * @param {number} [options.alignment=0.5] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outter)
+     * @param {boolean} [options.native=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    lineTextureStyle(width = 0, texture = Texture.WHITE, color = 0xFFFFFF, alpha = 1,
-        matrix = null, alignment = 0.5, native = false)
+    lineTextureStyle(options)
     {
+        // backward compatibility with params: (width, texture,
+        // color, alpha, matrix, alignment, native)
+        if (typeof options === 'number')
+        {
+            deprecation('v5.2.0', 'Please use object-based options for Graphics#lineTextureStyle');
+
+            const [width, texture, color, alpha, matrix, alignment, native] = arguments;
+
+            options = { width, texture, color, alpha, matrix, alignment, native };
+
+            // Remove undefined keys
+            Object.keys(options).forEach((key) => options[key] === undefined && delete options[key]);
+        }
+
+        // Apply defaults
+        options = Object.assign({
+            width: 0,
+            texture: Texture.WHITE,
+            color: 0x0,
+            alpha: 1,
+            matrix: null,
+            alignment: 0.5,
+            native: false,
+        }, options);
+
         if (this.currentPath)
         {
             this.startPoly();
         }
 
-        const visible = width > 0 && alpha > 0;
+        const visible = options.width > 0 && options.alpha > 0;
 
         if (!visible)
         {
@@ -286,22 +336,13 @@ export default class Graphics extends Container
         }
         else
         {
-            if (matrix)
+            if (options.matrix)
             {
-                matrix = matrix.clone();
-                matrix.invert();
+                options.matrix = options.matrix.clone();
+                options.matrix.invert();
             }
 
-            Object.assign(this._lineStyle, {
-                color,
-                width,
-                alpha,
-                matrix,
-                texture,
-                alignment,
-                native,
-                visible,
-            });
+            Object.assign(this._lineStyle, { visible }, options);
         }
 
         return this;
