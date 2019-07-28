@@ -429,10 +429,9 @@ export default class Ticker
 
             elapsedMS *= this.speed;
 
-            // if not enough time has passed, exit the function.
-            // We give a padding (5% of minElapsedMS) to elapsedMS for this check, because the
-            // nature of request animation frame means that not all browsers will return precise values.
-            // However, because rAF works based on v-sync, it's won't change the effective FPS.
+            // If not enough time has passed, exit the function.
+            // Get ready for next frame by setting _lastKey, but based on _minElapsedMS
+            // adjustment to ensure a relatively stable interval.
             if (this._minElapsedMS)
             {
                 const delta = currentTime - this._lastKey | 0;
