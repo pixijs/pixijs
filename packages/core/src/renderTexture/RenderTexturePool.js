@@ -48,6 +48,7 @@ export default class RenderTexturePool
         const baseRenderTexture = new BaseRenderTexture(Object.assign({
             width: realWidth,
             height: realHeight,
+            resolution: 1,
         }, this.textureOptions));
 
         return new RenderTexture(baseRenderTexture);

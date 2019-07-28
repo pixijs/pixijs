@@ -107,7 +107,7 @@ export default class FilterSystem extends System
          * stores a bunch of PO2 textures used for filtering
          * @member {Object}
          */
-        this.texturePool = new RenderTexturePool({ resolution: 1 });
+        this.texturePool = new RenderTexturePool();
 
         this.texturePool.setScreenSize(renderer.view);
 
