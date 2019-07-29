@@ -430,18 +430,18 @@ export default class Ticker
             elapsedMS *= this.speed;
 
             // If not enough time has passed, exit the function.
-            // Get ready for next frame by setting _lastKey, but based on _minElapsedMS
+            // Get ready for next frame by setting _lastFrame, but based on _minElapsedMS
             // adjustment to ensure a relatively stable interval.
             if (this._minElapsedMS)
             {
-                const delta = currentTime - this._lastKey | 0;
+                const delta = currentTime - this._lastFrame | 0;
 
                 if (delta < this._minElapsedMS)
                 {
                     return;
                 }
 
-                this._lastKey = currentTime - (delta % this._minElapsedMS);
+                this._lastFrame = currentTime - (delta % this._minElapsedMS);
             }
 
             this.deltaMS = elapsedMS;
