@@ -306,7 +306,7 @@ export default class GraphicsGeometry extends BatchGeometry
 
         this.dirty++;
 
-        return data;
+        return this;
     }
 
     /**
