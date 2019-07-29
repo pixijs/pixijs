@@ -1,7 +1,8 @@
 import { settings } from '../../settings';
 import { ENV } from '@pixi/constants';
 
-let context;
+const unknownContext = {};
+let context = unknownContext;
 
 /**
  * returns a little WebGL context to use for program inspection.
@@ -12,7 +13,7 @@ let context;
  */
 export default function getTestContext()
 {
-    if (context !== undefined)
+    if (context === unknownContext)
     {
         const canvas = document.createElement('canvas');
 
