@@ -39,6 +39,10 @@
  * @class
  * @memberof PIXI
  */
+
+// eslint-disable-next-line no-empty-function
+const NOOP = () => {};
+
 export default class Runner
 {
     /**
@@ -48,6 +52,30 @@ export default class Runner
     {
         this.items = [];
         this._name = name;
+
+        this._cleanupData = null;
+
+        this.running = 0;
+    }
+
+    /**
+     * @private
+     */
+    tidy()
+    {
+        const toRemove = this._cleanupData.toRemove;
+
+        for (let i = 0; i < toRemove.length; i++)
+        {
+            const index = toRemove[i];
+
+            if (index !== -1)
+            {
+                this.items.splice(index, 1);
+            }
+        }
+
+        toRemove.length = 0;
     }
 
     /**
@@ -61,12 +89,23 @@ export default class Runner
             throw new Error('max arguments reached');
         }
 
+        this.running = 1;
+
         const { name, items } = this;
 
         for (let i = 0, len = items.length; i < len; i++)
         {
             items[i][name](a0, a1, a2, a3, a4, a5, a6, a7);
         }
+
+        // if this is two.. we should tidy up!
+        if (this.running === 2)
+        {
+            this.tidy();
+        }
+
+        // runner is no longer active, so lets set if back to 0
+        this.running = 0;
 
         return this;
     }
@@ -107,12 +146,33 @@ export default class Runner
     {
         const index = this.items.indexOf(item);
 
+        // if the runner is running and we remove a listener there can be weird side-effects can happen..
+        // this way we remove after we have finished iterating
+        if (this.running)
+        {
+            // most of the time we won't need this object so no point creating it until we do!
+            if (!this._cleanupData)
+            {
+                this._cleanupData = {
+                    toRemove: [],
+                };
+
+                this._cleanupData[name] = NOOP;
+            }
+
+            // set to two.. this means we will perform a tidy up AFTER the runner has finished
+            this.running = 2;
+            // wait..
+            this.toRemove.push(index);
+
+            // replace with a dummy for now
+            this.items[index] = this._cleanupData;
+        }
+        else
         if (index !== -1)
         {
             this.items.splice(index, 1);
         }
-
-        return this;
     }
 
     /**
@@ -142,6 +202,7 @@ export default class Runner
         this.removeAll();
         this.items = null;
         this._name = null;
+        this._cleanupData = null;
     }
 
     /**
