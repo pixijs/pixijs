@@ -101,11 +101,22 @@ declare namespace PIXI {
 
     export interface DisplayObject {
         on(event: interaction.InteractionEventTypes, fn: (event: interaction.InteractionEvent) => void, context?: any): this;
+        //tslint:disable-next-line:ban-types forbidden-types
+        on(event: string | symbol, fn: Function, context?: any): this;
         once(event: interaction.InteractionEventTypes, fn: (event: interaction.InteractionEvent) => void, context?: any): this;
+        //tslint:disable-next-line:ban-types forbidden-types
+        once(event: string | symbol, fn: Function, context?: any): this;
         removeListener(event: interaction.InteractionEventTypes, fn?: (event: interaction.InteractionEvent) => void, context?: any): this;
+        //tslint:disable-next-line:ban-types forbidden-types
+        removeListener(event: string | symbol, fn?: Function, context?: any): this;
         removeAllListeners(event?: interaction.InteractionEventTypes): this;
+        removeAllListeners(event?: string | symbol): this;
         off(event: interaction.InteractionEventTypes, fn?: (event: interaction.InteractionEvent) => void, context?: any): this;
+        //tslint:disable-next-line:ban-types forbidden-types
+        off(event: string | symbol, fn?: Function, context?: any): this;
         addListener(event: interaction.InteractionEventTypes, fn: (event: interaction.InteractionEvent) => void, context?: any): this;
+        //tslint:disable-next-line:ban-types forbidden-types
+        addListener(event: string | symbol, fn: Function, context?: any): this;
     }
 
     export interface Container {
