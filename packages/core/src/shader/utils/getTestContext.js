@@ -1,7 +1,7 @@
 import { settings } from '../../settings';
 import { ENV } from '@pixi/constants';
 
-let context = null;
+let context;
 
 /**
  * returns a little WebGL context to use for program inspection.
@@ -12,7 +12,7 @@ let context = null;
  */
 export default function getTestContext()
 {
-    if (!context)
+    if (context !== undefined)
     {
         const canvas = document.createElement('canvas');
 
@@ -31,7 +31,7 @@ export default function getTestContext()
             if (!gl)
             {
                 // fail, not able to get a context
-                throw new Error('This browser does not support WebGL. Try using the canvas renderer');
+                gl = null;
             }
             else
             {
@@ -41,8 +41,6 @@ export default function getTestContext()
         }
 
         context = gl;
-
-        return gl;
     }
 
     return context;
