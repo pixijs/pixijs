@@ -618,26 +618,48 @@ export default class Graphics extends Container
      */
     beginFill(color = 0, alpha = 1)
     {
-        return this.beginTextureFill(Texture.WHITE, color, alpha);
+        return this.beginTextureFill({ texture: Texture.WHITE, color, alpha });
     }
 
     /**
      * Begin the texture fill
      *
-     * @param {PIXI.Texture} [texture=PIXI.Texture.WHITE] - Texture to fill
-     * @param {number} [color=0xffffff] - Background to fill behind texture
-     * @param {number} [alpha=1] - Alpha of fill
-     * @param {PIXI.Matrix} [matrix=null] - Transform matrix
+     * @param {object} [options] - Object object.
+     * @param {PIXI.Texture} [options.texture=PIXI.Texture.WHITE] - Texture to fill
+     * @param {number} [options.color=0xffffff] - Background to fill behind texture
+     * @param {number} [options.alpha=1] - Alpha of fill
+     * @param {PIXI.Matrix} [options.matrix=null] - Transform matrix
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    beginTextureFill(texture = Texture.WHITE, color = 0xFFFFFF, alpha = 1, matrix = null)
+    beginTextureFill(options)
     {
+        // backward compatibility with params: (texture, color, alpha, matrix)
+        if (typeof options === 'number')
+        {
+            deprecation('v5.2.0', 'Please use object-based options for Graphics#beginTextureFill');
+
+            const [texture, color, alpha, matrix] = arguments;
+
+            options = { texture, color, alpha, matrix };
+
+            // Remove undefined keys
+            Object.keys(options).forEach((key) => options[key] === undefined && delete options[key]);
+        }
+
+        // Apply defaults
+        options = Object.assign({
+            texture: Texture.WHITE,
+            color: 0xFFFFFF,
+            alpha: 1,
+            matrix: null,
+        }, options);
+
         if (this.currentPath)
         {
             this.startPoly();
         }
 
-        const visible = alpha > 0;
+        const visible = options.alpha > 0;
 
         if (!visible)
         {
@@ -645,19 +667,13 @@ export default class Graphics extends Container
         }
         else
         {
-            if (matrix)
+            if (options.matrix)
             {
-                matrix = matrix.clone();
-                matrix.invert();
+                options.matrix = options.matrix.clone();
+                options.matrix.invert();
             }
 
-            Object.assign(this._fillStyle, {
-                color,
-                alpha,
-                texture,
-                matrix,
-                visible,
-            });
+            Object.assign(this._fillStyle, { visible }, options);
         }
 
         return this;
