@@ -1,6 +1,6 @@
 import BatchShaderGenerator from './BatchShaderGenerator';
 import BatchGeometry from './BatchGeometry';
-import BaseBatchRenderer from './BatchRenderer';
+import AbstractBatchRenderer from './AbstractBatchRenderer';
 
 import defaultVertex from './texture.vert';
 import defaultFragment from './texture.frag';
@@ -50,7 +50,7 @@ export default class BatchPluginFactory
             vertexSize: 6,
         }, options);
 
-        return class BatchPlugin extends BaseBatchRenderer
+        return class BatchPlugin extends AbstractBatchRenderer
         {
             constructor(renderer)
             {
