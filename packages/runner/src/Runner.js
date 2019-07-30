@@ -67,11 +67,11 @@ export default class Runner
 
         for (let i = 0; i < toRemove.length; i++)
         {
-            const index = toRemove[i];
+            const index = this.items.indexOf(toRemove[i]);
 
             if (index !== -1)
             {
-                this.items.splice(index, 1);
+                this.items.splice(index, i);
             }
         }
 
@@ -162,8 +162,9 @@ export default class Runner
 
             // set to two.. this means we will perform a tidy up AFTER the runner has finished
             this.running = 2;
+
             // wait..
-            this.toRemove.push(index);
+            this._cleanupData.toRemove.push(this._cleanupData);
 
             // replace with a dummy for now
             this.items[index] = this._cleanupData;
