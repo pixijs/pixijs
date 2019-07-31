@@ -138,6 +138,15 @@ export default class Ticker
         this._protected = false;
 
         /**
+         * The last time keyframe was executed.
+         * Maintains a relatively fixed interval with the previous value.
+         * @member {number}
+         * @default -1
+         * @private
+         */
+        this._lastFrame = -1;
+
+        /**
          * Internal tick method bound to ticker instance.
          * This is because in early 2015, Function.bind
          * is still 60% slower in high performance scenarios.
@@ -178,6 +187,7 @@ export default class Ticker
         {
             // ensure callbacks get correct delta
             this.lastTime = performance.now();
+            this._lastFrame = this.lastTime;
             this._requestId = requestAnimationFrame(this._tick);
         }
     }
@@ -419,18 +429,19 @@ export default class Ticker
 
             elapsedMS *= this.speed;
 
-            // if not enough time has passed, exit the function.
-            // We give a padding (5% of minElapsedMS) to elapsedMS for this check, because the
-            // nature of request animation frame means that not all browsers will return precise values.
-            // However, because rAF works based on v-sync, it's won't change the effective FPS.
+            // If not enough time has passed, exit the function.
+            // Get ready for next frame by setting _lastFrame, but based on _minElapsedMS
+            // adjustment to ensure a relatively stable interval.
             if (this._minElapsedMS)
             {
-                const elapsedMSPadding = this._minElapsedMS * 0.05;
+                const delta = currentTime - this._lastFrame | 0;
 
-                if (elapsedMS + elapsedMSPadding < this._minElapsedMS)
+                if (delta < this._minElapsedMS)
                 {
                     return;
                 }
+
+                this._lastFrame = currentTime - (delta % this._minElapsedMS);
             }
 
             this.deltaMS = elapsedMS;
