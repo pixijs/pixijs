@@ -619,7 +619,7 @@ removeAllHandlers(Texture.EMPTY);
 removeAllHandlers(Texture.EMPTY.baseTexture);
 
 /**
- * A white texture of 10x10 size, used for graphics and other things
+ * A white texture of 16x16 size, used for graphics and other things
  * Can not be destroyed.
  *
  * @static

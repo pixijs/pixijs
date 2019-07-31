@@ -52,7 +52,7 @@ export default class CanvasGraphicsRenderer
         );
 
         // update tint if graphics was dirty
-        if (graphics.canvasTintDirty !== graphics.dirty
+        if (graphics.canvasTintDirty !== graphics.geometry.dirty
             || graphics._prevTint !== graphics.tint)
         {
             this.updateGraphicsTint(graphics);
@@ -293,7 +293,7 @@ export default class CanvasGraphicsRenderer
     updateGraphicsTint(graphics)
     {
         graphics._prevTint = graphics.tint;
-        graphics.canvasTintDirty = graphics.dirty;
+        graphics.canvasTintDirty = graphics.geometry.dirty;
 
         const tintR = ((graphics.tint >> 16) & 0xFF) / 255;
         const tintG = ((graphics.tint >> 8) & 0xFF) / 255;
