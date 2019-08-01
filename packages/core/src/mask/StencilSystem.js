@@ -41,6 +41,7 @@ export default class StencilSystem extends System
             else
             {
                 gl.enable(gl.STENCIL_TEST);
+                this._useCurrent();
             }
         }
 
