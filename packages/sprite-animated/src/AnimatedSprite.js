@@ -35,7 +35,7 @@ import { Ticker, UPDATE_PRIORITY } from '@pixi/ticker';
  * @extends PIXI.Sprite
  * @memberof PIXI
  */
-export default class AnimatedSprite extends Sprite
+export class AnimatedSprite extends Sprite
 {
     /**
      * @param {PIXI.Texture[]|PIXI.AnimatedSprite.FrameObject[]} textures - An array of {@link PIXI.Texture} or frame

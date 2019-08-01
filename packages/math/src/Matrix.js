@@ -1,4 +1,4 @@
-import Point from './Point';
+import { Point } from './Point';
 import { PI_2 } from './const';
 
 /**
@@ -13,7 +13,7 @@ import { PI_2 } from './const';
  * @class
  * @memberof PIXI
  */
-export default class Matrix
+export class Matrix
 {
     /**
      * @param {number} [a=1] - x scale

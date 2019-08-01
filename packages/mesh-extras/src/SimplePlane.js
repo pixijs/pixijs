@@ -1,6 +1,6 @@
 import { Texture } from '@pixi/core';
 import { Mesh, MeshMaterial } from '@pixi/mesh';
-import PlaneGeometry from './geometry/PlaneGeometry';
+import { PlaneGeometry } from './geometry/PlaneGeometry';
 
 /**
  * The SimplePlane allows you to draw a texture across several points and then manipulate these points
@@ -17,7 +17,7 @@ import PlaneGeometry from './geometry/PlaneGeometry';
  * @memberof PIXI
  *
  */
-export default class SimplePlane extends Mesh
+export class SimplePlane extends Mesh
 {
     /**
      * @param {PIXI.Texture} texture - The texture to use on the SimplePlane.

@@ -1,4 +1,4 @@
-import { default as Renderer } from './Renderer';
+import { Renderer } from './Renderer';
 
 /**
  * This helper function will automatically detect which renderer you should be using.

@@ -1,4 +1,4 @@
-import BaseImageResource from './BaseImageResource';
+import { BaseImageResource } from './BaseImageResource';
 
 /**
  * Resource type for ImageBitmap.
@@ -7,7 +7,7 @@ import BaseImageResource from './BaseImageResource';
  * @memberof PIXI.resources
  * @param {ImageBitmap} source - Image element to use
  */
-export default class ImageBitmapResource extends BaseImageResource
+export class ImageBitmapResource extends BaseImageResource
 {
     /**
      * Used to auto-detect the type of resource.

@@ -1,5 +1,5 @@
-import RenderTexture from './RenderTexture';
-import BaseRenderTexture from './BaseRenderTexture';
+import { RenderTexture } from './RenderTexture';
+import { BaseRenderTexture } from './BaseRenderTexture';
 import { nextPow2 } from '@pixi/utils';
 
 /**
@@ -11,7 +11,7 @@ import { nextPow2 } from '@pixi/utils';
  * @class
  * @memberof PIXI
  */
-export default class RenderTexturePool
+export class RenderTexturePool
 {
     /**
      * @param {object} [textureOptions] - options that will be passed to BaseRenderTexture constructor

@@ -8,7 +8,7 @@ import { Runner } from '@pixi/runner';
  * @class
  * @memberof PIXI.resources
  */
-export default class Resource
+export class Resource
 {
     /**
      * @param {number} [width=0] Width of the resource

@@ -1,2 +1,2 @@
-export { default as settings } from './settings';
+export * from './settings';
 export { default as isMobile } from 'ismobilejs';

@@ -1,5 +1,5 @@
 import { Mesh, MeshMaterial } from '@pixi/mesh';
-import RopeGeometry from './geometry/RopeGeometry';
+import { RopeGeometry } from './geometry/RopeGeometry';
 
 /**
  * The rope allows you to draw a texture across several points and then manipulate these points
@@ -16,7 +16,7 @@ import RopeGeometry from './geometry/RopeGeometry';
  * @memberof PIXI
  *
  */
-export default class SimpleRope extends Mesh
+export class SimpleRope extends Mesh
 {
     /**
      * @param {PIXI.Texture} texture - The texture to use on the rope.

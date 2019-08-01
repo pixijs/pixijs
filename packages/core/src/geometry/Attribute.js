@@ -9,7 +9,7 @@
  * @class
  * @memberof PIXI
  */
-export default class Attribute
+export class Attribute
 {
     /**
      * @param {string} buffer  the id of the buffer that this attribute will look for

@@ -29,7 +29,7 @@ const canvasRenderWorldTransform = new Matrix();
  * @protected
  * @memberof PIXI
  */
-export default class CanvasSpriteRenderer
+export class CanvasSpriteRenderer
 {
     /**
      * @param {PIXI.Renderer} renderer -The renderer sprite this batch works for.

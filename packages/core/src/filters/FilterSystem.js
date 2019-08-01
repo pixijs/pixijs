@@ -1,10 +1,9 @@
-import System from '../System';
-
-import RenderTexturePool from '../renderTexture/RenderTexturePool';
-import Quad from '../utils/Quad';
-import QuadUv from '../utils/QuadUv';
+import { System } from '../System';
+import { RenderTexturePool } from '../renderTexture/RenderTexturePool';
+import { Quad } from '../utils/Quad';
+import { QuadUv } from '../utils/QuadUv';
 import { Rectangle, Matrix } from '@pixi/math';
-import UniformGroup from '../shader/UniformGroup';
+import { UniformGroup } from '../shader/UniformGroup';
 import { DRAW_MODES } from '@pixi/constants';
 
 /**
@@ -87,7 +86,7 @@ class FilterState
  * @memberof PIXI.systems
  * @extends PIXI.System
  */
-export default class FilterSystem extends System
+export class FilterSystem extends System
 {
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.

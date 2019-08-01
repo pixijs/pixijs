@@ -1,4 +1,4 @@
-import System from '../System';
+import { System } from '../System';
 import { Matrix } from '@pixi/math';
 
 /**
@@ -9,7 +9,7 @@ import { Matrix } from '@pixi/math';
  * @memberof PIXI.systems
  */
 
-export default class ProjectionSystem extends System
+export class ProjectionSystem extends System
 {
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.

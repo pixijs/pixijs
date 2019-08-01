@@ -10,7 +10,7 @@ import { Point, SHAPES } from '@pixi/math';
  * @param {PIXI.GraphicsData} graphicsData - The graphics object containing all the necessary properties
  * @param {PIXI.GraphicsGeometry} graphicsGeometry - Geometry where to append output
  */
-export default function (graphicsData, graphicsGeometry)
+export function buildLine(graphicsData, graphicsGeometry)
 {
     if (graphicsData.lineStyle.native)
     {
@@ -18,7 +18,7 @@ export default function (graphicsData, graphicsGeometry)
     }
     else
     {
-        buildLine(graphicsData, graphicsGeometry);
+        buildNonNativeLine(graphicsData, graphicsGeometry);
     }
 }
 
@@ -32,7 +32,7 @@ export default function (graphicsData, graphicsGeometry)
  * @param {PIXI.GraphicsData} graphicsData - The graphics object containing all the necessary properties
  * @param {PIXI.GraphicsGeometry} graphicsGeometry - Geometry where to append output
  */
-function buildLine(graphicsData, graphicsGeometry)
+function buildNonNativeLine(graphicsData, graphicsGeometry)
 {
     const shape = graphicsData.shape;
     let points = graphicsData.points || shape.points.slice();

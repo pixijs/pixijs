@@ -1,11 +1,11 @@
 import { Ticker, UPDATE_PRIORITY } from '@pixi/ticker';
 import { Point } from '@pixi/math';
 import { DisplayObject } from '@pixi/display';
-import InteractionData from './InteractionData';
-import InteractionEvent from './InteractionEvent';
-import InteractionTrackingData from './InteractionTrackingData';
+import { InteractionData } from './InteractionData';
+import { InteractionEvent } from './InteractionEvent';
+import { InteractionTrackingData } from './InteractionTrackingData';
 import { EventEmitter } from '@pixi/utils';
-import interactiveTarget from './interactiveTarget';
+import { interactiveTarget } from './interactiveTarget';
 
 // Mix interactiveTarget into DisplayObject.prototype,
 // after deprecation has been handled
@@ -34,7 +34,7 @@ const hitTestEvent = {
  * @extends PIXI.utils.EventEmitter
  * @memberof PIXI.interaction
  */
-export default class InteractionManager extends EventEmitter
+export class InteractionManager extends EventEmitter
 {
     /**
      * @param {PIXI.CanvasRenderer|PIXI.Renderer} renderer - A reference to the current renderer

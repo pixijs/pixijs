@@ -1,1 +1,1 @@
-export { default as Runner } from './Runner';
+export * from './Runner';

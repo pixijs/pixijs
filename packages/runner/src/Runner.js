@@ -39,7 +39,7 @@
  * @class
  * @memberof PIXI
  */
-export default class Runner
+export class Runner
 {
     /**
      *  @param {string} name the function name that will be executed on the listeners added to this Runner.

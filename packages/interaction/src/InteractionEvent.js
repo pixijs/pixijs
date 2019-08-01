@@ -4,7 +4,7 @@
  * @class
  * @memberof PIXI.interaction
  */
-export default class InteractionEvent
+export class InteractionEvent
 {
     constructor()
     {

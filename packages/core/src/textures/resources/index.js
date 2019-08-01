@@ -1,12 +1,12 @@
 import { INSTALLED, autoDetectResource } from './autoDetectResource';
-import ArrayResource from './ArrayResource';
-import BufferResource from './BufferResource';
-import CanvasResource from './CanvasResource';
-import CubeResource from './CubeResource';
-import ImageResource from './ImageResource';
-import SVGResource from './SVGResource';
-import VideoResource from './VideoResource';
-import ImageBitmapResource from './ImageBitmapResource';
+import { ArrayResource } from './ArrayResource';
+import { BufferResource } from './BufferResource';
+import { CanvasResource } from './CanvasResource';
+import { CubeResource } from './CubeResource';
+import { ImageResource } from './ImageResource';
+import { SVGResource } from './SVGResource';
+import { VideoResource } from './VideoResource';
+import { ImageBitmapResource } from './ImageBitmapResource';
 
 /**
  * Collection of base resource types supported by PixiJS.
@@ -19,8 +19,8 @@ import ImageBitmapResource from './ImageBitmapResource';
  * const baseTexture = PIXI.BaseTexture.from('path/to/image.jpg');
  * @namespace PIXI.resources
  */
-export { default as Resource } from './Resource';
-export { default as BaseImageResource } from './BaseImageResource';
+export * from './Resource';
+export * from './BaseImageResource';
 
 INSTALLED.push(
     ImageResource,

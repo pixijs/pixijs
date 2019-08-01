@@ -1,8 +1,8 @@
 import { BaseTextureCache, EventEmitter, isPow2, TextureCache, uid } from '@pixi/utils';
 import { FORMATS, SCALE_MODES, TARGETS, TYPES } from '@pixi/constants';
 
-import Resource from './resources/Resource';
-import BufferResource from './resources/BufferResource';
+import { Resource } from './resources/Resource';
+import { BufferResource } from './resources/BufferResource';
 import { autoDetectResource } from './resources/autoDetectResource';
 
 import { settings } from '@pixi/settings';
@@ -39,7 +39,7 @@ const defaultBufferOptions = {
  * @param {object} [options.resourceOptions] - Optional resource options,
  *        see {@link PIXI.resources.autoDetectResource autoDetectResource}
  */
-export default class BaseTexture extends EventEmitter
+export class BaseTexture extends EventEmitter
 {
     constructor(resource = null, options = null)
     {

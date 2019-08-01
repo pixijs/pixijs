@@ -6,7 +6,7 @@ let UID = 0;
  * @class
  * @memberof PIXI
  */
-class UniformGroup
+export class UniformGroup
 {
     /**
      * @param {object} [uniforms] - Custom uniforms to use to augment the built-in ones.
@@ -68,5 +68,3 @@ class UniformGroup
         return new UniformGroup(uniforms, _static);
     }
 }
-
-export default UniformGroup;

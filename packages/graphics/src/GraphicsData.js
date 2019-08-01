@@ -4,7 +4,7 @@
  * @class
  * @memberof PIXI
  */
-export default class GraphicsData
+export class GraphicsData
 {
     /**
      *

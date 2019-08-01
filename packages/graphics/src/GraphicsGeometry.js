@@ -3,12 +3,12 @@ import { Bounds } from '@pixi/display';
 import { BatchGeometry, BatchDrawCall, BaseTexture } from '@pixi/core';
 import { DRAW_MODES, WRAP_MODES } from '@pixi/constants';
 
-import GraphicsData from './GraphicsData';
-import buildCircle from './utils/buildCircle';
-import buildLine from './utils/buildLine';
-import buildPoly from './utils/buildPoly';
-import buildRectangle from './utils/buildRectangle';
-import buildRoundedRectangle from './utils/buildRoundedRectangle';
+import { GraphicsData } from './GraphicsData';
+import { buildCircle } from './utils/buildCircle';
+import { buildLine } from './utils/buildLine';
+import { buildPoly } from './utils/buildPoly';
+import { buildRectangle } from './utils/buildRectangle';
+import { buildRoundedRectangle } from './utils/buildRoundedRectangle';
 import { premultiplyTint } from '@pixi/utils';
 
 const BATCH_POOL = [];
@@ -56,7 +56,7 @@ class BatchPart
  * @extends PIXI.BatchGeometry
  * @memberof PIXI
  */
-export default class GraphicsGeometry extends BatchGeometry
+export class GraphicsGeometry extends BatchGeometry
 {
     constructor()
     {

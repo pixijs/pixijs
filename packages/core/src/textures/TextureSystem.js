@@ -1,6 +1,6 @@
-import System from '../System';
-import BaseTexture from './BaseTexture';
-import GLTexture from './GLTexture';
+import { System } from '../System';
+import { BaseTexture } from './BaseTexture';
+import { GLTexture } from './GLTexture';
 import { removeItems } from '@pixi/utils';
 import { MIPMAP_MODES, WRAP_MODES, SCALE_MODES, TYPES } from '@pixi/constants';
 
@@ -11,7 +11,7 @@ import { MIPMAP_MODES, WRAP_MODES, SCALE_MODES, TYPES } from '@pixi/constants';
  * @extends PIXI.System
  * @memberof PIXI.systems
  */
-export default class TextureSystem extends System
+export class TextureSystem extends System
 {
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.

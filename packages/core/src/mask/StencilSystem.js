@@ -1,4 +1,4 @@
-import System from '../System';
+import { System } from '../System';
 
 /**
  * System plugin to the renderer to manage stencils (used for masks).
@@ -7,7 +7,7 @@ import System from '../System';
  * @extends PIXI.System
  * @memberof PIXI.systems
  */
-export default class StencilSystem extends System
+export class StencilSystem extends System
 {
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.

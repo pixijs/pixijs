@@ -1,5 +1,5 @@
 import { uid } from '@pixi/utils';
-import BaseImageResource from './BaseImageResource';
+import { BaseImageResource } from './BaseImageResource';
 
 /**
  * Resource type for SVG elements and graphics.
@@ -13,7 +13,7 @@ import BaseImageResource from './BaseImageResource';
  * @param {number} [options.height] Rasterize SVG this high. Aspect ratio preserved if width not specified.
  * @param {boolean} [options.autoLoad=true] Start loading right away.
  */
-export default class SVGResource extends BaseImageResource
+export class SVGResource extends BaseImageResource
 {
     constructor(source, options)
     {

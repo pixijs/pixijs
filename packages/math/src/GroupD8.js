@@ -3,7 +3,7 @@
 // This file implements the dihedral group of order 16, also called
 // of degree 8. That's why its called GroupD8.
 
-import Matrix from './Matrix';
+import { Matrix } from './Matrix';
 
 /*
  * Transform matrix for operation n is:
@@ -113,7 +113,7 @@ init();
  * @class
  * @memberof PIXI
  */
-const GroupD8 = {
+export const GroupD8 = {
     /**
      * | Rotation | Direction |
      * |----------|-----------|
@@ -389,5 +389,3 @@ const GroupD8 = {
         matrix.append(mat);
     },
 };
-
-export default GroupD8;
