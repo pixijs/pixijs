@@ -27,7 +27,6 @@ export default class FillStyle
         obj.texture = this.texture;
         obj.matrix = this.matrix;
         obj.visible = this.visible;
-        obj.native = this.native;
 
         return obj;
     }
@@ -76,15 +75,6 @@ export default class FillStyle
          * @default false
          */
         this.visible = false;
-
-        /**
-         * If true the strokes will be draw using LINES instead of TRIANGLE_STRIP
-         * Fills will be shown as wireframes
-         *
-         * @member {boolean}
-         * @default false
-         */
-        this.native = false;
     }
 
     /**
