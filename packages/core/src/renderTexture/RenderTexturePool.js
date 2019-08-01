@@ -8,6 +8,9 @@ import { nextPow2 } from '@pixi/utils';
  * Texture pool, used by FilterSystem and plugins
  * Stores collection of temporary pow2 or screen-sized renderTextures
  *
+ * If you use custom RenderTexturePool for your filters, you can use methods
+ * `getFilterTexture` and `returnFilterTexture` same as in
+ *
  * @class
  * @memberof PIXI
  */
@@ -95,18 +98,20 @@ export default class RenderTexturePool
     }
 
     /**
-     * Gets extra texture of the same size as current renderTexture
+     * Gets extra texture of the same size as input renderTexture
      *
-     * @param {number} [resolution] resolution, by default its the same as in current renderTexture
+     * `getFilterTexture(input, 0.5)` or `getFilterTexture(0.5, input)`
+     *
+     * @param {PIXI.RenderTexture} input renderTexture from which size and resolution will be copied
+     * @param {number} [resolution] override resolution of the renderTexture
+     *  It overrides, it does not multiply
      * @returns {PIXI.RenderTexture}
      */
-    getFilterTexture(resolution)
+    getFilterTexture(input, resolution)
     {
-        const rt = this.renderer.renderTexture.current;
+        const filterTexture = this.getOptimalTexture(input.width, input.height, resolution || input.resolution);
 
-        const filterTexture = this.getOptimalTexture(rt.width, rt.height, resolution || rt.baseTexture.resolution);
-
-        filterTexture.filterFrame = rt.filterFrame;
+        filterTexture.filterFrame = input.filterFrame;
 
         return filterTexture;
     }
@@ -163,7 +168,7 @@ export default class RenderTexturePool
      * If screen size was changed, drops all screen-sized textures,
      * sets new screen size, sets `enableFullScreen` to true
      *
-     * Size is measured in pixels, `renderer.view` can be passed here.
+     * Size is measured in pixels, `renderer.view` can be passed here, not `renderer.screen`
      *
      * @param {PIXI.ISize} size - Initial size of screen
      */
