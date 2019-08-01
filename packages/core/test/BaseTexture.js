@@ -1,5 +1,5 @@
 const { BaseTextureCache, TextureCache } = require('@pixi/utils');
-const { BaseTexture, Texture, resources } = require('../');
+const { BaseTexture, Texture, RenderTexture, resources } = require('../');
 const { ImageResource } = resources;
 
 const URL = 'foo.png';
@@ -177,7 +177,7 @@ describe('BaseTexture', function ()
 
     it('should show correct width/height after setResolution', function ()
     {
-        const texture = PIXI.RenderTexture.create({ width: 15, height: 15 });
+        const texture = RenderTexture.create({ width: 15, height: 15 });
 
         texture.setResolution(0.9);
         expect(texture.baseTexture.realWidth).to.equal(15);
