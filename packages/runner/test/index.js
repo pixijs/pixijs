@@ -128,4 +128,32 @@ describe('PIXI.Runner', function ()
         complete.add(obj).add(obj);
         expect(complete.items.length).to.equal(1);
     });
+
+    it('should not not bug out is items are removed items whilst mid run', function ()
+    {
+        const complete = new Runner('complete');
+
+        const objs = [];
+        let tick = 0;
+
+        for (let i = 0; i < 10; i++)
+        {
+            // eslint-disable-next-line no-loop-func
+            const obj = { complete()
+            {
+                tick++;
+                complete.remove(obj);
+            } };
+
+            obj.id = i;
+            objs.push(obj);
+
+            complete.add(obj);
+        }
+
+        complete.run();
+
+        expect(complete.items.length).to.equal(0);
+        expect(tick).to.equal(10);
+    });
 });
