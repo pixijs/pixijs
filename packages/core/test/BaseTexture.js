@@ -174,4 +174,13 @@ describe('BaseTexture', function ()
         expect(resource.destroyed).to.be.true;
         expect(baseTexture.destroyed).to.be.true;
     });
+
+    it('should show correct width/height after setResolution', function ()
+    {
+        const texture = PIXI.RenderTexture.create({ width: 15, height: 15 });
+
+        texture.setResolution(0.9);
+        expect(texture.baseTexture.realWidth).to.equal(15);
+        expect(texture.baseTexture.realHeight).to.equal(15);
+    });
 });
