@@ -15,6 +15,7 @@ export default class RenderTexturePool
 {
     /**
      * @param {object} [textureOptions] - options that will be passed to BaseRenderTexture constructor
+     * @param {PIXI.SCALE_MODES} [textureOptions.scaleMode] - See {@link PIXI.SCALE_MODES} for possible values.
      */
     constructor(textureOptions)
     {
@@ -46,6 +47,7 @@ export default class RenderTexturePool
         const baseRenderTexture = new BaseRenderTexture(Object.assign({
             width: realWidth,
             height: realHeight,
+            resolution: 1,
         }, this.textureOptions));
 
         return new RenderTexture(baseRenderTexture);
