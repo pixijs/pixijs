@@ -303,7 +303,7 @@ export default class BaseTexture extends EventEmitter
      */
     get realWidth()
     {
-        return Math.ceil(this.width * this.resolution);
+        return Math.ceil((this.width * this.resolution) - 1e-4);
     }
 
     /**
@@ -314,7 +314,7 @@ export default class BaseTexture extends EventEmitter
      */
     get realHeight()
     {
-        return Math.ceil(this.height * this.resolution);
+        return Math.ceil((this.height * this.resolution) - 1e-4);
     }
 
     /**
