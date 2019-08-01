@@ -22,9 +22,9 @@ export default class LineStyle extends FillStyle
         obj.texture = this.texture;
         obj.matrix = this.matrix;
         obj.visible = this.visible;
+        obj.native = this.native;
         obj.width = this.width;
         obj.alignment = this.alignment;
-        obj.native = this.native;
 
         return obj;
     }
@@ -53,13 +53,5 @@ export default class LineStyle extends FillStyle
          * @default 0
          */
         this.alignment = 0.5;
-
-        /**
-         * If true the lines will be draw using LINES instead of TRIANGLE_STRIP
-         *
-         * @member {boolean}
-         * @default false
-         */
-        this.native = false;
     }
 }
