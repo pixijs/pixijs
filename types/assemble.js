@@ -47,6 +47,18 @@ if (bundle === 'pixi.js') {
         .replace(/PIXI\.prepare\.CanvasPrepare \| (PIXI\.Renderer)/g, '$1');
 }
 
+// tsd-jsdoc doesn't currently support indexed generics (TChildren[0])
+buffer = buffer.replace(
+    /(addChild|removeChild)\(\.\.\.child: PIXI.DisplayObject\[\]\): PIXI\.DisplayObject;/g,
+    '$1<TChildren extends PIXI.DisplayObject[]>(...child: TChildren): TChildren[0];'
+);
+
+// tsd-jsdoc supports this case using the @template tag, but using said tag breaks documentation generation
+buffer = buffer.replace(
+    /addChildAt\(child: PIXI\.DisplayObject, index: number\): PIXI\.DisplayObject;/g,
+    'addChildAt<T extends PIXI.DisplayObject>(child: T, index: number): T;'
+);
+
 // EventEmitter3 and resource-loader are external dependencies, we'll
 // inject these into the find output
 const eventTypes = fs.readFileSync(path.join(__dirname, 'events.d.ts'), 'utf8');
