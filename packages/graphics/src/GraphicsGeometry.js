@@ -445,7 +445,7 @@ export default class GraphicsGeometry extends BatchGeometry
 
             currentTexture = style.texture.baseTexture;
             currentColor = style.color + style.alpha;
-            currentNative = style.native;
+            currentNative = !!style.native;
         }
 
         for (let i = this.shapeIndex; i < this.graphicsData.length; i++)
@@ -481,7 +481,7 @@ export default class GraphicsGeometry extends BatchGeometry
                 if (batchPart
                     && (currentTexture !== nextTexture
                     || currentColor !== (style.color + style.alpha)
-                    || currentNative !== style.native))
+                    || currentNative !== !!style.native))
                 {
                     batchPart.size = index - batchPart.start;
                     batchPart.attribSize = attribIndex - batchPart.attribStart;
@@ -650,7 +650,7 @@ export default class GraphicsGeometry extends BatchGeometry
 
             const nextTexture = style.texture.baseTexture;
 
-            if (native !== style.native)
+            if (native !== !!style.native)
             {
                 native = style.native;
                 drawMode = native ? DRAW_MODES.LINES : DRAW_MODES.TRIANGLES;
