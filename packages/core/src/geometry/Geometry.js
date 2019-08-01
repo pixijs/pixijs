@@ -70,8 +70,6 @@ export default class Geometry
          */
         this.instanceCount = 1;
 
-        this._size = null;
-
         this.disposeRunner = new Runner('disposeGeometry', 2);
 
         /**
