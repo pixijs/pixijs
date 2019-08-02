@@ -372,7 +372,6 @@ export default class GraphicsGeometry extends BatchGeometry
         for (let i = 0; i < graphicsData.length; ++i)
         {
             const data = graphicsData[i];
-            tmpPoint.copyFrom(point);
 
             if (!data.fillStyle.visible)
             {
@@ -382,9 +381,13 @@ export default class GraphicsGeometry extends BatchGeometry
             // only deal with fills..
             if (data.shape)
             {
-                if(data.matrix)
+                if (data.matrix)
                 {
                     data.matrix.applyInverse(point, tmpPoint);
+                }
+                else 
+                {
+                    tmpPoint.copyFrom(point);
                 }
 
                 if (data.shape.contains(tmpPoint.x, tmpPoint.y))
