@@ -380,7 +380,8 @@ export default class GraphicsGeometry extends BatchGeometry
             // only deal with fills..
             if (data.shape)
             {
-                if(data.matrix) {
+                if(data.matrix)
+                {
                     point = data.matrix.applyInverse(point);
                 }
                 
