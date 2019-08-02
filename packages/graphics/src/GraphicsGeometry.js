@@ -1,4 +1,4 @@
-import { SHAPES } from '@pixi/math';
+import { SHAPES, Point } from '@pixi/math';
 import { Bounds } from '@pixi/display';
 import { BatchGeometry, BatchDrawCall, BaseTexture } from '@pixi/core';
 import { DRAW_MODES, WRAP_MODES } from '@pixi/constants';
@@ -13,6 +13,7 @@ import { premultiplyTint } from '@pixi/utils';
 
 const BATCH_POOL = [];
 const DRAW_CALL_POOL = [];
+const tmpPoint = new Point();
 
 /**
  * Map of fill commands for each shape type.
@@ -371,6 +372,7 @@ export default class GraphicsGeometry extends BatchGeometry
         for (let i = 0; i < graphicsData.length; ++i)
         {
             const data = graphicsData[i];
+            tmpPoint.copyFrom(point);
 
             if (!data.fillStyle.visible)
             {
@@ -382,10 +384,10 @@ export default class GraphicsGeometry extends BatchGeometry
             {
                 if(data.matrix)
                 {
-                    point = data.matrix.applyInverse(point);
+                    data.matrix.applyInverse(point, tmpPoint);
                 }
-                
-                if (data.shape.contains(point.x, point.y))
+
+                if (data.shape.contains(tmpPoint.x, tmpPoint.y))
                 {
                     if (data.holes)
                     {
@@ -393,7 +395,7 @@ export default class GraphicsGeometry extends BatchGeometry
                         {
                             const hole = data.holes[i];
 
-                            if (hole.shape.contains(point.x, point.y))
+                            if (hole.shape.contains(tmpPoint.x, tmpPoint.y))
                             {
                                 return false;
                             }
