@@ -197,6 +197,14 @@ export default class GraphicsGeometry extends BatchGeometry
         this.indicesUint16 = null;
 
         this.uvsFloat32 = null;
+
+        /**
+         * Minimal distance between points that are considered different.
+         * Affects line tesselation.
+         *
+         * @member {number}
+         */
+        this.closePointEps = 1e-4;
     }
 
     /**
