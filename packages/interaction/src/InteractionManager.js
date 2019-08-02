@@ -253,6 +253,14 @@ export default class InteractionManager extends EventEmitter
         this.resolution = 1;
 
         /**
+         * Delayed pointer events. Used to guarantee correct ordering of over/out events.
+         *
+         * @private
+         * @member {Array}
+         */
+        this.delayedEvents = [];
+
+        /**
          * Fired when a pointer device button (usually a mouse left-button) is pressed on the display
          * object.
          *
@@ -946,6 +954,20 @@ export default class InteractionManager extends EventEmitter
     }
 
     /**
+     * Puts a event on a queue to be dispatched later. This is used to guarantee correct
+     * ordering of over/out events.
+     *
+     * @param {PIXI.Container|PIXI.Sprite|PIXI.TilingSprite} displayObject - the display object in question
+     * @param {string} eventString - the name of the event (e.g, mousedown)
+     * @param {object} eventData - the event data object
+     * @private
+     */
+    delayDispatchEvent(displayObject, eventString, eventData)
+    {
+        this.delayedEvents.push([displayObject, eventString, eventData]);
+    }
+
+    /**
      * Maps x and y coords from a DOM object and maps them correctly to the PixiJS view. The
      * resulting value is stored in the point. This takes into account the fact that the DOM
      * element could be scaled and positioned anywhere on the screen.
@@ -988,9 +1010,11 @@ export default class InteractionManager extends EventEmitter
      *  interactionEvent, displayObject and hit will be passed to the function
      * @param {boolean} [hitTest] - this indicates if the objects inside should be hit test against the point
      * @param {boolean} [interactive] - Whether the displayObject is interactive
+     * @param {boolean} [noDelayed] - Whether to process delayed events before returning. This is
+     *  used to avoid processing them too early during recursive calls.
      * @return {boolean} returns true if the displayObject hit the point
      */
-    processInteractive(interactionEvent, displayObject, func, hitTest, interactive)
+    processInteractive(interactionEvent, displayObject, func, hitTest, interactive, noDelayed)
     {
         if (!displayObject || !displayObject.visible)
         {
@@ -1065,7 +1089,7 @@ export default class InteractionManager extends EventEmitter
                 const child = children[i];
 
                 // time to get recursive.. if this function will return if something is hit..
-                const childHit = this.processInteractive(interactionEvent, child, func, hitTest, interactiveParent);
+                const childHit = this.processInteractive(interactionEvent, child, func, hitTest, interactiveParent, true);
 
                 if (childHit)
                 {
@@ -1127,6 +1151,22 @@ export default class InteractionManager extends EventEmitter
                 {
                     func(interactionEvent, displayObject, !!hit);
                 }
+            }
+        }
+
+        const delayedEvents = this.delayedEvents;
+
+        if (delayedEvents.length && !noDelayed)
+        {
+            const delayedLen = delayedEvents.length;
+
+            this.delayedEvents = [];
+
+            for (let i = 0; i < delayedLen; i++)
+            {
+                const delayed = delayedEvents[i];
+
+                this.dispatchEvent(delayed[0], delayed[1], delayed[2]);
             }
         }
 
@@ -1583,10 +1623,10 @@ export default class InteractionManager extends EventEmitter
             if (!trackingData.over)
             {
                 trackingData.over = true;
-                this.dispatchEvent(displayObject, 'pointerover', interactionEvent);
+                this.delayDispatchEvent(displayObject, 'pointerover', interactionEvent);
                 if (isMouse)
                 {
-                    this.dispatchEvent(displayObject, 'mouseover', interactionEvent);
+                    this.delayDispatchEvent(displayObject, 'mouseover', interactionEvent);
                 }
             }
 
