@@ -380,6 +380,10 @@ export default class GraphicsGeometry extends BatchGeometry
             // only deal with fills..
             if (data.shape)
             {
+                if(data.matrix) {
+                    point = data.matrix.applyInverse(point);
+                }
+                
                 if (data.shape.contains(point.x, point.y))
                 {
                     if (data.holes)
