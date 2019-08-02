@@ -181,6 +181,27 @@ describe('PIXI.Graphics', function ()
             expect(graphics.containsPoint(point1)).to.be.true;
             expect(graphics.containsPoint(point2)).to.be.false;
         });
+
+        it('should take a matrix into account', function ()
+        {
+            const g = new Graphics();
+            const m = new Matrix();
+
+            g.beginFill(0xffffff, 1.0);
+            m.identity().translate(0, 100);
+            g.setMatrix(m.clone());
+            g.drawRect(0, 0, 10, 10);
+            m.identity().translate(200, 0);
+            g.setMatrix(m.clone());
+            g.drawRect(0, 0, 10, 10);
+            g.setMatrix(null);
+            g.drawRect(30, 40, 10, 10);
+
+            expect(g.containsPoint(new Point(5, 5))).to.be.false;
+            expect(g.containsPoint(new Point(5, 105))).to.be.true;
+            expect(g.containsPoint(new Point(205, 5))).to.be.true;
+            expect(g.containsPoint(new Point(35, 45))).to.be.true;
+        });
     });
 
     describe('chaining', function ()
