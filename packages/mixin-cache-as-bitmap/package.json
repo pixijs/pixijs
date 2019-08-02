@@ -1,6 +1,6 @@
 {
   "name": "@pixi/mixin-cache-as-bitmap",
-  "version": "5.1.0",
+  "version": "5.1.1",
   "main": "lib/mixin-cache-as-bitmap.js",
   "module": "lib/mixin-cache-as-bitmap.es.js",
   "bundle": "dist/mixin-cache-as-bitmap.js",
@@ -25,11 +25,11 @@
     "dist"
   ],
   "dependencies": {
-    "@pixi/core": "^5.1.0",
-    "@pixi/display": "^5.1.0",
+    "@pixi/core": "^5.1.1",
+    "@pixi/display": "^5.1.1",
     "@pixi/math": "^5.1.0",
-    "@pixi/settings": "^5.1.0",
-    "@pixi/sprite": "^5.1.0",
-    "@pixi/utils": "^5.1.0"
+    "@pixi/settings": "^5.1.1",
+    "@pixi/sprite": "^5.1.1",
+    "@pixi/utils": "^5.1.1"
   }
 }
