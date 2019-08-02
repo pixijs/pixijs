@@ -2,7 +2,7 @@
 const { Renderer, BatchRenderer } = require('@pixi/core');
 const { Graphics, GRAPHICS_CURVES } = require('../');
 const { BLEND_MODES } = require('@pixi/constants');
-const { Point } = require('@pixi/math');
+const { Point, Matrix } = require('@pixi/math');
 const { skipHello } = require('@pixi/utils');
 
 Renderer.registerPlugin('batch', BatchRenderer);
