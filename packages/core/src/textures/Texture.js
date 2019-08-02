@@ -498,6 +498,7 @@ export default class Texture extends EventEmitter
     /**
      * Returns resolution of baseTexture
      *
+     * @member {number}
      * @readonly
      */
     get resolution()
