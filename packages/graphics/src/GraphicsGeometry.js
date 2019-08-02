@@ -198,6 +198,14 @@ export default class GraphicsGeometry extends BatchGeometry
         this.indicesUint16 = null;
 
         this.uvsFloat32 = null;
+
+        /**
+         * Minimal distance between points that are considered different.
+         * Affects line tesselation.
+         *
+         * @member {number}
+         */
+        this.closePointEps = 1e-4;
     }
 
     /**
@@ -1000,7 +1008,7 @@ export default class GraphicsGeometry extends BatchGeometry
     /**
      * Modify uvs array according to position of texture region
      * Does not work with rotated or trimmed textures
-     * @param {number} uvs array
+     * @param {number[]} uvs array
      * @param {PIXI.Texture} texture region
      * @param {number} start starting index for uvs
      * @param {number} size how many points to adjust

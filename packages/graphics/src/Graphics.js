@@ -534,6 +534,7 @@ export default class Graphics extends Container
 
         const startX = cx + (Math.cos(startAngle) * radius);
         const startY = cy + (Math.sin(startAngle) * radius);
+        const eps = this.geometry.closePointEps;
 
         // If the currentPath exists, take its points. Otherwise call `moveTo` to start a path.
         let points = this.currentPath ? this.currentPath.points : null;
@@ -546,7 +547,7 @@ export default class Graphics extends Container
             const xDiff = Math.abs(points[points.length - 2] - startX);
             const yDiff = Math.abs(points[points.length - 1] - startY);
 
-            if (xDiff < 0.001 && yDiff < 0.001)
+            if (xDiff < eps && yDiff < eps)
             {
                 // If the point is very close, we don't add it, since this would lead to artifacts
                 // during tessellation due to floating point imprecision.
