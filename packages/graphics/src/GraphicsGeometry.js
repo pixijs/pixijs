@@ -385,7 +385,7 @@ export default class GraphicsGeometry extends BatchGeometry
                 {
                     data.matrix.applyInverse(point, tmpPoint);
                 }
-                else 
+                else
                 {
                     tmpPoint.copyFrom(point);
                 }
