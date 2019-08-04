@@ -795,8 +795,9 @@ export default class GraphicsGeometry extends BatchGeometry
             const data = this.graphicsData[i];
             const shape = data.shape;
             const type = data.type;
-            const lineWidth = data.lineStyle ? data.lineStyle.width : 0;
-            const nextMatrix = data.matrix || Matrix.Identity;
+            const lineStyle = data.lineStyle;
+            const lineWidth = lineStyle ? (lineStyle.width * (0.5 + Math.abs(0.5 - lineStyle.alignment))) : 0;
+            const nextMatrix = data.matrix || Matrix.IDENTITY;
 
             if (curMatrix !== nextMatrix)
             {
