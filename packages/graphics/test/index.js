@@ -36,9 +36,8 @@ describe('PIXI.Graphics', function ()
             graphics.moveTo(0, 0);
             graphics.lineTo(0, 10);
 
-            expect(graphics.width).to.be.below(1.00001);
-            expect(graphics.width).to.be.above(0.99999);
-            expect(graphics.height).to.be.equals(10);
+            expect(graphics.width).to.be.closeTo(1, 0.0001);
+            expect(graphics.height).to.be.closeTo(11, 0.0001);
         });
 
         it('should return correct bounds - south', function ()
@@ -49,9 +48,8 @@ describe('PIXI.Graphics', function ()
             graphics.lineStyle(1);
             graphics.lineTo(0, -10);
 
-            expect(graphics.width).to.be.below(1.00001);
-            expect(graphics.width).to.be.above(0.99999);
-            expect(graphics.height).to.be.equals(10);
+            expect(graphics.width).to.be.closeTo(1, 0.0001);
+            expect(graphics.height).to.be.closeTo(11, 0.0001);
         });
 
         it('should return correct bounds - east', function ()
@@ -62,8 +60,8 @@ describe('PIXI.Graphics', function ()
             graphics.lineStyle(1);
             graphics.lineTo(10, 0);
 
-            expect(graphics.height).to.be.equals(1);
-            expect(graphics.width).to.be.equals(10);
+            expect(graphics.height).to.be.closeTo(1, 0.0001);
+            expect(graphics.width).to.be.closeTo(11, 0.0001);
         });
 
         it('should return correct bounds - west', function ()
@@ -74,9 +72,8 @@ describe('PIXI.Graphics', function ()
             graphics.lineStyle(1);
             graphics.lineTo(-10, 0);
 
-            expect(graphics.height).to.be.above(0.9999);
-            expect(graphics.height).to.be.below(1.0001);
-            expect(graphics.width).to.be.equals(10);
+            expect(graphics.height).to.be.closeTo(1, 0.0001);
+            expect(graphics.width).to.be.closeTo(11, 0.0001);
         });
 
         it('should return correct bounds when stacked with circle', function ()
