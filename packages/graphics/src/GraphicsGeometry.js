@@ -1,4 +1,4 @@
-import { SHAPES, Point } from '@pixi/math';
+import { SHAPES, Point, Matrix } from '@pixi/math';
 import { Bounds } from '@pixi/display';
 import { BatchGeometry, BatchDrawCall, BaseTexture } from '@pixi/core';
 import { DRAW_MODES, WRAP_MODES } from '@pixi/constants';
@@ -14,6 +14,7 @@ import { premultiplyTint } from '@pixi/utils';
 const BATCH_POOL = [];
 const DRAW_CALL_POOL = [];
 const tmpPoint = new Point();
+const tmpBounds = new Bounds();
 
 /**
  * Map of fill commands for each shape type.
@@ -782,126 +783,59 @@ export default class GraphicsGeometry extends BatchGeometry
      */
     calculateBounds()
     {
-        let minX = Infinity;
-        let maxX = -Infinity;
+        const bounds = this._bounds;
+        const sequenceBounds = tmpBounds;
+        let curMatrix = Matrix.IDENTITY;
 
-        let minY = Infinity;
-        let maxY = -Infinity;
+        this._bounds.clear();
+        sequenceBounds.clear();
 
-        if (this.graphicsData.length)
+        for (let i = 0; i < this.graphicsData.length; i++)
         {
-            let shape = null;
-            let x = 0;
-            let y = 0;
-            let w = 0;
-            let h = 0;
+            const data = this.graphicsData[i];
+            const shape = data.shape;
+            const type = data.type;
+            const lineWidth = data.lineStyle ? data.lineStyle.width : 0;
+            const nextMatrix = data.matrix || Matrix.Identity;
 
-            for (let i = 0; i < this.graphicsData.length; i++)
+            if (curMatrix !== nextMatrix)
             {
-                const data = this.graphicsData[i];
-
-                const type = data.type;
-                const lineWidth = data.lineStyle ? data.lineStyle.width : 0;
-
-                shape = data.shape;
-
-                if (type === SHAPES.RECT || type === SHAPES.RREC)
+                if (!sequenceBounds.isEmpty())
                 {
-                    x = shape.x - (lineWidth / 2);
-                    y = shape.y - (lineWidth / 2);
-                    w = shape.width + lineWidth;
-                    h = shape.height + lineWidth;
-
-                    minX = x < minX ? x : minX;
-                    maxX = x + w > maxX ? x + w : maxX;
-
-                    minY = y < minY ? y : minY;
-                    maxY = y + h > maxY ? y + h : maxY;
+                    bounds.addBoundsMatrix(sequenceBounds, curMatrix);
+                    sequenceBounds.clear();
                 }
-                else if (type === SHAPES.CIRC)
-                {
-                    x = shape.x;
-                    y = shape.y;
-                    w = shape.radius + (lineWidth / 2);
-                    h = shape.radius + (lineWidth / 2);
+                curMatrix = nextMatrix;
+            }
 
-                    minX = x - w < minX ? x - w : minX;
-                    maxX = x + w > maxX ? x + w : maxX;
-
-                    minY = y - h < minY ? y - h : minY;
-                    maxY = y + h > maxY ? y + h : maxY;
-                }
-                else if (type === SHAPES.ELIP)
-                {
-                    x = shape.x;
-                    y = shape.y;
-                    w = shape.width + (lineWidth / 2);
-                    h = shape.height + (lineWidth / 2);
-
-                    minX = x - w < minX ? x - w : minX;
-                    maxX = x + w > maxX ? x + w : maxX;
-
-                    minY = y - h < minY ? y - h : minY;
-                    maxY = y + h > maxY ? y + h : maxY;
-                }
-                else
-                {
-                    // POLY
-                    const points = shape.points;
-                    let x2 = 0;
-                    let y2 = 0;
-                    let dx = 0;
-                    let dy = 0;
-                    let rw = 0;
-                    let rh = 0;
-                    let cx = 0;
-                    let cy = 0;
-
-                    for (let j = 0; j + 2 < points.length; j += 2)
-                    {
-                        x = points[j];
-                        y = points[j + 1];
-                        x2 = points[j + 2];
-                        y2 = points[j + 3];
-                        dx = Math.abs(x2 - x);
-                        dy = Math.abs(y2 - y);
-                        h = lineWidth;
-                        w = Math.sqrt((dx * dx) + (dy * dy));
-
-                        if (w < 1e-9)
-                        {
-                            continue;
-                        }
-
-                        rw = ((h / w * dy) + dx) / 2;
-                        rh = ((h / w * dx) + dy) / 2;
-                        cx = (x2 + x) / 2;
-                        cy = (y2 + y) / 2;
-
-                        minX = cx - rw < minX ? cx - rw : minX;
-                        maxX = cx + rw > maxX ? cx + rw : maxX;
-
-                        minY = cy - rh < minY ? cy - rh : minY;
-                        maxY = cy + rh > maxY ? cy + rh : maxY;
-                    }
-                }
+            if (type === SHAPES.RECT || type === SHAPES.RREC)
+            {
+                sequenceBounds.addFramePad(shape.x, shape.y, shape.x + shape.width, shape.y + shape.height,
+                    lineWidth);
+            }
+            else if (type === SHAPES.CIRC)
+            {
+                sequenceBounds.addFramePad(shape.x, shape.y, shape.x, shape.y,
+                    shape.radius + lineWidth, shape.radius + lineWidth);
+            }
+            else if (type === SHAPES.ELIP)
+            {
+                sequenceBounds.addFramePad(shape.x, shape.y, shape.x, shape.y,
+                    shape.width + lineWidth, shape.height + lineWidth);
+            }
+            else
+            {
+                // adding directly to the bounds
+                bounds.addVerticesMatrix(shape.points, 0, shape.points.length, lineWidth, lineWidth);
             }
         }
-        else
+
+        if (!sequenceBounds.isEmpty())
         {
-            minX = 0;
-            maxX = 0;
-            minY = 0;
-            maxY = 0;
+            bounds.addBoundsMatrix(sequenceBounds, curMatrix);
         }
 
-        const padding = this.boundsPadding;
-
-        this._bounds.minX = minX - padding;
-        this._bounds.maxX = maxX + padding;
-
-        this._bounds.minY = minY - padding;
-        this._bounds.maxY = maxY + padding;
+        bounds.pad(this.boundsPadding, this.boundsPadding);
     }
 
     /**

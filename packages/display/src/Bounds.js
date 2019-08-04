@@ -151,15 +151,28 @@ export default class Bounds
     /**
      * Adds sprite frame, transformed.
      *
-     * @param {PIXI.Transform} transform - TODO
-     * @param {number} x0 - TODO
-     * @param {number} y0 - TODO
-     * @param {number} x1 - TODO
-     * @param {number} y1 - TODO
+     * @param {PIXI.Transform} transform - transform to apply
+     * @param {number} x0 - left X of frame
+     * @param {number} y0 - top Y of frame
+     * @param {number} x1 - right X of frame
+     * @param {number} y1 - bottom Y of frame
      */
     addFrame(transform, x0, y0, x1, y1)
     {
-        const matrix = transform.worldTransform;
+        this.addFrameMatrix(transform.worldTransform, x0, y0, x1, y1);
+    }
+
+    /**
+     * Adds sprite frame, multiplied by matrix
+     *
+     * @param {PIXI.Matrix} matrix - matrix to apply
+     * @param {number} x0 - left X of frame
+     * @param {number} y0 - top Y of frame
+     * @param {number} x1 - right X of frame
+     * @param {number} y1 - bottom Y of frame
+     */
+    addFrameMatrix(matrix, x0, y0, x1, y1)
+    {
         const a = matrix.a;
         const b = matrix.b;
         const c = matrix.c;
@@ -248,13 +261,30 @@ export default class Bounds
      */
     addVertices(transform, vertices, beginOffset, endOffset)
     {
-        const matrix = transform.worldTransform;
+        this.addVerticesMatrix(transform.worldTransform, vertices, beginOffset, endOffset);
+    }
+
+    /**
+     * Add an array of mesh vertices
+     *
+     * @param {PIXI.Matrix} matrix - mesh matrix
+     * @param {Float32Array} vertices - mesh coordinates in array
+     * @param {number} beginOffset - begin offset
+     * @param {number} endOffset - end offset, excluded
+     * @param {number} [padX] - x padding
+     * @param {number} [padY] - y padding
+     */
+    addVerticesMatrix(matrix, vertices, beginOffset, endOffset, padX, padY)
+    {
         const a = matrix.a;
         const b = matrix.b;
         const c = matrix.c;
         const d = matrix.d;
         const tx = matrix.tx;
         const ty = matrix.ty;
+
+        padX = padX | 0;
+        padY = padY | 0;
 
         let minX = this.minX;
         let minY = this.minY;
@@ -268,10 +298,10 @@ export default class Bounds
             const x = (a * rawX) + (c * rawY) + tx;
             const y = (d * rawY) + (b * rawX) + ty;
 
-            minX = x < minX ? x : minX;
-            minY = y < minY ? y : minY;
-            maxX = x > maxX ? x : maxX;
-            maxY = y > maxY ? y : maxY;
+            minX = Math.min(x - padX, minX);
+            maxX = Math.max(x + padX, maxX);
+            minY = Math.min(y - padY, minY);
+            maxY = Math.max(y - padY, maxY);
         }
 
         this.minX = minX;
@@ -326,6 +356,17 @@ export default class Bounds
     }
 
     /**
+     * Adds other Bounds, multiplied by matrix. Bounds shouldn't be empty
+     *
+     * @param {PIXI.Bounds} bounds other bounds
+     * @param {PIXI.Matrix} matrix multiplicator
+     */
+    addBoundsMatrix(bounds, matrix)
+    {
+        this.addFrameMatrix(matrix, bounds.minX, bounds.minY, bounds.maxX, bounds.maxY);
+    }
+
+    /**
      * Adds other Bounds, masked with Rectangle
      *
      * @param {PIXI.Bounds} bounds - TODO
@@ -350,5 +391,48 @@ export default class Bounds
             this.maxX = _maxX > maxX ? _maxX : maxX;
             this.maxY = _maxY > maxY ? _maxY : maxY;
         }
+    }
+
+    /**
+     * Pads bounds object, making it grow in all directions.
+     *
+     * @param {number} paddingX - The horizontal padding amount.
+     * @param {number} paddingY - The vertical padding amount.
+     */
+    pad(paddingX, paddingY)
+    {
+        paddingX = paddingX || 0;
+        paddingY = paddingY || ((paddingY !== 0) ? paddingX : 0);
+
+        if (!this.isEmpty())
+        {
+            this.minX -= paddingX;
+            this.maxX += paddingX;
+            this.minY -= paddingY;
+            this.maxY += paddingY;
+        }
+    }
+
+    /**
+     * Adds padded frame. (x0, y0) should be strictly less than (x1, y1)
+     *
+     * @param {number} x0 - left X of frame
+     * @param {number} y0 - top Y of frame
+     * @param {number} x1 - right X of frame
+     * @param {number} y1 - bottom Y of frame
+     * @param {number} padX - padding X
+     * @param {number} padY - padding Y
+     */
+    addFramePad(x0, y0, x1, y1, padX, padY)
+    {
+        x0 -= padX;
+        y0 -= padY;
+        x1 += padX;
+        y1 += padY;
+
+        this.minX = this.minX < x0 ? this.minX : x0;
+        this.maxX = this.maxX > x1 ? this.maxX : x1;
+        this.minY = this.minY < y0 ? this.minY : y0;
+        this.maxY = this.maxY > y1 ? this.maxY : y1;
     }
 }
