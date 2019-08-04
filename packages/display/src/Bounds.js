@@ -298,10 +298,10 @@ export default class Bounds
             const x = (a * rawX) + (c * rawY) + tx;
             const y = (d * rawY) + (b * rawX) + ty;
 
-            minX = Math.min(x - padX, minX);
-            maxX = Math.max(x + padX, maxX);
-            minY = Math.min(y - padY, minY);
-            maxY = Math.max(y - padY, maxY);
+            minX = Math.min(minX, x - padX);
+            maxX = Math.max(maxX, x + padX);
+            minY = Math.min(minY, y - padY);
+            maxY = Math.max(maxY, y + padY);
         }
 
         this.minX = minX;
