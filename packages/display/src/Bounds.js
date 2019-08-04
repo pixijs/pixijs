@@ -283,8 +283,8 @@ export default class Bounds
         const tx = matrix.tx;
         const ty = matrix.ty;
 
-        padX = padX | 0;
-        padY = padY | 0;
+        padX = padX || 0;
+        padY = padY || 0;
 
         let minX = this.minX;
         let minY = this.minY;

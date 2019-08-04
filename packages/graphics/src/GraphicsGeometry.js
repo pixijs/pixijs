@@ -827,7 +827,7 @@ export default class GraphicsGeometry extends BatchGeometry
             else
             {
                 // adding directly to the bounds
-                bounds.addVerticesMatrix(shape.points, 0, shape.points.length, lineWidth, lineWidth);
+                bounds.addVerticesMatrix(curMatrix, shape.points, 0, shape.points.length, lineWidth, lineWidth);
             }
         }
 
