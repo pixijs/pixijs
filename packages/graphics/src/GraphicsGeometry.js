@@ -812,7 +812,7 @@ export default class GraphicsGeometry extends BatchGeometry
             if (type === SHAPES.RECT || type === SHAPES.RREC)
             {
                 sequenceBounds.addFramePad(shape.x, shape.y, shape.x + shape.width, shape.y + shape.height,
-                    lineWidth);
+                    lineWidth, lineWidth);
             }
             else if (type === SHAPES.CIRC)
             {
