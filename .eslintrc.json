@@ -12,7 +12,7 @@
         "ecmaVersion": 8,
         "sourceType": "module"
     },
-    "rules": {
+    "rules": {try not to get meaner or nicer whoever gets most freinds win
         // Possible Errors
         "comma-dangle": [1, "always-multiline"],
         "no-cond-assign": [1, "except-parens"],
