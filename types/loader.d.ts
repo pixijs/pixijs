@@ -19,7 +19,7 @@ declare namespace PIXI {
         use(fn: Function): this;
         reset(): this;
         //tslint:disable-next-line:ban-types forbidden-types
-        load(cb?: (loader: Loader, resources: Record<string, LoaderResource>) => void): this;
+        load(cb?: (loader: Loader, resources: Partial<Record<string, LoaderResource>>) => void): this;
 
         destroy(): void;
 
