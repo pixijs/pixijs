@@ -15,7 +15,13 @@ If you want to keep up to date with the latest PixiJS news then feel free to fol
 and we will keep you posted! You can also check back on [our site](http://www.pixijs.com)
 as any breakthroughs will be posted up there too!
 
-**Your support helps us make PixiJS even better. Make your pledge on [Patreon](https://www.patreon.com/user?u=2384552&ty=h&u=2384552) and we'll love you forever!**
+**We are now a part of the [Open Collective](https://opencollective.com/pixijs) and with your support you can help us make PixiJS even better. To make a donation, simply click the button below and we'll love you forever!**
+
+<div align="center">
+  <a href="https://opencollective.com/pixijs/donate" target="_blank">
+    <img src="https://opencollective.com/pixijs/donate/button@2x.png?color=blue" width=250 />
+  </a>
+</div>
 
 ### What to Use PixiJS for and When to Use It
 
