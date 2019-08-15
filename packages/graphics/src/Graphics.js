@@ -470,8 +470,8 @@ export default class Graphics extends Container
      *
      * "borrowed" from https://code.google.com/p/fxcanvas/ - thanks google!
      *
-     * @param {number} x1 - The x-coordinate of the beginning of the arc
-     * @param {number} y1 - The y-coordinate of the beginning of the arc
+     * @param {number} x1 - The x-coordinate of the first tangent point of the arc
+     * @param {number} y1 - The y-coordinate of the first tangent point of the arc
      * @param {number} x2 - The x-coordinate of the end of the arc
      * @param {number} y2 - The y-coordinate of the end of the arc
      * @param {number} radius - The radius of the arc
