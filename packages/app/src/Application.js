@@ -129,7 +129,7 @@ export default class Application
      * @param {boolean} [stageOptions.baseTexture=false] - Only used for child Sprites if stageOptions.children is set
      *  to true. Should it destroy the base texture of the child sprite
      */
-    destroy(removeView)
+    destroy(removeView, stageOptions)
     {
         // Destroy plugins in the opposite order
         // which they were constructed
@@ -141,7 +141,7 @@ export default class Application
             plugin.destroy.call(this);
         });
 
-        this.stage.destroy();
+        this.stage.destroy(stageOptions);
         this.stage = null;
 
         this.renderer.destroy(removeView);
