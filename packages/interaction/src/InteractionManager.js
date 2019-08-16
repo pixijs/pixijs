@@ -964,7 +964,7 @@ export default class InteractionManager extends EventEmitter
      */
     delayDispatchEvent(displayObject, eventString, eventData)
     {
-        this.delayedEvents.push([displayObject, eventString, eventData]);
+        this.delayedEvents.push({ displayObject, eventString, eventData });
     }
 
     /**
@@ -1010,11 +1010,11 @@ export default class InteractionManager extends EventEmitter
      *  interactionEvent, displayObject and hit will be passed to the function
      * @param {boolean} [hitTest] - this indicates if the objects inside should be hit test against the point
      * @param {boolean} [interactive] - Whether the displayObject is interactive
-     * @param {boolean} [noDelayed] - Whether to process delayed events before returning. This is
+     * @param {boolean} [skipDelayed] - Whether to process delayed events before returning. This is
      *  used to avoid processing them too early during recursive calls.
      * @return {boolean} returns true if the displayObject hit the point
      */
-    processInteractive(interactionEvent, displayObject, func, hitTest, interactive, noDelayed)
+    processInteractive(interactionEvent, displayObject, func, hitTest, interactive, skipDelayed)
     {
         if (!displayObject || !displayObject.visible)
         {
@@ -1156,7 +1156,7 @@ export default class InteractionManager extends EventEmitter
 
         const delayedEvents = this.delayedEvents;
 
-        if (delayedEvents.length && !noDelayed)
+        if (delayedEvents.length && !skipDelayed)
         {
             const delayedLen = delayedEvents.length;
 
@@ -1166,7 +1166,7 @@ export default class InteractionManager extends EventEmitter
             {
                 const delayed = delayedEvents[i];
 
-                this.dispatchEvent(delayed[0], delayed[1], delayed[2]);
+                this.dispatchEvent(delayed.displayObject, delayed.eventString, delayed.eventData);
             }
         }
 
