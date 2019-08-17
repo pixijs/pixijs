@@ -1,6 +1,6 @@
 const { Application } = require('../');
 const { autoDetectRenderer } = require('@pixi/canvas-renderer');
-const { Container } = require('@pixi/display');
+const { Container, DisplayObject } = require('@pixi/display');
 const { skipHello } = require('@pixi/utils');
 
 skipHello();
@@ -54,6 +54,30 @@ describe('PIXI.Application', function ()
         expect(document.body.contains(view)).to.be.true;
         app.destroy(true);
         expect(document.body.contains(view)).to.be.false;
+    });
+
+    it('should not destroy children by default', function ()
+    {
+        const app = new Application();
+        const stage = app.stage;
+        const child = new DisplayObject();
+
+        stage.addChild(child);
+
+        app.destroy(true);
+        expect(child.transform).to.not.be.null;
+    });
+
+    it('should allow children destroy', function ()
+    {
+        const app = new Application();
+        const stage = app.stage;
+        const child = new DisplayObject();
+
+        stage.addChild(child);
+
+        app.destroy(true, true);
+        expect(child.transform).to.be.null;
     });
 
     describe('resizeTo', function ()

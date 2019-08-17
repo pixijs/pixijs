@@ -422,16 +422,27 @@ export class FilterSystem extends System
 
     /**
      * Gets extra render texture to use inside current filter
+     * To be compliant with older filters, you can use params in any order
      *
-     * @param {number} resolution resolution of the renderTexture
+     * @param {PIXI.RenderTexture} [input] renderTexture from which size and resolution will be copied
+     * @param {number} [resolution] override resolution of the renderTexture
      * @returns {PIXI.RenderTexture}
      */
-    getFilterTexture(resolution)
+    getFilterTexture(input, resolution)
     {
-        const rt = this.activeState.renderTexture;
-        const filterTexture = this.texturePool.getOptimalTexture(rt.width, rt.height, resolution || rt.resolution);
+        if (typeof input === 'number')
+        {
+            const swap = input;
 
-        filterTexture.filterFrame = rt.filterFrame;
+            input = resolution;
+            resolution = swap;
+        }
+
+        input = input || this.activeState.renderTexture;
+
+        const filterTexture = this.texturePool.getOptimalTexture(input.width, input.height, resolution || input.resolution);
+
+        filterTexture.filterFrame = input.filterFrame;
 
         return filterTexture;
     }

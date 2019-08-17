@@ -91,8 +91,10 @@ export class RenderTexture extends Texture
         this.valid = true;
 
         /**
-         * FilterSystem temporary storage
-         * @protected
+         * Stores `sourceFrame` when this texture is inside current filter stack.
+         * You can read it inside filters.
+         *
+         * @readonly
          * @member {PIXI.Rectangle}
          */
         this.filterFrame = null;
