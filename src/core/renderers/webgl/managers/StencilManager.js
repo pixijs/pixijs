@@ -23,21 +23,17 @@ export default class StencilManager extends WebGLManager
      */
     setMaskStack(stencilMaskStack)
     {
-        const gl = this.renderer.gl;
-        const curStackLen = this.stencilMaskStack.length;
-
         this.stencilMaskStack = stencilMaskStack;
-        if (stencilMaskStack.length !== curStackLen)
+
+        const gl = this.renderer.gl;
+
+        if (stencilMaskStack.length === 0)
         {
-            if (stencilMaskStack.length === 0)
-            {
-                gl.disable(gl.STENCIL_TEST);
-            }
-            else
-            {
-                gl.enable(gl.STENCIL_TEST);
-                this._useCurrent();
-            }
+            gl.disable(gl.STENCIL_TEST);
+        }
+        else
+        {
+            gl.enable(gl.STENCIL_TEST);
         }
     }
 
