@@ -7,6 +7,7 @@ import {
     Rectangle,
     RoundedRectangle,
     Matrix,
+    SHAPES,
 } from '@pixi/math';
 import { hex2rgb } from '@pixi/utils';
 import {
@@ -802,11 +803,9 @@ export default class Graphics extends Container
      */
     isFastRect()
     {
-        // will fix this!
-        return false;
-        // this.graphicsData.length === 1
-        //  && this.graphicsData[0].shape.type === SHAPES.RECT
-        // && !this.graphicsData[0].lineWidth;
+        return this.geometry.graphicsData.length === 1
+        && this.geometry.graphicsData[0].shape.type === SHAPES.RECT
+        && !this.geometry.graphicsData[0].lineWidth;
     }
 
     /**
