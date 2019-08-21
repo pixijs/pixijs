@@ -24,6 +24,8 @@ export default class VideoResource extends BaseImageResource
         {
             const videoElement = document.createElement('video');
 
+            // workaround for https://github.com/pixijs/pixi.js/issues/5996
+            videoElement.setAttribute('preload', 'auto');
             videoElement.setAttribute('webkit-playsinline', '');
             videoElement.setAttribute('playsinline', '');
 
