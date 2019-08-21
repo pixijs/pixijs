@@ -83,7 +83,8 @@ describe('PIXI.Renderer', function ()
         });
     });
 
-    describe('Masks', function() {
+    describe('Masks', function ()
+    {
         before(function ()
         {
             this.renderer = new Renderer();
@@ -95,12 +96,14 @@ describe('PIXI.Renderer', function ()
             this.renderer = null;
         });
 
-        it('should have scissor-masks enabled', function() {
-            expect(this.renderer.mask.enableScissor).to.equal(true)
+        it('should have scissor-masks enabled', function ()
+        {
+            expect(this.renderer.mask.enableScissor).to.equal(true);
         });
 
-        it('should use scissor masks whith axis aligned squares', function() {
-            const context = {}
+        it('should use scissor masks whith axis aligned squares', function ()
+        {
+            const context = {};
             const maskData = {
                 isFastRect() { return true; },
                 worldTransform: { a: 0, b: 0 },
@@ -116,8 +119,9 @@ describe('PIXI.Renderer', function ()
             expect(this.renderer.mask.scissor).to.equal(false);
         });
 
-        it('should not use scissor masks with non axis aligned sqares', function() {
-            const context = {}
+        it('should not use scissor masks with non axis aligned sqares', function ()
+        {
+            const context = {};
             const maskData = {
                 isFastRect() { return true; },
                 worldTransform: { a: 0.1, b: 2 },
@@ -130,5 +134,5 @@ describe('PIXI.Renderer', function ()
 
             this.renderer.mask.pop(context, maskData);
         });
-    })
+    });
 });
