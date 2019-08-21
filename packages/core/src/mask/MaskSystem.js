@@ -44,7 +44,7 @@ export default class MaskSystem extends System
          * @member {boolean}
          * @readonly
          */
-        this.enableScissor = false;
+        this.enableScissor = true;
 
         /**
          * Pool of used sprite mask filters
@@ -118,7 +118,7 @@ export default class MaskSystem extends System
         {
             this.popSpriteMask(target, maskData);
         }
-        else if (this.enableScissor && !this.renderer.stencil.stencilMaskStack.length)
+        else if (this.scissor)
         {
             this.popScissorMask(target, maskData);
         }
