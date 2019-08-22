@@ -324,9 +324,10 @@ export default class Texture extends EventEmitter
      * @param {number|string|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|PIXI.BaseTexture} source
      *        Source to create texture from
      * @param {object} [options] See {@link PIXI.BaseTexture}'s constructor for options.
+     * @param {boolean} [strict] Enforce strict-mode, see {@link PIXI.settings.STRICT_TEXTURE_CACHE}.
      * @return {PIXI.Texture} The newly created texture
      */
-    static from(source, options = {})
+    static from(source, options = {}, strict = settings.STRICT_TEXTURE_CACHE)
     {
         let cacheId = null;
 
@@ -345,6 +346,12 @@ export default class Texture extends EventEmitter
         }
 
         let texture = TextureCache[cacheId];
+
+        // Strict-mode rejects invalid cacheIds
+        if (cacheId && strict && !texture)
+        {
+            throw new Error(`The cacheId "${cacheId}" does not exist in TextureCache.`);
+        }
 
         if (!texture)
         {

@@ -1,6 +1,7 @@
 const { BaseTextureCache, TextureCache } = require('@pixi/utils');
 const { BaseTexture, Texture, RenderTexture, resources } = require('../');
 const { ImageResource } = resources;
+const { settings } = require('@pixi/settings');
 
 const URL = 'foo.png';
 const NAME = 'foo';
@@ -182,5 +183,15 @@ describe('BaseTexture', function ()
         texture.setResolution(0.9);
         expect(texture.baseTexture.realWidth).to.equal(15);
         expect(texture.baseTexture.realHeight).to.equal(15);
+    });
+
+    it('should throw and error in strict from mode', function ()
+    {
+        const id = 'baz';
+
+        expect(() => BaseTexture.from(id, {}, true)).to.throw(`The cacheId "${id}" does not exist in BaseTextureCache.`);
+        settings.STRICT_TEXTURE_CACHE = true;
+        expect(() => BaseTexture.from(id)).to.throw(`The cacheId "${id}" does not exist in BaseTextureCache.`);
+        settings.STRICT_TEXTURE_CACHE = false;
     });
 });
