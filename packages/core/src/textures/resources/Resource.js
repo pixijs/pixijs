@@ -70,7 +70,7 @@ export default class Resource
          * @member {Runner}
          * @private
          */
-        this.onError = new Runner('onError', 2);
+        this.onError = new Runner('onError', 1);
     }
 
     /**
