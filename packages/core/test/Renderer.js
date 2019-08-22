@@ -101,7 +101,7 @@ describe('PIXI.Renderer', function ()
             expect(this.renderer.mask.enableScissor).to.equal(true);
         });
 
-        it('should use scissor masks whith axis aligned squares', function ()
+        it('should use scissor masks with axis aligned squares', function ()
         {
             const context = {};
             const maskData = {
