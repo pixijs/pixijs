@@ -63,6 +63,14 @@ export default class Resource
          * @private
          */
         this.onUpdate = new Runner('update');
+
+        /**
+         * Handle internal errors, such as loading errors
+         *
+         * @member {Runner}
+         * @private
+         */
+        this.onError = new Runner('onError', 2);
     }
 
     /**
@@ -74,6 +82,7 @@ export default class Resource
     {
         this.onResize.add(baseTexture);
         this.onUpdate.add(baseTexture);
+        this.onError.add(baseTexture);
 
         // Call a resize immediate if we already
         // have the width and height of the resource
@@ -92,6 +101,7 @@ export default class Resource
     {
         this.onResize.remove(baseTexture);
         this.onUpdate.remove(baseTexture);
+        this.onError.remove(baseTexture);
     }
 
     /**
@@ -206,12 +216,14 @@ export default class Resource
     {
         if (!this.destroyed)
         {
+            this.destroyed = true;
+            this.dispose();
+            this.onError.removeAll();
+            this.onError = null;
             this.onResize.removeAll();
             this.onResize = null;
             this.onUpdate.removeAll();
             this.onUpdate = null;
-            this.destroyed = true;
-            this.dispose();
         }
     }
 }
