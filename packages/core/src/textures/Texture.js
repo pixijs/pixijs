@@ -330,10 +330,12 @@ export default class Texture extends EventEmitter
     static from(source, options = {}, strict = settings.STRICT_TEXTURE_CACHE)
     {
         let cacheId = null;
+        let doStrict = false;
 
         if (typeof source === 'string')
         {
             cacheId = source;
+            doStrict = true;
         }
         else
         {
@@ -348,7 +350,7 @@ export default class Texture extends EventEmitter
         let texture = TextureCache[cacheId];
 
         // Strict-mode rejects invalid cacheIds
-        if (cacheId && strict && !texture)
+        if (doStrict && strict && !texture)
         {
             throw new Error(`The cacheId "${cacheId}" does not exist in TextureCache.`);
         }
