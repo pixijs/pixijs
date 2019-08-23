@@ -1483,13 +1483,10 @@ export default class InteractionManager extends EventEmitter
         {
             this.dispatchEvent(displayObject, 'pointerup', interactionEvent);
 
-            if (trackingData)
+            // emit pointertap if the mouse/touch block decided it was a tap
+            if (isTap)
             {
-                // emit pointertap if not a mouse, or if the mouse block decided it was a tap
-                if (isTap)
-                {
-                    this.dispatchEvent(displayObject, 'pointertap', interactionEvent);
-                }
+                this.dispatchEvent(displayObject, 'pointertap', interactionEvent);
             }
         }
         else if (trackingData)
