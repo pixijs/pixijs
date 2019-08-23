@@ -535,13 +535,12 @@ export default class BaseTexture extends EventEmitter
      */
     static from(source, options, strict = settings.STRICT_TEXTURE_CACHE)
     {
+        const isFrame = typeof source === 'string';
         let cacheId = null;
-        let doStrict = false;
 
-        if (typeof source === 'string')
+        if (isFrame)
         {
             cacheId = source;
-            doStrict = true;
         }
         else
         {
@@ -556,7 +555,7 @@ export default class BaseTexture extends EventEmitter
         let baseTexture = BaseTextureCache[cacheId];
 
         // Strict-mode rejects invalid cacheIds
-        if (doStrict && strict && !baseTexture)
+        if (isFrame && strict && !baseTexture)
         {
             throw new Error(`The cacheId "${cacheId}" does not exist in BaseTextureCache.`);
         }
