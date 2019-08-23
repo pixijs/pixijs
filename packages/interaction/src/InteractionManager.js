@@ -1248,14 +1248,25 @@ export default class InteractionManager extends EventEmitter
 
         if (hit)
         {
-            if (!displayObject.trackedPointers[id])
+            let trackingData = displayObject.trackedPointers[id];
+
+            if (!trackingData)
             {
-                displayObject.trackedPointers[id] = new InteractionTrackingData(id);
+                trackingData = displayObject.trackedPointers[id] = new InteractionTrackingData(id);
             }
             this.dispatchEvent(displayObject, 'pointerdown', interactionEvent);
 
             if (data.pointerType === 'touch')
             {
+                if (!trackingData.over)
+                {
+                    // Touches are considered over as soon as an element is touched.
+                    // This makes the pointer does not have to move before it is registered as 'over'.
+                    trackingData.over = true;
+
+                    this.dispatchEvent(displayObject, 'pointerover', interactionEvent);
+                }
+
                 this.dispatchEvent(displayObject, 'touchstart', interactionEvent);
             }
             else if (data.pointerType === 'mouse' || data.pointerType === 'pen')
@@ -1264,11 +1275,11 @@ export default class InteractionManager extends EventEmitter
 
                 if (isRightButton)
                 {
-                    displayObject.trackedPointers[id].rightDown = true;
+                    trackingData.rightDown = true;
                 }
                 else
                 {
-                    displayObject.trackedPointers[id].leftDown = true;
+                    trackingData.leftDown = true;
                 }
 
                 this.dispatchEvent(displayObject, isRightButton ? 'rightdown' : 'mousedown', interactionEvent);
@@ -1455,9 +1466,6 @@ export default class InteractionManager extends EventEmitter
                 if (isTouch)
                 {
                     this.dispatchEvent(displayObject, 'tap', interactionEvent);
-                    // touches are no longer over (if they ever were) when we get the touchend
-                    // so we should ensure that we don't keep pretending that they are
-                    trackingData.over = false;
                 }
             }
         }
@@ -1466,6 +1474,16 @@ export default class InteractionManager extends EventEmitter
             this.dispatchEvent(displayObject, 'pointerupoutside', interactionEvent);
             if (isTouch) this.dispatchEvent(displayObject, 'touchendoutside', interactionEvent);
         }
+
+        if (isTouch && trackingData && trackingData.over)
+        {
+            // touches are no longer over (if they ever were) when we get the touchend
+            // so we should ensure that we don't keep pretending that they are
+            trackingData.over = false;
+
+            this.dispatchEvent(displayObject, 'pointerout', interactionEvent);
+        }
+
         // Only remove the tracking data if there is no over/down state still associated with it
         if (trackingData && trackingData.none)
         {
@@ -1536,10 +1554,7 @@ export default class InteractionManager extends EventEmitter
 
         const isMouse = (data.pointerType === 'mouse' || data.pointerType === 'pen');
 
-        if (isMouse)
-        {
-            this.processPointerOverOut(interactionEvent, displayObject, hit);
-        }
+        this.processPointerOverOut(interactionEvent, displayObject, hit);
 
         if (!this.moveWhenInside || hit)
         {
@@ -1618,7 +1633,7 @@ export default class InteractionManager extends EventEmitter
 
         if (trackingData === undefined) return;
 
-        if (hit && this.mouseOverRenderer)
+        if (hit && (this.mouseOverRenderer || !isMouse))
         {
             if (!trackingData.over)
             {
