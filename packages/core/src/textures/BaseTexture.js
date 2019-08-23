@@ -257,6 +257,7 @@ export default class BaseTexture extends EventEmitter
          * @protected
          * @event PIXI.BaseTexture#error
          * @param {PIXI.BaseTexture} baseTexture - Resource errored.
+         * @param {ErrorEvent} event - Load error event.
          */
 
         /**
@@ -265,14 +266,6 @@ export default class BaseTexture extends EventEmitter
          * @protected
          * @event PIXI.BaseTexture#loaded
          * @param {PIXI.BaseTexture} baseTexture - Resource loaded.
-         */
-
-        /**
-         * Fired when BaseTexture is destroyed.
-         *
-         * @protected
-         * @event PIXI.BaseTexture#error
-         * @param {PIXI.BaseTexture} baseTexture - Resource errored.
          */
 
         /**
@@ -470,6 +463,16 @@ export default class BaseTexture extends EventEmitter
             this.dirtyStyleId++;
             this.emit('update', this);
         }
+    }
+
+    /**
+     * Handle errors with resources.
+     * @private
+     * @param {ErrorEvent} event - Error event emitted.
+     */
+    onError(event)
+    {
+        this.emit('error', this, event);
     }
 
     /**
