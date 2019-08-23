@@ -121,6 +121,22 @@ export default class InteractionTrackingData
     {
         this._doSet(this.constructor.FLAGS.LEFT_DOWN, yn);
     }
+
+    /**
+     * Did the user touch down in the DisplayObject?
+     *
+     * @private
+     * @member {boolean}
+     */
+    get touchDown()
+    {
+        return (this._flags & this.constructor.FLAGS.TOUCH_DOWN) !== 0;
+    }
+
+    set touchDown(yn) // eslint-disable-line require-jsdoc
+    {
+        this._doSet(this.constructor.FLAGS.TOUCH_DOWN, yn);
+    }
 }
 
 InteractionTrackingData.FLAGS = Object.freeze({
@@ -128,4 +144,5 @@ InteractionTrackingData.FLAGS = Object.freeze({
     OVER: 1 << 0,
     LEFT_DOWN: 1 << 1,
     RIGHT_DOWN: 1 << 2,
+    TOUCH_DOWN: 1 << 3,
 });

@@ -1261,11 +1261,13 @@ export default class InteractionManager extends EventEmitter
                 if (!trackingData.over)
                 {
                     // Touches are considered over as soon as an element is touched.
-                    // This makes the pointer does not have to move before it is registered as 'over'.
+                    // This makes the pointer not have to move before it is registered as 'over'.
                     trackingData.over = true;
 
                     this.dispatchEvent(displayObject, 'pointerover', interactionEvent);
                 }
+
+                trackingData.touchDown = true;
 
                 this.dispatchEvent(displayObject, 'touchstart', interactionEvent);
             }
@@ -1406,9 +1408,10 @@ export default class InteractionManager extends EventEmitter
         const isTouch = data.pointerType === 'touch';
 
         const isMouse = (data.pointerType === 'mouse' || data.pointerType === 'pen');
-        // need to track mouse down status in the mouse block so that we can emit
+
+        // need to track down status in the mouse block so that we can emit
         // event in a later block
-        let isMouseTap = false;
+        let isTap = false;
 
         // Mouse only
         if (isMouse)
@@ -1429,7 +1432,7 @@ export default class InteractionManager extends EventEmitter
                 {
                     this.dispatchEvent(displayObject, isRightButton ? 'rightclick' : 'click', interactionEvent);
                     // because we can confirm that the mousedown happened on this object, flag for later emit of pointertap
-                    isMouseTap = true;
+                    isTap = true;
                 }
             }
             else if (isDown)
@@ -1449,30 +1452,49 @@ export default class InteractionManager extends EventEmitter
                 }
             }
         }
+        else if (isTouch)
+        {
+            const isDown = trackingData && trackingData.touchDown;
+
+            if (hit)
+            {
+                this.dispatchEvent(displayObject, 'touchend', interactionEvent);
+
+                if (isDown)
+                {
+                    this.dispatchEvent(displayObject, 'tap', interactionEvent);
+                    // because we can confirm that the touch happened on this object, flag for later emit of pointertap
+                    isTap = true;
+                }
+            }
+            else
+            {
+                this.dispatchEvent(displayObject, 'touchendoutside', interactionEvent);
+            }
+
+            if (isDown)
+            {
+                trackingData.touchDown = false;
+            }
+        }
 
         // Pointers and Touches, and Mouse
         if (hit)
         {
             this.dispatchEvent(displayObject, 'pointerup', interactionEvent);
-            if (isTouch) this.dispatchEvent(displayObject, 'touchend', interactionEvent);
 
             if (trackingData)
             {
                 // emit pointertap if not a mouse, or if the mouse block decided it was a tap
-                if (!isMouse || isMouseTap)
+                if (isTap)
                 {
                     this.dispatchEvent(displayObject, 'pointertap', interactionEvent);
-                }
-                if (isTouch)
-                {
-                    this.dispatchEvent(displayObject, 'tap', interactionEvent);
                 }
             }
         }
         else if (trackingData)
         {
             this.dispatchEvent(displayObject, 'pointerupoutside', interactionEvent);
-            if (isTouch) this.dispatchEvent(displayObject, 'touchendoutside', interactionEvent);
         }
 
         if (isTouch && trackingData && trackingData.over)
