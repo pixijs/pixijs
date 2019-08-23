@@ -1,4 +1,4 @@
-import { SHAPES } from '@pixi/math';
+import { SHAPES, Point } from '@pixi/math';
 import { Bounds } from '@pixi/display';
 import { BatchGeometry, BatchDrawCall, BaseTexture } from '@pixi/core';
 import { DRAW_MODES, WRAP_MODES } from '@pixi/constants';
@@ -13,6 +13,7 @@ import { premultiplyTint } from '@pixi/utils';
 
 const BATCH_POOL = [];
 const DRAW_CALL_POOL = [];
+const tmpPoint = new Point();
 
 /**
  * Map of fill commands for each shape type.
@@ -197,6 +198,14 @@ export default class GraphicsGeometry extends BatchGeometry
         this.indicesUint16 = null;
 
         this.uvsFloat32 = null;
+
+        /**
+         * Minimal distance between points that are considered different.
+         * Affects line tesselation.
+         *
+         * @member {number}
+         */
+        this.closePointEps = 1e-4;
     }
 
     /**
@@ -380,7 +389,16 @@ export default class GraphicsGeometry extends BatchGeometry
             // only deal with fills..
             if (data.shape)
             {
-                if (data.shape.contains(point.x, point.y))
+                if (data.matrix)
+                {
+                    data.matrix.applyInverse(point, tmpPoint);
+                }
+                else
+                {
+                    tmpPoint.copyFrom(point);
+                }
+
+                if (data.shape.contains(tmpPoint.x, tmpPoint.y))
                 {
                     if (data.holes)
                     {
@@ -388,7 +406,7 @@ export default class GraphicsGeometry extends BatchGeometry
                         {
                             const hole = data.holes[i];
 
-                            if (hole.shape.contains(point.x, point.y))
+                            if (hole.shape.contains(tmpPoint.x, tmpPoint.y))
                             {
                                 return false;
                             }
@@ -990,7 +1008,7 @@ export default class GraphicsGeometry extends BatchGeometry
     /**
      * Modify uvs array according to position of texture region
      * Does not work with rotated or trimmed textures
-     * @param {number} uvs array
+     * @param {number[]} uvs array
      * @param {PIXI.Texture} texture region
      * @param {number} start starting index for uvs
      * @param {number} size how many points to adjust

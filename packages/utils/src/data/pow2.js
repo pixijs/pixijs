@@ -3,7 +3,7 @@
 /**
  * Rounds to next power of two.
  *
- * @function isPow2
+ * @function nextPow2
  * @memberof PIXI.utils
  * @param {number} v input value
  * @return {number}

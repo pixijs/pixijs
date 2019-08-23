@@ -1,23 +1,23 @@
 {
   "name": "@internal/integration-tests",
   "private": true,
-  "version": "5.1.0",
+  "version": "5.1.1",
   "description": "Integration tests for PixiJS packages",
   "devDependencies": {
-    "@pixi/canvas-display": "^5.1.0",
-    "@pixi/canvas-graphics": "^5.1.0",
-    "@pixi/canvas-mesh": "^5.1.0",
-    "@pixi/canvas-renderer": "^5.1.0",
-    "@pixi/canvas-sprite": "^5.1.0",
-    "@pixi/canvas-text": "^5.1.0",
-    "@pixi/core": "^5.1.0",
-    "@pixi/display": "^5.1.0",
-    "@pixi/graphics": "^5.1.0",
+    "@pixi/canvas-display": "^5.1.1",
+    "@pixi/canvas-graphics": "^5.1.1",
+    "@pixi/canvas-mesh": "^5.1.1",
+    "@pixi/canvas-renderer": "^5.1.1",
+    "@pixi/canvas-sprite": "^5.1.1",
+    "@pixi/canvas-text": "^5.1.1",
+    "@pixi/core": "^5.1.1",
+    "@pixi/display": "^5.1.1",
+    "@pixi/graphics": "^5.1.1",
     "@pixi/math": "^5.1.0",
-    "@pixi/mesh": "^5.1.0",
-    "@pixi/mesh-extras": "^5.1.0",
-    "@pixi/sprite": "^5.1.0",
-    "@pixi/text": "^5.1.0",
-    "@pixi/utils": "^5.1.0"
+    "@pixi/mesh": "^5.1.1",
+    "@pixi/mesh-extras": "^5.1.1",
+    "@pixi/sprite": "^5.1.1",
+    "@pixi/text": "^5.1.1",
+    "@pixi/utils": "^5.1.1"
   }
 }
