@@ -127,9 +127,8 @@ describe('PIXI.Graphics', function ()
             graphics.moveTo(0, 0);
             graphics.lineTo(0, 10);
 
-            expect(graphics.width).to.be.below(1.00001);
-            expect(graphics.width).to.be.above(0.99999);
-            expect(graphics.height).to.be.equals(10);
+            expect(graphics.width).to.be.closeTo(1, 0.0001);
+            expect(graphics.height).to.be.closeTo(11, 0.0001);
         });
 
         it('should return correct bounds - south', function ()
@@ -140,9 +139,8 @@ describe('PIXI.Graphics', function ()
             graphics.lineStyle(1);
             graphics.lineTo(0, -10);
 
-            expect(graphics.width).to.be.below(1.00001);
-            expect(graphics.width).to.be.above(0.99999);
-            expect(graphics.height).to.be.equals(10);
+            expect(graphics.width).to.be.closeTo(1, 0.0001);
+            expect(graphics.height).to.be.closeTo(11, 0.0001);
         });
 
         it('should return correct bounds - east', function ()
@@ -153,8 +151,8 @@ describe('PIXI.Graphics', function ()
             graphics.lineStyle(1);
             graphics.lineTo(10, 0);
 
-            expect(graphics.height).to.be.equals(1);
-            expect(graphics.width).to.be.equals(10);
+            expect(graphics.height).to.be.closeTo(1, 0.0001);
+            expect(graphics.width).to.be.closeTo(11, 0.0001);
         });
 
         it('should return correct bounds - west', function ()
@@ -165,9 +163,8 @@ describe('PIXI.Graphics', function ()
             graphics.lineStyle(1);
             graphics.lineTo(-10, 0);
 
-            expect(graphics.height).to.be.above(0.9999);
-            expect(graphics.height).to.be.below(1.0001);
-            expect(graphics.width).to.be.equals(10);
+            expect(graphics.height).to.be.closeTo(1, 0.0001);
+            expect(graphics.width).to.be.closeTo(11, 0.0001);
         });
 
         it('should return correct bounds when stacked with circle', function ()
@@ -401,6 +398,40 @@ describe('PIXI.Graphics', function ()
             graphics._calculateBounds();
 
             expect(spy).to.have.been.calledOnce;
+        });
+    });
+
+    describe('getBounds', function ()
+    {
+        it('should use getBounds without stroke', function ()
+        {
+            const graphics = new Graphics();
+
+            graphics.beginFill(0x0).drawRect(10, 20, 100, 200);
+
+            const { x, y, width, height } = graphics.getBounds();
+
+            expect(x).to.equal(10);
+            expect(y).to.equal(20);
+            expect(width).to.equal(100);
+            expect(height).to.equal(200);
+        });
+
+        it('should use getBounds with stroke', function ()
+        {
+            const graphics = new Graphics();
+
+            graphics
+                .lineStyle(4, 0xff0000)
+                .beginFill(0x0)
+                .drawRect(10, 20, 100, 200);
+
+            const { x, y, width, height } = graphics.getBounds();
+
+            expect(x).to.equal(8);
+            expect(y).to.equal(18);
+            expect(width).to.equal(104);
+            expect(height).to.equal(204);
         });
     });
 
