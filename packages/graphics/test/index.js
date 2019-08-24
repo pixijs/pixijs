@@ -1,5 +1,5 @@
 // const MockPointer = require('../interaction/MockPointer');
-const { Renderer, BatchRenderer } = require('@pixi/core');
+const { Renderer, BatchRenderer, Texture } = require('@pixi/core');
 const { Graphics, GRAPHICS_CURVES } = require('../');
 const { BLEND_MODES } = require('@pixi/constants');
 const { Point, Matrix } = require('@pixi/math');
@@ -26,6 +26,97 @@ describe('PIXI.Graphics', function ()
         });
     });
 
+    describe('lineStyle', function ()
+    {
+        it('should support a list of parameters', function ()
+        {
+            const graphics = new Graphics();
+
+            graphics.lineStyle(1, 0xff0000, 0.5, 1, true);
+
+            expect(graphics.line.width).to.equal(1);
+            expect(graphics.line.color).to.equal(0xff0000);
+            expect(graphics.line.alignment).to.equal(1);
+            expect(graphics.line.alpha).to.equal(0.5);
+            expect(graphics.line.native).to.equal(true);
+
+            graphics.destroy();
+        });
+
+        it('should support object parameter', function ()
+        {
+            const graphics = new Graphics();
+
+            graphics.lineStyle({
+                width: 1,
+                alpha: 0.5,
+                color: 0xff0000,
+                alignment: 1,
+                native: true,
+            });
+
+            expect(graphics.line.width).to.equal(1);
+            expect(graphics.line.color).to.equal(0xff0000);
+            expect(graphics.line.alignment).to.equal(1);
+            expect(graphics.line.alpha).to.equal(0.5);
+            expect(graphics.line.native).to.equal(true);
+            expect(graphics.line.visible).to.equal(true);
+
+            graphics.lineStyle();
+
+            expect(graphics.line.width).to.equal(0);
+            expect(graphics.line.color).to.equal(0);
+            expect(graphics.line.alignment).to.equal(0.5);
+            expect(graphics.line.alpha).to.equal(1);
+            expect(graphics.line.native).to.equal(false);
+            expect(graphics.line.visible).to.equal(false);
+
+            graphics.destroy();
+        });
+    });
+
+    describe('lineTextureStyle', function ()
+    {
+        it('should support object parameter', function ()
+        {
+            const graphics = new Graphics();
+            const matrix = new Matrix();
+            const texture = Texture.BLACK;
+
+            graphics.lineTextureStyle({
+                width: 1,
+                alpha: 0.5,
+                color: 0xff0000,
+                matrix,
+                texture,
+                alignment: 1,
+                native: true,
+            });
+
+            expect(graphics.line.width).to.equal(1);
+            expect(graphics.line.texture).to.equal(texture);
+            expect(graphics.line.matrix).to.be.okay;
+            expect(graphics.line.color).to.equal(0xff0000);
+            expect(graphics.line.alignment).to.equal(1);
+            expect(graphics.line.alpha).to.equal(0.5);
+            expect(graphics.line.native).to.equal(true);
+            expect(graphics.line.visible).to.equal(true);
+
+            graphics.lineTextureStyle();
+
+            expect(graphics.line.width).to.equal(0);
+            expect(graphics.line.texture).to.equal(Texture.WHITE);
+            expect(graphics.line.matrix).to.equal(null);
+            expect(graphics.line.color).to.equal(0);
+            expect(graphics.line.alignment).to.equal(0.5);
+            expect(graphics.line.alpha).to.equal(1);
+            expect(graphics.line.native).to.equal(false);
+            expect(graphics.line.visible).to.equal(false);
+
+            graphics.destroy();
+        });
+    });
+
     describe('lineTo', function ()
     {
         it('should return correct bounds - north', function ()
@@ -36,9 +127,8 @@ describe('PIXI.Graphics', function ()
             graphics.moveTo(0, 0);
             graphics.lineTo(0, 10);
 
-            expect(graphics.width).to.be.below(1.00001);
-            expect(graphics.width).to.be.above(0.99999);
-            expect(graphics.height).to.be.equals(10);
+            expect(graphics.width).to.be.closeTo(1, 0.0001);
+            expect(graphics.height).to.be.closeTo(11, 0.0001);
         });
 
         it('should return correct bounds - south', function ()
@@ -49,9 +139,8 @@ describe('PIXI.Graphics', function ()
             graphics.lineStyle(1);
             graphics.lineTo(0, -10);
 
-            expect(graphics.width).to.be.below(1.00001);
-            expect(graphics.width).to.be.above(0.99999);
-            expect(graphics.height).to.be.equals(10);
+            expect(graphics.width).to.be.closeTo(1, 0.0001);
+            expect(graphics.height).to.be.closeTo(11, 0.0001);
         });
 
         it('should return correct bounds - east', function ()
@@ -62,8 +151,8 @@ describe('PIXI.Graphics', function ()
             graphics.lineStyle(1);
             graphics.lineTo(10, 0);
 
-            expect(graphics.height).to.be.equals(1);
-            expect(graphics.width).to.be.equals(10);
+            expect(graphics.height).to.be.closeTo(1, 0.0001);
+            expect(graphics.width).to.be.closeTo(11, 0.0001);
         });
 
         it('should return correct bounds - west', function ()
@@ -74,9 +163,8 @@ describe('PIXI.Graphics', function ()
             graphics.lineStyle(1);
             graphics.lineTo(-10, 0);
 
-            expect(graphics.height).to.be.above(0.9999);
-            expect(graphics.height).to.be.below(1.0001);
-            expect(graphics.width).to.be.equals(10);
+            expect(graphics.height).to.be.closeTo(1, 0.0001);
+            expect(graphics.width).to.be.closeTo(11, 0.0001);
         });
 
         it('should return correct bounds when stacked with circle', function ()
@@ -310,6 +398,40 @@ describe('PIXI.Graphics', function ()
             graphics._calculateBounds();
 
             expect(spy).to.have.been.calledOnce;
+        });
+    });
+
+    describe('getBounds', function ()
+    {
+        it('should use getBounds without stroke', function ()
+        {
+            const graphics = new Graphics();
+
+            graphics.beginFill(0x0).drawRect(10, 20, 100, 200);
+
+            const { x, y, width, height } = graphics.getBounds();
+
+            expect(x).to.equal(10);
+            expect(y).to.equal(20);
+            expect(width).to.equal(100);
+            expect(height).to.equal(200);
+        });
+
+        it('should use getBounds with stroke', function ()
+        {
+            const graphics = new Graphics();
+
+            graphics
+                .lineStyle(4, 0xff0000)
+                .beginFill(0x0)
+                .drawRect(10, 20, 100, 200);
+
+            const { x, y, width, height } = graphics.getBounds();
+
+            expect(x).to.equal(8);
+            expect(y).to.equal(18);
+            expect(width).to.equal(104);
+            expect(height).to.equal(204);
         });
     });
 

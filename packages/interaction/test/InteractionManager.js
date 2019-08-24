@@ -138,6 +138,50 @@ describe('PIXI.interaction.InteractionManager', function ()
 
             expect(eventSpy).to.have.been.called;
         });
+
+        it('should always call mouseout before mouseover', function ()
+        {
+            const stage = new Container();
+            const graphicsA = new Graphics();
+            const graphicsB = new Graphics();
+
+            const mouseOverSpyA = sinon.spy();
+            const mouseOutSpyA = sinon.spy();
+
+            const mouseOverSpyB = sinon.spy();
+            const mouseOutSpyB = sinon.spy();
+
+            const pointer = this.pointer = new MockPointer(stage);
+
+            stage.addChild(graphicsA);
+            graphicsA.beginFill(0xFFFFFF);
+            graphicsA.drawRect(0, 0, 50, 50);
+            graphicsA.interactive = true;
+
+            graphicsA.on('mouseover', mouseOverSpyA);
+            graphicsA.on('mouseout', mouseOutSpyA);
+
+            stage.addChild(graphicsB);
+            graphicsB.x = 25;
+            graphicsB.beginFill(0xFFFFFF);
+            graphicsB.drawRect(0, 0, 50, 50);
+            graphicsB.interactive = true;
+
+            graphicsB.on('mouseover', mouseOverSpyB);
+            graphicsB.on('mouseout', mouseOutSpyB);
+
+            pointer.mousemove(10, 10);
+
+            expect(mouseOverSpyA).to.have.been.called;
+
+            pointer.mousemove(40, 10);
+
+            expect(mouseOutSpyA).to.have.been.calledImmediatelyBefore(mouseOverSpyB);
+
+            pointer.mousemove(10, 10);
+
+            expect(mouseOutSpyB).to.have.been.calledImmediatelyBefore(mouseOverSpyA);
+        });
     });
 
     describe('touch vs pointer', function ()
