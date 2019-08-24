@@ -152,6 +152,7 @@ export class ImageResource extends BaseImageResource
             else
             {
                 source.onload = completed;
+                source.onerror = (event) => this.onError.run(event);
             }
         });
 
@@ -261,6 +262,9 @@ export class ImageResource extends BaseImageResource
      */
     dispose()
     {
+        this.source.onload = null;
+        this.source.onerror = null;
+
         super.dispose();
 
         if (this.bitmap)

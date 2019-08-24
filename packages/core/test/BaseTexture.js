@@ -1,6 +1,7 @@
 const { BaseTextureCache, TextureCache } = require('@pixi/utils');
 const { BaseTexture, Texture, RenderTexture, resources } = require('../');
-const { ImageResource } = resources;
+const { settings } = require('@pixi/settings');
+const { ImageResource, SVGResource, VideoResource } = resources;
 
 const URL = 'foo.png';
 const NAME = 'foo';
@@ -35,6 +36,57 @@ describe('BaseTexture', function ()
         });
     });
     */
+
+    it('should handle invalid image URL for textures', function (done)
+    {
+        cleanCache();
+
+        const invalidFile = 'missing-image.png';
+        const baseTexture = BaseTexture.from(invalidFile);
+
+        baseTexture.once('error', function (baseTexture, event)
+        {
+            expect(baseTexture.resource).to.be.instanceof(ImageResource);
+            expect(baseTexture.resource.url).contains(invalidFile);
+            expect(event.type).to.equal('error');
+            baseTexture.destroy();
+            done();
+        });
+    });
+
+    it('should handle invalid svg URL for textures', function (done)
+    {
+        cleanCache();
+
+        const invalidFile = 'missing-image.svg';
+        const baseTexture = BaseTexture.from(invalidFile);
+
+        baseTexture.once('error', function (baseTexture, event)
+        {
+            expect(baseTexture.resource).to.be.instanceof(SVGResource);
+            expect(baseTexture.resource.svg).contains(invalidFile);
+            expect(event.type).to.equal('error');
+            baseTexture.destroy();
+            done();
+        });
+    });
+
+    it('should handle invalid video URL for textures', function (done)
+    {
+        cleanCache();
+
+        const invalidFile = 'missing-image.mp4';
+        const baseTexture = BaseTexture.from(invalidFile);
+
+        baseTexture.once('error', function (baseTexture, event)
+        {
+            expect(baseTexture.resource).to.be.instanceof(VideoResource);
+            expect(baseTexture.resource.source.firstChild.src).contains(invalidFile);
+            expect(event.type).to.equal('error');
+            baseTexture.destroy();
+            done();
+        });
+    });
 
     it('should remove Canvas BaseTexture from cache on destroy', function ()
     {
@@ -182,5 +234,15 @@ describe('BaseTexture', function ()
         texture.setResolution(0.9);
         expect(texture.baseTexture.realWidth).to.equal(15);
         expect(texture.baseTexture.realHeight).to.equal(15);
+    });
+
+    it('should throw and error in strict from mode', function ()
+    {
+        const id = 'baz';
+
+        expect(() => BaseTexture.from(id, {}, true)).to.throw(`The cacheId "${id}" does not exist in BaseTextureCache.`);
+        settings.STRICT_TEXTURE_CACHE = true;
+        expect(() => BaseTexture.from(id)).to.throw(`The cacheId "${id}" does not exist in BaseTextureCache.`);
+        settings.STRICT_TEXTURE_CACHE = false;
     });
 });

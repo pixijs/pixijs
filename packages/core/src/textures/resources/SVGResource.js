@@ -123,6 +123,12 @@ export class SVGResource extends BaseImageResource
         BaseImageResource.crossOrigin(tempImage, this.svg, this._crossorigin);
         tempImage.src = this.svg;
 
+        tempImage.onerror = (event) =>
+        {
+            tempImage.onerror = null;
+            this.onError.run(event);
+        };
+
         tempImage.onload = () =>
         {
             const svgWidth = tempImage.width;
