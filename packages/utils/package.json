@@ -1,6 +1,6 @@
 {
   "name": "@pixi/utils",
-  "version": "5.1.1",
+  "version": "5.1.2",
   "main": "lib/utils.js",
   "module": "lib/utils.es.js",
   "bundle": "dist/utils.js",
