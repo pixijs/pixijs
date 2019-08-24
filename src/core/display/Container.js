@@ -400,7 +400,7 @@ export default class Container extends DisplayObject
         }
 
         // do a quick check to see if this element has a mask or a filter.
-        if (this._mask || this._filters)
+        if (this._mask || (this.filters && this.filters.length))
         {
             this.renderAdvancedWebGL(renderer);
         }
