@@ -93,6 +93,7 @@ export default class VideoResource extends BaseImageResource
 
         // Bind for listeners
         this._onCanPlay = this._onCanPlay.bind(this);
+        this._onError = this._onError.bind(this);
 
         if (options.autoLoad !== false)
         {
@@ -149,6 +150,7 @@ export default class VideoResource extends BaseImageResource
         {
             source.addEventListener('canplay', this._onCanPlay);
             source.addEventListener('canplaythrough', this._onCanPlay);
+            source.addEventListener('error', this._onError, true);
         }
         else
         {
@@ -170,6 +172,17 @@ export default class VideoResource extends BaseImageResource
         });
 
         return this._load;
+    }
+
+    /**
+     * Handle video error events.
+     *
+     * @private
+     */
+    _onError()
+    {
+        this.source.removeEventListener('error', this._onError, true);
+        this.onError.run(event);
     }
 
     /**
@@ -276,6 +289,7 @@ export default class VideoResource extends BaseImageResource
 
         if (this.source)
         {
+            this.source.removeEventListener('error', this._onError, true);
             this.source.pause();
             this.source.src = '';
             this.source.load();
