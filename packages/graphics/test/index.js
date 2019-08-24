@@ -401,6 +401,40 @@ describe('PIXI.Graphics', function ()
         });
     });
 
+    describe('getBounds', function ()
+    {
+        it('should use getBounds without stroke', function ()
+        {
+            const graphics = new Graphics();
+
+            graphics.beginFill(0x0).drawRect(10, 20, 100, 200);
+
+            const { x, y, width, height } = graphics.getBounds();
+
+            expect(x).to.equal(10);
+            expect(y).to.equal(20);
+            expect(width).to.equal(100);
+            expect(height).to.equal(200);
+        });
+
+        it('should use getBounds with stroke', function ()
+        {
+            const graphics = new Graphics();
+
+            graphics
+                .lineStyle(4, 0xff0000)
+                .beginFill(0x0)
+                .drawRect(10, 20, 100, 200);
+
+            const { x, y, width, height } = graphics.getBounds();
+
+            expect(x).to.equal(8);
+            expect(y).to.equal(18);
+            expect(width).to.equal(104);
+            expect(height).to.equal(204);
+        });
+    });
+
     describe('drawCircle', function ()
     {
         it('should have no gaps in line border', function ()
