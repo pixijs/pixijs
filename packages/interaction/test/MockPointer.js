@@ -206,7 +206,7 @@ class MockPointer
     click(x, y, asPointer)
     {
         this.mousedown(x, y, asPointer);
-        this.mouseup(x, y, asPointer);
+        this.mouseup(x, y, true, asPointer);
     }
 
     /**
@@ -314,6 +314,17 @@ class MockPointer
     penup(x, y, identifier)
     {
         this.interaction.onPointerUp(this.createEvent('pointerup', x, y, identifier, true));
+    }
+
+    /**
+     * @param {number} x - pointer x position
+     * @param {number} y - pointer y position
+     * @param {number} [identifier] - pointer id
+     */
+    pentap(x, y, identifier)
+    {
+        this.pendown(x, y, identifier);
+        this.penup(x, y, identifier);
     }
 }
 

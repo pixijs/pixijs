@@ -1254,7 +1254,6 @@ export default class InteractionManager extends EventEmitter
             {
                 trackingData = displayObject.trackedPointers[id] = new InteractionTrackingData(id);
             }
-            this.dispatchEvent(displayObject, 'pointerdown', interactionEvent);
 
             if (data.pointerType === 'touch')
             {
@@ -1286,6 +1285,8 @@ export default class InteractionManager extends EventEmitter
 
                 this.dispatchEvent(displayObject, isRightButton ? 'rightdown' : 'mousedown', interactionEvent);
             }
+
+            this.dispatchEvent(displayObject, 'pointerdown', interactionEvent);
         }
     }
 
@@ -1640,7 +1641,7 @@ export default class InteractionManager extends EventEmitter
 
         const id = interactionEvent.data.identifier;
 
-        const isMouse = (data.pointerType === 'mouse' || data.pointerType === 'pen');
+        const isPenOrMouse = (data.pointerType === 'mouse' || data.pointerType === 'pen');
 
         let trackingData = displayObject.trackedPointers[id];
 
@@ -1652,33 +1653,41 @@ export default class InteractionManager extends EventEmitter
 
         if (trackingData === undefined) return;
 
-        if (hit && (this.mouseOverRenderer || !isMouse))
+        // The element was hit and we didn't ignore a mouse event because the mouse
+        // wasn't on the renderer.
+        if (hit && (this.mouseOverRenderer || data.pointerType !== 'mouse'))
         {
             if (!trackingData.over)
             {
                 trackingData.over = true;
-                this.delayDispatchEvent(displayObject, 'pointerover', interactionEvent);
-                if (isMouse)
+
+                if (isPenOrMouse)
                 {
                     this.delayDispatchEvent(displayObject, 'mouseover', interactionEvent);
                 }
+
+                this.delayDispatchEvent(displayObject, 'pointerover', interactionEvent);
             }
 
             // only change the cursor if it has not already been changed (by something deeper in the
             // display tree)
-            if (isMouse && this.cursor === null)
+            if (isPenOrMouse && this.cursor === null)
             {
                 this.cursor = displayObject.cursor;
             }
         }
+        // This element isn't considered to be hit, so dispatch "out" events as necessary.
         else if (trackingData.over)
         {
             trackingData.over = false;
-            this.dispatchEvent(displayObject, 'pointerout', this.eventData);
-            if (isMouse)
+
+            if (isPenOrMouse)
             {
                 this.dispatchEvent(displayObject, 'mouseout', interactionEvent);
             }
+
+            this.dispatchEvent(displayObject, 'pointerout', this.eventData);
+
             // if there is no mouse down information for the pointer, then it is safe to delete
             if (trackingData.none)
             {
@@ -1706,7 +1715,7 @@ export default class InteractionManager extends EventEmitter
 
         interactionEvent.data.originalEvent = event;
 
-        if (event.pointerType === 'mouse')
+        if (event.pointerType === 'mouse' || event.pointerType === 'pen')
         {
             this.mouseOverRenderer = true;
         }

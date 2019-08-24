@@ -18,6 +18,7 @@ describe('PIXI.interaction.InteractionManager', function ()
 {
     afterEach(function ()
     {
+        // TODO: This doesn't work....
         // if we made a MockPointer for the test, clean it up
         if (this.pointer)
         {
@@ -25,6 +26,119 @@ describe('PIXI.interaction.InteractionManager', function ()
             this.pointer = null;
         }
     });
+
+    /*
+     * Runs a test with mouse events and no pointer support, mouse events as pointer events,
+     * pen events, touch events and no pointer support, and finally touch events as pointer events.
+     *
+     * Provides a generic mock pointer.
+     */
+    function withEachInputType(test, canvasWidth = 100, canvasHeight = 100)
+    {
+        let pointer = null;
+
+        function createMockPointer(type, pointerEvents, stage)
+        {
+            if (pointer)
+            {
+                throw new Error('Please only create ONE mock pointer!');
+            }
+
+            pointer = new MockPointer(stage, canvasWidth, canvasHeight, pointerEvents);
+
+            if (type === 'mouse')
+            {
+                return {
+                    down: (x, y) => pointer.mousedown(x, y, pointerEvents),
+                    move: (x, y) => pointer.mousemove(x, y, pointerEvents),
+                    up: (x, y) => pointer.mouseup(x, y, true, pointerEvents),
+                    click: (x, y) => pointer.click(x, y, pointerEvents),
+                };
+            }
+
+            if (type === 'pen')
+            {
+                return {
+                    down: (x, y, id = 1) => pointer.pendown(x, y, id),
+                    move: (x, y, id = 1) => pointer.penmove(x, y, id),
+                    up: (x, y, id = 1) => pointer.penup(x, y, id),
+                    click: (x, y, id = 1) => pointer.pentap(x, y, id),
+                };
+            }
+
+            const down = {};
+
+            // Touch handler.
+            // When pointer events are enabled, we send both pointer and touch events.
+            return {
+                down: (x, y, id = 1) =>
+                {
+                    down[id] = true;
+                    if (pointerEvents) pointer.touchstart(x, y, id, true);
+                    pointer.touchstart(x, y, id, false);
+                },
+                move: (x, y, id = 1) =>
+                {
+                    // For touch there will be no move events unless we're pressing and holding
+                    if (!down[id]) return;
+                    if (pointerEvents) pointer.touchmove(x, y, id, true);
+                    pointer.touchmove(x, y, id, false);
+                },
+                up: (x, y, id = 1) =>
+                {
+                    delete down[id];
+                    if (pointerEvents) pointer.touchend(x, y, id, true);
+                    pointer.touchend(x, y, id, false);
+                },
+                click: (x, y, id = 1) =>
+                {
+                    if (pointerEvents) pointer.tap(x, y, id, true);
+                    pointer.tap(x, y, id, false);
+                },
+            };
+        }
+
+        function cleanMockPointer()
+        {
+            if (!pointer)
+            {
+                throw new Error('NO mock pointer was created!');
+            }
+
+            pointer.cleanup();
+            pointer = null;
+        }
+
+        context('with mouse events but no pointer support', function ()
+        {
+            test(createMockPointer.bind(null, 'mouse', false), 'mouse');
+            afterEach(cleanMockPointer);
+        });
+
+        context('with mouse events as pointer events', function ()
+        {
+            test(createMockPointer.bind(null, 'mouse', true), 'mouse');
+            afterEach(cleanMockPointer);
+        });
+
+        context('with pen events', function ()
+        {
+            test(createMockPointer.bind(null, 'pen', true), 'pen');
+            afterEach(cleanMockPointer);
+        });
+
+        context('with touch events but no pointer support', function ()
+        {
+            test(createMockPointer.bind(null, 'touch', false), 'touch');
+            afterEach(cleanMockPointer);
+        });
+
+        context('with touch events as pointer events', function ()
+        {
+            test(createMockPointer.bind(null, 'touch', true), 'touch');
+            afterEach(cleanMockPointer);
+        });
+    }
 
     describe('event basics', function ()
     {
@@ -648,147 +762,132 @@ describe('PIXI.interaction.InteractionManager', function ()
         });
     });
 
-    describe('pointertap', function ()
+    describe('generic events', function ()
     {
-        it('should call handler when inside', function ()
+        withEachInputType(function (createPointer, inputType)
         {
-            const stage = new Container();
-            const graphics = new Graphics();
-            const clickSpy = sinon.spy();
-            const pointer = this.pointer = new MockPointer(stage);
+            it('should call pointertap when inside', function ()
+            {
+                const stage = new Container();
+                const graphics = new Graphics();
+                const downSpy = sinon.spy();
+                const upSpy = sinon.spy();
+                const clickSpy = sinon.spy();
+                const pointer = createPointer(stage);
 
-            stage.addChild(graphics);
-            graphics.beginFill(0xFFFFFF);
-            graphics.drawRect(0, 0, 50, 50);
-            graphics.interactive = true;
-            graphics.on('pointertap', clickSpy);
+                stage.addChild(graphics);
+                graphics.beginFill(0xFFFFFF);
+                graphics.drawRect(0, 0, 50, 50); graphics.interactive = true;
 
-            pointer.click(10, 10, true);
+                graphics.on('pointerdown', downSpy);
+                graphics.on('pointerup', upSpy);
+                graphics.on('pointertap', clickSpy);
 
-            expect(clickSpy).to.have.been.calledOnce;
-        });
+                pointer.click(10, 10);
 
-        it('should not call handler when outside', function ()
-        {
-            const stage = new Container();
-            const graphics = new Graphics();
-            const clickSpy = sinon.spy();
-            const pointer = this.pointer = new MockPointer(stage);
+                expect(downSpy).to.have.been.calledOnce;
+                expect(upSpy).to.have.been.calledOnce;
+                expect(clickSpy).to.have.been.calledOnce;
 
-            stage.addChild(graphics);
-            graphics.beginFill(0xFFFFFF);
-            graphics.drawRect(0, 0, 50, 50);
-            graphics.interactive = true;
-            graphics.on('pointertap', clickSpy);
+                expect(upSpy).to.have.been.calledImmediatelyAfter(downSpy);
+                expect(clickSpy).to.have.been.calledImmediatelyAfter(upSpy);
+            });
 
-            pointer.click(60, 60, true);
+            it('should not call pointertap when outside', function ()
+            {
+                const stage = new Container();
+                const graphics = new Graphics();
+                const downSpy = sinon.spy();
+                const upSpy = sinon.spy();
+                const clickSpy = sinon.spy();
+                const pointer = createPointer(stage);
 
-            expect(clickSpy).to.not.have.been.called;
-        });
+                stage.addChild(graphics);
+                graphics.beginFill(0xFFFFFF);
+                graphics.drawRect(0, 0, 50, 50);
+                graphics.interactive = true;
+                graphics.on('pointertap', clickSpy);
 
-        it('with mouse events, should not call handler when moved to other sprite', function ()
-        {
-            const stage = new Container();
-            const graphics = new Graphics();
-            const graphics2 = new Graphics();
-            const overSpy = sinon.spy();
-            const upSpy = sinon.spy();
-            const clickSpy = sinon.spy();
-            const pointer = this.pointer = new MockPointer(stage);
+                pointer.click(60, 60);
 
-            stage.addChild(graphics);
-            graphics.beginFill(0xFFFFFF);
-            graphics.drawRect(0, 0, 50, 50);
-            graphics.interactive = true;
-            graphics.name = 'graphics1';
+                expect(clickSpy).to.not.have.been.called;
+                expect(downSpy).to.not.have.been.called;
+                expect(upSpy).to.not.have.been.called;
+            });
 
-            stage.addChild(graphics2);
-            graphics2.beginFill(0xFFFFFF);
-            graphics2.drawRect(75, 75, 50, 50);
-            graphics2.interactive = true;
-            graphics2.on('pointertap', clickSpy);
-            graphics2.on('pointerover', overSpy);
-            graphics2.on('pointerup', upSpy);
-            graphics2.name = 'graphics2';
+            it('should handle holding and moving to other sprite without causing a click', function ()
+            {
+                const stage = new Container();
+                const graphics1 = new Graphics();
+                const graphics2 = new Graphics();
+                const pointer = createPointer(stage);
 
-            pointer.mousedown(25, 25);
-            pointer.mousemove(60, 60);
-            pointer.mousemove(80, 80);
-            pointer.mouseup(80, 80);
+                const overSpy1 = sinon.spy();
+                const outSpy1 = sinon.spy();
+                const downSpy1 = sinon.spy();
+                const upSpy1 = sinon.spy();
+                const clickSpy1 = sinon.spy();
 
-            expect(overSpy).to.have.been.called;
-            expect(upSpy).to.have.been.called;
-            expect(clickSpy).to.not.have.been.called;
-        });
+                const overSpy2 = sinon.spy();
+                const outSpy2 = sinon.spy();
+                const downSpy2 = sinon.spy();
+                const upSpy2 = sinon.spy();
+                const clickSpy2 = sinon.spy();
 
-        it('with pointer events, should not call handler when moved to other sprite', function ()
-        {
-            const stage = new Container();
-            const graphics = new Graphics();
-            const graphics2 = new Graphics();
-            const overSpy = sinon.spy();
-            const upSpy = sinon.spy();
-            const clickSpy = sinon.spy();
-            const pointer = this.pointer = new MockPointer(stage);
+                stage.addChild(graphics1);
+                graphics1.beginFill(0xFFFFFF);
+                graphics1.drawRect(0, 0, 50, 50);
+                graphics1.interactive = true;
+                graphics1.name = 'graphics1';
 
-            stage.addChild(graphics);
-            graphics.beginFill(0xFFFFFF);
-            graphics.drawRect(0, 0, 50, 50);
-            graphics.interactive = true;
-            graphics.name = 'graphics1';
+                stage.addChild(graphics2);
+                graphics2.beginFill(0xFFFFFF);
+                graphics2.drawRect(75, 75, 50, 50);
+                graphics2.interactive = true;
 
-            stage.addChild(graphics2);
-            graphics2.beginFill(0xFFFFFF);
-            graphics2.drawRect(75, 75, 50, 50);
-            graphics2.interactive = true;
-            graphics2.on('pointertap', clickSpy);
-            graphics2.on('pointerover', overSpy);
-            graphics2.on('pointerup', upSpy);
-            graphics2.name = 'graphics2';
+                graphics1.on('pointerover', overSpy1);
+                graphics1.on('pointerout', outSpy1);
+                graphics1.on('pointerdown', downSpy1);
+                graphics1.on('pointerup', upSpy1);
+                graphics1.on('pointertap', clickSpy1);
 
-            pointer.mousedown(25, 25, true);
-            pointer.mousemove(60, 60, true);
-            pointer.mousemove(80, 80, true);
-            pointer.mouseup(80, 80, true);
+                graphics2.on('pointerover', overSpy2);
+                graphics2.on('pointerout', outSpy2);
+                graphics2.on('pointerdown', downSpy2);
+                graphics2.on('pointerup', upSpy2);
+                graphics2.on('pointertap', clickSpy2);
 
-            expect(overSpy).to.have.been.called;
-            expect(upSpy).to.have.been.called;
-            expect(clickSpy).to.not.have.been.called;
-        });
+                graphics2.name = 'graphics2';
 
-        it('with touch events, should not call handler when moved to other sprite', function ()
-        {
-            const stage = new Container();
-            const graphics = new Graphics();
-            const graphics2 = new Graphics();
-            const moveSpy = sinon.spy();
-            const upSpy = sinon.spy();
-            const clickSpy = sinon.spy();
-            const pointer = this.pointer = new MockPointer(stage);
+                pointer.move(25, 25);
+                pointer.down(25, 25);
+                pointer.move(60, 60);
+                pointer.move(80, 80);
+                pointer.up(80, 80);
 
-            stage.addChild(graphics);
-            graphics.beginFill(0xFFFFFF);
-            graphics.drawRect(0, 0, 50, 50);
-            graphics.interactive = true;
-            graphics.name = 'graphics1';
+                expect(overSpy1).to.have.been.called;
+                expect(downSpy1).to.have.been.calledImmediatelyAfter(overSpy1);
+                expect(outSpy1).to.have.been.calledImmediatelyAfter(downSpy1);
 
-            stage.addChild(graphics2);
-            graphics2.beginFill(0xFFFFFF);
-            graphics2.drawRect(75, 75, 50, 50);
-            graphics2.interactive = true;
-            graphics2.on('pointertap', clickSpy);
-            graphics2.on('pointermove', moveSpy);
-            graphics2.on('pointerup', upSpy);
-            graphics2.name = 'graphics2';
+                expect(overSpy2).to.have.been.calledImmediatelyAfter(outSpy1);
 
-            pointer.touchstart(25, 25, true);
-            pointer.touchmove(60, 60, true);
-            pointer.touchmove(80, 80, true);
-            pointer.touchend(80, 80, true);
+                expect(upSpy2).to.have.been.calledImmediatelyAfter(overSpy2);
 
-            expect(moveSpy).to.have.been.called;
-            expect(upSpy).to.have.been.called;
-            expect(clickSpy).to.not.have.been.called;
+                if (inputType === 'touch')
+                {
+                    // With touch we expect pointer out when it is released
+                    expect(outSpy2).to.have.been.calledImmediatelyAfter(upSpy2);
+                }
+                else
+                {
+                    expect(outSpy2).to.not.have.been.called;
+                }
+
+                expect(downSpy2).to.not.have.been.called;
+                expect(clickSpy2).to.not.have.been.called;
+                expect(upSpy1).to.not.have.been.called;
+                expect(clickSpy1).to.not.not.have.been.called;
+            });
         });
     });
 
