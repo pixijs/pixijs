@@ -496,6 +496,17 @@ export default class Texture extends EventEmitter
     }
 
     /**
+     * Returns resolution of baseTexture
+     *
+     * @member {number}
+     * @readonly
+     */
+    get resolution()
+    {
+        return this.baseTexture.resolution;
+    }
+
+    /**
      * The frame specifies the region of the base texture that this texture uses.
      * Please call `updateUvs()` after you change coordinates of `frame` manually.
      *

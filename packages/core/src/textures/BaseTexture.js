@@ -257,6 +257,7 @@ export default class BaseTexture extends EventEmitter
          * @protected
          * @event PIXI.BaseTexture#error
          * @param {PIXI.BaseTexture} baseTexture - Resource errored.
+         * @param {ErrorEvent} event - Load error event.
          */
 
         /**
@@ -265,14 +266,6 @@ export default class BaseTexture extends EventEmitter
          * @protected
          * @event PIXI.BaseTexture#loaded
          * @param {PIXI.BaseTexture} baseTexture - Resource loaded.
-         */
-
-        /**
-         * Fired when BaseTexture is destroyed.
-         *
-         * @protected
-         * @event PIXI.BaseTexture#error
-         * @param {PIXI.BaseTexture} baseTexture - Resource errored.
          */
 
         /**
@@ -303,7 +296,7 @@ export default class BaseTexture extends EventEmitter
      */
     get realWidth()
     {
-        return Math.ceil(this.width * this.resolution);
+        return Math.ceil((this.width * this.resolution) - 1e-4);
     }
 
     /**
@@ -314,7 +307,7 @@ export default class BaseTexture extends EventEmitter
      */
     get realHeight()
     {
-        return Math.ceil(this.height * this.resolution);
+        return Math.ceil((this.height * this.resolution) - 1e-4);
     }
 
     /**
@@ -378,8 +371,8 @@ export default class BaseTexture extends EventEmitter
     setRealSize(realWidth, realHeight, resolution)
     {
         this.resolution = resolution || this.resolution;
-        this.width = Math.ceil(realWidth / this.resolution);
-        this.height = Math.ceil(realHeight / this.resolution);
+        this.width = realWidth / this.resolution;
+        this.height = realHeight / this.resolution;
         this._refreshPOT();
         this.update();
 
@@ -415,8 +408,8 @@ export default class BaseTexture extends EventEmitter
 
         if (this.valid)
         {
-            this.width = Math.ceil(this.width * oldResolution / resolution);
-            this.height = Math.ceil(this.height * oldResolution / resolution);
+            this.width = this.width * oldResolution / resolution;
+            this.height = this.height * oldResolution / resolution;
             this.emit('update', this);
         }
 
@@ -470,6 +463,16 @@ export default class BaseTexture extends EventEmitter
             this.dirtyStyleId++;
             this.emit('update', this);
         }
+    }
+
+    /**
+     * Handle errors with resources.
+     * @private
+     * @param {ErrorEvent} event - Error event emitted.
+     */
+    onError(event)
+    {
+        this.emit('error', this, event);
     }
 
     /**

@@ -1,6 +1,6 @@
 {
   "name": "@pixi/sprite",
-  "version": "5.1.0",
+  "version": "5.1.2",
   "main": "lib/sprite.js",
   "module": "lib/sprite.es.js",
   "bundle": "dist/sprite.js",
@@ -25,10 +25,10 @@
   ],
   "dependencies": {
     "@pixi/constants": "^5.1.0",
-    "@pixi/core": "^5.1.0",
-    "@pixi/display": "^5.1.0",
+    "@pixi/core": "^5.1.2",
+    "@pixi/display": "^5.1.2",
     "@pixi/math": "^5.1.0",
-    "@pixi/settings": "^5.1.0",
-    "@pixi/utils": "^5.1.0"
+    "@pixi/settings": "^5.1.1",
+    "@pixi/utils": "^5.1.2"
   }
 }

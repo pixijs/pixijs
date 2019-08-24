@@ -511,8 +511,8 @@ export default class Graphics extends Container
      *
      * "borrowed" from https://code.google.com/p/fxcanvas/ - thanks google!
      *
-     * @param {number} x1 - The x-coordinate of the beginning of the arc
-     * @param {number} y1 - The y-coordinate of the beginning of the arc
+     * @param {number} x1 - The x-coordinate of the first tangent point of the arc
+     * @param {number} y1 - The y-coordinate of the first tangent point of the arc
      * @param {number} x2 - The x-coordinate of the end of the arc
      * @param {number} y2 - The y-coordinate of the end of the arc
      * @param {number} radius - The radius of the arc
@@ -575,6 +575,7 @@ export default class Graphics extends Container
 
         const startX = cx + (Math.cos(startAngle) * radius);
         const startY = cy + (Math.sin(startAngle) * radius);
+        const eps = this.geometry.closePointEps;
 
         // If the currentPath exists, take its points. Otherwise call `moveTo` to start a path.
         let points = this.currentPath ? this.currentPath.points : null;
@@ -587,7 +588,7 @@ export default class Graphics extends Container
             const xDiff = Math.abs(points[points.length - 2] - startX);
             const yDiff = Math.abs(points[points.length - 1] - startY);
 
-            if (xDiff < 0.001 && yDiff < 0.001)
+            if (xDiff < eps && yDiff < eps)
             {
                 // If the point is very close, we don't add it, since this would lead to artifacts
                 // during tessellation due to floating point imprecision.
