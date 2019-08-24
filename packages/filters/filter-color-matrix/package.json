@@ -1,6 +1,6 @@
 {
   "name": "@pixi/filter-color-matrix",
-  "version": "5.1.1",
+  "version": "5.1.2",
   "main": "lib/filter-color-matrix.js",
   "module": "lib/filter-color-matrix.es.js",
   "bundle": "dist/filter-color-matrix.js",
@@ -25,6 +25,6 @@
     "dist"
   ],
   "dependencies": {
-    "@pixi/core": "^5.1.1"
+    "@pixi/core": "^5.1.2"
   }
 }
