@@ -433,6 +433,58 @@ describe('PIXI.Graphics', function ()
             expect(width).to.equal(104);
             expect(height).to.equal(204);
         });
+
+        it('should be zero for empty Graphics', function ()
+        {
+            const graphics = new Graphics();
+
+            const { x, y, width, height } = graphics.getBounds();
+
+            expect(x).to.equal(0);
+            expect(y).to.equal(0);
+            expect(width).to.equal(0);
+            expect(height).to.equal(0);
+        });
+
+        it('should be zero after clear', function ()
+        {
+            const graphics = new Graphics();
+
+            graphics
+                .lineStyle(4, 0xff0000)
+                .beginFill(0x0)
+                .drawRect(10, 20, 100, 200)
+                .clear();
+
+            const { x, y, width, height } = graphics.getBounds();
+
+            expect(x).to.equal(0);
+            expect(y).to.equal(0);
+            expect(width).to.equal(0);
+            expect(height).to.equal(0);
+        });
+
+        it('should be equal of childs bounds when empty', function ()
+        {
+            const graphics = new Graphics();
+            const child = new Graphics();
+
+            child
+                .lineStyle(4, 0xff0000)
+                .beginFill(0x0)
+                .drawRect(10, 20, 100, 200)
+                .clear();
+
+            graphics.addChild(child);
+
+            const rootBounds = graphics.getBounds();
+            const childBounds = graphics.getBounds();
+
+            expect(rootBounds.x).to.equal(childBounds.x);
+            expect(rootBounds.y).to.equal(childBounds.y);
+            expect(rootBounds.width).to.equal(childBounds.width);
+            expect(rootBounds.height).to.equal(childBounds.height);
+        });
     });
 
     describe('drawCircle', function ()
