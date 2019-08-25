@@ -1033,10 +1033,11 @@ export default class Graphics extends Container
     _calculateBounds()
     {
         this.finishPoly();
+
         const geometry = this.geometry;
 
         // skipping when graphics is empty, like a container
-        if (geometry.graphicsData.length)
+        if (!geometry.graphicsData.length)
         {
             return;
         }

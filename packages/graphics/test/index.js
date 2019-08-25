@@ -386,9 +386,12 @@ describe('PIXI.Graphics', function ()
 
     describe('_calculateBounds', function ()
     {
-        it('should only call updateLocalBounds once', function ()
+        it('should only call updateLocalBounds once when no empty', function ()
         {
             const graphics = new Graphics();
+
+            graphics.drawRect(0, 0, 10, 10);
+
             const spy = sinon.spy(graphics.geometry, 'calculateBounds');
 
             graphics._calculateBounds();
@@ -398,6 +401,21 @@ describe('PIXI.Graphics', function ()
             graphics._calculateBounds();
 
             expect(spy).to.have.been.calledOnce;
+        });
+
+        it('don`t should call updateLocalBounds when empty', function ()
+        {
+            const graphics = new Graphics();
+
+            const spy = sinon.spy(graphics.geometry, 'calculateBounds');
+
+            graphics._calculateBounds();
+
+            expect(spy).to.not.have.been.called;
+
+            graphics._calculateBounds();
+
+            expect(spy).to.not.have.been.called;
         });
     });
 
@@ -470,20 +488,17 @@ describe('PIXI.Graphics', function ()
             const child = new Graphics();
 
             child
-                .lineStyle(4, 0xff0000)
                 .beginFill(0x0)
-                .drawRect(10, 20, 100, 200)
-                .clear();
+                .drawRect(10, 20, 100, 200);
 
             graphics.addChild(child);
 
-            const rootBounds = graphics.getBounds();
-            const childBounds = graphics.getBounds();
+            const { x, y, width, height } = graphics.getBounds();
 
-            expect(rootBounds.x).to.equal(childBounds.x);
-            expect(rootBounds.y).to.equal(childBounds.y);
-            expect(rootBounds.width).to.equal(childBounds.width);
-            expect(rootBounds.height).to.equal(childBounds.height);
+            expect(x).to.equal(10);
+            expect(y).to.equal(20);
+            expect(width).to.equal(100);
+            expect(height).to.equal(200);
         });
     });
 
