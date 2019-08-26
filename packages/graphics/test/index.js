@@ -386,7 +386,7 @@ describe('PIXI.Graphics', function ()
 
     describe('_calculateBounds', function ()
     {
-        it('should only call updateLocalBounds once when no empty', function ()
+        it('should only call updateLocalBounds once when not empty', function ()
         {
             const graphics = new Graphics();
 
@@ -403,7 +403,7 @@ describe('PIXI.Graphics', function ()
             expect(spy).to.have.been.calledOnce;
         });
 
-        it('don`t should call updateLocalBounds when empty', function ()
+        it('should not call updateLocalBounds when empty', function ()
         {
             const graphics = new Graphics();
 

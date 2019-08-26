@@ -1044,7 +1044,7 @@ export default class Graphics extends Container
 
         const { minX, minY, maxX, maxY } = geometry.bounds;
 
-        this._bounds.addFrame(this.transform, lb.minX, lb.minY, lb.maxX, lb.maxY);
+        this._bounds.addFrame(this.transform, minX, minY, maxX, maxY);
     }
 
     /**
