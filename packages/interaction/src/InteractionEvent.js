@@ -21,7 +21,7 @@ export default class InteractionEvent
         /**
          * At which object this event stops propagating.
          *
-         * @private
+         * @readonly
          * @member {PIXI.DisplayObject}
          */
         this.stopsPropagatingAt = null;

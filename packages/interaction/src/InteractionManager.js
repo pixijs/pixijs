@@ -939,7 +939,7 @@ export default class InteractionManager extends EventEmitter
      */
     dispatchEvent(displayObject, eventString, eventData)
     {
-        // Even the event was stopped, at least dispatch any remaining events
+        // Even if the event was stopped, at least dispatch any remaining events
         // for the same display object.
         if (!eventData.stopPropagationHint || displayObject === eventData.stopsPropagatingAt)
         {
