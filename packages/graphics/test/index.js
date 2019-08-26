@@ -386,9 +386,12 @@ describe('PIXI.Graphics', function ()
 
     describe('_calculateBounds', function ()
     {
-        it('should only call updateLocalBounds once', function ()
+        it('should only call updateLocalBounds once when not empty', function ()
         {
             const graphics = new Graphics();
+
+            graphics.drawRect(0, 0, 10, 10);
+
             const spy = sinon.spy(graphics.geometry, 'calculateBounds');
 
             graphics._calculateBounds();
@@ -398,6 +401,21 @@ describe('PIXI.Graphics', function ()
             graphics._calculateBounds();
 
             expect(spy).to.have.been.calledOnce;
+        });
+
+        it('should not call updateLocalBounds when empty', function ()
+        {
+            const graphics = new Graphics();
+
+            const spy = sinon.spy(graphics.geometry, 'calculateBounds');
+
+            graphics._calculateBounds();
+
+            expect(spy).to.not.have.been.called;
+
+            graphics._calculateBounds();
+
+            expect(spy).to.not.have.been.called;
         });
     });
 
@@ -432,6 +450,55 @@ describe('PIXI.Graphics', function ()
             expect(y).to.equal(18);
             expect(width).to.equal(104);
             expect(height).to.equal(204);
+        });
+
+        it('should be zero for empty Graphics', function ()
+        {
+            const graphics = new Graphics();
+
+            const { x, y, width, height } = graphics.getBounds();
+
+            expect(x).to.equal(0);
+            expect(y).to.equal(0);
+            expect(width).to.equal(0);
+            expect(height).to.equal(0);
+        });
+
+        it('should be zero after clear', function ()
+        {
+            const graphics = new Graphics();
+
+            graphics
+                .lineStyle(4, 0xff0000)
+                .beginFill(0x0)
+                .drawRect(10, 20, 100, 200)
+                .clear();
+
+            const { x, y, width, height } = graphics.getBounds();
+
+            expect(x).to.equal(0);
+            expect(y).to.equal(0);
+            expect(width).to.equal(0);
+            expect(height).to.equal(0);
+        });
+
+        it('should be equal of childs bounds when empty', function ()
+        {
+            const graphics = new Graphics();
+            const child = new Graphics();
+
+            child
+                .beginFill(0x0)
+                .drawRect(10, 20, 100, 200);
+
+            graphics.addChild(child);
+
+            const { x, y, width, height } = graphics.getBounds();
+
+            expect(x).to.equal(10);
+            expect(y).to.equal(20);
+            expect(width).to.equal(100);
+            expect(height).to.equal(200);
         });
     });
 
