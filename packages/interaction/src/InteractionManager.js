@@ -1172,7 +1172,7 @@ export default class InteractionManager extends EventEmitter
                 const { displayObject, eventString, eventData } = delayedEvents[i];
 
                 // When we reach the object we wanted to stop propagating at,
-                // reset the propagation hint.
+                // set the propagation hint.
                 if (eventData.stopsPropagatingAt === displayObject)
                 {
                     eventData.stopPropagationHint = true;
