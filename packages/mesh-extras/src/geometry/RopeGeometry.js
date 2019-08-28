@@ -19,7 +19,7 @@ export default class RopeGeometry extends MeshGeometry
     /**
      * @param {number} [width=200] - The width (i.e., thickness) of the rope.
      * @param {PIXI.Point[]} [points] - An array of {@link PIXI.Point} objects to construct this rope.
-     * @param {number} [textureScale=0] -  By default the rope texture will be stretched to match
+     * @param {number} [textureScale=0] - By default the rope texture will be stretched to match
      *     rope length. If textureScale is positive this value will be treated as a downsampling
      *     factor and the texture will preserve its aspect ratio instead. To create a tiling rope
      *     set baseTexture.wrapMode to {@link PIXI.WRAP_MODES.REPEAT} and use a power of two texture,
@@ -92,8 +92,6 @@ export default class RopeGeometry extends MeshGeometry
         uvs[2] = 0;
         uvs[3] = 1;
 
-        // indices[0] = 0;
-        // indices[1] = 1;
         let amount = 0;
         let prev = points[0];
         const textureWidth = this.width * this.textureScale;
@@ -166,8 +164,6 @@ export default class RopeGeometry extends MeshGeometry
         let perpX = 0;
         let perpY = 0;
 
-        // this.count -= 0.2;
-
         const vertices = this.buffers[0].data;
         const total = points.length;
 
@@ -196,8 +192,7 @@ export default class RopeGeometry extends MeshGeometry
             }
 
             const perpLength = Math.sqrt((perpX * perpX) + (perpY * perpY));
-            const num = this.textureScale * this.width / 2;
-            // (20 + Math.abs(Math.sin((i + this.count) * 0.3) * 50) )* ratio;
+            const num = this.textureScale > 0 ? this.textureScale * this.width / 2 : this.width / 2;
 
             perpX /= perpLength;
             perpY /= perpLength;
