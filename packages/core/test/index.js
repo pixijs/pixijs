@@ -2,6 +2,7 @@ require('./BaseTexture');
 require('./Texture');
 require('./Renderer');
 require('./CanvasResource');
+require('./ImageBitmapResource');
 require('./ImageResource');
 require('./SVGResource');
 require('./VideoResource');

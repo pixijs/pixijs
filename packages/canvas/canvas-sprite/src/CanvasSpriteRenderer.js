@@ -159,15 +159,15 @@ export default class CanvasSpriteRenderer
             }
 
             context.drawImage(
-                source,
+                sprite._tintedCanvas,
                 0,
                 0,
-                width * resolution,
-                height * resolution,
-                dx * renderer.resolution,
-                dy * renderer.resolution,
-                width * renderer.resolution,
-                height * renderer.resolution
+                Math.floor(width * resolution),
+                Math.floor(height * resolution),
+                Math.floor(dx * renderer.resolution),
+                Math.floor(dy * renderer.resolution),
+                Math.floor(width * renderer.resolution),
+                Math.floor(height * renderer.resolution)
             );
         }
         else
@@ -176,12 +176,12 @@ export default class CanvasSpriteRenderer
                 source,
                 texture._frame.x * resolution,
                 texture._frame.y * resolution,
-                width * resolution,
-                height * resolution,
-                dx * renderer.resolution,
-                dy * renderer.resolution,
-                width * renderer.resolution,
-                height * renderer.resolution
+                Math.floor(width * resolution),
+                Math.floor(height * resolution),
+                Math.floor(dx * renderer.resolution),
+                Math.floor(dy * renderer.resolution),
+                Math.floor(width * renderer.resolution),
+                Math.floor(height * renderer.resolution)
             );
         }
 

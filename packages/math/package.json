@@ -1,6 +1,6 @@
 {
   "name": "@pixi/math",
-  "version": "5.0.0-rc.3",
+  "version": "5.1.0",
   "main": "lib/math.js",
   "module": "lib/math.es.js",
   "bundle": "dist/math.js",
@@ -19,14 +19,8 @@
   "publishConfig": {
     "access": "public"
   },
-  "scripts": {
-    "test": "floss --path test"
-  },
   "files": [
     "lib",
     "dist"
-  ],
-  "devDependencies": {
-    "floss": "^2.2.0"
-  }
+  ]
 }

@@ -52,10 +52,10 @@ export default class CanvasGraphicsRenderer
         );
 
         // update tint if graphics was dirty
-        if (graphics.canvasTintDirty !== graphics.dirty
+        if (graphics.canvasTintDirty !== graphics.geometry.dirty
             || graphics._prevTint !== graphics.tint)
         {
-        //    this.updateGraphicsTint(graphics);
+            this.updateGraphicsTint(graphics);
         }
 
         renderer.setBlendMode(graphics.blendMode);
@@ -69,8 +69,8 @@ export default class CanvasGraphicsRenderer
             const fillStyle = data.fillStyle;
             const lineStyle = data.lineStyle;
 
-            const fillColor = fillStyle.color;// data._fillTint;
-            const lineColor = lineStyle.color;// data._lineTint;
+            const fillColor = data._fillTint;
+            const lineColor = data._lineTint;
 
             context.lineWidth = lineStyle.width;
 
@@ -82,6 +82,8 @@ export default class CanvasGraphicsRenderer
                 const holes = data.holes;
                 let outerArea;
                 let innerArea;
+                let px;
+                let py;
 
                 context.moveTo(points[0], points[1]);
 
@@ -98,19 +100,30 @@ export default class CanvasGraphicsRenderer
                 if (holes.length > 0)
                 {
                     outerArea = 0;
-                    for (let j = 0; j < points.length; j += 2)
+                    px = points[0];
+                    py = points[1];
+                    for (let j = 2; j + 2 < points.length; j += 2)
                     {
-                        outerArea += (points[j] * points[j + 3]) - (points[j + 1] * points[j + 2]);
+                        outerArea += ((points[j] - px) * (points[j + 3] - py))
+                            - ((points[j + 2] - px) * (points[j + 1] - py));
                     }
 
                     for (let k = 0; k < holes.length; k++)
                     {
-                        points = holes[k].points;
+                        points = holes[k].shape.points;
+
+                        if (!points)
+                        {
+                            continue;
+                        }
 
                         innerArea = 0;
-                        for (let j = 0; j < points.length; j += 2)
+                        px = points[0];
+                        py = points[1];
+                        for (let j = 2; j + 2 < points.length; j += 2)
                         {
-                            innerArea += (points[j] * points[j + 3]) - (points[j + 1] * points[j + 2]);
+                            innerArea += ((points[j] - px) * (points[j + 3] - py))
+                                - ((points[j + 2] - px) * (points[j + 1] - py));
                         }
 
                         if (innerArea * outerArea < 0)
@@ -280,18 +293,19 @@ export default class CanvasGraphicsRenderer
     updateGraphicsTint(graphics)
     {
         graphics._prevTint = graphics.tint;
-        graphics.canvasTintDirty = graphics.dirty;
+        graphics.canvasTintDirty = graphics.geometry.dirty;
 
         const tintR = ((graphics.tint >> 16) & 0xFF) / 255;
         const tintG = ((graphics.tint >> 8) & 0xFF) / 255;
         const tintB = (graphics.tint & 0xFF) / 255;
+        const graphicsData = graphics.geometry.graphicsData;
 
-        for (let i = 0; i < graphics.graphicsData.length; ++i)
+        for (let i = 0; i < graphicsData.length; ++i)
         {
-            const data = graphics.graphicsData[i];
+            const data = graphicsData[i];
 
-            const fillColor = data.fillColor | 0;
-            const lineColor = data.lineColor | 0;
+            const fillColor = data.fillStyle.color | 0;
+            const lineColor = data.lineStyle.color | 0;
 
             // super inline, cos optimization :)
             data._fillTint = (

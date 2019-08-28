@@ -1,6 +1,7 @@
 const { BaseTextureCache, TextureCache } = require('@pixi/utils');
 const { Rectangle, Point } = require('@pixi/math');
 const { BaseTexture, Texture } = require('../');
+const { settings } = require('@pixi/settings');
 
 const URL = 'foo.png';
 const NAME = 'foo';
@@ -167,7 +168,7 @@ describe('PIXI.Texture', function ()
         canvas.width = 50;
         canvas.height = 50;
 
-        const texture = new Texture.from(canvas);
+        const texture = Texture.from(canvas);
 
         expect(texture.width).to.equal(50);
         canvas.width = 100;
@@ -204,5 +205,15 @@ describe('PIXI.Texture', function ()
         expect(texture.width).to.equal(10);
         expect(texture.height).to.equal(20);
         texture.destroy(true);
+    });
+
+    it('should throw and error in strict from mode', function ()
+    {
+        const id = 'baz';
+
+        expect(() => Texture.from(id, {}, true)).to.throw(`The cacheId "${id}" does not exist in TextureCache.`);
+        settings.STRICT_TEXTURE_CACHE = true;
+        expect(() => Texture.from(id)).to.throw(`The cacheId "${id}" does not exist in TextureCache.`);
+        settings.STRICT_TEXTURE_CACHE = false;
     });
 });

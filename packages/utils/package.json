@@ -1,6 +1,6 @@
 {
   "name": "@pixi/utils",
-  "version": "5.0.1",
+  "version": "5.1.2",
   "main": "lib/utils.js",
   "module": "lib/utils.es.js",
   "bundle": "dist/utils.js",
@@ -20,21 +20,15 @@
   "publishConfig": {
     "access": "public"
   },
-  "scripts": {
-    "test": "floss --path test"
-  },
   "files": [
     "lib",
     "dist"
   ],
   "dependencies": {
-    "@pixi/constants": "^5.0.0-rc.3",
-    "@pixi/settings": "^5.0.1",
+    "@pixi/constants": "^5.1.0",
+    "@pixi/settings": "^5.1.1",
     "earcut": "^2.1.5",
     "eventemitter3": "^3.1.0",
     "url": "^0.11.0"
-  },
-  "devDependencies": {
-    "floss": "^2.2.0"
   }
 }

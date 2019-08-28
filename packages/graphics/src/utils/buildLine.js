@@ -36,6 +36,7 @@ function buildLine(graphicsData, graphicsGeometry)
 {
     const shape = graphicsData.shape;
     let points = graphicsData.points || shape.points.slice();
+    const eps = graphicsGeometry.closePointEps;
 
     if (points.length === 0)
     {
@@ -57,7 +58,8 @@ function buildLine(graphicsData, graphicsGeometry)
     const firstPoint = new Point(points[0], points[1]);
     const lastPoint = new Point(points[points.length - 2], points[points.length - 1]);
     const closedShape = shape.type !== SHAPES.POLY || shape.closeStroke;
-    const closedPath = firstPoint.x === lastPoint.x && firstPoint.y === lastPoint.y;
+    const closedPath = Math.abs(firstPoint.x - lastPoint.x) < eps
+        && Math.abs(firstPoint.y - lastPoint.y) < eps;
 
     // if the first point is the last point - gonna have issues :)
     if (closedShape)
@@ -250,7 +252,9 @@ function buildNativeLine(graphicsData, graphicsGeometry)
 {
     let i = 0;
 
-    const points = graphicsData.points || graphicsData.shape.points;
+    const shape = graphicsData.shape;
+    const points = graphicsData.points || shape.points;
+    const closedShape = shape.type !== SHAPES.POLY || shape.closeStroke;
 
     if (points.length === 0) return;
 
@@ -258,21 +262,21 @@ function buildNativeLine(graphicsData, graphicsGeometry)
     const indices = graphicsGeometry.indices;
     const length = points.length / 2;
 
-    let indexStart = verts.length / 2;
-    // sort color
+    const startIndex = verts.length / 2;
+    let currentIndex = startIndex;
+
+    verts.push(points[0], points[1]);
 
     for (i = 1; i < length; i++)
     {
-        const p1x = points[(i - 1) * 2];
-        const p1y = points[((i - 1) * 2) + 1];
+        verts.push(points[i * 2], points[(i * 2) + 1]);
+        indices.push(currentIndex, currentIndex + 1);
 
-        const p2x = points[i * 2];
-        const p2y = points[(i * 2) + 1];
+        currentIndex++;
+    }
 
-        verts.push(p1x, p1y);
-
-        verts.push(p2x, p2y);
-
-        indices.push(indexStart++, indexStart++);
+    if (closedShape)
+    {
+        indices.push(currentIndex, startIndex);
     }
 }

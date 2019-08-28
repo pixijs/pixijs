@@ -22,6 +22,9 @@ const DEFAULT_UVS = new TextureUvs();
  * let sprite2 = new PIXI.Sprite(texture);
  * ```
  *
+ * If you didnt pass the texture frame to constructor, it enables `noFrame` mode:
+ * it subscribes on baseTexture events, it automatically resizes at the same time as baseTexture.
+ *
  * Textures made from SVGs, loaded or not, cannot be used before the file finishes processing.
  * You can check for this by checking the sprite's _textureID property.
  * ```js
@@ -51,6 +54,19 @@ export default class Texture extends EventEmitter
 
         /**
          * Does this Texture have any frame data assigned to it?
+         *
+         * This mode is enabled automatically if no frame was passed inside constructor.
+         *
+         * In this mode texture is subscribed to baseTexture events, and fires `update` on any change.
+         *
+         * Beware, after loading or resize of baseTexture event can fired two times!
+         * If you want more control, subscribe on baseTexture itself.
+         *
+         * ```js
+         * texture.on('update', () => {});
+         * ```
+         *
+         * Any assignment of `frame` switches off `noFrame` mode.
          *
          * @member {boolean}
          */
@@ -166,22 +182,26 @@ export default class Texture extends EventEmitter
          */
         this.textureCacheIds = [];
 
-        if (this.noFrame)
+        if (!baseTexture.valid)
+        {
+            baseTexture.once('loaded', this.onBaseTextureUpdated, this);
+        }
+        else if (this.noFrame)
         {
             // if there is no frame we should monitor for any base texture changes..
             if (baseTexture.valid)
             {
                 this.onBaseTextureUpdated(baseTexture);
             }
-            baseTexture.on('update', this.onBaseTextureUpdated, this);
-        }
-        else if (!baseTexture.valid)
-        {
-            baseTexture.once('loaded', this.onBaseTextureUpdated, this);
         }
         else
         {
             this.frame = frame;
+        }
+
+        if (this.noFrame)
+        {
+            baseTexture.on('update', this.onBaseTextureUpdated, this);
         }
     }
 
@@ -301,16 +321,18 @@ export default class Texture extends EventEmitter
      * The source can be - frame id, image url, video url, canvas element, video element, base texture
      *
      * @static
-     * @param {number|string|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|PIXI.BaseTexture} source
+     * @param {string|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|PIXI.BaseTexture} source
      *        Source to create texture from
      * @param {object} [options] See {@link PIXI.BaseTexture}'s constructor for options.
+     * @param {boolean} [strict] Enforce strict-mode, see {@link PIXI.settings.STRICT_TEXTURE_CACHE}.
      * @return {PIXI.Texture} The newly created texture
      */
-    static from(source, options = {})
+    static from(source, options = {}, strict = settings.STRICT_TEXTURE_CACHE)
     {
+        const isFrame = typeof source === 'string';
         let cacheId = null;
 
-        if (typeof source === 'string')
+        if (isFrame)
         {
             cacheId = source;
         }
@@ -325,6 +347,12 @@ export default class Texture extends EventEmitter
         }
 
         let texture = TextureCache[cacheId];
+
+        // Strict-mode rejects invalid cacheIds
+        if (isFrame && strict && !texture)
+        {
+            throw new Error(`The cacheId "${cacheId}" does not exist in TextureCache.`);
+        }
 
         if (!texture)
         {
@@ -476,6 +504,17 @@ export default class Texture extends EventEmitter
     }
 
     /**
+     * Returns resolution of baseTexture
+     *
+     * @member {number}
+     * @readonly
+     */
+    get resolution()
+    {
+        return this.baseTexture.resolution;
+    }
+
+    /**
      * The frame specifies the region of the base texture that this texture uses.
      * Please call `updateUvs()` after you change coordinates of `frame` manually.
      *
@@ -599,7 +638,7 @@ removeAllHandlers(Texture.EMPTY);
 removeAllHandlers(Texture.EMPTY.baseTexture);
 
 /**
- * A white texture of 10x10 size, used for graphics and other things
+ * A white texture of 16x16 size, used for graphics and other things
  * Can not be destroyed.
  *
  * @static

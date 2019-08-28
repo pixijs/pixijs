@@ -152,7 +152,7 @@ export default class DisplayObject extends EventEmitter
         /**
          * The original, cached mask of the object.
          *
-         * @member {PIXI.Graphics|PIXI.Sprite}
+         * @member {PIXI.Graphics|PIXI.Sprite|null}
          * @protected
          */
         this._mask = null;
@@ -260,6 +260,7 @@ export default class DisplayObject extends EventEmitter
         if (this._boundsID !== this._lastBoundsID)
         {
             this.calculateBounds();
+            this._lastBoundsID = this._boundsID;
         }
 
         if (!rect)
@@ -680,7 +681,7 @@ export default class DisplayObject extends EventEmitter
      * sprite.mask = graphics;
      * @todo At the moment, PIXI.CanvasRenderer doesn't support PIXI.Sprite as mask.
      *
-     * @member {PIXI.Graphics|PIXI.Sprite}
+     * @member {PIXI.Graphics|PIXI.Sprite|null}
      */
     get mask()
     {
@@ -705,5 +706,11 @@ export default class DisplayObject extends EventEmitter
     }
 }
 
-// performance increase to avoid using call.. (10x faster)
+/**
+ * DisplayObject default updateTransform, does not update children of container.
+ * Will crash if there's no parent element.
+ *
+ * @memberof PIXI.DisplayObject#
+ * @function displayObjectUpdateTransform
+ */
 DisplayObject.prototype.displayObjectUpdateTransform = DisplayObject.prototype.updateTransform;

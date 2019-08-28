@@ -26,6 +26,7 @@ const defaultBufferOptions = {
  *        into a Resource.
  * @param {Object} [options] - Collection of options
  * @param {PIXI.MIPMAP_MODES} [options.mipmap=PIXI.settings.MIPMAP_TEXTURES] - If mipmapping is enabled for texture
+ * @param {number} [options.anisotropicLevel=PIXI.settings.ANISOTROPIC_LEVEL] - Anisotropic filtering level of texture
  * @param {PIXI.WRAP_MODES} [options.wrapMode=PIXI.settings.WRAP_MODE] - Wrap mode for textures
  * @param {PIXI.SCALE_MODES} [options.scaleMode=PIXI.settings.SCALE_MODE] - Default scale mode, linear, nearest
  * @param {PIXI.FORMATS} [options.format=PIXI.FORMATS.RGBA] - GL format type
@@ -34,6 +35,7 @@ const defaultBufferOptions = {
  * @param {boolean} [options.premultiplyAlpha=true] - Pre multiply the image alpha
  * @param {number} [options.width=0] - Width of the texture
  * @param {number} [options.height=0] - Height of the texture
+ * @param {number} [options.resolution] - Resolution of the base texture
  * @param {object} [options.resourceOptions] - Optional resource options,
  *        see {@link PIXI.resources.autoDetectResource autoDetectResource}
  */
@@ -45,7 +47,7 @@ export default class BaseTexture extends EventEmitter
 
         options = options || {};
 
-        const { premultiplyAlpha, mipmap, scaleMode, width, height,
+        const { premultiplyAlpha, mipmap, anisotropicLevel, scaleMode, width, height,
             wrapMode, format, type, target, resolution, resourceOptions } = options;
 
         // Convert the resource to a Resource object
@@ -86,6 +88,14 @@ export default class BaseTexture extends EventEmitter
          * @default PIXI.settings.MIPMAP_TEXTURES
          */
         this.mipmap = mipmap !== undefined ? mipmap : settings.MIPMAP_TEXTURES;
+
+        /**
+         * Anisotropic filtering level of texture
+         *
+         * @member {number}
+         * @default PIXI.settings.ANISOTROPIC_LEVEL
+         */
+        this.anisotropicLevel = anisotropicLevel !== undefined ? anisotropicLevel : settings.ANISOTROPIC_LEVEL;
 
         /**
          * How the texture wraps
@@ -170,8 +180,9 @@ export default class BaseTexture extends EventEmitter
 
         /**
          * Used by TextureSystem to only update texture to the GPU when needed.
+         * Please call `update()` to increment it.
          *
-         * @protected
+         * @readonly
          * @member {number}
          */
         this.dirtyId = 0;
@@ -246,6 +257,7 @@ export default class BaseTexture extends EventEmitter
          * @protected
          * @event PIXI.BaseTexture#error
          * @param {PIXI.BaseTexture} baseTexture - Resource errored.
+         * @param {ErrorEvent} event - Load error event.
          */
 
         /**
@@ -254,14 +266,6 @@ export default class BaseTexture extends EventEmitter
          * @protected
          * @event PIXI.BaseTexture#loaded
          * @param {PIXI.BaseTexture} baseTexture - Resource loaded.
-         */
-
-        /**
-         * Fired when BaseTexture is destroyed.
-         *
-         * @protected
-         * @event PIXI.BaseTexture#error
-         * @param {PIXI.BaseTexture} baseTexture - Resource errored.
          */
 
         /**
@@ -292,7 +296,7 @@ export default class BaseTexture extends EventEmitter
      */
     get realWidth()
     {
-        return this.width * this.resolution;
+        return Math.ceil((this.width * this.resolution) - 1e-4);
     }
 
     /**
@@ -303,7 +307,7 @@ export default class BaseTexture extends EventEmitter
      */
     get realHeight()
     {
-        return this.height * this.resolution;
+        return Math.ceil((this.height * this.resolution) - 1e-4);
     }
 
     /**
@@ -462,6 +466,16 @@ export default class BaseTexture extends EventEmitter
     }
 
     /**
+     * Handle errors with resources.
+     * @private
+     * @param {ErrorEvent} event - Error event emitted.
+     */
+    onError(event)
+    {
+        this.emit('error', this, event);
+    }
+
+    /**
      * Destroys this base texture.
      * The method stops if resource doesn't want this texture to be destroyed.
      * Removes texture from all caches.
@@ -519,13 +533,15 @@ export default class BaseTexture extends EventEmitter
      * @param {string|HTMLImageElement|HTMLCanvasElement|SVGElement|HTMLVideoElement} source - The
      *        source to create base texture from.
      * @param {object} [options] See {@link PIXI.BaseTexture}'s constructor for options.
+     * @param {boolean} [strict] Enforce strict-mode, see {@link PIXI.settings.STRICT_TEXTURE_CACHE}.
      * @returns {PIXI.BaseTexture} The new base texture.
      */
-    static from(source, options)
+    static from(source, options, strict = settings.STRICT_TEXTURE_CACHE)
     {
+        const isFrame = typeof source === 'string';
         let cacheId = null;
 
-        if (typeof source === 'string')
+        if (isFrame)
         {
             cacheId = source;
         }
@@ -540,6 +556,12 @@ export default class BaseTexture extends EventEmitter
         }
 
         let baseTexture = BaseTextureCache[cacheId];
+
+        // Strict-mode rejects invalid cacheIds
+        if (isFrame && strict && !baseTexture)
+        {
+            throw new Error(`The cacheId "${cacheId}" does not exist in BaseTextureCache.`);
+        }
 
         if (!baseTexture)
         {

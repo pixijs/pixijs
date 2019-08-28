@@ -36,6 +36,7 @@ export default class ContextSystem extends System
          * @property {OES_texture_float} floatTexture - WebGL v1 extension
          * @property {WEBGL_lose_context} loseContext - WebGL v1 extension
          * @property {OES_vertex_array_object} vertexArrayObject - WebGL v1 extension
+         * @property {EXT_texture_filter_anisotropic} anisotropicFiltering - WebGL v1 and v2 extension
          */
         this.extensions = {};
 
@@ -64,6 +65,8 @@ export default class ContextSystem extends System
     contextChange(gl)
     {
         this.gl = gl;
+        this.renderer.gl = gl;
+        this.renderer.CONTEXT_UID = CONTEXT_UID++;
 
         // restore a context if it was previously lost
         if (gl.isContextLost() && gl.getExtension('WEBGL_lose_context'))
@@ -158,15 +161,28 @@ export default class ContextSystem extends System
             Object.assign(this.extensions, {
                 drawBuffers: gl.getExtension('WEBGL_draw_buffers'),
                 depthTexture: gl.getExtension('WEBKIT_WEBGL_depth_texture'),
-                floatTexture: gl.getExtension('OES_texture_float'),
                 loseContext: gl.getExtension('WEBGL_lose_context'),
                 vertexArrayObject: gl.getExtension('OES_vertex_array_object')
                     || gl.getExtension('MOZ_OES_vertex_array_object')
                     || gl.getExtension('WEBKIT_OES_vertex_array_object'),
+                anisotropicFiltering: gl.getExtension('EXT_texture_filter_anisotropic'),
+                uint32ElementIndex: gl.getExtension('OES_element_index_uint'),
+                // Floats and half-floats
+                floatTexture: gl.getExtension('OES_texture_float'),
+                floatTextureLinear: gl.getExtension('OES_texture_float_linear'),
+                textureHalfFloat: gl.getExtension('OES_texture_half_float'),
+                textureHalfFloatLinear: gl.getExtension('OES_texture_half_float_linear'),
             });
         }
-
-        // we don't use any specific WebGL 2 ones yet!
+        else if (this.webGLVersion === 2)
+        {
+            Object.assign(this.extensions, {
+                anisotropicFiltering: gl.getExtension('EXT_texture_filter_anisotropic'),
+                // Floats and half-floats
+                colorBufferFloat: gl.getExtension('EXT_color_buffer_float'),
+                floatTextureLinear: gl.getExtension('OES_texture_float_linear'),
+            });
+        }
     }
 
     /**

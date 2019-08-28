@@ -1,6 +1,6 @@
 {
   "name": "@pixi/prepare",
-  "version": "5.0.2",
+  "version": "5.1.2",
   "main": "lib/prepare.js",
   "module": "lib/prepare.es.js",
   "bundle": "dist/prepare.js",
@@ -20,22 +20,16 @@
   "publishConfig": {
     "access": "public"
   },
-  "scripts": {
-    "test": "floss --path test"
-  },
   "files": [
     "lib",
     "dist"
   ],
   "dependencies": {
-    "@pixi/core": "^5.0.2",
-    "@pixi/display": "^5.0.1",
-    "@pixi/graphics": "^5.0.2",
-    "@pixi/settings": "^5.0.1",
-    "@pixi/text": "^5.0.2",
-    "@pixi/ticker": "^5.0.1"
-  },
-  "devDependencies": {
-    "floss": "^2.2.0"
+    "@pixi/core": "^5.1.2",
+    "@pixi/display": "^5.1.2",
+    "@pixi/graphics": "^5.1.2",
+    "@pixi/settings": "^5.1.1",
+    "@pixi/text": "^5.1.2",
+    "@pixi/ticker": "^5.1.1"
   }
 }

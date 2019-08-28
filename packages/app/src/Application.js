@@ -48,6 +48,8 @@ export default class Application
      * @param {string} [options.powerPreference] - Parameter passed to webgl context, set to "high-performance"
      *  for devices with dual graphics card. **(WebGL only)**.
      * @param {boolean} [options.sharedTicker=false] - `true` to use PIXI.Ticker.shared, `false` to create new ticker.
+     *  If set to false, you cannot register a handler to occur before anything that runs on the shared ticker.
+     *  The system ticker will always run before both the shared ticker and the app ticker.
      * @param {boolean} [options.sharedLoader=false] - `true` to use PIXI.Loader.shared, `false` to create new Loader.
      * @param {Window|HTMLElement} [options.resizeTo] - Element to automatically resize stage to.
      */
@@ -127,7 +129,7 @@ export default class Application
      * @param {boolean} [stageOptions.baseTexture=false] - Only used for child Sprites if stageOptions.children is set
      *  to true. Should it destroy the base texture of the child sprite
      */
-    destroy(removeView)
+    destroy(removeView, stageOptions)
     {
         // Destroy plugins in the opposite order
         // which they were constructed
@@ -139,7 +141,7 @@ export default class Application
             plugin.destroy.call(this);
         });
 
-        this.stage.destroy();
+        this.stage.destroy(stageOptions);
         this.stage = null;
 
         this.renderer.destroy(removeView);

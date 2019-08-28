@@ -1,6 +1,6 @@
 {
   "name": "@pixi/mixin-get-child-by-name",
-  "version": "5.0.1",
+  "version": "5.1.2",
   "main": "lib/mixin-get-child-by-name.js",
   "module": "lib/mixin-get-child-by-name.es.js",
   "bundle": "dist/mixin-get-child-by-name.js",
@@ -20,17 +20,11 @@
   "publishConfig": {
     "access": "public"
   },
-  "scripts": {
-    "test": "floss --path test"
-  },
   "files": [
     "lib",
     "dist"
   ],
   "dependencies": {
-    "@pixi/display": "^5.0.1"
-  },
-  "devDependencies": {
-    "floss": "^2.2.0"
+    "@pixi/display": "^5.1.2"
   }
 }

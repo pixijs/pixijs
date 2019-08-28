@@ -8,7 +8,7 @@ import {
     RoundedRectangle,
     Matrix,
 } from '@pixi/math';
-import { hex2rgb } from '@pixi/utils';
+import { hex2rgb, deprecation } from '@pixi/utils';
 import {
     Texture,
     Shader,
@@ -158,6 +158,14 @@ export default class Graphics extends Container
         this._transformID = -1;
         this.batchDirty = -1;
 
+        /**
+         * Renderer plugin for batching
+         *
+         * @member {string}
+         * @default 'batch'
+         */
+        this.pluginName = 'batch';
+
         // Set default
         this.tint = 0xFFFFFF;
         this.blendMode = BLEND_MODES.NORMAL;
@@ -236,41 +244,91 @@ export default class Graphics extends Container
      * Specifies the line style used for subsequent calls to Graphics methods such as the lineTo()
      * method or the drawCircle() method.
      *
+     * @method PIXI.Graphics#lineStyle
      * @param {number} [width=0] - width of the line to draw, will update the objects stored style
-     * @param {number} [color=0] - color of the line to draw, will update the objects stored style
+     * @param {number} [color=0x0] - color of the line to draw, will update the objects stored style
      * @param {number} [alpha=1] - alpha of the line to draw, will update the objects stored style
-     * @param {number} [alignment=1] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outter)
+     * @param {number} [alignment=0.5] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outter)
      * @param {boolean} [native=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    lineStyle(width = 0, color = 0, alpha = 1, alignment = 0.5, native = false)
+    /**
+     * Specifies the line style used for subsequent calls to Graphics methods such as the lineTo()
+     * method or the drawCircle() method.
+     *
+     * @param {object} [options] - Line style options
+     * @param {number} [options.width=0] - width of the line to draw, will update the objects stored style
+     * @param {number} [options.color=0x0] - color of the line to draw, will update the objects stored style
+     * @param {number} [options.alpha=1] - alpha of the line to draw, will update the objects stored style
+     * @param {number} [options.alignment=0.5] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outter)
+     * @param {boolean} [options.native=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
+     * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
+     */
+    lineStyle(options)
     {
-        this.lineTextureStyle(width, Texture.WHITE, color, alpha, null, alignment, native);
+        // Support non-object params: (width, color, alpha, alignment, native)
+        if (typeof options === 'number')
+        {
+            const args = arguments;
 
-        return this;
+            options = {
+                width: args[0] || 0,
+                color: args[1] || 0x0,
+                alpha: args[2] !== undefined ? args[2] : 1,
+                alignment: args[3] !== undefined ? args[3] : 0.5,
+                native: !!args[4],
+            };
+        }
+
+        return this.lineTextureStyle(options);
     }
 
     /**
      * Like line style but support texture for line fill.
      *
-     * @param {number} [width=0] - width of the line to draw, will update the objects stored style
-     * @param {PIXI.Texture} [texture=PIXI.Texture.WHITE] - Texture to use
-     * @param {number} [color=0] - color of the line to draw, will update the objects stored style
-     * @param {number} [alpha=1] - alpha of the line to draw, will update the objects stored style
-     * @param {PIXI.Matrix} [matrix=null] Texture matrix to transform texture
-     * @param {number} [alignment=0.5] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outter)
-     * @param {boolean} [native=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
+     * @param {object} [options] - Collection of options for setting line style.
+     * @param {number} [options.width=0] - width of the line to draw, will update the objects stored style
+     * @param {PIXI.Texture} [options.texture=PIXI.Texture.WHITE] - Texture to use
+     * @param {number} [options.color=0x0] - color of the line to draw, will update the objects stored style
+     * @param {number} [options.alpha=1] - alpha of the line to draw, will update the objects stored style
+     * @param {PIXI.Matrix} [options.matrix=null] Texture matrix to transform texture
+     * @param {number} [options.alignment=0.5] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outter)
+     * @param {boolean} [options.native=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    lineTextureStyle(width = 0, texture = Texture.WHITE, color = 0xFFFFFF, alpha = 1,
-        matrix = null, alignment = 0.5, native = false)
+    lineTextureStyle(options)
     {
+        // backward compatibility with params: (width, texture,
+        // color, alpha, matrix, alignment, native)
+        if (typeof options === 'number')
+        {
+            deprecation('v5.2.0', 'Please use object-based options for Graphics#lineTextureStyle');
+
+            const [width, texture, color, alpha, matrix, alignment, native] = arguments;
+
+            options = { width, texture, color, alpha, matrix, alignment, native };
+
+            // Remove undefined keys
+            Object.keys(options).forEach((key) => options[key] === undefined && delete options[key]);
+        }
+
+        // Apply defaults
+        options = Object.assign({
+            width: 0,
+            texture: Texture.WHITE,
+            color: 0x0,
+            alpha: 1,
+            matrix: null,
+            alignment: 0.5,
+            native: false,
+        }, options);
+
         if (this.currentPath)
         {
             this.startPoly();
         }
 
-        const visible = width > 0 && alpha > 0;
+        const visible = options.width > 0 && options.alpha > 0;
 
         if (!visible)
         {
@@ -278,22 +336,13 @@ export default class Graphics extends Container
         }
         else
         {
-            if (matrix)
+            if (options.matrix)
             {
-                matrix = matrix.clone();
-                matrix.invert();
+                options.matrix = options.matrix.clone();
+                options.matrix.invert();
             }
 
-            Object.assign(this._lineStyle, {
-                color,
-                width,
-                alpha,
-                matrix,
-                texture,
-                alignment,
-                native,
-                visible,
-            });
+            Object.assign(this._lineStyle, { visible }, options);
         }
 
         return this;
@@ -462,8 +511,8 @@ export default class Graphics extends Container
      *
      * "borrowed" from https://code.google.com/p/fxcanvas/ - thanks google!
      *
-     * @param {number} x1 - The x-coordinate of the beginning of the arc
-     * @param {number} y1 - The y-coordinate of the beginning of the arc
+     * @param {number} x1 - The x-coordinate of the first tangent point of the arc
+     * @param {number} y1 - The y-coordinate of the first tangent point of the arc
      * @param {number} x2 - The x-coordinate of the end of the arc
      * @param {number} y2 - The y-coordinate of the end of the arc
      * @param {number} radius - The radius of the arc
@@ -526,6 +575,7 @@ export default class Graphics extends Container
 
         const startX = cx + (Math.cos(startAngle) * radius);
         const startY = cy + (Math.sin(startAngle) * radius);
+        const eps = this.geometry.closePointEps;
 
         // If the currentPath exists, take its points. Otherwise call `moveTo` to start a path.
         let points = this.currentPath ? this.currentPath.points : null;
@@ -538,7 +588,7 @@ export default class Graphics extends Container
             const xDiff = Math.abs(points[points.length - 2] - startX);
             const yDiff = Math.abs(points[points.length - 1] - startY);
 
-            if (xDiff < 0.001 && yDiff < 0.001)
+            if (xDiff < eps && yDiff < eps)
             {
                 // If the point is very close, we don't add it, since this would lead to artifacts
                 // during tessellation due to floating point imprecision.
@@ -569,26 +619,48 @@ export default class Graphics extends Container
      */
     beginFill(color = 0, alpha = 1)
     {
-        return this.beginTextureFill(Texture.WHITE, color, alpha);
+        return this.beginTextureFill({ texture: Texture.WHITE, color, alpha });
     }
 
     /**
      * Begin the texture fill
      *
-     * @param {PIXI.Texture} [texture=PIXI.Texture.WHITE] - Texture to fill
-     * @param {number} [color=0xffffff] - Background to fill behind texture
-     * @param {number} [alpha=1] - Alpha of fill
-     * @param {PIXI.Matrix} [matrix=null] - Transform matrix
+     * @param {object} [options] - Object object.
+     * @param {PIXI.Texture} [options.texture=PIXI.Texture.WHITE] - Texture to fill
+     * @param {number} [options.color=0xffffff] - Background to fill behind texture
+     * @param {number} [options.alpha=1] - Alpha of fill
+     * @param {PIXI.Matrix} [options.matrix=null] - Transform matrix
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    beginTextureFill(texture = Texture.WHITE, color = 0xFFFFFF, alpha = 1, matrix = null)
+    beginTextureFill(options)
     {
+        // backward compatibility with params: (texture, color, alpha, matrix)
+        if (typeof options === 'number')
+        {
+            deprecation('v5.2.0', 'Please use object-based options for Graphics#beginTextureFill');
+
+            const [texture, color, alpha, matrix] = arguments;
+
+            options = { texture, color, alpha, matrix };
+
+            // Remove undefined keys
+            Object.keys(options).forEach((key) => options[key] === undefined && delete options[key]);
+        }
+
+        // Apply defaults
+        options = Object.assign({
+            texture: Texture.WHITE,
+            color: 0xFFFFFF,
+            alpha: 1,
+            matrix: null,
+        }, options);
+
         if (this.currentPath)
         {
             this.startPoly();
         }
 
-        const visible = alpha > 0;
+        const visible = options.alpha > 0;
 
         if (!visible)
         {
@@ -596,19 +668,13 @@ export default class Graphics extends Container
         }
         else
         {
-            if (matrix)
+            if (options.matrix)
             {
-                matrix = matrix.clone();
-                matrix.invert();
+                options.matrix = options.matrix.clone();
+                options.matrix.invert();
             }
 
-            Object.assign(this._fillStyle, {
-                color,
-                alpha,
-                texture,
-                matrix,
-                visible,
-            });
+            Object.assign(this._fillStyle, { visible }, options);
         }
 
         return this;
@@ -775,11 +841,12 @@ export default class Graphics extends Container
     clear()
     {
         this.geometry.clear();
+        this._lineStyle.reset();
+        this._fillStyle.reset();
 
         this._matrix = null;
         this._holeMode = false;
         this.currentPath = null;
-        this._spriteRect = null;
 
         return this;
     }
@@ -863,10 +930,10 @@ export default class Graphics extends Container
                 }
             }
 
-            renderer.batch.setObjectRenderer(renderer.plugins.batch);
-
             if (this.batches.length)
             {
+                renderer.batch.setObjectRenderer(renderer.plugins[this.pluginName]);
+
                 this.calculateVertices();
                 this.calculateTints();
 
@@ -876,7 +943,7 @@ export default class Graphics extends Container
 
                     batch.worldAlpha = this.worldAlpha * batch.alpha;
 
-                    renderer.plugins.batch.render(batch);
+                    renderer.plugins[this.pluginName].render(batch);
                 }
             }
         }
@@ -905,7 +972,7 @@ export default class Graphics extends Container
                     };
 
                     // we can bbase default shader of the batch renderers program
-                    const program =  renderer.plugins.batch.shader.program;
+                    const program =  renderer.plugins.batch._shader.program;
 
                     defaultShader = new Shader(program, uniforms);
                 }
@@ -938,7 +1005,7 @@ export default class Graphics extends Container
             renderer.geometry.bind(geometry, this.shader);
 
             // set state..
-            renderer.state.setState(this.state);
+            renderer.state.set(this.state);
 
             // then render the rest of them...
             for (let i = 0; i < geometry.drawCalls.length; i++)
@@ -966,9 +1033,18 @@ export default class Graphics extends Container
     _calculateBounds()
     {
         this.finishPoly();
-        const lb = this.geometry.bounds;
 
-        this._bounds.addFrame(this.transform, lb.minX, lb.minY, lb.maxX, lb.maxY);
+        const geometry = this.geometry;
+
+        // skipping when graphics is empty, like a container
+        if (!geometry.graphicsData.length)
+        {
+            return;
+        }
+
+        const { minX, minY, maxX, maxY } = geometry.bounds;
+
+        this._bounds.addFrame(this.transform, minX, minY, maxX, maxY);
     }
 
     /**

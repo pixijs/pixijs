@@ -39,6 +39,13 @@ export default class GeometrySystem extends System
         this.hasInstance = true;
 
         /**
+         * `true` if support `gl.UNSIGNED_INT` in `gl.drawElements` or `gl.drawElementsInstanced`
+         * @member {boolean}
+         * @readonly
+         */
+        this.canUseUInt32ElementIndex = false;
+
+        /**
          * A cache of currently bound buffer,
          * contains only two members with keys ARRAY_BUFFER and ELEMENT_ARRAY_BUFFER
          * @member {Object.<number, PIXI.Buffer>}
@@ -69,6 +76,7 @@ export default class GeometrySystem extends System
         this.disposeAll(true);
 
         const gl = this.gl = this.renderer.gl;
+        const context = this.renderer.context;
 
         this.CONTEXT_UID = this.renderer.CONTEXT_UID;
 
@@ -134,13 +142,15 @@ export default class GeometrySystem extends System
                 this.hasInstance = false;
             }
         }
+
+        this.canUseUInt32ElementIndex = context.webGLVersion === 2 || !!context.extensions.uint32ElementIndex;
     }
 
     /**
      * Binds geometry so that is can be drawn. Creating a Vao if required
-     * @protected
+     *
      * @param {PIXI.Geometry} geometry instance of geometry to bind
-     * @param {PIXI.Shader} shader instance of shader to bind
+     * @param {PIXI.Shader} [shader] instance of shader to use vao for
      */
     bind(geometry, shader)
     {
@@ -593,15 +603,27 @@ export default class GeometrySystem extends System
 
         if (geometry.indexBuffer)
         {
-            if (geometry.instanced)
+            const byteSize = geometry.indexBuffer.data.BYTES_PER_ELEMENT;
+            const glType = byteSize === 2 ? gl.UNSIGNED_SHORT : gl.UNSIGNED_INT;
+
+            if (byteSize === 2 || (byteSize === 4 && this.canUseUInt32ElementIndex))
             {
-                /* eslint-disable max-len */
-                gl.drawElementsInstanced(type, size || geometry.indexBuffer.data.length, gl.UNSIGNED_SHORT, (start || 0) * 2, instanceCount || 1);
-                /* eslint-enable max-len */
+                if (geometry.instanced)
+                {
+                    /* eslint-disable max-len */
+                    gl.drawElementsInstanced(type, size || geometry.indexBuffer.data.length, glType, (start || 0) * byteSize, instanceCount || 1);
+                    /* eslint-enable max-len */
+                }
+                else
+                {
+                    /* eslint-disable max-len */
+                    gl.drawElements(type, size || geometry.indexBuffer.data.length, glType, (start || 0) * byteSize);
+                    /* eslint-enable max-len */
+                }
             }
             else
             {
-                gl.drawElements(type, size || geometry.indexBuffer.data.length, gl.UNSIGNED_SHORT, (start || 0) * 2);
+                console.warn('unsupported index buffer type: uint32');
             }
         }
         else if (geometry.instanced)

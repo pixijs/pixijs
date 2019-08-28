@@ -1,6 +1,6 @@
 {
   "name": "@pixi/app",
-  "version": "5.0.2",
+  "version": "5.1.2",
   "main": "lib/app.js",
   "module": "lib/app.es.js",
   "bundle": "dist/app.js",
@@ -19,20 +19,16 @@
   "publishConfig": {
     "access": "public"
   },
-  "scripts": {
-    "test": "floss --path test"
-  },
   "files": [
     "lib",
     "dist"
   ],
   "dependencies": {
-    "@pixi/core": "^5.0.2",
-    "@pixi/display": "^5.0.1"
+    "@pixi/core": "^5.1.2",
+    "@pixi/display": "^5.1.2"
   },
   "devDependencies": {
-    "@pixi/canvas-renderer": "^5.0.2",
-    "@pixi/utils": "^5.0.1",
-    "floss": "^2.2.0"
+    "@pixi/canvas-renderer": "^5.1.2",
+    "@pixi/utils": "^5.1.2"
   }
 }

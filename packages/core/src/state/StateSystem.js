@@ -98,7 +98,7 @@ export default class StateSystem extends System
 
         this.blendModes = mapWebGLBlendModesToPixi(gl);
 
-        this.setState(this.defaultState);
+        this.set(this.defaultState);
 
         this.reset();
     }
@@ -108,7 +108,7 @@ export default class StateSystem extends System
      *
      * @param {*} state - The state to set.
      */
-    setState(state)
+    set(state)
     {
         state = state || this.defaultState;
 
@@ -182,6 +182,8 @@ export default class StateSystem extends System
      */
     setOffset(value)
     {
+        this.updateCheck(StateSystem.checkPolygonOffset, value);
+
         this.gl[value ? 'enable' : 'disable'](this.gl.POLYGON_OFFSET_FILL);
     }
 
@@ -314,5 +316,16 @@ export default class StateSystem extends System
         system.setBlendMode(state.blendMode);
     }
 
-    // TODO - add polygon offset?
+    /**
+     * A private little wrapper function that we call to check the polygon offset.
+     *
+     * @static
+     * @private
+     * @param {PIXI.StateSystem} System  the System to perform the state check on
+     * @param {PIXI.State} state  the state that the blendMode will pulled from
+     */
+    static checkPolygonOffset(system, state)
+    {
+        system.setPolygonOffset(state.polygonOffset, 0);
+    }
 }

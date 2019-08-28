@@ -10,6 +10,7 @@ const { SimplePlane } = require('@pixi/mesh-extras');
 const { CanvasMeshRenderer } = require('@pixi/canvas-mesh');
 
 require('@pixi/canvas-display');
+require('@pixi/canvas-text');
 
 CanvasRenderer.registerPlugin('sprite', CanvasSpriteRenderer);
 CanvasRenderer.registerPlugin('graphics', CanvasGraphicsRenderer);

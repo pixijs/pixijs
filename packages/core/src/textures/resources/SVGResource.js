@@ -1,4 +1,4 @@
-import { decomposeDataUri, uid } from '@pixi/utils';
+import { uid } from '@pixi/utils';
 import BaseImageResource from './BaseImageResource';
 
 /**
@@ -8,7 +8,9 @@ import BaseImageResource from './BaseImageResource';
  * @memberof PIXI.resources
  * @param {string} source - Base64 encoded SVG element or URL for SVG file.
  * @param {object} [options] - Options to use
- * @param {number} [options.scale=1] Scale to apply to SVG.
+ * @param {number} [options.scale=1] Scale to apply to SVG. Overridden by...
+ * @param {number} [options.width] Rasterize SVG this wide. Aspect ratio preserved if height not specified.
+ * @param {number} [options.height] Rasterize SVG this high. Aspect ratio preserved if width not specified.
  * @param {boolean} [options.autoLoad=true] Start loading right away.
  */
 export default class SVGResource extends BaseImageResource
@@ -18,6 +20,8 @@ export default class SVGResource extends BaseImageResource
         options = options || {};
 
         super(document.createElement('canvas'));
+        this._width = 0;
+        this._height = 0;
 
         /**
          * Base64 encoded SVG element or URL for SVG file
@@ -27,11 +31,25 @@ export default class SVGResource extends BaseImageResource
         this.svg = source;
 
         /**
-         * The source scale to apply to render
+         * The source scale to apply when rasterizing on load
          * @readonly
          * @member {number}
          */
         this.scale = options.scale || 1;
+
+        /**
+         * A width override for rasterization on load
+         * @readonly
+         * @member {number}
+         */
+        this._overrideWidth = options.width;
+
+        /**
+         * A height override for rasterization on load
+         * @readonly
+         * @member {number}
+         */
+        this._overrideHeight = options.height;
 
         /**
          * Call when completely loaded
@@ -39,6 +57,13 @@ export default class SVGResource extends BaseImageResource
          * @member {function}
          */
         this._resolve = null;
+
+        /**
+         * Cross origin value to use
+         * @private
+         * @member {boolean|string}
+         */
+        this._crossorigin = options.crossorigin;
 
         /**
          * Promise when loading
@@ -73,133 +98,70 @@ export default class SVGResource extends BaseImageResource
             // Convert SVG inline string to data-uri
             if ((/^\<svg/).test(this.svg.trim()))
             {
-                this.svg = `data:image/svg+xml;utf8,${this.svg}`;
+                if (!btoa)
+                {
+                    throw new Error('Your browser doesn\'t support base64 conversions.');
+                }
+                this.svg = `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(this.svg)))}`;
             }
 
-            // Checks if `source` is an SVG image and whether it's
-            // loaded via a URL or a data URI. Then calls
-            // `_loadDataUri` or `_loadXhr`.
-            const dataUri = decomposeDataUri(this.svg);
-
-            if (dataUri)
-            {
-                this._loadDataUri(dataUri);
-            }
-            else
-            {
-                // We got an URL, so we need to do an XHR to check the svg size
-                this._loadXhr();
-            }
+            this._loadSvg();
         });
 
         return this._load;
     }
 
     /**
-     * Reads an SVG string from data URI and then calls `_loadString`.
-     *
-     * @param {string} dataUri - The data uri to load from.
-     */
-    _loadDataUri(dataUri)
-    {
-        let svgString;
-
-        if (dataUri.encoding === 'base64')
-        {
-            if (!atob)
-            {
-                throw new Error('Your browser doesn\'t support base64 conversions.');
-            }
-            svgString = atob(dataUri.data);
-        }
-        else
-        {
-            svgString = dataUri.data;
-        }
-
-        this._loadString(svgString);
-    }
-
-    /**
-     * Loads an SVG string from `imageUrl` using XHR and then calls `_loadString`.
+     * Loads an SVG image from `imageUrl` or `data URL`.
      *
      * @private
      */
-    _loadXhr()
+    _loadSvg()
     {
-        const svgXhr = new XMLHttpRequest();
-
-        // This throws error on IE, so SVG Document can't be used
-        // svgXhr.responseType = 'document';
-
-        // This is not needed since we load the svg as string (breaks IE too)
-        // but overrideMimeType() can be used to force the response to be parsed as XML
-        // svgXhr.overrideMimeType('image/svg+xml');
-
-        svgXhr.onload = () =>
-        {
-            if (svgXhr.readyState !== svgXhr.DONE || svgXhr.status !== 200)
-            {
-                throw new Error('Failed to load SVG using XHR.');
-            }
-
-            this._loadString(svgXhr.response);
-        };
-
-        // svgXhr.onerror = () => this.emit('error', this);
-
-        svgXhr.open('GET', this.svg, true);
-        svgXhr.send();
-    }
-
-    /**
-     * Loads texture using an SVG string. The original SVG Image is stored as `origSource` and the
-     * created canvas is the new `source`. The SVG is scaled using `sourceScale`. Called by
-     * `_loadXhr` or `_loadDataUri`.
-     *
-     * @private
-     * @param  {string} svgString SVG source as string
-     *
-     * @fires loaded
-     */
-    _loadString(svgString)
-    {
-        const svgSize = SVGResource.getSize(svgString);
-
         const tempImage = new Image();
 
-        tempImage.src = `data:image/svg+xml,${svgString}`;
+        BaseImageResource.crossOrigin(tempImage, this.svg, this._crossorigin);
+        tempImage.src = this.svg;
 
-        tempImage.onerror = () =>
+        tempImage.onerror = (event) =>
         {
-            throw new Error(`Unable to load image from: ${tempImage.src}`);
+            tempImage.onerror = null;
+            this.onError.run(event);
         };
 
         tempImage.onload = () =>
         {
-            const svgWidth = svgSize.width;
-            const svgHeight = svgSize.height;
+            const svgWidth = tempImage.width;
+            const svgHeight = tempImage.height;
 
             if (!svgWidth || !svgHeight)
             {
                 throw new Error('The SVG image must have width and height defined (in pixels), canvas API needs them.');
             }
 
-            // Scale realWidth and realHeight
-            this._width = Math.round(svgWidth * this.scale);
-            this._height = Math.round(svgHeight * this.scale);
+            // Set render size
+            let width = svgWidth * this.scale;
+            let height = svgHeight * this.scale;
+
+            if (this._overrideWidth || this._overrideHeight)
+            {
+                width = this._overrideWidth || this._overrideHeight / svgHeight * svgWidth;
+                height = this._overrideHeight || this._overrideWidth / svgWidth * svgHeight;
+            }
+            width = Math.round(width);
+            height = Math.round(height);
 
             // Create a canvas element
             const canvas = this.source;
 
-            canvas.width = this._width;
-            canvas.height = this._height;
+            canvas.width = width;
+            canvas.height = height;
             canvas._pixiId = `canvas_${uid()}`;
 
             // Draw the Svg to the canvas
             canvas
                 .getContext('2d')
-                .drawImage(tempImage, 0, 0, svgWidth, svgHeight, 0, 0, this.width, this.height);
+                .drawImage(tempImage, 0, 0, svgWidth, svgHeight, 0, 0, width, height);
 
             this._resolve();
             this._resolve = null;
@@ -207,20 +169,11 @@ export default class SVGResource extends BaseImageResource
     }
 
     /**
-     * Typedef for Size object.
-     *
-     * @memberof PIXI.resources.SVGResource
-     * @typedef {object} Size
-     * @property {number} width - Width component
-     * @property {number} height - Height component
-     */
-
-    /**
      * Get size from an svg string using regexp.
      *
      * @method
      * @param {string} svgString - a serialized svg element
-     * @return {PIXI.resources.SVGResource.Size} image extension
+     * @return {PIXI.ISize} image extension
      */
     static getSize(svgString)
     {
@@ -244,6 +197,7 @@ export default class SVGResource extends BaseImageResource
     {
         super.dispose();
         this._resolve = null;
+        this._crossorigin = null;
     }
 
     /**
@@ -258,7 +212,9 @@ export default class SVGResource extends BaseImageResource
         // url file extension is SVG
         return extension === 'svg'
             // source is SVG data-uri
-            || (typeof source === 'string' && source.indexOf('data:image/svg+xml') === 0);
+            || (typeof source === 'string' && source.indexOf('data:image/svg+xml;base64') === 0)
+            // source is SVG inline
+            || (typeof source === 'string' && source.indexOf('<svg') === 0);
     }
 }
 

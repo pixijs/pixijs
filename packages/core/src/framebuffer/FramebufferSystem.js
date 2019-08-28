@@ -365,12 +365,12 @@ export default class FramebufferSystem extends System
 
             gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.stencil);
 
+            gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, framebuffer.width, framebuffer.height);
             // TODO.. this is depth AND stencil?
             if (!framebuffer.depthTexture)
             { // you can't have both, so one should take priority if enabled
                 gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, fbo.stencil);
             }
-            gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, framebuffer.width, framebuffer.height);
             // fbo.enableStencil();
         }
     }
@@ -421,7 +421,7 @@ export default class FramebufferSystem extends System
 
         this.managedFramebuffers = [];
 
-        for (let i = 0; i < list.count; i++)
+        for (let i = 0; i < list.length; i++)
         {
             this.disposeFramebuffer(list[i], contextLost);
         }

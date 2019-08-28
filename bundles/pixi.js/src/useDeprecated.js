@@ -642,15 +642,24 @@ export default function useDeprecated()
          * @name PIXI.BaseTexture#imageUrl
          * @type {string}
          * @deprecated since 5.0.0
-         * @readonly
          * @see PIXI.resource.ImageResource#url
          */
         imageUrl: {
             get()
             {
-                deprecation(v5, 'PIXI.BaseTexture.imageUrl property has been removed, use resource.url');
+                deprecation(v5, 'PIXI.BaseTexture.imageUrl property has been removed, use PIXI.BaseTexture.resource.url');
 
                 return this.resource && this.resource.url;
+            },
+
+            set(imageUrl)
+            {
+                deprecation(v5, 'PIXI.BaseTexture.imageUrl property has been removed, use PIXI.BaseTexture.resource.url');
+
+                if (this.resource)
+                {
+                    this.resource.url = imageUrl;
+                }
             },
         },
         /**
@@ -663,13 +672,13 @@ export default function useDeprecated()
         source: {
             get()
             {
-                deprecation(v5, 'PIXI.BaseTexture.source property has been moved, use `resource.source`');
+                deprecation(v5, 'PIXI.BaseTexture.source property has been moved, use `PIXI.BaseTexture.resource.source`');
 
                 return this.resource && this.resource.source;
             },
             set(source)
             {
-                deprecation(v5, 'PIXI.BaseTexture.source property has been moved, use `resource.source` '
+                deprecation(v5, 'PIXI.BaseTexture.source property has been moved, use `PIXI.BaseTexture.resource.source` '
                     + 'if you want to set HTMLCanvasElement. Otherwise, create new BaseTexture.');
 
                 if (this.resource)
@@ -772,6 +781,18 @@ export default function useDeprecated()
         deprecation(v5, 'PIXI.Matrix.copy method has been replaced with PIXI.Matrix.copyTo');
 
         return this.copyTo(p);
+    };
+
+    /**
+     * @method PIXI.systems.StateSystem#setState
+     * @deprecated since 5.1.0
+     * @see PIXI.systems.StateSystem#set
+     */
+    PIXI.systems.StateSystem.prototype.setState = function setState(s)
+    {
+        deprecation('v5.1.0', 'StateSystem.setState has been renamed to StateSystem.set');
+
+        return this.set(s);
     };
 
     Object.assign(PIXI.systems.FilterSystem.prototype, {
@@ -929,6 +950,21 @@ export default function useDeprecated()
         };
     }
 
+    /**
+     * @deprecated since 5.0.0
+     * @member {PIXI.Graphics} PIXI.Graphics#graphicsData
+     * @see PIXI.Graphics#geometry
+     * @readonly
+     */
+    Object.defineProperty(PIXI.Graphics.prototype, 'graphicsData', {
+        get()
+        {
+            deprecation(v5, 'PIXI.Graphics.graphicsData property is deprecated, use PIXI.Graphics.geometry.graphicsData');
+
+            return this.geometry.graphicsData;
+        },
+    });
+
     // Use these to deprecate all the Sprite from* methods
     function spriteFrom(name, source, crossorigin, scaleMode)
     {
@@ -1043,15 +1079,31 @@ export default function useDeprecated()
     Object.defineProperty(PIXI.AbstractRenderer.prototype, 'autoResize', {
         get()
         {
-            deprecation(v5, 'PIXI.AbstractRenderer.autoResize property is deprecated, use autoDensity');
+            deprecation(v5, 'PIXI.AbstractRenderer.autoResize property is deprecated, '
+                + 'use PIXI.AbstractRenderer.autoDensity');
 
             return this.autoDensity;
         },
         set(value)
         {
-            deprecation(v5, 'PIXI.AbstractRenderer.autoResize property is deprecated, use autoDensity');
+            deprecation(v5, 'PIXI.AbstractRenderer.autoResize property is deprecated, '
+                + 'use PIXI.AbstractRenderer.autoDensity');
 
             this.autoDensity = value;
+        },
+    });
+
+    /**
+     * @deprecated since 5.0.0
+     * @member {PIXI.systems.TextureSystem} PIXI.Renderer#textureManager
+     * @see PIXI.Renderer#texture
+     */
+    Object.defineProperty(PIXI.Renderer.prototype, 'textureManager', {
+        get()
+        {
+            deprecation(v5, 'PIXI.Renderer.textureManager property is deprecated, use PIXI.Renderer.texture');
+
+            return this.texture;
         },
     });
 

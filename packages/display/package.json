@@ -1,6 +1,6 @@
 {
   "name": "@pixi/display",
-  "version": "5.0.1",
+  "version": "5.1.2",
   "main": "lib/display.js",
   "module": "lib/display.es.js",
   "bundle": "dist/display.js",
@@ -19,19 +19,13 @@
   "publishConfig": {
     "access": "public"
   },
-  "scripts": {
-    "test": "floss --path test"
-  },
   "files": [
     "lib",
     "dist"
   ],
   "dependencies": {
-    "@pixi/math": "^5.0.0-rc.3",
-    "@pixi/settings": "^5.0.1",
-    "@pixi/utils": "^5.0.1"
-  },
-  "devDependencies": {
-    "floss": "^2.2.0"
+    "@pixi/math": "^5.1.0",
+    "@pixi/settings": "^5.1.1",
+    "@pixi/utils": "^5.1.2"
   }
 }

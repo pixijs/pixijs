@@ -14,7 +14,7 @@ const indices = new Uint16Array([0, 1, 2, 0, 2, 3]);
  * A sprite can be created directly from an image like this:
  *
  * ```js
- * let sprite = new PIXI.Sprite.from('assets/image.png');
+ * let sprite = PIXI.Sprite.from('assets/image.png');
  * ```
  *
  * The more efficient way to create sprites is using a {@link PIXI.Spritesheet},
@@ -37,21 +37,27 @@ const indices = new Uint16Array([0, 1, 2, 0, 2, 3]);
 export default class Sprite extends Container
 {
     /**
-     * @param {PIXI.Texture} texture - The texture for this sprite.
+     * @param {PIXI.Texture} [texture] - The texture for this sprite.
      */
     constructor(texture)
     {
         super();
 
         /**
-         * The anchor sets the origin point of the texture.
-         * The default is 0,0 or taken from the {@link PIXI.Texture#defaultAnchor|Texture}
-         * passed to the constructor. A value of 0,0 means the texture's origin is the top left.
-         * Setting the anchor to 0.5,0.5 means the texture's origin is centered.
-         * Setting the anchor to 1,1 would mean the texture's origin point will be the bottom right corner.
-         * Note: Updating the {@link PIXI.Texture#defaultAnchor} after a Texture is
-         * created does _not_ update the Sprite's anchor values.
+         * The anchor point defines the normalized coordinates
+         * in the texture that map to the position of this
+         * sprite.
          *
+         * By default, this is `(0,0)` (or `texture.defaultAnchor`
+         * if you have modified that), which means the position
+         * `(x,y)` of this `Sprite` will be the top-left corner.
+         *
+         * Note: Updating `texture.defaultAnchor` after
+         * constructing a `Sprite` does _not_ update its anchor.
+         *
+         * {@link https://docs.cocos2d-x.org/cocos2d-x/en/sprites/manipulation.html}
+         *
+         * @default `texture.defaultAnchor`
          * @member {PIXI.ObservablePoint}
          * @private
          */
@@ -114,13 +120,14 @@ export default class Sprite extends Container
         this.shader = null;
 
         /**
-         * An internal cached value of the tint.
+         * Cached tint value so we can tell when the tint is changed.
+         * Value is used for 2d CanvasRenderer.
          *
-         * @private
+         * @protected
          * @member {number}
          * @default 0xFFFFFF
          */
-        this.cachedTint = 0xFFFFFF;
+        this._cachedTint = 0xFFFFFF;
 
         this.uvs = null;
 
@@ -160,7 +167,7 @@ export default class Sprite extends Container
          * Allows to customize the rendering process without overriding '_render' & '_renderCanvas' methods.
          *
          * @member {string}
-         * @default 'sprite'
+         * @default 'batch'
          */
         this.pluginName = 'batch';
 
@@ -188,7 +195,7 @@ export default class Sprite extends Container
     {
         this._textureID = -1;
         this._textureTrimmedID = -1;
-        this.cachedTint = 0xFFFFFF;
+        this._cachedTint = 0xFFFFFF;
 
         this.uvs = this._texture._uvs.uvsFloat32;
         // so if _width is 0 then width was not set..
@@ -494,7 +501,7 @@ export default class Sprite extends Container
     {
         const texture = (source instanceof Texture)
             ? source
-            : new Texture.from(source, options);
+            : Texture.from(source, options);
 
         return new Sprite(texture);
     }
@@ -622,7 +629,7 @@ export default class Sprite extends Container
         }
 
         this._texture = value || Texture.EMPTY;
-        this.cachedTint = 0xFFFFFF;
+        this._cachedTint = 0xFFFFFF;
 
         this._textureID = -1;
         this._textureTrimmedID = -1;

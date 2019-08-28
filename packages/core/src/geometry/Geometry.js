@@ -63,15 +63,18 @@ export default class Geometry
 
         this.instanced = false;
 
+        /**
+         * Number of instances in this geometry, pass it to `GeometrySystem.draw()`
+         * @member {number}
+         * @default 1
+         */
         this.instanceCount = 1;
-
-        this._size = null;
 
         this.disposeRunner = new Runner('disposeGeometry', 2);
 
         /**
          * Count of existing (not destroyed) meshes that reference this geometry
-         * @member {boolean}
+         * @member {number}
          */
         this.refCount = 0;
     }

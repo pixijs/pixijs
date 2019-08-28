@@ -61,9 +61,9 @@ export default class RenderTextureSystem extends System
 
     /**
      * Bind the current render texture
-     * @param {PIXI.RenderTexture} renderTexture
-     * @param {PIXI.Rectangle} sourceFrame
-     * @param {PIXI.Rectangle} destinationFrame
+     * @param {PIXI.RenderTexture} [renderTexture] - RenderTexture to bind, by default its `null`, the screen
+     * @param {PIXI.Rectangle} [sourceFrame] - part of screen that is mapped to the renderTexture
+     * @param {PIXI.Rectangle} [destinationFrame] - part of renderTexture, by default it has the same size as sourceFrame
      */
     bind(renderTexture = null, sourceFrame, destinationFrame)
     {
@@ -130,6 +130,11 @@ export default class RenderTextureSystem extends System
 
         this.destinationFrame.width = destinationFrame.width / resolution;
         this.destinationFrame.height = destinationFrame.height / resolution;
+
+        if (sourceFrame === destinationFrame)
+        {
+            this.sourceFrame.copyFrom(this.destinationFrame);
+        }
     }
 
     /**
