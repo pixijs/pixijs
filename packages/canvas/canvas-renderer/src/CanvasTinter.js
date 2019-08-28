@@ -7,7 +7,7 @@ import { canUseNewCanvasBlendModes } from './utils/canUseNewCanvasBlendModes';
  * Tinting with the CanvasRenderer involves creating a new canvas to use as a texture,
  * so be aware of the performance implications.
  *
- * @class
+ * @namespace PIXI.CanvasTinter
  * @memberof PIXI
  */
 export const CanvasTinter = {

@@ -12,7 +12,7 @@ const v5 = '5.0.0';
  * @memberof PIXI
  * @function useDeprecated
  */
-export default function useDeprecated()
+export function useDeprecated()
 {
     const PIXI = this;
 

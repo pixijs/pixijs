@@ -1,6 +1,6 @@
 import { defaultValue } from './defaultValue';
 
-export default function extractUniformsFromSrc(vertexSrc, fragmentSrc, mask)
+export function extractUniformsFromSrc(vertexSrc, fragmentSrc, mask)
 {
     const vertUniforms = extractUniformsFromString(vertexSrc, mask);
     const fragUniforms = extractUniformsFromString(fragmentSrc, mask);
