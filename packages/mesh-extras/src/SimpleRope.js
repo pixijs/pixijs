@@ -31,7 +31,8 @@ export default class SimpleRope extends Mesh
         const ropeGeometry = new RopeGeometry(texture.height, points, textureScale);
         const meshMaterial = new MeshMaterial(texture);
 
-        if (textureScale > 0) {
+        if (textureScale > 0)
+        {
             // attempt to set UV wrapping, will fail on non-power of two textures
             texture.baseTexture.wrapMode = WRAP_MODES.REPEAT;
         }
