@@ -19,15 +19,15 @@ export default class RopeGeometry extends MeshGeometry
     /**
      * @param {number} [width=200] - The width (i.e., thickness) of the rope.
      * @param {PIXI.Point[]} [points] - An array of {@link PIXI.Point} objects to construct this rope.
-     * @param {boolean}  [stretch=true] - Specifies if the texture will be stretched across full rope length.
-     *     When set to false, texture aspect ratio is preserved (UVs can be greater than zero).
-     *     This allows to create a tiling rope - set baseTexture.wrapMode to {@link PIXI.WRAP_MODES.REPEAT}
-     *     and use a power of two texture.
-     * @param {number} [textureScale] -  If stretch set to false, allows to scale rope texture
-     *     keeping its aspect ratio. Set to reduce alpha channel artifacts by providing
-     *     a larger texture and downsampling.
+     * @param {number} [textureScale=0] -  By default the rope texture will be stretched to match
+     *     rope length. If textureScale is positive this value will be treated as a downsampling
+     *     factor and the texture will preserve its aspect ratio instead. To create a tiling rope
+     *     set baseTexture.wrapMode to {@link PIXI.WRAP_MODES.REPEAT} and use a power of two texture,
+     *     then set textureScale=1 to keep the original texture pixel size,
+     *     In order to reduce alpha channel artifacts provide a larger texture and downsample -
+     *     set textureScale=2 to scale it down twice.
      */
-    constructor(width = 200, points, stretch = true, textureScale = 1)
+    constructor(width = 200, points, textureScale = 0)
     {
         super(new Float32Array(points.length * 4),
             new Float32Array(points.length * 4),
@@ -47,14 +47,8 @@ export default class RopeGeometry extends MeshGeometry
         this.width = width;
 
         /**
-         * If true then the rope texture is stretched.
-         * @member {boolean}
-         * @readOnly
-         */
-        this.stretch = stretch;
-
-        /**
-         * Rope texture scale if stretch set to false.
+         * Rope texture scale, if zero then the rope texture is stretched.
+         * Positive values are used to scale the texture down.
          * @member {number}
          * @readOnly
          */
@@ -110,19 +104,20 @@ export default class RopeGeometry extends MeshGeometry
             // time to do some smart drawing!
             const index = i * 4;
 
-            if (this.stretch)
+            if (this.textureScale > 0)
             {
-                amount = i / (total - 1);
-            }
-            else
-            {
-                // pixels from previous point
+                // calculate pixel distance from previous point
                 const dx = prev.x - points[i].x;
                 const dy = prev.y - points[i].y;
                 const distance = Math.sqrt((dx * dx) + (dy * dy));
 
                 prev = points[i];
                 amount += distance / textureWidth;
+            }
+            else
+            {
+                // stretch texture
+                amount = i / (total - 1);
             }
 
             uvs[index] = amount;
@@ -225,7 +220,7 @@ export default class RopeGeometry extends MeshGeometry
     {
         if (this.textureScale > 0)
         {
-            this.build(); // we need to update UV
+            this.build(); // we need to update UVs
         }
         else
         {
