@@ -22,7 +22,7 @@ export default class SimpleRope extends Mesh
     /**
      * @param {PIXI.Texture} texture - The texture to use on the rope.
      * @param {PIXI.Point[]} points - An array of {@link PIXI.Point} objects to construct this rope.
-     * @param {number} [textureScale=0] - Optional. Positive values scale rope texture down
+     * @param {number} [textureScale=0] - Optional. Positive values scale rope texture
      * keeping its aspect ratio. You can reduce alpha channel artifacts by providing a larger texture
      * and downsampling here. If set to zero, texture will be streched instead.
      */

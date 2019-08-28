@@ -20,12 +20,12 @@ export default class RopeGeometry extends MeshGeometry
      * @param {number} [width=200] - The width (i.e., thickness) of the rope.
      * @param {PIXI.Point[]} [points] - An array of {@link PIXI.Point} objects to construct this rope.
      * @param {number} [textureScale=0] - By default the rope texture will be stretched to match
-     *     rope length. If textureScale is positive this value will be treated as a downsampling
+     *     rope length. If textureScale is positive this value will be treated as a scaling
      *     factor and the texture will preserve its aspect ratio instead. To create a tiling rope
      *     set baseTexture.wrapMode to {@link PIXI.WRAP_MODES.REPEAT} and use a power of two texture,
      *     then set textureScale=1 to keep the original texture pixel size,
      *     In order to reduce alpha channel artifacts provide a larger texture and downsample -
-     *     set textureScale=2 to scale it down twice.
+     *     i.e. set textureScale=0.5 to scale it down twice.
      */
     constructor(width = 200, points, textureScale = 0)
     {
@@ -48,7 +48,6 @@ export default class RopeGeometry extends MeshGeometry
 
         /**
          * Rope texture scale, if zero then the rope texture is stretched.
-         * Positive values are used to scale the texture down.
          * @member {number}
          * @readOnly
          */
