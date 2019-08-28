@@ -23,7 +23,7 @@ export default class RopeGeometry extends MeshGeometry
      *     rope length. If textureScale is positive this value will be treated as a scaling
      *     factor and the texture will preserve its aspect ratio instead. To create a tiling rope
      *     set baseTexture.wrapMode to {@link PIXI.WRAP_MODES.REPEAT} and use a power of two texture,
-     *     then set textureScale=1 to keep the original texture pixel size,
+     *     then set textureScale=1 to keep the original texture pixel size.
      *     In order to reduce alpha channel artifacts provide a larger texture and downsample -
      *     i.e. set textureScale=0.5 to scale it down twice.
      */
