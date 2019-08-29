@@ -1,12 +1,9 @@
 import * as resources from './textures/resources';
 import * as systems from './systems';
-import { BaseTexture } from './textures/BaseTexture';
-
 import './settings';
 
 export { systems };
 export { resources };
-export { BaseTexture as GLTexture };
 
 export * from './autoDetectRenderer';
 export * from './fragments';
@@ -17,6 +14,7 @@ export * from './framebuffer/Framebuffer';
 export * from './textures/CubeTexture';
 export * from './textures/Texture';
 export * from './textures/BaseTexture';
+export * from './textures/GLTexture';
 export * from './textures/TextureMatrix';
 export * from './renderTexture/RenderTexture';
 export * from './renderTexture/RenderTexturePool';
