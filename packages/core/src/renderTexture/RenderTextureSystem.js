@@ -1,4 +1,4 @@
-import System from '../System';
+import { System } from '../System';
 import { Rectangle } from '@pixi/math';
 
 const tempRect = new Rectangle();
@@ -13,7 +13,7 @@ const tempRect = new Rectangle();
  * @memberof PIXI.systems
  */
 
-export default class RenderTextureSystem extends System
+export class RenderTextureSystem extends System
 {
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.

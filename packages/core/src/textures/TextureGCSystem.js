@@ -1,4 +1,4 @@
-import System from '../System';
+import { System } from '../System';
 import { GC_MODES } from '@pixi/constants';
 import { settings } from '@pixi/settings';
 
@@ -10,7 +10,7 @@ import { settings } from '@pixi/settings';
  * @memberof PIXI.systems
  * @extends PIXI.System
  */
-export default class TextureGCSystem extends System
+export class TextureGCSystem extends System
 {
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.

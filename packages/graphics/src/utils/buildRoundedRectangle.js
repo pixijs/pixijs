@@ -11,7 +11,7 @@ import { earcut } from '@pixi/utils';
  * @param {object} webGLData - an object containing all the WebGL-specific information to create this shape
  * @param {object} webGLDataNativeLines - an object containing all the WebGL-specific information to create nativeLines
  */
-export default {
+export const buildRoundedRectangle = {
 
     build(graphicsData)
     {

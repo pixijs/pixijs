@@ -1,1 +1,1 @@
-export { default as DisplacementFilter } from './DisplacementFilter';
+export * from './DisplacementFilter';

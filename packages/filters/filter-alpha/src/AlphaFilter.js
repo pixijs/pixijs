@@ -18,7 +18,7 @@ import fragment from './alpha.frag';
  * @extends PIXI.Filter
  * @memberof PIXI.filters
  */
-export default class AlphaFilter extends Filter
+export class AlphaFilter extends Filter
 {
     /**
      * @param {number} [alpha=1] Amount of alpha from 0 to 1, where 0 is transparent

@@ -1,5 +1,5 @@
-import Program from './Program';
-import UniformGroup from './UniformGroup';
+import { Program } from './Program';
+import { UniformGroup } from './UniformGroup';
 
 /**
  * A helper class for shaders
@@ -7,7 +7,7 @@ import UniformGroup from './UniformGroup';
  * @class
  * @memberof PIXI
  */
-class Shader
+export class Shader
 {
     /**
      * @param {PIXI.Program} [program] - The program the shader will use.
@@ -109,5 +109,3 @@ class Shader
         return new Shader(program, uniforms);
     }
 }
-
-export default Shader;

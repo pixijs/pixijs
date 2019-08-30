@@ -1,10 +1,10 @@
-import BatchDrawCall from './BatchDrawCall';
-import BaseTexture from '../textures/BaseTexture';
-import ObjectRenderer from './ObjectRenderer';
-import State from '../state/State';
-import ViewableBuffer from '../geometry/ViewableBuffer';
+import { BatchDrawCall } from './BatchDrawCall';
+import { BaseTexture } from '../textures/BaseTexture';
+import { ObjectRenderer } from './ObjectRenderer';
+import { State } from '../state/State';
+import { ViewableBuffer } from '../geometry/ViewableBuffer';
 
-import checkMaxIfStatementsInShader from '../shader/utils/checkMaxIfStatementsInShader';
+import { checkMaxIfStatementsInShader } from '../shader/utils/checkMaxIfStatementsInShader';
 
 import { settings } from '@pixi/settings';
 import { premultiplyBlendMode, premultiplyTint, nextPow2, log2 } from '@pixi/utils';
@@ -23,7 +23,7 @@ import { ENV } from '@pixi/constants';
  * @memberof PIXI
  * @extends PIXI.ObjectRenderer
  */
-export default class AbstractBatchRenderer extends ObjectRenderer
+export class AbstractBatchRenderer extends ObjectRenderer
 {
     /**
      * This will hook onto the renderer's `contextChange`

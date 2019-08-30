@@ -11,7 +11,7 @@ import { SHAPES } from '@pixi/math';
  * @param {object} webGLData - an object containing all the WebGL-specific information to create this shape
  * @param {object} webGLDataNativeLines - an object containing all the WebGL-specific information to create nativeLines
  */
-export default {
+export const buildCircle = {
 
     build(graphicsData)
     {

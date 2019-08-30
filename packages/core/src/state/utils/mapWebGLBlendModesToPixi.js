@@ -10,7 +10,7 @@ import { BLEND_MODES } from '@pixi/constants';
  * @param {number[][]} [array=[]] - The array to output into.
  * @return {number[][]} Mapped modes.
  */
-export default function mapWebGLBlendModesToPixi(gl, array = [])
+export function mapWebGLBlendModesToPixi(gl, array = [])
 {
     // TODO - premultiply alpha would be different.
     // add a boolean for that!

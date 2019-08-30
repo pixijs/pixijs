@@ -9,7 +9,7 @@
  * @param {object} webGLData - an object containing all the WebGL-specific information to create this shape
  * @param {object} webGLDataNativeLines - an object containing all the WebGL-specific information to create nativeLines
  */
-export default {
+export const buildRectangle = {
 
     build(graphicsData)
     {

@@ -14,7 +14,7 @@ import { MeshGeometry } from '@pixi/mesh';
  * @memberof PIXI
  *
  */
-export default class RopeGeometry extends MeshGeometry
+export class RopeGeometry extends MeshGeometry
 {
     /**
      * @param {number} [width=200] - The width (i.e., thickness) of the rope.

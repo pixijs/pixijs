@@ -1,8 +1,8 @@
-import System from '../System';
+import { System } from '../System';
 import { Rectangle } from '@pixi/math';
 import { ENV } from '@pixi/constants';
 import { settings } from '../settings';
-import Framebuffer from './Framebuffer';
+import { Framebuffer } from './Framebuffer';
 
 /**
  * System plugin to the renderer to manage framebuffers.
@@ -11,7 +11,7 @@ import Framebuffer from './Framebuffer';
  * @extends PIXI.System
  * @memberof PIXI.systems
  */
-export default class FramebufferSystem extends System
+export class FramebufferSystem extends System
 {
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.

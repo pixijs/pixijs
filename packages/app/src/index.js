@@ -1,5 +1,5 @@
-import Application from './Application';
-import ResizePlugin from './ResizePlugin';
+import { Application } from './Application';
+import { ResizePlugin } from './ResizePlugin';
 
 Application.registerPlugin(ResizePlugin);
 

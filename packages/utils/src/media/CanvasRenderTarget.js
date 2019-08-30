@@ -6,7 +6,7 @@ import { settings } from '@pixi/settings';
  * @class
  * @memberof PIXI.utils
  */
-export default class CanvasRenderTarget
+export class CanvasRenderTarget
 {
     /**
      * @param {number} width - the width for the newly created canvas

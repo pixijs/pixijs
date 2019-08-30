@@ -1,9 +1,9 @@
-import getTestContext from './getTestContext';
+import { getTestContext } from './getTestContext';
 import { PRECISION } from '@pixi/constants';
 
 let maxFragmentPrecision;
 
-export default function getMaxFragmentPrecision()
+export function getMaxFragmentPrecision()
 {
     if (!maxFragmentPrecision)
     {

@@ -9,7 +9,7 @@
  * @class
  * @memberof PIXI
  */
-export default class TextMetrics
+export class TextMetrics
 {
     /**
      * @param {string} text - the text that was measured

@@ -16,7 +16,7 @@ import fragment from './colorMatrix.frag';
  * @extends PIXI.Filter
  * @memberof PIXI.filters
  */
-export default class ColorMatrixFilter extends Filter
+export class ColorMatrixFilter extends Filter
 {
     constructor()
     {

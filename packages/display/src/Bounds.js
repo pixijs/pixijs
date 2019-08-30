@@ -9,7 +9,7 @@ import { Rectangle } from '@pixi/math';
  * @class
  * @memberof PIXI
  */
-export default class Bounds
+export class Bounds
 {
     constructor()
     {

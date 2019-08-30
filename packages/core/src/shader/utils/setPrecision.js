@@ -11,7 +11,7 @@ import { PRECISION } from '@pixi/constants';
  *
  * @return {string} modified shader source
  */
-export default function setPrecision(src, requestedPrecision, maxSupportedPrecision)
+export function setPrecision(src, requestedPrecision, maxSupportedPrecision)
 {
     if (src.substring(0, 9) !== 'precision')
     {

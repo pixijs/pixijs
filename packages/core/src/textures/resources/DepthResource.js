@@ -1,4 +1,4 @@
-import BufferResource from './BufferResource';
+import { BufferResource } from './BufferResource';
 
 /**
  * Resource type for DepthTexture.
@@ -6,7 +6,7 @@ import BufferResource from './BufferResource';
  * @extends PIXI.resources.BufferResource
  * @memberof PIXI.resources
  */
-export default class DepthResource extends BufferResource
+export class DepthResource extends BufferResource
 {
     /**
      * Upload the texture to the GPU.

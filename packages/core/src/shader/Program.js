@@ -22,7 +22,7 @@ const nameCache = {};
  * @class
  * @memberof PIXI
  */
-export default class Program
+export class Program
 {
     /**
      * @param {string} [vertexSrc] - The source of the vertex shader.
