@@ -31,8 +31,10 @@ export default class StencilSystem extends System
     setMaskStack(stencilMaskStack)
     {
         const gl = this.renderer.gl;
+        const curStackLen = this.stencilMaskStack.length;
 
-        if (stencilMaskStack.length !== this.stencilMaskStack.length)
+        this.stencilMaskStack = stencilMaskStack;
+        if (stencilMaskStack.length !== curStackLen)
         {
             if (stencilMaskStack.length === 0)
             {
@@ -41,10 +43,9 @@ export default class StencilSystem extends System
             else
             {
                 gl.enable(gl.STENCIL_TEST);
+                this._useCurrent();
             }
         }
-
-        this.stencilMaskStack = stencilMaskStack;
     }
 
     /**

@@ -1,6 +1,15 @@
 import { SHAPES } from '../const';
 
 /**
+ * Size object, contains width and height
+ *
+ * @memberof PIXI
+ * @typedef {object} ISize
+ * @property {number} width - Width component
+ * @property {number} height - Height component
+ */
+
+/**
  * Rectangle object is an area defined by its position, as indicated by its top-left corner
  * point (x, y) and by its width and its height.
  *

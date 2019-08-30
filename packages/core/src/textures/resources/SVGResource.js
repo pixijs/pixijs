@@ -123,6 +123,12 @@ export default class SVGResource extends BaseImageResource
         BaseImageResource.crossOrigin(tempImage, this.svg, this._crossorigin);
         tempImage.src = this.svg;
 
+        tempImage.onerror = (event) =>
+        {
+            tempImage.onerror = null;
+            this.onError.run(event);
+        };
+
         tempImage.onload = () =>
         {
             const svgWidth = tempImage.width;
@@ -163,20 +169,11 @@ export default class SVGResource extends BaseImageResource
     }
 
     /**
-     * Typedef for Size object.
-     *
-     * @memberof PIXI.resources.SVGResource
-     * @typedef {object} Size
-     * @property {number} width - Width component
-     * @property {number} height - Height component
-     */
-
-    /**
      * Get size from an svg string using regexp.
      *
      * @method
      * @param {string} svgString - a serialized svg element
-     * @return {PIXI.resources.SVGResource.Size} image extension
+     * @return {PIXI.ISize} image extension
      */
     static getSize(svgString)
     {

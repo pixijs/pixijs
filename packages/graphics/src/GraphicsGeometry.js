@@ -1,7 +1,7 @@
-import { SHAPES } from '@pixi/math';
+import { SHAPES, Point, Matrix } from '@pixi/math';
 import { Bounds } from '@pixi/display';
 import { BatchGeometry, BatchDrawCall, BaseTexture } from '@pixi/core';
-import { DRAW_MODES } from '@pixi/constants';
+import { DRAW_MODES, WRAP_MODES } from '@pixi/constants';
 
 import GraphicsData from './GraphicsData';
 import buildCircle from './utils/buildCircle';
@@ -13,6 +13,8 @@ import { premultiplyTint } from '@pixi/utils';
 
 const BATCH_POOL = [];
 const DRAW_CALL_POOL = [];
+const tmpPoint = new Point();
+const tmpBounds = new Bounds();
 
 /**
  * Map of fill commands for each shape type.
@@ -63,9 +65,9 @@ export default class GraphicsGeometry extends BatchGeometry
         super();
 
         /**
-         * An array of points to draw
+         * An array of points to draw, 2 numbers per point
          *
-         * @member {PIXI.Point[]}
+         * @member {number[]}
          * @protected
          */
         this.points = [];
@@ -111,8 +113,7 @@ export default class GraphicsGeometry extends BatchGeometry
         this.graphicsData = [];
 
         /**
-         * Used to detect if the graphics object has changed. If this is set to true then the graphics
-         * object will be recalculated.
+         * Used to detect if the graphics object has changed.
          *
          * @member {number}
          * @protected
@@ -136,7 +137,7 @@ export default class GraphicsGeometry extends BatchGeometry
         this.cacheDirty = -1;
 
         /**
-         * Used to detect if we clear the graphics WebGL data.
+         * Used to detect if we cleared the graphicsData.
          *
          * @member {number}
          * @default 0
@@ -162,7 +163,7 @@ export default class GraphicsGeometry extends BatchGeometry
         this.batches = [];
 
         /**
-         * Index of the current last shape in the stack of calls.
+         * Index of the last batched shape in the stack of calls.
          *
          * @member {number}
          * @protected
@@ -198,6 +199,14 @@ export default class GraphicsGeometry extends BatchGeometry
         this.indicesUint16 = null;
 
         this.uvsFloat32 = null;
+
+        /**
+         * Minimal distance between points that are considered different.
+         * Affects line tesselation.
+         *
+         * @member {number}
+         */
+        this.closePointEps = 1e-4;
     }
 
     /**
@@ -218,6 +227,44 @@ export default class GraphicsGeometry extends BatchGeometry
     }
 
     /**
+     * Call if you changed graphicsData manually.
+     * Empties all batch buffers.
+     */
+    invalidate()
+    {
+        this.boundsDirty = -1;
+        this.dirty++;
+        this.batchDirty++;
+        this.shapeIndex = 0;
+
+        this.points.length = 0;
+        this.colors.length = 0;
+        this.uvs.length = 0;
+        this.indices.length = 0;
+        this.textureIds.length = 0;
+
+        for (let i = 0; i < this.drawCalls.length; i++)
+        {
+            this.drawCalls[i].textures.length = 0;
+            DRAW_CALL_POOL.push(this.drawCalls[i]);
+        }
+
+        this.drawCalls.length = 0;
+
+        for (let i = 0; i < this.batches.length; i++)
+        {
+            const batch =  this.batches[i];
+
+            batch.start = 0;
+            batch.attribStart = 0;
+            batch.style = null;
+            BATCH_POOL.push(batch);
+        }
+
+        this.batches.length = 0;
+    }
+
+    /**
      * Clears the graphics that were drawn to this Graphics object, and resets fill and line style settings.
      *
      * @return {PIXI.GraphicsGeometry} This GraphicsGeometry object. Good for chaining method calls
@@ -226,38 +273,9 @@ export default class GraphicsGeometry extends BatchGeometry
     {
         if (this.graphicsData.length > 0)
         {
-            this.boundsDirty = -1;
-            this.dirty++;
+            this.invalidate();
             this.clearDirty++;
-            this.batchDirty++;
             this.graphicsData.length = 0;
-            this.shapeIndex = 0;
-
-            this.points.length = 0;
-            this.colors.length = 0;
-            this.uvs.length = 0;
-            this.indices.length = 0;
-            this.textureIds.length = 0;
-
-            for (let i = 0; i < this.drawCalls.length; i++)
-            {
-                this.drawCalls[i].textures.length = 0;
-                DRAW_CALL_POOL.push(this.drawCalls[i]);
-            }
-
-            this.drawCalls.length = 0;
-
-            for (let i = 0; i < this.batches.length; i++)
-            {
-                const batch =  this.batches[i];
-
-                batch.start = 0;
-                batch.attribStart = 0;
-                batch.style = null;
-                BATCH_POOL.push(batch);
-            }
-
-            this.batches.length = 0;
         }
 
         return this;
@@ -306,7 +324,7 @@ export default class GraphicsGeometry extends BatchGeometry
 
         this.dirty++;
 
-        return data;
+        return this;
     }
 
     /**
@@ -372,7 +390,16 @@ export default class GraphicsGeometry extends BatchGeometry
             // only deal with fills..
             if (data.shape)
             {
-                if (data.shape.contains(point.x, point.y))
+                if (data.matrix)
+                {
+                    data.matrix.applyInverse(point, tmpPoint);
+                }
+                else
+                {
+                    tmpPoint.copyFrom(point);
+                }
+
+                if (data.shape.contains(tmpPoint.x, tmpPoint.y))
                 {
                     if (data.holes)
                     {
@@ -380,7 +407,7 @@ export default class GraphicsGeometry extends BatchGeometry
                         {
                             const hole = data.holes[i];
 
-                            if (hole.shape.contains(point.x, point.y))
+                            if (hole.shape.contains(tmpPoint.x, tmpPoint.y))
                             {
                                 return false;
                             }
@@ -398,7 +425,6 @@ export default class GraphicsGeometry extends BatchGeometry
     /**
      * Generates intermediate batch data. Either gets converted to drawCalls
      * or used to convert to batch objects directly by the Graphics object.
-     * @protected
      */
     updateBatches()
     {
@@ -425,20 +451,22 @@ export default class GraphicsGeometry extends BatchGeometry
 
         const uvs = this.uvs;
 
-        let batchPart = this.batches.pop()
-            || BATCH_POOL.pop()
-            || new BatchPart();
+        let batchPart = null;
+        let currentTexture = null;
+        let currentColor = 0;
+        let currentNative = false;
 
-        batchPart.style = batchPart.style
-            || this.graphicsData[0].fillStyle
-            || this.graphicsData[0].lineStyle;
+        if (this.batches.length > 0)
+        {
+            batchPart = this.batches[this.batches.length - 1];
 
-        let currentTexture = batchPart.style.texture.baseTexture;
-        let currentColor = batchPart.style.color + batchPart.style.alpha;
+            const style = batchPart.style;
 
-        this.batches.push(batchPart);
+            currentTexture = style.texture.baseTexture;
+            currentColor = style.color + style.alpha;
+            currentNative = !!style.native;
+        }
 
-        // TODO - this can be simplified
         for (let i = this.shapeIndex; i < this.graphicsData.length; i++)
         {
             this.shapeIndex++;
@@ -465,31 +493,36 @@ export default class GraphicsGeometry extends BatchGeometry
 
                 const nextTexture = style.texture.baseTexture;
 
-                if (currentTexture !== nextTexture || (style.color + style.alpha) !== currentColor)
+                const index = this.indices.length;
+                const attribIndex = this.points.length / 2;
+
+                // close batch if style is different
+                if (batchPart
+                    && (currentTexture !== nextTexture
+                    || currentColor !== (style.color + style.alpha)
+                    || currentNative !== !!style.native))
                 {
-                    // TODO use a const
-                    nextTexture.wrapMode = 10497;
-                    currentTexture = nextTexture;
-                    currentColor = style.color + style.alpha;
-
-                    const index = this.indices.length;
-                    const attribIndex = this.points.length / 2;
-
                     batchPart.size = index - batchPart.start;
                     batchPart.attribSize = attribIndex - batchPart.attribStart;
 
                     if (batchPart.size > 0)
                     {
-                        batchPart = BATCH_POOL.pop() || new BatchPart();
-
-                        this.batches.push(batchPart);
+                        batchPart = null;
                     }
+                }
+                // spawn new batch if its first batch or previous was closed
+                if (!batchPart)
+                {
+                    batchPart = BATCH_POOL.pop() || new BatchPart();
+                    this.batches.push(batchPart);
+                    nextTexture.wrapMode = WRAP_MODES.REPEAT;
+                    currentTexture = nextTexture;
+                    currentColor = style.color + style.alpha;
+                    currentNative = style.native;
 
                     batchPart.style = style;
                     batchPart.start = index;
                     batchPart.attribStart = attribIndex;
-
-                    // TODO add this to the render part..
                 }
 
                 const start = this.points.length / 2;
@@ -525,6 +558,15 @@ export default class GraphicsGeometry extends BatchGeometry
 
         const index = this.indices.length;
         const attrib = this.points.length / 2;
+
+        if (!batchPart)
+        {
+            // there are no visible styles in GraphicsData
+            // its possible that someone wants Graphics just for the bounds
+            this.batchable = true;
+
+            return;
+        }
 
         batchPart.size = index - batchPart.start;
         batchPart.attribSize = attrib - batchPart.attribStart;
@@ -627,7 +669,7 @@ export default class GraphicsGeometry extends BatchGeometry
 
             const nextTexture = style.texture.baseTexture;
 
-            if (native !== style.native)
+            if (native !== !!style.native)
             {
                 native = style.native;
                 drawMode = native ? DRAW_MODES.LINES : DRAW_MODES.TRIANGLES;
@@ -741,126 +783,76 @@ export default class GraphicsGeometry extends BatchGeometry
      */
     calculateBounds()
     {
-        let minX = Infinity;
-        let maxX = -Infinity;
+        const bounds = this._bounds;
+        const sequenceBounds = tmpBounds;
+        let curMatrix = Matrix.IDENTITY;
 
-        let minY = Infinity;
-        let maxY = -Infinity;
+        this._bounds.clear();
+        sequenceBounds.clear();
 
-        if (this.graphicsData.length)
+        for (let i = 0; i < this.graphicsData.length; i++)
         {
-            let shape = null;
-            let x = 0;
-            let y = 0;
-            let w = 0;
-            let h = 0;
+            const data = this.graphicsData[i];
+            const shape = data.shape;
+            const type = data.type;
+            const lineStyle = data.lineStyle;
+            const nextMatrix = data.matrix || Matrix.IDENTITY;
+            let lineWidth = 0.0;
 
-            for (let i = 0; i < this.graphicsData.length; i++)
+            if (lineStyle && lineStyle.visible)
             {
-                const data = this.graphicsData[i];
+                const alignment = lineStyle.alignment;
 
-                const type = data.type;
-                const lineWidth = data.lineStyle ? data.lineStyle.width : 0;
+                lineWidth = lineStyle.width;
 
-                shape = data.shape;
-
-                if (type === SHAPES.RECT || type === SHAPES.RREC)
+                if (type === SHAPES.POLY)
                 {
-                    x = shape.x - (lineWidth / 2);
-                    y = shape.y - (lineWidth / 2);
-                    w = shape.width + lineWidth;
-                    h = shape.height + lineWidth;
-
-                    minX = x < minX ? x : minX;
-                    maxX = x + w > maxX ? x + w : maxX;
-
-                    minY = y < minY ? y : minY;
-                    maxY = y + h > maxY ? y + h : maxY;
-                }
-                else if (type === SHAPES.CIRC)
-                {
-                    x = shape.x;
-                    y = shape.y;
-                    w = shape.radius + (lineWidth / 2);
-                    h = shape.radius + (lineWidth / 2);
-
-                    minX = x - w < minX ? x - w : minX;
-                    maxX = x + w > maxX ? x + w : maxX;
-
-                    minY = y - h < minY ? y - h : minY;
-                    maxY = y + h > maxY ? y + h : maxY;
-                }
-                else if (type === SHAPES.ELIP)
-                {
-                    x = shape.x;
-                    y = shape.y;
-                    w = shape.width + (lineWidth / 2);
-                    h = shape.height + (lineWidth / 2);
-
-                    minX = x - w < minX ? x - w : minX;
-                    maxX = x + w > maxX ? x + w : maxX;
-
-                    minY = y - h < minY ? y - h : minY;
-                    maxY = y + h > maxY ? y + h : maxY;
+                    lineWidth = lineWidth * (0.5 + Math.abs(0.5 - alignment));
                 }
                 else
                 {
-                    // POLY
-                    const points = shape.points;
-                    let x2 = 0;
-                    let y2 = 0;
-                    let dx = 0;
-                    let dy = 0;
-                    let rw = 0;
-                    let rh = 0;
-                    let cx = 0;
-                    let cy = 0;
-
-                    for (let j = 0; j + 2 < points.length; j += 2)
-                    {
-                        x = points[j];
-                        y = points[j + 1];
-                        x2 = points[j + 2];
-                        y2 = points[j + 3];
-                        dx = Math.abs(x2 - x);
-                        dy = Math.abs(y2 - y);
-                        h = lineWidth;
-                        w = Math.sqrt((dx * dx) + (dy * dy));
-
-                        if (w < 1e-9)
-                        {
-                            continue;
-                        }
-
-                        rw = ((h / w * dy) + dx) / 2;
-                        rh = ((h / w * dx) + dy) / 2;
-                        cx = (x2 + x) / 2;
-                        cy = (y2 + y) / 2;
-
-                        minX = cx - rw < minX ? cx - rw : minX;
-                        maxX = cx + rw > maxX ? cx + rw : maxX;
-
-                        minY = cy - rh < minY ? cy - rh : minY;
-                        maxY = cy + rh > maxY ? cy + rh : maxY;
-                    }
+                    lineWidth = lineWidth * Math.max(0, alignment);
                 }
             }
+
+            if (curMatrix !== nextMatrix)
+            {
+                if (!sequenceBounds.isEmpty())
+                {
+                    bounds.addBoundsMatrix(sequenceBounds, curMatrix);
+                    sequenceBounds.clear();
+                }
+                curMatrix = nextMatrix;
+            }
+
+            if (type === SHAPES.RECT || type === SHAPES.RREC)
+            {
+                sequenceBounds.addFramePad(shape.x, shape.y, shape.x + shape.width, shape.y + shape.height,
+                    lineWidth, lineWidth);
+            }
+            else if (type === SHAPES.CIRC)
+            {
+                sequenceBounds.addFramePad(shape.x, shape.y, shape.x, shape.y,
+                    shape.radius + lineWidth, shape.radius + lineWidth);
+            }
+            else if (type === SHAPES.ELIP)
+            {
+                sequenceBounds.addFramePad(shape.x, shape.y, shape.x, shape.y,
+                    shape.width + lineWidth, shape.height + lineWidth);
+            }
+            else
+            {
+                // adding directly to the bounds
+                bounds.addVerticesMatrix(curMatrix, shape.points, 0, shape.points.length, lineWidth, lineWidth);
+            }
         }
-        else
+
+        if (!sequenceBounds.isEmpty())
         {
-            minX = 0;
-            maxX = 0;
-            minY = 0;
-            maxY = 0;
+            bounds.addBoundsMatrix(sequenceBounds, curMatrix);
         }
 
-        const padding = this.boundsPadding;
-
-        this._bounds.minX = minX - padding;
-        this._bounds.maxX = maxX + padding;
-
-        this._bounds.minY = minY - padding;
-        this._bounds.maxY = maxY + padding;
+        bounds.pad(this.boundsPadding, this.boundsPadding);
     }
 
     /**
@@ -967,7 +959,7 @@ export default class GraphicsGeometry extends BatchGeometry
     /**
      * Modify uvs array according to position of texture region
      * Does not work with rotated or trimmed textures
-     * @param {number} uvs array
+     * @param {number[]} uvs array
      * @param {PIXI.Texture} texture region
      * @param {number} start starting index for uvs
      * @param {number} size how many points to adjust

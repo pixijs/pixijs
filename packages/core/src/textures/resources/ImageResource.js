@@ -33,6 +33,16 @@ export default class ImageResource extends BaseImageResource
 
         super(source);
 
+        // FireFox 68, and possibly other versions, seems like setting the HTMLImageElement#width and #height
+        // to non-zero values before its loading completes if images are in a cache.
+        // Because of this, need to set the `_width` and the `_height` to zero to avoid uploading incomplete images.
+        // Please refer to the issue #5968 (https://github.com/pixijs/pixi.js/issues/5968).
+        if (!source.complete && !!this._width && !!this._height)
+        {
+            this._width = 0;
+            this._height = 0;
+        }
+
         /**
          * URL of the image source
          * @member {string}
@@ -142,6 +152,7 @@ export default class ImageResource extends BaseImageResource
             else
             {
                 source.onload = completed;
+                source.onerror = (event) => this.onError.run(event);
             }
         });
 
@@ -251,6 +262,9 @@ export default class ImageResource extends BaseImageResource
      */
     dispose()
     {
+        this.source.onload = null;
+        this.source.onerror = null;
+
         super.dispose();
 
         if (this.bitmap)

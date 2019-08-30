@@ -1,10 +1,9 @@
 import System from '../System';
 
-import RenderTexture from '../renderTexture/RenderTexture';
+import RenderTexturePool from '../renderTexture/RenderTexturePool';
 import Quad from '../utils/Quad';
 import QuadUv from '../utils/QuadUv';
 import { Rectangle, Matrix } from '@pixi/math';
-import { nextPow2 } from '@pixi/utils';
 import UniformGroup from '../shader/UniformGroup';
 import { DRAW_MODES } from '@pixi/constants';
 
@@ -81,8 +80,6 @@ class FilterState
     }
 }
 
-const screenKey = 'screen';
-
 /**
  * System plugin to the renderer to manage the filters.
  *
@@ -110,7 +107,9 @@ export default class FilterSystem extends System
          * stores a bunch of PO2 textures used for filtering
          * @member {Object}
          */
-        this.texturePool = {};
+        this.texturePool = new RenderTexturePool();
+
+        this.texturePool.setScreenSize(renderer.view);
 
         /**
          * a pool for storing filter states, save us creating new ones each tick
@@ -401,26 +400,15 @@ export default class FilterSystem extends System
 
     /**
      * Destroys this Filter System.
-     *
-     * @param {boolean} [contextLost=false] context was lost, do not free shaders
-     *
      */
-    destroy(contextLost = false)
+    destroy()
     {
-        if (!contextLost)
-        {
-            this.emptyPool();
-        }
-        else
-        {
-            this.texturePool = {};
-        }
+        // Those textures has to be destroyed by RenderTextureSystem or FramebufferSystem
+        this.texturePool.clear(false);
     }
 
     /**
      * Gets a Power-of-Two render texture or fullScreen texture
-     *
-     * TODO move to a separate class could be on renderer?
      *
      * @protected
      * @param {number} minWidth - The minimum width of the render texture in real pixels.
@@ -430,52 +418,32 @@ export default class FilterSystem extends System
      */
     getOptimalFilterTexture(minWidth, minHeight, resolution = 1)
     {
-        let key = screenKey;
-
-        minWidth *= resolution;
-        minHeight *= resolution;
-
-        if (minWidth !== this._pixelsWidth || minHeight !== this._pixelsHeight)
-        {
-            minWidth = nextPow2(minWidth);
-            minHeight = nextPow2(minHeight);
-            key = ((minWidth & 0xFFFF) << 16) | (minHeight & 0xFFFF);
-        }
-
-        if (!this.texturePool[key])
-        {
-            this.texturePool[key] = [];
-        }
-
-        let renderTexture = this.texturePool[key].pop();
-
-        if (!renderTexture)
-        {
-            renderTexture = RenderTexture.create({
-                width: minWidth,
-                height: minHeight,
-            });
-        }
-
-        renderTexture.filterPoolKey = key;
-        renderTexture.setResolution(resolution);
-
-        return renderTexture;
+        return this.texturePool.getOptimalTexture(minWidth, minHeight, resolution);
     }
 
     /**
      * Gets extra render texture to use inside current filter
+     * To be compliant with older filters, you can use params in any order
      *
-     * @param {number} resolution resolution of the renderTexture
+     * @param {PIXI.RenderTexture} [input] renderTexture from which size and resolution will be copied
+     * @param {number} [resolution] override resolution of the renderTexture
      * @returns {PIXI.RenderTexture}
      */
-    getFilterTexture(resolution)
+    getFilterTexture(input, resolution)
     {
-        const rt = this.activeState.renderTexture;
+        if (typeof input === 'number')
+        {
+            const swap = input;
 
-        const filterTexture = this.getOptimalFilterTexture(rt.width, rt.height, resolution || rt.baseTexture.resolution);
+            input = resolution;
+            resolution = swap;
+        }
 
-        filterTexture.filterFrame = rt.filterFrame;
+        input = input || this.activeState.renderTexture;
+
+        const filterTexture = this.texturePool.getOptimalTexture(input.width, input.height, resolution || input.resolution);
+
+        filterTexture.filterFrame = input.filterFrame;
 
         return filterTexture;
     }
@@ -487,48 +455,22 @@ export default class FilterSystem extends System
      */
     returnFilterTexture(renderTexture)
     {
-        const key = renderTexture.filterPoolKey;
-
-        renderTexture.filterFrame = null;
-        this.texturePool[key].push(renderTexture);
+        this.texturePool.returnTexture(renderTexture);
     }
 
     /**
      * Empties the texture pool.
-     *
      */
     emptyPool()
     {
-        for (const i in this.texturePool)
-        {
-            const textures = this.texturePool[i];
-
-            if (textures)
-            {
-                for (let j = 0; j < textures.length; j++)
-                {
-                    textures[j].destroy(true);
-                }
-            }
-        }
-
-        this.texturePool = {};
+        this.texturePool.clear(true);
     }
 
+    /**
+     * calls `texturePool.resize()`, affects fullScreen renderTextures
+     */
     resize()
     {
-        const textures = this.texturePool[screenKey];
-
-        if (textures)
-        {
-            for (let j = 0; j < textures.length; j++)
-            {
-                textures[j].destroy(true);
-            }
-        }
-        this.texturePool[screenKey] = [];
-
-        this._pixelsWidth = this.renderer.view.width;
-        this._pixelsHeight = this.renderer.view.height;
+        this.texturePool.setScreenSize(this.renderer.view);
     }
 }
