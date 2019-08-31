@@ -963,7 +963,7 @@ export default class Graphics extends Container
     }
 
     /**
-     * Direct Render specific DrawCall
+     * Renders specific DrawCall
      *
      * @param {PIXI.Renderer} renderer
      * @param {PIXI.BatchDrawCall} drawCall
