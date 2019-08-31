@@ -26,8 +26,8 @@ import { Container } from '@pixi/display';
 
 const temp = new Float32Array(3);
 
-// a default shader used by graphics..
-let defaultShader = null;
+// a default shaders map used by graphics..
+const DEFAULT_SHADERS = {};
 
 /**
  * The Graphics class contains methods used to draw primitive shapes such as lines, circles and
@@ -952,11 +952,15 @@ export default class Graphics extends Container
             // no batching...
             renderer.batch.flush();
 
-            if (!this.shader)
+            const pluginName = this.pluginName;
+            let shader = this.shader;
+
+            if (!shader)
             {
                 // if there is no shader here, we can use the default shader.
                 // and that only gets created if we actually need it..
-                if (!defaultShader)
+                // but may be more than one plugins for graphics
+                if (!DEFAULT_SHADERS[pluginName])
                 {
                     const sampleValues = new Int32Array(16);
 
@@ -971,38 +975,37 @@ export default class Graphics extends Container
                         default: UniformGroup.from({ uSamplers: sampleValues }, true),
                     };
 
-                    // we can bbase default shader of the batch renderers program
-                    const program =  renderer.plugins.batch._shader.program;
+                    const program = renderer.plugins[pluginName]._shader.program;
 
-                    defaultShader = new Shader(program, uniforms);
+                    DEFAULT_SHADERS[pluginName] = new Shader(program, uniforms);
                 }
 
-                this.shader = defaultShader;
+                shader = DEFAULT_SHADERS[pluginName];
             }
 
-            const uniforms = this.shader.uniforms;
+            const uniforms = shader.uniforms;
 
             // lets set the transfomr
             uniforms.translationMatrix = this.transform.worldTransform;
 
             const tint = this.tint;
-            const wa = this.worldAlpha;
+            const worldAlpha = this.worldAlpha;
 
             // and then lets set the tint..
-            uniforms.tint[0] = (((tint >> 16) & 0xFF) / 255) * wa;
-            uniforms.tint[1] = (((tint >> 8) & 0xFF) / 255) * wa;
-            uniforms.tint[2] = ((tint & 0xFF) / 255) * wa;
-            uniforms.tint[3] = wa;
+            uniforms.tint[0] = (((tint >> 16) & 0xFF) / 255) * worldAlpha;
+            uniforms.tint[1] = (((tint >> 8) & 0xFF) / 255) * worldAlpha;
+            uniforms.tint[2] = ((tint & 0xFF) / 255) * worldAlpha;
+            uniforms.tint[3] = worldAlpha;
 
             // the first draw call, we can set the uniforms of the shader directly here.
 
             // this means that we can tack advantage of the sync function of pixi!
             // bind and sync uniforms..
             // there is a way to optimise this..
-            renderer.shader.bind(this.shader);
+            renderer.shader.bind(shader);
 
             // then render it
-            renderer.geometry.bind(geometry, this.shader);
+            renderer.geometry.bind(geometry, shader);
 
             // set state..
             renderer.state.set(this.state);
@@ -1011,7 +1014,6 @@ export default class Graphics extends Container
             for (let i = 0; i < geometry.drawCalls.length; i++)
             {
                 const drawCall = geometry.drawCalls[i];
-
                 const groupTextureCount = drawCall.textureCount;
 
                 for (let j = 0; j < groupTextureCount; j++)
