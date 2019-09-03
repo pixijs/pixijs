@@ -232,6 +232,7 @@ export default class Sprite extends Container
             return;
         }
 
+        // update texture UV here, because base texture can be changed without calling `_onTextureUpdate`
         if (this._textureID !== texture._updateID)
         {
             this.uvs = this._texture._uvs.uvsFloat32;
