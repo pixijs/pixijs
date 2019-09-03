@@ -860,7 +860,7 @@ export default class Graphics extends Container
 
         this.vertexData = new Float32Array(geometry.points);
 
-        for (let i = 0; i < geometry.batches.length; i++)
+        for (let i = 0, l = geometry.batches.length; i < l; i++)
         {
             const gI = geometry.batches[i];
             const color = gI.style.color;
@@ -909,7 +909,7 @@ export default class Graphics extends Container
         this.calculateVertices();
         this.calculateTints();
 
-        for (let i = 0; i < this.batches.length; i++)
+        for (let i = 0, l = this.batches.length; i < l; i++)
         {
             const batch = this.batches[i];
 
