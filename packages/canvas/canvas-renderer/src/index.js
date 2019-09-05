@@ -1,6 +1,6 @@
 export * from './CanvasRenderer';
 export * from './utils/canUseNewCanvasBlendModes';
-export * from './CanvasTinter';
+export * from './canvasUtils';
 
 import './Renderer';
 import './BaseTexture';

@@ -1,6 +1,6 @@
 import { SCALE_MODES, BLEND_MODES } from '@pixi/constants';
-import { Matrix, GroupD8 } from '@pixi/math';
-import { CanvasTinter } from '@pixi/canvas-renderer';
+import { Matrix, groupD8 } from '@pixi/math';
+import { canvasUtils } from '@pixi/canvas-renderer';
 
 const canvasRenderWorldTransform = new Matrix();
 
@@ -96,7 +96,7 @@ export class CanvasSpriteRenderer
         {
             wt.copyTo(canvasRenderWorldTransform);
             wt = canvasRenderWorldTransform;
-            GroupD8.matrixAppendRotationInv(wt, texture.rotate, dx, dy);
+            groupD8.matrixAppendRotationInv(wt, texture.rotate, dx, dy);
             // the anchor has already been applied above, so lets set it to zero
             dx = 0;
             dy = 0;
@@ -155,7 +155,7 @@ export class CanvasSpriteRenderer
                 sprite._cachedTint = sprite.tint;
 
                 // TODO clean up caching - how to clean up the caches?
-                sprite._tintedCanvas = CanvasTinter.getTintedCanvas(sprite, sprite.tint);
+                sprite._tintedCanvas = canvasUtils.getTintedCanvas(sprite, sprite.tint);
             }
 
             context.drawImage(
