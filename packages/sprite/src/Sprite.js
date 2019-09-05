@@ -197,7 +197,6 @@ export default class Sprite extends Container
         this._textureTrimmedID = -1;
         this._cachedTint = 0xFFFFFF;
 
-        this.uvs = this._texture._uvs.uvsFloat32;
         // so if _width is 0 then width was not set..
         if (this._width)
         {
@@ -231,6 +230,12 @@ export default class Sprite extends Container
         if (this._transformID === this.transform._worldID && this._textureID === texture._updateID)
         {
             return;
+        }
+
+        // update texture UV here, because base texture can be changed without calling `_onTextureUpdate`
+        if (this._textureID !== texture._updateID)
+        {
+            this.uvs = this._texture._uvs.uvsFloat32;
         }
 
         this._transformID = this.transform._worldID;
