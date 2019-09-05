@@ -31,7 +31,7 @@ import { removeItems, getResolutionOfUrl } from '@pixi/utils';
  * @extends PIXI.Container
  * @memberof PIXI
  */
-export default class BitmapText extends Container
+export class BitmapText extends Container
 {
     /**
      * @param {string} text - A string that you would like the text to display.

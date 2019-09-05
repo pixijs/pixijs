@@ -5,7 +5,7 @@
  * @class
  * @memberof PIXI
  */
-export default class BatchDrawCall
+export class BatchDrawCall
 {
     constructor()
     {

@@ -29,7 +29,7 @@ import { Container } from '@pixi/display';
  * @extends PIXI.Container
  * @memberof PIXI
  */
-export default class ParticleContainer extends Container
+export class ParticleContainer extends Container
 {
     /**
      * @param {number} [maxSize=1500] - The maximum number of particles that can be rendered by the container.

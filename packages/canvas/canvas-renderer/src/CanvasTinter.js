@@ -1,5 +1,5 @@
 import { hex2rgb, rgb2hex } from '@pixi/utils';
-import canUseNewCanvasBlendModes from './utils/canUseNewCanvasBlendModes';
+import { canUseNewCanvasBlendModes } from './utils/canUseNewCanvasBlendModes';
 
 /**
  * Utility methods for Sprite/Texture tinting.
@@ -7,10 +7,10 @@ import canUseNewCanvasBlendModes from './utils/canUseNewCanvasBlendModes';
  * Tinting with the CanvasRenderer involves creating a new canvas to use as a texture,
  * so be aware of the performance implications.
  *
- * @class
+ * @namespace PIXI.CanvasTinter
  * @memberof PIXI
  */
-const CanvasTinter = {
+export const CanvasTinter = {
     /**
      * Basically this method just needs a sprite and a color and tints the sprite with the given color.
      *
@@ -286,5 +286,3 @@ const CanvasTinter = {
 };
 
 CanvasTinter.tintMethod = CanvasTinter.canUseMultiply ? CanvasTinter.tintWithMultiply : CanvasTinter.tintWithPerPixel;
-
-export default CanvasTinter;

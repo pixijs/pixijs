@@ -5,8 +5,8 @@ import { settings } from '@pixi/settings';
 import { Rectangle } from '@pixi/math';
 import { sign, trimCanvas, hex2rgb, string2hex } from '@pixi/utils';
 import { TEXT_GRADIENT } from './const';
-import TextStyle from './TextStyle';
-import TextMetrics from './TextMetrics';
+import { TextStyle } from './TextStyle';
+import { TextMetrics } from './TextMetrics';
 
 const defaultDestroyOptions = {
     texture: true,
@@ -39,7 +39,7 @@ const defaultDestroyOptions = {
  * @extends PIXI.Sprite
  * @memberof PIXI
  */
-export default class Text extends Sprite
+export class Text extends Sprite
 {
     /**
      * @param {string} text - The string that you would like the text to display

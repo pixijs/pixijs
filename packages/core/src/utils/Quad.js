@@ -1,4 +1,4 @@
-import Geometry from '../geometry/Geometry';
+import { Geometry } from '../geometry/Geometry';
 
 /**
  * Helper class to create a quad
@@ -6,7 +6,7 @@ import Geometry from '../geometry/Geometry';
  * @class
  * @memberof PIXI
  */
-export default class Quad extends Geometry
+export class Quad extends Geometry
 {
     constructor()
     {

@@ -3,7 +3,7 @@
 // This file implements the dihedral group of order 16, also called
 // of degree 8. That's why its called GroupD8.
 
-import Matrix from './Matrix';
+import { Matrix } from './Matrix';
 
 /*
  * Transform matrix for operation n is:
@@ -110,15 +110,16 @@ init();
  * @see PIXI.GroupD8.N
  * @see PIXI.GroupD8.NE
  * @author Ivan @ivanpopelyshev
- * @class
+ * @namespace PIXI.GroupD8
  * @memberof PIXI
  */
-const GroupD8 = {
+export const GroupD8 = {
     /**
      * | Rotation | Direction |
      * |----------|-----------|
      * | 0°       | East      |
      *
+     * @memberof PIXI.GroupD8
      * @constant {PIXI.GD8Symmetry}
      */
     E: 0,
@@ -128,6 +129,7 @@ const GroupD8 = {
      * |----------|-----------|
      * | 45°↻     | Southeast |
      *
+     * @memberof PIXI.GroupD8
      * @constant {PIXI.GD8Symmetry}
      */
     SE: 1,
@@ -137,6 +139,7 @@ const GroupD8 = {
      * |----------|-----------|
      * | 90°↻     | South     |
      *
+     * @memberof PIXI.GroupD8
      * @constant {PIXI.GD8Symmetry}
      */
     S: 2,
@@ -146,6 +149,7 @@ const GroupD8 = {
      * |----------|-----------|
      * | 135°↻    | Southwest |
      *
+     * @memberof PIXI.GroupD8
      * @constant {PIXI.GD8Symmetry}
      */
     SW: 3,
@@ -155,6 +159,7 @@ const GroupD8 = {
      * |----------|-----------|
      * | 180°     | West      |
      *
+     * @memberof PIXI.GroupD8
      * @constant {PIXI.GD8Symmetry}
      */
     W: 4,
@@ -164,6 +169,7 @@ const GroupD8 = {
      * |-------------|--------------|
      * | -135°/225°↻ | Northwest    |
      *
+     * @memberof PIXI.GroupD8
      * @constant {PIXI.GD8Symmetry}
      */
     NW: 5,
@@ -173,6 +179,7 @@ const GroupD8 = {
      * |-------------|--------------|
      * | -90°/270°↻  | North        |
      *
+     * @memberof PIXI.GroupD8
      * @constant {PIXI.GD8Symmetry}
      */
     N: 6,
@@ -182,6 +189,7 @@ const GroupD8 = {
      * |-------------|--------------|
      * | -45°/315°↻  | Northeast    |
      *
+     * @memberof PIXI.GroupD8
      * @constant {PIXI.GD8Symmetry}
      */
     NE: 7,
@@ -189,6 +197,7 @@ const GroupD8 = {
     /**
      * Reflection about Y-axis.
      *
+     * @memberof PIXI.GroupD8
      * @constant {PIXI.GD8Symmetry}
      */
     MIRROR_VERTICAL: 8,
@@ -196,6 +205,7 @@ const GroupD8 = {
     /**
      * Reflection about the main diagonal.
      *
+     * @memberof PIXI.GroupD8
      * @constant {PIXI.GD8Symmetry}
      */
     MAIN_DIAGONAL: 10,
@@ -203,6 +213,7 @@ const GroupD8 = {
     /**
      * Reflection about X-axis.
      *
+     * @memberof PIXI.GroupD8
      * @constant {PIXI.GD8Symmetry}
      */
     MIRROR_HORIZONTAL: 12,
@@ -210,6 +221,7 @@ const GroupD8 = {
     /**
      * Reflection about reverse diagonal.
      *
+     * @memberof PIXI.GroupD8
      * @constant {PIXI.GD8Symmetry}
      */
     REVERSE_DIAGONAL: 14,
@@ -389,5 +401,3 @@ const GroupD8 = {
         matrix.append(mat);
     },
 };
-
-export default GroupD8;

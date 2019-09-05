@@ -14,13 +14,13 @@ import {
     Shader,
     UniformGroup, State,
 } from '@pixi/core';
-import FillStyle from './styles/FillStyle';
-import GraphicsGeometry from './GraphicsGeometry';
-import LineStyle from './styles/LineStyle';
-import BezierUtils from './utils/BezierUtils';
-import QuadraticUtils from './utils/QuadraticUtils';
-import ArcUtils from './utils/ArcUtils';
-import Star from './utils/Star';
+import { FillStyle } from './styles/FillStyle';
+import { GraphicsGeometry } from './GraphicsGeometry';
+import { LineStyle } from './styles/LineStyle';
+import { BezierUtils } from './utils/BezierUtils';
+import { QuadraticUtils } from './utils/QuadraticUtils';
+import { ArcUtils } from './utils/ArcUtils';
+import { Star } from './utils/Star';
 import { BLEND_MODES } from '@pixi/constants';
 import { Container } from '@pixi/display';
 
@@ -42,7 +42,7 @@ let defaultShader = null;
  * @extends PIXI.Container
  * @memberof PIXI
  */
-export default class Graphics extends Container
+export class Graphics extends Container
 {
     /**
      * @param {PIXI.GraphicsGeometry} [geometry=null] - Geometry to use, if omitted

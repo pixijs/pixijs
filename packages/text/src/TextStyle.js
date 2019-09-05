@@ -55,7 +55,7 @@ const genericFontFamilies = [
  * @class
  * @memberof PIXI
  */
-export default class TextStyle
+export class TextStyle
 {
     /**
      * @param {object} [style] - The style parameters

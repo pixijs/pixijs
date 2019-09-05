@@ -5,7 +5,7 @@
  * @param size {Number}
  * @private
  */
-export default function defaultValue(type, size)
+export function defaultValue(type, size)
 {
     switch (type)
     {

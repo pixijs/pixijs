@@ -21,7 +21,7 @@ import fragment from './displacement.frag';
  * @extends PIXI.Filter
  * @memberof PIXI.filters
  */
-export default class DisplacementFilter extends Filter
+export class DisplacementFilter extends Filter
 {
     /**
      * @param {PIXI.Sprite} sprite - The sprite used for the displacement map. (make sure its added to the scene!)

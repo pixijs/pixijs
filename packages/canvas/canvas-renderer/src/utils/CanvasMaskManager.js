@@ -8,7 +8,7 @@ import { SHAPES } from '@pixi/math';
  * @class
  * @memberof PIXI
  */
-export default class CanvasMaskManager
+export class CanvasMaskManager
 {
     /**
      * @param {PIXI.CanvasRenderer} renderer - The canvas renderer.

@@ -1,4 +1,4 @@
-import ArrayResource from './ArrayResource';
+import { ArrayResource } from './ArrayResource';
 import { TARGETS } from '@pixi/constants';
 
 /**
@@ -13,7 +13,7 @@ import { TARGETS } from '@pixi/constants';
  * @param {number} [options.width] - Width of resource
  * @param {number} [options.height] - Height of resource
  */
-export default class CubeResource extends ArrayResource
+export class CubeResource extends ArrayResource
 {
     constructor(source, options)
     {

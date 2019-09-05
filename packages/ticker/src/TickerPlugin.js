@@ -1,4 +1,4 @@
-import Ticker from './Ticker';
+import { Ticker } from './Ticker';
 import { UPDATE_PRIORITY } from './const';
 
 /**
@@ -12,7 +12,7 @@ import { UPDATE_PRIORITY } from './const';
  * @class
  * @memberof PIXI
  */
-export default class TickerPlugin
+export class TickerPlugin
 {
     /**
      * Initialize the plugin with scope of application instance

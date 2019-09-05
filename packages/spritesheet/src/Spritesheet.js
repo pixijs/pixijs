@@ -26,7 +26,7 @@ import { getResolutionOfUrl } from '@pixi/utils';
  * @class
  * @memberof PIXI
  */
-export default class Spritesheet
+export class Spritesheet
 {
     /**
      * The maximum number of Textures to build per process.

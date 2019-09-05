@@ -1,6 +1,6 @@
 import { settings } from '@pixi/settings';
 import { removeItems } from '@pixi/utils';
-import DisplayObject from './DisplayObject';
+import { DisplayObject } from './DisplayObject';
 
 function sortChildren(a, b)
 {
@@ -26,7 +26,7 @@ function sortChildren(a, b)
  * @extends PIXI.DisplayObject
  * @memberof PIXI
  */
-export default class Container extends DisplayObject
+export class Container extends DisplayObject
 {
     constructor()
     {
@@ -494,7 +494,7 @@ export default class Container extends DisplayObject
         }
 
         // do a quick check to see if this element has a mask or a filter.
-        if (this._mask || (this.filters && this.filters.length))
+        if (this._mask || (this._filters && this._filters.length))
         {
             this.renderAdvanced(renderer);
         }
@@ -520,7 +520,7 @@ export default class Container extends DisplayObject
     {
         renderer.batch.flush();
 
-        const filters = this.filters;
+        const filters = this._filters;
         const mask = this._mask;
 
         // push filter first as we need to ensure the stencil buffer is correct for any masking

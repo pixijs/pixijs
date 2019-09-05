@@ -1,1 +1,1 @@
-export { default as CanvasExtract } from './CanvasExtract';
+export * from './CanvasExtract';

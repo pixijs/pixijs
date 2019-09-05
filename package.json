@@ -40,7 +40,7 @@
     "@lerna/batch-packages": "^3.13.0",
     "@lerna/filter-packages": "^3.13.0",
     "@lerna/project": "^3.13.1",
-    "@pixi/jsdoc-template": "^2.4.2",
+    "@pixi/jsdoc-template": "^2.4.3",
     "copyfiles": "^2.1.0",
     "cross-env": "^5.2.0",
     "electron": "^4.1.4",

@@ -2,7 +2,7 @@ import { TYPES } from '@pixi/constants';
 import { ObjectRenderer, Shader } from '@pixi/core';
 import { correctBlendMode, premultiplyRgba, premultiplyTint } from '@pixi/utils';
 import { Matrix } from '@pixi/math';
-import ParticleBuffer from './ParticleBuffer';
+import { ParticleBuffer } from './ParticleBuffer';
 import vertex from './particles.vert';
 import fragment from './particles.frag';
 
@@ -24,7 +24,7 @@ import fragment from './particles.frag';
  * @class
  * @memberof PIXI
  */
-export default class ParticleRenderer extends ObjectRenderer
+export class ParticleRenderer extends ObjectRenderer
 {
     /**
      * @param {PIXI.Renderer} renderer - The renderer this sprite batch works for.

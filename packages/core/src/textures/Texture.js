@@ -1,7 +1,7 @@
-import BaseTexture from './BaseTexture';
-import ImageResource from './resources/ImageResource';
-import CanvasResource from './resources/CanvasResource';
-import TextureUvs from './TextureUvs';
+import { BaseTexture } from './BaseTexture';
+import { ImageResource } from './resources/ImageResource';
+import { CanvasResource } from './resources/CanvasResource';
+import { TextureUvs } from './TextureUvs';
 import { settings } from '@pixi/settings';
 import { Rectangle, Point } from '@pixi/math';
 import { uid, TextureCache, getResolutionOfUrl, EventEmitter } from '@pixi/utils';
@@ -38,7 +38,7 @@ const DEFAULT_UVS = new TextureUvs();
  * @extends PIXI.utils.EventEmitter
  * @memberof PIXI
  */
-export default class Texture extends EventEmitter
+export class Texture extends EventEmitter
 {
     /**
      * @param {PIXI.BaseTexture} baseTexture - The base texture source to create the texture from

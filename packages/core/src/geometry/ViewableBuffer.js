@@ -5,7 +5,7 @@
  * @class
  * @memberof PIXI
  */
-export default class ViewableBuffer
+export class ViewableBuffer
 {
     /**
      * @param {number} size - The size of the buffer in bytes.
