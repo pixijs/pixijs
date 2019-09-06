@@ -106,6 +106,8 @@ export class Resource
 
     /**
      * Trigger a resize event
+     * @param {number} width X dimension
+     * @param {number} height Y dimension
      */
     resize(width, height)
     {
