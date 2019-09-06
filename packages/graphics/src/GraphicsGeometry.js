@@ -130,7 +130,7 @@ export class GraphicsGeometry extends BatchGeometry
          * Intermediate abstract format sent to batch system.
          * Can be converted to drawCalls or to batchable objects.
          *
-         * @member {object[]}
+         * @member {BatchPart[]}
          * @protected
          */
         this.batches = [];
@@ -401,54 +401,31 @@ export class GraphicsGeometry extends BatchGeometry
      */
     updateBatches()
     {
-        if (this.dirty === this.cacheDirty) return;
-        if (this.graphicsData.length === 0)
-        {
-            this.batchable = true;
-
-            return;
-        }
-
-        if (this.dirty !== this.cacheDirty)
-        {
-            for (let i = 0; i < this.graphicsData.length; i++)
-            {
-                const data = this.graphicsData[i];
-
-                if (data.fillStyle && !data.fillStyle.texture.baseTexture.valid) return;
-                if (data.lineStyle && !data.lineStyle.texture.baseTexture.valid) return;
-            }
-        }
+        if (!this.validateBathching()) return;
 
         this.cacheDirty = this.dirty;
 
         const uvs = this.uvs;
+        const graphicsData = this.graphicsData;
 
         let batchPart = null;
-        let currentTexture = null;
-        let currentColor = 0;
-        let currentNative = false;
+
+        let currentStyle = null;
 
         if (this.batches.length > 0)
         {
             batchPart = this.batches[this.batches.length - 1];
-
-            const style = batchPart.style;
-
-            currentTexture = style.texture.baseTexture;
-            currentColor = style.color + style.alpha;
-            currentNative = !!style.native;
+            currentStyle = batchPart.style;
         }
 
-        for (let i = this.shapeIndex; i < this.graphicsData.length; i++)
+        for (let i = this.shapeIndex; i < graphicsData.length; i++)
         {
             this.shapeIndex++;
 
-            const data = this.graphicsData[i];
-            const command = FILL_COMMANDS[data.type];
-
+            const data = graphicsData[i];
             const fillStyle = data.fillStyle;
             const lineStyle = data.lineStyle;
+            const command = FILL_COMMANDS[data.type];
 
             // build out the shapes points..
             command.build(data);
@@ -465,18 +442,15 @@ export class GraphicsGeometry extends BatchGeometry
                 if (!style.visible) continue;
 
                 const nextTexture = style.texture.baseTexture;
-
                 const index = this.indices.length;
                 const attribIndex = this.points.length / 2;
 
+                nextTexture.wrapMode = WRAP_MODES.REPEAT;
+
                 // close batch if style is different
-                if (batchPart
-                    && (currentTexture !== nextTexture
-                    || currentColor !== (style.color + style.alpha)
-                    || currentNative !== !!style.native))
+                if (batchPart && !this._compareStyles(currentStyle, style))
                 {
-                    batchPart.size = index - batchPart.start;
-                    batchPart.attribSize = attribIndex - batchPart.attribStart;
+                    batchPart.end(index, attribIndex);
 
                     if (batchPart.size > 0)
                     {
@@ -487,40 +461,20 @@ export class GraphicsGeometry extends BatchGeometry
                 if (!batchPart)
                 {
                     batchPart = BATCH_POOL.pop() || new BatchPart();
-                    this.batches.push(batchPart);
-                    nextTexture.wrapMode = WRAP_MODES.REPEAT;
-                    currentTexture = nextTexture;
-                    currentColor = style.color + style.alpha;
-                    currentNative = style.native;
+                    batchPart.begin(style, index, attribIndex);
 
-                    batchPart.style = style;
-                    batchPart.start = index;
-                    batchPart.attribStart = attribIndex;
+                    this.batches.push(batchPart);
                 }
 
                 const start = this.points.length / 2;
 
                 if (j === 0)
                 {
-                    if (data.holes.length)
-                    {
-                        this.processHoles(data.holes);
-
-                        buildPoly.triangulate(data, this);
-                    }
-                    else
-                    {
-                        command.triangulate(data, this);
-                    }
+                    this.processFill(data);
                 }
                 else
                 {
-                    buildLine(data, this);
-
-                    for (let i = 0; i < data.holes.length; i++)
-                    {
-                        buildLine(data.holes[i], this);
-                    }
+                    this.processLine(data);
                 }
 
                 const size = (this.points.length / 2) - start;
@@ -528,9 +482,6 @@ export class GraphicsGeometry extends BatchGeometry
                 this.addUvs(this.points, uvs, style.texture, start, size, style.matrix);
             }
         }
-
-        const index = this.indices.length;
-        const attrib = this.points.length / 2;
 
         if (!batchPart)
         {
@@ -541,8 +492,11 @@ export class GraphicsGeometry extends BatchGeometry
             return;
         }
 
-        batchPart.size = index - batchPart.start;
-        batchPart.attribSize = attrib - batchPart.attribStart;
+        const index = this.indices.length;
+        const attrib = this.points.length / 2;
+
+        batchPart.end(index, attrib);
+
         this.indicesUint16 = new Uint16Array(this.indices);
 
         // TODO make this a const..
@@ -550,22 +504,7 @@ export class GraphicsGeometry extends BatchGeometry
 
         if (this.batchable)
         {
-            this.batchDirty++;
-
-            this.uvsFloat32 = new Float32Array(this.uvs);
-
-            // offset the indices so that it works with the batcher...
-            for (let i = 0; i < this.batches.length; i++)
-            {
-                const batch = this.batches[i];
-
-                for (let j = 0; j < batch.size; j++)
-                {
-                    const index = batch.start + j;
-
-                    this.indicesUint16[index] = this.indicesUint16[index] - batch.attribStart;
-                }
-            }
+            this.packBatches();
         }
         else
         {
@@ -574,8 +513,100 @@ export class GraphicsGeometry extends BatchGeometry
     }
 
     /**
+     * Affinity check
+     *
+     * @param {PIXI.FillStyle | PIXI.LineStyle} styleA
+     * @param {PIXI.FillStyle | PIXI.LineSTyle} styleB
+     */
+    _compareStyles(styleA, styleB)
+    {
+        if (!styleA || !styleB)
+        {
+            return false;
+        }
+
+        if (styleA.texture.baseTexture !== styleB.texture.baseTexture)
+        {
+            return false;
+        }
+
+        if (styleA.color + styleA.alpha !== styleB.color + styleB.alpha)
+        {
+            return false;
+        }
+
+        if (!!styleA.native !== !!styleB.native)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Test geometry for batching process.
+     *
+     * @protected
+     */
+    validateBathching()
+    {
+        if (this.dirty === this.cacheDirty)
+        {
+            return false;
+        }
+
+        if (!this.graphicsData.length)
+        {
+            this.batchable = true;
+
+            return false;
+        }
+
+        if (this.dirty !== this.cacheDirty)
+        {
+            for (let i = 0; i < this.graphicsData.length; i++)
+            {
+                const data = this.graphicsData[i];
+                const fill = data.fillStyle;
+                const line = data.lineStyle;
+
+                if (fill && !fill.texture.baseTexture.valid) return false;
+                if (line && !line.texture.baseTexture.valid) return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Offset the indices so that it works with the batcher.
+     *
+     * @protected
+     */
+    packBatches()
+    {
+        this.batchDirty++;
+        this.uvsFloat32 = new Float32Array(this.uvs);
+
+        const batches = this.batches;
+
+        for (let i = 0, l = batches.length; i < l; i++)
+        {
+            const batch = batches[i];
+
+            for (let j = 0; j < batch.size; j++)
+            {
+                const index = batch.start + j;
+
+                this.indicesUint16[index] = this.indicesUint16[index] - batch.attribStart;
+            }
+        }
+    }
+
+    /**
      * Checks to see if this graphics geometry can be batched.
      * Currently it needs to be small enough and not contain any native lines.
+     *
      * @protected
      */
     isBatchable()
@@ -595,6 +626,7 @@ export class GraphicsGeometry extends BatchGeometry
 
     /**
      * Converts intermediate batches data to drawCalls.
+     *
      * @protected
      */
     buildDrawCalls()
@@ -609,7 +641,6 @@ export class GraphicsGeometry extends BatchGeometry
 
         this.drawCalls.length = 0;
 
-        const uvs = this.uvs;
         const colors = this.colors;
         const textureIds = this.textureIds;
 
@@ -701,7 +732,20 @@ export class GraphicsGeometry extends BatchGeometry
 
         // upload..
         // merge for now!
+        this.packAttributes();
+    }
+
+    /**
+     * Packs attributes to single buffer.
+     *
+     * @protected
+     */
+    packAttributes()
+    {
         const verts = this.points;
+        const uvs = this.uvs;
+        const colors = this.colors;
+        const textureIds = this.textureIds;
 
         // verts are 2 positions.. so we * by 3 as there are 6 properties.. then 4 cos its bytes
         const glPoints = new ArrayBuffer(verts.length * 3 * 4);
@@ -728,6 +772,44 @@ export class GraphicsGeometry extends BatchGeometry
     }
 
     /**
+     * Process fill part of Graphics.
+     *
+     * @param {PIXI.GraphicsData} data
+     * @protected
+     */
+    processFill(data)
+    {
+        if (data.holes.length)
+        {
+            this.processHoles(data.holes);
+
+            buildPoly.triangulate(data, this);
+        }
+        else
+        {
+            const command = FILL_COMMANDS[data.type];
+
+            command.triangulate(data, this);
+        }
+    }
+
+    /**
+     * Process line part of Graphics.
+     *
+     * @param {PIXI.GraphicsData} data
+     * @protected
+     */
+    processLine(data)
+    {
+        buildLine(data, this);
+
+        for (let i = 0; i < data.holes.length; i++)
+        {
+            buildLine(data.holes[i], this);
+        }
+    }
+
+    /**
      * Process the holes data.
      *
      * @param {PIXI.GraphicsData[]} holes - Holes to render
@@ -738,7 +820,6 @@ export class GraphicsGeometry extends BatchGeometry
         for (let i = 0; i < holes.length; i++)
         {
             const hole = holes[i];
-
             const command = FILL_COMMANDS[hole.type];
 
             command.build(hole);
@@ -752,6 +833,7 @@ export class GraphicsGeometry extends BatchGeometry
 
     /**
      * Update the local bounds of the object. Expensive to use performance-wise.
+     *
      * @protected
      */
     calculateBounds()
@@ -932,6 +1014,7 @@ export class GraphicsGeometry extends BatchGeometry
     /**
      * Modify uvs array according to position of texture region
      * Does not work with rotated or trimmed textures
+     *
      * @param {number[]} uvs array
      * @param {PIXI.Texture} texture region
      * @param {number} start starting index for uvs

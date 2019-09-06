@@ -23,6 +23,7 @@ export * from './Star';
 export * from './ArcUtils';
 export * from './BezierUtils';
 export * from './QuadraticUtils';
+export * from './BatchPart';
 
 import { SHAPES } from '@pixi/math';
 
@@ -40,22 +41,6 @@ export const FILL_COMMANDS = {
 };
 
 /**
- * A structure to hold interim batch objects.
- *
- */
-export class BatchPart
-{
-    constructor()
-    {
-        this.style = null;
-        this.size = 0;
-        this.start = 0;
-        this.attribStart = 0;
-        this.attribSize = 0;
-    }
-}
-
-/**
  * Batch pool, stores unused batches for preventing allocations.
  *
  * @type {Array<BatchPart>}
@@ -65,6 +50,6 @@ export const BATCH_POOL = [];
 /**
  * Draw call pool, stores unused draw calls for preventing allocations.
  *
- * @type {Array<any>}
+ * @type {Array<PIXI.BatchDrawCall>}
  */
 export const DRAW_CALL_POOL = [];
