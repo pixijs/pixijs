@@ -1,51 +1,24 @@
-import { SHAPES, Point, Matrix } from '@pixi/math';
-import { Bounds } from '@pixi/display';
-import { BatchGeometry, BatchDrawCall, BaseTexture } from '@pixi/core';
+import {
+    buildLine,
+    buildPoly,
+    BatchPart,
+    FILL_COMMANDS,
+    BATCH_POOL,
+    DRAW_CALL_POOL } from './utils';
+
+import {
+    BatchGeometry,
+    BatchDrawCall,
+    BaseTexture } from '@pixi/core';
+
 import { DRAW_MODES, WRAP_MODES } from '@pixi/constants';
-
+import { SHAPES, Point, Matrix } from '@pixi/math';
 import { GraphicsData } from './GraphicsData';
-import { buildCircle } from './utils/buildCircle';
-import { buildLine } from './utils/buildLine';
-import { buildPoly } from './utils/buildPoly';
-import { buildRectangle } from './utils/buildRectangle';
-import { buildRoundedRectangle } from './utils/buildRoundedRectangle';
 import { premultiplyTint } from '@pixi/utils';
+import { Bounds } from '@pixi/display';
 
-const BATCH_POOL = [];
-const DRAW_CALL_POOL = [];
 const tmpPoint = new Point();
 const tmpBounds = new Bounds();
-
-/**
- * Map of fill commands for each shape type.
- *
- * @member {Object}
- * @private
- */
-const fillCommands = {};
-
-fillCommands[SHAPES.POLY] = buildPoly;
-fillCommands[SHAPES.CIRC] = buildCircle;
-fillCommands[SHAPES.ELIP] = buildCircle;
-fillCommands[SHAPES.RECT] = buildRectangle;
-fillCommands[SHAPES.RREC] = buildRoundedRectangle;
-
-/**
- * A little internal structure to hold interim batch objects.
- *
- * @private
- */
-class BatchPart
-{
-    constructor()
-    {
-        this.style = null;
-        this.size = 0;
-        this.start = 0;
-        this.attribStart = 0;
-        this.attribSize = 0;
-    }
-}
 
 /**
  * The Graphics class contains methods used to draw primitive shapes such as lines, circles and
@@ -472,7 +445,7 @@ export class GraphicsGeometry extends BatchGeometry
             this.shapeIndex++;
 
             const data = this.graphicsData[i];
-            const command = fillCommands[data.type];
+            const command = FILL_COMMANDS[data.type];
 
             const fillStyle = data.fillStyle;
             const lineStyle = data.lineStyle;
@@ -766,7 +739,7 @@ export class GraphicsGeometry extends BatchGeometry
         {
             const hole = holes[i];
 
-            const command = fillCommands[hole.type];
+            const command = FILL_COMMANDS[hole.type];
 
             command.build(hole);
 
