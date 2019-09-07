@@ -250,7 +250,7 @@
     },
     "overrides": [
         {
-          "files": ["*.ts", "*.tsx", ".*.ts", ".*.tsx"],
+          "files": ["*.ts"],
           "extends": ["plugin:@typescript-eslint/recommended"]
         }
     ]

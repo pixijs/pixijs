@@ -1,18 +1,17 @@
-
 {
-"compilerOptions": {
-    "target": "es5",                       /* Specify ECMAScript target version: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017', or 'ESNEXT'. */
-    "allowJs": true,                       /* Allow JavaScript files to be compiled. */
-    "declaration": true,                   /* Generates corresponding '.d.ts' file. */
-    "sourceMap": true,                     /* Generates corresponding '.map' file. */
-    "removeComments": false,                /* Do not emit comments to output. */
-    "strict": true,                        /* Enable all strict type-checking options. */
-    "noImplicitAny": true,                 /* Raise error on expressions and declarations with an implied 'any' type. */
-    "noUnusedLocals": true,                /* Report errors on unused locals. */
-    "noUnusedParameters": true,            /* Report errors on unused parameters. */
-    "noImplicitReturns": true,             /* Report error when not all code paths in function return a value. */
-  },
-  "exclude": [
-    "node_modules"
-  ]
+    "compilerOptions": {
+        "target": "es5",                       /* Specify ECMAScript target version: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017', or 'ESNEXT'. */
+        "allowJs": true,                       /* Allow JavaScript files to be compiled. */
+        "declaration": true,                   /* Generates corresponding '.d.ts' file. */
+        "sourceMap": true,                     /* Generates corresponding '.map' file. */
+        "removeComments": false,               /* Do not emit comments to output. */
+        "strict": true,                        /* Enable all strict type-checking options. */
+        "noImplicitAny": true,                 /* Raise error on expressions and declarations with an implied 'any' type. */
+        "noUnusedLocals": true,                /* Report errors on unused locals. */
+        "noUnusedParameters": true,            /* Report errors on unused parameters. */
+        "noImplicitReturns": true,             /* Report error when not all code paths in function return a value. */
+    },
+    "exclude": [
+        "node_modules"
+    ]
 }
