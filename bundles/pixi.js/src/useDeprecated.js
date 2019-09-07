@@ -138,6 +138,34 @@ export function useDeprecated()
                 return PIXI.systems.FilterSystem;
             },
         },
+
+        /**
+         * @namespace PIXI.CanvasTinter
+         * @see PIXI.canvasUtils
+         * @deprecated since 5.2.0
+         */
+        CanvasTinter: {
+            get()
+            {
+                deprecation('5.2.0', 'PIXI.CanvasTinter namespace has moved to PIXI.canvasUtils');
+
+                return PIXI.canvasUtils;
+            },
+        },
+
+        /**
+         * @namespace PIXI.GroupD8
+         * @see PIXI.groupD8
+         * @deprecated since 5.2.0
+         */
+        GroupD8: {
+            get()
+            {
+                deprecation('5.2.0', 'PIXI.GroupD8 namespace has moved to PIXI.groupD8');
+
+                return PIXI.groupD8;
+            },
+        },
     });
 
     /**

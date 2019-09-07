@@ -1,4 +1,4 @@
-import { GroupD8 } from '@pixi/math';
+import { groupD8 } from '@pixi/math';
 
 /**
  * Stores a texture's frame in UV coordinates, in
@@ -85,7 +85,7 @@ export class TextureUvs
      * @protected
      * @param {PIXI.Rectangle} frame - The frame of the texture
      * @param {PIXI.Rectangle} baseFrame - The base frame of the texture
-     * @param {number} rotate - Rotation of frame, see {@link PIXI.GroupD8}
+     * @param {number} rotate - Rotation of frame, see {@link PIXI.groupD8}
      */
     set(frame, baseFrame, rotate)
     {
@@ -102,21 +102,21 @@ export class TextureUvs
             const cX = (frame.x / tw) + w2;
             const cY = (frame.y / th) + h2;
 
-            rotate = GroupD8.add(rotate, GroupD8.NW); // NW is top-left corner
-            this.x0 = cX + (w2 * GroupD8.uX(rotate));
-            this.y0 = cY + (h2 * GroupD8.uY(rotate));
+            rotate = groupD8.add(rotate, groupD8.NW); // NW is top-left corner
+            this.x0 = cX + (w2 * groupD8.uX(rotate));
+            this.y0 = cY + (h2 * groupD8.uY(rotate));
 
-            rotate = GroupD8.add(rotate, 2); // rotate 90 degrees clockwise
-            this.x1 = cX + (w2 * GroupD8.uX(rotate));
-            this.y1 = cY + (h2 * GroupD8.uY(rotate));
+            rotate = groupD8.add(rotate, 2); // rotate 90 degrees clockwise
+            this.x1 = cX + (w2 * groupD8.uX(rotate));
+            this.y1 = cY + (h2 * groupD8.uY(rotate));
 
-            rotate = GroupD8.add(rotate, 2);
-            this.x2 = cX + (w2 * GroupD8.uX(rotate));
-            this.y2 = cY + (h2 * GroupD8.uY(rotate));
+            rotate = groupD8.add(rotate, 2);
+            this.x2 = cX + (w2 * groupD8.uX(rotate));
+            this.y2 = cY + (h2 * groupD8.uY(rotate));
 
-            rotate = GroupD8.add(rotate, 2);
-            this.x3 = cX + (w2 * GroupD8.uX(rotate));
-            this.y3 = cY + (h2 * GroupD8.uY(rotate));
+            rotate = groupD8.add(rotate, 2);
+            this.x3 = cX + (w2 * groupD8.uX(rotate));
+            this.y3 = cY + (h2 * groupD8.uY(rotate));
         }
         else
         {

@@ -89,8 +89,14 @@ export class Renderer extends AbstractRenderer
          */
         this.type = RENDERER_TYPE.WEBGL;
 
-        // this will be set by the contextSystem (this.context)
+        /**
+         * WebGL context, set by the contextSystem (this.context)
+         *
+         * @readonly
+         * @member {WebGLRenderingContext}
+         */
         this.gl = null;
+
         this.CONTEXT_UID = 0;
 
         // TODO legacy!
