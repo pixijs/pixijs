@@ -5,7 +5,7 @@
  * @class
  * @memberof PIXI
  */
-export default class Point
+export class Point
 {
     /**
      * @param {number} [x=0] - position of the point on the x axis

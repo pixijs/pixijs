@@ -16,7 +16,7 @@ const tempMat = new Matrix();
  * @memberof PIXI
  * @extends PIXI.ObjectRenderer
  */
-export default class TilingSpriteRenderer extends ObjectRenderer
+export class TilingSpriteRenderer extends ObjectRenderer
 {
     /**
      * constructor for renderer

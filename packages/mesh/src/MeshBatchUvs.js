@@ -4,7 +4,7 @@
  * @class
  * @memberof PIXI
  */
-export default class MeshBatchUvs
+export class MeshBatchUvs
 {
     /**
      * @param {PIXI.Buffer} uvBuffer - Buffer with normalized uv's

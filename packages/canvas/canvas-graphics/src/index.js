@@ -1,3 +1,3 @@
-export { default as CanvasGraphicsRenderer } from './CanvasGraphicsRenderer';
+export * from './CanvasGraphicsRenderer';
 
 import './Graphics';

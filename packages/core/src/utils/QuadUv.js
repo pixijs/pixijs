@@ -1,5 +1,5 @@
-import Geometry from '../geometry/Geometry';
-import Buffer from '../geometry/Buffer';
+import { Geometry } from '../geometry/Geometry';
+import { Buffer } from '../geometry/Buffer';
 
 /**
  * Helper class to create a quad with uvs like in v4
@@ -8,7 +8,7 @@ import Buffer from '../geometry/Buffer';
  * @memberof PIXI
  * @extends PIXI.Geometry
  */
-export default class QuadUv extends Geometry
+export class QuadUv extends Geometry
 {
     constructor()
     {

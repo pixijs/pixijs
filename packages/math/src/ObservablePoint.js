@@ -7,7 +7,7 @@
  * @class
  * @memberof PIXI
  */
-export default class ObservablePoint
+export class ObservablePoint
 {
     /**
      * @param {Function} cb - callback when changed

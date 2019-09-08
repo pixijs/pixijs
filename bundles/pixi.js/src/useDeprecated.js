@@ -12,7 +12,7 @@ const v5 = '5.0.0';
  * @memberof PIXI
  * @function useDeprecated
  */
-export default function useDeprecated()
+export function useDeprecated()
 {
     const PIXI = this;
 
@@ -136,6 +136,34 @@ export default function useDeprecated()
                 deprecation(v5, 'PIXI.FilterManager class has moved to PIXI.systems.FilterSystem');
 
                 return PIXI.systems.FilterSystem;
+            },
+        },
+
+        /**
+         * @namespace PIXI.CanvasTinter
+         * @see PIXI.canvasUtils
+         * @deprecated since 5.2.0
+         */
+        CanvasTinter: {
+            get()
+            {
+                deprecation('5.2.0', 'PIXI.CanvasTinter namespace has moved to PIXI.canvasUtils');
+
+                return PIXI.canvasUtils;
+            },
+        },
+
+        /**
+         * @namespace PIXI.GroupD8
+         * @see PIXI.groupD8
+         * @deprecated since 5.2.0
+         */
+        GroupD8: {
+            get()
+            {
+                deprecation('5.2.0', 'PIXI.GroupD8 namespace has moved to PIXI.groupD8');
+
+                return PIXI.groupD8;
             },
         },
     });

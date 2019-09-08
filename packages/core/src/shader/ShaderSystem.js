@@ -1,5 +1,5 @@
-import System from '../System';
-import GLProgram from './GLProgram';
+import { System } from '../System';
+import { GLProgram } from './GLProgram';
 import { generateUniformsSync,
     unsafeEvalSupported,
     defaultValue,
@@ -14,7 +14,7 @@ let UID = 0;
  * @memberof PIXI.systems
  * @extends PIXI.System
  */
-export default class ShaderSystem extends System
+export class ShaderSystem extends System
 {
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.

@@ -8,7 +8,7 @@
  * @param attributeLocations {Object} An attribute location map that lets you manually set the attribute locations
  * @return {WebGLProgram} the shader program
  */
-export default function compileProgram(gl, vertexSrc, fragmentSrc, attributeLocations)
+export function compileProgram(gl, vertexSrc, fragmentSrc, attributeLocations)
 {
     const glVertShader = compileShader(gl, gl.VERTEX_SHADER, vertexSrc);
     const glFragShader = compileShader(gl, gl.FRAGMENT_SHADER, fragmentSrc);

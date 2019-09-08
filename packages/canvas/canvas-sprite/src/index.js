@@ -1,3 +1,3 @@
-export { default as CanvasSpriteRenderer } from './CanvasSpriteRenderer';
+export * from './CanvasSpriteRenderer';
 
 import './Sprite';

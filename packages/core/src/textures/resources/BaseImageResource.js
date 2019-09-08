@@ -1,4 +1,4 @@
-import Resource from './Resource';
+import { Resource } from './Resource';
 import { determineCrossOrigin } from '@pixi/utils';
 
 /**
@@ -7,7 +7,7 @@ import { determineCrossOrigin } from '@pixi/utils';
  * @extends PIXI.resources.Resource
  * @memberof PIXI.resources
  */
-export default class BaseImageResource extends Resource
+export class BaseImageResource extends Resource
 {
     /**
      * @param {HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|SVGElement} source

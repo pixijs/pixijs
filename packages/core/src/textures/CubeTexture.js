@@ -1,5 +1,5 @@
-import BaseTexture from './BaseTexture';
-import CubeResource from './resources/CubeResource';
+import { BaseTexture } from './BaseTexture';
+import { CubeResource } from './resources/CubeResource';
 
 /**
  * A Texture that depends on six other resources.
@@ -8,7 +8,7 @@ import CubeResource from './resources/CubeResource';
  * @extends PIXI.BaseTexture
  * @memberof PIXI
  */
-export default class CubeTexture extends BaseTexture
+export class CubeTexture extends BaseTexture
 {
     /**
      * Generate a new CubeTexture.

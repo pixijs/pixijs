@@ -14,7 +14,7 @@ import { Polygon, PI_2 } from '@pixi/math';
  * @param {number} [rotation=0] - The rotation of the star in radians, where 0 is vertical
  * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
  */
-export default class Star extends Polygon
+export class Star extends Polygon
 {
     constructor(x, y, points, radius, innerRadius, rotation)
     {

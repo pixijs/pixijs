@@ -1,11 +1,11 @@
 import { Ticker, UPDATE_PRIORITY } from '@pixi/ticker';
 import { Point } from '@pixi/math';
 import { DisplayObject } from '@pixi/display';
-import InteractionData from './InteractionData';
-import InteractionEvent from './InteractionEvent';
-import InteractionTrackingData from './InteractionTrackingData';
+import { InteractionData } from './InteractionData';
+import { InteractionEvent } from './InteractionEvent';
+import { InteractionTrackingData } from './InteractionTrackingData';
 import { EventEmitter } from '@pixi/utils';
-import interactiveTarget from './interactiveTarget';
+import { interactiveTarget } from './interactiveTarget';
 
 // Mix interactiveTarget into DisplayObject.prototype,
 // after deprecation has been handled
@@ -34,7 +34,7 @@ const hitTestEvent = {
  * @extends PIXI.utils.EventEmitter
  * @memberof PIXI.interaction
  */
-export default class InteractionManager extends EventEmitter
+export class InteractionManager extends EventEmitter
 {
     /**
      * @param {PIXI.CanvasRenderer|PIXI.Renderer} renderer - A reference to the current renderer
@@ -939,7 +939,9 @@ export default class InteractionManager extends EventEmitter
      */
     dispatchEvent(displayObject, eventString, eventData)
     {
-        if (!eventData.stopped)
+        // Even if the event was stopped, at least dispatch any remaining events
+        // for the same display object.
+        if (!eventData.stopPropagationHint || displayObject === eventData.stopsPropagatingAt)
         {
             eventData.currentTarget = displayObject;
             eventData.type = eventString;
@@ -1158,15 +1160,25 @@ export default class InteractionManager extends EventEmitter
 
         if (delayedEvents.length && !skipDelayed)
         {
+            // Reset the propagation hint, because we start deeper in the tree again.
+            interactionEvent.stopPropagationHint = false;
+
             const delayedLen = delayedEvents.length;
 
             this.delayedEvents = [];
 
             for (let i = 0; i < delayedLen; i++)
             {
-                const delayed = delayedEvents[i];
+                const { displayObject, eventString, eventData } = delayedEvents[i];
 
-                this.dispatchEvent(delayed.displayObject, delayed.eventString, delayed.eventData);
+                // When we reach the object we wanted to stop propagating at,
+                // set the propagation hint.
+                if (eventData.stopsPropagatingAt === displayObject)
+                {
+                    eventData.stopPropagationHint = true;
+                }
+
+                this.dispatchEvent(displayObject, eventString, eventData);
             }
         }
 

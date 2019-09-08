@@ -4,7 +4,7 @@
  * @class
  * @memberof PIXI
  */
-export default class GLProgram
+export class GLProgram
 {
     /**
      * Makes a new Pixi program

@@ -1,1 +1,1 @@
-export { default as FXAAFilter } from './FXAAFilter';
+export * from './FXAAFilter';

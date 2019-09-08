@@ -1,5 +1,5 @@
 import { TilingSprite } from '@pixi/sprite-tiling';
-import { CanvasTinter } from '@pixi/canvas-renderer';
+import { canvasUtils } from '@pixi/canvas-renderer';
 import { CanvasRenderTarget } from '@pixi/utils';
 
 /**
@@ -40,7 +40,7 @@ TilingSprite.prototype._renderCanvas = function _renderCanvas(renderer)
         // Tint the tiling sprite
         if (this.tint !== 0xFFFFFF)
         {
-            this._tintedCanvas = CanvasTinter.getTintedCanvas(this, this.tint);
+            this._tintedCanvas = canvasUtils.getTintedCanvas(this, this.tint);
             tempCanvas.context.drawImage(this._tintedCanvas, 0, 0);
         }
         else

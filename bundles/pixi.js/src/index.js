@@ -26,7 +26,7 @@ import '@pixi/mixin-get-global-position';
 // Export deprecations so Rollup can call it
 // in the footer after global is defined
 // other module must call this manually
-import useDeprecated from './useDeprecated';
+import { useDeprecated } from './useDeprecated';
 
 // Install renderer plugins
 Renderer.registerPlugin('accessibility', accessibility.AccessibilityManager);
