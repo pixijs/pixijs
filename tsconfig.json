@@ -8,7 +8,7 @@
         "noImplicitAny": true,                 /* Raise error on expressions and declarations with an implied 'any' type. */
         "noUnusedLocals": true,                /* Report errors on unused locals. */
         "noUnusedParameters": true,            /* Report errors on unused parameters. */
-        "noImplicitReturns": true,             /* Report error when not all code paths in function return a value. */
+        "noImplicitReturns": true              /* Report error when not all code paths in function return a value. */
     },
     "exclude": [
         "node_modules"
