@@ -102,7 +102,7 @@ export class TreeSearch
                 const child = children[i];
 
                 // time to get recursive.. if this function will return if something is hit..
-                const childHit = this.recursiveProcessInteractive(interactionEvent, child, func, hitTest, interactiveParent);
+                const childHit = this.recursiveFindHit(interactionEvent, child, func, hitTest, interactiveParent);
 
                 if (childHit)
                 {
