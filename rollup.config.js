@@ -3,6 +3,7 @@ import transpile from 'rollup-plugin-buble';
 import resolve from 'rollup-plugin-node-resolve';
 import { string } from 'rollup-plugin-string';
 import sourcemaps from 'rollup-plugin-sourcemaps';
+import typescript from 'rollup-plugin-typescript';
 import minimist from 'minimist';
 import commonjs from 'rollup-plugin-commonjs';
 import replace from 'rollup-plugin-replace';
@@ -44,6 +45,7 @@ async function main()
                 'resource-loader': ['Resource'],
             },
         }),
+        typescript(),
         string({
             include: [
                 '**/*.frag',
