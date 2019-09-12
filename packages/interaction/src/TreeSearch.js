@@ -1,7 +1,7 @@
 import { Point } from '@pixi/math';
 
 /**
- * An Algorithm that searches through stage tree for interactive objects
+ * Strategy how to search through stage tree for interactive objects
  *
  * @class
  * @memberof PIXI.interaction
