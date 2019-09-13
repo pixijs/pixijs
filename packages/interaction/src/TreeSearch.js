@@ -3,6 +3,7 @@ import { Point } from '@pixi/math';
 /**
  * Strategy how to search through stage tree for interactive objects
  *
+ * @private
  * @class
  * @memberof PIXI.interaction
  */
@@ -16,7 +17,7 @@ export class TreeSearch
     /**
      * Recursive implementation for findHit
      *
-     * @protected
+     * @private
      * @param {PIXI.interaction.InteractionEvent} interactionEvent - event containing the point that
      *  is tested for collision
      * @param {PIXI.Container|PIXI.Sprite|PIXI.TilingSprite} displayObject - the displayObject
@@ -171,6 +172,8 @@ export class TreeSearch
     }
 
     /**
+     * @private
+     *
      * This function is provides a neat way of crawling through the scene graph and running a
      * specified function on all interactive objects it finds. It will also take care of hit
      * testing the interactive objects and passes the hit across in the function.

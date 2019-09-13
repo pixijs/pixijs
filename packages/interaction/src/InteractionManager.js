@@ -254,6 +254,8 @@ export class InteractionManager extends EventEmitter
 
         /**
          * TreeSearch component that is used to hitTest stage tree
+         *
+         * @private
          * @member {PIXI.interaction.TreeSearch}
          */
         this.search = new TreeSearch();
