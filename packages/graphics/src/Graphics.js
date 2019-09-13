@@ -31,8 +31,8 @@ import { Container } from '@pixi/display';
 
 const temp = new Float32Array(3);
 
-// a default shader used by graphics..
-let defaultShader = null;
+// a default shaders map used by graphics..
+const DEFAULT_SHADERS = {};
 
 /**
  * The Graphics class contains methods used to draw primitive shapes such as lines, circles and
@@ -891,143 +891,198 @@ export class Graphics extends Container
         {
             if (this.batchDirty !== geometry.batchDirty)
             {
-                this.batches = [];
-                this.batchTint = -1;
-                this._transformID = -1;
-                this.batchDirty = geometry.batchDirty;
-
-                this.vertexData = new Float32Array(geometry.points);
-
-                const blendMode = this.blendMode;
-
-                for (let i = 0; i < geometry.batches.length; i++)
-                {
-                    const gI = geometry.batches[i];
-
-                    const color = gI.style.color;
-
-                    //        + (alpha * 255 << 24);
-
-                    const vertexData = new Float32Array(this.vertexData.buffer,
-                        gI.attribStart * 4 * 2,
-                        gI.attribSize * 2);
-
-                    const uvs = new Float32Array(geometry.uvsFloat32.buffer,
-                        gI.attribStart * 4 * 2,
-                        gI.attribSize * 2);
-
-                    const indices = new Uint16Array(geometry.indicesUint16.buffer,
-                        gI.start * 2,
-                        gI.size);
-
-                    const batch = {
-                        vertexData,
-                        blendMode,
-                        indices,
-                        uvs,
-                        _batchRGB: hex2rgb(color),
-                        _tintRGB: color,
-                        _texture: gI.style.texture,
-                        alpha: gI.style.alpha,
-                        worldAlpha: 1 };
-
-                    this.batches[i] = batch;
-                }
+                this._populateBatches();
             }
 
-            if (this.batches.length)
-            {
-                renderer.batch.setObjectRenderer(renderer.plugins[this.pluginName]);
-
-                this.calculateVertices();
-                this.calculateTints();
-
-                for (let i = 0; i < this.batches.length; i++)
-                {
-                    const batch = this.batches[i];
-
-                    batch.worldAlpha = this.worldAlpha * batch.alpha;
-
-                    renderer.plugins[this.pluginName].render(batch);
-                }
-            }
+            this._renderBatched(renderer);
         }
         else
         {
             // no batching...
             renderer.batch.flush();
 
-            if (!this.shader)
-            {
-                // if there is no shader here, we can use the default shader.
-                // and that only gets created if we actually need it..
-                if (!defaultShader)
-                {
-                    const sampleValues = new Int32Array(16);
-
-                    for (let i = 0; i < 16; i++)
-                    {
-                        sampleValues[i] = i;
-                    }
-
-                    const uniforms = {
-                        tint: new Float32Array([1, 1, 1, 1]),
-                        translationMatrix: new Matrix(),
-                        default: UniformGroup.from({ uSamplers: sampleValues }, true),
-                    };
-
-                    // we can bbase default shader of the batch renderers program
-                    const program =  renderer.plugins.batch._shader.program;
-
-                    defaultShader = new Shader(program, uniforms);
-                }
-
-                this.shader = defaultShader;
-            }
-
-            const uniforms = this.shader.uniforms;
-
-            // lets set the transfomr
-            uniforms.translationMatrix = this.transform.worldTransform;
-
-            const tint = this.tint;
-            const wa = this.worldAlpha;
-
-            // and then lets set the tint..
-            uniforms.tint[0] = (((tint >> 16) & 0xFF) / 255) * wa;
-            uniforms.tint[1] = (((tint >> 8) & 0xFF) / 255) * wa;
-            uniforms.tint[2] = ((tint & 0xFF) / 255) * wa;
-            uniforms.tint[3] = wa;
-
-            // the first draw call, we can set the uniforms of the shader directly here.
-
-            // this means that we can tack advantage of the sync function of pixi!
-            // bind and sync uniforms..
-            // there is a way to optimise this..
-            renderer.shader.bind(this.shader);
-
-            // then render it
-            renderer.geometry.bind(geometry, this.shader);
-
-            // set state..
-            renderer.state.set(this.state);
-
-            // then render the rest of them...
-            for (let i = 0; i < geometry.drawCalls.length; i++)
-            {
-                const drawCall = geometry.drawCalls[i];
-
-                const groupTextureCount = drawCall.textureCount;
-
-                for (let j = 0; j < groupTextureCount; j++)
-                {
-                    renderer.texture.bind(drawCall.textures[j], j);
-                }
-
-                // bind the geometry...
-                renderer.geometry.draw(drawCall.type, drawCall.size, drawCall.start);
-            }
+            this._renderDirect(renderer);
         }
+    }
+
+    /**
+     * Populating batches for rendering
+     *
+     * @protected
+     */
+    _populateBatches()
+    {
+        const geometry = this.geometry;
+        const blendMode = this.blendMode;
+
+        this.batches = [];
+        this.batchTint = -1;
+        this._transformID = -1;
+        this.batchDirty = geometry.batchDirty;
+
+        this.vertexData = new Float32Array(geometry.points);
+
+        for (let i = 0, l = geometry.batches.length; i < l; i++)
+        {
+            const gI = geometry.batches[i];
+            const color = gI.style.color;
+            const vertexData = new Float32Array(this.vertexData.buffer,
+                gI.attribStart * 4 * 2,
+                gI.attribSize * 2);
+
+            const uvs = new Float32Array(geometry.uvsFloat32.buffer,
+                gI.attribStart * 4 * 2,
+                gI.attribSize * 2);
+
+            const indices = new Uint16Array(geometry.indicesUint16.buffer,
+                gI.start * 2,
+                gI.size);
+
+            const batch = {
+                vertexData,
+                blendMode,
+                indices,
+                uvs,
+                _batchRGB: hex2rgb(color),
+                _tintRGB: color,
+                _texture: gI.style.texture,
+                alpha: gI.style.alpha,
+                worldAlpha: 1 };
+
+            this.batches[i] = batch;
+        }
+    }
+
+    /**
+     * Renders the batches using the BathedRenderer plugin
+     *
+     * @protected
+     * @param {PIXI.Renderer} renderer - The renderer
+     */
+    _renderBatched(renderer)
+    {
+        if (!this.batches.length)
+        {
+            return;
+        }
+
+        renderer.batch.setObjectRenderer(renderer.plugins[this.pluginName]);
+
+        this.calculateVertices();
+        this.calculateTints();
+
+        for (let i = 0, l = this.batches.length; i < l; i++)
+        {
+            const batch = this.batches[i];
+
+            batch.worldAlpha = this.worldAlpha * batch.alpha;
+
+            renderer.plugins[this.pluginName].render(batch);
+        }
+    }
+
+    /**
+     * Renders the graphics direct
+     *
+     * @protected
+     * @param {PIXI.Renderer} renderer - The renderer
+     */
+    _renderDirect(renderer)
+    {
+        const shader = this._resolveDirectShader(renderer);
+
+        const geometry = this.geometry;
+        const tint = this.tint;
+        const worldAlpha = this.worldAlpha;
+        const uniforms = shader.uniforms;
+        const drawCalls = geometry.drawCalls;
+
+        // lets set the transfomr
+        uniforms.translationMatrix = this.transform.worldTransform;
+
+        // and then lets set the tint..
+        uniforms.tint[0] = (((tint >> 16) & 0xFF) / 255) * worldAlpha;
+        uniforms.tint[1] = (((tint >> 8) & 0xFF) / 255) * worldAlpha;
+        uniforms.tint[2] = ((tint & 0xFF) / 255) * worldAlpha;
+        uniforms.tint[3] = worldAlpha;
+
+        // the first draw call, we can set the uniforms of the shader directly here.
+
+        // this means that we can tack advantage of the sync function of pixi!
+        // bind and sync uniforms..
+        // there is a way to optimise this..
+        renderer.shader.bind(shader);
+        renderer.geometry.bind(geometry, shader);
+
+        // set state..
+        renderer.state.set(this.state);
+
+        // then render the rest of them...
+        for (let i = 0, l = drawCalls.length; i < l; i++)
+        {
+            this._renderDrawCallDirect(renderer, geometry.drawCalls[i]);
+        }
+    }
+
+    /**
+     * Renders specific DrawCall
+     *
+     * @param {PIXI.Renderer} renderer
+     * @param {PIXI.BatchDrawCall} drawCall
+     */
+    _renderDrawCallDirect(renderer, drawCall)
+    {
+        const groupTextureCount = drawCall.textureCount;
+
+        for (let j = 0; j < groupTextureCount; j++)
+        {
+            renderer.texture.bind(drawCall.textures[j], j);
+        }
+
+        renderer.geometry.draw(drawCall.type, drawCall.size, drawCall.start);
+    }
+
+    /**
+     * Resolves shader for direct rendering
+     *
+     * @protected
+     * @param {PIXI.Renderer} renderer - The renderer
+     */
+    _resolveDirectShader(renderer)
+    {
+        let shader = this.shader;
+
+        const pluginName = this.pluginName;
+
+        if (!shader)
+        {
+            // if there is no shader here, we can use the default shader.
+            // and that only gets created if we actually need it..
+            // but may be more than one plugins for graphics
+            if (!DEFAULT_SHADERS[pluginName])
+            {
+                const sampleValues = new Int32Array(16);
+
+                for (let i = 0; i < 16; i++)
+                {
+                    sampleValues[i] = i;
+                }
+
+                const uniforms = {
+                    tint: new Float32Array([1, 1, 1, 1]),
+                    translationMatrix: new Matrix(),
+                    default: UniformGroup.from({ uSamplers: sampleValues }, true),
+                };
+
+                const program = renderer.plugins[pluginName]._shader.program;
+
+                DEFAULT_SHADERS[pluginName] = new Shader(program, uniforms);
+            }
+
+            shader = DEFAULT_SHADERS[pluginName];
+        }
+
+        return shader;
     }
 
     /**
