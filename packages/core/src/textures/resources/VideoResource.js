@@ -62,6 +62,7 @@ export class VideoResource extends BaseImageResource
 
         super(source);
 
+        this.noSubImage = true;
         this._autoUpdate = true;
         this._isAutoUpdating = false;
         this._updateFPS = options.updateFPS || 0;
