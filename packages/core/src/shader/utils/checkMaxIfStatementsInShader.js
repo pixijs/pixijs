@@ -7,7 +7,7 @@ const fragTemplate = [
     '}',
 ].join('\n');
 
-export default function checkMaxIfStatementsInShader(maxIfs, gl)
+export function checkMaxIfStatementsInShader(maxIfs, gl)
 {
     if (maxIfs === 0)
     {

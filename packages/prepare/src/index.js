@@ -28,7 +28,7 @@
  */
 import './settings';
 
-export { default as Prepare } from './Prepare';
-export { default as BasePrepare } from './BasePrepare';
-export { default as CountLimiter } from './CountLimiter';
-export { default as TimeLimiter } from './TimeLimiter';
+export * from './Prepare';
+export * from './BasePrepare';
+export * from './CountLimiter';
+export * from './TimeLimiter';

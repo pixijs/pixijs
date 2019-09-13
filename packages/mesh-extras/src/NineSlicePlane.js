@@ -1,5 +1,5 @@
 import { Texture } from '@pixi/core';
-import SimplePlane from './SimplePlane';
+import { SimplePlane } from './SimplePlane';
 
 const DEFAULT_BORDER_SIZE = 10;
 
@@ -34,7 +34,7 @@ const DEFAULT_BORDER_SIZE = 10;
  * @memberof PIXI
  *
  */
-export default class NineSlicePlane extends SimplePlane
+export class NineSlicePlane extends SimplePlane
 {
     /**
      * @param {PIXI.Texture} texture - The texture to use on the NineSlicePlane.

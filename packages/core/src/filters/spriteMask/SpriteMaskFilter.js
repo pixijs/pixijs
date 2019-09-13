@@ -1,8 +1,8 @@
-import Filter from '../Filter';
+import { Filter } from '../Filter';
 import { Matrix } from '@pixi/math';
 import vertex from './spriteMaskFilter.vert';
 import fragment from './spriteMaskFilter.frag';
-import { default as TextureMatrix } from '../../textures/TextureMatrix';
+import { TextureMatrix } from '../../textures/TextureMatrix';
 
 /**
  * This handles a Sprite acting as a mask, as opposed to a Graphic.
@@ -13,7 +13,7 @@ import { default as TextureMatrix } from '../../textures/TextureMatrix';
  * @extends PIXI.Filter
  * @memberof PIXI
  */
-export default class SpriteMaskFilter extends Filter
+export class SpriteMaskFilter extends Filter
 {
     /**
      * @param {PIXI.Sprite} sprite - the target sprite

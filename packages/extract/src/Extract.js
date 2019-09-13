@@ -13,7 +13,7 @@ const BYTES_PER_PIXEL = 4;
  * @class
  * @memberof PIXI.extract
  */
-export default class Extract
+export class Extract
 {
     /**
      * @param {PIXI.Renderer} renderer - A reference to the current renderer

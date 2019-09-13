@@ -1,2 +1,2 @@
-export { default as Spritesheet } from './Spritesheet';
-export { default as SpritesheetLoader } from './SpritesheetLoader';
+export * from './Spritesheet';
+export * from './SpritesheetLoader';

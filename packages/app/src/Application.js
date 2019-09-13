@@ -19,7 +19,7 @@ import { autoDetectRenderer } from '@pixi/core';
  * @class
  * @memberof PIXI
  */
-export default class Application
+export class Application
 {
     /**
      * @param {object} [options] - The optional renderer parameters.

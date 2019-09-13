@@ -1,7 +1,7 @@
 import { Filter } from '@pixi/core';
 import { settings } from '@pixi/settings';
-import generateBlurVertSource from './generateBlurVertSource';
-import generateBlurFragSource from './generateBlurFragSource';
+import { generateBlurVertSource } from './generateBlurVertSource';
+import { generateBlurFragSource } from './generateBlurFragSource';
 
 /**
  * The BlurFilterPass applies a horizontal or vertical Gaussian blur to an object.
@@ -10,7 +10,7 @@ import generateBlurFragSource from './generateBlurFragSource';
  * @extends PIXI.Filter
  * @memberof PIXI.filters
  */
-export default class BlurFilterPass extends Filter
+export class BlurFilterPass extends Filter
 {
     /**
      * @param {boolean} horizontal - Do pass along the x-axis (`true`) or y-axis (`false`).

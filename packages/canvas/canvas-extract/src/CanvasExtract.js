@@ -12,7 +12,7 @@ const TEMP_RECT = new Rectangle();
  * @class
  * @memberof PIXI.extract
  */
-export default class CanvasExtract
+export class CanvasExtract
 {
     /**
      * @param {PIXI.CanvasRenderer} renderer - A reference to the current renderer

@@ -12,7 +12,7 @@ const tempPoint = new Point();
  * @extends PIXI.Sprite
  * @memberof PIXI
  */
-export default class TilingSprite extends Sprite
+export class TilingSprite extends Sprite
 {
     /**
      * @param {PIXI.Texture} texture - the texture of the tiling sprite

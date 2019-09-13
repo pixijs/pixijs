@@ -10,7 +10,7 @@ import { hex2rgb } from '@pixi/utils';
  * @param {PIXI.Graphics} graphicsData - The graphics object containing all the necessary properties
  * @param {object} webGLData - an object containing all the WebGL-specific information to create this shape
  */
-export default function buildComplexPoly(graphicsData, webGLData)
+export function buildComplexPoly(graphicsData, webGLData)
 {
     // TODO - no need to copy this as it gets turned into a Float32Array anyways..
     const points = graphicsData.points.slice();

@@ -1,4 +1,4 @@
-import Loader from './Loader';
+import { Loader } from './Loader';
 
 /**
  * Application plugin for supporting loader option. Installing the LoaderPlugin
@@ -10,7 +10,7 @@ import Loader from './Loader';
  * @class
  * @memberof PIXI
  */
-export default class AppLoaderPlugin
+export class AppLoaderPlugin
 {
     /**
      * Called on application constructor

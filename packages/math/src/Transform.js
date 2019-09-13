@@ -1,5 +1,5 @@
-import ObservablePoint from './ObservablePoint';
-import Matrix from './Matrix';
+import { ObservablePoint } from './ObservablePoint';
+import { Matrix } from './Matrix';
 
 /**
  * Transform that takes care about its versions
@@ -7,7 +7,7 @@ import Matrix from './Matrix';
  * @class
  * @memberof PIXI
  */
-export default class Transform
+export class Transform
 {
     constructor()
     {

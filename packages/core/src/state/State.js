@@ -17,7 +17,7 @@ const WINDING = 4;
  * @class
  * @memberof PIXI
  */
-export default class State
+export class State
 {
     constructor()
     {

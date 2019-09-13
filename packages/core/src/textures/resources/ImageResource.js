@@ -1,4 +1,4 @@
-import BaseImageResource from './BaseImageResource';
+import { BaseImageResource } from './BaseImageResource';
 import { settings } from '@pixi/settings';
 
 /**
@@ -7,7 +7,7 @@ import { settings } from '@pixi/settings';
  * @extends PIXI.resources.BaseImageResource
  * @memberof PIXI.resources
  */
-export default class ImageResource extends BaseImageResource
+export class ImageResource extends BaseImageResource
 {
     /**
      * @param {HTMLImageElement|string} source - image source or URL
