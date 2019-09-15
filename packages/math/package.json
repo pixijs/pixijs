@@ -19,6 +19,9 @@
   "publishConfig": {
     "access": "public"
   },
+  "scripts": {
+    "compile:docs": "tsc -p tsconfig.docs.json"
+  },
   "files": [
     "lib",
     "dist"

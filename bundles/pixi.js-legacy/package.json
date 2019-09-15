@@ -25,6 +25,9 @@
     "type": "git",
     "url": "https://github.com/pixijs/pixi.js.git"
   },
+  "scripts": {
+    "compile:docs": "tsc -p tsconfig.docs.json"
+  },
   "files": [
     "lib/",
     "dist/",

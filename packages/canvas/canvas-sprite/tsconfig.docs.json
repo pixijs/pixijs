@@ -1,0 +1,11 @@
+{
+    "extends": "../../../tsconfig.json",
+    "compilerOptions": {
+        "target": "es6",
+        "outDir": "../../../dist/compiled/packages/canvas/canvas-sprite/src/",
+        "sourceMap": false
+    },
+    "include": [
+        "src/**/*"
+    ]
+}

@@ -32,7 +32,8 @@
   },
   "scripts": {
     "test": "floss --path test",
-    "benchmark": "cd benchmark && npm start"
+    "benchmark": "cd benchmark && npm start",
+    "compile:docs": "tsc -p tsconfig.docs.json"
   },
   "files": [
     "lib",

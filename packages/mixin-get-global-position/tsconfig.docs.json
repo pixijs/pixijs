@@ -1,0 +1,11 @@
+{
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+        "target": "es6",
+        "outDir": "../../dist/compiled/packages/mixin-get-global-position/src/",
+        "sourceMap": false
+    },
+    "include": [
+        "src/**/*"
+    ]
+}

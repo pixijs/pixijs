@@ -13,10 +13,14 @@
     "unit-test": "floss --path test",
     "coverage": "npm run pretest && nyc floss --path=test && nyc report --reporter=html",
     "coverage:ci": "npm run pretest && nyc floss --path=test && nyc report --reporter=text-lcov > coverage.lcov",
+    "predocs": "npm run compile:docs && eslint --ext .js dist/compiled --fix",
     "docs": "mkdirp dist && jsdoc -c jsdoc.conf.json -R README.md",
+    "postdocs": "rimraf dist/compiled",
+    "pretypes": "npm run compile:docs",
     "types": "npm run types:legacy && npm run types:default",
     "types:default": "mkdirp dist/types && jsdoc -c types/jsdoc.conf.json && node types/assemble pixi.js",
     "types:legacy": "mkdirp dist/types && jsdoc -c types/jsdoc-legacy.conf.json && node types/assemble pixi.js-legacy",
+    "posttypes": "rimraf dist/compiled",
     "lint": "eslint --ext .js --ext .ts test bundles packages tools --ignore-path .gitignore --max-warnings 0",
     "lintfix": "npm run lint -- --fix",
     "prebuild": "npm run clean:build",
@@ -31,7 +35,8 @@
     "postdist": "copyfiles -f bundles/*/dist/* dist && copyfiles -f \"packages/**/dist/*\" dist/packages",
     "prerelease": "npm run clean:build && npm test",
     "postversion": "npm run build:prod",
-    "release": "lerna publish"
+    "release": "lerna publish",
+    "compile:docs": "lerna run compile:docs"
   },
   "pre-commit": [
     "lintfix"
@@ -68,6 +73,7 @@
     "rollup-plugin-terser": "^4.0.4",
     "rollup-plugin-typescript": "^1.0.1",
     "tsd-jsdoc": "^2.1.3",
-    "typescript": "^3.6.2"
+    "typescript": "^3.6.2",
+    "@types/node": "^12.7.5"
   }
 }
