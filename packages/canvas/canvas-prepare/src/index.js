@@ -1,1 +1,1 @@
-export { default as CanvasPrepare } from './CanvasPrepare';
+export * from './CanvasPrepare';

@@ -1,5 +1,5 @@
 import { Renderer } from '@pixi/core';
-import CanvasRenderer from './CanvasRenderer';
+import { CanvasRenderer } from './CanvasRenderer';
 
 // Reference to Renderer.create static function
 const parentCreate = Renderer.create;

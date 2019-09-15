@@ -1,5 +1,5 @@
-import BaseRenderTexture from './BaseRenderTexture';
-import Texture from '../textures/Texture';
+import { BaseRenderTexture } from './BaseRenderTexture';
+import { Texture } from '../textures/Texture';
 
 /**
  * A RenderTexture is a special texture that allows any PixiJS display object to be rendered to it.
@@ -41,7 +41,7 @@ import Texture from '../textures/Texture';
  * @extends PIXI.Texture
  * @memberof PIXI
  */
-export default class RenderTexture extends Texture
+export class RenderTexture extends Texture
 {
     /**
      * @param {PIXI.BaseRenderTexture} baseRenderTexture - The base texture object that this texture uses
@@ -91,8 +91,10 @@ export default class RenderTexture extends Texture
         this.valid = true;
 
         /**
-         * FilterSystem temporary storage
-         * @protected
+         * Stores `sourceFrame` when this texture is inside current filter stack.
+         * You can read it inside filters.
+         *
+         * @readonly
          * @member {PIXI.Rectangle}
          */
         this.filterFrame = null;

@@ -19,7 +19,7 @@ const fragTemplate = [
 
 ].join('\n');
 
-export default function generateBlurFragSource(kernelSize)
+export function generateBlurFragSource(kernelSize)
 {
     const kernel = GAUSSIAN_VALUES[kernelSize];
     const halfLength = kernel.length;

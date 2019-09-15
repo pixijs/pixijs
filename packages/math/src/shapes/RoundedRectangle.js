@@ -7,7 +7,7 @@ import { SHAPES } from '../const';
  * @class
  * @memberof PIXI
  */
-export default class RoundedRectangle
+export class RoundedRectangle
 {
     /**
      * @param {number} [x=0] - The X coordinate of the upper-left corner of the rounded rectangle

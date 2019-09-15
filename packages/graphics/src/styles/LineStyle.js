@@ -1,4 +1,4 @@
-import FillStyle from './FillStyle';
+import { FillStyle } from './FillStyle';
 
 /**
  * Represents the line style for Graphics.
@@ -6,7 +6,7 @@ import FillStyle from './FillStyle';
  * @class
  * @extends PIXI.FillStyle
  */
-export default class LineStyle extends FillStyle
+export class LineStyle extends FillStyle
 {
     /**
      * Clones the object

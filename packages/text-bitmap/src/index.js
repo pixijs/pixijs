@@ -1,2 +1,2 @@
-export { default as BitmapText } from './BitmapText';
-export { default as BitmapFontLoader } from './BitmapFontLoader';
+export * from './BitmapText';
+export * from './BitmapFontLoader';

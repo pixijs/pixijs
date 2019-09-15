@@ -8,26 +8,26 @@ import {
     RoundedRectangle,
     Matrix,
 } from '@pixi/math';
-import { hex2rgb } from '@pixi/utils';
+import { hex2rgb, deprecation } from '@pixi/utils';
 import {
     Texture,
     Shader,
     UniformGroup, State,
 } from '@pixi/core';
-import FillStyle from './styles/FillStyle';
-import GraphicsGeometry from './GraphicsGeometry';
-import LineStyle from './styles/LineStyle';
-import BezierUtils from './utils/BezierUtils';
-import QuadraticUtils from './utils/QuadraticUtils';
-import ArcUtils from './utils/ArcUtils';
-import Star from './utils/Star';
+import { FillStyle } from './styles/FillStyle';
+import { GraphicsGeometry } from './GraphicsGeometry';
+import { LineStyle } from './styles/LineStyle';
+import { BezierUtils } from './utils/BezierUtils';
+import { QuadraticUtils } from './utils/QuadraticUtils';
+import { ArcUtils } from './utils/ArcUtils';
+import { Star } from './utils/Star';
 import { BLEND_MODES } from '@pixi/constants';
 import { Container } from '@pixi/display';
 
 const temp = new Float32Array(3);
 
-// a default shader used by graphics..
-let defaultShader = null;
+// a default shaders map used by graphics..
+const DEFAULT_SHADERS = {};
 
 /**
  * The Graphics class contains methods used to draw primitive shapes such as lines, circles and
@@ -42,7 +42,7 @@ let defaultShader = null;
  * @extends PIXI.Container
  * @memberof PIXI
  */
-export default class Graphics extends Container
+export class Graphics extends Container
 {
     /**
      * @param {PIXI.GraphicsGeometry} [geometry=null] - Geometry to use, if omitted
@@ -244,41 +244,91 @@ export default class Graphics extends Container
      * Specifies the line style used for subsequent calls to Graphics methods such as the lineTo()
      * method or the drawCircle() method.
      *
+     * @method PIXI.Graphics#lineStyle
      * @param {number} [width=0] - width of the line to draw, will update the objects stored style
-     * @param {number} [color=0] - color of the line to draw, will update the objects stored style
+     * @param {number} [color=0x0] - color of the line to draw, will update the objects stored style
      * @param {number} [alpha=1] - alpha of the line to draw, will update the objects stored style
      * @param {number} [alignment=0.5] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outter)
      * @param {boolean} [native=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    lineStyle(width = 0, color = 0, alpha = 1, alignment = 0.5, native = false)
+    /**
+     * Specifies the line style used for subsequent calls to Graphics methods such as the lineTo()
+     * method or the drawCircle() method.
+     *
+     * @param {object} [options] - Line style options
+     * @param {number} [options.width=0] - width of the line to draw, will update the objects stored style
+     * @param {number} [options.color=0x0] - color of the line to draw, will update the objects stored style
+     * @param {number} [options.alpha=1] - alpha of the line to draw, will update the objects stored style
+     * @param {number} [options.alignment=0.5] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outter)
+     * @param {boolean} [options.native=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
+     * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
+     */
+    lineStyle(options)
     {
-        this.lineTextureStyle(width, Texture.WHITE, color, alpha, null, alignment, native);
+        // Support non-object params: (width, color, alpha, alignment, native)
+        if (typeof options === 'number')
+        {
+            const args = arguments;
 
-        return this;
+            options = {
+                width: args[0] || 0,
+                color: args[1] || 0x0,
+                alpha: args[2] !== undefined ? args[2] : 1,
+                alignment: args[3] !== undefined ? args[3] : 0.5,
+                native: !!args[4],
+            };
+        }
+
+        return this.lineTextureStyle(options);
     }
 
     /**
      * Like line style but support texture for line fill.
      *
-     * @param {number} [width=0] - width of the line to draw, will update the objects stored style
-     * @param {PIXI.Texture} [texture=PIXI.Texture.WHITE] - Texture to use
-     * @param {number} [color=0] - color of the line to draw, will update the objects stored style
-     * @param {number} [alpha=1] - alpha of the line to draw, will update the objects stored style
-     * @param {PIXI.Matrix} [matrix=null] Texture matrix to transform texture
-     * @param {number} [alignment=0.5] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outter)
-     * @param {boolean} [native=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
+     * @param {object} [options] - Collection of options for setting line style.
+     * @param {number} [options.width=0] - width of the line to draw, will update the objects stored style
+     * @param {PIXI.Texture} [options.texture=PIXI.Texture.WHITE] - Texture to use
+     * @param {number} [options.color=0x0] - color of the line to draw, will update the objects stored style
+     * @param {number} [options.alpha=1] - alpha of the line to draw, will update the objects stored style
+     * @param {PIXI.Matrix} [options.matrix=null] Texture matrix to transform texture
+     * @param {number} [options.alignment=0.5] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outter)
+     * @param {boolean} [options.native=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    lineTextureStyle(width = 0, texture = Texture.WHITE, color = 0xFFFFFF, alpha = 1,
-        matrix = null, alignment = 0.5, native = false)
+    lineTextureStyle(options)
     {
+        // backward compatibility with params: (width, texture,
+        // color, alpha, matrix, alignment, native)
+        if (typeof options === 'number')
+        {
+            deprecation('v5.2.0', 'Please use object-based options for Graphics#lineTextureStyle');
+
+            const [width, texture, color, alpha, matrix, alignment, native] = arguments;
+
+            options = { width, texture, color, alpha, matrix, alignment, native };
+
+            // Remove undefined keys
+            Object.keys(options).forEach((key) => options[key] === undefined && delete options[key]);
+        }
+
+        // Apply defaults
+        options = Object.assign({
+            width: 0,
+            texture: Texture.WHITE,
+            color: 0x0,
+            alpha: 1,
+            matrix: null,
+            alignment: 0.5,
+            native: false,
+        }, options);
+
         if (this.currentPath)
         {
             this.startPoly();
         }
 
-        const visible = width > 0 && alpha > 0;
+        const visible = options.width > 0 && options.alpha > 0;
 
         if (!visible)
         {
@@ -286,22 +336,13 @@ export default class Graphics extends Container
         }
         else
         {
-            if (matrix)
+            if (options.matrix)
             {
-                matrix = matrix.clone();
-                matrix.invert();
+                options.matrix = options.matrix.clone();
+                options.matrix.invert();
             }
 
-            Object.assign(this._lineStyle, {
-                color,
-                width,
-                alpha,
-                matrix,
-                texture,
-                alignment,
-                native,
-                visible,
-            });
+            Object.assign(this._lineStyle, { visible }, options);
         }
 
         return this;
@@ -470,8 +511,8 @@ export default class Graphics extends Container
      *
      * "borrowed" from https://code.google.com/p/fxcanvas/ - thanks google!
      *
-     * @param {number} x1 - The x-coordinate of the beginning of the arc
-     * @param {number} y1 - The y-coordinate of the beginning of the arc
+     * @param {number} x1 - The x-coordinate of the first tangent point of the arc
+     * @param {number} y1 - The y-coordinate of the first tangent point of the arc
      * @param {number} x2 - The x-coordinate of the end of the arc
      * @param {number} y2 - The y-coordinate of the end of the arc
      * @param {number} radius - The radius of the arc
@@ -534,6 +575,7 @@ export default class Graphics extends Container
 
         const startX = cx + (Math.cos(startAngle) * radius);
         const startY = cy + (Math.sin(startAngle) * radius);
+        const eps = this.geometry.closePointEps;
 
         // If the currentPath exists, take its points. Otherwise call `moveTo` to start a path.
         let points = this.currentPath ? this.currentPath.points : null;
@@ -546,7 +588,7 @@ export default class Graphics extends Container
             const xDiff = Math.abs(points[points.length - 2] - startX);
             const yDiff = Math.abs(points[points.length - 1] - startY);
 
-            if (xDiff < 0.001 && yDiff < 0.001)
+            if (xDiff < eps && yDiff < eps)
             {
                 // If the point is very close, we don't add it, since this would lead to artifacts
                 // during tessellation due to floating point imprecision.
@@ -577,26 +619,48 @@ export default class Graphics extends Container
      */
     beginFill(color = 0, alpha = 1)
     {
-        return this.beginTextureFill(Texture.WHITE, color, alpha);
+        return this.beginTextureFill({ texture: Texture.WHITE, color, alpha });
     }
 
     /**
      * Begin the texture fill
      *
-     * @param {PIXI.Texture} [texture=PIXI.Texture.WHITE] - Texture to fill
-     * @param {number} [color=0xffffff] - Background to fill behind texture
-     * @param {number} [alpha=1] - Alpha of fill
-     * @param {PIXI.Matrix} [matrix=null] - Transform matrix
+     * @param {object} [options] - Object object.
+     * @param {PIXI.Texture} [options.texture=PIXI.Texture.WHITE] - Texture to fill
+     * @param {number} [options.color=0xffffff] - Background to fill behind texture
+     * @param {number} [options.alpha=1] - Alpha of fill
+     * @param {PIXI.Matrix} [options.matrix=null] - Transform matrix
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    beginTextureFill(texture = Texture.WHITE, color = 0xFFFFFF, alpha = 1, matrix = null)
+    beginTextureFill(options)
     {
+        // backward compatibility with params: (texture, color, alpha, matrix)
+        if (typeof options === 'number')
+        {
+            deprecation('v5.2.0', 'Please use object-based options for Graphics#beginTextureFill');
+
+            const [texture, color, alpha, matrix] = arguments;
+
+            options = { texture, color, alpha, matrix };
+
+            // Remove undefined keys
+            Object.keys(options).forEach((key) => options[key] === undefined && delete options[key]);
+        }
+
+        // Apply defaults
+        options = Object.assign({
+            texture: Texture.WHITE,
+            color: 0xFFFFFF,
+            alpha: 1,
+            matrix: null,
+        }, options);
+
         if (this.currentPath)
         {
             this.startPoly();
         }
 
-        const visible = alpha > 0;
+        const visible = options.alpha > 0;
 
         if (!visible)
         {
@@ -604,19 +668,13 @@ export default class Graphics extends Container
         }
         else
         {
-            if (matrix)
+            if (options.matrix)
             {
-                matrix = matrix.clone();
-                matrix.invert();
+                options.matrix = options.matrix.clone();
+                options.matrix.invert();
             }
 
-            Object.assign(this._fillStyle, {
-                color,
-                alpha,
-                texture,
-                matrix,
-                visible,
-            });
+            Object.assign(this._fillStyle, { visible }, options);
         }
 
         return this;
@@ -828,143 +886,198 @@ export default class Graphics extends Container
         {
             if (this.batchDirty !== geometry.batchDirty)
             {
-                this.batches = [];
-                this.batchTint = -1;
-                this._transformID = -1;
-                this.batchDirty = geometry.batchDirty;
-
-                this.vertexData = new Float32Array(geometry.points);
-
-                const blendMode = this.blendMode;
-
-                for (let i = 0; i < geometry.batches.length; i++)
-                {
-                    const gI = geometry.batches[i];
-
-                    const color = gI.style.color;
-
-                    //        + (alpha * 255 << 24);
-
-                    const vertexData = new Float32Array(this.vertexData.buffer,
-                        gI.attribStart * 4 * 2,
-                        gI.attribSize * 2);
-
-                    const uvs = new Float32Array(geometry.uvsFloat32.buffer,
-                        gI.attribStart * 4 * 2,
-                        gI.attribSize * 2);
-
-                    const indices = new Uint16Array(geometry.indicesUint16.buffer,
-                        gI.start * 2,
-                        gI.size);
-
-                    const batch = {
-                        vertexData,
-                        blendMode,
-                        indices,
-                        uvs,
-                        _batchRGB: hex2rgb(color),
-                        _tintRGB: color,
-                        _texture: gI.style.texture,
-                        alpha: gI.style.alpha,
-                        worldAlpha: 1 };
-
-                    this.batches[i] = batch;
-                }
+                this._populateBatches();
             }
 
-            if (this.batches.length)
-            {
-                renderer.batch.setObjectRenderer(renderer.plugins[this.pluginName]);
-
-                this.calculateVertices();
-                this.calculateTints();
-
-                for (let i = 0; i < this.batches.length; i++)
-                {
-                    const batch = this.batches[i];
-
-                    batch.worldAlpha = this.worldAlpha * batch.alpha;
-
-                    renderer.plugins[this.pluginName].render(batch);
-                }
-            }
+            this._renderBatched(renderer);
         }
         else
         {
             // no batching...
             renderer.batch.flush();
 
-            if (!this.shader)
-            {
-                // if there is no shader here, we can use the default shader.
-                // and that only gets created if we actually need it..
-                if (!defaultShader)
-                {
-                    const sampleValues = new Int32Array(16);
-
-                    for (let i = 0; i < 16; i++)
-                    {
-                        sampleValues[i] = i;
-                    }
-
-                    const uniforms = {
-                        tint: new Float32Array([1, 1, 1, 1]),
-                        translationMatrix: new Matrix(),
-                        default: UniformGroup.from({ uSamplers: sampleValues }, true),
-                    };
-
-                    // we can bbase default shader of the batch renderers program
-                    const program =  renderer.plugins.batch._shader.program;
-
-                    defaultShader = new Shader(program, uniforms);
-                }
-
-                this.shader = defaultShader;
-            }
-
-            const uniforms = this.shader.uniforms;
-
-            // lets set the transfomr
-            uniforms.translationMatrix = this.transform.worldTransform;
-
-            const tint = this.tint;
-            const wa = this.worldAlpha;
-
-            // and then lets set the tint..
-            uniforms.tint[0] = (((tint >> 16) & 0xFF) / 255) * wa;
-            uniforms.tint[1] = (((tint >> 8) & 0xFF) / 255) * wa;
-            uniforms.tint[2] = ((tint & 0xFF) / 255) * wa;
-            uniforms.tint[3] = wa;
-
-            // the first draw call, we can set the uniforms of the shader directly here.
-
-            // this means that we can tack advantage of the sync function of pixi!
-            // bind and sync uniforms..
-            // there is a way to optimise this..
-            renderer.shader.bind(this.shader);
-
-            // then render it
-            renderer.geometry.bind(geometry, this.shader);
-
-            // set state..
-            renderer.state.set(this.state);
-
-            // then render the rest of them...
-            for (let i = 0; i < geometry.drawCalls.length; i++)
-            {
-                const drawCall = geometry.drawCalls[i];
-
-                const groupTextureCount = drawCall.textureCount;
-
-                for (let j = 0; j < groupTextureCount; j++)
-                {
-                    renderer.texture.bind(drawCall.textures[j], j);
-                }
-
-                // bind the geometry...
-                renderer.geometry.draw(drawCall.type, drawCall.size, drawCall.start);
-            }
+            this._renderDirect(renderer);
         }
+    }
+
+    /**
+     * Populating batches for rendering
+     *
+     * @protected
+     */
+    _populateBatches()
+    {
+        const geometry = this.geometry;
+        const blendMode = this.blendMode;
+
+        this.batches = [];
+        this.batchTint = -1;
+        this._transformID = -1;
+        this.batchDirty = geometry.batchDirty;
+
+        this.vertexData = new Float32Array(geometry.points);
+
+        for (let i = 0, l = geometry.batches.length; i < l; i++)
+        {
+            const gI = geometry.batches[i];
+            const color = gI.style.color;
+            const vertexData = new Float32Array(this.vertexData.buffer,
+                gI.attribStart * 4 * 2,
+                gI.attribSize * 2);
+
+            const uvs = new Float32Array(geometry.uvsFloat32.buffer,
+                gI.attribStart * 4 * 2,
+                gI.attribSize * 2);
+
+            const indices = new Uint16Array(geometry.indicesUint16.buffer,
+                gI.start * 2,
+                gI.size);
+
+            const batch = {
+                vertexData,
+                blendMode,
+                indices,
+                uvs,
+                _batchRGB: hex2rgb(color),
+                _tintRGB: color,
+                _texture: gI.style.texture,
+                alpha: gI.style.alpha,
+                worldAlpha: 1 };
+
+            this.batches[i] = batch;
+        }
+    }
+
+    /**
+     * Renders the batches using the BathedRenderer plugin
+     *
+     * @protected
+     * @param {PIXI.Renderer} renderer - The renderer
+     */
+    _renderBatched(renderer)
+    {
+        if (!this.batches.length)
+        {
+            return;
+        }
+
+        renderer.batch.setObjectRenderer(renderer.plugins[this.pluginName]);
+
+        this.calculateVertices();
+        this.calculateTints();
+
+        for (let i = 0, l = this.batches.length; i < l; i++)
+        {
+            const batch = this.batches[i];
+
+            batch.worldAlpha = this.worldAlpha * batch.alpha;
+
+            renderer.plugins[this.pluginName].render(batch);
+        }
+    }
+
+    /**
+     * Renders the graphics direct
+     *
+     * @protected
+     * @param {PIXI.Renderer} renderer - The renderer
+     */
+    _renderDirect(renderer)
+    {
+        const shader = this._resolveDirectShader(renderer);
+
+        const geometry = this.geometry;
+        const tint = this.tint;
+        const worldAlpha = this.worldAlpha;
+        const uniforms = shader.uniforms;
+        const drawCalls = geometry.drawCalls;
+
+        // lets set the transfomr
+        uniforms.translationMatrix = this.transform.worldTransform;
+
+        // and then lets set the tint..
+        uniforms.tint[0] = (((tint >> 16) & 0xFF) / 255) * worldAlpha;
+        uniforms.tint[1] = (((tint >> 8) & 0xFF) / 255) * worldAlpha;
+        uniforms.tint[2] = ((tint & 0xFF) / 255) * worldAlpha;
+        uniforms.tint[3] = worldAlpha;
+
+        // the first draw call, we can set the uniforms of the shader directly here.
+
+        // this means that we can tack advantage of the sync function of pixi!
+        // bind and sync uniforms..
+        // there is a way to optimise this..
+        renderer.shader.bind(shader);
+        renderer.geometry.bind(geometry, shader);
+
+        // set state..
+        renderer.state.set(this.state);
+
+        // then render the rest of them...
+        for (let i = 0, l = drawCalls.length; i < l; i++)
+        {
+            this._renderDrawCallDirect(renderer, geometry.drawCalls[i]);
+        }
+    }
+
+    /**
+     * Renders specific DrawCall
+     *
+     * @param {PIXI.Renderer} renderer
+     * @param {PIXI.BatchDrawCall} drawCall
+     */
+    _renderDrawCallDirect(renderer, drawCall)
+    {
+        const groupTextureCount = drawCall.textureCount;
+
+        for (let j = 0; j < groupTextureCount; j++)
+        {
+            renderer.texture.bind(drawCall.textures[j], j);
+        }
+
+        renderer.geometry.draw(drawCall.type, drawCall.size, drawCall.start);
+    }
+
+    /**
+     * Resolves shader for direct rendering
+     *
+     * @protected
+     * @param {PIXI.Renderer} renderer - The renderer
+     */
+    _resolveDirectShader(renderer)
+    {
+        let shader = this.shader;
+
+        const pluginName = this.pluginName;
+
+        if (!shader)
+        {
+            // if there is no shader here, we can use the default shader.
+            // and that only gets created if we actually need it..
+            // but may be more than one plugins for graphics
+            if (!DEFAULT_SHADERS[pluginName])
+            {
+                const sampleValues = new Int32Array(16);
+
+                for (let i = 0; i < 16; i++)
+                {
+                    sampleValues[i] = i;
+                }
+
+                const uniforms = {
+                    tint: new Float32Array([1, 1, 1, 1]),
+                    translationMatrix: new Matrix(),
+                    default: UniformGroup.from({ uSamplers: sampleValues }, true),
+                };
+
+                const program = renderer.plugins[pluginName]._shader.program;
+
+                DEFAULT_SHADERS[pluginName] = new Shader(program, uniforms);
+            }
+
+            shader = DEFAULT_SHADERS[pluginName];
+        }
+
+        return shader;
     }
 
     /**
@@ -975,9 +1088,18 @@ export default class Graphics extends Container
     _calculateBounds()
     {
         this.finishPoly();
-        const lb = this.geometry.bounds;
 
-        this._bounds.addFrame(this.transform, lb.minX, lb.minY, lb.maxX, lb.maxY);
+        const geometry = this.geometry;
+
+        // skipping when graphics is empty, like a container
+        if (!geometry.graphicsData.length)
+        {
+            return;
+        }
+
+        const { minX, minY, maxX, maxY } = geometry.bounds;
+
+        this._bounds.addFrame(this.transform, minX, minY, maxX, maxY);
     }
 
     /**

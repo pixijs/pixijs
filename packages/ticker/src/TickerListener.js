@@ -5,7 +5,7 @@
  * @class
  * @memberof PIXI
  */
-export default class TickerListener
+export class TickerListener
 {
     /**
      * Constructor

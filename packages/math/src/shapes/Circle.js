@@ -1,4 +1,4 @@
-import Rectangle from './Rectangle';
+import { Rectangle } from './Rectangle';
 import { SHAPES } from '../const';
 
 /**
@@ -7,7 +7,7 @@ import { SHAPES } from '../const';
  * @class
  * @memberof PIXI
  */
-export default class Circle
+export class Circle
 {
     /**
      * @param {number} [x=0] - The X coordinate of the center of this circle

@@ -10,7 +10,7 @@ import { Point, SHAPES } from '@pixi/math';
  * @param {PIXI.GraphicsData} graphicsData - The graphics object containing all the necessary properties
  * @param {PIXI.GraphicsGeometry} graphicsGeometry - Geometry where to append output
  */
-export default function (graphicsData, graphicsGeometry)
+export function buildLine(graphicsData, graphicsGeometry)
 {
     if (graphicsData.lineStyle.native)
     {
@@ -18,7 +18,7 @@ export default function (graphicsData, graphicsGeometry)
     }
     else
     {
-        buildLine(graphicsData, graphicsGeometry);
+        buildNonNativeLine(graphicsData, graphicsGeometry);
     }
 }
 
@@ -32,10 +32,11 @@ export default function (graphicsData, graphicsGeometry)
  * @param {PIXI.GraphicsData} graphicsData - The graphics object containing all the necessary properties
  * @param {PIXI.GraphicsGeometry} graphicsGeometry - Geometry where to append output
  */
-function buildLine(graphicsData, graphicsGeometry)
+function buildNonNativeLine(graphicsData, graphicsGeometry)
 {
     const shape = graphicsData.shape;
     let points = graphicsData.points || shape.points.slice();
+    const eps = graphicsGeometry.closePointEps;
 
     if (points.length === 0)
     {
@@ -57,7 +58,8 @@ function buildLine(graphicsData, graphicsGeometry)
     const firstPoint = new Point(points[0], points[1]);
     const lastPoint = new Point(points[points.length - 2], points[points.length - 1]);
     const closedShape = shape.type !== SHAPES.POLY || shape.closeStroke;
-    const closedPath = firstPoint.x === lastPoint.x && firstPoint.y === lastPoint.y;
+    const closedPath = Math.abs(firstPoint.x - lastPoint.x) < eps
+        && Math.abs(firstPoint.y - lastPoint.y) < eps;
 
     // if the first point is the last point - gonna have issues :)
     if (closedShape)

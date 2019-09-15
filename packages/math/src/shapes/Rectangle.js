@@ -16,7 +16,7 @@ import { SHAPES } from '../const';
  * @class
  * @memberof PIXI
  */
-export default class Rectangle
+export class Rectangle
 {
     /**
      * @param {number} [x=0] - The X coordinate of the upper-left corner of the rectangle

@@ -8,10 +8,12 @@
     "globals": {
         "global": false
     },
+    "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaVersion": 8,
         "sourceType": "module"
     },
+    "plugins": ["@typescript-eslint"],
     "rules": {
         // Possible Errors
         "comma-dangle": [1, "always-multiline"],
@@ -245,5 +247,11 @@
         "sort-imports": 0,
         "template-curly-spacing": [1, "never"],
         "yield-star-spacing": [1, "before"]
-    }
+    },
+    "overrides": [
+        {
+          "files": ["*.ts"],
+          "extends": ["plugin:@typescript-eslint/recommended"]
+        }
+    ]
 }

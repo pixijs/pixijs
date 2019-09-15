@@ -1,4 +1,4 @@
-import ImageResource from './ImageResource';
+import { ImageResource } from './ImageResource';
 
 /**
  * Collection of installed resource types, class must extend {@link PIXI.resources.Resource}.

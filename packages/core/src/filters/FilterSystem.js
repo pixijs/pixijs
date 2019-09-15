@@ -1,10 +1,9 @@
-import System from '../System';
-
-import RenderTexturePool from '../renderTexture/RenderTexturePool';
-import Quad from '../utils/Quad';
-import QuadUv from '../utils/QuadUv';
+import { System } from '../System';
+import { RenderTexturePool } from '../renderTexture/RenderTexturePool';
+import { Quad } from '../utils/Quad';
+import { QuadUv } from '../utils/QuadUv';
 import { Rectangle, Matrix } from '@pixi/math';
-import UniformGroup from '../shader/UniformGroup';
+import { UniformGroup } from '../shader/UniformGroup';
 import { DRAW_MODES } from '@pixi/constants';
 
 /**
@@ -87,7 +86,7 @@ class FilterState
  * @memberof PIXI.systems
  * @extends PIXI.System
  */
-export default class FilterSystem extends System
+export class FilterSystem extends System
 {
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
@@ -423,16 +422,27 @@ export default class FilterSystem extends System
 
     /**
      * Gets extra render texture to use inside current filter
+     * To be compliant with older filters, you can use params in any order
      *
-     * @param {number} resolution resolution of the renderTexture
+     * @param {PIXI.RenderTexture} [input] renderTexture from which size and resolution will be copied
+     * @param {number} [resolution] override resolution of the renderTexture
      * @returns {PIXI.RenderTexture}
      */
-    getFilterTexture(resolution)
+    getFilterTexture(input, resolution)
     {
-        const rt = this.activeState.renderTexture;
-        const filterTexture = this.texturePool.getOptimalTexture(rt.width, rt.height, resolution || rt.resolution);
+        if (typeof input === 'number')
+        {
+            const swap = input;
 
-        filterTexture.filterFrame = rt.filterFrame;
+            input = resolution;
+            resolution = swap;
+        }
+
+        input = input || this.activeState.renderTexture;
+
+        const filterTexture = this.texturePool.getOptimalTexture(input.width, input.height, resolution || input.resolution);
+
+        filterTexture.filterFrame = input.filterFrame;
 
         return filterTexture;
     }

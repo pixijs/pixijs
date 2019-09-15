@@ -1,4 +1,4 @@
-export { default as CanvasMeshRenderer } from './CanvasMeshRenderer';
+export * from './CanvasMeshRenderer';
 
 import './settings';
 

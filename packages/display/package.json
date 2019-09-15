@@ -1,6 +1,6 @@
 {
   "name": "@pixi/display",
-  "version": "5.1.0",
+  "version": "5.1.3",
   "main": "lib/display.js",
   "module": "lib/display.es.js",
   "bundle": "dist/display.js",
@@ -25,7 +25,7 @@
   ],
   "dependencies": {
     "@pixi/math": "^5.1.0",
-    "@pixi/settings": "^5.1.0",
-    "@pixi/utils": "^5.1.0"
+    "@pixi/settings": "^5.1.3",
+    "@pixi/utils": "^5.1.3"
   }
 }

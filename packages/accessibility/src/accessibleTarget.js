@@ -14,7 +14,7 @@
  *          PIXI.accessibility.accessibleTarget
  *      );
  */
-export default {
+export const accessibleTarget = {
     /**
      *  Flag for if the object is accessible. If true AccessibilityManager will overlay a
      *   shadow div with attributes set

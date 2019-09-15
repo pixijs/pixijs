@@ -1,5 +1,5 @@
 import { hex2rgb, rgb2hex } from '@pixi/utils';
-import canUseNewCanvasBlendModes from './utils/canUseNewCanvasBlendModes';
+import { canUseNewCanvasBlendModes } from './utils/canUseNewCanvasBlendModes';
 
 /**
  * Utility methods for Sprite/Texture tinting.
@@ -7,14 +7,14 @@ import canUseNewCanvasBlendModes from './utils/canUseNewCanvasBlendModes';
  * Tinting with the CanvasRenderer involves creating a new canvas to use as a texture,
  * so be aware of the performance implications.
  *
- * @class
+ * @namespace PIXI.canvasUtils
  * @memberof PIXI
  */
-const CanvasTinter = {
+export const canvasUtils = {
     /**
      * Basically this method just needs a sprite and a color and tints the sprite with the given color.
      *
-     * @memberof PIXI.CanvasTinter
+     * @memberof PIXI.canvasUtils
      * @param {PIXI.Sprite} sprite - the sprite to tint
      * @param {number} color - the color to use to tint the sprite with
      * @return {HTMLCanvasElement} The tinted canvas
@@ -23,7 +23,7 @@ const CanvasTinter = {
     {
         const texture = sprite.texture;
 
-        color = CanvasTinter.roundColor(color);
+        color = canvasUtils.roundColor(color);
 
         const stringColor = `#${(`00000${(color | 0).toString(16)}`).substr(-6)}`;
 
@@ -44,14 +44,14 @@ const CanvasTinter = {
         }
         else
         {
-            canvas = CanvasTinter.canvas || document.createElement('canvas');
+            canvas = canvasUtils.canvas || document.createElement('canvas');
         }
 
-        CanvasTinter.tintMethod(texture, color, canvas);
+        canvasUtils.tintMethod(texture, color, canvas);
 
         canvas.tintId = texture._updateID;
 
-        if (CanvasTinter.convertTintToImage)
+        if (canvasUtils.convertTintToImage)
         {
             // is this better?
             const tintImage = new Image();
@@ -64,7 +64,7 @@ const CanvasTinter = {
         {
             texture.tintCache[stringColor] = canvas;
             // if we are not converting the texture to an image then we need to lose the reference to the canvas
-            CanvasTinter.canvas = null;
+            canvasUtils.canvas = null;
         }
 
         return canvas;
@@ -73,7 +73,7 @@ const CanvasTinter = {
     /**
      * Tint a texture using the 'multiply' operation.
      *
-     * @memberof PIXI.CanvasTinter
+     * @memberof PIXI.canvasUtils
      * @param {PIXI.Texture} texture - the texture to tint
      * @param {number} color - the color to use to tint the sprite with
      * @param {HTMLCanvasElement} canvas - the current canvas
@@ -132,7 +132,7 @@ const CanvasTinter = {
     /**
      * Tint a texture using the 'overlay' operation.
      *
-     * @memberof PIXI.CanvasTinter
+     * @memberof PIXI.canvasUtils
      * @param {PIXI.Texture} texture - the texture to tint
      * @param {number} color - the color to use to tint the sprite with
      * @param {HTMLCanvasElement} canvas - the current canvas
@@ -176,7 +176,7 @@ const CanvasTinter = {
     /**
      * Tint a texture pixel per pixel.
      *
-     * @memberof PIXI.CanvasTinter
+     * @memberof PIXI.canvasUtils
      * @param {PIXI.Texture} texture - the texture to tint
      * @param {number} color - the color to use to tint the sprite with
      * @param {HTMLCanvasElement} canvas - the current canvas
@@ -230,15 +230,15 @@ const CanvasTinter = {
     },
 
     /**
-     * Rounds the specified color according to the CanvasTinter.cacheStepsPerColorChannel.
+     * Rounds the specified color according to the canvasUtils.cacheStepsPerColorChannel.
      *
-     * @memberof PIXI.CanvasTinter
+     * @memberof PIXI.canvasUtils
      * @param {number} color - the color to round, should be a hex color
      * @return {number} The rounded color.
      */
     roundColor: (color) =>
     {
-        const step = CanvasTinter.cacheStepsPerColorChannel;
+        const step = canvasUtils.cacheStepsPerColorChannel;
 
         const rgbValues = hex2rgb(color);
 
@@ -252,7 +252,7 @@ const CanvasTinter = {
     /**
      * Number of steps which will be used as a cap when rounding colors.
      *
-     * @memberof PIXI.CanvasTinter
+     * @memberof PIXI.canvasUtils
      * @type {number}
      */
     cacheStepsPerColorChannel: 8,
@@ -260,7 +260,7 @@ const CanvasTinter = {
     /**
      * Tint cache boolean flag.
      *
-     * @memberof PIXI.CanvasTinter
+     * @memberof PIXI.canvasUtils
      * @type {boolean}
      */
     convertTintToImage: false,
@@ -268,7 +268,7 @@ const CanvasTinter = {
     /**
      * Whether or not the Canvas BlendModes are supported, consequently the ability to tint using the multiply method.
      *
-     * @memberof PIXI.CanvasTinter
+     * @memberof PIXI.canvasUtils
      * @type {boolean}
      */
     canUseMultiply: canUseNewCanvasBlendModes(),
@@ -276,7 +276,7 @@ const CanvasTinter = {
     /**
      * The tinting method that will be used.
      *
-     * @memberof PIXI.CanvasTinter
+     * @memberof PIXI.canvasUtils
      * @type {Function}
      */
     tintMethod: () =>
@@ -285,6 +285,4 @@ const CanvasTinter = {
     },
 };
 
-CanvasTinter.tintMethod = CanvasTinter.canUseMultiply ? CanvasTinter.tintWithMultiply : CanvasTinter.tintWithPerPixel;
-
-export default CanvasTinter;
+canvasUtils.tintMethod = canvasUtils.canUseMultiply ? canvasUtils.tintWithMultiply : canvasUtils.tintWithPerPixel;

@@ -1,1 +1,1 @@
-export { default as NoiseFilter } from './NoiseFilter';
+export * from './NoiseFilter';

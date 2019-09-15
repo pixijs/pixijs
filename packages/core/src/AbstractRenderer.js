@@ -3,7 +3,7 @@ import { Matrix, Rectangle } from '@pixi/math';
 import { RENDERER_TYPE } from '@pixi/constants';
 import { settings } from '@pixi/settings';
 import { Container } from '@pixi/display';
-import RenderTexture from './renderTexture/RenderTexture';
+import { RenderTexture } from './renderTexture/RenderTexture';
 
 const tempMatrix = new Matrix();
 
@@ -16,7 +16,7 @@ const tempMatrix = new Matrix();
  * @extends PIXI.utils.EventEmitter
  * @memberof PIXI
  */
-export default class AbstractRenderer extends EventEmitter
+export class AbstractRenderer extends EventEmitter
 {
     /**
      * @param {string} system - The name of the system this renderer is for.

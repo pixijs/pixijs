@@ -21,7 +21,7 @@ import { TYPES } from '@pixi/constants';
  * @private
  * @memberof PIXI
  */
-export default class ParticleBuffer
+export class ParticleBuffer
 {
     /**
      * @private

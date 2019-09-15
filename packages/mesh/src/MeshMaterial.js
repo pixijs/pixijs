@@ -10,7 +10,7 @@ import { premultiplyTintToRgba } from '@pixi/utils';
  * @memberof PIXI
  * @extends PIXI.Shader
  */
-export default class MeshMaterial extends Shader
+export class MeshMaterial extends Shader
 {
     /**
      * @param {PIXI.Texture} uSampler - Texture that material uses to render.
