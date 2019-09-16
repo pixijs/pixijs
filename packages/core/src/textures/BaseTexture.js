@@ -32,7 +32,7 @@ const defaultBufferOptions = {
  * @param {PIXI.FORMATS} [options.format=PIXI.FORMATS.RGBA] - GL format type
  * @param {PIXI.TYPES} [options.type=PIXI.TYPES.UNSIGNED_BYTE] - GL data type
  * @param {PIXI.TARGETS} [options.target=PIXI.TARGETS.TEXTURE_2D] - GL texture target
- * @param {PIXI.PMA_MODES} [options.premultiplyAlpha=PIXI.PMA_MODES.DO_UNPACK] - Pre multiply the image alpha
+ * @param {PIXI.PMA_MODES} [options.premultiplyAlpha=PIXI.PMA_MODES.UNPACK] - Pre multiply the image alpha
  * @param {number} [options.width=0] - Width of the texture
  * @param {number} [options.height=0] - Height of the texture
  * @param {number} [options.resolution] - Resolution of the base texture
@@ -139,9 +139,9 @@ export class BaseTexture extends EventEmitter
          * How to treat premultiplied alpha, see {@link PIXI.PMA_MODES}.
          *
          * @member {PIXI.PMA_MODES}
-         * @default PIXI.PMA_MODES.DO_UNPACK
+         * @default PIXI.PMA_MODES.UNPACK
          */
-        this.premultiplyAlpha = premultiplyAlpha !== undefined ? premultiplyAlpha : PMA_MODES.DO_UNPACK;
+        this.premultiplyAlpha = premultiplyAlpha !== undefined ? premultiplyAlpha : PMA_MODES.UNPACK;
 
         if (typeof premultiplyAlpha === 'boolean')
         {

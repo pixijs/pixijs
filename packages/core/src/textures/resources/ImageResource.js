@@ -17,7 +17,7 @@ export class ImageResource extends BaseImageResource
      * @param {boolean} [options.createBitmap=PIXI.settings.CREATE_IMAGE_BITMAP] whether its required to create
      *        a bitmap before upload
      * @param {boolean} [options.crossorigin=true] - Load image using cross origin
-     * @param {PIXI.PMA_MODES} [options.premultiplyAlpha=PIXI.PMA_MODES.DO_UNPACK] - Premultiply image alpha in bitmap
+     * @param {PIXI.PMA_MODES} [options.premultiplyAlpha=PIXI.PMA_MODES.UNPACK] - Premultiply image alpha in bitmap
      */
     constructor(source, options)
     {
@@ -189,7 +189,7 @@ export class ImageResource extends BaseImageResource
         this._process = window.createImageBitmap(this.source,
             0, 0, this.source.width, this.source.height,
             {
-                premultiplyAlpha: this.premultiplyAlpha === PMA_MODES.DO_UNPACK ? 'premultiply' : 'none',
+                premultiplyAlpha: this.premultiplyAlpha === PMA_MODES.UNPACK ? 'premultiply' : 'none',
             })
             .then((bitmap) =>
             {

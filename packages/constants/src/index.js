@@ -289,14 +289,14 @@ export const MIPMAP_MODES = {
  * @enum {number}
  * @property {number} NPM - Source is not premultiplied, leave it like that.
  *  Option for compressed and data textures that are created from typed arrays.
- * @property {number} DO_UNPACK - Source is not premultiplied, premultiply on upload.
+ * @property {number} UNPACK - Source is not premultiplied, premultiply on upload.
  *  Default option, used for all loaded images.
  * @property {number} PMA - Source is already premultiplied
  *  Example: spine atlases with `_pma` suffix.
  */
 export const PMA_MODES = {
     NPM: 0,
-    DO_UNPACK: 1,
+    UNPACK: 1,
     PMA: 2,
 };
 

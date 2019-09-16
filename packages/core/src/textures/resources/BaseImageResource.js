@@ -72,7 +72,7 @@ export class BaseImageResource extends Resource
 
         source = source || this.source;
 
-        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, baseTexture.premultiplyAlpha === PMA_MODES.DO_UNPACK);
+        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, baseTexture.premultiplyAlpha === PMA_MODES.UNPACK);
 
         if (!this.noSubImage
             && baseTexture.target === gl.TEXTURE_2D
