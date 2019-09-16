@@ -82,6 +82,12 @@ export class ImageResource extends BaseImageResource
          */
         this.premultiplyAlpha = typeof options.premultiplyAlpha === 'number' ? options.premultiplyAlpha : null;
 
+        if (options.premultiplyAlpha === false)
+        {
+            // fallback for those who used pma=false here before 5.2.0
+            this.premultiplyAlpha = PMA_MODES.NPM;
+        }
+
         /**
          * The ImageBitmap element created for HTMLImageElement
          * @member {ImageBitmap}
