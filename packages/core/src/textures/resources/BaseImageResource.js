@@ -1,5 +1,6 @@
 import { Resource } from './Resource';
 import { determineCrossOrigin } from '@pixi/utils';
+import { PMA_MODES } from '@pixi/constants';
 
 /**
  * Base for all the image/canvas resources
@@ -71,7 +72,7 @@ export class BaseImageResource extends Resource
 
         source = source || this.source;
 
-        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, baseTexture.premultiplyAlpha);
+        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, baseTexture.premultiplyAlpha === PMA_MODES.DO_UNPACK);
 
         if (!this.noSubImage
             && baseTexture.target === gl.TEXTURE_2D

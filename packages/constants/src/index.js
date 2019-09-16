@@ -281,6 +281,26 @@ export const MIPMAP_MODES = {
 };
 
 /**
+ * How to treat textures with premultiplied alpha
+ *
+ * @name PMA_MODES
+ * @memberof PIXI
+ * @static
+ * @enum {number}
+ * @property {number} NPM - Source is not premultiplied, leave it like that.
+ *  Option for compressed and data textures that are created from typed arrays.
+ * @property {number} DO_UNPACK - Source is not premultiplied, premultiply on upload.
+ *  Default option, used for all loaded images.
+ * @property {number} PMA - Source is already premultiplied
+ *  Example: spine atlases with `_pma` suffix.
+ */
+export const PMA_MODES = {
+    NPM: 0,
+    DO_UNPACK: 1,
+    PMA: 2,
+};
+
+/**
  * The gc modes that are supported by pixi.
  *
  * The {@link PIXI.settings.GC_MODE} Garbage Collection mode for PixiJS textures is AUTO

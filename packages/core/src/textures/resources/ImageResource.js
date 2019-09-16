@@ -1,5 +1,6 @@
 import { BaseImageResource } from './BaseImageResource';
 import { settings } from '@pixi/settings';
+import { PMA_MODES } from '@pixi/constants';
 
 /**
  * Resource type for HTMLImageElement.
@@ -15,7 +16,7 @@ export class ImageResource extends BaseImageResource
      * @param {boolean} [options.createBitmap=PIXI.settings.CREATE_IMAGE_BITMAP] whether its required to create
      *        a bitmap before upload
      * @param {boolean} [options.crossorigin=true] - Load image using cross origin
-     * @param {boolean} [options.premultiplyAlpha=true] - Premultiply image alpha in bitmap
+     * @param {PIXI.PMA_MODES} [options.premultiplyAlpha=PIXI.PMA_MODES.DO_UNPACK] - Premultiply image alpha in bitmap
      */
     constructor(source, options)
     {
@@ -74,10 +75,12 @@ export class ImageResource extends BaseImageResource
         /**
          * Controls texture premultiplyAlpha field
          * Copies from options
-         * @member {boolean|null}
+         * Default is `null`, copies option from baseTexture
+         *
+         * @member {PIXI.PMA_MODES|null}
          * @readonly
          */
-        this.premultiplyAlpha = options.premultiplyAlpha !== false;
+        this.premultiplyAlpha = typeof options.premultiplyAlpha === 'number' ? options.premultiplyAlpha : null;
 
         /**
          * The ImageBitmap element created for HTMLImageElement
@@ -179,7 +182,7 @@ export class ImageResource extends BaseImageResource
         this._process = window.createImageBitmap(this.source,
             0, 0, this.source.width, this.source.height,
             {
-                premultiplyAlpha: this.premultiplyAlpha ? 'premultiply' : 'none',
+                premultiplyAlpha: this.premultiplyAlpha === PMA_MODES.DO_UNPACK ? 'premultiply' : 'none',
             })
             .then((bitmap) =>
             {
@@ -207,7 +210,12 @@ export class ImageResource extends BaseImageResource
      */
     upload(renderer, baseTexture, glTexture)
     {
-        baseTexture.premultiplyAlpha = this.premultiplyAlpha;
+        if (typeof this.premultiplyAlpha === 'number')
+        {
+            // bitmap stores unpack premultiply flag, we dont have to notify texImage2D about it
+
+            baseTexture.premultiplyAlpha = this.premultiplyAlpha;
+        }
 
         if (!this.createBitmap)
         {

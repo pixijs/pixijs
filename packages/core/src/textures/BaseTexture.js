@@ -1,5 +1,5 @@
 import { BaseTextureCache, EventEmitter, isPow2, TextureCache, uid } from '@pixi/utils';
-import { FORMATS, SCALE_MODES, TARGETS, TYPES } from '@pixi/constants';
+import { FORMATS, SCALE_MODES, TARGETS, TYPES, PMA_MODES } from '@pixi/constants';
 
 import { Resource } from './resources/Resource';
 import { BufferResource } from './resources/BufferResource';
@@ -10,7 +10,7 @@ import { settings } from '@pixi/settings';
 const defaultBufferOptions = {
     scaleMode: SCALE_MODES.NEAREST,
     format: FORMATS.RGBA,
-    premultiplyAlpha: false,
+    premultiplyAlpha: PMA_MODES.NPM,
 };
 
 /**
@@ -32,7 +32,7 @@ const defaultBufferOptions = {
  * @param {PIXI.FORMATS} [options.format=PIXI.FORMATS.RGBA] - GL format type
  * @param {PIXI.TYPES} [options.type=PIXI.TYPES.UNSIGNED_BYTE] - GL data type
  * @param {PIXI.TARGETS} [options.target=PIXI.TARGETS.TEXTURE_2D] - GL texture target
- * @param {boolean} [options.premultiplyAlpha=true] - Pre multiply the image alpha
+ * @param {PIXI.PMA_MODES} [options.premultiplyAlpha=PIXI.PMA_MODES.DO_UNPACK] - Pre multiply the image alpha
  * @param {number} [options.width=0] - Width of the texture
  * @param {number} [options.height=0] - Height of the texture
  * @param {number} [options.resolution] - Resolution of the base texture
@@ -136,12 +136,12 @@ export class BaseTexture extends EventEmitter
         this.target = target || TARGETS.TEXTURE_2D;
 
         /**
-         * Set to true to enable pre-multiplied alpha
+         * How to treat premultiplied alpha, see {@link PIXI.PMA_MODES}.
          *
-         * @member {boolean}
-         * @default true
+         * @member {PIXI.PMA_MODES}
+         * @default PIXI.PMA_MODES.DO_UNPACK
          */
-        this.premultiplyAlpha = premultiplyAlpha !== false;
+        this.premultiplyAlpha = premultiplyAlpha !== undefined ? Number(premultiplyAlpha) : PMA_MODES.DO_UNPACK;
 
         /**
          * Global unique identifier for this BaseTexture
