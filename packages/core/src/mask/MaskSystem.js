@@ -44,7 +44,7 @@ export default class MaskSystem extends System
          * @member {boolean}
          * @readonly
          */
-        this.enableScissor = true;
+        this.enableScissor = false;
 
         /**
          * Pool of used sprite mask filters

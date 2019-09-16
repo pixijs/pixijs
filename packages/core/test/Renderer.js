@@ -88,6 +88,7 @@ describe('PIXI.Renderer', function ()
         before(function ()
         {
             this.renderer = new Renderer();
+            this.renderer.mask.enableScissor = true;
         });
 
         after(function ()
