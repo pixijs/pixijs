@@ -25,6 +25,15 @@ export class BaseImageResource extends Resource
          * @readonly
          */
         this.source = source;
+
+        /**
+         * If set to `true`, will force `texImage2D` over `texSubImage2D` for uploading.
+         * Certain types of media (e.g. video) using `texImage2D` is more performant.
+         * @member {boolean}
+         * @default false
+         * @private
+         */
+        this.noSubImage = false;
     }
 
     /**
@@ -64,7 +73,10 @@ export class BaseImageResource extends Resource
 
         gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, baseTexture.premultiplyAlpha);
 
-        if (baseTexture.target === gl.TEXTURE_2D && glTexture.width === width && glTexture.height === height)
+        if (!this.noSubImage
+            && baseTexture.target === gl.TEXTURE_2D
+            && glTexture.width === width
+            && glTexture.height === height)
         {
             gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, baseTexture.format, baseTexture.type, source);
         }
