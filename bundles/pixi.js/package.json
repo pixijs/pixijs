@@ -27,8 +27,7 @@
   },
   "scripts": {
     "test": "floss --path test",
-    "postinstall": "node scripts/support-pixi.js",
-    "compile:docs": "tsc -p tsconfig.docs.json"
+    "postinstall": "node scripts/support-pixi.js"
   },
   "files": [
     "lib/",
