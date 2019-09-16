@@ -16,6 +16,8 @@
         "**/lib/**",
         "**/test/**",
         "**/scripts/**",
-        "**/*.d.ts"
+        "**/types/**",
+        "**/*.d.ts",
+        "rollup.config.js"
     ]
 }
