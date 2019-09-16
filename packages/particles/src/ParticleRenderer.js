@@ -124,7 +124,7 @@ export class ParticleRenderer extends ObjectRenderer
         const baseTexture = children[0]._texture.baseTexture;
 
         // if the uvs have not updated then no point rendering just yet!
-        this.renderer.state.setBlendMode(correctBlendMode(container.blendMode, !!baseTexture.premultiplyAlpha));
+        this.renderer.state.setBlendMode(correctBlendMode(container.blendMode, baseTexture.premultiplyAlpha));
 
         const gl = renderer.gl;
 
@@ -135,7 +135,7 @@ export class ParticleRenderer extends ObjectRenderer
         this.shader.uniforms.translationMatrix = m.toArray(true);
 
         this.shader.uniforms.uColor = premultiplyRgba(container.tintRgb,
-            container.worldAlpha, this.shader.uniforms.uColor, !!baseTexture.premultiplyAlpha);
+            container.worldAlpha, this.shader.uniforms.uColor, baseTexture.premultiplyAlpha);
 
         this.shader.uniforms.uSampler = baseTexture;
 
@@ -401,7 +401,7 @@ export class ParticleRenderer extends ObjectRenderer
         for (let i = 0; i < amount; ++i)
         {
             const sprite = children[startIndex + i];
-            const premultiplied = !!sprite._texture.baseTexture.premultiplyAlpha;
+            const premultiplied = sprite._texture.baseTexture.premultiplyAlpha > 0;
             const alpha = sprite.alpha;
             // we dont call extra function if alpha is 1.0, that's faster
             const argb = alpha < 1.0 && premultiplied ? premultiplyTint(sprite._tintRGB, alpha)

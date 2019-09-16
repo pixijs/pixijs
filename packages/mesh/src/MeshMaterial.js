@@ -143,7 +143,7 @@ export class MeshMaterial extends Shader
             this._colorDirty = false;
             const baseTexture = this.texture.baseTexture;
 
-            premultiplyTintToRgba(this._tint, this._alpha, this.uniforms.uColor, !!baseTexture.premultiplyAlpha);
+            premultiplyTintToRgba(this._tint, this._alpha, this.uniforms.uColor, baseTexture.premultiplyAlpha);
         }
         if (this.uvMatrix.update())
         {

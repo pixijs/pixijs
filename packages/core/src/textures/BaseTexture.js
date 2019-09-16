@@ -1,4 +1,4 @@
-import { BaseTextureCache, EventEmitter, isPow2, TextureCache, uid } from '@pixi/utils';
+import { BaseTextureCache, deprecation, EventEmitter, isPow2, TextureCache, uid } from '@pixi/utils';
 import { FORMATS, SCALE_MODES, TARGETS, TYPES, PMA_MODES } from '@pixi/constants';
 
 import { Resource } from './resources/Resource';
@@ -141,7 +141,13 @@ export class BaseTexture extends EventEmitter
          * @member {PIXI.PMA_MODES}
          * @default PIXI.PMA_MODES.DO_UNPACK
          */
-        this.premultiplyAlpha = premultiplyAlpha !== undefined ? Number(premultiplyAlpha) : PMA_MODES.DO_UNPACK;
+        this.premultiplyAlpha = premultiplyAlpha !== undefined ? premultiplyAlpha : PMA_MODES.DO_UNPACK;
+
+        if (typeof premultiplyAlpha === 'boolean')
+        {
+            deprecation('v5.2.0', 'premultiplyAlpha is not a boolean anymore, see PIXI.PMA_MODES');
+            this.premultiplyAlpha = Number(premultiplyAlpha);
+        }
 
         /**
          * Global unique identifier for this BaseTexture

@@ -1,6 +1,7 @@
 import { BaseImageResource } from './BaseImageResource';
 import { settings } from '@pixi/settings';
 import { PMA_MODES } from '@pixi/constants';
+import { deprecation } from '@pixi/utils';
 
 /**
  * Resource type for HTMLImageElement.
@@ -82,10 +83,10 @@ export class ImageResource extends BaseImageResource
          */
         this.premultiplyAlpha = typeof options.premultiplyAlpha === 'number' ? options.premultiplyAlpha : null;
 
-        if (options.premultiplyAlpha === false)
+        if (typeof options.premultiplyAlpha === 'boolean')
         {
-            // fallback for those who used pma=false here before 5.2.0
-            this.premultiplyAlpha = PMA_MODES.NPM;
+            deprecation('v5.2.0', 'premultiplyAlpha is not a boolean anymore, see PIXI.PMA_MODES');
+            this.premultiplyAlpha = Number(options.premultiplyAlpha);
         }
 
         /**
