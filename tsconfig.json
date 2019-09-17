@@ -11,6 +11,13 @@
         "noImplicitReturns": true              /* Report error when not all code paths in function return a value. */
     },
     "exclude": [
-        "node_modules"
+        "node_modules",
+        "**/dist/**",
+        "**/lib/**",
+        "**/test/**",
+        "**/scripts/**",
+        "**/types/**",
+        "**/*.d.ts",
+        "rollup.config.js"
     ]
 }
