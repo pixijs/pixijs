@@ -1,7 +1,6 @@
 import { BaseImageResource } from './BaseImageResource';
 import { settings } from '@pixi/settings';
 import { PMA_MODES } from '@pixi/constants';
-import { deprecation } from '@pixi/utils';
 
 /**
  * Resource type for HTMLImageElement.
@@ -85,9 +84,8 @@ export class ImageResource extends BaseImageResource
 
         if (options.premultiplyAlpha !== undefined)
         {
-            deprecation('5.2.0', 'PIXI.resources.ImageResource.premultiplyAlpha property '
-                + 'has been changed to `pmaMode`, see `PIXI.PMA_MODES`');
-            this.pmaMode = Number(options.premultiplyAlpha);
+            // triggers deprecation
+            this.premultiplyAlpha = options.premultiplyAlpha;
         }
 
         /**

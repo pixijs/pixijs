@@ -1,4 +1,4 @@
-import { BaseTextureCache, deprecation, EventEmitter, isPow2, TextureCache, uid } from '@pixi/utils';
+import { BaseTextureCache, EventEmitter, isPow2, TextureCache, uid } from '@pixi/utils';
 import { FORMATS, SCALE_MODES, TARGETS, TYPES, PMA_MODES } from '@pixi/constants';
 
 import { Resource } from './resources/Resource';
@@ -145,9 +145,8 @@ export class BaseTexture extends EventEmitter
 
         if (options.premultiplyAlpha !== undefined)
         {
-            deprecation('5.2.0', 'PIXI.BaseTexture.premultiplyAlpha property has been changed to `pmaMode`'
-                + ', see `PIXI.PMA_MODES`');
-            this.pmaMode = Number(options.premultiplyAlpha);
+            // triggers deprecation
+            this.premultiplyAlpha = options.premultiplyAlpha;
         }
 
         /**
