@@ -60,6 +60,8 @@ export default class StencilSystem extends System
 
         if (prevMaskCount === 0)
         {
+            // force use stencil texture in current framebuffer
+            this.renderer.framebuffer.forceStencil();
             gl.enable(gl.STENCIL_TEST);
         }
 
