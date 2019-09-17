@@ -295,6 +295,8 @@ export class Text extends Sprite
         // https://medium.com/@giltayar/iterating-over-emoji-characters-the-es6-way-f06e4589516
         // https://github.com/orling/grapheme-splitter
         const stringArray = Array.from ? Array.from(text) : text.split('');
+        let previousWidth = this.context.measureText(text).width;
+        let currentWidth = 0;
 
         for (let i = 0; i < stringArray.length; ++i)
         {
@@ -308,7 +310,9 @@ export class Text extends Sprite
             {
                 this.context.fillText(currentChar, currentPosition, y);
             }
-            currentPosition += this.context.measureText(currentChar).width + letterSpacing;
+            currentWidth = this.context.measureText(text.substring(i + 1)).width;
+            currentPosition += previousWidth - currentWidth + letterSpacing;
+            previousWidth = currentWidth;
         }
     }
 
