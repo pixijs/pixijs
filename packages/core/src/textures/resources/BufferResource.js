@@ -50,7 +50,7 @@ export class BufferResource extends Resource
     {
         const gl = renderer.gl;
 
-        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, baseTexture.premultiplyAlpha === PMA_MODES.UNPACK);
+        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, baseTexture.pmaMode === PMA_MODES.UNPACK);
 
         if (glTexture.width === baseTexture.width && glTexture.height === baseTexture.height)
         {

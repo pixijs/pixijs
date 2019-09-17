@@ -17,7 +17,7 @@ export class ImageResource extends BaseImageResource
      * @param {boolean} [options.createBitmap=PIXI.settings.CREATE_IMAGE_BITMAP] whether its required to create
      *        a bitmap before upload
      * @param {boolean} [options.crossorigin=true] - Load image using cross origin
-     * @param {PIXI.PMA_MODES} [options.premultiplyAlpha=PIXI.PMA_MODES.UNPACK] - Premultiply image alpha in bitmap
+     * @param {PIXI.PMA_MODES} [options.pmaMode=PIXI.PMA_MODES.UNPACK] - Premultiply image alpha in bitmap
      */
     constructor(source, options)
     {
@@ -74,19 +74,20 @@ export class ImageResource extends BaseImageResource
             ? options.createBitmap : settings.CREATE_IMAGE_BITMAP) && !!window.createImageBitmap;
 
         /**
-         * Controls texture premultiplyAlpha field
+         * Controls texture pmaMode field
          * Copies from options
          * Default is `null`, copies option from baseTexture
          *
          * @member {PIXI.PMA_MODES|null}
          * @readonly
          */
-        this.premultiplyAlpha = typeof options.premultiplyAlpha === 'number' ? options.premultiplyAlpha : null;
+        this.pmaMode = typeof options.pmaMode === 'number' ? options.pmaMode : null;
 
-        if (typeof options.premultiplyAlpha === 'boolean')
+        if (options.premultiplyAlpha !== undefined)
         {
-            deprecation('v5.2.0', 'premultiplyAlpha is not a boolean anymore, see PIXI.PMA_MODES');
-            this.premultiplyAlpha = Number(options.premultiplyAlpha);
+            deprecation('5.2.0', 'PIXI.resources.ImageResource.premultiplyAlpha property '
+                + 'has been changed to `pmaMode`, see `PIXI.PMA_MODES`');
+            this.pmaMode = Number(options.premultiplyAlpha);
         }
 
         /**
@@ -217,11 +218,11 @@ export class ImageResource extends BaseImageResource
      */
     upload(renderer, baseTexture, glTexture)
     {
-        if (typeof this.premultiplyAlpha === 'number')
+        if (typeof this.pmaMode === 'number')
         {
             // bitmap stores unpack premultiply flag, we dont have to notify texImage2D about it
 
-            baseTexture.premultiplyAlpha = this.premultiplyAlpha;
+            baseTexture.pmaMode = this.pmaMode;
         }
 
         if (!this.createBitmap)

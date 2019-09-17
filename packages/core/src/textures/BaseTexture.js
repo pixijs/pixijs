@@ -10,7 +10,7 @@ import { settings } from '@pixi/settings';
 const defaultBufferOptions = {
     scaleMode: SCALE_MODES.NEAREST,
     format: FORMATS.RGBA,
-    premultiplyAlpha: PMA_MODES.NPM,
+    pmaMode: PMA_MODES.NPM,
 };
 
 /**
@@ -32,7 +32,7 @@ const defaultBufferOptions = {
  * @param {PIXI.FORMATS} [options.format=PIXI.FORMATS.RGBA] - GL format type
  * @param {PIXI.TYPES} [options.type=PIXI.TYPES.UNSIGNED_BYTE] - GL data type
  * @param {PIXI.TARGETS} [options.target=PIXI.TARGETS.TEXTURE_2D] - GL texture target
- * @param {PIXI.PMA_MODES} [options.premultiplyAlpha=PIXI.PMA_MODES.UNPACK] - Pre multiply the image alpha
+ * @param {PIXI.PMA_MODES} [options.pmaMode=PIXI.PMA_MODES.UNPACK] - Pre multiply the image alpha
  * @param {number} [options.width=0] - Width of the texture
  * @param {number} [options.height=0] - Height of the texture
  * @param {number} [options.resolution] - Resolution of the base texture
@@ -47,7 +47,7 @@ export class BaseTexture extends EventEmitter
 
         options = options || {};
 
-        const { premultiplyAlpha, mipmap, anisotropicLevel, scaleMode, width, height,
+        const { pmaMode, mipmap, anisotropicLevel, scaleMode, width, height,
             wrapMode, format, type, target, resolution, resourceOptions } = options;
 
         // Convert the resource to a Resource object
@@ -141,12 +141,13 @@ export class BaseTexture extends EventEmitter
          * @member {PIXI.PMA_MODES}
          * @default PIXI.PMA_MODES.UNPACK
          */
-        this.premultiplyAlpha = premultiplyAlpha !== undefined ? premultiplyAlpha : PMA_MODES.UNPACK;
+        this.pmaMode = pmaMode !== undefined ? pmaMode : PMA_MODES.UNPACK;
 
-        if (typeof premultiplyAlpha === 'boolean')
+        if (options.premultiplyAlpha !== undefined)
         {
-            deprecation('v5.2.0', 'premultiplyAlpha is not a boolean anymore, see PIXI.PMA_MODES');
-            this.premultiplyAlpha = Number(premultiplyAlpha);
+            deprecation('5.2.0', 'PIXI.BaseTexture.premultiplyAlpha property has been changed to `pmaMode`'
+                + ', see `PIXI.PMA_MODES`');
+            this.pmaMode = Number(options.premultiplyAlpha);
         }
 
         /**

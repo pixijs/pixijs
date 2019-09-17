@@ -364,7 +364,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
             nextTexture = sprite._texture.baseTexture;
 
             const spriteBlendMode = premultiplyBlendMode[
-                nextTexture.premultiplyAlpha ? 1 : 0][sprite.blendMode];
+                nextTexture.pmaMode ? 1 : 0][sprite.blendMode];
 
             if (blendMode !== spriteBlendMode)
             {
@@ -609,7 +609,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
 
         const alpha = Math.min(element.worldAlpha, 1.0);
         const argb = (alpha < 1.0
-          && element._texture.baseTexture.premultiplyAlpha)
+          && element._texture.baseTexture.pmaMode)
             ? premultiplyTint(element._tintRGB, alpha)
             : element._tintRGB + (alpha * 255 << 24);
 
