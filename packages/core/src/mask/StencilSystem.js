@@ -1,4 +1,4 @@
-import System from '../System';
+import { System } from '../System';
 
 /**
  * System plugin to the renderer to manage stencils (used for masks).
@@ -7,7 +7,7 @@ import System from '../System';
  * @extends PIXI.System
  * @memberof PIXI.systems
  */
-export default class StencilSystem extends System
+export class StencilSystem extends System
 {
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
@@ -31,8 +31,10 @@ export default class StencilSystem extends System
     setMaskStack(stencilMaskStack)
     {
         const gl = this.renderer.gl;
+        const curStackLen = this.stencilMaskStack.length;
 
-        if (stencilMaskStack.length !== this.stencilMaskStack.length)
+        this.stencilMaskStack = stencilMaskStack;
+        if (stencilMaskStack.length !== curStackLen)
         {
             if (stencilMaskStack.length === 0)
             {
@@ -41,10 +43,9 @@ export default class StencilSystem extends System
             else
             {
                 gl.enable(gl.STENCIL_TEST);
+                this._useCurrent();
             }
         }
-
-        this.stencilMaskStack = stencilMaskStack;
     }
 
     /**
@@ -59,6 +60,8 @@ export default class StencilSystem extends System
 
         if (prevMaskCount === 0)
         {
+            // force use stencil texture in current framebuffer
+            this.renderer.framebuffer.forceStencil();
             gl.enable(gl.STENCIL_TEST);
         }
 

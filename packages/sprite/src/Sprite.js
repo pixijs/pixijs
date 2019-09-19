@@ -34,7 +34,7 @@ const indices = new Uint16Array([0, 1, 2, 0, 2, 3]);
  * @extends PIXI.Container
  * @memberof PIXI
  */
-export default class Sprite extends Container
+export class Sprite extends Container
 {
     /**
      * @param {PIXI.Texture} [texture] - The texture for this sprite.
@@ -44,14 +44,20 @@ export default class Sprite extends Container
         super();
 
         /**
-         * The anchor sets the origin point of the texture.
-         * The default is 0,0 or taken from the {@link PIXI.Texture#defaultAnchor|Texture}
-         * passed to the constructor. A value of 0,0 means the texture's origin is the top left.
-         * Setting the anchor to 0.5,0.5 means the texture's origin is centered.
-         * Setting the anchor to 1,1 would mean the texture's origin point will be the bottom right corner.
-         * Note: Updating the {@link PIXI.Texture#defaultAnchor} after a Texture is
-         * created does _not_ update the Sprite's anchor values.
+         * The anchor point defines the normalized coordinates
+         * in the texture that map to the position of this
+         * sprite.
          *
+         * By default, this is `(0,0)` (or `texture.defaultAnchor`
+         * if you have modified that), which means the position
+         * `(x,y)` of this `Sprite` will be the top-left corner.
+         *
+         * Note: Updating `texture.defaultAnchor` after
+         * constructing a `Sprite` does _not_ update its anchor.
+         *
+         * {@link https://docs.cocos2d-x.org/cocos2d-x/en/sprites/manipulation.html}
+         *
+         * @default `texture.defaultAnchor`
          * @member {PIXI.ObservablePoint}
          * @private
          */
@@ -123,6 +129,13 @@ export default class Sprite extends Container
          */
         this._cachedTint = 0xFFFFFF;
 
+        /**
+         * this is used to store the uvs data of the sprite, assigned at the same time
+         * as the vertexData in calculateVertices()
+         *
+         * @private
+         * @member {Float32Array}
+         */
         this.uvs = null;
 
         // call texture setter
@@ -191,7 +204,6 @@ export default class Sprite extends Container
         this._textureTrimmedID = -1;
         this._cachedTint = 0xFFFFFF;
 
-        this.uvs = this._texture._uvs.uvsFloat32;
         // so if _width is 0 then width was not set..
         if (this._width)
         {
@@ -225,6 +237,12 @@ export default class Sprite extends Container
         if (this._transformID === this.transform._worldID && this._textureID === texture._updateID)
         {
             return;
+        }
+
+        // update texture UV here, because base texture can be changed without calling `_onTextureUpdate`
+        if (this._textureID !== texture._updateID)
+        {
+            this.uvs = this._texture._uvs.uvsFloat32;
         }
 
         this._transformID = this.transform._worldID;

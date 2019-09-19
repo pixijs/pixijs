@@ -1,5 +1,5 @@
 import { LoaderResource } from '@pixi/loaders';
-import BitmapText from './BitmapText';
+import { BitmapText } from './BitmapText';
 
 /**
  * {@link PIXI.Loader Loader} middleware for loading
@@ -8,7 +8,7 @@ import BitmapText from './BitmapText';
  * @memberof PIXI
  * @implements PIXI.ILoaderPlugin
  */
-export default class BitmapFontLoader
+export class BitmapFontLoader
 {
     /**
      * Register a BitmapText font from loader resource.

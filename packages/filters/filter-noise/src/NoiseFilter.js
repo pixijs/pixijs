@@ -13,7 +13,7 @@ import fragment from './noise.frag';
  * @extends PIXI.Filter
  * @memberof PIXI.filters
  */
-export default class NoiseFilter extends Filter
+export class NoiseFilter extends Filter
 {
     /**
      * @param {number} [noise=0.5] - The noise intensity, should be a normalized value in the range [0, 1].

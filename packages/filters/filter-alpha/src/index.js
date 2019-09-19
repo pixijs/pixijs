@@ -1,1 +1,1 @@
-export { default as AlphaFilter } from './AlphaFilter';
+export * from './AlphaFilter';

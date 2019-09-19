@@ -1,7 +1,7 @@
-import { AbstractRenderer } from '@pixi/core';
+import { AbstractRenderer, resources } from '@pixi/core';
 import { CanvasRenderTarget, sayHello } from '@pixi/utils';
-import CanvasMaskManager from './utils/CanvasMaskManager';
-import mapCanvasBlendModesToPixi from './utils/mapCanvasBlendModesToPixi';
+import { CanvasMaskManager } from './utils/CanvasMaskManager';
+import { mapCanvasBlendModesToPixi } from './utils/mapCanvasBlendModesToPixi';
 import { RENDERER_TYPE, SCALE_MODES, BLEND_MODES } from '@pixi/constants';
 import { settings } from '@pixi/settings';
 
@@ -15,7 +15,7 @@ import { settings } from '@pixi/settings';
  * @memberof PIXI
  * @extends PIXI.AbstractRenderer
  */
-export default class CanvasRenderer extends AbstractRenderer
+export class CanvasRenderer extends AbstractRenderer
 {
     /**
      * @param {object} [options] - The optional renderer parameters
@@ -161,7 +161,7 @@ export default class CanvasRenderer extends AbstractRenderer
                     renderTexture.height,
                     renderTexture.resolution
                 );
-                renderTexture.source = renderTexture._canvasRenderTarget.canvas;
+                renderTexture.resource = new resources.CanvasResource(renderTexture._canvasRenderTarget.canvas);
                 renderTexture.valid = true;
             }
 

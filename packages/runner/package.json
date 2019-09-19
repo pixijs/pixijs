@@ -1,6 +1,6 @@
 {
   "name": "@pixi/runner",
-  "version": "5.0.4",
+  "version": "5.1.1",
   "main": "lib/runner.js",
   "module": "lib/runner.es.js",
   "bundle": "dist/runner.js",
@@ -37,8 +37,5 @@
   "files": [
     "lib",
     "dist"
-  ],
-  "devDependencies": {
-    "floss": "^2.2.0"
-  }
+  ]
 }

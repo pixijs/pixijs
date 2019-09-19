@@ -1,8 +1,8 @@
 import { BaseTextureCache, EventEmitter, isPow2, TextureCache, uid } from '@pixi/utils';
 import { FORMATS, SCALE_MODES, TARGETS, TYPES } from '@pixi/constants';
 
-import Resource from './resources/Resource';
-import BufferResource from './resources/BufferResource';
+import { Resource } from './resources/Resource';
+import { BufferResource } from './resources/BufferResource';
 import { autoDetectResource } from './resources/autoDetectResource';
 
 import { settings } from '@pixi/settings';
@@ -35,10 +35,11 @@ const defaultBufferOptions = {
  * @param {boolean} [options.premultiplyAlpha=true] - Pre multiply the image alpha
  * @param {number} [options.width=0] - Width of the texture
  * @param {number} [options.height=0] - Height of the texture
+ * @param {number} [options.resolution] - Resolution of the base texture
  * @param {object} [options.resourceOptions] - Optional resource options,
  *        see {@link PIXI.resources.autoDetectResource autoDetectResource}
  */
-export default class BaseTexture extends EventEmitter
+export class BaseTexture extends EventEmitter
 {
     constructor(resource = null, options = null)
     {
@@ -179,8 +180,9 @@ export default class BaseTexture extends EventEmitter
 
         /**
          * Used by TextureSystem to only update texture to the GPU when needed.
+         * Please call `update()` to increment it.
          *
-         * @protected
+         * @readonly
          * @member {number}
          */
         this.dirtyId = 0;
@@ -255,6 +257,7 @@ export default class BaseTexture extends EventEmitter
          * @protected
          * @event PIXI.BaseTexture#error
          * @param {PIXI.BaseTexture} baseTexture - Resource errored.
+         * @param {ErrorEvent} event - Load error event.
          */
 
         /**
@@ -263,14 +266,6 @@ export default class BaseTexture extends EventEmitter
          * @protected
          * @event PIXI.BaseTexture#loaded
          * @param {PIXI.BaseTexture} baseTexture - Resource loaded.
-         */
-
-        /**
-         * Fired when BaseTexture is destroyed.
-         *
-         * @protected
-         * @event PIXI.BaseTexture#error
-         * @param {PIXI.BaseTexture} baseTexture - Resource errored.
          */
 
         /**
@@ -301,7 +296,7 @@ export default class BaseTexture extends EventEmitter
      */
     get realWidth()
     {
-        return this.width * this.resolution;
+        return Math.ceil((this.width * this.resolution) - 1e-4);
     }
 
     /**
@@ -312,7 +307,7 @@ export default class BaseTexture extends EventEmitter
      */
     get realHeight()
     {
-        return this.height * this.resolution;
+        return Math.ceil((this.height * this.resolution) - 1e-4);
     }
 
     /**
@@ -471,6 +466,16 @@ export default class BaseTexture extends EventEmitter
     }
 
     /**
+     * Handle errors with resources.
+     * @private
+     * @param {ErrorEvent} event - Error event emitted.
+     */
+    onError(event)
+    {
+        this.emit('error', this, event);
+    }
+
+    /**
      * Destroys this base texture.
      * The method stops if resource doesn't want this texture to be destroyed.
      * Removes texture from all caches.
@@ -528,13 +533,15 @@ export default class BaseTexture extends EventEmitter
      * @param {string|HTMLImageElement|HTMLCanvasElement|SVGElement|HTMLVideoElement} source - The
      *        source to create base texture from.
      * @param {object} [options] See {@link PIXI.BaseTexture}'s constructor for options.
+     * @param {boolean} [strict] Enforce strict-mode, see {@link PIXI.settings.STRICT_TEXTURE_CACHE}.
      * @returns {PIXI.BaseTexture} The new base texture.
      */
-    static from(source, options)
+    static from(source, options, strict = settings.STRICT_TEXTURE_CACHE)
     {
+        const isFrame = typeof source === 'string';
         let cacheId = null;
 
-        if (typeof source === 'string')
+        if (isFrame)
         {
             cacheId = source;
         }
@@ -549,6 +556,12 @@ export default class BaseTexture extends EventEmitter
         }
 
         let baseTexture = BaseTextureCache[cacheId];
+
+        // Strict-mode rejects invalid cacheIds
+        if (isFrame && strict && !baseTexture)
+        {
+            throw new Error(`The cacheId "${cacheId}" does not exist in BaseTextureCache.`);
+        }
 
         if (!baseTexture)
         {

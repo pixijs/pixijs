@@ -3,7 +3,7 @@ import { Point, Polygon } from '@pixi/math';
 import { BLEND_MODES, DRAW_MODES } from '@pixi/constants';
 import { Container } from '@pixi/display';
 import { settings } from '@pixi/settings';
-import MeshBatchUvs from './MeshBatchUvs';
+import { MeshBatchUvs } from './MeshBatchUvs';
 
 const tempPoint = new Point();
 const tempPolygon = new Polygon();
@@ -26,7 +26,7 @@ const tempPolygon = new Polygon();
  * @extends PIXI.Container
  * @memberof PIXI
  */
-export default class Mesh extends Container
+export class Mesh extends Container
 {
     /**
      * @param {PIXI.Geometry} geometry  the geometry the mesh will use
@@ -248,6 +248,7 @@ export default class Mesh extends Container
     /**
      * Standard renderer draw.
      * @protected
+     * @param {PIXI.Renderer} renderer - Instance to renderer.
      */
     _render(renderer)
     {
@@ -292,7 +293,7 @@ export default class Mesh extends Container
         renderer.shader.bind(shader);
 
         // set state..
-        renderer.state.setState(this.state);
+        renderer.state.set(this.state);
 
         // bind the geometry...
         renderer.geometry.bind(this.geometry, shader);

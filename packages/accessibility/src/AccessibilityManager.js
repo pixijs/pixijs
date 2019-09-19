@@ -1,4 +1,4 @@
-import accessibleTarget from './accessibleTarget';
+import { accessibleTarget } from './accessibleTarget';
 import { removeItems, isMobile } from '@pixi/utils';
 import { DisplayObject } from '@pixi/display';
 
@@ -29,7 +29,7 @@ const DIV_HOOK_ZINDEX = 2;
  * @class
  * @memberof PIXI.accessibility
  */
-export default class AccessibilityManager
+export class AccessibilityManager
 {
     /**
      * @param {PIXI.CanvasRenderer|PIXI.Renderer} renderer - A reference to the current renderer
@@ -472,6 +472,8 @@ export default class AccessibilityManager
         const interactionManager = this.renderer.plugins.interaction;
 
         interactionManager.dispatchEvent(e.target.displayObject, 'click', interactionManager.eventData);
+        interactionManager.dispatchEvent(e.target.displayObject, 'pointertap', interactionManager.eventData);
+        interactionManager.dispatchEvent(e.target.displayObject, 'tap', interactionManager.eventData);
     }
 
     /**

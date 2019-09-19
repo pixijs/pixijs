@@ -1,6 +1,6 @@
 {
   "name": "@pixi/loaders",
-  "version": "5.0.4",
+  "version": "5.1.3",
   "main": "lib/loaders.js",
   "module": "lib/loaders.es.js",
   "bundle": "dist/loaders.js",
@@ -19,19 +19,13 @@
   "publishConfig": {
     "access": "public"
   },
-  "scripts": {
-    "test": "floss --path test"
-  },
   "files": [
     "lib",
     "dist"
   ],
   "dependencies": {
-    "@pixi/core": "^5.0.4",
-    "@pixi/utils": "^5.0.4",
-    "resource-loader": "^2.2.4"
-  },
-  "devDependencies": {
-    "floss": "^2.2.0"
+    "@pixi/core": "^5.1.3",
+    "@pixi/utils": "^5.1.3",
+    "resource-loader": "^3.0.1"
   }
 }

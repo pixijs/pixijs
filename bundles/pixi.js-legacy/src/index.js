@@ -1,5 +1,5 @@
 import { accessibility, interaction, prepare, extract } from 'pixi.js';
-import { CanvasRenderer, CanvasTinter } from '@pixi/canvas-renderer';
+import { CanvasRenderer, canvasUtils } from '@pixi/canvas-renderer';
 import { CanvasMeshRenderer } from '@pixi/canvas-mesh';
 import { CanvasGraphicsRenderer } from '@pixi/canvas-graphics';
 import { CanvasSpriteRenderer } from '@pixi/canvas-sprite';
@@ -8,6 +8,7 @@ import * as canvasPrepare from '@pixi/canvas-prepare';
 import '@pixi/canvas-sprite-tiling';
 import '@pixi/canvas-particles';
 import '@pixi/canvas-display';
+import '@pixi/canvas-text';
 
 CanvasRenderer.registerPlugin('accessibility', accessibility.AccessibilityManager);
 CanvasRenderer.registerPlugin('extract', canvasExtract.CanvasExtract);
@@ -28,5 +29,5 @@ export {
     CanvasGraphicsRenderer,
     CanvasMeshRenderer,
     CanvasSpriteRenderer,
-    CanvasTinter,
+    canvasUtils,
 };

@@ -1,6 +1,6 @@
-import BatchShaderGenerator from './BatchShaderGenerator';
-import BatchGeometry from './BatchGeometry';
-import BaseBatchRenderer from './BatchRenderer';
+import { BatchShaderGenerator } from './BatchShaderGenerator';
+import { BatchGeometry } from './BatchGeometry';
+import { AbstractBatchRenderer } from './AbstractBatchRenderer';
 
 import defaultVertex from './texture.vert';
 import defaultFragment from './texture.frag';
@@ -10,7 +10,7 @@ import defaultFragment from './texture.frag';
  * @memberof PIXI
  * @hideconstructor
  */
-export default class BatchPluginFactory
+export class BatchPluginFactory
 {
     /**
      * Create a new BatchRenderer plugin for Renderer. this convenience can provide an easy way
@@ -39,7 +39,7 @@ export default class BatchPluginFactory
      * @param {string} [options.fragment=PIXI.BatchPluginFactory.defaultFragmentTemplate] - Fragment shader template
      * @param {number} [options.vertexSize=6] - Vertex size
      * @param {object} [options.geometryClass=PIXI.BatchGeometry]
-     * @return {PIXI.BatchRenderer} New batch renderer plugin.
+     * @return {*} New batch renderer plugin
      */
     static create(options)
     {
@@ -50,7 +50,7 @@ export default class BatchPluginFactory
             vertexSize: 6,
         }, options);
 
-        return class BatchPlugin extends BaseBatchRenderer
+        return class BatchPlugin extends AbstractBatchRenderer
         {
             constructor(renderer)
             {

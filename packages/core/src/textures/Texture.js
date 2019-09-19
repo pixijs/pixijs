@@ -1,7 +1,7 @@
-import BaseTexture from './BaseTexture';
-import ImageResource from './resources/ImageResource';
-import CanvasResource from './resources/CanvasResource';
-import TextureUvs from './TextureUvs';
+import { BaseTexture } from './BaseTexture';
+import { ImageResource } from './resources/ImageResource';
+import { CanvasResource } from './resources/CanvasResource';
+import { TextureUvs } from './TextureUvs';
 import { settings } from '@pixi/settings';
 import { Rectangle, Point } from '@pixi/math';
 import { uid, TextureCache, getResolutionOfUrl, EventEmitter } from '@pixi/utils';
@@ -38,14 +38,14 @@ const DEFAULT_UVS = new TextureUvs();
  * @extends PIXI.utils.EventEmitter
  * @memberof PIXI
  */
-export default class Texture extends EventEmitter
+export class Texture extends EventEmitter
 {
     /**
      * @param {PIXI.BaseTexture} baseTexture - The base texture source to create the texture from
      * @param {PIXI.Rectangle} [frame] - The rectangle frame of the texture to show
      * @param {PIXI.Rectangle} [orig] - The area of original texture
      * @param {PIXI.Rectangle} [trim] - Trimmed rectangle of original texture
-     * @param {number} [rotate] - indicates how the texture was rotated by texture packer. See {@link PIXI.GroupD8}
+     * @param {number} [rotate] - indicates how the texture was rotated by texture packer. See {@link PIXI.groupD8}
      * @param {PIXI.Point} [anchor] - Default anchor point used for sprite placement / rotation
      */
     constructor(baseTexture, frame, orig, trim, rotate, anchor)
@@ -321,16 +321,18 @@ export default class Texture extends EventEmitter
      * The source can be - frame id, image url, video url, canvas element, video element, base texture
      *
      * @static
-     * @param {number|string|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|PIXI.BaseTexture} source
+     * @param {string|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|PIXI.BaseTexture} source
      *        Source to create texture from
      * @param {object} [options] See {@link PIXI.BaseTexture}'s constructor for options.
+     * @param {boolean} [strict] Enforce strict-mode, see {@link PIXI.settings.STRICT_TEXTURE_CACHE}.
      * @return {PIXI.Texture} The newly created texture
      */
-    static from(source, options = {})
+    static from(source, options = {}, strict = settings.STRICT_TEXTURE_CACHE)
     {
+        const isFrame = typeof source === 'string';
         let cacheId = null;
 
-        if (typeof source === 'string')
+        if (isFrame)
         {
             cacheId = source;
         }
@@ -345,6 +347,12 @@ export default class Texture extends EventEmitter
         }
 
         let texture = TextureCache[cacheId];
+
+        // Strict-mode rejects invalid cacheIds
+        if (isFrame && strict && !texture)
+        {
+            throw new Error(`The cacheId "${cacheId}" does not exist in TextureCache.`);
+        }
 
         if (!texture)
         {
@@ -496,6 +504,17 @@ export default class Texture extends EventEmitter
     }
 
     /**
+     * Returns resolution of baseTexture
+     *
+     * @member {number}
+     * @readonly
+     */
+    get resolution()
+    {
+        return this.baseTexture.resolution;
+    }
+
+    /**
      * The frame specifies the region of the base texture that this texture uses.
      * Please call `updateUvs()` after you change coordinates of `frame` manually.
      *
@@ -544,7 +563,7 @@ export default class Texture extends EventEmitter
      * set to 2 to compensate for texture packer rotation
      * set to 6 to compensate for spine packer rotation
      * can be used to rotate or mirror sprites
-     * See {@link PIXI.GroupD8} for explanation
+     * See {@link PIXI.groupD8} for explanation
      *
      * @member {number}
      */
@@ -619,7 +638,7 @@ removeAllHandlers(Texture.EMPTY);
 removeAllHandlers(Texture.EMPTY.baseTexture);
 
 /**
- * A white texture of 10x10 size, used for graphics and other things
+ * A white texture of 16x16 size, used for graphics and other things
  * Can not be destroyed.
  *
  * @static

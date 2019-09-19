@@ -1,4 +1,4 @@
-import { CanvasTinter } from '@pixi/canvas-renderer';
+import { canvasUtils } from '@pixi/canvas-renderer';
 import { NineSlicePlane } from '@pixi/mesh-extras';
 
 /**
@@ -39,7 +39,7 @@ NineSlicePlane.prototype._renderCanvas = function _renderCanvas(renderer)
     const transform = this.worldTransform;
     const res = renderer.resolution;
     const isTinted = this.tint !== 0xFFFFFF;
-    const texture = this._texture;
+    const texture = this.texture;
 
     // Work out tinting
     if (isTinted)
@@ -50,7 +50,7 @@ NineSlicePlane.prototype._renderCanvas = function _renderCanvas(renderer)
 
             this._cachedTint = this.tint;
 
-            this._tintedCanvas = CanvasTinter.getTintedCanvas(this, this.tint);
+            this._tintedCanvas = canvasUtils.getTintedCanvas(this, this.tint);
         }
     }
 

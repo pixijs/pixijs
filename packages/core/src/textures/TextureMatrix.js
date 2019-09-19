@@ -19,7 +19,7 @@ const tempMat = new Matrix();
  * @class
  * @memberof PIXI
  */
-export default class TextureMatrix
+export class TextureMatrix
 {
     /**
      *
@@ -31,10 +31,27 @@ export default class TextureMatrix
     {
         this._texture = texture;
 
+        /**
+         * Matrix operation that converts texture region coords to texture coords
+         * @member {PIXI.Matrix}
+         * @readonly
+         */
         this.mapCoord = new Matrix();
 
+        /**
+         * Clamp region for normalized coords, left-top pixel center in xy , bottom-right in zw.
+         * Calculated based on clampOffset.
+         * @member {Float32Array}
+         * @readonly
+         */
         this.uClampFrame = new Float32Array(4);
 
+        /**
+         * Normalized clamp offset.
+         * Calculated based on clampOffset.
+         * @member {Float32Array}
+         * @readonly
+         */
         this.uClampOffset = new Float32Array(2);
 
         /**

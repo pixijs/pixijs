@@ -3,7 +3,7 @@ import { Matrix, Rectangle } from '@pixi/math';
 import { RENDERER_TYPE } from '@pixi/constants';
 import { settings } from '@pixi/settings';
 import { Container } from '@pixi/display';
-import RenderTexture from './renderTexture/RenderTexture';
+import { RenderTexture } from './renderTexture/RenderTexture';
 
 const tempMatrix = new Matrix();
 
@@ -16,7 +16,7 @@ const tempMatrix = new Matrix();
  * @extends PIXI.utils.EventEmitter
  * @memberof PIXI
  */
-export default class AbstractRenderer extends EventEmitter
+export class AbstractRenderer extends EventEmitter
 {
     /**
      * @param {string} system - The name of the system this renderer is for.
@@ -246,7 +246,7 @@ export default class AbstractRenderer extends EventEmitter
      * @param {number} resolution - The resolution / device pixel ratio of the texture being generated.
      * @param {PIXI.Rectangle} [region] - The region of the displayObject, that shall be rendered,
      *        if no region is specified, defaults to the local bounds of the displayObject.
-     * @return {PIXI.Texture} A texture of the graphics object.
+     * @return {PIXI.RenderTexture} A texture of the graphics object.
      */
     generateTexture(displayObject, scaleMode, resolution, region)
     {

@@ -15,7 +15,7 @@ const CANVAS_START_SIZE = 16;
  * @extends PIXI.prepare.BasePrepare
  * @memberof PIXI.prepare
  */
-export default class CanvasPrepare extends BasePrepare
+export class CanvasPrepare extends BasePrepare
 {
     /**
      * @param {PIXI.CanvasRenderer} renderer - A reference to the current renderer

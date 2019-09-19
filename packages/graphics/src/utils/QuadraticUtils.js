@@ -5,7 +5,7 @@ import { GRAPHICS_CURVES } from '../const';
  * @class
  * @private
  */
-export default class QuadraticUtils
+export class QuadraticUtils
 {
     /**
      * Calculate length of quadratic curve

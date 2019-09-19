@@ -7,6 +7,6 @@ import { Resource } from 'resource-loader';
  * @memberof PIXI
  */
 export const LoaderResource = Resource;
-export { default as Loader } from './Loader';
-export { default as TextureLoader } from './TextureLoader';
-export { default as AppLoaderPlugin } from './AppLoaderPlugin';
+export * from './Loader';
+export * from './TextureLoader';
+export * from './AppLoaderPlugin';

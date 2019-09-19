@@ -1,4 +1,4 @@
-import System from '../System';
+import { System } from '../System';
 import { GC_MODES } from '@pixi/constants';
 import { settings } from '@pixi/settings';
 
@@ -10,7 +10,7 @@ import { settings } from '@pixi/settings';
  * @memberof PIXI.systems
  * @extends PIXI.System
  */
-export default class TextureGCSystem extends System
+export class TextureGCSystem extends System
 {
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
@@ -41,7 +41,7 @@ export default class TextureGCSystem extends System
         this.maxIdle = settings.GC_MAX_IDLE;
 
         /**
-         * Maximum number of itesm to check
+         * Maximum number of item to check
          * @member {number}
          * @see PIXI.settings.GC_MAX_CHECK_COUNT
          */

@@ -9,7 +9,7 @@
  * @class
  * @memberof PIXI
  */
-export default class TextMetrics
+export class TextMetrics
 {
     /**
      * @param {string} text - the text that was measured
@@ -699,7 +699,20 @@ export default class TextMetrics
  * @private
  */
 
-const canvas = document.createElement('canvas');
+const canvas = (() =>
+{
+    try
+    {
+        // OffscreenCanvas2D measureText can be up to 40% faster.
+        const c = new OffscreenCanvas(0, 0);
+
+        return c.getContext('2d') ? c : document.createElement('canvas');
+    }
+    catch (ex)
+    {
+        return document.createElement('canvas');
+    }
+})();
 
 canvas.width = canvas.height = 10;
 

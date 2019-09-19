@@ -8,7 +8,7 @@ import { Runner } from '@pixi/runner';
  * @class
  * @memberof PIXI.resources
  */
-export default class Resource
+export class Resource
 {
     /**
      * @param {number} [width=0] Width of the resource
@@ -63,6 +63,14 @@ export default class Resource
          * @private
          */
         this.onUpdate = new Runner('update');
+
+        /**
+         * Handle internal errors, such as loading errors
+         *
+         * @member {Runner}
+         * @private
+         */
+        this.onError = new Runner('onError', 1);
     }
 
     /**
@@ -74,6 +82,7 @@ export default class Resource
     {
         this.onResize.add(baseTexture);
         this.onUpdate.add(baseTexture);
+        this.onError.add(baseTexture);
 
         // Call a resize immediate if we already
         // have the width and height of the resource
@@ -92,10 +101,13 @@ export default class Resource
     {
         this.onResize.remove(baseTexture);
         this.onUpdate.remove(baseTexture);
+        this.onError.remove(baseTexture);
     }
 
     /**
      * Trigger a resize event
+     * @param {number} width X dimension
+     * @param {number} height Y dimension
      */
     resize(width, height)
     {
@@ -206,12 +218,14 @@ export default class Resource
     {
         if (!this.destroyed)
         {
+            this.destroyed = true;
+            this.dispose();
+            this.onError.removeAll();
+            this.onError = null;
             this.onResize.removeAll();
             this.onResize = null;
             this.onUpdate.removeAll();
             this.onUpdate = null;
-            this.destroyed = true;
-            this.dispose();
         }
     }
 }

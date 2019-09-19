@@ -1,8 +1,8 @@
-import System from '../System';
-import BaseTexture from './BaseTexture';
-import GLTexture from './GLTexture';
+import { System } from '../System';
+import { BaseTexture } from './BaseTexture';
+import { GLTexture } from './GLTexture';
 import { removeItems } from '@pixi/utils';
-import { MIPMAP_MODES, WRAP_MODES, SCALE_MODES } from '@pixi/constants';
+import { MIPMAP_MODES, WRAP_MODES, SCALE_MODES, TYPES } from '@pixi/constants';
 
 /**
  * System plugin to the renderer to manage textures.
@@ -11,7 +11,7 @@ import { MIPMAP_MODES, WRAP_MODES, SCALE_MODES } from '@pixi/constants';
  * @extends PIXI.System
  * @memberof PIXI.systems
  */
-export default class TextureSystem extends System
+export class TextureSystem extends System
 {
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
@@ -232,6 +232,34 @@ export default class TextureSystem extends System
         return glTexture;
     }
 
+    initTextureType(texture, glTexture)
+    {
+        glTexture.internalFormat = texture.format;
+        glTexture.type = texture.type;
+        if (this.webGLVersion !== 2)
+        {
+            return;
+        }
+        const gl = this.renderer.gl;
+
+        if (texture.type === gl.FLOAT
+            && texture.format === gl.RGBA)
+        {
+            glTexture.internalFormat = gl.RGBA32F;
+        }
+        // that's WebGL1 HALF_FLOAT_OES
+        // we have to convert it to WebGL HALF_FLOAT
+        if (texture.type === TYPES.HALF_FLOAT)
+        {
+            glTexture.type = gl.HALF_FLOAT;
+        }
+        if (glTexture.type === gl.HALF_FLOAT
+            && texture.format === gl.RGBA)
+        {
+            glTexture.internalFormat = gl.RGBA16F;
+        }
+    }
+
     /**
      * Update a texture
      *
@@ -241,7 +269,15 @@ export default class TextureSystem extends System
     updateTexture(texture)
     {
         const glTexture = texture._glTextures[this.CONTEXT_UID];
+
+        if (!glTexture)
+        {
+            return;
+        }
+
         const renderer = this.renderer;
+
+        this.initTextureType(texture, glTexture);
 
         if (texture.resource && texture.resource.upload(renderer, texture, glTexture))
         {
@@ -262,12 +298,12 @@ export default class TextureSystem extends System
                 glTexture.height = height;
 
                 gl.texImage2D(texture.target, 0,
-                    texture.format,
+                    glTexture.internalFormat,
                     width,
                     height,
                     0,
                     texture.format,
-                    texture.type,
+                    glTexture.type,
                     null);
             }
         }

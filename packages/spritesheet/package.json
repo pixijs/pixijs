@@ -1,6 +1,6 @@
 {
   "name": "@pixi/spritesheet",
-  "version": "5.0.4",
+  "version": "5.1.3",
   "main": "lib/spritesheet.js",
   "module": "lib/spritesheet.es.js",
   "bundle": "dist/spritesheet.js",
@@ -19,20 +19,14 @@
   "publishConfig": {
     "access": "public"
   },
-  "scripts": {
-    "test": "floss --path test"
-  },
   "files": [
     "lib",
     "dist"
   ],
   "dependencies": {
-    "@pixi/core": "^5.0.4",
-    "@pixi/loaders": "^5.0.4",
-    "@pixi/math": "^5.0.4",
-    "@pixi/utils": "^5.0.4"
-  },
-  "devDependencies": {
-    "floss": "^2.2.0"
+    "@pixi/core": "^5.1.3",
+    "@pixi/loaders": "^5.1.3",
+    "@pixi/math": "^5.1.0",
+    "@pixi/utils": "^5.1.3"
   }
 }

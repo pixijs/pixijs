@@ -19,7 +19,7 @@ import { SHAPES } from '@pixi/math';
  * @protected
  * @memberof PIXI
  */
-export default class CanvasGraphicsRenderer
+export class CanvasGraphicsRenderer
 {
     /**
      * @param {PIXI.CanvasRenderer} renderer - The current PIXI renderer.
@@ -52,10 +52,10 @@ export default class CanvasGraphicsRenderer
         );
 
         // update tint if graphics was dirty
-        if (graphics.canvasTintDirty !== graphics.dirty
+        if (graphics.canvasTintDirty !== graphics.geometry.dirty
             || graphics._prevTint !== graphics.tint)
         {
-        //    this.updateGraphicsTint(graphics);
+            this.updateGraphicsTint(graphics);
         }
 
         renderer.setBlendMode(graphics.blendMode);
@@ -69,8 +69,8 @@ export default class CanvasGraphicsRenderer
             const fillStyle = data.fillStyle;
             const lineStyle = data.lineStyle;
 
-            const fillColor = fillStyle.color;// data._fillTint;
-            const lineColor = lineStyle.color;// data._lineTint;
+            const fillColor = data._fillTint;
+            const lineColor = data._lineTint;
 
             context.lineWidth = lineStyle.width;
 
@@ -293,18 +293,19 @@ export default class CanvasGraphicsRenderer
     updateGraphicsTint(graphics)
     {
         graphics._prevTint = graphics.tint;
-        graphics.canvasTintDirty = graphics.dirty;
+        graphics.canvasTintDirty = graphics.geometry.dirty;
 
         const tintR = ((graphics.tint >> 16) & 0xFF) / 255;
         const tintG = ((graphics.tint >> 8) & 0xFF) / 255;
         const tintB = (graphics.tint & 0xFF) / 255;
+        const graphicsData = graphics.geometry.graphicsData;
 
-        for (let i = 0; i < graphics.graphicsData.length; ++i)
+        for (let i = 0; i < graphicsData.length; ++i)
         {
-            const data = graphics.graphicsData[i];
+            const data = graphicsData[i];
 
-            const fillColor = data.fillColor | 0;
-            const lineColor = data.lineColor | 0;
+            const fillColor = data.fillStyle.color | 0;
+            const lineColor = data.lineStyle.color | 0;
 
             // super inline, cos optimization :)
             data._fillTint = (

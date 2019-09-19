@@ -1,4 +1,28 @@
 /**
+ * Interface for classes that represent a hit area.
+ *
+ * It is implemented by the following classes:
+ * - {@link PIXI.Circle}
+ * - {@link PIXI.Ellipse}
+ * - {@link PIXI.Polygon}
+ * - {@link PIXI.RoundedRectangle}
+ *
+ * @interface IHitArea
+ * @memberof PIXI
+ */
+
+/**
+ * Checks whether the x and y coordinates given are contained within this area
+ *
+ * @method
+ * @name contains
+ * @memberof PIXI.IHitArea#
+ * @param {number} x - The X coordinate of the point to test
+ * @param {number} y - The Y coordinate of the point to test
+ * @return {boolean} Whether the x/y coordinates are within this area
+ */
+
+/**
  * Default property values of interactive objects
  * Used by {@link PIXI.interaction.InteractionManager} to automatically give all DisplayObjects these properties
  *
@@ -14,7 +38,7 @@
  *          PIXI.interaction.interactiveTarget
  *      );
  */
-export default {
+export const interactiveTarget = {
 
     /**
      * Enable interaction events for the DisplayObject. Touch, pointer and mouse
@@ -48,7 +72,7 @@ export default {
      * const sprite = new PIXI.Sprite(texture);
      * sprite.interactive = true;
      * sprite.hitArea = new PIXI.Rectangle(0, 0, 100, 100);
-     * @member {PIXI.Rectangle|PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.RoundedRectangle}
+     * @member {PIXI.IHitArea}
      * @memberof PIXI.DisplayObject#
      */
     hitArea: null,

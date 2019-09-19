@@ -1,4 +1,4 @@
-import BaseImageResource from './BaseImageResource';
+import { BaseImageResource } from './BaseImageResource';
 import { Ticker } from '@pixi/ticker';
 
 /**
@@ -14,7 +14,7 @@ import { Ticker } from '@pixi/ticker';
  * Leave at 0 to update at every render.
  * @param {boolean} [options.crossorigin=true] - Load image using cross origin
  */
-export default class VideoResource extends BaseImageResource
+export class VideoResource extends BaseImageResource
 {
     constructor(source, options)
     {
@@ -24,6 +24,8 @@ export default class VideoResource extends BaseImageResource
         {
             const videoElement = document.createElement('video');
 
+            // workaround for https://github.com/pixijs/pixi.js/issues/5996
+            videoElement.setAttribute('preload', 'auto');
             videoElement.setAttribute('webkit-playsinline', '');
             videoElement.setAttribute('playsinline', '');
 
@@ -60,6 +62,7 @@ export default class VideoResource extends BaseImageResource
 
         super(source);
 
+        this.noSubImage = true;
         this._autoUpdate = true;
         this._isAutoUpdating = false;
         this._updateFPS = options.updateFPS || 0;
@@ -91,6 +94,7 @@ export default class VideoResource extends BaseImageResource
 
         // Bind for listeners
         this._onCanPlay = this._onCanPlay.bind(this);
+        this._onError = this._onError.bind(this);
 
         if (options.autoLoad !== false)
         {
@@ -147,6 +151,7 @@ export default class VideoResource extends BaseImageResource
         {
             source.addEventListener('canplay', this._onCanPlay);
             source.addEventListener('canplaythrough', this._onCanPlay);
+            source.addEventListener('error', this._onError, true);
         }
         else
         {
@@ -168,6 +173,17 @@ export default class VideoResource extends BaseImageResource
         });
 
         return this._load;
+    }
+
+    /**
+     * Handle video error events.
+     *
+     * @private
+     */
+    _onError()
+    {
+        this.source.removeEventListener('error', this._onError, true);
+        this.onError.run(event);
     }
 
     /**
@@ -274,6 +290,7 @@ export default class VideoResource extends BaseImageResource
 
         if (this.source)
         {
+            this.source.removeEventListener('error', this._onError, true);
             this.source.pause();
             this.source.src = '';
             this.source.load();

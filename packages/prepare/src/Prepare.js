@@ -1,6 +1,6 @@
 import { BaseTexture } from '@pixi/core';
 import { Graphics } from '@pixi/graphics';
-import BasePrepare from './BasePrepare';
+import { BasePrepare } from './BasePrepare';
 
 /**
  * The prepare manager provides functionality to upload content to the GPU.
@@ -11,7 +11,7 @@ import BasePrepare from './BasePrepare';
  * @extends PIXI.prepare.BasePrepare
  * @memberof PIXI.prepare
  */
-export default class Prepare extends BasePrepare
+export class Prepare extends BasePrepare
 {
     /**
      * @param {PIXI.Renderer} renderer - A reference to the current renderer
@@ -45,7 +45,7 @@ function uploadBaseTextures(renderer, item)
         // reuploads the texture without need for preparing it again
         if (!item._glTextures[renderer.CONTEXT_UID])
         {
-            renderer.textureManager.updateTexture(item);
+            renderer.texture.bind(item);
         }
 
         return true;

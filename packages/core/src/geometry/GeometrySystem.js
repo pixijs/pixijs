@@ -1,5 +1,5 @@
-import System from '../System';
-import GLBuffer from './GLBuffer';
+import { System } from '../System';
+import { GLBuffer } from './GLBuffer';
 import { ENV } from '@pixi/constants';
 import { settings } from '../settings';
 
@@ -12,7 +12,7 @@ const byteSizeMap = { 5126: 4, 5123: 2, 5121: 1 };
  * @extends PIXI.System
  * @memberof PIXI.systems
  */
-export default class GeometrySystem extends System
+export class GeometrySystem extends System
 {
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
@@ -148,9 +148,9 @@ export default class GeometrySystem extends System
 
     /**
      * Binds geometry so that is can be drawn. Creating a Vao if required
-     * @protected
+     *
      * @param {PIXI.Geometry} geometry instance of geometry to bind
-     * @param {PIXI.Shader} shader instance of shader to bind
+     * @param {PIXI.Shader} [shader] instance of shader to use vao for
      */
     bind(geometry, shader)
     {

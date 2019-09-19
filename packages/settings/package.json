@@ -1,6 +1,6 @@
 {
   "name": "@pixi/settings",
-  "version": "5.0.4",
+  "version": "5.1.3",
   "main": "lib/settings.js",
   "module": "lib/settings.es.js",
   "bundle": "dist/settings.js",
@@ -19,17 +19,11 @@
   "publishConfig": {
     "access": "public"
   },
-  "scripts": {
-    "test": "floss --path test"
-  },
   "files": [
     "lib",
     "dist"
   ],
   "dependencies": {
     "ismobilejs": "^0.5.1"
-  },
-  "devDependencies": {
-    "floss": "^2.2.0"
   }
 }
