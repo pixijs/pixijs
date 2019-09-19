@@ -66,10 +66,10 @@ import * as PIXI from 'pixi.js'
 #### CDN Install (via cdnjs)
 
 ```html
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.5.1/pixi.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/5.1.3/pixi.min.js"></script>
 ```
 
-_Note: `4.5.1` can be replaced by any [released](https://github.com/pixijs/pixi.js/releases) version._
+_Note: `5.1.3` can be replaced by any [released](https://github.com/pixijs/pixi.js/releases) version._
 
 ### Demos ###
 
@@ -114,11 +114,13 @@ before submitting changes.
 - Primitive Drawing
 - Masking
 - Filters
-- [User Plugins](https://github.com/pixijs/pixi.js/wiki/v3-Pixi-Plugins)
+- [User Plugins](https://github.com/pixijs/pixi.js/wiki/v5-Resources)
 
 ### Basic Usage Example ###
 
 ```js
+import * as PIXI from 'pixi.js';
+
 // The application will create a renderer using WebGL, if possible,
 // with a fallback to a canvas render. It will also setup the ticker
 // and the root stage PIXI.Container
@@ -179,7 +181,7 @@ The docs can be generated using npm:
 npm run docs
 ```
 
-The documentation uses [Jaguar.js](https://github.com/pixijs/jaguarjs-jsdoc) and the jsdoc format, the configuration file can be found at [scripts/jsdoc.conf.json](scripts/jsdoc.conf.json)
+The documentation uses JSDocs in combination with this template [pixi-jsdoc-template](https://github.com/pixijs/pixi-jsdoc-template). The configuration file can be found at [jsdoc.conf.json](jsdoc.conf.json)
 
 ### License ###
 
