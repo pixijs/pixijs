@@ -401,7 +401,10 @@ export class GraphicsGeometry extends BatchGeometry
      */
     updateBatches()
     {
-        if (!this.validateBathching()) return;
+        if (!this.validateBatching())
+        {
+            return;
+        }
 
         this.cacheDirty = this.dirty;
 
@@ -548,7 +551,7 @@ export class GraphicsGeometry extends BatchGeometry
      *
      * @protected
      */
-    validateBathching()
+    validateBatching()
     {
         if (this.dirty === this.cacheDirty)
         {
@@ -562,17 +565,14 @@ export class GraphicsGeometry extends BatchGeometry
             return false;
         }
 
-        if (this.dirty !== this.cacheDirty)
+        for (let i = 0, l = this.graphicsData.length; i < l; i++)
         {
-            for (let i = 0; i < this.graphicsData.length; i++)
-            {
-                const data = this.graphicsData[i];
-                const fill = data.fillStyle;
-                const line = data.lineStyle;
+            const data = this.graphicsData[i];
+            const fill = data.fillStyle;
+            const line = data.lineStyle;
 
-                if (fill && !fill.texture.baseTexture.valid) return false;
-                if (line && !line.texture.baseTexture.valid) return false;
-            }
+            if (fill && !fill.texture.baseTexture.valid) return false;
+            if (line && !line.texture.baseTexture.valid) return false;
         }
 
         return true;
