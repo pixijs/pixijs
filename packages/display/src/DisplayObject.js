@@ -462,7 +462,7 @@ export class DisplayObject extends EventEmitter
 
         this.filterArea = null;
         this.hitArea = null;
-        
+
         this.interactive = false;
         this.interactiveChildren = false;
 
