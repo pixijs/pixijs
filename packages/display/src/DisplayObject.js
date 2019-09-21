@@ -460,6 +460,7 @@ export class DisplayObject extends EventEmitter
         this._currentBounds = null;
         this._mask = null;
 
+        this.filters = null;
         this.filterArea = null;
         this.hitArea = null;
 
