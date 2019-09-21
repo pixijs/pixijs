@@ -290,6 +290,8 @@ export default class Text extends Sprite
         let currentPosition = x;
         let index = 0;
         let current = '';
+        let previousWidth = this.context.measureText(text).width;
+        let currentWidth = 0;
 
         while (index < text.length)
         {
@@ -302,7 +304,9 @@ export default class Text extends Sprite
             {
                 this.context.fillText(current, currentPosition, y);
             }
-            currentPosition += this.context.measureText(current).width + letterSpacing;
+            currentWidth = this.context.measureText(text.substring(index)).width;
+            currentPosition += previousWidth - currentWidth + letterSpacing;
+            previousWidth = currentWidth;
         }
     }
 
