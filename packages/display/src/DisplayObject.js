@@ -456,12 +456,13 @@ export class DisplayObject extends EventEmitter
         this.transform = null;
 
         this.parent = null;
-
         this._bounds = null;
         this._currentBounds = null;
         this._mask = null;
 
+        this.filters = null;
         this.filterArea = null;
+        this.hitArea = null;
 
         this.interactive = false;
         this.interactiveChildren = false;
