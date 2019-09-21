@@ -106,8 +106,8 @@ export default class WebGLExtract
             frame.height = textureBuffer.size.height;
         }
 
-        const width = frame.width * resolution;
-        const height = frame.height * resolution;
+        const width = Math.floor((frame.width * resolution) + 1e-4);
+        const height = Math.floor((frame.height * resolution) + 1e-4);
 
         const canvasBuffer = new core.CanvasRenderTarget(width, height, 1);
 
