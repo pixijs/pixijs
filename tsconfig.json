@@ -1,14 +1,64 @@
 {
     "compilerOptions": {
-        "target": "es5",                       /* Specify ECMAScript target version: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017', or 'ESNEXT'. */
-        "allowJs": true,                       /* Allow JavaScript files to be compiled. */
-        "sourceMap": true,                     /* Generates corresponding '.map' file. */
-        "removeComments": false,               /* Do not emit comments to output. */
-        "strict": true,                        /* Enable all strict type-checking options. */
-        "noImplicitAny": true,                 /* Raise error on expressions and declarations with an implied 'any' type. */
-        "noUnusedLocals": true,                /* Report errors on unused locals. */
-        "noUnusedParameters": true,            /* Report errors on unused parameters. */
-        "noImplicitReturns": true              /* Report error when not all code paths in function return a value. */
+        "target": "es5",
+        "allowJs": true,
+        "sourceMap": true,
+        "removeComments": false,
+        "strict": true,
+        "noImplicitAny": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noImplicitReturns": true,
+        "baseUrl": "./",
+        "paths": {
+            "@pixi.js": ["./bundles/pixi.js"],
+            "@pixi.js-legacy": ["./bundles/pixi.js-legacy"],
+            "@pixi/accessibility": ["./packages/accessibility/src/"],
+            "@pixi/app": ["./packages/app/src/"],
+            "@pixi/canvas-display": ["./packages/canvas/canvas-display/src/"],
+            "@pixi/canvas-extract": ["./packages/canvas/canvas-extract/src/"],
+            "@pixi/canvas-graphics": ["./packages/canvas/canvas-graphics/src/"],
+            "@pixi/canvas-mesh": ["./packages/canvas/canvas-mesh/src/"],
+            "@pixi/canvas-particles": ["./packages/canvas/canvas-particles/src/"],
+            "@pixi/canvas-prepare": ["./packages/canvas/canvas-prepare/src/"],
+            "@pixi/canvas-renderer": ["./packages/canvas/canvas-renderer/src/"],
+            "@pixi/canvas-sprite": ["./packages/canvas/canvas-sprite/src/"],
+            "@pixi/canvas-sprite-tiling": ["./packages/canvas/canvas-sprite-tiling/src/"],
+            "@pixi/canvas-text": ["./packages/canvas/canvas-text/src/"],
+            "@pixi/constants": ["./packages/constants/src/"],
+            "@pixi/core": ["./packages/core/src/"],
+            "@pixi/display": ["./packages/display/src/"],
+            "@pixi/extract": ["./packages/extract/src/"],
+            "@pixi/filters-alpha": ["./packages/filters/filters-alpha/src/"],
+            "@pixi/filters-blur": ["./packages/filters/filters-blur/src/"],
+            "@pixi/filters-color-matrix": ["./packages/filters/filters-color-matrix/src/"],
+            "@pixi/filters-displacement": ["./packages/filters/filters-displacement/src/"],
+            "@pixi/filters-fxaa": ["./packages/filters/filters-fxaa/src/"],
+            "@pixi/filters-noise": ["./packages/filters/filters-noise/src/"],
+            "@pixi/graphics": ["./packages/graphics/src/"],
+            "@pixi/interaction": ["./packages/interaction/src/"],
+            "@pixi/loaders": ["./packages/loaders/src/"],
+            "@pixi/math": ["./packages/math/src/"],
+            "@pixi/mesh": ["./packages/mesh/src/"],
+            "@pixi/mesh-extras": ["./packages/mesh-extras/src/"],
+            "@pixi/mixin-cache-as-bitmap": ["./packages/mixin-cache-as-bitmap/src/"],
+            "@pixi/mixin-get-child-by-name": ["./packages/mixin-get-child-by-name/src/"],
+            "@pixi/mixin-get-global-position": ["./packages/mixin-get-global-position/src/"],
+            "@pixi/particles": ["./packages/particles/src/"],
+            "@pixi/polyfill": ["./packages/polyfill/src/"],
+            "@pixi/prepare": ["./packages/prepare/src/"],
+            "@pixi/runner": ["./packages/runner/src/"],
+            "@pixi/settings": ["./packages/settings/src/"],
+            "@pixi/sprite": ["./packages/sprite/src/"],
+            "@pixi/sprite-animated": ["./packages/sprite-animated/src/"],
+            "@pixi/sprite-tiling": ["./packages/sprite-tiling/src/"],
+            "@pixi/spritesheet": ["./packages/spritesheet/src/"],
+            "@pixi/text": ["./packages/text/src/"],
+            "@pixi/text-bitmap": ["./packages/text-bitmap/src/"],
+            "@pixi/ticker": ["./packages/ticker/src/"],
+            "@pixi/unsafe-eval": ["./packages/unsafe-eval/src/"],
+            "@pixi/utils": ["./packages/utils/src/"]
+        }
     },
     "exclude": [
         "node_modules",
