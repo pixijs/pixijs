@@ -11,8 +11,8 @@
         "noImplicitReturns": true,
         "baseUrl": "./",
         "paths": {
-            "@pixi.js": ["./bundles/pixi.js"],
-            "@pixi.js-legacy": ["./bundles/pixi.js-legacy"],
+            "pixi.js": ["./bundles/pixi.js"],
+            "pixi.js-legacy": ["./bundles/pixi.js-legacy"],
             "@pixi/accessibility": ["./packages/accessibility/src/"],
             "@pixi/app": ["./packages/app/src/"],
             "@pixi/canvas-display": ["./packages/canvas/canvas-display/src/"],
