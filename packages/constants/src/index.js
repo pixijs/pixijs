@@ -287,17 +287,23 @@ export const MIPMAP_MODES = {
  * @memberof PIXI
  * @static
  * @enum {number}
- * @property {number} NPM - Source is not premultiplied, leave it like that.
+ * @property {number} NO_PREMULTIPLIED_ALPHA - Source is not premultiplied, leave it like that.
  *  Option for compressed and data textures that are created from typed arrays.
- * @property {number} UNPACK - Source is not premultiplied, premultiply on upload.
+ * @property {number} PREMULTIPLY_ON_UPLOAD - Source is not premultiplied, premultiply on upload.
  *  Default option, used for all loaded images.
- * @property {number} PMA - Source is already premultiplied
+ * @property {number} PREMULTIPLIED_ALPHA - Source is already premultiplied
  *  Example: spine atlases with `_pma` suffix.
+ * @property {number} NPM - Alias for NO_PREMULTIPLIED_ALPHA.
+ * @property {number} UNPACK - Default option, alias for PREMULTIPLY_ON_UPLOAD.
+ * @property {number} PMA - Alias for PREMULTIPLIED_ALPHA.
  */
 export const ALPHA_MODES = {
     NPM: 0,
     UNPACK: 1,
     PMA: 2,
+    NO_PREMULTIPLIED_ALPHA: 0,
+    PREMULTIPLY_ON_UPLOAD: 1,
+    PREMULTIPLY_ALPHA: 2,
 };
 
 /**
