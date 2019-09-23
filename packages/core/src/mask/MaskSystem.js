@@ -80,7 +80,7 @@ export default class MaskSystem extends System
         }
         else if (this.enableScissor
             && !this.scissor
-            // && this.renderer._activeRenderTarget.root
+            && !this.renderer.renderTexture.current
             && !this.renderer.stencil.stencilMaskStack.length
             && maskData.isFastRect())
         {
