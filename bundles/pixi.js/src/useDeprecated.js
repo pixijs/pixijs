@@ -721,22 +721,22 @@ export function useDeprecated()
          * @type {boolean}
          * @deprecated since 5.2.0
          * @readonly
-         * @see PIXI.BaseTexture#pmaMode
+         * @see PIXI.BaseTexture#alphaMode
          */
         premultiplyAlpha: {
             get()
             {
-                deprecation('5.2.0', 'PIXI.BaseTexture.premultiplyAlpha property has been changed to `pmaMode`'
-                    + ', see `PIXI.PMA_MODES`');
+                deprecation('5.2.0', 'PIXI.BaseTexture.premultiplyAlpha property has been changed to `alphaMode`'
+                    + ', see `PIXI.ALPHA_MODES`');
 
-                return this.pmaMode !== 0;
+                return this.alphaMode !== 0;
             },
             set(value)
             {
-                deprecation('5.2.0', 'PIXI.BaseTexture.premultiplyAlpha property has been changed to `pmaMode`'
-                    + ', see `PIXI.PMA_MODES`');
+                deprecation('5.2.0', 'PIXI.BaseTexture.premultiplyAlpha property has been changed to `alphaMode`'
+                    + ', see `PIXI.ALPHA_MODES`');
 
-                this.pmaMode = Number(value);
+                this.alphaMode = Number(value);
             },
         },
     });
@@ -793,21 +793,21 @@ export function useDeprecated()
          * @type {boolean}
          * @deprecated since 5.2.0
          * @readonly
-         * @see PIXI.resources.ImageResource#pmaMode
+         * @see PIXI.resources.ImageResource#alphaMode
          */
         premultiplyAlpha: {
             get()
             {
                 deprecation('5.2.0', 'PIXI.resources.ImageResource.premultiplyAlpha property '
-                    + 'has been changed to `pmaMode`, see `PIXI.PMA_MODES`');
+                    + 'has been changed to `alphaMode`, see `PIXI.ALPHA_MODES`');
 
-                return this.pmaMode !== 0;
+                return this.alphaMode !== 0;
             },
             set(value)
             {
                 deprecation('5.2.0', 'PIXI.resources.ImageResource.premultiplyAlpha property '
-                    + 'has been changed to `pmaMode`, see `PIXI.PMA_MODES`');
-                this.pmaMode = Number(value);
+                    + 'has been changed to `alphaMode`, see `PIXI.ALPHA_MODES`');
+                this.alphaMode = Number(value);
             },
         },
     });

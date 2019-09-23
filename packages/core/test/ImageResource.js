@@ -134,7 +134,7 @@ describe('PIXI.resources.ImageResource', function ()
         });
     });
 
-    describe('pmaMode behaviour', function ()
+    describe('alphaMode behaviour', function ()
     {
         before(function ()
         {
@@ -147,10 +147,10 @@ describe('PIXI.resources.ImageResource', function ()
             this.renderer = null;
         });
 
-        it('should override BaseTexture pmaMode if specified', function ()
+        it('should override BaseTexture alphaMode if specified', function ()
         {
             const image = new Image();
-            const resource = new ImageResource(image, { autoLoad: false, pmaMode: 2 });
+            const resource = new ImageResource(image, { autoLoad: false, alphaMode: 2 });
             const baseTexture = new BaseTexture(resource);
 
             image.src = this.slugUrl;
@@ -158,25 +158,25 @@ describe('PIXI.resources.ImageResource', function ()
             return resource.load(false).then(() =>
             {
                 this.renderer.texture.bind(baseTexture);
-                expect(baseTexture.pmaMode).to.equal(2);
+                expect(baseTexture.alphaMode).to.equal(2);
             });
         });
 
-        it('should not override BaseTexture pmaMode if not specified', function ()
+        it('should not override BaseTexture alphaMode if not specified', function ()
         {
             const image = new Image();
             const resource = new ImageResource(image, { autoLoad: false });
             const baseTexture = new BaseTexture(resource);
 
-            baseTexture.pmaMode = 2;
-            expect(resource.pmaMode).to.be.null;
+            baseTexture.alphaMode = 2;
+            expect(resource.alphaMode).to.be.null;
 
             image.src = this.slugUrl;
 
             return resource.load(false).then(() =>
             {
                 this.renderer.texture.bind(baseTexture);
-                expect(baseTexture.pmaMode).to.equal(2);
+                expect(baseTexture.alphaMode).to.equal(2);
             });
         });
     });

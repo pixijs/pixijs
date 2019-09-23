@@ -1,5 +1,5 @@
 import { Resource } from './Resource';
-import { PMA_MODES } from '@pixi/constants';
+import { ALPHA_MODES } from '@pixi/constants';
 
 /**
  * @interface SharedArrayBuffer
@@ -50,7 +50,7 @@ export class BufferResource extends Resource
     {
         const gl = renderer.gl;
 
-        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, baseTexture.pmaMode === PMA_MODES.UNPACK);
+        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, baseTexture.alphaMode === ALPHA_MODES.UNPACK);
 
         if (glTexture.width === baseTexture.width && glTexture.height === baseTexture.height)
         {

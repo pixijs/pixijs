@@ -283,7 +283,7 @@ export const MIPMAP_MODES = {
 /**
  * How to treat textures with premultiplied alpha
  *
- * @name PMA_MODES
+ * @name ALPHA_MODES
  * @memberof PIXI
  * @static
  * @enum {number}
@@ -294,7 +294,7 @@ export const MIPMAP_MODES = {
  * @property {number} PMA - Source is already premultiplied
  *  Example: spine atlases with `_pma` suffix.
  */
-export const PMA_MODES = {
+export const ALPHA_MODES = {
     NPM: 0,
     UNPACK: 1,
     PMA: 2,
