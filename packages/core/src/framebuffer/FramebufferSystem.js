@@ -460,8 +460,7 @@ export default class FramebufferSystem extends System
         gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, w, h);
 
         fbo.stencil = stencil;
-        gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.STENCIL_ATTACHMENT, gl.RENDERBUFFER, stencil);
-        gl.bindFramebuffer(gl.FRAMEBUFFER, fbo.framebuffer);
+        gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, stencil);
     }
 
     /**
