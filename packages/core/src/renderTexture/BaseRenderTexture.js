@@ -86,8 +86,7 @@ export class BaseRenderTexture extends BaseTexture
         this.clearColor = [0, 0, 0, 0];
 
         this.framebuffer = new Framebuffer(this.width * this.resolution, this.height * this.resolution)
-            .addColorTexture(0, this)
-            .enableStencil();
+            .addColorTexture(0, this);
 
         // TODO - could this be added the systems?
 

@@ -7,6 +7,7 @@
     "budo": "^11.6.2",
     "eventemitter3": "^3.1.0",
     "mini-signals": "^1.2.0",
-    "signals": "^1.0.0"
+    "signals": "^1.0.0",
+    "@types/signals": "^1.0.1"
   }
 }
