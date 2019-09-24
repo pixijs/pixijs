@@ -1,6 +1,6 @@
 {
   "name": "@pixi/core",
-  "version": "5.1.4",
+  "version": "5.1.5",
   "main": "lib/core.js",
   "module": "lib/core.es.js",
   "bundle": "dist/core.js",
