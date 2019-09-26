@@ -62,4 +62,31 @@ export const accessibleTarget = {
      * @todo Needs docs.
      */
     _accessibleDiv: false,
+
+    /**
+     * Specify the type of div the accessible layer is. Screen readers treat the element differently 
+     * depending on this type. Defaults to button.
+     * 
+     * @member {string}
+     * @memberof PIXI.DisplayObject#
+     */
+    accessibleType: 'button',
+
+    /**
+     * Specify the pointer-events the accessible div will use
+     * Defaults to auto.
+     * 
+     * @member {string}
+     * @memberof PIXI.DisplayObject#
+     */
+    accessiblePointerEvents: 'auto',
+
+    /**
+     * Setting to false will prevent any children inside this container to
+     * be accessible. Defaults to true.
+     *
+     * @member {boolean}
+     * @memberof PIXI.DisplayObject#
+     */
+    accessibleChildren: true,
 };
