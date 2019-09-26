@@ -1,5 +1,5 @@
 import { BaseTextureCache, EventEmitter, isPow2, TextureCache, uid } from '@pixi/utils';
-import { FORMATS, SCALE_MODES, TARGETS, TYPES } from '@pixi/constants';
+import { FORMATS, SCALE_MODES, TARGETS, TYPES, ALPHA_MODES } from '@pixi/constants';
 
 import { Resource } from './resources/Resource';
 import { BufferResource } from './resources/BufferResource';
@@ -10,7 +10,7 @@ import { settings } from '@pixi/settings';
 const defaultBufferOptions = {
     scaleMode: SCALE_MODES.NEAREST,
     format: FORMATS.RGBA,
-    premultiplyAlpha: false,
+    alphaMode: ALPHA_MODES.NPM,
 };
 
 /**
@@ -32,7 +32,7 @@ const defaultBufferOptions = {
  * @param {PIXI.FORMATS} [options.format=PIXI.FORMATS.RGBA] - GL format type
  * @param {PIXI.TYPES} [options.type=PIXI.TYPES.UNSIGNED_BYTE] - GL data type
  * @param {PIXI.TARGETS} [options.target=PIXI.TARGETS.TEXTURE_2D] - GL texture target
- * @param {boolean} [options.premultiplyAlpha=true] - Pre multiply the image alpha
+ * @param {PIXI.ALPHA_MODES} [options.alphaMode=PIXI.ALPHA_MODES.UNPACK] - Pre multiply the image alpha
  * @param {number} [options.width=0] - Width of the texture
  * @param {number} [options.height=0] - Height of the texture
  * @param {number} [options.resolution] - Resolution of the base texture
@@ -47,7 +47,7 @@ export class BaseTexture extends EventEmitter
 
         options = options || {};
 
-        const { premultiplyAlpha, mipmap, anisotropicLevel, scaleMode, width, height,
+        const { alphaMode, mipmap, anisotropicLevel, scaleMode, width, height,
             wrapMode, format, type, target, resolution, resourceOptions } = options;
 
         // Convert the resource to a Resource object
@@ -136,12 +136,18 @@ export class BaseTexture extends EventEmitter
         this.target = target || TARGETS.TEXTURE_2D;
 
         /**
-         * Set to true to enable pre-multiplied alpha
+         * How to treat premultiplied alpha, see {@link PIXI.ALPHA_MODES}.
          *
-         * @member {boolean}
-         * @default true
+         * @member {PIXI.ALPHA_MODES}
+         * @default PIXI.ALPHA_MODES.UNPACK
          */
-        this.premultiplyAlpha = premultiplyAlpha !== false;
+        this.alphaMode = alphaMode !== undefined ? alphaMode : ALPHA_MODES.UNPACK;
+
+        if (options.premultiplyAlpha !== undefined)
+        {
+            // triggers deprecation
+            this.premultiplyAlpha = options.premultiplyAlpha;
+        }
 
         /**
          * Global unique identifier for this BaseTexture

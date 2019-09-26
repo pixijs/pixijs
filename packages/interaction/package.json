@@ -1,6 +1,6 @@
 {
   "name": "@pixi/interaction",
-  "version": "5.1.3",
+  "version": "5.1.5",
   "main": "lib/interaction.js",
   "module": "lib/interaction.es.js",
   "bundle": "dist/interaction.js",
@@ -25,7 +25,7 @@
     "dist"
   ],
   "dependencies": {
-    "@pixi/core": "^5.1.3",
+    "@pixi/core": "^5.1.5",
     "@pixi/display": "^5.1.3",
     "@pixi/math": "^5.1.0",
     "@pixi/ticker": "^5.1.3",
@@ -33,10 +33,10 @@
   },
   "devDependencies": {
     "@pixi/canvas-display": "^5.1.3",
-    "@pixi/canvas-graphics": "^5.1.3",
-    "@pixi/canvas-renderer": "^5.1.3",
-    "@pixi/canvas-sprite": "^5.1.3",
-    "@pixi/graphics": "^5.1.3",
-    "@pixi/sprite": "^5.1.3"
+    "@pixi/canvas-graphics": "^5.1.5",
+    "@pixi/canvas-renderer": "^5.1.5",
+    "@pixi/canvas-sprite": "^5.1.5",
+    "@pixi/graphics": "^5.1.5",
+    "@pixi/sprite": "^5.1.5"
   }
 }

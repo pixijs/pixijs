@@ -715,6 +715,30 @@ export function useDeprecated()
                 }
             },
         },
+
+        /**
+         * @name PIXI.BaseTexture#premultiplyAlpha
+         * @type {boolean}
+         * @deprecated since 5.2.0
+         * @readonly
+         * @see PIXI.BaseTexture#alphaMode
+         */
+        premultiplyAlpha: {
+            get()
+            {
+                deprecation('5.2.0', 'PIXI.BaseTexture.premultiplyAlpha property has been changed to `alphaMode`'
+                    + ', see `PIXI.ALPHA_MODES`');
+
+                return this.alphaMode !== 0;
+            },
+            set(value)
+            {
+                deprecation('5.2.0', 'PIXI.BaseTexture.premultiplyAlpha property has been changed to `alphaMode`'
+                    + ', see `PIXI.ALPHA_MODES`');
+
+                this.alphaMode = Number(value);
+            },
+        },
     });
 
     /**
@@ -762,6 +786,31 @@ export function useDeprecated()
 
         return BaseTexture.from(canvas, { scaleMode, resourceOptions });
     };
+
+    Object.defineProperties(PIXI.resources.ImageResource.prototype, {
+        /**
+         * @name PIXI.resources.ImageResource#premultiplyAlpha
+         * @type {boolean}
+         * @deprecated since 5.2.0
+         * @readonly
+         * @see PIXI.resources.ImageResource#alphaMode
+         */
+        premultiplyAlpha: {
+            get()
+            {
+                deprecation('5.2.0', 'PIXI.resources.ImageResource.premultiplyAlpha property '
+                    + 'has been changed to `alphaMode`, see `PIXI.ALPHA_MODES`');
+
+                return this.alphaMode !== 0;
+            },
+            set(value)
+            {
+                deprecation('5.2.0', 'PIXI.resources.ImageResource.premultiplyAlpha property '
+                    + 'has been changed to `alphaMode`, see `PIXI.ALPHA_MODES`');
+                this.alphaMode = Number(value);
+            },
+        },
+    });
 
     /**
      * @method PIXI.Point#copy
