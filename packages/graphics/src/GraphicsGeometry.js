@@ -401,6 +401,13 @@ export class GraphicsGeometry extends BatchGeometry
      */
     updateBatches()
     {
+        if (!this.graphicsData.length)
+        {
+            this.batchable = true;
+
+            return;
+        }
+
         if (!this.validateBatching())
         {
             return;
@@ -553,15 +560,8 @@ export class GraphicsGeometry extends BatchGeometry
      */
     validateBatching()
     {
-        if (this.dirty === this.cacheDirty)
+        if (this.dirty === this.cacheDirty || !this.graphicsData.length)
         {
-            return false;
-        }
-
-        if (!this.graphicsData.length)
-        {
-            this.batchable = true;
-
             return false;
         }
 
