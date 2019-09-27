@@ -1,4 +1,5 @@
 import { BufferResource } from './BufferResource';
+import { ALPHA_MODES } from '@pixi/constants';
 
 /**
  * Resource type for DepthTexture.
@@ -19,7 +20,7 @@ export class DepthResource extends BufferResource
     {
         const gl = renderer.gl;
 
-        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, baseTexture.premultiplyAlpha);
+        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, baseTexture.alphaMode === ALPHA_MODES.UNPACK);
 
         if (glTexture.width === baseTexture.width && glTexture.height === baseTexture.height)
         {
