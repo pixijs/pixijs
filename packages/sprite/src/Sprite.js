@@ -640,6 +640,11 @@ export class Sprite extends Container
             return;
         }
 
+        if (this._texture)
+        {
+            this._texture.off('update', this._onTextureUpdate, this);
+        }
+
         this._texture = value || Texture.EMPTY;
         this._cachedTint = 0xFFFFFF;
 
