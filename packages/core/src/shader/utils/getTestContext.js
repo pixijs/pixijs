@@ -9,7 +9,7 @@ let context = unknownContext;
  *
  * @static
  * @private
- * @returns {webGL-context} a gl context to test with
+ * @returns {WebGLRenderingContext} a gl context to test with
  */
 export function getTestContext()
 {
