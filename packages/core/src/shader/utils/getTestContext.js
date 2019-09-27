@@ -13,7 +13,7 @@ let context = unknownContext;
  */
 export function getTestContext()
 {
-    if (context === unknownContext || context.isContextLost())
+    if (context === unknownContext || (context && context.isContextLost()))
     {
         const canvas = document.createElement('canvas');
 
