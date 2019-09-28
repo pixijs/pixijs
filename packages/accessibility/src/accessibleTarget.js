@@ -88,6 +88,7 @@ export const accessibleTarget = {
      *
      * @member {boolean}
      * @memberof PIXI.DisplayObject#
+     * @default true
      */
     accessibleChildren: true,
 };
