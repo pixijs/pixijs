@@ -69,6 +69,7 @@ export const accessibleTarget = {
      *
      * @member {string}
      * @memberof PIXI.DisplayObject#
+     * @default 'button'
      */
     accessibleType: 'button',
 
