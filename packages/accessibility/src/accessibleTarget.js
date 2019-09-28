@@ -79,6 +79,7 @@ export const accessibleTarget = {
      *
      * @member {string}
      * @memberof PIXI.DisplayObject#
+     * @default 'auto'
      */
     accessiblePointerEvents: 'auto',
 
