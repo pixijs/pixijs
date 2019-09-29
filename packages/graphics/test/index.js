@@ -1,8 +1,9 @@
 // const MockPointer = require('../interaction/MockPointer');
 const { Renderer, BatchRenderer, Texture } = require('@pixi/core');
-const { Graphics, GRAPHICS_CURVES, FillStyle, LineStyle } = require('../');
+const { Graphics, GRAPHICS_CURVES, FillStyle, LineStyle, graphicsUtils } = require('../');
+const { FILL_COMMANDS, buildLine } = graphicsUtils;
 const { BLEND_MODES } = require('@pixi/constants');
-const { Point, Matrix } = require('@pixi/math');
+const { Point, Matrix, SHAPES } = require('@pixi/math');
 const { skipHello } = require('@pixi/utils');
 
 Renderer.registerPlugin('batch', BatchRenderer);
@@ -114,6 +115,38 @@ describe('PIXI.Graphics', function ()
             expect(graphics.line.visible).to.equal(false);
 
             graphics.destroy();
+        });
+    });
+
+    describe('utils', function ()
+    {
+        it('FILL_COMMADS should be filled', function ()
+        {
+            expect(FILL_COMMANDS).to.not.be.null;
+
+            expect(FILL_COMMANDS[SHAPES.POLY]).to.not.be.null;
+            expect(FILL_COMMANDS[SHAPES.CIRC]).to.not.be.null;
+            expect(FILL_COMMANDS[SHAPES.ELIP]).to.not.be.null;
+            expect(FILL_COMMANDS[SHAPES.RECT]).to.not.be.null;
+            expect(FILL_COMMANDS[SHAPES.RREC]).to.not.be.null;
+        });
+
+        it('buildLine should execute without throws', function ()
+        {
+            const graphics = new Graphics();
+
+            graphics.lineStyle({ width: 2, color: 0xff0000 });
+            graphics.drawRect(0, 0, 10, 10);
+
+            const geometry = graphics.geometry;
+            const data = geometry.graphicsData[0];
+
+            // native = false
+            expect(function () { buildLine(data, geometry); }).to.not.throw();
+
+            data.lineStyle.native = true;
+            // native = true
+            expect(function () { buildLine(data, geometry); }).to.not.throw();
         });
     });
 
