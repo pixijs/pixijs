@@ -472,8 +472,9 @@ export class GraphicsGeometry extends BatchGeometry
                 {
                     batchPart = BATCH_POOL.pop() || new BatchPart();
                     batchPart.begin(style, index, attribIndex);
-
                     this.batches.push(batchPart);
+
+                    currentStyle = style;
                 }
 
                 const start = this.points.length / 2;
