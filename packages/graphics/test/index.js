@@ -604,6 +604,37 @@ describe('PIXI.Graphics', function ()
 
     describe('geometry', function ()
     {
+        it('validateBatching should return false if any of textures is invalid', function ()
+        {
+            const graphics = new Graphics();
+            const invalidTex = Texture.EMPTY;
+            const validTex = Texture.WHITE;
+
+            graphics.beginTextureFill({ texture: invalidTex });
+            graphics.drawRect(0, 0, 10, 10);
+            graphics.beginTextureFill({ texture: validTex });
+            graphics.drawRect(0, 0, 10, 10);
+
+            const geometry = graphics.geometry;
+
+            expect(geometry.validateBatching()).to.be.false;
+        });
+
+        it('validateBatching should return true if all textures is valid', function ()
+        {
+            const graphics = new Graphics();
+            const validTex = Texture.WHITE;
+
+            graphics.beginTextureFill({ texture: validTex });
+            graphics.drawRect(0, 0, 10, 10);
+            graphics.beginTextureFill({ texture: validTex });
+            graphics.drawRect(0, 0, 10, 10);
+
+            const geometry = graphics.geometry;
+
+            expect(geometry.validateBatching()).to.be.true;
+        });
+
         it('should be batchable if graphicsData is empty', function ()
         {
             const graphics = new Graphics();
@@ -613,7 +644,7 @@ describe('PIXI.Graphics', function ()
             expect(geometry.batchable).to.be.true;
         });
 
-        it('should be passed for identical styles', function ()
+        it('_compareStyles should return true for identical styles', function ()
         {
             const graphics = new Graphics();
             const geometry = graphics.geometry;
@@ -664,6 +695,9 @@ describe('PIXI.Graphics', function ()
             // second style
             graphics.beginFill(0x0, 0.5);
             graphics.drawRect(100, 0, 20, 20);
+
+            // third shape with same style
+            graphics.drawRect(0, 0, 20, 20);
 
             const geometry = graphics.geometry;
 
