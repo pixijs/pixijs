@@ -1,6 +1,6 @@
 // const MockPointer = require('../interaction/MockPointer');
 const { Renderer, BatchRenderer, Texture } = require('@pixi/core');
-const { Graphics, GRAPHICS_CURVES } = require('../');
+const { Graphics, GRAPHICS_CURVES, FillStyle, LineStyle } = require('../');
 const { BLEND_MODES } = require('@pixi/constants');
 const { Point, Matrix } = require('@pixi/math');
 const { skipHello } = require('@pixi/utils');
@@ -611,6 +611,64 @@ describe('PIXI.Graphics', function ()
 
             geometry.updateBatches();
             expect(geometry.batchable).to.be.true;
+        });
+
+        it('should be passed for identical styles', function ()
+        {
+            const graphics = new Graphics();
+            const geometry = graphics.geometry;
+
+            const first = new FillStyle();
+
+            first.color = 0xff00ff;
+            first.alpha = 0.1;
+            first.visible = true;
+
+            const second = first.clone();
+
+            expect(geometry._compareStyles(first, second)).to.be.true;
+
+            const firstLine = new LineStyle();
+
+            firstLine.color = 0xff00ff;
+            firstLine.native = false;
+            firstLine.alignment = 1;
+
+            const secondLine = firstLine.clone();
+
+            expect(geometry._compareStyles(firstLine, secondLine)).to.be.true;
+        });
+
+        it('should be 1 batch for same styles', function ()
+        {
+            const graphics = new Graphics();
+
+            graphics.beginFill(0xff00ff, 0.5);
+            graphics.drawRect(0, 0, 20, 20);
+            graphics.drawRect(100, 0, 20, 20);
+
+            const geometry = graphics.geometry;
+
+            geometry.updateBatches();
+            expect(geometry.batches).to.have.lengthOf(1);
+        });
+
+        it('should be 2 batches for 2 different styles', function ()
+        {
+            const graphics = new Graphics();
+
+            // first style
+            graphics.beginFill(0xff00ff, 0.5);
+            graphics.drawRect(0, 0, 20, 20);
+
+            // second style
+            graphics.beginFill(0x0, 0.5);
+            graphics.drawRect(100, 0, 20, 20);
+
+            const geometry = graphics.geometry;
+
+            geometry.updateBatches();
+            expect(geometry.batches).to.have.lengthOf(2);
         });
     });
 });
