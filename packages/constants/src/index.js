@@ -73,6 +73,7 @@ export const RENDERER_TYPE = {
  * @property {number} SUBTRACT
  * @property {number} SRC_OVER
  * @property {number} ERASE
+ * @property {number} XOR
  */
 export const BLEND_MODES = {
     NORMAL:         0,
@@ -107,6 +108,7 @@ export const BLEND_MODES = {
     DST_ATOP:       27,
     ERASE:          26,
     SUBTRACT:       28,
+    XOR:            29,
 };
 
 /**
