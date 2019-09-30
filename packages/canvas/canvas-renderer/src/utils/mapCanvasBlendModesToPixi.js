@@ -66,6 +66,7 @@ export function mapCanvasBlendModesToPixi(array = [])
     array[BLEND_MODES.DST_IN] = 'destination-in';
     array[BLEND_MODES.DST_OUT] = 'destination-out';
     array[BLEND_MODES.DST_ATOP] = 'destination-atop';
+    array[BLEND_MODES.XOR] = 'xor';
 
     // SUBTRACT from flash, does not exist in canvas
     array[BLEND_MODES.SUBTRACT] = 'source-over';
