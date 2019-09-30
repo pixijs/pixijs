@@ -8,19 +8,24 @@ import {
     RoundedRectangle,
     Matrix,
 } from '@pixi/math';
-import { hex2rgb, deprecation } from '@pixi/utils';
+
 import {
     Texture,
     Shader,
     UniformGroup, State,
 } from '@pixi/core';
-import { FillStyle } from './styles/FillStyle';
+
+import {
+    BezierUtils,
+    QuadraticUtils,
+    ArcUtils,
+    Star,
+} from './utils';
+
+import { hex2rgb, deprecation } from '@pixi/utils';
 import { GraphicsGeometry } from './GraphicsGeometry';
+import { FillStyle } from './styles/FillStyle';
 import { LineStyle } from './styles/LineStyle';
-import { BezierUtils } from './utils/BezierUtils';
-import { QuadraticUtils } from './utils/QuadraticUtils';
-import { ArcUtils } from './utils/ArcUtils';
-import { Star } from './utils/Star';
 import { BLEND_MODES } from '@pixi/constants';
 import { Container } from '@pixi/display';
 
