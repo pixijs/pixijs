@@ -1,8 +1,8 @@
-import System from '../System';
+import { System } from '../System';
 import { Rectangle } from '@pixi/math';
 import { ENV } from '@pixi/constants';
 import { settings } from '../settings';
-import Framebuffer from './Framebuffer';
+import { Framebuffer } from './Framebuffer';
 
 /**
  * System plugin to the renderer to manage framebuffers.
@@ -11,7 +11,7 @@ import Framebuffer from './Framebuffer';
  * @extends PIXI.System
  * @memberof PIXI.systems
  */
-export default class FramebufferSystem extends System
+export class FramebufferSystem extends System
 {
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
@@ -365,13 +365,12 @@ export default class FramebufferSystem extends System
 
             gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.stencil);
 
+            gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, framebuffer.width, framebuffer.height);
             // TODO.. this is depth AND stencil?
             if (!framebuffer.depthTexture)
             { // you can't have both, so one should take priority if enabled
                 gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, fbo.stencil);
             }
-            gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, framebuffer.width, framebuffer.height);
-            // fbo.enableStencil();
         }
     }
 
@@ -425,6 +424,43 @@ export default class FramebufferSystem extends System
         {
             this.disposeFramebuffer(list[i], contextLost);
         }
+    }
+
+    /**
+     * Forcing creation of stencil buffer for current framebuffer, if it wasn't done before.
+     * Used by MaskSystem, when its time to use stencil mask for Graphics element.
+     *
+     * Its an alternative for public lazy `framebuffer.enableStencil`, in case we need stencil without rebind.
+     *
+     * @private
+     */
+    forceStencil()
+    {
+        const framebuffer = this.current;
+
+        if (!framebuffer)
+        {
+            return;
+        }
+
+        const fbo = framebuffer.glFramebuffers[this.CONTEXT_UID];
+
+        if (!fbo || fbo.stencil)
+        {
+            return;
+        }
+        framebuffer.enableStencil();
+
+        const w = framebuffer.width;
+        const h = framebuffer.height;
+        const gl = this.gl;
+        const stencil = gl.createRenderbuffer();
+
+        gl.bindRenderbuffer(gl.RENDERBUFFER, stencil);
+        gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, w, h);
+
+        fbo.stencil = stencil;
+        gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, stencil);
     }
 
     /**

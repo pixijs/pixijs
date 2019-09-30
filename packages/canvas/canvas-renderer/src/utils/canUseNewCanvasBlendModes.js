@@ -26,7 +26,7 @@ function createColoredCanvas(color)
  * @private
  * @return {boolean} whether they are supported
  */
-export default function canUseNewCanvasBlendModes()
+export function canUseNewCanvasBlendModes()
 {
     if (typeof document === 'undefined')
     {

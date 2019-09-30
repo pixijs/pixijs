@@ -1,5 +1,6 @@
-import Resource from './Resource';
+import { Resource } from './Resource';
 import { determineCrossOrigin } from '@pixi/utils';
+import { ALPHA_MODES } from '@pixi/constants';
 
 /**
  * Base for all the image/canvas resources
@@ -7,7 +8,7 @@ import { determineCrossOrigin } from '@pixi/utils';
  * @extends PIXI.resources.Resource
  * @memberof PIXI.resources
  */
-export default class BaseImageResource extends Resource
+export class BaseImageResource extends Resource
 {
     /**
      * @param {HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|SVGElement} source
@@ -25,6 +26,15 @@ export default class BaseImageResource extends Resource
          * @readonly
          */
         this.source = source;
+
+        /**
+         * If set to `true`, will force `texImage2D` over `texSubImage2D` for uploading.
+         * Certain types of media (e.g. video) using `texImage2D` is more performant.
+         * @member {boolean}
+         * @default false
+         * @private
+         */
+        this.noSubImage = false;
     }
 
     /**
@@ -62,9 +72,12 @@ export default class BaseImageResource extends Resource
 
         source = source || this.source;
 
-        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, baseTexture.premultiplyAlpha);
+        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, baseTexture.alphaMode === ALPHA_MODES.UNPACK);
 
-        if (baseTexture.target === gl.TEXTURE_2D && glTexture.width === width && glTexture.height === height)
+        if (!this.noSubImage
+            && baseTexture.target === gl.TEXTURE_2D
+            && glTexture.width === width
+            && glTexture.height === height)
         {
             gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, baseTexture.format, baseTexture.type, source);
         }

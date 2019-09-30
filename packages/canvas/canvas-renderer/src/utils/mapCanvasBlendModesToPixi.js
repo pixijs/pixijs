@@ -1,5 +1,5 @@
 import { BLEND_MODES } from '@pixi/constants';
-import canUseNewCanvasBlendModes from './canUseNewCanvasBlendModes';
+import { canUseNewCanvasBlendModes } from './canUseNewCanvasBlendModes';
 
 /**
  * Maps blend combinations to Canvas.
@@ -10,7 +10,7 @@ import canUseNewCanvasBlendModes from './canUseNewCanvasBlendModes';
  * @param {string[]} [array=[]] - The array to output into.
  * @return {string[]} Mapped modes.
  */
-export default function mapCanvasBlendModesToPixi(array = [])
+export function mapCanvasBlendModesToPixi(array = [])
 {
     if (canUseNewCanvasBlendModes())
     {
@@ -66,6 +66,7 @@ export default function mapCanvasBlendModesToPixi(array = [])
     array[BLEND_MODES.DST_IN] = 'destination-in';
     array[BLEND_MODES.DST_OUT] = 'destination-out';
     array[BLEND_MODES.DST_ATOP] = 'destination-atop';
+    array[BLEND_MODES.XOR] = 'xor';
 
     // SUBTRACT from flash, does not exist in canvas
     array[BLEND_MODES.SUBTRACT] = 'source-over';

@@ -10,7 +10,7 @@ import { premultiplyTintToRgba } from '@pixi/utils';
  * @memberof PIXI
  * @extends PIXI.Shader
  */
-export default class MeshMaterial extends Shader
+export class MeshMaterial extends Shader
 {
     /**
      * @param {PIXI.Texture} uSampler - Texture that material uses to render.
@@ -143,7 +143,7 @@ export default class MeshMaterial extends Shader
             this._colorDirty = false;
             const baseTexture = this.texture.baseTexture;
 
-            premultiplyTintToRgba(this._tint, this._alpha, this.uniforms.uColor, baseTexture.premultiplyAlpha);
+            premultiplyTintToRgba(this._tint, this._alpha, this.uniforms.uColor, baseTexture.alphaMode);
         }
         if (this.uvMatrix.update())
         {

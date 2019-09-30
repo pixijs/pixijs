@@ -1,10 +1,10 @@
-import BatchDrawCall from './BatchDrawCall';
-import BaseTexture from '../textures/BaseTexture';
-import ObjectRenderer from './ObjectRenderer';
-import State from '../state/State';
-import ViewableBuffer from '../geometry/ViewableBuffer';
+import { BatchDrawCall } from './BatchDrawCall';
+import { BaseTexture } from '../textures/BaseTexture';
+import { ObjectRenderer } from './ObjectRenderer';
+import { State } from '../state/State';
+import { ViewableBuffer } from '../geometry/ViewableBuffer';
 
-import checkMaxIfStatementsInShader from '../shader/utils/checkMaxIfStatementsInShader';
+import { checkMaxIfStatementsInShader } from '../shader/utils/checkMaxIfStatementsInShader';
 
 import { settings } from '@pixi/settings';
 import { premultiplyBlendMode, premultiplyTint, nextPow2, log2 } from '@pixi/utils';
@@ -23,7 +23,7 @@ import { ENV } from '@pixi/constants';
  * @memberof PIXI
  * @extends PIXI.ObjectRenderer
  */
-export default class AbstractBatchRenderer extends ObjectRenderer
+export class AbstractBatchRenderer extends ObjectRenderer
 {
     /**
      * This will hook onto the renderer's `contextChange`
@@ -364,7 +364,7 @@ export default class AbstractBatchRenderer extends ObjectRenderer
             nextTexture = sprite._texture.baseTexture;
 
             const spriteBlendMode = premultiplyBlendMode[
-                nextTexture.premultiplyAlpha ? 1 : 0][sprite.blendMode];
+                nextTexture.alphaMode ? 1 : 0][sprite.blendMode];
 
             if (blendMode !== spriteBlendMode)
             {
@@ -609,7 +609,7 @@ export default class AbstractBatchRenderer extends ObjectRenderer
 
         const alpha = Math.min(element.worldAlpha, 1.0);
         const argb = (alpha < 1.0
-          && element._texture.baseTexture.premultiplyAlpha)
+          && element._texture.baseTexture.alphaMode)
             ? premultiplyTint(element._tintRGB, alpha)
             : element._tintRGB + (alpha * 255 << 24);
 

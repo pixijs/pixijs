@@ -1,4 +1,4 @@
-import accessibleTarget from './accessibleTarget';
+import { accessibleTarget } from './accessibleTarget';
 import { removeItems, isMobile } from '@pixi/utils';
 import { DisplayObject } from '@pixi/display';
 
@@ -29,7 +29,7 @@ const DIV_HOOK_ZINDEX = 2;
  * @class
  * @memberof PIXI.accessibility
  */
-export default class AccessibilityManager
+export class AccessibilityManager
 {
     /**
      * @param {PIXI.CanvasRenderer|PIXI.Renderer} renderer - A reference to the current renderer

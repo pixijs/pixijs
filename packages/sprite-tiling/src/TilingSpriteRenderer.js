@@ -16,7 +16,7 @@ const tempMat = new Matrix();
  * @memberof PIXI
  * @extends PIXI.ObjectRenderer
  */
-export default class TilingSpriteRenderer extends ObjectRenderer
+export class TilingSpriteRenderer extends ObjectRenderer
 {
     /**
      * constructor for renderer
@@ -123,14 +123,14 @@ export default class TilingSpriteRenderer extends ObjectRenderer
 
         shader.uniforms.uTransform = tempMat.toArray(true);
         shader.uniforms.uColor = premultiplyTintToRgba(ts.tint, ts.worldAlpha,
-            shader.uniforms.uColor, baseTex.premultiplyAlpha);
+            shader.uniforms.uColor, baseTex.alphaMode);
         shader.uniforms.translationMatrix = ts.transform.worldTransform.toArray(true);
         shader.uniforms.uSampler = tex;
 
         renderer.shader.bind(shader);
         renderer.geometry.bind(quad);// , renderer.shader.getGLShader());
 
-        renderer.state.setBlendMode(correctBlendMode(ts.blendMode, baseTex.premultiplyAlpha));
+        renderer.state.setBlendMode(correctBlendMode(ts.blendMode, baseTex.alphaMode));
         renderer.geometry.draw(this.renderer.gl.TRIANGLES, 6, 0);
     }
 }

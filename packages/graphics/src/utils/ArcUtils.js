@@ -6,7 +6,7 @@ import { PI_2 } from '@pixi/math';
  * @class
  * @private
  */
-export default class ArcUtils
+export class ArcUtils
 {
     /**
      * The arcTo() method creates an arc/curve between two tangents on the canvas.

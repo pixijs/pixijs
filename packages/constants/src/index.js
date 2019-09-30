@@ -73,6 +73,7 @@ export const RENDERER_TYPE = {
  * @property {number} SUBTRACT
  * @property {number} SRC_OVER
  * @property {number} ERASE
+ * @property {number} XOR
  */
 export const BLEND_MODES = {
     NORMAL:         0,
@@ -107,6 +108,7 @@ export const BLEND_MODES = {
     DST_ATOP:       27,
     ERASE:          26,
     SUBTRACT:       28,
+    XOR:            29,
 };
 
 /**
@@ -278,6 +280,32 @@ export const MIPMAP_MODES = {
     OFF: 0,
     POW2: 1,
     ON: 2,
+};
+
+/**
+ * How to treat textures with premultiplied alpha
+ *
+ * @name ALPHA_MODES
+ * @memberof PIXI
+ * @static
+ * @enum {number}
+ * @property {number} NO_PREMULTIPLIED_ALPHA - Source is not premultiplied, leave it like that.
+ *  Option for compressed and data textures that are created from typed arrays.
+ * @property {number} PREMULTIPLY_ON_UPLOAD - Source is not premultiplied, premultiply on upload.
+ *  Default option, used for all loaded images.
+ * @property {number} PREMULTIPLIED_ALPHA - Source is already premultiplied
+ *  Example: spine atlases with `_pma` suffix.
+ * @property {number} NPM - Alias for NO_PREMULTIPLIED_ALPHA.
+ * @property {number} UNPACK - Default option, alias for PREMULTIPLY_ON_UPLOAD.
+ * @property {number} PMA - Alias for PREMULTIPLIED_ALPHA.
+ */
+export const ALPHA_MODES = {
+    NPM: 0,
+    UNPACK: 1,
+    PMA: 2,
+    NO_PREMULTIPLIED_ALPHA: 0,
+    PREMULTIPLY_ON_UPLOAD: 1,
+    PREMULTIPLY_ALPHA: 2,
 };
 
 /**

@@ -13,7 +13,7 @@ import fragment from './fxaa.frag';
  * @memberof PIXI.filters
  *
  */
-export default class FXAAFilter extends Filter
+export class FXAAFilter extends Filter
 {
     constructor()
     {

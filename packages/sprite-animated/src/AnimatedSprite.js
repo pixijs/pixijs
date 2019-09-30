@@ -35,7 +35,7 @@ import { Ticker, UPDATE_PRIORITY } from '@pixi/ticker';
  * @extends PIXI.Sprite
  * @memberof PIXI
  */
-export default class AnimatedSprite extends Sprite
+export class AnimatedSprite extends Sprite
 {
     /**
      * @param {PIXI.Texture[]|PIXI.AnimatedSprite.FrameObject[]} textures - An array of {@link PIXI.Texture} or frame
@@ -301,7 +301,7 @@ export default class AnimatedSprite extends Sprite
 
         if (this.updateAnchor)
         {
-            this._anchor.copy(this._texture.defaultAnchor);
+            this._anchor.copyFrom(this._texture.defaultAnchor);
         }
 
         if (this.onFrameChange)

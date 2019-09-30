@@ -1,6 +1,6 @@
-export { default as CanvasRenderer } from './CanvasRenderer';
-export { default as canUseNewCanvasBlendModes } from './utils/canUseNewCanvasBlendModes';
-export { default as CanvasTinter } from './CanvasTinter';
+export * from './CanvasRenderer';
+export * from './utils/canUseNewCanvasBlendModes';
+export * from './canvasUtils';
 
 import './Renderer';
 import './BaseTexture';

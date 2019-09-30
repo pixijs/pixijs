@@ -1,6 +1,6 @@
 import { url } from '@pixi/utils';
 import { LoaderResource } from '@pixi/loaders';
-import Spritesheet from './Spritesheet';
+import { Spritesheet } from './Spritesheet';
 
 /**
  * {@link PIXI.Loader Loader} middleware for loading texture atlases that have been created with
@@ -12,7 +12,7 @@ import Spritesheet from './Spritesheet';
  * @memberof PIXI
  * @implements PIXI.ILoaderPlugin
  */
-export default class SpritesheetLoader
+export class SpritesheetLoader
 {
     /**
      * Called after a resource is loaded.

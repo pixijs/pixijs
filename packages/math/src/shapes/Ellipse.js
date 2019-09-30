@@ -1,4 +1,4 @@
-import Rectangle from './Rectangle';
+import { Rectangle } from './Rectangle';
 import { SHAPES } from '../const';
 
 /**
@@ -7,7 +7,7 @@ import { SHAPES } from '../const';
  * @class
  * @memberof PIXI
  */
-export default class Ellipse
+export class Ellipse
 {
     /**
      * @param {number} [x=0] - The X coordinate of the center of this ellipse

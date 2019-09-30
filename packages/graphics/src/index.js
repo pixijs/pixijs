@@ -1,6 +1,9 @@
 export * from './const';
-export { default as FillStyle } from './styles/FillStyle';
-export { default as Graphics } from './Graphics';
-export { default as GraphicsData } from './GraphicsData';
-export { default as GraphicsGeometry } from './GraphicsGeometry';
-export { default as LineStyle } from './styles/LineStyle';
+export * from './styles/FillStyle';
+export * from './Graphics';
+export * from './GraphicsData';
+export * from './GraphicsGeometry';
+export * from './styles/LineStyle';
+
+import * as graphicsUtils from './utils';
+export { graphicsUtils };

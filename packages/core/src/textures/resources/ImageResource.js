@@ -1,5 +1,6 @@
-import BaseImageResource from './BaseImageResource';
+import { BaseImageResource } from './BaseImageResource';
 import { settings } from '@pixi/settings';
+import { ALPHA_MODES } from '@pixi/constants';
 
 /**
  * Resource type for HTMLImageElement.
@@ -7,7 +8,7 @@ import { settings } from '@pixi/settings';
  * @extends PIXI.resources.BaseImageResource
  * @memberof PIXI.resources
  */
-export default class ImageResource extends BaseImageResource
+export class ImageResource extends BaseImageResource
 {
     /**
      * @param {HTMLImageElement|string} source - image source or URL
@@ -15,7 +16,7 @@ export default class ImageResource extends BaseImageResource
      * @param {boolean} [options.createBitmap=PIXI.settings.CREATE_IMAGE_BITMAP] whether its required to create
      *        a bitmap before upload
      * @param {boolean} [options.crossorigin=true] - Load image using cross origin
-     * @param {boolean} [options.premultiplyAlpha=true] - Premultiply image alpha in bitmap
+     * @param {PIXI.ALPHA_MODES} [options.alphaMode=PIXI.ALPHA_MODES.UNPACK] - Premultiply image alpha in bitmap
      */
     constructor(source, options)
     {
@@ -72,12 +73,20 @@ export default class ImageResource extends BaseImageResource
             ? options.createBitmap : settings.CREATE_IMAGE_BITMAP) && !!window.createImageBitmap;
 
         /**
-         * Controls texture premultiplyAlpha field
+         * Controls texture alphaMode field
          * Copies from options
-         * @member {boolean|null}
+         * Default is `null`, copies option from baseTexture
+         *
+         * @member {PIXI.ALPHA_MODES|null}
          * @readonly
          */
-        this.premultiplyAlpha = options.premultiplyAlpha !== false;
+        this.alphaMode = typeof options.alphaMode === 'number' ? options.alphaMode : null;
+
+        if (options.premultiplyAlpha !== undefined)
+        {
+            // triggers deprecation
+            this.premultiplyAlpha = options.premultiplyAlpha;
+        }
 
         /**
          * The ImageBitmap element created for HTMLImageElement
@@ -179,7 +188,7 @@ export default class ImageResource extends BaseImageResource
         this._process = window.createImageBitmap(this.source,
             0, 0, this.source.width, this.source.height,
             {
-                premultiplyAlpha: this.premultiplyAlpha ? 'premultiply' : 'none',
+                premultiplyAlpha: this.premultiplyAlpha === ALPHA_MODES.UNPACK ? 'premultiply' : 'none',
             })
             .then((bitmap) =>
             {
@@ -207,7 +216,12 @@ export default class ImageResource extends BaseImageResource
      */
     upload(renderer, baseTexture, glTexture)
     {
-        baseTexture.premultiplyAlpha = this.premultiplyAlpha;
+        if (typeof this.alphaMode === 'number')
+        {
+            // bitmap stores unpack premultiply flag, we dont have to notify texImage2D about it
+
+            baseTexture.alphaMode = this.alphaMode;
+        }
 
         if (!this.createBitmap)
         {

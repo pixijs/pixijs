@@ -1,7 +1,7 @@
-import Attribute from './Attribute';
-import Buffer from './Buffer';
-import interleaveTypedArrays from './utils/interleaveTypedArrays';
-import getBufferType from './utils/getBufferType';
+import { Attribute } from './Attribute';
+import { Buffer } from './Buffer';
+import { interleaveTypedArrays } from './utils/interleaveTypedArrays';
+import { getBufferType } from './utils/getBufferType';
 import { Runner } from '@pixi/runner';
 
 const byteSizeMap = { 5126: 4, 5123: 2, 5121: 1 };
@@ -37,7 +37,7 @@ const map = {
  * @class
  * @memberof PIXI
  */
-export default class Geometry
+export class Geometry
 {
     /**
      * @param {PIXI.Buffer[]} [buffers]  an array of buffers. optional.
@@ -84,7 +84,7 @@ export default class Geometry
     * Adds an attribute to the geometry
     *
     * @param {String} id - the name of the attribute (matching up to a shader)
-    * @param {PIXI.Buffer} [buffer] the buffer that holds the data of the attribute . You can also provide an Array and a buffer will be created from it.
+    * @param {PIXI.Buffer|number[]} [buffer] the buffer that holds the data of the attribute . You can also provide an Array and a buffer will be created from it.
     * @param {Number} [size=0] the size of the attribute. If you have 2 floats per vertex (eg position x and y) this would be 2
     * @param {Boolean} [normalized=false] should the data be normalized.
     * @param {Number} [type=PIXI.TYPES.FLOAT] what type of number is the attribute. Check {PIXI.TYPES} to see the ones available
@@ -167,7 +167,7 @@ export default class Geometry
     * Adds an index buffer to the geometry
     * The index buffer contains integers, three for each triangle in the geometry, which reference the various attribute buffers (position, colour, UV coordinates, other UV coordinates, normal, …). There is only ONE index buffer.
     *
-    * @param {PIXI.Buffer} [buffer] the buffer that holds the data of the index buffer. You can also provide an Array and a buffer will be created from it.
+    * @param {PIXI.Buffer|number[]} [buffer] the buffer that holds the data of the index buffer. You can also provide an Array and a buffer will be created from it.
     * @return {PIXI.Geometry} returns self, useful for chaining.
     */
     addIndex(buffer)

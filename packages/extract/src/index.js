@@ -18,4 +18,4 @@
  * document.body.appendChild(image);
  * @namespace PIXI.extract
  */
-export { default as Extract } from './Extract';
+export * from './Extract';

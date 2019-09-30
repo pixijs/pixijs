@@ -19,7 +19,7 @@ import { SHAPES } from '@pixi/math';
  * @protected
  * @memberof PIXI
  */
-export default class CanvasGraphicsRenderer
+export class CanvasGraphicsRenderer
 {
     /**
      * @param {PIXI.CanvasRenderer} renderer - The current PIXI renderer.

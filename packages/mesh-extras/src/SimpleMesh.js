@@ -9,7 +9,7 @@ import { Texture } from '@pixi/core';
  * @extends PIXI.Mesh
  * @memberof PIXI
  */
-export default class SimpleMesh extends Mesh
+export class SimpleMesh extends Mesh
 {
     /**
      * @param {PIXI.Texture} [texture=Texture.EMPTY] - The texture to use

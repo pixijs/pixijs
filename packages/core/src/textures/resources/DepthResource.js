@@ -1,4 +1,5 @@
-import BufferResource from './BufferResource';
+import { BufferResource } from './BufferResource';
+import { ALPHA_MODES } from '@pixi/constants';
 
 /**
  * Resource type for DepthTexture.
@@ -6,7 +7,7 @@ import BufferResource from './BufferResource';
  * @extends PIXI.resources.BufferResource
  * @memberof PIXI.resources
  */
-export default class DepthResource extends BufferResource
+export class DepthResource extends BufferResource
 {
     /**
      * Upload the texture to the GPU.
@@ -19,7 +20,7 @@ export default class DepthResource extends BufferResource
     {
         const gl = renderer.gl;
 
-        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, baseTexture.premultiplyAlpha);
+        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, baseTexture.alphaMode === ALPHA_MODES.UNPACK);
 
         if (glTexture.width === baseTexture.width && glTexture.height === baseTexture.height)
         {

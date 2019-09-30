@@ -5,7 +5,7 @@ import { GRAPHICS_CURVES } from '../const';
  * @class
  * @private
  */
-export default class BezierUtils
+export class BezierUtils
 {
     /**
      * Calculate length of bezier curve.

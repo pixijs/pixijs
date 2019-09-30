@@ -5,5 +5,5 @@
  * See {@link PIXI.CanvasRenderer#plugins} or {@link PIXI.Renderer#plugins}.
  * @namespace PIXI.accessibility
  */
-export { default as accessibleTarget } from './accessibleTarget';
-export { default as AccessibilityManager } from './AccessibilityManager';
+export * from './accessibleTarget';
+export * from './AccessibilityManager';

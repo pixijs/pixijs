@@ -128,6 +128,29 @@ describe('PIXI.Sprite', function ()
         });
     });
 
+    describe('texture', function ()
+    {
+        it('should unsubscribe from old texture', function ()
+        {
+            const texture = new Texture(new BaseTexture());
+            const texture2 = new Texture(new BaseTexture());
+
+            const sprite = new Sprite(texture);
+
+            expect(texture._eventsCount).to.equal(1);
+            expect(texture2._eventsCount).to.equal(0);
+
+            sprite.texture = texture2;
+
+            expect(texture._eventsCount).to.equal(0);
+            expect(texture2._eventsCount).to.equal(1);
+
+            sprite.destroy();
+            texture.destroy(true);
+            texture2.destroy(true);
+        });
+    });
+
     describe('destroy', function ()
     {
         it('should destroy while BaseTexture is loading', function ()

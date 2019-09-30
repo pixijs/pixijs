@@ -1,6 +1,6 @@
-import mapWebGLBlendModesToPixi from './utils/mapWebGLBlendModesToPixi';
-import System from '../System';
-import State from './State';
+import { mapWebGLBlendModesToPixi } from './utils/mapWebGLBlendModesToPixi';
+import { System } from '../System';
+import { State } from './State';
 import { BLEND_MODES } from '@pixi/constants';
 
 const BLEND = 0;
@@ -16,7 +16,7 @@ const WINDING = 4;
  * @extends PIXI.System
  * @memberof PIXI.systems
  */
-export default class StateSystem extends System
+export class StateSystem extends System
 {
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
