@@ -29,5 +29,8 @@
     "@pixi/math": "^5.1.0",
     "@pixi/settings": "^5.1.3",
     "@pixi/utils": "^5.1.3"
+  },
+  "devDependencies": {
+    "@pixi/display": "^5.1.3"
   }
 }
