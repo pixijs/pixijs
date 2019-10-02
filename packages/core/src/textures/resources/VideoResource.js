@@ -1,4 +1,4 @@
-import BaseImageResource from './BaseImageResource';
+import { BaseImageResource } from './BaseImageResource';
 import { Ticker } from '@pixi/ticker';
 
 /**
@@ -14,7 +14,7 @@ import { Ticker } from '@pixi/ticker';
  * Leave at 0 to update at every render.
  * @param {boolean} [options.crossorigin=true] - Load image using cross origin
  */
-export default class VideoResource extends BaseImageResource
+export class VideoResource extends BaseImageResource
 {
     constructor(source, options)
     {
@@ -62,6 +62,7 @@ export default class VideoResource extends BaseImageResource
 
         super(source);
 
+        this.noSubImage = true;
         this._autoUpdate = true;
         this._isAutoUpdating = false;
         this._updateFPS = options.updateFPS || 0;

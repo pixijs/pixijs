@@ -1,6 +1,6 @@
 import { TYPES } from '@pixi/constants';
-import Geometry from '../geometry/Geometry';
-import Buffer from '../geometry/Buffer';
+import { Geometry } from '../geometry/Geometry';
+import { Buffer } from '../geometry/Buffer';
 
 /**
  * Geometry used to batch standard PIXI content (e.g. Mesh, Sprite, Graphics objects).
@@ -8,7 +8,7 @@ import Buffer from '../geometry/Buffer';
  * @class
  * @memberof PIXI
  */
-export default class BatchGeometry extends Geometry
+export class BatchGeometry extends Geometry
 {
     /**
      * @param {boolean} [_static=false] Optimization flag, where `false`

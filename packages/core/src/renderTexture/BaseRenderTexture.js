@@ -1,5 +1,5 @@
-import BaseTexture from '../textures/BaseTexture';
-import Framebuffer from '../framebuffer/Framebuffer';
+import { BaseTexture } from '../textures/BaseTexture';
+import { Framebuffer } from '../framebuffer/Framebuffer';
 
 /**
  * A BaseRenderTexture is a special texture that allows any PixiJS display object to be rendered to it.
@@ -41,7 +41,7 @@ import Framebuffer from '../framebuffer/Framebuffer';
  * @extends PIXI.BaseTexture
  * @memberof PIXI
  */
-export default class BaseRenderTexture extends BaseTexture
+export class BaseRenderTexture extends BaseTexture
 {
     /**
      * @param {object} [options]
@@ -86,8 +86,7 @@ export default class BaseRenderTexture extends BaseTexture
         this.clearColor = [0, 0, 0, 0];
 
         this.framebuffer = new Framebuffer(this.width * this.resolution, this.height * this.resolution)
-            .addColorTexture(0, this)
-            .enableStencil();
+            .addColorTexture(0, this);
 
         // TODO - could this be added the systems?
 

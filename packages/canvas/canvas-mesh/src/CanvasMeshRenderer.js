@@ -7,7 +7,7 @@ import { DRAW_MODES } from '@pixi/constants';
  * @protected
  * @memberof PIXI
  */
-export default class CanvasMeshRenderer
+export class CanvasMeshRenderer
 {
     /**
      * @param {PIXI.CanvasRenderer} renderer - The renderer this downport works for

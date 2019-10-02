@@ -8,7 +8,7 @@ import { Runner } from '@pixi/runner';
  * @class
  * @memberof PIXI.resources
  */
-export default class Resource
+export class Resource
 {
     /**
      * @param {number} [width=0] Width of the resource
@@ -106,6 +106,8 @@ export default class Resource
 
     /**
      * Trigger a resize event
+     * @param {number} width X dimension
+     * @param {number} height Y dimension
      */
     resize(width, height)
     {

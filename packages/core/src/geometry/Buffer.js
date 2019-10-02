@@ -9,7 +9,7 @@ let UID = 0;
  * @class
  * @memberof PIXI
  */
-export default class Buffer
+export class Buffer
 {
     /**
      * @param {ArrayBuffer| SharedArrayBuffer|ArrayBufferView} data the data to store in the buffer.

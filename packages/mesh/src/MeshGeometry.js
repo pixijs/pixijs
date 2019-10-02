@@ -18,7 +18,7 @@ import { Buffer, Geometry } from '@pixi/core';
  * @memberof PIXI
  * @extends PIXI.Geometry
  */
-export default class MeshGeometry extends Geometry
+export class MeshGeometry extends Geometry
 {
     /**
      * @param {Float32Array|number[]} vertices - Positional data on geometry.

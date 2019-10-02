@@ -1,8 +1,9 @@
 // const MockPointer = require('../interaction/MockPointer');
 const { Renderer, BatchRenderer, Texture } = require('@pixi/core');
-const { Graphics, GRAPHICS_CURVES } = require('../');
+const { Graphics, GRAPHICS_CURVES, FillStyle, LineStyle, graphicsUtils } = require('../');
+const { FILL_COMMANDS, buildLine } = graphicsUtils;
 const { BLEND_MODES } = require('@pixi/constants');
-const { Point, Matrix } = require('@pixi/math');
+const { Point, Matrix, SHAPES } = require('@pixi/math');
 const { skipHello } = require('@pixi/utils');
 
 Renderer.registerPlugin('batch', BatchRenderer);
@@ -117,6 +118,38 @@ describe('PIXI.Graphics', function ()
         });
     });
 
+    describe('utils', function ()
+    {
+        it('FILL_COMMADS should be filled', function ()
+        {
+            expect(FILL_COMMANDS).to.not.be.null;
+
+            expect(FILL_COMMANDS[SHAPES.POLY]).to.not.be.null;
+            expect(FILL_COMMANDS[SHAPES.CIRC]).to.not.be.null;
+            expect(FILL_COMMANDS[SHAPES.ELIP]).to.not.be.null;
+            expect(FILL_COMMANDS[SHAPES.RECT]).to.not.be.null;
+            expect(FILL_COMMANDS[SHAPES.RREC]).to.not.be.null;
+        });
+
+        it('buildLine should execute without throws', function ()
+        {
+            const graphics = new Graphics();
+
+            graphics.lineStyle({ width: 2, color: 0xff0000 });
+            graphics.drawRect(0, 0, 10, 10);
+
+            const geometry = graphics.geometry;
+            const data = geometry.graphicsData[0];
+
+            // native = false
+            expect(function () { buildLine(data, geometry); }).to.not.throw();
+
+            data.lineStyle.native = true;
+            // native = true
+            expect(function () { buildLine(data, geometry); }).to.not.throw();
+        });
+    });
+
     describe('lineTo', function ()
     {
         it('should return correct bounds - north', function ()
@@ -127,9 +160,8 @@ describe('PIXI.Graphics', function ()
             graphics.moveTo(0, 0);
             graphics.lineTo(0, 10);
 
-            expect(graphics.width).to.be.below(1.00001);
-            expect(graphics.width).to.be.above(0.99999);
-            expect(graphics.height).to.be.equals(10);
+            expect(graphics.width).to.be.closeTo(1, 0.0001);
+            expect(graphics.height).to.be.closeTo(11, 0.0001);
         });
 
         it('should return correct bounds - south', function ()
@@ -140,9 +172,8 @@ describe('PIXI.Graphics', function ()
             graphics.lineStyle(1);
             graphics.lineTo(0, -10);
 
-            expect(graphics.width).to.be.below(1.00001);
-            expect(graphics.width).to.be.above(0.99999);
-            expect(graphics.height).to.be.equals(10);
+            expect(graphics.width).to.be.closeTo(1, 0.0001);
+            expect(graphics.height).to.be.closeTo(11, 0.0001);
         });
 
         it('should return correct bounds - east', function ()
@@ -153,8 +184,8 @@ describe('PIXI.Graphics', function ()
             graphics.lineStyle(1);
             graphics.lineTo(10, 0);
 
-            expect(graphics.height).to.be.equals(1);
-            expect(graphics.width).to.be.equals(10);
+            expect(graphics.height).to.be.closeTo(1, 0.0001);
+            expect(graphics.width).to.be.closeTo(11, 0.0001);
         });
 
         it('should return correct bounds - west', function ()
@@ -165,9 +196,8 @@ describe('PIXI.Graphics', function ()
             graphics.lineStyle(1);
             graphics.lineTo(-10, 0);
 
-            expect(graphics.height).to.be.above(0.9999);
-            expect(graphics.height).to.be.below(1.0001);
-            expect(graphics.width).to.be.equals(10);
+            expect(graphics.height).to.be.closeTo(1, 0.0001);
+            expect(graphics.width).to.be.closeTo(11, 0.0001);
         });
 
         it('should return correct bounds when stacked with circle', function ()
@@ -389,9 +419,12 @@ describe('PIXI.Graphics', function ()
 
     describe('_calculateBounds', function ()
     {
-        it('should only call updateLocalBounds once', function ()
+        it('should only call updateLocalBounds once when not empty', function ()
         {
             const graphics = new Graphics();
+
+            graphics.drawRect(0, 0, 10, 10);
+
             const spy = sinon.spy(graphics.geometry, 'calculateBounds');
 
             graphics._calculateBounds();
@@ -401,6 +434,104 @@ describe('PIXI.Graphics', function ()
             graphics._calculateBounds();
 
             expect(spy).to.have.been.calledOnce;
+        });
+
+        it('should not call updateLocalBounds when empty', function ()
+        {
+            const graphics = new Graphics();
+
+            const spy = sinon.spy(graphics.geometry, 'calculateBounds');
+
+            graphics._calculateBounds();
+
+            expect(spy).to.not.have.been.called;
+
+            graphics._calculateBounds();
+
+            expect(spy).to.not.have.been.called;
+        });
+    });
+
+    describe('getBounds', function ()
+    {
+        it('should use getBounds without stroke', function ()
+        {
+            const graphics = new Graphics();
+
+            graphics.beginFill(0x0).drawRect(10, 20, 100, 200);
+
+            const { x, y, width, height } = graphics.getBounds();
+
+            expect(x).to.equal(10);
+            expect(y).to.equal(20);
+            expect(width).to.equal(100);
+            expect(height).to.equal(200);
+        });
+
+        it('should use getBounds with stroke', function ()
+        {
+            const graphics = new Graphics();
+
+            graphics
+                .lineStyle(4, 0xff0000)
+                .beginFill(0x0)
+                .drawRect(10, 20, 100, 200);
+
+            const { x, y, width, height } = graphics.getBounds();
+
+            expect(x).to.equal(8);
+            expect(y).to.equal(18);
+            expect(width).to.equal(104);
+            expect(height).to.equal(204);
+        });
+
+        it('should be zero for empty Graphics', function ()
+        {
+            const graphics = new Graphics();
+
+            const { x, y, width, height } = graphics.getBounds();
+
+            expect(x).to.equal(0);
+            expect(y).to.equal(0);
+            expect(width).to.equal(0);
+            expect(height).to.equal(0);
+        });
+
+        it('should be zero after clear', function ()
+        {
+            const graphics = new Graphics();
+
+            graphics
+                .lineStyle(4, 0xff0000)
+                .beginFill(0x0)
+                .drawRect(10, 20, 100, 200)
+                .clear();
+
+            const { x, y, width, height } = graphics.getBounds();
+
+            expect(x).to.equal(0);
+            expect(y).to.equal(0);
+            expect(width).to.equal(0);
+            expect(height).to.equal(0);
+        });
+
+        it('should be equal of childs bounds when empty', function ()
+        {
+            const graphics = new Graphics();
+            const child = new Graphics();
+
+            child
+                .beginFill(0x0)
+                .drawRect(10, 20, 100, 200);
+
+            graphics.addChild(child);
+
+            const { x, y, width, height } = graphics.getBounds();
+
+            expect(x).to.equal(10);
+            expect(y).to.equal(20);
+            expect(width).to.equal(100);
+            expect(height).to.equal(200);
         });
     });
 
@@ -506,6 +637,37 @@ describe('PIXI.Graphics', function ()
 
     describe('geometry', function ()
     {
+        it('validateBatching should return false if any of textures is invalid', function ()
+        {
+            const graphics = new Graphics();
+            const invalidTex = Texture.EMPTY;
+            const validTex = Texture.WHITE;
+
+            graphics.beginTextureFill({ texture: invalidTex });
+            graphics.drawRect(0, 0, 10, 10);
+            graphics.beginTextureFill({ texture: validTex });
+            graphics.drawRect(0, 0, 10, 10);
+
+            const geometry = graphics.geometry;
+
+            expect(geometry.validateBatching()).to.be.false;
+        });
+
+        it('validateBatching should return true if all textures is valid', function ()
+        {
+            const graphics = new Graphics();
+            const validTex = Texture.WHITE;
+
+            graphics.beginTextureFill({ texture: validTex });
+            graphics.drawRect(0, 0, 10, 10);
+            graphics.beginTextureFill({ texture: validTex });
+            graphics.drawRect(0, 0, 10, 10);
+
+            const geometry = graphics.geometry;
+
+            expect(geometry.validateBatching()).to.be.true;
+        });
+
         it('should be batchable if graphicsData is empty', function ()
         {
             const graphics = new Graphics();
@@ -513,6 +675,67 @@ describe('PIXI.Graphics', function ()
 
             geometry.updateBatches();
             expect(geometry.batchable).to.be.true;
+        });
+
+        it('_compareStyles should return true for identical styles', function ()
+        {
+            const graphics = new Graphics();
+            const geometry = graphics.geometry;
+
+            const first = new FillStyle();
+
+            first.color = 0xff00ff;
+            first.alpha = 0.1;
+            first.visible = true;
+
+            const second = first.clone();
+
+            expect(geometry._compareStyles(first, second)).to.be.true;
+
+            const firstLine = new LineStyle();
+
+            firstLine.color = 0xff00ff;
+            firstLine.native = false;
+            firstLine.alignment = 1;
+
+            const secondLine = firstLine.clone();
+
+            expect(geometry._compareStyles(firstLine, secondLine)).to.be.true;
+        });
+
+        it('should be 1 batch for same styles', function ()
+        {
+            const graphics = new Graphics();
+
+            graphics.beginFill(0xff00ff, 0.5);
+            graphics.drawRect(0, 0, 20, 20);
+            graphics.drawRect(100, 0, 20, 20);
+
+            const geometry = graphics.geometry;
+
+            geometry.updateBatches();
+            expect(geometry.batches).to.have.lengthOf(1);
+        });
+
+        it('should be 2 batches for 2 different styles', function ()
+        {
+            const graphics = new Graphics();
+
+            // first style
+            graphics.beginFill(0xff00ff, 0.5);
+            graphics.drawRect(0, 0, 20, 20);
+
+            // second style
+            graphics.beginFill(0x0, 0.5);
+            graphics.drawRect(100, 0, 20, 20);
+
+            // third shape with same style
+            graphics.drawRect(0, 0, 20, 20);
+
+            const geometry = graphics.geometry;
+
+            geometry.updateBatches();
+            expect(geometry.batches).to.have.lengthOf(2);
         });
     });
 });

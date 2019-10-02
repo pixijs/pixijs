@@ -1,6 +1,6 @@
 import { Loader as ResourceLoader, middleware } from 'resource-loader';
 import { EventEmitter } from '@pixi/utils';
-import TextureLoader from './TextureLoader';
+import { TextureLoader } from './TextureLoader';
 
 /**
  * The new loader, extends Resource Loader by Chad Engler: https://github.com/englercj/resource-loader
@@ -53,7 +53,7 @@ import TextureLoader from './TextureLoader';
  * @param {string} [baseUrl=''] - The base url for all resources loaded by this loader.
  * @param {number} [concurrency=10] - The number of resources to load concurrently.
  */
-export default class Loader extends ResourceLoader
+export class Loader extends ResourceLoader
 {
     constructor(baseUrl, concurrency)
     {

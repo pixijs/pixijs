@@ -10,7 +10,7 @@ import { BLEND_MODES } from '@pixi/constants';
  * @param {number[][]} [array=[]] - The array to output into.
  * @return {number[][]} Mapped modes.
  */
-export default function mapWebGLBlendModesToPixi(gl, array = [])
+export function mapWebGLBlendModesToPixi(gl, array = [])
 {
     // TODO - premultiply alpha would be different.
     // add a boolean for that!
@@ -46,6 +46,7 @@ export default function mapWebGLBlendModesToPixi(gl, array = [])
     array[BLEND_MODES.DST_IN] = [gl.ZERO, gl.SRC_ALPHA];
     array[BLEND_MODES.DST_OUT] = [gl.ZERO, gl.ONE_MINUS_SRC_ALPHA];
     array[BLEND_MODES.DST_ATOP] = [gl.ONE_MINUS_DST_ALPHA, gl.SRC_ALPHA];
+    array[BLEND_MODES.XOR] = [gl.ONE_MINUS_DST_ALPHA, gl.ONE_MINUS_SRC_ALPHA];
 
     // SUBTRACT from flash
     array[BLEND_MODES.SUBTRACT] = [gl.ONE, gl.ONE, gl.ONE, gl.ONE, gl.FUNC_REVERSE_SUBTRACT, gl.FUNC_ADD];

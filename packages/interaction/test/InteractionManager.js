@@ -298,6 +298,113 @@ describe('PIXI.interaction.InteractionManager', function ()
         });
     });
 
+    describe('event propagation', function ()
+    {
+        it('should stop event propagation', function ()
+        {
+            const stage = new Container();
+            const parent = new Container();
+            const graphics = new Graphics();
+
+            const pointer = this.pointer = new MockPointer(stage);
+
+            const mouseDownChild = sinon.spy((evt) => evt.stopPropagation());
+            const mouseDownParent = sinon.spy();
+
+            stage.addChild(parent);
+            parent.addChild(graphics);
+
+            graphics.beginFill(0xFFFFFF);
+            graphics.drawRect(0, 0, 50, 50);
+            graphics.interactive = true;
+            parent.interactive = true;
+
+            graphics.on('mousedown', mouseDownChild);
+
+            parent.on('mousedown', mouseDownParent);
+
+            pointer.mousedown(10, 10);
+
+            expect(mouseDownChild).to.have.been.called;
+            expect(mouseDownParent).to.not.have.been.called;
+        });
+
+        it('should not stop events on the same object from happening', function ()
+        {
+            const stage = new Container();
+            const parent = new Container();
+            const graphics = new Graphics();
+
+            const pointer = this.pointer = new MockPointer(stage);
+
+            // Neither of these should stop the other from firing
+            const mouseMoveChild = sinon.spy((evt) => evt.stopPropagation());
+            const mouseOverChild = sinon.spy((evt) => evt.stopPropagation());
+
+            const mouseMoveParent = sinon.spy();
+            const mouseOverParent = sinon.spy();
+
+            stage.addChild(parent);
+            parent.addChild(graphics);
+
+            graphics.beginFill(0xFFFFFF);
+            graphics.drawRect(0, 0, 50, 50);
+            graphics.interactive = true;
+            parent.interactive = true;
+
+            graphics.on('mousemove', mouseMoveChild);
+            graphics.on('mouseover', mouseOverChild);
+
+            parent.on('mousemove', mouseMoveParent);
+            parent.on('mouseover', mouseOverParent);
+
+            pointer.mousemove(10, 10);
+
+            expect(mouseOverChild).to.have.been.called;
+            expect(mouseMoveChild).to.have.been.called;
+
+            expect(mouseOverParent).to.not.have.been.called;
+            expect(mouseMoveParent).to.not.have.been.called;
+        });
+
+        it('should not stop events on children of an object from happening', function ()
+        {
+            const stage = new Container();
+            const parent = new Container();
+            const graphics = new Graphics();
+
+            const pointer = this.pointer = new MockPointer(stage);
+
+            const mouseMoveChild = sinon.spy();
+            const mouseMoveParent = sinon.spy((evt) => evt.stopPropagation());
+
+            const mouseOverChild = sinon.spy();
+            const mouseOverParent = sinon.spy();
+
+            stage.addChild(parent);
+            parent.addChild(graphics);
+
+            graphics.beginFill(0xFFFFFF);
+            graphics.drawRect(0, 0, 50, 50);
+            graphics.interactive = true;
+            parent.interactive = true;
+
+            graphics.on('mousemove', mouseMoveChild);
+            graphics.on('mouseover', mouseOverChild);
+
+            parent.on('mousemove', mouseMoveParent);
+            parent.on('mouseover', mouseOverParent);
+
+            pointer.mousemove(10, 10);
+
+            expect(mouseMoveChild).to.have.been.called;
+            expect(mouseOverChild).to.have.been.called;
+
+            expect(mouseMoveParent).to.have.been.called;
+            expect(mouseOverParent).to.have.been.called;
+        });
+    });
+
     describe('touch vs pointer', function ()
     {
         it('should call touchstart and pointerdown when touch event and pointer supported', function ()

@@ -7,7 +7,7 @@ import { Texture } from '@pixi/core';
  * @memberof PIXI
  * @implements PIXI.ILoaderPlugin
  */
-export default class TextureLoader
+export class TextureLoader
 {
     /**
      * Called after a resource is loaded.

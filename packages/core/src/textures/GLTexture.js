@@ -3,7 +3,7 @@
  * @class
  * @memberof PIXI
  */
-export default class GLTexture
+export class GLTexture
 {
     constructor(texture)
     {

@@ -1,6 +1,6 @@
 import isMobile from 'ismobilejs';
-import maxRecommendedTextures from './utils/maxRecommendedTextures';
-import canUploadSameBuffer from './utils/canUploadSameBuffer';
+import { maxRecommendedTextures } from './utils/maxRecommendedTextures';
+import { canUploadSameBuffer } from './utils/canUploadSameBuffer';
 
 /**
  * User's customizable globals for overriding the default PIXI settings, such
@@ -8,13 +8,13 @@ import canUploadSameBuffer from './utils/canUploadSameBuffer';
  * @example
  * // Use the native window resolution as the default resolution
  * // will support high-density displays when rendering
- * PIXI.settings.RESOLUTION = window.devicePixelRatio.
+ * PIXI.settings.RESOLUTION = window.devicePixelRatio;
  *
  * // Disable interpolation when scaling, will make texture be pixelated
  * PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
  * @namespace PIXI.settings
  */
-export default {
+export const settings = {
 
     /**
      * If set to true WebGL will attempt make textures mimpaped by default.

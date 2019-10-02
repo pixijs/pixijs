@@ -1,6 +1,6 @@
 import { Filter } from '@pixi/core';
 import { settings } from '@pixi/settings';
-import BlurFilterPass from './BlurFilterPass';
+import { BlurFilterPass } from './BlurFilterPass';
 
 /**
  * The BlurFilter applies a Gaussian blur to an object.
@@ -11,7 +11,7 @@ import BlurFilterPass from './BlurFilterPass';
  * @extends PIXI.Filter
  * @memberof PIXI.filters
  */
-export default class BlurFilter extends Filter
+export class BlurFilter extends Filter
 {
     /**
      * @param {number} [strength=8] - The strength of the blur filter.

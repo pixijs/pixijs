@@ -1,1 +1,1 @@
-export { default as ColorMatrixFilter } from './ColorMatrixFilter';
+export * from './ColorMatrixFilter';

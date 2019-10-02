@@ -1,6 +1,6 @@
 {
   "name": "@pixi/particles",
-  "version": "5.1.2",
+  "version": "5.1.5",
   "main": "lib/particles.js",
   "module": "lib/particles.es.js",
   "bundle": "dist/particles.js",
@@ -25,9 +25,9 @@
   ],
   "dependencies": {
     "@pixi/constants": "^5.1.0",
-    "@pixi/core": "^5.1.2",
-    "@pixi/display": "^5.1.2",
+    "@pixi/core": "^5.1.5",
+    "@pixi/display": "^5.1.3",
     "@pixi/math": "^5.1.0",
-    "@pixi/utils": "^5.1.2"
+    "@pixi/utils": "^5.1.3"
   }
 }

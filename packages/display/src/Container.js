@@ -1,6 +1,6 @@
 import { settings } from '@pixi/settings';
 import { removeItems } from '@pixi/utils';
-import DisplayObject from './DisplayObject';
+import { DisplayObject } from './DisplayObject';
 
 function sortChildren(a, b)
 {
@@ -26,7 +26,7 @@ function sortChildren(a, b)
  * @extends PIXI.DisplayObject
  * @memberof PIXI
  */
-export default class Container extends DisplayObject
+export class Container extends DisplayObject
 {
     constructor()
     {

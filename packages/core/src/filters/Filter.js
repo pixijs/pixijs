@@ -1,6 +1,6 @@
-import Shader from '../shader/Shader';
-import Program from '../shader/Program';
-import State from '../state/State';
+import { Shader } from '../shader/Shader';
+import { Program } from '../shader/Program';
+import { State } from '../state/State';
 import { settings } from '@pixi/settings';
 import defaultVertex from './defaultFilter.vert';
 import defaultFragment from './defaultFilter.frag';
@@ -141,7 +141,7 @@ import defaultFragment from './defaultFilter.frag';
  * @memberof PIXI
  * @extends PIXI.Shader
  */
-export default class Filter extends Shader
+export class Filter extends Shader
 {
     /**
      * @param {string} [vertexSrc] - The source of the vertex shader.

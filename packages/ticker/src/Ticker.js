@@ -1,6 +1,6 @@
 import { settings } from './settings';
 import { UPDATE_PRIORITY } from './const';
-import TickerListener from './TickerListener';
+import { TickerListener } from './TickerListener';
 
 /**
  * A Ticker class that runs an update loop that other objects listen to.
@@ -11,7 +11,7 @@ import TickerListener from './TickerListener';
  * @class
  * @memberof PIXI
  */
-export default class Ticker
+export class Ticker
 {
     constructor()
     {

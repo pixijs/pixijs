@@ -4,16 +4,37 @@
  * @class
  * @memberof PIXI.interaction
  */
-export default class InteractionEvent
+export class InteractionEvent
 {
     constructor()
     {
         /**
-         * Whether this event will continue propagating in the tree
+         * Whether this event will continue propagating in the tree.
+         *
+         * Remaining events for the {@link stopsPropagatingAt} object
+         * will still be dispatched.
          *
          * @member {boolean}
          */
         this.stopped = false;
+
+        /**
+         * At which object this event stops propagating.
+         *
+         * @private
+         * @member {PIXI.DisplayObject}
+         */
+        this.stopsPropagatingAt = null;
+
+        /**
+         * Whether we already reached the element we want to
+         * stop propagating at. This is important for delayed events,
+         * where we start over deeper in the tree again.
+         *
+         * @private
+         * @member {boolean}
+         */
+        this.stopPropagationHint = false;
 
         /**
          * The object which caused this event to be dispatched.
@@ -52,6 +73,8 @@ export default class InteractionEvent
     stopPropagation()
     {
         this.stopped = true;
+        this.stopPropagationHint = true;
+        this.stopsPropagatingAt = this.currentTarget;
     }
 
     /**
@@ -60,6 +83,8 @@ export default class InteractionEvent
     reset()
     {
         this.stopped = false;
+        this.stopsPropagatingAt = null;
+        this.stopPropagationHint = false;
         this.currentTarget = null;
         this.target = null;
     }

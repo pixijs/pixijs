@@ -1,5 +1,5 @@
-import System from '../System';
-import SpriteMaskFilter from '../filters/spriteMask/SpriteMaskFilter';
+import { System } from '../System';
+import { SpriteMaskFilter } from '../filters/spriteMask/SpriteMaskFilter';
 
 /**
  * System plugin to the renderer to manage masks.
@@ -8,7 +8,7 @@ import SpriteMaskFilter from '../filters/spriteMask/SpriteMaskFilter';
  * @extends PIXI.System
  * @memberof PIXI.systems
  */
-export default class MaskSystem extends System
+export class MaskSystem extends System
 {
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
@@ -80,7 +80,7 @@ export default class MaskSystem extends System
         }
         else if (this.enableScissor
             && !this.scissor
-            && this.renderer._activeRenderTarget.root
+            && !this.renderer.renderTexture.current
             && !this.renderer.stencil.stencilMaskStack.length
             && maskData.isFastRect())
         {
@@ -118,7 +118,7 @@ export default class MaskSystem extends System
         {
             this.popSpriteMask(target, maskData);
         }
-        else if (this.enableScissor && !this.renderer.stencil.stencilMaskStack.length)
+        else if (this.scissor)
         {
             this.popScissorMask(target, maskData);
         }
@@ -195,25 +195,33 @@ export default class MaskSystem extends System
     {
         maskData.renderable = true;
 
-        const renderTarget = this.renderer._activeRenderTarget;
+        const bounds = maskData.getBounds(true);
 
-        const bounds = maskData.getBounds();
-
-        bounds.fit(renderTarget.size);
         maskData.renderable = false;
 
         this.renderer.gl.enable(this.renderer.gl.SCISSOR_TEST);
 
         const resolution = this.renderer.resolution;
 
+        let y;
+
+        if (this.renderer.renderingToScreen)
+        {
+            y = this.renderer.height - ((bounds.y + bounds.height) * resolution);
+        }
+        else
+        {
+            y = bounds.y * resolution;
+        }
+
         this.renderer.gl.scissor(
             bounds.x * resolution,
-            (renderTarget.root ? renderTarget.size.height - bounds.y - bounds.height : bounds.y) * resolution,
+            y,
             bounds.width * resolution,
             bounds.height * resolution
         );
 
-        this.scissorRenderTarget = renderTarget;
+        this.scissorRenderTarget = target;
         this.scissorData = maskData;
         this.scissor = true;
     }

@@ -1,6 +1,6 @@
 import { MeshGeometry } from '@pixi/mesh';
 
-export default class PlaneGeometry extends MeshGeometry
+export class PlaneGeometry extends MeshGeometry
 {
     constructor(width = 100, height = 100, segWidth = 10, segHeight = 10)
     {

@@ -9,11 +9,11 @@ let context = unknownContext;
  *
  * @static
  * @private
- * @returns {webGL-context} a gl context to test with
+ * @returns {WebGLRenderingContext} a gl context to test with
  */
-export default function getTestContext()
+export function getTestContext()
 {
-    if (context === unknownContext)
+    if (context === unknownContext || (context && context.isContextLost()))
     {
         const canvas = document.createElement('canvas');
 

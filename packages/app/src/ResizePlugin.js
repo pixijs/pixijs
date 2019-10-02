@@ -3,7 +3,7 @@
  * @private
  * @class
  */
-export default class ResizePlugin
+export class ResizePlugin
 {
     /**
      * Initialize the plugin with scope of application instance

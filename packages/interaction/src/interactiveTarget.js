@@ -38,7 +38,7 @@
  *          PIXI.interaction.interactiveTarget
  *      );
  */
-export default {
+export const interactiveTarget = {
 
     /**
      * Enable interaction events for the DisplayObject. Touch, pointer and mouse

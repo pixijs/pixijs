@@ -1,6 +1,6 @@
-import Shader from '../shader/Shader';
-import Program from '../shader/Program';
-import UniformGroup from '../shader/UniformGroup';
+import { Shader } from '../shader/Shader';
+import { Program } from '../shader/Program';
+import { UniformGroup } from '../shader/UniformGroup';
 import { Matrix } from '@pixi/math';
 
 /**
@@ -9,7 +9,7 @@ import { Matrix } from '@pixi/math';
  * @class
  * @memberof PIXI
  */
-export default class BatchShaderGenerator
+export class BatchShaderGenerator
 {
     /**
      * @param {string} vertexSrc - Vertex shader

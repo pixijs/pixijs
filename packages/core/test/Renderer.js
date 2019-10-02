@@ -82,4 +82,58 @@ describe('PIXI.Renderer', function ()
             expect(this.curRenderer.start).to.not.be.called;
         });
     });
+
+    describe('Masks', function ()
+    {
+        before(function ()
+        {
+            this.renderer = new Renderer();
+            this.renderer.mask.enableScissor = true;
+        });
+
+        after(function ()
+        {
+            this.renderer.destroy();
+            this.renderer = null;
+        });
+
+        it('should have scissor-masks enabled', function ()
+        {
+            expect(this.renderer.mask.enableScissor).to.equal(true);
+        });
+
+        it('should use scissor masks with axis aligned squares', function ()
+        {
+            const context = {};
+            const maskData = {
+                isFastRect() { return true; },
+                worldTransform: { a: 0, b: 0 },
+                getBounds() { return { x: 0, y: 0, width: 0, height: 0 }; },
+            };
+
+            this.renderer.mask.push(context, maskData);
+
+            expect(this.renderer.mask.scissor).to.equal(true);
+
+            this.renderer.mask.pop(context, maskData);
+
+            expect(this.renderer.mask.scissor).to.equal(false);
+        });
+
+        it('should not use scissor masks with non axis aligned sqares', function ()
+        {
+            const context = {};
+            const maskData = {
+                isFastRect() { return true; },
+                worldTransform: { a: 0.1, b: 2 },
+                render() { return; },
+            };
+
+            this.renderer.mask.push(context, maskData);
+
+            expect(this.renderer.mask.scissor).to.equal(false);
+
+            this.renderer.mask.pop(context, maskData);
+        });
+    });
 });

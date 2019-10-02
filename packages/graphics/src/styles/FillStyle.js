@@ -6,7 +6,7 @@ import { Texture } from '@pixi/core';
  * @class
  * @memberof PIXI
  */
-export default class FillStyle
+export class FillStyle
 {
     constructor()
     {

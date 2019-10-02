@@ -13,7 +13,7 @@ const BYTES_PER_PIXEL = 4;
  * @class
  * @memberof PIXI.extract
  */
-export default class Extract
+export class Extract
 {
     /**
      * @param {PIXI.Renderer} renderer - A reference to the current renderer
@@ -113,8 +113,8 @@ export default class Extract
             renderer.renderTexture.bind(null);
         }
 
-        const width = Math.floor(frame.width * resolution);
-        const height = Math.floor(frame.height * resolution);
+        const width = Math.floor((frame.width * resolution) + 1e-4);
+        const height = Math.floor((frame.height * resolution) + 1e-4);
 
         const canvasBuffer = new CanvasRenderTarget(width, height, 1);
 

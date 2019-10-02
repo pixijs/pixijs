@@ -6,7 +6,7 @@ import { Point } from '@pixi/math';
  * @class
  * @memberof PIXI.interaction
  */
-export default class InteractionData
+export class InteractionData
 {
     constructor()
     {

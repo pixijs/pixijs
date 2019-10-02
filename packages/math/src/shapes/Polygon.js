@@ -1,4 +1,4 @@
-import Point from '../Point';
+import { Point } from '../Point';
 import { SHAPES } from '../const';
 
 /**
@@ -7,7 +7,7 @@ import { SHAPES } from '../const';
  * @class
  * @memberof PIXI
  */
-export default class Polygon
+export class Polygon
 {
     /**
      * @param {PIXI.Point[]|number[]} points - This can be an array of Points

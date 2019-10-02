@@ -1,4 +1,4 @@
-import getBufferType from './getBufferType';
+import { getBufferType } from './getBufferType';
 
 /* eslint-disable object-shorthand */
 const map = {
@@ -8,7 +8,7 @@ const map = {
     Uint8Array: Uint8Array,
 };
 
-export default function interleaveTypedArrays(arrays, sizes)
+export function interleaveTypedArrays(arrays, sizes)
 {
     let outSize = 0;
     let stride = 0;

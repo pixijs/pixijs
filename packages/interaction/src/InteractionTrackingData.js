@@ -5,7 +5,7 @@
  * @private
  * @memberof PIXI.interaction
  */
-export default class InteractionTrackingData
+export class InteractionTrackingData
 {
     /**
      * @param {number} pointerId - Unique pointer id of the event

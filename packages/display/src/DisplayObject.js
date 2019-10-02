@@ -1,6 +1,6 @@
 import { EventEmitter } from '@pixi/utils';
 import { Rectangle, Transform, RAD_TO_DEG, DEG_TO_RAD } from '@pixi/math';
-import Bounds from './Bounds';
+import { Bounds } from './Bounds';
 // _tempDisplayObjectParent = new DisplayObject();
 
 /**
@@ -12,7 +12,7 @@ import Bounds from './Bounds';
  * @extends PIXI.utils.EventEmitter
  * @memberof PIXI
  */
-export default class DisplayObject extends EventEmitter
+export class DisplayObject extends EventEmitter
 {
     /**
      * Mixes all enumerable properties and methods from a source object to DisplayObject.
@@ -456,12 +456,13 @@ export default class DisplayObject extends EventEmitter
         this.transform = null;
 
         this.parent = null;
-
         this._bounds = null;
         this._currentBounds = null;
         this._mask = null;
 
+        this.filters = null;
         this.filterArea = null;
+        this.hitArea = null;
 
         this.interactive = false;
         this.interactiveChildren = false;

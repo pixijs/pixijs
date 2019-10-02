@@ -1,5 +1,5 @@
 import { accessibility, interaction, prepare, extract } from 'pixi.js';
-import { CanvasRenderer, CanvasTinter } from '@pixi/canvas-renderer';
+import { CanvasRenderer, canvasUtils } from '@pixi/canvas-renderer';
 import { CanvasMeshRenderer } from '@pixi/canvas-mesh';
 import { CanvasGraphicsRenderer } from '@pixi/canvas-graphics';
 import { CanvasSpriteRenderer } from '@pixi/canvas-sprite';
@@ -29,5 +29,5 @@ export {
     CanvasGraphicsRenderer,
     CanvasMeshRenderer,
     CanvasSpriteRenderer,
-    CanvasTinter,
+    canvasUtils,
 };
