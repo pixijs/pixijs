@@ -1,3 +1,5 @@
+import { Point } from './Point';
+
 /**
  * The Point object represents a location in a two-dimensional coordinate system, where x represents
  * the horizontal axis and y represents the vertical axis.
@@ -9,13 +11,18 @@
  */
 export class ObservablePoint
 {
+    public cb: Function
+    public scope: object
+    protected _x: number
+    protected _y: number
+
     /**
      * @param {Function} cb - callback when changed
      * @param {object} scope - owner of callback
      * @param {number} [x=0] - position of the point on the x axis
      * @param {number} [y=0] - position of the point on the y axis
      */
-    constructor(cb, scope, x = 0, y = 0)
+    constructor(cb: Function, scope: object, x = 0, y = 0)
     {
         this._x = x;
         this._y = y;
@@ -34,7 +41,7 @@ export class ObservablePoint
      * @param {object} [scope=null] - owner of callback
      * @return {PIXI.ObservablePoint} a copy of the point
      */
-    clone(cb = null, scope = null)
+    clone(cb: Function|null = null, scope: object|null = null): ObservablePoint
     {
         const _cb = cb || this.cb;
         const _scope = scope || this.scope;
@@ -49,7 +56,7 @@ export class ObservablePoint
      * @param {number} [x=0] - position of the point on the x axis
      * @param {number} [y=0] - position of the point on the y axis
      */
-    set(x, y)
+    set(x: number, y: number): void
     {
         const _x = x || 0;
         const _y = y || ((y !== 0) ? _x : 0);
@@ -68,7 +75,7 @@ export class ObservablePoint
      * @param {PIXI.IPoint} p - The point to copy from.
      * @returns {PIXI.IPoint} Returns itself.
      */
-    copyFrom(p)
+    copyFrom(p: IPoint): IPoint
     {
         if (this._x !== p.x || this._y !== p.y)
         {
@@ -86,7 +93,7 @@ export class ObservablePoint
      * @param {PIXI.IPoint} p - The point to copy.
      * @returns {PIXI.IPoint} Given point with values updated
      */
-    copyTo(p)
+    copyTo(p: IPoint): IPoint
     {
         p.set(this._x, this._y);
 
@@ -99,7 +106,7 @@ export class ObservablePoint
      * @param {PIXI.IPoint} p - The point to check
      * @returns {boolean} Whether the given point equal to this point
      */
-    equals(p)
+    equals(p: IPoint): boolean
     {
         return (p.x === this._x) && (p.y === this._y);
     }
@@ -109,7 +116,7 @@ export class ObservablePoint
      *
      * @member {number}
      */
-    get x()
+    get x(): number
     {
         return this._x;
     }
@@ -128,7 +135,7 @@ export class ObservablePoint
      *
      * @member {number}
      */
-    get y()
+    get y(): number
     {
         return this._y;
     }
@@ -148,3 +155,4 @@ export class ObservablePoint
  * @memberof PIXI
  * @typedef {(PIXI.Point|PIXI.ObservablePoint)} IPoint
  */
+export type IPoint = Point|ObservablePoint

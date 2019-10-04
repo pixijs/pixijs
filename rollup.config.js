@@ -13,11 +13,14 @@ import filterPackages from '@lerna/filter-packages';
 import { getPackages } from '@lerna/project';
 import repo from './lerna.json';
 
+const fs = require('fs');
+
 /**
  * Get a list of the non-private sorted packages with Lerna v3
  * @see https://github.com/lerna/lerna/issues/1848
  * @return {Promise<Package[]>} List of packages
  */
+
 async function getSortedPackages(scope, ignore)
 {
     const packages = await getPackages(__dirname);
@@ -93,7 +96,13 @@ async function main()
         // Check for bundle folder
         const external = Object.keys(pkg.dependencies || []);
         const basePath = path.relative(__dirname, pkg.location);
-        const input = path.join(basePath, 'src/index.js');
+        let input = path.join(basePath, 'src/index.js');
+
+        if (!fs.existsSync(input))
+        {
+            input = path.join(basePath, 'src/index.ts');
+        }
+
         const {
             main,
             module,
@@ -131,7 +140,13 @@ async function main()
         // this will package all dependencies
         if (bundle)
         {
-            const input = path.join(basePath, bundleInput || 'src/index.js');
+            let input = path.join(basePath, bundleInput || 'src/index.js');
+
+            if (!fs.existsSync(input))
+            {
+                input = path.join(basePath, bundleInput || 'src/index.ts');
+            }
+
             const file = path.join(basePath, bundle);
             const external = standalone ? null : Object.keys(namespaces);
             const globals = standalone ? null : namespaces;

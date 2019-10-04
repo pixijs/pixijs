@@ -9,6 +9,32 @@ import { Matrix } from './Matrix';
  */
 export class Transform
 {
+    /**
+     * A default (identity) transform
+     *
+     * @static
+     * @constant
+     * @member {PIXI.Transform}
+     */
+    public static IDENTITY = new Transform();
+
+    public worldTransform: Matrix
+    public localTransform: Matrix
+    public position: ObservablePoint
+    public scale: ObservablePoint
+    public pivot: ObservablePoint
+    public skew: ObservablePoint
+
+    protected _rotation: number
+    protected _cx: number
+    protected _sx: number
+    protected _cy: number
+    protected _sy: number
+    protected _localID: number
+    protected _currentLocalID: number
+    protected _worldID: number
+    protected _parentID: number
+
     constructor()
     {
         /**
@@ -137,7 +163,7 @@ export class Transform
      *
      * @protected
      */
-    onChange()
+    protected onChange(): void
     {
         this._localID++;
     }
@@ -147,12 +173,12 @@ export class Transform
      *
      * @protected
      */
-    updateSkew()
+    protected updateSkew(): void
     {
-        this._cx = Math.cos(this._rotation + this.skew._y);
-        this._sx = Math.sin(this._rotation + this.skew._y);
-        this._cy = -Math.sin(this._rotation - this.skew._x); // cos, added PI/2
-        this._sy = Math.cos(this._rotation - this.skew._x); // sin, added PI/2
+        this._cx = Math.cos(this._rotation + this.skew.y);
+        this._sx = Math.sin(this._rotation + this.skew.y);
+        this._cy = -Math.sin(this._rotation - this.skew.x); // cos, added PI/2
+        this._sy = Math.cos(this._rotation - this.skew.x); // sin, added PI/2
 
         this._localID++;
     }
@@ -160,20 +186,20 @@ export class Transform
     /**
      * Updates the local transformation matrix.
      */
-    updateLocalTransform()
+    updateLocalTransform(): void
     {
         const lt = this.localTransform;
 
         if (this._localID !== this._currentLocalID)
         {
             // get the matrix values of the displayobject based on its transform properties..
-            lt.a = this._cx * this.scale._x;
-            lt.b = this._sx * this.scale._x;
-            lt.c = this._cy * this.scale._y;
-            lt.d = this._sy * this.scale._y;
+            lt.a = this._cx * this.scale.x;
+            lt.b = this._sx * this.scale.x;
+            lt.c = this._cy * this.scale.y;
+            lt.d = this._sy * this.scale.y;
 
-            lt.tx = this.position._x - ((this.pivot._x * lt.a) + (this.pivot._y * lt.c));
-            lt.ty = this.position._y - ((this.pivot._x * lt.b) + (this.pivot._y * lt.d));
+            lt.tx = this.position.x - ((this.pivot.x * lt.a) + (this.pivot.y * lt.c));
+            lt.ty = this.position.y - ((this.pivot.x * lt.b) + (this.pivot.y * lt.d));
             this._currentLocalID = this._localID;
 
             // force an update..
@@ -186,20 +212,20 @@ export class Transform
      *
      * @param {PIXI.Transform} parentTransform - The parent transform
      */
-    updateTransform(parentTransform)
+    updateTransform(parentTransform: Transform): void
     {
         const lt = this.localTransform;
 
         if (this._localID !== this._currentLocalID)
         {
             // get the matrix values of the displayobject based on its transform properties..
-            lt.a = this._cx * this.scale._x;
-            lt.b = this._sx * this.scale._x;
-            lt.c = this._cy * this.scale._y;
-            lt.d = this._sy * this.scale._y;
+            lt.a = this._cx * this.scale.x;
+            lt.b = this._sx * this.scale.x;
+            lt.c = this._cy * this.scale.y;
+            lt.d = this._sy * this.scale.y;
 
-            lt.tx = this.position._x - ((this.pivot._x * lt.a) + (this.pivot._y * lt.c));
-            lt.ty = this.position._y - ((this.pivot._x * lt.b) + (this.pivot._y * lt.d));
+            lt.tx = this.position.x - ((this.pivot.x * lt.a) + (this.pivot.y * lt.c));
+            lt.ty = this.position.y - ((this.pivot.x * lt.b) + (this.pivot.y * lt.d));
             this._currentLocalID = this._localID;
 
             // force an update..
@@ -231,7 +257,7 @@ export class Transform
      *
      * @param {PIXI.Matrix} matrix - The matrix to decompose
      */
-    setFromMatrix(matrix)
+    setFromMatrix(matrix: Matrix): void
     {
         matrix.decompose(this);
         this._localID++;
@@ -242,7 +268,7 @@ export class Transform
      *
      * @member {number}
      */
-    get rotation()
+    get rotation(): number
     {
         return this._rotation;
     }
@@ -256,12 +282,3 @@ export class Transform
         }
     }
 }
-
-/**
- * A default (identity) transform
- *
- * @static
- * @constant
- * @member {PIXI.Transform}
- */
-Transform.IDENTITY = new Transform();

@@ -9,6 +9,13 @@ import { SHAPES } from '../const';
  */
 export class RoundedRectangle
 {
+    public x: number
+    public y: number
+    public width: number
+    public height: number
+    public radius: number
+    public readonly type: number
+
     /**
      * @param {number} [x=0] - The X coordinate of the upper-left corner of the rounded rectangle
      * @param {number} [y=0] - The Y coordinate of the upper-left corner of the rounded rectangle
@@ -64,7 +71,7 @@ export class RoundedRectangle
      *
      * @return {PIXI.RoundedRectangle} a copy of the rounded rectangle
      */
-    clone()
+    clone(): RoundedRectangle
     {
         return new RoundedRectangle(this.x, this.y, this.width, this.height, this.radius);
     }
@@ -76,7 +83,7 @@ export class RoundedRectangle
      * @param {number} y - The Y coordinate of the point to test
      * @return {boolean} Whether the x/y coordinates are within this Rounded Rectangle
      */
-    contains(x, y)
+    contains(x: number, y: number): boolean
     {
         if (this.width <= 0 || this.height <= 0)
         {

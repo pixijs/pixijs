@@ -18,6 +18,12 @@ import { SHAPES } from '../const';
  */
 export class Rectangle
 {
+    public x: number
+    public y: number
+    public width: number
+    public height: number
+    public readonly type: number
+
     /**
      * @param {number} [x=0] - The X coordinate of the upper-left corner of the rectangle
      * @param {number} [y=0] - The Y coordinate of the upper-left corner of the rectangle
@@ -66,7 +72,7 @@ export class Rectangle
      *
      * @member {number}
      */
-    get left()
+    get left(): number
     {
         return this.x;
     }
@@ -76,7 +82,7 @@ export class Rectangle
      *
      * @member {number}
      */
-    get right()
+    get right(): number
     {
         return this.x + this.width;
     }
@@ -86,7 +92,7 @@ export class Rectangle
      *
      * @member {number}
      */
-    get top()
+    get top(): number
     {
         return this.y;
     }
@@ -96,7 +102,7 @@ export class Rectangle
      *
      * @member {number}
      */
-    get bottom()
+    get bottom(): number
     {
         return this.y + this.height;
     }
@@ -107,8 +113,9 @@ export class Rectangle
      * @static
      * @constant
      * @member {PIXI.Rectangle}
+     * @return {PIXI.Rectangle} An empty rectangle
      */
-    static get EMPTY()
+    static get EMPTY(): Rectangle
     {
         return new Rectangle(0, 0, 0, 0);
     }
@@ -118,7 +125,7 @@ export class Rectangle
      *
      * @return {PIXI.Rectangle} a copy of the rectangle
      */
-    clone()
+    clone(): Rectangle
     {
         return new Rectangle(this.x, this.y, this.width, this.height);
     }
@@ -129,7 +136,7 @@ export class Rectangle
      * @param {PIXI.Rectangle} rectangle - The rectangle to copy from.
      * @return {PIXI.Rectangle} Returns itself.
      */
-    copyFrom(rectangle)
+    copyFrom(rectangle: Rectangle): Rectangle
     {
         this.x = rectangle.x;
         this.y = rectangle.y;
@@ -145,7 +152,7 @@ export class Rectangle
      * @param {PIXI.Rectangle} rectangle - The rectangle to copy to.
      * @return {PIXI.Rectangle} Returns given parameter.
      */
-    copyTo(rectangle)
+    copyTo(rectangle: Rectangle): Rectangle
     {
         rectangle.x = this.x;
         rectangle.y = this.y;
@@ -162,7 +169,7 @@ export class Rectangle
      * @param {number} y - The Y coordinate of the point to test
      * @return {boolean} Whether the x/y coordinates are within this Rectangle
      */
-    contains(x, y)
+    contains(x: number, y: number): boolean
     {
         if (this.width <= 0 || this.height <= 0)
         {
@@ -186,7 +193,7 @@ export class Rectangle
      * @param {number} paddingX - The horizontal padding amount.
      * @param {number} paddingY - The vertical padding amount.
      */
-    pad(paddingX, paddingY)
+    pad(paddingX: number, paddingY: number): void
     {
         paddingX = paddingX || 0;
         paddingY = paddingY || ((paddingY !== 0) ? paddingX : 0);
@@ -203,7 +210,7 @@ export class Rectangle
      *
      * @param {PIXI.Rectangle} rectangle - The rectangle to fit.
      */
-    fit(rectangle)
+    fit(rectangle: Rectangle): void
     {
         const x1 = Math.max(this.x, rectangle.x);
         const x2 = Math.min(this.x + this.width, rectangle.x + rectangle.width);
@@ -222,7 +229,7 @@ export class Rectangle
      * @param {number} [resolution=1] resolution
      * @param {number} [eps=0.001] precision
      */
-    ceil(resolution = 1, eps = 0.001)
+    ceil(resolution = 1, eps = 0.001): void
     {
         const x2 = Math.ceil((this.x + this.width - eps) * resolution) / resolution;
         const y2 = Math.ceil((this.y + this.height - eps) * resolution) / resolution;
@@ -239,7 +246,7 @@ export class Rectangle
      *
      * @param {PIXI.Rectangle} rectangle - The rectangle to include.
      */
-    enlarge(rectangle)
+    enlarge(rectangle: Rectangle): void
     {
         const x1 = Math.min(this.x, rectangle.x);
         const x2 = Math.max(this.x + this.width, rectangle.x + rectangle.width);
