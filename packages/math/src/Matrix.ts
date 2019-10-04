@@ -127,7 +127,7 @@ export class Matrix
      * @param {Float32Array} [out=new Float32Array(9)] - If provided the array will be assigned to out
      * @return {number[]} the newly created array which contains the matrix
      */
-    toArray(transpose: boolean, out: Float32Array): Float32Array
+    toArray(transpose: boolean, out?: Float32Array): Float32Array
     {
         if (!this.array)
         {
@@ -172,7 +172,7 @@ export class Matrix
      * @param {PIXI.Point} [newPos] - The point that the new position is assigned to (allowed to be same as input)
      * @return {PIXI.Point} The new point, transformed through this matrix
      */
-    apply(pos: Point, newPos: Point): Point
+    apply(pos: Point, newPos?: Point): Point
     {
         newPos = newPos || new Point();
 
@@ -193,7 +193,7 @@ export class Matrix
      * @param {PIXI.Point} [newPos] - The point that the new position is assigned to (allowed to be same as input)
      * @return {PIXI.Point} The new point, inverse-transformed through this matrix
      */
-    applyInverse(pos: Point, newPos: Point): Point
+    applyInverse(pos: Point, newPos?: Point): Point
     {
         newPos = newPos || new Point();
 

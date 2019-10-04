@@ -56,7 +56,7 @@ export class ObservablePoint
      * @param {number} [x=0] - position of the point on the x axis
      * @param {number} [y=0] - position of the point on the y axis
      */
-    set(x: number, y: number): void
+    set(x?: number, y?: number): void
     {
         const _x = x || 0;
         const _y = y || ((y !== 0) ? _x : 0);
