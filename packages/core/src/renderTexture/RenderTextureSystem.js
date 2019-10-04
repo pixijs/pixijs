@@ -95,7 +95,7 @@ export class RenderTextureSystem extends System
             this.renderer.framebuffer.bind(baseTexture.framebuffer, destinationFrame);
 
             this.renderer.projection.update(destinationFrame, sourceFrame, resolution, false);
-            this.renderer.stencil.setMaskStack(baseTexture.stencilMaskStack);
+            this.renderer.mask.setMaskStack(baseTexture.maskStack);
         }
         else
         {
@@ -120,7 +120,7 @@ export class RenderTextureSystem extends System
 
             // TODO store this..
             this.renderer.projection.update(destinationFrame, sourceFrame, resolution, true);
-            this.renderer.stencil.setMaskStack(this.defaultMaskStack);
+            this.renderer.mask.setMaskStack(this.defaultMaskStack);
         }
 
         this.sourceFrame.copyFrom(sourceFrame);

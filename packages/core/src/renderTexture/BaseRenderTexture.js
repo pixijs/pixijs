@@ -93,14 +93,14 @@ export class BaseRenderTexture extends BaseTexture
         /**
          * The data structure for the stencil masks.
          *
-         * @member {PIXI.Graphics[]}
+         * @member {PIXI.MaskData[]}
          */
-        this.stencilMaskStack = [];
+        this.maskStack = [];
 
         /**
          * The data structure for the filters.
          *
-         * @member {PIXI.Graphics[]}
+         * @member {Object[]}
          */
         this.filterStack = [{}];
     }

@@ -2,6 +2,7 @@ import { AbstractRenderer } from './AbstractRenderer';
 import { sayHello, isWebGLSupported } from '@pixi/utils';
 import { MaskSystem } from './mask/MaskSystem';
 import { StencilSystem } from './mask/StencilSystem';
+import { ScissorSystem } from './mask/ScissorSystem';
 import { FilterSystem } from './filters/FilterSystem';
 import { FramebufferSystem } from './framebuffer/FramebufferSystem';
 import { RenderTextureSystem } from './renderTexture/RenderTextureSystem';
@@ -184,6 +185,13 @@ export class Renderer extends AbstractRenderer
              * @readonly
              */
             .addSystem(FramebufferSystem, 'framebuffer')
+            /**
+             * Scissor system instance
+             * @member {PIXI.systems.ScissorSystem} scissor
+             * @memberof PIXI.Renderer#
+             * @readonly
+             */
+            .addSystem(ScissorSystem, 'scissor')
             /**
              * Stencil system instance
              * @member {PIXI.systems.StencilSystem} stencil

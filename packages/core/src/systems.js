@@ -8,6 +8,7 @@ export * from './context/ContextSystem';
 export * from './framebuffer/FramebufferSystem';
 export * from './geometry/GeometrySystem';
 export * from './mask/MaskSystem';
+export * from './mask/ScissorSystem';
 export * from './mask/StencilSystem';
 export * from './projection/ProjectionSystem';
 export * from './renderTexture/RenderTextureSystem';
