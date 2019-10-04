@@ -9,9 +9,9 @@ import { Point } from '../Point';
  */
 export class Polygon
 {
-    public points: number[]
-    public closeStroke: boolean
-    public readonly type: number
+    public points: number[];
+    public closeStroke: boolean;
+    public readonly type: number;
 
     /**
      * @param {PIXI.Point[]|number[]|number[][]} points - This can be an array of Points

@@ -251,7 +251,10 @@
     "overrides": [
         {
           "files": ["*.ts"],
-          "extends": ["plugin:@typescript-eslint/recommended"]
+          "extends": ["plugin:@typescript-eslint/recommended"],
+          "rules": {
+            "@typescript-eslint/semi": 1
+          }
         }
     ]
 }

@@ -18,22 +18,22 @@ export class Transform
      */
     public static IDENTITY = new Transform();
 
-    public worldTransform: Matrix
-    public localTransform: Matrix
-    public position: ObservablePoint
-    public scale: ObservablePoint
-    public pivot: ObservablePoint
-    public skew: ObservablePoint
+    public worldTransform: Matrix;
+    public localTransform: Matrix;
+    public position: ObservablePoint;
+    public scale: ObservablePoint;
+    public pivot: ObservablePoint;
+    public skew: ObservablePoint;
 
-    protected _rotation: number
-    protected _cx: number
-    protected _sx: number
-    protected _cy: number
-    protected _sy: number
-    protected _localID: number
-    protected _currentLocalID: number
-    protected _worldID: number
-    protected _parentID: number
+    protected _rotation: number;
+    protected _cx: number;
+    protected _sx: number;
+    protected _cy: number;
+    protected _sy: number;
+    protected _localID: number;
+    protected _currentLocalID: number;
+    protected _worldID: number;
+    protected _parentID: number;
 
     constructor()
     {

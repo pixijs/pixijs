@@ -12,8 +12,7 @@ import batchPackages from '@lerna/batch-packages';
 import filterPackages from '@lerna/filter-packages';
 import { getPackages } from '@lerna/project';
 import repo from './lerna.json';
-
-const fs = require('fs');
+import fs from 'fs';
 
 /**
  * Get a list of the non-private sorted packages with Lerna v3
@@ -96,11 +95,12 @@ async function main()
         // Check for bundle folder
         const external = Object.keys(pkg.dependencies || []);
         const basePath = path.relative(__dirname, pkg.location);
-        let input = path.join(basePath, 'src/index.js');
+        let input = path.join(basePath, 'src/index.ts');
 
+        // TODO: remove check once all packages have been converted to typescript
         if (!fs.existsSync(input))
         {
-            input = path.join(basePath, 'src/index.ts');
+            input = path.join(basePath, 'src/index.js');
         }
 
         const {
@@ -140,11 +140,12 @@ async function main()
         // this will package all dependencies
         if (bundle)
         {
-            let input = path.join(basePath, bundleInput || 'src/index.js');
+            let input = path.join(basePath, bundleInput || 'src/index.ts');
 
+            // TODO: remove check once all packages have been converted to typescript
             if (!fs.existsSync(input))
             {
-                input = path.join(basePath, bundleInput || 'src/index.ts');
+                input = path.join(basePath, bundleInput || 'src/index.js');
             }
 
             const file = path.join(basePath, bundle);

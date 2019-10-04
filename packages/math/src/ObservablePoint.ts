@@ -11,10 +11,10 @@ import { Point } from './Point';
  */
 export class ObservablePoint
 {
-    public cb: Function
-    public scope: object
-    protected _x: number
-    protected _y: number
+    public cb: Function;
+    public scope: object;
+    protected _x: number;
+    protected _y: number;
 
     /**
      * @param {Function} cb - callback when changed
@@ -155,4 +155,4 @@ export class ObservablePoint
  * @memberof PIXI
  * @typedef {(PIXI.Point|PIXI.ObservablePoint)} IPoint
  */
-export type IPoint = Point|ObservablePoint
+export type IPoint = Point|ObservablePoint;

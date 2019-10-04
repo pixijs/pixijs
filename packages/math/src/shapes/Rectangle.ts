@@ -18,11 +18,11 @@ import { SHAPES } from '../const';
  */
 export class Rectangle
 {
-    public x: number
-    public y: number
-    public width: number
-    public height: number
-    public readonly type: number
+    public x: number;
+    public y: number;
+    public width: number;
+    public height: number;
+    public readonly type: number;
 
     /**
      * @param {number} [x=0] - The X coordinate of the upper-left corner of the rectangle
