@@ -11,8 +11,8 @@ import { Point } from './Point';
  */
 export class ObservablePoint
 {
-    public cb: Function;
-    public scope: object;
+    public cb: () => any;
+    public scope: any;
     protected _x: number;
     protected _y: number;
 
@@ -22,7 +22,7 @@ export class ObservablePoint
      * @param {number} [x=0] - position of the point on the x axis
      * @param {number} [y=0] - position of the point on the y axis
      */
-    constructor(cb: Function, scope: object, x = 0, y = 0)
+    constructor(cb: () => any, scope: any, x = 0, y = 0)
     {
         this._x = x;
         this._y = y;
@@ -41,12 +41,9 @@ export class ObservablePoint
      * @param {object} [scope=null] - owner of callback
      * @return {PIXI.ObservablePoint} a copy of the point
      */
-    clone(cb: Function|null = null, scope: object|null = null): ObservablePoint
+    clone(cb = this.cb, scope = this.scope): ObservablePoint
     {
-        const _cb = cb || this.cb;
-        const _scope = scope || this.scope;
-
-        return new ObservablePoint(_cb, _scope, this._x, this._y);
+        return new ObservablePoint(cb, scope, this._x, this._y);
     }
 
     /**
@@ -56,14 +53,13 @@ export class ObservablePoint
      * @param {number} [x=0] - position of the point on the x axis
      * @param {number} [y=0] - position of the point on the y axis
      */
-    set(x?: number, y?: number): void
+    set(x = 0, y? : number): void
     {
-        const _x = x || 0;
-        const _y = y || ((y !== 0) ? _x : 0);
+        const _y = y || ((y !== 0) ? x : 0);
 
-        if (this._x !== _x || this._y !== _y)
+        if (this._x !== x || this._y !== _y)
         {
-            this._x = _x;
+            this._x = x;
             this._y = _y;
             this.cb.call(this.scope);
         }
@@ -75,7 +71,7 @@ export class ObservablePoint
      * @param {PIXI.IPoint} p - The point to copy from.
      * @returns {PIXI.IPoint} Returns itself.
      */
-    copyFrom(p: IPoint): IPoint
+    copyFrom(p: IPoint): this
     {
         if (this._x !== p.x || this._y !== p.y)
         {

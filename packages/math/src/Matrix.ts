@@ -23,7 +23,7 @@ export class Matrix
     public tx: number;
     public ty: number;
 
-    public array: Float32Array|null;
+    public array: Float32Array|null = null;
 
     /**
      * @param {number} [a=1] - x scale
@@ -70,8 +70,6 @@ export class Matrix
          * @default 0
          */
         this.ty = ty;
-
-        this.array = null;
     }
 
     /**
@@ -108,7 +106,7 @@ export class Matrix
      *
      * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
      */
-    set(a: number, b: number, c: number, d: number, tx: number, ty: number): Matrix
+    set(a: number, b: number, c: number, d: number, tx: number, ty: number): this
     {
         this.a = a;
         this.b = b;
@@ -215,7 +213,7 @@ export class Matrix
      * @param {number} y How much to translate y by
      * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
      */
-    translate(x: number, y: number): Matrix
+    translate(x: number, y: number): this
     {
         this.tx += x;
         this.ty += y;
@@ -230,7 +228,7 @@ export class Matrix
      * @param {number} y The amount to scale vertically
      * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
      */
-    scale(x: number, y: number): Matrix
+    scale(x: number, y: number): this
     {
         this.a *= x;
         this.d *= y;
@@ -248,7 +246,7 @@ export class Matrix
      * @param {number} angle - The angle in radians.
      * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
      */
-    rotate(angle: number): Matrix
+    rotate(angle: number): this
     {
         const cos = Math.cos(angle);
         const sin = Math.sin(angle);
@@ -273,7 +271,7 @@ export class Matrix
      * @param {PIXI.Matrix} matrix - The matrix to append.
      * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
      */
-    append(matrix: Matrix): Matrix
+    append(matrix: Matrix): this
     {
         const a1 = this.a;
         const b1 = this.b;
@@ -306,7 +304,7 @@ export class Matrix
      * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
      */
     setTransform(x: number, y: number, pivotX: number, pivotY: number, scaleX: number,
-        scaleY: number, rotation: number, skewX: number, skewY: number): Matrix
+        scaleY: number, rotation: number, skewX: number, skewY: number): this
     {
         this.a = Math.cos(rotation + skewY) * scaleX;
         this.b = Math.sin(rotation + skewY) * scaleX;
@@ -325,7 +323,7 @@ export class Matrix
      * @param {PIXI.Matrix} matrix - The matrix to prepend
      * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
      */
-    prepend(matrix: Matrix): Matrix
+    prepend(matrix: Matrix): this
     {
         const tx1 = this.tx;
 
@@ -393,7 +391,7 @@ export class Matrix
      *
      * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
      */
-    invert(): Matrix
+    invert(): this
     {
         const a1 = this.a;
         const b1 = this.b;
@@ -417,7 +415,7 @@ export class Matrix
      *
      * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
      */
-    identity(): Matrix
+    identity(): this
     {
         this.a = 1;
         this.b = 0;
@@ -472,7 +470,7 @@ export class Matrix
      * @param {PIXI.Matrix} matrix - The matrix to copy from.
      * @return {PIXI.Matrix} this
      */
-    copyFrom(matrix: Matrix): Matrix
+    copyFrom(matrix: Matrix): this
     {
         this.a = matrix.a;
         this.b = matrix.b;

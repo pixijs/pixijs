@@ -16,7 +16,7 @@ export class Transform
      * @constant
      * @member {PIXI.Transform}
      */
-    public static IDENTITY = new Transform();
+    public static readonly IDENTITY = new Transform();
 
     public worldTransform: Matrix;
     public localTransform: Matrix;

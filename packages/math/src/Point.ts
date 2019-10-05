@@ -47,7 +47,7 @@ export class Point
      * @param {PIXI.IPoint} p - The point to copy from
      * @returns {PIXI.IPoint} Returns itself.
      */
-    copyFrom(p: IPoint): IPoint
+    copyFrom(p: IPoint): this
     {
         this.set(p.x, p.y);
 
@@ -85,9 +85,9 @@ export class Point
      * @param {number} [x=0] - position of the point on the x axis
      * @param {number} [y=0] - position of the point on the y axis
      */
-    set(x?: number, y?: number): void
+    set(x = 0, y?: number): void
     {
-        this.x = x || 0;
+        this.x = x;
         this.y = y || ((y !== 0) ? this.x : 0);
     }
 }
