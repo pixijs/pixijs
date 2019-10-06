@@ -53,14 +53,12 @@ export class ObservablePoint
      * @param {number} [x=0] - position of the point on the x axis
      * @param {number} [y=0] - position of the point on the y axis
      */
-    set(x = 0, y? : number): void
+    set(x = 0, y = x): void
     {
-        const _y = y || ((y !== 0) ? x : 0);
-
-        if (this._x !== x || this._y !== _y)
+        if (this._x !== x || this._y !== y)
         {
             this._x = x;
-            this._y = _y;
+            this._y = y;
             this.cb.call(this.scope);
         }
     }

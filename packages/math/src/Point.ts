@@ -85,9 +85,9 @@ export class Point
      * @param {number} [x=0] - position of the point on the x axis
      * @param {number} [y=0] - position of the point on the y axis
      */
-    set(x = 0, y?: number): void
+    set(x = 0, y = x): void
     {
         this.x = x;
-        this.y = y || ((y !== 0) ? this.x : 0);
+        this.y = y;
     }
 }
