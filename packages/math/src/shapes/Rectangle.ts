@@ -189,9 +189,10 @@ export class Rectangle
 
     /**
      * Pads the rectangle making it grow in all directions.
+     * If paddingY is omitted, both paddingX and paddingY will be set to paddingX.
      *
-     * @param {number} paddingX - The horizontal padding amount.
-     * @param {number} paddingY - The vertical padding amount.
+     * @param {number} [paddingX=0] - The horizontal padding amount.
+     * @param {number} [paddingY=0] - The vertical padding amount.
      */
     pad(paddingX: number, paddingY: number): void
     {
