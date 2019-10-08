@@ -194,11 +194,8 @@ export class Rectangle
      * @param {number} [paddingX=0] - The horizontal padding amount.
      * @param {number} [paddingY=0] - The vertical padding amount.
      */
-    pad(paddingX: number, paddingY: number): void
+    pad(paddingX = 0, paddingY = paddingX): void
     {
-        paddingX = paddingX || 0;
-        paddingY = paddingY || ((paddingY !== 0) ? paddingX : 0);
-
         this.x -= paddingX;
         this.y -= paddingY;
 
