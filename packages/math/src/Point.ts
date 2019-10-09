@@ -1,3 +1,5 @@
+import { IPoint } from './ObservablePoint';
+
 /**
  * The Point object represents a location in a two-dimensional coordinate system, where x represents
  * the horizontal axis and y represents the vertical axis.
@@ -7,6 +9,9 @@
  */
 export class Point
 {
+    public x: number;
+    public y: number;
+
     /**
      * @param {number} [x=0] - position of the point on the x axis
      * @param {number} [y=0] - position of the point on the y axis
@@ -31,7 +36,7 @@ export class Point
      *
      * @return {PIXI.Point} a copy of the point
      */
-    clone()
+    clone(): Point
     {
         return new Point(this.x, this.y);
     }
@@ -42,7 +47,7 @@ export class Point
      * @param {PIXI.IPoint} p - The point to copy from
      * @returns {PIXI.IPoint} Returns itself.
      */
-    copyFrom(p)
+    copyFrom(p: IPoint): this
     {
         this.set(p.x, p.y);
 
@@ -55,7 +60,7 @@ export class Point
      * @param {PIXI.IPoint} p - The point to copy.
      * @returns {PIXI.IPoint} Given point with values updated
      */
-    copyTo(p)
+    copyTo(p: IPoint): IPoint
     {
         p.set(this.x, this.y);
 
@@ -68,7 +73,7 @@ export class Point
      * @param {PIXI.IPoint} p - The point to check
      * @returns {boolean} Whether the given point equal to this point
      */
-    equals(p)
+    equals(p: IPoint): boolean
     {
         return (p.x === this.x) && (p.y === this.y);
     }
@@ -80,9 +85,9 @@ export class Point
      * @param {number} [x=0] - position of the point on the x axis
      * @param {number} [y=0] - position of the point on the y axis
      */
-    set(x, y)
+    set(x = 0, y = x): void
     {
-        this.x = x || 0;
-        this.y = y || ((y !== 0) ? this.x : 0);
+        this.x = x;
+        this.y = y;
     }
 }
