@@ -527,7 +527,7 @@ export class GraphicsGeometry extends BatchGeometry
      * Affinity check
      *
      * @param {PIXI.FillStyle | PIXI.LineStyle} styleA
-     * @param {PIXI.FillStyle | PIXI.LineSTyle} styleB
+     * @param {PIXI.FillStyle | PIXI.LineStyle} styleB
      */
     _compareStyles(styleA, styleB)
     {
