@@ -32,7 +32,7 @@ export interface IPoint
  * @method set
  * @memberof PIXI.IPoint#
  * @param {number} [x=0] - position of the point on the x axis
- * @param {number} [y=0] - position of the point on the y axis
+ * @param {number} [y=x] - position of the point on the y axis
  */
 
 /**
@@ -59,5 +59,4 @@ export interface IPoint
  * @param {PIXI.IPoint} p - The point to check
  * @returns {boolean} Whether the given point equal to this point
  */
-
 

@@ -52,7 +52,7 @@ export class ObservablePoint implements IPoint
      * If y is omitted, both x and y will be set to x.
      *
      * @param {number} [x=0] - position of the point on the x axis
-     * @param {number} [y=0] - position of the point on the y axis
+     * @param {number} [y=x] - position of the point on the y axis
      */
     set(x = 0, y = x): void
     {
