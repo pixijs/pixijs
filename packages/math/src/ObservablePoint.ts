@@ -1,4 +1,4 @@
-import { IPoint } from './Point';
+import { IPoint } from './IPoint';
 
 /**
  * The Point object represents a location in a two-dimensional coordinate system, where x represents
@@ -68,7 +68,7 @@ export class ObservablePoint implements IPoint
      * Copies x and y from the given point
      *
      * @param {PIXI.IPoint} p - The point to copy from.
-     * @returns {PIXI.IPoint} Returns itself.
+     * @returns {this} Returns itself.
      */
     copyFrom(p: IPoint): this
     {
