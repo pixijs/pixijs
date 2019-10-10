@@ -3,7 +3,7 @@ export interface IPoint
     x: number;
     y: number;
     copyFrom(p: IPoint): this;
-    copyTo(p: IPoint): IPoint;
+    copyTo<T extends IPoint>(p: T): T;
     equals(p: IPoint): boolean;
     set(x?: number, y?: number): void;
 }

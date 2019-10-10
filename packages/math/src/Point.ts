@@ -61,7 +61,7 @@ export class Point implements IPoint
      * @param {PIXI.IPoint} p - The point to copy.
      * @returns {PIXI.IPoint} Given point with values updated
      */
-    copyTo(p: IPoint): IPoint
+    copyTo<T extends IPoint>(p: T): T
     {
         p.set(this.x, this.y);
 
