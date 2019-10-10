@@ -82,12 +82,12 @@ function init(): void
 
 init();
 
+type GD8Symmetry = number;
 /**
  * @memberof PIXI
  * @typedef {number} GD8Symmetry
  * @see PIXI.groupD8
  */
-type GD8Symmetry = number;
 
 /**
  * Implements the dihedral group D8, which is similar to
