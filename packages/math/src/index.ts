@@ -3,6 +3,7 @@
  *
  * @lends PIXI
  */
+export * from './IPoint';
 export * from './Point';
 export * from './ObservablePoint';
 export * from './Matrix';

@@ -1,3 +1,4 @@
+import { IPoint } from './IPoint';
 import { Point } from './Point';
 import { PI_2 } from './const';
 import { Transform } from './Transform';
@@ -170,7 +171,7 @@ export class Matrix
      * @param {PIXI.Point} [newPos] - The point that the new position is assigned to (allowed to be same as input)
      * @return {PIXI.Point} The new point, transformed through this matrix
      */
-    apply(pos: Point, newPos?: Point): Point
+    apply(pos: IPoint, newPos?: Point): Point
     {
         newPos = newPos || new Point();
 
@@ -191,7 +192,7 @@ export class Matrix
      * @param {PIXI.Point} [newPos] - The point that the new position is assigned to (allowed to be same as input)
      * @return {PIXI.Point} The new point, inverse-transformed through this matrix
      */
-    applyInverse(pos: Point, newPos?: Point): Point
+    applyInverse(pos: IPoint, newPos?: Point): Point
     {
         newPos = newPos || new Point();
 

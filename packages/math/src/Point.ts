@@ -1,4 +1,4 @@
-import { IPoint } from './ObservablePoint';
+import { IPoint } from './IPoint';
 
 /**
  * The Point object represents a location in a two-dimensional coordinate system, where x represents
@@ -6,8 +6,9 @@ import { IPoint } from './ObservablePoint';
  *
  * @class
  * @memberof PIXI
+ * @implements IPoint
  */
-export class Point
+export class Point implements IPoint
 {
     public x: number;
     public y: number;
@@ -45,7 +46,7 @@ export class Point
      * Copies x and y from the given point
      *
      * @param {PIXI.IPoint} p - The point to copy from
-     * @returns {PIXI.IPoint} Returns itself.
+     * @returns {this} Returns itself.
      */
     copyFrom(p: IPoint): this
     {
@@ -60,7 +61,7 @@ export class Point
      * @param {PIXI.IPoint} p - The point to copy.
      * @returns {PIXI.IPoint} Given point with values updated
      */
-    copyTo(p: IPoint): IPoint
+    copyTo<T extends IPoint>(p: T): T
     {
         p.set(this.x, this.y);
 
@@ -83,7 +84,7 @@ export class Point
      * If y is omitted, both x and y will be set to x.
      *
      * @param {number} [x=0] - position of the point on the x axis
-     * @param {number} [y=0] - position of the point on the y axis
+     * @param {number} [y=x] - position of the point on the y axis
      */
     set(x = 0, y = x): void
     {
