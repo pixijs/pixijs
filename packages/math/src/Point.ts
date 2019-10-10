@@ -1,10 +1,3 @@
-/**
- * Common interface for points. Both Point and ObservablePoint implement it
- * @memberof PIXI
- * @interface IPoint
- * @property {number} x - x coord
- * @property {number} y - y coord
- */
 export interface IPoint
 {
     x: number;
@@ -14,6 +7,13 @@ export interface IPoint
     equals(p: IPoint): boolean;
     set(x?: number, y?: number): void;
 }
+/**
+ * Common interface for points. Both Point and ObservablePoint implement it
+ * @memberof PIXI
+ * @interface IPoint
+ * @property {number} x - x coord
+ * @property {number} y - y coord
+ */
 
 /**
  * The Point object represents a location in a two-dimensional coordinate system, where x represents
