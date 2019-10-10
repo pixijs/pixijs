@@ -1,4 +1,4 @@
-import { Point } from './Point';
+import { IPoint } from './Point';
 
 /**
  * The Point object represents a location in a two-dimensional coordinate system, where x represents
@@ -8,8 +8,9 @@ import { Point } from './Point';
  *
  * @class
  * @memberof PIXI
+ * @implements IPoint
  */
-export class ObservablePoint
+export class ObservablePoint implements IPoint
 {
     public cb: () => any;
     public scope: any;
@@ -143,10 +144,3 @@ export class ObservablePoint
         }
     }
 }
-
-/**
- * A number, or a string containing a number.
- * @memberof PIXI
- * @typedef {(PIXI.Point|PIXI.ObservablePoint)} IPoint
- */
-export type IPoint = Point|ObservablePoint;

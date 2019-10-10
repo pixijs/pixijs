@@ -1,4 +1,19 @@
-import { IPoint } from './ObservablePoint';
+/**
+ * Common interface for points. Both Point and ObservablePoint implement it
+ * @memberof PIXI
+ * @interface IPoint
+ * @property {number} x - x coord
+ * @property {number} y - y coord
+ */
+export interface IPoint
+{
+    x: number;
+    y: number;
+    copyFrom(p: IPoint): this;
+    copyTo(p: IPoint): IPoint;
+    equals(p: IPoint): boolean;
+    set(x?: number, y?: number): void;
+}
 
 /**
  * The Point object represents a location in a two-dimensional coordinate system, where x represents
@@ -6,8 +21,9 @@ import { IPoint } from './ObservablePoint';
  *
  * @class
  * @memberof PIXI
+ * @implements IPoint
  */
-export class Point
+export class Point implements IPoint
 {
     public x: number;
     public y: number;

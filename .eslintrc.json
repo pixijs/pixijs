@@ -254,7 +254,8 @@
           "extends": ["plugin:@typescript-eslint/recommended"],
           "rules": {
             "@typescript-eslint/semi": 1,
-            "@typescript-eslint/no-explicit-any": 0
+            "@typescript-eslint/no-explicit-any": 0,
+            "@typescript-eslint/interface-name-prefix": 0
           }
         }
     ]
