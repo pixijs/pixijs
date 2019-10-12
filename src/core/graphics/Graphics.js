@@ -1066,6 +1066,8 @@ export default class Graphics extends Container
             {
                 if (data.shape.contains(tempPoint.x, tempPoint.y))
                 {
+                    let hitHole = false;
+
                     if (data.holes)
                     {
                         for (let i = 0; i < data.holes.length; i++)
@@ -1074,12 +1076,16 @@ export default class Graphics extends Container
 
                             if (hole.contains(tempPoint.x, tempPoint.y))
                             {
-                                return false;
+                                hitHole = true;
+                                break;
                             }
                         }
                     }
 
-                    return true;
+                    if (!hitHole)
+                    {
+                        return true;
+                    }
                 }
             }
         }
