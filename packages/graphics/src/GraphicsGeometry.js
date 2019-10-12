@@ -374,6 +374,8 @@ export class GraphicsGeometry extends BatchGeometry
 
                 if (data.shape.contains(tmpPoint.x, tmpPoint.y))
                 {
+                    let hitHole = false;
+
                     if (data.holes)
                     {
                         for (let i = 0; i < data.holes.length; i++)
@@ -382,12 +384,16 @@ export class GraphicsGeometry extends BatchGeometry
 
                             if (hole.shape.contains(tmpPoint.x, tmpPoint.y))
                             {
-                                return false;
+                                hitHole = true;
+                                break;
                             }
                         }
                     }
 
-                    return true;
+                    if (!hitHole)
+                    {
+                        return true;
+                    }
                 }
             }
         }
