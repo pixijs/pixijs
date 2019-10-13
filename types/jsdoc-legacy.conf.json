@@ -3,7 +3,7 @@
         "include": [
             "dist/compiled"
         ],
-        "excludePattern": "(node_modules|lib|test|deprecated)"
+        "excludePattern": "(node_modules|lib|test|useDeprecated)"
     },
     "plugins": [
         "@pixi/jsdoc-template/plugins/es6-fix"
