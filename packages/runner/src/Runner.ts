@@ -174,7 +174,8 @@ export class Runner
     public destroy(): void
     {
         this.removeAll();
-        this.items.length = 0;
+        this.items = null;
+        this._name = null;
     }
 
     /**
