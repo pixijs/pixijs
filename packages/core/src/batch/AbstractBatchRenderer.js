@@ -120,6 +120,8 @@ export class AbstractBatchRenderer extends ObjectRenderer
          */
         this._bufferedElements = [];
 
+        this._bufferedTextures = [];
+
         /**
          * Number of elements that are buffered and are
          * waiting to be flushed.
@@ -339,13 +341,14 @@ export class AbstractBatchRenderer extends ObjectRenderer
 
         this._vertexCount += element.vertexData.length / 2;
         this._indexCount += element.indices.length;
+        this._bufferedTextures[this._bufferSize] = element._texture.baseTexture;
         this._bufferedElements[this._bufferSize++] = element;
     }
 
     buildTexturesAndDrawCalls()
     {
         const {
-            _bufferedElements: elements,
+            _bufferedTextures: textures,
             _textureArrays: textureArrays,
             MAX_TEXTURES,
         } = this;
@@ -361,8 +364,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
 
         for (let i = 0; i < this._bufferSize; ++i)
         {
-            const sprite = elements[i];
-            const tex = sprite._texture.baseTexture;
+            const tex = textures[i];
 
             if (tex._batchEnabled === TICK)
             {
@@ -398,6 +400,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
     {
         const {
             _bufferedElements: elements,
+            _bufferedTextures: textures,
             _drawCalls: drawCalls,
         } = this;
 
@@ -411,7 +414,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
         for (let i = start; i < finish; ++i)
         {
             const sprite = elements[i];
-            const tex = sprite._texture.baseTexture;
+            const tex = textures[i];
             const spriteBlendMode = premultiplyBlendMode[
                 tex.alphaMode ? 1 : 0][sprite.blendMode];
 
@@ -665,6 +668,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
         const {
             _attributeBuffer: attributeBuffer,
             _bufferedElements: elements,
+            _bufferedTextures: textures,
             _indexBuffer: indexBuffer,
         } = this;
         const {
@@ -679,12 +683,12 @@ export class AbstractBatchRenderer extends ObjectRenderer
         {
             const element = elements[j];
             const { uvs, indices, vertexData } = element;
-            const baseTex = element._texture.baseTexture;
+            const baseTex = textures[j];
             const { _batchLocation } = baseTex;
 
             const alpha = Math.min(element.worldAlpha, 1.0);
             const argb = (alpha < 1.0
-                && element._texture.baseTexture.alphaMode)
+                && baseTex.alphaMode)
                 ? premultiplyTint(element._tintRGB, alpha)
                 : element._tintRGB + (alpha * 255 << 24);
 
@@ -706,6 +710,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
 
             packedVertices += vertexData.length / 2;
             elements[j] = null;
+            textures[j] = null;
         }
 
         this._aIndex = aIndex;
