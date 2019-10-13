@@ -90,7 +90,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
          * occurs automatically.
          *
          * @member {number}
-         * @default settings.SPRITE_MAX_TEXTURES * 4
+         * @default settings.SPRITE_BATCH_SIZE * 4
          */
         this.size = settings.SPRITE_BATCH_SIZE * 4;
 
@@ -322,8 +322,8 @@ export class AbstractBatchRenderer extends ObjectRenderer
      * Buffers the "batchable" object. It need not be rendered
      * immediately.
      *
-     * @param {PIXI.Sprite} sprite - the sprite to render when
-     *    using this spritebatch
+     * @param {PIXI.DisplayObject} element - the element to render when
+     *    using this renderer
      */
     render(element)
     {
@@ -349,9 +349,11 @@ export class AbstractBatchRenderer extends ObjectRenderer
             _textureArrays: textureArrays,
             MAX_TEXTURES,
         } = this;
-        const { batch } = this.renderer;
+
+        const batch = this.renderer.batch;
         const boundTextures = this._tempBoundTextures;
         const touch = this.renderer.textureGC.count;
+
         let TICK = ++BaseTexture._globalBatch;
         let countTexArrays = 0;
         let texArray = textureArrays[0];
@@ -394,6 +396,13 @@ export class AbstractBatchRenderer extends ObjectRenderer
         BaseTexture._globalBatch = TICK;
     }
 
+    /**
+     * Populating drawcalls for rendering
+     *
+     * @param {PIXI.BatchTextureArray} texArray
+     * @param {number} start
+     * @param {number} finish
+     */
     buildDrawCalls(texArray, start, finish)
     {
         const {
@@ -440,6 +449,11 @@ export class AbstractBatchRenderer extends ObjectRenderer
         this._dcIndex = dcIndex;
     }
 
+    /**
+     * Bind textures for current rendering
+     *
+     * @param {PIXI.BatchTextureArray} texArray
+     */
     bindAndClearTexArray(texArray)
     {
         const textureSystem = this.renderer.texture;
@@ -671,6 +685,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
             uint32View,
             float32View,
         } = attributeBuffer;
+
         let aIndex = this._aIndex;
         let iIndex = this._iIndex;
         let packedVertices = aIndex / this.vertexSize;
@@ -678,15 +693,10 @@ export class AbstractBatchRenderer extends ObjectRenderer
         for (let j = start; j < finish; j++)
         {
             const element = elements[j];
-            const { uvs, indices, vertexData } = element;
-            const baseTex = element._texture.baseTexture;
-            const { _batchLocation } = baseTex;
-
-            const alpha = Math.min(element.worldAlpha, 1.0);
-            const argb = (alpha < 1.0
-                && element._texture.baseTexture.alphaMode)
-                ? premultiplyTint(element._tintRGB, alpha)
-                : element._tintRGB + (alpha * 255 << 24);
+            const { uvs, indices, vertexData, worldAlpha, _tintRGB } = element;
+            const { _batchLocation, alphaMode } = element._texture.baseTexture;
+            const alpha = Math.min(worldAlpha, 1.0);
+            const argb = (alpha < 1.0 && alphaMode) ? premultiplyTint(_tintRGB, alpha) : _tintRGB + (alpha * 255 << 24);
 
             // lets not worry about tint! for now..
             for (let i = 0; i < vertexData.length; i += 2)
