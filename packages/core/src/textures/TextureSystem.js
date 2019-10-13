@@ -125,19 +125,23 @@ export class TextureSystem extends System
 
                 const glTexture = texture._glTextures[this.CONTEXT_UID] || this.initTexture(texture);
 
-                if (this.currentLocation !== location)
-                {
-                    this.currentLocation = location;
-                    gl.activeTexture(gl.TEXTURE0 + location);
-                }
-
                 if (this.boundTextures[location] !== texture)
                 {
+                    if (this.currentLocation !== location)
+                    {
+                        this.currentLocation = location;
+                        gl.activeTexture(gl.TEXTURE0 + location);
+                    }
                     gl.bindTexture(texture.target, glTexture.texture);
                 }
 
                 if (glTexture.dirtyId !== texture.dirtyId)
                 {
+                    if (this.currentLocation !== location)
+                    {
+                        this.currentLocation = location;
+                        gl.activeTexture(gl.TEXTURE0 + location);
+                    }
                     this.updateTexture(texture);
                 }
 
@@ -154,6 +158,22 @@ export class TextureSystem extends System
 
             gl.bindTexture(gl.TEXTURE_2D, this.emptyTextures[gl.TEXTURE_2D].texture);
             this.boundTextures[location] = null;
+        }
+    }
+
+    /**
+     * shortcut for batch renderers: copies bound textures in first maxTextures locations to array
+     * sets actual _batchLocation for them
+     *
+     * @param arr
+     * @param maxTextures
+     */
+    copyBoundTextures(arr, maxTextures)
+    {
+        for (let i = maxTextures - 1; i >= 0; --i)
+        {
+            arr[i] = this.boundTextures[i] || null;
+            arr[i]._batchLocation = i;
         }
     }
 

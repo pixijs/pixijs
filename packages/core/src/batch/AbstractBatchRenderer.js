@@ -1,4 +1,4 @@
-import { BatchDrawCall } from './BatchDrawCall';
+import { BatchDrawCall, BatchTextureArray } from './BatchDrawCall';
 import { BaseTexture } from '../textures/BaseTexture';
 import { ObjectRenderer } from './ObjectRenderer';
 import { State } from '../state/State';
@@ -181,22 +181,6 @@ export class AbstractBatchRenderer extends ObjectRenderer
         this._flushId = 0;
 
         /**
-         * Pool of `BatchDrawCall` objects that `flush` used
-         * to create "batches" of the objects being rendered.
-         *
-         * These are never re-allocated again.
-         *
-         * @member BatchDrawCall[]
-         * @private
-         */
-        this._drawCalls = [];
-
-        for (let k = 0; k < this.size / 4; k++)
-        { // initialize the draw-calls pool to max size.
-            this._drawCalls[k] = new BatchDrawCall();
-        }
-
-        /**
          * Pool of `ViewableBuffer` objects that are sorted in
          * order of increasing size. The flush method uses
          * the buffer with the least size above the amount
@@ -237,8 +221,48 @@ export class AbstractBatchRenderer extends ObjectRenderer
          */
         this.MAX_TEXTURES = 1;
 
+        this.initFlushBuffers();
+
         this.renderer.on('prerender', this.onPrerender, this);
         renderer.runners.contextChange.add(this);
+    }
+
+    initFlushBuffers()
+    {
+        /**
+         * Pool of `BatchDrawCall` objects that `flush` used
+         * to create "batches" of the objects being rendered.
+         *
+         * These are never re-allocated again.
+         *
+         * @member {PIXI.BatchDrawCall[]}
+         * @private
+         */
+        this._drawCalls = [];
+
+        /**
+         *
+         * @member {PIXI.BatchTextureArray[]}
+         * @private
+         */
+        this._textureArrays = [];
+
+        // @popelyshev: There are 4k objects and 2k arrays per batched renderer by default.
+        // @popelyshev: @mat Can we do something about it?
+        // initialize the draw-calls pool to max size.
+        for (let k = 0; k < this.size / 4; k++)
+        {
+            this._drawCalls[k] = new BatchDrawCall();
+            this._textureArrays[k] = new BatchTextureArray();
+        }
+
+        this._tempBoundTextures = [];
+
+        this._dcIndex = 0;
+        this._aIndex = 0;
+        this._iIndex = 0;
+        this._attributeBuffer = null;
+        this._indexBuffer = null;
     }
 
     /**
@@ -275,6 +299,11 @@ export class AbstractBatchRenderer extends ObjectRenderer
         {
             /* eslint-disable max-len */
             this._packedGeometries[i] = new (this.geometryClass)();
+        }
+
+        for (let i = 0; i < this.MAX_TEXTURES; i++)
+        {
+            this._tempBoundTextures[i] = null;
         }
     }
 
@@ -313,108 +342,123 @@ export class AbstractBatchRenderer extends ObjectRenderer
         this._bufferedElements[this._bufferSize++] = element;
     }
 
-    /**
-     * Renders the content _now_ and empties the current batch.
-     */
-    flush()
+    buildTexturesAndDrawCalls()
     {
-        if (this._vertexCount === 0)
-        {
-            return;
-        }
-
-        const attributeBuffer = this.getAttributeBuffer(this._vertexCount);
-        const indexBuffer = this.getIndexBuffer(this._indexCount);
-        const gl = this.renderer.gl;
-
         const {
             _bufferedElements: elements,
-            _drawCalls: drawCalls,
+            _textureArrays: textureArrays,
             MAX_TEXTURES,
-            _packedGeometries: packedGeometries,
-            vertexSize,
         } = this;
-
+        const boundTextures = this._tempBoundTextures;
         const touch = this.renderer.textureGC.count;
-
-        let index = 0;
-        let _indexCount = 0;
-
-        let nextTexture;
-        let currentTexture;
-        let textureCount = 0;
-
-        let currentGroup = drawCalls[0];
-        let groupCount = 0;
-
-        let blendMode = -1;// blend-mode of previous element/sprite/object!
-
-        currentGroup.textureCount = 0;
-        currentGroup.start = 0;
-        currentGroup.blend = blendMode;
-
         let TICK = ++BaseTexture._globalBatch;
-        let i;
+        let countTexArrays = 0;
+        let texArray = textureArrays[0];
+        let start = 0;
 
-        for (i = 0; i < this._bufferSize; ++i)
+        this.renderer.texture.copyBoundTextures(boundTextures, MAX_TEXTURES);
+
+        for (let i = 0; i < this._bufferSize; ++i)
         {
             const sprite = elements[i];
+            const tex = sprite._texture.baseTexture;
 
-            elements[i] = null;
-            nextTexture = sprite._texture.baseTexture;
-
-            const spriteBlendMode = premultiplyBlendMode[
-                nextTexture.alphaMode ? 1 : 0][sprite.blendMode];
-
-            if (blendMode !== spriteBlendMode)
+            if (tex._batchEnabled === TICK)
             {
-                blendMode = spriteBlendMode;
-
-                // force the batch to break!
-                currentTexture = null;
-                textureCount = MAX_TEXTURES;
-                TICK++;
+                continue;
             }
 
-            if (currentTexture !== nextTexture)
+            if (texArray.count >= MAX_TEXTURES)
             {
-                currentTexture = nextTexture;
-
-                if (nextTexture._batchEnabled !== TICK)
-                {
-                    if (textureCount === MAX_TEXTURES)
-                    {
-                        TICK++;
-
-                        textureCount = 0;
-
-                        currentGroup.size = _indexCount - currentGroup.start;
-
-                        currentGroup = drawCalls[groupCount++];
-                        currentGroup.textureCount = 0;
-                        currentGroup.blend = blendMode;
-                        currentGroup.start = _indexCount;
-                    }
-
-                    nextTexture.touched = touch;
-                    nextTexture._batchEnabled = TICK;
-                    nextTexture._id = textureCount;
-
-                    currentGroup.textures[currentGroup.textureCount++] = nextTexture;
-                    textureCount++;
-                }
+                texArray.calculateBinds(boundTextures, TICK, MAX_TEXTURES);
+                this.buildDrawCalls(start, i);
+                start = i;
+                texArray = textureArrays[++countTexArrays];
+                ++TICK;
             }
 
-            this.packInterleavedGeometry(sprite, attributeBuffer,
-                indexBuffer, index, _indexCount);
+            tex._batchEnabled = TICK;
+            tex.touched = touch;
+            texArray.textures[texArray.count++] = tex;
+        }
 
-            // push a graphics..
-            index += (sprite.vertexData.length / 2) * vertexSize;
-            _indexCount += sprite.indices.length;
+        if (texArray.count > 0)
+        {
+            texArray.calculateBinds(boundTextures, TICK, MAX_TEXTURES);
+            this.buildDrawCalls(start, this._bufferSize);
+            ++countTexArrays;
+            ++TICK;
         }
 
         BaseTexture._globalBatch = TICK;
-        currentGroup.size = _indexCount - currentGroup.start;
+    }
+
+    buildDrawCalls(texArray, start, finish)
+    {
+        const {
+            _bufferedElements: elements,
+            _drawCalls: drawCalls,
+        } = this;
+
+        let dcIndex = this._dcIndex;
+
+        let drawCall = drawCalls[dcIndex];
+
+        drawCall.texArray = texArray;
+        drawCall.blend = -1;
+
+        for (let i = start; i < finish; ++i)
+        {
+            const sprite = elements[i];
+            const tex = sprite._texture.baseTexture;
+            const spriteBlendMode = premultiplyBlendMode[
+                tex.alphaMode ? 1 : 0][sprite.blendMode];
+
+            elements[i] = null;
+            if (start > i && drawCall.blend !== spriteBlendMode)
+            {
+                drawCall.start = this._iIndex;
+                this.packInterleavedGeometry(start, i);
+                drawCall.size = this._iIndex - drawCall.start;
+
+                start = i;
+                drawCall = drawCalls[++dcIndex];
+                drawCall.texArray = texArray;
+            }
+
+            drawCall.blend = spriteBlendMode;
+        }
+
+        if (drawCall.start < finish)
+        {
+            drawCall.start = this._iIndex;
+            this.packInterleavedGeometry(start, finish);
+            drawCall.size = this._iIndex - drawCall.start;
+            ++dcIndex;
+        }
+
+        this._dcIndex = dcIndex;
+    }
+
+    bindAndClearTexArray(texArray)
+    {
+        const { textureSystem } = this.renderer;
+
+        for (let j = 0; j < texArray.size; j++)
+        {
+            textureSystem.bind(texArray.elements[j], texArray.ids[j]);
+            texArray.elements[j] = null;
+            texArray.count = 0;
+        }
+    }
+
+    updateGeometry()
+    {
+        const {
+            _packedGeometries: packedGeometries,
+            _attributeBuffer: attributeBuffer,
+            _indexBuffer: indexBuffer,
+        } = this;
 
         if (!settings.CAN_UPLOAD_SAME_BUFFER)
         { /* Usually on iOS devices, where the browser doesn't
@@ -425,8 +469,8 @@ export class AbstractBatchRenderer extends ObjectRenderer
                 packedGeometries[this._flushId] = new (this.geometryClass)();
             }
 
-            packedGeometries[this._flushId]._buffer.update(attributeBuffer.rawBinaryData, 0);
-            packedGeometries[this._flushId]._indexBuffer.update(indexBuffer, 0);
+            packedGeometries[this._flushId]._buffer.update(attributeBuffer.rawBinaryData);
+            packedGeometries[this._flushId]._indexBuffer.update(indexBuffer);
 
             this.renderer.geometry.bind(packedGeometries[this._flushId]);
             this.renderer.geometry.updateBuffers();
@@ -435,30 +479,54 @@ export class AbstractBatchRenderer extends ObjectRenderer
         else
         {
             // lets use the faster option, always use buffer number 0
-            packedGeometries[this._flushId]._buffer.update(attributeBuffer.rawBinaryData, 0);
-            packedGeometries[this._flushId]._indexBuffer.update(indexBuffer, 0);
+            packedGeometries[this._flushId]._buffer.update(attributeBuffer.rawBinaryData);
+            packedGeometries[this._flushId]._indexBuffer.update(indexBuffer);
 
             this.renderer.geometry.updateBuffers();
         }
+    }
 
-        const textureSystem = this.renderer.texture;
-        const stateSystem = this.renderer.state;
+    drawBatches()
+    {
+        const dcCount = this._dcIndex;
+        const { gl, stateSystem } = this.renderer;
+        let curTexArray = null;
 
         // Upload textures and do the draw calls
-        for (i = 0; i < groupCount; i++)
+        for (let i = 0; i < dcCount; i++)
         {
-            const group = drawCalls[i];
-            const groupTextureCount = group.textureCount;
+            const { texArray, type, size, start, blend } = this._drawCalls[i];
 
-            for (let j = 0; j < groupTextureCount; j++)
+            if (curTexArray !== texArray)
             {
-                textureSystem.bind(group.textures[j], j);
-                group.textures[j] = null;
+                curTexArray = texArray;
+                this.bindAndClearTexArray(texArray);
             }
 
-            stateSystem.setBlendMode(group.blend);
-            gl.drawElements(group.type, group.size, gl.UNSIGNED_SHORT, group.start * 2);
+            stateSystem.setBlendMode(blend);
+            gl.drawElements(type, size, gl.UNSIGNED_SHORT, start * 2);
         }
+    }
+
+    /**
+     * Renders the content _now_ and empties the current batch.
+     */
+    flush()
+    {
+        if (this._vertexCount === 0)
+        {
+            return;
+        }
+
+        this._attributeBuffer = this.getAttributeBuffer(this._vertexCount);
+        this._indexBuffer = this.getIndexBuffer(this._indexCount);
+        this._aIndex = 0;
+        this._iIndex = 0;
+        this._dcIndex = 0;
+
+        this.buildTexturesAndDrawCalls();
+        this.updateGeometry();
+        this.drawBatches();
 
         // reset elements for the next flush
         this._bufferSize = 0;
@@ -581,52 +649,66 @@ export class AbstractBatchRenderer extends ObjectRenderer
     }
 
     /**
-     * Takes the four batching parameters of `element`, interleaves
-     * and pushes them into the batching attribute/index buffers given.
+     * Takes the range and packs all data from `this._bufferedElements`
      *
      * It uses these properties: `vertexData` `uvs`, `textureId` and
      * `indicies`. It also uses the "tint" of the base-texture, if
      * present.
      *
-     * @param {PIXI.Sprite} element - element being rendered
-     * @param {PIXI.ViewableBuffer} attributeBuffer - attribute buffer.
-     * @param {Uint16Array} indexBuffer - index buffer
-     * @param {number} aIndex - number of floats already in the attribute buffer
-     * @param {number} iIndex - number of indices already in `indexBuffer`
+     * Current location for textures is taken from `baseTexture._batchLocation`.
+     *
+     * @param {number} start - first element to pack in geometry
+     * @param {number} finish - end element to pack in geometry
      */
-    packInterleavedGeometry(element, attributeBuffer, indexBuffer, aIndex, iIndex)
+    packInterleavedGeometry(start, finish)
     {
+        const {
+            _attributeBuffer: attributeBuffer,
+            _bufferedElements: elements,
+            _indexBuffer: indexBuffer,
+        } = this;
         const {
             uint32View,
             float32View,
         } = attributeBuffer;
+        let {
+            _aIndex: aIndex,
+            _iIndex: iIndex,
+        } = this;
 
         const packedVertices = aIndex / this.vertexSize;
-        const uvs = element.uvs;
-        const indicies = element.indices;
-        const vertexData = element.vertexData;
-        const textureId = element._texture.baseTexture._id;
 
-        const alpha = Math.min(element.worldAlpha, 1.0);
-        const argb = (alpha < 1.0
-          && element._texture.baseTexture.alphaMode)
-            ? premultiplyTint(element._tintRGB, alpha)
-            : element._tintRGB + (alpha * 255 << 24);
-
-        // lets not worry about tint! for now..
-        for (let i = 0; i < vertexData.length; i += 2)
+        for (let j = start; j < finish; j++)
         {
-            float32View[aIndex++] = vertexData[i];
-            float32View[aIndex++] = vertexData[i + 1];
-            float32View[aIndex++] = uvs[i];
-            float32View[aIndex++] = uvs[i + 1];
-            uint32View[aIndex++] = argb;
-            float32View[aIndex++] = textureId;
+            const element = elements[j];
+            const { uvs, indices, vertexData } = element;
+            const baseTex = element._texture.baseTexture;
+            const { _batchLocation } = baseTex;
+
+            const alpha = Math.min(element.worldAlpha, 1.0);
+            const argb = (alpha < 1.0
+                && element._texture.baseTexture.alphaMode)
+                ? premultiplyTint(element._tintRGB, alpha)
+                : element._tintRGB + (alpha * 255 << 24);
+
+            // lets not worry about tint! for now..
+            for (let i = 0; i < vertexData.length; i += 2)
+            {
+                float32View[aIndex++] = vertexData[i];
+                float32View[aIndex++] = vertexData[i + 1];
+                float32View[aIndex++] = uvs[i];
+                float32View[aIndex++] = uvs[i + 1];
+                uint32View[aIndex++] = argb;
+                float32View[aIndex++] = _batchLocation;
+            }
+
+            for (let i = 0; i < indices.length; i++)
+            {
+                indexBuffer[iIndex++] = packedVertices + indices[i];
+            }
         }
 
-        for (let i = 0; i < indicies.length; i++)
-        {
-            indexBuffer[iIndex++] = packedVertices + indicies[i];
-        }
+        this._aIndex = aIndex;
+        this._iIndex = iIndex;
     }
 }
