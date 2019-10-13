@@ -90,9 +90,9 @@ export class AbstractBatchRenderer extends ObjectRenderer
          * occurs automatically.
          *
          * @member {number}
-         * @default settings.SPRITE_MAX_TEXTURES
+         * @default settings.SPRITE_MAX_TEXTURES * 4
          */
-        this.size = 2000 * 4;// settings.SPRITE_BATCH_SIZE, 2000 is a nice balance between mobile/desktop
+        this.size = settings.SPRITE_BATCH_SIZE * 4;
 
         /**
          * Total count of all vertices used by the currently
