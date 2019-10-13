@@ -30,41 +30,7 @@ export class BatchTextureArray
     {
         this.elements = [];
         this.ids = [];
-        this.size = 0;
-    }
-
-    calculateBinds(boundTextures, batchId, maxTextures)
-    {
-        const { elements, ids, count } = this;
-        let j = 0;
-
-        for (let i = 0; i < count; i++)
-        {
-            const tex = elements[i];
-            const loc = tex._batchLocation;
-
-            if (loc >= 0 && loc < maxTextures
-                && boundTextures[loc] === tex)
-            {
-                ids[i] = loc;
-                continue;
-            }
-
-            while (j < maxTextures)
-            {
-                if (boundTextures[j]._batchEnabled === batchId
-                    && boundTextures[j]._batchLocation === j)
-                {
-                    j++;
-                    continue;
-                }
-
-                ids[i] = j;
-                tex._batchLocation = j;
-                boundTextures[j] = tex;
-                break;
-            }
-        }
+        this.count = 0;
     }
 
     clear()

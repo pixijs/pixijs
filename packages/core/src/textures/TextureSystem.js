@@ -162,22 +162,6 @@ export class TextureSystem extends System
     }
 
     /**
-     * shortcut for batch renderers: copies bound textures in first maxTextures locations to array
-     * sets actual _batchLocation for them
-     *
-     * @param arr
-     * @param maxTextures
-     */
-    copyBoundTextures(arr, maxTextures)
-    {
-        for (let i = maxTextures - 1; i >= 0; --i)
-        {
-            arr[i] = this.boundTextures[i] || null;
-            arr[i]._batchLocation = i;
-        }
-    }
-
-    /**
      * Resets texture location and bound textures
      *
      * Actual `bind(null, i)` calls will be performed at next `unbind()` call

@@ -349,6 +349,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
             _textureArrays: textureArrays,
             MAX_TEXTURES,
         } = this;
+        const { batch } = this.renderer;
         const boundTextures = this._tempBoundTextures;
         const touch = this.renderer.textureGC.count;
         let TICK = ++BaseTexture._globalBatch;
@@ -356,7 +357,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
         let texArray = textureArrays[0];
         let start = 0;
 
-        this.renderer.texture.copyBoundTextures(boundTextures, MAX_TEXTURES);
+        batch.copyBoundTextures(boundTextures, MAX_TEXTURES);
 
         for (let i = 0; i < this._bufferSize; ++i)
         {
@@ -370,8 +371,8 @@ export class AbstractBatchRenderer extends ObjectRenderer
 
             if (texArray.count >= MAX_TEXTURES)
             {
-                texArray.calculateBinds(boundTextures, TICK, MAX_TEXTURES);
-                this.buildDrawCalls(start, i);
+                batch.boundArray(texArray, boundTextures, TICK, MAX_TEXTURES);
+                this.buildDrawCalls(texArray, start, i);
                 start = i;
                 texArray = textureArrays[++countTexArrays];
                 ++TICK;
@@ -379,13 +380,13 @@ export class AbstractBatchRenderer extends ObjectRenderer
 
             tex._batchEnabled = TICK;
             tex.touched = touch;
-            texArray.textures[texArray.count++] = tex;
+            texArray.elements[texArray.count++] = tex;
         }
 
         if (texArray.count > 0)
         {
-            texArray.calculateBinds(boundTextures, TICK, MAX_TEXTURES);
-            this.buildDrawCalls(start, this._bufferSize);
+            batch.boundArray(texArray, boundTextures, TICK, MAX_TEXTURES);
+            this.buildDrawCalls(texArray, start, this._bufferSize);
             ++countTexArrays;
             ++TICK;
         }
@@ -414,7 +415,6 @@ export class AbstractBatchRenderer extends ObjectRenderer
             const spriteBlendMode = premultiplyBlendMode[
                 tex.alphaMode ? 1 : 0][sprite.blendMode];
 
-            elements[i] = null;
             if (start > i && drawCall.blend !== spriteBlendMode)
             {
                 drawCall.start = this._iIndex;
@@ -442,14 +442,14 @@ export class AbstractBatchRenderer extends ObjectRenderer
 
     bindAndClearTexArray(texArray)
     {
-        const { textureSystem } = this.renderer;
+        const textureSystem = this.renderer.texture;
 
-        for (let j = 0; j < texArray.size; j++)
+        for (let j = 0; j < texArray.count; j++)
         {
             textureSystem.bind(texArray.elements[j], texArray.ids[j]);
             texArray.elements[j] = null;
-            texArray.count = 0;
         }
+        texArray.count = 0;
     }
 
     updateGeometry()
@@ -489,7 +489,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
     drawBatches()
     {
         const dcCount = this._dcIndex;
-        const { gl, stateSystem } = this.renderer;
+        const { gl, state: stateSystem } = this.renderer;
         let curTexArray = null;
 
         // Upload textures and do the draw calls
@@ -671,12 +671,9 @@ export class AbstractBatchRenderer extends ObjectRenderer
             uint32View,
             float32View,
         } = attributeBuffer;
-        let {
-            _aIndex: aIndex,
-            _iIndex: iIndex,
-        } = this;
-
-        const packedVertices = aIndex / this.vertexSize;
+        let aIndex = this._aIndex;
+        let iIndex = this._iIndex;
+        let packedVertices = aIndex / this.vertexSize;
 
         for (let j = start; j < finish; j++)
         {
@@ -706,6 +703,9 @@ export class AbstractBatchRenderer extends ObjectRenderer
             {
                 indexBuffer[iIndex++] = packedVertices + indices[i];
             }
+
+            packedVertices += vertexData.length / 2;
+            elements[j] = null;
         }
 
         this._aIndex = aIndex;
