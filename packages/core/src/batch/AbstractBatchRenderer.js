@@ -341,8 +341,8 @@ export class AbstractBatchRenderer extends ObjectRenderer
 
         this._vertexCount += element.vertexData.length / 2;
         this._indexCount += element.indices.length;
+        this._bufferedTextures[this._bufferSize] = element._texture.baseTexture;
         this._bufferedElements[this._bufferSize++] = element;
-        this._bufferedTextures[this._bufferSize++] = element._texture.baseTexture;
     }
 
     buildTexturesAndDrawCalls()
