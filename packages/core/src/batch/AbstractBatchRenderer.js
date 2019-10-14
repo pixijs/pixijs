@@ -120,6 +120,8 @@ export class AbstractBatchRenderer extends ObjectRenderer
          */
         this._bufferedElements = [];
 
+        this._bufferedTextures = [];
+
         /**
          * Number of elements that are buffered and are
          * waiting to be flushed.
@@ -340,12 +342,13 @@ export class AbstractBatchRenderer extends ObjectRenderer
         this._vertexCount += element.vertexData.length / 2;
         this._indexCount += element.indices.length;
         this._bufferedElements[this._bufferSize++] = element;
+        this._bufferedTextures[this._bufferSize++] = element._texture.baseTexture;
     }
 
     buildTexturesAndDrawCalls()
     {
         const {
-            _bufferedElements: elements,
+            _bufferedTextures: textures,
             _textureArrays: textureArrays,
             MAX_TEXTURES,
         } = this;
@@ -363,7 +366,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
 
         for (let i = 0; i < this._bufferSize; ++i)
         {
-            const sprite = elements[i];
+            const sprite = textures[i];
             const tex = sprite._texture.baseTexture;
 
             if (tex._batchEnabled === TICK)
