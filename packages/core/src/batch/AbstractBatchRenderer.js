@@ -120,6 +120,8 @@ export class AbstractBatchRenderer extends ObjectRenderer
          */
         this._bufferedElements = [];
 
+        this._bufferedTextures = [];
+
         /**
          * Number of elements that are buffered and are
          * waiting to be flushed.
@@ -339,13 +341,14 @@ export class AbstractBatchRenderer extends ObjectRenderer
 
         this._vertexCount += element.vertexData.length / 2;
         this._indexCount += element.indices.length;
+        this._bufferedTextures[this._bufferSize] = element._texture.baseTexture;
         this._bufferedElements[this._bufferSize++] = element;
     }
 
     buildTexturesAndDrawCalls()
     {
         const {
-            _bufferedElements: elements,
+            _bufferedTextures: textures,
             _textureArrays: textureArrays,
             MAX_TEXTURES,
         } = this;
@@ -363,8 +366,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
 
         for (let i = 0; i < this._bufferSize; ++i)
         {
-            const sprite = elements[i];
-            const tex = sprite._texture.baseTexture;
+            const tex = textures[i];
 
             if (tex._batchEnabled === TICK)
             {
@@ -411,11 +413,11 @@ export class AbstractBatchRenderer extends ObjectRenderer
         } = this;
 
         let dcIndex = this._dcIndex;
-
         let drawCall = drawCalls[dcIndex];
 
         drawCall.texArray = texArray;
         drawCall.blend = -1;
+        drawCall.start = this._iIndex;
 
         for (let i = start; i < finish; ++i)
         {
@@ -426,22 +428,19 @@ export class AbstractBatchRenderer extends ObjectRenderer
 
             if (start > i && drawCall.blend !== spriteBlendMode)
             {
-                drawCall.start = this._iIndex;
-                this.packInterleavedGeometry(start, i);
                 drawCall.size = this._iIndex - drawCall.start;
-
                 start = i;
                 drawCall = drawCalls[++dcIndex];
+                drawCall.start = this._iIndex;
                 drawCall.texArray = texArray;
             }
 
             drawCall.blend = spriteBlendMode;
+            this.packInterleavedGeometry(sprite);
         }
 
         if (drawCall.start < finish)
         {
-            drawCall.start = this._iIndex;
-            this.packInterleavedGeometry(start, finish);
             drawCall.size = this._iIndex - drawCall.start;
             ++dcIndex;
         }
@@ -663,7 +662,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
     }
 
     /**
-     * Takes the range and packs all data from `this._bufferedElements`
+     * Takes the element and packs all data from `this._bufferedElements`
      *
      * It uses these properties: `vertexData` `uvs`, `textureId` and
      * `indicies`. It also uses the "tint" of the base-texture, if
@@ -671,14 +670,12 @@ export class AbstractBatchRenderer extends ObjectRenderer
      *
      * Current location for textures is taken from `baseTexture._batchLocation`.
      *
-     * @param {number} start - first element to pack in geometry
-     * @param {number} finish - end element to pack in geometry
+     * @param {PIXI.Sprite} element - element
      */
-    packInterleavedGeometry(start, finish)
+    packInterleavedGeometry(element)
     {
         const {
             _attributeBuffer: attributeBuffer,
-            _bufferedElements: elements,
             _indexBuffer: indexBuffer,
         } = this;
         const {
@@ -688,34 +685,27 @@ export class AbstractBatchRenderer extends ObjectRenderer
 
         let aIndex = this._aIndex;
         let iIndex = this._iIndex;
-        let packedVertices = aIndex / this.vertexSize;
+        const packedVertices = aIndex / this.vertexSize;
 
-        for (let j = start; j < finish; j++)
+        const { uvs, indices, vertexData, worldAlpha, _tintRGB } = element;
+        const { _batchLocation, alphaMode } = element._texture.baseTexture;
+        const alpha = Math.min(worldAlpha, 1.0);
+        const argb = (alpha < 1.0 && alphaMode) ? premultiplyTint(_tintRGB, alpha) : _tintRGB + (alpha * 255 << 24);
+
+        // lets not worry about tint! for now..
+        for (let i = 0; i < vertexData.length; i += 2)
         {
-            const element = elements[j];
-            const { uvs, indices, vertexData, worldAlpha, _tintRGB } = element;
-            const { _batchLocation, alphaMode } = element._texture.baseTexture;
-            const alpha = Math.min(worldAlpha, 1.0);
-            const argb = (alpha < 1.0 && alphaMode) ? premultiplyTint(_tintRGB, alpha) : _tintRGB + (alpha * 255 << 24);
+            float32View[aIndex++] = vertexData[i];
+            float32View[aIndex++] = vertexData[i + 1];
+            float32View[aIndex++] = uvs[i];
+            float32View[aIndex++] = uvs[i + 1];
+            uint32View[aIndex++] = argb;
+            float32View[aIndex++] = _batchLocation;
+        }
 
-            // lets not worry about tint! for now..
-            for (let i = 0; i < vertexData.length; i += 2)
-            {
-                float32View[aIndex++] = vertexData[i];
-                float32View[aIndex++] = vertexData[i + 1];
-                float32View[aIndex++] = uvs[i];
-                float32View[aIndex++] = uvs[i + 1];
-                uint32View[aIndex++] = argb;
-                float32View[aIndex++] = _batchLocation;
-            }
-
-            for (let i = 0; i < indices.length; i++)
-            {
-                indexBuffer[iIndex++] = packedVertices + indices[i];
-            }
-
-            packedVertices += vertexData.length / 2;
-            elements[j] = null;
+        for (let i = 0; i < indices.length; i++)
+        {
+            indexBuffer[iIndex++] = packedVertices + indices[i];
         }
 
         this._aIndex = aIndex;
