@@ -368,6 +368,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
         {
             const tex = textures[i];
 
+            textures[i] = null;
             if (tex._batchEnabled === TICK)
             {
                 continue;
