@@ -1,4 +1,5 @@
-import { BatchDrawCall, BatchTextureArray } from './BatchDrawCall';
+import { BatchDrawCall } from './BatchDrawCall';
+import { BatchTextureArray } from './BatchTextureArray';
 import { BaseTexture } from '../textures/BaseTexture';
 import { ObjectRenderer } from './ObjectRenderer';
 import { State } from '../state/State';
