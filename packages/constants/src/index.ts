@@ -1,81 +1,16 @@
-/**
- * Different types of environments for WebGL.
- *
- * @static
- * @memberof PIXI
- * @name ENV
- * @enum {number}
- * @property {number} WEBGL_LEGACY - Used for older v1 WebGL devices. PixiJS will aim to ensure compatibility
- *  with older / less advanced devices. If you experience unexplained flickering prefer this environment.
- * @property {number} WEBGL - Version 1 of WebGL
- * @property {number} WEBGL2 - Version 2 of WebGL
- */
-export enum ENV {
+export const enum ENV {
     WEBGL_LEGACY,
     WEBGL,
     WEBGL2,
 }
 
-/**
- * Constant to identify the Renderer Type.
- *
- * @static
- * @memberof PIXI
- * @name RENDERER_TYPE
- * @enum {number}
- * @property {number} UNKNOWN - Unknown render type.
- * @property {number} WEBGL - WebGL render type.
- * @property {number} CANVAS - Canvas render type.
- */
-export enum RENDERER_TYPE {
+export const enum RENDERER_TYPE {
     UNKNOWN,
     WEBGL,
     CANVAS,
 }
 
-/**
- * Various blend modes supported by PIXI.
- *
- * IMPORTANT - The WebGL renderer only supports the NORMAL, ADD, MULTIPLY and SCREEN blend modes.
- * Anything else will silently act like NORMAL.
- *
- * @memberof PIXI
- * @name BLEND_MODES
- * @enum {number}
- * @property {number} NORMAL
- * @property {number} ADD
- * @property {number} MULTIPLY
- * @property {number} SCREEN
- * @property {number} OVERLAY
- * @property {number} DARKEN
- * @property {number} LIGHTEN
- * @property {number} COLOR_DODGE
- * @property {number} COLOR_BURN
- * @property {number} HARD_LIGHT
- * @property {number} SOFT_LIGHT
- * @property {number} DIFFERENCE
- * @property {number} EXCLUSION
- * @property {number} HUE
- * @property {number} SATURATION
- * @property {number} COLOR
- * @property {number} LUMINOSITY
- * @property {number} NORMAL_NPM
- * @property {number} ADD_NPM
- * @property {number} SCREEN_NPM
- * @property {number} NONE
- * @property {number} SRC_IN
- * @property {number} SRC_OUT
- * @property {number} SRC_ATOP
- * @property {number} DST_OVER
- * @property {number} DST_IN
- * @property {number} DST_OUT
- * @property {number} DST_ATOP
- * @property {number} SUBTRACT
- * @property {number} SRC_OVER
- * @property {number} ERASE
- * @property {number} XOR
- */
-export enum BLEND_MODES {
+export const enum BLEND_MODES {
     NORMAL = 0,
     ADD = 1,
     MULTIPLY = 2,
@@ -111,23 +46,7 @@ export enum BLEND_MODES {
     XOR = 29,
 }
 
-/**
- * Various webgl draw modes. These can be used to specify which GL drawMode to use
- * under certain situations and renderers.
- *
- * @memberof PIXI
- * @static
- * @name DRAW_MODES
- * @enum {number}
- * @property {number} POINTS
- * @property {number} LINES
- * @property {number} LINE_LOOP
- * @property {number} LINE_STRIP
- * @property {number} TRIANGLES
- * @property {number} TRIANGLE_STRIP
- * @property {number} TRIANGLE_FAN
- */
-export enum DRAW_MODES {
+export const enum DRAW_MODES {
     POINTS,
     LINES,
     LINE_LOOP,
@@ -137,22 +56,7 @@ export enum DRAW_MODES {
     TRIANGLE_FAN,
 }
 
-/**
- * Various GL texture/resources formats.
- *
- * @memberof PIXI
- * @static
- * @name FORMATS
- * @enum {number}
- * @property {number} RGBA=6408
- * @property {number} RGB=6407
- * @property {number} ALPHA=6406
- * @property {number} LUMINANCE=6409
- * @property {number} LUMINANCE_ALPHA=6410
- * @property {number} DEPTH_COMPONENT=6402
- * @property {number} DEPTH_STENCIL=34041
- */
-export enum FORMATS {
+export const enum FORMATS {
     RGBA = 6408,
     RGB = 6407,
     ALPHA = 6406,
@@ -162,24 +66,7 @@ export enum FORMATS {
     DEPTH_STENCIL = 34041,
 }
 
-/**
- * Various GL target types.
- *
- * @memberof PIXI
- * @static
- * @name TARGETS
- * @enum {number}
- * @property {number} TEXTURE_2D=3553
- * @property {number} TEXTURE_CUBE_MAP=34067
- * @property {number} TEXTURE_2D_ARRAY=35866
- * @property {number} TEXTURE_CUBE_MAP_POSITIVE_X=34069
- * @property {number} TEXTURE_CUBE_MAP_NEGATIVE_X=34070
- * @property {number} TEXTURE_CUBE_MAP_POSITIVE_Y=34071
- * @property {number} TEXTURE_CUBE_MAP_NEGATIVE_Y=34072
- * @property {number} TEXTURE_CUBE_MAP_POSITIVE_Z=34073
- * @property {number} TEXTURE_CUBE_MAP_NEGATIVE_Z=34074
- */
-export enum TARGETS {
+export const enum TARGETS {
     TEXTURE_2D = 3553,
     TEXTURE_CUBE_MAP = 34067,
     TEXTURE_2D_ARRAY = 35866,
@@ -191,22 +78,7 @@ export enum TARGETS {
     TEXTURE_CUBE_MAP_NEGATIVE_Z = 34074,
 }
 
-/**
- * Various GL data format types.
- *
- * @memberof PIXI
- * @static
- * @name TYPES
- * @enum {number}
- * @property {number} UNSIGNED_BYTE=5121
- * @property {number} UNSIGNED_SHORT=5123
- * @property {number} UNSIGNED_SHORT_5_6_5=33635
- * @property {number} UNSIGNED_SHORT_4_4_4_4=32819
- * @property {number} UNSIGNED_SHORT_5_5_5_1=32820
- * @property {number} FLOAT=5126
- * @property {number} HALF_FLOAT=36193
- */
-export enum TYPES {
+export const enum TYPES {
     UNSIGNED_BYTE = 5121,
     UNSIGNED_SHORT = 5123,
     UNSIGNED_SHORT_5_6_5 = 33635,
@@ -215,6 +87,185 @@ export enum TYPES {
     FLOAT = 5126,
     HALF_FLOAT = 36193,
 }
+
+export const enum SCALE_MODES {
+    NEAREST,
+    LINEAR,
+}
+
+export const enum WRAP_MODES {
+    CLAMP = 33071,
+    REPEAT = 10497,
+    MIRRORED_REPEAT = 33648,
+}
+
+export const enum MIPMAP_MODES {
+    OFF,
+    POW2,
+    ON,
+}
+
+export const enum ALPHA_MODES {
+    NPM = 0,
+    UNPACK = 1,
+    PMA = 2,
+    NO_PREMULTIPLIED_ALPHA = 0,
+    PREMULTIPLY_ON_UPLOAD = 1,
+    PREMULTIPLY_ALPHA = 2,
+}
+
+export const enum GC_MODES {
+    AUTO,
+    MANUAL,
+}
+
+export const enum PRECISION {
+    LOW = 'lowp',
+    MEDIUM = 'mediump',
+    HIGH = 'highp',
+}
+
+/**
+ * Different types of environments for WebGL.
+ *
+ * @static
+ * @memberof PIXI
+ * @name ENV
+ * @enum {number}
+ * @constant
+ * @property {number} WEBGL_LEGACY - Used for older v1 WebGL devices. PixiJS will aim to ensure compatibility
+ *  with older / less advanced devices. If you experience unexplained flickering prefer this environment.
+ * @property {number} WEBGL - Version 1 of WebGL
+ * @property {number} WEBGL2 - Version 2 of WebGL
+ */
+
+/**
+ * Constant to identify the Renderer Type.
+ *
+ * @static
+ * @memberof PIXI
+ * @name RENDERER_TYPE
+ * @enum {number}
+ * @constant
+ * @property {number} UNKNOWN - Unknown render type.
+ * @property {number} WEBGL - WebGL render type.
+ * @property {number} CANVAS - Canvas render type.
+ */
+
+/**
+ * Various blend modes supported by PIXI.
+ *
+ * IMPORTANT - The WebGL renderer only supports the NORMAL, ADD, MULTIPLY and SCREEN blend modes.
+ * Anything else will silently act like NORMAL.
+ *
+ * @memberof PIXI
+ * @name BLEND_MODES
+ * @enum {number}
+ * @constant
+ * @property {number} NORMAL
+ * @property {number} ADD
+ * @property {number} MULTIPLY
+ * @property {number} SCREEN
+ * @property {number} OVERLAY
+ * @property {number} DARKEN
+ * @property {number} LIGHTEN
+ * @property {number} COLOR_DODGE
+ * @property {number} COLOR_BURN
+ * @property {number} HARD_LIGHT
+ * @property {number} SOFT_LIGHT
+ * @property {number} DIFFERENCE
+ * @property {number} EXCLUSION
+ * @property {number} HUE
+ * @property {number} SATURATION
+ * @property {number} COLOR
+ * @property {number} LUMINOSITY
+ * @property {number} NORMAL_NPM
+ * @property {number} ADD_NPM
+ * @property {number} SCREEN_NPM
+ * @property {number} NONE
+ * @property {number} SRC_IN
+ * @property {number} SRC_OUT
+ * @property {number} SRC_ATOP
+ * @property {number} DST_OVER
+ * @property {number} DST_IN
+ * @property {number} DST_OUT
+ * @property {number} DST_ATOP
+ * @property {number} SUBTRACT
+ * @property {number} SRC_OVER
+ * @property {number} ERASE
+ * @property {number} XOR
+ */
+
+/**
+ * Various webgl draw modes. These can be used to specify which GL drawMode to use
+ * under certain situations and renderers.
+ *
+ * @memberof PIXI
+ * @static
+ * @name DRAW_MODES
+ * @enum {number}
+ * @constant
+ * @property {number} POINTS
+ * @property {number} LINES
+ * @property {number} LINE_LOOP
+ * @property {number} LINE_STRIP
+ * @property {number} TRIANGLES
+ * @property {number} TRIANGLE_STRIP
+ * @property {number} TRIANGLE_FAN
+ */
+
+/**
+ * Various GL texture/resources formats.
+ *
+ * @memberof PIXI
+ * @static
+ * @name FORMATS
+ * @enum {number}
+ * @constant
+ * @property {number} RGBA=6408
+ * @property {number} RGB=6407
+ * @property {number} ALPHA=6406
+ * @property {number} LUMINANCE=6409
+ * @property {number} LUMINANCE_ALPHA=6410
+ * @property {number} DEPTH_COMPONENT=6402
+ * @property {number} DEPTH_STENCIL=34041
+ */
+
+/**
+ * Various GL target types.
+ *
+ * @memberof PIXI
+ * @static
+ * @name TARGETS
+ * @enum {number}
+ * @constant
+ * @property {number} TEXTURE_2D=3553
+ * @property {number} TEXTURE_CUBE_MAP=34067
+ * @property {number} TEXTURE_2D_ARRAY=35866
+ * @property {number} TEXTURE_CUBE_MAP_POSITIVE_X=34069
+ * @property {number} TEXTURE_CUBE_MAP_NEGATIVE_X=34070
+ * @property {number} TEXTURE_CUBE_MAP_POSITIVE_Y=34071
+ * @property {number} TEXTURE_CUBE_MAP_NEGATIVE_Y=34072
+ * @property {number} TEXTURE_CUBE_MAP_POSITIVE_Z=34073
+ * @property {number} TEXTURE_CUBE_MAP_NEGATIVE_Z=34074
+ */
+
+/**
+ * Various GL data format types.
+ *
+ * @memberof PIXI
+ * @static
+ * @name TYPES
+ * @enum {number}
+ * @constant
+ * @property {number} UNSIGNED_BYTE=5121
+ * @property {number} UNSIGNED_SHORT=5123
+ * @property {number} UNSIGNED_SHORT_5_6_5=33635
+ * @property {number} UNSIGNED_SHORT_4_4_4_4=32819
+ * @property {number} UNSIGNED_SHORT_5_5_5_1=32820
+ * @property {number} FLOAT=5126
+ * @property {number} HALF_FLOAT=36193
+ */
 
 /**
  * The scale modes that are supported by pixi.
@@ -226,13 +277,10 @@ export enum TYPES {
  * @static
  * @name SCALE_MODES
  * @enum {number}
+ * @constant
  * @property {number} LINEAR Smooth scaling
  * @property {number} NEAREST Pixelating scaling
  */
-export enum SCALE_MODES {
-    NEAREST,
-    LINEAR,
-}
 
 /**
  * The wrap modes that are supported by pixi.
@@ -248,15 +296,11 @@ export enum SCALE_MODES {
  * @memberof PIXI
  * @static
  * @enum {number}
+ * @constant
  * @property {number} CLAMP - The textures uvs are clamped
  * @property {number} REPEAT - The texture uvs tile and repeat
  * @property {number} MIRRORED_REPEAT - The texture uvs tile and repeat with mirroring
  */
-export enum WRAP_MODES {
-    CLAMP = 33071,
-    REPEAT = 10497,
-    MIRRORED_REPEAT = 33648,
-}
 
 /**
  * Mipmap filtering modes that are supported by pixi.
@@ -272,15 +316,11 @@ export enum WRAP_MODES {
  * @memberof PIXI
  * @static
  * @enum {number}
+ * @constant
  * @property {number} OFF - No mipmaps
  * @property {number} POW2 - Generate mipmaps if texture dimensions are pow2
  * @property {number} ON - Always generate mipmaps
  */
-export enum MIPMAP_MODES {
-    OFF,
-    POW2,
-    ON,
-}
 
 /**
  * How to treat textures with premultiplied alpha
@@ -289,6 +329,7 @@ export enum MIPMAP_MODES {
  * @memberof PIXI
  * @static
  * @enum {number}
+ * @constant
  * @property {number} NO_PREMULTIPLIED_ALPHA - Source is not premultiplied, leave it like that.
  *  Option for compressed and data textures that are created from typed arrays.
  * @property {number} PREMULTIPLY_ON_UPLOAD - Source is not premultiplied, premultiply on upload.
@@ -299,14 +340,6 @@ export enum MIPMAP_MODES {
  * @property {number} UNPACK - Default option, alias for PREMULTIPLY_ON_UPLOAD.
  * @property {number} PMA - Alias for PREMULTIPLIED_ALPHA.
  */
-export enum ALPHA_MODES {
-    NPM = 0,
-    UNPACK = 1,
-    PMA = 2,
-    NO_PREMULTIPLIED_ALPHA = 0,
-    PREMULTIPLY_ON_UPLOAD = 1,
-    PREMULTIPLY_ALPHA = 2,
-}
 
 /**
  * The gc modes that are supported by pixi.
@@ -323,20 +356,12 @@ export enum ALPHA_MODES {
  * @name GC_MODES
  * @enum {number}
  * @static
+ * @constant
  * @memberof PIXI
  * @property {number} AUTO - Garbage collection will happen periodically automatically
  * @property {number} MANUAL - Garbage collection will need to be called manually
  */
-export enum GC_MODES {
-    AUTO,
-    MANUAL,
-}
 
-export const enum PRECISION {
-    LOW = 'lowp',
-    MEDIUM = 'mediump',
-    HIGH = 'highp',
-}
 /**
  * Constants that specify float precision in shaders.
  *
