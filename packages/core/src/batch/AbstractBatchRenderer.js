@@ -121,6 +121,13 @@ export class AbstractBatchRenderer extends ObjectRenderer
         this._bufferedElements = [];
 
         /**
+         * Data for texture batch builder, helps to save a bit of CPU on a pass
+         * @type {PIXI.BaseTexture[]}
+         * @private
+         */
+        this._bufferedTextures = [];
+
+        /**
          * Number of elements that are buffered and are
          * waiting to be flushed.
          *
@@ -339,13 +346,14 @@ export class AbstractBatchRenderer extends ObjectRenderer
 
         this._vertexCount += element.vertexData.length / 2;
         this._indexCount += element.indices.length;
+        this._bufferedTextures[this._bufferSize] = element._texture.baseTexture;
         this._bufferedElements[this._bufferSize++] = element;
     }
 
     buildTexturesAndDrawCalls()
     {
         const {
-            _bufferedElements: elements,
+            _bufferedTextures: textures,
             _textureArrays: textureArrays,
             MAX_TEXTURES,
         } = this;
@@ -363,9 +371,9 @@ export class AbstractBatchRenderer extends ObjectRenderer
 
         for (let i = 0; i < this._bufferSize; ++i)
         {
-            const sprite = elements[i];
-            const tex = sprite._texture.baseTexture;
+            const tex = textures[i];
 
+            textures[i] = null;
             if (tex._batchEnabled === TICK)
             {
                 continue;
@@ -408,14 +416,19 @@ export class AbstractBatchRenderer extends ObjectRenderer
         const {
             _bufferedElements: elements,
             _drawCalls: drawCalls,
+            _attributeBuffer,
+            _indexBuffer,
+            vertexSize,
         } = this;
 
         let dcIndex = this._dcIndex;
+        let aIndex = this._aIndex;
+        let iIndex = this._iIndex;
 
         let drawCall = drawCalls[dcIndex];
 
+        drawCall.start = this._iIndex;
         drawCall.texArray = texArray;
-        drawCall.blend = -1;
 
         for (let i = start; i < finish; ++i)
         {
@@ -426,27 +439,29 @@ export class AbstractBatchRenderer extends ObjectRenderer
 
             if (start > i && drawCall.blend !== spriteBlendMode)
             {
-                drawCall.start = this._iIndex;
-                this.packInterleavedGeometry(start, i);
-                drawCall.size = this._iIndex - drawCall.start;
-
+                drawCall.size = iIndex - drawCall.start;
                 start = i;
                 drawCall = drawCalls[++dcIndex];
                 drawCall.texArray = texArray;
+                drawCall.start = iIndex;
             }
+
+            this.packInterleavedGeometry(sprite, _attributeBuffer, _indexBuffer, aIndex, iIndex);
+            aIndex += sprite.vertexData.length / 2 * vertexSize;
+            iIndex += sprite.indices.length;
 
             drawCall.blend = spriteBlendMode;
         }
 
         if (drawCall.start < finish)
         {
-            drawCall.start = this._iIndex;
-            this.packInterleavedGeometry(start, finish);
-            drawCall.size = this._iIndex - drawCall.start;
+            drawCall.size = iIndex - drawCall.start;
             ++dcIndex;
         }
 
         this._dcIndex = dcIndex;
+        this._aIndex = aIndex;
+        this._iIndex = iIndex;
     }
 
     /**
@@ -663,62 +678,52 @@ export class AbstractBatchRenderer extends ObjectRenderer
     }
 
     /**
-     * Takes the range and packs all data from `this._bufferedElements`
+     * Takes the four batching parameters of `element`, interleaves
+     * and pushes them into the batching attribute/index buffers given.
      *
      * It uses these properties: `vertexData` `uvs`, `textureId` and
      * `indicies`. It also uses the "tint" of the base-texture, if
      * present.
      *
-     * Current location for textures is taken from `baseTexture._batchLocation`.
-     *
-     * @param {number} start - first element to pack in geometry
-     * @param {number} finish - end element to pack in geometry
+     * @param {PIXI.Sprite} element - element being rendered
+     * @param {PIXI.ViewableBuffer} attributeBuffer - attribute buffer.
+     * @param {Uint16Array} indexBuffer - index buffer
+     * @param {number} aIndex - number of floats already in the attribute buffer
+     * @param {number} iIndex - number of indices already in `indexBuffer`
      */
-    packInterleavedGeometry(start, finish)
+    packInterleavedGeometry(element, attributeBuffer, indexBuffer, aIndex, iIndex)
     {
-        const {
-            _attributeBuffer: attributeBuffer,
-            _bufferedElements: elements,
-            _indexBuffer: indexBuffer,
-        } = this;
         const {
             uint32View,
             float32View,
         } = attributeBuffer;
 
-        let aIndex = this._aIndex;
-        let iIndex = this._iIndex;
-        let packedVertices = aIndex / this.vertexSize;
+        const packedVertices = aIndex / this.vertexSize;
+        const uvs = element.uvs;
+        const indicies = element.indices;
+        const vertexData = element.vertexData;
+        const textureId = element._texture.baseTexture._batchLocation;
 
-        for (let j = start; j < finish; j++)
+        const alpha = Math.min(element.worldAlpha, 1.0);
+        const argb = (alpha < 1.0
+            && element._texture.baseTexture.alphaMode)
+            ? premultiplyTint(element._tintRGB, alpha)
+            : element._tintRGB + (alpha * 255 << 24);
+
+        // lets not worry about tint! for now..
+        for (let i = 0; i < vertexData.length; i += 2)
         {
-            const element = elements[j];
-            const { uvs, indices, vertexData, worldAlpha, _tintRGB } = element;
-            const { _batchLocation, alphaMode } = element._texture.baseTexture;
-            const alpha = Math.min(worldAlpha, 1.0);
-            const argb = (alpha < 1.0 && alphaMode) ? premultiplyTint(_tintRGB, alpha) : _tintRGB + (alpha * 255 << 24);
-
-            // lets not worry about tint! for now..
-            for (let i = 0; i < vertexData.length; i += 2)
-            {
-                float32View[aIndex++] = vertexData[i];
-                float32View[aIndex++] = vertexData[i + 1];
-                float32View[aIndex++] = uvs[i];
-                float32View[aIndex++] = uvs[i + 1];
-                uint32View[aIndex++] = argb;
-                float32View[aIndex++] = _batchLocation;
-            }
-
-            for (let i = 0; i < indices.length; i++)
-            {
-                indexBuffer[iIndex++] = packedVertices + indices[i];
-            }
-
-            packedVertices += vertexData.length / 2;
-            elements[j] = null;
+            float32View[aIndex++] = vertexData[i];
+            float32View[aIndex++] = vertexData[i + 1];
+            float32View[aIndex++] = uvs[i];
+            float32View[aIndex++] = uvs[i + 1];
+            uint32View[aIndex++] = argb;
+            float32View[aIndex++] = textureId;
         }
 
-        this._aIndex = aIndex;
-        this._iIndex = iIndex;
+        for (let i = 0; i < indicies.length; i++)
+        {
+            indexBuffer[iIndex++] = packedVertices + indicies[i];
+        }
     }
 }

@@ -723,7 +723,7 @@ export class GraphicsGeometry extends BatchGeometry
                     // TODO add this to the render part..
                     nextTexture.touched = 1;// touch;
                     nextTexture._batchEnabled = TICK;
-                    nextTexture._id = textureCount;
+                    nextTexture._batchLocation = textureCount;
                     nextTexture.wrapMode = 10497;
 
                     currentGroup.textures.elements[currentGroup.textures.count++] = nextTexture;
@@ -734,7 +734,7 @@ export class GraphicsGeometry extends BatchGeometry
             currentGroup.size += data.size;
             index += data.size;
 
-            textureId = nextTexture._id;
+            textureId = nextTexture._batchLocation;
 
             this.addColors(colors, style.color, style.alpha, data.attribSize);
             this.addTextureIds(textureIds, textureId, data.attribSize);
