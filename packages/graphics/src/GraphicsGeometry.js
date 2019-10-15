@@ -517,7 +517,7 @@ export default class GraphicsGeometry extends BatchGeometry
                     nextTexture.wrapMode = WRAP_MODES.REPEAT;
                     currentTexture = nextTexture;
                     currentColor = style.color + style.alpha;
-                    currentNative = style.native;
+                    currentNative = !!style.native;
 
                     batchPart.style = style;
                     batchPart.start = index;
