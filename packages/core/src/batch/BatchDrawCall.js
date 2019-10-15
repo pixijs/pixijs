@@ -24,6 +24,13 @@ export class BatchDrawCall
     }
 }
 
+/**
+ * Used by the batcher to build texture batches.
+ * Holds list of textures and their respective locations.
+ *
+ * @class
+ * @memberof PIXI
+ */
 export class BatchTextureArray
 {
     constructor()
