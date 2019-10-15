@@ -284,21 +284,21 @@ export class AbstractBatchRenderer extends ObjectRenderer
     initFlushBuffers()
     {
         const {
-            _drawCalls,
-            _textureArrays,
+            _drawCallPool,
+            _textureArrayPool,
         } = AbstractBatchRenderer;
         // max draw calls
         const MAX_SPRITES = this.size / 4;
         // max texture arrays
         const MAX_TA = Math.floor(MAX_SPRITES / this.MAX_TEXTURES) + 1;
 
-        while (_drawCalls.length < MAX_SPRITES)
+        while (_drawCallPool.length < MAX_SPRITES)
         {
-            _drawCalls.push(new BatchDrawCall());
+            _drawCallPool.push(new BatchDrawCall());
         }
-        while (_textureArrays.length < MAX_TA)
+        while (_textureArrayPool.length < MAX_TA)
         {
-            _textureArrays.push(new BatchTextureArray());
+            _textureArrayPool.push(new BatchTextureArray());
         }
         for (let i = 0; i < this.MAX_TEXTURES; i++)
         {
@@ -348,7 +348,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
             _bufferedTextures: textures,
             MAX_TEXTURES,
         } = this;
-        const textureArrays = AbstractBatchRenderer._textureArrays;
+        const textureArrays = AbstractBatchRenderer._textureArrayPool;
         const batch = this.renderer.batch;
         const boundTextures = this._tempBoundTextures;
         const touch = this.renderer.textureGC.count;
@@ -416,7 +416,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
             _indexBuffer,
             vertexSize,
         } = this;
-        const drawCalls = AbstractBatchRenderer._drawCalls;
+        const drawCalls = AbstractBatchRenderer._drawCallPool;
 
         let dcIndex = this._dcIndex;
         let aIndex = this._aIndex;
@@ -516,7 +516,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
     {
         const dcCount = this._dcIndex;
         const { gl, state: stateSystem } = this.renderer;
-        const drawCalls = AbstractBatchRenderer._drawCalls;
+        const drawCalls = AbstractBatchRenderer._drawCallPool;
 
         let curTexArray = null;
 
@@ -559,7 +559,10 @@ export class AbstractBatchRenderer extends ObjectRenderer
         // reset elements for the next flush
         this._bufferSize = 0;
         this._vertexCount = 0;
+        this._vertexCount = 0;
         this._indexCount = 0;
+        this._attributeBuffer = null;
+        this._indexBuffer = null;
     }
 
     /**
@@ -604,7 +607,6 @@ export class AbstractBatchRenderer extends ObjectRenderer
         this._aBuffers = null;
         this._iBuffers = null;
         this._packedGeometries = null;
-        this._drawCalls = null;
 
         if (this._shader)
         {
@@ -737,7 +739,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
  * @static
  * @member {PIXI.BatchDrawCall[]}
  */
-AbstractBatchRenderer._drawCalls = [];
+AbstractBatchRenderer._drawCallPool = [];
 
 /**
  * Pool of `BatchDrawCall` objects that `flush` used
@@ -749,4 +751,4 @@ AbstractBatchRenderer._drawCalls = [];
  * @static
  * @member {PIXI.BatchTextureArray[]}
  */
-AbstractBatchRenderer._textureArrays = [];
+AbstractBatchRenderer._textureArrayPool = [];
