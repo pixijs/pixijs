@@ -322,7 +322,7 @@ export class Graphics extends Container
         options = Object.assign({
             width: 0,
             texture: Texture.WHITE,
-            color: 0x0,
+            color: 0xFFFFFF,
             alpha: 1,
             matrix: null,
             alignment: 0.5,
