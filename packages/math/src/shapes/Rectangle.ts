@@ -193,6 +193,7 @@ export class Rectangle
      *
      * @param {number} [paddingX=0] - The horizontal padding amount.
      * @param {number} [paddingY=0] - The vertical padding amount.
+     * @return {PIXI.Rectangle} Returns itself.
      */
     pad(paddingX = 0, paddingY = paddingX): void
     {
@@ -201,12 +202,14 @@ export class Rectangle
 
         this.width += paddingX * 2;
         this.height += paddingY * 2;
+        return this;
     }
 
     /**
      * Fits this rectangle around the passed one.
      *
      * @param {PIXI.Rectangle} rectangle - The rectangle to fit.
+     * @return {PIXI.Rectangle} Returns itself.
      */
     fit(rectangle: Rectangle): void
     {
@@ -219,6 +222,7 @@ export class Rectangle
         this.width = Math.max(x2 - x1, 0);
         this.y = y1;
         this.height = Math.max(y2 - y1, 0);
+        return this;
     }
 
     /**
@@ -226,6 +230,7 @@ export class Rectangle
      *
      * @param {number} [resolution=1] resolution
      * @param {number} [eps=0.001] precision
+     * @return {PIXI.Rectangle} Returns itself.
      */
     ceil(resolution = 1, eps = 0.001): void
     {
@@ -237,12 +242,14 @@ export class Rectangle
 
         this.width = x2 - this.x;
         this.height = y2 - this.y;
+        return this;
     }
 
     /**
      * Enlarges this rectangle to include the passed rectangle.
      *
      * @param {PIXI.Rectangle} rectangle - The rectangle to include.
+     * @return {PIXI.Rectangle} Returns itself.
      */
     enlarge(rectangle: Rectangle): void
     {
@@ -255,5 +262,6 @@ export class Rectangle
         this.width = x2 - x1;
         this.y = y1;
         this.height = y2 - y1;
+        return this;
     }
 }
