@@ -61,7 +61,7 @@ export class Runner
 
     /**
      * Dispatch/Broadcast Runner to all listeners added to the queue.
-     * @param {...any} [params] - optional parameters to pass to each listener
+     * @param {...any} params - optional parameters to pass to each listener
      * @return {PIXI.Runner}
      */
     public emit(a0?: any, a1?: any, a2?: any, a3?: any, a4?: any, a5?: any, a6?: any, a7?: any): this
