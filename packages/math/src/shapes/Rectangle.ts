@@ -202,6 +202,7 @@ export class Rectangle
 
         this.width += paddingX * 2;
         this.height += paddingY * 2;
+
         return this;
     }
 
@@ -222,6 +223,7 @@ export class Rectangle
         this.width = Math.max(x2 - x1, 0);
         this.y = y1;
         this.height = Math.max(y2 - y1, 0);
+
         return this;
     }
 
@@ -242,6 +244,7 @@ export class Rectangle
 
         this.width = x2 - this.x;
         this.height = y2 - this.y;
+
         return this;
     }
 
@@ -262,6 +265,7 @@ export class Rectangle
         this.width = x2 - x1;
         this.y = y1;
         this.height = y2 - y1;
+
         return this;
     }
 }
