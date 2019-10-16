@@ -195,7 +195,7 @@ export class Rectangle
      * @param {number} [paddingY=0] - The vertical padding amount.
      * @return {PIXI.Rectangle} Returns itself.
      */
-    pad(paddingX = 0, paddingY = paddingX): void
+    pad(paddingX = 0, paddingY = paddingX): this
     {
         this.x -= paddingX;
         this.y -= paddingY;
@@ -212,7 +212,7 @@ export class Rectangle
      * @param {PIXI.Rectangle} rectangle - The rectangle to fit.
      * @return {PIXI.Rectangle} Returns itself.
      */
-    fit(rectangle: Rectangle): void
+    fit(rectangle: Rectangle): this
     {
         const x1 = Math.max(this.x, rectangle.x);
         const x2 = Math.min(this.x + this.width, rectangle.x + rectangle.width);
@@ -234,7 +234,7 @@ export class Rectangle
      * @param {number} [eps=0.001] precision
      * @return {PIXI.Rectangle} Returns itself.
      */
-    ceil(resolution = 1, eps = 0.001): void
+    ceil(resolution = 1, eps = 0.001): this
     {
         const x2 = Math.ceil((this.x + this.width - eps) * resolution) / resolution;
         const y2 = Math.ceil((this.y + this.height - eps) * resolution) / resolution;
@@ -254,7 +254,7 @@ export class Rectangle
      * @param {PIXI.Rectangle} rectangle - The rectangle to include.
      * @return {PIXI.Rectangle} Returns itself.
      */
-    enlarge(rectangle: Rectangle): void
+    enlarge(rectangle: Rectangle): this
     {
         const x1 = Math.min(this.x, rectangle.x);
         const x2 = Math.max(this.x + this.width, rectangle.x + rectangle.width);
