@@ -295,7 +295,8 @@ export class Graphics extends Container
      * @param {object} [options] - Collection of options for setting line style.
      * @param {number} [options.width=0] - width of the line to draw, will update the objects stored style
      * @param {PIXI.Texture} [options.texture=PIXI.Texture.WHITE] - Texture to use
-     * @param {number} [options.color=0x0] - color of the line to draw, will update the objects stored style
+     * @param {number} [options.color=0x0] - color of the line to draw, will update the objects stored style.
+     *  Default 0xFFFFFF if texture present.
      * @param {number} [options.alpha=1] - alpha of the line to draw, will update the objects stored style
      * @param {PIXI.Matrix} [options.matrix=null] Texture matrix to transform texture
      * @param {number} [options.alignment=0.5] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outter)
@@ -322,7 +323,7 @@ export class Graphics extends Container
         options = Object.assign({
             width: 0,
             texture: Texture.WHITE,
-            color: 0xFFFFFF,
+            color: (options && options.texture) ? 0xFFFFFF : 0x0,
             alpha: 1,
             matrix: null,
             alignment: 0.5,

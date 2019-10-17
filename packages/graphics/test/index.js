@@ -44,6 +44,17 @@ describe('PIXI.Graphics', function ()
             graphics.destroy();
         });
 
+        it('should default color to black if texture not present and white if present', function ()
+        {
+            const graphics = new Graphics();
+
+            graphics.lineStyle(1);
+            expect(graphics.line.color).to.equal(0x0);
+            graphics.lineTextureStyle({ texture: Texture.WHITE, width: 1 });
+            expect(graphics.line.color).to.equal(0xFFFFFF);
+            graphics.destroy();
+        });
+
         it('should support object parameter', function ()
         {
             const graphics = new Graphics();
