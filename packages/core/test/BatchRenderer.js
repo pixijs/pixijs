@@ -22,6 +22,7 @@ describe('PIXI.BatchRenderer', function ()
     it('should pass the batching test', function ()
     {
         const renderer = new Renderer(1, 1);
+        const batchRenderer = new BatchRenderer(renderer);
         const drawCalls = [];
 
         renderer.gl.drawElements = (type, size, indexType, start) =>
@@ -60,8 +61,6 @@ describe('PIXI.BatchRenderer', function ()
 
         try
         {
-            const batchRenderer = new BatchRenderer(renderer);
-
             batchRenderer.size = 300;
             batchRenderer.contextChange();
             batchRenderer.MAX_TEXTURES = 2;
@@ -130,6 +129,7 @@ describe('PIXI.BatchRenderer', function ()
         }
         finally
         {
+            batchRenderer.destroy();
             renderer.destroy();
         }
     });
