@@ -560,7 +560,6 @@ export class AbstractBatchRenderer extends ObjectRenderer
         // reset elements for the next flush
         this._bufferSize = 0;
         this._vertexCount = 0;
-        this._vertexCount = 0;
         this._indexCount = 0;
         this._attributeBuffer = null;
         this._indexBuffer = null;
