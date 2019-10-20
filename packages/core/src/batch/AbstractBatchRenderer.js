@@ -557,12 +557,10 @@ export class AbstractBatchRenderer extends ObjectRenderer
         this.updateGeometry();
         this.drawBatches();
 
-        // reset elements for the next flush
+        // reset elements buffer for the next flush
         this._bufferSize = 0;
         this._vertexCount = 0;
         this._indexCount = 0;
-        this._attributeBuffer = null;
-        this._indexBuffer = null;
     }
 
     /**
@@ -607,6 +605,8 @@ export class AbstractBatchRenderer extends ObjectRenderer
         this._aBuffers = null;
         this._iBuffers = null;
         this._packedGeometries = null;
+        this._attributeBuffer = null;
+        this._indexBuffer = null;
 
         if (this._shader)
         {
