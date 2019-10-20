@@ -324,18 +324,6 @@ export class BaseTexture extends EventEmitter
     }
 
     /**
-     * This field was introduced in BatchRenderer for 5.0-5.1
-     * Renamed in 5.2, we cant add it to deprecation because its a hot place
-     *
-     * @member {number}
-     * @private
-     */
-    get _id()
-    {
-        return this._batchLocation;
-    }
-
-    /**
      * Changes style options of BaseTexture
      *
      * @param {PIXI.SCALE_MODES} [scaleMode] - Pixi scalemode
