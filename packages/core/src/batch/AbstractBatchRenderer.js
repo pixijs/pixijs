@@ -435,7 +435,9 @@ export class AbstractBatchRenderer extends ObjectRenderer
             const spriteBlendMode = premultiplyBlendMode[
                 tex.alphaMode ? 1 : 0][sprite.blendMode];
 
-            if (start > i && drawCall.blend !== spriteBlendMode)
+            elements[i] = null;
+
+            if (start < i && drawCall.blend !== spriteBlendMode)
             {
                 drawCall.size = iIndex - drawCall.start;
                 start = i;
@@ -451,7 +453,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
             drawCall.blend = spriteBlendMode;
         }
 
-        if (drawCall.start < finish)
+        if (start < finish)
         {
             drawCall.size = iIndex - drawCall.start;
             ++dcIndex;
