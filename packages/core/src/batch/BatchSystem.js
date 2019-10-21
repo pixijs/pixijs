@@ -88,6 +88,16 @@ export class BatchSystem extends System
         }
     }
 
+    /**
+     * Assigns batch locations to textures in array based on boundTextures state.
+     * All textures in texArray should have `_batchEnabled = _batchId`,
+     * and their count should be less than `maxTextures`.
+     *
+     * @param {PIXI.BatchTextureArray} texArray textures to bound
+     * @param {PIXI.BaseTexture[]} boundTextures current state of bound textures
+     * @param {number} batchId marker for _batchEnabled param of textures in texArray
+     * @param {number} maxTextures number of texture locations to manipulate
+     */
     boundArray(texArray, boundTextures, batchId, maxTextures)
     {
         const { elements, ids, count } = texArray;
