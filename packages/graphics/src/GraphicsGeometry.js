@@ -676,7 +676,7 @@ export class GraphicsGeometry extends BatchGeometry
 
             if (native !== !!style.native)
             {
-                native = style.native;
+                native = !!style.native;
                 drawMode = native ? DRAW_MODES.LINES : DRAW_MODES.TRIANGLES;
 
                 // force the batch to break!

@@ -8,10 +8,10 @@ uniform vec2 uClampOffset;
 
 void main(void)
 {
-    vec2 coord = mod(vTextureCoord - uClampOffset, vec2(1.0, 1.0)) + uClampOffset;
+    vec2 coord = vTextureCoord - floor(vTextureCoord - uClampOffset);
     coord = (uMapCoord * vec3(coord, 1.0)).xy;
     coord = clamp(coord, uClampFrame.xy, uClampFrame.zw);
 
-    vec4 sample = texture2D(uSampler, coord);
-    gl_FragColor = sample * uColor;
+    vec4 texSample = texture2D(uSampler, coord);
+    gl_FragColor = texSample * uColor;
 }
