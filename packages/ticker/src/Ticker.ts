@@ -284,7 +284,7 @@ export class Ticker
      * @param {TickerListener} listener - Current listener being added.
      * @returns {PIXI.Ticker} This instance of a ticker
      */
-    _addListener(listener: TickerListener): this
+    private _addListener(listener: TickerListener): this
     {
         // For attaching to head
         let current = this._head.next;
