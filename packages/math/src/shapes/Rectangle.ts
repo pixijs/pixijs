@@ -193,22 +193,26 @@ export class Rectangle
      *
      * @param {number} [paddingX=0] - The horizontal padding amount.
      * @param {number} [paddingY=0] - The vertical padding amount.
+     * @return {PIXI.Rectangle} Returns itself.
      */
-    pad(paddingX = 0, paddingY = paddingX): void
+    pad(paddingX = 0, paddingY = paddingX): this
     {
         this.x -= paddingX;
         this.y -= paddingY;
 
         this.width += paddingX * 2;
         this.height += paddingY * 2;
+
+        return this;
     }
 
     /**
      * Fits this rectangle around the passed one.
      *
      * @param {PIXI.Rectangle} rectangle - The rectangle to fit.
+     * @return {PIXI.Rectangle} Returns itself.
      */
-    fit(rectangle: Rectangle): void
+    fit(rectangle: Rectangle): this
     {
         const x1 = Math.max(this.x, rectangle.x);
         const x2 = Math.min(this.x + this.width, rectangle.x + rectangle.width);
@@ -219,6 +223,8 @@ export class Rectangle
         this.width = Math.max(x2 - x1, 0);
         this.y = y1;
         this.height = Math.max(y2 - y1, 0);
+
+        return this;
     }
 
     /**
@@ -226,8 +232,9 @@ export class Rectangle
      *
      * @param {number} [resolution=1] resolution
      * @param {number} [eps=0.001] precision
+     * @return {PIXI.Rectangle} Returns itself.
      */
-    ceil(resolution = 1, eps = 0.001): void
+    ceil(resolution = 1, eps = 0.001): this
     {
         const x2 = Math.ceil((this.x + this.width - eps) * resolution) / resolution;
         const y2 = Math.ceil((this.y + this.height - eps) * resolution) / resolution;
@@ -237,14 +244,17 @@ export class Rectangle
 
         this.width = x2 - this.x;
         this.height = y2 - this.y;
+
+        return this;
     }
 
     /**
      * Enlarges this rectangle to include the passed rectangle.
      *
      * @param {PIXI.Rectangle} rectangle - The rectangle to include.
+     * @return {PIXI.Rectangle} Returns itself.
      */
-    enlarge(rectangle: Rectangle): void
+    enlarge(rectangle: Rectangle): this
     {
         const x1 = Math.min(this.x, rectangle.x);
         const x2 = Math.max(this.x + this.width, rectangle.x + rectangle.width);
@@ -255,5 +265,7 @@ export class Rectangle
         this.width = x2 - x1;
         this.y = y1;
         this.height = y2 - y1;
+
+        return this;
     }
 }
