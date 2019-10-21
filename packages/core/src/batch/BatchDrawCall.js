@@ -1,3 +1,5 @@
+import { DRAW_MODES } from '@pixi/constants';
+
 /**
  * Used by the batcher to draw batches.
  * Each one of these contains all information required to draw a bound geometry.
@@ -11,7 +13,7 @@ export class BatchDrawCall
     {
         this.texArray = null;
         this.blend = 0;
-        this.type = 4;
+        this.type = DRAW_MODES.TRIANGLES;
 
         this.start = 0;
         this.size = 0;
