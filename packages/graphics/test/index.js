@@ -44,6 +44,17 @@ describe('PIXI.Graphics', function ()
             graphics.destroy();
         });
 
+        it('should default color to black if texture not present and white if present', function ()
+        {
+            const graphics = new Graphics();
+
+            graphics.lineStyle(1);
+            expect(graphics.line.color).to.equal(0x0);
+            graphics.lineTextureStyle({ texture: Texture.WHITE, width: 1 });
+            expect(graphics.line.color).to.equal(0xFFFFFF);
+            graphics.destroy();
+        });
+
         it('should support object parameter', function ()
         {
             const graphics = new Graphics();
@@ -736,6 +747,21 @@ describe('PIXI.Graphics', function ()
 
             geometry.updateBatches();
             expect(geometry.batches).to.have.lengthOf(2);
+        });
+
+        it('should be 1 batch if fill and line are the same', function ()
+        {
+            const graphics = new Graphics();
+
+            graphics.lineStyle(10.0, 0x00ffff);
+            graphics.beginFill(0x00ffff);
+            graphics.drawRect(50, 50, 100, 100);
+            graphics.drawRect(150, 150, 100, 100);
+
+            const geometry = graphics.geometry;
+
+            geometry.updateBatches();
+            expect(geometry.batches).to.have.lengthOf(1);
         });
     });
 });
