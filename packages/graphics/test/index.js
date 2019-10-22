@@ -314,6 +314,40 @@ describe('PIXI.Graphics', function ()
             expect(graphics.containsPoint(point2)).to.be.false;
         });
 
+        it('should handle extra shapes in holes', function ()
+        {
+            const graphics = new Graphics();
+
+            graphics.beginFill(0)
+                .moveTo(3, 3)
+                .lineTo(5, 3)
+                .lineTo(5, 5)
+                .lineTo(3, 5)
+                .beginFill(0)
+                .moveTo(0, 0)
+                .lineTo(10, 0)
+                .lineTo(10, 10)
+                .lineTo(0, 10)
+                .beginHole()
+                .moveTo(2, 2)
+                .lineTo(8, 2)
+                .lineTo(8, 8)
+                .lineTo(2, 8)
+                .endHole()
+                .beginFill(0)
+                .moveTo(5, 5)
+                .lineTo(7, 5)
+                .lineTo(7, 7)
+                .lineTo(5, 7)
+                .endFill();
+
+            expect(graphics.containsPoint(new Point(1, 1))).to.be.true;
+            expect(graphics.containsPoint(new Point(4, 4))).to.be.true;
+            expect(graphics.containsPoint(new Point(4, 6))).to.be.false;
+            expect(graphics.containsPoint(new Point(6, 4))).to.be.false;
+            expect(graphics.containsPoint(new Point(6, 6))).to.be.true;
+        });
+
         it('should take a matrix into account', function ()
         {
             const g = new Graphics();
