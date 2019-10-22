@@ -13,6 +13,25 @@ import { TickerListener } from './TickerListener';
  */
 export class Ticker
 {
+    static _shared: Ticker;
+    static _system: Ticker;
+
+    public autoStart: boolean;
+    public deltaTime: number;
+    public deltaMS: number;
+    public elapsedMS: number;
+    public lastTime: number;
+    public speed: number;
+    public started: boolean;
+
+    private _head: TickerListener;
+    private _requestId: number;
+    private _maxElapsedMS: number;
+    private _minElapsedMS: number;
+    private _protected: boolean;
+    private _lastFrame: number;
+    private _tick: (time: number) => any;
+
     constructor()
     {
         /**
@@ -40,6 +59,7 @@ export class Ticker
         /**
          * Internal value managed by maxFPS property setter and getter.
          * This is the minimum allowed milliseconds between updates.
+         * @type {number}
          * @private
          */
         this._minElapsedMS = 0;
@@ -157,7 +177,7 @@ export class Ticker
          * @private
          * @param {number} time - Time since last tick.
          */
-        this._tick = (time) =>
+        this._tick = (time: number): void =>
         {
             this._requestId = null;
 
@@ -181,7 +201,7 @@ export class Ticker
      *
      * @private
      */
-    _requestIfNeeded()
+    private _requestIfNeeded(): void
     {
         if (this._requestId === null && this._head.next)
         {
@@ -197,7 +217,7 @@ export class Ticker
      *
      * @private
      */
-    _cancelIfNeeded()
+    private _cancelIfNeeded(): void
     {
         if (this._requestId !== null)
         {
@@ -216,7 +236,7 @@ export class Ticker
      *
      * @private
      */
-    _startIfPossible()
+    private _startIfPossible(): void
     {
         if (this.started)
         {
@@ -237,7 +257,7 @@ export class Ticker
      * @param {number} [priority=PIXI.UPDATE_PRIORITY.NORMAL] - The priority for emitting
      * @returns {PIXI.Ticker} This instance of a ticker
      */
-    add(fn, context, priority = UPDATE_PRIORITY.NORMAL)
+    add(fn: (dt?: number) => any, context: any, priority = UPDATE_PRIORITY.NORMAL): this
     {
         return this._addListener(new TickerListener(fn, context, priority));
     }
@@ -250,7 +270,7 @@ export class Ticker
      * @param {number} [priority=PIXI.UPDATE_PRIORITY.NORMAL] - The priority for emitting
      * @returns {PIXI.Ticker} This instance of a ticker
      */
-    addOnce(fn, context, priority = UPDATE_PRIORITY.NORMAL)
+    addOnce(fn: (dt?: number) => any, context: any, priority = UPDATE_PRIORITY.NORMAL): this
     {
         return this._addListener(new TickerListener(fn, context, priority, true));
     }
@@ -264,7 +284,7 @@ export class Ticker
      * @param {TickerListener} listener - Current listener being added.
      * @returns {PIXI.Ticker} This instance of a ticker
      */
-    _addListener(listener)
+    private _addListener(listener: TickerListener): this
     {
         // For attaching to head
         let current = this._head.next;
@@ -309,7 +329,7 @@ export class Ticker
      * @param {*} [context] - The listener context to be removed
      * @returns {PIXI.Ticker} This instance of a ticker
      */
-    remove(fn, context)
+    remove(fn: (dt?: number) => any, context: any): this
     {
         let listener = this._head.next;
 
@@ -340,7 +360,7 @@ export class Ticker
      * Starts the ticker. If the ticker has listeners
      * a new animation frame is requested at this point.
      */
-    start()
+    start(): void
     {
         if (!this.started)
         {
@@ -353,7 +373,7 @@ export class Ticker
      * Stops the ticker. If the ticker has requested
      * an animation frame it is canceled at this point.
      */
-    stop()
+    stop(): void
     {
         if (this.started)
         {
@@ -366,7 +386,7 @@ export class Ticker
      * Destroy the ticker and don't use after this. Calling
      * this method removes all references to internal events.
      */
-    destroy()
+    destroy(): void
     {
         if (!this._protected)
         {
@@ -397,7 +417,7 @@ export class Ticker
      *
      * @param {number} [currentTime=performance.now()] - the current time of execution
      */
-    update(currentTime = performance.now())
+    update(currentTime = performance.now()): void
     {
         let elapsedMS;
 
@@ -482,7 +502,7 @@ export class Ticker
      * @member {number}
      * @readonly
      */
-    get FPS()
+    get FPS(): number
     {
         return 1000 / this.elapsedMS;
     }
@@ -498,7 +518,7 @@ export class Ticker
      * @member {number}
      * @default 10
      */
-    get minFPS()
+    get minFPS(): number
     {
         return 1000 / this._maxElapsedMS;
     }
@@ -524,7 +544,7 @@ export class Ticker
      * @member {number}
      * @default 0
      */
-    get maxFPS()
+    get maxFPS(): number
     {
         if (this._minElapsedMS)
         {
@@ -592,7 +612,7 @@ export class Ticker
      * @member {PIXI.Ticker}
      * @static
      */
-    static get shared()
+    static get shared(): Ticker
     {
         if (!Ticker._shared)
         {
@@ -615,7 +635,7 @@ export class Ticker
      * @member {PIXI.Ticker}
      * @static
      */
-    static get system()
+    static get system(): Ticker
     {
         if (!Ticker._system)
         {
