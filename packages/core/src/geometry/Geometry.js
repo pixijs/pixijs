@@ -283,8 +283,7 @@ export class Geometry
         this.dispose();
 
         this.buffers = null;
-        this.indexBuffer.destroy();
-
+        this.indexBuffer = null;
         this.attributes = null;
     }
 
