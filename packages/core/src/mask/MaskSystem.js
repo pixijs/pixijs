@@ -99,7 +99,7 @@ export class MaskSystem extends System
             this.detect(maskData);
         }
 
-        maskData.copyCounters(this.maskStack[this.maskStack.length - 1]);
+        maskData.copyCountersOrReset(this.maskStack[this.maskStack.length - 1]);
         maskData._target = target;
 
         switch (maskData.type)
@@ -113,7 +113,7 @@ export class MaskSystem extends System
                 this.renderer.stencil.push(maskData);
                 break;
             case MASK_TYPES.SPRITE:
-                maskData.copyCounters(null);
+                maskData.copyCountersOrReset(null);
                 this.pushSpriteMask(maskData);
                 this.maskStack.push(maskData);
                 break;
