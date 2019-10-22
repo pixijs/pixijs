@@ -27,6 +27,7 @@ export * from './batch/BatchPluginFactory';
 export * from './batch/BatchShaderGenerator';
 export * from './batch/BatchGeometry';
 export * from './batch/BatchDrawCall';
+export * from './batch/BatchTextureArray';
 export * from './utils/Quad';
 export * from './utils/QuadUv';
 export * from './shader/utils/checkMaxIfStatementsInShader';

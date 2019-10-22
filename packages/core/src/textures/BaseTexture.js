@@ -250,6 +250,13 @@ export class BaseTexture extends EventEmitter
         this._batchEnabled = 0;
 
         /**
+         * Location inside texture batch, used by multi-texture renderers
+         *
+         * @member {number}
+         */
+        this._batchLocation = 0;
+
+        /**
          * Fired when a not-immediately-available source finishes loading.
          *
          * @protected

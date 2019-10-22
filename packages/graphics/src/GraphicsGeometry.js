@@ -9,6 +9,7 @@ import {
 import {
     BatchGeometry,
     BatchDrawCall,
+    BatchTextureArray,
     BaseTexture } from '@pixi/core';
 
 import { DRAW_MODES, WRAP_MODES } from '@pixi/constants';
@@ -651,9 +652,14 @@ export class GraphicsGeometry extends BatchGeometry
         const colors = this.colors;
         const textureIds = this.textureIds;
 
-        let currentGroup =  DRAW_CALL_POOL.pop() || new BatchDrawCall();
+        let currentGroup =  DRAW_CALL_POOL.pop();
 
-        currentGroup.textureCount = 0;
+        if (!currentGroup)
+        {
+            currentGroup = new BatchDrawCall();
+            currentGroup.textures = new BatchTextureArray();
+        }
+        currentGroup.textures.count = 0;
         currentGroup.start = 0;
         currentGroup.size = 0;
         currentGroup.type = DRAW_MODES.TRIANGLES;
@@ -705,23 +711,28 @@ export class GraphicsGeometry extends BatchGeometry
 
                         if (currentGroup.size > 0)
                         {
-                            currentGroup = DRAW_CALL_POOL.pop() || new BatchDrawCall();
+                            currentGroup = DRAW_CALL_POOL.pop();
+                            if (!currentGroup)
+                            {
+                                currentGroup = new BatchDrawCall();
+                                currentGroup.textures = new BatchTextureArray();
+                            }
                             this.drawCalls.push(currentGroup);
                         }
 
                         currentGroup.start = index;
                         currentGroup.size = 0;
-                        currentGroup.textureCount = 0;
+                        currentGroup.textures.count = 0;
                         currentGroup.type = drawMode;
                     }
 
                     // TODO add this to the render part..
                     nextTexture.touched = 1;// touch;
                     nextTexture._batchEnabled = TICK;
-                    nextTexture._id = textureCount;
+                    nextTexture._batchLocation = textureCount;
                     nextTexture.wrapMode = 10497;
 
-                    currentGroup.textures[currentGroup.textureCount++] = nextTexture;
+                    currentGroup.textures.elements[currentGroup.textures.count++] = nextTexture;
                     textureCount++;
                 }
             }
@@ -729,7 +740,7 @@ export class GraphicsGeometry extends BatchGeometry
             currentGroup.size += data.size;
             index += data.size;
 
-            textureId = nextTexture._id;
+            textureId = nextTexture._batchLocation;
 
             this.addColors(colors, style.color, style.alpha, data.attribSize);
             this.addTextureIds(textureIds, textureId, data.attribSize);

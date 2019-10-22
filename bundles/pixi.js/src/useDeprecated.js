@@ -650,6 +650,8 @@ export function useDeprecated()
         this.update();
     };
 
+    let baseTextureIdDeprecation = false;
+
     Object.defineProperties(BaseTexture.prototype, {
         /**
          * @name PIXI.BaseTexture#hasLoaded
@@ -737,6 +739,31 @@ export function useDeprecated()
                     + ', see `PIXI.ALPHA_MODES`');
 
                 this.alphaMode = Number(value);
+            },
+        },
+        /**
+         * Batch local field, stores current texture location
+         *
+         * @name PIXI.BaseTexture#_id
+         * @deprecated since 5.2.0
+         * @type {number}
+         * @see PIXI.BaseTexture#_batchLocation
+         */
+        _id: {
+            get()
+            {
+                if (!baseTextureIdDeprecation)
+                {
+                    // #popelyshev: That property was a hot place, I don't want to call deprecation method on it if possible
+                    deprecation('5.2.0', 'PIXI.BaseTexture._id batch local field has been changed to `_batchLocation`');
+                    baseTextureIdDeprecation = true;
+                }
+
+                return this._batchLocation;
+            },
+            set(value)
+            {
+                this._batchLocation = value;
             },
         },
     });

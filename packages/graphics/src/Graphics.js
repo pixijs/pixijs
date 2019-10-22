@@ -1032,14 +1032,15 @@ export class Graphics extends Container
      */
     _renderDrawCallDirect(renderer, drawCall)
     {
-        const groupTextureCount = drawCall.textureCount;
+        const { textures, type, size, start } = drawCall;
+        const groupTextureCount = textures.count;
 
         for (let j = 0; j < groupTextureCount; j++)
         {
-            renderer.texture.bind(drawCall.textures[j], j);
+            renderer.texture.bind(textures.elements[j], j);
         }
 
-        renderer.geometry.draw(drawCall.type, drawCall.size, drawCall.start);
+        renderer.geometry.draw(type, size, start);
     }
 
     /**
