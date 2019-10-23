@@ -56,12 +56,6 @@ export class MaskSystem extends System
          * @readonly
          */
         this.alphaMaskIndex = 0;
-
-        /**
-         * Counter, whether an element tried to pop a mask with wrong target
-         * @member {number}
-         */
-        this.errorCounter = 0;
     }
 
     /**
@@ -134,8 +128,7 @@ export class MaskSystem extends System
 
         if (!maskData || maskData._target !== target)
         {
-            this.errorCounter++;
-            // we will report this incident post render
+            //TODO: add an assert when we have it
 
             return;
         }
@@ -240,20 +233,5 @@ export class MaskSystem extends System
     {
         this.renderer.filter.pop();
         this.alphaMaskIndex--;
-    }
-
-    /**
-     * Checks mask balance after frame rendering
-     */
-    postrender()
-    {
-        if (this.errorCounter > 0)
-        {
-            this.maskStack = [];
-            this.errorCounter = 0;
-
-            console.warn(
-                `PixiJS Error: Number of 'mask.pop()' that did not have corresponding pushes is ${this.errorCounter}`);
-        }
     }
 }

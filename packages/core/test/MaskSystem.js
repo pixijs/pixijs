@@ -30,20 +30,6 @@ describe('PIXI.systems.MaskSystem', function ()
         expect(this.renderer.mask.enableScissor).to.equal(true);
     });
 
-    it('should detect wrong mask push/pop', function ()
-    {
-        const context = {};
-        const context2 = {};
-        const maskObject = onePixelMask();
-
-        this.renderer.mask.push(context, maskObject);
-        this.renderer.mask.push(context2, maskObject);
-        this.renderer.mask.pop(context, maskObject);
-        this.renderer.mask.pop(context2, maskObject);
-
-        expect(this.renderer.mask.errorCounter).to.equal(2);
-    });
-
     it('should use scissor masks with axis aligned squares', function ()
     {
         const context = {};
