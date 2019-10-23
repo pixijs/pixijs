@@ -21,16 +21,17 @@ export class CanvasMaskManager
     /**
      * This method adds it to the current stack of masks.
      *
-     * @param {object} maskData - the maskData that will be pushed
+     * @param {PIXI.MaskData | PIXI.Graphics} maskData - the maskData that will be pushed
      */
     pushMask(maskData)
     {
         const renderer = this.renderer;
+        const maskObject = maskData.isMaskData ? maskData.maskObject : maskData;
 
         renderer.context.save();
 
-        const cacheAlpha = maskData.alpha;
-        const transform = maskData.transform.worldTransform;
+        const cacheAlpha = maskObject.alpha;
+        const transform = maskObject.transform.worldTransform;
         const resolution = renderer.resolution;
 
         renderer.context.setTransform(
@@ -44,9 +45,9 @@ export class CanvasMaskManager
 
         // TODO support sprite alpha masks??
         // lots of effort required. If demand is great enough..
-        if (!maskData._texture)
+        if (!maskObject._texture)
         {
-            this.renderGraphicsShape(maskData);
+            this.renderGraphicsShape(maskObject);
             renderer.context.clip();
         }
 

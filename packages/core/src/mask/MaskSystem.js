@@ -1,5 +1,7 @@
 import { System } from '../System';
+import { MaskData } from './MaskData';
 import { SpriteMaskFilter } from '../filters/spriteMask/SpriteMaskFilter';
+import { MASK_TYPES } from '@pixi/constants';
 
 /**
  * System plugin to the renderer to manage masks.
@@ -16,21 +18,6 @@ export class MaskSystem extends System
     constructor(renderer)
     {
         super(renderer);
-
-        // TODO - we don't need both!
-        /**
-         * `true` if current pushed masked is scissor
-         * @member {boolean}
-         * @readonly
-         */
-        this.scissor = false;
-
-        /**
-         * Mask data
-         * @member {PIXI.Graphics}
-         * @readonly
-         */
-        this.scissorData = null;
 
         /**
          * Target to mask
@@ -54,6 +41,15 @@ export class MaskSystem extends System
         this.alphaMaskPool = [];
 
         /**
+         * Pool of mask data
+         * @member {PIXI.MaskData[]}
+         * @readonly
+         */
+        this.maskDataPool = [];
+
+        this.maskStack = [];
+
+        /**
          * Current index of alpha mask pool
          * @member {number}
          * @default 0
@@ -63,92 +59,167 @@ export class MaskSystem extends System
     }
 
     /**
+     * Changes the mask stack that is used by this System.
+     *
+     * @param {PIXI.MaskData[]} maskStack - The mask stack
+     */
+    setMaskStack(maskStack)
+    {
+        this.maskStack = maskStack;
+        this.renderer.scissor.setMaskStack(maskStack);
+        this.renderer.stencil.setMaskStack(maskStack);
+    }
+
+    /**
      * Applies the Mask and adds it to the current filter stack.
+     * Renderer batch must be flushed beforehand.
      *
      * @param {PIXI.DisplayObject} target - Display Object to push the mask to
-     * @param {PIXI.Sprite|PIXI.Graphics} maskData - The masking data.
+     * @param {PIXI.MaskData|PIXI.Sprite|PIXI.Graphics|PIXI.DisplayObject} maskData - The masking data.
      */
     push(target, maskData)
     {
-        // TODO the root check means scissor rect will not
-        // be used on render textures more info here:
-        // https://github.com/pixijs/pixi.js/pull/3545
-
-        if (maskData.isSprite)
+        if (!maskData.isMaskData)
         {
-            this.pushSpriteMask(target, maskData);
+            const d = this.maskDataPool.pop() || new MaskData();
+
+            d.pooled = true;
+            d.maskObject = maskData;
+            maskData = d;
         }
-        else if (this.enableScissor
-            && !this.scissor
-            && !this.renderer.renderTexture.current
-            && !this.renderer.stencil.stencilMaskStack.length
-            && maskData.isFastRect())
+
+        if (maskData.autoDetect)
         {
-            const matrix = maskData.worldTransform;
-
-            let rot = Math.atan2(matrix.b, matrix.a);
-
-            // use the nearest degree!
-            rot = Math.round(rot * (180 / Math.PI));
-
-            if (rot % 90)
-            {
-                this.pushStencilMask(maskData);
-            }
-            else
-            {
-                this.pushScissorMask(target, maskData);
-            }
+            this.detect(maskData);
         }
-        else
+
+        maskData.copyCountersOrReset(this.maskStack[this.maskStack.length - 1]);
+        maskData._target = target;
+
+        switch (maskData.type)
         {
-            this.pushStencilMask(maskData);
+            case MASK_TYPES.SCISSOR:
+                this.maskStack.push(maskData);
+                this.renderer.scissor.push(maskData);
+                break;
+            case MASK_TYPES.STENCIL:
+                this.maskStack.push(maskData);
+                this.renderer.stencil.push(maskData);
+                break;
+            case MASK_TYPES.SPRITE:
+                maskData.copyCountersOrReset(null);
+                this.pushSpriteMask(maskData);
+                this.maskStack.push(maskData);
+                break;
+            default:
+                break;
         }
     }
 
     /**
      * Removes the last mask from the mask stack and doesn't return it.
+     * Renderer batch must be flushed beforehand.
      *
      * @param {PIXI.DisplayObject} target - Display Object to pop the mask from
-     * @param {PIXI.Sprite|PIXI.Graphics} maskData - The masking data.
      */
-    pop(target, maskData)
+    pop(target)
     {
-        if (maskData.isSprite)
+        const maskData = this.maskStack.pop();
+
+        if (!maskData || maskData._target !== target)
         {
-            this.popSpriteMask(target, maskData);
+            // TODO: add an assert when we have it
+
+            return;
         }
-        else if (this.scissor)
+
+        switch (maskData.type)
         {
-            this.popScissorMask(target, maskData);
+            case MASK_TYPES.SCISSOR:
+                this.renderer.scissor.pop();
+                break;
+            case MASK_TYPES.STENCIL:
+                this.renderer.stencil.pop(maskData.maskObject);
+                break;
+            case MASK_TYPES.SPRITE:
+                this.popSpriteMask();
+                break;
+            default:
+                break;
         }
-        else
+
+        maskData.reset();
+
+        if (maskData.pooled)
         {
-            this.popStencilMask(target, maskData);
+            this.maskDataPool.push(maskData);
+        }
+    }
+
+    /**
+     * Sets type of MaskData based on its maskObject
+     * @param {PIXI.MaskData} maskData
+     */
+    detect(maskData)
+    {
+        const maskObject = maskData.maskObject;
+
+        if (maskObject.isSprite)
+        {
+            maskData.type = MASK_TYPES.SPRITE;
+
+            return;
+        }
+        maskData.type = MASK_TYPES.STENCIL;
+        // detect scissor in graphics
+        if (this.enableScissor
+            && maskObject.isFastRect
+            && maskObject.isFastRect())
+        {
+            const matrix = maskObject.worldTransform;
+
+            // TODO: move the check to the matrix itself
+            // we are checking that its orthogonal and x rotation is 0 90 180 or 270
+
+            let rotX = Math.atan2(matrix.b, matrix.a);
+            let rotXY = Math.atan2(matrix.d, matrix.c);
+
+            // use the nearest degree to 0.01
+            rotX = Math.round(rotX * (180 / Math.PI) * 100);
+            rotXY = Math.round(rotXY * (180 / Math.PI) * 100) - rotX;
+
+            rotX = ((rotX % 9000) + 9000) % 9000;
+            rotXY = ((rotXY % 18000) + 18000) % 18000;
+
+            if (rotX === 0 && rotXY === 9000)
+            {
+                maskData.type = MASK_TYPES.SCISSOR;
+            }
         }
     }
 
     /**
      * Applies the Mask and adds it to the current filter stack.
      *
-     * @param {PIXI.RenderTexture} target - Display Object to push the sprite mask to
-     * @param {PIXI.Sprite} maskData - Sprite to be used as the mask
+     * @param {PIXI.MaskData} maskData - Sprite to be used as the mask
      */
-    pushSpriteMask(target, maskData)
+    pushSpriteMask(maskData)
     {
+        const { maskObject } = maskData;
+        const target = maskData._target;
         let alphaMaskFilter = this.alphaMaskPool[this.alphaMaskIndex];
 
         if (!alphaMaskFilter)
         {
-            alphaMaskFilter = this.alphaMaskPool[this.alphaMaskIndex] = [new SpriteMaskFilter(maskData)];
+            alphaMaskFilter = this.alphaMaskPool[this.alphaMaskIndex] = [new SpriteMaskFilter(maskObject)];
         }
 
         alphaMaskFilter[0].resolution = this.renderer.resolution;
-        alphaMaskFilter[0].maskSprite = maskData;
+        alphaMaskFilter[0].maskSprite = maskObject;
 
         const stashFilterArea = target.filterArea;
 
-        target.filterArea = maskData.getBounds(true);
+        target.filterArea = maskObject.getBounds(true);
         this.renderer.filter.push(target, alphaMaskFilter);
         target.filterArea = stashFilterArea;
 
@@ -157,88 +228,10 @@ export class MaskSystem extends System
 
     /**
      * Removes the last filter from the filter stack and doesn't return it.
-     *
      */
     popSpriteMask()
     {
         this.renderer.filter.pop();
         this.alphaMaskIndex--;
-    }
-
-    /**
-     * Applies the Mask and adds it to the current filter stack.
-     *
-     * @param {PIXI.Sprite|PIXI.Graphics} maskData - The masking data.
-     */
-    pushStencilMask(maskData)
-    {
-        this.renderer.batch.flush();
-        this.renderer.stencil.pushStencil(maskData);
-    }
-
-    /**
-     * Removes the last filter from the filter stack and doesn't return it.
-     *
-     */
-    popStencilMask()
-    {
-        // this.renderer.currentRenderer.stop();
-        this.renderer.stencil.popStencil();
-    }
-
-    /**
-     *
-     * @param {PIXI.DisplayObject} target - Display Object to push the mask to
-     * @param {PIXI.Graphics} maskData - The masking data.
-     */
-    pushScissorMask(target, maskData)
-    {
-        maskData.renderable = true;
-
-        const bounds = maskData.getBounds(true);
-
-        maskData.renderable = false;
-
-        this.renderer.gl.enable(this.renderer.gl.SCISSOR_TEST);
-
-        const resolution = this.renderer.resolution;
-
-        let y;
-
-        if (this.renderer.renderingToScreen)
-        {
-            y = this.renderer.height - ((bounds.y + bounds.height) * resolution);
-        }
-        else
-        {
-            y = bounds.y * resolution;
-        }
-
-        this.renderer.gl.scissor(
-            bounds.x * resolution,
-            y,
-            bounds.width * resolution,
-            bounds.height * resolution
-        );
-
-        this.scissorRenderTarget = target;
-        this.scissorData = maskData;
-        this.scissor = true;
-    }
-
-    /**
-     * Pop scissor mask
-     *
-     */
-    popScissorMask()
-    {
-        this.scissorRenderTarget = null;
-        this.scissorData = null;
-        this.scissor = false;
-
-        // must be scissor!
-        const { gl } = this.renderer;
-
-        gl.disable(gl.SCISSOR_TEST);
     }
 }

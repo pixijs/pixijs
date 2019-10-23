@@ -349,3 +349,23 @@ export enum PRECISION {
     MEDIUM = 'mediump',
     HIGH = 'highp',
 }
+
+/**
+ * Constants for mask implementations.
+ * We use `type` suffix because it leads to very different behaviours
+ *
+ * @name MASK_TYPES
+ * @memberof PIXI
+ * @static
+ * @enum {number}
+ * @property {number} NONE - Mask is ignored
+ * @property {number} SCISSOR - Scissor mask, rectangle on screen, cheap
+ * @property {number} STENCIL - Stencil mask, 1-bit, medium, works only if renderer supports stencil
+ * @property {number} SPRITE - Mask that uses SpriteMaskFilter, uses temporary RenderTexture
+ */
+export enum MASK_TYPES {
+    NONE = 0,
+    SCISSOR = 1,
+    STENCIL = 2,
+    SPRITE = 3,
+}
