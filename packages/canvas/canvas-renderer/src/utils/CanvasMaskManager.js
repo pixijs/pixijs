@@ -26,12 +26,7 @@ export class CanvasMaskManager
     pushMask(maskData)
     {
         const renderer = this.renderer;
-        let maskObject = maskData;
-
-        if (maskData.isMaskData)
-        {
-            maskObject = maskData.maskObject;
-        }
+        const maskObject = maskData.isMaskData ? maskData.maskObject : maskData;
 
         renderer.context.save();
 
