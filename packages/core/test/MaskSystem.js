@@ -1,4 +1,4 @@
-const { Renderer, MaskData } = require('../');
+const { Renderer, MaskData, RenderTexture } = require('../');
 const { Rectangle, Matrix } = require('@pixi/math');
 
 describe('PIXI.systems.MaskSystem', function ()
@@ -7,7 +7,7 @@ describe('PIXI.systems.MaskSystem', function ()
     {
         return {
             isFastRect() { return true; },
-            worldTransform: worldTransform || { a: 1, b: 0, c: 0, d: 1 },
+            worldTransform: worldTransform || Matrix.IDENTITY,
             getBounds() { return new Rectangle(0, 0, 1, 1); },
             render() { /* nothing*/ },
         };
@@ -98,7 +98,7 @@ describe('PIXI.systems.MaskSystem', function ()
         this.renderer.mask.pop(context, maskObject);
     });
 
-    it('should apply scissor with transform', function ()
+    it('should apply scissor with transform on canvas or renderTexture', function ()
     {
         const context = {};
         const maskObject =  {
@@ -111,14 +111,25 @@ describe('PIXI.systems.MaskSystem', function ()
         this.renderer.resolution = 2;
         this.renderer.resize(10, 10);
 
+        const rt = RenderTexture.create({ width: 10, height: 10, resolution: 3 });
         const scissor = sinon.spy(this.renderer.gl, 'scissor');
 
         this.renderer.projection.transform = new Matrix(1, 0, 0, 1, 0.5, 1);
         this.renderer.mask.push(context, maskObject);
         this.renderer.mask.pop(context, maskObject);
 
-        expect(scissor.calledOnce).to.be.true;
-        // Y is 2 because x=2 h=10 and renderer H=20 is inverted , 2-12 becomes 18-8, e.g. Y=8
+        // now , lets try it for renderTexture
+        this.renderer.renderTexture.bind(rt);
+
+        this.renderer.mask.push(context, maskObject);
+        this.renderer.mask.pop(context, maskObject);
+
+        expect(scissor.calledTwice).to.be.true;
+        // result Y is 2 because after transform y=8 h=10 and renderer H=20 is inverted , 8-18 becomes 12-2, e.g. Y=2
         expect(scissor.args[0]).to.eql([5, 2, 12, 10]);
+        // resolution is 3 , and Y is not reversed
+        expect(scissor.args[1]).to.eql([7.5, 12, 18, 15]);
+
+        rt.destroy(true);
     });
 });

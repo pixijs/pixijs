@@ -128,7 +128,7 @@ export class MaskSystem extends System
 
         if (!maskData || maskData._target !== target)
         {
-            //TODO: add an assert when we have it
+            // TODO: add an assert when we have it
 
             return;
         }
