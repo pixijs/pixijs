@@ -1,5 +1,5 @@
 const { Renderer, MaskData } = require('../');
-const { Rectangle } = require('@pixi/math');
+const { Rectangle, Matrix } = require('@pixi/math');
 
 describe('PIXI.systems.MaskSystem', function ()
 {
@@ -110,5 +110,29 @@ describe('PIXI.systems.MaskSystem', function ()
         expect(this.renderer.scissor.getStackLength()).to.equal(0);
 
         this.renderer.mask.pop(context, maskObject);
+    });
+
+    it('should apply scissor with transform', function ()
+    {
+        const context = {};
+        const maskObject =  {
+            isFastRect() { return true; },
+            worldTransform: new Matrix(1, 0, 0, 1),
+            getBounds() { return new Rectangle(2, 3, 6, 5); },
+            render() { /* nothing*/ },
+        };
+
+        this.renderer.resolution = 2;
+        this.renderer.resize(10, 10);
+
+        const scissor = sinon.spy(this.renderer.gl, 'scissor');
+
+        this.renderer.projection.transform = new Matrix(1, 0, 0, 1, 0.5, 1);
+        this.renderer.mask.push(context, maskObject);
+        this.renderer.mask.pop(context, maskObject);
+
+        expect(scissor.calledOnce).to.be.true;
+        // Y is 2 because x=2 h=10 and renderer H=20 is inverted , 2-12 becomes 18-8, e.g. Y=8
+        expect(scissor.args[0]).to.eql([5, 2, 12, 10]);
     });
 });
