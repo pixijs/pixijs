@@ -698,6 +698,10 @@ export class DisplayObject extends EventEmitter
         }
 
         this._mask = value;
+        if (this.parent)
+        {
+            this.parent._boundsID++;
+        }
 
         if (this._mask)
         {
