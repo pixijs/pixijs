@@ -1,5 +1,6 @@
-const { Renderer, MaskData, RenderTexture } = require('../');
+const { MASK_TYPES } = require('@pixi/constants');
 const { Rectangle, Matrix } = require('@pixi/math');
+const { Renderer, MaskData, RenderTexture, Filter, Texture } = require('../');
 
 describe('PIXI.systems.MaskSystem', function ()
 {
@@ -86,7 +87,7 @@ describe('PIXI.systems.MaskSystem', function ()
         }
     });
 
-    it('should not use scissor masks with non axis aligned sqares', function ()
+    it('should not use scissor masks with non axis aligned squares', function ()
     {
         const context = {};
         const maskObject = onePixelMask({ a: 0.1, b: 2, c: 2, d: -0.1 });
@@ -103,7 +104,7 @@ describe('PIXI.systems.MaskSystem', function ()
         const context = {};
         const maskObject =  {
             isFastRect() { return true; },
-            worldTransform: new Matrix(1, 0, 0, 1),
+            worldTransform: Matrix.IDENTITY,
             getBounds() { return new Rectangle(2, 3, 6, 5); },
             render() { /* nothing*/ },
         };
@@ -131,5 +132,55 @@ describe('PIXI.systems.MaskSystem', function ()
         expect(scissor.args[1]).to.eql([7.5, 12, 18, 15]);
 
         rt.destroy(true);
+    });
+
+    it('should correctly calculate alpha mask area if filter is present', function ()
+    {
+        // the bug was fixed in #5444
+        this.renderer.resize(10, 10);
+
+        const filteredObject = {
+            getBounds() { return new Rectangle(0, 0, 10, 10); },
+            render() { /* nothing*/ },
+        };
+        const maskBounds = new Rectangle(2, 3, 6, 5);
+        const maskObject = {
+            isSprite: true,
+            _texture: Texture.WHITE,
+            get texture() { return this._texture; },
+            anchor: { x: 0, y: 0 },
+            isFastRect() { return true; },
+            worldTransform: Matrix.IDENTITY,
+            getBounds() { return maskBounds.clone(); },
+        };
+        const filters = [new Filter()];
+        const maskSystem = this.renderer.mask;
+
+        for (let i = 0; i < 6; i++)
+        {
+            this.renderer.filter.push(filteredObject, filters);
+            maskSystem.push(filteredObject, maskObject);
+            expect(maskSystem.maskStack.length).to.equal(1);
+            expect(maskSystem.maskStack[0].type).to.equal(MASK_TYPES.SPRITE);
+            expect(this.renderer.renderTexture.current).to.be.notnull;
+
+            const filterArea = this.renderer.renderTexture.current.filterFrame;
+            const expected = maskBounds.clone();
+
+            expected.fit(filteredObject.getBounds());
+            expect(filterArea).to.be.notnull;
+            expect(filterArea.x).to.equal(expected.x);
+            expect(filterArea.y).to.equal(expected.y);
+            expect(filterArea.width).to.equal(expected.width);
+            expect(filterArea.height).to.equal(expected.height);
+
+            maskSystem.pop(filteredObject);
+            this.renderer.filter.pop();
+            expect(maskSystem.maskStack.length).to.equal(0);
+            expect(this.renderer.renderTexture.current).to.be.null;
+
+            maskBounds.x += 1.0;
+            maskBounds.y += 0.5;
+        }
     });
 });
