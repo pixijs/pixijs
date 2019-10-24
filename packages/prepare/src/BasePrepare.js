@@ -346,21 +346,22 @@ function findMultipleBaseTextures(item, queue)
 }
 
 /**
- * Built-in hook to find BaseTextures from Sprites.
+ * Built-in hook to find BaseTextures from Texture.
  *
  * @private
- * @param {PIXI.DisplayObject} item - Display object to check
+ * @param {PIXI.Texture} item - Display object to check
  * @param {Array<*>} queue - Collection of items to upload
  * @return {boolean} if a PIXI.Texture object was found.
  */
 function findBaseTexture(item, queue)
 {
-    // Objects with textures, like Sprites/Text
-    if (item instanceof BaseTexture)
+    if (item.baseTexture instanceof BaseTexture)
     {
-        if (queue.indexOf(item) === -1)
+        const texture = item.baseTexture;
+
+        if (queue.indexOf(texture) === -1)
         {
-            queue.push(item);
+            queue.push(texture);
         }
 
         return true;
