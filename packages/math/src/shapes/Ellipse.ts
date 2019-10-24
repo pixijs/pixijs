@@ -9,6 +9,12 @@ import { SHAPES } from '../const';
  */
 export class Ellipse
 {
+    public x: number;
+    public y: number;
+    public width: number;
+    public height: number;
+    public readonly type: number;
+
     /**
      * @param {number} [x=0] - The X coordinate of the center of this ellipse
      * @param {number} [y=0] - The Y coordinate of the center of this ellipse
@@ -57,7 +63,7 @@ export class Ellipse
      *
      * @return {PIXI.Ellipse} a copy of the ellipse
      */
-    clone()
+    clone(): Ellipse
     {
         return new Ellipse(this.x, this.y, this.width, this.height);
     }
@@ -69,7 +75,7 @@ export class Ellipse
      * @param {number} y - The Y coordinate of the point to test
      * @return {boolean} Whether the x/y coords are within this ellipse
      */
-    contains(x, y)
+    contains(x: number, y: number): boolean
     {
         if (this.width <= 0 || this.height <= 0)
         {
@@ -91,7 +97,7 @@ export class Ellipse
      *
      * @return {PIXI.Rectangle} the framing rectangle
      */
-    getBounds()
+    getBounds(): Rectangle
     {
         return new Rectangle(this.x - this.width, this.y - this.height, this.width, this.height);
     }

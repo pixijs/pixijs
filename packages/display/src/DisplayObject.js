@@ -184,6 +184,12 @@ export class DisplayObject extends EventEmitter
          * @member {boolean}
          */
         this.isSprite = false;
+
+        /**
+         * Does any other displayObject use this object as a mask?
+         * @member {boolean}
+         */
+        this.isMask = false;
     }
 
     /**
@@ -456,12 +462,13 @@ export class DisplayObject extends EventEmitter
         this.transform = null;
 
         this.parent = null;
-
         this._bounds = null;
         this._currentBounds = null;
         this._mask = null;
 
+        this.filters = null;
         this.filterArea = null;
+        this.hitArea = null;
 
         this.interactive = false;
         this.interactiveChildren = false;
@@ -692,16 +699,20 @@ export class DisplayObject extends EventEmitter
     {
         if (this._mask)
         {
-            this._mask.renderable = true;
-            this._mask.isMask = false;
+            const maskObject = this._mask.maskObject || this._mask;
+
+            maskObject.renderable = true;
+            maskObject.isMask = false;
         }
 
         this._mask = value;
 
         if (this._mask)
         {
-            this._mask.renderable = false;
-            this._mask.isMask = true;
+            const maskObject = this._mask.maskObject || this._mask;
+
+            maskObject.renderable = false;
+            maskObject.isMask = true;
         }
     }
 }

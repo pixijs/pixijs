@@ -189,12 +189,15 @@ export class CanvasRenderer extends AbstractRenderer
             if (transform)
             {
                 transform.copyTo(tempWt);
-
-                // lets not forget to flag the parent transform as dirty...
-                this._tempDisplayObjectParent.transform._worldID = -1;
+                // Canvas Renderer doesn't use "context.translate"
+                // nor does it store current translation in projectionSystem
+                // we re-calculate all matrices,
+                // its not like CanvasRenderer can survive more than 1000 elements
+                displayObject.transform._parentID = -1;
             }
             else
             {
+                // in this case matrix cache in displayObject works like expected
                 tempWt.identity();
             }
 
@@ -202,6 +205,12 @@ export class CanvasRenderer extends AbstractRenderer
 
             displayObject.updateTransform();
             displayObject.parent = cacheParent;
+            if (transform)
+            {
+                // Clear the matrix cache one more time,
+                // we dont have our computations to affect standard "transform=null" case
+                displayObject.transform._parentID = -1;
+            }
             // displayObject.hitArea = //TODO add a temp hit area
         }
 

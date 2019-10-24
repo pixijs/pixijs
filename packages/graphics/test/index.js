@@ -1,8 +1,9 @@
 // const MockPointer = require('../interaction/MockPointer');
 const { Renderer, BatchRenderer, Texture } = require('@pixi/core');
-const { Graphics, GRAPHICS_CURVES } = require('../');
+const { Graphics, GRAPHICS_CURVES, FillStyle, LineStyle, graphicsUtils } = require('../');
+const { FILL_COMMANDS, buildLine } = graphicsUtils;
 const { BLEND_MODES } = require('@pixi/constants');
-const { Point, Matrix } = require('@pixi/math');
+const { Point, Matrix, SHAPES } = require('@pixi/math');
 const { skipHello } = require('@pixi/utils');
 
 Renderer.registerPlugin('batch', BatchRenderer);
@@ -40,6 +41,17 @@ describe('PIXI.Graphics', function ()
             expect(graphics.line.alpha).to.equal(0.5);
             expect(graphics.line.native).to.equal(true);
 
+            graphics.destroy();
+        });
+
+        it('should default color to black if texture not present and white if present', function ()
+        {
+            const graphics = new Graphics();
+
+            graphics.lineStyle(1);
+            expect(graphics.line.color).to.equal(0x0);
+            graphics.lineTextureStyle({ texture: Texture.WHITE, width: 1 });
+            expect(graphics.line.color).to.equal(0xFFFFFF);
             graphics.destroy();
         });
 
@@ -114,6 +126,38 @@ describe('PIXI.Graphics', function ()
             expect(graphics.line.visible).to.equal(false);
 
             graphics.destroy();
+        });
+    });
+
+    describe('utils', function ()
+    {
+        it('FILL_COMMADS should be filled', function ()
+        {
+            expect(FILL_COMMANDS).to.not.be.null;
+
+            expect(FILL_COMMANDS[SHAPES.POLY]).to.not.be.null;
+            expect(FILL_COMMANDS[SHAPES.CIRC]).to.not.be.null;
+            expect(FILL_COMMANDS[SHAPES.ELIP]).to.not.be.null;
+            expect(FILL_COMMANDS[SHAPES.RECT]).to.not.be.null;
+            expect(FILL_COMMANDS[SHAPES.RREC]).to.not.be.null;
+        });
+
+        it('buildLine should execute without throws', function ()
+        {
+            const graphics = new Graphics();
+
+            graphics.lineStyle({ width: 2, color: 0xff0000 });
+            graphics.drawRect(0, 0, 10, 10);
+
+            const geometry = graphics.geometry;
+            const data = geometry.graphicsData[0];
+
+            // native = false
+            expect(function () { buildLine(data, geometry); }).to.not.throw();
+
+            data.lineStyle.native = true;
+            // native = true
+            expect(function () { buildLine(data, geometry); }).to.not.throw();
         });
     });
 
@@ -268,6 +312,40 @@ describe('PIXI.Graphics', function ()
 
             expect(graphics.containsPoint(point1)).to.be.true;
             expect(graphics.containsPoint(point2)).to.be.false;
+        });
+
+        it('should handle extra shapes in holes', function ()
+        {
+            const graphics = new Graphics();
+
+            graphics.beginFill(0)
+                .moveTo(3, 3)
+                .lineTo(5, 3)
+                .lineTo(5, 5)
+                .lineTo(3, 5)
+                .beginFill(0)
+                .moveTo(0, 0)
+                .lineTo(10, 0)
+                .lineTo(10, 10)
+                .lineTo(0, 10)
+                .beginHole()
+                .moveTo(2, 2)
+                .lineTo(8, 2)
+                .lineTo(8, 8)
+                .lineTo(2, 8)
+                .endHole()
+                .beginFill(0)
+                .moveTo(5, 5)
+                .lineTo(7, 5)
+                .lineTo(7, 7)
+                .lineTo(5, 7)
+                .endFill();
+
+            expect(graphics.containsPoint(new Point(1, 1))).to.be.true;
+            expect(graphics.containsPoint(new Point(4, 4))).to.be.true;
+            expect(graphics.containsPoint(new Point(4, 6))).to.be.false;
+            expect(graphics.containsPoint(new Point(6, 4))).to.be.false;
+            expect(graphics.containsPoint(new Point(6, 6))).to.be.true;
         });
 
         it('should take a matrix into account', function ()
@@ -604,6 +682,37 @@ describe('PIXI.Graphics', function ()
 
     describe('geometry', function ()
     {
+        it('validateBatching should return false if any of textures is invalid', function ()
+        {
+            const graphics = new Graphics();
+            const invalidTex = Texture.EMPTY;
+            const validTex = Texture.WHITE;
+
+            graphics.beginTextureFill({ texture: invalidTex });
+            graphics.drawRect(0, 0, 10, 10);
+            graphics.beginTextureFill({ texture: validTex });
+            graphics.drawRect(0, 0, 10, 10);
+
+            const geometry = graphics.geometry;
+
+            expect(geometry.validateBatching()).to.be.false;
+        });
+
+        it('validateBatching should return true if all textures is valid', function ()
+        {
+            const graphics = new Graphics();
+            const validTex = Texture.WHITE;
+
+            graphics.beginTextureFill({ texture: validTex });
+            graphics.drawRect(0, 0, 10, 10);
+            graphics.beginTextureFill({ texture: validTex });
+            graphics.drawRect(0, 0, 10, 10);
+
+            const geometry = graphics.geometry;
+
+            expect(geometry.validateBatching()).to.be.true;
+        });
+
         it('should be batchable if graphicsData is empty', function ()
         {
             const graphics = new Graphics();
@@ -611,6 +720,82 @@ describe('PIXI.Graphics', function ()
 
             geometry.updateBatches();
             expect(geometry.batchable).to.be.true;
+        });
+
+        it('_compareStyles should return true for identical styles', function ()
+        {
+            const graphics = new Graphics();
+            const geometry = graphics.geometry;
+
+            const first = new FillStyle();
+
+            first.color = 0xff00ff;
+            first.alpha = 0.1;
+            first.visible = true;
+
+            const second = first.clone();
+
+            expect(geometry._compareStyles(first, second)).to.be.true;
+
+            const firstLine = new LineStyle();
+
+            firstLine.color = 0xff00ff;
+            firstLine.native = false;
+            firstLine.alignment = 1;
+
+            const secondLine = firstLine.clone();
+
+            expect(geometry._compareStyles(firstLine, secondLine)).to.be.true;
+        });
+
+        it('should be 1 batch for same styles', function ()
+        {
+            const graphics = new Graphics();
+
+            graphics.beginFill(0xff00ff, 0.5);
+            graphics.drawRect(0, 0, 20, 20);
+            graphics.drawRect(100, 0, 20, 20);
+
+            const geometry = graphics.geometry;
+
+            geometry.updateBatches();
+            expect(geometry.batches).to.have.lengthOf(1);
+        });
+
+        it('should be 2 batches for 2 different styles', function ()
+        {
+            const graphics = new Graphics();
+
+            // first style
+            graphics.beginFill(0xff00ff, 0.5);
+            graphics.drawRect(0, 0, 20, 20);
+
+            // second style
+            graphics.beginFill(0x0, 0.5);
+            graphics.drawRect(100, 0, 20, 20);
+
+            // third shape with same style
+            graphics.drawRect(0, 0, 20, 20);
+
+            const geometry = graphics.geometry;
+
+            geometry.updateBatches();
+            expect(geometry.batches).to.have.lengthOf(2);
+        });
+
+        it('should be 1 batch if fill and line are the same', function ()
+        {
+            const graphics = new Graphics();
+
+            graphics.lineStyle(10.0, 0x00ffff);
+            graphics.beginFill(0x00ffff);
+            graphics.drawRect(50, 50, 100, 100);
+            graphics.drawRect(150, 150, 100, 100);
+
+            const geometry = graphics.geometry;
+
+            geometry.updateBatches();
+            expect(geometry.batches).to.have.lengthOf(1);
         });
     });
 });

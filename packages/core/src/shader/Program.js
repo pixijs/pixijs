@@ -222,7 +222,7 @@ export class Program
      *
      * @param {string} [vertexSrc] - The source of the vertex shader.
      * @param {string} [fragmentSrc] - The source of the fragment shader.
-     * @param {object} [uniforms] - Custom uniforms to use to augment the built-in ones.
+     * @param {string} [name=pixi-shader] - Name for shader
      *
      * @returns {PIXI.Program} an shiny new Pixi shader!
      */

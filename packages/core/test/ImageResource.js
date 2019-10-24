@@ -1,4 +1,4 @@
-const { resources } = require('../');
+const { resources, BaseTexture, Renderer } = require('../');
 const { settings } = require('@pixi/settings');
 const { ImageResource } = resources;
 const path = require('path');
@@ -131,6 +131,53 @@ describe('PIXI.resources.ImageResource', function ()
             expect(resource.valid).to.be.true;
             expect(resource.bitmap).to.be.null;
             settings.CREATE_IMAGE_BITMAP = old;
+        });
+    });
+
+    describe('alphaMode behaviour', function ()
+    {
+        before(function ()
+        {
+            this.renderer = new Renderer();
+        });
+
+        after(function ()
+        {
+            this.renderer.destroy();
+            this.renderer = null;
+        });
+
+        it('should override BaseTexture alphaMode if specified', function ()
+        {
+            const image = new Image();
+            const resource = new ImageResource(image, { autoLoad: false, alphaMode: 2 });
+            const baseTexture = new BaseTexture(resource);
+
+            image.src = this.slugUrl;
+
+            return resource.load(false).then(() =>
+            {
+                this.renderer.texture.bind(baseTexture);
+                expect(baseTexture.alphaMode).to.equal(2);
+            });
+        });
+
+        it('should not override BaseTexture alphaMode if not specified', function ()
+        {
+            const image = new Image();
+            const resource = new ImageResource(image, { autoLoad: false });
+            const baseTexture = new BaseTexture(resource);
+
+            baseTexture.alphaMode = 2;
+            expect(resource.alphaMode).to.be.null;
+
+            image.src = this.slugUrl;
+
+            return resource.load(false).then(() =>
+            {
+                this.renderer.texture.bind(baseTexture);
+                expect(baseTexture.alphaMode).to.equal(2);
+            });
         });
     });
 });

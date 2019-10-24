@@ -23,7 +23,7 @@ const vy = [1, 1, 0, -1, -1, -1, 0, 1, -1, -1, 0, 1, 1, 1, 0, -1];
  * @type number[][]
  * @private
  */
-const rotationCayley = [];
+const rotationCayley: number[][] = [];
 
 /**
  * Matrices for each `GD8Symmetry` rotation.
@@ -31,7 +31,7 @@ const rotationCayley = [];
  * @type Matrix[]
  * @private
  */
-const rotationMatrices = [];
+const rotationMatrices: Matrix[] = [];
 
 /*
  * Alias for {@code Math.sign}.
@@ -42,11 +42,11 @@ const signum = Math.sign;
  * Initializes `rotationCayley` and `rotationMatrices`. It is called
  * only once below.
  */
-function init()
+function init(): void
 {
     for (let i = 0; i < 16; i++)
     {
-        const row = [];
+        const row: number[] = [];
 
         rotationCayley.push(row);
 
@@ -82,6 +82,7 @@ function init()
 
 init();
 
+type GD8Symmetry = number;
 /**
  * @memberof PIXI
  * @typedef {number} GD8Symmetry
@@ -232,7 +233,7 @@ export const groupD8 = {
      * @return {PIXI.GD8Symmetry} The X-component of the U-axis
      *    after rotating the axes.
      */
-    uX: (ind) => ux[ind],
+    uX: (ind: GD8Symmetry): GD8Symmetry => ux[ind],
 
     /**
      * @memberof PIXI.groupD8
@@ -240,7 +241,7 @@ export const groupD8 = {
      * @return {PIXI.GD8Symmetry} The Y-component of the U-axis
      *    after rotating the axes.
      */
-    uY: (ind) => uy[ind],
+    uY: (ind: GD8Symmetry): GD8Symmetry => uy[ind],
 
     /**
      * @memberof PIXI.groupD8
@@ -248,7 +249,7 @@ export const groupD8 = {
      * @return {PIXI.GD8Symmetry} The X-component of the V-axis
      *    after rotating the axes.
      */
-    vX: (ind) => vx[ind],
+    vX: (ind: GD8Symmetry): GD8Symmetry => vx[ind],
 
     /**
      * @memberof PIXI.groupD8
@@ -256,7 +257,7 @@ export const groupD8 = {
      * @return {PIXI.GD8Symmetry} The Y-component of the V-axis
      *    after rotating the axes.
      */
-    vY: (ind) => vy[ind],
+    vY: (ind: GD8Symmetry): GD8Symmetry => vy[ind],
 
     /**
      * @memberof PIXI.groupD8
@@ -265,7 +266,7 @@ export const groupD8 = {
      *   reflections don't.
      * @return {PIXI.GD8Symmetry} The opposite symmetry of `rotation`
      */
-    inv: (rotation) =>
+    inv: (rotation: GD8Symmetry): GD8Symmetry =>
     {
         if (rotation & 8)// true only if between 8 & 15 (reflections)
         {
@@ -299,7 +300,7 @@ export const groupD8 = {
      *   is the column in the above cayley table.
      * @return {PIXI.GD8Symmetry} Composed operation
      */
-    add: (rotationSecond, rotationFirst) => (
+    add: (rotationSecond: GD8Symmetry, rotationFirst: GD8Symmetry): GD8Symmetry => (
         rotationCayley[rotationSecond][rotationFirst]
     ),
 
@@ -311,7 +312,7 @@ export const groupD8 = {
      * @param {PIXI.GD8Symmetry} rotationFirst - First operation
      * @return {PIXI.GD8Symmetry} Result
      */
-    sub: (rotationSecond, rotationFirst) => (
+    sub: (rotationSecond: GD8Symmetry, rotationFirst: GD8Symmetry): GD8Symmetry => (
         rotationCayley[rotationSecond][groupD8.inv(rotationFirst)]
     ),
 
@@ -323,7 +324,7 @@ export const groupD8 = {
      * @param {number} rotation - The number to rotate.
      * @returns {number} Rotated number
      */
-    rotate180: (rotation) => rotation ^ 4,
+    rotate180: (rotation: number): number => rotation ^ 4,
 
     /**
      * Checks if the rotation angle is vertical, i.e. south
@@ -333,7 +334,7 @@ export const groupD8 = {
      * @param {PIXI.GD8Symmetry} rotation - The number to check.
      * @returns {boolean} Whether or not the direction is vertical
      */
-    isVertical: (rotation) => (rotation & 3) === 2, // rotation % 4 === 2
+    isVertical: (rotation: GD8Symmetry): boolean => (rotation & 3) === 2, // rotation % 4 === 2
 
     /**
      * Approximates the vector `V(dx,dy)` into one of the
@@ -345,7 +346,7 @@ export const groupD8 = {
      * @return {PIXI.GD8Symmetry} Approximation of the vector into
      *  one of the eight symmetries.
      */
-    byDirection: (dx, dy) =>
+    byDirection: (dx: number, dy: number): GD8Symmetry =>
     {
         if (Math.abs(dx) * 2 <= Math.abs(dy))
         {
@@ -391,10 +392,10 @@ export const groupD8 = {
      * @param {number} tx - sprite anchoring
      * @param {number} ty - sprite anchoring
      */
-    matrixAppendRotationInv: (matrix, rotation, tx = 0, ty = 0) =>
+    matrixAppendRotationInv: (matrix: Matrix, rotation: GD8Symmetry, tx = 0, ty = 0): void =>
     {
         // Packer used "rotation", we use "inv(rotation)"
-        const mat = rotationMatrices[groupD8.inv(rotation)];
+        const mat: Matrix = rotationMatrices[groupD8.inv(rotation)];
 
         mat.tx = tx;
         mat.ty = ty;
