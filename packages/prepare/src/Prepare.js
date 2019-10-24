@@ -33,7 +33,7 @@ export class Prepare extends BasePrepare
  *
  * @private
  * @param {PIXI.Renderer} renderer - instance of the webgl renderer
- * @param {PIXI.DisplayObject} item - Item to check
+ * @param {PIXI.BaseTexture} item - Item to check
  * @return {boolean} If item was uploaded.
  */
 function uploadBaseTextures(renderer, item)

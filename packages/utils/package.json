@@ -30,5 +30,8 @@
     "earcut": "^2.1.5",
     "eventemitter3": "^3.1.0",
     "url": "^0.11.0"
+  },
+  "devDependencies": {
+    "@types/earcut": "^2.1.0"
   }
 }

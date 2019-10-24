@@ -27,5 +27,8 @@
   "dependencies": {
     "es6-promise-polyfill": "^1.2.0",
     "object-assign": "^4.1.1"
+  },
+  "devDependencies": {
+    "@types/object-assign": "^4.0.30"
   }
 }

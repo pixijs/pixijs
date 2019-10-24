@@ -7,20 +7,26 @@ import {
     Rectangle,
     RoundedRectangle,
     Matrix,
+    SHAPES,
 } from '@pixi/math';
-import { hex2rgb, deprecation } from '@pixi/utils';
+
 import {
     Texture,
     Shader,
     UniformGroup, State,
 } from '@pixi/core';
-import { FillStyle } from './styles/FillStyle';
+
+import {
+    BezierUtils,
+    QuadraticUtils,
+    ArcUtils,
+    Star,
+} from './utils';
+
+import { hex2rgb, deprecation } from '@pixi/utils';
 import { GraphicsGeometry } from './GraphicsGeometry';
+import { FillStyle } from './styles/FillStyle';
 import { LineStyle } from './styles/LineStyle';
-import { BezierUtils } from './utils/BezierUtils';
-import { QuadraticUtils } from './utils/QuadraticUtils';
-import { ArcUtils } from './utils/ArcUtils';
-import { Star } from './utils/Star';
 import { BLEND_MODES } from '@pixi/constants';
 import { Container } from '@pixi/display';
 
@@ -289,7 +295,8 @@ export class Graphics extends Container
      * @param {object} [options] - Collection of options for setting line style.
      * @param {number} [options.width=0] - width of the line to draw, will update the objects stored style
      * @param {PIXI.Texture} [options.texture=PIXI.Texture.WHITE] - Texture to use
-     * @param {number} [options.color=0x0] - color of the line to draw, will update the objects stored style
+     * @param {number} [options.color=0x0] - color of the line to draw, will update the objects stored style.
+     *  Default 0xFFFFFF if texture present.
      * @param {number} [options.alpha=1] - alpha of the line to draw, will update the objects stored style
      * @param {PIXI.Matrix} [options.matrix=null] Texture matrix to transform texture
      * @param {number} [options.alignment=0.5] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outter)
@@ -316,7 +323,7 @@ export class Graphics extends Container
         options = Object.assign({
             width: 0,
             texture: Texture.WHITE,
-            color: 0x0,
+            color: (options && options.texture) ? 0xFFFFFF : 0x0,
             alpha: 1,
             matrix: null,
             alignment: 0.5,
@@ -859,11 +866,9 @@ export class Graphics extends Container
      */
     isFastRect()
     {
-        // will fix this!
-        return false;
-        // this.graphicsData.length === 1
-        //  && this.graphicsData[0].shape.type === SHAPES.RECT
-        // && !this.graphicsData[0].lineWidth;
+        return this.geometry.graphicsData.length === 1
+        && this.geometry.graphicsData[0].shape.type === SHAPES.RECT
+        && !this.geometry.graphicsData[0].lineWidth;
     }
 
     /**
@@ -1027,14 +1032,15 @@ export class Graphics extends Container
      */
     _renderDrawCallDirect(renderer, drawCall)
     {
-        const groupTextureCount = drawCall.textureCount;
+        const { textures, type, size, start } = drawCall;
+        const groupTextureCount = textures.count;
 
         for (let j = 0; j < groupTextureCount; j++)
         {
-            renderer.texture.bind(drawCall.textures[j], j);
+            renderer.texture.bind(textures.elements[j], j);
         }
 
-        renderer.geometry.draw(drawCall.type, drawCall.size, drawCall.start);
+        renderer.geometry.draw(type, size, start);
     }
 
     /**

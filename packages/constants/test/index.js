@@ -2,6 +2,11 @@ const lib = require('../');
 
 describe('PIXI', function ()
 {
+    it('should have ENV', function ()
+    {
+        expect(lib.ENV).to.be.object;
+    });
+
     it('should have RENDERER_TYPE', function ()
     {
         expect(lib.RENDERER_TYPE).to.be.object;
@@ -40,6 +45,16 @@ describe('PIXI', function ()
     it('should have WRAP_MODES', function ()
     {
         expect(lib.WRAP_MODES).to.be.object;
+    });
+
+    it('should have MIPMAP_MODES', function ()
+    {
+        expect(lib.MIPMAP_MODES).to.be.object;
+    });
+
+    it('should have ALPHA_MODES', function ()
+    {
+        expect(lib.ALPHA_MODES).to.be.object;
     });
 
     it('should have GC_MODES', function ()
