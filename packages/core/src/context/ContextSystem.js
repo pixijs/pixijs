@@ -229,7 +229,10 @@ export class ContextSystem extends System
      */
     postrender()
     {
-        this.gl.flush();
+        if (this.renderer.renderingToScreen)
+        {
+            this.gl.flush();
+        }
     }
 
     /**
