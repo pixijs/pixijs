@@ -129,6 +129,38 @@ describe('PIXI.Graphics', function ()
         });
     });
 
+    describe('beginTextureFill', function ()
+    {
+        it('should pass texture to batches', function ()
+        {
+            const graphics = new Graphics();
+            const canvas1 = document.createElement('canvas');
+            const validTex1 = Texture.from(canvas1);
+            const canvas2 = document.createElement('canvas');
+            const validTex2 = Texture.from(canvas2);
+
+            canvas1.width = 10;
+            canvas1.height = 10;
+            canvas2.width = 10;
+            canvas2.height = 10;
+            validTex1.update();
+            validTex2.update();
+
+            graphics.beginTextureFill({ texture: validTex1 });
+            graphics.drawRect(0, 0, 10, 10);
+            graphics.beginTextureFill(validTex2); // old 5.0-5.1 style
+            graphics.drawRect(20, 20, 10, 10);
+
+            graphics.geometry.updateBatches();
+
+            const batches = graphics.geometry.batches;
+
+            expect(batches.length).to.equal(2);
+            expect(batches[0].style.texture).to.equal(validTex1);
+            expect(batches[1].style.texture).to.equal(validTex2);
+        });
+    });
+
     describe('utils', function ()
     {
         it('FILL_COMMADS should be filled', function ()

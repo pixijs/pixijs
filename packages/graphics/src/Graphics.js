@@ -642,7 +642,7 @@ export class Graphics extends Container
     beginTextureFill(options)
     {
         // backward compatibility with params: (texture, color, alpha, matrix)
-        if (typeof options === 'number')
+        if (options instanceof Texture)
         {
             deprecation('v5.2.0', 'Please use object-based options for Graphics#beginTextureFill');
 
