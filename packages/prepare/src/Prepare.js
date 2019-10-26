@@ -80,7 +80,7 @@ function uploadGraphics(renderer, item)
     // upload all textures found in styles
     for (let i = 0; i < batches.length; i++)
     {
-        const { texture } = batches[i].style.texture;
+        const { texture } = batches[i].style;
 
         if (texture)
         {
