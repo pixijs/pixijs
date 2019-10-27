@@ -126,4 +126,22 @@ export class RoundedRectangle
 
         return false;
     }
+
+    /**
+     * Sets the rectangle to a new x and y position and a new height and width with specific radius.
+     *
+     * @param {number} [x=0] - The X coordinate of the upper-left corner of the rectangle
+     * @param {number} [y=0] - The Y coordinate of the upper-left corner of the rectangle
+     * @param {number} [width=0] - The overall width of this rectangle
+     * @param {number} [height=0] - The overall height of this rectangle
+     * @param {number} [radius=20] - Controls the radius of the rounded corners
+     */
+    set(x = 0, y = 0, width = 0, height = 0, radius = 20): void
+    {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.radius = radius;
+    }
 }

@@ -101,4 +101,20 @@ export class Ellipse
     {
         return new Rectangle(this.x - this.width, this.y - this.height, this.width, this.height);
     }
+
+    /**
+     * Sets the ellipse to a new x and y position and a new half height and width.
+     *
+     * @param {number} [x=0] - The X coordinate of the center of this ellipse
+     * @param {number} [y=0] - The Y coordinate of the center of this ellipse
+     * @param {number} [halfWidth=0] - The half width of this ellipse
+     * @param {number} [halfHeight=0] - The half height of this ellipse
+     */
+    set(x = 0, y = 0, halfWidth = 0, halfHeight = 0): void
+    {
+        this.x = x;
+        this.y = y;
+        this.width = halfWidth;
+        this.height = halfHeight;
+    }
 }

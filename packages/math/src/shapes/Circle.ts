@@ -93,4 +93,18 @@ export class Circle
     {
         return new Rectangle(this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2);
     }
+
+    /**
+     * Sets the circle to a new x and y position and a new radius.
+     *
+     * @param {number} [x=0] - The X coordinate of the center of this circle
+     * @param {number} [y=0] - The Y coordinate of the center of this circle
+     * @param {number} [radius=0] - The radius of the circle
+     */
+    set(x = 0, y = 0, radius = 0): void
+    {
+        this.x = x;
+        this.y = y;
+        this.radius = radius;
+    }
 }
