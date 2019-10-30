@@ -25,6 +25,13 @@ export const RAD_TO_DEG = 180 / Math.PI;
  */
 export const DEG_TO_RAD = Math.PI / 180;
 
+export const enum SHAPES {
+    POLY = 0,
+    RECT = 1,
+    CIRC = 2,
+    ELIP = 3,
+    RREC = 4,
+}
 /**
  * Constants that identify shapes, mainly to prevent `instanceof` calls.
  *
@@ -32,18 +39,11 @@ export const DEG_TO_RAD = Math.PI / 180;
  * @constant
  * @name SHAPES
  * @memberof PIXI
- * @type {object}
+ * @type {enum}
  * @property {number} POLY Polygon
  * @property {number} RECT Rectangle
  * @property {number} CIRC Circle
  * @property {number} ELIP Ellipse
  * @property {number} RREC Rounded Rectangle
+ * @enum {number}
  */
-export const SHAPES = {
-    POLY: 0,
-    RECT: 1,
-    CIRC: 2,
-    ELIP: 3,
-    RREC: 4,
-};
-

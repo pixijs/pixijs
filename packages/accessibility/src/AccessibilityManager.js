@@ -240,7 +240,7 @@ export class AccessibilityManager
      */
     updateAccessibleObjects(displayObject)
     {
-        if (!displayObject.visible)
+        if (!displayObject.visible || !displayObject.accessibleChildren)
         {
             return;
         }
@@ -347,11 +347,30 @@ export class AccessibilityManager
                         div.setAttribute('aria-label', child.accessibleHint);
                     }
                 }
+
+                // the title or index may have changed, if so lets update it!
+                if (child.accessibleTitle !== div.title || child.tabIndex !== div.tabIndex)
+                {
+                    div.title = child.accessibleTitle;
+                    div.tabIndex = child.tabIndex;
+                    if (this.debug) this.updateDebugHTML(div);
+                }
             }
         }
 
         // increment the render id..
         this.renderId++;
+    }
+
+    /**
+     * private function that will visually add the information to the
+     * accessability div
+     *
+     * @param {HTMLDivElement} div
+     */
+    updateDebugHTML(div)
+    {
+        div.innerHTML = `type: ${div.type}</br> title : ${div.title}</br> tabIndex: ${div.tabIndex}`;
     }
 
     /**
@@ -402,7 +421,7 @@ export class AccessibilityManager
 
             div.style.width = `${DIV_TOUCH_SIZE}px`;
             div.style.height = `${DIV_TOUCH_SIZE}px`;
-            div.style.backgroundColor = this.debug ? 'rgba(255,0,0,0.5)' : 'transparent';
+            div.style.backgroundColor = this.debug ? 'rgba(255,255,255,0.5)' : 'transparent';
             div.style.position = 'absolute';
             div.style.zIndex = DIV_TOUCH_ZINDEX;
             div.style.borderStyle = 'none';
@@ -434,6 +453,11 @@ export class AccessibilityManager
             div.addEventListener('focusout', this._onFocusOut.bind(this));
         }
 
+        // set pointer events
+        div.style.pointerEvents = displayObject.accessiblePointerEvents;
+        // set the type, this defaults to button!
+        div.type = displayObject.accessibleType;
+
         if (displayObject.accessibleTitle && displayObject.accessibleTitle !== null)
         {
             div.title = displayObject.accessibleTitle;
@@ -450,7 +474,7 @@ export class AccessibilityManager
             div.setAttribute('aria-label', displayObject.accessibleHint);
         }
 
-        //
+        if (this.debug) this.updateDebugHTML(div);
 
         displayObject._accessibleActive = true;
         displayObject._accessibleDiv = div;

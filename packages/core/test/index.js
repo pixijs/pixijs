@@ -1,6 +1,9 @@
 require('./BaseTexture');
 require('./Texture');
 require('./Renderer');
+require('./MaskSystem');
+require('./BatchRenderer');
+require('./Geometry');
 require('./CanvasResource');
 require('./ImageBitmapResource');
 require('./ImageResource');

@@ -1,4 +1,4 @@
-import { System } from '../System';
+import { AbstractMaskSystem } from './AbstractMaskSystem';
 
 /**
  * System plugin to the renderer to manage stencils (used for masks).
@@ -7,7 +7,7 @@ import { System } from '../System';
  * @extends PIXI.System
  * @memberof PIXI.systems
  */
-export class StencilSystem extends System
+export class StencilSystem extends AbstractMaskSystem
 {
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
@@ -16,47 +16,31 @@ export class StencilSystem extends System
     {
         super(renderer);
 
-        /**
-         * The mask stack
-         * @member {PIXI.Graphics[]}
-         */
-        this.stencilMaskStack = [];
+        this.glConst = WebGLRenderingContext.STENCIL_TEST;
     }
 
-    /**
-     * Changes the mask stack that is used by this System.
-     *
-     * @param {PIXI.Graphics[]} stencilMaskStack - The mask stack
-     */
-    setMaskStack(stencilMaskStack)
+    getStackLength()
     {
-        const gl = this.renderer.gl;
-        const curStackLen = this.stencilMaskStack.length;
+        const maskData = this.maskStack[this.maskStack.length - 1];
 
-        this.stencilMaskStack = stencilMaskStack;
-        if (stencilMaskStack.length !== curStackLen)
+        if (maskData)
         {
-            if (stencilMaskStack.length === 0)
-            {
-                gl.disable(gl.STENCIL_TEST);
-            }
-            else
-            {
-                gl.enable(gl.STENCIL_TEST);
-                this._useCurrent();
-            }
+            return maskData._stencilCounter;
         }
+
+        return 0;
     }
 
     /**
-     * Applies the Mask and adds it to the current stencil stack. @alvin
+     * Applies the Mask and adds it to the current stencil stack.
      *
-     * @param {PIXI.Graphics} graphics - The mask
+     * @param {PIXI.MaskData} maskData - The mask data
      */
-    pushStencil(graphics)
+    push(maskData)
     {
-        const gl = this.renderer.gl;
-        const prevMaskCount = this.stencilMaskStack.length;
+        const maskObject = maskData.maskObject;
+        const { gl } = this.renderer;
+        const prevMaskCount = maskData._stencilCounter;
 
         if (prevMaskCount === 0)
         {
@@ -65,30 +49,31 @@ export class StencilSystem extends System
             gl.enable(gl.STENCIL_TEST);
         }
 
-        this.stencilMaskStack.push(graphics);
+        maskData._stencilCounter++;
 
         // Increment the reference stencil value where the new mask overlaps with the old ones.
         gl.colorMask(false, false, false, false);
         gl.stencilFunc(gl.EQUAL, prevMaskCount, this._getBitwiseMask());
         gl.stencilOp(gl.KEEP, gl.KEEP, gl.INCR);
 
-        graphics.renderable = true;
-        graphics.render(this.renderer);
+        maskObject.renderable = true;
+        maskObject.render(this.renderer);
         this.renderer.batch.flush();
-        graphics.renderable = false;
+        maskObject.renderable = false;
 
         this._useCurrent();
     }
 
     /**
-     * Removes the last mask from the stencil stack. @alvin
+     * Pops stencil mask. MaskData is already removed from stack
+     *
+     * @param {PIXI.DisplayObject} maskObject - object of popped mask data
      */
-    popStencil()
+    pop(maskObject)
     {
         const gl = this.renderer.gl;
-        const graphics = this.stencilMaskStack.pop();
 
-        if (this.stencilMaskStack.length === 0)
+        if (this.getStackLength() === 0)
         {
             // the stack is empty!
             gl.disable(gl.STENCIL_TEST);
@@ -101,10 +86,10 @@ export class StencilSystem extends System
             gl.colorMask(false, false, false, false);
             gl.stencilOp(gl.KEEP, gl.KEEP, gl.DECR);
 
-            graphics.renderable = true;
-            graphics.render(this.renderer);
+            maskObject.renderable = true;
+            maskObject.render(this.renderer);
             this.renderer.batch.flush();
-            graphics.renderable = false;
+            maskObject.renderable = false;
 
             this._useCurrent();
         }
@@ -119,7 +104,7 @@ export class StencilSystem extends System
         const gl = this.renderer.gl;
 
         gl.colorMask(true, true, true, true);
-        gl.stencilFunc(gl.EQUAL, this.stencilMaskStack.length, this._getBitwiseMask());
+        gl.stencilFunc(gl.EQUAL, this.getStackLength(), this._getBitwiseMask());
         gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
     }
 
@@ -130,17 +115,6 @@ export class StencilSystem extends System
      */
     _getBitwiseMask()
     {
-        return (1 << this.stencilMaskStack.length) - 1;
-    }
-
-    /**
-     * Destroys the mask stack.
-     *
-     */
-    destroy()
-    {
-        super.destroy(this);
-
-        this.stencilMaskStack = null;
+        return (1 << this.getStackLength()) - 1;
     }
 }

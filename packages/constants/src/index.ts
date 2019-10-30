@@ -10,11 +10,11 @@
  * @property {number} WEBGL - Version 1 of WebGL
  * @property {number} WEBGL2 - Version 2 of WebGL
  */
-export const ENV = {
-    WEBGL_LEGACY: 0,
-    WEBGL: 1,
-    WEBGL2: 2,
-};
+export enum ENV {
+    WEBGL_LEGACY,
+    WEBGL,
+    WEBGL2,
+}
 
 /**
  * Constant to identify the Renderer Type.
@@ -27,11 +27,11 @@ export const ENV = {
  * @property {number} WEBGL - WebGL render type.
  * @property {number} CANVAS - Canvas render type.
  */
-export const RENDERER_TYPE = {
-    UNKNOWN:    0,
-    WEBGL:      1,
-    CANVAS:     2,
-};
+export enum RENDERER_TYPE {
+    UNKNOWN,
+    WEBGL,
+    CANVAS,
+}
 
 /**
  * Various blend modes supported by PIXI.
@@ -73,41 +73,43 @@ export const RENDERER_TYPE = {
  * @property {number} SUBTRACT
  * @property {number} SRC_OVER
  * @property {number} ERASE
+ * @property {number} XOR
  */
-export const BLEND_MODES = {
-    NORMAL:         0,
-    ADD:            1,
-    MULTIPLY:       2,
-    SCREEN:         3,
-    OVERLAY:        4,
-    DARKEN:         5,
-    LIGHTEN:        6,
-    COLOR_DODGE:    7,
-    COLOR_BURN:     8,
-    HARD_LIGHT:     9,
-    SOFT_LIGHT:     10,
-    DIFFERENCE:     11,
-    EXCLUSION:      12,
-    HUE:            13,
-    SATURATION:     14,
-    COLOR:          15,
-    LUMINOSITY:     16,
-    NORMAL_NPM:     17,
-    ADD_NPM:        18,
-    SCREEN_NPM:     19,
-    NONE:           20,
+export enum BLEND_MODES {
+    NORMAL = 0,
+    ADD = 1,
+    MULTIPLY = 2,
+    SCREEN = 3,
+    OVERLAY = 4,
+    DARKEN = 5,
+    LIGHTEN = 6,
+    COLOR_DODGE = 7,
+    COLOR_BURN = 8,
+    HARD_LIGHT = 9,
+    SOFT_LIGHT = 10,
+    DIFFERENCE = 11,
+    EXCLUSION = 12,
+    HUE = 13,
+    SATURATION = 14,
+    COLOR = 15,
+    LUMINOSITY = 16,
+    NORMAL_NPM = 17,
+    ADD_NPM = 18,
+    SCREEN_NPM = 19,
+    NONE = 20,
 
-    SRC_OVER:       0,
-    SRC_IN:         21,
-    SRC_OUT:        22,
-    SRC_ATOP:       23,
-    DST_OVER:       24,
-    DST_IN:         25,
-    DST_OUT:        26,
-    DST_ATOP:       27,
-    ERASE:          26,
-    SUBTRACT:       28,
-};
+    SRC_OVER = 0,
+    SRC_IN = 21,
+    SRC_OUT = 22,
+    SRC_ATOP = 23,
+    DST_OVER = 24,
+    DST_IN = 25,
+    DST_OUT = 26,
+    DST_ATOP = 27,
+    ERASE = 26,
+    SUBTRACT = 28,
+    XOR = 29,
+}
 
 /**
  * Various webgl draw modes. These can be used to specify which GL drawMode to use
@@ -125,15 +127,15 @@ export const BLEND_MODES = {
  * @property {number} TRIANGLE_STRIP
  * @property {number} TRIANGLE_FAN
  */
-export const DRAW_MODES = {
-    POINTS:         0,
-    LINES:          1,
-    LINE_LOOP:      2,
-    LINE_STRIP:     3,
-    TRIANGLES:      4,
-    TRIANGLE_STRIP: 5,
-    TRIANGLE_FAN:   6,
-};
+export enum DRAW_MODES {
+    POINTS,
+    LINES,
+    LINE_LOOP,
+    LINE_STRIP,
+    TRIANGLES,
+    TRIANGLE_STRIP,
+    TRIANGLE_FAN,
+}
 
 /**
  * Various GL texture/resources formats.
@@ -150,15 +152,15 @@ export const DRAW_MODES = {
  * @property {number} DEPTH_COMPONENT=6402
  * @property {number} DEPTH_STENCIL=34041
  */
-export const FORMATS = {
-    RGBA:             6408,
-    RGB:              6407,
-    ALPHA:            6406,
-    LUMINANCE:        6409,
-    LUMINANCE_ALPHA:  6410,
-    DEPTH_COMPONENT:  6402,
-    DEPTH_STENCIL:    34041,
-};
+export enum FORMATS {
+    RGBA = 6408,
+    RGB = 6407,
+    ALPHA = 6406,
+    LUMINANCE = 6409,
+    LUMINANCE_ALPHA = 6410,
+    DEPTH_COMPONENT = 6402,
+    DEPTH_STENCIL = 34041,
+}
 
 /**
  * Various GL target types.
@@ -177,17 +179,17 @@ export const FORMATS = {
  * @property {number} TEXTURE_CUBE_MAP_POSITIVE_Z=34073
  * @property {number} TEXTURE_CUBE_MAP_NEGATIVE_Z=34074
  */
-export const TARGETS = {
-    TEXTURE_2D: 3553,
-    TEXTURE_CUBE_MAP: 34067,
-    TEXTURE_2D_ARRAY: 35866,
-    TEXTURE_CUBE_MAP_POSITIVE_X: 34069,
-    TEXTURE_CUBE_MAP_NEGATIVE_X: 34070,
-    TEXTURE_CUBE_MAP_POSITIVE_Y: 34071,
-    TEXTURE_CUBE_MAP_NEGATIVE_Y: 34072,
-    TEXTURE_CUBE_MAP_POSITIVE_Z: 34073,
-    TEXTURE_CUBE_MAP_NEGATIVE_Z: 34074,
-};
+export enum TARGETS {
+    TEXTURE_2D = 3553,
+    TEXTURE_CUBE_MAP = 34067,
+    TEXTURE_2D_ARRAY = 35866,
+    TEXTURE_CUBE_MAP_POSITIVE_X = 34069,
+    TEXTURE_CUBE_MAP_NEGATIVE_X = 34070,
+    TEXTURE_CUBE_MAP_POSITIVE_Y = 34071,
+    TEXTURE_CUBE_MAP_NEGATIVE_Y = 34072,
+    TEXTURE_CUBE_MAP_POSITIVE_Z = 34073,
+    TEXTURE_CUBE_MAP_NEGATIVE_Z = 34074,
+}
 
 /**
  * Various GL data format types.
@@ -204,15 +206,15 @@ export const TARGETS = {
  * @property {number} FLOAT=5126
  * @property {number} HALF_FLOAT=36193
  */
-export const TYPES = {
-    UNSIGNED_BYTE: 5121,
-    UNSIGNED_SHORT: 5123,
-    UNSIGNED_SHORT_5_6_5: 33635,
-    UNSIGNED_SHORT_4_4_4_4: 32819,
-    UNSIGNED_SHORT_5_5_5_1: 32820,
-    FLOAT: 5126,
-    HALF_FLOAT: 36193,
-};
+export enum TYPES {
+    UNSIGNED_BYTE = 5121,
+    UNSIGNED_SHORT = 5123,
+    UNSIGNED_SHORT_5_6_5 = 33635,
+    UNSIGNED_SHORT_4_4_4_4 = 32819,
+    UNSIGNED_SHORT_5_5_5_1 = 32820,
+    FLOAT = 5126,
+    HALF_FLOAT = 36193,
+}
 
 /**
  * The scale modes that are supported by pixi.
@@ -227,10 +229,10 @@ export const TYPES = {
  * @property {number} LINEAR Smooth scaling
  * @property {number} NEAREST Pixelating scaling
  */
-export const SCALE_MODES = {
-    LINEAR:     1,
-    NEAREST:    0,
-};
+export enum SCALE_MODES {
+    NEAREST,
+    LINEAR,
+}
 
 /**
  * The wrap modes that are supported by pixi.
@@ -250,11 +252,11 @@ export const SCALE_MODES = {
  * @property {number} REPEAT - The texture uvs tile and repeat
  * @property {number} MIRRORED_REPEAT - The texture uvs tile and repeat with mirroring
  */
-export const WRAP_MODES = {
-    CLAMP:           33071,
-    REPEAT:          10497,
-    MIRRORED_REPEAT: 33648,
-};
+export enum WRAP_MODES {
+    CLAMP = 33071,
+    REPEAT = 10497,
+    MIRRORED_REPEAT = 33648,
+}
 
 /**
  * Mipmap filtering modes that are supported by pixi.
@@ -274,11 +276,11 @@ export const WRAP_MODES = {
  * @property {number} POW2 - Generate mipmaps if texture dimensions are pow2
  * @property {number} ON - Always generate mipmaps
  */
-export const MIPMAP_MODES = {
-    OFF: 0,
-    POW2: 1,
-    ON: 2,
-};
+export enum MIPMAP_MODES {
+    OFF,
+    POW2,
+    ON,
+}
 
 /**
  * How to treat textures with premultiplied alpha
@@ -297,14 +299,14 @@ export const MIPMAP_MODES = {
  * @property {number} UNPACK - Default option, alias for PREMULTIPLY_ON_UPLOAD.
  * @property {number} PMA - Alias for PREMULTIPLIED_ALPHA.
  */
-export const ALPHA_MODES = {
-    NPM: 0,
-    UNPACK: 1,
-    PMA: 2,
-    NO_PREMULTIPLIED_ALPHA: 0,
-    PREMULTIPLY_ON_UPLOAD: 1,
-    PREMULTIPLY_ALPHA: 2,
-};
+export enum ALPHA_MODES {
+    NPM = 0,
+    UNPACK = 1,
+    PMA = 2,
+    NO_PREMULTIPLIED_ALPHA = 0,
+    PREMULTIPLY_ON_UPLOAD = 1,
+    PREMULTIPLY_ALPHA = 2,
+}
 
 /**
  * The gc modes that are supported by pixi.
@@ -325,10 +327,10 @@ export const ALPHA_MODES = {
  * @property {number} AUTO - Garbage collection will happen periodically automatically
  * @property {number} MANUAL - Garbage collection will need to be called manually
  */
-export const GC_MODES = {
-    AUTO:           0,
-    MANUAL:         1,
-};
+export enum GC_MODES {
+    AUTO,
+    MANUAL,
+}
 
 /**
  * Constants that specify float precision in shaders.
@@ -342,8 +344,28 @@ export const GC_MODES = {
  * @property {string} MEDIUM='mediump'
  * @property {string} HIGH='highp'
  */
-export const PRECISION = {
-    LOW: 'lowp',
-    MEDIUM: 'mediump',
-    HIGH: 'highp',
-};
+export enum PRECISION {
+    LOW = 'lowp',
+    MEDIUM = 'mediump',
+    HIGH = 'highp',
+}
+
+/**
+ * Constants for mask implementations.
+ * We use `type` suffix because it leads to very different behaviours
+ *
+ * @name MASK_TYPES
+ * @memberof PIXI
+ * @static
+ * @enum {number}
+ * @property {number} NONE - Mask is ignored
+ * @property {number} SCISSOR - Scissor mask, rectangle on screen, cheap
+ * @property {number} STENCIL - Stencil mask, 1-bit, medium, works only if renderer supports stencil
+ * @property {number} SPRITE - Mask that uses SpriteMaskFilter, uses temporary RenderTexture
+ */
+export enum MASK_TYPES {
+    NONE = 0,
+    SCISSOR = 1,
+    STENCIL = 2,
+    SPRITE = 3,
+}

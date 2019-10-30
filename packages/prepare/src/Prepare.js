@@ -33,7 +33,7 @@ export class Prepare extends BasePrepare
  *
  * @private
  * @param {PIXI.Renderer} renderer - instance of the webgl renderer
- * @param {PIXI.DisplayObject} item - Item to check
+ * @param {PIXI.BaseTexture} item - Item to check
  * @return {boolean} If item was uploaded.
  */
 function uploadBaseTextures(renderer, item)
@@ -64,19 +64,37 @@ function uploadBaseTextures(renderer, item)
  */
 function uploadGraphics(renderer, item)
 {
-    if (item instanceof Graphics)
+    if (!(item instanceof Graphics))
     {
-        // if the item is not dirty and already has webgl data, then it got prepared or rendered
-        // before now and we shouldn't waste time updating it again
-        if (item.dirty || item.clearDirty || !item._webGL[renderer.plugins.graphics.CONTEXT_UID])
-        {
-            renderer.plugins.graphics.updateGraphics(item);
-        }
-
-        return true;
+        return false;
     }
 
-    return false;
+    const { geometry } = item;
+
+    // update dirty graphics to get batches
+    item.finishPoly();
+    geometry.updateBatches();
+
+    const { batches } = geometry;
+
+    // upload all textures found in styles
+    for (let i = 0; i < batches.length; i++)
+    {
+        const { texture } = batches[i].style;
+
+        if (texture)
+        {
+            uploadBaseTextures(renderer, texture.baseTexture);
+        }
+    }
+
+    // if its not batchable - update vao for particular shader
+    if (!geometry.batchable)
+    {
+        renderer.geometry.bind(geometry, item._resolveDirectShader());
+    }
+
+    return true;
 }
 
 /**

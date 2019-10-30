@@ -14,6 +14,11 @@ import { UPDATE_PRIORITY } from './const';
  */
 export class TickerPlugin
 {
+    static start: () => void;
+    static stop: () => void;
+    static _ticker: Ticker;
+    static ticker: Ticker;
+
     /**
      * Initialize the plugin with scope of application instance
      *
@@ -21,7 +26,7 @@ export class TickerPlugin
      * @private
      * @param {object} [options] - See application options
      */
-    static init(options)
+    static init(options?: IApplicationOptions): void
     {
         // Set default
         options = Object.assign({
@@ -55,7 +60,7 @@ export class TickerPlugin
          *
          * @method PIXI.Application#stop
          */
-        this.stop = () =>
+        this.stop = (): void =>
         {
             this._ticker.stop();
         };
@@ -65,7 +70,7 @@ export class TickerPlugin
          *
          * @method PIXI.Application#start
          */
-        this.start = () =>
+        this.start = (): void =>
         {
             this._ticker.start();
         };
@@ -103,7 +108,7 @@ export class TickerPlugin
      * @static
      * @private
      */
-    static destroy()
+    static destroy(): void
     {
         if (this._ticker)
         {

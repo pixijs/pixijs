@@ -1,5 +1,5 @@
-import { Point } from '../Point';
 import { SHAPES } from '../const';
+import { Point } from '../Point';
 
 /**
  * A class to define a shape via user defined co-orinates.
@@ -9,14 +9,18 @@ import { SHAPES } from '../const';
  */
 export class Polygon
 {
+    public points: number[];
+    public closeStroke: boolean;
+    public readonly type: number;
+
     /**
-     * @param {PIXI.Point[]|number[]} points - This can be an array of Points
+     * @param {PIXI.Point[]|number[]|number[][]} points - This can be an array of Points
      *  that form the polygon, a flat array of numbers that will be interpreted as [x,y, x,y, ...], or
      *  the arguments passed can be all the points of the polygon e.g.
      *  `new PIXI.Polygon(new PIXI.Point(), new PIXI.Point(), ...)`, or the arguments passed can be flat
      *  x,y values e.g. `new Polygon(x,y, x,y, x,y, ...)` where `x` and `y` are Numbers.
      */
-    constructor(...points)
+    constructor(...points: Point[]|number[]|number[][])
     {
         if (Array.isArray(points[0]))
         {
@@ -26,7 +30,9 @@ export class Polygon
         // if this is an array of points, convert it to a flat array of numbers
         if (points[0] instanceof Point)
         {
-            const p = [];
+            points = points as Point[];
+
+            const p: number[] = [];
 
             for (let i = 0, il = points.length; i < il; i++)
             {
@@ -41,7 +47,7 @@ export class Polygon
          *
          * @member {number[]}
          */
-        this.points = points;
+        this.points = points as number[];
 
         /**
          * The type of the object, mainly used to avoid `instanceof` checks
@@ -66,9 +72,10 @@ export class Polygon
      *
      * @return {PIXI.Polygon} a copy of the polygon
      */
-    clone()
+    clone(): Polygon
     {
-        const polygon = new Polygon(this.points.slice());
+        const points = this.points.slice();
+        const polygon = new Polygon(points);
 
         polygon.closeStroke = this.closeStroke;
 
@@ -82,7 +89,7 @@ export class Polygon
      * @param {number} y - The Y coordinate of the point to test
      * @return {boolean} Whether the x/y coordinates are within this polygon
      */
-    contains(x, y)
+    contains(x: number, y: number): boolean
     {
         let inside = false;
 

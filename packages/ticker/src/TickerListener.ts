@@ -7,6 +7,15 @@
  */
 export class TickerListener
 {
+    public priority: number;
+    public next: TickerListener;
+    public previous: TickerListener;
+
+    private fn: (dt?: number) => any;
+    private context: any;
+    private once: boolean;
+    private _destroyed: boolean;
+
     /**
      * Constructor
      * @private
@@ -15,7 +24,7 @@ export class TickerListener
      * @param {number} [priority=0] - The priority for emitting
      * @param {boolean} [once=false] - If the handler should fire once
      */
-    constructor(fn, context = null, priority = 0, once = false)
+    constructor(fn: (dt?: number) => any, context: any = null, priority = 0, once = false)
     {
         /**
          * The handler function to execute.
@@ -71,13 +80,11 @@ export class TickerListener
      * Simple compare function to figure out if a function and context match.
      * @private
      * @param {Function} fn - The listener function to be added for one update
-     * @param {Function} context - The listener context
+     * @param {any} [context] - The listener context
      * @return {boolean} `true` if the listener match the arguments
      */
-    match(fn, context)
+    match(fn: (dt?: number) => any, context: any = null): boolean
     {
-        context = context || null;
-
         return this.fn === fn && this.context === context;
     }
 
@@ -87,7 +94,7 @@ export class TickerListener
      * @param {number} deltaTime - time since the last emit.
      * @return {TickerListener} Next ticker
      */
-    emit(deltaTime)
+    emit(deltaTime: number): TickerListener
     {
         if (this.fn)
         {
@@ -123,7 +130,7 @@ export class TickerListener
      * @private
      * @param {TickerListener} previous - Input node, previous listener
      */
-    connect(previous)
+    connect(previous: TickerListener): void
     {
         this.previous = previous;
         if (previous.next)
@@ -141,7 +148,7 @@ export class TickerListener
      *        is considered a hard destroy. Soft destroy maintains the next reference.
      * @return {TickerListener} The listener to redirect while emitting or removing.
      */
-    destroy(hard = false)
+    destroy(hard = false): TickerListener
     {
         this._destroyed = true;
         this.fn = null;

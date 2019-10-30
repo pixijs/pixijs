@@ -453,8 +453,10 @@ export class Container extends DisplayObject
             // TODO: filter+mask, need to mask both somehow
             if (child._mask)
             {
-                child._mask.calculateBounds();
-                this._bounds.addBoundsMask(child._bounds, child._mask._bounds);
+                const maskObject = child._mask.maskObject || child._mask;
+
+                maskObject.calculateBounds();
+                this._bounds.addBoundsMask(child._bounds, maskObject._bounds);
             }
             else if (child.filterArea)
             {
