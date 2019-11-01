@@ -372,11 +372,18 @@ export class TextureSystem extends System
         if ((texture.mipmap === MIPMAP_MODES.POW2 || this.webGLVersion !== 2) && !texture.isPowerOfTwo)
         {
             glTexture.mipmap = 0;
-            glTexture.wrapMode = WRAP_MODES.CLAMP;
         }
         else
         {
             glTexture.mipmap = texture.mipmap >= 1;
+        }
+
+        if (this.webGLVersion !== 2 && !texture.isPowerOfTwo)
+        {
+            glTexture.wrapMode = WRAP_MODES.CLAMP;
+        }
+        else
+        {
             glTexture.wrapMode = texture.wrapMode;
         }
 
