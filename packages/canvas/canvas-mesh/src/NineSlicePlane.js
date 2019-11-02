@@ -54,7 +54,7 @@ NineSlicePlane.prototype._renderCanvas = function _renderCanvas(renderer)
         }
     }
 
-    const textureSource = !isTinted ? texture.baseTexture.source : this._tintedCanvas;
+    const textureSource = !isTinted ? texture.baseTexture.resource.source : this._tintedCanvas;
 
     if (!this._canvasUvs)
     {
