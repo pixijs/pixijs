@@ -26,7 +26,6 @@ describe('PIXI.NineSlicePlane', function ()
 
         const nineSlicePlane = new NineSlicePlane(rt, 1, 1, 1, 1);
 
-        renderer.render(nineSlicePlane);
         expect(() => { renderer.render(nineSlicePlane); }).to.not.throw();
     });
 });
