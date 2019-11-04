@@ -61,6 +61,11 @@ export class TextureGCSystem extends System
      */
     postrender()
     {
+        if (!this.renderer.renderingToScreen)
+        {
+            return;
+        }
+
         this.count++;
 
         if (this.mode === GC_MODES.MANUAL)
