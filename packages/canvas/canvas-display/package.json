@@ -24,10 +24,6 @@
     "lib",
     "dist"
   ],
-  "funding": {
-    "type": "opencollective",
-    "url": "https://opencollective.com/pixijs"
-  },
   "dependencies": {
     "@pixi/display": "^5.2.0"
   }

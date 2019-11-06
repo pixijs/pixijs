@@ -23,10 +23,6 @@
     "lib",
     "dist"
   ],
-  "funding": {
-    "type": "opencollective",
-    "url": "https://opencollective.com/pixijs"
-  },
   "dependencies": {
     "@pixi/core": "^5.2.0",
     "@pixi/sprite": "^5.2.0",

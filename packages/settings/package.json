@@ -23,10 +23,6 @@
     "lib",
     "dist"
   ],
-  "funding": {
-    "type": "opencollective",
-    "url": "https://opencollective.com/pixijs"
-  },
   "dependencies": {
     "ismobilejs": "^0.5.1"
   }
