@@ -23,6 +23,10 @@
     "lib",
     "dist"
   ],
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/pixijs"
+  },
   "dependencies": {
     "@pixi/canvas-renderer": "^5.2.0",
     "@pixi/constants": "^5.2.0",

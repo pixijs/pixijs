@@ -24,6 +24,10 @@
     "lib",
     "dist"
   ],
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/pixijs"
+  },
   "dependencies": {
     "es6-promise-polyfill": "^1.2.0",
     "object-assign": "^4.1.1"

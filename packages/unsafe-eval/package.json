@@ -21,5 +21,9 @@
   "files": [
     "lib/",
     "dist/"
-  ]
+  ],
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/pixijs"
+  }
 }
