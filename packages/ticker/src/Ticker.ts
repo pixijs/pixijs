@@ -2,7 +2,7 @@ import { settings } from './settings';
 import { UPDATE_PRIORITY } from './const';
 import { TickerListener } from './TickerListener';
 
-export type TickerCallback<T> = (this: T, dt: number) => void;
+export type TickerCallback<T> = (this: T, dt: number) => any;
 
 /**
  * A Ticker class that runs an update loop that other objects listen to.
