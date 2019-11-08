@@ -1,6 +1,6 @@
 {
   "name": "@pixi/core",
-  "version": "5.1.5",
+  "version": "5.2.0",
   "main": "lib/core.js",
   "module": "lib/core.es.js",
   "bundle": "dist/core.js",
@@ -23,13 +23,17 @@
     "lib",
     "dist"
   ],
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/pixijs"
+  },
   "dependencies": {
-    "@pixi/constants": "^5.1.0",
-    "@pixi/display": "^5.1.3",
-    "@pixi/math": "^5.1.0",
-    "@pixi/runner": "^5.1.1",
-    "@pixi/settings": "^5.1.3",
-    "@pixi/ticker": "^5.1.3",
-    "@pixi/utils": "^5.1.3"
+    "@pixi/constants": "^5.2.0",
+    "@pixi/display": "^5.2.0",
+    "@pixi/math": "^5.2.0",
+    "@pixi/runner": "^5.2.0",
+    "@pixi/settings": "^5.2.0",
+    "@pixi/ticker": "^5.2.0",
+    "@pixi/utils": "^5.2.0"
   }
 }
