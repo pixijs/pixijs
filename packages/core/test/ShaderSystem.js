@@ -4,7 +4,7 @@ const { skipHello } = require('@pixi/utils');
 
 skipHello();
 
-describe('PIXI.systems.GeometrySystem', function ()
+describe('PIXI.systems.ShaderSystem', function ()
 {
     const vertexSrc = `
 attribute vec2 aVertexPosition;
