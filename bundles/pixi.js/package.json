@@ -26,15 +26,17 @@
     "url": "https://github.com/pixijs/pixi.js.git"
   },
   "scripts": {
-    "test": "floss --path test",
-    "postinstall": "node scripts/support-pixi.js"
+    "test": "floss --path test"
   },
   "files": [
     "lib/",
     "dist/",
-    "scripts/",
     "pixi.js.d.ts"
   ],
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/pixijs"
+  },
   "dependencies": {
     "@pixi/accessibility": "^5.2.0",
     "@pixi/app": "^5.2.0",

@@ -30,6 +30,10 @@
     "dist/",
     "pixi.js-legacy.d.ts"
   ],
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/pixijs"
+  },
   "dependencies": {
     "@pixi/canvas-display": "^5.2.0",
     "@pixi/canvas-extract": "^5.2.0",

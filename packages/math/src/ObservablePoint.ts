@@ -10,9 +10,9 @@ import { IPoint } from './IPoint';
  * @memberof PIXI
  * @implements IPoint
  */
-export class ObservablePoint implements IPoint
+export class ObservablePoint<T = any> implements IPoint
 {
-    public cb: () => any;
+    public cb: (this: T) => any;
     public scope: any;
     protected _x: number;
     protected _y: number;
@@ -23,7 +23,7 @@ export class ObservablePoint implements IPoint
      * @param {number} [x=0] - position of the point on the x axis
      * @param {number} [y=0] - position of the point on the y axis
      */
-    constructor(cb: () => any, scope: any, x = 0, y = 0)
+    constructor(cb: (this: T) => any, scope: T, x = 0, y = 0)
     {
         this._x = x;
         this._y = y;
