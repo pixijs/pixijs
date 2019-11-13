@@ -454,11 +454,11 @@ export class DisplayObject extends EventEmitter
      */
     destroy()
     {
-        this.removeAllListeners();
         if (this.parent)
         {
             this.parent.removeChild(this);
         }
+        this.removeAllListeners();
         this.transform = null;
 
         this.parent = null;

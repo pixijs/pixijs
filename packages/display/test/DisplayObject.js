@@ -108,4 +108,22 @@ describe('PIXI.DisplayObject', function ()
             expect(object.angle).to.be.equal(180);
         });
     });
+
+    describe('destroy', function ()
+    {
+        it('should trigger removed listeners', function ()
+        {
+            const child = new DisplayObject();
+            const container = new Container();
+
+            container.addChild(child);
+
+            let removedListenerWasCalled = false;
+
+            child.on('removed', () => { removedListenerWasCalled = true; });
+            child.destroy();
+
+            expect(removedListenerWasCalled).to.be.true;
+        });
+    });
 });
