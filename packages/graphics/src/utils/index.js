@@ -30,6 +30,7 @@ import { SHAPES } from '@pixi/math';
 /**
  * Map of fill commands for each shape type.
  *
+ * @namespace PIXI.graphicsUtils
  * @member {Object}
  */
 export const FILL_COMMANDS = {
@@ -43,6 +44,7 @@ export const FILL_COMMANDS = {
 /**
  * Batch pool, stores unused batches for preventing allocations.
  *
+ * @namespace PIXI.graphicsUtils
  * @type {Array<BatchPart>}
  */
 export const BATCH_POOL = [];
@@ -50,6 +52,7 @@ export const BATCH_POOL = [];
 /**
  * Draw call pool, stores unused draw calls for preventing allocations.
  *
+ * @namespace PIXI.graphicsUtils
  * @type {Array<PIXI.BatchDrawCall>}
  */
 export const DRAW_CALL_POOL = [];
