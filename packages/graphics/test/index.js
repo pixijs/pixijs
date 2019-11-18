@@ -829,5 +829,26 @@ describe('PIXI.Graphics', function ()
             geometry.updateBatches();
             expect(geometry.batches).to.have.lengthOf(1);
         });
+
+        it('should not use fill if triangulation does nothing', function ()
+        {
+            const graphics = new Graphics();
+
+            graphics
+                .lineStyle(2, 0x00ff00)
+                .beginFill(0xff0000)
+                .drawRect(0, 0, 100, 100)
+                .moveTo(200, 0)
+                .lineTo(250, 200);
+
+            const geometry = graphics.geometry;
+
+            geometry.updateBatches();
+            expect(geometry.batches).to.have.lengthOf(2);
+            expect(geometry.batches[0].style.color).to.equals(0xff0000);
+            expect(geometry.batches[0].size).to.equal(6);
+            expect(geometry.batches[1].style.color).to.equals(0x00ff00);
+            expect(geometry.batches[1].size).to.equal(30);
+        });
     });
 });

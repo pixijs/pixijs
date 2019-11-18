@@ -1,3 +1,5 @@
+import { TickerCallback } from './Ticker';
+
 /**
  * Internal class for handling the priority sorting of ticker handlers.
  *
@@ -5,14 +7,14 @@
  * @class
  * @memberof PIXI
  */
-export class TickerListener
+export class TickerListener<T = any>
 {
     public priority: number;
     public next: TickerListener;
     public previous: TickerListener;
 
-    private fn: (dt?: number) => any;
-    private context: any;
+    private fn: TickerCallback<T>;
+    private context: T;
     private once: boolean;
     private _destroyed: boolean;
 
@@ -24,7 +26,7 @@ export class TickerListener
      * @param {number} [priority=0] - The priority for emitting
      * @param {boolean} [once=false] - If the handler should fire once
      */
-    constructor(fn: (dt?: number) => any, context: any = null, priority = 0, once = false)
+    constructor(fn: TickerCallback<T>, context: T = null, priority = 0, once = false)
     {
         /**
          * The handler function to execute.
@@ -83,7 +85,7 @@ export class TickerListener
      * @param {any} [context] - The listener context
      * @return {boolean} `true` if the listener match the arguments
      */
-    match(fn: (dt?: number) => any, context: any = null): boolean
+    match(fn: TickerCallback<T>, context: any = null): boolean
     {
         return this.fn === fn && this.context === context;
     }
@@ -104,7 +106,7 @@ export class TickerListener
             }
             else
             {
-                this.fn(deltaTime);
+                (this as TickerListener<any>).fn(deltaTime);
             }
         }
 
