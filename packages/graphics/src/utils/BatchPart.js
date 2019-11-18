@@ -1,6 +1,7 @@
 /**
- * A structure to hold interim batch objects.
- *
+ * A structure to hold interim batch objects for Graphics.
+ * @class
+ * @memberof PIXI.graphicsUtils
  */
 export class BatchPart
 {

@@ -131,7 +131,7 @@ export class GraphicsGeometry extends BatchGeometry
          * Intermediate abstract format sent to batch system.
          * Can be converted to drawCalls or to batchable objects.
          *
-         * @member {BatchPart[]}
+         * @member {PIXI.graphicsUtils.BatchPart[]}
          * @protected
          */
         this.batches = [];
@@ -227,12 +227,10 @@ export class GraphicsGeometry extends BatchGeometry
 
         for (let i = 0; i < this.batches.length; i++)
         {
-            const batch =  this.batches[i];
+            const batchPart = this.batches[i];
 
-            batch.start = 0;
-            batch.attribStart = 0;
-            batch.style = null;
-            BATCH_POOL.push(batch);
+            batchPart.reset();
+            BATCH_POOL.push(batchPart);
         }
 
         this.batches.length = 0;
@@ -464,28 +462,6 @@ export class GraphicsGeometry extends BatchGeometry
 
                 nextTexture.wrapMode = WRAP_MODES.REPEAT;
 
-                // close batch if style is different
-                if (batchPart && !this._compareStyles(currentStyle, style))
-                {
-                    batchPart.end(index, attribIndex);
-
-                    if (batchPart.size > 0)
-                    {
-                        batchPart = null;
-                    }
-                }
-                // spawn new batch if its first batch or previous was closed
-                if (!batchPart)
-                {
-                    batchPart = BATCH_POOL.pop() || new BatchPart();
-                    batchPart.begin(style, index, attribIndex);
-                    this.batches.push(batchPart);
-
-                    currentStyle = style;
-                }
-
-                const start = this.points.length / 2;
-
                 if (j === 0)
                 {
                     this.processFill(data);
@@ -495,13 +471,37 @@ export class GraphicsGeometry extends BatchGeometry
                     this.processLine(data);
                 }
 
-                const size = (this.points.length / 2) - start;
+                const size = (this.points.length / 2) - attribIndex;
 
-                this.addUvs(this.points, uvs, style.texture, start, size, style.matrix);
+                if (size === 0) continue;
+                // close batch if style is different
+                if (batchPart && !this._compareStyles(currentStyle, style))
+                {
+                    batchPart.end(index, attribIndex);
+                    batchPart = null;
+                }
+                // spawn new batch if its first batch or previous was closed
+                if (!batchPart)
+                {
+                    batchPart = BATCH_POOL.pop() || new BatchPart();
+                    batchPart.begin(style, index, attribIndex);
+                    this.batches.push(batchPart);
+                    currentStyle = style;
+                }
+
+                this.addUvs(this.points, uvs, style.texture, attribIndex, size, style.matrix);
             }
         }
 
-        if (!batchPart)
+        if (batchPart)
+        {
+            const index = this.indices.length;
+            const attrib = this.points.length / 2;
+
+            batchPart.end(index, attrib);
+        }
+
+        if (this.batches.length === 0)
         {
             // there are no visible styles in GraphicsData
             // its possible that someone wants Graphics just for the bounds
@@ -509,11 +509,6 @@ export class GraphicsGeometry extends BatchGeometry
 
             return;
         }
-
-        const index = this.indices.length;
-        const attrib = this.points.length / 2;
-
-        batchPart.end(index, attrib);
 
         this.indicesUint16 = new Uint16Array(this.indices);
 
