@@ -1,6 +1,7 @@
 const { Renderer, BatchRenderer, resources, Texture, BaseTexture } = require('../');
 const { CanvasResource } = resources;
 const { skipHello } = require('@pixi/utils');
+const { BLEND_MODES } = require('@pixi/constants');
 
 skipHello();
 
@@ -19,6 +20,20 @@ describe('PIXI.BatchRenderer', function ()
         return new BaseTexture(new CanvasResource(canvas));
     }
 
+    const uvs = [0, 0, 1, 0, 1, 1, 0, 1];
+    const vertexData = uvs;
+    const indices = [0, 1, 2, 0, 2, 3];
+    const uvs2 = [0, 0, 1, 0, 1, 1, 0.5, 1, 1, 1];
+    const vertexData2 = uvs2;
+    const indices2 = [0, 1, 2, 3, 4];
+    const tex1 = createTexture(10, 10);
+    const tex2 = createTexture(20, 20);
+    const tex3 = createTexture(16, 24);
+    const tex4 = createTexture(24, 16);
+    const tint1 = 0xffffff;
+    const tint2 = 0xffff00;
+    const tint3 = 0x00ffff;
+
     it('should pass the batching test', function ()
     {
         const renderer = new Renderer(1, 1);
@@ -29,20 +44,6 @@ describe('PIXI.BatchRenderer', function ()
         {
             drawCalls.push(start, size);
         };
-
-        const uvs = [0, 0, 1, 0, 1, 1, 0, 1];
-        const vertexData = uvs;
-        const indices = [0, 1, 2, 0, 2, 3];
-        const uvs2 = [0, 0, 1, 0, 1, 1, 0.5, 1, 1, 1];
-        const vertexData2 = uvs2;
-        const indices2 = [0, 1, 2, 3, 4];
-        const tex1 = createTexture(10, 10);
-        const tex2 = createTexture(20, 20);
-        const tex3 = createTexture(16, 24);
-        const tex4 = createTexture(24, 16);
-        const tint1 = 0xffffff;
-        const tint2 = 0xffff00;
-        const tint3 = 0x00ffff;
 
         // optimal is three drawCalls, but due to priority of bindTexture there are four
 
@@ -126,6 +127,44 @@ describe('PIXI.BatchRenderer', function ()
 
             expect(resultAttr).to.eql(attr);
             expect(resultInd).to.eql(ind);
+        }
+        finally
+        {
+            batchRenderer.destroy();
+            renderer.destroy();
+        }
+    });
+
+    it('should ask StateSystem to call gl.disable(gl.BLEND) if sprite has BLEND_MODES.NONE', function ()
+    {
+        const renderer = new Renderer(1, 1);
+        const { gl } = renderer;
+        const batchRenderer = new BatchRenderer(renderer);
+
+        const elements = [
+            { uvs, vertexData, indices, _tintRGB: tint1, worldAlpha: 1.0, _texture: new Texture(tex1),
+                blendMode: BLEND_MODES.NONE },
+            { uvs, vertexData, indices, _tintRGB: tint1, worldAlpha: 0.5, _texture: new Texture(tex1),
+                blendMode: BLEND_MODES.NORMAL },
+        ];
+
+        try
+        {
+            batchRenderer.size = 300;
+            batchRenderer.contextChange();
+            batchRenderer.MAX_TEXTURES = 2;
+            batchRenderer.start();
+
+            const glEnable = sinon.spy(gl.enable);
+            const glDisable = sinon.spy(gl.disable);
+
+            elements.forEach((element) => batchRenderer.render(element));
+            batchRenderer.flush();
+
+            expect(glDisable.calledOnce).to.be.true;
+            expect(glDisable.args[0][0]).to.equal(gl.BLEND);
+            expect(glEnable.calledOnce).to.be.true;
+            expect(glEnable.args[0][0]).to.equal(gl.BLEND);
         }
         finally
         {

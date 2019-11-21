@@ -534,7 +534,8 @@ export class AbstractBatchRenderer extends ObjectRenderer
                 this.bindAndClearTexArray(texArray);
             }
 
-            stateSystem.setBlendMode(blend);
+            this.state.blendMode = blend;
+            stateSystem.set(this.state);
             gl.drawElements(type, size, gl.UNSIGNED_SHORT, start * 2);
         }
     }
