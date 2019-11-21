@@ -138,8 +138,8 @@ describe('PIXI.BatchRenderer', function ()
     it('should ask StateSystem to call gl.disable(gl.BLEND) if sprite has BLEND_MODES.NONE', function ()
     {
         const renderer = new Renderer(1, 1);
-        const { gl } = renderer;
         const batchRenderer = new BatchRenderer(renderer);
+        const { gl } = renderer;
 
         const elements = [
             { uvs, vertexData, indices, _tintRGB: tint1, worldAlpha: 1.0, _texture: new Texture(tex1),
