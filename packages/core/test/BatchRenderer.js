@@ -155,8 +155,8 @@ describe('PIXI.BatchRenderer', function ()
             batchRenderer.MAX_TEXTURES = 2;
             batchRenderer.start();
 
-            const glEnable = sinon.spy(gl.enable);
-            const glDisable = sinon.spy(gl.disable);
+            const glEnable = sinon.spy(gl, 'enable');
+            const glDisable = sinon.spy(gl, 'disable');
 
             elements.forEach((element) => batchRenderer.render(element));
             batchRenderer.flush();
