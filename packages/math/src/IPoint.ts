@@ -2,6 +2,7 @@ export interface IPoint
 {
     x: number;
     y: number;
+    clone(): IPoint;
     copyFrom(p: IPoint): this;
     copyTo<T extends IPoint>(p: T): T;
     equals(p: IPoint): boolean;
@@ -33,6 +34,13 @@ export interface IPoint
  * @memberof PIXI.IPoint#
  * @param {number} [x=0] - position of the point on the x axis
  * @param {number} [y=x] - position of the point on the y axis
+ */
+
+/**
+ * Creates a clone of this point
+ * @method clone
+ * @memberof PIXI.IPoint#
+ * @return {PIXI.Point} a copy of the point
  */
 
 /**
