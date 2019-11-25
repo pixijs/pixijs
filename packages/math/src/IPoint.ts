@@ -40,7 +40,7 @@ export interface IPoint
  * Creates a clone of this point
  * @method clone
  * @memberof PIXI.IPoint#
- * @return {PIXI.Point} a copy of the point
+ * @return {PIXI.IPoint} a copy of the point
  */
 
 /**
