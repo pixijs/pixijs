@@ -250,7 +250,7 @@ export class TextMetrics
                 if (TextMetrics.canBreakWords(token, style.breakWords))
                 {
                     // break word into characters
-                    const characters = token.split('');
+                    const characters = TextMetrics.configuration.wordWrapTokenSplit(token);
 
                     // loop the characters
                     for (let j = 0; j < characters.length; j++)
@@ -715,6 +715,15 @@ const canvas = (() =>
 })();
 
 canvas.width = canvas.height = 10;
+
+/**
+ * Configuration for TextMetrics
+ * @type {{wordWrapTokenSplit: (function(*): (Array|string[]))}} A function that splits a token in `wordWrap` method into
+ * separate characters when token is longer than the allowed width
+ */
+TextMetrics.configuration = {
+    wordWrapTokenSplit: (token) => token.split(''),
+};
 
 /**
  * Cached canvas element for measuring text
