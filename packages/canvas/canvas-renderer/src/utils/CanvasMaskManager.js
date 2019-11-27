@@ -45,13 +45,44 @@ export class CanvasMaskManager
 
         // TODO support sprite alpha masks??
         // lots of effort required. If demand is great enough..
-        if (!maskObject._texture)
+        if (this.recursiveFindShapes(maskObject))
         {
-            this.renderGraphicsShape(maskObject);
             renderer.context.clip();
         }
 
         maskData.worldAlpha = cacheAlpha;
+    }
+
+    /**
+     * Renders all PIXI.Graphics shapes in a subtree.
+     *
+     * @param {PIXI.Container} container - container to scan.
+     * @returns {boolean} whether graphics was found
+     */
+    recursiveFindShapes(container)
+    {
+        let found = false;
+
+        if (container.geometry && container.geometry.graphicsData)
+        {
+            found = true;
+            this.renderGraphicsShape(container);
+        }
+
+        const { children } = container;
+
+        if (children)
+        {
+            for (let i = 0; i < children.length; i++)
+            {
+                if (this.recursiveFindShapes(children[i]))
+                {
+                    found = true;
+                }
+            }
+        }
+
+        return found;
     }
 
     /**
@@ -61,6 +92,8 @@ export class CanvasMaskManager
      */
     renderGraphicsShape(graphics)
     {
+        graphics.finishPoly();
+
         const context = this.renderer.context;
         const graphicsData = graphics.geometry.graphicsData;
         const len = graphicsData.length;
