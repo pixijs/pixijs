@@ -16,6 +16,8 @@ export class CanvasMaskManager
     constructor(renderer)
     {
         this.renderer = renderer;
+
+        this._foundShapes = [];
     }
 
     /**
@@ -32,9 +34,35 @@ export class CanvasMaskManager
 
         // TODO support sprite alpha masks??
         // lots of effort required. If demand is great enough..
-        if (this.recursiveFindShapes(maskObject))
+
+        const foundShapes = this._foundShapes;
+
+        this.recursiveFindShapes(maskObject, foundShapes);
+        if (foundShapes.length > 0)
         {
-            renderer.context.clip();
+            const { context, resolution } = renderer;
+
+            context.beginPath();
+
+            for (let i = 0; i < foundShapes.length; i++)
+            {
+                const shape = foundShapes[i];
+                const transform = shape.transform.worldTransform;
+
+                this.renderer.context.setTransform(
+                    transform.a * resolution,
+                    transform.b * resolution,
+                    transform.c * resolution,
+                    transform.d * resolution,
+                    transform.tx * resolution,
+                    transform.ty * resolution
+                );
+
+                this.renderGraphicsShape(shape);
+            }
+
+            foundShapes.length = 0;
+            context.clip();
         }
     }
 
@@ -42,29 +70,13 @@ export class CanvasMaskManager
      * Renders all PIXI.Graphics shapes in a subtree.
      *
      * @param {PIXI.Container} container - container to scan.
-     * @returns {boolean} whether graphics was found
+     * @param {PIXI.Graphics[]} out - where to put found shapes
      */
-    recursiveFindShapes(container)
+    recursiveFindShapes(container, out)
     {
-        let found = false;
-
         if (container.geometry && container.geometry.graphicsData)
         {
-            found = true;
-
-            const transform = container.transform.worldTransform;
-            const resolution = this.renderer.resolution;
-
-            this.renderer.context.setTransform(
-                transform.a * resolution,
-                transform.b * resolution,
-                transform.c * resolution,
-                transform.d * resolution,
-                transform.tx * resolution,
-                transform.ty * resolution
-            );
-
-            this.renderGraphicsShape(container);
+            out.push(container);
         }
 
         const { children } = container;
@@ -73,14 +85,9 @@ export class CanvasMaskManager
         {
             for (let i = 0; i < children.length; i++)
             {
-                if (this.recursiveFindShapes(children[i]))
-                {
-                    found = true;
-                }
+                this.recursiveFindShapes(children[i], out);
             }
         }
-
-        return found;
     }
 
     /**
@@ -100,8 +107,6 @@ export class CanvasMaskManager
         {
             return;
         }
-
-        context.beginPath();
 
         for (let i = 0; i < len; i++)
         {
