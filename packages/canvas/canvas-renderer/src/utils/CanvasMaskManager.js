@@ -30,27 +30,12 @@ export class CanvasMaskManager
 
         renderer.context.save();
 
-        const cacheAlpha = maskObject.alpha;
-        const transform = maskObject.transform.worldTransform;
-        const resolution = renderer.resolution;
-
-        renderer.context.setTransform(
-            transform.a * resolution,
-            transform.b * resolution,
-            transform.c * resolution,
-            transform.d * resolution,
-            transform.tx * resolution,
-            transform.ty * resolution
-        );
-
         // TODO support sprite alpha masks??
         // lots of effort required. If demand is great enough..
         if (this.recursiveFindShapes(maskObject))
         {
             renderer.context.clip();
         }
-
-        maskData.worldAlpha = cacheAlpha;
     }
 
     /**
@@ -66,6 +51,19 @@ export class CanvasMaskManager
         if (container.geometry && container.geometry.graphicsData)
         {
             found = true;
+
+            const transform = container.transform.worldTransform;
+            const resolution = this.renderer.resolution;
+
+            this.renderer.context.setTransform(
+                transform.a * resolution,
+                transform.b * resolution,
+                transform.c * resolution,
+                transform.d * resolution,
+                transform.tx * resolution,
+                transform.ty * resolution
+            );
+
             this.renderGraphicsShape(container);
         }
 
