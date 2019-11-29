@@ -4,6 +4,8 @@ import { State } from '../state/State';
 import { settings } from '@pixi/settings';
 import defaultVertex from './defaultFilter.vert';
 import defaultFragment from './defaultFilter.frag';
+import acsVertex from './acs.vert';
+import acsFragment from  './acs.frag';
 
 /**
  * Filter is a special type of WebGL shader that is applied to the screen.
@@ -156,10 +158,8 @@ export class Filter extends Shader
         super(program, uniforms);
 
         /**
-         * The padding of the filter. Some filters require extra space to breath such as a blur.
-         * Increasing this will add extra width and height to the bounds of the object that the
-         * filter is applied to.
-         *
+         * The extra space that is added to the target's bounds for filters to manipulate. Some
+         * filters like blurs need it to "breathe".
          * @member {number}
          */
         this.padding = 0;
@@ -167,22 +167,19 @@ export class Filter extends Shader
         /**
          * The resolution of the filter. Setting this to be lower will lower the quality but
          * increase the performance of the filter.
-         *
          * @member {number}
          */
         this.resolution = settings.FILTER_RESOLUTION;
 
         /**
          * If enabled is true the filter is applied, if false it will not.
-         *
          * @member {boolean}
          */
         this.enabled = true;
 
         /**
-         * If enabled, PixiJS will fit the filter area into boundaries for better performance.
-         * Switch it off if it does not work for specific shader.
-         *
+         * If enabled, PixiJS will apply the filter only on the visible portion of the target's
+         * filter area. You can switch it off if it does not work for specific filter.
          * @member {boolean}
          */
         this.autoFit = true;
@@ -199,6 +196,63 @@ export class Filter extends Shader
          * @member {PIXI.State}
          */
         this.state = new State();
+    }
+
+    /**
+     * Input frame required by this filter, as recorded by the last measure
+     * pass.
+     * @returns {PIXI.Rectangle}
+     */
+    get frame()
+    {
+        return this._frame;
+    }
+
+    /**
+     * Whether this filter can be applied without reducing the refresh rate
+     * significantly
+     * @returns {boolean}
+     */
+    get renderable()
+    {
+        return this._renderable;
+    }
+
+    /**
+     * Overridable method called by `measure`. Use this to provide your custom measurements,
+     * by setting `this._frame` and `this._renderable`.
+     * @param {PIXI.Rectangle} targetBounds
+     * @param {PIXI.Rectangle} passBounds
+     * @param {number} padding
+     * @abstract
+     * @see {@link PIXI.Filter#frame}
+     * @see {@link PIXI.Filter#renderable}
+     */
+    onMeasure(targetBounds, passBounds, padding)// eslint-disable-line no-unused-vars
+    {
+        this._frame = passBounds;
+        this._renderable = true;
+    }
+
+    /**
+     * Measures the input frame needed by this filter to calculate pixels
+     * in the pass-output. It should keep the results in `Filter#frame`
+     * @param {PIXI.Rectangle} targetBounds - bounds of the target object
+     * @param {PIXI.Rectangle} passBounds - frame in which output is required
+     * @param {number} padding - padding applied in the target bounds
+     */
+    measure(targetBounds, passBounds, padding)
+    {
+        this.onMeasure(targetBounds, passBounds, padding);
+
+        if (this.frame === null || this.frame === undefined)
+        {
+            throw new Error(`${this.constructor.name}#onMeasure does not set Filter#_frame.`);
+        }
+        if (this.renderable === undefined)
+        {
+            throw new Error(`${this.constructor.name}#onMeasure does not set Filter#_renderable.`);
+        }
     }
 
     /**
@@ -239,7 +293,6 @@ export class Filter extends Shader
 
     /**
      * The default vertex shader source
-     *
      * @static
      * @type {string}
      * @constant
@@ -251,7 +304,6 @@ export class Filter extends Shader
 
     /**
      * The default fragment shader source
-     *
      * @static
      * @type {string}
      * @constant
@@ -259,6 +311,30 @@ export class Filter extends Shader
     static get defaultFragmentSrc()
     {
         return defaultFragment;
+    }
+
+    /**
+     * The absolute coordinates supplement vertex shader: along with `vTextureCoord`, this
+     * shader passes the `vAbsoluteCoord` varying. This can be used to do operations in
+     * absolute coordinates, which preserve vector directions.
+     * @static
+     * @type {string}
+     * @constant
+     */
+    static get acsVertexSrc()
+    {
+        return acsVertex;
+    }
+
+    /**
+     * The identity fragment shader for the acs vertex shader.
+     * @static
+     * @type {string}
+     * @constant
+     */
+    static get acsFragmentSrc()
+    {
+        return acsFragment;
     }
 }
 
@@ -270,4 +346,3 @@ export class Filter extends Shader
  * @protected
  */
 Filter.SOURCE_KEY_MAP = {};
-
