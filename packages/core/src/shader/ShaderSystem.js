@@ -6,6 +6,8 @@ import { generateUniformsSync,
     compileProgram } from './utils';
 
 let UID = 0;
+// defualt sync data so we don't create a new one each time!
+const defaultSyncData = { textureCount: 0 };
 
 /**
  * System plugin to the renderer to manage shaders.
@@ -92,7 +94,9 @@ export class ShaderSystem extends System
 
         if (!dontSync)
         {
-            this.syncUniformGroup(shader.uniformGroup);
+            defaultSyncData.textureCount = 0;
+
+            this.syncUniformGroup(shader.uniformGroup, defaultSyncData);
         }
 
         return glProgram;
@@ -111,7 +115,13 @@ export class ShaderSystem extends System
         shader.syncUniforms(glProgram.uniformData, uniforms, this.renderer);
     }
 
-    syncUniformGroup(group)
+    /**
+     *
+     * syncs uniforms on the group
+     * @param {*} group the uniform group to sync
+     * @param {*} syncData this is data that is passed to the sync function and any nested sync functions
+     */
+    syncUniformGroup(group, syncData)
     {
         const glProgram = this.getglProgram();
 
@@ -119,7 +129,7 @@ export class ShaderSystem extends System
         {
             glProgram.uniformGroups[group.id] = group.dirtyId;
 
-            this.syncUniforms(group, glProgram);
+            this.syncUniforms(group, glProgram, syncData);
         }
     }
 
@@ -129,11 +139,11 @@ export class ShaderSystem extends System
      *
      * @private
      */
-    syncUniforms(group, glProgram)
+    syncUniforms(group, glProgram, syncData)
     {
         const syncFunc = group.syncUniforms[this.shader.program.id] || this.createSyncGroups(group);
 
-        syncFunc(glProgram.uniformData, group.uniforms, this.renderer);
+        syncFunc(glProgram.uniformData, group.uniforms, this.renderer, syncData);
     }
 
     createSyncGroups(group)
