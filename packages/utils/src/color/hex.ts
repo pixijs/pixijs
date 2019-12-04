@@ -9,7 +9,7 @@
  * @param  {number[]} [out=[]] If supplied, this array will be used rather than returning a new one
  * @return {number[]} An array representing the [R, G, B] of the color where all values are floats.
  */
-export function hex2rgb(hex, out)
+export function hex2rgb(hex: number, out: number[]): number[]
 {
     out = out || [];
 
@@ -30,12 +30,11 @@ export function hex2rgb(hex, out)
  * @param {number} hex - Number in hex (e.g., `0xffffff`)
  * @return {string} The string color (e.g., `"#ffffff"`).
  */
-export function hex2string(hex)
+export function hex2string(hex: number): string
 {
-    hex = hex.toString(16);
-    hex = '000000'.substr(0, 6 - hex.length) + hex;
+    const hexString = hex.toString(16).padStart(6, '0');
 
-    return `#${hex}`;
+    return `#${hexString}`;
 }
 
 /**
@@ -48,7 +47,7 @@ export function hex2string(hex)
  * @param {string} The string color (e.g., `"#ffffff"`)
  * @return {number} Number in hexadecimal.
  */
-export function string2hex(string)
+export function string2hex(string: string): number
 {
     if (typeof string === 'string' && string[0] === '#')
     {
@@ -68,7 +67,7 @@ export function string2hex(string)
  * @param {number[]} rgb - Array of numbers where all values are normalized floats from 0.0 to 1.0.
  * @return {number} Number in hexadecimal.
  */
-export function rgb2hex(rgb)
+export function rgb2hex(rgb: number[]): number
 {
     return (((rgb[0] * 255) << 16) + ((rgb[1] * 255) << 8) + (rgb[2] * 255 | 0));
 }

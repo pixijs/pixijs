@@ -1,4 +1,5 @@
 declare module '@pixi/settings';
+declare module '@pixi/constants';
 
 declare interface IApplicationOptions {
     autoStart?: boolean;
