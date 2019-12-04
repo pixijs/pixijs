@@ -222,18 +222,18 @@ describe('PIXI.TextMetrics', function ()
 
     describe('wordWrap misc', function ()
     {
-        const originalSplit = TextMetrics.configuration.wordWrapTokenSplit;
+        const originalSplit = TextMetrics.wordWrapSplit;
 
         afterEach(function ()
         {
-            TextMetrics.configuration.wordWrapTokenSplit = originalSplit;
+            TextMetrics.wordWrapSplit = originalSplit;
         });
 
         it('should use configuration callback to split a token', () =>
         {
             let wasSplitCalled = false;
 
-            TextMetrics.configuration.wordWrapTokenSplit = (token) =>
+            TextMetrics.wordWrapSplit = (token) =>
             {
                 wasSplitCalled = true;
                 expect(token).to.equal('testword1234567890abcd!');
