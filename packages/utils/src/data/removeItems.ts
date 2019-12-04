@@ -7,7 +7,7 @@
  * @param {number} startIdx starting index
  * @param {number} removeCount how many to remove
  */
-export function removeItems(arr, startIdx, removeCount)
+export function removeItems(arr: any[], startIdx: number, removeCount: number): void
 {
     const length = arr.length;
     let i;
