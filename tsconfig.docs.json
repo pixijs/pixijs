@@ -3,6 +3,7 @@
     "compilerOptions": {
         "target": "es6",
         "outDir": "./dist/compiled",
-        "sourceMap": false
+        "sourceMap": false,
+        "allowJs": true
     }
 }

@@ -9,7 +9,16 @@
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "noImplicitReturns": true,
-        "strictNullChecks": false
+        "strictNullChecks": false,
+        "baseUrl": "./",
+        "outDir": "./out",
+        "paths": {
+            "@pixi/math": ["packages/math/src/"],
+            "@pixi/utils": ["packages/utils/src/"],
+            "@pixi/core": ["packages/core/src/"],
+            "@pixi/sprite": ["packages/sprite/src/"],
+            "@pixi/graphics": ["packages/graphics/src/"],
+        }
     },
     "exclude": [
         "node_modules",

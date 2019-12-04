@@ -1,8 +1,15 @@
+import { MaskData, Renderer } from '@pixi/core';
 import { settings } from '@pixi/settings';
 import { removeItems } from '@pixi/utils';
 import { DisplayObject } from './DisplayObject';
 
-function sortChildren(a, b)
+export interface IDestroyOptions {
+    children?: boolean;
+    texture?: boolean;
+    baseTexture?: boolean;
+}
+
+function sortChildren(a: DisplayObject, b: DisplayObject): number
 {
     if (a.zIndex === b.zIndex)
     {
@@ -28,6 +35,13 @@ function sortChildren(a, b)
  */
 export class Container extends DisplayObject
 {
+    public readonly children: DisplayObject[];
+    public sortableChildren: boolean;
+    public sortDirty: boolean;
+
+    protected _width: number;
+    protected _height: number;
+
     constructor()
     {
         super();
@@ -89,7 +103,8 @@ export class Container extends DisplayObject
      *
      * @protected
      */
-    onChildrenChange()
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    protected onChildrenChange(length: number): void
     {
         /* empty */
     }
@@ -99,26 +114,26 @@ export class Container extends DisplayObject
      *
      * Multiple items can be added like so: `myContainer.addChild(thingOne, thingTwo, thingThree)`
      *
-     * @param {...PIXI.DisplayObject} child - The DisplayObject(s) to add to the container
+     * @param {...PIXI.DisplayObject} children - The DisplayObject(s) to add to the container
      * @return {PIXI.DisplayObject} The first child that was added.
      */
-    addChild(child)
+    addChild<T extends DisplayObject[]>(...children: T): T[0]
     {
-        const argumentsLength = arguments.length;
-
         // if there is only one argument we can bypass looping through the them
-        if (argumentsLength > 1)
+        if (children.length > 1)
         {
-            // loop through the arguments property and add all children
-            // use it the right way (.length and [i]) so that this function can still be optimized by JS runtimes
-            for (let i = 0; i < argumentsLength; i++)
+            // loop through the array and add all children
+            for (let i = 0; i < children.length; i++)
             {
-                this.addChild(arguments[i]);
+                // eslint-disable-next-line prefer-rest-params
+                this.addChild(children[i]);
             }
         }
         else
         {
+            const child = children[0];
             // if the child has a parent then lets remove it as PixiJS objects can only exist in one place
+
             if (child.parent)
             {
                 child.parent.removeChild(child);
@@ -141,7 +156,7 @@ export class Container extends DisplayObject
             child.emit('added', this);
         }
 
-        return child;
+        return children[0];
     }
 
     /**
@@ -151,7 +166,7 @@ export class Container extends DisplayObject
      * @param {number} index - The index to place the child in
      * @return {PIXI.DisplayObject} The child that was added.
      */
-    addChildAt(child, index)
+    addChildAt<T extends DisplayObject>(child: T, index: number): T
     {
         if (index < 0 || index > this.children.length)
         {
@@ -188,7 +203,7 @@ export class Container extends DisplayObject
      * @param {PIXI.DisplayObject} child - First display object to swap
      * @param {PIXI.DisplayObject} child2 - Second display object to swap
      */
-    swapChildren(child, child2)
+    swapChildren(child: DisplayObject, child2: DisplayObject): void
     {
         if (child === child2)
         {
@@ -209,7 +224,7 @@ export class Container extends DisplayObject
      * @param {PIXI.DisplayObject} child - The DisplayObject instance to identify
      * @return {number} The index position of the child display object to identify
      */
-    getChildIndex(child)
+    getChildIndex(child: DisplayObject): number
     {
         const index = this.children.indexOf(child);
 
@@ -227,7 +242,7 @@ export class Container extends DisplayObject
      * @param {PIXI.DisplayObject} child - The child DisplayObject instance for which you want to change the index number
      * @param {number} index - The resulting index number for the child display object
      */
-    setChildIndex(child, index)
+    setChildIndex(child: DisplayObject, index: number): void
     {
         if (index < 0 || index >= this.children.length)
         {
@@ -248,7 +263,7 @@ export class Container extends DisplayObject
      * @param {number} index - The index to get the child at
      * @return {PIXI.DisplayObject} The child at the given index, if any.
      */
-    getChildAt(index)
+    getChildAt(index: number): DisplayObject
     {
         if (index < 0 || index >= this.children.length)
         {
@@ -261,25 +276,23 @@ export class Container extends DisplayObject
     /**
      * Removes one or more children from the container.
      *
-     * @param {...PIXI.DisplayObject} child - The DisplayObject(s) to remove
+     * @param {...PIXI.DisplayObject} children - The DisplayObject(s) to remove
      * @return {PIXI.DisplayObject} The first child that was removed.
      */
-    removeChild(child)
+    removeChild<T extends DisplayObject[]>(...children: T): T[0]
     {
-        const argumentsLength = arguments.length;
-
         // if there is only one argument we can bypass looping through the them
-        if (argumentsLength > 1)
+        if (children.length > 1)
         {
-            // loop through the arguments property and add all children
-            // use it the right way (.length and [i]) so that this function can still be optimized by JS runtimes
-            for (let i = 0; i < argumentsLength; i++)
+            // loop through the arguments property and remove all children
+            for (let i = 0; i < children.length; i++)
             {
-                this.removeChild(arguments[i]);
+                this.removeChild(children[i]);
             }
         }
         else
         {
+            const child = children[0];
             const index = this.children.indexOf(child);
 
             if (index === -1) return null;
@@ -298,7 +311,7 @@ export class Container extends DisplayObject
             this.emit('childRemoved', child, this, index);
         }
 
-        return child;
+        return children[0];
     }
 
     /**
@@ -307,7 +320,7 @@ export class Container extends DisplayObject
      * @param {number} index - The index to get the child from
      * @return {PIXI.DisplayObject} The child that was removed.
      */
-    removeChildAt(index)
+    removeChildAt(index: number): DisplayObject
     {
         const child = this.getChildAt(index);
 
@@ -334,10 +347,10 @@ export class Container extends DisplayObject
      * @param {number} [endIndex=this.children.length] - The ending position. Default value is size of the container.
      * @returns {PIXI.DisplayObject[]} List of removed children
      */
-    removeChildren(beginIndex = 0, endIndex)
+    removeChildren(beginIndex = 0, endIndex = this.children.length): DisplayObject[]
     {
         const begin = beginIndex;
-        const end = typeof endIndex === 'number' ? endIndex : this.children.length;
+        const end = endIndex;
         const range = end - begin;
         let removed;
 
@@ -377,7 +390,7 @@ export class Container extends DisplayObject
     /**
      * Sorts children by zIndex. Previous order is mantained for 2 children with the same zIndex.
      */
-    sortChildren()
+    sortChildren(): void
     {
         let sortRequired = false;
 
@@ -404,7 +417,7 @@ export class Container extends DisplayObject
     /**
      * Updates the transform on all children of this container for rendering
      */
-    updateTransform()
+    updateTransform(): void
     {
         if (this.sortableChildren && this.sortDirty)
         {
@@ -433,7 +446,7 @@ export class Container extends DisplayObject
      * Recalculates the bounds of the container.
      *
      */
-    calculateBounds()
+    calculateBounds(): void
     {
         this._bounds.clear();
 
@@ -453,7 +466,7 @@ export class Container extends DisplayObject
             // TODO: filter+mask, need to mask both somehow
             if (child._mask)
             {
-                const maskObject = child._mask.maskObject || child._mask;
+                const maskObject: any = (child._mask as MaskData).maskObject || (child._mask as Container);
 
                 maskObject.calculateBounds();
                 this._bounds.addBoundsMask(child._bounds, maskObject._bounds);
@@ -477,7 +490,7 @@ export class Container extends DisplayObject
      *
      * @protected
      */
-    _calculateBounds()
+    protected _calculateBounds(): void
     {
         // FILL IN//
     }
@@ -487,7 +500,7 @@ export class Container extends DisplayObject
      *
      * @param {PIXI.Renderer} renderer - The renderer
      */
-    render(renderer)
+    render(renderer: Renderer): void
     {
         // if the object is not visible or the alpha is 0 then no need to render this element
         if (!this.visible || this.worldAlpha <= 0 || !this.renderable)
@@ -518,7 +531,7 @@ export class Container extends DisplayObject
      * @protected
      * @param {PIXI.Renderer} renderer - The renderer
      */
-    renderAdvanced(renderer)
+    renderAdvanced(renderer: Renderer): void
     {
         renderer.batch.flush();
 
@@ -582,7 +595,8 @@ export class Container extends DisplayObject
      * @protected
      * @param {PIXI.Renderer} renderer - The renderer
      */
-    _render(renderer) // eslint-disable-line no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    protected _render(renderer: Renderer): void // eslint-disable-line no-unused-vars
     {
         // this is where content itself gets rendered...
     }
@@ -600,7 +614,7 @@ export class Container extends DisplayObject
      * @param {boolean} [options.baseTexture=false] - Only used for child Sprites if options.children is set to true
      *  Should it destroy the base texture of the child sprite
      */
-    destroy(options)
+    destroy(options?: IDestroyOptions|boolean): void
     {
         super.destroy();
 
@@ -624,7 +638,7 @@ export class Container extends DisplayObject
      *
      * @member {number}
      */
-    get width()
+    get width(): number
     {
         return this.scale.x * this.getLocalBounds().width;
     }
@@ -650,7 +664,7 @@ export class Container extends DisplayObject
      *
      * @member {number}
      */
-    get height()
+    get height(): number
     {
         return this.scale.y * this.getLocalBounds().height;
     }
@@ -672,5 +686,7 @@ export class Container extends DisplayObject
     }
 }
 
-// performance increase to avoid using call.. (10x faster)
-Container.prototype.containerUpdateTransform = Container.prototype.updateTransform;
+Object.defineProperties(Container.prototype, {
+    // performance increase to avoid using call.. (10x faster)
+    containerUpdateTransform: { value: Container.prototype.updateTransform },
+});
