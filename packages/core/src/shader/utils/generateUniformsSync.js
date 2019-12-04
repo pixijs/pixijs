@@ -80,10 +80,11 @@ const GLSL_TO_ARRAY_SETTERS = {
 
 export function generateUniformsSync(group, uniformData)
 {
-    let textureCount = 0;
     let func = `var v = null;
     var cv = null
-    var gl = renderer.gl`;
+    var t = 0;
+    var gl = renderer.gl
+    `;
 
     for (const i in group.uniforms)
     {
@@ -94,7 +95,7 @@ export function generateUniformsSync(group, uniformData)
             if (group.uniforms[i].group)
             {
                 func += `
-                    renderer.shader.syncUniformGroup(uv.${i});
+                    renderer.shader.syncUniformGroup(uv.${i}, syncData);
                 `;
             }
 
@@ -116,15 +117,16 @@ export function generateUniformsSync(group, uniformData)
         /* eslint-disable max-len */
         {
             func += `
-            renderer.texture.bind(uv.${i}, ${textureCount});
 
-            if(ud.${i}.value !== ${textureCount})
+            t = syncData.textureCount++;
+
+            renderer.texture.bind(uv.${i}, t);
+            
+            if(ud.${i}.value !== t)
             {
-                ud.${i}.value = ${textureCount};
-                gl.uniform1i(ud.${i}.location, ${textureCount});\n; // eslint-disable-line max-len
+                ud.${i}.value = t;
+                gl.uniform1i(ud.${i}.location, t);\n; // eslint-disable-line max-len
             }\n`;
-
-            textureCount++;
         }
         else if (data.type === 'mat3' && data.size === 1)
         {
@@ -224,5 +226,11 @@ export function generateUniformsSync(group, uniformData)
         }
     }
 
-    return new Function('ud', 'uv', 'renderer', func); // eslint-disable-line no-new-func
+    /**
+     * the introduction of syncData is to solve an issue where textures in uniform groups are not set correctly
+     * the texture count was always starting from 0 in each group. This needs to increment each time a texture is used
+     * no matter which group is being used
+     *
+     */
+    return new Function('ud', 'uv', 'renderer', 'syncData', func); // eslint-disable-line no-new-func
 }
