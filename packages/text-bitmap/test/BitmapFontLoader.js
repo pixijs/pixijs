@@ -402,8 +402,8 @@ describe('PIXI.BitmapFontLoader', function ()
         loader.add(path.join(this.resources, 'split_font2.fnt'));
         loader.load(() =>
         {
-            const page0 = path.join(this.resources, 'split_font_ab.png');
-            const page1 = path.join(this.resources, 'split_font_cd.png');
+            const page0 = path.join(this.resources, 'split_font_ab.png').replace(/\\/g, '/');
+            const page1 = path.join(this.resources, 'split_font_cd.png').replace(/\\/g, '/');
 
             expect(loader.resources[page0].metadata.pageFile).to.equal('split_font_ab.png');
             expect(loader.resources[page1].metadata.pageFile).to.equal('split_font_cd.png');
