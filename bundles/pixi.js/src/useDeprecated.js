@@ -1069,6 +1069,28 @@ export function useDeprecated()
         },
     });
 
+    /**
+     * @deprecated since 5.0.0
+     * @member {PIXI.Point[]} PIXI.SimpleRope#points
+     * @see PIXI.Mesh#geometry
+     */
+    Object.defineProperty(PIXI.SimpleRope.prototype, 'points', {
+        get()
+        {
+            deprecation(v5, 'PIXI.SimpleRope.points property is deprecated, '
+                + 'use PIXI.SimpleRope.geometry.points');
+
+            return this.geometry.points;
+        },
+        set(value)
+        {
+            deprecation(v5, 'PIXI.SimpleRope.points property is deprecated, '
+                + 'use PIXI.SimpleRope.geometry.points');
+
+            this.geometry.points = value;
+        },
+    });
+
     // Use these to deprecate all the Sprite from* methods
     function spriteFrom(name, source, crossorigin, scaleMode)
     {
