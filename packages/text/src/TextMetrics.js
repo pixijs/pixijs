@@ -529,12 +529,12 @@ export class TextMetrics
     }
 
     /**
-     * This method exists to be easily overridden
+     * Overridable helper method used internally by TextMetrics, exposed to allow customizing the class's behavior.
+     *
      * It allows one to customise which words should break
      * Examples are if the token is CJK or numbers.
      * It must return a boolean.
      *
-     * @private
      * @param  {string}  token       The token
      * @param  {boolean}  breakWords  The style attr break words
      * @return {boolean} whether to break word or not
@@ -545,13 +545,13 @@ export class TextMetrics
     }
 
     /**
-     * This method exists to be easily overridden
+     * Overridable helper method used internally by TextMetrics, exposed to allow customizing the class's behavior.
+     *
      * It allows one to determine whether a pair of characters
      * should be broken by newlines
      * For example certain characters in CJK langs or numbers.
      * It must return a boolean.
      *
-     * @private
      * @param  {string}  char      The character
      * @param  {string}  nextChar  The next character
      * @param  {string}  token     The token/word the characters are from
