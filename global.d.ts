@@ -1,5 +1,18 @@
 declare module '@pixi/settings';
 declare module '@pixi/constants';
+declare module '@pixi/core' {
+    class Texture {
+        destroy(): void;
+    }
+
+    class BaseTexture {
+        destroy(): void;
+    }
+
+    class Program {
+
+    }
+}
 
 declare interface IApplicationOptions {
     autoStart?: boolean;

@@ -1,3 +1,10 @@
+interface Bound {
+    top?: number;
+    left?: number;
+    right?: number;
+    bottom?: number;
+}
+
 /**
  * Trim transparent borders from a canvas
  *
@@ -6,7 +13,7 @@
  * @param {HTMLCanvasElement} canvas - the canvas to trim
  * @returns {object} Trim data
  */
-export function trimCanvas(canvas)
+export function trimCanvas(canvas: HTMLCanvasElement): {width: number; height: number; data?: ImageData}
 {
     // https://gist.github.com/remy/784508
 
@@ -18,7 +25,7 @@ export function trimCanvas(canvas)
     const pixels = imageData.data;
     const len = pixels.length;
 
-    const bound = {
+    const bound: Bound = {
         top: null,
         left: null,
         right: null,
