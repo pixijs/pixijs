@@ -86,10 +86,22 @@ export { default as url } from 'url';
 
 import './settings';
 
-export * from './browser';
-export * from './color';
-export * from './data';
-export * from './media';
-export * from './network';
+export * from './browser/hello';
+export * from './browser/isWebGLSupported';
+export * from './color/hex';
+export * from './color/premultiply';
+export * from './data/createIndicesForQuads';
+export * from './data/getBufferType';
+export * from './data/interleaveTypedArrays';
+export * from './data/pow2';
+export * from './data/removeItems';
+export * from './data/sign';
+export * from './data/uid';
+export * from './logging/deprecation';
+export * from './media/caches';
+export * from './media/CanvasRenderTarget';
+export * from './media/trimCanvas';
+export * from './network/decomposeDataUri';
+export * from './network/determineCrossOrigin';
+export * from './network/getResolutionOfUrl';
 export * from './const';
-export * from './logging';
