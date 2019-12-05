@@ -1,15 +1,30 @@
 import { DATA_URI } from '../const';
 
 /**
- * Typedef for decomposeDataUri return object.
- *
  * @memberof PIXI.utils
- * @typedef {object} DecomposedDataUri
- * @property {string} mediaType Media type, eg. `image`
- * @property {string} subType Sub type, eg. `png`
- * @property {string} encoding Data encoding, eg. `base64`
- * @property {string} data The actual data
  */
+export interface DecomposedDataUri {
+    /**
+     * @property {string} Media type, eg. `image`
+     */
+    mediaType: string;
+    /**
+     * @property {string} subType Sub type, eg. `png`
+     */
+    subType: string;
+    /**
+     * @property {string} charset
+     */
+    charset: string;
+    /**
+     * @property {string} encoding Data encoding, eg. `base64`
+     */
+    encoding: string;
+    /**
+     * @property {string} data The actual data
+     */
+    data: string;
+}
 
 /**
  * Split a data URI into components. Returns undefined if
@@ -20,7 +35,7 @@ import { DATA_URI } from '../const';
  * @param {string} dataUri - the data URI to check
  * @return {PIXI.utils.DecomposedDataUri|undefined} The decomposed data uri or undefined
  */
-export function decomposeDataUri(dataUri)
+export function decomposeDataUri(dataUri: string): DecomposedDataUri
 {
     const dataUriMatch = DATA_URI.exec(dataUri);
 
