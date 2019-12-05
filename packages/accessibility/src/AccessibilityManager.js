@@ -1,6 +1,7 @@
-import { accessibleTarget } from './accessibleTarget';
-import { removeItems, isMobile } from '@pixi/utils';
+import { isMobile, removeItems } from '@pixi/utils';
+
 import { DisplayObject } from '@pixi/display';
+import { accessibleTarget } from './accessibleTarget';
 
 // add some extra variables to the container..
 DisplayObject.mixin(accessibleTarget);
@@ -132,6 +133,13 @@ export class AccessibilityManager
          */
         this.isMobileAccessibility = false;
 
+        /**
+         * count to throttle div updates on android devices
+         * @type number
+         * @private
+         */
+        this.androidUpdateCount = 0;
+
         // let listen for tab.. once pressed we can fire up and show the accessibility layer
         window.addEventListener('keydown', this._onKeyDown, false);
     }
@@ -152,7 +160,7 @@ export class AccessibilityManager
         hookDiv.style.left = `${DIV_HOOK_POS_Y}px`;
         hookDiv.style.zIndex = DIV_HOOK_ZINDEX;
         hookDiv.style.backgroundColor = '#FF0000';
-        hookDiv.title = 'HOOK DIV';
+        hookDiv.title = 'select to enable accessability for this content';
 
         hookDiv.addEventListener('focus', () =>
         {
@@ -270,6 +278,15 @@ export class AccessibilityManager
      */
     update()
     {
+        /* On Android, tab order seems to be calculated by position rather than tabIndex,
+        ** moving buttons can cause focus to flicker between two buttons making it hard/impossible to navigate,
+        ** so I am just running update every half a second, seems to fix it
+        */
+        this.androidUpdateCount++;
+        this.androidUpdateCount %= 30;
+
+        if (isMobile.android.device && this.androidUpdateCount !== 0) return;
+
         if (!this.renderer.renderingToScreen)
         {
             return;
@@ -279,8 +296,11 @@ export class AccessibilityManager
         this.updateAccessibleObjects(this.renderer._lastObjectRendered);
 
         const rect = this.renderer.view.getBoundingClientRect();
-        const sx = rect.width / this.renderer.width;
-        const sy = rect.height / this.renderer.height;
+
+        const resolution = this.renderer.resolution;
+
+        const sx = (rect.width / this.renderer.width) * resolution;
+        const sy = (rect.height / this.renderer.height) * resolution;
 
         let div = this.div;
 
@@ -303,11 +323,6 @@ export class AccessibilityManager
                 child._accessibleDiv = null;
 
                 i--;
-
-                if (this.children.length === 0)
-                {
-                    this.deactivate();
-                }
             }
             else
             {
