@@ -65,6 +65,12 @@ export class BitmapFontLoader
      */
     static use(resource, next)
     {
+        if (resource.data && resource.type === LoaderResource.TYPE.TEXT && resource.data.startsWith('info face='))
+        {
+            BitmapFontLoader.useTxt.bind(this)(resource, next);
+            return;
+        }
+        
         // skip if no data or not xml data
         if (!resource.data || resource.type !== LoaderResource.TYPE.XML)
         {
@@ -84,34 +90,49 @@ export class BitmapFontLoader
             return;
         }
 
-        let xmlUrl = !resource.isDataUrl ? BitmapFontLoader.dirname(resource.url) : '';
+        BitmapFontLoader.useXml.bind(this)(resource, next);
+    }
+
+    /**
+     * Get folder path from a resource
+     * @param {PIXI.LoaderResource} resource 
+     */
+    static getResourceDir(resource)
+    {
+        let resUrl = !resource.isDataUrl ? BitmapFontLoader.dirname(resource.url) : '';
 
         if (resource.isDataUrl)
         {
-            if (xmlUrl === '.')
+            if (resUrl === '.')
             {
-                xmlUrl = '';
+                resUrl = '';
             }
 
-            if (this.baseUrl && xmlUrl)
+            if (this.baseUrl && resUrl)
             {
-                // if baseurl has a trailing slash then add one to xmlUrl so the replace works below
+                // if baseurl has a trailing slash then add one to resUrl so the replace works below
                 if (this.baseUrl.charAt(this.baseUrl.length - 1) === '/')
                 {
-                    xmlUrl += '/';
+                    resUrl += '/';
                 }
             }
         }
 
-        // remove baseUrl from xmlUrl
-        xmlUrl = xmlUrl.replace(this.baseUrl, '');
+        // remove baseUrl from resUrl
+        resUrl = resUrl.replace(this.baseUrl, '');
 
-        // if there is an xmlUrl now, it needs a trailing slash. Ensure that it does if the string isn't empty.
-        if (xmlUrl && xmlUrl.charAt(xmlUrl.length - 1) !== '/')
+        // if there is an resUrl now, it needs a trailing slash. Ensure that it does if the string isn't empty.
+        if (resUrl && resUrl.charAt(resUrl.length - 1) !== '/')
         {
-            xmlUrl += '/';
+            resUrl += '/';
         }
 
+        return resUrl;
+    }
+
+    static useXml(resource, next)
+    {
+        const xmlUrl = BitmapFontLoader.getResourceDir(resource);
         const pages = resource.data.getElementsByTagName('page');
         const textures = {};
 
@@ -174,5 +195,124 @@ export class BitmapFontLoader
                 this.add(url, options, completed);
             }
         }
+    }
+
+    static useTxt(resource, next)
+    {
+        const fontData = BitmapFontLoader.txtToFontData(resource.data);
+        const txtUrl = BitmapFontLoader.getResourceDir(resource);
+        const pages = fontData.page;
+        const textures = {};
+
+        // Handle completed, when the number of textures
+        // load is the same number as references in the fnt file
+        const completed = (page) =>
+        {
+            textures[page.metadata.pageFile] = page.texture;
+
+            if (Object.keys(textures).length === pages.length)
+            {
+                resource.bitmapFont = BitmapText.registerFontObj(fontData, textures);
+                next();
+            }
+        };
+
+        for (let i = 0; i < pages.length; ++i)
+        {
+            const pageFile = pages[i]['file'];
+            const url = txtUrl + pageFile;
+            let exists = false;
+            
+            // incase the image is loaded outside
+            // using the same loader, resource will be available
+            for (const name in this.resources)
+            {
+                const bitmapResource = this.resources[name];
+                
+                if (bitmapResource.url === url)
+                {
+                    bitmapResource.metadata.pageFile = pageFile;
+                    if (bitmapResource.texture)
+                    {
+                        completed(bitmapResource);
+                    }
+                    else
+                    {
+                        bitmapResource.onAfterMiddleware.add(completed);
+                    }
+                    exists = true;
+                    break;
+                }
+            }
+
+
+            // texture is not loaded, we'll attempt to add
+            // it to the load and add the texture to the list
+            if (!exists)
+            {
+                // Standard loading options for images
+                const options = {
+                    crossOrigin: resource.crossOrigin,
+                    loadType: LoaderResource.LOAD_TYPE.IMAGE,
+                    metadata: Object.assign(
+                        { pageFile },
+                        resource.metadata.imageMetadata
+                    ),
+                    parentResource: resource,
+                };
+
+                this.add(url, options, completed);
+            }
+        }
+    }
+
+    /**
+     * Convert text font data to a javascript object
+     * @param {string} txt Raw string data to be converted
+     * @return {Object} Parsed font data
+     */
+    static txtToFontData(txt) 
+    {
+        // Retrieve data item
+        const items = txt.match(/^[a-z]+\s+.+$/gm);
+        const data =  {};
+        for (let i in items) 
+        {
+            // Extract item name
+            const name = items[i].match(/^[a-z]+/gm)[0];
+
+            // Extract item attribute list as string ex.: "width=10"
+            const attributeList = items[i].match(/[a-zA-Z]+=([^\s"']+|"([^"]*)")/gm);
+
+            // Convert attribute list into an object
+            const itemData = {};
+            for (let i in attributeList) 
+            {
+                // Split key-value pairs
+                const split = attributeList[i].split('=');
+                const key = split[0];
+
+                // Remove eventual quotes from value
+                const strValue = split[1].replace(/"/gm, '')
+
+                // Try to convert value into float
+                const floatValue = parseFloat(strValue);
+
+                // Use string value case float value is NaN
+                const value = isNaN(floatValue) ? strValue : floatValue;
+                itemData[key] = value;
+            }
+
+            // Push current item to the resulting data
+            if (!data[name]) data[name] = [];
+            data[name].push(itemData);
+        }
+
+        // Validate data
+        if (!data['info'] || !data['info'][0]) throw new Error('Font info not found');
+        if (!data['info'][0].face) throw new Error('Invalid font face');
+        if (data['info'][0].face.indexOf(' ') >= 0) throw new Error('Font face name should not contain spaces');
+        
+        return data;
     }
 }

@@ -568,12 +568,122 @@ export class BitmapText extends Container
      * Register a bitmap font with data and a texture.
      *
      * @static
+     * @param {XMLDocument|string} data - The characters map that could be provided as xml or raw string.
+     * @param {Object.<string, PIXI.Texture>|PIXI.Texture|PIXI.Texture[]} textures - List of textures for each page.
+     * @return {Object} Result font object with font, size, lineHeight and char fields.
+     */
+    static registerFont(data, textures)
+    {
+        if (data instanceof XMLDocument)
+        {
+            return BitmapText.registerFontXml(data, textures);
+        }
+        else if (typeof data === 'object')
+        {
+            return BitmapText.registerFontObj(data, textures);
+        }
+        else
+        {
+            throw new Error('Unrecognized data format for bitmap font.');
+        }
+    }
+
+    /**
+     * Register a bitmap font using font data object and a texture.
+     *
+     * @static
+     * @param {Object} obj - The font data object.
+     * @param {Object.<string, PIXI.Texture>|PIXI.Texture|PIXI.Texture[]} textures - List of textures for each page.
+     * @return {Object} Result font object with font, size, lineHeight and char fields.
+     */
+    static registerFontObj(obj, textures)
+    {
+        const data = {};
+        const info = obj['info'][0];
+        const common = obj['common'][0];
+        const pages = obj['page'];
+        const res = getResolutionOfUrl(pages[0]['file'], settings.RESOLUTION);
+        const pagesTextures = {};
+
+        data.font = info['face'];
+        data.size = parseInt(info['size'], 10);
+        data.lineHeight = parseInt(common['lineHeight'], 10) / res;
+        data.chars = {};
+
+        // Single texture, convert to list
+        if (textures instanceof Texture)
+        {
+            textures = [textures];
+        }
+
+        // Convert the input Texture, Textures or object
+        // into a page Texture lookup by "id"
+        for (let i = 0; i < pages.length; i++)
+        {
+            const id = pages[i]['id'];
+            const file = pages[i]['file'];
+
+            pagesTextures[id] = textures instanceof Array ? textures[i] : textures[file];
+        }
+
+        // parse letters
+        const letters = obj['char'];
+
+        for (let i = 0; i < letters.length; i++)
+        {
+            const letter = letters[i];
+            const charCode = parseInt(letter['id'], 10);
+            const page = letter['page'] || 0;
+            const textureRect = new Rectangle(
+                (parseInt(letter['x'], 10) / res) + (pagesTextures[page].frame.x / res),
+                (parseInt(letter['y'], 10) / res) + (pagesTextures[page].frame.y / res),
+                parseInt(letter['width'], 10) / res,
+                parseInt(letter['height'], 10) / res
+            );
+
+            data.chars[charCode] = {
+                xOffset: parseInt(letter['xoffset'], 10) / res,
+                yOffset: parseInt(letter['yoffset'], 10) / res,
+                xAdvance: parseInt(letter['xadvance'], 10) / res,
+                kerning: {},
+                texture: new Texture(pagesTextures[page].baseTexture, textureRect),
+                page,
+            };
+        }
+
+        // parse kernings
+        const kernings = obj['kerning'] || [];
+
+        for (let i = 0; i < kernings.length; i++)
+        {
+            const kerning = kernings[i];
+            const first = parseInt(kerning['first'], 10) / res;
+            const second = parseInt(kerning['second'], 10) / res;
+            const amount = parseInt(kerning['amount'], 10) / res;
+
+            if (data.chars[second])
+            {
+                data.chars[second].kerning[first] = amount;
+            }
+        }
+
+        // I'm leaving this as a temporary fix so we can test the bitmap fonts in v3
+        // but it's very likely to change
+        BitmapText.fonts[data.font] = data;
+
+        return data;
+    }
+
+    /**
+     * Register a bitmap font with xml data and a texture.
+     *
+     * @static
      * @param {XMLDocument} xml - The XML document data.
      * @param {Object.<string, PIXI.Texture>|PIXI.Texture|PIXI.Texture[]} textures - List of textures for each page.
      *  If providing an object, the key is the `<page>` element's `file` attribute in the FNT file.
      * @return {Object} Result font object with font, size, lineHeight and char fields.
      */
-    static registerFont(xml, textures)
+    static registerFontXml(xml, textures)
     {
         const data = {};
         const info = xml.getElementsByTagName('info')[0];
