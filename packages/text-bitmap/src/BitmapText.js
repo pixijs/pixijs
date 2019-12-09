@@ -582,10 +582,8 @@ export class BitmapText extends Container
         {
             return BitmapText.registerFontObj(data, textures);
         }
-        else
-        {
-            throw new Error('Unrecognized data format for bitmap font.');
-        }
+
+        throw new Error('Unrecognized data format for bitmap font.');
     }
 
     /**
@@ -599,15 +597,15 @@ export class BitmapText extends Container
     static registerFontObj(obj, textures)
     {
         const data = {};
-        const info = obj['info'][0];
-        const common = obj['common'][0];
-        const pages = obj['page'];
-        const res = getResolutionOfUrl(pages[0]['file'], settings.RESOLUTION);
+        const info = obj.info[0];
+        const common = obj.common[0];
+        const pages = obj.page;
+        const res = getResolutionOfUrl(pages[0].file, settings.RESOLUTION);
         const pagesTextures = {};
 
-        data.font = info['face'];
-        data.size = parseInt(info['size'], 10);
-        data.lineHeight = parseInt(common['lineHeight'], 10) / res;
+        data.font = info.face;
+        data.size = parseInt(info.size, 10);
+        data.lineHeight = parseInt(common.lineHeight, 10) / res;
         data.chars = {};
 
         // Single texture, convert to list
@@ -620,31 +618,31 @@ export class BitmapText extends Container
         // into a page Texture lookup by "id"
         for (let i = 0; i < pages.length; i++)
         {
-            const id = pages[i]['id'];
-            const file = pages[i]['file'];
+            const id = pages[i].id;
+            const file = pages[i].file;
 
             pagesTextures[id] = textures instanceof Array ? textures[i] : textures[file];
         }
 
         // parse letters
-        const letters = obj['char'];
+        const letters = obj.char;
 
         for (let i = 0; i < letters.length; i++)
         {
             const letter = letters[i];
-            const charCode = parseInt(letter['id'], 10);
-            const page = letter['page'] || 0;
+            const charCode = parseInt(letter.id, 10);
+            const page = letter.page || 0;
             const textureRect = new Rectangle(
-                (parseInt(letter['x'], 10) / res) + (pagesTextures[page].frame.x / res),
-                (parseInt(letter['y'], 10) / res) + (pagesTextures[page].frame.y / res),
-                parseInt(letter['width'], 10) / res,
-                parseInt(letter['height'], 10) / res
+                (parseInt(letter.x, 10) / res) + (pagesTextures[page].frame.x / res),
+                (parseInt(letter.y, 10) / res) + (pagesTextures[page].frame.y / res),
+                parseInt(letter.width, 10) / res,
+                parseInt(letter.height, 10) / res
             );
 
             data.chars[charCode] = {
-                xOffset: parseInt(letter['xoffset'], 10) / res,
-                yOffset: parseInt(letter['yoffset'], 10) / res,
-                xAdvance: parseInt(letter['xadvance'], 10) / res,
+                xOffset: parseInt(letter.xoffset, 10) / res,
+                yOffset: parseInt(letter.yoffset, 10) / res,
+                xAdvance: parseInt(letter.xadvance, 10) / res,
                 kerning: {},
                 texture: new Texture(pagesTextures[page].baseTexture, textureRect),
                 page,
@@ -652,14 +650,14 @@ export class BitmapText extends Container
         }
 
         // parse kernings
-        const kernings = obj['kerning'] || [];
+        const kernings = obj.kerning || [];
 
         for (let i = 0; i < kernings.length; i++)
         {
             const kerning = kernings[i];
-            const first = parseInt(kerning['first'], 10) / res;
-            const second = parseInt(kerning['second'], 10) / res;
-            const amount = parseInt(kerning['amount'], 10) / res;
+            const first = parseInt(kerning.first, 10) / res;
+            const second = parseInt(kerning.second, 10) / res;
+            const amount = parseInt(kerning.amount, 10) / res;
 
             if (data.chars[second])
             {

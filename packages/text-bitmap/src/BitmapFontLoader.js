@@ -65,37 +65,27 @@ export class BitmapFontLoader
      */
     static use(resource, next)
     {
-        if (resource.data && resource.type === LoaderResource.TYPE.TEXT && resource.data.startsWith('info face='))
+        // Check if resource refers to font data in xml format
+        if (BitmapFontLoader.isXmlFontData(resource))
+        {
+            BitmapFontLoader.useXml.bind(this)(resource, next);
+            return;
+        }
+        
+        // Check if resource refers to font data in text format
+        if (BitmapFontLoader.isTxtFontData(resource))
         {
             BitmapFontLoader.useTxt.bind(this)(resource, next);
             return;
         }
         
-        // skip if no data or not xml data
-        if (!resource.data || resource.type !== LoaderResource.TYPE.XML)
-        {
-            next();
-
-            return;
-        }
-
-        // skip if not bitmap font data, using some silly duck-typing
-        if (resource.data.getElementsByTagName('page').length === 0
-            || resource.data.getElementsByTagName('info').length === 0
-            || resource.data.getElementsByTagName('info')[0].getAttribute('face') === null
-        )
-        {
-            next();
-
-            return;
-        }
-
-        BitmapFontLoader.useXml.bind(this)(resource, next);
+        // Resource was not recognised as any of the expected font data format 
+        next();
     }
 
     /**
      * Get folder path from a resource
-     * @param {PIXI.LoaderResource} resource 
+     * @param {PIXI.LoaderResource} resource
      */
     static getResourceDir(resource)
     {
@@ -130,6 +120,25 @@ export class BitmapFontLoader
         return resUrl;
     }
 
+    /**
+     * Check if resource refers to xml font data
+     * @param {PIXI.LoaderResource} resource 
+     * @return True if resource could be treated as font data, false otherwise.
+     */
+    static isXmlFontData(resource) 
+    {
+        if (!resource.data || resource.type !== LoaderResource.TYPE.XML) return false;
+        if (!resource.data.getElementsByTagName('page').length) return false;
+        if (!resource.data.getElementsByTagName('info')[0].getAttribute('face') === null) return false;
+        return true;
+    }
+
+    /**
+     * Called after a resource is loaded and matches xml font data format.
+     * @see PIXI.Loader.loaderMiddleware
+     * @param {PIXI.LoaderResource} resource
+     * @param {function} next
+     */
     static useXml(resource, next)
     {
         const xmlUrl = BitmapFontLoader.getResourceDir(resource);
@@ -197,21 +206,43 @@ export class BitmapFontLoader
         }
     }
 
+    /**
+     * Check if resource refers to txt font data
+     * @param {PIXI.LoaderResource} resource 
+     * @return True if resource could be treated as font data, false otherwise.
+     */
+    static isTxtFontData(resource) 
+    {
+        if (!resource.data || resource.type !== LoaderResource.TYPE.TEXT) return false;
+        if (!resource.data.startsWith('info face=')) return false;
+        return true;
+    }
+
+    /**
+     * Called after a resource is loaded and matches txt font data format.
+     * @see PIXI.Loader.loaderMiddleware
+     * @param {PIXI.LoaderResource} resource
+     * @param {function} next
+     */
     static useTxt(resource, next)
     {
+        // This code is mostly repeated from xml procedure,
+        // to figure out a way of sharing this functionality.
+
         const fontData = BitmapFontLoader.txtToFontData(resource.data);
         const txtUrl = BitmapFontLoader.getResourceDir(resource);
         const pages = fontData.page;
         const textures = {};
 
         // Handle completed, when the number of textures
-        // load is the same number as references in the fnt file
+        // load is the same number as references in the txt file
         const completed = (page) =>
         {
             textures[page.metadata.pageFile] = page.texture;
 
             if (Object.keys(textures).length === pages.length)
             {
+                // Registering parsed font data
                 resource.bitmapFont = BitmapText.registerFontObj(fontData, textures);
                 next();
             }
@@ -219,16 +250,16 @@ export class BitmapFontLoader
 
         for (let i = 0; i < pages.length; ++i)
         {
-            const pageFile = pages[i]['file'];
+            const pageFile = pages[i].file;
             const url = txtUrl + pageFile;
             let exists = false;
-            
+
             // incase the image is loaded outside
             // using the same loader, resource will be available
             for (const name in this.resources)
             {
                 const bitmapResource = this.resources[name];
-                
+
                 if (bitmapResource.url === url)
                 {
                     bitmapResource.metadata.pageFile = pageFile;
@@ -244,7 +275,6 @@ export class BitmapFontLoader
                     break;
                 }
             }
-
 
             // texture is not loaded, we'll attempt to add
             // it to the load and add the texture to the list
@@ -271,12 +301,13 @@ export class BitmapFontLoader
      * @param {string} txt Raw string data to be converted
      * @return {Object} Parsed font data
      */
-    static txtToFontData(txt) 
+    static txtToFontData(txt)
     {
         // Retrieve data item
         const items = txt.match(/^[a-z]+\s+.+$/gm);
         const data =  {};
-        for (let i in items) 
+
+        for (const i in items)
         {
             // Extract item name
             const name = items[i].match(/^[a-z]+/gm)[0];
@@ -286,20 +317,22 @@ export class BitmapFontLoader
 
             // Convert attribute list into an object
             const itemData = {};
-            for (let i in attributeList) 
+
+            for (const i in attributeList)
             {
                 // Split key-value pairs
                 const split = attributeList[i].split('=');
                 const key = split[0];
 
                 // Remove eventual quotes from value
-                const strValue = split[1].replace(/"/gm, '')
+                const strValue = split[1].replace(/"/gm, '');
 
                 // Try to convert value into float
                 const floatValue = parseFloat(strValue);
 
                 // Use string value case float value is NaN
                 const value = isNaN(floatValue) ? strValue : floatValue;
+
                 itemData[key] = value;
             }
 
@@ -308,11 +341,11 @@ export class BitmapFontLoader
             data[name].push(itemData);
         }
 
-        // Validate data
-        if (!data['info'] || !data['info'][0]) throw new Error('Font info not found');
-        if (!data['info'][0].face) throw new Error('Invalid font face');
-        if (data['info'][0].face.indexOf(' ') >= 0) throw new Error('Font face name should not contain spaces');
-        
+        // Validate parsed data
+        if (!data.info || !data.info[0]) throw new Error('Font info not found');
+        if (!data.info[0].face) throw new Error('Invalid font face');
+        if (data.info[0].face.indexOf(' ') >= 0) throw new Error('Font face name should not contain spaces');
+
         return data;
     }
 }
