@@ -148,16 +148,22 @@ export class NineSlicePlane extends SimplePlane
         vertices[6] = vertices[14] = vertices[22] = vertices[30] = this._width;
     }
 
+    /**
+     * Returns the smaller of a set of vertical and horizontal scale of nine slice corners.
+     *
+     * @return {number} Smaller number of vertical and horizontal scale.
+     * @private
+     */
     _getMinScale()
     {
         const w = this._leftWidth + this._rightWidth;
-        const scale_w = this._width > w ? 1.0 : this._width / w;
-        
+        const scaleW = this._width > w ? 1.0 : this._width / w;
+
         const h = this._topHeight + this._bottomHeight;
-        const scale_h = this._height > h ? 1.0 : this._height / h;
-        
-        const scale = Math.min(scale_w, scale_h);
-        
+        const scaleH = this._height > h ? 1.0 : this._height / h;
+
+        const scale = Math.min(scaleW, scaleH);
+
         return scale;
     }
 
