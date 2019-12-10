@@ -1,1 +1,2 @@
 require('./SimplePlane');
+require('./NineSlicePlane');
