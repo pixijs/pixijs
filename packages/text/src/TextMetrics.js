@@ -575,7 +575,6 @@ export class TextMetrics
      * // Correctly splits emojis, eg "🤪🤪" will result in two element array, each with one emoji.
      * TextMetrics.wordWrapSplit = (token) => [...token];
      *
-     * @private
      * @param  {string}  token The token to split
      * @return {string[]} The characters of the token
      */
@@ -735,15 +734,6 @@ const canvas = (() =>
 })();
 
 canvas.width = canvas.height = 10;
-
-/**
- * Configuration for TextMetrics
- * @type {{wordWrapTokenSplit: (function(*): (Array|string[]))}} A function that splits a token in `wordWrap` method into
- * separate characters when token is longer than the allowed width
- */
-TextMetrics.configuration = {
-    wordWrapTokenSplit: (token) => token.split(''),
-};
 
 /**
  * Cached canvas element for measuring text
