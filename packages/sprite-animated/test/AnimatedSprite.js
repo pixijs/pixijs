@@ -247,11 +247,11 @@ describe('PIXI.AnimatedSprite', function ()
             this.sprite.animationSpeed = 1;
             this.sprite.onComplete = () =>
             {
-                done();
                 expect(frameIds).to.deep.equal([1, 2]); // from 0 to 2, triggers onFrameChange at 1,2.
                 expect(this.sprite.currentFrame).to.equal(2);
                 this.sprite.onComplete = null;
                 this.sprite.onFrameChange = null;
+                done();
             };
             this.sprite.onFrameChange = (frame) =>
             {
@@ -269,11 +269,11 @@ describe('PIXI.AnimatedSprite', function ()
             this.sprite.animationSpeed = -1;
             this.sprite.onComplete = () =>
             {
-                done();
                 expect(frameIds).to.deep.equal([1, 0]); // from 2 to 0, triggers onFrameChange at 1,0.
                 expect(this.sprite.currentFrame).to.equal(0);
                 this.sprite.onComplete = null;
                 this.sprite.onFrameChange = null;
+                done();
             };
             this.sprite.onFrameChange = (frame) =>
             {
@@ -291,11 +291,11 @@ describe('PIXI.AnimatedSprite', function ()
             this.sprite.animationSpeed = -1;
             this.sprite.onComplete = () =>
             {
-                done();
                 expect(frameIds).to.deep.equal([0]); // from 1 to 0, triggers onFrameChange at 0.
                 expect(this.sprite.currentFrame).to.equal(0);
                 this.sprite.onComplete = null;
                 this.sprite.onFrameChange = null;
+                done();
             };
             this.sprite.onFrameChange = (frame) =>
             {
