@@ -85,7 +85,7 @@ export class BlurFilterPass extends Filter
             let flop = renderTarget;
 
             this.state.blend = false;
-            filterManager.applyFilter(this, flip, flop, false);
+            filterManager.applyFilter(this, flip, flop, true);
 
             for (let i = 1; i < this.passes - 1; i++)
             {
