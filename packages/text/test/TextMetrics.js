@@ -227,6 +227,34 @@ describe('PIXI.TextMetrics', function ()
         });
     });
 
+    describe('wordWrap misc', function ()
+    {
+        const originalSplit = TextMetrics.wordWrapSplit;
+
+        afterEach(function ()
+        {
+            TextMetrics.wordWrapSplit = originalSplit;
+        });
+
+        it('should use configuration callback to split a token', () =>
+        {
+            let wasSplitCalled = false;
+
+            TextMetrics.wordWrapSplit = (token) =>
+            {
+                wasSplitCalled = true;
+                expect(token).to.equal('testword1234567890abcd!');
+
+                return ['s', 'p', 'l', 'i', 't'];
+            };
+
+            const brokenText = TextMetrics.wordWrap('testword1234567890abcd!', new TextStyle(defaultStyle));
+
+            expect(wasSplitCalled).to.equal(true);
+            expect(brokenText).to.equal('split');
+        });
+    });
+
     describe('whiteSpace `normal` without breakWords', function ()
     {
         it('multiple spaces should be collapsed to 1 and but not newlines', function ()
