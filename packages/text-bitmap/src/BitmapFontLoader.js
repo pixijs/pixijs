@@ -39,6 +39,7 @@ export class BitmapFontLoader
     static dirname(url)
     {
         const dir = url
+            .replace(/\\/g, '/') // convert windows notation to UNIX notation, URL-safe because it's a forbidden character
             .replace(/\/$/, '') // replace trailing slash
             .replace(/\/[^\/]*$/, ''); // remove everything after the last
 
