@@ -304,9 +304,11 @@ export class Sprite extends Container
 
         if (this._roundPixels)
         {
-            for (let i = 0; i < 8; i++)
+            const resolution = settings.RESOLUTION;
+
+            for (let i = 0; i < vertexData.length; ++i)
             {
-                vertexData[i] = Math.round(vertexData[i]);
+                vertexData[i] = Math.round((vertexData[i] * resolution | 0) / resolution);
             }
         }
     }
