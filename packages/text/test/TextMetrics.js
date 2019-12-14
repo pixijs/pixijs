@@ -1,5 +1,10 @@
 const { TextMetrics, TextStyle } = require('../');
 
+/**
+ * Fonts render slightly differently between platforms so tests that depend on a specific
+ * widths or breaking of words may not be cross-platform
+ */
+
 /* eslint-disable no-multi-str */
 const longText = 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem \
 accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo \
@@ -56,7 +61,8 @@ describe('PIXI.TextMetrics', function ()
     {
         it('width should not be greater than wordWrapWidth with longText', function ()
         {
-            const style = Object.assign({}, defaultStyle, { breakWords: false });
+            // On Windows 'exercitationem' renders to about 217px, bigger wrap width required for this test to be valid on every platform
+            const style = Object.assign({}, defaultStyle, { wordWrapWidth: 220, breakWords: false });
 
             const metrics = TextMetrics.measureText(longText, new TextStyle(style));
 
@@ -64,6 +70,7 @@ describe('PIXI.TextMetrics', function ()
 
             metrics.lines.forEach((line) =>
             {
+                expect(line).to.not.contain('  ', 'should not have multiple spaces in a row');
                 expect(line[0]).to.not.equal(' ', 'should not have space at the start');
                 expect(line[line - 1]).to.not.equal(' ', 'should not have space at the end');
             });
@@ -220,6 +227,34 @@ describe('PIXI.TextMetrics', function ()
         });
     });
 
+    describe('wordWrap misc', function ()
+    {
+        const originalSplit = TextMetrics.wordWrapSplit;
+
+        afterEach(function ()
+        {
+            TextMetrics.wordWrapSplit = originalSplit;
+        });
+
+        it('should use configuration callback to split a token', () =>
+        {
+            let wasSplitCalled = false;
+
+            TextMetrics.wordWrapSplit = (token) =>
+            {
+                wasSplitCalled = true;
+                expect(token).to.equal('testword1234567890abcd!');
+
+                return ['s', 'p', 'l', 'i', 't'];
+            };
+
+            const brokenText = TextMetrics.wordWrap('testword1234567890abcd!', new TextStyle(defaultStyle));
+
+            expect(wasSplitCalled).to.equal(true);
+            expect(brokenText).to.equal('split');
+        });
+    });
+
     describe('whiteSpace `normal` without breakWords', function ()
     {
         it('multiple spaces should be collapsed to 1 and but not newlines', function ()
@@ -230,17 +265,32 @@ describe('PIXI.TextMetrics', function ()
 
             expect(metrics.width).to.be.above(style.wordWrapWidth);
 
+            metrics.lines.forEach((line) =>
+            {
+                expect(line).to.not.contain('  ', 'should not have multiple spaces in a row');
+                expect(line[0]).to.not.equal(' ', 'all lines should not have space at the start');
+                expect(line[line - 1]).to.not.equal(' ', 'no lines should have a space at the end');
+            });
+        });
+
+        it('text is wrapped in a platform-specific way', function ()
+        {
+            if (process.platform === 'win32')
+            {
+                this.skip();
+
+                return;
+            }
+
+            const style = Object.assign({}, defaultStyle, { breakWords: false, whiteSpace: 'normal' });
+
+            const metrics = TextMetrics.measureText(spaceNewLineText, new TextStyle(style));
+
             expect(metrics.lines[0][0]).to.equal('S', '1st line should not start with a space');
             expect(metrics.lines[4][0]).to.equal('m', '5th line should not start with 3 spaces (1)');
             expect(metrics.lines[4][1]).to.equal('o', '5th line should not start with 3 spaces (2)');
             expect(metrics.lines[4][2]).to.equal('r', '5th line should not start with 3 spaces (3)');
             expect(metrics.lines[17][0]).to.equal('a', '17th line should not have wrapped');
-
-            metrics.lines.forEach((line) =>
-            {
-                expect(line[0]).to.not.equal(' ', 'all lines should not have space at the start');
-                expect(line[line - 1]).to.not.equal(' ', 'no lines should have a space at the end');
-            });
         });
     });
 
@@ -278,17 +328,32 @@ describe('PIXI.TextMetrics', function ()
 
             expect(metrics.width).to.be.below(style.wordWrapWidth);
 
+            metrics.lines.forEach((line) =>
+            {
+                expect(line).to.not.contain('  ', 'should not have multiple spaces in a row');
+                expect(line[0]).to.not.equal(' ', 'all lines should not have space at the start');
+                expect(line[line - 1]).to.not.equal(' ', 'no lines should have a space at the end');
+            });
+        });
+
+        it('text is wrapped in a platform-specific way', function ()
+        {
+            if (process.platform === 'win32')
+            {
+                this.skip();
+
+                return;
+            }
+
+            const style = Object.assign({}, defaultStyle, { breakWords: true, whiteSpace: 'normal' });
+
+            const metrics = TextMetrics.measureText(spaceNewLineText, new TextStyle(style));
+
             expect(metrics.lines[0][0]).to.equal('S', '1st line should not start with a space');
             expect(metrics.lines[4][0]).to.equal('m', '5th line should not start with 3 spaces (1)');
             expect(metrics.lines[4][1]).to.equal('o', '5th line should not start with 3 spaces (2)');
             expect(metrics.lines[4][2]).to.equal('r', '5th line should not start with 3 spaces (3)');
             expect(metrics.lines[17][0]).to.equal('a', '17th line should not have wrapped');
-
-            metrics.lines.forEach((line) =>
-            {
-                expect(line[0]).to.not.equal(' ', 'all lines should not have space at the start');
-                expect(line[line - 1]).to.not.equal(' ', 'no lines should have a space at the end');
-            });
         });
     });
 
