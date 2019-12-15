@@ -1,4 +1,4 @@
-import { ObjectRenderer, Shader, QuadUv } from '@pixi/core';
+import { ObjectRenderer, Shader, State, QuadUv } from '@pixi/core';
 import { WRAP_MODES } from '@pixi/constants';
 import { Matrix } from '@pixi/math';
 import { premultiplyTintToRgba, correctBlendMode } from '@pixi/utils';
@@ -34,6 +34,14 @@ export class TilingSpriteRenderer extends ObjectRenderer
         this.simpleShader = Shader.from(vertex, fragmentSimple, uniforms);
 
         this.quad = new QuadUv();
+
+        /**
+         * The WebGL state in which this renderer will work.
+         *
+         * @member {PIXI.State}
+         * @readonly
+         */
+        this.state = State.for2d();
     }
 
     /**
@@ -130,7 +138,8 @@ export class TilingSpriteRenderer extends ObjectRenderer
         renderer.shader.bind(shader);
         renderer.geometry.bind(quad);// , renderer.shader.getGLShader());
 
-        renderer.state.setBlendMode(correctBlendMode(ts.blendMode, baseTex.alphaMode));
+        this.state.blendMode = correctBlendMode(ts.blendMode, baseTex.alphaMode);
+        renderer.state.set(this.state);
         renderer.geometry.draw(this.renderer.gl.TRIANGLES, 6, 0);
     }
 }

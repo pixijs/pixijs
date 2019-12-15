@@ -16,6 +16,8 @@ export class CanvasMaskManager
     constructor(renderer)
     {
         this.renderer = renderer;
+
+        this._foundShapes = [];
     }
 
     /**
@@ -30,28 +32,62 @@ export class CanvasMaskManager
 
         renderer.context.save();
 
-        const cacheAlpha = maskObject.alpha;
-        const transform = maskObject.transform.worldTransform;
-        const resolution = renderer.resolution;
-
-        renderer.context.setTransform(
-            transform.a * resolution,
-            transform.b * resolution,
-            transform.c * resolution,
-            transform.d * resolution,
-            transform.tx * resolution,
-            transform.ty * resolution
-        );
-
         // TODO support sprite alpha masks??
         // lots of effort required. If demand is great enough..
-        if (!maskObject._texture)
+
+        const foundShapes = this._foundShapes;
+
+        this.recursiveFindShapes(maskObject, foundShapes);
+        if (foundShapes.length > 0)
         {
-            this.renderGraphicsShape(maskObject);
-            renderer.context.clip();
+            const { context, resolution } = renderer;
+
+            context.beginPath();
+
+            for (let i = 0; i < foundShapes.length; i++)
+            {
+                const shape = foundShapes[i];
+                const transform = shape.transform.worldTransform;
+
+                this.renderer.context.setTransform(
+                    transform.a * resolution,
+                    transform.b * resolution,
+                    transform.c * resolution,
+                    transform.d * resolution,
+                    transform.tx * resolution,
+                    transform.ty * resolution
+                );
+
+                this.renderGraphicsShape(shape);
+            }
+
+            foundShapes.length = 0;
+            context.clip();
+        }
+    }
+
+    /**
+     * Renders all PIXI.Graphics shapes in a subtree.
+     *
+     * @param {PIXI.Container} container - container to scan.
+     * @param {PIXI.Graphics[]} out - where to put found shapes
+     */
+    recursiveFindShapes(container, out)
+    {
+        if (container.geometry && container.geometry.graphicsData)
+        {
+            out.push(container);
         }
 
-        maskData.worldAlpha = cacheAlpha;
+        const { children } = container;
+
+        if (children)
+        {
+            for (let i = 0; i < children.length; i++)
+            {
+                this.recursiveFindShapes(children[i], out);
+            }
+        }
     }
 
     /**
@@ -61,6 +97,8 @@ export class CanvasMaskManager
      */
     renderGraphicsShape(graphics)
     {
+        graphics.finishPoly();
+
         const context = this.renderer.context;
         const graphicsData = graphics.geometry.graphicsData;
         const len = graphicsData.length;
@@ -69,8 +107,6 @@ export class CanvasMaskManager
         {
             return;
         }
-
-        context.beginPath();
 
         for (let i = 0; i < len; i++)
         {

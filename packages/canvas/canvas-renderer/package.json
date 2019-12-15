@@ -31,6 +31,8 @@
     "@pixi/utils": "^5.2.0"
   },
   "devDependencies": {
-    "@pixi/display": "^5.2.0"
+    "@pixi/display": "^5.2.0",
+    "@pixi/sprite": "^5.2.0",
+    "@pixi/graphics": "^5.2.0"
   }
 }
