@@ -1,4 +1,4 @@
-import isMobile from 'ismobilejs';
+import { isMobile } from './isMobile';
 
 /**
  * The maximum recommended texture units to use.
