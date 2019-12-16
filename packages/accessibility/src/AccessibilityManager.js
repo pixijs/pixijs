@@ -140,6 +140,12 @@ export class AccessibilityManager
          */
         this.androidUpdateCount = 0;
 
+        /**
+         * the frequency to update the div elements ()
+         * @private
+         */
+        this.androidUpdateFrequency = 500; // 2fps
+
         // let listen for tab.. once pressed we can fire up and show the accessibility layer
         window.addEventListener('keydown', this._onKeyDown, false);
     }
@@ -278,14 +284,18 @@ export class AccessibilityManager
      */
     update()
     {
-        /* On Android, tab order seems to be calculated by position rather than tabIndex,
-        ** moving buttons can cause focus to flicker between two buttons making it hard/impossible to navigate,
-        ** so I am just running update every half a second, seems to fix it
+        /* On Android default web browser, tab order seems to be calculated by position rather than tabIndex,
+        *  moving buttons can cause focus to flicker between two buttons making it hard/impossible to navigate,
+        *  so I am just running update every half a second, seems to fix it.
         */
-        this.androidUpdateCount++;
-        this.androidUpdateCount %= 30;
+        const now = performance.now();
 
-        if (isMobile.android.device && this.androidUpdateCount !== 0) return;
+        if (isMobile.android.device && now < this.androidUpdateCount)
+        {
+            return;
+        }
+
+        this.androidUpdateCount = now + this.androidUpdateFrequency;
 
         if (!this.renderer.renderingToScreen)
         {
