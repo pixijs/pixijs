@@ -32,7 +32,9 @@ export function hex2rgb(hex: number, out: number[]): number[]
  */
 export function hex2string(hex: number): string
 {
-    const hexString = hex.toString(16).padStart(6, '0');
+    let hexString = hex.toString(16);
+
+    hexString = '000000'.substr(0, 6 - hexString.length) + hexString;
 
     return `#${hexString}`;
 }
