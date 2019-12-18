@@ -1,6 +1,6 @@
-import _url from 'url';
+import * as _url from 'url';
 
-let tempAnchor;
+let tempAnchor: HTMLAnchorElement|undefined;
 
 /**
  * Sets the `crossOrigin` property for this resource based on if the url
@@ -13,7 +13,7 @@ let tempAnchor;
  * @param {object} [loc=window.location] - The location object to test against.
  * @return {string} The crossOrigin value to use (or empty string for none).
  */
-export function determineCrossOrigin(url, loc = window.location)
+export function determineCrossOrigin(url: string, loc: Location = window.location): string
 {
     // data: and javascript: urls are considered same-origin
     if (url.indexOf('data:') === 0)
@@ -33,12 +33,12 @@ export function determineCrossOrigin(url, loc = window.location)
     // parse with the node url lib, we can't use the properties of the anchor element
     // because they don't work in IE9 :(
     tempAnchor.href = url;
-    url = _url.parse(tempAnchor.href);
+    const parsedUrl = _url.parse(tempAnchor.href);
 
-    const samePort = (!url.port && loc.port === '') || (url.port === loc.port);
+    const samePort = (!parsedUrl.port && loc.port === '') || (parsedUrl.port === loc.port);
 
     // if cross origin
-    if (url.hostname !== loc.hostname || !samePort || url.protocol !== loc.protocol)
+    if (parsedUrl.hostname !== loc.hostname || !samePort || parsedUrl.protocol !== loc.protocol)
     {
         return 'anonymous';
     }

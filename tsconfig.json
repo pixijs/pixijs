@@ -9,7 +9,8 @@
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "noImplicitReturns": true,
-        "strictNullChecks": false
+        "strictNullChecks": false,
+        "esModuleInterop": true
     },
     "exclude": [
         "node_modules",

@@ -8,12 +8,18 @@ import { settings } from '@pixi/settings';
  */
 export class CanvasRenderTarget
 {
+    public canvas: HTMLCanvasElement;
+
+    public context: CanvasRenderingContext2D;
+
+    public resolution: number;
+
     /**
      * @param {number} width - the width for the newly created canvas
      * @param {number} height - the height for the newly created canvas
      * @param {number} [resolution=1] - The resolution / device pixel ratio of the canvas
      */
-    constructor(width, height, resolution)
+    constructor(width: number, height: number, resolution: number)
     {
         /**
          * The Canvas object that belongs to this CanvasRenderTarget.
@@ -39,7 +45,7 @@ export class CanvasRenderTarget
      *
      * @private
      */
-    clear()
+    clear(): void
     {
         this.context.setTransform(1, 0, 0, 1, 0, 0);
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -51,7 +57,7 @@ export class CanvasRenderTarget
      * @param {number} width - the new width of the canvas
      * @param {number} height - the new height of the canvas
      */
-    resize(width, height)
+    resize(width: number, height: number): void
     {
         this.canvas.width = width * this.resolution;
         this.canvas.height = height * this.resolution;
@@ -61,7 +67,7 @@ export class CanvasRenderTarget
      * Destroys this canvas.
      *
      */
-    destroy()
+    destroy(): void
     {
         this.context = null;
         this.canvas = null;
@@ -72,12 +78,12 @@ export class CanvasRenderTarget
      *
      * @member {number}
      */
-    get width()
+    get width(): number
     {
         return this.canvas.width;
     }
 
-    set width(val) // eslint-disable-line require-jsdoc
+    set width(val: number) // eslint-disable-line require-jsdoc
     {
         this.canvas.width = val;
     }
@@ -87,12 +93,12 @@ export class CanvasRenderTarget
      *
      * @member {number}
      */
-    get height()
+    get height(): number
     {
         return this.canvas.height;
     }
 
-    set height(val) // eslint-disable-line require-jsdoc
+    set height(val: number) // eslint-disable-line require-jsdoc
     {
         this.canvas.height = val;
     }

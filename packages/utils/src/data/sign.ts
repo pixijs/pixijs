@@ -6,7 +6,7 @@
  * @param {number} n - the number to check the sign of
  * @returns {number} 0 if `n` is 0, -1 if `n` is negative, 1 if `n` is positive
  */
-export function sign(n)
+export function sign(n: number): -1|0|1
 {
     if (n === 0) return 0;
 

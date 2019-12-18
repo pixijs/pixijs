@@ -1,6 +1,6 @@
 import { settings } from '../settings';
 
-let supported;
+let supported: boolean|undefined;
 
 /**
  * Helper for checking for WebGL support.
@@ -9,11 +9,11 @@ let supported;
  * @function isWebGLSupported
  * @return {boolean} Is WebGL supported.
  */
-export function isWebGLSupported()
+export function isWebGLSupported(): boolean
 {
     if (typeof supported === 'undefined')
     {
-        supported = (function supported()
+        supported = (function supported(): boolean
         {
             const contextOptions = {
                 stencil: true,
@@ -28,8 +28,10 @@ export function isWebGLSupported()
                 }
 
                 const canvas = document.createElement('canvas');
-                let gl = canvas.getContext('webgl', contextOptions)
-                    || canvas.getContext('experimental-webgl', contextOptions);
+                let gl = (
+                    canvas.getContext('webgl', contextOptions)
+                    || canvas.getContext('experimental-webgl', contextOptions)
+                ) as WebGLRenderingContext;
 
                 const success = !!(gl && gl.getContextAttributes().stencil);
 
