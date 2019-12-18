@@ -1,4 +1,4 @@
-import isMobile from 'ismobilejs';
+import { isMobile } from './isMobile';
 
 /**
  * Uploading the same buffer multiple times in a single frame can cause performance issues.

@@ -6,10 +6,9 @@ import { BLEND_MODES } from '@pixi/constants';
  * @memberof PIXI.utils
  * @function mapPremultipliedBlendModes
  * @private
- * @param {Array<number[]>} [array] - The array to output into.
  * @return {Array<number[]>} Mapped modes.
  */
-function mapPremultipliedBlendModes()
+function mapPremultipliedBlendModes(): number[][]
 {
     const pm = [];
     const npm = [];
@@ -28,7 +27,7 @@ function mapPremultipliedBlendModes()
     npm[BLEND_MODES.ADD] = BLEND_MODES.ADD_NPM;
     npm[BLEND_MODES.SCREEN] = BLEND_MODES.SCREEN_NPM;
 
-    const array = [];
+    const array: number[][] = [];
 
     array.push(npm);
     array.push(pm);
@@ -53,7 +52,7 @@ export const premultiplyBlendMode = mapPremultipliedBlendModes();
  * @param {boolean} premultiplied  whether source is premultiplied
  * @returns {number} true blend mode for this texture
  */
-export function correctBlendMode(blendMode, premultiplied)
+export function correctBlendMode(blendMode: number, premultiplied: boolean): number
 {
     return premultiplyBlendMode[premultiplied ? 1 : 0][blendMode];
 }
@@ -69,7 +68,12 @@ export function correctBlendMode(blendMode, premultiplied)
  * @param {boolean} [premultiply=true] do premultiply it
  * @returns {Float32Array} vec4 rgba
  */
-export function premultiplyRgba(rgb, alpha, out, premultiply)
+export function premultiplyRgba(
+    rgb: Float32Array|number[],
+    alpha: number,
+    out: Float32Array,
+    premultiply: boolean
+): Float32Array
 {
     out = out || new Float32Array(4);
     if (premultiply || premultiply === undefined)
@@ -98,7 +102,7 @@ export function premultiplyRgba(rgb, alpha, out, premultiply)
  * @param {number} alpha floating point alpha (0.0-1.0)
  * @returns {number} tint multiplied by alpha
  */
-export function premultiplyTint(tint, alpha)
+export function premultiplyTint(tint: number, alpha: number): number
 {
     if (alpha === 1.0)
     {
@@ -130,7 +134,7 @@ export function premultiplyTint(tint, alpha)
  * @param {boolean} [premultiply=true] do premultiply it
  * @returns {Float32Array} vec4 rgba
  */
-export function premultiplyTintToRgba(tint, alpha, out, premultiply)
+export function premultiplyTintToRgba(tint: number, alpha: number, out: Float32Array, premultiply: boolean): Float32Array
 {
     out = out || new Float32Array(4);
     out[0] = ((tint >> 16) & 0xFF) / 255.0;

@@ -7,7 +7,7 @@ const VERSION = '__VERSION__';
  * @function skipHello
  * @memberof PIXI.utils
  */
-export function skipHello()
+export function skipHello(): void
 {
     saidHello = true;
 }
@@ -22,7 +22,7 @@ export function skipHello()
  * @memberof PIXI.utils
  * @param {string} type - The string renderer type to log.
  */
-export function sayHello(type)
+export function sayHello(type: string): void
 {
     if (saidHello)
     {
@@ -44,7 +44,7 @@ export function sayHello(type)
             'color: #ff2424; background: #fff; padding:5px 0;',
         ];
 
-        window.console.log.apply(console, args);
+        window.console.log(...args);
     }
     else if (window.console)
     {
