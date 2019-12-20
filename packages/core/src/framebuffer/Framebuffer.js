@@ -1,7 +1,7 @@
 import { Runner } from '@pixi/runner';
 import { BaseTexture } from '../textures/BaseTexture';
 import { DepthResource } from '../textures/resources/DepthResource';
-import { Renderbuffer } from '../renderbuffers/Renderbuffer';
+import { Renderbuffer } from '../renderbuffer/Renderbuffer';
 import { FORMATS, TYPES } from '@pixi/constants';
 
 /**

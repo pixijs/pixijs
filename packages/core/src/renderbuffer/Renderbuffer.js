@@ -37,31 +37,31 @@ export class Renderbuffer
         this.isRenderbuffer = true;
     }
 
-    get width(): number
+    get width()
     {
         return this._width;
     }
-    set width(value: number)
+    set width(value)
     {
         this._width = value;
         this.dirtyId++;
     }
 
-    get height(): number
+    get height()
     {
         return this._height;
     }
-    set height(value: number)
+    set height(value)
     {
         this._height = value;
         this.dirtyId++;
     }
 
-    get internalFormat(): number
+    get internalFormat()
     {
         return this._internalFormat;
     }
-    set internalFormat(value: number)
+    set internalFormat(value)
     {
         this._internalFormat = value;
         this.dirtyId++;

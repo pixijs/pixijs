@@ -48,7 +48,7 @@ export class RenderbufferSystem extends System
      *
      * @param {PIXI.Renderbuffer} renderbuffer
      */
-    bind(renderbuffer: Renderbuffer)
+    bind(renderbuffer)
     {
         const { gl } = this;
 
