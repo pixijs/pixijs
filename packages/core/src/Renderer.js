@@ -5,6 +5,7 @@ import { StencilSystem } from './mask/StencilSystem';
 import { ScissorSystem } from './mask/ScissorSystem';
 import { FilterSystem } from './filters/FilterSystem';
 import { FramebufferSystem } from './framebuffer/FramebufferSystem';
+import { RenderbufferSystem } from './renderbuffer/RenderbufferSystem';
 import { RenderTextureSystem } from './renderTexture/RenderTextureSystem';
 import { TextureSystem } from './textures/TextureSystem';
 import { ProjectionSystem } from './projection/ProjectionSystem';
@@ -186,6 +187,13 @@ export class Renderer extends AbstractRenderer
              */
             .addSystem(FramebufferSystem, 'framebuffer')
             /**
+             * Renderbuffer system instance
+             * @member {PIXI.systems.RenderbufferSystem} renderbuffer
+             * @memberof PIXI.Render#
+             * @readonly
+             */
+            .addSystem(RenderbufferSystem, 'renderbuffer')
+            /**
              * Scissor system instance
              * @member {PIXI.systems.ScissorSystem} scissor
              * @memberof PIXI.Renderer#
@@ -227,7 +235,6 @@ export class Renderer extends AbstractRenderer
              * @readonly
              */
             .addSystem(RenderTextureSystem, 'renderTexture')
-
             /**
              * Batch system instance
              * @member {PIXI.systems.BatchSystem} batch

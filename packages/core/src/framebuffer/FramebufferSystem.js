@@ -170,6 +170,44 @@ export class FramebufferSystem extends System
     }
 
     /**
+     * Copies the pixels in the source color buffer to the destination
+     * color buffer. This creates two temporary framebuffers to complete
+     * the operation.
+     *
+     * @param {PIXI.ColorBuffer} srcBuffer
+     * @param {PIXI.ColorBuffer} dstBuffer
+     */
+    blitColorBuffer(srcBuffer, dstBuffer)
+    {
+        const srcFb = new Framebuffer().addColorBuffer(srcBuffer);
+        const dstFb = new Framebuffer().addColorBuffer(dstBuffer);
+
+        this.blitFramebuffer(srcFb, dstFb);
+    }
+
+    /**
+     * Transfers all the pixels in the source framebuffer to the destination
+     * framebuffer.
+     *
+     * @param {PIXI.Framebuffer} src
+     * @param {PIXI.Framebuffer} dst
+     */
+    blitFramebuffer(src, dst)
+    {
+        // TODO: Add caching for these two binding points
+
+        this.gl.bindFramebuffer(this.gl.READ_FRAMEBUFFER, this.glFramebuffer(src));
+        this.updateFramebuffer(src, this.gl.READ_FRAMEBUFFER);
+
+        this.gl.bindFramebuffer(this.gl.DRAW_FRAMEBUFFER, this.glFramebuffer(dst));
+        this.updateFramebuffer(dst, this.gl.DRAW_FRAMEBUFFER);
+
+        this.gl.blitFramebuffer(0, 0, src.width, src.height,
+            0, 0, dst.width, dst.height,
+            this.gl.COLOR_BUFFER_BIT, this.gl.LINEAR);
+    }
+
+    /**
      * Set the WebGLRenderingContext's viewport.
      *
      * @param {Number} x - X position of viewport
@@ -227,6 +265,19 @@ export class FramebufferSystem extends System
     }
 
     /**
+     * Gets the {@code WebGLFramebuffer} object associated with the given framebuffer
+     * for this renderer.
+     *
+     * @param {PIXI.Framebuffer} framebuffer
+     * @returns {WebGLFramebuffer}
+     */
+    glFramebuffer(framebuffer)
+    {
+        return framebuffer.glFramebuffers[this.CONTEXT_UID].framebuffer
+            || this.initFramebuffer(framebuffer).framebuffer;
+    }
+
+    /**
      * Initialize framebuffer
      *
      * @protected
@@ -254,12 +305,13 @@ export class FramebufferSystem extends System
     }
 
     /**
-     * Resize the framebuffer
+     * Resizes the bound framebuffer
      *
      * @protected
      * @param {PIXI.Framebuffer} framebuffer
+     * @param {number} [target=this.gl.FRAMEBUFFER] - binding point for `framebuffer`
      */
-    resizeFramebuffer(framebuffer)
+    resizeFramebuffer(framebuffer, target = this.gl.FRAMEBUFFE) // eslint-disable-line no-unused-vars
     {
         const { gl } = this;
 
@@ -269,6 +321,8 @@ export class FramebufferSystem extends System
         {
             gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.stencil);
             gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, framebuffer.width, framebuffer.height);
+
+            this.renderer.renderbuffer.clearState();
         }
 
         const colorTextures = framebuffer.colorTextures;
@@ -285,12 +339,13 @@ export class FramebufferSystem extends System
     }
 
     /**
-     * Update the framebuffer
+     * Updates a bound framebuffer
      *
      * @protected
      * @param {PIXI.Framebuffer} framebuffer
+     * @param {number} [target=this.gl.FRAMEBUFFER] - binding point for `framebuffer`
      */
-    updateFramebuffer(framebuffer)
+    updateFramebuffer(framebuffer, target = this.gl.FRAMEBUFFER)
     {
         const { gl } = this;
 
@@ -310,26 +365,36 @@ export class FramebufferSystem extends System
 
         for (let i = 0; i < count; i++)
         {
-            const texture = framebuffer.colorTextures[i];
+            const buffer = framebuffer.colorBuffers[i];
 
-            if (texture.texturePart)
+            if (buffer.isRenderbuffer)
             {
-                this.renderer.texture.bind(texture.texture, 0);
+                this.renderer.renderbuffer.bind(buffer);
 
-                gl.framebufferTexture2D(gl.FRAMEBUFFER,
+                gl.framebufferRenderbuffer(target,
                     gl.COLOR_ATTACHMENT0 + i,
-                    gl.TEXTURE_CUBE_MAP_NEGATIVE_X + texture.side,
-                    texture.texture._glTextures[this.CONTEXT_UID].texture,
+                    gl.RENDERBUFFER,
+                    this.renderer.renderbuffer.glRenderbuffer(buffer)
+                );
+            }
+            else if (buffer.texturePart)
+            {
+                this.renderer.texture.bind(buffer.texture, 0);
+
+                gl.framebufferTexture2D(target,
+                    gl.COLOR_ATTACHMENT0 + i,
+                    gl.TEXTURE_CUBE_MAP_NEGATIVE_X + buffer.side,
+                    buffer.texture._glTextures[this.CONTEXT_UID].texture,
                     0);
             }
             else
             {
-                this.renderer.texture.bind(texture, 0);
+                this.renderer.texture.bind(buffer, 0);
 
-                gl.framebufferTexture2D(gl.FRAMEBUFFER,
+                gl.framebufferTexture2D(target,
                     gl.COLOR_ATTACHMENT0 + i,
                     gl.TEXTURE_2D,
-                    texture._glTextures[this.CONTEXT_UID].texture,
+                    buffer._glTextures[this.CONTEXT_UID].texture,
                     0);
             }
 
@@ -351,7 +416,7 @@ export class FramebufferSystem extends System
 
                 this.renderer.texture.bind(depthTexture, 0);
 
-                gl.framebufferTexture2D(gl.FRAMEBUFFER,
+                gl.framebufferTexture2D(target,
                     gl.DEPTH_ATTACHMENT,
                     gl.TEXTURE_2D,
                     depthTexture._glTextures[this.CONTEXT_UID].texture,
@@ -369,8 +434,10 @@ export class FramebufferSystem extends System
             // TODO.. this is depth AND stencil?
             if (!framebuffer.depthTexture)
             { // you can't have both, so one should take priority if enabled
-                gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, fbo.stencil);
+                gl.framebufferRenderbuffer(target, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, fbo.stencil);
             }
+
+            this.renderer.renderbuffer.clearState();
         }
     }
 
@@ -458,6 +525,7 @@ export class FramebufferSystem extends System
 
         gl.bindRenderbuffer(gl.RENDERBUFFER, stencil);
         gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, w, h);
+        this.renderer.renderbuffer.clearState();
 
         fbo.stencil = stencil;
         gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, stencil);

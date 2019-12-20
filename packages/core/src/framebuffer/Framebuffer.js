@@ -1,6 +1,7 @@
 import { Runner } from '@pixi/runner';
 import { BaseTexture } from '../textures/BaseTexture';
 import { DepthResource } from '../textures/resources/DepthResource';
+import { Renderbuffer } from '../renderbuffers/Renderbuffer';
 import { FORMATS, TYPES } from '@pixi/constants';
 
 /**
@@ -28,7 +29,13 @@ export class Framebuffer
         this.dirtySize = 0;
 
         this.depthTexture = null;
-        this.colorTextures = [];
+
+        /**
+         * Map of color attachments to the color buffers for this framebuffer.
+         *
+         * @member Array<BaseTexture | Renderbuffer>
+         */
+        this.colorBuffers = [];
 
         this.glFramebuffers = {};
 
@@ -36,9 +43,9 @@ export class Framebuffer
     }
 
     /**
-     * Reference to the colorTexture.
+     * Reference to the (first) color texture.
      *
-     * @member {PIXI.Texture[]}
+     * @member {PIXI.BaseTexture}
      * @readonly
      */
     get colorTexture()
@@ -46,16 +53,40 @@ export class Framebuffer
         return this.colorTextures[0];
     }
 
+    get colorTextures()
+    {
+        return this.colorBuffers;
+    }
+
     /**
-     * Add texture to the colorTexture array
+     * Reference to the (first) color renderbuffer.
      *
-     * @param {number} [index=0] - Index of the array to add the texture to
-     * @param {PIXI.Texture} [texture] - Texture to add to the array
+     * @member {PIXI.Renderbuffer}
+     * @readonly
+     */
+    get colorRenderBuffer()
+    {
+        return this.colorBuffers[0];
+    }
+
+    /**
+     * Adds a texture to the color buffers.
+     *
+     * @param {number} [index=0] - color attachment for the texture
+     * @param {PIXI.BaseTexture} [texture] - texture to attach
      */
     addColorTexture(index = 0, texture)
     {
-        // TODO add some validation to the texture - same width / height etc?
-        this.colorTextures[index] = texture || new BaseTexture(null, { scaleMode: 0,
+        if (texture.realWidth !== this.width && texture.realHeight !== this.height)
+        {
+            throw new Error('Cannot attach texture with different dimensions to framebuffer.');
+        }
+        if (this.colorBuffers.length <= index)
+        {
+            this.colorBuffers.length = index + 1;
+        }
+
+        this.colorBuffers[index] = texture || new BaseTexture(null, { scaleMode: 0,
             resolution: 1,
             mipmap: false,
             width: this.width,
@@ -65,6 +96,56 @@ export class Framebuffer
         this.dirtyFormat++;
 
         return this;
+    }
+
+    /**
+     * Adds a renderbuffer to the color buffers.
+     *
+     * @param {number} [index=0] - color attachment for the renderbuffer
+     * @param {PIXI.Renderbuffer} [renderbuffer] - renderbuffer to attach
+     * @returns {PIXI.Framebuffer} - `this`
+     */
+    addColorRenderbuffer(index = 0, renderbuffer)
+    {
+        if (renderbuffer.width !== this.width && renderbuffer.height !== this.height)
+        {
+            throw new Error('Cannot attach renderbuffer with different dimensions to framebuffer');
+        }
+        if (this.colorBuffers.length <= index)
+        {
+            this.colorBuffers.length = index + 1;
+        }
+
+        this.colorBuffers[index] = renderbuffer || new Renderbuffer(
+            this.width,
+            this.height);
+
+        this.dirtyId++;
+        this.dirtyFormat++;
+
+        return this;
+    }
+
+    /**
+     * Adds a color buffer to the color attachments, determining whether it is a
+     * texture or a renderbuffer.
+     *
+     * @param {number} [index=0] - color attachmenet for the buffer
+     * @param {PIXI.BaseTexture | PIXI.Renderbuffer} buffer
+     * @returns {PIXI.Framebuffer} - `this`
+     */
+    addColorBuffer(index = 0, buffer)
+    {
+        if (buffer instanceof BaseTexture)
+        {
+            return this.addColorTexture(index, buffer);
+        }
+        else if (buffer instanceof Renderbuffer)
+        {
+            return this.addColorRenderbuffer(index, buffer);
+        }
+
+        throw new Error('Unknown color buffer type: must be BaseTexture or Renderbuffer');
     }
 
     /**
@@ -159,3 +240,8 @@ export class Framebuffer
         this.disposeRunner.run(this, false);
     }
 }
+
+/**
+ * @namespace PIXI
+ * @typedef {PIXI.BaseTexture | PIXI.Renderbuffer} ColorBuffer
+ */

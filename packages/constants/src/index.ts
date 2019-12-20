@@ -151,6 +151,11 @@ export enum DRAW_MODES {
  * @property {number} LUMINANCE_ALPHA=6410
  * @property {number} DEPTH_COMPONENT=6402
  * @property {number} DEPTH_STENCIL=34041
+ * @property {number} R8=33321
+ * @property {number} RGB8=32849
+ * @property {number} RGBA8=32856
+ * @property {number} SRGB8_ALPHA8 = 35907
+ * @property {number} RGBA8=32856
  */
 export enum FORMATS {
     RGBA = 6408,
@@ -160,6 +165,19 @@ export enum FORMATS {
     LUMINANCE_ALPHA = 6410,
     DEPTH_COMPONENT = 6402,
     DEPTH_STENCIL = 34041,
+
+    // Renderbuffer formats
+    R8 = 33321,
+    R8UI = 33330,
+    R8I = 33329,
+    R16UI = 33332,
+    R16UI = 33331,
+    R32UI = 33334,
+    R32UI = 33333,
+    RGB8 = 32849,
+    RGBA8 = 32856,
+    SRGB8_ALPHA8 = 35907,
+    RGBA4 = 32854
 }
 
 /**
@@ -368,4 +386,21 @@ export enum MASK_TYPES {
     SCISSOR = 1,
     STENCIL = 2,
     SPRITE = 3,
+}
+
+/**
+ * Types of antialiasing supported by pixi.js
+ *
+ * @name ANTIALIAS_TYPES
+ * @memberof PIXI
+ * @static
+ * @enum {number}
+ * @property {number} LEGACY - Antialiasing used older pixi.js versions, if supported
+ * @property {number} FSAA - Full-scene antialiasing, i.e. rendering at higher resolutions
+ * @property {number} MSAA - Multisampling antialiasing (WebGL 2 only)
+ */
+export enum ANTIALIAS_TYPES {
+    LEGACY = 0,
+    FSAA = 1,
+    MSAA = 2
 }
