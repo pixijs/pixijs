@@ -69,8 +69,7 @@ export class RenderbufferSystem extends System
                 this.updateRenderbuffer(renderbuffer);
             }
         }
-        else
-        if (this.current)
+        else if (this.current)
         {
             this.current = null;
             gl.bindRenderbuffer(gl.RENDERBUFFER, null);
@@ -102,8 +101,8 @@ export class RenderbufferSystem extends System
      */
     glRenderbuffer(renderbuffer)
     {
-        return renderbuffer.glRenderbuffers[this.CONTEXT_UID].renderbuffer
-            || this.initRenderbuffer(renderbuffer).renderbuffer;
+        return (renderbuffer.glRenderbuffers[this.CONTEXT_UID]
+            || this.initRenderbuffer(renderbuffer)).renderbuffer;
     }
 
     /**

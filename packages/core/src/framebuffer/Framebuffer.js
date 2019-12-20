@@ -77,7 +77,7 @@ export class Framebuffer
      */
     addColorTexture(index = 0, texture)
     {
-        if (texture.realWidth !== this.width && texture.realHeight !== this.height)
+        if (texture && texture.realWidth !== this.width && texture.realHeight !== this.height)
         {
             throw new Error('Cannot attach texture with different dimensions to framebuffer.');
         }
@@ -107,7 +107,7 @@ export class Framebuffer
      */
     addColorRenderbuffer(index = 0, renderbuffer)
     {
-        if (renderbuffer.width !== this.width && renderbuffer.height !== this.height)
+        if (renderbuffer && renderbuffer.width !== this.width && renderbuffer.height !== this.height)
         {
             throw new Error('Cannot attach renderbuffer with different dimensions to framebuffer');
         }

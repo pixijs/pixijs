@@ -273,8 +273,8 @@ export class FramebufferSystem extends System
      */
     glFramebuffer(framebuffer)
     {
-        return framebuffer.glFramebuffers[this.CONTEXT_UID].framebuffer
-            || this.initFramebuffer(framebuffer).framebuffer;
+        return (framebuffer.glFramebuffers[this.CONTEXT_UID]
+            || this.initFramebuffer(framebuffer)).framebuffer;
     }
 
     /**
