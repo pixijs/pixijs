@@ -8,7 +8,7 @@ import { System } from '../System';
  */
 export class RenderbufferSystem extends System
 {
-    constructor(renderer: Renderer)
+    constructor(renderer)
     {
         super(renderer);
 
