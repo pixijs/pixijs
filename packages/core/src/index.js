@@ -16,6 +16,7 @@ export * from './textures/Texture';
 export * from './textures/BaseTexture';
 export * from './textures/GLTexture';
 export * from './textures/TextureMatrix';
+export * from './renderbuffer/Renderbuffer';
 export * from './renderTexture/RenderTexture';
 export * from './renderTexture/RenderTexturePool';
 export * from './renderTexture/BaseRenderTexture';
