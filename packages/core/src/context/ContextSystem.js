@@ -84,10 +84,13 @@ export class ContextSystem extends System
     initFromContext(gl)
     {
         this.gl = gl;
-        this.validateContext(gl);
         this.renderer.gl = gl;
         this.renderer.CONTEXT_UID = CONTEXT_UID++;
-        this.renderer.runners.contextChange.run(gl);
+        if (this.validateContext(gl))
+        {
+            // success, the context is alive
+            this.renderer.runners.contextChange.run(gl);
+        }
     }
 
     /**
@@ -240,10 +243,18 @@ export class ContextSystem extends System
      *
      * @protected
      * @param {WebGLRenderingContext} gl - Render context
+     * @returns {boolean} Whether context is actually alive
      */
     validateContext(gl)
     {
         const attributes = gl.getContextAttributes();
+
+        if (gl.isContextLost() || !attributes)
+        {
+            console.warn('Provided WebGL context is lost');
+
+            return false;
+        }
 
         // this is going to be fairly simple for now.. but at least we have room to grow!
         if (!attributes.stencil)
@@ -256,5 +267,7 @@ export class ContextSystem extends System
 
             /* eslint-enable max-len */
         }
+
+        return true;
     }
 }
