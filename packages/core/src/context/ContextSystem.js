@@ -249,11 +249,18 @@ export class ContextSystem extends System
     {
         const attributes = gl.getContextAttributes();
 
-        if (gl.isContextLost() || !attributes)
+        if (gl.isContextLost())
         {
             console.warn('Provided WebGL context is lost');
 
             return false;
+        }
+
+        if (!attributes)
+        {
+            console.warn('Provided WebGL context has no contextAttributes');
+
+            return true;
         }
 
         // this is going to be fairly simple for now.. but at least we have room to grow!
