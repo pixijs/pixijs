@@ -726,7 +726,7 @@ const canvas = (() =>
         const c = new OffscreenCanvas(0, 0);
         const context = c.getContext('2d');
 
-        if (context && context.measureText && context === c.getContext('2d'))
+        if (context && context.measureText)
         {
             return c;
         }
