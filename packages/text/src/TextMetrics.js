@@ -730,10 +730,8 @@ const canvas = (() =>
         {
             return c;
         }
-        else
-        {
-            return document.createElement('canvas');
-        }
+
+        return document.createElement('canvas');
     }
     catch (ex)
     {
