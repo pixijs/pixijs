@@ -197,14 +197,30 @@ export class FramebufferSystem extends System
         // TODO: Add caching for these two binding points
 
         this.gl.bindFramebuffer(this.gl.READ_FRAMEBUFFER, this.glFramebuffer(src));
-        this.updateFramebuffer(src, this.gl.READ_FRAMEBUFFER);
+
+        if (src)
+        {
+            this.updateFramebuffer(src, this.gl.READ_FRAMEBUFFER);
+        }
 
         this.gl.bindFramebuffer(this.gl.DRAW_FRAMEBUFFER, this.glFramebuffer(dst));
-        this.updateFramebuffer(dst, this.gl.DRAW_FRAMEBUFFER);
 
-        this.gl.blitFramebuffer(0, 0, src.width, src.height,
-            0, 0, dst.width, dst.height,
+        if (dst)
+        {
+            this.updateFramebuffer(dst, this.gl.DRAW_FRAMEBUFFER);
+        }
+
+        const srcWidth = src ? src.width : this.renderer.screen.width;
+        const srcHeight = src ? src.height : this.renderer.screen.height;
+        const dstWidth = dst ? dst.width : this.renderer.screen.width;
+        const dstHeight = dst ? dst.height : this.renderer.screen.height;
+
+        this.gl.blitFramebuffer(0, 0, srcWidth, srcHeight,
+            0, 0, dstWidth, dstHeight,
             this.gl.COLOR_BUFFER_BIT, this.gl.LINEAR);
+
+        this.gl.bindFramebuffer(this.gl.READ_FRAMEBUFFER, null);
+        this.gl.bindFramebuffer(this.gl.DRAW_FRAMEBUFFER, null);
     }
 
     /**
@@ -265,7 +281,7 @@ export class FramebufferSystem extends System
     }
 
     /**
-     * Gets the {@code WebGLFramebuffer} object associated with the given framebuffer
+     * Gets the `WebGLFramebuffer` object associated with the given framebuffer
      * for this renderer.
      *
      * @param {PIXI.Framebuffer} framebuffer
@@ -273,6 +289,11 @@ export class FramebufferSystem extends System
      */
     glFramebuffer(framebuffer)
     {
+        if (!framebuffer)
+        {
+            return null;
+        }
+
         return (framebuffer.glFramebuffers[this.CONTEXT_UID]
             || this.initFramebuffer(framebuffer)).framebuffer;
     }
@@ -311,7 +332,7 @@ export class FramebufferSystem extends System
      * @param {PIXI.Framebuffer} framebuffer
      * @param {number} [target=this.gl.FRAMEBUFFER] - binding point for `framebuffer`
      */
-    resizeFramebuffer(framebuffer, target = this.gl.FRAMEBUFFE) // eslint-disable-line no-unused-vars
+    resizeFramebuffer(framebuffer, target = this.gl.FRAMEBUFFER) // eslint-disable-line no-unused-vars
     {
         const { gl } = this;
 

@@ -85,8 +85,7 @@ export class RenderbufferSystem extends System
     }
 
     /**
-     * Use this to tell this system after directly changing the WebGL renderbuffer
-     * state.
+     * Use this after directly changing the WebGL renderbuffer state.
      */
     clearState()
     {
@@ -134,10 +133,21 @@ export class RenderbufferSystem extends System
     {
         const { gl } = this;
 
-        gl.renderbufferStorage(gl.RENDERBUFFER,
-            renderbuffer.internalFormat,
-            renderbuffer.width,
-            renderbuffer.height);
+        if (renderbuffer.multisample)
+        {
+            gl.renderbufferStorageMultisample(gl.RENDERBUFFER,
+                renderbuffer.samples,
+                renderbuffer.internalFormat,
+                renderbuffer.width,
+                renderbuffer.height);
+        }
+        else
+        {
+            gl.renderbufferStorage(gl.RENDERBUFFER,
+                renderbuffer.internalFormat,
+                renderbuffer.width,
+                renderbuffer.height);
+        }
     }
 
     /**

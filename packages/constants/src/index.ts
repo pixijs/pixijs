@@ -177,7 +177,9 @@ export enum FORMATS {
     RGB8 = 32849,
     RGBA8 = 32856,
     SRGB8_ALPHA8 = 35907,
-    RGBA4 = 32854
+    RGBA4 = 32854,
+
+    RGBA32F = 34836
 }
 
 /**

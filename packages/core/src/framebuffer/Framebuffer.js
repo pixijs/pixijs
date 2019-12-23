@@ -64,7 +64,7 @@ export class Framebuffer
      * @member {PIXI.Renderbuffer}
      * @readonly
      */
-    get colorRenderBuffer()
+    get colorRenderbuffer()
     {
         return this.colorBuffers[0];
     }
