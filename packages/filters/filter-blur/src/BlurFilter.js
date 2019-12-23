@@ -1,6 +1,7 @@
 import { Filter } from '@pixi/core';
 import { settings } from '@pixi/settings';
 import { BlurFilterPass } from './BlurFilterPass';
+import { CLEAR_MODES } from '@pixi/constants';
 
 /**
  * The BlurFilter applies a Gaussian blur to an object.
@@ -39,8 +40,9 @@ export class BlurFilter extends Filter
      * @param {PIXI.systems.FilterSystem} filterManager - The manager.
      * @param {PIXI.RenderTexture} input - The input target.
      * @param {PIXI.RenderTexture} output - The output target.
+     * @param {PIXI.CLEAR_MODES} clearMode - How to clear
      */
-    apply(filterManager, input, output, clear)
+    apply(filterManager, input, output, clearMode)
     {
         const xStrength = Math.abs(this.blurXFilter.strength);
         const yStrength = Math.abs(this.blurYFilter.strength);
@@ -49,18 +51,18 @@ export class BlurFilter extends Filter
         {
             const renderTarget = filterManager.getFilterTexture();
 
-            this.blurXFilter.apply(filterManager, input, renderTarget, true);
-            this.blurYFilter.apply(filterManager, renderTarget, output, clear);
+            this.blurXFilter.apply(filterManager, input, renderTarget, CLEAR_MODES.CLEAR);
+            this.blurYFilter.apply(filterManager, renderTarget, output, clearMode);
 
             filterManager.returnFilterTexture(renderTarget);
         }
         else if (yStrength)
         {
-            this.blurYFilter.apply(filterManager, input, output, clear);
+            this.blurYFilter.apply(filterManager, input, output, clearMode);
         }
         else
         {
-            this.blurXFilter.apply(filterManager, input, output, clear);
+            this.blurXFilter.apply(filterManager, input, output, clearMode);
         }
     }
 

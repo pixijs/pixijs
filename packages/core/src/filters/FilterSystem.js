@@ -4,7 +4,7 @@ import { Quad } from '../utils/Quad';
 import { QuadUv } from '../utils/QuadUv';
 import { Rectangle, Matrix } from '@pixi/math';
 import { UniformGroup } from '../shader/UniformGroup';
-import { DRAW_MODES } from '@pixi/constants';
+import { DRAW_MODES, CLEAR_MODES } from '@pixi/constants';
 
 /**
  * System plugin to the renderer to manage filter states.
@@ -165,6 +165,12 @@ export class FilterSystem extends System
 
         this._pixelsWidth = renderer.view.width;
         this._pixelsHeight = renderer.view.height;
+
+        /**
+         * Whether to clear output renderTexture in AUTO/BLIT mode. See {@link PIXI.CLEAR_MODES}
+         * @member {boolean}
+         */
+        this.forceClear = false;
     }
 
     /**
@@ -327,25 +333,33 @@ export class FilterSystem extends System
     }
 
     /**
+     * Binds a renderTexture with corresponding `filterFrame`, clears it if mode corresponds.
+     * @param {PIXI.RenderTexture} filterTexture renderTexture to bind, should belong to filter pool or filter stack
+     * @param {PIXI.CLEAR_MODES} [clearMode] clearMode, by default its CLEAR/YES. See {@link PIXI.CLEAR_MODES}
+     */
+    bindAndClear(filterTexture, clearMode = CLEAR_MODES.CLEAR)
+    {
+        this.renderer.renderTexture.bind(filterTexture, filterTexture ? filterTexture.filterFrame : null);
+        if (clearMode === CLEAR_MODES.CLEAR
+            || (clearMode === CLEAR_MODES.BLIT && this.forceClear))
+        {
+            this.renderer.renderTexture.clear();
+        }
+    }
+
+    /**
      * Draws a filter.
      *
      * @param {PIXI.Filter} filter - The filter to draw.
      * @param {PIXI.RenderTexture} input - The input render target.
      * @param {PIXI.RenderTexture} output - The target to output to.
-     * @param {boolean} clear - Should the output be cleared before rendering to it
+     * @param {PIXI.CLEAR_MODES} [clear] - Should the output be cleared before rendering to it
      */
-    applyFilter(filter, input, output, clear)
+    applyFilter(filter, input, output, clearMode = CLEAR_MODES.CLEAR)
     {
         const renderer = this.renderer;
 
-        renderer.renderTexture.bind(output, output ? output.filterFrame : null);
-
-        if (clear)
-        {
-            // gl.disable(gl.SCISSOR_TEST);
-            renderer.renderTexture.clear();
-            // gl.enable(gl.SCISSOR_TEST);
-        }
+        this.bindAndClear(output, clearMode);
 
         // set the uniforms..
         filter.uniforms.uSampler = input;
