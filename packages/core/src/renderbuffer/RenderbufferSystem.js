@@ -52,10 +52,15 @@ export class RenderbufferSystem extends System
     {
         const { gl } = this;
 
-        if (renderbuffer)
+        if (renderbuffer && renderbuffer !== this.unknownRenderbuffer)
         {
-            const rbo = renderbuffer.glRenderbuffers[this.CONTEXT_UID]
+            const rbo = renderbuffer.glRenderbuffer
                 || this.initRenderbuffer(renderbuffer);
+
+            if (rbo.CONTEXT_UID !== this.CONTEXT_UID)
+            {
+                throw new Error('Renderbuffer owned by a different context!');
+            }
 
             if (this.current !== renderbuffer)
             {
@@ -100,8 +105,7 @@ export class RenderbufferSystem extends System
      */
     glRenderbuffer(renderbuffer)
     {
-        return (renderbuffer.glRenderbuffers[this.CONTEXT_UID]
-            || this.initRenderbuffer(renderbuffer)).renderbuffer;
+        return (renderbuffer.glRenderbuffer || this.initRenderbuffer(renderbuffer)).renderbuffer;
     }
 
     /**
@@ -112,11 +116,12 @@ export class RenderbufferSystem extends System
     initRenderbuffer(renderbuffer)
     {
         const rbo = {
+            CONTEXT_UID: this.CONTEXT_UID,
             renderbuffer: this.gl.createRenderbuffer(),
             dirtyId: -1,
         };
 
-        renderbuffer.glRenderbuffers[this.CONTEXT_UID] = rbo;
+        renderbuffer.glRenderbuffer = rbo;
 
         this.managedRenderbuffers.push(renderbuffer);
 
@@ -131,9 +136,14 @@ export class RenderbufferSystem extends System
      */
     updateRenderbuffer(renderbuffer)
     {
+        if (renderbuffer.glRenderbuffer.CONTEXT_UID !== this.CONTEXT_UID)
+        {
+            throw new Error('Renderbuffer is owned by another WebGL context!');
+        }
+
         const { gl } = this;
 
-        if (renderbuffer.multisample)
+        if (renderbuffer.multisample && this.renderer.context.webGLVersion === 2)
         {
             gl.renderbufferStorageMultisample(gl.RENDERBUFFER,
                 renderbuffer.samples,

@@ -94,7 +94,7 @@ export class FramebufferSystem extends System
     {
         const { gl } = this;
 
-        if (framebuffer)
+        if (framebuffer && framebuffer !== this.unknownFramebuffer)
         {
             // TODO caching layer!
 
@@ -173,14 +173,16 @@ export class FramebufferSystem extends System
      * Copies the pixels in the source color buffer to the destination
      * color buffer. This creates two temporary framebuffers to complete
      * the operation.
+     * 
+     * Works only WebGL 2.
      *
      * @param {PIXI.ColorBuffer} srcBuffer
      * @param {PIXI.ColorBuffer} dstBuffer
      */
     blitColorBuffer(srcBuffer, dstBuffer)
     {
-        const srcFb = new Framebuffer().addColorBuffer(srcBuffer);
-        const dstFb = new Framebuffer().addColorBuffer(dstBuffer);
+        const srcFb = Framebuffer.fromColorBuffer(srcBuffer);
+        const dstFb = Framebuffer.fromColorBuffer(dstBuffer);
 
         this.blitFramebuffer(srcFb, dstFb);
     }
@@ -188,6 +190,8 @@ export class FramebufferSystem extends System
     /**
      * Transfers all the pixels in the source framebuffer to the destination
      * framebuffer.
+     * 
+     * Works only on WebGL 2.
      *
      * @param {PIXI.Framebuffer} src
      * @param {PIXI.Framebuffer} dst

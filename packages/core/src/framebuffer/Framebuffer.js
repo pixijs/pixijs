@@ -239,6 +239,52 @@ export class Framebuffer
     {
         this.disposeRunner.run(this, false);
     }
+
+    /**
+     * Creates a framebuffer with one renderbuffer attached.
+     *
+     * @param {number} width
+     * @param {number} height
+     * @param {number} samples
+     * @param {PIXI.FORMATS} format
+     * @returns {PIXI.Framebuffer}
+     */
+    static withRenderbuffer(width, height, samples, format)
+    {
+        return new Framebuffer(width, height)
+            .addColorRenderbuffer(new Renderbuffer(width, height, samples, format));
+    }
+
+    /**
+     * Creates a framebuffer with an existing renderbuffer attached.
+     * 
+     * @param {PIXI.Renderbuffer} renderbuffer
+     */
+    static fromRenderbuffer(renderbuffer)
+    {
+        return new Framebuffer(renderbuffer.width, renderbuffer.height)
+            .addColorRenderbuffer(renderbuffer);
+    }
+
+    static fromTexture(texture)
+    {
+        return new Framebuffer(texture.realWidth, texture.realHeight)
+            .addColorTexture(texture);
+    }
+
+    static fromColorBuffer(buffer)
+    {
+        if (buffer instanceof Renderbuffer)
+        {
+            return Framebuffer.fromRenderbuffer(buffer)
+        }
+        else if (buffer instanceof BaseTexture)
+        {
+            return Framebuffer.fromTexture(buffer)
+        }
+
+        return null;
+    }
 }
 
 /**

@@ -2,6 +2,11 @@ import { FORMATS } from '@pixi/constants';
 import { Runner } from '@pixi/runner';
 
 /**
+ * Renderbuffers store images in a "native" pixel format. They are faster to
+ * use than textures; however, they cannot be read by shaders like textures. To
+ * copy them to the canvas framebuffer or a texture, you must do a 'blit'
+ * operation using `PIXI.FramebufferSystem`.
+ *
  * @namespace PIXI
  */
 export class Renderbuffer
@@ -28,12 +33,9 @@ export class Renderbuffer
         this.dirtyId = 0;
 
         /**
-         * Map of the context UIDs to RBOs.
-         *
-         * @member {Map<number, object>}
-         * @protected
+         * WebGL Renderbuffer object.
          */
-        this.glRenderbuffers = {};
+        this.glRenderbuffer = null;
 
         /**
          * Runs when this renderbuffer is disposed.
@@ -92,6 +94,9 @@ export class Renderbuffer
     /**
      * Whether multisampling is enabled for this renderbuffer. To enable
      * this, set `samples` to a positive value.
+     *
+     * NOTE: This feature is supported only on WebGL 2 machines. On WebGL
+     * 1 machines, samples would be discarded.
      */
     get multisample()
     {

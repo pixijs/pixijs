@@ -3,6 +3,7 @@ import { ArrayResource } from './ArrayResource';
 import { BufferResource } from './BufferResource';
 import { CanvasResource } from './CanvasResource';
 import { CubeResource } from './CubeResource';
+import { DepthResource } from './DepthResource';
 import { ImageResource } from './ImageResource';
 import { SVGResource } from './SVGResource';
 import { VideoResource } from './VideoResource';
@@ -40,6 +41,7 @@ export {
     BufferResource,
     CanvasResource,
     CubeResource,
+    DepthResource,
     ImageResource,
     ImageBitmapResource,
     SVGResource,
