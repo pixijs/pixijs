@@ -257,7 +257,7 @@ export class Framebuffer
 
     /**
      * Creates a framebuffer with an existing renderbuffer attached.
-     * 
+     *
      * @param {PIXI.Renderbuffer} renderbuffer
      */
     static fromRenderbuffer(renderbuffer)
@@ -276,11 +276,11 @@ export class Framebuffer
     {
         if (buffer instanceof Renderbuffer)
         {
-            return Framebuffer.fromRenderbuffer(buffer)
+            return Framebuffer.fromRenderbuffer(buffer);
         }
         else if (buffer instanceof BaseTexture)
         {
-            return Framebuffer.fromTexture(buffer)
+            return Framebuffer.fromTexture(buffer);
         }
 
         return null;

@@ -173,7 +173,7 @@ export class FramebufferSystem extends System
      * Copies the pixels in the source color buffer to the destination
      * color buffer. This creates two temporary framebuffers to complete
      * the operation.
-     * 
+     *
      * Works only WebGL 2.
      *
      * @param {PIXI.ColorBuffer} srcBuffer
@@ -190,7 +190,7 @@ export class FramebufferSystem extends System
     /**
      * Transfers all the pixels in the source framebuffer to the destination
      * framebuffer.
-     * 
+     *
      * Works only on WebGL 2.
      *
      * @param {PIXI.Framebuffer} src
