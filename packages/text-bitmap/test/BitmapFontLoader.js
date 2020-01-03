@@ -32,6 +32,7 @@ describe('PIXI.BitmapFontLoader', function ()
 
         this.resources = path.join(__dirname, 'resources');
         this.fontXML = null;
+        this.fontTXT = null;
         this.fontScaledXML = null;
         this.fontImage = null;
         this.fontScaledImage = null;
@@ -47,6 +48,13 @@ describe('PIXI.BitmapFontLoader', function ()
                 resolve((new window.DOMParser()).parseFromString(data, 'text/xml'));
             }));
 
+        const loadTxt = (url) => new Promise((resolve) =>
+            fs.readFile(resolveURL(url), 'utf8', (err, data) =>
+            {
+                expect(err).to.be.null;
+                resolve(data);
+            }));
+
         const loadImage = (url) => new Promise((resolve) =>
         {
             const image = new Image();
@@ -56,23 +64,29 @@ describe('PIXI.BitmapFontLoader', function ()
         });
 
         Promise.all([
+            loadTxt('bmptxt-test.txt'),
             loadXML('font.fnt'),
             loadXML('font@0.5x.fnt'),
+            loadImage('bmtxt-test.png'),
             loadImage('font.png'),
             loadImage('font@0.5x.png'),
             loadImage('atlas.png'),
             loadImage('atlas@0.5x.png'),
         ]).then(([
+            fontTXT,
             fontXML,
             fontScaledXML,
+            fontTXTImage,
             fontImage,
             fontScaledImage,
             atlasImage,
             atlasScaledImage,
         ]) =>
         {
+            this.fontTXT = fontTXT;
             this.fontXML = fontXML;
             this.fontScaledXML = fontScaledXML;
+            this.fontTXTImage = fontTXTImage;
             this.fontImage = fontImage;
             this.fontScaledImage = fontScaledImage;
             this.atlasImage = atlasImage;
@@ -98,7 +112,7 @@ describe('PIXI.BitmapFontLoader', function ()
         expect(dirname('../file.fnt')).to.equal('..');
     });
 
-    it('should do nothing if the resource is not XML', function ()
+    it('should do nothing if the resource is not XML/TXT font data', function ()
     {
         const spy = sinon.spy();
         const res = {};
@@ -120,6 +134,17 @@ describe('PIXI.BitmapFontLoader', function ()
         expect(res.textures).to.be.undefined;
     });
 
+    it('should do nothing if the resource is not properly formatted TXT', function ()
+    {
+        const spy = sinon.spy();
+        const res = { data: 'abcdefgh' };
+
+        BitmapFontLoader.use(res, spy);
+
+        expect(spy).to.have.been.calledOnce;
+        expect(res.textures).to.be.undefined;
+    });
+
     // TODO: Test the texture cache code path.
     // TODO: Test the loading texture code path.
     // TODO: Test data-url code paths.
@@ -128,6 +153,52 @@ describe('PIXI.BitmapFontLoader', function ()
     {
         const texture = Texture.from(this.fontImage);
         const font = BitmapText.registerFont(this.fontXML, texture);
+
+        expect(font).to.be.an.object;
+        expect(BitmapText.fonts.font).to.equal(font);
+        expect(font).to.have.property('chars');
+        const charA = font.chars['A'.charCodeAt(0)];
+
+        expect(charA).to.exist;
+        expect(charA.texture.baseTexture.resource.source).to.equal(this.fontImage);
+        expect(charA.texture.frame.x).to.equal(2);
+        expect(charA.texture.frame.y).to.equal(2);
+        expect(charA.texture.frame.width).to.equal(19);
+        expect(charA.texture.frame.height).to.equal(20);
+        const charB = font.chars['B'.charCodeAt(0)];
+
+        expect(charB).to.exist;
+        expect(charB.texture.baseTexture.resource.source).to.equal(this.fontImage);
+        expect(charB.texture.frame.x).to.equal(2);
+        expect(charB.texture.frame.y).to.equal(24);
+        expect(charB.texture.frame.width).to.equal(15);
+        expect(charB.texture.frame.height).to.equal(20);
+        const charC = font.chars['C'.charCodeAt(0)];
+
+        expect(charC).to.exist;
+        expect(charC.texture.baseTexture.resource.source).to.equal(this.fontImage);
+        expect(charC.texture.frame.x).to.equal(23);
+        expect(charC.texture.frame.y).to.equal(2);
+        expect(charC.texture.frame.width).to.equal(18);
+        expect(charC.texture.frame.height).to.equal(20);
+        const charD = font.chars['D'.charCodeAt(0)];
+
+        expect(charD).to.exist;
+        expect(charD.texture.baseTexture.resource.source).to.equal(this.fontImage);
+        expect(charD.texture.frame.x).to.equal(19);
+        expect(charD.texture.frame.y).to.equal(24);
+        expect(charD.texture.frame.width).to.equal(17);
+        expect(charD.texture.frame.height).to.equal(20);
+        const charE = font.chars['E'.charCodeAt(0)];
+
+        expect(charE).to.be.undefined;
+        done();
+    });
+
+    it('should properly register bitmap font based on txt data', function (done)
+    {
+        const texture = Texture.from(this.fontTXTImage);
+        const font = BitmapText.registerFont(this.fontTXT, texture);
 
         expect(font).to.be.an.object;
         expect(BitmapText.fonts.font).to.equal(font);

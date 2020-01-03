@@ -69,17 +69,19 @@ export class BitmapFontLoader
         if (BitmapFontLoader.isXmlFontData(resource))
         {
             BitmapFontLoader.useXml.bind(this)(resource, next);
+
             return;
         }
-        
+
         // Check if resource refers to font data in text format
         if (BitmapFontLoader.isTxtFontData(resource))
         {
             BitmapFontLoader.useTxt.bind(this)(resource, next);
+
             return;
         }
-        
-        // Resource was not recognised as any of the expected font data format 
+
+        // Resource was not recognised as any of the expected font data format
         next();
     }
 
@@ -122,14 +124,15 @@ export class BitmapFontLoader
 
     /**
      * Check if resource refers to xml font data
-     * @param {PIXI.LoaderResource} resource 
+     * @param {PIXI.LoaderResource} resource
      * @return True if resource could be treated as font data, false otherwise.
      */
-    static isXmlFontData(resource) 
+    static isXmlFontData(resource)
     {
         if (!resource.data || resource.type !== LoaderResource.TYPE.XML) return false;
         if (!resource.data.getElementsByTagName('page').length) return false;
         if (!resource.data.getElementsByTagName('info')[0].getAttribute('face') === null) return false;
+
         return true;
     }
 
@@ -208,13 +211,14 @@ export class BitmapFontLoader
 
     /**
      * Check if resource refers to txt font data
-     * @param {PIXI.LoaderResource} resource 
+     * @param {PIXI.LoaderResource} resource
      * @return True if resource could be treated as font data, false otherwise.
      */
-    static isTxtFontData(resource) 
+    static isTxtFontData(resource)
     {
         if (!resource.data || resource.type !== LoaderResource.TYPE.TEXT) return false;
         if (!resource.data.startsWith('info face=')) return false;
+
         return true;
     }
 
