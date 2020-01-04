@@ -213,6 +213,8 @@ export class DisplayObject extends EventEmitter
      */
     updateTransform()
     {
+        this._boundsID++;
+
         this.transform.updateTransform(this.parent.transform);
         // multiply the alphas..
         this.worldAlpha = this.alpha * this.parent.worldAlpha;
