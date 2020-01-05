@@ -750,7 +750,7 @@ export class InteractionManager extends EventEmitter
      */
     addTicker()
     {
-        if (this.tickerAdded || !this.interactionDOMElement || !this._useSystemTicker) {
+        if (this.tickerAdded || !this.interactionDOMElement || !this._useSystemTicker)
         {
             return;
         }
