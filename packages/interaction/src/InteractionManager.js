@@ -730,6 +730,8 @@ export class InteractionManager extends EventEmitter
      */
     setTargetElement(element, resolution = 1)
     {
+        this.removeTicker();
+
         this.removeEvents();
 
         this.interactionDOMElement = element;
@@ -852,8 +854,6 @@ export class InteractionManager extends EventEmitter
         {
             return;
         }
-
-        Ticker.system.remove(this.tickerUpdate, this);
 
         if (window.navigator.msPointerEnabled)
         {
