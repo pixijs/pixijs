@@ -365,6 +365,10 @@ export class Ticker
      */
     get count(): number
     {
+        if (!this._head) {
+            return 0;
+        }
+
         let count = 0;
         let current = this._head;
 
