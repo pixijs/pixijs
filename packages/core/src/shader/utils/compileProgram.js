@@ -32,6 +32,18 @@ export function compileProgram(gl, vertexSrc, fragmentSrc, attributeLocations)
     // if linking fails, then log and cleanup
     if (!gl.getProgramParameter(program, gl.LINK_STATUS))
     {
+        if (!gl.getShaderParameter(glVertShader, gl.COMPILE_STATUS))
+        {
+            console.warn(vertexSrc);
+            console.error(gl.getShaderInfoLog(glVertShader));
+        }
+
+        if (!gl.getShaderParameter(glFragShader, gl.COMPILE_STATUS))
+        {
+            console.warn(fragmentSrc);
+            console.error(gl.getShaderInfoLog(glFragShader));
+        }
+
         console.error('Pixi.js Error: Could not initialize shader.');
         console.error('gl.VALIDATE_STATUS', gl.getProgramParameter(program, gl.VALIDATE_STATUS));
         console.error('gl.getError()', gl.getError());
@@ -66,14 +78,6 @@ function compileShader(gl, type, src)
 
     gl.shaderSource(shader, src);
     gl.compileShader(shader);
-
-    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS))
-    {
-        console.warn(src);
-        console.error(gl.getShaderInfoLog(shader));
-
-        return null;
-    }
 
     return shader;
 }

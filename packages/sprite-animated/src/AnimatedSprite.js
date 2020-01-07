@@ -252,7 +252,8 @@ export class AnimatedSprite extends Sprite
 
         if (this._currentTime < 0 && !this.loop)
         {
-            this.gotoAndStop(0);
+            this._currentTime = 0;
+            this.stop();
 
             if (this.onComplete)
             {
@@ -261,7 +262,8 @@ export class AnimatedSprite extends Sprite
         }
         else if (this._currentTime >= this._textures.length && !this.loop)
         {
-            this.gotoAndStop(this._textures.length - 1);
+            this._currentTime = this._textures.length - 1;
+            this.stop();
 
             if (this.onComplete)
             {

@@ -1,5 +1,5 @@
 // A map of warning messages already fired
-const warnings = {};
+const warnings: {[key: string]: boolean} = {};
 
 /**
  * Helper for warning developers about deprecated features & settings.
@@ -13,7 +13,7 @@ const warnings = {};
  * @param {number} [ignoreDepth=3] - The number of steps to ignore at the top of the error stack
  *        this is mostly to ignore internal deprecation calls.
  */
-export function deprecation(version, message, ignoreDepth = 3)
+export function deprecation(version: string, message: string, ignoreDepth = 3): void
 {
     // Ignore duplicat
     if (warnings[message])

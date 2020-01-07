@@ -7,7 +7,7 @@ let nextUid = 0;
  * @function uid
  * @return {number} The next unique identifier to use.
  */
-export function uid()
+export function uid(): number
 {
     return ++nextUid;
 }
