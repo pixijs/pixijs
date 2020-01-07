@@ -7,6 +7,9 @@ import { Runner } from '@pixi/runner';
  * copy them to the canvas framebuffer or a texture, you must do a 'blit'
  * operation using `PIXI.FramebufferSystem`.
  *
+ * A renderbuffer can be owned by only one renderer (and WebGL context); do not
+ * rely on them for save data across different renderers.
+ *
  * @namespace PIXI
  */
 export class Renderbuffer

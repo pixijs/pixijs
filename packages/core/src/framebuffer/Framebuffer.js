@@ -5,7 +5,11 @@ import { Renderbuffer } from '../renderbuffer/Renderbuffer';
 import { FORMATS, TYPES } from '@pixi/constants';
 
 /**
- * Frame buffer used by the BaseRenderTexture
+ * Framebuffers are "alternate" render targets to the actual canvas/screen. They
+ * are used by `PIXI.BaseRenderTexture` internally.
+ *
+ * NOTE: Framebuffers use `PIXI.BaseTexture` objects to attach textures, not the
+ * conventional `PIXI.Texture`.
  *
  * @class
  * @memberof PIXI
@@ -28,6 +32,13 @@ export class Framebuffer
         this.dirtyFormat = 0;
         this.dirtySize = 0;
 
+        /**
+         * Depth texture used in this framebuffer. Note that this is a base-texture
+         * object (not a regular `PIXI.Texture`).
+         *
+         * @member {PIXI.BaseTexture}
+         * @see PIXI.Framebuffer#addDepthTexture
+         */
         this.depthTexture = null;
 
         /**
@@ -37,8 +48,18 @@ export class Framebuffer
          */
         this.colorBuffers = [];
 
+        /**
+         * Map of context UIDs to FBO objects for this framebuffer.
+         *
+         * @member {Map<number, PIXI.FBO>}
+         */
         this.glFramebuffers = {};
 
+        /**
+         * Runs when this framebuffer is disposed.
+         *
+         * @member {PIXI.Runner}
+         */
         this.disposeRunner = new Runner('disposeFramebuffer', 2);
     }
 
@@ -53,6 +74,12 @@ export class Framebuffer
         return this.colorTextures[0];
     }
 
+    /**
+     * Alias to color-buffers array, assuming you're not using renderbuffers.
+     *
+     * @member {Array<PIXI.BaseTexture>}
+     * @readonly
+     */
     get colorTextures()
     {
         return this.colorBuffers;
@@ -151,7 +178,7 @@ export class Framebuffer
     /**
      * Add a depth texture to the frame buffer
      *
-     * @param {PIXI.Texture} [texture] - Texture to add
+     * @param {PIXI.BaseTexture} [texture] - Texture to add
      */
     addDepthTexture(texture)
     {
@@ -266,6 +293,11 @@ export class Framebuffer
             .addColorRenderbuffer(renderbuffer);
     }
 
+    /**
+     * Creates a framebuffer with an existing texture attached.
+     *
+     * @param {PIXI.BaseTexture} texture
+     */
     static fromTexture(texture)
     {
         return new Framebuffer(texture.realWidth, texture.realHeight)

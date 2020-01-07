@@ -195,9 +195,11 @@ export class RenderbufferSystem extends System
 }
 
 /**
+ * Used to cache context-specific information about a renderbuffer.
+ *
  * @namespace PIXI
  * @typedef {Object} RBO
- *
+ * @property {number} CONTEXT_UID - context UID of owning renderer context
  * @property {WebGLRenderbuffer} renderbuffer
  * @property {number} dirtyId
  */

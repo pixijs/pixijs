@@ -1,6 +1,6 @@
 import { System } from '../System';
 import { Rectangle } from '@pixi/math';
-import { ENV } from '@pixi/constants';
+import { ENV, FBO_TARGETS } from '@pixi/constants';
 import { settings } from '../settings';
 import { Framebuffer } from './Framebuffer';
 
@@ -312,7 +312,6 @@ export class FramebufferSystem extends System
     {
         const { gl } = this;
 
-        // TODO - make this a class?
         const fbo = {
             framebuffer: gl.createFramebuffer(),
             stencil: null,
@@ -333,10 +332,10 @@ export class FramebufferSystem extends System
      * Resizes the bound framebuffer
      *
      * @protected
-     * @param {PIXI.Framebuffer} framebuffer
-     * @param {number} [target=this.gl.FRAMEBUFFER] - binding point for `framebuffer`
+     * @param {PIXI.Framebuffer} framebuffer - framebuffer whose FBO is already bound
+     * @param {PIXI.FBO_TARGETS} [target=PIXI.FBO_TARGETS.FRAMEBUFFER] - binding point for `framebuffer`
      */
-    resizeFramebuffer(framebuffer, target = this.gl.FRAMEBUFFER) // eslint-disable-line no-unused-vars
+    resizeFramebuffer(framebuffer, target = FBO_TARGETS.FRAMEBUFFER) // eslint-disable-line no-unused-vars
     {
         const { gl } = this;
 
@@ -367,10 +366,10 @@ export class FramebufferSystem extends System
      * Updates a bound framebuffer
      *
      * @protected
-     * @param {PIXI.Framebuffer} framebuffer
+     * @param {PIXI.Framebuffer} framebuffer - framebuffer whose FBO is already bound
      * @param {number} [target=this.gl.FRAMEBUFFER] - binding point for `framebuffer`
      */
-    updateFramebuffer(framebuffer, target = this.gl.FRAMEBUFFER)
+    updateFramebuffer(framebuffer, target = FBO_TARGETS.FRAMEBUFFER)
     {
         const { gl } = this;
 
@@ -504,6 +503,7 @@ export class FramebufferSystem extends System
 
     /**
      * Disposes all framebuffers, but not textures bound to them
+     *
      * @param {boolean} [contextLost=false] If context was lost, we suppress all delete function calls
      */
     disposeAll(contextLost)
@@ -567,3 +567,15 @@ export class FramebufferSystem extends System
         this.viewport = new Rectangle();
     }
 }
+
+/**
+ * Used to cache context-specific information about a framebuffer.
+ *
+ * @namespace PIXI
+ * @typedef {Object} FBO
+ * @property {WebGLFramebuffer} framebuffer
+ * @property {WebGLRenderbuffer?} stencil
+ * @property {number} dirtyId
+ * @property {number} dirtyFormat
+ * @property {number} dirtySize
+ */

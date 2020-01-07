@@ -63,17 +63,6 @@ export const settings = {
     FILTER_RESOLUTION: 1,
 
     /**
-     * Override filter resolution by actually using a multisampling renderbuffer.
-     *
-     * @static
-     * @name FILTER_MULTISAMPLING
-     * @memberof PIXI.settings
-     * @type {boolean}
-     * @default true
-     */
-    FILTER_MULTISAMPLING: true,
-
-    /**
      * The maximum textures that this device supports.
      *
      * @static

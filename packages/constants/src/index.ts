@@ -183,7 +183,25 @@ export enum FORMATS {
 }
 
 /**
- * Various GL target types.
+ * Targets to which a WebGLFramebuffer can be attached in a context (via
+ * gl.bindFramebuffer())
+ *
+ * @memberof PIXI
+ * @static
+ * @name FBO_TARGETS
+ * @enum {number}
+ * @property {number} FRAMEBUFFER=36160
+ * @property {number} READ_FRAMEBUFFER=36008
+ * @property {number} DRAW_FRAMEBUFER=36009
+ */
+export enum FBO_TARGETS {
+    FRAMEBUFFER = 36160,
+    READ_FRAMEBUFFER = 36008,
+    DRAW_FRAMEBUFER = 36009
+}
+
+/**
+ * Various GL target types for binding textures.
  *
  * @memberof PIXI
  * @static
