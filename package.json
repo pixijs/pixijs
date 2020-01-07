@@ -36,7 +36,7 @@
     "prerelease": "npm run clean:build && npm test",
     "postversion": "npm run build:prod",
     "release": "lerna publish --exact",
-    "compile:docs": "tsc -p tsconfig.docs.json"
+    "compile:docs": "tsc -p tsconfig.docs.json --skipLibCheck"
   },
   "pre-commit": [
     "lintfix"

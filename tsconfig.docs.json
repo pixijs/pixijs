@@ -5,5 +5,20 @@
         "outDir": "./dist/compiled",
         "sourceMap": false,
         "allowJs": true
-    }
+    },
+    "include": [
+        "bundles",
+        "packages",
+        "./global.d.ts"
+    ],
+    "exclude": [
+        "node_modules",
+        "**/dist/**",
+        "**/lib/**",
+        "**/test/**",
+        "**/scripts/**",
+        "**/types/**",
+        "bundles/*/*.d.ts",
+        "rollup.config.js",
+    ]
 }

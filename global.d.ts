@@ -1,16 +1,4 @@
 declare module '@pixi/settings';
-declare module '@pixi/constants';
-declare module '@pixi/core' {
-    interface Texture {
-        destroy(): void;
-    }
-
-    interface BaseTexture {
-        destroy(): void;
-    }
-
-    interface Program {}
-}
 
 declare type InteractionTrackingData = any;
 
