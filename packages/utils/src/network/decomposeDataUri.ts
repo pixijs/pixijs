@@ -1,30 +1,46 @@
 import { DATA_URI } from '../const';
 
-/**
- * @memberof PIXI.utils
- */
 export interface DecomposedDataUri {
-    /**
-     * @property {string} Media type, eg. `image`
-     */
     mediaType: string;
-    /**
-     * @property {string} subType Sub type, eg. `png`
-     */
     subType: string;
-    /**
-     * @property {string} charset
-     */
     charset: string;
-    /**
-     * @property {string} encoding Data encoding, eg. `base64`
-     */
     encoding: string;
-    /**
-     * @property {string} data The actual data
-     */
     data: string;
 }
+
+/**
+ * @memberof PIXI.utils
+ * @interface DecomposedDataUri
+ */
+
+/**
+ * type, eg. `image`
+ * @memberof PIXI.utils.DecomposedDataUri#
+ * @member {string} mediaType
+ */
+
+/**
+ * Sub type, eg. `png`
+ * @memberof PIXI.utils.DecomposedDataUri#
+ * @member {string} subType
+ */
+
+/**
+ * @memberof PIXI.utils.DecomposedDataUri#
+ * @member {string} charset
+ */
+
+/**
+ * Data encoding, eg. `base64`
+ * @memberof PIXI.utils.DecomposedDataUri#
+ * @member {string} encoding
+ */
+
+/**
+ * The actual data
+ * @memberof PIXI.utils.DecomposedDataUri#
+ * @member {string} data
+ */
 
 /**
  * Split a data URI into components. Returns undefined if
