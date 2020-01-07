@@ -1,14 +1,8 @@
 import { MaskData, Renderer } from '@pixi/core';
 import { settings } from '@pixi/settings';
 import { removeItems } from '@pixi/utils';
-import { DisplayObject } from './DisplayObject';
+import { DisplayObject, IDestroyOptions } from './DisplayObject';
 import { Bounds } from './Bounds';
-
-export interface IDestroyOptions {
-    children?: boolean;
-    texture?: boolean;
-    baseTexture?: boolean;
-}
 
 function sortChildren(a: DisplayObject, b: DisplayObject): number
 {

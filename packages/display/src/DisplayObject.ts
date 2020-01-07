@@ -1,8 +1,14 @@
 import { Filter, MaskData, Renderer } from '@pixi/core';
 import { DEG_TO_RAD, IPoint, Matrix, ObservablePoint, Point, RAD_TO_DEG, Rectangle, Transform } from '@pixi/math';
 import { EventEmitter } from '@pixi/utils';
+import { Container } from './Container';
 import { Bounds } from './Bounds';
-import { Container, IDestroyOptions } from './Container';
+
+export interface IDestroyOptions {
+    children?: boolean;
+    texture?: boolean;
+    baseTexture?: boolean;
+}
 
 export interface DisplayObject extends InteractiveTarget, EventEmitter {}
 
@@ -41,7 +47,7 @@ export abstract class DisplayObject extends EventEmitter
     protected _localBoundsRect: Rectangle;
     protected _destroyed: boolean;
 
-    private tempDisplayObjectParent: Container;
+    private tempDisplayObjectParent: TemporaryDisplayObject;
     private displayObjectUpdateTransform: () => void;
 
     /**
@@ -538,11 +544,12 @@ export abstract class DisplayObject extends EventEmitter
      * @protected
      * @member {PIXI.Container}
      */
-    get _tempDisplayObjectParent(): Container
+    get _tempDisplayObjectParent(): TemporaryDisplayObject
     {
         if (this.tempDisplayObjectParent === null)
         {
-            this.tempDisplayObjectParent = new Container();
+            // eslint-disable-next-line @typescript-eslint/no-use-before-define
+            this.tempDisplayObjectParent = new TemporaryDisplayObject();
         }
 
         return this.tempDisplayObjectParent;
@@ -787,4 +794,12 @@ export abstract class DisplayObject extends EventEmitter
             maskObject.isMask = true;
         }
     }
+}
+
+class TemporaryDisplayObject extends DisplayObject
+{
+    calculateBounds: () => {} = null;
+    removeChild: (child: DisplayObject) => {} = null;
+    render: (renderer: Renderer) => {} = null;
+    sortDirty: boolean = null;
 }
