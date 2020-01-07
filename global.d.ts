@@ -1,5 +1,3 @@
-declare module '@pixi/settings';
-
 declare interface IApplicationOptions {
     autoStart?: boolean;
     width?: number;

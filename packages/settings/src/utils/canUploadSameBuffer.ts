@@ -8,7 +8,7 @@ import { isMobile } from './isMobile';
  * @private
  * @returns {boolean}
  */
-export function canUploadSameBuffer()
+export function canUploadSameBuffer(): boolean
 {
     return !isMobile.apple.device;
 }
