@@ -365,7 +365,8 @@ export class Ticker
      */
     get count(): number
     {
-        if (!this._head) {
+        if (!this._head)
+        {
             return 0;
         }
 
