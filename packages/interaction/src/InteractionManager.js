@@ -686,11 +686,11 @@ export class InteractionManager extends EventEmitter
 
         if (useSystemTicker)
         {
-            this.addTicker();
+            this.addTickerListener();
         }
         else
         {
-            this.removeTicker();
+            this.removeTickerListener();
         }
     }
 
@@ -730,7 +730,7 @@ export class InteractionManager extends EventEmitter
      */
     setTargetElement(element, resolution = 1)
     {
-        this.removeTicker();
+        this.removeTickerListener();
 
         this.removeEvents();
 
@@ -740,15 +740,15 @@ export class InteractionManager extends EventEmitter
 
         this.addEvents();
 
-        this.addTicker();
+        this.addTickerListener();
     }
 
     /**
-     * Add the ticker
+     * Add the ticker listener
      *
      * @private
      */
-    addTicker()
+    addTickerListener()
     {
         if (this.tickerAdded || !this.interactionDOMElement || !this._useSystemTicker)
         {
@@ -761,11 +761,11 @@ export class InteractionManager extends EventEmitter
     }
 
     /**
-     * Remove the ticker
+     * Remove the ticker listener
      *
      * @private
      */
-    removeTicker()
+    removeTickerListener()
     {
         if (!this.tickerAdded)
         {
@@ -845,12 +845,7 @@ export class InteractionManager extends EventEmitter
      */
     removeEvents()
     {
-        if (!this.eventsAdded)
-        {
-            return;
-        }
-
-        if (!this.interactionDOMElement)
+        if (!this.eventsAdded || !this.interactionDOMElement)
         {
             return;
         }
@@ -1804,7 +1799,7 @@ export class InteractionManager extends EventEmitter
     {
         this.removeEvents();
 
-        this.removeTicker();
+        this.removeTickerListener();
 
         this.removeAllListeners();
 
