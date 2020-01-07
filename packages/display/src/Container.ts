@@ -2,6 +2,7 @@ import { MaskData, Renderer } from '@pixi/core';
 import { settings } from '@pixi/settings';
 import { removeItems } from '@pixi/utils';
 import { DisplayObject } from './DisplayObject';
+import { Bounds } from './Bounds';
 
 export interface IDestroyOptions {
     children?: boolean;
@@ -104,7 +105,7 @@ export class Container extends DisplayObject
      * @protected
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    protected onChildrenChange(length: number): void
+    protected onChildrenChange(_length: number): void
     {
         /* empty */
     }
@@ -466,10 +467,12 @@ export class Container extends DisplayObject
             // TODO: filter+mask, need to mask both somehow
             if (child._mask)
             {
-                const maskObject: any = (child._mask as MaskData).maskObject || (child._mask as Container);
+                const maskObject = (child._mask as MaskData).maskObject || (child._mask as Container);
 
-                maskObject.calculateBounds();
-                this._bounds.addBoundsMask(child._bounds, maskObject._bounds);
+                // TODO: maskObject is getting PIXI.DisplayObject and DisplayObject confused.
+                // Once types are sorted we wont need to do this weird conversion
+                (maskObject as DisplayObject|Container).calculateBounds();
+                this._bounds.addBoundsMask(child._bounds, (maskObject._bounds as Bounds));
             }
             else if (child.filterArea)
             {
@@ -531,7 +534,7 @@ export class Container extends DisplayObject
      * @protected
      * @param {PIXI.Renderer} renderer - The renderer
      */
-    renderAdvanced(renderer: Renderer): void
+    protected renderAdvanced(renderer: Renderer): void
     {
         renderer.batch.flush();
 
@@ -596,7 +599,7 @@ export class Container extends DisplayObject
      * @param {PIXI.Renderer} renderer - The renderer
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    protected _render(renderer: Renderer): void // eslint-disable-line no-unused-vars
+    protected _render(_renderer: Renderer): void // eslint-disable-line no-unused-vars
     {
         // this is where content itself gets rendered...
     }

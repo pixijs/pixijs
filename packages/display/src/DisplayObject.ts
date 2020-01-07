@@ -4,11 +4,7 @@ import { EventEmitter } from '@pixi/utils';
 import { Bounds } from './Bounds';
 import { Container, IDestroyOptions } from './Container';
 
-// TODO: for whatever reason removeAllListeners and emit was not being picked up so its being declared here
-export interface DisplayObject extends InteractiveTarget, EventEmitter {
-    removeAllListeners: (event?: string | symbol) => this;
-    emit: (event: string | symbol, ...args: any[]) => boolean;
-}
+export interface DisplayObject extends InteractiveTarget, EventEmitter {}
 
 /**
  * The base class for all objects that are rendered on the screen.
@@ -53,7 +49,7 @@ export abstract class DisplayObject extends EventEmitter
      *
      * @param {object} source The source of properties and methods to mix in.
      */
-    static mixin(source: any): void
+    static mixin(source: {[x: string]: any}): void
     {
         // in ES8/ES2017, this would be really easy:
         // Object.defineProperties(DisplayObject.prototype, Object.getOwnPropertyDescriptors(source));
@@ -170,8 +166,7 @@ export abstract class DisplayObject extends EventEmitter
         this.filters = null;
 
         /**
-         * TODO
-         *
+         * Currently enabled filters
          * @member {PIXI.Filter[]}
          * @protected
          */
@@ -181,7 +176,6 @@ export abstract class DisplayObject extends EventEmitter
          * The bounds object, this is used to calculate and store the bounds of the displayObject.
          *
          * @member {PIXI.Bounds}
-         * @protected
          */
         this._bounds = new Bounds();
 
