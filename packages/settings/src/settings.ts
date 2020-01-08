@@ -153,7 +153,7 @@ export const settings: PixiSettings = {
      * @property {boolean} legacy=false
      */
     RENDER_OPTIONS: {
-        view: null as HTMLCanvasElement,
+        view: null,
         antialias: false,
         forceFXAA: false,
         autoDensity: false,
