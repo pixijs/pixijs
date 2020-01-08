@@ -337,9 +337,9 @@ export enum GC_MODES {
  *
  * @name PRECISION
  * @memberof PIXI
+ * @constant
  * @static
  * @enum {string}
- * @constant
  * @property {string} LOW='lowp'
  * @property {string} MEDIUM='mediump'
  * @property {string} HIGH='highp'
