@@ -122,6 +122,33 @@ describe('PIXI.Ticker', function ()
         expect(this.length()).to.equal(length);
     });
 
+    it('should count listeners correctly', function ()
+    {
+        const ticker = new Ticker();
+
+        expect(ticker.count).to.equal(0);
+
+        const listener = sinon.spy();
+
+        ticker.add(listener);
+
+        expect(ticker.count).to.equal(1);
+
+        ticker.add(listener);
+
+        expect(ticker.count).to.equal(2);
+
+        ticker.remove(listener);
+
+        expect(ticker.count).to.equal(0);
+
+        ticker.destroy();
+
+        expect(ticker._head).to.be.null;
+        expect(ticker.started).to.be.false;
+        expect(this.length(ticker)).to.equal(0);
+    });
+
     it('should respect priority order', function ()
     {
         const length = this.length();

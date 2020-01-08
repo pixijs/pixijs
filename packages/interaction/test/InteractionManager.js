@@ -1,5 +1,6 @@
 const MockPointer = require('./MockPointer');
 const { Container } = require('@pixi/display');
+const { Ticker } = require('@pixi/ticker');
 const { Graphics } = require('@pixi/graphics');
 const { Point, Rectangle } = require('@pixi/math');
 const { CanvasRenderer } = require('@pixi/canvas-renderer');
@@ -380,7 +381,7 @@ describe('PIXI.interaction.InteractionManager', function ()
         });
     });
 
-    describe('add/remove events', function ()
+    describe('add/remove events and ticker', function ()
     {
         let stub;
 
@@ -616,6 +617,41 @@ describe('PIXI.interaction.InteractionManager', function ()
             expect(element.removeEventListener).to.have.been.calledWith('touchcancel');
             expect(element.removeEventListener).to.have.been.calledWith('touchend');
             expect(element.removeEventListener).to.have.been.calledWith('touchmove');
+        });
+
+        it('should add and remove Ticker.system listener', function ()
+        {
+            const manager = new InteractionManager(sinon.stub());
+
+            const element = {};
+
+            manager.interactionDOMElement = element;
+
+            const listenerCount = Ticker.system.count;
+
+            manager.addTickerListener();
+
+            expect(Ticker.system.count).to.equal(listenerCount + 1);
+
+            manager.useSystemTicker = false;
+
+            expect(Ticker.system.count).to.equal(listenerCount);
+
+            manager.useSystemTicker = true;
+
+            expect(Ticker.system.count).to.equal(listenerCount + 1);
+
+            manager.removeTickerListener();
+
+            expect(Ticker.system.count).to.equal(listenerCount);
+
+            manager.useSystemTicker = false;
+
+            expect(Ticker.system.count).to.equal(listenerCount);
+
+            manager.addTickerListener();
+
+            expect(Ticker.system.count).to.equal(listenerCount);
         });
     });
 
