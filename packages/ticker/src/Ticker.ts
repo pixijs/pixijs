@@ -359,6 +359,29 @@ export class Ticker
     }
 
     /**
+     * Counts the number of listeners on this ticker.
+     *
+     * @returns {number} The number of listeners on this ticker
+     */
+    get count(): number
+    {
+        if (!this._head)
+        {
+            return 0;
+        }
+
+        let count = 0;
+        let current = this._head;
+
+        while ((current = current.next))
+        {
+            count++;
+        }
+
+        return count;
+    }
+
+    /**
      * Starts the ticker. If the ticker has listeners
      * a new animation frame is requested at this point.
      */
