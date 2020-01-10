@@ -411,12 +411,7 @@ export class Container extends DisplayObject
             this.sortChildren();
         }
 
-        this._boundsID++;
-
-        this.transform.updateTransform(this.parent.transform);
-
-        // TODO: check render flags, how to process stuff here
-        this.worldAlpha = this.alpha * this.parent.worldAlpha;
+        super.updateTransform();
 
         for (let i = 0, j = this.children.length; i < j; ++i)
         {
@@ -466,6 +461,18 @@ export class Container extends DisplayObject
             {
                 this._bounds.addBounds(child._bounds);
             }
+        }
+
+        if (this.filters)
+        {
+            let filterPadding = 0;
+
+            for (let i = 0; i < this.filters.length; i++)
+            {
+                filterPadding += this.filters[i].padding;
+            }
+
+            this._bounds.pad(filterPadding);
         }
 
         this._lastBoundsID = this._boundsID;

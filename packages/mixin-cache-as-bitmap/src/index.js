@@ -172,14 +172,6 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
     // TODO pass an object to clone too? saves having to create a new one each time!
     const bounds = this.getLocalBounds().clone();
 
-    // add some padding!
-    if (this.filters)
-    {
-        const padding = this.filters[0].padding;
-
-        bounds.pad(padding);
-    }
-
     bounds.ceil(settings.RESOLUTION);
 
     // for now we cache the current renderTarget that the WebGL renderer is currently using.

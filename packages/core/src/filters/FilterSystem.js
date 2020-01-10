@@ -180,7 +180,6 @@ export class FilterSystem extends System
         const state = this.statePool.pop() || new FilterState();
 
         let resolution = filters[0].resolution;
-        let padding = filters[0].padding;
         let autoFit = filters[0].autoFit;
         let legacy = filters[0].legacy;
 
@@ -190,8 +189,6 @@ export class FilterSystem extends System
 
             // lets use the lowest resolution..
             resolution = Math.min(resolution, filter.resolution);
-            // and the largest amount of padding!
-            padding = Math.max(padding, filter.padding);
             // only auto fit if all filters are autofit
             autoFit = autoFit || filter.autoFit;
 
@@ -213,7 +210,6 @@ export class FilterSystem extends System
 
         state.sourceFrame.copyFrom(target.filterArea || target.getBounds(true));
 
-        state.sourceFrame.pad(padding);
         if (autoFit)
         {
             state.sourceFrame.fit(this.renderer.renderTexture.sourceFrame);

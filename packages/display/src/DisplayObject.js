@@ -84,7 +84,7 @@ export class DisplayObject extends EventEmitter
         this.renderable = true;
 
         /**
-         * The display object container that contains this display object.
+         * The display object container that contains this DisplayObject.
          *
          * @member {PIXI.Container}
          * @readonly
@@ -92,7 +92,9 @@ export class DisplayObject extends EventEmitter
         this.parent = null;
 
         /**
-         * The multiplied alpha of the displayObject.
+         * The multiplied alpha of the DisplayObject.
+         *
+         * Updated via updateTransform()
          *
          * @member {number}
          * @readonly
@@ -118,8 +120,10 @@ export class DisplayObject extends EventEmitter
         this._zIndex = 0;
 
         /**
-         * The area the filter is applied to. This is used as more of an optimization
-         * rather than figuring out the dimensions of the displayObject each frame you can set this rectangle.
+         * The area the filters are applied to. This is used as more of an optimization
+         * rather than figuring out the dimensions of the displayObject each frame.
+         *
+         * If you set this you need to add filter padding yourself.
          *
          * Also works as an interaction mask.
          *
@@ -216,6 +220,7 @@ export class DisplayObject extends EventEmitter
         this._boundsID++;
 
         this.transform.updateTransform(this.parent.transform);
+
         // multiply the alphas..
         this.worldAlpha = this.alpha * this.parent.worldAlpha;
     }
@@ -473,7 +478,6 @@ export class DisplayObject extends EventEmitter
 
         this.parent = null;
         this._bounds = null;
-        this._currentBounds = null;
         this._mask = null;
 
         this.filters = null;

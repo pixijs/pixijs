@@ -1,4 +1,5 @@
 const { Container, DisplayObject } = require('../');
+const { Point } = require('@pixi/math');
 
 function testAddChild(fn)
 {
@@ -504,6 +505,61 @@ describe('PIXI.Container', function ()
             container.updateTransform();
 
             expect(canvasSpy).to.not.have.been.called;
+        });
+    });
+
+    describe('calculateBounds', function ()
+    {
+        it('should add filter.padding to bounds', function ()
+        {
+            const parentContainer = new Container();
+            const container = new Container();
+            const child = new Container();
+
+            // Make the child be 10x10
+            child._calculateBounds = function ()
+            {
+                const wt = this.worldTransform;
+
+                this._bounds.addPoint(new Point(wt.tx + 0, wt.ty + 0));
+                this._bounds.addPoint(new Point(wt.tx + 10, wt.ty + 10));
+            };
+
+            container.x = 50;
+            container.y = 40;
+
+            child.x = -10;
+            child.y = -10;
+
+            // Just mock filters
+            const filterA = {
+                padding: 0,
+            };
+
+            const filterB = {
+                padding: 5,
+            };
+
+            parentContainer.addChild(container);
+            container.addChild(child);
+
+            container.filters = [filterA, filterB, filterB, filterA];
+            child.filters = [filterB, filterA];
+
+            const containerBounds = container.getBounds(false);
+            const childBounds = child.getBounds(false);
+
+            expect(childBounds.x).to.be.equal(35); // container.x + child.x - 5
+            expect(childBounds.y).to.be.equal(25); // container.y + child.y - 5
+
+            expect(childBounds.width).to.be.equal(20); // 10 + 5 * 2
+            expect(childBounds.height).to.be.equal(20); // 10 + 5 * 2
+
+            expect(containerBounds.x).to.be.equal(25); // container.x + child.x - 5 * 3
+            expect(containerBounds.y).to.be.equal(15); // container.y + child.y - 5 * 3
+
+            expect(containerBounds.width).to.be.equal(40); // 10 + 5 * 3 * 2
+            expect(containerBounds.height).to.be.equal(40); // 10 + 5 * 3 * 2
         });
     });
 
