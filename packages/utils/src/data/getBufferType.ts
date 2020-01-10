@@ -1,4 +1,4 @@
-export function getBufferType(array)
+export function getBufferType(array: any): 'Float32Array'|'Uint32Array'|'Int32Array'|'Uint16Array'|'Uint8Array'|null
 {
     if (array.BYTES_PER_ELEMENT === 4)
     {

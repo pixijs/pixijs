@@ -56,8 +56,6 @@ export class Bounds
      */
     clear()
     {
-        this.updateID++;
-
         this.minX = Infinity;
         this.minY = Infinity;
         this.maxX = -Infinity;

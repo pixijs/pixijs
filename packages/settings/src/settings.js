@@ -1,4 +1,4 @@
-import isMobile from 'ismobilejs';
+import { isMobile } from './utils/isMobile';
 import { maxRecommendedTextures } from './utils/maxRecommendedTextures';
 import { canUploadSameBuffer } from './utils/canUploadSameBuffer';
 
