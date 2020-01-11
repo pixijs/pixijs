@@ -463,7 +463,7 @@ export class Container extends DisplayObject
             }
         }
 
-        if (this.filters)
+        if (this.filters && this.filters.length)
         {
             let filterPadding = 0;
 
