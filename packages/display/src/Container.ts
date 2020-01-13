@@ -33,6 +33,7 @@ export class Container extends DisplayObject
     public readonly children: DisplayObject[];
     public sortableChildren: boolean;
     public sortDirty: boolean;
+    public containerUpdateTransform: () => void;
 
     protected _width: number;
     protected _height: number;
@@ -73,6 +74,9 @@ export class Container extends DisplayObject
          * @member {boolean}
          */
         this.sortDirty = false;
+
+        // performance increase to avoid using call.. (10x faster)
+        this.containerUpdateTransform = this.updateTransform;
 
         /**
          * Fired when a DisplayObject is added to this Container.
@@ -682,8 +686,3 @@ export class Container extends DisplayObject
         this._height = value;
     }
 }
-
-Object.defineProperties(Container.prototype, {
-    // performance increase to avoid using call.. (10x faster)
-    containerUpdateTransform: { value: Container.prototype.updateTransform },
-});

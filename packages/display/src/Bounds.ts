@@ -43,6 +43,9 @@ export class Bounds
          * @default 0
          */
         this.maxY = -Infinity;
+
+        this.rect = null;
+        this.updateID = 0;
     }
 
     /**
