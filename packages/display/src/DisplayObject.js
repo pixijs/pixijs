@@ -213,11 +213,21 @@ export class DisplayObject extends EventEmitter
      */
     updateTransform()
     {
+        this._boundsID++;
+
         this.transform.updateTransform(this.parent.transform);
         // multiply the alphas..
         this.worldAlpha = this.alpha * this.parent.worldAlpha;
+    }
 
-        this._bounds.updateID++;
+    /**
+     * Recalculates the bounds of the display object.
+     *
+     * Does nothing by default and can be overwritten in a parent class.
+     */
+    calculateBounds()
+    {
+        // OVERWRITE;
     }
 
     /**

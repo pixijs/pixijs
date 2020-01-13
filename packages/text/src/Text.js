@@ -437,8 +437,12 @@ export class Text extends Sprite
         let currentIteration;
         let stop;
 
-        const width = Math.ceil(this.canvas.width / this._resolution);
-        const height = Math.ceil(this.canvas.height / this._resolution);
+        // a dropshadow will enlarge the canvas and result in the gradient being
+        // generated with the incorrect dimensions
+        const dropShadowCorrection = (style.dropShadow) ? style.dropShadowDistance : 0;
+
+        const width = Math.ceil(this.canvas.width / this._resolution) - dropShadowCorrection;
+        const height = Math.ceil(this.canvas.height / this._resolution) - dropShadowCorrection;
 
         // make a copy of the style settings, so we can manipulate them later
         const fill = style.fill.slice();

@@ -40,7 +40,8 @@ export class InteractionManager extends EventEmitter
      * @param {PIXI.CanvasRenderer|PIXI.Renderer} renderer - A reference to the current renderer
      * @param {object} [options] - The options for the manager.
      * @param {boolean} [options.autoPreventDefault=true] - Should the manager automatically prevent default browser actions.
-     * @param {number} [options.interactionFrequency=10] - Frequency increases the interaction events will be checked.
+     * @param {number} [options.interactionFrequency=10] - Maximum requency (ms) at pointer over/out states will be checked.
+     * @param {number} [options.useSystemTicker=true] - Whether to add {@link tickerUpdate} to {@link PIXI.Ticker.system}.
      */
     constructor(renderer, options)
     {
@@ -67,7 +68,7 @@ export class InteractionManager extends EventEmitter
         this.autoPreventDefault = options.autoPreventDefault !== undefined ? options.autoPreventDefault : true;
 
         /**
-         * Frequency in milliseconds that the mousemove, mouseover & mouseout interaction events will be checked.
+         * Maximum requency in milliseconds at which pointer over/out states will be checked by {@link tickerUpdate}.
          *
          * @member {number}
          * @default 10
@@ -138,6 +139,14 @@ export class InteractionManager extends EventEmitter
          * @member {boolean}
          */
         this.eventsAdded = false;
+
+        /**
+         * Has the system ticker been added?
+         *
+         * @protected
+         * @member {boolean}
+         */
+        this.tickerAdded = false;
 
         /**
          * Is the mouse hovering over the renderer?
@@ -656,7 +665,33 @@ export class InteractionManager extends EventEmitter
          * @param {PIXI.interaction.InteractionEvent} event - Interaction event
          */
 
+        this._useSystemTicker = options.useSystemTicker !== undefined ? options.useSystemTicker : true;
+
         this.setTargetElement(this.renderer.view, this.renderer.resolution);
+    }
+
+    /**
+     * Should the InteractionManager automatically add {@link tickerUpdate} to {@link PIXI.Ticker.system}.
+     *
+     * @member {boolean}
+     * @default true
+     */
+    get useSystemTicker()
+    {
+        return this._useSystemTicker;
+    }
+    set useSystemTicker(useSystemTicker)
+    {
+        this._useSystemTicker = useSystemTicker;
+
+        if (useSystemTicker)
+        {
+            this.addTickerListener();
+        }
+        else
+        {
+            this.removeTickerListener();
+        }
     }
 
     /**
@@ -695,6 +730,8 @@ export class InteractionManager extends EventEmitter
      */
     setTargetElement(element, resolution = 1)
     {
+        this.removeTickerListener();
+
         this.removeEvents();
 
         this.interactionDOMElement = element;
@@ -702,6 +739,42 @@ export class InteractionManager extends EventEmitter
         this.resolution = resolution;
 
         this.addEvents();
+
+        this.addTickerListener();
+    }
+
+    /**
+     * Add the ticker listener
+     *
+     * @private
+     */
+    addTickerListener()
+    {
+        if (this.tickerAdded || !this.interactionDOMElement || !this._useSystemTicker)
+        {
+            return;
+        }
+
+        Ticker.system.add(this.tickerUpdate, this, UPDATE_PRIORITY.INTERACTION);
+
+        this.tickerAdded = true;
+    }
+
+    /**
+     * Remove the ticker listener
+     *
+     * @private
+     */
+    removeTickerListener()
+    {
+        if (!this.tickerAdded)
+        {
+            return;
+        }
+
+        Ticker.system.remove(this.tickerUpdate, this);
+
+        this.tickerAdded = false;
     }
 
     /**
@@ -711,12 +784,10 @@ export class InteractionManager extends EventEmitter
      */
     addEvents()
     {
-        if (!this.interactionDOMElement)
+        if (this.eventsAdded || !this.interactionDOMElement)
         {
             return;
         }
-
-        Ticker.system.add(this.update, this, UPDATE_PRIORITY.INTERACTION);
 
         if (window.navigator.msPointerEnabled)
         {
@@ -774,12 +845,10 @@ export class InteractionManager extends EventEmitter
      */
     removeEvents()
     {
-        if (!this.interactionDOMElement)
+        if (!this.eventsAdded || !this.interactionDOMElement)
         {
             return;
         }
-
-        Ticker.system.remove(this.update, this);
 
         if (window.navigator.msPointerEnabled)
         {
@@ -823,12 +892,14 @@ export class InteractionManager extends EventEmitter
     }
 
     /**
-     * Updates the state of interactive objects.
+     * Updates the state of interactive objects if at least {@link interactionFrequency}
+     * milliseconds have passed since the last invocation.
+     *
      * Invoked by a throttled ticker update from {@link PIXI.Ticker.system}.
      *
-     * @param {number} deltaTime - time delta since last tick
+     * @param {number} deltaTime - time delta since the last call
      */
-    update(deltaTime)
+    tickerUpdate(deltaTime)
     {
         this._deltaTime += deltaTime;
 
@@ -839,6 +910,14 @@ export class InteractionManager extends EventEmitter
 
         this._deltaTime = 0;
 
+        this.update();
+    }
+
+    /**
+     * Updates the state of interactive objects.
+     */
+    update()
+    {
         if (!this.interactionDOMElement)
         {
             return;
@@ -1719,6 +1798,8 @@ export class InteractionManager extends EventEmitter
     destroy()
     {
         this.removeEvents();
+
+        this.removeTickerListener();
 
         this.removeAllListeners();
 
