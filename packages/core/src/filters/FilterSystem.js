@@ -341,7 +341,8 @@ export class FilterSystem extends System
     {
         this.renderer.renderTexture.bind(filterTexture, filterTexture ? filterTexture.filterFrame : null);
         if (clearMode === CLEAR_MODES.CLEAR
-            || (clearMode === CLEAR_MODES.BLIT && this.forceClear))
+            || (clearMode === CLEAR_MODES.BLIT && this.forceClear)
+            || clearMode === true)
         {
             this.renderer.renderTexture.clear();
         }
