@@ -10,7 +10,14 @@
         "noUnusedParameters": true,
         "noImplicitReturns": true,
         "strictNullChecks": false,
-        "esModuleInterop": true
+        "esModuleInterop": true,
+        "moduleResolution": "node",
+        "baseUrl": "./",
+        "paths": {
+            "@pixi/*": ["packages/*/src", "packages/filters/*/src", "packages/canvas/*/src"],
+            "pixi.js": ["bundles/pixi.js/src"],
+            "pixi.js-legacy": ["bundles/pixi.js-legacy/src"]
+        }
     },
     "exclude": [
         "node_modules",
