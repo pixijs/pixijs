@@ -9,7 +9,7 @@ import { CountLimiter } from './CountLimiter';
  * The prepare manager provides functionality to upload content to the GPU.
  *
  * BasePrepare handles basic queuing functionality and is extended by
- * {@link PIXI.prepare.Prepare} and {@link PIXI.prepare.CanvasPrepare}
+ * {@link PIXI.Prepare} and {@link PIXI.CanvasPrepare}
  * to provide preparation capabilities specific to their respective renderers.
  *
  * @example
@@ -26,7 +26,7 @@ import { CountLimiter } from './CountLimiter';
  *
  * @abstract
  * @class
- * @memberof PIXI.prepare
+ * @memberof PIXI
  */
 export class BasePrepare
 {

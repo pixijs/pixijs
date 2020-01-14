@@ -166,6 +166,34 @@ export function useDeprecated()
                 return PIXI.groupD8;
             },
         },
+
+        /**
+         * @namespace PIXI.prepare
+         * @see PIXI
+         * @deprecated since 5.2.1
+         */
+        prepare: {
+            get()
+            {
+                deprecation('5.2.1', 'PIXI.prepare namespace has been moved to PIXI');
+
+                return PIXI;
+            },
+        },
+
+        /**
+         * @namespace PIXI.extract
+         * @see PIXI
+         * @deprecated since 5.2.1
+         */
+        extract: {
+            get()
+            {
+                deprecation('5.2.1', 'PIXI.extract namespace has been moved to PIXI');
+
+                return PIXI;
+            },
+        },
     });
 
     /**

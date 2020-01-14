@@ -4,7 +4,6 @@
   "main": "lib/canvas-extract.js",
   "module": "lib/canvas-extract.es.js",
   "bundle": "dist/canvas-extract.js",
-  "namespace": "PIXI.extract",
   "description": "Canvas mixin for the extract package",
   "author": "Mat Groves",
   "contributors": [
