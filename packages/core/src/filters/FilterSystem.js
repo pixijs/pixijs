@@ -5,6 +5,7 @@ import { QuadUv } from '../utils/QuadUv';
 import { Rectangle, Matrix } from '@pixi/math';
 import { UniformGroup } from '../shader/UniformGroup';
 import { DRAW_MODES, CLEAR_MODES } from '@pixi/constants';
+import { deprecation } from '@pixi/utils';
 
 /**
  * System plugin to the renderer to manage filter states.
@@ -340,9 +341,15 @@ export class FilterSystem extends System
     bindAndClear(filterTexture, clearMode = CLEAR_MODES.CLEAR)
     {
         this.renderer.renderTexture.bind(filterTexture, filterTexture ? filterTexture.filterFrame : null);
+        // TODO: remove in next major version
+        if (typeof clearMode === 'boolean')
+        {
+            clearMode = clearMode ? CLEAR_MODES.CLEAR : CLEAR_MODES.BLEND;
+            // get deprecation function from utils
+            deprecation('5.2.1', 'Use CLEAR_MODES when using clear applyFilter option');
+        }
         if (clearMode === CLEAR_MODES.CLEAR
-            || (clearMode === CLEAR_MODES.BLIT && this.forceClear)
-            || clearMode === true)
+            || (clearMode === CLEAR_MODES.BLIT && this.forceClear))
         {
             this.renderer.renderTexture.clear();
         }
