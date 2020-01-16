@@ -2,6 +2,7 @@ import { Filter } from '@pixi/core';
 import { settings } from '@pixi/settings';
 import { generateBlurVertSource } from './generateBlurVertSource';
 import { generateBlurFragSource } from './generateBlurFragSource';
+import { CLEAR_MODES } from '@pixi/constants';
 
 /**
  * The BlurFilterPass applies a horizontal or vertical Gaussian blur to an object.
@@ -43,7 +44,7 @@ export class BlurFilterPass extends Filter
         this.blur = strength || 8;
     }
 
-    apply(filterManager, input, output, clear)
+    apply(filterManager, input, output, clearMode)
     {
         if (output)
         {
@@ -74,7 +75,7 @@ export class BlurFilterPass extends Filter
 
         if (this.passes === 1)
         {
-            filterManager.applyFilter(this, input, output, clear);
+            filterManager.applyFilter(this, input, output, clearMode);
         }
         else
         {
@@ -85,11 +86,11 @@ export class BlurFilterPass extends Filter
             let flop = renderTarget;
 
             this.state.blend = false;
-            filterManager.applyFilter(this, flip, flop, true);
+            filterManager.applyFilter(this, flip, flop, CLEAR_MODES.CLEAR);
 
             for (let i = 1; i < this.passes - 1; i++)
             {
-                renderer.renderTexture.bind(flip, flip.filterFrame);
+                filterManager.bindAndClear(flip, CLEAR_MODES.BLIT);
 
                 this.uniforms.uSampler = flop;
 
@@ -103,7 +104,7 @@ export class BlurFilterPass extends Filter
             }
 
             this.state.blend = true;
-            filterManager.applyFilter(this, flop, output, clear);
+            filterManager.applyFilter(this, flop, output, clearMode);
             filterManager.returnFilterTexture(renderTarget);
         }
     }
