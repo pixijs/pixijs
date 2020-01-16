@@ -309,6 +309,29 @@ export enum ALPHA_MODES {
 }
 
 /**
+ * How to clear renderTextures in filter
+ *
+ * @name CLEAR_MODES
+ * @memberof PIXI
+ * @static
+ * @enum {number}
+ * @property {number} BLEND - Preserve the information in the texture, blend above
+ * @property {number} CLEAR - Must use `gl.clear` operation
+ * @property {number} BLIT - Clear or blit it, depends on device and level of paranoia
+ * @property {number} NO - Alias for BLEND, same as `false` in earlier versions
+ * @property {number} YES - Alias for CLEAR, same as `true` in earlier versions
+ * @property {number} AUTO - Alias for BLIT
+ */
+export enum CLEAR_MODES {
+    NO = 0,
+    YES = 1,
+    AUTO = 2,
+    BLEND = 0,
+    CLEAR = 1,
+    BLIT = 2,
+}
+
+/**
  * The gc modes that are supported by pixi.
  *
  * The {@link PIXI.settings.GC_MODE} Garbage Collection mode for PixiJS textures is AUTO

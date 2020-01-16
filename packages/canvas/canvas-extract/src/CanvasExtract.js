@@ -10,7 +10,7 @@ const TEMP_RECT = new Rectangle();
  * An instance of this class is automatically created by default, and can be found at `renderer.plugins.extract`
  *
  * @class
- * @memberof PIXI.extract
+ * @memberof PIXI
  */
 export class CanvasExtract
 {
@@ -23,9 +23,9 @@ export class CanvasExtract
         /**
          * Collection of methods for extracting data (image, pixels, etc.) from a display object or render texture
          *
-         * @member {PIXI.extract.CanvasExtract} extract
+         * @member {PIXI.CanvasExtract} extract
          * @memberof PIXI.CanvasRenderer#
-         * @see PIXI.extract.CanvasExtract
+         * @see PIXI.CanvasExtract
          */
         renderer.extract = this;
     }

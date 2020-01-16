@@ -196,14 +196,6 @@ export abstract class DisplayObject extends EventEmitter
         /**
          * TODO
          *
-         * @member {number}
-         * @protected
-         */
-        this._lastBoundsID = -1;
-
-        /**
-         * TODO
-         *
          * @member {PIXI.Bounds}
          * @protected
          */
@@ -269,6 +261,9 @@ export abstract class DisplayObject extends EventEmitter
         this.displayObjectUpdateTransform = this.updateTransform;
     }
 
+    /**
+     * Recalculates the bounds of the display object.
+     */
     abstract calculateBounds(): void;
 
     abstract removeChild(child: DisplayObject): void;
@@ -304,11 +299,11 @@ export abstract class DisplayObject extends EventEmitter
      */
     updateTransform(): void
     {
+        this._boundsID++;
+
         this.transform.updateTransform(this.parent.transform);
         // multiply the alphas..
         this.worldAlpha = this.alpha * this.parent.worldAlpha;
-
-        this._bounds.updateID++;
     }
 
     /**
@@ -337,10 +332,10 @@ export abstract class DisplayObject extends EventEmitter
             }
         }
 
-        if (this._boundsID !== this._lastBoundsID)
+        if (this._bounds.updateID !== this._boundsID)
         {
             this.calculateBounds();
-            this._lastBoundsID = this._boundsID;
+            this._bounds.updateID = this._boundsID;
         }
 
         if (!rect)

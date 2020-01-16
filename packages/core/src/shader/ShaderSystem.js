@@ -73,7 +73,7 @@ export class ShaderSystem extends System
      * Changes the current shader to the one given in parameter
      *
      * @param {PIXI.Shader} shader - the new shader
-     * @param {boolean} dontSync - false if the shader should automatically sync its uniforms.
+     * @param {boolean} [dontSync] - false if the shader should automatically sync its uniforms.
      * @returns {PIXI.GLProgram} the glProgram that belongs to the shader.
      */
     bind(shader, dontSync)

@@ -482,7 +482,7 @@ export class Container extends DisplayObject
             }
         }
 
-        this._lastBoundsID = this._boundsID;
+        this._bounds.updateID = this._boundsID;
     }
 
     /**

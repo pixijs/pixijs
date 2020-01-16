@@ -207,16 +207,16 @@ export class Filter extends Shader
      * @param {PIXI.systems.FilterSystem} filterManager - The renderer to retrieve the filter from
      * @param {PIXI.RenderTexture} input - The input render target.
      * @param {PIXI.RenderTexture} output - The target to output to.
-     * @param {boolean} clear - Should the output be cleared before rendering to it
+     * @param {PIXI.CLEAR_MODES} clearMode - Should the output be cleared before rendering to it.
      * @param {object} [currentState] - It's current state of filter.
      *        There are some useful properties in the currentState :
      *        target, filters, sourceFrame, destinationFrame, renderTarget, resolution
      */
-    apply(filterManager, input, output, clear, currentState)
+    apply(filterManager, input, output, clearMode, currentState)
     {
         // do as you please!
 
-        filterManager.applyFilter(this, input, output, clear, currentState);
+        filterManager.applyFilter(this, input, output, clearMode, currentState);
 
         // or just do a regular render..
     }
