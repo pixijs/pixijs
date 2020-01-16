@@ -110,7 +110,7 @@ ParticleContainer.prototype.renderCanvas = function renderCanvas(renderer)
         const resolution = child._texture.baseTexture.resolution;
 
         context.drawImage(
-            child._texture.baseTexture.source,
+            child._texture.baseTexture.getDrawableSource(),
             frame.x * resolution,
             frame.y * resolution,
             frame.width * resolution,

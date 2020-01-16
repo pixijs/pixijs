@@ -169,6 +169,91 @@ export function useDeprecated()
     });
 
     /**
+     * @namespace PIXI.prepare
+     * @see PIXI
+     * @deprecated since 5.2.1
+     */
+    PIXI.prepare = {};
+
+    Object.defineProperties(PIXI.prepare, {
+        /**
+         * @class PIXI.prepare.BasePrepare
+         * @deprecated since 5.2.1
+         * @see PIXI.BasePrepare
+         */
+        BasePrepare: {
+            get()
+            {
+                deprecation('5.2.1', 'PIXI.prepare.BasePrepare moved to PIXI.BasePrepare');
+
+                return PIXI.BasePrepare;
+            },
+        },
+        /**
+         * @class PIXI.prepare.Prepare
+         * @deprecated since 5.2.1
+         * @see PIXI.Prepare
+         */
+        Prepare: {
+            get()
+            {
+                deprecation('5.2.1', 'PIXI.prepare.Prepare moved to PIXI.Prepare');
+
+                return PIXI.Prepare;
+            },
+        },
+        /**
+         * @class PIXI.prepare.CanvasPrepare
+         * @deprecated since 5.2.1
+         * @see PIXI.CanvasPrepare
+         */
+        CanvasPrepare: {
+            get()
+            {
+                deprecation('5.2.1', 'PIXI.prepare.CanvasPrepare moved to PIXI.CanvasPrepare');
+
+                return PIXI.CanvasPrepare;
+            },
+        },
+    });
+
+    /**
+     * @namespace PIXI.extract
+     * @see PIXI
+     * @deprecated since 5.2.1
+     */
+    PIXI.extract = {};
+
+    Object.defineProperties(PIXI.extract, {
+        /**
+         * @class PIXI.extract.Extract
+         * @deprecated since 5.2.1
+         * @see PIXI.Extract
+         */
+        Extract: {
+            get()
+            {
+                deprecation('5.2.1', 'PIXI.extract.Extract moved to PIXI.Extract');
+
+                return PIXI.Extract;
+            },
+        },
+        /**
+         * @class PIXI.extract.CanvasExtract
+         * @deprecated since 5.2.1
+         * @see PIXI.CanvasExtract
+         */
+        CanvasExtract: {
+            get()
+            {
+                deprecation('5.2.1', 'PIXI.extract.CanvasExtract moved to PIXI.CanvasExtract');
+
+                return PIXI.CanvasExtract;
+            },
+        },
+    });
+
+    /**
      * This namespace has been removed. All classes previous nested
      * under this namespace have been moved to the top-level `PIXI` object.
      * @namespace PIXI.extras
@@ -529,28 +614,28 @@ export function useDeprecated()
     /**
      * @class PIXI.extract.WebGLExtract
      * @deprecated since 5.0.0
-     * @see PIXI.extract.Extract
+     * @see PIXI.Extract
      */
     Object.defineProperty(PIXI.extract, 'WebGLExtract', {
         get()
         {
-            deprecation(v5, 'PIXI.extract.WebGLExtract method has moved to PIXI.extract.Extract');
+            deprecation(v5, 'PIXI.extract.WebGLExtract method has moved to PIXI.Extract');
 
-            return PIXI.extract.Extract;
+            return PIXI.Extract;
         },
     });
 
     /**
      * @class PIXI.prepare.WebGLPrepare
      * @deprecated since 5.0.0
-     * @see PIXI.prepare.Prepare
+     * @see PIXI.Prepare
      */
     Object.defineProperty(PIXI.prepare, 'WebGLPrepare', {
         get()
         {
-            deprecation(v5, 'PIXI.prepare.WebGLPrepare class has moved to PIXI.prepare.Prepare');
+            deprecation(v5, 'PIXI.prepare.WebGLPrepare class has moved to PIXI.Prepare');
 
-            return PIXI.prepare.Prepare;
+            return PIXI.Prepare;
         },
     });
 
