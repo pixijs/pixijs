@@ -184,8 +184,8 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
 
     // for now we cache the current renderTarget that the WebGL renderer is currently using.
     // this could be more elegant..
-    const cachedRenderTexture = renderer.renderTexture.current ?
-      renderer.renderTexture.current.clone() : null;
+    const cachedRenderTexture = renderer.renderTexture.current
+        ? renderer.renderTexture.current.clone() : null;
     const cachedSourceFrame = renderer.renderTexture.sourceFrame.clone();
     const cachedProjectionTransform = renderer.projection.transform;
 
@@ -244,16 +244,16 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
 
     this.transform._parentID = -1;
     // restore the transform of the cached sprite to avoid the nasty flicker..
-    // if (!this.parent)
-    // {
-    //     this.parent = renderer._tempDisplayObjectParent;
-    //     this.updateTransform();
-    //     this.parent = null;
-    // }
-    // else
-    // {
-    //     this.updateTransform();
-    // }
+    if (!this.parent)
+    {
+        this.parent = renderer._tempDisplayObjectParent;
+        this.updateTransform();
+        this.parent = null;
+    }
+    else
+    {
+        this.updateTransform();
+    }
 
     // map the hit test..
     this.containsPoint = cachedSprite.containsPoint.bind(cachedSprite);
