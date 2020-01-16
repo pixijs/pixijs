@@ -1,9 +1,9 @@
 /**
- * CountLimiter limits the number of items handled by a {@link PIXI.prepare.BasePrepare} to a specified
+ * CountLimiter limits the number of items handled by a {@link PIXI.BasePrepare} to a specified
  * number of items per frame.
  *
  * @class
- * @memberof PIXI.prepare
+ * @memberof PIXI
  */
 export class CountLimiter
 {

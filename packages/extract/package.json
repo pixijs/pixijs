@@ -4,7 +4,6 @@
   "main": "lib/extract.js",
   "module": "lib/extract.es.js",
   "bundle": "dist/extract.js",
-  "namespace": "PIXI.extract",
   "description": "Extract raw graphics data from renderer",
   "author": "Mat Groves",
   "contributors": [
