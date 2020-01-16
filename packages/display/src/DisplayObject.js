@@ -145,7 +145,6 @@ export class DisplayObject extends EventEmitter
          */
         this._bounds = new Bounds();
         this._boundsID = 0;
-        this._lastBoundsID = -1;
         this._boundsRect = null;
         this._localBoundsRect = null;
 
@@ -273,10 +272,10 @@ export class DisplayObject extends EventEmitter
             }
         }
 
-        if (this._boundsID !== this._lastBoundsID)
+        if (this._bounds.updateID !== this._boundsID)
         {
             this.calculateBounds();
-            this._lastBoundsID = this._boundsID;
+            this._bounds.updateID = this._boundsID;
         }
 
         if (!rect)

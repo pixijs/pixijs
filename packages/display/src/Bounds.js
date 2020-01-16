@@ -38,6 +38,15 @@ export class Bounds
         this.maxY = -Infinity;
 
         this.rect = null;
+
+        /**
+         * It is updated to _boundsID of corresponding object to keep bounds in sync with content.
+         * Updated from outside, thus public modifier.
+         *
+         * @member {number}
+         * @public
+         */
+        this.updateID = -1;
     }
 
     /**
