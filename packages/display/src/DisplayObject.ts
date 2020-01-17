@@ -42,7 +42,6 @@ export abstract class DisplayObject extends EventEmitter
     protected _zIndex: number;
     protected _enabledFilters: Filter[];
     protected _boundsID: number;
-    protected _lastBoundsID: number;
     protected _boundsRect: Rectangle;
     protected _localBoundsRect: Rectangle;
     protected _destroyed: boolean;
