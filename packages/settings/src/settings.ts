@@ -16,7 +16,7 @@ export interface RenderOptions {
     legacy: boolean;
 }
 
-export interface PixiSettings {
+export interface Settings {
     MIPMAP_TEXTURES: number;
     ANISOTROPIC_LEVEL: number;
     RESOLUTION: number;
@@ -56,7 +56,7 @@ export interface PixiSettings {
  * PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
  * @namespace PIXI.settings
  */
-export const settings: PixiSettings = {
+export const settings: Settings = {
 
     /**
      * If set to true WebGL will attempt make textures mimpaped by default.
