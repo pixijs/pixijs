@@ -2,7 +2,6 @@ import { MaskData, Renderer } from '@pixi/core';
 import { settings } from '@pixi/settings';
 import { removeItems } from '@pixi/utils';
 import { DisplayObject, IDestroyOptions } from './DisplayObject';
-import { Bounds } from './Bounds';
 
 function sortChildren(a: DisplayObject, b: DisplayObject): number
 {
@@ -465,12 +464,12 @@ export class Container extends DisplayObject
             // TODO: filter+mask, need to mask both somehow
             if (child._mask)
             {
-                const maskObject = (child._mask as MaskData).maskObject || (child._mask as Container);
+                const maskObject = ((child._mask as MaskData).maskObject || child._mask) as Container;
 
                 // TODO: maskObject is getting PIXI.DisplayObject and DisplayObject confused.
                 // Once types are sorted we wont need to do this weird conversion
-                (maskObject as DisplayObject|Container).calculateBounds();
-                this._bounds.addBoundsMask(child._bounds, (maskObject._bounds as Bounds));
+                maskObject.calculateBounds();
+                this._bounds.addBoundsMask(child._bounds, maskObject._bounds);
             }
             else if (child.filterArea)
             {
