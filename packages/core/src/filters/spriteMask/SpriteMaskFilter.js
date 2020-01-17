@@ -45,9 +45,9 @@ export class SpriteMaskFilter extends Filter
      * @param {PIXI.systems.FilterSystem} filterManager - The renderer to retrieve the filter from
      * @param {PIXI.RenderTexture} input - The input render target.
      * @param {PIXI.RenderTexture} output - The target to output to.
-     * @param {boolean} clear - Should the output be cleared before rendering to it.
+     * @param {PIXI.CLEAR_MODES} clearMode - Should the output be cleared before rendering to it.
      */
-    apply(filterManager, input, output, clear)
+    apply(filterManager, input, output, clearMode)
     {
         const maskSprite = this.maskSprite;
         const tex = this.maskSprite.texture;
@@ -72,6 +72,6 @@ export class SpriteMaskFilter extends Filter
         this.uniforms.alpha = maskSprite.worldAlpha;
         this.uniforms.maskClamp = tex.transform.uClampFrame;
 
-        filterManager.applyFilter(this, input, output, clear);
+        filterManager.applyFilter(this, input, output, clearMode);
     }
 }

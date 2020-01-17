@@ -25,6 +25,7 @@
     "dist"
   ],
   "dependencies": {
+    "@pixi/constants": "^5.2.0",
     "@pixi/core": "^5.2.0",
     "@pixi/settings": "^5.2.0"
   }

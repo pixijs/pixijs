@@ -136,6 +136,11 @@ export class Renderer extends AbstractRenderer
             projectionMatrix: new Matrix(),
         }, true);
 
+        // TODO: typescript doesn't like the dynamic addition of these systems so adding them here for now
+        this.mask = null;
+        this.batch = null;
+        this.filter = null;
+
         /**
          * Mask system instance
          * @member {PIXI.systems.MaskSystem} mask
@@ -454,9 +459,9 @@ export class Renderer extends AbstractRenderer
      * @type {object}
      * @readonly
      * @property {PIXI.accessibility.AccessibilityManager} accessibility Support tabbing interactive elements.
-     * @property {PIXI.extract.Extract} extract Extract image data from renderer.
+     * @property {PIXI.Extract} extract Extract image data from renderer.
      * @property {PIXI.interaction.InteractionManager} interaction Handles mouse, touch and pointer events.
-     * @property {PIXI.prepare.Prepare} prepare Pre-render display objects.
+     * @property {PIXI.Prepare} prepare Pre-render display objects.
      */
 
     /**

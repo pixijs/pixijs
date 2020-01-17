@@ -20,7 +20,7 @@ export const GRAPHICS_CURVES = {
     maxSegments: 2048,
     _segmentsCount(length, defaultSegments = 20)
     {
-        if (!this.adaptive)
+        if (!this.adaptive || !length || Number.isNaN(length))
         {
             return defaultSegments;
         }

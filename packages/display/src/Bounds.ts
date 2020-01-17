@@ -1,4 +1,4 @@
-import { Rectangle } from '@pixi/math';
+import { Rectangle, IPoint, Transform, Matrix } from '@pixi/math';
 
 /**
  * 'Builder' pattern for bounds rectangles.
@@ -11,6 +11,13 @@ import { Rectangle } from '@pixi/math';
  */
 export class Bounds
 {
+    public minX: number;
+    public minY: number;
+    public maxX: number;
+    public maxY: number;
+    public rect: Rectangle;
+    public updateID: number;
+
     constructor()
     {
         /**
@@ -38,6 +45,15 @@ export class Bounds
         this.maxY = -Infinity;
 
         this.rect = null;
+
+        /**
+         * It is updated to _boundsID of corresponding object to keep bounds in sync with content.
+         * Updated from outside, thus public modifier.
+         *
+         * @member {number}
+         * @public
+         */
+        this.updateID = -1;
     }
 
     /**
@@ -45,7 +61,7 @@ export class Bounds
      *
      * @return {boolean} True if empty.
      */
-    isEmpty()
+    isEmpty(): boolean
     {
         return this.minX > this.maxX || this.minY > this.maxY;
     }
@@ -54,10 +70,8 @@ export class Bounds
      * Clears the bounds and resets.
      *
      */
-    clear()
+    clear(): void
     {
-        this.updateID++;
-
         this.minX = Infinity;
         this.minY = Infinity;
         this.maxX = -Infinity;
@@ -71,7 +85,7 @@ export class Bounds
      * @param {PIXI.Rectangle} rect - temporary object will be used if AABB is not empty
      * @returns {PIXI.Rectangle} A rectangle of the bounds
      */
-    getRectangle(rect)
+    getRectangle(rect: Rectangle): Rectangle
     {
         if (this.minX > this.maxX || this.minY > this.maxY)
         {
@@ -91,9 +105,9 @@ export class Bounds
     /**
      * This function should be inlined when its possible.
      *
-     * @param {PIXI.Point} point - The point to add.
+     * @param {PIXI.IPoint} point - The point to add.
      */
-    addPoint(point)
+    addPoint(point: IPoint): void
     {
         this.minX = Math.min(this.minX, point.x);
         this.maxX = Math.max(this.maxX, point.x);
@@ -106,7 +120,7 @@ export class Bounds
      *
      * @param {Float32Array} vertices - The verts to add.
      */
-    addQuad(vertices)
+    addQuad(vertices: Float32Array): void
     {
         let minX = this.minX;
         let minY = this.minY;
@@ -157,7 +171,7 @@ export class Bounds
      * @param {number} x1 - right X of frame
      * @param {number} y1 - bottom Y of frame
      */
-    addFrame(transform, x0, y0, x1, y1)
+    addFrame(transform: Transform, x0: number, y0: number, x1: number, y1: number): void
     {
         this.addFrameMatrix(transform.worldTransform, x0, y0, x1, y1);
     }
@@ -171,7 +185,7 @@ export class Bounds
      * @param {number} x1 - right X of frame
      * @param {number} y1 - bottom Y of frame
      */
-    addFrameMatrix(matrix, x0, y0, x1, y1)
+    addFrameMatrix(matrix: Matrix, x0: number, y0: number, x1: number, y1: number): void
     {
         const a = matrix.a;
         const b = matrix.b;
@@ -227,7 +241,7 @@ export class Bounds
      * @param {number} beginOffset - begin offset
      * @param {number} endOffset - end offset, excluded
      */
-    addVertexData(vertexData, beginOffset, endOffset)
+    addVertexData(vertexData: Float32Array, beginOffset: number, endOffset: number): void
     {
         let minX = this.minX;
         let minY = this.minY;
@@ -259,22 +273,23 @@ export class Bounds
      * @param {number} beginOffset - begin offset
      * @param {number} endOffset - end offset, excluded
      */
-    addVertices(transform, vertices, beginOffset, endOffset)
+    addVertices(transform: Transform, vertices: Float32Array, beginOffset: number, endOffset: number): void
     {
         this.addVerticesMatrix(transform.worldTransform, vertices, beginOffset, endOffset);
     }
 
     /**
-     * Add an array of mesh vertices
+     * Add an array of mesh vertices.
      *
      * @param {PIXI.Matrix} matrix - mesh matrix
      * @param {Float32Array} vertices - mesh coordinates in array
      * @param {number} beginOffset - begin offset
      * @param {number} endOffset - end offset, excluded
-     * @param {number} [padX] - x padding
-     * @param {number} [padY] - y padding
+     * @param {number} [padX=0] - x padding
+     * @param {number} [padY=0] - y padding
      */
-    addVerticesMatrix(matrix, vertices, beginOffset, endOffset, padX, padY)
+    addVerticesMatrix(matrix: Matrix, vertices: Float32Array, beginOffset: number,
+        endOffset: number, padX = 0, padY = padX): void
     {
         const a = matrix.a;
         const b = matrix.b;
@@ -282,9 +297,6 @@ export class Bounds
         const d = matrix.d;
         const tx = matrix.tx;
         const ty = matrix.ty;
-
-        padX = padX || 0;
-        padY = padY || 0;
 
         let minX = this.minX;
         let minY = this.minY;
@@ -311,11 +323,11 @@ export class Bounds
     }
 
     /**
-     * Adds other Bounds
+     * Adds other Bounds.
      *
-     * @param {PIXI.Bounds} bounds - TODO
+     * @param {PIXI.Bounds} bounds - The Bounds to be added
      */
-    addBounds(bounds)
+    addBounds(bounds: Bounds): void
     {
         const minX = this.minX;
         const minY = this.minY;
@@ -329,12 +341,12 @@ export class Bounds
     }
 
     /**
-     * Adds other Bounds, masked with Bounds
+     * Adds other Bounds, masked with Bounds.
      *
-     * @param {PIXI.Bounds} bounds - TODO
+     * @param {PIXI.Bounds} bounds - The Bounds to be added.
      * @param {PIXI.Bounds} mask - TODO
      */
-    addBoundsMask(bounds, mask)
+    addBoundsMask(bounds: Bounds, mask: Bounds): void
     {
         const _minX = bounds.minX > mask.minX ? bounds.minX : mask.minX;
         const _minY = bounds.minY > mask.minY ? bounds.minY : mask.minY;
@@ -356,23 +368,23 @@ export class Bounds
     }
 
     /**
-     * Adds other Bounds, multiplied by matrix. Bounds shouldn't be empty
+     * Adds other Bounds, multiplied by matrix. Bounds shouldn't be empty.
      *
      * @param {PIXI.Bounds} bounds other bounds
      * @param {PIXI.Matrix} matrix multiplicator
      */
-    addBoundsMatrix(bounds, matrix)
+    addBoundsMatrix(bounds: Bounds, matrix: Matrix): void
     {
         this.addFrameMatrix(matrix, bounds.minX, bounds.minY, bounds.maxX, bounds.maxY);
     }
 
     /**
-     * Adds other Bounds, masked with Rectangle
+     * Adds other Bounds, masked with Rectangle.
      *
      * @param {PIXI.Bounds} bounds - TODO
      * @param {PIXI.Rectangle} area - TODO
      */
-    addBoundsArea(bounds, area)
+    addBoundsArea(bounds: Bounds, area: Rectangle): void
     {
         const _minX = bounds.minX > area.x ? bounds.minX : area.x;
         const _minY = bounds.minY > area.y ? bounds.minY : area.y;
@@ -400,11 +412,8 @@ export class Bounds
      * @param {number} [paddingX=0] - The horizontal padding amount.
      * @param {number} [paddingY=0] - The vertical padding amount.
      */
-    pad(paddingX, paddingY)
+    pad(paddingX = 0, paddingY = paddingX): void
     {
-        paddingX = paddingX || 0;
-        paddingY = paddingY || ((paddingY !== 0) ? paddingX : 0);
-
         if (!this.isEmpty())
         {
             this.minX -= paddingX;
@@ -424,7 +433,7 @@ export class Bounds
      * @param {number} padX - padding X
      * @param {number} padY - padding Y
      */
-    addFramePad(x0, y0, x1, y1, padX, padY)
+    addFramePad(x0: number, y0: number, x1: number, y1: number, padX: number, padY: number): void
     {
         x0 -= padX;
         y0 -= padY;
