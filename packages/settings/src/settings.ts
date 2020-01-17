@@ -2,7 +2,7 @@ import { isMobile } from './utils/isMobile';
 import { maxRecommendedTextures } from './utils/maxRecommendedTextures';
 import { canUploadSameBuffer } from './utils/canUploadSameBuffer';
 
-export interface RenderOptions {
+export interface IRenderOptions {
     view: HTMLCanvasElement;
     antialias: boolean;
     forceFXAA: boolean;
@@ -16,14 +16,14 @@ export interface RenderOptions {
     legacy: boolean;
 }
 
-export interface Settings {
+export interface ISettings {
     MIPMAP_TEXTURES: number;
     ANISOTROPIC_LEVEL: number;
     RESOLUTION: number;
     FILTER_RESOLUTION: number;
     SPRITE_MAX_TEXTURES: number;
     SPRITE_BATCH_SIZE: number;
-    RENDER_OPTIONS: RenderOptions;
+    RENDER_OPTIONS: IRenderOptions;
     GC_MODE: number;
     GC_MAX_IDLE: number;
     GC_MAX_CHECK_COUNT: number;
@@ -56,7 +56,7 @@ export interface Settings {
  * PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
  * @namespace PIXI.settings
  */
-export const settings: Settings = {
+export const settings: ISettings = {
 
     /**
      * If set to true WebGL will attempt make textures mimpaped by default.
