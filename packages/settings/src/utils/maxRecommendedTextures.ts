@@ -13,7 +13,7 @@ import { isMobile } from './isMobile';
  * @param {number} max
  * @returns {number}
  */
-export function maxRecommendedTextures(max)
+export function maxRecommendedTextures(max: number): number
 {
     let allowMax = true;
 

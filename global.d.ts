@@ -1,5 +1,3 @@
-declare module '@pixi/settings';
-
 declare type InteractionTrackingData = any;
 
 declare type Cursor = 'auto'
@@ -27,11 +25,11 @@ declare type Cursor = 'auto'
     | 'se-resize'
     | 'sw-resize'
     | 'w-resize'
-    | 'ew-resize'
     | 'ns-resize'
+    | 'ew-resize'
     | 'nesw-resize'
-    | 'nwse-resize'
     | 'col-resize'
+    | 'nwse-resize'
     | 'row-resize'
     | 'all-scroll'
     | 'zoom-in'
