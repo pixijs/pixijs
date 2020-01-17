@@ -51,7 +51,7 @@ export class BasePrepare
         /**
          * The only real difference between CanvasPrepare and Prepare is what they pass
          * to upload hooks. That different parameter is stored here.
-         * @type {PIXI.CanvasPrepare|PIXI.Renderer}
+         * @type {object}
          * @protected
          */
         this.uploadHookHelper = null;
