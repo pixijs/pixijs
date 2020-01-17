@@ -24,6 +24,7 @@ export class Transform
     public scale: ObservablePoint;
     public pivot: ObservablePoint;
     public skew: ObservablePoint;
+    public _parentID: number;
 
     protected _rotation: number;
     protected _cx: number;
@@ -33,7 +34,6 @@ export class Transform
     protected _localID: number;
     protected _currentLocalID: number;
     protected _worldID: number;
-    protected _parentID: number;
 
     constructor()
     {
