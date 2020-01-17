@@ -466,8 +466,6 @@ export class Container extends DisplayObject
             {
                 const maskObject = ((child._mask as MaskData).maskObject || child._mask) as Container;
 
-                // TODO: maskObject is getting PIXI.DisplayObject and DisplayObject confused.
-                // Once types are sorted we wont need to do this weird conversion
                 maskObject.calculateBounds();
                 this._bounds.addBoundsMask(child._bounds, maskObject._bounds);
             }
