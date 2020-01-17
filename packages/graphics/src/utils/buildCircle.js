@@ -49,7 +49,7 @@ export const buildCircle = {
 
         const seg = (Math.PI * 2) / totalSegs;
 
-        for (let i = 0; i < totalSegs - 1; i++)
+        for (let i = 0; i < totalSegs - 0.5; i++)
         {
             points.push(
                 x + (Math.sin(-seg * i) * width),
