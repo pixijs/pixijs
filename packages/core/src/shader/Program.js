@@ -29,7 +29,7 @@ export class Program
      * @param {string} [fragmentSrc] - The source of the fragment shader.
      * @param {string} [name] - Name for shader
      */
-    constructor(vertexSrc, fragmentSrc, name = 'pixi-shader')
+    constructor(vertexSrc, fragmentSrc, name = `${this.constructor.name}`)
     {
         this.id = UID++;
 
