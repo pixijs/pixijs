@@ -41,9 +41,9 @@
     "lib": "babel src --out-dir lib -s",
     "predocs": "rimraf docs/**",
     "docs": "jsdoc -c scripts/jsdoc.conf.json -R README.md",
-    "publish:patch": "npm version patch && npm publish",
-    "publish:minor": "npm version minor && npm publish",
-    "publish:major": "npm version major && npm publish",
+    "publish:patch": "npm version patch && npm publish --tag legacy",
+    "publish:minor": "npm version minor && npm publish --tag legacy",
+    "publish:major": "npm version major && npm publish --tag legacy",
     "postversion": "npm run clean && npm run build && npm run lib && npm run unit-test",
     "postpublish": "git push && git push --tags"
   },
