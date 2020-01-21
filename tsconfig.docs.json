@@ -18,6 +18,7 @@
         "**/test/**",
         "**/scripts/**",
         "**/types/**",
+        "dist/**",
         "bundles/*/*.d.ts",
         "rollup.config.js",
     ]

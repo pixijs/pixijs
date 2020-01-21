@@ -11,31 +11,31 @@ export class BitmapFontData
     constructor()
     {
         /**
-         * @member {PIXI.BitmapFontData~Info[]}
+         * @member {PIXI.IBitmapFontDataInfo[]}
          * @readOnly
          */
         this.info = [];
 
         /**
-         * @member {PIXI.BitmapFontData~Common[]}
+         * @member {PIXI.IBitmapFontDataCommon[]}
          * @readOnly
          */
         this.common = [];
 
         /**
-         * @member {PIXI.BitmapFontData~Page[]}
+         * @member {PIXI.IBitmapFontDataPage[]}
          * @readOnly
          */
         this.page = [];
 
         /**
-         * @member {PIXI.BitmapFontData~Char[]}
+         * @member {PIXI.IBitmapFontDataChar[]}
          * @readOnly
          */
         this.char = [];
 
         /**
-         * @member {PIXI.BitmapFontData~Kerning[]}
+         * @member {PIXI.IBitmapFontDataKerning[]}
          * @readOnly
          */
         this.kerning = [];
@@ -43,24 +43,28 @@ export class BitmapFontData
 }
 
 /**
- * @interface PIXI.IBitmapFontDataInfo
+ * @memberof PIXI
+ * @typedef {object} IBitmapFontDataInfo
  * @property {string} face
  * @property {number} size
  */
 
 /**
- * @interface PIXI.IBitmapFontDataCommon
+ * @memberof PIXI
+ * @typedef {object} IBitmapFontDataCommon
  * @property {number} lineHeight
  */
 
 /**
- * @interface PIXI.IBitmapFontDataPage
+ * @memberof PIXI
+ * @typedef {object} IBitmapFontDataPage
  * @property {number} id
  * @property {string} file
  */
 
 /**
- * @interface PIXI.IBitmapFontDataChar
+ * @memberof PIXI
+ * @typedef {object} IBitmapFontDataChar
  * @property {string} id
  * @property {number} page
  * @property {number} x
@@ -73,7 +77,8 @@ export class BitmapFontData
  */
 
 /**
- * @interface PIXI.IBitmapFontDataKerning
+ * @memberof PIXI
+ * @typedef {object} IBitmapFontDataKerning
  * @property {number} first
  * @property {number} second
  * @property {number} amount
