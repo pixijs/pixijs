@@ -1,10 +1,8 @@
-import { Texture } from '@pixi/core';
 import { Container } from '@pixi/display';
 import { ObservablePoint, Point } from '@pixi/math';
 import { settings } from '@pixi/settings';
 import { Sprite } from '@pixi/sprite';
-import { removeItems } from '@pixi/utils';
-import { autoDetectFormat } from './formats';
+import { removeItems, deprecation } from '@pixi/utils';
 import { BitmapFont } from './BitmapFont';
 
 /**
@@ -165,7 +163,7 @@ export class BitmapText extends Container
      */
     updateText()
     {
-        const data = BitmapText.fonts[this._font.name];
+        const data = BitmapFont.available[this._font.name];
         const scale = this._font.size / data.size;
         const pos = new Point();
         const chars = [];
@@ -450,7 +448,7 @@ export class BitmapText extends Container
             value = value.split(' ');
 
             this._font.name = value.length === 1 ? value[0] : value.slice(1).join(' ');
-            this._font.size = value.length >= 2 ? parseInt(value[0], 10) : BitmapText.fonts[this._font.name].size;
+            this._font.size = value.length >= 2 ? parseInt(value[0], 10) : BitmapFont.available[this._font.name].size;
         }
         else
         {
@@ -569,39 +567,30 @@ export class BitmapText extends Container
     /**
      * Register a bitmap font with data and a texture.
      *
+     * @deprecated since 5.3.0
+     * @see PIXI.BitmapFont.install
      * @static
-     * @param {XMLDocument|string} data - The characters map that could be provided as xml or raw string.
-     * @param {Object.<string, PIXI.Texture>|PIXI.Texture|PIXI.Texture[]} textures - List of textures for each page.
-     * @return {PIXI.BitmapFont} Result font object with font, size, lineHeight and char fields.
      */
     static registerFont(data, textures)
     {
-        const format = autoDetectFormat(data);
+        deprecation('5.3.0', 'PIXI.BitmapText.registerFont is deprecated, use PIXI.BitmapFont.install');
 
-        if (!format)
-        {
-            throw new Error('Unrecognized data format for bitmap font.');
-        }
-
-        // Single texture, convert to list
-        if (textures instanceof Texture)
-        {
-            textures = [textures];
-        }
-
-        return BitmapFont.register(format.parse(data), textures);
+        return BitmapFont.install(data, textures);
     }
 
     /**
      * Get the list of installed fonts.
      *
      * @see PIXI.BitmapFont.available
+     * @deprecated since 5.3.0
      * @static
      * @readonly
      * @member {Object.<string, PIXI.BitmapFont>}
      */
     static get fonts()
     {
+        deprecation('5.3.0', 'PIXI.BitmapText.fonts is deprecated, use PIXI.BitmapFont.available');
+
         return BitmapFont.available;
     }
 }

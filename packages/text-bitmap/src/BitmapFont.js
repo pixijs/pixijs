@@ -2,16 +2,21 @@ import { settings } from '@pixi/settings';
 import { getResolutionOfUrl } from '@pixi/utils';
 import { Rectangle } from '@pixi/math';
 import { Texture } from '@pixi/core';
+import { autoDetectFormat } from './formats';
+import { BitmapFontData } from './BitmapFontData';
 
 // Internal map of available fonts, by name
 const available = {};
 
 /**
  * BitmapFont represents a typeface available for use
- * with the BitmapText class.
+ * with the BitmapText class. Use the `install` method
+ * for adding a font to be used.
  *
  * @class
  * @memberof PIXI
+ * @param {PIXI.BitmapFontData} data
+ * @param {PIXI.Texture[]|Object.<string, PIXI.Texture>} textures
  */
 export class BitmapFont
 {
@@ -61,7 +66,8 @@ export class BitmapFont
         {
             const { id, file } = data.page[i];
 
-            pagesTextures[id] = textures instanceof Array ? textures[i] : textures[file];
+            pagesTextures[id] = textures instanceof Array
+                ? textures[i] : textures[file];
         }
 
         // parse letters
@@ -115,20 +121,59 @@ export class BitmapFont
     }
 
     /**
+     * Remove references to created glyph textures.
+     */
+    destroy()
+    {
+        for (const id in this.chars)
+        {
+            this.chars[id].texture.destroy();
+        }
+        this.chars = null;
+    }
+
+    /**
      * Register a new bitmap font.
      *
      * @static
-     * @param {PIXI.BitmapFontData} data
-     * @param {Object.<string, PIXI.Texture>|PIXI.Texture[]} textures
-     * @return {PIXI.BitmapFont} New font created
+     * @param {XMLDocument|string|PIXI.BitmapFontData} data - The
+     *        characters map that could be provided as xml or raw string.
+     * @param {Object.<string, PIXI.Texture>|PIXI.Texture|PIXI.Texture[]}
+     *        textures - List of textures for each page.
+     * @return {PIXI.BitmapFont} Result font object with font, size, lineHeight
+     *         and char fields.
      */
-    static register(data, textures)
+    static install(data, textures)
     {
-        const bitmapFont = new BitmapFont(data, textures);
+        let fontData;
 
-        available[bitmapFont.font] = bitmapFont;
+        if (data instanceof BitmapFontData)
+        {
+            fontData = data;
+        }
+        else
+        {
+            const format = autoDetectFormat(data);
 
-        return bitmapFont;
+            if (!format)
+            {
+                throw new Error('Unrecognized data format for font.');
+            }
+
+            fontData = format.parse(data);
+        }
+
+        // Single texture, convert to list
+        if (textures instanceof Texture)
+        {
+            textures = [textures];
+        }
+
+        const font = new BitmapFont(fontData, textures);
+
+        available[font.font] = font;
+
+        return font;
     }
 
     /**
@@ -137,16 +182,25 @@ export class BitmapFont
      * @static
      * @param {string} name
      */
-    static unregister(name)
+    static uninstall(name)
     {
+        const font = available[name];
+
+        if (!font)
+        {
+            throw new Error(`No font found named '${name}'`);
+        }
+
+        font.destroy();
         delete available[name];
     }
 
     /**
      * Collection of available fonts.
-     * @readonly
+     *
+     * @readOnly
      * @static
-     * @member {Object<string, BitmapFont>} available
+     * @member {Object.<string, PIXI.BitmapFont>}
      */
     static get available()
     {
