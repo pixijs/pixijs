@@ -1,14 +1,45 @@
 import { DATA_URI } from '../const';
 
+export interface DecomposedDataUri {
+    mediaType: string;
+    subType: string;
+    charset: string;
+    encoding: string;
+    data: string;
+}
+
 /**
- * Typedef for decomposeDataUri return object.
- *
  * @memberof PIXI.utils
- * @typedef {object} DecomposedDataUri
- * @property {string} mediaType Media type, eg. `image`
- * @property {string} subType Sub type, eg. `png`
- * @property {string} encoding Data encoding, eg. `base64`
- * @property {string} data The actual data
+ * @interface DecomposedDataUri
+ */
+
+/**
+ * type, eg. `image`
+ * @memberof PIXI.utils.DecomposedDataUri#
+ * @member {string} mediaType
+ */
+
+/**
+ * Sub type, eg. `png`
+ * @memberof PIXI.utils.DecomposedDataUri#
+ * @member {string} subType
+ */
+
+/**
+ * @memberof PIXI.utils.DecomposedDataUri#
+ * @member {string} charset
+ */
+
+/**
+ * Data encoding, eg. `base64`
+ * @memberof PIXI.utils.DecomposedDataUri#
+ * @member {string} encoding
+ */
+
+/**
+ * The actual data
+ * @memberof PIXI.utils.DecomposedDataUri#
+ * @member {string} data
  */
 
 /**
@@ -20,7 +51,7 @@ import { DATA_URI } from '../const';
  * @param {string} dataUri - the data URI to check
  * @return {PIXI.utils.DecomposedDataUri|undefined} The decomposed data uri or undefined
  */
-export function decomposeDataUri(dataUri)
+export function decomposeDataUri(dataUri: string): DecomposedDataUri
 {
     const dataUriMatch = DATA_URI.exec(dataUri);
 

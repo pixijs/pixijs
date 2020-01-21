@@ -24,8 +24,6 @@ describe('PIXI', function ()
         expect(PIXI).to.not.be.undefined;
         expect(PIXI.interaction).to.not.be.undefined;
         expect(PIXI.settings).to.not.be.undefined;
-        expect(PIXI.extract).to.not.be.undefined;
-        expect(PIXI.prepare).to.not.be.undefined;
         expect(PIXI.utils).to.not.be.undefined;
     });
 

@@ -4,6 +4,7 @@ require('./Renderer');
 require('./MaskSystem');
 require('./TextureSystem');
 require('./ShaderSystem');
+require('./FilterSystem');
 require('./BatchRenderer');
 require('./Geometry');
 require('./CanvasResource');

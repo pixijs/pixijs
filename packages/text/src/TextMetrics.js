@@ -250,7 +250,7 @@ export class TextMetrics
                 if (TextMetrics.canBreakWords(token, style.breakWords))
                 {
                     // break word into characters
-                    const characters = token.split('');
+                    const characters = TextMetrics.wordWrapSplit(token);
 
                     // loop the characters
                     for (let j = 0; j < characters.length; j++)
@@ -529,12 +529,12 @@ export class TextMetrics
     }
 
     /**
-     * This method exists to be easily overridden
+     * Overridable helper method used internally by TextMetrics, exposed to allow customizing the class's behavior.
+     *
      * It allows one to customise which words should break
      * Examples are if the token is CJK or numbers.
      * It must return a boolean.
      *
-     * @private
      * @param  {string}  token       The token
      * @param  {boolean}  breakWords  The style attr break words
      * @return {boolean} whether to break word or not
@@ -545,13 +545,13 @@ export class TextMetrics
     }
 
     /**
-     * This method exists to be easily overridden
+     * Overridable helper method used internally by TextMetrics, exposed to allow customizing the class's behavior.
+     *
      * It allows one to determine whether a pair of characters
      * should be broken by newlines
      * For example certain characters in CJK langs or numbers.
      * It must return a boolean.
      *
-     * @private
      * @param  {string}  char      The character
      * @param  {string}  nextChar  The next character
      * @param  {string}  token     The token/word the characters are from
@@ -562,6 +562,25 @@ export class TextMetrics
     static canBreakChars(char, nextChar, token, index, breakWords) // eslint-disable-line no-unused-vars
     {
         return true;
+    }
+
+    /**
+     * Overridable helper method used internally by TextMetrics, exposed to allow customizing the class's behavior.
+     *
+     * It is called when a token (usually a word) has to be split into separate pieces
+     * in order to determine the point to break a word.
+     * It must return an array of characters.
+     *
+     * @example
+     * // Correctly splits emojis, eg "🤪🤪" will result in two element array, each with one emoji.
+     * TextMetrics.wordWrapSplit = (token) => [...token];
+     *
+     * @param  {string}  token The token to split
+     * @return {string[]} The characters of the token
+     */
+    static wordWrapSplit(token)
+    {
+        return token.split('');
     }
 
     /**
@@ -705,8 +724,14 @@ const canvas = (() =>
     {
         // OffscreenCanvas2D measureText can be up to 40% faster.
         const c = new OffscreenCanvas(0, 0);
+        const context = c.getContext('2d');
 
-        return c.getContext('2d') ? c : document.createElement('canvas');
+        if (context && context.measureText)
+        {
+            return c;
+        }
+
+        return document.createElement('canvas');
     }
     catch (ex)
     {

@@ -85,10 +85,13 @@ export class Point implements IPoint
      *
      * @param {number} [x=0] - position of the point on the x axis
      * @param {number} [y=x] - position of the point on the y axis
+     * @returns {this} Returns itself.
      */
-    set(x = 0, y = x): void
+    set(x = 0, y = x): this
     {
         this.x = x;
         this.y = y;
+
+        return this;
     }
 }

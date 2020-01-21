@@ -4,7 +4,6 @@
   "main": "lib/prepare.js",
   "module": "lib/prepare.es.js",
   "bundle": "dist/prepare.js",
-  "namespace": "PIXI.prepare",
   "description": "Plugin to allow uploading textures to the GPU",
   "author": "Mat Groves",
   "contributors": [

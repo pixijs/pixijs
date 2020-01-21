@@ -8,9 +8,9 @@
  * @param {number} v input value
  * @return {number}
  */
-export function nextPow2(v)
+export function nextPow2(v: number): number
 {
-    v += v === 0;
+    v += v === 0 ? 1 : 0;
     --v;
     v |= v >>> 1;
     v |= v >>> 2;
@@ -29,7 +29,7 @@ export function nextPow2(v)
  * @param {number} v input value
  * @return {boolean} `true` if value is power of two
  */
-export function isPow2(v)
+export function isPow2(v: number): boolean
 {
     return !(v & (v - 1)) && (!!v);
 }
@@ -42,18 +42,18 @@ export function isPow2(v)
  * @param {number} v input value
  * @return {number} logarithm base 2
  */
-export function log2(v)
+export function log2(v: number): number
 {
-    let r = (v > 0xFFFF) << 4;
+    let r = (v > 0xFFFF ? 1 : 0) << 4;
 
     v >>>= r;
 
-    let shift = (v > 0xFF) << 3;
+    let shift = (v > 0xFF ? 1 : 0) << 3;
 
     v >>>= shift; r |= shift;
-    shift = (v > 0xF) << 2;
+    shift = (v > 0xF ? 1 : 0) << 2;
     v >>>= shift; r |= shift;
-    shift = (v > 0x3) << 1;
+    shift = (v > 0x3 ? 1 : 0) << 1;
     v >>>= shift; r |= shift;
 
     return r | (v >> 1);

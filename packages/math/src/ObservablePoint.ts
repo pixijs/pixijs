@@ -53,8 +53,9 @@ export class ObservablePoint<T = any> implements IPoint
      *
      * @param {number} [x=0] - position of the point on the x axis
      * @param {number} [y=x] - position of the point on the y axis
+     * @returns {this} Returns itself.
      */
-    set(x = 0, y = x): void
+    set(x = 0, y = x): this
     {
         if (this._x !== x || this._y !== y)
         {
@@ -62,6 +63,8 @@ export class ObservablePoint<T = any> implements IPoint
             this._y = y;
             this.cb.call(this.scope);
         }
+
+        return this;
     }
 
     /**

@@ -12,8 +12,8 @@ const CANVAS_START_SIZE = 16;
  * An instance of this class is automatically created by default, and can be found at `renderer.plugins.prepare`
  *
  * @class
- * @extends PIXI.prepare.BasePrepare
- * @memberof PIXI.prepare
+ * @extends PIXI.BasePrepare
+ * @memberof PIXI
  */
 export class CanvasPrepare extends BasePrepare
 {

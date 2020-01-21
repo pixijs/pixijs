@@ -1,4 +1,4 @@
-import isMobile from 'ismobilejs';
+import { isMobile } from './isMobile';
 
 /**
  * The maximum recommended texture units to use.
@@ -13,7 +13,7 @@ import isMobile from 'ismobilejs';
  * @param {number} max
  * @returns {number}
  */
-export function maxRecommendedTextures(max)
+export function maxRecommendedTextures(max: number): number
 {
     let allowMax = true;
 
