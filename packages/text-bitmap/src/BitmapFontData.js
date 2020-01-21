@@ -1,3 +1,5 @@
+/* eslint-disable max-len */
+
 /**
  * Normalized parsed data from .fnt files.
  *
@@ -27,17 +29,7 @@ export class BitmapFontData
         this.page = [];
 
         /**
-         * @member {Array.<{
-         *   id:string,
-         *   page:number,
-         *   x:number,
-         *   y:number,
-         *   width:number,
-         *   height:number,
-         *   xoffset:number,
-         *   yoffset:number,
-         *   xadvance:number
-         * }>}
+         * @member {Array.<{ id:string, page:number, x:number, y:number, width:number, height:number, xoffset:number, yoffset:number, xadvance:number }>}
          * @readOnly
          */
         this.char = [];

@@ -1,14 +1,17 @@
 import { BitmapFontData } from '../BitmapFontData';
 
 /**
- * BitmapFont format that's Text-based
+ * BitmapFont format that's Text-based.
+ *
  * @class
  * @private
  */
 export class TextFormat
 {
     /**
-     * Check if resource refers to txt font data
+     * Check if resource refers to txt font data.
+     *
+     * @static
      * @param {any} data
      * @return {boolean} True if resource could be treated as font data, false otherwise.
      */
@@ -18,7 +21,9 @@ export class TextFormat
     }
 
     /**
-     * Convert text font data to a javascript object
+     * Convert text font data to a javascript object.
+     *
+     * @static
      * @param {string} txt Raw string data to be converted
      * @return {PIXI.BitmapFontData} Parsed font data
      */

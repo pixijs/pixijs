@@ -1,14 +1,17 @@
 import { BitmapFontData } from '../BitmapFontData';
 
 /**
- * BitmapFont format that's XML-based
+ * BitmapFont format that's XML-based.
+ *
  * @class
  * @private
  */
 export class XMLFormat
 {
     /**
-     * Check if resource refers to xml font data
+     * Check if resource refers to xml font data.
+     *
+     * @static
      * @param {any} data
      * @return {boolean} True if resource could be treated as font data, false otherwise.
      */
@@ -21,6 +24,8 @@ export class XMLFormat
 
     /**
      * Convert the XML into BitmapFontData that we can use.
+     *
+     * @static
      * @param {XMLDocument} xml
      * @return {BitmapFontData} Data to use for BitmapFont
      */
