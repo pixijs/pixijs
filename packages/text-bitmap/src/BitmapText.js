@@ -1,9 +1,11 @@
 import { Texture } from '@pixi/core';
 import { Container } from '@pixi/display';
-import { ObservablePoint, Point, Rectangle } from '@pixi/math';
+import { ObservablePoint, Point } from '@pixi/math';
 import { settings } from '@pixi/settings';
 import { Sprite } from '@pixi/sprite';
-import { removeItems, getResolutionOfUrl } from '@pixi/utils';
+import { removeItems } from '@pixi/utils';
+import { autoDetectFormat } from './formats';
+import { BitmapFont } from './BitmapFont';
 
 /**
  * A BitmapText object will create a line or multiple lines of text using bitmap font.
@@ -570,43 +572,16 @@ export class BitmapText extends Container
      * @static
      * @param {XMLDocument|string} data - The characters map that could be provided as xml or raw string.
      * @param {Object.<string, PIXI.Texture>|PIXI.Texture|PIXI.Texture[]} textures - List of textures for each page.
-     * @return {Object} Result font object with font, size, lineHeight and char fields.
+     * @return {PIXI.BitmapFont} Result font object with font, size, lineHeight and char fields.
      */
     static registerFont(data, textures)
     {
-        if (data instanceof XMLDocument)
+        const format = autoDetectFormat(data);
+
+        if (!format)
         {
-            return BitmapText.registerFontXml(data, textures);
+            throw new Error('Unrecognized data format for bitmap font.');
         }
-        else if (typeof data === 'object')
-        {
-            return BitmapText.registerFontObj(data, textures);
-        }
-
-        throw new Error('Unrecognized data format for bitmap font.');
-    }
-
-    /**
-     * Register a bitmap font using font data object and a texture.
-     *
-     * @static
-     * @param {Object} obj - The font data object.
-     * @param {Object.<string, PIXI.Texture>|PIXI.Texture|PIXI.Texture[]} textures - List of textures for each page.
-     * @return {Object} Result font object with font, size, lineHeight and char fields.
-     */
-    static registerFontObj(obj, textures)
-    {
-        const data = {};
-        const info = obj.info[0];
-        const common = obj.common[0];
-        const pages = obj.page;
-        const res = getResolutionOfUrl(pages[0].file, settings.RESOLUTION);
-        const pagesTextures = {};
-
-        data.font = info.face;
-        data.size = parseInt(info.size, 10);
-        data.lineHeight = parseInt(common.lineHeight, 10) / res;
-        data.chars = {};
 
         // Single texture, convert to list
         if (textures instanceof Texture)
@@ -614,150 +589,19 @@ export class BitmapText extends Container
             textures = [textures];
         }
 
-        // Convert the input Texture, Textures or object
-        // into a page Texture lookup by "id"
-        for (let i = 0; i < pages.length; i++)
-        {
-            const id = pages[i].id;
-            const file = pages[i].file;
-
-            pagesTextures[id] = textures instanceof Array ? textures[i] : textures[file];
-        }
-
-        // parse letters
-        const letters = obj.char;
-
-        for (let i = 0; i < letters.length; i++)
-        {
-            const letter = letters[i];
-            const charCode = parseInt(letter.id, 10);
-            const page = letter.page || 0;
-            const textureRect = new Rectangle(
-                (parseInt(letter.x, 10) / res) + (pagesTextures[page].frame.x / res),
-                (parseInt(letter.y, 10) / res) + (pagesTextures[page].frame.y / res),
-                parseInt(letter.width, 10) / res,
-                parseInt(letter.height, 10) / res
-            );
-
-            data.chars[charCode] = {
-                xOffset: parseInt(letter.xoffset, 10) / res,
-                yOffset: parseInt(letter.yoffset, 10) / res,
-                xAdvance: parseInt(letter.xadvance, 10) / res,
-                kerning: {},
-                texture: new Texture(pagesTextures[page].baseTexture, textureRect),
-                page,
-            };
-        }
-
-        // parse kernings
-        const kernings = obj.kerning || [];
-
-        for (let i = 0; i < kernings.length; i++)
-        {
-            const kerning = kernings[i];
-            const first = parseInt(kerning.first, 10) / res;
-            const second = parseInt(kerning.second, 10) / res;
-            const amount = parseInt(kerning.amount, 10) / res;
-
-            if (data.chars[second])
-            {
-                data.chars[second].kerning[first] = amount;
-            }
-        }
-
-        // I'm leaving this as a temporary fix so we can test the bitmap fonts in v3
-        // but it's very likely to change
-        BitmapText.fonts[data.font] = data;
-
-        return data;
+        return BitmapFont.register(format.parse(data), textures);
     }
 
     /**
-     * Register a bitmap font with xml data and a texture.
+     * Get the list of installed fonts.
      *
+     * @see PIXI.BitmapFont.available
      * @static
-     * @param {XMLDocument} xml - The XML document data.
-     * @param {Object.<string, PIXI.Texture>|PIXI.Texture|PIXI.Texture[]} textures - List of textures for each page.
-     *  If providing an object, the key is the `<page>` element's `file` attribute in the FNT file.
-     * @return {Object} Result font object with font, size, lineHeight and char fields.
+     * @readonly
+     * @member {Object.<string, PIXI.BitmapFont>}
      */
-    static registerFontXml(xml, textures)
+    static get fonts()
     {
-        const data = {};
-        const info = xml.getElementsByTagName('info')[0];
-        const common = xml.getElementsByTagName('common')[0];
-        const pages = xml.getElementsByTagName('page');
-        const res = getResolutionOfUrl(pages[0].getAttribute('file'), settings.RESOLUTION);
-        const pagesTextures = {};
-
-        data.font = info.getAttribute('face');
-        data.size = parseInt(info.getAttribute('size'), 10);
-        data.lineHeight = parseInt(common.getAttribute('lineHeight'), 10) / res;
-        data.chars = {};
-
-        // Single texture, convert to list
-        if (textures instanceof Texture)
-        {
-            textures = [textures];
-        }
-
-        // Convert the input Texture, Textures or object
-        // into a page Texture lookup by "id"
-        for (let i = 0; i < pages.length; i++)
-        {
-            const id = pages[i].getAttribute('id');
-            const file = pages[i].getAttribute('file');
-
-            pagesTextures[id] = textures instanceof Array ? textures[i] : textures[file];
-        }
-
-        // parse letters
-        const letters = xml.getElementsByTagName('char');
-
-        for (let i = 0; i < letters.length; i++)
-        {
-            const letter = letters[i];
-            const charCode = parseInt(letter.getAttribute('id'), 10);
-            const page = letter.getAttribute('page') || 0;
-            const textureRect = new Rectangle(
-                (parseInt(letter.getAttribute('x'), 10) / res) + (pagesTextures[page].frame.x / res),
-                (parseInt(letter.getAttribute('y'), 10) / res) + (pagesTextures[page].frame.y / res),
-                parseInt(letter.getAttribute('width'), 10) / res,
-                parseInt(letter.getAttribute('height'), 10) / res
-            );
-
-            data.chars[charCode] = {
-                xOffset: parseInt(letter.getAttribute('xoffset'), 10) / res,
-                yOffset: parseInt(letter.getAttribute('yoffset'), 10) / res,
-                xAdvance: parseInt(letter.getAttribute('xadvance'), 10) / res,
-                kerning: {},
-                texture: new Texture(pagesTextures[page].baseTexture, textureRect),
-                page,
-            };
-        }
-
-        // parse kernings
-        const kernings = xml.getElementsByTagName('kerning');
-
-        for (let i = 0; i < kernings.length; i++)
-        {
-            const kerning = kernings[i];
-            const first = parseInt(kerning.getAttribute('first'), 10) / res;
-            const second = parseInt(kerning.getAttribute('second'), 10) / res;
-            const amount = parseInt(kerning.getAttribute('amount'), 10) / res;
-
-            if (data.chars[second])
-            {
-                data.chars[second].kerning[first] = amount;
-            }
-        }
-
-        // I'm leaving this as a temporary fix so we can test the bitmap fonts in v3
-        // but it's very likely to change
-        BitmapText.fonts[data.font] = data;
-
-        return data;
+        return BitmapFont.available;
     }
 }
-
-BitmapText.fonts = {};

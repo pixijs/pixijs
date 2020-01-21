@@ -198,8 +198,7 @@ describe('PIXI.BitmapFontLoader', function ()
     it('should properly register bitmap font based on txt data', function (done)
     {
         const texture = Texture.from(this.fontTXTImage);
-        const data = BitmapFontLoader.txtToFontData(this.fontTXT);
-        const font = BitmapText.registerFont(data, texture);
+        const font = BitmapText.registerFont(this.fontTXT, texture);
 
         expect(font).to.be.an.object;
         expect(font).to.have.property('chars');
@@ -484,8 +483,8 @@ describe('PIXI.BitmapFontLoader', function ()
             const charA = font.chars['A'.charCodeAt(0)];
             const charC = font.chars['C'.charCodeAt(0)];
 
-            expect(charA.page).to.equal('0');
-            expect(charC.page).to.equal('1');
+            expect(charA.page).to.equal(0);
+            expect(charC.page).to.equal(1);
             expect(charA.texture.baseTexture.resource.url).to.equal(page0);
             expect(charC.texture.baseTexture.resource.url).to.equal(page1);
 
@@ -509,10 +508,5 @@ describe('PIXI.BitmapFontLoader', function ()
 
             done();
         });
-    });
-
-    it('should parse exist', function ()
-    {
-        expect(BitmapFontLoader.parse).to.be.a('function');
     });
 });
