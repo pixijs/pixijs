@@ -43,28 +43,24 @@ export class BitmapFontData
 }
 
 /**
- * @interface Info
- * @memberof PIXI.BitmapFontData~
+ * @interface PIXI.IBitmapFontDataInfo
  * @property {string} face
  * @property {number} size
  */
 
 /**
- * @interface Common
- * @memberof PIXI.BitmapFontData~
+ * @interface PIXI.IBitmapFontDataCommon
  * @property {number} lineHeight
  */
 
 /**
- * @interface Page
- * @memberof PIXI.BitmapFontData~
+ * @interface PIXI.IBitmapFontDataPage
  * @property {number} id
  * @property {string} file
  */
 
 /**
- * @interface Char
- * @memberof PIXI.BitmapFontData~
+ * @interface PIXI.IBitmapFontDataChar
  * @property {string} id
  * @property {number} page
  * @property {number} x
@@ -77,8 +73,7 @@ export class BitmapFontData
  */
 
 /**
- * @interface Kerning
- * @memberof PIXI.BitmapFontData~
+ * @interface PIXI.IBitmapFontDataKerning
  * @property {number} first
  * @property {number} second
  * @property {number} amount

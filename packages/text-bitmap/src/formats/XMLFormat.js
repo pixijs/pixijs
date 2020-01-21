@@ -12,6 +12,7 @@ export class XMLFormat
      * Check if resource refers to xml font data.
      *
      * @static
+     * @private
      * @param {any} data
      * @return {boolean} True if resource could be treated as font data, false otherwise.
      */
@@ -26,6 +27,7 @@ export class XMLFormat
      * Convert the XML into BitmapFontData that we can use.
      *
      * @static
+     * @private
      * @param {XMLDocument} xml
      * @return {BitmapFontData} Data to use for BitmapFont
      */

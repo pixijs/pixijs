@@ -12,6 +12,7 @@ export class TextFormat
      * Check if resource refers to txt font data.
      *
      * @static
+     * @private
      * @param {any} data
      * @return {boolean} True if resource could be treated as font data, false otherwise.
      */
@@ -24,6 +25,7 @@ export class TextFormat
      * Convert text font data to a javascript object.
      *
      * @static
+     * @private
      * @param {string} txt Raw string data to be converted
      * @return {PIXI.BitmapFontData} Parsed font data
      */
