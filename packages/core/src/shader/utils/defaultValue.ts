@@ -1,4 +1,4 @@
-function booleanArray(size: number)
+function booleanArray(size: number): Array<boolean>
 {
     const array = new Array(size);
 

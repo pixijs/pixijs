@@ -1,6 +1,6 @@
 import { System } from '../System';
 import { BaseTexture } from './BaseTexture';
-import { GLTexture } from '@pixi/core';
+import { GLTexture } from './GLTexture';
 import { removeItems } from '@pixi/utils';
 import { MIPMAP_MODES, WRAP_MODES, SCALE_MODES, TYPES } from '@pixi/constants';
 
@@ -72,7 +72,7 @@ export class TextureSystem extends System
     /**
      * Sets up the renderer context and necessary buffers.
      */
-    contextChange()
+    contextChange(): void
     {
         const gl = this.gl = this.renderer.gl;
 
@@ -124,7 +124,7 @@ export class TextureSystem extends System
      * @param {PIXI.Texture|PIXI.BaseTexture} texture_ - Texture to bind
      * @param {number} [location=0] - Location to bind at
      */
-    bind(texture: Texture|BaseTexture, location = 0)
+    bind(texture: Texture|BaseTexture, location = 0): void
     {
         const { gl } = this;
 
@@ -179,7 +179,7 @@ export class TextureSystem extends System
      *
      * Actual `bind(null, i)` calls will be performed at next `unbind()` call
      */
-    reset()
+    reset(): void
     {
         this._unknownBoundTextures = true;
         this.currentLocation = -1;
@@ -194,7 +194,7 @@ export class TextureSystem extends System
      * Unbind a texture
      * @param {PIXI.BaseTexture} texture - Texture to bind
      */
-    unbind(texture?: BaseTexture)
+    unbind(texture?: BaseTexture): void
     {
         const { gl, boundTextures } = this;
 
@@ -234,7 +234,7 @@ export class TextureSystem extends System
      * @private
      * @param {PIXI.BaseTexture} texture - Texture to initialize
      */
-    initTexture(texture: BaseTexture)
+    initTexture(texture: BaseTexture): GLTexture
     {
         const glTexture = new GLTexture(this.gl.createTexture());
 
@@ -249,7 +249,7 @@ export class TextureSystem extends System
         return glTexture;
     }
 
-    initTextureType(texture: BaseTexture, glTexture: GLTexture)
+    initTextureType(texture: BaseTexture, glTexture: GLTexture): void
     {
         glTexture.internalFormat = texture.format;
         glTexture.type = texture.type;
@@ -283,7 +283,7 @@ export class TextureSystem extends System
      * @private
      * @param {PIXI.BaseTexture} texture - Texture to initialize
      */
-    updateTexture(texture: BaseTexture)
+    updateTexture(texture: BaseTexture): void
     {
         const glTexture = texture._glTextures[this.CONTEXT_UID];
 
@@ -340,7 +340,7 @@ export class TextureSystem extends System
      * @param {PIXI.BaseTexture|PIXI.Texture} texture_ - the texture to destroy
      * @param {boolean} [skipRemove=false] - Whether to skip removing the texture from the TextureManager.
      */
-    destroyTexture(texture: BaseTexture|Texture, skipRemove?: boolean)
+    destroyTexture(texture: BaseTexture|Texture, skipRemove?: boolean): void
     {
         const { gl } = this;
 
@@ -373,7 +373,7 @@ export class TextureSystem extends System
      * @private
      * @param {PIXI.BaseTexture} texture - Texture to update
      */
-    updateTextureStyle(texture: BaseTexture)
+    updateTextureStyle(texture: BaseTexture): void
     {
         const glTexture = texture._glTextures[this.CONTEXT_UID];
 
@@ -419,7 +419,7 @@ export class TextureSystem extends System
      * @param {PIXI.BaseTexture} texture - Texture to update
      * @param {PIXI.GLTexture} glTexture
      */
-    setStyle(texture: BaseTexture, glTexture: GLTexture)
+    setStyle(texture: BaseTexture, glTexture: GLTexture): void
     {
         const gl = this.gl;
 

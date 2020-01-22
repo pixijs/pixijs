@@ -50,7 +50,7 @@ export class BaseImageResource extends Resource
      * @param {string} url - URL to check
      * @param {boolean|string} [crossorigin=true] - Cross origin value to use
      */
-    static crossOrigin(element: HTMLImageElement|HTMLVideoElement, url: string, crossorigin: boolean|string)
+    static crossOrigin(element: HTMLImageElement|HTMLVideoElement, url: string, crossorigin: boolean|string): void
     {
         if (crossorigin === undefined && url.indexOf('data:') !== 0)
         {
@@ -102,7 +102,7 @@ export class BaseImageResource extends Resource
      * Checks if source width/height was changed, resize can cause extra baseTexture update.
      * Triggers one update in any case.
      */
-    update()
+    update(): void
     {
         if (this.destroyed)
         {
@@ -123,9 +123,8 @@ export class BaseImageResource extends Resource
      * Destroy this BaseImageResource
      * @override
      * @param {PIXI.BaseTexture} [fromTexture] Optional base texture
-     * @return {boolean} Destroy was successful
      */
-    dispose()
+    dispose(): void
     {
         this.source = null;
     }

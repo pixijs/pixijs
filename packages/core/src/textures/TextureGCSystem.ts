@@ -66,7 +66,7 @@ export class TextureGCSystem extends System
      * Checks to see when the last time a texture was used
      * if the texture has not been used for a specified amount of time it will be removed from the GPU
      */
-    postrender()
+    postrender(): void
     {
         if (!this.renderer.renderingToScreen)
         {
@@ -94,7 +94,7 @@ export class TextureGCSystem extends System
      * Checks to see when the last time a texture was used
      * if the texture has not been used for a specified amount of time it will be removed from the GPU
      */
-    run()
+    run(): void
     {
         const tm = this.renderer.texture;
         const managedTextures =  tm.managedTextures;
@@ -134,7 +134,7 @@ export class TextureGCSystem extends System
      *
      * @param {PIXI.DisplayObject} displayObject - the displayObject to remove the textures from.
      */
-    unload(displayObject: any)
+    unload(displayObject: any): void
     {
         const tm = this.renderer.texture;
 

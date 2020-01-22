@@ -351,7 +351,7 @@ export class BaseTexture extends EventEmitter
      * @readonly
      * @member {number}
      */
-    get realWidth()
+    get realWidth(): number
     {
         return Math.ceil((this.width * this.resolution) - 1e-4);
     }
@@ -362,7 +362,7 @@ export class BaseTexture extends EventEmitter
      * @readonly
      * @member {number}
      */
-    get realHeight()
+    get realHeight(): number
     {
         return Math.ceil((this.height * this.resolution) - 1e-4);
     }
@@ -374,7 +374,7 @@ export class BaseTexture extends EventEmitter
      * @param {PIXI.MIPMAP_MODES} [mipmap] - enable mipmaps
      * @returns {PIXI.BaseTexture} this
      */
-    setStyle(scaleMode?: SCALE_MODES, mipmap?: MIPMAP_MODES)
+    setStyle(scaleMode?: SCALE_MODES, mipmap?: MIPMAP_MODES): this
     {
         let dirty;
 
@@ -406,7 +406,7 @@ export class BaseTexture extends EventEmitter
      * @param {number} [resolution] Optionally set resolution
      * @returns {PIXI.BaseTexture} this
      */
-    setSize(width: number, height: number, resolution?: number)
+    setSize(width: number, height: number, resolution?: number): this
     {
         (this as any).resolution = resolution || this.resolution;
         (this as any).width = width;
@@ -425,7 +425,7 @@ export class BaseTexture extends EventEmitter
      * @param {number} [resolution] Optionally set resolution
      * @returns {PIXI.BaseTexture} this
      */
-    setRealSize(realWidth: number, realHeight: number, resolution?: number)
+    setRealSize(realWidth: number, realHeight: number, resolution?: number): this
     {
         (this as any).resolution = resolution || this.resolution;
         (this as any).width = realWidth / this.resolution;
@@ -441,7 +441,7 @@ export class BaseTexture extends EventEmitter
      *
      * @private
      */
-    _refreshPOT()
+    _refreshPOT(): void
     {
         this.isPowerOfTwo = isPow2(this.realWidth) && isPow2(this.realHeight);
     }
@@ -452,7 +452,7 @@ export class BaseTexture extends EventEmitter
      * @param {number} resolution res
      * @returns {PIXI.BaseTexture} this
      */
-    setResolution(resolution: number)
+    setResolution(resolution: number): this
     {
         const oldResolution = this.resolution;
 
@@ -481,7 +481,7 @@ export class BaseTexture extends EventEmitter
      * @param {PIXI.resources.Resource} resource - that is managing this BaseTexture
      * @returns {PIXI.BaseTexture} this
      */
-    setResource(resource: Resource)
+    setResource(resource: Resource): this
     {
         if (this.resource === resource)
         {
@@ -503,7 +503,7 @@ export class BaseTexture extends EventEmitter
     /**
      * Invalidates the object. Texture becomes valid if width and height are greater than zero.
      */
-    update()
+    update(): void
     {
         if (!this.valid)
         {
@@ -527,7 +527,7 @@ export class BaseTexture extends EventEmitter
      * @private
      * @param {ErrorEvent} event - Error event emitted.
      */
-    onError(event: ErrorEvent)
+    onError(event: ErrorEvent): void
     {
         this.emit('error', this, event);
     }
@@ -537,7 +537,7 @@ export class BaseTexture extends EventEmitter
      * The method stops if resource doesn't want this texture to be destroyed.
      * Removes texture from all caches.
      */
-    destroy()
+    destroy(): void
     {
         // remove and destroy the resource
         if (this.resource)
@@ -575,7 +575,7 @@ export class BaseTexture extends EventEmitter
      *
      * @fires PIXI.BaseTexture#dispose
      */
-    dispose()
+    dispose(): void
     {
         this.emit('dispose', this);
     }
@@ -583,7 +583,7 @@ export class BaseTexture extends EventEmitter
     /**
      * Utility function for BaseTexture|Texture cast
      */
-    castToBaseTexture()
+    castToBaseTexture(): BaseTexture
     {
         return this;
     }
@@ -601,7 +601,8 @@ export class BaseTexture extends EventEmitter
      * @param {boolean} [strict] Enforce strict-mode, see {@link PIXI.settings.STRICT_TEXTURE_CACHE}.
      * @returns {PIXI.BaseTexture} The new base texture.
      */
-    static from(source: ImageSource|string, options: IBaseTextureOptions, strict = settings.STRICT_TEXTURE_CACHE)
+    static from(source: ImageSource|string, options: IBaseTextureOptions,
+        strict = settings.STRICT_TEXTURE_CACHE): BaseTexture
     {
         const isFrame = typeof source === 'string';
         let cacheId = null;
@@ -649,7 +650,8 @@ export class BaseTexture extends EventEmitter
      * @param {object} [options] See {@link PIXI.BaseTexture}'s constructor for options.
      * @return {PIXI.BaseTexture} The resulting new BaseTexture
      */
-    static fromBuffer(buffer: Float32Array|Uint8Array, width: number, height: number, options: IBaseTextureOptions)
+    static fromBuffer(buffer: Float32Array|Uint8Array,
+        width: number, height: number, options: IBaseTextureOptions): BaseTexture
     {
         buffer = buffer || new Float32Array(width * height * 4);
 
@@ -666,7 +668,7 @@ export class BaseTexture extends EventEmitter
      * @param {PIXI.BaseTexture} baseTexture - The BaseTexture to add to the cache.
      * @param {string} id - The id that the BaseTexture will be stored against.
      */
-    static addToCache(baseTexture: BaseTexture, id: string)
+    static addToCache(baseTexture: BaseTexture, id: string): void
     {
         if (id)
         {
@@ -692,7 +694,7 @@ export class BaseTexture extends EventEmitter
      * @param {string|PIXI.BaseTexture} baseTexture - id of a BaseTexture to be removed, or a BaseTexture instance itself.
      * @return {PIXI.BaseTexture|null} The BaseTexture that was removed.
      */
-    static removeFromCache(baseTexture: string | BaseTexture)
+    static removeFromCache(baseTexture: string | BaseTexture): BaseTexture|null
     {
         if (typeof baseTexture === 'string')
         {

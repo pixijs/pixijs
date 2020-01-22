@@ -8,6 +8,7 @@ import defaultFragment from './defaultFilter.frag';
 import { RenderTexture } from '@pixi/core';
 import { FilterSystem } from './FilterSystem';
 import { FilterState } from './FilterState';
+import { BLEND_MODES, CLEAR_MODES } from '@pixi/constants';
 
 /**
  * Filter is a special type of WebGL shader that is applied to the screen.
@@ -217,19 +218,22 @@ export class Filter extends Shader
      * @param {PIXI.systems.FilterSystem} filterManager - The renderer to retrieve the filter from
      * @param {PIXI.RenderTexture} input - The input render target.
      * @param {PIXI.RenderTexture} output - The target to output to.
-     * @param {boolean} clear - Should the output be cleared before rendering to it
+     * @param {PIXI.CLEAR_MODES} clearMode - Should the output be cleared before rendering to it.
      * @param {object} [currentState] - It's current state of filter.
      *        There are some useful properties in the currentState :
      *        target, filters, sourceFrame, destinationFrame, renderTarget, resolution
      */
-    apply(filterManager: FilterSystem, input: RenderTexture, output: RenderTexture, clear: boolean,
-        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    apply(filterManager: FilterSystem, input: RenderTexture, output: RenderTexture, clearMode: CLEAR_MODES,
+        /* eslint-disable @typescript-eslint/no-unused-vars */
+        /* eslint-disable @typescript-eslint/ban-ts-ignore */
         // @ts-ignore
-        currentState?: FilterState)
+        currentState?: FilterState): void
+        /* eslint-enable @typescript-eslint/no-unused-vars */
+        /* eslint-enable @typescript-eslint/ban-ts-ignore */
     {
         // do as you please!
 
-        filterManager.applyFilter(this, input, output, clear);
+        filterManager.applyFilter(this, input, output, clearMode);
 
         // or just do a regular render..
     }
@@ -240,7 +244,7 @@ export class Filter extends Shader
      * @member {number}
      * @default PIXI.BLEND_MODES.NORMAL
      */
-    get blendMode()
+    get blendMode(): BLEND_MODES
     {
         return this.state.blendMode;
     }
@@ -257,7 +261,7 @@ export class Filter extends Shader
      * @type {string}
      * @constant
      */
-    static get defaultVertexSrc()
+    static get defaultVertexSrc(): string
     {
         return defaultVertex;
     }
@@ -269,7 +273,7 @@ export class Filter extends Shader
      * @type {string}
      * @constant
      */
-    static get defaultFragmentSrc()
+    static get defaultFragmentSrc(): string
     {
         return defaultFragment;
     }

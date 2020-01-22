@@ -21,7 +21,7 @@ export class StencilSystem extends AbstractMaskSystem
         this.glConst = WebGLRenderingContext.STENCIL_TEST;
     }
 
-    getStackLength()
+    getStackLength(): number
     {
         const maskData = this.maskStack[this.maskStack.length - 1];
 
@@ -38,7 +38,7 @@ export class StencilSystem extends AbstractMaskSystem
      *
      * @param {PIXI.MaskData} maskData - The mask data
      */
-    push(maskData: MaskData)
+    push(maskData: MaskData): void
     {
         const maskObject = maskData.maskObject;
         const { gl } = this.renderer;
@@ -71,7 +71,7 @@ export class StencilSystem extends AbstractMaskSystem
      *
      * @param {PIXI.DisplayObject} maskObject - object of popped mask data
      */
-    pop(maskObject: IMaskTarget)
+    pop(maskObject: IMaskTarget): void
     {
         const gl = this.renderer.gl;
 
@@ -101,7 +101,7 @@ export class StencilSystem extends AbstractMaskSystem
      * Setup renderer to use the current stencil data.
      * @private
      */
-    _useCurrent()
+    _useCurrent(): void
     {
         const gl = this.renderer.gl;
 
@@ -115,7 +115,7 @@ export class StencilSystem extends AbstractMaskSystem
      * @private
      * @return {number} The bitwise mask.
      */
-    _getBitwiseMask()
+    _getBitwiseMask(): number
     {
         return (1 << this.getStackLength()) - 1;
     }

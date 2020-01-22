@@ -3,7 +3,7 @@ import { PRECISION } from '@pixi/constants';
 
 let maxFragmentPrecision: string;
 
-export function getMaxFragmentPrecision()
+export function getMaxFragmentPrecision(): string
 {
     if (!maxFragmentPrecision)
     {

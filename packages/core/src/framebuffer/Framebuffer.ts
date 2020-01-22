@@ -49,10 +49,10 @@ export class Framebuffer
     /**
      * Reference to the colorTexture.
      *
-     * @member {PIXI.Texture[]}
+     * @member {PIXI.BaseTexture[]}
      * @readonly
      */
-    get colorTexture()
+    get colorTexture(): BaseTexture
     {
         return this.colorTextures[0];
     }
@@ -63,7 +63,7 @@ export class Framebuffer
      * @param {number} [index=0] - Index of the array to add the texture to
      * @param {PIXI.BaseTexture} [texture] - Texture to add to the array
      */
-    addColorTexture(index = 0, texture: BaseTexture)
+    addColorTexture(index = 0, texture: BaseTexture): this
     {
         // TODO add some validation to the texture - same width / height etc?
         this.colorTextures[index] = texture || new BaseTexture(null, { scaleMode: 0,
@@ -83,7 +83,7 @@ export class Framebuffer
      *
      * @param {PIXI.BaseTexture} [texture] - Texture to add
      */
-    addDepthTexture(texture: BaseTexture)
+    addDepthTexture(texture: BaseTexture): this
     {
         /* eslint-disable max-len */
         this.depthTexture = texture || new BaseTexture(new DepthResource(null, { width: this.width, height: this.height }), { scaleMode: 0,
@@ -103,7 +103,7 @@ export class Framebuffer
     /**
      * Enable depth on the frame buffer
      */
-    enableDepth()
+    enableDepth(): this
     {
         this.depth = true;
 
@@ -116,7 +116,7 @@ export class Framebuffer
     /**
      * Enable stencil on the frame buffer
      */
-    enableStencil()
+    enableStencil(): this
     {
         this.stencil = true;
 
@@ -132,7 +132,7 @@ export class Framebuffer
      * @param {number} width - Width of the frame buffer to resize to
      * @param {number} height - Height of the frame buffer to resize to
      */
-    resize(width: number, height: number)
+    resize(width: number, height: number): void
     {
         width = Math.ceil(width);
         height = Math.ceil(height);
@@ -165,7 +165,7 @@ export class Framebuffer
     /**
      * disposes WebGL resources that are connected to this geometry
      */
-    dispose()
+    dispose(): void
     {
         this.disposeRunner.emit(this, false);
     }

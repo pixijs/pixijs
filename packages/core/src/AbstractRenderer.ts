@@ -227,7 +227,7 @@ export abstract class AbstractRenderer extends EventEmitter
      * @protected
      * @param {object} staticMap - The dictionary of statically saved plugins.
      */
-    initPlugins(staticMap: IRendererPlugins)
+    initPlugins(staticMap: IRendererPlugins): void
     {
         for (const o in staticMap)
         {
@@ -242,7 +242,7 @@ export abstract class AbstractRenderer extends EventEmitter
      * @readonly
      * @default 800
      */
-    get width()
+    get width(): number
     {
         return this.view.width;
     }
@@ -254,7 +254,7 @@ export abstract class AbstractRenderer extends EventEmitter
      * @readonly
      * @default 600
      */
-    get height()
+    get height(): number
     {
         return this.view.height;
     }
@@ -266,7 +266,7 @@ export abstract class AbstractRenderer extends EventEmitter
      * @param {number} screenWidth - The new width of the screen.
      * @param {number} screenHeight - The new height of the screen.
      */
-    resize(screenWidth: number, screenHeight: number)
+    resize(screenWidth: number, screenHeight: number): void
     {
         this.screen.width = screenWidth;
         this.screen.height = screenHeight;
@@ -292,7 +292,8 @@ export abstract class AbstractRenderer extends EventEmitter
      *        if no region is specified, defaults to the local bounds of the displayObject.
      * @return {PIXI.RenderTexture} A texture of the graphics object.
      */
-    generateTexture(displayObject: DisplayObject, scaleMode?: SCALE_MODES, resolution?: number, region?: Rectangle)
+    generateTexture(displayObject: DisplayObject,
+        scaleMode?: SCALE_MODES, resolution?: number, region?: Rectangle): RenderTexture
     {
         region = region || displayObject.getLocalBounds();
 
@@ -323,7 +324,7 @@ export abstract class AbstractRenderer extends EventEmitter
      *
      * @param {boolean} [removeView=false] - Removes the Canvas element from the DOM.
      */
-    destroy(removeView?: boolean)
+    destroy(removeView?: boolean): void
     {
         for (const o in this.plugins)
         {
@@ -356,7 +357,7 @@ export abstract class AbstractRenderer extends EventEmitter
      *
      * @member {number}
      */
-    get backgroundColor()
+    get backgroundColor(): number
     {
         return this._backgroundColor;
     }

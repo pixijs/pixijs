@@ -104,7 +104,7 @@ export class TextureMatrix
      * texture property
      * @member {PIXI.Texture}
      */
-    get texture()
+    get texture(): Texture
     {
         return this._texture;
     }
@@ -121,7 +121,7 @@ export class TextureMatrix
      * @param {Float32Array} [out=uvs] output
      * @returns {Float32Array} output
      */
-    multiplyUvs(uvs: Float32Array, out?: Float32Array)
+    multiplyUvs(uvs: Float32Array, out?: Float32Array): Float32Array
     {
         if (out === undefined)
         {
@@ -147,7 +147,7 @@ export class TextureMatrix
      * @param {boolean} [forceUpdate=false] if true, matrices will be updated any case
      * @returns {boolean} whether or not it was updated
      */
-    update(forceUpdate?: boolean)
+    update(forceUpdate?: boolean): boolean
     {
         const tex = this._texture;
 

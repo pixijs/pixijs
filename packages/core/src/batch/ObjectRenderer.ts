@@ -28,7 +28,7 @@ export class ObjectRenderer
      * Stub method that should be used to empty the current
      * batch by rendering objects now.
      */
-    flush()
+    flush(): void
     {
         // flush!
     }
@@ -37,7 +37,7 @@ export class ObjectRenderer
      * Generic destruction method that frees all resources. This
      * should be called by subclasses.
      */
-    destroy()
+    destroy(): void
     {
         this.renderer = null;
     }
@@ -48,7 +48,7 @@ export class ObjectRenderer
      * signal, which occurs every frame, in that it is called
      * whenever an object requests _this_ renderer specifically.
      */
-    start()
+    start(): void
     {
         // set the shader..
     }
@@ -57,7 +57,7 @@ export class ObjectRenderer
      * Stops the renderer. It should free up any state and
      * become dormant.
      */
-    stop()
+    stop(): void
     {
         this.flush();
     }
@@ -68,9 +68,12 @@ export class ObjectRenderer
      *
      * @param {PIXI.DisplayObject} object - The object to render.
      */
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    /* eslint-disable @typescript-eslint/no-unused-vars */
+    /* eslint-disable @typescript-eslint/ban-ts-ignore */
     // @ts-ignore
-    render(object: any)
+    render(object: any): void
+    /* eslint-enable @typescript-eslint/no-unused-vars */
+    /* eslint-enable @typescript-eslint/ban-ts-ignore */
     {
         // render the object
     }

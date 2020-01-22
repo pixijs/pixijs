@@ -96,7 +96,7 @@ export class BufferResource extends Resource
      * Destroy and don't use after this
      * @override
      */
-    dispose()
+    dispose(): void
     {
         this.data = null;
     }

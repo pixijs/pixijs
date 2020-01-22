@@ -80,7 +80,7 @@ const GLSL_TO_ARRAY_SETTERS: any = {
     sampler2DArray: 'gl.uniform1iv(location, v)',
 };
 
-export function generateUniformsSync(group: UniformGroup, uniformData: any)
+export function generateUniformsSync(group: UniformGroup, uniformData: any): Function
 {
     let func = `var v = null;
     var cv = null

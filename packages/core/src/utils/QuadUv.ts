@@ -60,7 +60,7 @@ export class QuadUv extends Geometry
      * @param {PIXI.Rectangle} destinationFrame - the second rectangle
      * @return {PIXI.Quad} Returns itself.
      */
-    map(targetTextureFrame: Rectangle, destinationFrame: Rectangle)
+    map(targetTextureFrame: Rectangle, destinationFrame: Rectangle): this
     {
         let x = 0; // destinationFrame.x / targetTextureFrame.width;
         let y = 0; // destinationFrame.y / targetTextureFrame.height;
@@ -101,7 +101,7 @@ export class QuadUv extends Geometry
      * legacy upload method, just marks buffers dirty
      * @returns {PIXI.QuadUv} Returns itself.
      */
-    invalidate()
+    invalidate(): this
     {
         this.vertexBuffer._updateID++;
         this.uvBuffer._updateID++;

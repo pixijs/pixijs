@@ -102,7 +102,7 @@ export class StateSystem extends System
         this.defaultState.blend = true;
     }
 
-    contextChange(gl: WebGL2RenderingContext)
+    contextChange(gl: WebGL2RenderingContext): void
     {
         this.gl = gl;
 
@@ -118,7 +118,7 @@ export class StateSystem extends System
      *
      * @param {*} state - The state to set.
      */
-    set(state: State)
+    set(state: State): void
     {
         state = state || this.defaultState;
 
@@ -158,7 +158,7 @@ export class StateSystem extends System
      *
      * @param {*} state - The state to set
      */
-    forceState(state: State)
+    forceState(state: State): void
     {
         state = state || this.defaultState;
         for (let i = 0; i < this.map.length; i++)
@@ -178,7 +178,7 @@ export class StateSystem extends System
      *
      * @param {boolean} value - Turn on or off webgl blending.
      */
-    setBlend(value: boolean)
+    setBlend(value: boolean): void
     {
         this.updateCheck(StateSystem.checkBlendMode, value);
 
@@ -190,7 +190,7 @@ export class StateSystem extends System
      *
      * @param {boolean} value - Turn on or off webgl polygon offset testing.
      */
-    setOffset(value: boolean)
+    setOffset(value: boolean): void
     {
         this.updateCheck(StateSystem.checkPolygonOffset, value);
 
@@ -202,7 +202,7 @@ export class StateSystem extends System
      *
      * @param {boolean} value - Turn on or off webgl depth testing.
      */
-    setDepthTest(value: boolean)
+    setDepthTest(value: boolean): void
     {
         this.gl[value ? 'enable' : 'disable'](this.gl.DEPTH_TEST);
     }
@@ -212,7 +212,7 @@ export class StateSystem extends System
      *
      * @param {boolean} value - Turn on or off webgl cull face.
      */
-    setCullFace(value: boolean)
+    setCullFace(value: boolean): void
     {
         this.gl[value ? 'enable' : 'disable'](this.gl.CULL_FACE);
     }
@@ -222,7 +222,7 @@ export class StateSystem extends System
      *
      * @param {boolean} value - true is clockwise and false is counter-clockwise
      */
-    setFrontFace(value: boolean)
+    setFrontFace(value: boolean): void
     {
         this.gl.frontFace(this.gl[value ? 'CW' : 'CCW']);
     }
@@ -232,7 +232,7 @@ export class StateSystem extends System
      *
      * @param {number} value - The blend mode to set to.
      */
-    setBlendMode(value: number)
+    setBlendMode(value: number): void
     {
         if (value === this.blendMode)
         {
@@ -270,7 +270,7 @@ export class StateSystem extends System
      * @param {number} value - the polygon offset
      * @param {number} scale - the polygon offset scale
      */
-    setPolygonOffset(value: number, scale: number)
+    setPolygonOffset(value: number, scale: number): void
     {
         this.gl.polygonOffset(value, scale);
     }
@@ -279,7 +279,7 @@ export class StateSystem extends System
     /**
      * Resets all the logic and disables the vaos
      */
-    reset()
+    reset(): void
     {
         this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, false);
 
@@ -299,7 +299,7 @@ export class StateSystem extends System
      * @param {Function} func  the checking function to add or remove
      * @param {boolean} value  should the check function be added or removed.
      */
-    updateCheck(func: Function, value: boolean)
+    updateCheck(func: Function, value: boolean): void
     {
         const index = this.checks.indexOf(func);
 
@@ -321,7 +321,7 @@ export class StateSystem extends System
      * @param {PIXI.StateSystem} System  the System to perform the state check on
      * @param {PIXI.State} state  the state that the blendMode will pulled from
      */
-    static checkBlendMode(system: StateSystem, state: State)
+    static checkBlendMode(system: StateSystem, state: State): void
     {
         system.setBlendMode(state.blendMode);
     }
@@ -334,7 +334,7 @@ export class StateSystem extends System
      * @param {PIXI.StateSystem} System  the System to perform the state check on
      * @param {PIXI.State} state  the state that the blendMode will pulled from
      */
-    static checkPolygonOffset(system: StateSystem, state: State)
+    static checkPolygonOffset(system: StateSystem, state: State): void
     {
         system.setPolygonOffset(state.polygonOffset, 0);
     }

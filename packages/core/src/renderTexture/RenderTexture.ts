@@ -122,7 +122,7 @@ export class RenderTexture extends Texture
      * @param {number} height - The height to resize to.
      * @param {boolean} [resizeBaseTexture=true] - Should the baseTexture.width and height values be resized as well?
      */
-    resize(width: number, height: number, resizeBaseTexture = true)
+    resize(width: number, height: number, resizeBaseTexture = true): void
     {
         width = Math.ceil(width);
         height = Math.ceil(height);
@@ -146,7 +146,7 @@ export class RenderTexture extends Texture
      *
      * @param {number} resolution - The new resolution to apply to RenderTexture
      */
-    setResolution(resolution: number)
+    setResolution(resolution: number): void
     {
         const { baseTexture } = this;
 
@@ -169,7 +169,7 @@ export class RenderTexture extends Texture
      * @param {number} [options.resolution=1] - The resolution / device pixel ratio of the texture being generated
      * @return {PIXI.RenderTexture} The new render texture
      */
-    static create(options: IBaseTextureOptions)
+    static create(options: IBaseTextureOptions): RenderTexture
     {
         // fallback, old-style: create(width, height, scaleMode, resolution)
         if (typeof options === 'number')

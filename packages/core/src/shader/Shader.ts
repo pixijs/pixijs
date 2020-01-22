@@ -55,7 +55,7 @@ export class Shader
     }
 
     // TODO move to shader system..
-    checkUniformExists(name: string, group: UniformGroup)
+    checkUniformExists(name: string, group: UniformGroup): boolean
     {
         if (group.uniforms[name])
         {
@@ -78,7 +78,7 @@ export class Shader
         return false;
     }
 
-    destroy()
+    destroy(): void
     {
         // usage count on programs?
         // remove if not used!
@@ -90,7 +90,7 @@ export class Shader
      * @readonly
      * @member {object}
      */
-    get uniforms()
+    get uniforms(): any
     {
         return this.uniformGroup.uniforms;
     }
@@ -104,7 +104,7 @@ export class Shader
      *
      * @returns {PIXI.Shader} an shiny new Pixi shader!
      */
-    static from(vertexSrc?: string, fragmentSrc?: string, uniforms?: any)
+    static from(vertexSrc?: string, fragmentSrc?: string, uniforms?: any): Shader
     {
         const program = Program.from(vertexSrc, fragmentSrc);
 

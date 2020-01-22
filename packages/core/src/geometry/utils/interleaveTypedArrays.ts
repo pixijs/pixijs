@@ -9,7 +9,7 @@ const map: any = {
     Uint8Array: Uint8Array,
 };
 
-export function interleaveTypedArrays(arrays: Array<ITypedArray>, sizes: Array<number>)
+export function interleaveTypedArrays(arrays: Array<ITypedArray>, sizes: Array<number>): Float32Array
 {
     let outSize = 0;
     let stride = 0;

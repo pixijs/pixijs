@@ -1,6 +1,8 @@
 import { uid } from '@pixi/utils';
 import { BaseImageResource } from './BaseImageResource';
 
+import { ISize } from '@pixi/math';
+
 export interface ISVGResourceOptions
 {
     source?: string;
@@ -29,7 +31,7 @@ export class SVGResource extends BaseImageResource
     readonly _overrideWidth: number;
     readonly _overrideHeight: number;
     private _resolve: Function;
-    private _load: Promise<void>;
+    private _load: Promise<SVGResource>;
     private _crossorigin?: boolean|string;
 
     constructor(sourceBase64: string, options: ISVGResourceOptions)
@@ -96,20 +98,20 @@ export class SVGResource extends BaseImageResource
         }
     }
 
-    load()
+    load(): Promise<SVGResource>
     {
         if (this._load)
         {
             return this._load;
         }
 
-        this._load = new Promise((resolve) =>
+        this._load = new Promise((resolve): void =>
         {
             // Save this until after load is finished
             this._resolve = (): void =>
             {
                 this.resize(this.source.width, this.source.height);
-                resolve();
+                resolve(this);
             };
 
             // Convert SVG inline string to data-uri
@@ -133,14 +135,14 @@ export class SVGResource extends BaseImageResource
      *
      * @private
      */
-    _loadSvg()
+    _loadSvg(): void
     {
         const tempImage = new Image();
 
         BaseImageResource.crossOrigin(tempImage, this.svg, this._crossorigin);
         tempImage.src = this.svg;
 
-        tempImage.onerror = (event) =>
+        tempImage.onerror = (event): void =>
         {
             tempImage.onerror = null;
             this.onError.emit(event);
@@ -192,7 +194,7 @@ export class SVGResource extends BaseImageResource
      * @param {string} svgString - a serialized svg element
      * @return {PIXI.ISize} image extension
      */
-    static getSize(svgString?: string)
+    static getSize(svgString?: string): ISize
     {
         const sizeMatch = SVGResource.SVG_SIZE.exec(svgString);
         const size: any = {};
@@ -210,7 +212,7 @@ export class SVGResource extends BaseImageResource
      * Destroys this texture
      * @override
      */
-    dispose()
+    dispose(): void
     {
         super.dispose();
         this._resolve = null;
@@ -224,7 +226,7 @@ export class SVGResource extends BaseImageResource
      * @param {*} source - The source object
      * @param {string} extension - The extension of source, if set
      */
-    static test(source: any, extension?: string)
+    static test(source: any, extension?: string): boolean
     {
         // url file extension is SVG
         return extension === 'svg'

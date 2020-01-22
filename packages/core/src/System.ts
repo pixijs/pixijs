@@ -25,7 +25,7 @@ export class System
     /**
      * Generic destroy methods to be overridden by the subclass
      */
-    destroy()
+    destroy(): void
     {
         this.renderer = null;
     }

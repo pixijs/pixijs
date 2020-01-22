@@ -53,7 +53,7 @@ export class ViewableBuffer
      *
      * @member {Int8Array}
      */
-    get int8View()
+    get int8View(): Int8Array
     {
         if (!this._int8View)
         {
@@ -68,7 +68,7 @@ export class ViewableBuffer
      *
      * @member {Uint8Array}
      */
-    get uint8View()
+    get uint8View(): Uint8Array
     {
         if (!this._uint8View)
         {
@@ -83,7 +83,7 @@ export class ViewableBuffer
      *
      * @member {Int16Array}
      */
-    get int16View()
+    get int16View(): Int16Array
     {
         if (!this._int16View)
         {
@@ -98,7 +98,7 @@ export class ViewableBuffer
      *
      * @member {Uint16Array}
      */
-    get uint16View()
+    get uint16View(): Uint16Array
     {
         if (!this._uint16View)
         {
@@ -113,7 +113,7 @@ export class ViewableBuffer
      *
      * @member {Int32Array}
      */
-    get int32View()
+    get int32View(): Int32Array
     {
         if (!this._int32View)
         {
@@ -139,7 +139,7 @@ export class ViewableBuffer
      * Destroys all buffer references. Do not use after calling
      * this.
      */
-    destroy()
+    destroy(): void
     {
         this.rawBinaryData = null;
         this._int8View = null;
@@ -151,7 +151,7 @@ export class ViewableBuffer
         this.float32View = null;
     }
 
-    static sizeOf(type: string)
+    static sizeOf(type: string): number
     {
         switch (type)
         {

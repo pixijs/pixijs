@@ -23,7 +23,7 @@ export class ArrayResource extends Resource
     readonly length: number;
     items: Array<BaseTexture>;
     itemDirtyIds: Array<number>;
-    private _load: Promise<void>;
+    private _load: Promise<ArrayResource>;
 
     constructor(source: number|Array<any>, options?: any)
     {
@@ -95,7 +95,7 @@ export class ArrayResource extends Resource
      * Destroy this BaseImageResource
      * @override
      */
-    dispose()
+    dispose(): void
     {
         for (let i = 0, len = this.length; i < len; i++)
         {
@@ -113,7 +113,7 @@ export class ArrayResource extends Resource
      * @param {number} index - Zero-based index of resource to set
      * @return {PIXI.resources.ArrayResource} Instance for chaining
      */
-    addResourceAt(resource: Resource, index: number)
+    addResourceAt(resource: Resource, index: number): this
     {
         const baseTexture = this.items[index];
 
@@ -138,7 +138,7 @@ export class ArrayResource extends Resource
      * @member {PIXI.BaseTexture}
      * @override
      */
-    bind(baseTexture: BaseTexture)
+    bind(baseTexture: BaseTexture): void
     {
         super.bind(baseTexture);
 
@@ -155,7 +155,7 @@ export class ArrayResource extends Resource
      * @member {PIXI.BaseTexture}
      * @override
      */
-    unbind(baseTexture: BaseTexture)
+    unbind(baseTexture: BaseTexture): void
     {
         super.unbind(baseTexture);
 
@@ -170,7 +170,7 @@ export class ArrayResource extends Resource
      * @override
      * @return {Promise<void>} When load is resolved
      */
-    load()
+    load(): Promise<ArrayResource>
     {
         if (this._load)
         {
@@ -189,7 +189,7 @@ export class ArrayResource extends Resource
 
                 this.resize(width, height);
 
-                return Promise.resolve();
+                return Promise.resolve(this);
             }
             );
 

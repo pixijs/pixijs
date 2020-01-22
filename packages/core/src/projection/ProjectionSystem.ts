@@ -69,7 +69,7 @@ export class ProjectionSystem extends System
      * @param {Number} resolution - Resolution
      * @param {boolean} root - If is root
      */
-    update(destinationFrame: Rectangle, sourceFrame: Rectangle, resolution: number, root: boolean)
+    update(destinationFrame: Rectangle, sourceFrame: Rectangle, resolution: number, root: boolean): void
     {
         this.destinationFrame = destinationFrame || this.destinationFrame || this.defaultFrame;
         this.sourceFrame = sourceFrame || this.sourceFrame || destinationFrame;
@@ -102,7 +102,7 @@ export class ProjectionSystem extends System
      * @param {Number} resolution - Resolution
      * @param {boolean} root - If is root
      */
-    calculateProjection(destinationFrame: Rectangle, sourceFrame: Rectangle, resolution: number, root: boolean)
+    calculateProjection(destinationFrame: Rectangle, sourceFrame: Rectangle, resolution: number, root: boolean): void
     {
         const pm = this.projectionMatrix;
 
@@ -132,7 +132,7 @@ export class ProjectionSystem extends System
      *
      * @param {PIXI.Matrix} matrix - The transformation matrix
      */
-    setTransform()// matrix)
+    setTransform(): void // matrix)
     {
         // this._activeRenderTarget.transform = matrix;
     }

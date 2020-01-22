@@ -35,7 +35,7 @@ export class VideoResource extends BaseImageResource
     protected _updateFPS: number;
     protected _msToNextUpdate: number;
     protected autoPlay: boolean;
-    private _load: Promise<void>;
+    private _load: Promise<VideoResource>;
     private _resolve: Function;
 
     constructor(source?: HTMLVideoElement|Array<string|IVideoResourceOptionsElement>|string, options?: IVideoResourceOptions)
@@ -131,9 +131,12 @@ export class VideoResource extends BaseImageResource
      *
      * @param {number} [deltaTime=0] - time delta since last tick
      */
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    /* eslint-disable @typescript-eslint/no-unused-vars */
+    /* eslint-disable @typescript-eslint/ban-ts-ignore */
     // @ts-ignore
-    update(deltaTime = 0)
+    update(deltaTime = 0): void
+    /* eslint-enable @typescript-eslint/no-unused-vars */
+    /* eslint-enable @typescript-eslint/ban-ts-ignore */
     {
         if (!this.destroyed)
         {
@@ -155,7 +158,7 @@ export class VideoResource extends BaseImageResource
      * @protected
      * @return {Promise<void>} Handle the validate event
      */
-    load()
+    load(): Promise<VideoResource>
     {
         if (this._load)
         {
@@ -184,11 +187,11 @@ export class VideoResource extends BaseImageResource
             this._onCanPlay();
         }
 
-        this._load = new Promise((resolve) =>
+        this._load = new Promise((resolve): void =>
         {
             if (this.valid)
             {
-                resolve();
+                resolve(this);
             }
             else
             {
@@ -206,7 +209,7 @@ export class VideoResource extends BaseImageResource
      *
      * @private
      */
-    _onError()
+    _onError(): void
     {
         (this.source as HTMLVideoElement).removeEventListener('error', this._onError, true);
         this.onError.emit(event);
@@ -218,7 +221,7 @@ export class VideoResource extends BaseImageResource
      * @private
      * @return {boolean} True if playing.
      */
-    _isSourcePlaying()
+    _isSourcePlaying(): boolean
     {
         const source = this.source as HTMLVideoElement;
 
@@ -231,7 +234,7 @@ export class VideoResource extends BaseImageResource
      * @private
      * @return {boolean} True if ready.
      */
-    _isSourceReady()
+    _isSourceReady(): boolean
     {
         const source = this.source as HTMLVideoElement;
 
@@ -243,7 +246,7 @@ export class VideoResource extends BaseImageResource
      *
      * @private
      */
-    _onPlayStart()
+    _onPlayStart(): void
     {
         // Just in case the video has not received its can play even yet..
         if (!this.valid)
@@ -263,7 +266,7 @@ export class VideoResource extends BaseImageResource
      *
      * @private
      */
-    _onPlayStop()
+    _onPlayStop(): void
     {
         if (this._isAutoUpdating)
         {
@@ -277,7 +280,7 @@ export class VideoResource extends BaseImageResource
      *
      * @private
      */
-    _onCanPlay()
+    _onCanPlay(): void
     {
         const source = this.source as HTMLVideoElement;
 
@@ -309,7 +312,7 @@ export class VideoResource extends BaseImageResource
      * Destroys this texture
      * @override
      */
-    dispose()
+    dispose(): void
     {
         if (this._isAutoUpdating)
         {
@@ -333,7 +336,7 @@ export class VideoResource extends BaseImageResource
      *
      * @member {boolean}
      */
-    get autoUpdate()
+    get autoUpdate(): boolean
     {
         return this._autoUpdate;
     }
@@ -363,7 +366,7 @@ export class VideoResource extends BaseImageResource
      *
      * @member {number}
      */
-    get updateFPS()
+    get updateFPS(): number
     {
         return this._updateFPS;
     }
@@ -384,7 +387,7 @@ export class VideoResource extends BaseImageResource
      * @param {string} extension - The extension of source, if set
      * @return {boolean} `true` if video source
      */
-    static test(source: any, extension?: string)
+    static test(source: any, extension?: string): boolean
     {
         return (source instanceof HTMLVideoElement)
             || VideoResource.TYPES.indexOf(extension) > -1;

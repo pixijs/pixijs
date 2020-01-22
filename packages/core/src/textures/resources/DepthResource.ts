@@ -17,7 +17,7 @@ export class DepthResource extends BufferResource
      * @param {PIXI.GLTexture} glTexture glTexture
      * @returns {boolean} true is success
      */
-    upload(renderer: Renderer, baseTexture: BaseTexture, glTexture: GLTexture)
+    upload(renderer: Renderer, baseTexture: BaseTexture, glTexture: GLTexture): boolean
     {
         const gl = renderer.gl;
 

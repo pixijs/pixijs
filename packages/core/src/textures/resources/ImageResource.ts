@@ -21,8 +21,8 @@ export interface IImageResourceOptions
 export class ImageResource extends BaseImageResource
 {
     url: string;
-    private _load: Promise<void>;
-    private _process: Promise<void>;
+    private _load: Promise<ImageResource>;
+    private _process: Promise<ImageResource>;
     preserveBitmap: boolean;
     createBitmap: boolean;
     alphaMode: ALPHA_MODES;
@@ -132,7 +132,7 @@ export class ImageResource extends BaseImageResource
      * @param {boolean} [createBitmap] whether process image into bitmap
      * @returns {Promise<void>}
      */
-    load(createBitmap?: boolean): Promise<void>
+    load(createBitmap?: boolean): Promise<ImageResource>
     {
         if (createBitmap !== undefined)
         {
@@ -168,7 +168,7 @@ export class ImageResource extends BaseImageResource
                 }
                 else
                 {
-                    resolve();
+                    resolve(this);
                 }
             };
 
@@ -179,7 +179,7 @@ export class ImageResource extends BaseImageResource
             else
             {
                 source.onload = completed;
-                source.onerror = (event) => this.onError.emit(event);
+                source.onerror = (event): void => { this.onError.emit(event); };
             }
         });
 
@@ -192,7 +192,7 @@ export class ImageResource extends BaseImageResource
      *
      * @returns {Promise<void>} cached promise to fill that bitmap
      */
-    process(): Promise<void>
+    process(): Promise<ImageResource>
     {
         const source = this.source as HTMLImageElement;
 
@@ -202,7 +202,7 @@ export class ImageResource extends BaseImageResource
         }
         if (this.bitmap !== null || !window.createImageBitmap)
         {
-            return Promise.resolve();
+            return Promise.resolve(this);
         }
 
         this._process = (window.createImageBitmap as any)(source,
@@ -296,7 +296,7 @@ export class ImageResource extends BaseImageResource
      * Destroys this texture
      * @override
      */
-    dispose()
+    dispose(): void
     {
         (this.source as HTMLImageElement).onload = null;
         (this.source as HTMLImageElement).onerror = null;

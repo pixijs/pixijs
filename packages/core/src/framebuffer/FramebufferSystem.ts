@@ -49,7 +49,7 @@ export class FramebufferSystem extends System
     /**
      * Sets up the renderer context and necessary buffers.
      */
-    contextChange()
+    contextChange(): void
     {
         const gl = this.gl = this.renderer.gl;
 
@@ -76,13 +76,13 @@ export class FramebufferSystem extends System
 
             if (nativeDrawBuffersExtension)
             {
-                gl.drawBuffers = (activeTextures: number[]) =>
+                gl.drawBuffers = (activeTextures: number[]): void =>
                     nativeDrawBuffersExtension.drawBuffersWEBGL(activeTextures);
             }
             else
             {
                 this.hasMRT = false;
-                gl.drawBuffers = () =>
+                gl.drawBuffers = (): void =>
                 {
                     // empty
                 };
@@ -101,7 +101,7 @@ export class FramebufferSystem extends System
      * @param {PIXI.Framebuffer} framebuffer
      * @param {PIXI.Rectangle} [frame] frame, default is framebuffer size
      */
-    bind(framebuffer?: Framebuffer, frame?: Rectangle)
+    bind(framebuffer?: Framebuffer, frame?: Rectangle): void
     {
         const { gl } = this;
 
@@ -188,7 +188,7 @@ export class FramebufferSystem extends System
      * @param {Number} width - Width of viewport
      * @param {Number} height - Height of viewport
      */
-    setViewport(x: number, y: number, width: number, height: number)
+    setViewport(x: number, y: number, width: number, height: number): void
     {
         const v = this.viewport;
 
@@ -209,7 +209,7 @@ export class FramebufferSystem extends System
      * @member {object}
      * @readonly
      */
-    get size()
+    get size(): any
     {
         if (this.current)
         {
@@ -228,7 +228,7 @@ export class FramebufferSystem extends System
      * @param {Number} b - Blue value from 0 to 1
      * @param {Number} a - Alpha value from 0 to 1
      */
-    clear(r: number, g: number, b: number, a: number)
+    clear(r: number, g: number, b: number, a: number): void
     {
         const { gl } = this;
 
@@ -243,7 +243,7 @@ export class FramebufferSystem extends System
      * @protected
      * @param {PIXI.Framebuffer} framebuffer
      */
-    initFramebuffer(framebuffer: Framebuffer)
+    initFramebuffer(framebuffer: Framebuffer): any
     {
         const { gl } = this;
 
@@ -270,7 +270,7 @@ export class FramebufferSystem extends System
      * @protected
      * @param {PIXI.Framebuffer} framebuffer
      */
-    resizeFramebuffer(framebuffer: Framebuffer)
+    resizeFramebuffer(framebuffer: Framebuffer): void
     {
         const { gl } = this;
 
@@ -301,7 +301,7 @@ export class FramebufferSystem extends System
      * @protected
      * @param {PIXI.Framebuffer} framebuffer
      */
-    updateFramebuffer(framebuffer: Framebuffer)
+    updateFramebuffer(framebuffer: Framebuffer): void
     {
         const { gl } = this;
 
@@ -391,7 +391,7 @@ export class FramebufferSystem extends System
      * @param {PIXI.Framebuffer} framebuffer framebuffer that has to be disposed of
      * @param {boolean} [contextLost=false] If context was lost, we suppress all delete function calls
      */
-    disposeFramebuffer(framebuffer: Framebuffer, contextLost?: boolean)
+    disposeFramebuffer(framebuffer: Framebuffer, contextLost?: boolean): void
     {
         const fbo = framebuffer.glFramebuffers[this.CONTEXT_UID];
         const gl = this.gl;
@@ -426,7 +426,7 @@ export class FramebufferSystem extends System
      * Disposes all framebuffers, but not textures bound to them
      * @param {boolean} [contextLost=false] If context was lost, we suppress all delete function calls
      */
-    disposeAll(contextLost?: boolean)
+    disposeAll(contextLost?: boolean): void
     {
         const list = this.managedFramebuffers;
 
@@ -446,7 +446,7 @@ export class FramebufferSystem extends System
      *
      * @private
      */
-    forceStencil()
+    forceStencil(): void
     {
         const framebuffer = this.current;
 
@@ -480,7 +480,7 @@ export class FramebufferSystem extends System
      *
      * should be called before renderTexture reset()
      */
-    reset()
+    reset(): void
     {
         this.current = this.unknownFramebuffer;
         this.viewport = new Rectangle();

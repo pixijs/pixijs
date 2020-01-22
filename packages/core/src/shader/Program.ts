@@ -98,7 +98,7 @@ export class Program
      * @param {string} [vertexSrc] - The source of the vertex shader.
      * @param {string} [fragmentSrc] - The source of the fragment shader.
      */
-    extractData(vertexSrc: string, fragmentSrc: string)
+    extractData(vertexSrc: string, fragmentSrc: string): void
     {
         const gl = getTestContext();
 
@@ -127,7 +127,7 @@ export class Program
      *
      * @returns {object} the attribute data for this program
      */
-    getAttributeData(program: WebGLProgram, gl: WebGL2RenderingContext)
+    getAttributeData(program: WebGLProgram, gl: WebGL2RenderingContext): void
     {
         const attributes: any = {};
         const attributesArray: Array<any> = [];
@@ -171,7 +171,7 @@ export class Program
      *
      * @returns {object} the uniform data for this program
      */
-    getUniformData(program: WebGLProgram, gl: WebGL2RenderingContext)
+    getUniformData(program: WebGLProgram, gl: WebGL2RenderingContext): any
     {
         const uniforms: any = {};
 
@@ -209,7 +209,7 @@ export class Program
      * @constant
      * @member {string}
      */
-    static get defaultVertexSrc()
+    static get defaultVertexSrc(): string
     {
         return defaultVertex;
     }
@@ -221,7 +221,7 @@ export class Program
      * @constant
      * @member {string}
      */
-    static get defaultFragmentSrc()
+    static get defaultFragmentSrc(): string
     {
         return defaultFragment;
     }
@@ -236,7 +236,7 @@ export class Program
      *
      * @returns {PIXI.Program} an shiny new Pixi shader!
      */
-    static from(vertexSrc?: string, fragmentSrc?: string, name?: string)
+    static from(vertexSrc?: string, fragmentSrc?: string, name?: string): Program
     {
         const key = vertexSrc + fragmentSrc;
 

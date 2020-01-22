@@ -53,7 +53,7 @@ export class RenderTexturePool
      * @param {number} realHeight height of texture in pixels
      * @returns {RenderTexture}
      */
-    createTexture(realWidth: number, realHeight: number)
+    createTexture(realWidth: number, realHeight: number): RenderTexture
     {
         const baseRenderTexture = new BaseRenderTexture(Object.assign({
             width: realWidth,
@@ -73,7 +73,7 @@ export class RenderTexturePool
      * @param {number} [resolution=1] - The resolution of the render texture.
      * @return {PIXI.RenderTexture} The new render texture.
      */
-    getOptimalTexture(minWidth: number, minHeight: number, resolution = 1)
+    getOptimalTexture(minWidth: number, minHeight: number, resolution = 1): RenderTexture
     {
         let key: number|string = RenderTexturePool.SCREEN_KEY;
 
@@ -115,7 +115,7 @@ export class RenderTexturePool
      *  It overrides, it does not multiply
      * @returns {PIXI.RenderTexture}
      */
-    getFilterTexture(input: RenderTexture, resolution: number)
+    getFilterTexture(input: RenderTexture, resolution: number): RenderTexture
     {
         const filterTexture = this.getOptimalTexture(input.width, input.height, resolution || input.resolution);
 
@@ -128,7 +128,7 @@ export class RenderTexturePool
      * Place a render texture back into the pool.
      * @param {PIXI.RenderTexture} renderTexture - The renderTexture to free
      */
-    returnTexture(renderTexture: RenderTexture)
+    returnTexture(renderTexture: RenderTexture): void
     {
         const key = renderTexture.filterPoolKey;
 
@@ -140,7 +140,7 @@ export class RenderTexturePool
      * Alias for returnTexture, to be compliant with FilterSystem interface
      * @param {PIXI.RenderTexture} renderTexture - The renderTexture to free
      */
-    returnFilterTexture(renderTexture: RenderTexture)
+    returnFilterTexture(renderTexture: RenderTexture): void
     {
         this.returnTexture(renderTexture);
     }
@@ -150,7 +150,7 @@ export class RenderTexturePool
      *
      * @param {boolean} [destroyTextures=true] destroy all stored textures
      */
-    clear(destroyTextures: boolean)
+    clear(destroyTextures: boolean): void
     {
         destroyTextures = destroyTextures !== false;
         if (destroyTextures)
@@ -180,7 +180,7 @@ export class RenderTexturePool
      *
      * @param {PIXI.ISize} size - Initial size of screen
      */
-    setScreenSize(size: ISize)
+    setScreenSize(size: ISize): void
     {
         if (size.width === this._pixelsWidth
             && size.height === this._pixelsHeight)

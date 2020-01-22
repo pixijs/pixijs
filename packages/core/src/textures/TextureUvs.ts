@@ -97,7 +97,7 @@ export class TextureUvs
      * @param {PIXI.Rectangle} baseFrame - The base frame of the texture
      * @param {number} rotate - Rotation of frame, see {@link PIXI.groupD8}
      */
-    set(frame: Rectangle, baseFrame: ISize, rotate: number)
+    set(frame: Rectangle, baseFrame: ISize, rotate: number): void
     {
         const tw = baseFrame.width;
         const th = baseFrame.height;

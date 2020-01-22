@@ -9,10 +9,9 @@ let UID = 0;
  *
  * Same as ArrayBuffer in typescript lib, defined here just for documentation
  */
-export interface IArrayBuffer
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface IArrayBuffer extends ArrayBuffer
 {
-    readonly byteLength: number;
-    slice(begin: number, end?: number): IArrayBuffer;
 }
 
 /**
@@ -84,7 +83,7 @@ export class Buffer
      * flags this buffer as requiring an upload to the GPU
      * @param {ArrayBuffer|SharedArrayBuffer|ArrayBufferView} [data] the data to update in the buffer.
      */
-    update(data: IArrayBuffer)
+    update(data: IArrayBuffer): void
     {
         this.data = (data as ITypedArray) || this.data;
         this._updateID++;
@@ -93,7 +92,7 @@ export class Buffer
     /**
      * disposes WebGL resources that are connected to this geometry
      */
-    dispose()
+    dispose(): void
     {
         this.disposeRunner.emit(this, false);
     }
@@ -101,7 +100,7 @@ export class Buffer
     /**
      * Destroys the buffer
      */
-    destroy()
+    destroy(): void
     {
         this.dispose();
 
@@ -115,7 +114,7 @@ export class Buffer
      * @param {ArrayBufferView | number[]} data the TypedArray that the buffer will store. If this is a regular Array it will be converted to a Float32Array.
      * @return {PIXI.Buffer} A new Buffer based on the data provided.
      */
-    static from(data: IArrayBuffer | number[])
+    static from(data: IArrayBuffer | number[]): Buffer
     {
         if (data instanceof Array)
         {

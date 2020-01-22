@@ -38,7 +38,7 @@ export class AbstractMaskSystem extends System
      * gets count of masks of certain type
      * @returns {number}
      */
-    getStackLength()
+    getStackLength(): number
     {
         return this.maskStack.length;
     }
@@ -48,7 +48,7 @@ export class AbstractMaskSystem extends System
      *
      * @param {PIXI.MaskData[]} maskStack - The mask stack
      */
-    setMaskStack(maskStack: Array<MaskData>)
+    setMaskStack(maskStack: Array<MaskData>): void
     {
         const { gl } = this.renderer;
         const curStackLen = this.getStackLength();
@@ -75,7 +75,7 @@ export class AbstractMaskSystem extends System
      * Setup renderer to use the current mask data.
      * @private
      */
-    _useCurrent()
+    _useCurrent(): void
     {
         // OVERWRITE;
     }
@@ -84,7 +84,7 @@ export class AbstractMaskSystem extends System
      * Destroys the mask stack.
      *
      */
-    destroy()
+    destroy(): void
     {
         super.destroy();
 

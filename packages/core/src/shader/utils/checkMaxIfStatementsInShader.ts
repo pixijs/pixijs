@@ -7,7 +7,7 @@ const fragTemplate = [
     '}',
 ].join('\n');
 
-function generateIfTestSrc(maxIfs: number)
+function generateIfTestSrc(maxIfs: number): string
 {
     let src = '';
 
@@ -27,7 +27,7 @@ function generateIfTestSrc(maxIfs: number)
     return src;
 }
 
-export function checkMaxIfStatementsInShader(maxIfs: number, gl: WebGL2RenderingContext)
+export function checkMaxIfStatementsInShader(maxIfs: number, gl: WebGL2RenderingContext): number
 {
     if (maxIfs === 0)
     {

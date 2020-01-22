@@ -5,7 +5,7 @@
  * @param src {string} The vertex shader source as an array of strings.
  * @return {WebGLShader} the shader
  */
-function compileShader(gl: WebGL2RenderingContext, type: number, src: string)
+function compileShader(gl: WebGL2RenderingContext, type: number, src: string): WebGLShader
 {
     const shader = gl.createShader(type);
 
@@ -26,7 +26,7 @@ function compileShader(gl: WebGL2RenderingContext, type: number, src: string)
  * @return {WebGLProgram} the shader program
  */
 export function compileProgram(gl: WebGL2RenderingContext, vertexSrc: string, fragmentSrc: string,
-    attributeLocations?: Array<any>)
+    attributeLocations?: Array<any>): WebGLProgram
 {
     const glVertShader = compileShader(gl, gl.VERTEX_SHADER, vertexSrc);
     const glFragShader = compileShader(gl, gl.FRAGMENT_SHADER, fragmentSrc);

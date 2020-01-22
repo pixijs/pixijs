@@ -22,7 +22,7 @@ export class ScissorSystem extends AbstractMaskSystem
         this.glConst = WebGLRenderingContext.SCISSOR_TEST;
     }
 
-    getStackLength()
+    getStackLength(): number
     {
         const maskData = this.maskStack[this.maskStack.length - 1];
 
@@ -39,7 +39,7 @@ export class ScissorSystem extends AbstractMaskSystem
      *
      * @param {PIXI.MaskData} maskData - The mask data
      */
-    push(maskData: MaskData)
+    push(maskData: MaskData): void
     {
         const maskObject = maskData.maskObject;
 
@@ -68,7 +68,7 @@ export class ScissorSystem extends AbstractMaskSystem
     /**
      * Pops scissor mask. MaskData is already removed from stack
      */
-    pop()
+    pop(): void
     {
         const { gl } = this.renderer;
 
@@ -86,7 +86,7 @@ export class ScissorSystem extends AbstractMaskSystem
      * Setup renderer to use the current scissor data.
      * @private
      */
-    _useCurrent()
+    _useCurrent(): void
     {
         const rect = this.maskStack[this.maskStack.length - 1]._scissorRect;
         const rt = this.renderer.renderTexture.current;

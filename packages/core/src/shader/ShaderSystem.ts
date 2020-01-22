@@ -66,7 +66,7 @@ export class ShaderSystem extends System
      *
      * @private
      */
-    systemCheck()
+    systemCheck(): void
     {
         if (!unsafeEvalSupported())
         {
@@ -75,7 +75,7 @@ export class ShaderSystem extends System
         }
     }
 
-    contextChange(gl: WebGL2RenderingContext)
+    contextChange(gl: WebGL2RenderingContext): void
     {
         this.gl = gl;
         this.reset();
@@ -88,7 +88,7 @@ export class ShaderSystem extends System
      * @param {boolean} [dontSync] - false if the shader should automatically sync its uniforms.
      * @returns {PIXI.GLProgram} the glProgram that belongs to the shader.
      */
-    bind(shader: Shader, dontSync?: boolean)
+    bind(shader: Shader, dontSync?: boolean): GLProgram
     {
         shader.uniforms.globals = this.renderer.globalUniforms;
 
@@ -119,7 +119,7 @@ export class ShaderSystem extends System
      *
      * @param {object} uniforms - the uniforms values that be applied to the current shader
      */
-    setUniforms(uniforms: any)
+    setUniforms(uniforms: any): void
     {
         const shader = this.shader.program;
         const glProgram = shader.glPrograms[this.renderer.CONTEXT_UID];
@@ -133,7 +133,7 @@ export class ShaderSystem extends System
      * @param {*} group the uniform group to sync
      * @param {*} [syncData] this is data that is passed to the sync function and any nested sync functions
      */
-    syncUniformGroup(group: UniformGroup, syncData?: any)
+    syncUniformGroup(group: UniformGroup, syncData?: any): void
     {
         const glProgram = this.getglProgram();
 
@@ -151,14 +151,14 @@ export class ShaderSystem extends System
      *
      * @private
      */
-    syncUniforms(group: UniformGroup, glProgram: GLProgram, syncData: any)
+    syncUniforms(group: UniformGroup, glProgram: GLProgram, syncData: any): void
     {
         const syncFunc = group.syncUniforms[this.shader.program.id] || this.createSyncGroups(group);
 
         syncFunc(glProgram.uniformData, group.uniforms, this.renderer, syncData);
     }
 
-    createSyncGroups(group: UniformGroup)
+    createSyncGroups(group: UniformGroup): any
     {
         const id = this.getSignature(group, this.shader.program.uniformData);
 
@@ -180,7 +180,7 @@ export class ShaderSystem extends System
      * @returns {String} Unique signature of the uniform group
      * @private
      */
-    getSignature(group: UniformGroup, uniformData: any)
+    getSignature(group: UniformGroup, uniformData: any): string
     {
         const uniforms = group.uniforms;
 
@@ -205,7 +205,7 @@ export class ShaderSystem extends System
      *
      * @return {PIXI.GLProgram} the glProgram for the currently bound Shader for this context
      */
-    getglProgram()
+    getglProgram(): GLProgram
     {
         if (this.shader)
         {
@@ -222,7 +222,7 @@ export class ShaderSystem extends System
      * @param {PIXI.Shader} shader the shader that the glProgram will be based on.
      * @return {PIXI.GLProgram} A shiny new glProgram!
      */
-    generateShader(shader: Shader)
+    generateShader(shader: Shader): GLProgram
     {
         const gl = this.gl;
 
@@ -258,7 +258,7 @@ export class ShaderSystem extends System
     /**
      * Resets ShaderSystem state, does not affect WebGL state
      */
-    reset()
+    reset(): void
     {
         this.program = null;
         this.shader = null;
@@ -267,7 +267,7 @@ export class ShaderSystem extends System
     /**
      * Destroys this System and removes all its textures
      */
-    destroy()
+    destroy(): void
     {
         // TODO implement destroy method for ShaderSystem
         this.destroyed = true;

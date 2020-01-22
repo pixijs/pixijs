@@ -8,7 +8,7 @@ let unsafeEval: any;
  * @private
  * @returns {boolean}
  */
-export function unsafeEvalSupported()
+export function unsafeEvalSupported(): boolean
 {
     if (typeof unsafeEval === 'boolean')
     {

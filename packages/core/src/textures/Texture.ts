@@ -222,7 +222,7 @@ export class Texture extends EventEmitter
      * If you adjusted `frame` manually, please call `updateUvs()` instead.
      *
      */
-    update()
+    update(): void
     {
         if (this.baseTexture.resource)
         {
@@ -236,7 +236,7 @@ export class Texture extends EventEmitter
      * @protected
      * @param {PIXI.BaseTexture} baseTexture - The base texture.
      */
-    onBaseTextureUpdated(baseTexture: BaseTexture)
+    onBaseTextureUpdated(baseTexture: BaseTexture): void
     {
         if (this.noFrame)
         {
@@ -265,7 +265,7 @@ export class Texture extends EventEmitter
      *
      * @param {boolean} [destroyBase=false] Whether to destroy the base texture as well
      */
-    destroy(destroyBase?: boolean)
+    destroy(destroyBase?: boolean): void
     {
         if (this.baseTexture)
         {
@@ -304,7 +304,7 @@ export class Texture extends EventEmitter
      *
      * @return {PIXI.Texture} The new texture
      */
-    clone()
+    clone(): Texture
     {
         return new Texture(this.baseTexture, this.frame, this.orig, this.trim, this.rotate, this.defaultAnchor);
     }
@@ -313,7 +313,7 @@ export class Texture extends EventEmitter
      * Updates the internal WebGL UV cache. Use it after you change `frame` or `trim` of the texture.
      * Call it after changing the frame
      */
-    updateUvs()
+    updateUvs(): void
     {
         if (this._uvs === DEFAULT_UVS)
         {
@@ -336,7 +336,8 @@ export class Texture extends EventEmitter
      * @param {boolean} [strict] Enforce strict-mode, see {@link PIXI.settings.STRICT_TEXTURE_CACHE}.
      * @return {PIXI.Texture} The newly created texture
      */
-    static from(source: any, options: IBaseTextureOptions = {}, strict = settings.STRICT_TEXTURE_CACHE)
+    static from(source: any, options: IBaseTextureOptions = {},
+        strict = settings.STRICT_TEXTURE_CACHE): Texture
     {
         const isFrame = typeof source === 'string';
         let cacheId = null;
@@ -392,7 +393,8 @@ export class Texture extends EventEmitter
      * @param {object} [options] See {@link PIXI.BaseTexture}'s constructor for options.
      * @return {PIXI.Texture} The resulting new BaseTexture
      */
-    static fromBuffer(buffer: Float32Array|Uint8Array, width: number, height: number, options: IBaseTextureOptions)
+    static fromBuffer(buffer: Float32Array|Uint8Array,
+        width: number, height: number, options: IBaseTextureOptions): Texture
     {
         return new Texture(BaseTexture.fromBuffer(buffer, width, height, options));
     }
@@ -407,7 +409,7 @@ export class Texture extends EventEmitter
      *        specified, only `imageUrl` will be used as the cache ID.
      * @return {PIXI.Texture} Output texture
      */
-    static fromLoader(source: HTMLImageElement|HTMLCanvasElement, imageUrl: string, name: string)
+    static fromLoader(source: HTMLImageElement|HTMLCanvasElement, imageUrl: string, name: string): Texture
     {
         const resource = new ImageResource(source as any);
 
@@ -447,7 +449,7 @@ export class Texture extends EventEmitter
      * @param {PIXI.Texture} texture - The Texture to add to the cache.
      * @param {string} id - The id that the Texture will be stored against.
      */
-    static addToCache(texture: Texture, id: string)
+    static addToCache(texture: Texture, id: string): void
     {
         if (id)
         {
@@ -473,7 +475,7 @@ export class Texture extends EventEmitter
      * @param {string|PIXI.Texture} texture - id of a Texture to be removed, or a Texture instance itself
      * @return {PIXI.Texture|null} The Texture that was removed
      */
-    static removeFromCache(texture: Texture)
+    static removeFromCache(texture: Texture): Texture|null
     {
         if (typeof texture === 'string')
         {
@@ -518,7 +520,7 @@ export class Texture extends EventEmitter
      * @member {number}
      * @readonly
      */
-    get resolution()
+    get resolution(): number
     {
         return this.baseTexture.resolution;
     }
@@ -529,7 +531,7 @@ export class Texture extends EventEmitter
      *
      * @member {PIXI.Rectangle}
      */
-    get frame()
+    get frame(): Rectangle
     {
         return this._frame;
     }
@@ -576,7 +578,7 @@ export class Texture extends EventEmitter
      *
      * @member {number}
      */
-    get rotate()
+    get rotate(): number
     {
         return this._rotate;
     }
@@ -595,7 +597,7 @@ export class Texture extends EventEmitter
      *
      * @member {number}
      */
-    get width()
+    get width(): number
     {
         return this.orig.width;
     }
@@ -605,7 +607,7 @@ export class Texture extends EventEmitter
      *
      * @member {number}
      */
-    get height()
+    get height(): number
     {
         return this.orig.height;
     }
@@ -613,7 +615,7 @@ export class Texture extends EventEmitter
     /**
      * Utility function for BaseTexture|Texture cast
      */
-    castToBaseTexture()
+    castToBaseTexture(): BaseTexture
     {
         return this.baseTexture;
     }
@@ -622,7 +624,7 @@ export class Texture extends EventEmitter
     static readonly WHITE: Texture;
 }
 
-function createWhiteTexture()
+function createWhiteTexture(): Texture
 {
     const canvas = document.createElement('canvas');
 
@@ -637,12 +639,12 @@ function createWhiteTexture()
     return new Texture(new BaseTexture(new CanvasResource(canvas)));
 }
 
-function removeAllHandlers(tex: any)
+function removeAllHandlers(tex: any): void
 {
-    tex.destroy = function _emptyDestroy() { /* empty */ };
-    tex.on = function _emptyOn() { /* empty */ };
-    tex.once = function _emptyOnce() { /* empty */ };
-    tex.emit = function _emptyEmit() { /* empty */ };
+    tex.destroy = function _emptyDestroy(): void { /* empty */ };
+    tex.on = function _emptyOn(): void { /* empty */ };
+    tex.once = function _emptyOnce(): void { /* empty */ };
+    tex.emit = function _emptyEmit(): void { /* empty */ };
 }
 
 /**

@@ -76,7 +76,7 @@ export class FilterState
      * clears the state
      * @private
      */
-    clear()
+    clear(): void
     {
         this.target = null;
         this.filters = null;

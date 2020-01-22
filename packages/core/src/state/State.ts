@@ -39,7 +39,7 @@ export class State
      *
      * @member {boolean}
      */
-    get blend()
+    get blend(): boolean
     {
         return !!(this.data & (1 << BLEND));
     }
@@ -58,7 +58,7 @@ export class State
      * @member {boolean}
      * @default false
      */
-    get offsets()
+    get offsets(): boolean
     {
         return !!(this.data & (1 << OFFSET));
     }
@@ -77,7 +77,7 @@ export class State
      * @member {boolean}
      * @default false
      */
-    get culling()
+    get culling(): boolean
     {
         return !!(this.data & (1 << CULLING));
     }
@@ -96,7 +96,7 @@ export class State
      * @member {boolean}
      * @default false
      */
-    get depthTest()
+    get depthTest(): boolean
     {
         return !!(this.data & (1 << DEPTH_TEST));
     }
@@ -114,7 +114,7 @@ export class State
      * @member {boolean}
      * @default false
      */
-    get clockwiseFrontFace()
+    get clockwiseFrontFace(): boolean
     {
         return !!(this.data & (1 << WINDING));
     }
@@ -135,7 +135,7 @@ export class State
      * @default PIXI.BLEND_MODES.NORMAL
      * @see PIXI.BLEND_MODES
      */
-    get blendMode()
+    get blendMode(): BLEND_MODES
     {
         return this._blendMode;
     }
@@ -152,7 +152,7 @@ export class State
      * @member {number}
      * @default 0
      */
-    get polygonOffset()
+    get polygonOffset(): number
     {
         return this._polygonOffset;
     }
@@ -163,7 +163,7 @@ export class State
         this._polygonOffset = value;
     }
 
-    static for2d()
+    static for2d(): State
     {
         const state = new State();
 

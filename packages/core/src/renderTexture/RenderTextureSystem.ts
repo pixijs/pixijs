@@ -75,7 +75,7 @@ export class RenderTextureSystem extends System
      * @param {PIXI.Rectangle} [sourceFrame] - part of screen that is mapped to the renderTexture
      * @param {PIXI.Rectangle} [destinationFrame] - part of renderTexture, by default it has the same size as sourceFrame
      */
-    bind(renderTexture: RenderTexture = null, sourceFrame?: Rectangle, destinationFrame?: Rectangle)
+    bind(renderTexture: RenderTexture = null, sourceFrame?: Rectangle, destinationFrame?: Rectangle): void
     {
         this.current = renderTexture;
 
@@ -152,7 +152,7 @@ export class RenderTextureSystem extends System
      *
      * @param {number[]} [clearColor] - The color as rgba, default to use the renderer backgroundColor
      */
-    clear(clearColor?: number[])
+    clear(clearColor?: number[]): void
     {
         if (this.current)
         {
@@ -166,7 +166,7 @@ export class RenderTextureSystem extends System
         this.renderer.framebuffer.clear(clearColor[0], clearColor[1], clearColor[2], clearColor[3]);
     }
 
-    resize()// screenWidth, screenHeight)
+    resize(): void // screenWidth, screenHeight)
     {
         // resize the root only!
         this.bind(null);
@@ -175,7 +175,7 @@ export class RenderTextureSystem extends System
     /**
      * Resets renderTexture state
      */
-    reset()
+    reset(): void
     {
         this.bind(null);
     }

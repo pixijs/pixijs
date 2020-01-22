@@ -279,7 +279,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
      * It calculates `this.MAX_TEXTURES` and allocating the
      * packed-geometry object pool.
      */
-    contextChange()
+    contextChange(): void
     {
         const gl = this.renderer.gl;
 
@@ -315,7 +315,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
     /**
      * Makes sure that static and dynamic flush pooled objects have correct dimensions
      */
-    initFlushBuffers()
+    initFlushBuffers(): void
     {
         const {
             _drawCallPool,
@@ -346,7 +346,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
      * It ensures that flushes start from the first geometry
      * object again.
      */
-    onPrerender()
+    onPrerender(): void
     {
         this._flushId = 0;
     }
@@ -358,7 +358,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
      * @param {PIXI.DisplayObject} element - the element to render when
      *    using this renderer
      */
-    render(element: any)
+    render(element: any): void
     {
         if (!element._texture.valid)
         {
@@ -376,7 +376,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
         this._bufferedElements[this._bufferSize++] = element;
     }
 
-    buildTexturesAndDrawCalls()
+    buildTexturesAndDrawCalls(): void
     {
         const {
             _bufferedTextures: textures,
@@ -442,7 +442,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
      * @param {number} start
      * @param {number} finish
      */
-    buildDrawCalls(texArray: BatchTextureArray, start: number, finish: number)
+    buildDrawCalls(texArray: BatchTextureArray, start: number, finish: number): void
     {
         const {
             _bufferedElements: elements,
@@ -502,7 +502,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
      *
      * @param {PIXI.BatchTextureArray} texArray
      */
-    bindAndClearTexArray(texArray: BatchTextureArray)
+    bindAndClearTexArray(texArray: BatchTextureArray): void
     {
         const textureSystem = this.renderer.texture;
 
@@ -514,7 +514,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
         texArray.count = 0;
     }
 
-    updateGeometry()
+    updateGeometry(): void
     {
         const {
             _packedGeometries: packedGeometries,
@@ -548,7 +548,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
         }
     }
 
-    drawBatches()
+    drawBatches(): void
     {
         const dcCount = this._dcIndex;
         const { gl, state: stateSystem } = this.renderer;
@@ -576,7 +576,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
     /**
      * Renders the content _now_ and empties the current batch.
      */
-    flush()
+    flush(): void
     {
         if (this._vertexCount === 0)
         {
@@ -602,7 +602,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
     /**
      * Starts a new sprite batch.
      */
-    start()
+    start(): void
     {
         this.renderer.state.set(this.state);
 
@@ -618,7 +618,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
     /**
      * Stops and flushes the current batch.
      */
-    stop()
+    stop(): void
     {
         this.flush();
     }
@@ -626,7 +626,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
     /**
      * Destroys this `AbstractBatchRenderer`. It cannot be used again.
      */
-    destroy()
+    destroy(): void
     {
         for (let i = 0; i < this._packedGeometryPoolSize; i++)
         {
@@ -661,7 +661,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
      * @return {ViewableBuffer} - buffer than can hold atleast `size` floats
      * @private
      */
-    getAttributeBuffer(size: number)
+    getAttributeBuffer(size: number): ViewableBuffer
     {
         // 8 vertices is enough for 2 quads
         const roundedP2 = nextPow2(Math.ceil(size / 8));
@@ -692,7 +692,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
      *    indices.
      * @private
      */
-    getIndexBuffer(size: number)
+    getIndexBuffer(size: number): Uint16Array
     {
         // 12 indices is enough for 2 quads
         const roundedP2 = nextPow2(Math.ceil(size / 12));
@@ -729,7 +729,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
      * @param {number} iIndex - number of indices already in `indexBuffer`
      */
     packInterleavedGeometry(element: any, attributeBuffer: ViewableBuffer, indexBuffer: Uint16Array,
-        aIndex: number, iIndex: number)
+        aIndex: number, iIndex: number): void
     {
         const {
             uint32View,

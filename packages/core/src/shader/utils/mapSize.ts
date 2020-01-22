@@ -28,7 +28,7 @@ const GLSL_TO_SIZE: any = {
  * @param type {String}
  * @return {Number}
  */
-export function mapSize(type: string)
+export function mapSize(type: string): number
 {
     return GLSL_TO_SIZE[type];
 }

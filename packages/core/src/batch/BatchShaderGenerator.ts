@@ -49,7 +49,7 @@ export class BatchShaderGenerator
         }
     }
 
-    generateShader(maxTextures: number)
+    generateShader(maxTextures: number): Shader
     {
         if (!this.programCache[maxTextures])
         {
@@ -79,7 +79,7 @@ export class BatchShaderGenerator
         return new Shader(this.programCache[maxTextures], uniforms);
     }
 
-    generateSampleSrc(maxTextures: number)
+    generateSampleSrc(maxTextures: number): string
     {
         let src = '';
 

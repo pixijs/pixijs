@@ -42,7 +42,7 @@ export class GLProgram
     /**
      * Destroys this program
      */
-    destroy()
+    destroy(): void
     {
         this.uniformData = null;
         this.uniformGroups = null;

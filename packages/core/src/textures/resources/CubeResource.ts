@@ -2,7 +2,7 @@ import { ArrayResource } from './ArrayResource';
 import { Resource } from './Resource';
 import { TARGETS } from '@pixi/constants';
 
-import { BaseTexture, Renderer, GLTexture, ImageSource } from '@pixi/core';
+import { BaseTexture, Renderer, GLTexture } from '@pixi/core';
 
 /**
  * Resource for a CubeTexture which contains six resources.
@@ -48,7 +48,7 @@ export class CubeResource extends ArrayResource
      * @override
      * @param {PIXI.BaseTexture} baseTexture - parent base texture
      */
-    bind(baseTexture: BaseTexture)
+    bind(baseTexture: BaseTexture): void
     {
         super.bind(baseTexture);
 
@@ -62,7 +62,7 @@ export class CubeResource extends ArrayResource
      */
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
-    upload(renderer: Renderer, baseTexture: BaseTexture, glTexture: GLTexture, source?: ImageSource): boolean
+    upload(renderer: Renderer, baseTexture: BaseTexture, glTexture: GLTexture): boolean
     {
         const dirty = this.itemDirtyIds;
 

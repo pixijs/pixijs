@@ -68,7 +68,7 @@ export class Renderer extends AbstractRenderer
      * @static
      * @private
      */
-    static create(options: any)
+    static create(options: any): Renderer
     {
         if (isWebGLSupported())
         {
@@ -356,7 +356,8 @@ export class Renderer extends AbstractRenderer
      * @param {PIXI.Matrix} [transform] - A transform to apply to the render texture before rendering.
      * @param {boolean} [skipUpdateTransform=false] - Should we skip the update transform pass?
      */
-    render(displayObject: any, renderTexture?: RenderTexture, clear?: boolean, transform?: Matrix, skipUpdateTransform?: boolean)
+    render(displayObject: any, renderTexture?: RenderTexture,
+        clear?: boolean, transform?: Matrix, skipUpdateTransform?: boolean): void
     {
         // can be handy to know!
         this.renderingToScreen = !renderTexture;
@@ -421,7 +422,7 @@ export class Renderer extends AbstractRenderer
      * @param {number} screenWidth - The new width of the screen.
      * @param {number} screenHeight - The new height of the screen.
      */
-    resize(screenWidth: number, screenHeight: number)
+    resize(screenWidth: number, screenHeight: number): void
     {
         super.resize(screenWidth, screenHeight);
 
@@ -433,7 +434,7 @@ export class Renderer extends AbstractRenderer
      *
      * @return {PIXI.Renderer} Returns itself.
      */
-    reset()
+    reset(): this
     {
         this.runners.reset.emit();
 
@@ -443,7 +444,7 @@ export class Renderer extends AbstractRenderer
     /**
      * Clear the frame buffer
      */
-    clear()
+    clear(): void
     {
         this.renderTexture.bind();
         this.renderTexture.clear();
@@ -455,7 +456,7 @@ export class Renderer extends AbstractRenderer
      * @param {boolean} [removeView=false] - Removes the Canvas element from the DOM.
      *  See: https://github.com/pixijs/pixi.js/issues/2233
      */
-    destroy(removeView?: boolean)
+    destroy(removeView?: boolean): void
     {
         this.runners.destroy.emit();
 
@@ -492,7 +493,7 @@ export class Renderer extends AbstractRenderer
      * @param {string} pluginName - The name of the plugin.
      * @param {Function} ctor - The constructor function or class for the plugin.
      */
-    static registerPlugin(pluginName: string, ctor: Function)
+    static registerPlugin(pluginName: string, ctor: Function): void
     {
         Renderer.__plugins = Renderer.__plugins || {};
         Renderer.__plugins[pluginName] = ctor;

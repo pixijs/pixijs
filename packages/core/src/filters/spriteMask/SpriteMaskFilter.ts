@@ -1,5 +1,6 @@
 import { Filter } from '../Filter';
 import { Matrix, Point } from '@pixi/math';
+import { CLEAR_MODES } from '@pixi/constants';
 import vertex from './spriteMaskFilter.vert';
 import fragment from './spriteMaskFilter.frag';
 import { TextureMatrix } from '../../textures/TextureMatrix';
@@ -57,9 +58,9 @@ export class SpriteMaskFilter extends Filter
      * @param {PIXI.systems.FilterSystem} filterManager - The renderer to retrieve the filter from
      * @param {PIXI.RenderTexture} input - The input render target.
      * @param {PIXI.RenderTexture} output - The target to output to.
-     * @param {boolean} clear - Should the output be cleared before rendering to it.
+     * @param {PIXI.CLEAR_MODES} clearMode - Should the output be cleared before rendering to it.
      */
-    apply(filterManager: FilterSystem, input: RenderTexture, output: RenderTexture, clear: boolean)
+    apply(filterManager: FilterSystem, input: RenderTexture, output: RenderTexture, clearMode: CLEAR_MODES): void
     {
         const maskSprite = this.maskSprite as ISpriteMaskTarget;
         const tex = maskSprite._texture;
@@ -84,6 +85,6 @@ export class SpriteMaskFilter extends Filter
         this.uniforms.alpha = maskSprite.worldAlpha;
         this.uniforms.maskClamp = tex.uvMatrix.uClampFrame;
 
-        filterManager.applyFilter(this, input, output, clear);
+        filterManager.applyFilter(this, input, output, clearMode);
     }
 }

@@ -32,7 +32,7 @@ export class BatchTextureArray
         this.count = 0;
     }
 
-    clear()
+    clear(): void
     {
         for (let i = 0; i < this.count; i++)
         {

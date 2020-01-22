@@ -80,7 +80,7 @@ export class BatchPluginFactory
      * @type {string}
      * @constant
      */
-    static get defaultVertexSrc()
+    static get defaultVertexSrc(): string
     {
         return defaultVertex;
     }
@@ -92,7 +92,7 @@ export class BatchPluginFactory
      * @type {string}
      * @constant
      */
-    static get defaultFragmentTemplate()
+    static get defaultFragmentTemplate(): string
     {
         return defaultFragment;
     }

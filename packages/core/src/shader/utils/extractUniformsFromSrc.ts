@@ -1,6 +1,6 @@
 import { defaultValue } from './defaultValue';
 
-function extractUniformsFromString(string: string)
+function extractUniformsFromString(string: string): any
 {
     const maskRegex = new RegExp('^(projectionMatrix|uSampler|translationMatrix)$');
 
@@ -48,7 +48,7 @@ function extractUniformsFromString(string: string)
     return uniforms;
 }
 
-export function extractUniformsFromSrc(vertexSrc: string, fragmentSrc: string)
+export function extractUniformsFromSrc(vertexSrc: string, fragmentSrc: string): any
 {
     const vertUniforms = extractUniformsFromString(vertexSrc);
     const fragUniforms = extractUniformsFromString(fragmentSrc);

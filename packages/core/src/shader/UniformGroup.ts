@@ -60,17 +60,17 @@ export class UniformGroup
         this.static = !!_static;
     }
 
-    update()
+    update(): void
     {
         this.dirtyId++;
     }
 
-    add(name: string, uniforms: any, _static: boolean)
+    add(name: string, uniforms: any, _static: boolean): void
     {
         this.uniforms[name] = new UniformGroup(uniforms, _static);
     }
 
-    static from(uniforms: any, _static: boolean)
+    static from(uniforms: any, _static: boolean): UniformGroup
     {
         return new UniformGroup(uniforms, _static);
     }

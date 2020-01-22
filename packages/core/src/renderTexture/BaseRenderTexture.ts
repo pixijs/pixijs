@@ -116,7 +116,7 @@ export class BaseRenderTexture extends BaseTexture
      * @param {number} width - The width to resize to.
      * @param {number} height - The height to resize to.
      */
-    resize(width: number, height: number)
+    resize(width: number, height: number): void
     {
         width = Math.ceil(width);
         height = Math.ceil(height);
@@ -130,7 +130,7 @@ export class BaseRenderTexture extends BaseTexture
      *
      * @fires PIXI.BaseTexture#dispose
      */
-    dispose()
+    dispose(): void
     {
         this.framebuffer.dispose();
 
@@ -141,7 +141,7 @@ export class BaseRenderTexture extends BaseTexture
      * Destroys this texture.
      *
      */
-    destroy()
+    destroy(): void
     {
         super.destroy();
 

@@ -42,7 +42,7 @@ export class BatchSystem extends System
      *
      * @param {PIXI.ObjectRenderer} objectRenderer - The object renderer to use.
      */
-    setObjectRenderer(objectRenderer: ObjectRenderer)
+    setObjectRenderer(objectRenderer: ObjectRenderer): void
     {
         if (this.currentRenderer === objectRenderer)
         {
@@ -59,7 +59,7 @@ export class BatchSystem extends System
      * This should be called if you wish to do some custom rendering
      * It will basically render anything that may be batched up such as sprites
      */
-    flush()
+    flush(): void
     {
         this.setObjectRenderer(this.emptyRenderer);
     }
@@ -67,7 +67,7 @@ export class BatchSystem extends System
     /**
      * Reset the system to an empty renderer
      */
-    reset()
+    reset(): void
     {
         this.setObjectRenderer(this.emptyRenderer);
     }
@@ -79,7 +79,7 @@ export class BatchSystem extends System
      * @param arr
      * @param maxTextures
      */
-    copyBoundTextures(arr: Array<BaseTexture>, maxTextures: number)
+    copyBoundTextures(arr: Array<BaseTexture>, maxTextures: number): void
     {
         const { boundTextures } = this.renderer.texture;
 
@@ -103,7 +103,8 @@ export class BatchSystem extends System
      * @param {number} batchId marker for _batchEnabled param of textures in texArray
      * @param {number} maxTextures number of texture locations to manipulate
      */
-    boundArray(texArray: BatchTextureArray, boundTextures: Array<BaseTexture>, batchId: number, maxTextures: number)
+    boundArray(texArray: BatchTextureArray, boundTextures: Array<BaseTexture>,
+        batchId: number, maxTextures: number): void
     {
         const { elements, ids, count } = texArray;
         let j = 0;

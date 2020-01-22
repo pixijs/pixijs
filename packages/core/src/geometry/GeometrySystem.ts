@@ -1,10 +1,9 @@
 import { System } from '../System';
 import { GLBuffer } from './GLBuffer';
-import { ENV } from '@pixi/constants';
+import { ENV, DRAW_MODES } from '@pixi/constants';
 import { settings } from '../settings';
 
 import { Geometry, Shader, Renderer, Program } from '@pixi/core';
-import { DRAW_MODES } from '@pixi/constants';
 import { Buffer } from './Buffer';
 
 const byteSizeMap: {[key: number]: number} = { 5126: 4, 5123: 2, 5121: 1 };
@@ -78,7 +77,7 @@ export class GeometrySystem extends System
     /**
      * Sets up the renderer context and necessary buffers.
      */
-    contextChange()
+    contextChange(): void
     {
         this.disposeAll(true);
 
@@ -100,25 +99,25 @@ export class GeometrySystem extends System
 
             if (nativeVaoExtension)
             {
-                gl.createVertexArray = () =>
+                gl.createVertexArray = (): WebGLVertexArrayObject =>
                     nativeVaoExtension.createVertexArrayOES();
 
-                gl.bindVertexArray = (vao) =>
+                gl.bindVertexArray = (vao): void =>
                     nativeVaoExtension.bindVertexArrayOES(vao);
 
-                gl.deleteVertexArray = (vao) =>
+                gl.deleteVertexArray = (vao): void =>
                     nativeVaoExtension.deleteVertexArrayOES(vao);
             }
             else
             {
                 (this as any).hasVao = false;
-                gl.createVertexArray = () =>
+                gl.createVertexArray = (): WebGLVertexArrayObject =>
                     null;
 
-                gl.bindVertexArray = () =>
+                gl.bindVertexArray = (): void =>
                     null;
 
-                gl.deleteVertexArray = () =>
+                gl.deleteVertexArray = (): void =>
                     null;
             }
         }
@@ -129,13 +128,13 @@ export class GeometrySystem extends System
 
             if (instanceExt)
             {
-                gl.vertexAttribDivisor = (a, b) =>
+                gl.vertexAttribDivisor = (a, b): void =>
                     instanceExt.vertexAttribDivisorANGLE(a, b);
 
-                gl.drawElementsInstanced = (a, b, c, d, e) =>
+                gl.drawElementsInstanced = (a, b, c, d, e): void =>
                     instanceExt.drawElementsInstancedANGLE(a, b, c, d, e);
 
-                gl.drawArraysInstanced = (a, b, c, d) =>
+                gl.drawArraysInstanced = (a, b, c, d): void =>
                     instanceExt.drawArraysInstancedANGLE(a, b, c, d);
             }
             else
@@ -153,7 +152,7 @@ export class GeometrySystem extends System
      * @param {PIXI.Geometry} geometry instance of geometry to bind
      * @param {PIXI.Shader} [shader] instance of shader to use vao for
      */
-    bind(geometry?: Geometry, shader?: Shader)
+    bind(geometry?: Geometry, shader?: Shader): void
     {
         shader = shader || this.renderer.shader.shader;
 
@@ -199,7 +198,7 @@ export class GeometrySystem extends System
     /**
      * Reset and unbind any active VAO and geometry
      */
-    reset()
+    reset(): void
     {
         this.unbind();
     }
@@ -208,7 +207,7 @@ export class GeometrySystem extends System
      * Update buffers
      * @protected
      */
-    updateBuffers()
+    updateBuffers(): void
     {
         const geometry = this._activeGeometry;
         const { gl } = this;
@@ -258,7 +257,7 @@ export class GeometrySystem extends System
      * @param {PIXI.Geometry} geometry - Geometry instance
      * @param {PIXI.Program} program - Program instance
      */
-    checkCompatibility(geometry: Geometry, program: Program)
+    checkCompatibility(geometry: Geometry, program: Program): void
     {
         // geometry must have at least all the attributes that the shader requires.
         const geometryAttributes = geometry.attributes;
@@ -281,7 +280,7 @@ export class GeometrySystem extends System
      * @returns {String} Unique signature of the geometry and program
      * @protected
      */
-    getSignature(geometry: Geometry, program: Program)
+    getSignature(geometry: Geometry, program: Program): string
     {
         const attribs = geometry.attributes;
         const shaderAttributes = program.attributeData;
@@ -307,7 +306,7 @@ export class GeometrySystem extends System
      * @param {PIXI.Geometry} geometry - Instance of geometry to to generate Vao for
      * @param {PIXI.Program} program - Instance of program
      */
-    initGeometryVao(geometry: Geometry, program: Program)
+    initGeometryVao(geometry: Geometry, program: Program): WebGLVertexArrayObject
     {
         this.checkCompatibility(geometry, program);
 
@@ -417,7 +416,7 @@ export class GeometrySystem extends System
      * @param {PIXI.Buffer} buffer buffer with data
      * @param {boolean} [contextLost=false] If context was lost, we suppress deleteVertexArray
      */
-    disposeBuffer(buffer: Buffer, contextLost?: boolean)
+    disposeBuffer(buffer: Buffer, contextLost?: boolean): void
     {
         if (!this.managedBuffers[buffer.id])
         {
@@ -449,7 +448,7 @@ export class GeometrySystem extends System
      * @param {PIXI.Geometry} geometry Geometry with buffers. Only VAO will be disposed
      * @param {boolean} [contextLost=false] If context was lost, we suppress deleteVertexArray
      */
-    disposeGeometry(geometry: Geometry, contextLost?: boolean)
+    disposeGeometry(geometry: Geometry, contextLost?: boolean): void
     {
         if (!this.managedGeometries[geometry.id])
         {
@@ -505,7 +504,7 @@ export class GeometrySystem extends System
      * dispose all WebGL resources of all managed geometries and buffers
      * @param {boolean} [contextLost=false] If context was lost, we suppress `gl.delete` calls
      */
-    disposeAll(contextLost?: boolean)
+    disposeAll(contextLost?: boolean): void
     {
         let all: Array<any> = Object.keys(this.managedGeometries);
 
@@ -527,7 +526,7 @@ export class GeometrySystem extends System
      * @param {PIXI.Geometry} geometry - Geometry instance
      * @param {PIXI.Program} program - Shader program instance
      */
-    activateVao(geometry: Geometry, program: Program)
+    activateVao(geometry: Geometry, program: Program): void
     {
         const gl = this.gl;
         const CONTEXT_UID = this.CONTEXT_UID;
@@ -595,7 +594,7 @@ export class GeometrySystem extends System
      * @param {Number} [start] - Starting index
      * @param {Number} [instanceCount] - the number of instances of the set of elements to execute
      */
-    draw(type: DRAW_MODES, size?: number, start?: number, instanceCount?: number)
+    draw(type: DRAW_MODES, size?: number, start?: number, instanceCount?: number): this
     {
         const { gl } = this;
         const geometry = this._activeGeometry;
@@ -644,7 +643,7 @@ export class GeometrySystem extends System
      * Unbind/reset everything
      * @protected
      */
-    unbind()
+    unbind(): void
     {
         this.gl.bindVertexArray(null);
         this._activeVao = null;

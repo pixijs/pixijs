@@ -90,7 +90,7 @@ export class Resource
      *
      * @param {PIXI.BaseTexture} baseTexture - Parent texture
      */
-    bind(baseTexture: BaseTexture)
+    bind(baseTexture: BaseTexture): void
     {
         this.onResize.add(baseTexture);
         this.onUpdate.add(baseTexture);
@@ -109,7 +109,7 @@ export class Resource
      *
      * @param {PIXI.BaseTexture} baseTexture - Parent texture
      */
-    unbind(baseTexture: BaseTexture)
+    unbind(baseTexture: BaseTexture): void
     {
         this.onResize.remove(baseTexture);
         this.onUpdate.remove(baseTexture);
@@ -121,7 +121,7 @@ export class Resource
      * @param {number} width X dimension
      * @param {number} height Y dimension
      */
-    resize(width: number, height: number)
+    resize(width: number, height: number): void
     {
         if (width !== this._width || height !== this._height)
         {
@@ -136,7 +136,7 @@ export class Resource
      * @readonly
      * @member {boolean}
      */
-    get valid()
+    get valid(): boolean
     {
         return !!this._width && !!this._height;
     }
@@ -144,7 +144,7 @@ export class Resource
     /**
      * Has been updated trigger event
      */
-    update()
+    update(): void
     {
         if (!this.destroyed)
         {
@@ -158,9 +158,9 @@ export class Resource
      * @protected
      * @return {Promise<void>} Handle the validate event
      */
-    load()
+    load(): Promise<Resource>
     {
-        return Promise.resolve();
+        return Promise.resolve(this);
     }
 
     /**
@@ -169,7 +169,7 @@ export class Resource
      * @member {number}
      * @readonly
      */
-    get width()
+    get width(): number
     {
         return this._width;
     }
@@ -180,7 +180,7 @@ export class Resource
      * @member {number}
      * @readonly
      */
-    get height()
+    get height(): number
     {
         return this._height;
     }
@@ -193,12 +193,15 @@ export class Resource
      * @param {PIXI.GLTexture} glTexture - texture instance for this webgl context
      * @returns {boolean} true is success
      */
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    /* eslint-disable @typescript-eslint/no-unused-vars */
+    /* eslint-disable @typescript-eslint/ban-ts-ignore */
     // @ts-ignore
-    upload(renderer: Renderer, baseTexture: BaseTexture, glTexture: GLTexture) // eslint-disable-line no-unused-vars
+    upload(renderer: Renderer, baseTexture: BaseTexture, glTexture: GLTexture): boolean
     {
         return false;
     }
+    /* eslint-enable @typescript-eslint/no-unused-vars */
+    /* eslint-enable @typescript-eslint/ban-ts-ignore */
 
     /**
      * Set the style, optional to override
@@ -208,19 +211,22 @@ export class Resource
      * @param {PIXI.GLTexture} glTexture - texture instance for this webgl context
      * @returns {boolean} `true` is success
      */
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    /* eslint-disable @typescript-eslint/no-unused-vars */
+    /* eslint-disable @typescript-eslint/ban-ts-ignore */
     // @ts-ignore
-    style(renderer: Renderer, baseTexture: BaseTexture, glTexture: GLTexture) // eslint-disable-line no-unused-vars
+    style(renderer: Renderer, baseTexture: BaseTexture, glTexture: GLTexture): boolean
     {
         return false;
     }
+    /* eslint-enable @typescript-eslint/no-unused-vars */
+    /* eslint-enable @typescript-eslint/ban-ts-ignore */
 
     /**
      * Clean up anything, this happens when destroying is ready.
      *
      * @protected
      */
-    dispose()
+    dispose(): void
     {
         // override
     }
@@ -230,7 +236,7 @@ export class Resource
      * before calling this method, as reference counts are maintained
      * internally.
      */
-    destroy()
+    destroy(): void
     {
         if (!this.destroyed)
         {
@@ -252,10 +258,13 @@ export class Resource
      * @param {*} source - The source object
      * @param {string} extension - The extension of source, if set
      */
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    /* eslint-disable @typescript-eslint/no-unused-vars */
+    /* eslint-disable @typescript-eslint/ban-ts-ignore */
     // @ts-ignore
-    static test(source: any, extension?: string)
+    static test(source: any, extension?: string): boolean
     {
         return false;
     }
+    /* eslint-enable @typescript-eslint/no-unused-vars */
+    /* eslint-enable @typescript-eslint/ban-ts-ignore */
 }

@@ -9,7 +9,7 @@ const byteSizeMap: {[key: number]: number} = { 5126: 4, 5123: 2, 5121: 1 };
 let UID = 0;
 
 /* eslint-disable object-shorthand */
-const map = {
+const map: any = {
     Float32Array: Float32Array,
     Uint32Array: Uint32Array,
     Int32Array: Int32Array,
@@ -105,7 +105,7 @@ export class Geometry
     * @return {PIXI.Geometry} returns self, useful for chaining.
     */
     addAttribute(id: string, buffer: Buffer|Float32Array|Uint32Array|Array<number>, size = 0, normalized = false,
-        type?: TYPES, stride = 0, start = 0, instance = false)
+        type?: TYPES, stride = 0, start = 0, instance = false): this
     {
         if (!buffer)
         {
@@ -158,7 +158,7 @@ export class Geometry
      * @param {String} id  the name of the attribute required
      * @return {PIXI.Attribute} the attribute requested.
      */
-    getAttribute(id: string)
+    getAttribute(id: string): Attribute
     {
         return this.attributes[id];
     }
@@ -169,7 +169,7 @@ export class Geometry
      * @param {String} id  the name of the buffer required
      * @return {PIXI.Buffer} the buffer requested.
      */
-    getBuffer(id: string)
+    getBuffer(id: string): Buffer
     {
         return this.buffers[this.getAttribute(id).buffer];
     }
@@ -182,7 +182,7 @@ export class Geometry
     * @param {PIXI.Buffer|number[]} [buffer] the buffer that holds the data of the index buffer. You can also provide an Array and a buffer will be created from it.
     * @return {PIXI.Geometry} returns self, useful for chaining.
     */
-    addIndex(buffer?: Buffer | IArrayBuffer | number[])
+    addIndex(buffer?: Buffer | IArrayBuffer | number[]): Geometry
     {
         if (!(buffer instanceof Buffer))
         {
@@ -211,7 +211,7 @@ export class Geometry
      *
      * @return {PIXI.Buffer} the index buffer.
      */
-    getIndex()
+    getIndex(): Buffer
     {
         return this.indexBuffer;
     }
@@ -222,7 +222,7 @@ export class Geometry
      *
      * @return {PIXI.Geometry} returns self, useful for chaining.
      */
-    interleave()
+    interleave(): Geometry
     {
         // a simple check to see if buffers are already interleaved..
         if (this.buffers.length === 1 || (this.buffers.length === 2 && this.indexBuffer)) return this;
@@ -266,7 +266,7 @@ export class Geometry
         return this;
     }
 
-    getSize()
+    getSize(): number
     {
         for (const i in this.attributes)
         {
@@ -282,7 +282,7 @@ export class Geometry
     /**
      * disposes WebGL resources that are connected to this geometry
      */
-    dispose()
+    dispose(): void
     {
         this.disposeRunner.emit(this, false);
     }
@@ -290,7 +290,7 @@ export class Geometry
     /**
      * Destroys the geometry.
      */
-    destroy()
+    destroy(): void
     {
         this.dispose();
 
@@ -304,7 +304,7 @@ export class Geometry
      *
      * @returns {PIXI.Geometry} a new clone of this geometry
      */
-    clone()
+    clone(): Geometry
     {
         const geometry = new Geometry();
 
@@ -344,7 +344,7 @@ export class Geometry
      * @param {PIXI.Geometry[]} geometries array of geometries to merge
      * @returns {PIXI.Geometry} shiny new geometry!
      */
-    static merge(geometries: Array<Geometry>)
+    static merge(geometries: Array<Geometry>): Geometry
     {
         // todo add a geometry check!
         // also a size check.. cant be too big!]

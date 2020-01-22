@@ -1,3 +1,4 @@
+import { Resource } from './Resource';
 import { ImageResource } from './ImageResource';
 
 /**
@@ -58,7 +59,7 @@ export const INSTALLED: Array<any> = [];
  *        texture should be updated from the video. Leave at 0 to update at every render
  * @return {PIXI.resources.Resource} The created resource.
  */
-export function autoDetectResource(source: any, options: any)
+export function autoDetectResource(source: any, options: any): Resource
 {
     if (!source)
     {

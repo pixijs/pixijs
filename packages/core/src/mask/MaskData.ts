@@ -101,7 +101,7 @@ export class MaskData
     /**
      * resets the mask data after popMask()
      */
-    reset()
+    reset(): void
     {
         if (this.pooled)
         {
@@ -119,7 +119,7 @@ export class MaskData
      * copies counters from maskData above, called from pushMask()
      * @param {PIXI.MaskData|null} maskAbove
      */
-    copyCountersOrReset(maskAbove?: MaskData)
+    copyCountersOrReset(maskAbove?: MaskData): void
     {
         if (maskAbove)
         {

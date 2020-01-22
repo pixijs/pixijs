@@ -25,7 +25,7 @@ const GL_TO_GLSL_TYPES: any = {
     SAMPLER_2D_ARRAY:  'sampler2DArray',
 };
 
-export function mapType(gl: any, type: number)
+export function mapType(gl: any, type: number): string
 {
     if (!GL_TABLE)
     {
