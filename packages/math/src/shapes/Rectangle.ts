@@ -8,6 +8,11 @@ import { SHAPES } from '../const';
  * @property {number} width - Width component
  * @property {number} height - Height component
  */
+export interface ISize
+{
+    width: number;
+    height: number;
+}
 
 /**
  * Rectangle object is an area defined by its position, as indicated by its top-left corner

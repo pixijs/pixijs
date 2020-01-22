@@ -37,9 +37,7 @@ export class CanvasRenderer extends AbstractRenderer
      */
     constructor(options, arg2, arg3)
     {
-        super('Canvas', options, arg2, arg3);
-
-        this.type = RENDERER_TYPE.CANVAS;
+        super(RENDERER_TYPE.CANVAS, options, arg2, arg3);
 
         /**
          * The root canvas 2d context that everything is drawn with.
