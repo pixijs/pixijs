@@ -74,8 +74,6 @@ export class Container extends DisplayObject
          */
         this.sortDirty = false;
 
-
-
         /**
          * Fired when a DisplayObject is added to this Container.
          *
