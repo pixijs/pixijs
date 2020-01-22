@@ -74,8 +74,7 @@ export class Container extends DisplayObject
          */
         this.sortDirty = false;
 
-        // performance increase to avoid using call.. (10x faster)
-        this.containerUpdateTransform = this.updateTransform;
+
 
         /**
          * Fired when a DisplayObject is added to this Container.
@@ -683,3 +682,5 @@ export class Container extends DisplayObject
         this._height = value;
     }
 }
+
+Container.prototype.containerUpdateTransform = Container.prototype.updateTransform;
