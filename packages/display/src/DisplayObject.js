@@ -312,7 +312,7 @@ export class DisplayObject extends EventEmitter
 
                     if (bufferNames.indexOf(childName) > -1)
                     {
-                        if (c.length)
+                        if (c && c.length)
                         {
                             c.push(_child);
                         }
