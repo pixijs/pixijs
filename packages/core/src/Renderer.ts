@@ -38,30 +38,27 @@ import { System } from './System';
  */
 export class Renderer extends AbstractRenderer
 {
-    gl: WebGL2RenderingContext;
-    globalUniforms: UniformGroup;
-    CONTEXT_UID: number;
-
+    public gl: WebGL2RenderingContext;
+    public globalUniforms: UniformGroup;
+    public CONTEXT_UID: number;
+    public renderingToScreen: boolean;
     // systems
-    mask: MaskSystem;
-    context: ContextSystem;
-    state: StateSystem;
-    shader: ShaderSystem;
-    texture: TextureSystem;
-    geometry: GeometrySystem;
-    framebuffer: FramebufferSystem;
-    scissor: ScissorSystem;
-    stencil: StencilSystem;
-    projection: ProjectionSystem;
-    textureGC: TextureGCSystem;
-    filter: FilterSystem;
-    renderTexture: RenderTextureSystem;
-    batch: BatchSystem;
+    public mask: MaskSystem;
+    public context: ContextSystem;
+    public state: StateSystem;
+    public shader: ShaderSystem;
+    public texture: TextureSystem;
+    public geometry: GeometrySystem;
+    public framebuffer: FramebufferSystem;
+    public scissor: ScissorSystem;
+    public stencil: StencilSystem;
+    public projection: ProjectionSystem;
+    public textureGC: TextureGCSystem;
+    public filter: FilterSystem;
+    public renderTexture: RenderTextureSystem;
+    public batch: BatchSystem;
 
     runners: {[key: string]: Runner};
-
-    resolution: number;
-    renderingToScreen: boolean;
 
     /**
      * Create renderer if WebGL is available. Overrideable

@@ -45,22 +45,22 @@ export interface IRendererPlugins
  */
 export abstract class AbstractRenderer extends EventEmitter
 {
-    protected _backgroundColor: number;
-    protected _backgroundColorRgba: number[];
-    protected _backgroundColorString: string;
+    public resolution: number;
+    public clearBeforeRender?: boolean;
+    public readonly options: IRendererOptions;
+    public readonly type: RENDERER_TYPE;
+    public readonly screen: Rectangle;
+    public readonly view: HTMLCanvasElement;
+    public readonly plugins: IRendererPlugins;
+    public readonly transparent: boolean | 'notMultiplied';
+    public readonly autoDensity: boolean;
+    public readonly preserveDrawingBuffer: boolean;
 
-    options: IRendererOptions;
-    readonly type: RENDERER_TYPE;
-    readonly screen: Rectangle;
-    readonly view: HTMLCanvasElement;
-    resolution: number;
-    readonly transparent: boolean | 'notMultiplied';
-    readonly autoDensity: boolean;
-    readonly preserveDrawingBuffer: boolean;
-    clearBeforeRender?: boolean;
-    readonly _tempDisplayObjectParent: DisplayObject;
+    protected readonly _tempDisplayObjectParent: DisplayObject;
+    protected _backgroundColor: number;
+    protected _backgroundColorString: string;
+    _backgroundColorRgba: number[];
     _lastObjectRendered: DisplayObject;
-    plugins: IRendererPlugins;
 
     /**
      * @param {string} system - The name of the system this renderer is for.
@@ -341,12 +341,12 @@ export abstract class AbstractRenderer extends EventEmitter
 
         // null-ing all objects, that's a tradition!
 
-        this.plugins = null;
+        thisAny.plugins = null;
         thisAny.type = RENDERER_TYPE.UNKNOWN;
         thisAny.view = null;
         thisAny.screen = null;
         thisAny._tempDisplayObjectParent = null;
-        this.options = null;
+        thisAny.options = null;
         this._backgroundColorRgba = null;
         this._backgroundColorString = null;
         this._lastObjectRendered = null;

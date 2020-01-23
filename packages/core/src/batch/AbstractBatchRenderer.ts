@@ -30,31 +30,31 @@ import { BatchGeometry } from './BatchGeometry';
  */
 export class AbstractBatchRenderer extends ObjectRenderer
 {
-    shaderGenerator: BatchShaderGenerator;
-    geometryClass: typeof BatchGeometry;
-    vertexSize: number;
-    state: State;
-    size: number;
+    public readonly state: State;
+    public size: number;
+    public MAX_TEXTURES: number;
+
+    protected shaderGenerator: BatchShaderGenerator;
+    protected geometryClass: typeof BatchGeometry;
+    protected vertexSize: number;
     protected _vertexCount: number;
     protected _indexCount: number;
     protected _bufferedElements: Array<any>;
     protected _bufferedTextures: Array<BaseTexture>;
     protected _bufferSize: number;
     protected _shader: Shader;
-    private _packedGeometries: Array<BatchGeometry>;
-    private _packedGeometryPoolSize: number;
-
     protected _flushId: number;
     protected _aBuffers: Array<ViewableBuffer>;
     protected _iBuffers: Array<Uint16Array>;
-    MAX_TEXTURES: number;
-
     protected _dcIndex: number;
     protected _aIndex: number;
     protected _iIndex: number;
     protected _attributeBuffer: ViewableBuffer;
     protected _indexBuffer: Uint16Array;
     protected _tempBoundTextures: BaseTexture[];
+
+    private _packedGeometries: Array<BatchGeometry>;
+    private _packedGeometryPoolSize: number;
 
     /**
      * This will hook onto the renderer's `contextChange`
