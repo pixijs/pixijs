@@ -153,7 +153,7 @@ export class Filter extends Shader
     public enabled: boolean;
     public autoFit: boolean;
     public legacy: boolean;
-    public state: State;
+    state: State;
     /**
      * @param {string} [vertexSrc] - The source of the vertex shader.
      * @param {string} [fragmentSrc] - The source of the fragment shader.
@@ -224,12 +224,8 @@ export class Filter extends Shader
      *        target, filters, sourceFrame, destinationFrame, renderTarget, resolution
      */
     apply(filterManager: FilterSystem, input: RenderTexture, output: RenderTexture, clearMode: CLEAR_MODES,
-        /* eslint-disable @typescript-eslint/no-unused-vars */
-        /* eslint-disable @typescript-eslint/ban-ts-ignore */
-        // @ts-ignore
-        currentState?: FilterState): void
-        /* eslint-enable @typescript-eslint/no-unused-vars */
-        /* eslint-enable @typescript-eslint/ban-ts-ignore */
+        /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+        _currentState?: FilterState): void
     {
         // do as you please!
 

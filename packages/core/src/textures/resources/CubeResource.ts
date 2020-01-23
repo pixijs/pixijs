@@ -60,9 +60,7 @@ export class CubeResource extends ArrayResource
      *
      * @returns {boolean} true is success
      */
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    // @ts-ignore
-    upload(renderer: Renderer, baseTexture: BaseTexture, glTexture: GLTexture): boolean
+    upload(renderer: Renderer, _baseTexture: BaseTexture, glTexture: GLTexture): boolean
     {
         const dirty = this.itemDirtyIds;
 

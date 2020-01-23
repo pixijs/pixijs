@@ -49,7 +49,7 @@ export class FramebufferSystem extends System
     /**
      * Sets up the renderer context and necessary buffers.
      */
-    contextChange(): void
+    protected contextChange(): void
     {
         const gl = this.gl = this.renderer.gl;
 
@@ -209,7 +209,7 @@ export class FramebufferSystem extends System
      * @member {object}
      * @readonly
      */
-    get size(): any
+    get size(): { x: number; y: number; width: number; height: number }
     {
         if (this.current)
         {

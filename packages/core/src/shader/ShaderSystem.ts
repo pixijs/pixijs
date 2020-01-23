@@ -29,7 +29,7 @@ export class ShaderSystem extends System
     public program: Program;
     public id: number;
     public destroyed = false;
-    protected cache: { [key: string]: Function };
+    private cache: { [key: string]: Function };
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
@@ -66,7 +66,7 @@ export class ShaderSystem extends System
      *
      * @private
      */
-    systemCheck(): void
+    private systemCheck(): void
     {
         if (!unsafeEvalSupported())
         {
@@ -75,7 +75,7 @@ export class ShaderSystem extends System
         }
     }
 
-    contextChange(gl: WebGL2RenderingContext): void
+    protected contextChange(gl: WebGL2RenderingContext): void
     {
         this.gl = gl;
         this.reset();
@@ -158,7 +158,7 @@ export class ShaderSystem extends System
         syncFunc(glProgram.uniformData, group.uniforms, this.renderer, syncData);
     }
 
-    createSyncGroups(group: UniformGroup): any
+    createSyncGroups(group: UniformGroup): Function
     {
         const id = this.getSignature(group, this.shader.program.uniformData);
 
@@ -180,7 +180,7 @@ export class ShaderSystem extends System
      * @returns {String} Unique signature of the uniform group
      * @private
      */
-    getSignature(group: UniformGroup, uniformData: any): string
+    private getSignature(group: UniformGroup, uniformData: any): string
     {
         const uniforms = group.uniforms;
 

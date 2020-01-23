@@ -17,7 +17,7 @@ function booleanArray(size: number): Array<boolean>
  * @param size {Number}
  * @private
  */
-export function defaultValue(type: string, size: number): any
+export function defaultValue(type: string, size: number): number|Float32Array|Int32Array|boolean|boolean[]
 {
     switch (type)
     {

@@ -99,7 +99,7 @@ export class BaseTexture extends EventEmitter
         if (resource && !(resource instanceof Resource))
         {
             resource = autoDetectResource(resource, resourceOptions);
-            (resource as any).internal = true;
+            resource.internal = true;
         }
 
         /**
@@ -442,7 +442,7 @@ export class BaseTexture extends EventEmitter
      *
      * @private
      */
-    _refreshPOT(): void
+    protected _refreshPOT(): void
     {
         this.isPowerOfTwo = isPow2(this.realWidth) && isPow2(this.realHeight);
     }
@@ -545,7 +545,7 @@ export class BaseTexture extends EventEmitter
         {
             this.resource.unbind(this);
             // only destroy resourced created internally
-            if ((this.resource as any).internal)
+            if (this.resource.internal)
             {
                 this.resource.destroy();
             }

@@ -12,8 +12,8 @@ import { BaseTexture, Renderer, GLTexture, ImageSource } from '@pixi/core';
  */
 export class BaseImageResource extends Resource
 {
-    source: ImageSource;
-    noSubImage: boolean;
+    public source: ImageSource;
+    public noSubImage: boolean;
 
     /**
      * @param {HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|SVGElement} source

@@ -25,8 +25,8 @@ export class GeometrySystem extends System
     protected _activeGeometry: Geometry;
     protected _activeVao: WebGLVertexArrayObject;
     protected _boundBuffer: GLBuffer;
-    managedGeometries: {[key: number]: Geometry};
-    managedBuffers: {[key: number]: Buffer};
+    readonly managedGeometries: {[key: number]: Geometry};
+    readonly managedBuffers: {[key: number]: Buffer};
 
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
@@ -77,7 +77,7 @@ export class GeometrySystem extends System
     /**
      * Sets up the renderer context and necessary buffers.
      */
-    contextChange(): void
+    protected contextChange(): void
     {
         this.disposeAll(true);
 
@@ -257,7 +257,7 @@ export class GeometrySystem extends System
      * @param {PIXI.Geometry} geometry - Geometry instance
      * @param {PIXI.Program} program - Program instance
      */
-    checkCompatibility(geometry: Geometry, program: Program): void
+    protected checkCompatibility(geometry: Geometry, program: Program): void
     {
         // geometry must have at least all the attributes that the shader requires.
         const geometryAttributes = geometry.attributes;
@@ -280,7 +280,7 @@ export class GeometrySystem extends System
      * @returns {String} Unique signature of the geometry and program
      * @protected
      */
-    getSignature(geometry: Geometry, program: Program): string
+    protected getSignature(geometry: Geometry, program: Program): string
     {
         const attribs = geometry.attributes;
         const shaderAttributes = program.attributeData;
@@ -329,8 +329,8 @@ export class GeometrySystem extends System
 
         const buffers = geometry.buffers;
         const attributes = geometry.attributes;
-        const tempStride: any = {};
-        const tempStart: any = {};
+        const tempStride: {[x: string]: number} = {};
+        const tempStart: {[x: string]: number} = {};
 
         for (const j in buffers)
         {
@@ -526,7 +526,7 @@ export class GeometrySystem extends System
      * @param {PIXI.Geometry} geometry - Geometry instance
      * @param {PIXI.Program} program - Shader program instance
      */
-    activateVao(geometry: Geometry, program: Program): void
+    protected activateVao(geometry: Geometry, program: Program): void
     {
         const gl = this.gl;
         const CONTEXT_UID = this.CONTEXT_UID;
@@ -643,7 +643,7 @@ export class GeometrySystem extends System
      * Unbind/reset everything
      * @protected
      */
-    unbind(): void
+    protected unbind(): void
     {
         this.gl.bindVertexArray(null);
         this._activeVao = null;

@@ -1,10 +1,18 @@
 import { defaultValue } from './defaultValue';
 
-function extractUniformsFromString(string: string): any
+export interface IExtractedUniformData
+{
+    type: string;
+    dirtyId: number;
+    name: string;
+    value: number|Float32Array|Int32Array|boolean|boolean[];
+}
+
+function extractUniformsFromString(string: string): {[key: string]: IExtractedUniformData}
 {
     const maskRegex = new RegExp('^(projectionMatrix|uSampler|translationMatrix)$');
 
-    const uniforms: any = {};
+    const uniforms: {[key: string]: IExtractedUniformData} = {};
     let nameSplit: Array<string>;
 
     // clean the lines a little - remove extra spaces, tabs, etc.
@@ -48,7 +56,7 @@ function extractUniformsFromString(string: string): any
     return uniforms;
 }
 
-export function extractUniformsFromSrc(vertexSrc: string, fragmentSrc: string): any
+export function extractUniformsFromSrc(vertexSrc: string, fragmentSrc: string): {[key: string]: IExtractedUniformData}
 {
     const vertUniforms = extractUniformsFromString(vertexSrc);
     const fragUniforms = extractUniformsFromString(fragmentSrc);

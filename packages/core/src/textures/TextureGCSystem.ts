@@ -66,7 +66,7 @@ export class TextureGCSystem extends System
      * Checks to see when the last time a texture was used
      * if the texture has not been used for a specified amount of time it will be removed from the GPU
      */
-    postrender(): void
+    protected postrender(): void
     {
         if (!this.renderer.renderingToScreen)
         {

@@ -1,4 +1,4 @@
-const GLSL_TO_SIZE: any = {
+const GLSL_TO_SIZE: {[x: string]: number} = {
     float:    1,
     vec2:     2,
     vec3:     3,

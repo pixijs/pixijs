@@ -36,7 +36,7 @@ export class VideoResource extends BaseImageResource
     protected _msToNextUpdate: number;
     protected autoPlay: boolean;
     private _load: Promise<VideoResource>;
-    private _resolve: Function;
+    private _resolve: (value?: VideoResource | PromiseLike<VideoResource>) => void;
 
     constructor(source?: HTMLVideoElement|Array<string|IVideoResourceOptionsElement>|string, options?: IVideoResourceOptions)
     {
@@ -131,12 +131,8 @@ export class VideoResource extends BaseImageResource
      *
      * @param {number} [deltaTime=0] - time delta since last tick
      */
-    /* eslint-disable @typescript-eslint/no-unused-vars */
-    /* eslint-disable @typescript-eslint/ban-ts-ignore */
-    // @ts-ignore
-    update(deltaTime = 0): void
-    /* eslint-enable @typescript-eslint/no-unused-vars */
-    /* eslint-enable @typescript-eslint/ban-ts-ignore */
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    update(_deltaTime = 0): void
     {
         if (!this.destroyed)
         {
@@ -209,7 +205,7 @@ export class VideoResource extends BaseImageResource
      *
      * @private
      */
-    _onError(): void
+    private _onError(): void
     {
         (this.source as HTMLVideoElement).removeEventListener('error', this._onError, true);
         this.onError.emit(event);
@@ -221,7 +217,7 @@ export class VideoResource extends BaseImageResource
      * @private
      * @return {boolean} True if playing.
      */
-    _isSourcePlaying(): boolean
+    private _isSourcePlaying(): boolean
     {
         const source = this.source as HTMLVideoElement;
 

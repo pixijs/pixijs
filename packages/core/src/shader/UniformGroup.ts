@@ -8,8 +8,8 @@ let UID = 0;
  */
 export class UniformGroup
 {
-    public uniforms: {[key: string]: any};
-    public group: boolean;
+    public readonly uniforms: {[key: string]: any};
+    public readonly group: boolean;
     public id: number;
     syncUniforms: {[key: string]: Function};
     dirtyId: number;
@@ -19,7 +19,7 @@ export class UniformGroup
      * @param {object} [uniforms] - Custom uniforms to use to augment the built-in ones.
      * @param {boolean} [_static] - Uniforms wont be changed after creation
      */
-    constructor(uniforms: any, _static?: boolean)
+    constructor(uniforms: {[key: string]: any}, _static?: boolean)
     {
         /**
          * uniform values

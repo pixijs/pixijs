@@ -10,13 +10,12 @@ import { BaseTexture, Renderer, GLTexture } from '@pixi/core';
  * @class
  * @memberof PIXI.resources
  */
-export class Resource
+export abstract class Resource
 {
+    public destroyed: boolean;
+    public internal: boolean;
     protected _width: number;
     protected _height: number;
-    // readonly?
-    destroyed: boolean;
-    protected internal: boolean;
     protected onResize: Runner;
     protected onUpdate: Runner;
     protected onError: Runner;
@@ -193,15 +192,7 @@ export class Resource
      * @param {PIXI.GLTexture} glTexture - texture instance for this webgl context
      * @returns {boolean} true is success
      */
-    /* eslint-disable @typescript-eslint/no-unused-vars */
-    /* eslint-disable @typescript-eslint/ban-ts-ignore */
-    // @ts-ignore
-    upload(renderer: Renderer, baseTexture: BaseTexture, glTexture: GLTexture): boolean
-    {
-        return false;
-    }
-    /* eslint-enable @typescript-eslint/no-unused-vars */
-    /* eslint-enable @typescript-eslint/ban-ts-ignore */
+    abstract upload(renderer: Renderer, baseTexture: BaseTexture, glTexture: GLTexture): boolean;
 
     /**
      * Set the style, optional to override

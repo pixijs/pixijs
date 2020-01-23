@@ -26,8 +26,8 @@ export class StateSystem extends System
     protected _blendEq: boolean;
     protected gl: WebGL2RenderingContext;
     protected blendModes: number[][];
-    protected map: Array<Function>;
-    protected checks: Array<Function>;
+    protected readonly map: Array<(value: boolean) => void>;
+    protected readonly checks: Array<(system: this, state: State) => void>;
     protected defaultState: State;
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
@@ -299,7 +299,7 @@ export class StateSystem extends System
      * @param {Function} func  the checking function to add or remove
      * @param {boolean} value  should the check function be added or removed.
      */
-    updateCheck(func: Function, value: boolean): void
+    updateCheck(func: (system: this, state: State) => void, value: boolean): void
     {
         const index = this.checks.indexOf(func);
 

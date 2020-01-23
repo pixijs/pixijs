@@ -18,6 +18,22 @@ let UID = 0;
 
 const nameCache: { [key: string]: number } = {};
 
+export interface IAttributeData
+{
+    type: string;
+    size: number;
+    location: number;
+    name: string;
+}
+
+export interface IUniformData
+{
+    type: string;
+    size: number;
+    isArray: RegExpMatchArray;
+    value: any;
+}
+
 /**
  * Helper class to create a shader program.
  *
@@ -32,8 +48,8 @@ export class Program
     nameCache: any;
     glPrograms: { [ key: number ]: GLProgram};
     syncUniforms: any;
-    attributeData: any;
-    uniformData: any;
+    attributeData: { [key: string]: IAttributeData};
+    uniformData: {[key: string]: IUniformData};
     /**
      * @param {string} [vertexSrc] - The source of the vertex shader.
      * @param {string} [fragmentSrc] - The source of the fragment shader.
@@ -98,7 +114,7 @@ export class Program
      * @param {string} [vertexSrc] - The source of the vertex shader.
      * @param {string} [fragmentSrc] - The source of the fragment shader.
      */
-    extractData(vertexSrc: string, fragmentSrc: string): void
+    protected extractData(vertexSrc: string, fragmentSrc: string): void
     {
         const gl = getTestContext();
 
@@ -127,10 +143,10 @@ export class Program
      *
      * @returns {object} the attribute data for this program
      */
-    getAttributeData(program: WebGLProgram, gl: WebGL2RenderingContext): void
+    protected getAttributeData(program: WebGLProgram, gl: WebGL2RenderingContext): {[key: string]: IAttributeData}
     {
-        const attributes: any = {};
-        const attributesArray: Array<any> = [];
+        const attributes: {[key: string]: IAttributeData} = {};
+        const attributesArray: Array<IAttributeData> = [];
 
         const totalAttributes = gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES);
 
@@ -171,9 +187,9 @@ export class Program
      *
      * @returns {object} the uniform data for this program
      */
-    getUniformData(program: WebGLProgram, gl: WebGL2RenderingContext): any
+    private getUniformData(program: WebGLProgram, gl: WebGL2RenderingContext): {[key: string]: IUniformData}
     {
-        const uniforms: any = {};
+        const uniforms: {[key: string]: IUniformData} = {};
 
         const totalUniforms = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
 

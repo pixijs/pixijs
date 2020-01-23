@@ -15,10 +15,10 @@ import { Renderer } from '@pixi/core';
 export class MaskSystem extends System
 {
     public enableScissor: boolean;
-    alphaMaskPool: Array<SpriteMaskFilter[]>;
-    maskDataPool: Array<MaskData>;
-    maskStack: Array<MaskData>;
-    alphaMaskIndex: number;
+    protected readonly alphaMaskPool: Array<SpriteMaskFilter[]>;
+    protected alphaMaskIndex: number;
+    private readonly maskDataPool: Array<MaskData>;
+    private maskStack: Array<MaskData>;
 
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.

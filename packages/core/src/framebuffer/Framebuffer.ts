@@ -63,7 +63,7 @@ export class Framebuffer
      * @param {number} [index=0] - Index of the array to add the texture to
      * @param {PIXI.BaseTexture} [texture] - Texture to add to the array
      */
-    addColorTexture(index = 0, texture: BaseTexture): this
+    addColorTexture(index = 0, texture?: BaseTexture): this
     {
         // TODO add some validation to the texture - same width / height etc?
         this.colorTextures[index] = texture || new BaseTexture(null, { scaleMode: 0,
@@ -83,7 +83,7 @@ export class Framebuffer
      *
      * @param {PIXI.BaseTexture} [texture] - Texture to add
      */
-    addDepthTexture(texture: BaseTexture): this
+    addDepthTexture(texture?: BaseTexture): this
     {
         /* eslint-disable max-len */
         this.depthTexture = texture || new BaseTexture(new DepthResource(null, { width: this.width, height: this.height }), { scaleMode: 0,

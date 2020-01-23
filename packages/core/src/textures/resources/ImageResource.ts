@@ -265,7 +265,7 @@ export class ImageResource extends BaseImageResource
 
             let flag = true;
 
-            const glTextures = (baseTexture as any)._glTextures;
+            const glTextures = baseTexture._glTextures;
 
             for (const key in glTextures)
             {

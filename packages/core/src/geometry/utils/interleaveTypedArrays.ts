@@ -2,7 +2,7 @@ import { ITypedArray } from '../Buffer';
 import { getBufferType } from './getBufferType';
 
 /* eslint-disable object-shorthand */
-const map: any = {
+const map: {[x: string]: any} = {
     Float32Array: Float32Array,
     Uint32Array: Uint32Array,
     Int32Array: Int32Array,
@@ -13,7 +13,7 @@ export function interleaveTypedArrays(arrays: Array<ITypedArray>, sizes: Array<n
 {
     let outSize = 0;
     let stride = 0;
-    const views: any = {};
+    const views: {[x: string]: any} = {};
 
     for (let i = 0; i < arrays.length; i++)
     {

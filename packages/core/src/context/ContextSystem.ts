@@ -4,7 +4,7 @@ import { ENV } from '@pixi/constants';
 
 import { Renderer } from '@pixi/core';
 
-let CONTEXT_UID = 0;
+let CONTEXT_UID_COUNTER = 0;
 
 /**
  * System plugin to the renderer to manage the context.
@@ -15,9 +15,9 @@ let CONTEXT_UID = 0;
  */
 export class ContextSystem extends System
 {
-    CONTEXT_UID: number;
-    gl: WebGL2RenderingContext;
-    webGLVersion: number;
+    public webGLVersion: number;
+    protected CONTEXT_UID: number;
+    protected gl: WebGL2RenderingContext;
     /* eslint-disable @typescript-eslint/camelcase */
     extensions:
     {
@@ -84,11 +84,11 @@ export class ContextSystem extends System
      * Handle the context change event
      * @param {WebGLRenderingContext} gl new webgl context
      */
-    contextChange(gl: WebGL2RenderingContext): void
+    protected contextChange(gl: WebGL2RenderingContext): void
     {
         this.gl = gl;
         this.renderer.gl = gl;
-        this.renderer.CONTEXT_UID = CONTEXT_UID++;
+        this.renderer.CONTEXT_UID = CONTEXT_UID_COUNTER++;
 
         // restore a context if it was previously lost
         if (gl.isContextLost() && gl.getExtension('WEBGL_lose_context'))
@@ -108,7 +108,7 @@ export class ContextSystem extends System
         this.gl = gl;
         this.validateContext(gl);
         this.renderer.gl = gl;
-        this.renderer.CONTEXT_UID = CONTEXT_UID++;
+        this.renderer.CONTEXT_UID = CONTEXT_UID_COUNTER++;
         this.renderer.runners.contextChange.emit(gl);
     }
 
@@ -173,7 +173,7 @@ export class ContextSystem extends System
      *
      * @protected
      */
-    getExtensions(): void
+    protected getExtensions(): void
     {
         // time to set up default extensions that Pixi uses.
         const { gl } = this;
@@ -223,7 +223,7 @@ export class ContextSystem extends System
      *
      * @protected
      */
-    handleContextRestored(): void
+    protected handleContextRestored(): void
     {
         this.renderer.runners.contextChange.emit(this.gl);
     }
@@ -249,7 +249,7 @@ export class ContextSystem extends System
      *
      * @protected
      */
-    postrender(): void
+    protected postrender(): void
     {
         if (this.renderer.renderingToScreen)
         {
@@ -263,7 +263,7 @@ export class ContextSystem extends System
      * @protected
      * @param {WebGLRenderingContext} gl - Render context
      */
-    validateContext(gl: WebGL2RenderingContext): void
+    protected validateContext(gl: WebGL2RenderingContext): void
     {
         const attributes = gl.getContextAttributes();
 

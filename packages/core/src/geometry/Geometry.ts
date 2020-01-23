@@ -9,7 +9,7 @@ const byteSizeMap: {[key: number]: number} = { 5126: 4, 5123: 2, 5121: 1 };
 let UID = 0;
 
 /* eslint-disable object-shorthand */
-const map: any = {
+const map: {[x: string]: any} = {
     Float32Array: Float32Array,
     Uint32Array: Uint32Array,
     Int32Array: Int32Array,
@@ -53,7 +53,7 @@ export class Geometry
      * @param {PIXI.Buffer[]} [buffers]  an array of buffers. optional.
      * @param {object} [attributes] of the geometry, optional structure of the attributes layout
      */
-    constructor(buffers: Array<Buffer> = [], attributes: any = {})
+    constructor(buffers: Array<Buffer> = [], attributes: {[key: string]: Attribute} = {})
     {
         this.buffers = buffers;
 

@@ -1,6 +1,6 @@
-let GL_TABLE: any = null;
+let GL_TABLE: {[x: string]: string} = null;
 
-const GL_TO_GLSL_TYPES: any = {
+const GL_TO_GLSL_TYPES: {[x: string]: string} = {
     FLOAT:       'float',
     FLOAT_VEC2:  'vec2',
     FLOAT_VEC3:  'vec3',

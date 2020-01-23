@@ -21,7 +21,7 @@ import { Renderer, RenderTexture, ISpriteMaskTarget } from '@pixi/core';
  */
 export class FilterSystem extends System
 {
-    public defaultFilterStack: Array<FilterState>;
+    public readonly defaultFilterStack: Array<FilterState>;
     public statePool: Array<FilterState>;
     public texturePool: RenderTexturePool;
     public forceClear: boolean;
@@ -376,7 +376,7 @@ export class FilterSystem extends System
      * @param {number} [resolution=1] - The resolution of the render texture.
      * @return {PIXI.RenderTexture} The new render texture.
      */
-    getOptimalFilterTexture(minWidth: number, minHeight: number, resolution = 1): RenderTexture
+    protected getOptimalFilterTexture(minWidth: number, minHeight: number, resolution = 1): RenderTexture
     {
         return this.texturePool.getOptimalTexture(minWidth, minHeight, resolution);
     }
