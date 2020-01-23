@@ -301,14 +301,14 @@ export class DisplayObject extends EventEmitter
 
         while ((childrens = pool.shift()))
         {
-            for (let i = 0, c = null, l = childrens.length; i < l; i++)
+            for (let i = 0, l = childrens.length; i < l; i++)
             {
                 const _child = childrens[i];
                 const childName = _child.name;
 
                 if (childName)
                 {
-                    c = Child[childName];
+                    const c = Child[childName];
 
                     if (bufferNames.indexOf(childName) > -1)
                     {
@@ -318,13 +318,13 @@ export class DisplayObject extends EventEmitter
                         }
                         else
                         {
-                            c = [c, _child];
+                            Child[childName] = [c, _child];
                         }
                     }
                     else
                     {
                         bufferNames.push(childName);
-                        c = _child;
+                        Child[childName] = _child;
                     }
 
                     if (!_child.child && _child.children.length)
