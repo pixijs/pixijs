@@ -36,7 +36,7 @@ export class DisplayObject extends EventEmitter
             Object.defineProperty(
                 DisplayObject.prototype,
                 propertyName,
-                Object.getOwnPropertyDescriptor(source, propertyName)
+                Object.getOwnPropertyDescriptor(source, propertyName),
             );
         }
     }
@@ -126,6 +126,12 @@ export class DisplayObject extends EventEmitter
          * @member {?PIXI.Rectangle}
          */
         this.filterArea = null;
+
+        /**
+         * Pool keys used to stock childrens references by names
+         * @member {boolean}
+         */
+        this.child = null;
 
         /**
          * Sets the filters for the displayObject.
@@ -279,36 +285,56 @@ export class DisplayObject extends EventEmitter
     /**
      * Map DisplayObject with name, and return references
      * @return {Object.<string, PIXI.DisplayObject>} DisplayObjects pool references
-     * 
+     *
      */
     childrenToName()
     {
         const Child = {};
         const bufferNames = [];
         const pool = [this.children];
-        if(this.name){
+
+        if (this.name)
+        {
             (Child[this.name] = this);
         }
         let childrens;
-        while (childrens = pool.shift()) {
-            for (let i=0, l=childrens.length; i<l; i++)
+
+        while ((childrens = pool.shift()))
+        {
+            for (let i = 0, c = null, l = childrens.length; i < l; i++)
             {
                 const _child = childrens[i];
                 const childName = _child.name;
-                if(childName){
-                    if( bufferNames.indexOf(childName)>-1 )
+
+                if (childName)
+                {
+                    c = Child[childName];
+
+                    if (bufferNames.indexOf(childName) > -1)
                     {
-                        Child[childName].length? Child[childName].push(_child) : Child[childName] = [Child[childName],_child];
+                        if (c.length)
+                        {
+                            c.push(_child);
+                        }
+                        else
+                        {
+                            c = [c, _child];
+                        }
                     }
                     else
                     {
-                        bufferNames.push(childName)
-                        Child[childName] = _child;
+                        bufferNames.push(childName);
+                        c = _child;
                     }
-                    !_child.child && _child.children.length && pool.push(_child.children);
+
+                    if (!_child.child && _child.children.length)
+                    {
+                        pool.push(_child.children);
+                    }
                 }
             }
         }
+
         return Child;
     }
 
@@ -503,6 +529,8 @@ export class DisplayObject extends EventEmitter
         this.interactiveChildren = false;
 
         this._destroyed = true;
+
+        this.child = null;
     }
 
     /**

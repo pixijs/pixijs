@@ -85,6 +85,19 @@ export class Container extends DisplayObject
     }
 
     /**
+     * Set or change name
+     *
+     * @param {string} name - Name value
+     * @returns {this}
+     */
+    setName(name)
+    {
+        this.name = name;
+
+        return this;
+    }
+
+    /**
      * Overridable method that can be used by Container subclasses whenever the children array is modified
      *
      * @protected
