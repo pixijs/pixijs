@@ -59,17 +59,18 @@ export interface IBaseTextureOptions {
  */
 export class BaseTexture extends EventEmitter
 {
-    readonly width: number;
-    readonly height: number;
-    readonly resolution: number;
-    alphaMode?: ALPHA_MODES;
-    mipmap?: MIPMAP_MODES;
-    anisotropicLevel?: number;
-    scaleMode?: SCALE_MODES;
-    wrapMode?: WRAP_MODES;
-    format?: FORMATS;
-    type?: TYPES;
-    target?: TARGETS;
+    public width: number;
+    public height: number;
+    public resolution: number;
+    public alphaMode?: ALPHA_MODES;
+    public mipmap?: MIPMAP_MODES;
+    public anisotropicLevel?: number;
+    public scaleMode?: SCALE_MODES;
+    public wrapMode?: WRAP_MODES;
+    public format?: FORMATS;
+    public type?: TYPES;
+    public target?: TARGETS;
+
     protected uid: number;
     touched: number;
     isPowerOfTwo: boolean;
@@ -77,11 +78,11 @@ export class BaseTexture extends EventEmitter
     _glTextures: { [key: number]: GLTexture };
     dirtyId: number;
     dirtyStyleId: number;
-    cacheId: string;
-    readonly valid: boolean;
-    readonly textureCacheIds: Array<string>;
-    readonly destroyed: boolean;
-    resource: Resource;
+    public cacheId: string;
+    public valid: boolean;
+    textureCacheIds: Array<string>;
+    public destroyed: boolean;
+    public resource: Resource;
     _batchEnabled: number;
     _batchLocation: number;
 
@@ -408,9 +409,9 @@ export class BaseTexture extends EventEmitter
      */
     setSize(width: number, height: number, resolution?: number): this
     {
-        (this as any).resolution = resolution || this.resolution;
-        (this as any).width = width;
-        (this as any).height = height;
+        this.resolution = resolution || this.resolution;
+        this.width = width;
+        this.height = height;
         this._refreshPOT();
         this.update();
 
@@ -427,9 +428,9 @@ export class BaseTexture extends EventEmitter
      */
     setRealSize(realWidth: number, realHeight: number, resolution?: number): this
     {
-        (this as any).resolution = resolution || this.resolution;
-        (this as any).width = realWidth / this.resolution;
-        (this as any).height = realHeight / this.resolution;
+        this.resolution = resolution || this.resolution;
+        this.width = realWidth / this.resolution;
+        this.height = realHeight / this.resolution;
         this._refreshPOT();
         this.update();
 
@@ -461,12 +462,12 @@ export class BaseTexture extends EventEmitter
             return this;
         }
 
-        (this as any).resolution = resolution;
+        this.resolution = resolution;
 
         if (this.valid)
         {
-            (this as any).width = this.width * oldResolution / resolution;
-            (this as any).height = this.height * oldResolution / resolution;
+            this.width = this.width * oldResolution / resolution;
+            this.height = this.height * oldResolution / resolution;
             this.emit('update', this);
         }
 
@@ -509,7 +510,7 @@ export class BaseTexture extends EventEmitter
         {
             if (this.width > 0 && this.height > 0)
             {
-                (this as any).valid = true;
+                this.valid = true;
                 this.emit('loaded', this);
                 this.emit('update', this);
             }
@@ -563,9 +564,9 @@ export class BaseTexture extends EventEmitter
         this.dispose();
 
         BaseTexture.removeFromCache(this);
-        (this as any).textureCacheIds = null;
+        this.textureCacheIds = null;
 
-        (this as any).destroyed = true;
+        this.destroyed = true;
     }
 
     /**

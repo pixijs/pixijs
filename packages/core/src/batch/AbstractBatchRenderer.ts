@@ -35,11 +35,11 @@ export class AbstractBatchRenderer extends ObjectRenderer
     vertexSize: number;
     state: State;
     size: number;
-    _vertexCount: number;
-    _indexCount: number;
-    _bufferedElements: Array<any>;
-    _bufferedTextures: Array<BaseTexture>;
-    _bufferSize: number;
+    protected _vertexCount: number;
+    protected _indexCount: number;
+    protected _bufferedElements: Array<any>;
+    protected _bufferedTextures: Array<BaseTexture>;
+    protected _bufferSize: number;
     protected _shader: Shader;
     private _packedGeometries: Array<BatchGeometry>;
     private _packedGeometryPoolSize: number;
@@ -55,9 +55,6 @@ export class AbstractBatchRenderer extends ObjectRenderer
     protected _attributeBuffer: ViewableBuffer;
     protected _indexBuffer: Uint16Array;
     protected _tempBoundTextures: BaseTexture[];
-
-    _drawCallPool: any;
-    _textureCallPool: any;
 
     /**
      * This will hook onto the renderer's `contextChange`

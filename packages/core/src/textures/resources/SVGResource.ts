@@ -26,8 +26,8 @@ export interface ISVGResourceOptions
  */
 export class SVGResource extends BaseImageResource
 {
-    readonly svg: string;
-    readonly scale: number;
+    public readonly svg: string;
+    public readonly scale: number;
     readonly _overrideWidth: number;
     readonly _overrideHeight: number;
     private _resolve: Function;
@@ -135,7 +135,7 @@ export class SVGResource extends BaseImageResource
      *
      * @private
      */
-    _loadSvg(): void
+    private _loadSvg(): void
     {
         const tempImage = new Image();
 

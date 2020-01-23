@@ -234,7 +234,7 @@ export class VideoResource extends BaseImageResource
      * @private
      * @return {boolean} True if ready.
      */
-    _isSourceReady(): boolean
+    private _isSourceReady(): boolean
     {
         const source = this.source as HTMLVideoElement;
 
@@ -246,7 +246,7 @@ export class VideoResource extends BaseImageResource
      *
      * @private
      */
-    _onPlayStart(): void
+    private _onPlayStart(): void
     {
         // Just in case the video has not received its can play even yet..
         if (!this.valid)
@@ -266,7 +266,7 @@ export class VideoResource extends BaseImageResource
      *
      * @private
      */
-    _onPlayStop(): void
+    private _onPlayStop(): void
     {
         if (this._isAutoUpdating)
         {
@@ -280,7 +280,7 @@ export class VideoResource extends BaseImageResource
      *
      * @private
      */
-    _onCanPlay(): void
+    private _onCanPlay(): void
     {
         const source = this.source as HTMLVideoElement;
 

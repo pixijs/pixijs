@@ -21,6 +21,8 @@ import { Runner } from '@pixi/runner';
 
 // import types
 import { RenderTexture } from './renderTexture/RenderTexture';
+import { DisplayObject } from '@pixi/display';
+import { System } from './System';
 
 /**
  * The Renderer draws the scene and all its content onto a WebGL enabled canvas.
@@ -304,7 +306,7 @@ export class Renderer extends AbstractRenderer
      *        sure it doesn't collide with properties on Renderer.
      * @return {PIXI.Renderer} Return instance of renderer
      */
-    addSystem(ClassRef: any, name: string): this
+    addSystem<T extends System>(ClassRef: { new(renderer: Renderer): T}, name: string): this
     {
         if (!name)
         {
@@ -356,7 +358,7 @@ export class Renderer extends AbstractRenderer
      * @param {PIXI.Matrix} [transform] - A transform to apply to the render texture before rendering.
      * @param {boolean} [skipUpdateTransform=false] - Should we skip the update transform pass?
      */
-    render(displayObject: any, renderTexture?: RenderTexture,
+    render(displayObject: DisplayObject, renderTexture?: RenderTexture,
         clear?: boolean, transform?: Matrix, skipUpdateTransform?: boolean): void
     {
         // can be handy to know!

@@ -45,9 +45,9 @@ export interface IRendererPlugins
  */
 export abstract class AbstractRenderer extends EventEmitter
 {
-    _backgroundColor: number;
-    _backgroundColorRgba: number[];
-    _backgroundColorString: string;
+    protected _backgroundColor: number;
+    protected _backgroundColorRgba: number[];
+    protected _backgroundColorString: string;
 
     options: IRendererOptions;
     readonly type: RENDERER_TYPE;
@@ -59,7 +59,7 @@ export abstract class AbstractRenderer extends EventEmitter
     readonly preserveDrawingBuffer: boolean;
     clearBeforeRender?: boolean;
     readonly _tempDisplayObjectParent: DisplayObject;
-    _lastObjectRendered: any;
+    _lastObjectRendered: DisplayObject;
     plugins: IRendererPlugins;
 
     /**
