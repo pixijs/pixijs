@@ -40,13 +40,13 @@ const map: any = {
  */
 export class Geometry
 {
-    buffers: Array<Buffer>;
-    indexBuffer: Buffer;
-    attributes: {[key: string]: Attribute};
+    public buffers: Array<Buffer>;
+    public indexBuffer: Buffer;
+    public attributes: {[key: string]: Attribute};
+    public id: number;
+    public instanced: boolean;
+    public instanceCount: number;
     glVertexArrayObjects: {[key: number]: {[key: string]: WebGLVertexArrayObject}};
-    id: number;
-    instanced: boolean;
-    instanceCount: number;
     disposeRunner: Runner;
     refCount: number;
     /**

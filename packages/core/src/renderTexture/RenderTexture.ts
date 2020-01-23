@@ -46,9 +46,9 @@ import { Rectangle } from '@pixi/math';
  */
 export class RenderTexture extends Texture
 {
+    public filterFrame: Rectangle|null;
+    public filterPoolKey: string|null;
     legacyRenderer: any;
-    filterFrame: Rectangle|null;
-    filterPoolKey: string|null;
     /**
      * @param {PIXI.BaseRenderTexture} baseRenderTexture - The base texture object that this texture uses
      * @param {PIXI.Rectangle} [frame] - The rectangle frame of the texture to show

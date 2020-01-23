@@ -26,9 +26,9 @@ const nameCache: { [key: string]: number } = {};
  */
 export class Program
 {
-    id: number;
-    vertexSrc: string;
-    fragmentSrc: string;
+    public id: number;
+    public vertexSrc: string;
+    public fragmentSrc: string;
     nameCache: any;
     glPrograms: { [ key: number ]: GLProgram};
     syncUniforms: any;

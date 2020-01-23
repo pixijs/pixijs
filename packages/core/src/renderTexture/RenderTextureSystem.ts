@@ -19,11 +19,11 @@ const tempRect = new Rectangle();
 
 export class RenderTextureSystem extends System
 {
-    clearColor: number[];
-    defaultMaskStack: Array<any>;
-    current: RenderTexture;
-    readonly sourceFrame: Rectangle;
-    readonly destinationFrame: Rectangle;
+    public clearColor: number[];
+    public defaultMaskStack: Array<any>;
+    public current: RenderTexture;
+    public readonly sourceFrame: Rectangle;
+    public readonly destinationFrame: Rectangle;
 
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.

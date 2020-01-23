@@ -8,11 +8,11 @@ let UID = 0;
  */
 export class UniformGroup
 {
-    uniforms: {[key: string]: any};
-    group: boolean;
+    public uniforms: {[key: string]: any};
+    public group: boolean;
+    public id: number;
     syncUniforms: {[key: string]: Function};
     dirtyId: number;
-    id: number;
     static: boolean;
 
     /**

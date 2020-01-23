@@ -6,9 +6,9 @@
  */
 export class GLProgram
 {
-    program: WebGLProgram;
-    uniformData: any;
-    uniformGroups: any;
+    public program: WebGLProgram;
+    public uniformData: any;
+    public uniformGroups: any;
     /**
      * Makes a new Pixi program
      *

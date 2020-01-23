@@ -19,9 +19,9 @@ import { ISize } from '@pixi/math';
  */
 export class RenderTexturePool
 {
-    textureOptions: IBaseTextureOptions;
+    public textureOptions: IBaseTextureOptions;
+    public enableFullScreen: boolean;
     texturePool: any;
-    enableFullScreen: boolean;
     private _pixelsWidth: number;
     private _pixelsHeight: number;
     /**

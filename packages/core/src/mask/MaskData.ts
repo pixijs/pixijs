@@ -22,11 +22,11 @@ export interface IMaskTarget extends IFilterTarget
  */
 export class MaskData
 {
-    type: MASK_TYPES;
-    autoDetect: boolean;
-    maskObject: IMaskTarget;
-    pooled: boolean;
-    isMaskData: boolean;
+    public type: MASK_TYPES;
+    public autoDetect: boolean;
+    public maskObject: IMaskTarget;
+    public pooled: boolean;
+    public isMaskData: boolean;
     _stencilCounter: number;
     _scissorCounter: number;
     _scissorRect: Rectangle;

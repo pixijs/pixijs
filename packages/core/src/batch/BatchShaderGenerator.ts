@@ -11,8 +11,8 @@ import { Matrix } from '@pixi/math';
  */
 export class BatchShaderGenerator
 {
-    vertexSrc: string;
-    fragTemplate: string;
+    public vertexSrc: string;
+    public fragTemplate: string;
     programCache: {[key: number]: any};
     defaultGroupCache: {[key: number]: any};
     /**

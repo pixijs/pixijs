@@ -12,7 +12,7 @@ import { Renderer } from '@pixi/core';
 export class AbstractMaskSystem extends System
 {
     maskStack: Array<MaskData>;
-    glConst: number;
+    protected glConst: number;
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */

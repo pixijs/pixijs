@@ -42,17 +42,17 @@ const DEFAULT_UVS = new TextureUvs();
  */
 export class Texture extends EventEmitter
 {
-    baseTexture: BaseTexture;
-    orig: Rectangle;
-    trim: Rectangle;
-    valid: boolean;
-    _updateID: number;
-    noFrame: boolean;
-    defaultAnchor: Point;
-    _frame: Rectangle;
+    public baseTexture: BaseTexture;
+    public orig: Rectangle;
+    public trim: Rectangle;
+    public valid: boolean;
+    public noFrame: boolean;
+    public defaultAnchor: Point;
+    public uvMatrix: TextureMatrix;
     protected _rotate: number;
+    _updateID: number;
+    _frame: Rectangle;
     _uvs: TextureUvs;
-    uvMatrix: TextureMatrix;
     textureCacheIds: Array<string>;
 
     /**

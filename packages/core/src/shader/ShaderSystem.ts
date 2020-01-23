@@ -24,12 +24,12 @@ const defaultSyncData = { textureCount: 0 };
  */
 export class ShaderSystem extends System
 {
-    gl: WebGL2RenderingContext;
-    shader: Shader;
-    program: Program;
-    cache: { [key: string]: Function };
-    id: number;
-    destroyed = false;
+    protected gl: WebGL2RenderingContext;
+    public shader: Shader;
+    public program: Program;
+    public id: number;
+    public destroyed = false;
+    protected cache: { [key: string]: Function };
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */

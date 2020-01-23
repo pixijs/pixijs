@@ -18,15 +18,15 @@ import { groupD8, Rectangle, ISize } from '@pixi/math';
  */
 export class TextureUvs
 {
-    x0: number;
-    y0: number;
-    x1: number;
-    y1: number;
-    x2: number;
-    y2: number;
-    x3: number;
-    y3: number;
-    uvsFloat32: Float32Array;
+    public x0: number;
+    public y0: number;
+    public x1: number;
+    public y1: number;
+    public x2: number;
+    public y2: number;
+    public x3: number;
+    public y3: number;
+    public uvsFloat32: Float32Array;
 
     constructor()
     {

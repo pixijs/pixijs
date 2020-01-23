@@ -37,14 +37,13 @@ export interface ITypedArray extends IArrayBuffer
  */
 export class Buffer
 {
-    data: ITypedArray;
-    static: boolean;
-    index: boolean;
+    public data: ITypedArray;
+    public index: boolean;
+    public static: boolean;
+    public id: number;
+     disposeRunner: Runner;
     _glBuffers: {[key: number]: GLBuffer};
     _updateID: number;
-    id: number;
-    disposeRunner: Runner;
-
     /**
      * @param {ArrayBuffer| SharedArrayBuffer|ArrayBufferView} data the data to store in the buffer.
      * @param {boolean} [_static=true] `true` for static buffer

@@ -17,14 +17,14 @@ const byteSizeMap: {[key: number]: number} = { 5126: 4, 5123: 2, 5121: 1 };
  */
 export class GeometrySystem extends System
 {
-    CONTEXT_UID: number;
-    gl: WebGL2RenderingContext;
-    _activeGeometry: Geometry;
-    _activeVao: WebGLVertexArrayObject;
-    readonly hasVao: boolean;
-    readonly hasInstance: boolean;
-    readonly canUseUInt32ElementIndex: boolean;
-    _boundBuffer: GLBuffer;
+    public hasVao: boolean;
+    public hasInstance: boolean;
+    public canUseUInt32ElementIndex: boolean;
+    protected CONTEXT_UID: number;
+    protected gl: WebGL2RenderingContext;
+    protected _activeGeometry: Geometry;
+    protected _activeVao: WebGLVertexArrayObject;
+    protected _boundBuffer: GLBuffer;
     managedGeometries: {[key: number]: Geometry};
     managedBuffers: {[key: number]: Buffer};
 
@@ -110,7 +110,7 @@ export class GeometrySystem extends System
             }
             else
             {
-                (this as any).hasVao = false;
+                this.hasVao = false;
                 gl.createVertexArray = (): WebGLVertexArrayObject =>
                     null;
 
@@ -139,11 +139,11 @@ export class GeometrySystem extends System
             }
             else
             {
-                (this as any).hasInstance = false;
+                this.hasInstance = false;
             }
         }
 
-        (this as any).canUseUInt32ElementIndex = context.webGLVersion === 2 || !!context.extensions.uint32ElementIndex;
+        this.canUseUInt32ElementIndex = context.webGLVersion === 2 || !!context.extensions.uint32ElementIndex;
     }
 
     /**

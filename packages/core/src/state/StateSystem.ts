@@ -20,15 +20,15 @@ const WINDING = 4;
  */
 export class StateSystem extends System
 {
-    gl: WebGL2RenderingContext;
-    stateId: number;
-    polygonOffset: number;
-    blendMode: BLEND_MODES;
+    public stateId: number;
+    public polygonOffset: number;
+    public blendMode: BLEND_MODES;
     protected _blendEq: boolean;
-    readonly map: Array<Function>;
-    readonly checks: Array<Function>;
-    readonly defaultState: State;
-    blendModes: number[][];
+    protected gl: WebGL2RenderingContext;
+    protected blendModes: number[][];
+    protected map: Array<Function>;
+    protected checks: Array<Function>;
+    protected defaultState: State;
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */

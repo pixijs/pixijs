@@ -9,8 +9,8 @@ import { UniformGroup } from './UniformGroup';
  */
 export class Shader
 {
-    program: Program;
-    uniformGroup: UniformGroup;
+    public program: Program;
+    public uniformGroup: UniformGroup;
     /**
      * @param {PIXI.Program} [program] - The program the shader will use.
      * @param {object} [uniforms] - Custom uniforms to use to augment the built-in ones.

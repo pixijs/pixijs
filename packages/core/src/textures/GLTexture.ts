@@ -5,15 +5,15 @@
  */
 export class GLTexture
 {
-    texture: WebGLTexture;
-    width: number;
-    height: number;
+    public texture: WebGLTexture;
+    public width: number;
+    public height: number;
+    public mipmap: boolean;
+    public wrapMode: number;
+    public type: number;
+    public internalFormat: number;
     dirtyId: number;
     dirtyStyleId: number;
-    mipmap: boolean;
-    wrapMode: number;
-    type: number;
-    internalFormat: number;
 
     constructor(texture: WebGLTexture)
     {

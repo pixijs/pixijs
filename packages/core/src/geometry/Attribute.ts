@@ -13,13 +13,13 @@ import { TYPES } from '@pixi/constants';
  */
 export class Attribute
 {
-    buffer: number;
-    size: number;
-    normalized: boolean;
-    type: TYPES;
-    stride: number;
-    start: number;
-    instance: boolean;
+    public buffer: number;
+    public size: number;
+    public normalized: boolean;
+    public type: TYPES;
+    public stride: number;
+    public start: number;
+    public instance: boolean;
     /**
      * @param {string} buffer  the id of the buffer that this attribute will look for
      * @param {Number} [size=0] the size of the attribute. If you have 2 floats per vertex (eg position x and y) this would be 2.

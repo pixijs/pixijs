@@ -12,8 +12,8 @@ import { Renderer, BaseTexture, BatchTextureArray } from '@pixi/core';
  */
 export class BatchSystem extends System
 {
-    readonly emptyRenderer: ObjectRenderer;
-    currentRenderer: ObjectRenderer;
+    public readonly emptyRenderer: ObjectRenderer;
+    public currentRenderer: ObjectRenderer;
 
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.

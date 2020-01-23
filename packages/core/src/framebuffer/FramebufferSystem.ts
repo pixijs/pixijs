@@ -15,14 +15,14 @@ import { Renderer } from '@pixi/core';
  */
 export class FramebufferSystem extends System
 {
-    readonly managedFramebuffers: Array<Framebuffer>;
-    readonly unknownFramebuffer: Framebuffer;
-    CONTEXT_UID: number;
-    current: Framebuffer;
-    viewport: Rectangle;
-    hasMRT: boolean;
-    writeDepthTexture: boolean;
-    gl: WebGL2RenderingContext;
+    public readonly managedFramebuffers: Array<Framebuffer>;
+    public current: Framebuffer;
+    public viewport: Rectangle;
+    public hasMRT: boolean;
+    public writeDepthTexture: boolean;
+    protected CONTEXT_UID: number;
+    protected gl: WebGL2RenderingContext;
+    protected unknownFramebuffer: Framebuffer;
 
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.

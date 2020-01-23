@@ -148,12 +148,12 @@ import { BLEND_MODES, CLEAR_MODES } from '@pixi/constants';
  */
 export class Filter extends Shader
 {
-    padding: number;
-    resolution: number;
-    enabled: boolean;
-    autoFit: boolean;
-    legacy: boolean;
-    state: State;
+    public padding: number;
+    public resolution: number;
+    public enabled: boolean;
+    public autoFit: boolean;
+    public legacy: boolean;
+    public state: State;
     /**
      * @param {string} [vertexSrc] - The source of the vertex shader.
      * @param {string} [fragmentSrc] - The source of the fragment shader.

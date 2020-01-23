@@ -43,11 +43,11 @@ import { Framebuffer } from '../framebuffer/Framebuffer';
  */
 export class BaseRenderTexture extends BaseTexture
 {
-    protected _canvasRenderTarget: any;
-    clearColor: number[];
-    framebuffer: Framebuffer;
+    public clearColor: number[];
+    public framebuffer: Framebuffer;
     maskStack: Array<any>;
     filterStack: Array<any>;
+    _canvasRenderTarget: any;
     /**
      * @param {object} [options]
      * @param {number} [options.width=100] - The width of the base render texture.

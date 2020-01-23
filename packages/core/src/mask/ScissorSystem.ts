@@ -11,7 +11,6 @@ import { MaskData } from './MaskData';
  */
 export class ScissorSystem extends AbstractMaskSystem
 {
-    glConst: number;
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */

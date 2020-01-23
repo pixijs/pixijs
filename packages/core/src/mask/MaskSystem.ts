@@ -14,7 +14,7 @@ import { Renderer } from '@pixi/core';
  */
 export class MaskSystem extends System
 {
-    enableScissor: boolean;
+    public enableScissor: boolean;
     alphaMaskPool: Array<SpriteMaskFilter[]>;
     maskDataPool: Array<MaskData>;
     maskStack: Array<MaskData>;

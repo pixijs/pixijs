@@ -11,8 +11,8 @@ import { FORMATS, MIPMAP_MODES, TYPES } from '@pixi/constants';
  */
 export class Framebuffer
 {
-    width: number;
-    height: number;
+    public width: number;
+    public height: number;
     stencil: boolean;
     depth: boolean;
     dirtyId: number;

@@ -14,11 +14,11 @@ import { Renderer } from '@pixi/core';
  */
 export class TextureGCSystem extends System
 {
-    count: number;
-    checkCount: number;
-    maxIdle: number;
-    checkCountMax: number;
-    mode: number;
+    public count: number;
+    public checkCount: number;
+    public maxIdle: number;
+    public checkCountMax: number;
+    public mode: number;
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */

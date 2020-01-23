@@ -16,16 +16,16 @@ import { Renderer } from '@pixi/core';
  */
 export class TextureSystem extends System
 {
-    webGLVersion: number;
-    boundTextures: Array<BaseTexture>;
+    public webGLVersion: number;
+    public boundTextures: Array<BaseTexture>;
+    public managedTextures: Array<BaseTexture>;
+    protected CONTEXT_UID: number;
+    protected gl: WebGL2RenderingContext;
+    protected unknownTexture: BaseTexture;
+    protected _unknownBoundTextures: boolean;
     currentLocation: number;
-    managedTextures: Array<BaseTexture>;
-    _unknownBoundTextures: boolean;
-    unknownTexture: BaseTexture;
     emptyTextures: {[key: number]: GLTexture};
 
-    CONTEXT_UID: number;
-    gl: WebGL2RenderingContext;
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */

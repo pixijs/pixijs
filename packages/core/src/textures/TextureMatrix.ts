@@ -23,14 +23,14 @@ const tempMat = new Matrix();
  */
 export class TextureMatrix
 {
-    _texture: Texture;
-    mapCoord: Matrix;
+    public mapCoord: Matrix;
+    public clampOffset: number;
+    public clampMargin: number;
     readonly uClampFrame: Float32Array;
     readonly uClampOffset: Float32Array;
-    protected _updateID: number;
-    clampOffset: number;
-    clampMargin: number;
-    readonly isSimple: boolean;
+    _updateID: number;
+    _texture: Texture;
+    isSimple: boolean;
     /**
      *
      * @param {PIXI.Texture} texture observed texture
@@ -190,7 +190,7 @@ export class TextureMatrix
         this.uClampOffset[0] = offset / texBase.realWidth;
         this.uClampOffset[1] = offset / texBase.realHeight;
 
-        (this as any).isSimple = tex._frame.width === texBase.width
+        this.isSimple = tex._frame.width === texBase.width
             && tex._frame.height === texBase.height
             && tex.rotate === 0;
 

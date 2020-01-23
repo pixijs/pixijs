@@ -9,9 +9,9 @@ import { BaseTexture } from '@pixi/core';
  */
 export class BatchTextureArray
 {
-    elements: BaseTexture[];
-    ids: number[];
-    count: number;
+    public elements: BaseTexture[];
+    public ids: number[];
+    public count: number;
 
     constructor()
     {

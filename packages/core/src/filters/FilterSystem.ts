@@ -21,15 +21,15 @@ import { Renderer, RenderTexture, ISpriteMaskTarget } from '@pixi/core';
  */
 export class FilterSystem extends System
 {
-    defaultFilterStack: Array<FilterState>;
-    statePool: Array<FilterState>;
-    texturePool: RenderTexturePool;
-    quad: Quad;
-    quadUv: QuadUv;
+    public defaultFilterStack: Array<FilterState>;
+    public statePool: Array<FilterState>;
+    public texturePool: RenderTexturePool;
+    public forceClear: boolean;
+    protected quad: Quad;
+    protected quadUv: QuadUv;
+    protected activeState: FilterState;
+    protected globalUniforms: UniformGroup;
     private tempRect: Rectangle;
-    activeState: FilterState;
-    globalUniforms: UniformGroup;
-    forceClear: boolean;
 
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.

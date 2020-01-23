@@ -9,16 +9,16 @@ import { ITypedArray } from './Buffer';
  */
 export class ViewableBuffer
 {
-    size: number;
-    rawBinaryData: ArrayBuffer;
-    uint32View: Uint32Array;
-    float32View: Float32Array;
+    public size: number;
+    public rawBinaryData: ArrayBuffer;
+    public uint32View: Uint32Array;
+    public float32View: Float32Array;
 
-    _int8View: Int8Array;
-    _uint8View: Uint8Array;
-    _int16View: Int16Array;
-    _uint16View: Uint16Array;
-    _int32View: Int32Array;
+    private _int8View: Int8Array;
+    private _uint8View: Uint8Array;
+    private _int16View: Int16Array;
+    private _uint16View: Uint16Array;
+    private _int32View: Int32Array;
 
     /**
      * @param {number} size - The size of the buffer in bytes.

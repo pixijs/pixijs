@@ -10,7 +10,7 @@ import { Renderer } from '@pixi/core';
  */
 export class ObjectRenderer
 {
-    renderer: Renderer;
+    protected renderer: Renderer;
     /**
      * @param {PIXI.Renderer} renderer - The renderer this manager works for.
      */

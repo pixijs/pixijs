@@ -8,6 +8,8 @@ import { Renderer } from './Renderer';
  */
 export class System
 {
+    // public because of Filter usage,
+    // protected because usually renderer it already known by those who use the system
     renderer: Renderer;
     /**
      * @param {PIXI.Renderer} renderer - The renderer this manager works for.
@@ -27,6 +29,6 @@ export class System
      */
     destroy(): void
     {
-        this.renderer = null;
+        (this as any).renderer = null;
     }
 }

@@ -13,11 +13,11 @@ import { Renderer } from '@pixi/core';
 
 export class ProjectionSystem extends System
 {
-    destinationFrame: Rectangle;
-    sourceFrame: Rectangle;
-    defaultFrame: Rectangle;
-    projectionMatrix: Matrix;
-    transform: Matrix;
+    public destinationFrame: Rectangle;
+    public sourceFrame: Rectangle;
+    public defaultFrame: Rectangle;
+    public projectionMatrix: Matrix;
+    public transform: Matrix;
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
