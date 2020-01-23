@@ -277,6 +277,42 @@ export class DisplayObject extends EventEmitter
     }
 
     /**
+     * Map DisplayObject with name, and return references
+     * @return {Object.<string, PIXI.DisplayObject>} DisplayObjects pool references
+     * 
+     */
+    childrenToName()
+    {
+        const Child = {};
+        const bufferNames = [];
+        const pool = [this.children];
+        if(this.name){
+            (Child[this.name] = this);
+        }
+        let childrens;
+        while (childrens = pool.shift()) {
+            for (let i=0, l=childrens.length; i<l; i++)
+            {
+                const _child = childrens[i];
+                const childName = _child.name;
+                if(childName){
+                    if( bufferNames.indexOf(childName)>-1 )
+                    {
+                        Child[childName].length? Child[childName].push(_child) : Child[childName] = [Child[childName],_child];
+                    }
+                    else
+                    {
+                        bufferNames.push(childName)
+                        Child[childName] = _child;
+                    }
+                    !_child.child && _child.children.length && pool.push(_child.children);
+                }
+            }
+        }
+        return Child;
+    }
+
+    /**
      * Retrieves the local bounds of the displayObject as a rectangle object.
      *
      * @param {PIXI.Rectangle} [rect] - Optional rectangle to store the result of the bounds calculation.
