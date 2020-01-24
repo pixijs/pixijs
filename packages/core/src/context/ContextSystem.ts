@@ -213,7 +213,7 @@ export class ContextSystem extends System
      * @protected
      * @param {WebGLContextEvent} event - The context lost event.
      */
-    handleContextLost(event: WebGLContextEvent): void
+    protected handleContextLost(event: WebGLContextEvent): void
     {
         event.preventDefault();
     }

@@ -306,7 +306,7 @@ export class GeometrySystem extends System
      * @param {PIXI.Geometry} geometry - Instance of geometry to to generate Vao for
      * @param {PIXI.Program} program - Instance of program
      */
-    initGeometryVao(geometry: Geometry, program: Program): WebGLVertexArrayObject
+    protected initGeometryVao(geometry: Geometry, program: Program): WebGLVertexArrayObject
     {
         this.checkCompatibility(geometry, program);
 
