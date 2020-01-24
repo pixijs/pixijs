@@ -79,9 +79,9 @@ export class BaseRenderTexture extends BaseTexture
 
         // Set defaults
         this.mipmap = 0;
-        (this as any).width = Math.ceil(width) || 100;
-        (this as any).height = Math.ceil(height) || 100;
-        (this as any).valid = true;
+        this.width = Math.ceil(width) || 100;
+        this.height = Math.ceil(height) || 100;
+        this.valid = true;
 
         /**
          * A reference to the canvas render target (we only need one as this can be shared across renderers)
