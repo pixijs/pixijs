@@ -1,5 +1,6 @@
 import { LoaderResource } from '@pixi/loaders';
-import { BitmapText } from './BitmapText';
+import { autoDetectFormat } from './formats';
+import { BitmapFont } from './BitmapFont';
 
 /**
  * {@link PIXI.Loader Loader} middleware for loading
@@ -11,17 +12,6 @@ import { BitmapText } from './BitmapText';
 export class BitmapFontLoader
 {
     /**
-     * Register a BitmapText font from loader resource.
-     *
-     * @param {PIXI.LoaderResource} resource - Loader resource.
-     * @param {PIXI.Texture} texture - Reference to texture.
-     */
-    static parse(resource, texture)
-    {
-        resource.bitmapFont = BitmapText.registerFont(resource.data, texture);
-    }
-
-    /**
      * Called when the plugin is installed.
      *
      * @see PIXI.Loader.registerPlugin
@@ -32,32 +22,6 @@ export class BitmapFontLoader
     }
 
     /**
-     * Replacement for NodeJS's path.dirname
-     * @private
-     * @param {string} url Path to get directory for
-     */
-    static dirname(url)
-    {
-        const dir = url
-            .replace(/\\/g, '/') // convert windows notation to UNIX notation, URL-safe because it's a forbidden character
-            .replace(/\/$/, '') // replace trailing slash
-            .replace(/\/[^\/]*$/, ''); // remove everything after the last
-
-        // File request is relative, use current directory
-        if (dir === url)
-        {
-            return '.';
-        }
-        // Started with a slash
-        else if (dir === '')
-        {
-            return '/';
-        }
-
-        return dir;
-    }
-
-    /**
      * Called after a resource is loaded.
      * @see PIXI.Loader.loaderMiddleware
      * @param {PIXI.LoaderResource} resource
@@ -65,54 +29,18 @@ export class BitmapFontLoader
      */
     static use(resource, next)
     {
-        // skip if no data or not xml data
-        if (!resource.data || resource.type !== LoaderResource.TYPE.XML)
+        const format = autoDetectFormat(resource.data);
+
+        // Resource was not recognised as any of the expected font data format
+        if (!format)
         {
             next();
 
             return;
         }
 
-        // skip if not bitmap font data, using some silly duck-typing
-        if (resource.data.getElementsByTagName('page').length === 0
-            || resource.data.getElementsByTagName('info').length === 0
-            || resource.data.getElementsByTagName('info')[0].getAttribute('face') === null
-        )
-        {
-            next();
-
-            return;
-        }
-
-        let xmlUrl = !resource.isDataUrl ? BitmapFontLoader.dirname(resource.url) : '';
-
-        if (resource.isDataUrl)
-        {
-            if (xmlUrl === '.')
-            {
-                xmlUrl = '';
-            }
-
-            if (this.baseUrl && xmlUrl)
-            {
-                // if baseurl has a trailing slash then add one to xmlUrl so the replace works below
-                if (this.baseUrl.charAt(this.baseUrl.length - 1) === '/')
-                {
-                    xmlUrl += '/';
-                }
-            }
-        }
-
-        // remove baseUrl from xmlUrl
-        xmlUrl = xmlUrl.replace(this.baseUrl, '');
-
-        // if there is an xmlUrl now, it needs a trailing slash. Ensure that it does if the string isn't empty.
-        if (xmlUrl && xmlUrl.charAt(xmlUrl.length - 1) !== '/')
-        {
-            xmlUrl += '/';
-        }
-
-        const pages = resource.data.getElementsByTagName('page');
+        const baseUrl = BitmapFontLoader.getBaseUrl(this, resource);
+        const data = format.parse(resource.data);
         const textures = {};
 
         // Handle completed, when the number of textures
@@ -121,17 +49,17 @@ export class BitmapFontLoader
         {
             textures[page.metadata.pageFile] = page.texture;
 
-            if (Object.keys(textures).length === pages.length)
+            if (Object.keys(textures).length === data.page.length)
             {
-                BitmapFontLoader.parse(resource, textures);
+                resource.bitmapFont = BitmapFont.install(data, textures);
                 next();
             }
         };
 
-        for (let i = 0; i < pages.length; ++i)
+        for (let i = 0; i < data.page.length; ++i)
         {
-            const pageFile = pages[i].getAttribute('file');
-            const url = xmlUrl + pageFile;
+            const pageFile = data.page[i].file;
+            const url = baseUrl + pageFile;
             let exists = false;
 
             // incase the image is loaded outside
@@ -174,5 +102,71 @@ export class BitmapFontLoader
                 this.add(url, options, completed);
             }
         }
+    }
+
+    /**
+     * Get folder path from a resource
+     * @private
+     * @param {PIXI.Loader} loader
+     * @param {PIXI.LoaderResource} resource
+     * @return {string}
+     */
+    static getBaseUrl(loader, resource)
+    {
+        let resUrl = !resource.isDataUrl ? BitmapFontLoader.dirname(resource.url) : '';
+
+        if (resource.isDataUrl)
+        {
+            if (resUrl === '.')
+            {
+                resUrl = '';
+            }
+
+            if (loader.baseUrl && resUrl)
+            {
+                // if baseurl has a trailing slash then add one to resUrl so the replace works below
+                if (loader.baseUrl.charAt(loader.baseUrl.length - 1) === '/')
+                {
+                    resUrl += '/';
+                }
+            }
+        }
+
+        // remove baseUrl from resUrl
+        resUrl = resUrl.replace(loader.baseUrl, '');
+
+        // if there is an resUrl now, it needs a trailing slash. Ensure that it does if the string isn't empty.
+        if (resUrl && resUrl.charAt(resUrl.length - 1) !== '/')
+        {
+            resUrl += '/';
+        }
+
+        return resUrl;
+    }
+
+    /**
+     * Replacement for NodeJS's path.dirname
+     * @private
+     * @param {string} url Path to get directory for
+     */
+    static dirname(url)
+    {
+        const dir = url
+            .replace(/\\/g, '/') // convert windows notation to UNIX notation, URL-safe because it's a forbidden character
+            .replace(/\/$/, '') // replace trailing slash
+            .replace(/\/[^\/]*$/, ''); // remove everything after the last
+
+        // File request is relative, use current directory
+        if (dir === url)
+        {
+            return '.';
+        }
+        // Started with a slash
+        else if (dir === '')
+        {
+            return '/';
+        }
+
+        return dir;
     }
 }
