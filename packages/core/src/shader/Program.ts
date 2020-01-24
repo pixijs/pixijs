@@ -143,7 +143,7 @@ export class Program
      *
      * @returns {object} the attribute data for this program
      */
-    protected getAttributeData(program: WebGLProgram, gl: WebGL2RenderingContext): {[key: string]: IAttributeData}
+    protected getAttributeData(program: WebGLProgram, gl: WebGLRenderingContextBase): {[key: string]: IAttributeData}
     {
         const attributes: {[key: string]: IAttributeData} = {};
         const attributesArray: Array<IAttributeData> = [];
@@ -187,7 +187,7 @@ export class Program
      *
      * @returns {object} the uniform data for this program
      */
-    private getUniformData(program: WebGLProgram, gl: WebGL2RenderingContext): {[key: string]: IUniformData}
+    private getUniformData(program: WebGLProgram, gl: WebGLRenderingContextBase): {[key: string]: IUniformData}
     {
         const uniforms: {[key: string]: IUniformData} = {};
 

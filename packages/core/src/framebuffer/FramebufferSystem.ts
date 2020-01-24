@@ -4,7 +4,7 @@ import { ENV } from '@pixi/constants';
 import { settings } from '../settings';
 import { Framebuffer } from './Framebuffer';
 
-import { Renderer } from '@pixi/core';
+import { Renderer, IRenderingContext } from '@pixi/core';
 
 /**
  * System plugin to the renderer to manage framebuffers.
@@ -21,7 +21,7 @@ export class FramebufferSystem extends System
     public hasMRT: boolean;
     public writeDepthTexture: boolean;
     protected CONTEXT_UID: number;
-    protected gl: WebGL2RenderingContext;
+    protected gl: IRenderingContext;
     protected unknownFramebuffer: Framebuffer;
 
     /**

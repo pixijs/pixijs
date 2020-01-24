@@ -5,6 +5,8 @@ import { settings } from '@pixi/settings';
 import { DisplayObject, TemporaryDisplayObject } from '@pixi/display';
 import { RenderTexture } from './renderTexture/RenderTexture';
 
+import { IRenderingContext } from './IRenderingContext';
+
 const tempMatrix = new Matrix();
 
 export interface IRendererOptions
@@ -20,7 +22,7 @@ export interface IRendererOptions
     clearBeforeRender?: boolean;
     backgroundColor?: number;
     powerPreference?: WebGLPowerPreference;
-    context?: WebGL2RenderingContext;
+    context?: IRenderingContext;
 }
 
 interface IRendererOptionsLegacy extends IRendererOptions

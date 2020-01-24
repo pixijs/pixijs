@@ -5,6 +5,7 @@ import './settings';
 export { systems };
 export { resources };
 
+export * from './IRenderingContext';
 export * from './autoDetectRenderer';
 export * from './fragments';
 export * from './System';

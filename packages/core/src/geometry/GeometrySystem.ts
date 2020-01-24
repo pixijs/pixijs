@@ -3,7 +3,7 @@ import { GLBuffer } from './GLBuffer';
 import { ENV, DRAW_MODES } from '@pixi/constants';
 import { settings } from '../settings';
 
-import { Geometry, Shader, Renderer, Program } from '@pixi/core';
+import { Renderer, IRenderingContext, Geometry, Shader, Program } from '@pixi/core';
 import { Buffer } from './Buffer';
 
 const byteSizeMap: {[key: number]: number} = { 5126: 4, 5123: 2, 5121: 1 };
@@ -21,7 +21,7 @@ export class GeometrySystem extends System
     public hasInstance: boolean;
     public canUseUInt32ElementIndex: boolean;
     protected CONTEXT_UID: number;
-    protected gl: WebGL2RenderingContext;
+    protected gl: IRenderingContext;
     protected _activeGeometry: Geometry;
     protected _activeVao: WebGLVertexArrayObject;
     protected _boundBuffer: GLBuffer;

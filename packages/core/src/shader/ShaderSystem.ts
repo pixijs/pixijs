@@ -5,11 +5,7 @@ import { generateUniformsSync,
     defaultValue,
     compileProgram } from './utils';
 
-import { Renderer } from '../Renderer';
-import { Shader } from './Shader';
-import { Program } from './Program';
-
-import  { UniformGroup } from './UniformGroup';
+import { Renderer, IRenderingContext, Shader, Program, UniformGroup } from '@pixi/core';
 
 let UID = 0;
 // defualt sync data so we don't create a new one each time!
@@ -24,7 +20,7 @@ const defaultSyncData = { textureCount: 0 };
  */
 export class ShaderSystem extends System
 {
-    protected gl: WebGL2RenderingContext;
+    protected gl: IRenderingContext;
     public shader: Shader;
     public program: Program;
     public id: number;
@@ -75,7 +71,7 @@ export class ShaderSystem extends System
         }
     }
 
-    protected contextChange(gl: WebGL2RenderingContext): void
+    protected contextChange(gl: IRenderingContext): void
     {
         this.gl = gl;
         this.reset();

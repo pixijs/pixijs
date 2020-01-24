@@ -1,3 +1,5 @@
+import { IRenderingContext } from '@pixi/core';
+
 const fragTemplate = [
     'precision mediump float;',
     'void main(void){',
@@ -27,7 +29,7 @@ function generateIfTestSrc(maxIfs: number): string
     return src;
 }
 
-export function checkMaxIfStatementsInShader(maxIfs: number, gl: WebGL2RenderingContext): number
+export function checkMaxIfStatementsInShader(maxIfs: number, gl: IRenderingContext): number
 {
     if (maxIfs === 0)
     {

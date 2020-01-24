@@ -1,3 +1,5 @@
+import { IRenderingContext } from '@pixi/core';
+
 // var GL_MAP = {};
 
 /**
@@ -6,7 +8,7 @@
  * @param state {*}
  * @private
  */
-export function setVertexAttribArrays(gl: WebGL2RenderingContext, attribs: any, state: any): void
+export function setVertexAttribArrays(gl: IRenderingContext, attribs: any, state: any): void
 {
     let i;
 

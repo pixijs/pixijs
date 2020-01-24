@@ -2,7 +2,7 @@ import { System } from '../System';
 import { settings } from '../settings';
 import { ENV } from '@pixi/constants';
 
-import { Renderer } from '@pixi/core';
+import { IRenderingContext, Renderer } from '@pixi/core';
 
 let CONTEXT_UID_COUNTER = 0;
 
@@ -17,7 +17,7 @@ export class ContextSystem extends System
 {
     public webGLVersion: number;
     protected CONTEXT_UID: number;
-    protected gl: WebGL2RenderingContext;
+    protected gl: IRenderingContext;
     /* eslint-disable @typescript-eslint/camelcase */
     extensions:
     {
@@ -84,7 +84,7 @@ export class ContextSystem extends System
      * Handle the context change event
      * @param {WebGLRenderingContext} gl new webgl context
      */
-    protected contextChange(gl: WebGL2RenderingContext): void
+    protected contextChange(gl: IRenderingContext): void
     {
         this.gl = gl;
         this.renderer.gl = gl;
@@ -103,7 +103,7 @@ export class ContextSystem extends System
      * @protected
      * @param {WebGLRenderingContext} gl - WebGL context
      */
-    initFromContext(gl: WebGL2RenderingContext): void
+    initFromContext(gl: IRenderingContext): void
     {
         this.gl = gl;
         this.validateContext(gl);
@@ -134,7 +134,7 @@ export class ContextSystem extends System
      * @see https://developer.mozilla.org/en/docs/Web/API/HTMLCanvasElement/getContext
      * @return {WebGLRenderingContext} the WebGL context
      */
-    createContext(canvas: HTMLCanvasElement, options: WebGLContextAttributes): WebGL2RenderingContext
+    createContext(canvas: HTMLCanvasElement, options: WebGLContextAttributes): IRenderingContext
     {
         let gl;
 
@@ -161,7 +161,7 @@ export class ContextSystem extends System
             }
         }
 
-        this.gl = gl as WebGL2RenderingContext;
+        this.gl = gl as IRenderingContext;
 
         this.getExtensions();
 
@@ -263,7 +263,7 @@ export class ContextSystem extends System
      * @protected
      * @param {WebGLRenderingContext} gl - Render context
      */
-    protected validateContext(gl: WebGL2RenderingContext): void
+    protected validateContext(gl: IRenderingContext): void
     {
         const attributes = gl.getContextAttributes();
 

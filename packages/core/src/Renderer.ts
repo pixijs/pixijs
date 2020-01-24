@@ -23,6 +23,7 @@ import { Runner } from '@pixi/runner';
 import { RenderTexture } from './renderTexture/RenderTexture';
 import { DisplayObject } from '@pixi/display';
 import { System } from './System';
+import { IRenderingContext } from './IRenderingContext';
 
 /**
  * The Renderer draws the scene and all its content onto a WebGL enabled canvas.
@@ -38,7 +39,7 @@ import { System } from './System';
  */
 export class Renderer extends AbstractRenderer
 {
-    public gl: WebGL2RenderingContext;
+    public gl: IRenderingContext;
     public globalUniforms: UniformGroup;
     public CONTEXT_UID: number;
     public renderingToScreen: boolean;

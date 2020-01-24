@@ -3,7 +3,7 @@ import { System } from '../System';
 import { State } from './State';
 import { BLEND_MODES } from '@pixi/constants';
 
-import { Renderer } from '@pixi/core';
+import { Renderer, IRenderingContext } from '@pixi/core';
 
 const BLEND = 0;
 const OFFSET = 1;
@@ -24,7 +24,7 @@ export class StateSystem extends System
     public polygonOffset: number;
     public blendMode: BLEND_MODES;
     protected _blendEq: boolean;
-    protected gl: WebGL2RenderingContext;
+    protected gl: IRenderingContext;
     protected blendModes: number[][];
     protected readonly map: Array<(value: boolean) => void>;
     protected readonly checks: Array<(system: this, state: State) => void>;
@@ -102,7 +102,7 @@ export class StateSystem extends System
         this.defaultState.blend = true;
     }
 
-    contextChange(gl: WebGL2RenderingContext): void
+    contextChange(gl: IRenderingContext): void
     {
         this.gl = gl;
 

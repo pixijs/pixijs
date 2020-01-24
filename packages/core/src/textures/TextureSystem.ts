@@ -5,7 +5,7 @@ import { removeItems } from '@pixi/utils';
 import { MIPMAP_MODES, WRAP_MODES, SCALE_MODES, TYPES } from '@pixi/constants';
 
 import { Texture } from './Texture';
-import { Renderer } from '@pixi/core';
+import { Renderer, IRenderingContext } from '@pixi/core';
 
 /**
  * System plugin to the renderer to manage textures.
@@ -19,7 +19,7 @@ export class TextureSystem extends System
     public boundTextures: Array<BaseTexture>;
     public managedTextures: Array<BaseTexture>;
     protected CONTEXT_UID: number;
-    protected gl: WebGL2RenderingContext;
+    protected gl: IRenderingContext;
     protected webGLVersion: number;
     protected unknownTexture: BaseTexture;
     protected _unknownBoundTextures: boolean;
