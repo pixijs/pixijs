@@ -1,4 +1,5 @@
 import { Filter } from './Filter';
+import { FilterPass } from './FilterPass';
 import { IFilterTarget } from './IFilterTarget';
 import { RenderTexture } from '@pixi/core';
 import { Rectangle } from '@pixi/math';
@@ -18,6 +19,8 @@ export class FilterState
     sourceFrame: Rectangle;
     destinationFrame: Rectangle;
     filters: Array<Filter>;
+    filterPasses: Array<FilterPass>;
+    passIndex: number;
 
     constructor()
     {
@@ -69,7 +72,30 @@ export class FilterState
          * @member {PIXI.Filter[]}
          * @private
          */
-        this.filters = [];
+        this.filters = null;
+
+        /**
+         * Filter passes for each filter.
+         * @member {PIXI.FilterPass[]}
+         * @readonly
+         */
+        this.filterPasses = null;
+
+        /**
+         * Current filter pass being run.
+         * @member {number}
+         * @readonly
+         */
+        this.passIndex = 0;
+    }
+
+    /**
+     * Current filter's filter-pass object.
+     * @member {FilterPass}
+     */
+    get currentFilterPass(): FilterPass
+    {
+        return this.filterPasses[this.passIndex];
     }
 
     /**
@@ -80,6 +106,8 @@ export class FilterState
     {
         this.target = null;
         this.filters = null;
+        this.filterPasses = null;
+        this.passIndex = 0;
         this.renderTexture = null;
     }
 }

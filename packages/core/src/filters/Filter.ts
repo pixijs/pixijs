@@ -8,7 +8,14 @@ import defaultFragment from './defaultFilter.frag';
 import { RenderTexture } from '@pixi/core';
 import { FilterSystem } from './FilterSystem';
 import { FilterState } from './FilterState';
-import { BLEND_MODES, CLEAR_MODES } from '@pixi/constants';
+import {
+    BLEND_MODES,
+    CLEAR_MODES,
+    FILTER_OUTPUT_MODES,
+    FILTER_INPUT_MODES,
+    FILTER_TARGET_MODES,
+} from '@pixi/constants';
+import { Rectangle } from '@pixi/math';
 
 /**
  * Filter is a special type of WebGL shader that is applied to the screen.
@@ -154,6 +161,11 @@ export class Filter extends Shader
     public autoFit: boolean;
     public legacy: boolean;
     state: State;
+
+    public targetMode: FILTER_TARGET_MODES;
+    protected inputMode: FILTER_INPUT_MODES;
+    protected outputMode: FILTER_OUTPUT_MODES;
+
     /**
      * @param {string} [vertexSrc] - The source of the vertex shader.
      * @param {string} [fragmentSrc] - The source of the fragment shader.
@@ -210,6 +222,70 @@ export class Filter extends Shader
          * @member {PIXI.State}
          */
         this.state = new State();
+
+        /**
+         * Specifies how to resolve target-in frame.
+         * @member {PIXI.FILTER_TARGET_MODES}
+         * @default FILTER_TARGET_MODES.INPUT_FRAME
+         */
+        this.targetMode = FILTER_TARGET_MODES.INPUT_FRAME;
+
+        /**
+         * Supply a way to calculate target-in frame without overriding `onMeasureInput`.
+         * @member {PIXI.FILTER_INPUT_MODES}
+         * @default FILTER_INPUT_MODES.PASS_THROUGH
+         * @protected
+         */
+        this.inputMode = FILTER_INPUT_MODES.PASS_THROUGH;
+
+        /**
+         * Supply a way to calculate target-out frame without overriding `onMeasureOutput`.
+         * @member {PIXI.FILTER_OUTPUT_MODES}
+         * @default FILTER_OUTPUT_MODES.PAD
+         * @protected
+         */
+        this.outputMode = FILTER_OUTPUT_MODES.PAD;
+    }
+
+    /**
+     * Calculates the target-out frame, given a fixed target-in frame.
+     *
+     * This is useful for filters like blurs which sort of spread their contents outside of
+     * the input.
+     *
+     * @param {PIXI.Rectangle} targetInFrame - frame on which the filter's effects are applied
+     * @returns {PIXI.Rectangle} - frame in which the filter will output.
+     */
+    onMeasureOutput(targetInFrame: Rectangle): Rectangle
+    {
+        switch (this.outputMode)
+        {
+            case FILTER_OUTPUT_MODES.PAD:
+                return targetInFrame.pad(this.padding);
+            default:
+                return targetInFrame;
+        }
+    }
+
+    /**
+     * Calculate the size of the input needed to output.
+     *
+     * @param {PIXI.Rectangle} targetOutputFrame - frame in which filter will get to write
+     * @param {PIXI.Rectangle} wholeTargetInFrame - original target-in frame
+     * @returns {PIXI.Rectangle} - frame that the filter needs in order to write into target-out
+     */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    onMeasureInput(partialTargetOutFrame: Rectangle, _wholeTargetInFrame: Rectangle): Rectangle
+    {
+        switch (this.inputMode)
+        {
+            case FILTER_INPUT_MODES.PAD:
+                return partialTargetOutFrame.pad(this.padding);
+            case FILTER_INPUT_MODES.PASS_THROUGH:
+                return partialTargetOutFrame;
+            default:
+                return partialTargetOutFrame;
+        }
     }
 
     /**

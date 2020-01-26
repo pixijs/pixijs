@@ -392,3 +392,44 @@ export enum MASK_TYPES {
     STENCIL = 2,
     SPRITE = 3,
 }
+
+/**
+ * Modes to resolve target-in frame for filters.
+ *
+ * @name FILTER_TARGET_MODES
+ * @memberof PIXI
+ * @enum {number}
+ * @property {number} INPUT_FRAME - filter applies on previous filter's output, which is its own input frame
+ * @property {number} TARGET_BOUNDS - filter applies on the target object's bounds only
+ */
+export enum FILTER_TARGET_MODES {
+    INPUT_FRAME = 2002,
+    TARGET_BOUNDS = 2003
+}
+
+/**
+ * Modes to calculate target-out frame for a filter.
+ *
+ * @name FILTER_OUTPUT_MODES
+ * @memberof PIXI
+ * @enum {number}
+ * @property {number} PAD - apply `filter.padding` on target-in frame
+ */
+export enum FILTER_OUTPUT_MODES {
+    PAD = 29912,
+    PAD4 = 29001 // not implemented: should use paddingLeft, paddingRight,
+         // paddingTop, paddingBottom, paddingHorizontal, paddingVertical
+}
+
+/**
+ * Modes to calculate target-in frame for a filter.
+ *
+ * @name FILTER_INPUT_MODES
+ * @memberof PIXI
+ * @enum {number}
+ * @property {number} PAD - pad target-out frame by `filter.padding`
+ */
+export enum FILTER_INPUT_MODES {
+    PAD = 23239,
+    PASS_THROUGH = 1200
+}

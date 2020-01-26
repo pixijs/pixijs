@@ -4,11 +4,13 @@ import { Quad } from '../utils/Quad';
 import { QuadUv } from '../utils/QuadUv';
 import { Rectangle, Matrix } from '@pixi/math';
 import { UniformGroup } from '../shader/UniformGroup';
-import { DRAW_MODES, CLEAR_MODES } from '@pixi/constants';
+import { DRAW_MODES, CLEAR_MODES, FILTER_TARGET_MODES } from '@pixi/constants';
 import { deprecation } from '@pixi/utils';
 
 import { FilterState } from './FilterState';
 import { Filter } from './Filter';
+import { FilterGeometry } from './FilterGeometry';
+import { FilterPass } from './FilterPass';
 import { IFilterTarget } from './IFilterTarget';
 import { Renderer, RenderTexture, ISpriteMaskTarget } from '@pixi/core';
 
@@ -30,6 +32,7 @@ export class FilterSystem extends System
     protected activeState: FilterState;
     protected globalUniforms: UniformGroup;
     private tempRect: Rectangle;
+    private geometry: FilterGeometry;
 
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
@@ -70,6 +73,12 @@ export class FilterSystem extends System
          * @member {PIXI.QuadUv}
          */
         this.quadUv = new QuadUv();
+
+        /**
+         * Geometry that can convert frame-rectangles into native format.
+         * @member {PIXI.FilterGeometry}
+         */
+        this.geometry = new FilterGeometry();
 
         /**
          * Temporary rect for maths
@@ -114,9 +123,9 @@ export class FilterSystem extends System
     }
 
     /**
-     * Adds a new filter to the System.
+     * Adds a new set of filters in the system.
      *
-     * @param {PIXI.DisplayObject} target - The target of the filter to render.
+     * @param {PIXI.DisplayObject} target - The target of the filters to render.
      * @param {PIXI.Filter[]} filters - The filters to apply.
      */
     push(target: IFilterTarget, filters: Array<Filter>): void
@@ -134,13 +143,9 @@ export class FilterSystem extends System
         {
             const filter =  filters[i];
 
-            // lets use the lowest resolution..
             resolution = Math.min(resolution, filter.resolution);
-            // and the largest amount of padding!
             padding = Math.max(padding, filter.padding);
-            // only auto fit if all filters are autofit
             autoFit = autoFit || filter.autoFit;
-
             legacy = legacy || filter.legacy;
         }
 
@@ -150,39 +155,26 @@ export class FilterSystem extends System
         }
 
         filterStack.push(state);
-
+        state.filters = filters;
         state.resolution = resolution;
-
         state.legacy = legacy;
-
         state.target = target;
 
-        state.sourceFrame.copyFrom(target.filterArea || target.getBounds(true));
+        const filterBounds = target.filterArea || target.getBounds(true);
+        const filterPasses = this.measureAll(filters, filterBounds, autoFit);
 
-        state.sourceFrame.pad(padding);
-        if (autoFit)
-        {
-            state.sourceFrame.fit(this.renderer.renderTexture.sourceFrame);
-        }
-
-        // round to whole number based on resolution
-        state.sourceFrame.ceil(resolution);
-
-        state.renderTexture = this.getOptimalFilterTexture(state.sourceFrame.width, state.sourceFrame.height, resolution);
-        state.filters = filters;
-
+        state.filterPasses = filterPasses;
+        state.renderTexture = this.resolveTexture(filterPasses, resolution);
+        state.sourceFrame.copyFrom(state.renderTexture.filterFrame);
         state.destinationFrame.width = state.renderTexture.width;
         state.destinationFrame.height = state.renderTexture.height;
 
-        state.renderTexture.filterFrame = state.sourceFrame;
-
-        renderer.renderTexture.bind(state.renderTexture, state.sourceFrame);// /, state.destinationFrame);
+        renderer.renderTexture.bind(state.renderTexture, state.sourceFrame);
         renderer.renderTexture.clear();
     }
 
     /**
-     * Pops off the filter and applies it.
-     *
+     * Removes the last set of filters and applies them.
      */
     pop(): void
     {
@@ -235,6 +227,7 @@ export class FilterSystem extends System
 
         if (filters.length === 1)
         {
+            this.updateUniforms(state.currentFilterPass);
             filters[0].apply(this, state.renderTexture, lastState.renderTexture, CLEAR_MODES.BLEND, state);
 
             this.returnFilterTexture(state.renderTexture);
@@ -254,12 +247,15 @@ export class FilterSystem extends System
 
             for (i = 0; i < filters.length - 1; ++i)
             {
+                this.updateUniforms(state.currentFilterPass);
                 filters[i].apply(this, flip, flop, CLEAR_MODES.CLEAR, state);
 
                 const t = flip;
 
                 flip = flop;
                 flop = t;
+
+                ++state.passIndex;
             }
 
             filters[i].apply(this, flip, lastState.renderTexture, CLEAR_MODES.BLEND, state);
@@ -328,7 +324,9 @@ export class FilterSystem extends System
         }
         else
         {
-            renderer.geometry.bind(this.quad);
+            this.geometry.useFrame(this.activeState.currentFilterPass.targetOutFrame,
+                this.activeState);
+            renderer.geometry.bind(this.geometry);
             renderer.geometry.draw(DRAW_MODES.TRIANGLE_STRIP);
         }
     }
@@ -356,6 +354,23 @@ export class FilterSystem extends System
         mappedMatrix.translate(sprite.anchor.x, sprite.anchor.y);
 
         return mappedMatrix;
+    }
+
+    /**
+     * Updates the filter system's global-uniforms to use the given filter-pass frames.
+     *
+     * @param {PIXI.FilterPass} filterPass
+     */
+    updateUniforms(filterPass: FilterPass): void
+    {
+        const globalUniforms = this.globalUniforms.uniforms;
+
+        globalUniforms.inputFrame = filterPass.inputFrame;
+        globalUniforms.targetInFrame = filterPass.targetInFrame;
+        globalUniforms.outputFrame = filterPass.outputFrame;
+        globalUniforms.targetOutFrame = filterPass.targetOutFrame;
+
+        this.globalUniforms.update();
     }
 
     /**
@@ -432,5 +447,111 @@ export class FilterSystem extends System
     resize(): void
     {
         this.texturePool.setScreenSize(this.renderer.view);
+    }
+
+    private measureAll(filters: Filter[], targetBounds: Rectangle, autoFit = true): FilterPass[]
+    {
+        const filterPasses = this.measureForward(filters, targetBounds);
+        const measuredOutputFrame = filterPasses[filters.length - 1].outputFrame;
+
+        if (!autoFit)
+        {
+            return filterPasses;// no screen "fitting"
+        }
+
+        const outputFrame = measuredOutputFrame.clone().fit(this.renderer.renderTexture.sourceFrame);
+
+        if (outputFrame.x === measuredOutputFrame.x
+            && outputFrame.y === measuredOutputFrame.y
+            && outputFrame.width === measuredOutputFrame.width
+            && outputFrame.height === measuredOutputFrame.height)
+        {
+            return filterPasses;
+        }
+
+        return this.measureBackward(filters, filterPasses, outputFrame);
+    }
+
+    private measureBackward(filters: Filter[], filterPasses: FilterPass[], outputFrame: Rectangle): FilterPass[]
+    {
+        const targetInBuffer: Rectangle = new Rectangle();
+
+        for (let passIndex = filters.length - 1; passIndex >= 0; passIndex--)
+        {
+            const filter = filters[passIndex];
+            const filterPass = filterPasses[passIndex];
+
+            targetInBuffer.copyFrom(filterPass.targetInFrame);
+
+            filterPass.targetOutFrame.fit(outputFrame);
+            filterPass.targetInFrame
+                = filter.onMeasureInput(filterPass.targetOutFrame.clone(), filterPass.targetInFrame)
+                    .fit(targetInBuffer);
+            filterPass.inputFrame = outputFrame.clone().enlarge(filterPass.targetInFrame);
+
+            outputFrame = filterPass.inputFrame;
+        }
+
+        return filterPasses;
+    }
+
+    private measureForward(filters: Filter[], targetBounds: Rectangle): FilterPass[]
+    {
+        const filterPasses: FilterPass[] = new Array(filters.length);
+        let inputFrame: Rectangle = targetBounds;
+        let targetInFrame: Rectangle;
+        let outputFrame: Rectangle;
+        let targetOutFrame: Rectangle;
+
+        for (let passIndex = 0; passIndex < filters.length; passIndex++)
+        {
+            const filter = filters[passIndex];
+
+            targetInFrame = this.resolveTargetFrame(filter, targetBounds, inputFrame);
+            targetOutFrame = filter.onMeasureOutput(targetInFrame.clone());
+
+            outputFrame = inputFrame.clone();
+            outputFrame.enlarge(targetOutFrame);
+
+            filterPasses[passIndex] = new FilterPass(inputFrame, targetInFrame, outputFrame, targetOutFrame);
+
+            inputFrame = outputFrame;
+        }
+
+        return filterPasses;
+    }
+
+    private resolveTargetFrame(filter: Filter, targetBounds: Rectangle, inputFrame: Rectangle): Rectangle
+    {
+        switch (filter.targetMode)
+        {
+            case FILTER_TARGET_MODES.INPUT_FRAME:
+                return inputFrame;
+            case FILTER_TARGET_MODES.TARGET_BOUNDS:
+                return targetBounds;
+            default:
+                throw new Error(`Illegal filter target-mode: ${filter.targetMode}`);
+        }
+    }
+
+    private resolveTexture(filterPasses: FilterPass[], resolution = 1): RenderTexture
+    {
+        const frame = new Rectangle();
+
+        for (let i = 0; i < filterPasses.length; i++)
+        {
+            const filterPass = filterPasses[i];
+
+            frame.enlarge(filterPass.inputFrame);
+            frame.enlarge(filterPass.outputFrame);
+        }
+
+        frame.ceil(resolution);
+
+        const renderTexture = this.getOptimalFilterTexture(frame.width, frame.height, resolution);
+
+        renderTexture.filterFrame = frame;
+
+        return renderTexture;
     }
 }
