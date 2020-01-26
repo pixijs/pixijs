@@ -686,14 +686,14 @@ export class GraphicsGeometry extends BatchGeometry
         const colors = this.colors;
         const textureIds = this.textureIds;
 
-        let currentGroup =  DRAW_CALL_POOL.pop();
+        let currentGroup: BatchDrawCall =  DRAW_CALL_POOL.pop();
 
         if (!currentGroup)
         {
             currentGroup = new BatchDrawCall();
-            currentGroup.textures = new BatchTextureArray();
+            currentGroup.texArray = new BatchTextureArray();
         }
-        currentGroup.textures.count = 0;
+        currentGroup.texArray.count = 0;
         currentGroup.start = 0;
         currentGroup.size = 0;
         currentGroup.type = DRAW_MODES.TRIANGLES;
@@ -749,14 +749,14 @@ export class GraphicsGeometry extends BatchGeometry
                             if (!currentGroup)
                             {
                                 currentGroup = new BatchDrawCall();
-                                currentGroup.textures = new BatchTextureArray();
+                                currentGroup.texArray = new BatchTextureArray();
                             }
                             this.drawCalls.push(currentGroup);
                         }
 
                         currentGroup.start = index;
                         currentGroup.size = 0;
-                        currentGroup.textures.count = 0;
+                        currentGroup.texArray.count = 0;
                         currentGroup.type = drawMode;
                     }
 
@@ -766,7 +766,7 @@ export class GraphicsGeometry extends BatchGeometry
                     nextTexture._batchLocation = textureCount;
                     nextTexture.wrapMode = 10497;
 
-                    currentGroup.textures.elements[currentGroup.textures.count++] = nextTexture;
+                    currentGroup.texArray.elements[currentGroup.texArray.count++] = nextTexture;
                     textureCount++;
                 }
             }
