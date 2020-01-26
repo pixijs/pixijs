@@ -37,7 +37,7 @@ export class LineStyle extends FillStyle
      *
      * @return {PIXI.LineStyle}
      */
-    clone()
+    public clone(): LineStyle
     {
         const obj = new LineStyle();
 
@@ -55,7 +55,7 @@ export class LineStyle extends FillStyle
     /**
      * Reset the line style to default.
      */
-    reset()
+    public reset(): void
     {
         super.reset();
 

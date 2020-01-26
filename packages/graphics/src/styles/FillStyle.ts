@@ -59,7 +59,7 @@ export class FillStyle
      *
      * @return {PIXI.FillStyle}
      */
-    clone()
+    public clone(): FillStyle
     {
         const obj = new FillStyle();
 
@@ -75,7 +75,7 @@ export class FillStyle
     /**
      * Reset
      */
-    reset()
+    public reset(): void
     {
         this.color = 0xFFFFFF;
         this.alpha = 1;
@@ -87,7 +87,7 @@ export class FillStyle
     /**
      * Destroy and don't use after this
      */
-    destroy()
+    public destroy(): void
     {
         this.texture = null;
         this.matrix = null;
