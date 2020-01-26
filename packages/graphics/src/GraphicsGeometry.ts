@@ -11,7 +11,8 @@ import {
     BatchDrawCall,
     BatchTextureArray,
     BaseTexture,
-    Texture } from '@pixi/core';
+    Texture,
+    Buffer } from '@pixi/core';
 
 import { DRAW_MODES, WRAP_MODES } from '@pixi/constants';
 import { SHAPES, Point, Matrix, Circle, Ellipse, Polygon, Rectangle, RoundedRectangle } from '@pixi/math';
@@ -368,7 +369,7 @@ export class GraphicsGeometry extends BatchGeometry
         this.uvs = null;
         this.indices.length = 0;
         this.indices = null;
-        this.indexBuffer.destroy();
+        (this.indexBuffer as Buffer).destroy();
         this.indexBuffer = null;
         this.graphicsData.length = 0;
         this.graphicsData = null;
@@ -718,7 +719,7 @@ export class GraphicsGeometry extends BatchGeometry
 
             const style = data.style as LineStyle;
 
-            const nextTexture = style.texture.baseTexture;
+            const nextTexture: BaseTexture = style.texture.baseTexture;
 
             if (native !== !!style.native)
             {
@@ -761,7 +762,7 @@ export class GraphicsGeometry extends BatchGeometry
                     }
 
                     // TODO add this to the render part..
-                    nextTexture.touched = 1;// touch;
+                    (nextTexture as any).touched = 1;// touch;
                     nextTexture._batchEnabled = TICK;
                     nextTexture._batchLocation = textureCount;
                     nextTexture.wrapMode = 10497;
