@@ -12,6 +12,7 @@ export * from './System';
 export * from './Renderer';
 export * from './AbstractRenderer';
 export * from './framebuffer/Framebuffer';
+export * from './framebuffer/GLFramebuffer';
 export * from './textures/Texture';
 export * from './textures/BaseTexture';
 export * from './textures/GLTexture';

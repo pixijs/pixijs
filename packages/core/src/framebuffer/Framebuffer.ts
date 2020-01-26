@@ -3,6 +3,8 @@ import { BaseTexture } from '../textures/BaseTexture';
 import { DepthResource } from '../textures/resources/DepthResource';
 import { FORMATS, MIPMAP_MODES, TYPES } from '@pixi/constants';
 
+import { GLFramebuffer } from './GLFramebuffer';
+
 /**
  * Frame buffer used by the BaseRenderTexture
  *
@@ -20,7 +22,7 @@ export class Framebuffer
     dirtySize: number;
     depthTexture: BaseTexture;
     colorTextures: Array<BaseTexture>;
-    glFramebuffers: {[key: string]: any};
+    glFramebuffers: {[key: string]: GLFramebuffer};
     disposeRunner: Runner;
     /**
      * @param {number} width - Width of the frame buffer

@@ -3,6 +3,7 @@ import { Rectangle } from '@pixi/math';
 import { ENV } from '@pixi/constants';
 import { settings } from '../settings';
 import { Framebuffer } from './Framebuffer';
+import { GLFramebuffer } from './GLFramebuffer';
 
 import { Renderer, IRenderingContext } from '@pixi/core';
 
@@ -242,19 +243,12 @@ export class FramebufferSystem extends System
      *
      * @protected
      * @param {PIXI.Framebuffer} framebuffer
+     * @returns PIXI.GLFramebuffer
      */
-    initFramebuffer(framebuffer: Framebuffer): any
+    initFramebuffer(framebuffer: Framebuffer): GLFramebuffer
     {
         const { gl } = this;
-
-        // TODO - make this a class?
-        const fbo = {
-            framebuffer: gl.createFramebuffer(),
-            stencil: null as any,
-            dirtyId: 0,
-            dirtyFormat: 0,
-            dirtySize: 0,
-        };
+        const fbo = new GLFramebuffer(gl.createFramebuffer());
 
         framebuffer.glFramebuffers[this.CONTEXT_UID] = fbo;
 

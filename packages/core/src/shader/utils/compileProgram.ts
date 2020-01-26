@@ -26,7 +26,7 @@ function compileShader(gl: WebGLRenderingContextBase, type: number, src: string)
  * @return {WebGLProgram} the shader program
  */
 export function compileProgram(gl: WebGLRenderingContextBase, vertexSrc: string, fragmentSrc: string,
-    attributeLocations?: Array<any>): WebGLProgram
+    attributeLocations?: {[key: string]: number}): WebGLProgram
 {
     const glVertShader = compileShader(gl, gl.VERTEX_SHADER, vertexSrc);
     const glFragShader = compileShader(gl, gl.FRAGMENT_SHADER, fragmentSrc);

@@ -1,5 +1,5 @@
 import { System } from '../System';
-import { GLProgram } from './GLProgram';
+import { GLProgram, IGLUniformData } from './GLProgram';
 import { generateUniformsSync,
     unsafeEvalSupported,
     defaultValue,
@@ -115,7 +115,7 @@ export class ShaderSystem extends System
      *
      * @param {object} uniforms - the uniforms values that be applied to the current shader
      */
-    setUniforms(uniforms: any): void
+    setUniforms(uniforms: {[x: string]: any}): void
     {
         const shader = this.shader.program;
         const glProgram = shader.glPrograms[this.renderer.CONTEXT_UID];
@@ -176,7 +176,7 @@ export class ShaderSystem extends System
      * @returns {String} Unique signature of the uniform group
      * @private
      */
-    private getSignature(group: UniformGroup, uniformData: any): string
+    private getSignature(group: UniformGroup, uniformData: {[key: string]: any}): string
     {
         const uniforms = group.uniforms;
 
@@ -224,7 +224,7 @@ export class ShaderSystem extends System
 
         const program = shader.program;
 
-        const attribMap: any = {};
+        const attribMap: {[key: string]: number} = {};
 
         for (const i in program.attributeData)
         {
@@ -232,7 +232,7 @@ export class ShaderSystem extends System
         }
 
         const shaderProgram = compileProgram(gl, program.vertexSrc, program.fragmentSrc, attribMap);
-        const uniformData: any = {};
+        const uniformData: {[key: string]: IGLUniformData} = {};
 
         for (const i in program.uniformData)
         {

@@ -13,8 +13,8 @@ export class BatchShaderGenerator
 {
     public vertexSrc: string;
     public fragTemplate: string;
-    programCache: {[key: number]: any};
-    defaultGroupCache: {[key: number]: any};
+    programCache: {[key: number]: Program};
+    defaultGroupCache: {[key: number]: UniformGroup};
     /**
      * @param {string} vertexSrc - Vertex shader
      * @param {string} fragTemplate - Fragment shader template

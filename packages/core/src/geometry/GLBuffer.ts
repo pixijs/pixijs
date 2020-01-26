@@ -1,11 +1,11 @@
 export class GLBuffer
 {
-    buffer: any;
+    buffer: WebGLBuffer;
     updateID: number;
     byteLength: number;
     refCount: number;
 
-    constructor(buffer?: any)
+    constructor(buffer?: WebGLBuffer)
     {
         this.buffer = buffer || null;
         this.updateID = -1;

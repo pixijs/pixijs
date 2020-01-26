@@ -5,6 +5,8 @@ import { Renderer } from '../Renderer';
 import { RenderTexture } from './RenderTexture';
 import { BaseRenderTexture } from './BaseRenderTexture';
 
+import { MaskData } from '@pixi/core';
+
 const tempRect = new Rectangle();
 
 /**
@@ -20,7 +22,7 @@ const tempRect = new Rectangle();
 export class RenderTextureSystem extends System
 {
     public clearColor: number[];
-    public defaultMaskStack: Array<any>;
+    public defaultMaskStack: Array<MaskData>;
     public current: RenderTexture;
     public readonly sourceFrame: Rectangle;
     public readonly destinationFrame: Rectangle;

@@ -8,7 +8,8 @@ import { IRenderingContext } from '@pixi/core';
  * @param state {*}
  * @private
  */
-export function setVertexAttribArrays(gl: IRenderingContext, attribs: any, state: any): void
+export function setVertexAttribArrays(gl: IRenderingContext,
+    attribs: {[x: string]: any}, state: {[x: string]: any}): void
 {
     let i;
 

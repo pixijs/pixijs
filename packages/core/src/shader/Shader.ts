@@ -15,7 +15,7 @@ export class Shader
      * @param {PIXI.Program} [program] - The program the shader will use.
      * @param {object} [uniforms] - Custom uniforms to use to augment the built-in ones.
      */
-    constructor(program: Program, uniforms: any)
+    constructor(program: Program, uniforms: {[x: string]: any})
     {
         /**
          * Program that the shader uses
@@ -90,7 +90,7 @@ export class Shader
      * @readonly
      * @member {object}
      */
-    get uniforms(): any
+    get uniforms(): {[x: string]: any}
     {
         return this.uniformGroup.uniforms;
     }
@@ -104,7 +104,7 @@ export class Shader
      *
      * @returns {PIXI.Shader} an shiny new Pixi shader!
      */
-    static from(vertexSrc?: string, fragmentSrc?: string, uniforms?: any): Shader
+    static from(vertexSrc?: string, fragmentSrc?: string, uniforms?: {[x: string]: any}): Shader
     {
         const program = Program.from(vertexSrc, fragmentSrc);
 

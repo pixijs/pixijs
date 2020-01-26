@@ -1,3 +1,9 @@
+export class IGLUniformData
+{
+    location: WebGLUniformLocation;
+    value: number | boolean | Float32Array | Int32Array | boolean[];
+}
+
 /**
  * Helper class to create a WebGL Program
  *
@@ -7,15 +13,15 @@
 export class GLProgram
 {
     public program: WebGLProgram;
-    public uniformData: any;
-    public uniformGroups: any;
+    public uniformData: {[x: string]: any};
+    public uniformGroups: {[x: string]: any};
     /**
      * Makes a new Pixi program
      *
      * @param program {WebGLProgram} webgl program
      * @param uniformData {Object} uniforms
      */
-    constructor(program: WebGLProgram, uniformData: any)
+    constructor(program: WebGLProgram, uniformData: {[key: string]: IGLUniformData})
     {
         /**
          * The shader program

@@ -65,12 +65,12 @@ export class UniformGroup
         this.dirtyId++;
     }
 
-    add(name: string, uniforms: any, _static: boolean): void
+    add(name: string, uniforms: {[key: string]: any}, _static: boolean): void
     {
         this.uniforms[name] = new UniformGroup(uniforms, _static);
     }
 
-    static from(uniforms: any, _static: boolean): UniformGroup
+    static from(uniforms: {[key: string]: any}, _static: boolean): UniformGroup
     {
         return new UniformGroup(uniforms, _static);
     }
