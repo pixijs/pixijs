@@ -1,4 +1,5 @@
 import { Texture } from '@pixi/core';
+import { Matrix } from '@pixi/math';
 
 /**
  * Fill style object for Graphics.
@@ -8,6 +9,46 @@ import { Texture } from '@pixi/core';
  */
 export class FillStyle
 {
+    /**
+     * The hex color value used when coloring the Graphics object.
+     *
+     * @member {number}
+     * @default 0xFFFFFF
+     */
+    public color: number = 0xFFFFFF;
+    
+    /**
+     * The alpha value used when filling the Graphics object.
+     *
+     * @member {number}
+     * @default 1
+     */
+    public alpha: number = 1.0;
+
+    /**
+     * The texture to be used for the fill.
+     *
+     * @member {PIXI.Texture}
+     * @default 0
+     */
+    public texture: Texture = Texture.WHITE;
+
+    /**
+     * The transform aplpied to the texture.
+     *
+     * @member {PIXI.Matrix}
+     * @default null
+     */
+    public matrix: Matrix  =  null;
+
+    /**
+     * If the current fill is visible.
+     *
+     * @member {boolean}
+     * @default false
+     */
+    public visible: boolean = false;
+
     constructor()
     {
         this.reset();
@@ -36,44 +77,10 @@ export class FillStyle
      */
     reset()
     {
-        /**
-         * The hex color value used when coloring the Graphics object.
-         *
-         * @member {number}
-         * @default 1
-         */
         this.color = 0xFFFFFF;
-
-        /**
-         * The alpha value used when filling the Graphics object.
-         *
-         * @member {number}
-         * @default 1
-         */
         this.alpha = 1;
-
-        /**
-         * The texture to be used for the fill.
-         *
-         * @member {string}
-         * @default 0
-         */
         this.texture = Texture.WHITE;
-
-        /**
-         * The transform aplpied to the texture.
-         *
-         * @member {string}
-         * @default 0
-         */
         this.matrix = null;
-
-        /**
-         * If the current fill is visible.
-         *
-         * @member {boolean}
-         * @default false
-         */
         this.visible = false;
     }
 

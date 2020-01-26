@@ -1,3 +1,11 @@
+export interface IGraphicsCurvesSettings {
+    adaptive: boolean;
+    maxLength: number;
+    minSegments: number;
+    maxSegments: number;
+    _segmentsCount(length: number, defaultSegments: number): number;
+}
+
 /**
  * Graphics curves resolution settings. If `adaptive` flag is set to `true`,
  * the resolution is calculated based on the curve's length to ensure better visual quality.
@@ -13,29 +21,26 @@
  * @property {number} minSegments=8 - minimal number of segments in the curve (if adaptive = false, ignored)
  * @property {number} maxSegments=2048 - maximal number of segments in the curve (if adaptive = false, ignored)
  */
-export const GRAPHICS_CURVES = {
+export const GRAPHICS_CURVES: IGraphicsCurvesSettings = {
     adaptive: true,
     maxLength: 10,
     minSegments: 8,
-    maxSegments: 2048,
-    _segmentsCount(length, defaultSegments = 20)
-    {
-        if (!this.adaptive || !length || Number.isNaN(length))
-        {
+    maxSegments:  2048,
+
+    _segmentsCount(length: number, defaultSegments: number = 20) {
+        if (!this.adaptive || !length || Number.isNaN(length)) {
             return defaultSegments;
         }
 
         let result = Math.ceil(length / this.maxLength);
 
-        if (result < this.minSegments)
-        {
+        if (result < this.minSegments) {
             result = this.minSegments;
         }
-        else if (result > this.maxSegments)
-        {
+        else if (result > this.maxSegments) {
             result = this.maxSegments;
         }
 
         return result;
-    },
-};
+    }
+}
