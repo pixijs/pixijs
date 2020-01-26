@@ -61,5 +61,9 @@ export class LineStyle extends FillStyle
 
         // Override default line style color
         this.color = 0x0;
+
+        this.alignment = 0.5;
+        this.width = 0;
+        this.native = false;
     }
 }

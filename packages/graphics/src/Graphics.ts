@@ -325,7 +325,7 @@ export class Graphics extends Container
      * @param {boolean} [options.native=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    public lineStyle(options: ILineStyleOptions | number): Graphics
+    public lineStyle(options: ILineStyleOptions | number = null): Graphics
     {
         // Support non-object params: (width, color, alpha, alignment, native)
         if (typeof options === 'number')
@@ -359,7 +359,7 @@ export class Graphics extends Container
      * @param {boolean} [options.native=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    public lineTextureStyle(options: ILineStyleOptions | number): Graphics
+    public lineTextureStyle(options: ILineStyleOptions | number = null): Graphics
     {
         // backward compatibility with params: (width, texture,
         // color, alpha, matrix, alignment, native)
@@ -368,7 +368,7 @@ export class Graphics extends Container
             deprecation('v5.2.0', 'Please use object-based options for Graphics#lineTextureStyle');
 
             // eslint-disable-next-line
-            const [width, texture, color, alpha, matrix, alignment, native] = (arguments as any) as Array<any>;
+            const [width, texture, color, alpha, matrix, alignment, native] = (arguments as any);
 
             options = { width, texture, color, alpha, matrix, alignment, native };
 
