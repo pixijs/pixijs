@@ -15,15 +15,15 @@ export class FillStyle
      * @member {number}
      * @default 0xFFFFFF
      */
-    public color: number = 0xFFFFFF;
-    
+    public color = 0xFFFFFF;
+
     /**
      * The alpha value used when filling the Graphics object.
      *
      * @member {number}
      * @default 1
      */
-    public alpha: number = 1.0;
+    public alpha = 1.0;
 
     /**
      * The texture to be used for the fill.
@@ -39,7 +39,7 @@ export class FillStyle
      * @member {PIXI.Matrix}
      * @default null
      */
-    public matrix: Matrix  =  null;
+    public matrix: Matrix = null;
 
     /**
      * If the current fill is visible.
@@ -47,7 +47,7 @@ export class FillStyle
      * @member {boolean}
      * @default false
      */
-    public visible: boolean = false;
+    public visible = false;
 
     constructor()
     {

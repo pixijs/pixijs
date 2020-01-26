@@ -8,7 +8,6 @@ import { FillStyle } from './FillStyle';
  */
 export class LineStyle extends FillStyle
 {
-    
     /**
      * The width (thickness) of any lines drawn.
      *
@@ -32,7 +31,7 @@ export class LineStyle extends FillStyle
      * @default false
      */
     public native = false;
-    
+
     /**
      * Clones the object
      *
@@ -62,6 +61,5 @@ export class LineStyle extends FillStyle
 
         // Override default line style color
         this.color = 0x0;
-
     }
 }

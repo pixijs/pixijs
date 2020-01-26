@@ -66,21 +66,21 @@ export class Graphics extends Container
 {
     public shader: Shader;
     public pluginName: string;
-    
+
     protected geometry: GraphicsGeometry;
     protected currentPath: Polygon;
-    protected batches : any[];
+    protected batches: any[];
     protected batchTint: number;
     protected batchDirty: number;
     protected vertexData: Float32Array;
-    
+
     protected _fillStyle: FillStyle;
     protected _lineStyle: LineStyle;
     protected _matrix: Matrix;
     protected _holeMode: boolean;
     protected _transformID: number;
     protected _tint: number;
-    
+
     private state: State;
 
     /**
@@ -90,35 +90,35 @@ export class Graphics extends Container
     constructor(geometry: GraphicsGeometry = null)
     {
         super();
-        
+
         /**
          * Includes vertex positions, face indices, normals, colors, UVs, and
          * custom attributes within buffers, reducing the cost of passing all
          * this data to the GPU. Can be shared between multiple Mesh or Graphics objects.
-         * 
+         *
          * @member {PIXI.GraphicsGeometry}
          * @protected
-         */    
+         */
         this.geometry = geometry || new GraphicsGeometry();
-        
+
         this.geometry.refCount++;
 
-         /**
+        /**
          * Represents the vertex and fragment shaders that processes the geometry and runs on the GPU.
          * Can be shared between multiple Graphics objects.
-         * 
+         *
          * @member {PIXI.Shader}
          */
         this.shader = null;
 
-         /**
+        /**
          * Represents the WebGL state the Graphics required to render, excludes shader and geometry. E.g.,
          * blend mode, culling, depth testing, direction of rendering triangles, backface, etc.
-         * 
+         *
          * @member {PIXI.State}
          */
         this.state = State.for2d();
-        
+
         /**
          * Current fill style
          *
@@ -126,7 +126,7 @@ export class Graphics extends Container
          * @protected
          */
         this._fillStyle = new FillStyle();
-        
+
         /**
          * Current line style
          *
@@ -134,7 +134,7 @@ export class Graphics extends Container
          * @protected
          */
         this._lineStyle = new LineStyle();
-        
+
         /**
          * Current shape transform matrix.
          *
@@ -142,7 +142,7 @@ export class Graphics extends Container
          * @protected
          */
         this._matrix = null;
-        
+
         /**
          * Current hole mode is enabled.
          *
@@ -159,7 +159,7 @@ export class Graphics extends Container
          * @protected
          */
         this.currentPath = null;
-        
+
         /**
          * When cacheAsBitmap is set to true the graphics object will be rendered as if it was a sprite.
          * This is useful if your graphics element does not change often, as it will speed up the rendering
@@ -180,7 +180,7 @@ export class Graphics extends Container
          * @member {object[]}
          */
         this.batches = [];
-        
+
         /**
          * Update dirty for limiting calculating tints for batches.
          *
@@ -362,7 +362,7 @@ export class Graphics extends Container
             options = { width, texture, color, alpha, matrix, alignment, native };
 
             // Remove undefined keys
-            Object.keys(options).forEach((key) => (options as any) [key] === undefined && delete (options as any) [key]);
+            Object.keys(options).forEach((key) => (options as any)[key] === undefined && delete (options as any)[key]);
         }
 
         // Apply defaults
@@ -498,7 +498,7 @@ export class Graphics extends Container
      * @param {number} [x=0]
      * @param {number} [y=0]
      */
-    protected _initCurve(x: number = 0, y: number = 0)
+    protected _initCurve(x = 0, y = 0)
     {
         if (this.currentPath)
         {
@@ -603,7 +603,7 @@ export class Graphics extends Container
      *  indicates counter-clockwise.
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    arc(cx: number, cy: number, radius: number, startAngle: number, endAngle: number, anticlockwise: boolean = false): Graphics
+    arc(cx: number, cy: number, radius: number, startAngle: number, endAngle: number, anticlockwise = false): Graphics
     {
         if (startAngle === endAngle)
         {
@@ -670,7 +670,7 @@ export class Graphics extends Container
      * @param {number} [alpha=1] - the alpha of the fill
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    public beginFill(color: number = 0, alpha: number = 1): Graphics
+    public beginFill(color = 0, alpha = 1): Graphics
     {
         return this.beginTextureFill({ texture: Texture.WHITE, color, alpha });
     }
@@ -697,7 +697,7 @@ export class Graphics extends Container
             options = { texture, color, alpha, matrix };
 
             // Remove undefined keys
-            Object.keys(options).forEach((key) => (options as any) [key] === undefined && delete (options as any) [key]);
+            Object.keys(options).forEach((key) => (options as any)[key] === undefined && delete (options as any)[key]);
         }
 
         // Apply defaults
@@ -822,7 +822,9 @@ export class Graphics extends Container
         {
             closeStroke = (path as Polygon).closeStroke;
             points = (path as Polygon).points;
-        } else {
+        }
+        else
+        {
             points = path as Array<number> | Array<Point>;
         }
 

@@ -27,20 +27,24 @@ export const GRAPHICS_CURVES: IGraphicsCurvesSettings = {
     minSegments: 8,
     maxSegments:  2048,
 
-    _segmentsCount(length: number, defaultSegments: number = 20) {
-        if (!this.adaptive || !length || Number.isNaN(length)) {
+    _segmentsCount(length: number, defaultSegments = 20)
+    {
+        if (!this.adaptive || !length || Number.isNaN(length))
+        {
             return defaultSegments;
         }
 
         let result = Math.ceil(length / this.maxLength);
 
-        if (result < this.minSegments) {
+        if (result < this.minSegments)
+        {
             result = this.minSegments;
         }
-        else if (result > this.maxSegments) {
+        else if (result > this.maxSegments)
+        {
             result = this.maxSegments;
         }
 
         return result;
-    }
-}
+    },
+};
