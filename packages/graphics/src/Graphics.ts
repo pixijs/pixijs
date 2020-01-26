@@ -426,14 +426,14 @@ export class Graphics extends Container
             if (len > 2)
             {
                 this.drawShape(this.currentPath);
-                this.currentPath = new Polygon();
+                this.currentPath = new Polygon([]);
                 this.currentPath.closeStroke = false;
                 this.currentPath.points.push(points[len - 2], points[len - 1]);
             }
         }
         else
         {
-            this.currentPath = new Polygon();
+            this.currentPath = new Polygon([]);
             this.currentPath.closeStroke = false;
         }
     }

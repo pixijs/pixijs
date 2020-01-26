@@ -20,7 +20,7 @@ export class Polygon
      *  `new PIXI.Polygon(new PIXI.Point(), new PIXI.Point(), ...)`, or the arguments passed can be flat
      *  x,y values e.g. `new Polygon(x,y, x,y, x,y, ...)` where `x` and `y` are Numbers.
      */
-    constructor(...points: Point[]|number[]|number[][])
+    constructor(points: Point[] | number[] | number[][])
     {
         if (Array.isArray(points[0]))
         {

@@ -3,7 +3,7 @@ export interface IGraphicsCurvesSettings {
     maxLength: number;
     minSegments: number;
     maxSegments: number;
-    _segmentsCount(length: number, defaultSegments: number): number;
+    _segmentsCount(length: number, defaultSegments?: number): number;
 }
 
 /**

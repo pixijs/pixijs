@@ -92,6 +92,7 @@ export class GraphicsData
 
     /**
      * Destroys the Graphics data.
+     *
      */
     public destroy(): void
     {

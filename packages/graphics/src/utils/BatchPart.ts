@@ -1,3 +1,6 @@
+import { LineStyle } from '../styles/LineStyle';
+import { FillStyle } from '../styles/FillStyle';
+
 /**
  * A structure to hold interim batch objects for Graphics.
  * @class
@@ -5,6 +8,12 @@
  */
 export class BatchPart
 {
+    public style: LineStyle | FillStyle;
+    public start: number;
+    public size: number;
+    public attribStart: number;
+    public attribSize: number;
+
     constructor()
     {
         this.reset();
@@ -17,7 +26,7 @@ export class BatchPart
      * @param {number} startIndex
      * @param {number} attribStart
      */
-    begin(style, startIndex, attribStart)
+    public begin(style: LineStyle | FillStyle, startIndex: number, attribStart: number): void
     {
         this.reset();
         this.style = style;
@@ -31,13 +40,13 @@ export class BatchPart
      * @param {number} endIndex
      * @param {number} endAttrib
      */
-    end(endIndex, endAttrib)
+    public end(endIndex: number, endAttrib: number): void
     {
         this.attribSize = endAttrib - this.attribStart;
         this.size = endIndex - this.start;
     }
 
-    reset()
+    public reset(): void
     {
         this.style = null;
         this.size = 0;

@@ -657,7 +657,7 @@ export class GraphicsGeometry extends BatchGeometry
 
         for (let i = 0; i < batches.length; i++)
         {
-            if (batches[i].style.native)
+            if ((batches[i].style as LineStyle).native)
             {
                 return false;
             }
@@ -716,7 +716,7 @@ export class GraphicsGeometry extends BatchGeometry
             // TODO add some full on MAX_TEXTURE CODE..
             const MAX_TEXTURES = 8;
 
-            const style = data.style;
+            const style = data.style as LineStyle;
 
             const nextTexture = style.texture.baseTexture;
 
