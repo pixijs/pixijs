@@ -79,7 +79,7 @@ export class BatchSystem extends System
      * @param arr
      * @param maxTextures
      */
-    copyBoundTextures(arr: Array<BaseTexture>, maxTextures: number): void
+    copyBoundTextures(arr: BaseTexture[], maxTextures: number): void
     {
         const { boundTextures } = this.renderer.texture;
 

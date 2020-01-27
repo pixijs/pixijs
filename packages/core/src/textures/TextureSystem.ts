@@ -16,7 +16,7 @@ import { Renderer, IRenderingContext } from '@pixi/core';
  */
 export class TextureSystem extends System
 {
-    public boundTextures: Array<BaseTexture>;
+    public boundTextures: BaseTexture[];
     public managedTextures: Array<BaseTexture>;
     protected CONTEXT_UID: number;
     protected gl: IRenderingContext;
