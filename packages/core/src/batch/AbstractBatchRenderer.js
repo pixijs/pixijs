@@ -6,6 +6,7 @@ import { State } from '../state/State';
 import { ViewableBuffer } from '../geometry/ViewableBuffer';
 
 import { checkMaxIfStatementsInShader } from '../shader/utils/checkMaxIfStatementsInShader';
+import { checkMaxSamplersInShader } from '../shader/utils/checkMaxSamplersInShader';
 
 import { settings } from '@pixi/settings';
 import { premultiplyBlendMode, premultiplyTint, nextPow2, log2 } from '@pixi/utils';
@@ -263,6 +264,10 @@ export class AbstractBatchRenderer extends ObjectRenderer
 
             // step 2: check the maximum number of if statements the shader can have too..
             this.MAX_TEXTURES = checkMaxIfStatementsInShader(
+                this.MAX_TEXTURES, gl);
+
+            // step 3: check maximum number of samplers per shader
+            this.MAX_TEXTURES = checkMaxSamplersInShader(
                 this.MAX_TEXTURES, gl);
         }
 
