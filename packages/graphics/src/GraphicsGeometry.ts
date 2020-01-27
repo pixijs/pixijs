@@ -717,9 +717,10 @@ export class GraphicsGeometry extends BatchGeometry
             // TODO add some full on MAX_TEXTURE CODE..
             const MAX_TEXTURES = 8;
 
+            // Forced cast for checking `native` without errors
             const style = data.style as LineStyle;
 
-            const nextTexture: BaseTexture = style.texture.baseTexture;
+            const nextTexture = style.texture.baseTexture;
 
             if (native !== !!style.native)
             {
@@ -762,7 +763,9 @@ export class GraphicsGeometry extends BatchGeometry
                     }
 
                     // TODO add this to the render part..
+                    // Hack! Because texture has protected `touched`
                     (nextTexture as any).touched = 1;// touch;
+
                     nextTexture._batchEnabled = TICK;
                     nextTexture._batchLocation = textureCount;
                     nextTexture.wrapMode = 10497;
