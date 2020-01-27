@@ -21,7 +21,7 @@ export class RenderTexturePool
 {
     public textureOptions: IBaseTextureOptions;
     public enableFullScreen: boolean;
-    texturePool: any;
+    texturePool: {[x in string|number]: RenderTexture[]};
     private _pixelsWidth: number;
     private _pixelsHeight: number;
     /**
