@@ -1,6 +1,5 @@
 import { System } from '../System';
 import { Rectangle } from '@pixi/math';
-import { BUFFER_BITS } from '@pixi/constants';
 
 const tempRect = new Rectangle();
 

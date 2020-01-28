@@ -45,8 +45,8 @@ export enum RENDERER_TYPE {
  * @property {number} STENCIL - Indicates the stencil buffer.
  */
 export enum BUFFER_BITS {
-    COLOR   = 0x00004000,
-    DEPTH   = 0x00000100,
+    COLOR = 0x00004000,
+    DEPTH = 0x00000100,
     STENCIL = 0x00000400
 }
 

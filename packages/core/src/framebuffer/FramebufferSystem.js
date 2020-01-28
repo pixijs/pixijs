@@ -1,9 +1,8 @@
 import { System } from '../System';
 import { Rectangle } from '@pixi/math';
-import { ENV } from '@pixi/constants';
+import { ENV, BUFFER_BITS } from '@pixi/constants';
 import { settings } from '../settings';
 import { Framebuffer } from './Framebuffer';
-import { BUFFER_BITS } from '@pixi/constants';
 
 /**
  * System plugin to the renderer to manage framebuffers.
