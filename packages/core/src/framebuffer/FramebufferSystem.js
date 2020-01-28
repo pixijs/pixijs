@@ -3,6 +3,7 @@ import { Rectangle } from '@pixi/math';
 import { ENV } from '@pixi/constants';
 import { settings } from '../settings';
 import { Framebuffer } from './Framebuffer';
+import { BUFFER_BITS } from '@pixi/constants';
 
 /**
  * System plugin to the renderer to manage framebuffers.
@@ -216,14 +217,15 @@ export class FramebufferSystem extends System
      * @param {Number} g - Green value from 0 to 1
      * @param {Number} b - Blue value from 0 to 1
      * @param {Number} a - Alpha value from 0 to 1
+     * @param {Number} mask - Bitwise OR of masks that indicate the buffers to be cleared, by default COLOR
      */
-    clear(r, g, b, a)
+    clear(r, g, b, a, mask = BUFFER_BITS.COLOR)
     {
         const { gl } = this;
 
         // TODO clear color can be set only one right?
         gl.clearColor(r, g, b, a);
-        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        gl.clear(mask);
     }
 
     /**
