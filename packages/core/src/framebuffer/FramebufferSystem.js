@@ -210,20 +210,37 @@ export class FramebufferSystem extends System
     }
 
     /**
-     * Clear the color of the context
+     * Set clear color of the context
      *
      * @param {Number} r - Red value from 0 to 1
      * @param {Number} g - Green value from 0 to 1
      * @param {Number} b - Blue value from 0 to 1
      * @param {Number} a - Alpha value from 0 to 1
      */
-    clear(r, g, b, a)
+    setClearColor(r, g, b, a)
     {
         const { gl } = this;
 
         // TODO clear color can be set only one right?
         gl.clearColor(r, g, b, a);
-        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    }
+
+    /**
+     * Clear the color and the depth buffers of the context
+     *
+     * @param {boolean} color - Clear color buffer, by default its true
+     * @param {boolean} depth - Clear depth buffer, by default its false
+     */
+    clear(color = true, depth = false)
+    {
+        const { gl } = this;
+
+        let bits = 0;
+
+        if (color) bits |= gl.COLOR_BUFFER_BIT;
+        if (depth) bits |= gl.DEPTH_BUFFER_BIT;
+
+        gl.clear(bits);
     }
 
     /**

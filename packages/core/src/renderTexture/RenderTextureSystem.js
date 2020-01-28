@@ -138,23 +138,19 @@ export class RenderTextureSystem extends System
     }
 
     /**
-     * Erases the render texture and fills the drawing area with a colour
+     * Erases the render texture and fills the drawing area with a clearColor.
+     * Default to use the renderer backgroundColor
      *
-     * @param {number[]} [clearColor] - The color as rgba, default to use the renderer backgroundColor
+     * @param {boolean} color - Clear color buffer, by default its true
+     * @param {boolean} depth - Clear depth buffer, by default its false
      * @return {PIXI.Renderer} Returns itself.
      */
-    clear(clearColor)
+    clear(color = true, depth = false)
     {
-        if (this.current)
-        {
-            clearColor = clearColor || this.current.baseTexture.clearColor;
-        }
-        else
-        {
-            clearColor = clearColor || this.clearColor;
-        }
+        const clearColor = this.current ? this.current.baseTexture.clearColor : this.clearColor;
 
-        this.renderer.framebuffer.clear(clearColor[0], clearColor[1], clearColor[2], clearColor[3]);
+        this.renderer.framebuffer.setClearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3]);
+        this.renderer.framebuffer.clear(color, depth);
     }
 
     resize()// screenWidth, screenHeight)
