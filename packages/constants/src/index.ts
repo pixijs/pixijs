@@ -34,6 +34,23 @@ export enum RENDERER_TYPE {
 }
 
 /**
+ * Bitwise OR of masks that indicate the buffers to be cleared.
+ *
+ * @static
+ * @memberof PIXI
+ * @name BUFFER_BITS
+ * @enum {number}
+ * @property {number} COLOR - Indicates the buffers currently enabled for color writing.
+ * @property {number} DEPTH - Indicates the depth buffer.
+ * @property {number} STENCIL - Indicates the stencil buffer.
+ */
+export enum BUFFER_BITS {
+    COLOR   = 0x00004000,
+    DEPTH   = 0x00000100,
+    STENCIL = 0x00000400
+}
+
+/**
  * Various blend modes supported by PIXI.
  *
  * IMPORTANT - The WebGL renderer only supports the NORMAL, ADD, MULTIPLY and SCREEN blend modes.
