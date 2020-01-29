@@ -63,7 +63,7 @@ export class Ellipse
      *
      * @return {PIXI.Ellipse} a copy of the ellipse
      */
-    clone(): Ellipse
+    public clone(): Ellipse
     {
         return new Ellipse(this.x, this.y, this.width, this.height);
     }
@@ -75,7 +75,7 @@ export class Ellipse
      * @param {number} y - The Y coordinate of the point to test
      * @return {boolean} Whether the x/y coords are within this ellipse
      */
-    contains(x: number, y: number): boolean
+    public contains(x: number, y: number): boolean
     {
         if (this.width <= 0 || this.height <= 0)
         {
@@ -97,7 +97,7 @@ export class Ellipse
      *
      * @return {PIXI.Rectangle} the framing rectangle
      */
-    getBounds(): Rectangle
+    public getBounds(): Rectangle
     {
         return new Rectangle(this.x - this.width, this.y - this.height, this.width, this.height);
     }

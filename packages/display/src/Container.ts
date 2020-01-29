@@ -112,7 +112,7 @@ export class Container extends DisplayObject
      * @param {...PIXI.DisplayObject} children - The DisplayObject(s) to add to the container
      * @return {PIXI.DisplayObject} The first child that was added.
      */
-    addChild<T extends DisplayObject[]>(...children: T): T[0]
+    public addChild<T extends DisplayObject[]>(...children: T): T[0]
     {
         // if there is only one argument we can bypass looping through the them
         if (children.length > 1)
@@ -161,7 +161,7 @@ export class Container extends DisplayObject
      * @param {number} index - The index to place the child in
      * @return {PIXI.DisplayObject} The child that was added.
      */
-    addChildAt<T extends DisplayObject>(child: T, index: number): T
+    public addChildAt<T extends DisplayObject>(child: T, index: number): T
     {
         if (index < 0 || index > this.children.length)
         {
@@ -198,7 +198,7 @@ export class Container extends DisplayObject
      * @param {PIXI.DisplayObject} child - First display object to swap
      * @param {PIXI.DisplayObject} child2 - Second display object to swap
      */
-    swapChildren(child: DisplayObject, child2: DisplayObject): void
+    public swapChildren(child: DisplayObject, child2: DisplayObject): void
     {
         if (child === child2)
         {
@@ -219,7 +219,7 @@ export class Container extends DisplayObject
      * @param {PIXI.DisplayObject} child - The DisplayObject instance to identify
      * @return {number} The index position of the child display object to identify
      */
-    getChildIndex(child: DisplayObject): number
+    public getChildIndex(child: DisplayObject): number
     {
         const index = this.children.indexOf(child);
 
@@ -237,7 +237,7 @@ export class Container extends DisplayObject
      * @param {PIXI.DisplayObject} child - The child DisplayObject instance for which you want to change the index number
      * @param {number} index - The resulting index number for the child display object
      */
-    setChildIndex(child: DisplayObject, index: number): void
+    public setChildIndex(child: DisplayObject, index: number): void
     {
         if (index < 0 || index >= this.children.length)
         {
@@ -258,7 +258,7 @@ export class Container extends DisplayObject
      * @param {number} index - The index to get the child at
      * @return {PIXI.DisplayObject} The child at the given index, if any.
      */
-    getChildAt(index: number): DisplayObject
+    public getChildAt(index: number): DisplayObject
     {
         if (index < 0 || index >= this.children.length)
         {
@@ -274,7 +274,7 @@ export class Container extends DisplayObject
      * @param {...PIXI.DisplayObject} children - The DisplayObject(s) to remove
      * @return {PIXI.DisplayObject} The first child that was removed.
      */
-    removeChild<T extends DisplayObject[]>(...children: T): T[0]
+    public removeChild<T extends DisplayObject[]>(...children: T): T[0]
     {
         // if there is only one argument we can bypass looping through the them
         if (children.length > 1)
@@ -315,7 +315,7 @@ export class Container extends DisplayObject
      * @param {number} index - The index to get the child from
      * @return {PIXI.DisplayObject} The child that was removed.
      */
-    removeChildAt(index: number): DisplayObject
+    public removeChildAt(index: number): DisplayObject
     {
         const child = this.getChildAt(index);
 
@@ -342,7 +342,7 @@ export class Container extends DisplayObject
      * @param {number} [endIndex=this.children.length] - The ending position. Default value is size of the container.
      * @returns {PIXI.DisplayObject[]} List of removed children
      */
-    removeChildren(beginIndex = 0, endIndex = this.children.length): DisplayObject[]
+    public removeChildren(beginIndex = 0, endIndex = this.children.length): DisplayObject[]
     {
         const begin = beginIndex;
         const end = endIndex;
@@ -385,7 +385,7 @@ export class Container extends DisplayObject
     /**
      * Sorts children by zIndex. Previous order is mantained for 2 children with the same zIndex.
      */
-    sortChildren(): void
+    public sortChildren(): void
     {
         let sortRequired = false;
 
@@ -412,7 +412,7 @@ export class Container extends DisplayObject
     /**
      * Updates the transform on all children of this container for rendering
      */
-    updateTransform(): void
+    public updateTransform(): void
     {
         if (this.sortableChildren && this.sortDirty)
         {
@@ -441,7 +441,7 @@ export class Container extends DisplayObject
      * Recalculates the bounds of the container.
      *
      */
-    calculateBounds(): void
+    public calculateBounds(): void
     {
         this._bounds.clear();
 
@@ -495,7 +495,7 @@ export class Container extends DisplayObject
      *
      * @param {PIXI.Renderer} renderer - The renderer
      */
-    render(renderer: Renderer): void
+    public render(renderer: Renderer): void
     {
         // if the object is not visible or the alpha is 0 then no need to render this element
         if (!this.visible || this.worldAlpha <= 0 || !this.renderable)
@@ -609,7 +609,7 @@ export class Container extends DisplayObject
      * @param {boolean} [options.baseTexture=false] - Only used for child Sprites if options.children is set to true
      *  Should it destroy the base texture of the child sprite
      */
-    destroy(options?: IDestroyOptions|boolean): void
+    public destroy(options?: IDestroyOptions|boolean): void
     {
         super.destroy();
 

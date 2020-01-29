@@ -125,7 +125,7 @@ export class Rectangle
      *
      * @return {PIXI.Rectangle} a copy of the rectangle
      */
-    clone(): Rectangle
+    public clone(): Rectangle
     {
         return new Rectangle(this.x, this.y, this.width, this.height);
     }
@@ -136,7 +136,7 @@ export class Rectangle
      * @param {PIXI.Rectangle} rectangle - The rectangle to copy from.
      * @return {PIXI.Rectangle} Returns itself.
      */
-    copyFrom(rectangle: Rectangle): Rectangle
+    public copyFrom(rectangle: Rectangle): Rectangle
     {
         this.x = rectangle.x;
         this.y = rectangle.y;
@@ -152,7 +152,7 @@ export class Rectangle
      * @param {PIXI.Rectangle} rectangle - The rectangle to copy to.
      * @return {PIXI.Rectangle} Returns given parameter.
      */
-    copyTo(rectangle: Rectangle): Rectangle
+    public copyTo(rectangle: Rectangle): Rectangle
     {
         rectangle.x = this.x;
         rectangle.y = this.y;
@@ -169,7 +169,7 @@ export class Rectangle
      * @param {number} y - The Y coordinate of the point to test
      * @return {boolean} Whether the x/y coordinates are within this Rectangle
      */
-    contains(x: number, y: number): boolean
+    public contains(x: number, y: number): boolean
     {
         if (this.width <= 0 || this.height <= 0)
         {
@@ -195,7 +195,7 @@ export class Rectangle
      * @param {number} [paddingY=0] - The vertical padding amount.
      * @return {PIXI.Rectangle} Returns itself.
      */
-    pad(paddingX = 0, paddingY = paddingX): this
+    public pad(paddingX = 0, paddingY = paddingX): this
     {
         this.x -= paddingX;
         this.y -= paddingY;
@@ -212,7 +212,7 @@ export class Rectangle
      * @param {PIXI.Rectangle} rectangle - The rectangle to fit.
      * @return {PIXI.Rectangle} Returns itself.
      */
-    fit(rectangle: Rectangle): this
+    public fit(rectangle: Rectangle): this
     {
         const x1 = Math.max(this.x, rectangle.x);
         const x2 = Math.min(this.x + this.width, rectangle.x + rectangle.width);
@@ -234,7 +234,7 @@ export class Rectangle
      * @param {number} [eps=0.001] precision
      * @return {PIXI.Rectangle} Returns itself.
      */
-    ceil(resolution = 1, eps = 0.001): this
+    public ceil(resolution = 1, eps = 0.001): this
     {
         const x2 = Math.ceil((this.x + this.width - eps) * resolution) / resolution;
         const y2 = Math.ceil((this.y + this.height - eps) * resolution) / resolution;
@@ -254,7 +254,7 @@ export class Rectangle
      * @param {PIXI.Rectangle} rectangle - The rectangle to include.
      * @return {PIXI.Rectangle} Returns itself.
      */
-    enlarge(rectangle: Rectangle): this
+    public enlarge(rectangle: Rectangle): this
     {
         const x1 = Math.min(this.x, rectangle.x);
         const x2 = Math.max(this.x + this.width, rectangle.x + rectangle.width);

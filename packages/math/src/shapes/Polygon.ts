@@ -72,7 +72,7 @@ export class Polygon
      *
      * @return {PIXI.Polygon} a copy of the polygon
      */
-    clone(): Polygon
+    public clone(): Polygon
     {
         const points = this.points.slice();
         const polygon = new Polygon(points);
@@ -89,7 +89,7 @@ export class Polygon
      * @param {number} y - The Y coordinate of the point to test
      * @return {boolean} Whether the x/y coordinates are within this polygon
      */
-    contains(x: number, y: number): boolean
+    public contains(x: number, y: number): boolean
     {
         let inside = false;
 

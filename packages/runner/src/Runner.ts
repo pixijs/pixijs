@@ -184,7 +184,7 @@ export class Runner
      * @member {boolean}
      * @readonly
      */
-    public get empty(): boolean
+    get empty(): boolean
     {
         return this.items.length === 0;
     }
@@ -195,7 +195,7 @@ export class Runner
      * @member {string}
      * @readonly
      */
-    public get name(): string
+    get name(): string
     {
         return this._name;
     }

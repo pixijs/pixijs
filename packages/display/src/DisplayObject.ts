@@ -54,7 +54,7 @@ export abstract class DisplayObject extends EventEmitter
      *
      * @param {object} source The source of properties and methods to mix in.
      */
-    static mixin(source: {[x: string]: any}): void
+    public static mixin(source: {[x: string]: any}): void
     {
         // in ES8/ES2017, this would be really easy:
         // Object.defineProperties(DisplayObject.prototype, Object.getOwnPropertyDescriptors(source));
@@ -296,7 +296,7 @@ export abstract class DisplayObject extends EventEmitter
      *
      * TODO - Optimization pass!
      */
-    updateTransform(): void
+    public updateTransform(): void
     {
         this._boundsID++;
 
@@ -314,7 +314,7 @@ export abstract class DisplayObject extends EventEmitter
      * @param {PIXI.Rectangle} [rect] - Optional rectangle to store the result of the bounds calculation.
      * @return {PIXI.Rectangle} The rectangular bounding area.
      */
-    getBounds(skipUpdate?: boolean, rect?: Rectangle): Rectangle
+    public getBounds(skipUpdate?: boolean, rect?: Rectangle): Rectangle
     {
         if (!skipUpdate)
         {
@@ -356,7 +356,7 @@ export abstract class DisplayObject extends EventEmitter
      * @param {PIXI.Rectangle} [rect] - Optional rectangle to store the result of the bounds calculation.
      * @return {PIXI.Rectangle} The rectangular bounding area.
      */
-    getLocalBounds(rect?: Rectangle): Rectangle
+    public getLocalBounds(rect?: Rectangle): Rectangle
     {
         const transformRef = this.transform;
         const parentRef = this.parent;
@@ -391,7 +391,7 @@ export abstract class DisplayObject extends EventEmitter
      * @param {boolean} [skipUpdate=false] - Should we skip the update transform.
      * @return {PIXI.Point} A point object representing the position of this object.
      */
-    toGlobal(position: IPoint, point?: Point, skipUpdate = false): Point
+    public toGlobal(position: IPoint, point?: Point, skipUpdate = false): Point
     {
         if (!skipUpdate)
         {
@@ -426,7 +426,7 @@ export abstract class DisplayObject extends EventEmitter
      * @param {boolean} [skipUpdate=false] - Should we skip the update transform
      * @return {PIXI.Point} A point object representing the position of this object
      */
-    toLocal(position: IPoint, from: DisplayObject, point?: Point, skipUpdate?: boolean): Point
+    public toLocal(position: IPoint, from: DisplayObject, point?: Point, skipUpdate?: boolean): Point
     {
         if (from)
         {
@@ -462,7 +462,7 @@ export abstract class DisplayObject extends EventEmitter
      * @param {PIXI.Container} container - The Container to add this DisplayObject to.
      * @return {PIXI.Container} The Container that this DisplayObject was added to.
      */
-    setParent(container: Container): Container
+    public setParent(container: Container): Container
     {
         if (!container || !container.addChild)
         {
@@ -488,7 +488,9 @@ export abstract class DisplayObject extends EventEmitter
      * @param {number} [pivotY=0] - The Y pivot value
      * @return {PIXI.DisplayObject} The DisplayObject instance
      */
-    setTransform(x = 0, y = 0, scaleX = 1, scaleY = 1, rotation = 0, skewX = 0, skewY = 0, pivotX = 0, pivotY = 0): this
+    public setTransform(
+        x = 0, y = 0, scaleX = 1, scaleY = 1, rotation = 0, skewX = 0, skewY = 0, pivotX = 0, pivotY = 0
+    ): this
     {
         this.position.x = x;
         this.position.y = y;
@@ -511,7 +513,7 @@ export abstract class DisplayObject extends EventEmitter
      *
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    destroy(_options?: IDestroyOptions|boolean): void
+    public destroy(_options?: IDestroyOptions|boolean): void
     {
         if (this.parent)
         {
@@ -792,8 +794,8 @@ export abstract class DisplayObject extends EventEmitter
 
 class TemporaryDisplayObject extends DisplayObject
 {
-    calculateBounds: () => {} = null;
-    removeChild: (child: DisplayObject) => {} = null;
-    render: (renderer: Renderer) => {} = null;
-    sortDirty: boolean = null;
+    public calculateBounds: () => {} = null;
+    public removeChild: (child: DisplayObject) => {} = null;
+    public render: (renderer: Renderer) => {} = null;
+    public sortDirty: boolean = null;
 }

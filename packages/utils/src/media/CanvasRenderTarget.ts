@@ -45,7 +45,7 @@ export class CanvasRenderTarget
      *
      * @private
      */
-    clear(): void
+    public clear(): void
     {
         this.context.setTransform(1, 0, 0, 1, 0, 0);
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -57,7 +57,7 @@ export class CanvasRenderTarget
      * @param {number} width - the new width of the canvas
      * @param {number} height - the new height of the canvas
      */
-    resize(width: number, height: number): void
+    public resize(width: number, height: number): void
     {
         this.canvas.width = width * this.resolution;
         this.canvas.height = height * this.resolution;
@@ -67,7 +67,7 @@ export class CanvasRenderTarget
      * Destroys this canvas.
      *
      */
-    destroy(): void
+    public destroy(): void
     {
         this.context = null;
         this.canvas = null;

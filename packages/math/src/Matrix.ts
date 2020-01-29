@@ -85,7 +85,7 @@ export class Matrix
      *
      * @param {number[]} array - The array that the matrix will be populated from.
      */
-    fromArray(array: number[]): void
+    public fromArray(array: number[]): void
     {
         this.a = array[0];
         this.b = array[1];
@@ -107,7 +107,7 @@ export class Matrix
      *
      * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
      */
-    set(a: number, b: number, c: number, d: number, tx: number, ty: number): this
+    public set(a: number, b: number, c: number, d: number, tx: number, ty: number): this
     {
         this.a = a;
         this.b = b;
@@ -126,7 +126,7 @@ export class Matrix
      * @param {Float32Array} [out=new Float32Array(9)] - If provided the array will be assigned to out
      * @return {number[]} the newly created array which contains the matrix
      */
-    toArray(transpose: boolean, out?: Float32Array): Float32Array
+    public toArray(transpose: boolean, out?: Float32Array): Float32Array
     {
         if (!this.array)
         {
@@ -171,7 +171,7 @@ export class Matrix
      * @param {PIXI.Point} [newPos] - The point that the new position is assigned to (allowed to be same as input)
      * @return {PIXI.Point} The new point, transformed through this matrix
      */
-    apply(pos: IPoint, newPos?: Point): Point
+    public apply(pos: IPoint, newPos?: Point): Point
     {
         newPos = newPos || new Point();
 
@@ -192,7 +192,7 @@ export class Matrix
      * @param {PIXI.Point} [newPos] - The point that the new position is assigned to (allowed to be same as input)
      * @return {PIXI.Point} The new point, inverse-transformed through this matrix
      */
-    applyInverse(pos: IPoint, newPos?: Point): Point
+    public applyInverse(pos: IPoint, newPos?: Point): Point
     {
         newPos = newPos || new Point();
 
@@ -214,7 +214,7 @@ export class Matrix
      * @param {number} y How much to translate y by
      * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
      */
-    translate(x: number, y: number): this
+    public translate(x: number, y: number): this
     {
         this.tx += x;
         this.ty += y;
@@ -229,7 +229,7 @@ export class Matrix
      * @param {number} y The amount to scale vertically
      * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
      */
-    scale(x: number, y: number): this
+    public scale(x: number, y: number): this
     {
         this.a *= x;
         this.d *= y;
@@ -247,7 +247,7 @@ export class Matrix
      * @param {number} angle - The angle in radians.
      * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
      */
-    rotate(angle: number): this
+    public rotate(angle: number): this
     {
         const cos = Math.cos(angle);
         const sin = Math.sin(angle);
@@ -272,7 +272,7 @@ export class Matrix
      * @param {PIXI.Matrix} matrix - The matrix to append.
      * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
      */
-    append(matrix: Matrix): this
+    public append(matrix: Matrix): this
     {
         const a1 = this.a;
         const b1 = this.b;
@@ -304,7 +304,7 @@ export class Matrix
      * @param {number} skewY - Skew on the y axis
      * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
      */
-    setTransform(x: number, y: number, pivotX: number, pivotY: number, scaleX: number,
+    public setTransform(x: number, y: number, pivotX: number, pivotY: number, scaleX: number,
         scaleY: number, rotation: number, skewX: number, skewY: number): this
     {
         this.a = Math.cos(rotation + skewY) * scaleX;
@@ -324,7 +324,7 @@ export class Matrix
      * @param {PIXI.Matrix} matrix - The matrix to prepend
      * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
      */
-    prepend(matrix: Matrix): this
+    public prepend(matrix: Matrix): this
     {
         const tx1 = this.tx;
 
@@ -351,7 +351,7 @@ export class Matrix
      * @param {PIXI.Transform} transform - The transform to apply the properties to.
      * @return {PIXI.Transform} The transform with the newly applied properties
      */
-    decompose(transform: Transform): Transform
+    public decompose(transform: Transform): Transform
     {
         // sort out rotation / skew..
         const a = this.a;
@@ -392,7 +392,7 @@ export class Matrix
      *
      * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
      */
-    invert(): this
+    public invert(): this
     {
         const a1 = this.a;
         const b1 = this.b;
@@ -416,7 +416,7 @@ export class Matrix
      *
      * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
      */
-    identity(): this
+    public identity(): this
     {
         this.a = 1;
         this.b = 0;
@@ -433,7 +433,7 @@ export class Matrix
      *
      * @return {PIXI.Matrix} A copy of this matrix. Good for chaining method calls.
      */
-    clone(): Matrix
+    public clone(): Matrix
     {
         const matrix = new Matrix();
 
@@ -453,7 +453,7 @@ export class Matrix
      * @param {PIXI.Matrix} matrix - The matrix to copy to.
      * @return {PIXI.Matrix} The matrix given in parameter with its values updated.
      */
-    copyTo(matrix: Matrix): Matrix
+    public copyTo(matrix: Matrix): Matrix
     {
         matrix.a = this.a;
         matrix.b = this.b;
@@ -471,7 +471,7 @@ export class Matrix
      * @param {PIXI.Matrix} matrix - The matrix to copy from.
      * @return {PIXI.Matrix} this
      */
-    copyFrom(matrix: Matrix): this
+    public copyFrom(matrix: Matrix): this
     {
         this.a = matrix.a;
         this.b = matrix.b;

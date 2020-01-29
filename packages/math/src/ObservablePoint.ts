@@ -42,7 +42,7 @@ export class ObservablePoint<T = any> implements IPoint
      * @param {object} [scope=null] - owner of callback
      * @return {PIXI.ObservablePoint} a copy of the point
      */
-    clone(cb = this.cb, scope = this.scope): ObservablePoint
+    public clone(cb = this.cb, scope = this.scope): ObservablePoint
     {
         return new ObservablePoint(cb, scope, this._x, this._y);
     }
@@ -55,7 +55,7 @@ export class ObservablePoint<T = any> implements IPoint
      * @param {number} [y=x] - position of the point on the y axis
      * @returns {this} Returns itself.
      */
-    set(x = 0, y = x): this
+    public set(x = 0, y = x): this
     {
         if (this._x !== x || this._y !== y)
         {
@@ -73,7 +73,7 @@ export class ObservablePoint<T = any> implements IPoint
      * @param {PIXI.IPoint} p - The point to copy from.
      * @returns {this} Returns itself.
      */
-    copyFrom(p: IPoint): this
+    public copyFrom(p: IPoint): this
     {
         if (this._x !== p.x || this._y !== p.y)
         {
@@ -91,7 +91,7 @@ export class ObservablePoint<T = any> implements IPoint
      * @param {PIXI.IPoint} p - The point to copy.
      * @returns {PIXI.IPoint} Given point with values updated
      */
-    copyTo<T extends IPoint>(p: T): T
+    public copyTo<T extends IPoint>(p: T): T
     {
         p.set(this._x, this._y);
 
@@ -104,7 +104,7 @@ export class ObservablePoint<T = any> implements IPoint
      * @param {PIXI.IPoint} p - The point to check
      * @returns {boolean} Whether the given point equal to this point
      */
-    equals(p: IPoint): boolean
+    public equals(p: IPoint): boolean
     {
         return (p.x === this._x) && (p.y === this._y);
     }

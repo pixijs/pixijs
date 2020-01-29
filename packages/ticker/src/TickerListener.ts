@@ -85,7 +85,7 @@ export class TickerListener<T = any>
      * @param {any} [context] - The listener context
      * @return {boolean} `true` if the listener match the arguments
      */
-    match(fn: TickerCallback<T>, context: any = null): boolean
+    public match(fn: TickerCallback<T>, context: any = null): boolean
     {
         return this.fn === fn && this.context === context;
     }
@@ -96,7 +96,7 @@ export class TickerListener<T = any>
      * @param {number} deltaTime - time since the last emit.
      * @return {TickerListener} Next ticker
      */
-    emit(deltaTime: number): TickerListener
+    public emit(deltaTime: number): TickerListener
     {
         if (this.fn)
         {
@@ -132,7 +132,7 @@ export class TickerListener<T = any>
      * @private
      * @param {TickerListener} previous - Input node, previous listener
      */
-    connect(previous: TickerListener): void
+    public connect(previous: TickerListener): void
     {
         this.previous = previous;
         if (previous.next)
@@ -150,7 +150,7 @@ export class TickerListener<T = any>
      *        is considered a hard destroy. Soft destroy maintains the next reference.
      * @return {TickerListener} The listener to redirect while emitting or removing.
      */
-    destroy(hard = false): TickerListener
+    public destroy(hard = false): TickerListener
     {
         this._destroyed = true;
         this.fn = null;

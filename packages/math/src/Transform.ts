@@ -186,7 +186,7 @@ export class Transform
     /**
      * Updates the local transformation matrix.
      */
-    updateLocalTransform(): void
+    public updateLocalTransform(): void
     {
         const lt = this.localTransform;
 
@@ -212,7 +212,7 @@ export class Transform
      *
      * @param {PIXI.Transform} parentTransform - The parent transform
      */
-    updateTransform(parentTransform: Transform): void
+    public updateTransform(parentTransform: Transform): void
     {
         const lt = this.localTransform;
 
@@ -257,7 +257,7 @@ export class Transform
      *
      * @param {PIXI.Matrix} matrix - The matrix to decompose
      */
-    setFromMatrix(matrix: Matrix): void
+    public setFromMatrix(matrix: Matrix): void
     {
         matrix.decompose(this);
         this._localID++;

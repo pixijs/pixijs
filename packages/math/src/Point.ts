@@ -37,7 +37,7 @@ export class Point implements IPoint
      *
      * @return {PIXI.Point} a copy of the point
      */
-    clone(): Point
+    public clone(): Point
     {
         return new Point(this.x, this.y);
     }
@@ -48,7 +48,7 @@ export class Point implements IPoint
      * @param {PIXI.IPoint} p - The point to copy from
      * @returns {this} Returns itself.
      */
-    copyFrom(p: IPoint): this
+    public copyFrom(p: IPoint): this
     {
         this.set(p.x, p.y);
 
@@ -61,7 +61,7 @@ export class Point implements IPoint
      * @param {PIXI.IPoint} p - The point to copy.
      * @returns {PIXI.IPoint} Given point with values updated
      */
-    copyTo<T extends IPoint>(p: T): T
+    public copyTo<T extends IPoint>(p: T): T
     {
         p.set(this.x, this.y);
 
@@ -74,7 +74,7 @@ export class Point implements IPoint
      * @param {PIXI.IPoint} p - The point to check
      * @returns {boolean} Whether the given point equal to this point
      */
-    equals(p: IPoint): boolean
+    public equals(p: IPoint): boolean
     {
         return (p.x === this.x) && (p.y === this.y);
     }
@@ -87,7 +87,7 @@ export class Point implements IPoint
      * @param {number} [y=x] - position of the point on the y axis
      * @returns {this} Returns itself.
      */
-    set(x = 0, y = x): this
+    public set(x = 0, y = x): this
     {
         this.x = x;
         this.y = y;

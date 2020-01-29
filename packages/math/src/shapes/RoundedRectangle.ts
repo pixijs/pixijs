@@ -71,7 +71,7 @@ export class RoundedRectangle
      *
      * @return {PIXI.RoundedRectangle} a copy of the rounded rectangle
      */
-    clone(): RoundedRectangle
+    public clone(): RoundedRectangle
     {
         return new RoundedRectangle(this.x, this.y, this.width, this.height, this.radius);
     }
@@ -83,7 +83,7 @@ export class RoundedRectangle
      * @param {number} y - The Y coordinate of the point to test
      * @return {boolean} Whether the x/y coordinates are within this Rounded Rectangle
      */
-    contains(x: number, y: number): boolean
+    public contains(x: number, y: number): boolean
     {
         if (this.width <= 0 || this.height <= 0)
         {

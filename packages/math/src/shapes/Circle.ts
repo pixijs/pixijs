@@ -55,7 +55,7 @@ export class Circle
      *
      * @return {PIXI.Circle} a copy of the Circle
      */
-    clone(): Circle
+    public clone(): Circle
     {
         return new Circle(this.x, this.y, this.radius);
     }
@@ -67,7 +67,7 @@ export class Circle
      * @param {number} y - The Y coordinate of the point to test
      * @return {boolean} Whether the x/y coordinates are within this Circle
      */
-    contains(x: number, y: number): boolean
+    public contains(x: number, y: number): boolean
     {
         if (this.radius <= 0)
         {
@@ -89,7 +89,7 @@ export class Circle
     *
     * @return {PIXI.Rectangle} the framing rectangle
     */
-    getBounds(): Rectangle
+    public getBounds(): Rectangle
     {
         return new Rectangle(this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2);
     }
