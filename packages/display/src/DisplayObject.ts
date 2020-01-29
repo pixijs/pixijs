@@ -10,6 +10,7 @@ export interface IDestroyOptions {
     baseTexture?: boolean;
 }
 
+// eslint-disable-next-line @typescript-eslint/interface-name-prefix
 export interface DisplayObject extends InteractiveTarget, EventEmitter {}
 
 /**

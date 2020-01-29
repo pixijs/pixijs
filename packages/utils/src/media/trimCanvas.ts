@@ -1,4 +1,4 @@
-interface Inset {
+interface IInset {
     top?: number;
     left?: number;
     right?: number;
@@ -25,7 +25,7 @@ export function trimCanvas(canvas: HTMLCanvasElement): {width: number; height: n
     const pixels = imageData.data;
     const len = pixels.length;
 
-    const bound: Inset = {
+    const bound: IInset = {
         top: null,
         left: null,
         right: null,
