@@ -10,35 +10,35 @@ export interface IDecomposedDataUri {
 
 /**
  * @memberof PIXI.utils
- * @interface DecomposedDataUri
+ * @interface IDecomposedDataUri
  */
 
 /**
  * type, eg. `image`
- * @memberof PIXI.utils.DecomposedDataUri#
+ * @memberof PIXI.utils.IDecomposedDataUri#
  * @member {string} mediaType
  */
 
 /**
  * Sub type, eg. `png`
- * @memberof PIXI.utils.DecomposedDataUri#
+ * @memberof PIXI.utils.IDecomposedDataUri#
  * @member {string} subType
  */
 
 /**
- * @memberof PIXI.utils.DecomposedDataUri#
+ * @memberof PIXI.utils.IDecomposedDataUri#
  * @member {string} charset
  */
 
 /**
  * Data encoding, eg. `base64`
- * @memberof PIXI.utils.DecomposedDataUri#
+ * @memberof PIXI.utils.IDecomposedDataUri#
  * @member {string} encoding
  */
 
 /**
  * The actual data
- * @memberof PIXI.utils.DecomposedDataUri#
+ * @memberof PIXI.utils.IDecomposedDataUri#
  * @member {string} data
  */
 
@@ -49,7 +49,7 @@ export interface IDecomposedDataUri {
  * @memberof PIXI.utils
  * @function decomposeDataUri
  * @param {string} dataUri - the data URI to check
- * @return {PIXI.utils.DecomposedDataUri|undefined} The decomposed data uri or undefined
+ * @return {PIXI.utils.IDecomposedDataUri|undefined} The decomposed data uri or undefined
  */
 export function decomposeDataUri(dataUri: string): IDecomposedDataUri
 {
