@@ -1,5 +1,5 @@
 // Parsers, each one of these will take a look at the type of shader property and uniform.
-// if they pass the test function then the glsl function is called that returns a the shader upload code for that uniform.
+// if they pass the test function then the code function is called that returns a the shader upload code for that uniform.
 // Shader upload code is automagically generated with these parsers.
 // If no parser is valid then the default upload functions are used.
 // exposing Parsers means that custom upload logic can be added to pixi's shaders.
@@ -8,8 +8,8 @@
 // format is as follows:
 //
 // {
-//     test: (data, uniform) => {} <--- test is this glsl should be used for this uniform
-//     glsl: (name, uniform) => {} <--- returns the string of the piece of code that uploads the uniform
+//     test: (data, uniform) => {} <--- test is this code should be used for this uniform
+//     code: (name, uniform) => {} <--- returns the string of the piece of code that uploads the uniform
 // }
 export const uniformParsers = [
 
