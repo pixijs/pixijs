@@ -141,7 +141,8 @@ export class RenderTextureSystem extends System
      * Erases the render texture and fills the drawing area with a colour
      *
      * @param {number[]} [clearColor] - The color as rgba, default to use the renderer backgroundColor
-     * @param {PIXI.BUFFER_BITS} [mask=PIXI.BUFFER_BITS.COLOR] - Bitwise OR of masks that indicate the buffers to be cleared, by default COLOR
+     * @param {PIXI.BUFFER_BITS} [mask=PIXI.BUFFER_BITS.COLOR] - Bitwise OR of masks that indicate the buffers to be cleared,
+     *  by default COLOR
      * @return {PIXI.Renderer} Returns itself.
      */
     clear(clearColor, mask)
