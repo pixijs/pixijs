@@ -216,8 +216,8 @@ export class FramebufferSystem extends System
      * @param {Number} g - Green value from 0 to 1
      * @param {Number} b - Blue value from 0 to 1
      * @param {Number} a - Alpha value from 0 to 1
-     * @param {PIXI.BUFFER_BITS} [mask=PIXI.BUFFER_BIT.COLOR] - Bitwise OR of masks
-     *  that indicate the buffers to be cleared, by default COLOR
+     * @param {PIXI.BUFFER_BITS} [mask=BUFFER_BITS.COLOR | BUFFER_BITS.DEPTH] - Bitwise OR of masks
+     *  that indicate the buffers to be cleared, by default COLOR and DEPTH buffers.
      */
     clear(r, g, b, a, mask = BUFFER_BITS.COLOR | BUFFER_BITS.DEPTH)
     {
