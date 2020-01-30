@@ -219,7 +219,7 @@ export class FramebufferSystem extends System
      * @param {PIXI.BUFFER_BITS} [mask=PIXI.BUFFER_BIT.COLOR] - Bitwise OR of masks
      *  that indicate the buffers to be cleared, by default COLOR
      */
-    clear(r, g, b, a, mask = BUFFER_BITS.COLOR)
+    clear(r, g, b, a, mask = BUFFER_BITS.COLOR | BUFFER_BITS.DEPTH)
     {
         const { gl } = this;
 
