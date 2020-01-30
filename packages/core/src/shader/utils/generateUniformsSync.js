@@ -113,7 +113,7 @@ export function generateUniformsSync(group, uniformData)
         {
             if (uniformParsers[j].test(data, uniform))
             {
-                funcFragments.push(uniformParsers[j].glsl(i, uniform));
+                funcFragments.push(uniformParsers[j].code(i, uniform));
                 parsed = true;
 
                 break;

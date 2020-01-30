@@ -17,7 +17,7 @@ export const uniformParsers = [
     {
         test: (data) =>
             data.type === 'float' && data.size === 1,
-        glsl: (name) =>
+        code: (name) =>
             `
             if(uv.${name} !== ud.${name}.value)
             {
@@ -31,7 +31,7 @@ export const uniformParsers = [
         test: (data) =>
             // eslint-disable-next-line max-len
             (data.type === 'sampler2D' || data.type === 'samplerCube' || data.type === 'sampler2DArray') && data.size === 1 && !data.isArray,
-        glsl: (name) => `t = syncData.textureCount++;
+        code: (name) => `t = syncData.textureCount++;
 
             renderer.texture.bind(uv.${name}, t);
             
@@ -45,7 +45,7 @@ export const uniformParsers = [
     {
         test: (data, uniform) =>
             data.type === 'mat3' && data.size === 1 && uniform.a !== undefined,
-        glsl: (name) =>
+        code: (name) =>
 
             // TODO and some smart caching dirty ids here!
             `
@@ -58,7 +58,7 @@ export const uniformParsers = [
     {
         test: (data, uniform) =>
             data.type === 'vec2' && data.size === 1 && uniform.x !== undefined,
-        glsl: (name) =>
+        code: (name) =>
             `
                 cv = ud.${name}.value;
                 v = uv.${name};
@@ -74,7 +74,7 @@ export const uniformParsers = [
     {
         test: (data) =>
             data.type === 'vec2' && data.size === 1,
-        glsl: (name) =>
+        code: (name) =>
             `
                 cv = ud.${name}.value;
                 v = uv.${name};
@@ -92,7 +92,7 @@ export const uniformParsers = [
         test: (data, uniform) =>
             data.type === 'vec4' && data.size === 1 && uniform.width !== undefined,
 
-        glsl: (name) =>
+        code: (name) =>
             `
                 cv = ud.${name}.value;
                 v = uv.${name};
@@ -110,7 +110,7 @@ export const uniformParsers = [
     {
         test: (data) =>
             data.type === 'vec4' && data.size === 1,
-        glsl: (name) =>
+        code: (name) =>
             `
                 cv = ud.${name}.value;
                 v = uv.${name};
