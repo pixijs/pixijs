@@ -1,20 +1,15 @@
 // import * as from '../systems/shader/shader';
-import { setPrecision,
+import { Preprocessor,
     defaultValue,
     compileProgram,
     mapSize,
     mapType,
-    getTestContext,
-    getMaxFragmentPrecision } from './utils';
+    getTestContext } from './utils';
 import { ProgramCache } from '@pixi/utils';
 import defaultFragment from './defaultProgram.frag';
 import defaultVertex from './defaultProgram.vert';
-import { settings } from '@pixi/settings';
-import { PRECISION } from '@pixi/constants';
 
 let UID = 0;
-
-const nameCache = {};
 
 /**
  * Helper class to create a shader program.
@@ -28,60 +23,35 @@ export class Program
      * @param {string} [vertexSrc] - The source of the vertex shader.
      * @param {string} [fragmentSrc] - The source of the fragment shader.
      * @param {string} [name] - Name for shader
-     * @param {object} [parameters] - Parameters for shader
+     * @param {object} [options] - Options for shader
+     * @param {object} [preprocessor] - Object to preprocessing the shader program
      */
-    constructor(vertexSrc, fragmentSrc, name = 'pixi-shader', parameters = { isRawShader: false })
+    constructor(vertexSrc, fragmentSrc, name, options, preprocessor)
     {
         this.id = UID++;
+
+        if (!preprocessor)
+        {
+            preprocessor = new Preprocessor(
+                vertexSrc || Program.defaultVertexSrc,
+                fragmentSrc || Program.defaultFragmentSrc,
+                name,
+                options);
+        }
 
         /**
          * The vertex shader.
          *
          * @member {string}
          */
-        this.vertexSrc = vertexSrc || Program.defaultVertexSrc;
+        this.vertexSrc = preprocessor.vertex;
 
         /**
          * The fragment shader.
          *
          * @member {string}
          */
-        this.fragmentSrc = fragmentSrc || Program.defaultFragmentSrc;
-
-        this.vertexSrc = this.vertexSrc.trim();
-        this.fragmentSrc = this.fragmentSrc.trim();
-
-        parameters.defines = parameters.defines || {};
-        parameters.defines.SHADER_NAME = name;
-
-        if (!parameters.isRawShader)
-        {
-            if (this.vertexSrc.substring(0, 8) !== '#version')
-            {
-                name = name.replace(/\s+/g, '-');
-
-                if (nameCache[name])
-                {
-                    nameCache[name]++;
-                    name += `-${nameCache[name]}`;
-                }
-                else
-                {
-                    nameCache[name] = 1;
-                }
-
-                for (const define in parameters.defines)
-                {
-                    const value = parameters.defines[define];
-
-                    this.vertexSrc = `#define ${define} ${value}\n${this.vertexSrc}`;
-                    this.fragmentSrc = `#define ${define} ${value}\n${this.fragmentSrc}`;
-                }
-
-                this.vertexSrc = setPrecision(this.vertexSrc, settings.PRECISION_VERTEX, PRECISION.HIGH);
-                this.fragmentSrc = setPrecision(this.fragmentSrc, settings.PRECISION_FRAGMENT, getMaxFragmentPrecision());
-            }
-        }
+        this.fragmentSrc = preprocessor.fragment;
 
         // currently this does not extract structs only default types
         this.extractData(this.vertexSrc, this.fragmentSrc);
@@ -235,18 +205,22 @@ export class Program
      * @param {string} [vertexSrc] - The source of the vertex shader.
      * @param {string} [fragmentSrc] - The source of the fragment shader.
      * @param {string} [name=pixi-shader] - Name for shader
+     * @param {object} [options] - Options for shader
+     * @param {object} [preprocessor] - Object to preprocessing the shader program
      *
      * @returns {PIXI.Program} an shiny new Pixi shader!
      */
-    static from(vertexSrc, fragmentSrc, name, parameters)
+    static from(vertexSrc, fragmentSrc, name, options, preprocessor)
     {
-        const key = vertexSrc + fragmentSrc;
+        preprocessor = preprocessor || new Preprocessor(vertexSrc, fragmentSrc, name, options);
+
+        const key = preprocessor.vertex + preprocessor.fragment;
 
         let program = ProgramCache[key];
 
         if (!program)
         {
-            ProgramCache[key] = program = new Program(vertexSrc, fragmentSrc, name, parameters);
+            ProgramCache[key] = program = new Program(vertexSrc, fragmentSrc, name, options, preprocessor);
         }
 
         return program;
