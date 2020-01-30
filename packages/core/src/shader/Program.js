@@ -28,8 +28,9 @@ export class Program
      * @param {string} [vertexSrc] - The source of the vertex shader.
      * @param {string} [fragmentSrc] - The source of the fragment shader.
      * @param {string} [name] - Name for shader
+     * @param {object} [parameters] - Parameters for shader
      */
-    constructor(vertexSrc, fragmentSrc, name = 'pixi-shader')
+    constructor(vertexSrc, fragmentSrc, name = 'pixi-shader', parameters = { isRawShader: false })
     {
         this.id = UID++;
 
@@ -50,25 +51,36 @@ export class Program
         this.vertexSrc = this.vertexSrc.trim();
         this.fragmentSrc = this.fragmentSrc.trim();
 
-        if (this.vertexSrc.substring(0, 8) !== '#version')
+        parameters.defines = parameters.defines || {};
+        parameters.defines.SHADER_NAME = name;
+
+        if (!parameters.isRawShader)
         {
-            name = name.replace(/\s+/g, '-');
-
-            if (nameCache[name])
+            if (this.vertexSrc.substring(0, 8) !== '#version')
             {
-                nameCache[name]++;
-                name += `-${nameCache[name]}`;
-            }
-            else
-            {
-                nameCache[name] = 1;
-            }
+                name = name.replace(/\s+/g, '-');
 
-            this.vertexSrc = `#define SHADER_NAME ${name}\n${this.vertexSrc}`;
-            this.fragmentSrc = `#define SHADER_NAME ${name}\n${this.fragmentSrc}`;
+                if (nameCache[name])
+                {
+                    nameCache[name]++;
+                    name += `-${nameCache[name]}`;
+                }
+                else
+                {
+                    nameCache[name] = 1;
+                }
 
-            this.vertexSrc = setPrecision(this.vertexSrc, settings.PRECISION_VERTEX, PRECISION.HIGH);
-            this.fragmentSrc = setPrecision(this.fragmentSrc, settings.PRECISION_FRAGMENT, getMaxFragmentPrecision());
+                for (const define in parameters.defines)
+                {
+                    const value = parameters.defines[define];
+
+                    this.vertexSrc = `#define ${define} ${value}\n${this.vertexSrc}`;
+                    this.fragmentSrc = `#define ${define} ${value}\n${this.fragmentSrc}`;
+                }
+
+                this.vertexSrc = setPrecision(this.vertexSrc, settings.PRECISION_VERTEX, PRECISION.HIGH);
+                this.fragmentSrc = setPrecision(this.fragmentSrc, settings.PRECISION_FRAGMENT, getMaxFragmentPrecision());
+            }
         }
 
         // currently this does not extract structs only default types
@@ -226,7 +238,7 @@ export class Program
      *
      * @returns {PIXI.Program} an shiny new Pixi shader!
      */
-    static from(vertexSrc, fragmentSrc, name)
+    static from(vertexSrc, fragmentSrc, name, parameters)
     {
         const key = vertexSrc + fragmentSrc;
 
@@ -234,7 +246,7 @@ export class Program
 
         if (!program)
         {
-            ProgramCache[key] = program = new Program(vertexSrc, fragmentSrc, name);
+            ProgramCache[key] = program = new Program(vertexSrc, fragmentSrc, name, parameters);
         }
 
         return program;
