@@ -23,7 +23,8 @@ export class Program
      * @param {string} [vertexSrc] - The source of the vertex shader.
      * @param {string} [fragmentSrc] - The source of the fragment shader.
      * @param {string} [name] - Name for shader
-     * @param {object} [options] - Options for shader
+     * @param {object} [options = { isRawShader: false, defines: {} }] - Options for preprocessor,
+     *  include isRawShader and defines, of other for custom preprocessors
      * @param {object} [preprocessor] - Object to preprocessing the shader program
      */
     constructor(vertexSrc, fragmentSrc, name, options, preprocessor)
@@ -205,7 +206,8 @@ export class Program
      * @param {string} [vertexSrc] - The source of the vertex shader.
      * @param {string} [fragmentSrc] - The source of the fragment shader.
      * @param {string} [name=pixi-shader] - Name for shader
-     * @param {object} [options] - Options for shader
+     * @param {object} [options = { isRawShader: false, defines: {} }] - Options for preprocessor,
+     *  include isRawShader and defines, of other for custom preprocessors
      * @param {object} [preprocessor] - Object to preprocessing the shader program
      *
      * @returns {PIXI.Program} an shiny new Pixi shader!

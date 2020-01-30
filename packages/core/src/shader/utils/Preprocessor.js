@@ -29,35 +29,36 @@ export class Preprocessor
         this.vertex = vertexSrc.trim();
         this.fragment = fragmentSrc.trim();
 
-        options.defines.SHADER_NAME = name;
+        options.isRawShader = options.isRawShader || (this.vertex.substring(0, 8) === '#version');
 
         if (!options.isRawShader)
         {
-            if (this.vertex.substring(0, 8) !== '#version')
+            name = name.replace(/\s+/g, '-');
+
+            if (nameCache[name])
             {
-                name = name.replace(/\s+/g, '-');
-
-                if (nameCache[name])
-                {
-                    nameCache[name]++;
-                    name += `-${nameCache[name]}`;
-                }
-                else
-                {
-                    nameCache[name] = 1;
-                }
-
-                for (const define in options.defines)
-                {
-                    const value = options.defines[define];
-
-                    this.vertex = `#define ${define} ${value}\n${this.vertex}`;
-                    this.fragment = `#define ${define} ${value}\n${this.fragment}`;
-                }
-
-                this.vertex = setPrecision(this.vertex, settings.PRECISION_VERTEX, PRECISION.HIGH);
-                this.fragment = setPrecision(this.fragment, settings.PRECISION_FRAGMENT, getMaxFragmentPrecision());
+                nameCache[name]++;
+                name += `-${nameCache[name]}`;
             }
+            else
+            {
+                nameCache[name] = 1;
+            }
+
+            // Setup default define for shader name
+            options.defines.SHADER_NAME = name;
+
+            // Setup custom defines
+            for (const define in options.defines)
+            {
+                const value = options.defines[define];
+
+                this.vertex = `#define ${define} ${value}\n${this.vertex}`;
+                this.fragment = `#define ${define} ${value}\n${this.fragment}`;
+            }
+
+            this.vertex = setPrecision(this.vertex, settings.PRECISION_VERTEX, PRECISION.HIGH);
+            this.fragment = setPrecision(this.fragment, settings.PRECISION_FRAGMENT, getMaxFragmentPrecision());
         }
     }
 }
