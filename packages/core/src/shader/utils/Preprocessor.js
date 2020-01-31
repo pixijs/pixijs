@@ -38,7 +38,8 @@ export class Preprocessor
             if (nameCache[name])
             {
                 nameCache[name]++;
-                name += `-${nameCache[name]}`;
+                // TODO: incremented name in shader code breaks ProgramCache functionality
+                // name += `-${nameCache[name]}`;
             }
             else
             {
