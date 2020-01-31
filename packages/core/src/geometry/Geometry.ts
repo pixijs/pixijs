@@ -92,20 +92,21 @@ export class Geometry
     /**
     *
     * Adds an attribute to the geometry
+    * Note: `stride` and `start` should be `undefined` if you dont know them, not 0!
     *
     * @param {String} id - the name of the attribute (matching up to a shader)
     * @param {PIXI.Buffer|number[]} [buffer] the buffer that holds the data of the attribute . You can also provide an Array and a buffer will be created from it.
     * @param {Number} [size=0] the size of the attribute. If you have 2 floats per vertex (eg position x and y) this would be 2
     * @param {Boolean} [normalized=false] should the data be normalized.
     * @param {Number} [type=PIXI.TYPES.FLOAT] what type of number is the attribute. Check {PIXI.TYPES} to see the ones available
-    * @param {Number} [stride=0] How far apart (in floats) the start of each value is. (used for interleaving data)
-    * @param {Number} [start=0] How far into the array to start reading values (used for interleaving data)
+    * @param {Number} [stride] How far apart (in floats) the start of each value is. (used for interleaving data)
+    * @param {Number} [start] How far into the array to start reading values (used for interleaving data)
     * @param {boolean} [instance=false] Instancing flag
     *
     * @return {PIXI.Geometry} returns self, useful for chaining.
     */
     addAttribute(id: string, buffer: Buffer|Float32Array|Uint32Array|Array<number>, size = 0, normalized = false,
-        type?: TYPES, stride = 0, start = 0, instance = false): this
+        type?: TYPES, stride?: number, start?: number, instance = false): this
     {
         if (!buffer)
         {
