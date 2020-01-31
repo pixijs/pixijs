@@ -30,6 +30,21 @@ import { LineStyle } from './styles/LineStyle';
 import { BLEND_MODES } from '@pixi/constants';
 import { Container, IDestroyOptions } from '@pixi/display';
 
+/**
+ * Batch element computed from Graphics geometry
+ */
+export interface IGraphicsBatchElement {
+    vertexData: Float32Array;
+    blendMode: BLEND_MODES;
+    indices: Uint16Array | Uint32Array;
+    uvs: Float32Array;
+    alpha: number;
+    worldAlpha: number;
+    _batchRGB: number[],
+    _tintRGB: number,
+    _texture: Texture,
+};
+
 export interface IFillStyleOptions {
     color?: number;
     alpha?: number;
@@ -78,7 +93,7 @@ export class Graphics extends Container
 
     protected geometry: GraphicsGeometry;
     protected currentPath: Polygon;
-    protected batches: any[];
+    protected batches: Array<IGraphicsBatchElement>;
     protected batchTint: number;
     protected batchDirty: number;
     protected vertexData: Float32Array;
@@ -968,8 +983,6 @@ export class Graphics extends Container
     {
         const geometry = this.geometry;
         const blendMode = this.blendMode;
-
-        this.batches = [];
         this.batchTint = -1;
         this._transformID = -1;
         this.batchDirty = geometry.batchDirty;
@@ -1020,7 +1033,7 @@ export class Graphics extends Container
             return;
         }
 
-        renderer.batch.setObjectRenderer((renderer as any).plugins[this.pluginName]);
+        renderer.batch.setObjectRenderer(renderer.plugins[this.pluginName]);
 
         this.calculateVertices();
         this.calculateTints();
@@ -1031,7 +1044,7 @@ export class Graphics extends Container
 
             batch.worldAlpha = this.worldAlpha * batch.alpha;
 
-            (renderer as any).plugins[this.pluginName].render(batch);
+            renderer.plugins[this.pluginName].render(batch);
         }
     }
 
@@ -1065,11 +1078,11 @@ export class Graphics extends Container
         // this means that we can tack advantage of the sync function of pixi!
         // bind and sync uniforms..
         // there is a way to optimise this..
-        (renderer as any).shader.bind(shader);
-        (renderer as any).geometry.bind(geometry, shader);
+        renderer.shader.bind(shader);
+        renderer.geometry.bind(geometry, shader);
 
         // set state..
-        (renderer as any).state.set(this.state);
+        renderer.state.set(this.state);
 
         // then render the rest of them...
         for (let i = 0, l = drawCalls.length; i < l; i++)
@@ -1091,10 +1104,10 @@ export class Graphics extends Container
 
         for (let j = 0; j < groupTextureCount; j++)
         {
-            (renderer as any).texture.bind(texArray.elements[j], j);
+            renderer.texture.bind(texArray.elements[j], j);
         }
 
-        (renderer as any).geometry.draw(type, size, start);
+        renderer.geometry.draw(type, size, start);
     }
 
     /**
@@ -1129,7 +1142,7 @@ export class Graphics extends Container
                     default: UniformGroup.from({ uSamplers: sampleValues }, true),
                 };
 
-                const program = (renderer as any).plugins[pluginName]._shader.program;
+                const program = renderer.plugins[pluginName]._shader.program;
 
                 DEFAULT_SHADERS[pluginName] = new Shader(program, uniforms);
             }

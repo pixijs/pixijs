@@ -11,8 +11,8 @@ import {
     BatchDrawCall,
     BatchTextureArray,
     BaseTexture,
-    Texture,
-    Buffer } from '@pixi/core';
+    Texture
+} from '@pixi/core';
 
 import { DRAW_MODES, WRAP_MODES } from '@pixi/constants';
 import { SHAPES, Point, Matrix, Circle, Ellipse, Polygon, Rectangle, RoundedRectangle } from '@pixi/math';
@@ -263,7 +263,7 @@ export class GraphicsGeometry extends BatchGeometry
 
         for (let i = 0; i < this.drawCalls.length; i++)
         {
-            this.drawCalls[i].texArray.length = 0;
+            this.drawCalls[i].texArray.clear();
             DRAW_CALL_POOL.push(this.drawCalls[i]);
         }
 
@@ -369,7 +369,7 @@ export class GraphicsGeometry extends BatchGeometry
         this.uvs = null;
         this.indices.length = 0;
         this.indices = null;
-        (this.indexBuffer as Buffer).destroy();
+        this.indexBuffer.destroy();
         this.indexBuffer = null;
         this.graphicsData.length = 0;
         this.graphicsData = null;
@@ -463,7 +463,7 @@ export class GraphicsGeometry extends BatchGeometry
         const uvs = this.uvs;
         const graphicsData = this.graphicsData;
 
-        let batchPart = null;
+        let batchPart:BatchPart = null;
 
         let currentStyle = null;
 
@@ -678,7 +678,7 @@ export class GraphicsGeometry extends BatchGeometry
 
         for (let i = 0; i < this.drawCalls.length; i++)
         {
-            this.drawCalls[i].texArray.length = 0;
+            this.drawCalls[i].texArray.clear();
             DRAW_CALL_POOL.push(this.drawCalls[i]);
         }
 
@@ -764,7 +764,7 @@ export class GraphicsGeometry extends BatchGeometry
 
                     // TODO add this to the render part..
                     // Hack! Because texture has protected `touched`
-                    (nextTexture as any).touched = 1;// touch;
+                    nextTexture.touched = 1;// touch;
 
                     nextTexture._batchEnabled = TICK;
                     nextTexture._batchLocation = textureCount;
