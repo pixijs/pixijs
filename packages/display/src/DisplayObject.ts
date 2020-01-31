@@ -47,7 +47,7 @@ export abstract class DisplayObject extends EventEmitter
     protected _destroyed: boolean;
 
     private tempDisplayObjectParent: TemporaryDisplayObject;
-    private displayObjectUpdateTransform: () => void;
+    public displayObjectUpdateTransform: () => void;
 
     /**
      * Mixes all enumerable properties and methods from a source object to DisplayObject.
@@ -249,15 +249,6 @@ export abstract class DisplayObject extends EventEmitter
          * @member {boolean}
          */
         this.isMask = false;
-
-        /**
-         * DisplayObject default updateTransform, does not update children of container.
-         * Will crash if there's no parent element.
-         *
-         * @memberof PIXI.DisplayObject#
-         * @function displayObjectUpdateTransform
-         */
-        this.displayObjectUpdateTransform = this.updateTransform;
     }
 
     /**
@@ -797,3 +788,12 @@ class TemporaryDisplayObject extends DisplayObject
     render: (renderer: Renderer) => {} = null;
     sortDirty: boolean = null;
 }
+
+/**
+ * DisplayObject default updateTransform, does not update children of container.
+ * Will crash if there's no parent element.
+ *
+ * @memberof PIXI.DisplayObject#
+ * @function displayObjectUpdateTransform
+ */
+DisplayObject.prototype.displayObjectUpdateTransform = DisplayObject.prototype.updateTransform;
