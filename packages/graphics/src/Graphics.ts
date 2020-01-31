@@ -983,14 +983,16 @@ export class Graphics extends Container
     {
         const geometry = this.geometry;
         const blendMode = this.blendMode;
+        const len = geometry.batches.length;
 
         this.batchTint = -1;
         this._transformID = -1;
         this.batchDirty = geometry.batchDirty;
+        this.batches.length = len;
 
         this.vertexData = new Float32Array(geometry.points);
 
-        for (let i = 0, l = geometry.batches.length; i < l; i++)
+        for (let i = 0; i < len; i++)
         {
             const gI = geometry.batches[i];
             const color = gI.style.color;
