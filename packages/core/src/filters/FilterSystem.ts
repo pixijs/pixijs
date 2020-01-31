@@ -300,7 +300,7 @@ export class FilterSystem extends System
      * @param {PIXI.Filter} filter - The filter to draw.
      * @param {PIXI.RenderTexture} input - The input render target.
      * @param {PIXI.RenderTexture} output - The target to output to.
-     * @param {boolean} clear - Should the output be cleared before rendering to it
+     * @param {PIXI.CLEAR_MODES} [clearMode] - Should the output be cleared before rendering to it
      */
     applyFilter(filter: Filter, input: RenderTexture, output: RenderTexture, clearMode: CLEAR_MODES): void
     {
