@@ -40,10 +40,10 @@ export interface IGraphicsBatchElement {
     uvs: Float32Array;
     alpha: number;
     worldAlpha: number;
-    _batchRGB: number[],
-    _tintRGB: number,
-    _texture: Texture,
-};
+    _batchRGB: number[];
+    _tintRGB: number;
+    _texture: Texture;
+}
 
 export interface IFillStyleOptions {
     color?: number;
@@ -983,6 +983,7 @@ export class Graphics extends Container
     {
         const geometry = this.geometry;
         const blendMode = this.blendMode;
+
         this.batchTint = -1;
         this._transformID = -1;
         this.batchDirty = geometry.batchDirty;

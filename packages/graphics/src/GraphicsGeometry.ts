@@ -11,7 +11,7 @@ import {
     BatchDrawCall,
     BatchTextureArray,
     BaseTexture,
-    Texture
+    Texture,
 } from '@pixi/core';
 
 import { DRAW_MODES, WRAP_MODES } from '@pixi/constants';
@@ -463,7 +463,7 @@ export class GraphicsGeometry extends BatchGeometry
         const uvs = this.uvs;
         const graphicsData = this.graphicsData;
 
-        let batchPart:BatchPart = null;
+        let batchPart: BatchPart = null;
 
         let currentStyle = null;
 
