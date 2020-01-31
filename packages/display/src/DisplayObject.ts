@@ -763,7 +763,7 @@ export abstract class DisplayObject extends EventEmitter
     {
         if (this._mask)
         {
-            const maskObject = (this._mask as MaskData).maskObject || (this._mask as Container);
+            const maskObject = ((this._mask as MaskData).maskObject || this._mask) as Container;
 
             maskObject.renderable = true;
             maskObject.isMask = false;
@@ -773,7 +773,7 @@ export abstract class DisplayObject extends EventEmitter
 
         if (this._mask)
         {
-            const maskObject = (this._mask as MaskData).maskObject || (this._mask as Container);
+            const maskObject = ((this._mask as MaskData).maskObject || this._mask) as Container;
 
             maskObject.renderable = false;
             maskObject.isMask = true;
@@ -781,7 +781,7 @@ export abstract class DisplayObject extends EventEmitter
     }
 }
 
-class TemporaryDisplayObject extends DisplayObject
+export class TemporaryDisplayObject extends DisplayObject
 {
     calculateBounds: () => {} = null;
     removeChild: (child: DisplayObject) => {} = null;

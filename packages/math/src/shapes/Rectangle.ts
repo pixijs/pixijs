@@ -1,5 +1,10 @@
 import { SHAPES } from '../const';
 
+export interface ISize
+{
+    width: number;
+    height: number;
+}
 /**
  * Size object, contains width and height
  *
