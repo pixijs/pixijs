@@ -1,7 +1,7 @@
 import { Container, IDestroyOptions } from '@pixi/display';
 import { autoDetectRenderer, Renderer, IRendererOptionsAuto } from '@pixi/core';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
-import { Rectangle } from 'pixi.js';
+import { Rectangle } from '@pixi/math';
 
 export interface IApplicationPlugin {
     init: (...params: any[]) => any;
@@ -126,7 +126,9 @@ export class Application
      */
     get view(): HTMLCanvasElement
     {
-        return this.renderer.view;
+        // TODO: Since CanvasRenderer has not been converted it thinks view doesn't exists. This can be removed once
+        // converted
+        return (this.renderer as any).view;
     }
 
     /**
@@ -136,7 +138,9 @@ export class Application
      */
     get screen(): Rectangle
     {
-        return this.renderer.screen;
+        // TODO: Since CanvasRenderer has not been converted it thinks screen doesn't exists. This can be removed once
+        // converted
+        return (this.renderer as any).screen;
     }
 
     /**
