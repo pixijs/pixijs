@@ -47,7 +47,7 @@ export abstract class DisplayObject extends EventEmitter
     protected _destroyed: boolean;
 
     private tempDisplayObjectParent: TemporaryDisplayObject;
-    private displayObjectUpdateTransform: () => void;
+    public displayObjectUpdateTransform: () => void;
 
     /**
      * Mixes all enumerable properties and methods from a source object to DisplayObject.
@@ -249,15 +249,6 @@ export abstract class DisplayObject extends EventEmitter
          * @member {boolean}
          */
         this.isMask = false;
-
-        /**
-         * DisplayObject default updateTransform, does not update children of container.
-         * Will crash if there's no parent element.
-         *
-         * @memberof PIXI.DisplayObject#
-         * @function displayObjectUpdateTransform
-         */
-        this.displayObjectUpdateTransform = this.updateTransform;
     }
 
     /**
@@ -772,7 +763,7 @@ export abstract class DisplayObject extends EventEmitter
     {
         if (this._mask)
         {
-            const maskObject = (this._mask as MaskData).maskObject || (this._mask as Container);
+            const maskObject = ((this._mask as MaskData).maskObject || this._mask) as Container;
 
             maskObject.renderable = true;
             maskObject.isMask = false;
@@ -782,7 +773,7 @@ export abstract class DisplayObject extends EventEmitter
 
         if (this._mask)
         {
-            const maskObject = (this._mask as MaskData).maskObject || (this._mask as Container);
+            const maskObject = ((this._mask as MaskData).maskObject || this._mask) as Container;
 
             maskObject.renderable = false;
             maskObject.isMask = true;
@@ -790,10 +781,19 @@ export abstract class DisplayObject extends EventEmitter
     }
 }
 
-class TemporaryDisplayObject extends DisplayObject
+export class TemporaryDisplayObject extends DisplayObject
 {
     calculateBounds: () => {} = null;
     removeChild: (child: DisplayObject) => {} = null;
     render: (renderer: Renderer) => {} = null;
     sortDirty: boolean = null;
 }
+
+/**
+ * DisplayObject default updateTransform, does not update children of container.
+ * Will crash if there's no parent element.
+ *
+ * @memberof PIXI.DisplayObject#
+ * @function displayObjectUpdateTransform
+ */
+DisplayObject.prototype.displayObjectUpdateTransform = DisplayObject.prototype.updateTransform;

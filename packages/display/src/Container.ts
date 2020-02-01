@@ -575,7 +575,7 @@ export class Container extends DisplayObject
 
         if (mask)
         {
-            renderer.mask.pop(this, this._mask);
+            renderer.mask.pop(this);
         }
 
         if (filters && this._enabledFilters && this._enabledFilters.length)
@@ -681,4 +681,11 @@ export class Container extends DisplayObject
     }
 }
 
+/**
+ * Container default updateTransform, does update children of container.
+ * Will crash if there's no parent element.
+ *
+ * @memberof PIXI.Container#
+ * @function containerUpdateTransform
+ */
 Container.prototype.containerUpdateTransform = Container.prototype.updateTransform;

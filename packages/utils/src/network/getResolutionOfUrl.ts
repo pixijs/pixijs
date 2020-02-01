@@ -10,7 +10,7 @@ import { settings } from '../settings';
  * @param {number} [defaultValue=1] - the defaultValue if no filename prefix is set.
  * @return {number} resolution / device pixel ratio of an asset
  */
-export function getResolutionOfUrl(url: string, defaultValue: number): number
+export function getResolutionOfUrl(url: string, defaultValue?: number): number
 {
     const resolution = settings.RETINA_PREFIX.exec(url);
 
