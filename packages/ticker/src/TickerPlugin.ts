@@ -1,5 +1,6 @@
 import { Ticker } from './Ticker';
 import { UPDATE_PRIORITY } from './const';
+import { IApplicationOptions } from '../../app/src/Application';
 
 /**
  * Middleware for for Application Ticker.

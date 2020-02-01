@@ -1,3 +1,7 @@
+import { CanvasRenderer } from '@pixi/canvas-renderer';
+import { Renderer } from '@pixi/core';
+import { IApplicationOptions } from './Application';
+
 /**
  * Middleware for for Application's resize functionality
  * @private
@@ -5,44 +9,24 @@
  */
 export class ResizePlugin
 {
+    public static _resizeTo: Window|HTMLElement;
+    public static resize: () => void;
+    public static renderer: Renderer|CanvasRenderer;
+
     /**
      * Initialize the plugin with scope of application instance
      * @static
      * @private
      * @param {object} [options] - See application options
      */
-    static init(options)
+    static init(options?: IApplicationOptions): void
     {
-        /**
-         * The element or window to resize the application to.
-         * @type {Window|HTMLElement}
-         * @name resizeTo
-         * @memberof PIXI.Application#
-         */
-        Object.defineProperty(this, 'resizeTo',
-            {
-                set(dom)
-                {
-                    window.removeEventListener('resize', this.resize);
-                    this._resizeTo = dom;
-                    if (dom)
-                    {
-                        window.addEventListener('resize', this.resize);
-                        this.resize();
-                    }
-                },
-                get()
-                {
-                    return this._resizeTo;
-                },
-            });
-
         /**
          * If `resizeTo` is set, calling this function
          * will resize to the width and height of that element.
          * @method PIXI.Application#resize
          */
-        this.resize = () =>
+        this.resize = (): void =>
         {
             if (this._resizeTo)
             {
@@ -58,8 +42,8 @@ export class ResizePlugin
                 else
                 {
                     this.renderer.resize(
-                        this._resizeTo.clientWidth,
-                        this._resizeTo.clientHeight
+                        (this._resizeTo as HTMLElement).clientWidth,
+                        (this._resizeTo as HTMLElement).clientHeight
                     );
                 }
             }
@@ -75,9 +59,31 @@ export class ResizePlugin
      * @static
      * @private
      */
-    static destroy()
+    static destroy(): void
     {
         this.resizeTo = null;
         this.resize = null;
+    }
+
+    /**
+     * The element or window to resize the application to.
+     * @type {Window|HTMLElement}
+     * @name resizeTo
+     * @memberof PIXI.Application#
+     */
+    static get resizeTo(): Window|HTMLElement
+    {
+        return this._resizeTo;
+    }
+
+    static set resizeTo(dom)
+    {
+        window.removeEventListener('resize', this.resize);
+        this._resizeTo = dom;
+        if (dom)
+        {
+            window.addEventListener('resize', this.resize);
+            this.resize();
+        }
     }
 }

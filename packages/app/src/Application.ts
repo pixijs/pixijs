@@ -1,5 +1,20 @@
-import { Container } from '@pixi/display';
-import { autoDetectRenderer } from '@pixi/core';
+import { Container, IDestroyOptions } from '@pixi/display';
+import { autoDetectRenderer, Renderer, IRendererOptionsAuto } from '@pixi/core';
+import { CanvasRenderer } from '@pixi/canvas-renderer';
+import { Rectangle } from 'pixi.js';
+
+export interface IApplicationPlugin {
+    init: (...params: any[]) => any;
+    destroy: (...params: any[]) => any;
+}
+
+export interface IApplicationOptions extends IRendererOptionsAuto {
+    autoStart?: boolean;
+    forceFXAA?: boolean;
+    sharedTicker?: boolean;
+    sharedLoader?: boolean;
+    resizeTo?: Window | HTMLElement;
+}
 
 /**
  * Convenience class to create a new PIXI application.
@@ -21,6 +36,11 @@ import { autoDetectRenderer } from '@pixi/core';
  */
 export class Application
 {
+    public static _plugins: IApplicationPlugin[];
+
+    public stage: Container;
+    public renderer: Renderer|CanvasRenderer;
+
     /**
      * @param {object} [options] - The optional renderer parameters.
      * @param {boolean} [options.autoStart=true] - Automatically starts the rendering after the construction.
@@ -53,7 +73,7 @@ export class Application
      * @param {boolean} [options.sharedLoader=false] - `true` to use PIXI.Loader.shared, `false` to create new Loader.
      * @param {Window|HTMLElement} [options.resizeTo] - Element to automatically resize stage to.
      */
-    constructor(options)
+    constructor(options?: IApplicationOptions)
     {
         // The default options
         options = Object.assign({
@@ -84,7 +104,7 @@ export class Application
      * @static
      * @param {PIXI.Application.Plugin} plugin - Plugin being installed
      */
-    static registerPlugin(plugin)
+    static registerPlugin(plugin: IApplicationPlugin): void
     {
         Application._plugins.push(plugin);
     }
@@ -92,9 +112,11 @@ export class Application
     /**
      * Render the current stage.
      */
-    render()
+    public render(): void
     {
-        this.renderer.render(this.stage);
+        // TODO: Since CanvasRenderer has not been converted this function thinks it takes DisplayObject & PIXI.DisplayObject
+        // This can be fixed when CanvasRenderer is converted.
+        this.renderer.render(this.stage as any);
     }
 
     /**
@@ -102,7 +124,7 @@ export class Application
      * @member {HTMLCanvasElement}
      * @readonly
      */
-    get view()
+    get view(): HTMLCanvasElement
     {
         return this.renderer.view;
     }
@@ -112,7 +134,7 @@ export class Application
      * @member {PIXI.Rectangle}
      * @readonly
      */
-    get screen()
+    get screen(): Rectangle
     {
         return this.renderer.screen;
     }
@@ -129,7 +151,7 @@ export class Application
      * @param {boolean} [stageOptions.baseTexture=false] - Only used for child Sprites if stageOptions.children is set
      *  to true. Should it destroy the base texture of the child sprite
      */
-    destroy(removeView, stageOptions)
+    public destroy(removeView?: boolean, stageOptions?: IDestroyOptions|boolean): void
     {
         // Destroy plugins in the opposite order
         // which they were constructed
@@ -146,8 +168,6 @@ export class Application
 
         this.renderer.destroy(removeView);
         this.renderer = null;
-
-        this._options = null;
     }
 }
 
