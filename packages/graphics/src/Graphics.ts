@@ -89,10 +89,11 @@ export class Graphics extends Container
 
     static _TEMP_POINT = new Point();
 
+    public readonly geometry: GraphicsGeometry;
+
     public shader: Shader;
     public pluginName: string;
 
-    protected geometry: GraphicsGeometry;
     protected currentPath: Polygon;
     protected batches: Array<IGraphicsBatchElement>;
     protected batchTint: number;
@@ -122,7 +123,7 @@ export class Graphics extends Container
          * this data to the GPU. Can be shared between multiple Mesh or Graphics objects.
          *
          * @member {PIXI.GraphicsGeometry}
-         * @protected
+         * @readonly
          */
         this.geometry = geometry || new GraphicsGeometry();
 
