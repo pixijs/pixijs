@@ -2,6 +2,7 @@ import { MaskData, Renderer } from '@pixi/core';
 import { settings } from '@pixi/settings';
 import { removeItems } from '@pixi/utils';
 import { DisplayObject, IDestroyOptions } from './DisplayObject';
+import { Rectangle } from '@pixi/math';
 
 function sortChildren(a: DisplayObject, b: DisplayObject): number
 {
@@ -477,6 +478,26 @@ export class Container extends DisplayObject
         }
 
         this._bounds.updateID = this._boundsID;
+    }
+
+    public getLocalBounds(rect?: Rectangle, noTransformSideEffects = true): Rectangle
+    {
+        const result = super.getLocalBounds(rect);
+
+        if (noTransformSideEffects)
+        {
+            for (let i = 0, j = this.children.length; i < j; ++i)
+            {
+                const child = this.children[i];
+
+                if (child.visible)
+                {
+                    child.updateTransform();
+                }
+            }
+        }
+
+        return result;
     }
 
     /**

@@ -38,6 +38,7 @@ export abstract class DisplayObject extends EventEmitter
     public _lastSortedIndex: number;
     public _mask: Container|MaskData;
     public _bounds: Bounds;
+    public _localBounds: Bounds;
 
     protected _zIndex: number;
     protected _enabledFilters: Filter[];
@@ -183,6 +184,13 @@ export abstract class DisplayObject extends EventEmitter
          * @member {PIXI.Bounds}
          */
         this._bounds = new Bounds();
+
+        /**
+         * Local bounds object, swapped with `_bounds` when using `getLocalBounds()`.
+         *
+         * @member {PIXI.Bounds}
+         */
+        this._localBounds = new Bounds();
 
         /**
          * TODO
@@ -355,6 +363,11 @@ export abstract class DisplayObject extends EventEmitter
         this.parent = null;
         this.transform = this._tempDisplayObjectParent.transform;
 
+        const worldBounds = this._bounds;
+        const worldBoundsID = this._boundsID;
+
+        this._bounds = this._localBounds;
+
         if (!rect)
         {
             if (!this._localBoundsRect)
@@ -369,6 +382,9 @@ export abstract class DisplayObject extends EventEmitter
 
         this.parent = parentRef;
         this.transform = transformRef;
+
+        this._bounds = worldBounds;
+        this._bounds.updateID += this._boundsID - worldBoundsID;// reflect side-effects
 
         return bounds;
     }
