@@ -375,7 +375,7 @@ export class Graphics extends Container
      * @param {boolean} [options.native=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    public lineTextureStyle(options: ILineStyleOptions | number = null): this
+    public lineTextureStyle(options: ILineStyleOptions): this
     {
         // backward compatibility with params: (width, texture,
         // color, alpha, matrix, alignment, native)
@@ -1359,4 +1359,3 @@ export class Graphics extends Container
         super.destroy(options);
     }
 }
-
