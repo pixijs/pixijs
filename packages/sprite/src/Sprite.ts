@@ -268,7 +268,7 @@ export class Sprite extends Container
     /**
      * calculates worldTransform * vertices, store it in vertexData
      */
-    calculateVertices(): void
+    public calculateVertices(): void
     {
         const texture = this._texture;
 
@@ -355,7 +355,7 @@ export class Sprite extends Container
      * calculates worldTransform * vertices for a non texture with a trim. store it in vertexTrimmedData
      * This is used to ensure that the true width and height of a trimmed texture is respected
      */
-    calculateTrimmedVertices(): void
+    public calculateTrimmedVertices(): void
     {
         if (!this.vertexTrimmedData)
         {
@@ -453,7 +453,7 @@ export class Sprite extends Container
      * @param {PIXI.Rectangle} [rect] - The output rectangle.
      * @return {PIXI.Rectangle} The bounds.
      */
-    getLocalBounds(rect: Rectangle): Rectangle
+    public getLocalBounds(rect: Rectangle): Rectangle
     {
         // we can do a fast local bounds if the sprite has no children!
         if (this.children.length === 0)
@@ -485,7 +485,7 @@ export class Sprite extends Container
      * @param {PIXI.IPoint} point - the point to test
      * @return {boolean} the result of the test
      */
-    containsPoint(point: IPoint): boolean
+    public containsPoint(point: IPoint): boolean
     {
         this.worldTransform.applyInverse(point, tempPoint);
 
@@ -517,7 +517,7 @@ export class Sprite extends Container
      * @param {boolean} [options.texture=false] - Should it destroy the current texture of the sprite as well
      * @param {boolean} [options.baseTexture=false] - Should it destroy the base texture of the sprite as well
      */
-    destroy(options: IDestroyOptions|boolean): void
+    public destroy(options: IDestroyOptions|boolean): void
     {
         super.destroy(options);
 
