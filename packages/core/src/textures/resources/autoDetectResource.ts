@@ -1,5 +1,33 @@
 import { Resource } from './Resource';
-import { ImageResource } from './ImageResource';
+import { ImageResource, IImageResourceOptions } from './ImageResource';
+import { ISize } from '@pixi/math';
+import { ICubeResourceOptions } from './CubeResource';
+import { ISVGResourceOptions } from './SVGResource';
+import { IVideoResourceOptions } from './VideoResource';
+
+/**
+ * Allow flexible options for resource plugins
+ */
+export type IResourcePluginOptions = { [key: string]: any };
+
+/**
+ * All allowable options for autoDetectResource
+ */
+export type IAutoDetectOptions = ISize
+    | ICubeResourceOptions
+    | IImageResourceOptions
+    | ISVGResourceOptions
+    | IVideoResourceOptions
+    | IResourcePluginOptions;
+
+/**
+ * Shape of supported resource plugins
+ */
+export interface IResourcePlugin
+{
+    test(source: any, extension: string): boolean;
+    new (source: any, options?: any): Resource;
+}
 
 /**
  * Collection of installed resource types, class must extend {@link PIXI.resources.Resource}.
@@ -27,8 +55,7 @@ import { ImageResource } from './ImageResource';
  * @static
  * @readonly
  */
-// TODO: @popelyshev change to `typeof Resource` or something with `static test` method
-export const INSTALLED: Array<any> = [];
+export const INSTALLED: Array<IResourcePlugin> = [];
 
 /**
  * Create a resource element from a single source element. This
@@ -59,7 +86,7 @@ export const INSTALLED: Array<any> = [];
  *        texture should be updated from the video. Leave at 0 to update at every render
  * @return {PIXI.resources.Resource} The created resource.
  */
-export function autoDetectResource(source: any, options: any): Resource
+export function autoDetectResource(source: any, options?: IAutoDetectOptions): Resource
 {
     if (!source)
     {
@@ -91,5 +118,5 @@ export function autoDetectResource(source: any, options: any): Resource
 
     // When in doubt: probably an image
     // might be appropriate to throw an error or return null
-    return new ImageResource(source, options);
+    return new ImageResource(source, options as IImageResourceOptions);
 }
