@@ -1,7 +1,7 @@
 import { BaseImageResource } from './BaseImageResource';
 import { Ticker } from '@pixi/ticker';
 
-interface IVideoResourceOptions
+export interface IVideoResourceOptions
 {
     autoLoad?: boolean;
     autoPlay?: boolean;
@@ -9,7 +9,7 @@ interface IVideoResourceOptions
     crossorigin?: boolean|string;
 }
 
-interface IVideoResourceOptionsElement
+export interface IVideoResourceOptionsElement
 {
     src: string;
     mime: string;
