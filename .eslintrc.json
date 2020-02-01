@@ -226,7 +226,7 @@
         "no-class-assign": 1,
         "no-confusing-arrow": [1, { "allowParens": true }],
         "no-const-assign": 1,
-        "no-dupe-class-members": 1,
+        "no-dupe-class-members": 0,
         "no-duplicate-imports": 1,
         "no-new-symbol": 1,
         "no-restricted-imports": 0,
