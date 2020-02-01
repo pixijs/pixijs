@@ -134,14 +134,14 @@ export class ImageResource extends BaseImageResource
      */
     load(createBitmap?: boolean): Promise<ImageResource>
     {
-        if (createBitmap !== undefined)
-        {
-            this.createBitmap = createBitmap;
-        }
-
         if (this._load)
         {
             return this._load;
+        }
+
+        if (createBitmap !== undefined)
+        {
+            this.createBitmap = createBitmap;
         }
 
         this._load = new Promise((resolve): void =>
