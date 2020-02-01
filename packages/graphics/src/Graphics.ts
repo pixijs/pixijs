@@ -8,6 +8,7 @@ import {
     RoundedRectangle,
     Matrix,
     SHAPES,
+    IShape,
 } from '@pixi/math';
 
 import {
@@ -872,7 +873,7 @@ export class Graphics extends Container
      * @param {PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.Rectangle|PIXI.RoundedRectangle} shape - Shape to draw
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    public drawShape(shape: Circle | Ellipse | Polygon | Rectangle | RoundedRectangle): this
+    public drawShape(shape: IShape): this
     {
         if (!this._holeMode)
         {
@@ -1013,7 +1014,7 @@ export class Graphics extends Container
                 blendMode,
                 indices,
                 uvs,
-                _batchRGB: hex2rgb(color, []),
+                _batchRGB: hex2rgb(color) as Array<number>,
                 _tintRGB: color,
                 _texture: gI.style.texture,
                 alpha: gI.style.alpha,
@@ -1201,7 +1202,7 @@ export class Graphics extends Container
         {
             this.batchTint = this.tint;
 
-            const tintRGB = hex2rgb(this.tint, temp as any);
+            const tintRGB = hex2rgb(this.tint, temp);
 
             for (let i = 0; i < this.batches.length; i++)
             {
@@ -1230,7 +1231,7 @@ export class Graphics extends Container
      */
     protected calculateVertices(): void
     {
-        const wtID = (this.transform as any)._worldID;
+        const wtID = this.transform._worldID;
 
         if (this._transformID === wtID)
         {

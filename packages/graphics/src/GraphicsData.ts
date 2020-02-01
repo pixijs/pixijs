@@ -1,12 +1,6 @@
-import { Circle, Ellipse, Rectangle, Polygon, RoundedRectangle, Matrix, SHAPES } from '@pixi/math/src';
+import { Matrix, SHAPES, IShape } from '@pixi/math';
 import { FillStyle } from './styles/FillStyle';
 import { LineStyle } from './styles/LineStyle';
-
-/**
- * @description Complex shape type
- * @todo Move to Math shapes
- */
-type IShape = Circle | Ellipse | Polygon | Rectangle | RoundedRectangle;
 
 /**
  * A class to contain data useful for Graphics objects
