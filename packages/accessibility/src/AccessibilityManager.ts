@@ -1,7 +1,9 @@
+import { CanvasRenderer } from '@pixi/canvas-renderer';
+import { Renderer } from '@pixi/core';
+import { Container, DisplayObject } from '@pixi/display';
+import { Rectangle } from '@pixi/math';
 import { isMobile, removeItems } from '@pixi/utils';
-
-import { DisplayObject } from '@pixi/display';
-import { accessibleTarget } from './accessibleTarget';
+import { accessibleTarget, IAccessibleHTMLElement } from './accessibleTarget';
 
 // add some extra variables to the container..
 DisplayObject.mixin(accessibleTarget);
@@ -33,9 +35,25 @@ const DIV_HOOK_ZINDEX = 2;
 export class AccessibilityManager
 {
     /**
+     * @internal
+     */
+    public debug: boolean;
+    public renderer: CanvasRenderer|Renderer;
+    public isActive: boolean;
+    public isMobileAccessibility: boolean;
+
+    private _hookDiv: HTMLElement;
+    private div: HTMLElement;
+    private pool: IAccessibleHTMLElement[];
+    private renderId: number;
+    private children: DisplayObject[];
+    private androidUpdateCount: number;
+    private androidUpdateFrequency: number;
+
+    /**
      * @param {PIXI.CanvasRenderer|PIXI.Renderer} renderer - A reference to the current renderer
      */
-    constructor(renderer)
+    constructor(renderer: CanvasRenderer|Renderer)
     {
         /**
          * @type {?HTMLElement}
@@ -55,7 +73,7 @@ export class AccessibilityManager
         div.style.position = 'absolute';
         div.style.top = `${DIV_TOUCH_POS_X}px`;
         div.style.left = `${DIV_TOUCH_POS_Y}px`;
-        div.style.zIndex = DIV_TOUCH_ZINDEX;
+        div.style.zIndex = DIV_TOUCH_ZINDEX.toString();
 
         /**
          * This is the dom element that will sit over the PixiJS element. This is where the div overlays will go.
@@ -122,14 +140,12 @@ export class AccessibilityManager
         /**
          * A flag
          * @type {boolean}
-         * @readonly
          */
         this.isActive = false;
 
         /**
          * A flag
          * @type {boolean}
-         * @readonly
          */
         this.isMobileAccessibility = false;
 
@@ -155,7 +171,7 @@ export class AccessibilityManager
      *
      * @private
      */
-    createTouchHook()
+    private createTouchHook(): void
     {
         const hookDiv = document.createElement('button');
 
@@ -164,7 +180,7 @@ export class AccessibilityManager
         hookDiv.style.position = 'absolute';
         hookDiv.style.top = `${DIV_HOOK_POS_X}px`;
         hookDiv.style.left = `${DIV_HOOK_POS_Y}px`;
-        hookDiv.style.zIndex = DIV_HOOK_ZINDEX;
+        hookDiv.style.zIndex = DIV_HOOK_ZINDEX.toString();
         hookDiv.style.backgroundColor = '#FF0000';
         hookDiv.title = 'select to enable accessability for this content';
 
@@ -184,7 +200,7 @@ export class AccessibilityManager
      *
      * @private
      */
-    destroyTouchHook()
+    private destroyTouchHook(): void
     {
         if (!this._hookDiv)
         {
@@ -200,7 +216,7 @@ export class AccessibilityManager
      *
      * @private
      */
-    activate()
+    private activate(): void
     {
         if (this.isActive)
         {
@@ -226,7 +242,7 @@ export class AccessibilityManager
      *
      * @private
      */
-    deactivate()
+    private deactivate(): void
     {
         if (!this.isActive || this.isMobileAccessibility)
         {
@@ -252,7 +268,7 @@ export class AccessibilityManager
      * @private
      * @param {PIXI.Container} displayObject - The DisplayObject to check.
      */
-    updateAccessibleObjects(displayObject)
+    private updateAccessibleObjects(displayObject: Container): void
     {
         if (!displayObject.visible || !displayObject.accessibleChildren)
         {
@@ -273,7 +289,7 @@ export class AccessibilityManager
 
         for (let i = 0; i < children.length; i++)
         {
-            this.updateAccessibleObjects(children[i]);
+            this.updateAccessibleObjects(children[i] as Container);
         }
     }
 
@@ -282,7 +298,7 @@ export class AccessibilityManager
      *
      * @private
      */
-    update()
+    private update(): void
     {
         /* On Android default web browser, tab order seems to be calculated by position rather than tabIndex,
         *  moving buttons can cause focus to flicker between two buttons making it hard/impossible to navigate,
@@ -303,7 +319,7 @@ export class AccessibilityManager
         }
 
         // update children...
-        this.updateAccessibleObjects(this.renderer._lastObjectRendered);
+        this.updateAccessibleObjects(this.renderer._lastObjectRendered as Container);
 
         const rect = this.renderer.view.getBoundingClientRect();
 
@@ -338,7 +354,7 @@ export class AccessibilityManager
             {
                 // map div to display..
                 div = child._accessibleDiv;
-                let hitArea = child.hitArea;
+                let hitArea = child.hitArea as Rectangle;
                 const wt = child.worldTransform;
 
                 if (child.hitArea)
@@ -391,9 +407,9 @@ export class AccessibilityManager
      * private function that will visually add the information to the
      * accessability div
      *
-     * @param {HTMLDivElement} div
+     * @param {HTMLElement} div
      */
-    updateDebugHTML(div)
+    updateDebugHTML(div: IAccessibleHTMLElement): void
     {
         div.innerHTML = `type: ${div.type}</br> title : ${div.title}</br> tabIndex: ${div.tabIndex}`;
     }
@@ -403,7 +419,7 @@ export class AccessibilityManager
      *
      * @param {PIXI.Rectangle} hitArea - Bounds of the child
      */
-    capHitArea(hitArea)
+    capHitArea(hitArea: Rectangle): void
     {
         if (hitArea.x < 0)
         {
@@ -434,7 +450,7 @@ export class AccessibilityManager
      * @private
      * @param {PIXI.DisplayObject} displayObject - The child to make accessible.
      */
-    addChild(displayObject)
+    private addChild<T extends DisplayObject>(displayObject: T): void
     {
         //    this.activate();
 
@@ -448,7 +464,7 @@ export class AccessibilityManager
             div.style.height = `${DIV_TOUCH_SIZE}px`;
             div.style.backgroundColor = this.debug ? 'rgba(255,255,255,0.5)' : 'transparent';
             div.style.position = 'absolute';
-            div.style.zIndex = DIV_TOUCH_ZINDEX;
+            div.style.zIndex = DIV_TOUCH_ZINDEX.toString();
             div.style.borderStyle = 'none';
 
             // ARIA attributes ensure that button title and hint updates are announced properly
@@ -516,13 +532,19 @@ export class AccessibilityManager
      * @private
      * @param {MouseEvent} e - The click event.
      */
-    _onClick(e)
+    private _onClick(e: MouseEvent): void
     {
         const interactionManager = this.renderer.plugins.interaction;
 
-        interactionManager.dispatchEvent(e.target.displayObject, 'click', interactionManager.eventData);
-        interactionManager.dispatchEvent(e.target.displayObject, 'pointertap', interactionManager.eventData);
-        interactionManager.dispatchEvent(e.target.displayObject, 'tap', interactionManager.eventData);
+        interactionManager.dispatchEvent(
+            (e.target as IAccessibleHTMLElement).displayObject, 'click', interactionManager.eventData
+        );
+        interactionManager.dispatchEvent(
+            (e.target as IAccessibleHTMLElement).displayObject, 'pointertap', interactionManager.eventData
+        );
+        interactionManager.dispatchEvent(
+            (e.target as IAccessibleHTMLElement).displayObject, 'tap', interactionManager.eventData
+        );
     }
 
     /**
@@ -531,15 +553,17 @@ export class AccessibilityManager
      * @private
      * @param {FocusEvent} e - The focus event.
      */
-    _onFocus(e)
+    private _onFocus(e: FocusEvent): void
     {
-        if (!e.target.getAttribute('aria-live', 'off'))
+        if (!(e.target as Element).getAttribute('aria-live'))
         {
-            e.target.setAttribute('aria-live', 'assertive');
+            (e.target as Element).setAttribute('aria-live', 'assertive');
         }
         const interactionManager = this.renderer.plugins.interaction;
 
-        interactionManager.dispatchEvent(e.target.displayObject, 'mouseover', interactionManager.eventData);
+        interactionManager.dispatchEvent(
+            (e.target as IAccessibleHTMLElement).displayObject, 'mouseover', interactionManager.eventData
+        );
     }
 
     /**
@@ -548,15 +572,15 @@ export class AccessibilityManager
      * @private
      * @param {FocusEvent} e - The focusout event.
      */
-    _onFocusOut(e)
+    private _onFocusOut(e: FocusEvent): void
     {
-        if (!e.target.getAttribute('aria-live', 'off'))
+        if (!(e.target as Element).getAttribute('aria-live'))
         {
-            e.target.setAttribute('aria-live', 'polite');
+            (e.target as Element).setAttribute('aria-live', 'polite');
         }
         const interactionManager = this.renderer.plugins.interaction;
 
-        interactionManager.dispatchEvent(e.target.displayObject, 'mouseout', interactionManager.eventData);
+        interactionManager.dispatchEvent((e.target as any).displayObject, 'mouseout', interactionManager.eventData);
     }
 
     /**
@@ -565,7 +589,7 @@ export class AccessibilityManager
      * @private
      * @param {KeyboardEvent} e - The keydown event.
      */
-    _onKeyDown(e)
+    private _onKeyDown(e: KeyboardEvent): void
     {
         if (e.keyCode !== KEY_CODE_TAB)
         {
@@ -581,7 +605,7 @@ export class AccessibilityManager
      * @private
      * @param {MouseEvent} e - The mouse event.
      */
-    _onMouseMove(e)
+    private _onMouseMove(e: MouseEvent): void
     {
         if (e.movementX === 0 && e.movementY === 0)
         {
@@ -595,15 +619,10 @@ export class AccessibilityManager
      * Destroys the accessibility manager
      *
      */
-    destroy()
+    destroy(): void
     {
         this.destroyTouchHook();
         this.div = null;
-
-        for (let i = 0; i < this.children.length; i++)
-        {
-            this.children[i].div = null;
-        }
 
         window.document.removeEventListener('mousemove', this._onMouseMove, true);
         window.removeEventListener('keydown', this._onKeyDown);
