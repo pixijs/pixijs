@@ -13,8 +13,8 @@ export class Polygon
     public closeStroke: boolean;
     public readonly type: number;
 
-    constructor(points:IPoint[]|number[]);
-    constructor(...points:IPoint[]|number[]);
+    constructor(points: IPoint[]|number[]);
+    constructor(...points: IPoint[]|number[]);
     /**
      * @param {PIXI.IPoint[]|number[]} points - This can be an array of Points
      *  that form the polygon, a flat array of numbers that will be interpreted as [x,y, x,y, ...], or
@@ -22,9 +22,9 @@ export class Polygon
      *  `new PIXI.Polygon(new PIXI.Point(), new PIXI.Point(), ...)`, or the arguments passed can be flat
      *  x,y values e.g. `new Polygon(x,y, x,y, x,y, ...)` where `x` and `y` are Numbers.
      */
-    constructor(...points:any[])
+    constructor(...points: any[])
     {
-        let flat:IPoint[]|number[] = Array.isArray(points[0]) ? points[0] : points;
+        let flat: IPoint[]|number[] = Array.isArray(points[0]) ? points[0] : points;
 
         // if this is an array of points, convert it to a flat array of numbers
         if (typeof flat[0] !== 'number')
