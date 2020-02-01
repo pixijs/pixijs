@@ -831,25 +831,27 @@ export class Graphics extends Container
         return this.drawShape(new Ellipse(x, y, width, height));
     }
 
+    drawPolygon(...path: Array<number> | Array<Point>): this
+    drawPolygon(path: Array<number> | Array<Point> | Polygon): this
+
     /**
      * Draws a polygon using the given path.
      *
      * @param {number[]|PIXI.Point[]|PIXI.Polygon} path - The path data used to construct the polygon.
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    drawPolygon(path: Array<number> | Array<Point> | Polygon): this
+    drawPolygon(...path: any[]): this
     {
-        // prevents an argument assignment deopt
-        // see section 3.1: https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#3-managing-arguments
         let points: Array<number> | Array<Point>;
-
         let closeStroke = true;// !!this._fillStyle;
 
+        const poly = path[0] as Polygon;
+
         // check if data has points..
-        if ((path as Polygon).points)
+        if (poly.points)
         {
-            closeStroke = (path as Polygon).closeStroke;
-            points = (path as Polygon).points;
+            closeStroke = poly.closeStroke;
+            points = poly.points;
         }
         else
         {
