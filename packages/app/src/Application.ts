@@ -1,5 +1,5 @@
 import { Container, IDestroyOptions } from '@pixi/display';
-import { autoDetectRenderer, Renderer, IRendererOptionsAuto } from '@pixi/core';
+import { autoDetectRenderer, Renderer, IRendererOptionsAuto, AbstractRenderer } from '@pixi/core';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
 import { Rectangle } from '@pixi/math';
 
@@ -128,7 +128,7 @@ export class Application
     {
         // TODO: Since CanvasRenderer has not been converted it thinks view doesn't exists. This can be removed once
         // converted
-        return (this.renderer as any).view;
+        return (this.renderer as AbstractRenderer).view;
     }
 
     /**
@@ -140,7 +140,7 @@ export class Application
     {
         // TODO: Since CanvasRenderer has not been converted it thinks screen doesn't exists. This can be removed once
         // converted
-        return (this.renderer as any).screen;
+        return (this.renderer as AbstractRenderer).screen;
     }
 
     /**
