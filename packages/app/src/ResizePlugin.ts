@@ -22,6 +22,30 @@ export class ResizePlugin
     static init(options?: IApplicationOptions): void
     {
         /**
+         * The element or window to resize the application to.
+         * @type {Window|HTMLElement}
+         * @name resizeTo
+         * @memberof PIXI.Application#
+         */
+        Object.defineProperty(this, 'resizeTo',
+            {
+                set(dom)
+                {
+                    window.removeEventListener('resize', this.resize);
+                    this._resizeTo = dom;
+                    if (dom)
+                    {
+                        window.addEventListener('resize', this.resize);
+                        this.resize();
+                    }
+                },
+                get()
+                {
+                    return this._resizeTo;
+                },
+            });
+
+        /**
          * If `resizeTo` is set, calling this function
          * will resize to the width and height of that element.
          * @method PIXI.Application#resize
