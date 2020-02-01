@@ -90,6 +90,23 @@ describe('PIXI.resources.ImageResource', function ()
         });
     });
 
+    it('should handle error when resource is broken', function ()
+    {
+        const image = new Image();
+
+        image.src = '/';
+
+        const resource = new ImageResource(image, {
+            autoLoad: false,
+            createBitmap: false,
+        });
+
+        return resource.load().catch((error) =>
+        {
+            expect(error).to.be.not.null;
+        });
+    });
+
     it('should handle the loaded event with createBitmapImage using global setting', function ()
     {
         const old = settings.CREATE_IMAGE_BITMAP;
