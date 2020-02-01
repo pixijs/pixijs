@@ -712,7 +712,7 @@ export class Graphics extends Container
      * @param {PIXI.Matrix} [options.matrix=null] - Transform matrix
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    beginTextureFill(options: IFillStyleOptions | Texture): this
+    beginTextureFill(options: IFillStyleOptions): this
     {
         // backward compatibility with params: (texture, color, alpha, matrix)
         if (options instanceof Texture)
