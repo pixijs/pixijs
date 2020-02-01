@@ -1,8 +1,17 @@
 import { ArrayResource } from './ArrayResource';
 import { Resource } from './Resource';
 import { TARGETS } from '@pixi/constants';
+import { ISize } from '@pixi/math';
 
 import { BaseTexture, Renderer, GLTexture } from '@pixi/core';
+
+/**
+ * Constructor options for CubeResource
+ */
+export interface ICubeResourceOptions extends ISize
+{
+    autoLoad?: boolean;
+}
 
 /**
  * Resource for a CubeTexture which contains six resources.
@@ -20,11 +29,11 @@ export class CubeResource extends ArrayResource
 {
     items: Array<BaseTexture>;
 
-    constructor(source: Array<string|Resource>, options?: any)
+    constructor(source: Array<string|Resource>, options?: ICubeResourceOptions)
     {
-        options = options || {};
+        const { width, height, autoLoad } = options || {};
 
-        super(source, options);
+        super(source, { width, height });
 
         if (this.length !== CubeResource.SIDES)
         {
@@ -36,7 +45,7 @@ export class CubeResource extends ArrayResource
             this.items[i].target = TARGETS.TEXTURE_CUBE_MAP_POSITIVE_X + i;
         }
 
-        if (options.autoLoad !== false)
+        if (autoLoad !== false)
         {
             this.load();
         }

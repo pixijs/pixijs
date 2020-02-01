@@ -1,4 +1,4 @@
-import { INSTALLED, autoDetectResource } from './autoDetectResource';
+import { INSTALLED } from './autoDetectResource';
 import { ArrayResource } from './ArrayResource';
 import { BufferResource } from './BufferResource';
 import { CanvasResource } from './CanvasResource';
@@ -33,14 +33,12 @@ INSTALLED.push(
     ArrayResource
 );
 
-export {
-    INSTALLED,
-    autoDetectResource,
-    ArrayResource,
-    BufferResource,
-    CanvasResource,
-    CubeResource,
-    ImageResource,
-    ImageBitmapResource,
-    SVGResource,
-    VideoResource };
+export * from './autoDetectResource';
+export * from './ArrayResource';
+export * from './BufferResource';
+export * from './CanvasResource';
+export * from './CubeResource';
+export * from './ImageResource';
+export * from './SVGResource';
+export * from './VideoResource';
+export * from './ImageBitmapResource';
