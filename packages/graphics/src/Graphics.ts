@@ -340,7 +340,7 @@ export class Graphics extends Container
      * @param {boolean} [options.native=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    public lineStyle(options: ILineStyleOptions | number = null): Graphics
+    public lineStyle(options: ILineStyleOptions = null): this
     {
         // Support non-object params: (width, color, alpha, alignment, native)
         if (typeof options === 'number')
@@ -374,7 +374,7 @@ export class Graphics extends Container
      * @param {boolean} [options.native=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    public lineTextureStyle(options: ILineStyleOptions | number = null): Graphics
+    public lineTextureStyle(options: ILineStyleOptions | number = null): this
     {
         // backward compatibility with params: (width, texture,
         // color, alpha, matrix, alignment, native)
@@ -480,7 +480,7 @@ export class Graphics extends Container
      * @param {number} y - the Y coordinate to move to
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    public moveTo(x: number, y: number): Graphics
+    public moveTo(x: number, y: number): this
     {
         this.startPoly();
         this.currentPath.points[0] = x;
@@ -497,7 +497,7 @@ export class Graphics extends Container
      * @param {number} y - the Y coordinate to draw to
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    public lineTo(x: number, y: number): Graphics
+    public lineTo(x: number, y: number): this
     {
         if (!this.currentPath)
         {
@@ -549,7 +549,7 @@ export class Graphics extends Container
      * @param {number} toY - Destination point y
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    public quadraticCurveTo(cpX: number, cpY: number, toX: number, toY: number): Graphics
+    public quadraticCurveTo(cpX: number, cpY: number, toX: number, toY: number): this
     {
         this._initCurve();
 
@@ -576,7 +576,7 @@ export class Graphics extends Container
      * @param {number} toY - Destination point y
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    public bezierCurveTo(cpX: number, cpY: number, cpX2: number, cpY2: number, toX: number, toY: number): Graphics
+    public bezierCurveTo(cpX: number, cpY: number, cpX2: number, cpY2: number, toX: number, toY: number): this
     {
         this._initCurve();
 
@@ -597,7 +597,7 @@ export class Graphics extends Container
      * @param {number} radius - The radius of the arc
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    public arcTo(x1: number, y1: number, x2: number, y2: number, radius: number): Graphics
+    public arcTo(x1: number, y1: number, x2: number, y2: number, radius: number): this
     {
         this._initCurve(x1, y1);
 
@@ -629,7 +629,7 @@ export class Graphics extends Container
      *  indicates counter-clockwise.
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    arc(cx: number, cy: number, radius: number, startAngle: number, endAngle: number, anticlockwise = false): Graphics
+    arc(cx: number, cy: number, radius: number, startAngle: number, endAngle: number, anticlockwise = false): this
     {
         if (startAngle === endAngle)
         {
@@ -696,7 +696,7 @@ export class Graphics extends Container
      * @param {number} [alpha=1] - the alpha of the fill
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    public beginFill(color = 0, alpha = 1): Graphics
+    public beginFill(color = 0, alpha = 1): this
     {
         return this.beginTextureFill({ texture: Texture.WHITE, color, alpha });
     }
@@ -711,7 +711,7 @@ export class Graphics extends Container
      * @param {PIXI.Matrix} [options.matrix=null] - Transform matrix
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    beginTextureFill(options: IFillStyleOptions | Texture): Graphics
+    beginTextureFill(options: IFillStyleOptions | Texture): this
     {
         // backward compatibility with params: (texture, color, alpha, matrix)
         if (options instanceof Texture)
@@ -765,7 +765,7 @@ export class Graphics extends Container
      *
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    public endFill(): Graphics
+    public endFill(): this
     {
         this.finishPoly();
 
@@ -783,7 +783,7 @@ export class Graphics extends Container
      * @param {number} height - The height of the rectangle
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    public drawRect(x: number, y: number, width: number, height: number): Graphics
+    public drawRect(x: number, y: number, width: number, height: number): this
     {
         return this.drawShape(new Rectangle(x, y, width, height));
     }
@@ -798,7 +798,7 @@ export class Graphics extends Container
      * @param {number} radius - Radius of the rectangle corners
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    public drawRoundedRect(x: number, y: number, width: number, height: number, radius: number): Graphics
+    public drawRoundedRect(x: number, y: number, width: number, height: number, radius: number): this
     {
         return this.drawShape(new RoundedRectangle(x, y, width, height, radius));
     }
@@ -811,7 +811,7 @@ export class Graphics extends Container
      * @param {number} radius - The radius of the circle
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    public drawCircle(x: number, y: number, radius: number): Graphics
+    public drawCircle(x: number, y: number, radius: number): this
     {
         return this.drawShape(new Circle(x, y, radius));
     }
@@ -825,7 +825,7 @@ export class Graphics extends Container
      * @param {number} height - The half height of the ellipse
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    public drawEllipse(x: number, y: number, width: number, height: number): Graphics
+    public drawEllipse(x: number, y: number, width: number, height: number): this
     {
         return this.drawShape(new Ellipse(x, y, width, height));
     }
@@ -836,7 +836,7 @@ export class Graphics extends Container
      * @param {number[]|PIXI.Point[]|PIXI.Polygon} path - The path data used to construct the polygon.
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    drawPolygon(path: Array<number> | Array<Point> | Polygon): Graphics
+    drawPolygon(path: Array<number> | Array<Point> | Polygon): this
     {
         // prevents an argument assignment deopt
         // see section 3.1: https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#3-managing-arguments
@@ -872,7 +872,7 @@ export class Graphics extends Container
      * @param {PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.Rectangle|PIXI.RoundedRectangle} shape - Shape to draw
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    public drawShape(shape: Circle | Ellipse | Polygon | Rectangle | RoundedRectangle): Graphics
+    public drawShape(shape: Circle | Ellipse | Polygon | Rectangle | RoundedRectangle): this
     {
         if (!this._holeMode)
         {
@@ -902,7 +902,7 @@ export class Graphics extends Container
      * @param {number} [rotation=0] - The rotation of the star in radians, where 0 is vertical
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    public drawStar(x: number, y: number, points: number, radius: number, innerRadius: number, rotation = 0): Graphics
+    public drawStar(x: number, y: number, points: number, radius: number, innerRadius: number, rotation = 0): this
     {
         return this.drawPolygon(new Star(x, y, points, radius, innerRadius, rotation) as Polygon);
     }
@@ -912,7 +912,7 @@ export class Graphics extends Container
      *
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    public clear(): Graphics
+    public clear(): this
     {
         this.geometry.clear();
         this._lineStyle.reset();
@@ -1267,7 +1267,7 @@ export class Graphics extends Container
      *
      * @return {PIXI.Graphics} Returns itself.
      */
-    public closePath(): Graphics
+    public closePath(): this
     {
         const currentPath = this.currentPath;
 
@@ -1286,7 +1286,7 @@ export class Graphics extends Container
      * @param {PIXI.Matrix} matrix - Matrix to use for transform current shape.
      * @return {PIXI.Graphics} Returns itself.
      */
-    public setMatrix(matrix: Matrix): Graphics
+    public setMatrix(matrix: Matrix): this
     {
         this._matrix = matrix;
 
@@ -1301,7 +1301,7 @@ export class Graphics extends Container
      * please use `moveTo` `lineTo`, `quadraticCurveTo` if you rely on pixi-legacy bundle.
      * @return {PIXI.Graphics} Returns itself.
      */
-    public beginHole(): Graphics
+    public beginHole(): this
     {
         this.finishPoly();
         this._holeMode = true;
@@ -1313,7 +1313,7 @@ export class Graphics extends Container
      * End adding holes to the last draw shape
      * @return {PIXI.Graphics} Returns itself.
      */
-    public endHole(): Graphics
+    public endHole(): this
     {
         this.finishPoly();
         this._holeMode = false;
