@@ -5,6 +5,7 @@ import { Renderer } from '../../Renderer';
 import { GLTexture } from '../GLTexture';
 import { TARGETS } from '@pixi/constants';
 import { autoDetectResource } from './autoDetectResource';
+import { ISize } from '@pixi/math';
 
 /**
  * A resource that contains a number of sources.
@@ -25,9 +26,9 @@ export class ArrayResource extends Resource
     itemDirtyIds: Array<number>;
     private _load: Promise<ArrayResource>;
 
-    constructor(source: number|Array<any>, options?: any)
+    constructor(source: number|Array<any>, options?: ISize)
     {
-        options = options || {};
+        const { width, height } = options || {};
 
         let urls;
         let length: number;
@@ -42,7 +43,7 @@ export class ArrayResource extends Resource
             length = source;
         }
 
-        super(options.width, options.height);
+        super(width, height);
 
         /**
          * Collection of resources.
