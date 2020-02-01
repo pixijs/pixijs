@@ -383,7 +383,7 @@ export class Graphics extends Container
             deprecation('v5.2.0', 'Please use object-based options for Graphics#lineTextureStyle');
 
             // eslint-disable-next-line
-            const [width, texture, color, alpha, matrix, alignment, native] = (arguments as any);
+            const [width, texture, color, alpha, matrix, alignment, native] = arguments as any;
 
             options = { width, texture, color, alpha, matrix, alignment, native };
 
@@ -711,7 +711,7 @@ export class Graphics extends Container
      * @param {PIXI.Matrix} [options.matrix=null] - Transform matrix
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    beginTextureFill(options: IFillStyleOptions | number): Graphics
+    beginTextureFill(options: IFillStyleOptions | Texture): Graphics
     {
         // backward compatibility with params: (texture, color, alpha, matrix)
         if (options instanceof Texture)
@@ -719,7 +719,7 @@ export class Graphics extends Container
             deprecation('v5.2.0', 'Please use object-based options for Graphics#beginTextureFill');
 
             // eslint-disable-next-line
-            const [texture, color, alpha, matrix] = (arguments as any) as Array<any>;
+            const [texture, color, alpha, matrix] = arguments as any;
 
             options = { texture, color, alpha, matrix };
 
