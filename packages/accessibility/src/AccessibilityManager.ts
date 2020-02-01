@@ -1,5 +1,5 @@
 import { CanvasRenderer } from '@pixi/canvas-renderer';
-import { Renderer } from '@pixi/core';
+import { Renderer, AbstractRenderer } from '@pixi/core';
 import { Container, DisplayObject } from '@pixi/display';
 import { Rectangle } from '@pixi/math';
 import { isMobile, removeItems } from '@pixi/utils';
@@ -228,11 +228,11 @@ export class AccessibilityManager
         window.document.addEventListener('mousemove', this._onMouseMove, true);
         window.removeEventListener('keydown', this._onKeyDown, false);
 
-        this.renderer.on('postrender', this.update, this);
+        (this.renderer as AbstractRenderer).on('postrender', this.update, this);
 
-        if (this.renderer.view.parentNode)
+        if ((this.renderer as AbstractRenderer).view.parentNode)
         {
-            this.renderer.view.parentNode.appendChild(this.div);
+            (this.renderer as AbstractRenderer).view.parentNode.appendChild(this.div);
         }
     }
 
@@ -254,7 +254,7 @@ export class AccessibilityManager
         window.document.removeEventListener('mousemove', this._onMouseMove, true);
         window.addEventListener('keydown', this._onKeyDown, false);
 
-        this.renderer.off('postrender', this.update);
+        (this.renderer as AbstractRenderer).off('postrender', this.update);
 
         if (this.div.parentNode)
         {
@@ -321,19 +321,19 @@ export class AccessibilityManager
         // update children...
         this.updateAccessibleObjects(this.renderer._lastObjectRendered as Container);
 
-        const rect = this.renderer.view.getBoundingClientRect();
+        const rect = (this.renderer as AbstractRenderer).view.getBoundingClientRect();
 
         const resolution = this.renderer.resolution;
 
-        const sx = (rect.width / this.renderer.width) * resolution;
-        const sy = (rect.height / this.renderer.height) * resolution;
+        const sx = (rect.width / (this.renderer as AbstractRenderer).width) * resolution;
+        const sy = (rect.height / (this.renderer as AbstractRenderer).height) * resolution;
 
         let div = this.div;
 
         div.style.left = `${rect.left}px`;
         div.style.top = `${rect.top}px`;
-        div.style.width = `${this.renderer.width}px`;
-        div.style.height = `${this.renderer.height}px`;
+        div.style.width = `${(this.renderer as AbstractRenderer).width}px`;
+        div.style.height = `${(this.renderer as AbstractRenderer).height}px`;
 
         for (let i = 0; i < this.children.length; i++)
         {
@@ -433,14 +433,14 @@ export class AccessibilityManager
             hitArea.y = 0;
         }
 
-        if (hitArea.x + hitArea.width > this.renderer.width)
+        if (hitArea.x + hitArea.width > (this.renderer as AbstractRenderer).width)
         {
-            hitArea.width = this.renderer.width - hitArea.x;
+            hitArea.width = (this.renderer as AbstractRenderer).width - hitArea.x;
         }
 
-        if (hitArea.y + hitArea.height > this.renderer.height)
+        if (hitArea.y + hitArea.height > (this.renderer as AbstractRenderer).height)
         {
-            hitArea.height = this.renderer.height - hitArea.y;
+            hitArea.height = (this.renderer as AbstractRenderer).height - hitArea.y;
         }
     }
 
@@ -534,7 +534,7 @@ export class AccessibilityManager
      */
     private _onClick(e: MouseEvent): void
     {
-        const interactionManager = this.renderer.plugins.interaction;
+        const interactionManager = (this.renderer as AbstractRenderer).plugins.interaction;
 
         interactionManager.dispatchEvent(
             (e.target as IAccessibleHTMLElement).displayObject, 'click', interactionManager.eventData
@@ -559,7 +559,7 @@ export class AccessibilityManager
         {
             (e.target as Element).setAttribute('aria-live', 'assertive');
         }
-        const interactionManager = this.renderer.plugins.interaction;
+        const interactionManager = (this.renderer as AbstractRenderer).plugins.interaction;
 
         interactionManager.dispatchEvent(
             (e.target as IAccessibleHTMLElement).displayObject, 'mouseover', interactionManager.eventData
@@ -578,7 +578,7 @@ export class AccessibilityManager
         {
             (e.target as Element).setAttribute('aria-live', 'polite');
         }
-        const interactionManager = this.renderer.plugins.interaction;
+        const interactionManager = (this.renderer as AbstractRenderer).plugins.interaction;
 
         interactionManager.dispatchEvent((e.target as any).displayObject, 'mouseout', interactionManager.eventData);
     }
