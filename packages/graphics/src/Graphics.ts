@@ -92,7 +92,6 @@ export class Graphics extends Container
     public shader: Shader;
     public pluginName: string;
 
-    protected geometry: GraphicsGeometry;
     protected currentPath: Polygon;
     protected batches: Array<IGraphicsBatchElement>;
     protected batchTint: number;
@@ -107,6 +106,20 @@ export class Graphics extends Container
     protected _tint: number;
 
     private state: State;
+    private _geometry: GraphicsGeometry;
+
+    /**
+     * Includes vertex positions, face indices, normals, colors, UVs, and
+     * custom attributes within buffers, reducing the cost of passing all
+     * this data to the GPU. Can be shared between multiple Mesh or Graphics objects.
+     *
+     * @member {PIXI.GraphicsGeometry}
+     * @readonly
+     */
+    public get geometry(): GraphicsGeometry
+    {
+        return this._geometry;
+    }
 
     /**
      * @param {PIXI.GraphicsGeometry} [geometry=null] - Geometry to use, if omitted
@@ -116,17 +129,8 @@ export class Graphics extends Container
     {
         super();
 
-        /**
-         * Includes vertex positions, face indices, normals, colors, UVs, and
-         * custom attributes within buffers, reducing the cost of passing all
-         * this data to the GPU. Can be shared between multiple Mesh or Graphics objects.
-         *
-         * @member {PIXI.GraphicsGeometry}
-         * @protected
-         */
-        this.geometry = geometry || new GraphicsGeometry();
-
-        this.geometry.refCount++;
+        this._geometry = geometry || new GraphicsGeometry();
+        this._geometry.refCount++;
 
         /**
          * Represents the vertex and fragment shaders that processes the geometry and runs on the GPU.
@@ -257,7 +261,7 @@ export class Graphics extends Container
     {
         this.finishPoly();
 
-        return new Graphics(this.geometry);
+        return new Graphics(this._geometry);
     }
 
     /**
@@ -655,7 +659,7 @@ export class Graphics extends Container
 
         const startX = cx + (Math.cos(startAngle) * radius);
         const startY = cy + (Math.sin(startAngle) * radius);
-        const eps = this.geometry.closePointEps;
+        const eps = this._geometry.closePointEps;
 
         // If the currentPath exists, take its points. Otherwise call `moveTo` to start a path.
         let points = this.currentPath ? this.currentPath.points : null;
@@ -854,8 +858,13 @@ export class Graphics extends Container
             points = poly.points;
         }
         else
+        if (Array.isArray(path[0]))
         {
-            points = path as Array<number> | Array<Point>;
+            points = path[0];
+        }
+        else
+        {
+            points = path;
         }
 
         // eslint-disable-next-line
@@ -879,7 +888,7 @@ export class Graphics extends Container
     {
         if (!this._holeMode)
         {
-            this.geometry.drawShape(
+            this._geometry.drawShape(
                 shape,
                 this._fillStyle.clone(),
                 this._lineStyle.clone(),
@@ -888,7 +897,7 @@ export class Graphics extends Container
         }
         else
         {
-            this.geometry.drawHole(shape, this._matrix);
+            this._geometry.drawHole(shape, this._matrix);
         }
 
         return this;
@@ -917,7 +926,7 @@ export class Graphics extends Container
      */
     public clear(): this
     {
-        this.geometry.clear();
+        this._geometry.clear();
         this._lineStyle.reset();
         this._fillStyle.reset();
 
@@ -936,7 +945,7 @@ export class Graphics extends Container
      */
     public isFastRect(): boolean
     {
-        const data = this.geometry.graphicsData;
+        const data = this._geometry.graphicsData;
 
         return data.length === 1
             && data[0].shape.type === SHAPES.RECT
@@ -953,7 +962,7 @@ export class Graphics extends Container
     {
         this.finishPoly();
 
-        const geometry = this.geometry;
+        const geometry = this._geometry;
 
         // batch part..
         // batch it!
@@ -984,7 +993,7 @@ export class Graphics extends Container
      */
     protected _populateBatches(): void
     {
-        const geometry = this.geometry;
+        const geometry = this._geometry;
         const blendMode = this.blendMode;
         const len = geometry.batches.length;
 
@@ -1064,7 +1073,7 @@ export class Graphics extends Container
     {
         const shader = this._resolveDirectShader(renderer);
 
-        const geometry = this.geometry;
+        const geometry = this._geometry;
         const tint = this.tint;
         const worldAlpha = this.worldAlpha;
         const uniforms = shader.uniforms;
@@ -1168,7 +1177,7 @@ export class Graphics extends Container
     {
         this.finishPoly();
 
-        const geometry = this.geometry;
+        const geometry = this._geometry;
 
         // skipping when graphics is empty, like a container
         if (!geometry.graphicsData.length)
@@ -1191,7 +1200,7 @@ export class Graphics extends Container
     {
         this.worldTransform.applyInverse(point, Graphics._TEMP_POINT);
 
-        return this.geometry.containsPoint(Graphics._TEMP_POINT);
+        return this._geometry.containsPoint(Graphics._TEMP_POINT);
     }
 
     /**
@@ -1250,7 +1259,7 @@ export class Graphics extends Container
         const tx = wt.tx;
         const ty = wt.ty;
 
-        const data = this.geometry.points;// batch.vertexDataOriginal;
+        const data = this._geometry.points;// batch.vertexDataOriginal;
         const vertexData = this.vertexData;
 
         let count = 0;
@@ -1340,10 +1349,10 @@ export class Graphics extends Container
     {
         super.destroy(options);
 
-        this.geometry.refCount--;
-        if (this.geometry.refCount === 0)
+        this._geometry.refCount--;
+        if (this._geometry.refCount === 0)
         {
-            this.geometry.dispose();
+            this._geometry.dispose();
         }
 
         this._matrix = null;
@@ -1352,7 +1361,7 @@ export class Graphics extends Container
         this._lineStyle = null;
         this._fillStyle.destroy();
         this._fillStyle = null;
-        this.geometry = null;
+        this._geometry = null;
         this.shader = null;
         this.vertexData = null;
         this.batches.length = 0;
