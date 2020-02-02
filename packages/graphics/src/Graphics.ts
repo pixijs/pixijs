@@ -867,8 +867,6 @@ export class Graphics extends Container
             points = path;
         }
 
-        // eslint-disable-next-line
-        // @ts-ignore
         const shape = new Polygon(points);
 
         shape.closeStroke = closeStroke;
