@@ -24,6 +24,7 @@ import { RenderTexture } from './renderTexture/RenderTexture';
 import { DisplayObject } from '@pixi/display';
 import { System } from './System';
 import { IRenderingContext } from './IRenderingContext';
+import { Extract } from '@pixi/extract';
 
 /**
  * The Renderer draws the scene and all its content onto a WebGL enabled canvas.
@@ -43,6 +44,7 @@ export class Renderer extends AbstractRenderer
     public globalUniforms: UniformGroup;
     public CONTEXT_UID: number;
     public renderingToScreen: boolean;
+    public extract: Extract;
     // systems
     public mask: MaskSystem;
     public context: ContextSystem;
