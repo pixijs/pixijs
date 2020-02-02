@@ -55,7 +55,7 @@ export class MeshBatchUvs
      *
      * @param {boolean} [forceUpdate] - force the update
      */
-    update(forceUpdate?: boolean): void
+    public update(forceUpdate?: boolean): void
     {
         if (!forceUpdate
             && this._bufferUpdateId === this.uvBuffer._updateID

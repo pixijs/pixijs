@@ -360,7 +360,7 @@ export class Mesh extends Container
     /**
      * Updates vertexData field based on transform and vertices
      */
-    calculateVertices(): void
+    public calculateVertices(): void
     {
         const geometry = this.geometry;
         const vertices = geometry.buffers[0].data;
@@ -412,7 +412,7 @@ export class Mesh extends Container
     /**
      * Updates uv field based on from geometry uv's or batchUvs
      */
-    calculateUvs(): void
+    public calculateUvs(): void
     {
         const geomUvs = this.geometry.buffers[1];
 
@@ -450,7 +450,7 @@ export class Mesh extends Container
      * @param {PIXI.IPoint} point the point to test
      * @return {boolean} the result of the test
      */
-    containsPoint(point: IPoint): boolean
+    public containsPoint(point: IPoint): boolean
     {
         if (!this.getBounds().contains(point.x, point.y))
         {
@@ -495,7 +495,7 @@ export class Mesh extends Container
      * @param {boolean} [options.children=false] - if set to true, all the children will have
      *  their destroy method called as well. 'options' will be passed on to those calls.
      */
-    destroy(options: IDestroyOptions|boolean): void
+    public destroy(options: IDestroyOptions|boolean): void
     {
         super.destroy(options);
 

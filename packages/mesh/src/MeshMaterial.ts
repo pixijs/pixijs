@@ -156,7 +156,7 @@ export class MeshMaterial extends Shader
      * Gets called automatically by the Mesh. Intended to be overridden for custom
      * MeshMaterial objects.
      */
-    update(): void
+    public update(): void
     {
         if (this._colorDirty)
         {
