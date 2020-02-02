@@ -1,9 +1,10 @@
-import { State } from '@pixi/core';
-import { Point, Polygon } from '@pixi/math';
+import { State, Geometry, Buffer, Texture, Renderer } from '@pixi/core';
+import { Point, Polygon, IPoint } from '@pixi/math';
 import { BLEND_MODES, DRAW_MODES } from '@pixi/constants';
-import { Container } from '@pixi/display';
+import { Container, IDestroyOptions } from '@pixi/display';
 import { settings } from '@pixi/settings';
 import { MeshBatchUvs } from './MeshBatchUvs';
+import { MeshMaterial } from './MeshMaterial';
 
 const tempPoint = new Point();
 const tempPolygon = new Polygon();
@@ -28,14 +29,37 @@ const tempPolygon = new Polygon();
  */
 export class Mesh extends Container
 {
+    public readonly geometry: Geometry;
+    public shader: MeshMaterial;
+    public state: State;
+    public drawMode: DRAW_MODES;
+    public start: number;
+    public size: number;
+
+    private vertexData: Float32Array;
+    private vertexDirty: number;
+    private _transformID: number;
+    private _roundPixels: boolean;
+    private batchUvs: MeshBatchUvs;
+    /* eslint-disable @typescript-eslint/ban-ts-ignore */
+    // @ts-ignore
+    private uvs: Float32Array;
+    // @ts-ignore
+    private indices: Uint16Array;
+    // @ts-ignore
+    private _tintRGB: number;
+    // @ts-ignore
+    private _texture: Texture;
+    /* eslint-enable @typescript-eslint/ban-ts-ignore */
+
     /**
      * @param {PIXI.Geometry} geometry  the geometry the mesh will use
-     * @param {PIXI.Shader|PIXI.MeshMaterial} shader  the shader the mesh will use
+     * @param {PIXI.MeshMaterial} shader  the shader the mesh will use
      * @param {PIXI.State} [state] the state that the WebGL context is required to be in to render the mesh
      *        if no state is provided, uses {@link PIXI.State.for2d} to create a 2D state for PixiJS.
      * @param {number} [drawMode=PIXI.DRAW_MODES.TRIANGLES] the drawMode, can be any of the PIXI.DRAW_MODES consts
      */
-    constructor(geometry, shader, state, drawMode = DRAW_MODES.TRIANGLES)// vertices, uvs, indices, drawMode)
+    constructor(geometry: Geometry, shader: MeshMaterial, state: State, drawMode = DRAW_MODES.TRIANGLES)
     {
         super();
 
@@ -142,7 +166,7 @@ export class Mesh extends Container
      * @member {PIXI.Buffer}
      * @readonly
      */
-    get uvBuffer()
+    get uvBuffer(): Buffer
     {
         return this.geometry.buffers[1];
     }
@@ -153,21 +177,21 @@ export class Mesh extends Container
      * @member {PIXI.Buffer}
      * @readonly
      */
-    get verticesBuffer()
+    get verticesBuffer(): Buffer
     {
         return this.geometry.buffers[0];
     }
 
     /**
      * Alias for {@link PIXI.Mesh#shader}.
-     * @member {PIXI.Shader|PIXI.MeshMaterial}
+     * @member {PIXI.MeshMaterial}
      */
     set material(value)
     {
         this.shader = value;
     }
 
-    get material()
+    get material(): MeshMaterial
     {
         return this.shader;
     }
@@ -185,7 +209,7 @@ export class Mesh extends Container
         this.state.blendMode = value;
     }
 
-    get blendMode()
+    get blendMode(): BLEND_MODES
     {
         return this.state.blendMode;
     }
@@ -208,7 +232,7 @@ export class Mesh extends Container
         this._roundPixels = value;
     }
 
-    get roundPixels()
+    get roundPixels(): boolean
     {
         return this._roundPixels;
     }
@@ -220,7 +244,7 @@ export class Mesh extends Container
      * @member {number}
      * @default 0xFFFFFF
      */
-    get tint()
+    get tint(): number
     {
         return this.shader.tint;
     }
@@ -235,7 +259,7 @@ export class Mesh extends Container
      *
      * @member {PIXI.Texture}
      */
-    get texture()
+    get texture(): Texture
     {
         return this.shader.texture;
     }
@@ -250,14 +274,18 @@ export class Mesh extends Container
      * @protected
      * @param {PIXI.Renderer} renderer - Instance to renderer.
      */
-    _render(renderer)
+    protected _render(renderer: Renderer): void
     {
         // set properties for batching..
         // TODO could use a different way to grab verts?
         const vertices = this.geometry.buffers[0].data;
 
         // TODO benchmark check for attribute size..
-        if (this.shader.batchable && this.drawMode === DRAW_MODES.TRIANGLES && vertices.length < Mesh.BATCHABLE_SIZE * 2)
+        if (
+            this.shader.batchable
+            && this.drawMode === DRAW_MODES.TRIANGLES
+            && vertices.length < Mesh.BATCHABLE_SIZE * 2
+        )
         {
             this._renderToBatch(renderer);
         }
@@ -272,7 +300,7 @@ export class Mesh extends Container
      * @protected
      * @param {PIXI.Renderer} renderer - Instance to renderer.
      */
-    _renderDefault(renderer)
+    protected _renderDefault(renderer: Renderer): void
     {
         const shader = this.shader;
 
@@ -307,7 +335,7 @@ export class Mesh extends Container
      * @protected
      * @param {PIXI.Renderer} renderer - Instance to renderer.
      */
-    _renderToBatch(renderer)
+    protected _renderToBatch(renderer: Renderer): void
     {
         const geometry = this.geometry;
 
@@ -319,7 +347,7 @@ export class Mesh extends Container
 
         // set properties for batching..
         this.calculateVertices();
-        this.indices = geometry.indexBuffer.data;
+        this.indices = geometry.indexBuffer.data as Uint16Array;
         this._tintRGB = this.shader._tintRGB;
         this._texture = this.shader.texture;
 
@@ -332,12 +360,12 @@ export class Mesh extends Container
     /**
      * Updates vertexData field based on transform and vertices
      */
-    calculateVertices()
+    calculateVertices(): void
     {
         const geometry = this.geometry;
         const vertices = geometry.buffers[0].data;
 
-        if (geometry.vertexDirtyId === this.vertexDirty && this._transformID === this.transform._worldID)
+        if ((geometry as any).vertexDirtyId === this.vertexDirty && this._transformID === this.transform._worldID)
         {
             return;
         }
@@ -378,13 +406,13 @@ export class Mesh extends Container
             }
         }
 
-        this.vertexDirty = geometry.vertexDirtyId;
+        this.vertexDirty = (geometry as any).vertexDirtyId;
     }
 
     /**
      * Updates uv field based on from geometry uv's or batchUvs
      */
-    calculateUvs()
+    calculateUvs(): void
     {
         const geomUvs = this.geometry.buffers[1];
 
@@ -399,7 +427,7 @@ export class Mesh extends Container
         }
         else
         {
-            this.uvs = geomUvs.data;
+            this.uvs = geomUvs.data as Float32Array;
         }
     }
 
@@ -409,7 +437,7 @@ export class Mesh extends Container
      *
      * @protected
      */
-    _calculateBounds()
+    protected _calculateBounds(): void
     {
         this.calculateVertices();
 
@@ -419,10 +447,10 @@ export class Mesh extends Container
     /**
      * Tests if a point is inside this mesh. Works only for PIXI.DRAW_MODES.TRIANGLES.
      *
-     * @param {PIXI.Point} point the point to test
+     * @param {PIXI.IPoint} point the point to test
      * @return {boolean} the result of the test
      */
-    containsPoint(point)
+    containsPoint(point: IPoint): boolean
     {
         if (!this.getBounds().contains(point.x, point.y))
         {
@@ -467,7 +495,7 @@ export class Mesh extends Container
      * @param {boolean} [options.children=false] - if set to true, all the children will have
      *  their destroy method called as well. 'options' will be passed on to those calls.
      */
-    destroy(options)
+    destroy(options: IDestroyOptions|boolean): void
     {
         super.destroy(options);
 
@@ -477,20 +505,21 @@ export class Mesh extends Container
             this.geometry.dispose();
         }
 
-        this.geometry = null;
+        (this as any).geometry = null;
         this.shader = null;
         this.state = null;
         this.uvs = null;
         this.indices = null;
         this.vertexData = null;
     }
+
+    /**
+     * The maximum number of vertices to consider batchable. Generally, the complexity
+     * of the geometry.
+     * @memberof PIXI.Mesh
+     * @static
+     * @member {number} BATCHABLE_SIZE
+     */
+    public static BATCHABLE_SIZE = 100;
 }
 
-/**
- * The maximum number of vertices to consider batchable. Generally, the complexity
- * of the geometry.
- * @memberof PIXI.Mesh
- * @static
- * @member {number} BATCHABLE_SIZE
- */
-Mesh.BATCHABLE_SIZE = 100;

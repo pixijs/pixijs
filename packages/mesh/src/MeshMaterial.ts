@@ -1,8 +1,16 @@
-import { Shader, Program, TextureMatrix } from '@pixi/core';
-import vertex from './shader/mesh.vert';
-import fragment from './shader/mesh.frag';
+import { Program, Shader, Texture, TextureMatrix } from '@pixi/core';
 import { Matrix } from '@pixi/math';
 import { premultiplyTintToRgba } from '@pixi/utils';
+import fragment from './shader/mesh.frag';
+import vertex from './shader/mesh.vert';
+
+export interface IMeshMaterialOptions {
+    alpha?: number;
+    tint?: number;
+    pluginName?: string;
+    program?: Program;
+    uniforms?: {};
+}
 
 /**
  * Slightly opinionated default shader for PixiJS 2D objects.
@@ -12,6 +20,18 @@ import { premultiplyTintToRgba } from '@pixi/utils';
  */
 export class MeshMaterial extends Shader
 {
+    public readonly uvMatrix: TextureMatrix;
+
+    public batchable: boolean;
+    public pluginName: string;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // @ts-ignore
+    _tintRGB: number;
+
+    private _colorDirty: boolean;
+    private _alpha: number;
+    private _tint: number;
+
     /**
      * @param {PIXI.Texture} uSampler - Texture that material uses to render.
      * @param {object} [options] - Additional options
@@ -21,7 +41,7 @@ export class MeshMaterial extends Shader
      * @param {PIXI.Program} [options.program=0xFFFFFF] - Custom program.
      * @param {object} [options.uniforms] - Custom uniforms.
      */
-    constructor(uSampler, options)
+    constructor(uSampler: Texture, options: IMeshMaterialOptions)
     {
         const uniforms = {
             uSampler,
@@ -83,7 +103,7 @@ export class MeshMaterial extends Shader
      * Reference to the texture being rendered.
      * @member {PIXI.Texture}
      */
-    get texture()
+    get texture(): Texture
     {
         return this.uniforms.uSampler;
     }
@@ -109,7 +129,7 @@ export class MeshMaterial extends Shader
         this._alpha = value;
         this._colorDirty = true;
     }
-    get alpha()
+    get alpha(): number
     {
         return this._alpha;
     }
@@ -127,7 +147,7 @@ export class MeshMaterial extends Shader
         this._tintRGB = (value >> 16) + (value & 0xff00) + ((value & 0xff) << 16);
         this._colorDirty = true;
     }
-    get tint()
+    get tint(): number
     {
         return this._tint;
     }
@@ -136,14 +156,16 @@ export class MeshMaterial extends Shader
      * Gets called automatically by the Mesh. Intended to be overridden for custom
      * MeshMaterial objects.
      */
-    update()
+    update(): void
     {
         if (this._colorDirty)
         {
             this._colorDirty = false;
             const baseTexture = this.texture.baseTexture;
 
-            premultiplyTintToRgba(this._tint, this._alpha, this.uniforms.uColor, baseTexture.alphaMode);
+            premultiplyTintToRgba(
+                this._tint, this._alpha, this.uniforms.uColor, (baseTexture.alphaMode as unknown as boolean)
+            );
         }
         if (this.uvMatrix.update())
         {
