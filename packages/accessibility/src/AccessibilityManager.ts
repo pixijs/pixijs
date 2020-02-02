@@ -34,9 +34,6 @@ const DIV_HOOK_ZINDEX = 2;
  */
 export class AccessibilityManager
 {
-    /**
-     * @internal
-     */
     public debug: boolean;
     public renderer: CanvasRenderer|Renderer;
     public isActive: boolean;
@@ -228,6 +225,7 @@ export class AccessibilityManager
         window.document.addEventListener('mousemove', this._onMouseMove, true);
         window.removeEventListener('keydown', this._onKeyDown, false);
 
+        // TODO: Remove casting when CanvasRenderer is converted
         (this.renderer as AbstractRenderer).on('postrender', this.update, this);
 
         if ((this.renderer as AbstractRenderer).view.parentNode)
@@ -254,6 +252,7 @@ export class AccessibilityManager
         window.document.removeEventListener('mousemove', this._onMouseMove, true);
         window.addEventListener('keydown', this._onKeyDown, false);
 
+        // TODO: Remove casting when CanvasRenderer is converted
         (this.renderer as AbstractRenderer).off('postrender', this.update);
 
         if (this.div.parentNode)
@@ -321,6 +320,7 @@ export class AccessibilityManager
         // update children...
         this.updateAccessibleObjects(this.renderer._lastObjectRendered as Container);
 
+        // TODO: Remove casting when CanvasRenderer is converted
         const rect = (this.renderer as AbstractRenderer).view.getBoundingClientRect();
 
         const resolution = this.renderer.resolution;
@@ -409,7 +409,7 @@ export class AccessibilityManager
      *
      * @param {HTMLElement} div
      */
-    updateDebugHTML(div: IAccessibleHTMLElement): void
+    public updateDebugHTML(div: IAccessibleHTMLElement): void
     {
         div.innerHTML = `type: ${div.type}</br> title : ${div.title}</br> tabIndex: ${div.tabIndex}`;
     }
@@ -419,7 +419,7 @@ export class AccessibilityManager
      *
      * @param {PIXI.Rectangle} hitArea - Bounds of the child
      */
-    capHitArea(hitArea: Rectangle): void
+    public capHitArea(hitArea: Rectangle): void
     {
         if (hitArea.x < 0)
         {
@@ -433,6 +433,7 @@ export class AccessibilityManager
             hitArea.y = 0;
         }
 
+        // TODO: Remove casting when CanvasRenderer is converted
         if (hitArea.x + hitArea.width > (this.renderer as AbstractRenderer).width)
         {
             hitArea.width = (this.renderer as AbstractRenderer).width - hitArea.x;
@@ -534,6 +535,7 @@ export class AccessibilityManager
      */
     private _onClick(e: MouseEvent): void
     {
+        // TODO: Remove casting when CanvasRenderer is converted
         const interactionManager = (this.renderer as AbstractRenderer).plugins.interaction;
 
         interactionManager.dispatchEvent(
@@ -559,6 +561,8 @@ export class AccessibilityManager
         {
             (e.target as Element).setAttribute('aria-live', 'assertive');
         }
+
+        // TODO: Remove casting when CanvasRenderer is converted
         const interactionManager = (this.renderer as AbstractRenderer).plugins.interaction;
 
         interactionManager.dispatchEvent(
@@ -578,6 +582,8 @@ export class AccessibilityManager
         {
             (e.target as Element).setAttribute('aria-live', 'polite');
         }
+
+        // TODO: Remove casting when CanvasRenderer is converted
         const interactionManager = (this.renderer as AbstractRenderer).plugins.interaction;
 
         interactionManager.dispatchEvent((e.target as any).displayObject, 'mouseout', interactionManager.eventData);
@@ -619,7 +625,7 @@ export class AccessibilityManager
      * Destroys the accessibility manager
      *
      */
-    destroy(): void
+    public destroy(): void
     {
         this.destroyTouchHook();
         this.div = null;
