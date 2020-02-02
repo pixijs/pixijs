@@ -117,17 +117,17 @@ export class ImageResource extends BaseImageResource
      */
     load(createBitmap)
     {
-        if (createBitmap !== undefined)
-        {
-            this.createBitmap = createBitmap;
-        }
-
         if (this._load)
         {
             return this._load;
         }
 
-        this._load = new Promise((resolve) =>
+        if (createBitmap !== undefined)
+        {
+            this.createBitmap = createBitmap;
+        }
+
+        this._load = new Promise((resolve, reject) =>
         {
             this.url = this.source.src;
             const { source } = this;
@@ -161,7 +161,12 @@ export class ImageResource extends BaseImageResource
             else
             {
                 source.onload = completed;
-                source.onerror = (event) => this.onError.run(event);
+                source.onerror = (event) =>
+                {
+                    // Avoids Promise freezing when resource broken
+                    reject(event);
+                    this.onError.emit(event);
+                };
             }
         });
 
