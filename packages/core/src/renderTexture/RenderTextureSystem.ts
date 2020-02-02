@@ -1,5 +1,6 @@
 import { System } from '../System';
 import { Rectangle } from '@pixi/math';
+import { BUFFER_BITS } from '@pixi/constants';
 
 import { Renderer } from '../Renderer';
 import { RenderTexture } from './RenderTexture';
@@ -153,8 +154,11 @@ export class RenderTextureSystem extends System
      * Erases the render texture and fills the drawing area with a colour
      *
      * @param {number[]} [clearColor] - The color as rgba, default to use the renderer backgroundColor
+     * @param {PIXI.BUFFER_BITS} [mask=BUFFER_BITS.COLOR | BUFFER_BITS.DEPTH] - Bitwise OR of masks
+     *  that indicate the buffers to be cleared, by default COLOR and DEPTH buffers.
+     * @return {PIXI.Renderer} Returns itself.
      */
-    clear(clearColor?: number[]): void
+    clear(clearColor?: number[], mask?: BUFFER_BITS): void
     {
         if (this.current)
         {
@@ -165,7 +169,7 @@ export class RenderTextureSystem extends System
             clearColor = clearColor || this.clearColor;
         }
 
-        this.renderer.framebuffer.clear(clearColor[0], clearColor[1], clearColor[2], clearColor[3]);
+        this.renderer.framebuffer.clear(clearColor[0], clearColor[1], clearColor[2], clearColor[3], mask);
     }
 
     resize(): void // screenWidth, screenHeight)
