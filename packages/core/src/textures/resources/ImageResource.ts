@@ -134,17 +134,17 @@ export class ImageResource extends BaseImageResource
      */
     load(createBitmap?: boolean): Promise<ImageResource>
     {
-        if (createBitmap !== undefined)
-        {
-            this.createBitmap = createBitmap;
-        }
-
         if (this._load)
         {
             return this._load;
         }
 
-        this._load = new Promise((resolve): void =>
+        if (createBitmap !== undefined)
+        {
+            this.createBitmap = createBitmap;
+        }
+
+        this._load = new Promise((resolve, reject): void =>
         {
             const source = this.source as HTMLImageElement;
 
@@ -179,7 +179,12 @@ export class ImageResource extends BaseImageResource
             else
             {
                 source.onload = completed;
-                source.onerror = (event): void => { this.onError.emit(event); };
+                source.onerror = (event): void =>
+                {
+                    // Avoids Promise freezing when resource broken
+                    reject(event);
+                    this.onError.emit(event);
+                };
             }
         });
 
