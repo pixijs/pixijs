@@ -1,6 +1,6 @@
 import { System } from '../System';
 import { Rectangle } from '@pixi/math';
-import { ENV } from '@pixi/constants';
+import { ENV, BUFFER_BITS } from '@pixi/constants';
 import { settings } from '../settings';
 import { Framebuffer } from './Framebuffer';
 import { GLFramebuffer } from './GLFramebuffer';
@@ -228,14 +228,16 @@ export class FramebufferSystem extends System
      * @param {Number} g - Green value from 0 to 1
      * @param {Number} b - Blue value from 0 to 1
      * @param {Number} a - Alpha value from 0 to 1
+     * @param {PIXI.BUFFER_BITS} [mask=BUFFER_BITS.COLOR | BUFFER_BITS.DEPTH] - Bitwise OR of masks
+     *  that indicate the buffers to be cleared, by default COLOR and DEPTH buffers.
      */
-    clear(r: number, g: number, b: number, a: number): void
+    clear(r: number, g: number, b: number, a: number, mask: BUFFER_BITS = BUFFER_BITS.COLOR | BUFFER_BITS.DEPTH): void
     {
         const { gl } = this;
 
         // TODO clear color can be set only one right?
         gl.clearColor(r, g, b, a);
-        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        gl.clear(mask);
     }
 
     /**
