@@ -1,5 +1,5 @@
 import { SHAPES } from '../const';
-import { Point } from '../Point';
+import { IPoint } from '../IPoint';
 
 /**
  * A class to define a shape via user defined co-orinates.
@@ -13,33 +13,30 @@ export class Polygon
     public closeStroke: boolean;
     public readonly type: number;
 
+    constructor(points: IPoint[]|number[]);
+    constructor(...points: IPoint[]|number[]);
     /**
-     * @param {PIXI.Point[]|number[]|number[][]} points - This can be an array of Points
+     * @param {PIXI.IPoint[]|number[]} points - This can be an array of Points
      *  that form the polygon, a flat array of numbers that will be interpreted as [x,y, x,y, ...], or
      *  the arguments passed can be all the points of the polygon e.g.
      *  `new PIXI.Polygon(new PIXI.Point(), new PIXI.Point(), ...)`, or the arguments passed can be flat
      *  x,y values e.g. `new Polygon(x,y, x,y, x,y, ...)` where `x` and `y` are Numbers.
      */
-    constructor(...points: Point[]|number[]|number[][])
+    constructor(...points: any[])
     {
-        if (Array.isArray(points[0]))
-        {
-            points = points[0];
-        }
+        let flat: IPoint[]|number[] = Array.isArray(points[0]) ? points[0] : points;
 
         // if this is an array of points, convert it to a flat array of numbers
-        if (points[0] instanceof Point)
+        if (typeof flat[0] !== 'number')
         {
-            points = points as Point[];
-
             const p: number[] = [];
 
-            for (let i = 0, il = points.length; i < il; i++)
+            for (let i = 0, il = flat.length; i < il; i++)
             {
-                p.push(points[i].x, points[i].y);
+                p.push((flat[i] as IPoint).x, (flat[i] as IPoint).y);
             }
 
-            points = p;
+            flat = p;
         }
 
         /**
@@ -47,7 +44,7 @@ export class Polygon
          *
          * @member {number[]}
          */
-        this.points = points as number[];
+        this.points = flat as number[];
 
         /**
          * The type of the object, mainly used to avoid `instanceof` checks
