@@ -1,4 +1,4 @@
-import { BaseTexture, IBaseTextureOptions } from './BaseTexture';
+import { BaseTexture, IBaseTextureOptions, ImageSource } from './BaseTexture';
 import { ImageResource } from './resources/ImageResource';
 import { CanvasResource } from './resources/CanvasResource';
 import { TextureUvs } from './TextureUvs';
@@ -10,7 +10,7 @@ import { TextureMatrix } from './TextureMatrix';
 
 const DEFAULT_UVS = new TextureUvs();
 
-export type TextureSource = string|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|BaseTexture;
+export type TextureSource = string|BaseTexture|ImageSource;
 
 /**
  * A texture stores the information that represents an image or part of an image.

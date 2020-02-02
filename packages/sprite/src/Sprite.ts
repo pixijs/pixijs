@@ -1,14 +1,14 @@
 import { BLEND_MODES } from '@pixi/constants';
-import { Shader, Texture, Filter, Renderer, IBaseTextureOptions, TextureSource } from '@pixi/core';
+import { IBaseTextureOptions, Renderer, Texture, TextureSource } from '@pixi/core';
 import { Container, IDestroyOptions } from '@pixi/display';
-import { ObservablePoint, Point, Rectangle, IPoint } from '@pixi/math';
+import { IPoint, ObservablePoint, Point, Rectangle } from '@pixi/math';
 import { settings } from '@pixi/settings';
 import { sign } from '@pixi/utils';
 
 const tempPoint = new Point();
 const indices = new Uint16Array([0, 1, 2, 0, 2, 3]);
 
-export type SpriteSource = TextureSource & Texture;
+export type SpriteSource = TextureSource|Texture;
 
 /**
  * The Sprite object is the base for all textured objects that are rendered to the screen
@@ -39,7 +39,6 @@ export type SpriteSource = TextureSource & Texture;
 export class Sprite extends Container
 {
     public blendMode: BLEND_MODES;
-    public shader: Filter|Shader;
     public indices: Uint16Array;
     public size: number;
     public start: number;
@@ -149,13 +148,6 @@ export class Sprite extends Container
          * @see PIXI.BLEND_MODES
          */
         this.blendMode = BLEND_MODES.NORMAL;
-
-        /**
-         * The shader that will be used to render the sprite. Set to null to remove a current shader.
-         *
-         * @member {PIXI.Filter|PIXI.Shader}
-         */
-        this.shader = null;
 
         /**
          * Cached tint value so we can tell when the tint is changed.
@@ -309,18 +301,18 @@ export class Sprite extends Container
         {
             // if the sprite is trimmed and is not a tilingsprite then we need to add the extra
             // space before transforming the sprite coords.
-            w1 = trim.x - (anchor.x * orig.width);
+            w1 = trim.x - (anchor._x * orig.width);
             w0 = w1 + trim.width;
 
-            h1 = trim.y - (anchor.y * orig.height);
+            h1 = trim.y - (anchor._y * orig.height);
             h0 = h1 + trim.height;
         }
         else
         {
-            w1 = -anchor.x * orig.width;
+            w1 = -anchor._x * orig.width;
             w0 = w1 + orig.width;
 
-            h1 = -anchor.y * orig.height;
+            h1 = -anchor._y * orig.height;
             h0 = h1 + orig.height;
         }
 
@@ -384,10 +376,10 @@ export class Sprite extends Container
         const tx = wt.tx;
         const ty = wt.ty;
 
-        const w1 = -anchor.x * orig.width;
+        const w1 = -anchor._x * orig.width;
         const w0 = w1 + orig.width;
 
-        const h1 = -anchor.y * orig.height;
+        const h1 = -anchor._y * orig.height;
         const h0 = h1 + orig.height;
 
         // xy
@@ -458,10 +450,10 @@ export class Sprite extends Container
         // we can do a fast local bounds if the sprite has no children!
         if (this.children.length === 0)
         {
-            this._bounds.minX = this._texture.orig.width * -this._anchor.x;
-            this._bounds.minY = this._texture.orig.height * -this._anchor.y;
-            this._bounds.maxX = this._texture.orig.width * (1 - this._anchor.x);
-            this._bounds.maxY = this._texture.orig.height * (1 - this._anchor.y);
+            this._bounds.minX = this._texture.orig.width * -this._anchor._x;
+            this._bounds.minY = this._texture.orig.height * -this._anchor._y;
+            this._bounds.maxX = this._texture.orig.width * (1 - this._anchor._x);
+            this._bounds.maxY = this._texture.orig.height * (1 - this._anchor._y);
 
             if (!rect)
             {
@@ -535,7 +527,6 @@ export class Sprite extends Container
         }
 
         this._texture = null;
-        this.shader = null;
     }
 
     // some helper functions..
