@@ -1,4 +1,8 @@
-const GAUSSIAN_VALUES = {
+// eslint-disable-next-line @typescript-eslint/class-name-casing
+interface IGAUSSIAN_VALUES {
+    [x: number]: number[];
+}
+const GAUSSIAN_VALUES: IGAUSSIAN_VALUES = {
     5: [0.153388, 0.221461, 0.250301],
     7: [0.071303, 0.131514, 0.189879, 0.214607],
     9: [0.028532, 0.067234, 0.124009, 0.179044, 0.20236],
@@ -19,7 +23,7 @@ const fragTemplate = [
 
 ].join('\n');
 
-export function generateBlurFragSource(kernelSize)
+export function generateBlurFragSource(kernelSize: number): string
 {
     const kernel = GAUSSIAN_VALUES[kernelSize];
     const halfLength = kernel.length;
@@ -28,11 +32,11 @@ export function generateBlurFragSource(kernelSize)
 
     let blurLoop = '';
     const template = 'gl_FragColor += texture2D(uSampler, vBlurTexCoords[%index%]) * %value%;';
-    let value;
+    let value: number;
 
     for (let i = 0; i < kernelSize; i++)
     {
-        let blur = template.replace('%index%', i);
+        let blur = template.replace('%index%', i.toString());
 
         value = i;
 
@@ -41,14 +45,14 @@ export function generateBlurFragSource(kernelSize)
             value = kernelSize - i - 1;
         }
 
-        blur = blur.replace('%value%', kernel[value]);
+        blur = blur.replace('%value%', kernel[value].toString());
 
         blurLoop += blur;
         blurLoop += '\n';
     }
 
     fragSource = fragSource.replace('%blur%', blurLoop);
-    fragSource = fragSource.replace('%size%', kernelSize);
+    fragSource = fragSource.replace('%size%', kernelSize.toString());
 
     return fragSource;
 }

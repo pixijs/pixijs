@@ -1,7 +1,9 @@
-import { Filter } from '@pixi/core';
-import { Matrix, Point } from '@pixi/math';
-import vertex from './displacement.vert';
+import { CLEAR_MODES } from '@pixi/constants';
+import { Filter, RenderTexture, systems, Texture } from '@pixi/core';
+import { Matrix, Point } from '@pixi/math/src';
+import { Sprite } from '@pixi/sprite';
 import fragment from './displacement.frag';
+import vertex from './displacement.vert';
 
 /**
  * The DisplacementFilter class uses the pixel values from the specified texture
@@ -23,11 +25,15 @@ import fragment from './displacement.frag';
  */
 export class DisplacementFilter extends Filter
 {
+    public maskSprite: Sprite;
+    public maskMatrix: Matrix;
+    public scale: Point;
+
     /**
      * @param {PIXI.Sprite} sprite - The sprite used for the displacement map. (make sure its added to the scene!)
      * @param {number} [scale] - The scale of the displacement
      */
-    constructor(sprite, scale)
+    constructor(sprite: Sprite, scale: number)
     {
         const maskMatrix = new Matrix();
 
@@ -63,10 +69,14 @@ export class DisplacementFilter extends Filter
      * @param {PIXI.RenderTexture} output - The output target.
      * @param {PIXI.CLEAR_MODES} clearMode - clearMode.
      */
-    apply(filterManager, input, output, clearMode)
+    public apply(
+        filterManager: systems.FilterSystem, input: RenderTexture, output: RenderTexture, clearMode: CLEAR_MODES
+    ): void
     {
         // fill maskMatrix with _normalized sprite texture coords_
-        this.uniforms.filterMatrix = filterManager.calculateSpriteMatrix(this.maskMatrix, this.maskSprite);
+        this.uniforms.filterMatrix = filterManager.calculateSpriteMatrix(
+            this.maskMatrix, this.maskSprite as any
+        );
         this.uniforms.scale.x = this.scale.x;
         this.uniforms.scale.y = this.scale.y;
 
@@ -92,7 +102,7 @@ export class DisplacementFilter extends Filter
      *
      * @member {PIXI.Texture}
      */
-    get map()
+    get map(): Texture
     {
         return this.uniforms.mapSampler;
     }
