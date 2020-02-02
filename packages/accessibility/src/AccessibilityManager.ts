@@ -34,10 +34,10 @@ const DIV_HOOK_ZINDEX = 2;
  */
 export class AccessibilityManager
 {
+    public readonly isActive: boolean;
+    public readonly isMobileAccessibility: boolean;
     public debug: boolean;
     public renderer: CanvasRenderer|Renderer;
-    public isActive: boolean;
-    public isMobileAccessibility: boolean;
 
     private _hookDiv: HTMLElement;
     private div: HTMLElement;
@@ -57,6 +57,7 @@ export class AccessibilityManager
          * @private
          */
         this._hookDiv = null;
+
         if (isMobile.tablet || isMobile.phone)
         {
             this.createTouchHook();
@@ -137,12 +138,14 @@ export class AccessibilityManager
         /**
          * A flag
          * @type {boolean}
+         * @readonly
          */
         this.isActive = false;
 
         /**
          * A flag
          * @type {boolean}
+         * @readonly
          */
         this.isMobileAccessibility = false;
 
@@ -183,7 +186,7 @@ export class AccessibilityManager
 
         hookDiv.addEventListener('focus', () =>
         {
-            this.isMobileAccessibility = true;
+            (this as any).isMobileAccessibility = true;
             this.activate();
             this.destroyTouchHook();
         });
@@ -220,7 +223,7 @@ export class AccessibilityManager
             return;
         }
 
-        this.isActive = true;
+        (this as any).isActive = true;
 
         window.document.addEventListener('mousemove', this._onMouseMove, true);
         window.removeEventListener('keydown', this._onKeyDown, false);
@@ -247,7 +250,7 @@ export class AccessibilityManager
             return;
         }
 
-        this.isActive = false;
+        (this as any).isActive = false;
 
         window.document.removeEventListener('mousemove', this._onMouseMove, true);
         window.addEventListener('keydown', this._onKeyDown, false);

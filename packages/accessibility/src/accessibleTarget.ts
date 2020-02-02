@@ -125,5 +125,5 @@ export const accessibleTarget: IAccessibleTarget = {
      */
     accessibleChildren: true,
 
-    renderId: 0,
+    renderId: -1,
 };
