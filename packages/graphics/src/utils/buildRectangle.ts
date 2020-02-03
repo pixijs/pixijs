@@ -1,3 +1,7 @@
+// for type only
+import { IShapeBuildCommand } from './IShapeBuildCommand';
+import { Rectangle } from '@pixi/math';
+
 /**
  * Builds a rectangle to draw
  *
@@ -9,14 +13,14 @@
  * @param {object} webGLData - an object containing all the WebGL-specific information to create this shape
  * @param {object} webGLDataNativeLines - an object containing all the WebGL-specific information to create nativeLines
  */
-export const buildRectangle = {
+export const buildRectangle: IShapeBuildCommand = {
 
     build(graphicsData)
     {
         // --- //
         // need to convert points to a nice regular data
         //
-        const rectData = graphicsData.shape;
+        const rectData = graphicsData.shape as Rectangle;
         const x = rectData.x;
         const y = rectData.y;
         const width = rectData.width;
