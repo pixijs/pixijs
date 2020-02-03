@@ -34,11 +34,11 @@ const DIV_HOOK_ZINDEX = 2;
  */
 export class AccessibilityManager
 {
-    public readonly isActive: boolean;
-    public readonly isMobileAccessibility: boolean;
     public debug: boolean;
     public renderer: CanvasRenderer|Renderer;
 
+    private readonly _isActive: boolean;
+    private readonly _isMobileAccessibility: boolean;
     private _hookDiv: HTMLElement;
     private div: HTMLElement;
     private pool: IAccessibleHTMLElement[];
@@ -135,19 +135,9 @@ export class AccessibilityManager
          */
         this._onMouseMove = this._onMouseMove.bind(this);
 
-        /**
-         * A flag
-         * @type {boolean}
-         * @readonly
-         */
-        this.isActive = false;
+        this._isActive = false;
 
-        /**
-         * A flag
-         * @type {boolean}
-         * @readonly
-         */
-        this.isMobileAccessibility = false;
+        this._isMobileAccessibility = false;
 
         /**
          * count to throttle div updates on android devices
@@ -164,6 +154,26 @@ export class AccessibilityManager
 
         // let listen for tab.. once pressed we can fire up and show the accessibility layer
         window.addEventListener('keydown', this._onKeyDown, false);
+    }
+
+    /**
+     * A flag
+     * @member {boolean}
+     * @readonly
+     */
+    get isActive(): boolean
+    {
+        return this._isActive;
+    }
+
+    /**
+     * A flag
+     * @member {boolean}
+     * @readonly
+     */
+    get isMobileAccessibility(): boolean
+    {
+        return this._isMobileAccessibility;
     }
 
     /**
@@ -218,7 +228,7 @@ export class AccessibilityManager
      */
     private activate(): void
     {
-        if (this.isActive)
+        if (this._isActive)
         {
             return;
         }
@@ -245,7 +255,7 @@ export class AccessibilityManager
      */
     private deactivate(): void
     {
-        if (!this.isActive || this.isMobileAccessibility)
+        if (!this._isActive || this._isMobileAccessibility)
         {
             return;
         }
