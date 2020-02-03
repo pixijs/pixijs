@@ -1,4 +1,3 @@
-import { CanvasRenderer } from '@pixi/canvas-renderer';
 import { Renderer, AbstractRenderer } from '@pixi/core';
 import { Container, DisplayObject } from '@pixi/display';
 import { Rectangle } from '@pixi/math';
@@ -35,7 +34,7 @@ const DIV_HOOK_ZINDEX = 2;
 export class AccessibilityManager
 {
     public debug: boolean;
-    public renderer: CanvasRenderer|Renderer;
+    public renderer: AbstractRenderer|Renderer;
 
     private _isActive: boolean;
     private _isMobileAccessibility: boolean;
@@ -50,7 +49,7 @@ export class AccessibilityManager
     /**
      * @param {PIXI.CanvasRenderer|PIXI.Renderer} renderer - A reference to the current renderer
      */
-    constructor(renderer: CanvasRenderer|Renderer)
+    constructor(renderer: AbstractRenderer|Renderer)
     {
         /**
          * @type {?HTMLElement}
@@ -325,7 +324,7 @@ export class AccessibilityManager
 
         this.androidUpdateCount = now + this.androidUpdateFrequency;
 
-        if (!this.renderer.renderingToScreen)
+        if (!(this.renderer as Renderer).renderingToScreen)
         {
             return;
         }
