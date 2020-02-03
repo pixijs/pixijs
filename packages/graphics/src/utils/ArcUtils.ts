@@ -1,6 +1,15 @@
 import { GRAPHICS_CURVES } from '../const';
 import { PI_2 } from '@pixi/math';
 
+interface IArcLikeShape {
+    cx: number;
+    cy: number;
+    radius: number;
+    startAngle: number;
+    endAngle: number;
+    anticlockwise: boolean;
+}
+
 /**
  * Utilities for arc curves
  * @class
@@ -21,7 +30,7 @@ export class ArcUtils
      * @param {number} radius - The radius of the arc
      * @return {object} If the arc length is valid, return center of circle, radius and other info otherwise `null`.
      */
-    static curveTo(x1, y1, x2, y2, radius, points)
+    static curveTo(x1: number, y1: number, x2: number, y2: number, radius: number, points: Array<number>): IArcLikeShape
     {
         const fromX = points[points.length - 2];
         const fromY = points[points.length - 1];
@@ -86,7 +95,10 @@ export class ArcUtils
      * @param {number} n - Number of segments
      * @param {number[]} points - Collection of points to add to
      */
-    static arc(startX, startY, cx, cy, radius, startAngle, endAngle, anticlockwise, points)
+
+    /* eslint-disable max-len, @typescript-eslint/no-unused-vars, @typescript-eslint/ban-ts-ignore */
+    // @ts-ignore
+    static arc(startX: number, startY: number, cx: number, cy: number, radius: number, startAngle: number, endAngle: number, anticlockwise: boolean, points: Array<number>): void
     {
         const sweep = endAngle - startAngle;
         const n = GRAPHICS_CURVES._segmentsCount(
@@ -114,4 +126,5 @@ export class ArcUtils
             );
         }
     }
+    /* eslint-enable max-len, @typescript-eslint/no-unused-vars, @typescript-eslint/ban-ts-ignore */
 }

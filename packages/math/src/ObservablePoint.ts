@@ -14,8 +14,8 @@ export class ObservablePoint<T = any> implements IPoint
 {
     public cb: (this: T) => any;
     public scope: any;
-    protected _x: number;
-    protected _y: number;
+    _x: number;
+    _y: number;
 
     /**
      * @param {Function} cb - callback when changed

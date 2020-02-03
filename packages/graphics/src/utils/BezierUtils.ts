@@ -23,7 +23,11 @@ export class BezierUtils
      * @param {number} toY - Destination point y
      * @return {number} Length of bezier curve
      */
-    static curveLength(fromX, fromY, cpX, cpY, cpX2, cpY2, toX, toY)
+    static curveLength(
+        fromX: number, fromY: number,
+        cpX: number, cpY: number,
+        cpX2: number, cpY2: number,
+        toX: number, toY: number): number
     {
         const n = 10;
         let result = 0.0;
@@ -76,7 +80,11 @@ export class BezierUtils
      * @param {number} toY - Destination point y
      * @param {number[]} points - Path array to push points into
      */
-    static curveTo(cpX, cpY, cpX2, cpY2, toX, toY, points)
+    static curveTo(
+        cpX: number, cpY: number,
+        cpX2: number, cpY2: number,
+        toX: number, toY: number,
+        points: Array<number>): void
     {
         const fromX = points[points.length - 2];
         const fromY = points[points.length - 1];
