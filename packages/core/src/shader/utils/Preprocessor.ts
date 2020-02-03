@@ -9,6 +9,13 @@ import { settings } from '@pixi/settings';
 
 const nameCache: { [key: string]: number } = {};
 
+export interface IOptions
+{
+    isRawShader?: boolean;
+    defines?: { [key: string]: any };
+    [key: string]: any;
+}
+
 /**
  * Helper class to preprocessing a shader program.
  *
@@ -19,18 +26,18 @@ export class Preprocessor
 {
     public vertex: string;
     public fragment: string;
-    nameCache: any;
+
     /**
      * @param {string} [vertexSrc] - The source of the vertex shader.
      * @param {string} [fragmentSrc] - The source of the fragment shader.
      * @param {string} [name=pixi-shader] - Name for shader
-     * @param {any} [options = { isRawShader: false, defines: {} }] - Options for preprocessor,
+     * @param {IOptions} [options = { isRawShader: false, defines: {} }] - Options for preprocessor,
      *  include isRawShader and defines, of other for custom preprocessors
      */
     constructor(vertexSrc: string,
         fragmentSrc: string,
         name = 'pixi-shader',
-        options: any = { isRawShader: false, defines: {} })
+        options: IOptions = { isRawShader: false, defines: {} })
     {
         this.vertex = vertexSrc.trim();
         this.fragment = fragmentSrc.trim();

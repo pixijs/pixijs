@@ -1,5 +1,6 @@
 // import * as from '../systems/shader/shader';
 import { Preprocessor,
+    IOptions,
     defaultValue,
     compileProgram,
     mapSize,
@@ -48,11 +49,15 @@ export class Program
      * @param {string} [vertexSrc] - The source of the vertex shader.
      * @param {string} [fragmentSrc] - The source of the fragment shader.
      * @param {string} [name] - Name for shader
-     * @param {object} [options = { isRawShader: false, defines: {} }] - Options for preprocessor,
+     * @param {IOptions} [options = { isRawShader: false, defines: {} }] - Options for preprocessor,
      *  include isRawShader and defines, of other for custom preprocessors
-     * @param {object} [preprocessor] - Object to preprocessing the shader program
+     * @param {Preprocessor} [preprocessor] - Object to preprocessing the shader program
      */
-    constructor(vertexSrc?: string, fragmentSrc?: string, name = 'pixi-shader', options?: any, preprocessor?: any)
+    constructor(vertexSrc?: string,
+        fragmentSrc?: string,
+        name = 'pixi-shader',
+        options?: IOptions,
+        preprocessor?: Preprocessor)
     {
         this.id = UID++;
 
@@ -231,13 +236,17 @@ export class Program
      * @param {string} [vertexSrc] - The source of the vertex shader.
      * @param {string} [fragmentSrc] - The source of the fragment shader.
      * @param {string} [name=pixi-shader] - Name for shader
-     * @param {object} [options = { isRawShader: false, defines: {} }] - Options for preprocessor,
+     * @param {IOptions} [options = { isRawShader: false, defines: {} }] - Options for preprocessor,
      *  include isRawShader and defines, of other for custom preprocessors
-     * @param {object} [preprocessor] - Object to preprocessing the shader program
+     * @param {Preprocessor} [preprocessor] - Object to preprocessing the shader program
      *
      * @returns {PIXI.Program} an shiny new Pixi shader!
      */
-    static from(vertexSrc?: string, fragmentSrc?: string, name?: string, options?: any, preprocessor?: any): Program
+    static from(vertexSrc?: string,
+        fragmentSrc?: string,
+        name?: string,
+        options?: IOptions,
+        preprocessor?: Preprocessor): Program
     {
         preprocessor = preprocessor || new Preprocessor(vertexSrc, fragmentSrc, name, options);
 
