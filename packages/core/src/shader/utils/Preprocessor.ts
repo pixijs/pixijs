@@ -2,12 +2,12 @@
  * Created by hazed on 30.01.2020.
  */
 
-import { setPrecision } from './setPrecision.js';
-import { getMaxFragmentPrecision } from './getMaxFragmentPrecision.js';
+import { setPrecision } from './setPrecision';
+import { getMaxFragmentPrecision } from './getMaxFragmentPrecision';
 import { PRECISION } from '@pixi/constants';
 import { settings } from '@pixi/settings';
 
-const nameCache = {};
+const nameCache: { [key: string]: number } = {};
 
 /**
  * Helper class to preprocessing a shader program.
@@ -17,14 +17,20 @@ const nameCache = {};
  */
 export class Preprocessor
 {
+    public vertex: string;
+    public fragment: string;
+    nameCache: any;
     /**
      * @param {string} [vertexSrc] - The source of the vertex shader.
      * @param {string} [fragmentSrc] - The source of the fragment shader.
      * @param {string} [name=pixi-shader] - Name for shader
-     * @param {object} [options = { isRawShader: false, defines: {} }] - Options for preprocessor,
+     * @param {any} [options = { isRawShader: false, defines: {} }] - Options for preprocessor,
      *  include isRawShader and defines, of other for custom preprocessors
      */
-    constructor(vertexSrc, fragmentSrc, name = 'pixi-shader', options = { isRawShader: false, defines: {} })
+    constructor(vertexSrc: string,
+        fragmentSrc: string,
+        name = 'pixi-shader',
+        options: any = { isRawShader: false, defines: {} })
     {
         this.vertex = vertexSrc.trim();
         this.fragment = fragmentSrc.trim();
