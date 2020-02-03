@@ -45,3 +45,6 @@ export * from './geometry/Attribute';
 export * from './geometry/Buffer';
 export * from './geometry/Geometry';
 export * from './geometry/ViewableBuffer';
+
+// T stands for (content) type, L stands for the array fixed length
+export type ArrayFixed<T, L extends number> = [ T, ...Array<T> ] & { length: L };
