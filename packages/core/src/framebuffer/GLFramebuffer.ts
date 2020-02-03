@@ -1,3 +1,6 @@
+import { Framebuffer } from './Framebuffer';
+import { MSAA_QUALITY } from '@pixi/constants';
+
 /**
  * Internal framebuffer for WebGL context
  * @class
@@ -7,6 +10,9 @@ export class GLFramebuffer
 {
     public framebuffer: WebGLFramebuffer;
     public stencil: WebGLRenderbuffer;
+    public multisample: number;
+    public msaaBuffer: WebGLRenderbuffer;
+    public blitFramebuffer: Framebuffer;
     dirtyId: number;
     dirtyFormat: number;
     dirtySize: number;
@@ -41,5 +47,24 @@ export class GLFramebuffer
          * @protected
          */
         this.dirtySize = 0;
+
+        /**
+         * Detected AA samples number
+         * @member {MSAA_QUALITY}
+         */
+        this.multisample = MSAA_QUALITY.NONE;
+
+        /**
+         * In case MSAA, we use this Renderbuffer instead of colorTextures[0] when we write info
+         * @member {WebGLRenderbuffer}
+         */
+        this.multisample = null;
+
+        /**
+         * In case we use MSAA, this is actual framebuffer that has colorTextures[0]
+         * The contents of that framebuffer are read when we use that renderTexture in sprites
+         * @member {PIXI.Framebuffer}
+         */
+        this.blitFramebuffer = null;
     }
 }
