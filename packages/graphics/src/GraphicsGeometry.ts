@@ -10,13 +10,23 @@ import {
     BatchGeometry,
     BatchDrawCall,
     BatchTextureArray,
-    BaseTexture } from '@pixi/core';
+    BaseTexture,
+    Texture,
+} from '@pixi/core';
 
 import { DRAW_MODES, WRAP_MODES } from '@pixi/constants';
-import { SHAPES, Point, Matrix } from '@pixi/math';
+import { SHAPES, Point, Matrix, Circle, Ellipse, Polygon, Rectangle, RoundedRectangle } from '@pixi/math';
 import { GraphicsData } from './GraphicsData';
 import { premultiplyTint } from '@pixi/utils';
 import { Bounds } from '@pixi/display';
+import { FillStyle } from './styles/FillStyle';
+import { LineStyle } from './styles/LineStyle';
+
+/**
+ * @description Complex shape type
+ * @todo Move to Math shapes
+ */
+type IShape = Circle | Ellipse | Polygon | Rectangle | RoundedRectangle;
 
 const tmpPoint = new Point();
 const tmpBounds = new Bounds();
@@ -34,6 +44,40 @@ const tmpBounds = new Bounds();
  */
 export class GraphicsGeometry extends BatchGeometry
 {
+    /**
+     * The maximum number of points to consider an object "batchable",
+     * able to be batched by the renderer's batch system.
+     *
+     * @memberof PIXI.GraphicsGeometry
+     * @static
+     * @member {number} BATCHABLE_SIZE
+     * @default 100
+     */
+    public static BATCHABLE_SIZE = 100;
+
+    public closePointEps: number;
+    public boundsPadding: number;
+
+    uvsFloat32: Float32Array = null;
+    indicesUint16: Uint16Array = null;
+    batchable: boolean;
+    points: Array<number>;
+    colors: Array<number>;
+    uvs: Array<number>;
+    indices: Array<number>;
+    textureIds: Array<number>;
+    graphicsData: Array<GraphicsData>;
+    drawCalls: Array<BatchDrawCall>;
+    batchDirty: number;
+    batches: Array<BatchPart>;
+
+    protected dirty: number;
+    protected cacheDirty: number;
+    protected clearDirty: number;
+    protected shapeIndex: number;
+    protected _bounds: Bounds;
+    protected boundsDirty: number;
+
     constructor()
     {
         super();
@@ -189,7 +233,7 @@ export class GraphicsGeometry extends BatchGeometry
      * @member {PIXI.Bounds}
      * @readonly
      */
-    get bounds()
+    public get bounds(): Bounds
     {
         if (this.boundsDirty !== this.dirty)
         {
@@ -204,7 +248,7 @@ export class GraphicsGeometry extends BatchGeometry
      * Call if you changed graphicsData manually.
      * Empties all batch buffers.
      */
-    invalidate()
+    protected invalidate(): void
     {
         this.boundsDirty = -1;
         this.dirty++;
@@ -219,7 +263,7 @@ export class GraphicsGeometry extends BatchGeometry
 
         for (let i = 0; i < this.drawCalls.length; i++)
         {
-            this.drawCalls[i].textures.length = 0;
+            this.drawCalls[i].texArray.clear();
             DRAW_CALL_POOL.push(this.drawCalls[i]);
         }
 
@@ -241,7 +285,7 @@ export class GraphicsGeometry extends BatchGeometry
      *
      * @return {PIXI.GraphicsGeometry} This GraphicsGeometry object. Good for chaining method calls
      */
-    clear()
+    public clear(): GraphicsGeometry
     {
         if (this.graphicsData.length > 0)
         {
@@ -262,7 +306,11 @@ export class GraphicsGeometry extends BatchGeometry
      * @param {PIXI.Matrix} matrix - Transform applied to the points of the shape.
      * @return {PIXI.GraphicsGeometry} Returns geometry for chaining.
      */
-    drawShape(shape, fillStyle, lineStyle, matrix)
+    public drawShape(
+        shape: IShape,
+        fillStyle: FillStyle = null,
+        lineStyle: LineStyle = null,
+        matrix: Matrix = null): GraphicsGeometry
     {
         const data = new GraphicsData(shape, fillStyle, lineStyle, matrix);
 
@@ -279,7 +327,7 @@ export class GraphicsGeometry extends BatchGeometry
      * @param {PIXI.Matrix} matrix - Transform applied to the points of the shape.
      * @return {PIXI.GraphicsGeometry} Returns geometry for chaining.
      */
-    drawHole(shape, matrix)
+    public drawHole(shape: IShape, matrix: Matrix = null): GraphicsGeometry
     {
         if (!this.graphicsData.length)
         {
@@ -300,20 +348,12 @@ export class GraphicsGeometry extends BatchGeometry
     }
 
     /**
-     * Destroys the Graphics object.
+     * Destroys the GraphicsGeometry object.
      *
-     * @param {object|boolean} [options] - Options parameter. A boolean will act as if all
-     *  options have been set to that value
-     * @param {boolean} [options.children=false] - if set to true, all the children will have
-     *  their destroy method called as well. 'options' will be passed on to those calls.
-     * @param {boolean} [options.texture=false] - Only used for child Sprites if options.children is set to true
-     *  Should it destroy the texture of the child sprite
-     * @param {boolean} [options.baseTexture=false] - Only used for child Sprites if options.children is set to true
-     *  Should it destroy the base texture of the child sprite
      */
-    destroy(options)
+    public destroy(): void
     {
-        super.destroy(options);
+        super.destroy();
 
         // destroy each of the GraphicsData objects
         for (let i = 0; i < this.graphicsData.length; ++i)
@@ -346,7 +386,7 @@ export class GraphicsGeometry extends BatchGeometry
      * @param {PIXI.Point} point - Point to check if it's contained.
      * @return {Boolean} `true` if the point is contained within geometry.
      */
-    containsPoint(point)
+    public containsPoint(point: Point): boolean
     {
         const graphicsData = this.graphicsData;
 
@@ -404,7 +444,7 @@ export class GraphicsGeometry extends BatchGeometry
      * Generates intermediate batch data. Either gets converted to drawCalls
      * or used to convert to batch objects directly by the Graphics object.
      */
-    updateBatches()
+    updateBatches(): void
     {
         if (!this.graphicsData.length)
         {
@@ -423,7 +463,7 @@ export class GraphicsGeometry extends BatchGeometry
         const uvs = this.uvs;
         const graphicsData = this.graphicsData;
 
-        let batchPart = null;
+        let batchPart: BatchPart = null;
 
         let currentStyle = null;
 
@@ -531,7 +571,7 @@ export class GraphicsGeometry extends BatchGeometry
      * @param {PIXI.FillStyle | PIXI.LineStyle} styleA
      * @param {PIXI.FillStyle | PIXI.LineStyle} styleB
      */
-    _compareStyles(styleA, styleB)
+    protected _compareStyles(styleA: FillStyle | LineStyle, styleB: FillStyle | LineStyle): boolean
     {
         if (!styleA || !styleB)
         {
@@ -548,7 +588,7 @@ export class GraphicsGeometry extends BatchGeometry
             return false;
         }
 
-        if (!!styleA.native !== !!styleB.native)
+        if (!!(styleA as LineStyle).native !== !!(styleB as LineStyle).native)
         {
             return false;
         }
@@ -561,7 +601,7 @@ export class GraphicsGeometry extends BatchGeometry
      *
      * @protected
      */
-    validateBatching()
+    protected validateBatching(): boolean
     {
         if (this.dirty === this.cacheDirty || !this.graphicsData.length)
         {
@@ -586,7 +626,7 @@ export class GraphicsGeometry extends BatchGeometry
      *
      * @protected
      */
-    packBatches()
+    protected packBatches(): void
     {
         this.batchDirty++;
         this.uvsFloat32 = new Float32Array(this.uvs);
@@ -612,13 +652,13 @@ export class GraphicsGeometry extends BatchGeometry
      *
      * @protected
      */
-    isBatchable()
+    protected isBatchable(): boolean
     {
         const batches = this.batches;
 
         for (let i = 0; i < batches.length; i++)
         {
-            if (batches[i].style.native)
+            if ((batches[i].style as LineStyle).native)
             {
                 return false;
             }
@@ -632,13 +672,13 @@ export class GraphicsGeometry extends BatchGeometry
      *
      * @protected
      */
-    buildDrawCalls()
+    protected buildDrawCalls(): void
     {
         let TICK = ++BaseTexture._globalBatch;
 
         for (let i = 0; i < this.drawCalls.length; i++)
         {
-            this.drawCalls[i].textures.length = 0;
+            this.drawCalls[i].texArray.clear();
             DRAW_CALL_POOL.push(this.drawCalls[i]);
         }
 
@@ -647,14 +687,14 @@ export class GraphicsGeometry extends BatchGeometry
         const colors = this.colors;
         const textureIds = this.textureIds;
 
-        let currentGroup =  DRAW_CALL_POOL.pop();
+        let currentGroup: BatchDrawCall =  DRAW_CALL_POOL.pop();
 
         if (!currentGroup)
         {
             currentGroup = new BatchDrawCall();
-            currentGroup.textures = new BatchTextureArray();
+            currentGroup.texArray = new BatchTextureArray();
         }
-        currentGroup.textures.count = 0;
+        currentGroup.texArray.count = 0;
         currentGroup.start = 0;
         currentGroup.size = 0;
         currentGroup.type = DRAW_MODES.TRIANGLES;
@@ -677,7 +717,8 @@ export class GraphicsGeometry extends BatchGeometry
             // TODO add some full on MAX_TEXTURE CODE..
             const MAX_TEXTURES = 8;
 
-            const style = data.style;
+            // Forced cast for checking `native` without errors
+            const style = data.style as LineStyle;
 
             const nextTexture = style.texture.baseTexture;
 
@@ -710,24 +751,26 @@ export class GraphicsGeometry extends BatchGeometry
                             if (!currentGroup)
                             {
                                 currentGroup = new BatchDrawCall();
-                                currentGroup.textures = new BatchTextureArray();
+                                currentGroup.texArray = new BatchTextureArray();
                             }
                             this.drawCalls.push(currentGroup);
                         }
 
                         currentGroup.start = index;
                         currentGroup.size = 0;
-                        currentGroup.textures.count = 0;
+                        currentGroup.texArray.count = 0;
                         currentGroup.type = drawMode;
                     }
 
                     // TODO add this to the render part..
+                    // Hack! Because texture has protected `touched`
                     nextTexture.touched = 1;// touch;
+
                     nextTexture._batchEnabled = TICK;
                     nextTexture._batchLocation = textureCount;
                     nextTexture.wrapMode = 10497;
 
-                    currentGroup.textures.elements[currentGroup.textures.count++] = nextTexture;
+                    currentGroup.texArray.elements[currentGroup.texArray.count++] = nextTexture;
                     textureCount++;
                 }
             }
@@ -753,7 +796,7 @@ export class GraphicsGeometry extends BatchGeometry
      *
      * @protected
      */
-    packAttributes()
+    protected packAttributes(): void
     {
         const verts = this.points;
         const uvs = this.uvs;
@@ -790,7 +833,7 @@ export class GraphicsGeometry extends BatchGeometry
      * @param {PIXI.GraphicsData} data
      * @protected
      */
-    processFill(data)
+    protected processFill(data: GraphicsData): void
     {
         if (data.holes.length)
         {
@@ -812,7 +855,7 @@ export class GraphicsGeometry extends BatchGeometry
      * @param {PIXI.GraphicsData} data
      * @protected
      */
-    processLine(data)
+    protected processLine(data: GraphicsData): void
     {
         buildLine(data, this);
 
@@ -828,7 +871,7 @@ export class GraphicsGeometry extends BatchGeometry
      * @param {PIXI.GraphicsData[]} holes - Holes to render
      * @protected
      */
-    processHoles(holes)
+    protected processHoles(holes: Array<GraphicsData>): void
     {
         for (let i = 0; i < holes.length; i++)
         {
@@ -849,7 +892,7 @@ export class GraphicsGeometry extends BatchGeometry
      *
      * @protected
      */
-    calculateBounds()
+    protected calculateBounds(): void
     {
         const bounds = this._bounds;
         const sequenceBounds = tmpBounds;
@@ -895,23 +938,31 @@ export class GraphicsGeometry extends BatchGeometry
 
             if (type === SHAPES.RECT || type === SHAPES.RREC)
             {
-                sequenceBounds.addFramePad(shape.x, shape.y, shape.x + shape.width, shape.y + shape.height,
+                const rect = shape as Rectangle | RoundedRectangle;
+
+                sequenceBounds.addFramePad(rect.x, rect.y, rect.x + rect.width, rect.y + rect.height,
                     lineWidth, lineWidth);
             }
             else if (type === SHAPES.CIRC)
             {
-                sequenceBounds.addFramePad(shape.x, shape.y, shape.x, shape.y,
-                    shape.radius + lineWidth, shape.radius + lineWidth);
+                const circle = shape as Circle;
+
+                sequenceBounds.addFramePad(circle.x, circle.y, circle.x, circle.y,
+                    circle.radius + lineWidth, circle.radius + lineWidth);
             }
             else if (type === SHAPES.ELIP)
             {
-                sequenceBounds.addFramePad(shape.x, shape.y, shape.x, shape.y,
-                    shape.width + lineWidth, shape.height + lineWidth);
+                const ellipse = shape as Ellipse;
+
+                sequenceBounds.addFramePad(ellipse.x, ellipse.y, ellipse.x, ellipse.y,
+                    ellipse.width + lineWidth, ellipse.height + lineWidth);
             }
             else
             {
+                const poly = shape as Polygon;
                 // adding directly to the bounds
-                bounds.addVerticesMatrix(curMatrix, shape.points, 0, shape.points.length, lineWidth, lineWidth);
+
+                bounds.addVerticesMatrix(curMatrix, (poly.points as any), 0, poly.points.length, lineWidth, lineWidth);
             }
         }
 
@@ -930,7 +981,7 @@ export class GraphicsGeometry extends BatchGeometry
      * @param {number[]} points - Points to transform
      * @param {PIXI.Matrix} matrix - Transform matrix
      */
-    transformPoints(points, matrix)
+    protected transformPoints(points: Array<number>, matrix: Matrix): void
     {
         for (let i = 0; i < points.length / 2; i++)
         {
@@ -951,7 +1002,7 @@ export class GraphicsGeometry extends BatchGeometry
      * @param {number} alpha - Alpha to use
      * @param {number} size - Number of colors to add
      */
-    addColors(colors, color, alpha, size)
+    protected addColors(colors: Array<number>, color: number, alpha: number, size: number): void
     {
         // TODO use the premultiply bits Ivan added
         const rgb = (color >> 16) + (color & 0xff00) + ((color & 0xff) << 16);
@@ -972,7 +1023,7 @@ export class GraphicsGeometry extends BatchGeometry
      * @param {number} id
      * @param {number} size
      */
-    addTextureIds(textureIds, id, size)
+    protected addTextureIds(textureIds: Array<number>, id: number, size: number): void
     {
         while (size-- > 0)
         {
@@ -991,7 +1042,13 @@ export class GraphicsGeometry extends BatchGeometry
      * @param {number} size - The size/length for index buffer.
      * @param {PIXI.Matrix} [matrix] - Optional transform for all points.
      */
-    addUvs(verts, uvs, texture, start, size, matrix)
+    protected addUvs(
+        verts: Array<number>,
+        uvs: Array<number>,
+        texture: Texture,
+        start: number, size:
+        number, matrix:
+        Matrix = null): void
     {
         let index = 0;
         const uvsStart = uvs.length;
@@ -1033,7 +1090,7 @@ export class GraphicsGeometry extends BatchGeometry
      * @param {number} start starting index for uvs
      * @param {number} size how many points to adjust
      */
-    adjustUvs(uvs, texture, start, size)
+    protected adjustUvs(uvs: Array<number>, texture: Texture, start: number, size: number): void
     {
         const baseTexture = texture.baseTexture;
         const eps = 1e-6;
@@ -1060,14 +1117,3 @@ export class GraphicsGeometry extends BatchGeometry
         }
     }
 }
-
-/**
- * The maximum number of points to consider an object "batchable",
- * able to be batched by the renderer's batch system.
- *
- * @memberof PIXI.GraphicsGeometry
- * @static
- * @member {number} BATCHABLE_SIZE
- * @default 100
- */
-GraphicsGeometry.BATCHABLE_SIZE = 100;
