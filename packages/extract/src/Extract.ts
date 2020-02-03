@@ -180,7 +180,7 @@ export class Extract
      *  to convert. If left empty will use the main renderer
      * @return {Uint8Array} One-dimensional array containing the pixel data of the entire texture
      */
-    public pixels(target: DisplayObject|RenderTexture): Uint16Array
+    public pixels(target: DisplayObject|RenderTexture): Uint8Array
     {
         const renderer = this.renderer;
         let resolution;
