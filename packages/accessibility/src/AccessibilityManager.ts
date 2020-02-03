@@ -37,8 +37,8 @@ export class AccessibilityManager
     public debug: boolean;
     public renderer: CanvasRenderer|Renderer;
 
-    private readonly _isActive: boolean;
-    private readonly _isMobileAccessibility: boolean;
+    private _isActive: boolean;
+    private _isMobileAccessibility: boolean;
     private _hookDiv: HTMLElement;
     private div: HTMLElement;
     private pool: IAccessibleHTMLElement[];
