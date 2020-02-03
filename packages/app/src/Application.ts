@@ -1,6 +1,5 @@
 import { Container, IDestroyOptions } from '@pixi/display';
 import { autoDetectRenderer, Renderer, IRendererOptionsAuto, AbstractRenderer } from '@pixi/core';
-import { CanvasRenderer } from '@pixi/canvas-renderer';
 import { Rectangle } from '@pixi/math';
 
 export interface IApplicationPlugin {
@@ -39,7 +38,7 @@ export class Application
     public static _plugins: IApplicationPlugin[];
 
     public stage: Container;
-    public renderer: Renderer|CanvasRenderer;
+    public renderer: Renderer|AbstractRenderer;
 
     /**
      * @param {object} [options] - The optional renderer parameters.
@@ -126,9 +125,7 @@ export class Application
      */
     get view(): HTMLCanvasElement
     {
-        // TODO: Since CanvasRenderer has not been converted it thinks view doesn't exists. This can be removed once
-        // converted
-        return (this.renderer as AbstractRenderer).view;
+        return this.renderer.view;
     }
 
     /**
@@ -138,9 +135,7 @@ export class Application
      */
     get screen(): Rectangle
     {
-        // TODO: Since CanvasRenderer has not been converted it thinks screen doesn't exists. This can be removed once
-        // converted
-        return (this.renderer as AbstractRenderer).screen;
+        return this.renderer.screen;
     }
 
     /**
