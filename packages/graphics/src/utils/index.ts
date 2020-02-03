@@ -17,15 +17,17 @@ import { buildRoundedRectangle } from './buildRoundedRectangle';
 export { buildRoundedRectangle };
 
 export * from './buildLine';
-export * from './buildComplexPoly';
-export * from './bezierCurveTo';
 export * from './Star';
 export * from './ArcUtils';
 export * from './BezierUtils';
 export * from './QuadraticUtils';
 export * from './BatchPart';
 
+// for type only
+import { BatchPart } from './BatchPart';
 import { SHAPES } from '@pixi/math';
+import { BatchDrawCall } from '@pixi/core';
+import { IShapeBuildCommand } from './IShapeBuildCommand';
 
 /**
  * Map of fill commands for each shape type.
@@ -33,7 +35,7 @@ import { SHAPES } from '@pixi/math';
  * @memberof PIXI.graphicsUtils
  * @member {Object}
  */
-export const FILL_COMMANDS = {
+export const FILL_COMMANDS: Record<SHAPES, IShapeBuildCommand> = {
     [SHAPES.POLY]: buildPoly,
     [SHAPES.CIRC]: buildCircle,
     [SHAPES.ELIP]: buildCircle,
@@ -47,7 +49,7 @@ export const FILL_COMMANDS = {
  * @memberof PIXI.graphicsUtils
  * @type {Array<PIXI.graphicsUtils.BatchPart>}
  */
-export const BATCH_POOL = [];
+export const BATCH_POOL: Array<BatchPart> = [];
 
 /**
  * Draw call pool, stores unused draw calls for preventing allocations.
@@ -55,4 +57,4 @@ export const BATCH_POOL = [];
  * @memberof PIXI.graphicsUtils
  * @type {Array<PIXI.BatchDrawCall>}
  */
-export const DRAW_CALL_POOL = [];
+export const DRAW_CALL_POOL: Array<BatchDrawCall> = [];

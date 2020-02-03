@@ -33,7 +33,8 @@ export class Transform
     protected _sy: number;
     protected _localID: number;
     protected _currentLocalID: number;
-    protected _worldID: number;
+
+    _worldID: number;
 
     constructor()
     {
