@@ -196,7 +196,7 @@ export class AccessibilityManager
 
         hookDiv.addEventListener('focus', () =>
         {
-            (this as any).isMobileAccessibility = true;
+            this._isMobileAccessibility = true;
             this.activate();
             this.destroyTouchHook();
         });
@@ -233,7 +233,7 @@ export class AccessibilityManager
             return;
         }
 
-        (this as any).isActive = true;
+        this._isActive = true;
 
         window.document.addEventListener('mousemove', this._onMouseMove, true);
         window.removeEventListener('keydown', this._onKeyDown, false);
@@ -260,7 +260,7 @@ export class AccessibilityManager
             return;
         }
 
-        (this as any).isActive = false;
+        this._isActive = false;
 
         window.document.removeEventListener('mousemove', this._onMouseMove, true);
         window.addEventListener('keydown', this._onKeyDown, false);
