@@ -1,3 +1,7 @@
+import { Matrix, SHAPES, IShape } from '@pixi/math';
+import { FillStyle } from './styles/FillStyle';
+import { LineStyle } from './styles/LineStyle';
+
 /**
  * A class to contain data useful for Graphics objects
  *
@@ -6,14 +10,21 @@
  */
 export class GraphicsData
 {
+    shape: IShape;
+    lineStyle: LineStyle;
+    fillStyle: FillStyle;
+    matrix: Matrix;
+    type: SHAPES;
+    points: number[];
+    holes: Array<GraphicsData>;
     /**
      *
-     * @param {PIXI.Circle|PIXI.Rectangle|PIXI.Ellipse|PIXI.Polygon} shape - The shape object to draw.
+     * @param {PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.Rectangle|PIXI.RoundedRectangle} shape - The shape object to draw.
      * @param {PIXI.FillStyle} [fillStyle] - the width of the line to draw
      * @param {PIXI.LineStyle} [lineStyle] - the color of the line to draw
      * @param {PIXI.Matrix} [matrix] - Transform matrix
      */
-    constructor(shape, fillStyle = null, lineStyle = null, matrix = null)
+    constructor(shape: IShape, fillStyle: FillStyle = null, lineStyle: LineStyle = null, matrix: Matrix = null)
     {
         /**
          * The shape object to draw.
@@ -63,7 +74,7 @@ export class GraphicsData
      *
      * @return {PIXI.GraphicsData} Cloned GraphicsData object
      */
-    clone()
+    public clone(): GraphicsData
     {
         return new GraphicsData(
             this.shape,
@@ -75,8 +86,9 @@ export class GraphicsData
 
     /**
      * Destroys the Graphics data.
+     *
      */
-    destroy()
+    public destroy(): void
     {
         this.shape = null;
         this.holes.length = 0;

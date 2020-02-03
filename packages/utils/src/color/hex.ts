@@ -9,10 +9,8 @@
  * @param  {number[]} [out=[]] If supplied, this array will be used rather than returning a new one
  * @return {number[]} An array representing the [R, G, B] of the color where all values are floats.
  */
-export function hex2rgb(hex: number, out: number[]): number[]
+export function hex2rgb(hex: number, out: Array<number> | Float32Array = []): Array<number> | Float32Array
 {
-    out = out || [];
-
     out[0] = ((hex >> 16) & 0xFF) / 255;
     out[1] = ((hex >> 8) & 0xFF) / 255;
     out[2] = (hex & 0xFF) / 255;

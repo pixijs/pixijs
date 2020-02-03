@@ -21,7 +21,10 @@ export class QuadraticUtils
      * @param {number} toY - y-coordinate of curve end point
      * @return {number} Length of quadratic curve
      */
-    static curveLength(fromX, fromY, cpX, cpY, toX, toY)
+    static curveLength(
+        fromX: number, fromY: number,
+        cpX: number, cpY: number,
+        toX: number, toY: number): number
     {
         const ax = fromX - (2.0 * cpX) + toX;
         const ay = fromY - (2.0 * cpY) + toY;
@@ -58,7 +61,7 @@ export class QuadraticUtils
      * @param {number} toY - Destination point y
      * @param {number[]} points - Points to add segments to.
      */
-    static curveTo(cpX, cpY, toX, toY, points)
+    static curveTo(cpX: number, cpY: number, toX: number, toY: number, points: Array<number>): void
     {
         const fromX = points[points.length - 2];
         const fromY = points[points.length - 1];
