@@ -16,7 +16,7 @@ import { Polygon, PI_2 } from '@pixi/math';
  */
 export class Star extends Polygon
 {
-    constructor(x, y, points, radius, innerRadius, rotation)
+    constructor(x: number, y: number, points: number, radius: number, innerRadius: number, rotation = 0)
     {
         innerRadius = innerRadius || radius / 2;
 

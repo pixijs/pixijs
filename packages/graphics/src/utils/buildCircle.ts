@@ -1,4 +1,6 @@
-import { SHAPES } from '@pixi/math';
+// for type only
+import { SHAPES, Circle, Ellipse } from '@pixi/math';
+import { IShapeBuildCommand } from './IShapeBuildCommand';
 
 /**
  * Builds a circle to draw
@@ -11,12 +13,12 @@ import { SHAPES } from '@pixi/math';
  * @param {object} webGLData - an object containing all the WebGL-specific information to create this shape
  * @param {object} webGLDataNativeLines - an object containing all the WebGL-specific information to create nativeLines
  */
-export const buildCircle = {
+export const buildCircle: IShapeBuildCommand = {
 
     build(graphicsData)
     {
         // need to convert points to a nice regular data
-        const circleData = graphicsData.shape;
+        const circleData = graphicsData.shape as Circle & Ellipse;
         const points = graphicsData.points;
         const x = circleData.x;
         const y = circleData.y;
@@ -65,6 +67,7 @@ export const buildCircle = {
 
     triangulate(graphicsData, graphicsGeometry)
     {
+        const shape = graphicsData.shape as Circle;
         const points = graphicsData.points;
         const verts = graphicsGeometry.points;
         const indices = graphicsGeometry.indices;
@@ -72,7 +75,7 @@ export const buildCircle = {
         let vertPos = verts.length / 2;
         const center = vertPos;
 
-        verts.push(graphicsData.shape.x, graphicsData.shape.y);
+        verts.push(shape.x, shape.y);
 
         for (let i = 0; i < points.length; i += 2)
         {

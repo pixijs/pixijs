@@ -1,5 +1,9 @@
 import { earcut } from '@pixi/utils';
 
+// for type only
+import { IShapeBuildCommand } from './IShapeBuildCommand';
+import { Polygon } from '@pixi/math';
+
 /**
  * Builds a polygon to draw
  *
@@ -11,11 +15,11 @@ import { earcut } from '@pixi/utils';
  * @param {object} webGLData - an object containing all the WebGL-specific information to create this shape
  * @param {object} webGLDataNativeLines - an object containing all the WebGL-specific information to create nativeLines
  */
-export const buildPoly = {
+export const buildPoly: IShapeBuildCommand = {
 
     build(graphicsData)
     {
-        graphicsData.points = graphicsData.shape.points.slice();
+        graphicsData.points = (graphicsData.shape as Polygon).points.slice();
     },
 
     triangulate(graphicsData, graphicsGeometry)
