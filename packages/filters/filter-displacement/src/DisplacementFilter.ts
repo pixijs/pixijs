@@ -1,7 +1,6 @@
 import { CLEAR_MODES } from '@pixi/constants';
-import { Filter, RenderTexture, systems, Texture } from '@pixi/core';
+import { Filter, RenderTexture, systems, Texture, ISpriteMaskTarget } from '@pixi/core';
 import { Matrix, Point } from '@pixi/math/src';
-import { Sprite } from '@pixi/sprite';
 import fragment from './displacement.frag';
 import vertex from './displacement.vert';
 
@@ -25,7 +24,7 @@ import vertex from './displacement.vert';
  */
 export class DisplacementFilter extends Filter
 {
-    public maskSprite: Sprite;
+    public maskSprite: ISpriteMaskTarget;
     public maskMatrix: Matrix;
     public scale: Point;
 
@@ -33,7 +32,7 @@ export class DisplacementFilter extends Filter
      * @param {PIXI.Sprite} sprite - The sprite used for the displacement map. (make sure its added to the scene!)
      * @param {number} [scale] - The scale of the displacement
      */
-    constructor(sprite: Sprite, scale: number)
+    constructor(sprite: ISpriteMaskTarget, scale: number)
     {
         const maskMatrix = new Matrix();
 
@@ -74,14 +73,12 @@ export class DisplacementFilter extends Filter
     ): void
     {
         // fill maskMatrix with _normalized sprite texture coords_
-        this.uniforms.filterMatrix = filterManager.calculateSpriteMatrix(
-            this.maskMatrix, this.maskSprite as any
-        );
+        this.uniforms.filterMatrix = filterManager.calculateSpriteMatrix(this.maskMatrix, this.maskSprite);
         this.uniforms.scale.x = this.scale.x;
         this.uniforms.scale.y = this.scale.y;
 
         // Extract rotation from world transform
-        const wt = this.maskSprite.transform.worldTransform;
+        const wt = this.maskSprite.worldTransform;
         const lenX = Math.sqrt((wt.a * wt.a) + (wt.b * wt.b));
         const lenY = Math.sqrt((wt.c * wt.c) + (wt.d * wt.d));
 
