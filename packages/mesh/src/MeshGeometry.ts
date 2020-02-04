@@ -1,5 +1,5 @@
 import { TYPES } from '@pixi/constants';
-import { Buffer, Geometry } from '@pixi/core';
+import { Buffer, Geometry, IArrayBuffer } from '@pixi/core';
 
 /**
  * Standard 2D geometry used in PixiJS.
@@ -20,12 +20,17 @@ import { Buffer, Geometry } from '@pixi/core';
  */
 export class MeshGeometry extends Geometry
 {
+    // TODO: is this needed?
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // @ts-ignore
+    private _updateId: number;
+
     /**
      * @param {Float32Array|number[]} vertices - Positional data on geometry.
      * @param {Float32Array|number[]} uvs - Texture UVs.
      * @param {Uint16Array|number[]} index - IndexBuffer
      */
-    constructor(vertices, uvs, index)
+    constructor(vertices: IArrayBuffer, uvs: IArrayBuffer, index: IArrayBuffer)
     {
         super();
 
@@ -54,7 +59,7 @@ export class MeshGeometry extends Geometry
      * @readonly
      * @private
      */
-    get vertexDirtyId()
+    get vertexDirtyId(): number
     {
         return this.buffers[0]._updateID;
     }

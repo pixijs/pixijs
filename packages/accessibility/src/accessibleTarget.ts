@@ -1,3 +1,35 @@
+import { DisplayObject } from '@pixi/display';
+
+export type PointerEvents = 'auto'
+| 'none'
+| 'visiblePainted'
+| 'visibleFill'
+| 'visibleStroke'
+| 'visible'
+| 'painted'
+| 'fill'
+| 'stroke'
+| 'all'
+| 'inherit';
+
+export interface IAccessibleTarget {
+    accessible: boolean;
+    accessibleTitle: string;
+    accessibleHint: string;
+    tabIndex: number;
+    _accessibleActive: boolean;
+    _accessibleDiv: IAccessibleHTMLElement;
+    accessibleType: string;
+    accessiblePointerEvents: PointerEvents;
+    accessibleChildren: true;
+    renderId: number;
+}
+
+export interface IAccessibleHTMLElement extends HTMLElement {
+    type?: string;
+    displayObject?: DisplayObject;
+}
+
 /**
  * Default property values of accessible objects
  * used by {@link PIXI.accessibility.AccessibilityManager}.
@@ -14,7 +46,7 @@
  *          PIXI.accessibility.accessibleTarget
  *      );
  */
-export const accessibleTarget = {
+export const accessibleTarget: IAccessibleTarget = {
     /**
      *  Flag for if the object is accessible. If true AccessibilityManager will overlay a
      *   shadow div with attributes set
@@ -61,7 +93,7 @@ export const accessibleTarget = {
      * @memberof PIXI.DisplayObject#
      * @todo Needs docs.
      */
-    _accessibleDiv: false,
+    _accessibleDiv: null,
 
     /**
      * Specify the type of div the accessible layer is. Screen readers treat the element differently
@@ -92,4 +124,6 @@ export const accessibleTarget = {
      * @default true
      */
     accessibleChildren: true,
+
+    renderId: -1,
 };
