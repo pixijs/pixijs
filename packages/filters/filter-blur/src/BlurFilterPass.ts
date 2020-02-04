@@ -1,8 +1,9 @@
-import { Filter } from '@pixi/core';
+import { Filter, RenderTexture } from '@pixi/core';
 import { settings } from '@pixi/settings';
 import { generateBlurVertSource } from './generateBlurVertSource';
 import { generateBlurFragSource } from './generateBlurFragSource';
 import { CLEAR_MODES } from '@pixi/constants';
+import { FilterSystem } from 'packages/core/src/systems';
 
 /**
  * The BlurFilterPass applies a horizontal or vertical Gaussian blur to an object.
@@ -13,16 +14,21 @@ import { CLEAR_MODES } from '@pixi/constants';
  */
 export class BlurFilterPass extends Filter
 {
+    public horizontal: boolean;
+    public strength: number;
+    public passes: number;
+
+    private _quality: number;
+
     /**
      * @param {boolean} horizontal - Do pass along the x-axis (`true`) or y-axis (`false`).
-     * @param {number} strength - The strength of the blur filter.
-     * @param {number} quality - The quality of the blur filter.
-     * @param {number} resolution - The resolution of the blur filter.
+     * @param {number} [strength=8] - The strength of the blur filter.
+     * @param {number} [quality=4] - The quality of the blur filter.
+     * @param {number} [resolution=1] - The resolution of the blur filter.
      * @param {number} [kernelSize=5] - The kernelSize of the blur filter.Options: 5, 7, 9, 11, 13, 15.
      */
-    constructor(horizontal, strength, quality, resolution, kernelSize)
+    constructor(horizontal: boolean, strength = 8, quality = 4, resolution = settings.RESOLUTION, kernelSize = 5)
     {
-        kernelSize = kernelSize || 5;
         const vertSrc = generateBlurVertSource(kernelSize, horizontal);
         const fragSrc = generateBlurFragSource(kernelSize);
 
@@ -35,16 +41,24 @@ export class BlurFilterPass extends Filter
 
         this.horizontal = horizontal;
 
-        this.resolution = resolution || settings.RESOLUTION;
+        this.resolution = resolution;
 
         this._quality = 0;
 
-        this.quality = quality || 4;
+        this.quality = quality;
 
-        this.blur = strength || 8;
+        this.blur = strength;
     }
 
-    apply(filterManager, input, output, clearMode)
+    /**
+     * Applies the filter.
+     *
+     * @param {PIXI.systems.FilterSystem} filterManager - The manager.
+     * @param {PIXI.RenderTexture} input - The input target.
+     * @param {PIXI.RenderTexture} output - The output target.
+     * @param {PIXI.CLEAR_MODES} clearMode - How to clear
+     */
+    public apply(filterManager: FilterSystem, input: RenderTexture, output: RenderTexture, clearMode: CLEAR_MODES): void
     {
         if (output)
         {
@@ -114,7 +128,7 @@ export class BlurFilterPass extends Filter
      * @member {number}
      * @default 16
      */
-    get blur()
+    get blur(): number
     {
         return this.strength;
     }
@@ -132,7 +146,7 @@ export class BlurFilterPass extends Filter
      * @member {number}
      * @default 4
      */
-    get quality()
+    get quality(): number
     {
         return this._quality;
     }

@@ -36,7 +36,7 @@ export class NoiseFilter extends Filter
      * @member {number}
      * @default 0.5
      */
-    get noise()
+    get noise(): number
     {
         return this.uniforms.uNoise;
     }
@@ -51,7 +51,7 @@ export class NoiseFilter extends Filter
      *
      * @member {number}
      */
-    get seed()
+    get seed(): number
     {
         return this.uniforms.uSeed;
     }

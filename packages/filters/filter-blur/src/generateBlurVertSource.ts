@@ -30,7 +30,7 @@ const vertTemplate = `
         %blur%
     }`;
 
-export function generateBlurVertSource(kernelSize, x)
+export function generateBlurVertSource(kernelSize: number, x: boolean): string
 {
     const halfLength = Math.ceil(kernelSize / 2);
 
@@ -38,7 +38,6 @@ export function generateBlurVertSource(kernelSize, x)
 
     let blurLoop = '';
     let template;
-    // let value;
 
     if (x)
     {
@@ -51,14 +50,7 @@ export function generateBlurVertSource(kernelSize, x)
 
     for (let i = 0; i < kernelSize; i++)
     {
-        let blur = template.replace('%index%', i);
-
-        // value = i;
-
-        // if(i >= halfLength)
-        // {
-        //     value = kernelSize - i - 1;
-        // }
+        let blur = template.replace('%index%', i.toString());
 
         blur = blur.replace('%sampleIndex%', `${i - (halfLength - 1)}.0`);
 
@@ -67,7 +59,7 @@ export function generateBlurVertSource(kernelSize, x)
     }
 
     vertSource = vertSource.replace('%blur%', blurLoop);
-    vertSource = vertSource.replace('%size%', kernelSize);
+    vertSource = vertSource.replace('%size%', kernelSize.toString());
 
     return vertSource;
 }
