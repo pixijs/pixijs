@@ -1,3 +1,5 @@
+import { TextureMatrix, Buffer } from '@pixi/core';
+
 /**
  * Class controls cache for UV mapping from Texture normal space to BaseTexture normal space.
  *
@@ -6,11 +8,21 @@
  */
 export class MeshBatchUvs
 {
+    public readonly data: Float32Array;
+    public uvBuffer: Buffer;
+    public uvMatrix: TextureMatrix;
+
+    private _bufferUpdateId: number;
+    private _textureUpdateId: number;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // @ts-ignore
+    private _updateID: number;
+
     /**
      * @param {PIXI.Buffer} uvBuffer - Buffer with normalized uv's
      * @param {PIXI.TextureMatrix} uvMatrix - Material UV matrix
      */
-    constructor(uvBuffer, uvMatrix)
+    constructor(uvBuffer: Buffer, uvMatrix: TextureMatrix)
     {
         /**
          * Buffer with normalized UV's
@@ -41,13 +53,14 @@ export class MeshBatchUvs
     /**
      * updates
      *
-     * @param {boolean} forceUpdate - force the update
+     * @param {boolean} [forceUpdate] - force the update
      */
-    update(forceUpdate)
+    public update(forceUpdate?: boolean): void
     {
         if (!forceUpdate
             && this._bufferUpdateId === this.uvBuffer._updateID
-            && this._textureUpdateId === this.uvMatrix._updateID)
+            && this._textureUpdateId === this.uvMatrix._updateID
+        )
         {
             return;
         }
@@ -55,11 +68,11 @@ export class MeshBatchUvs
         this._bufferUpdateId = this.uvBuffer._updateID;
         this._textureUpdateId = this.uvMatrix._updateID;
 
-        const data = this.uvBuffer.data;
+        const data = this.uvBuffer.data as Float32Array;
 
         if (!this.data || this.data.length !== data.length)
         {
-            this.data = new Float32Array(data.length);
+            (this.data as any) = new Float32Array(data.length);
         }
 
         this.uvMatrix.multiplyUvs(data, this.data);
