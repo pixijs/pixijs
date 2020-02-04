@@ -1,5 +1,8 @@
-import { Filter, defaultFilterVertex, ArrayFixed } from '@pixi/core';
+import { Filter, defaultFilterVertex } from '@pixi/core';
 import fragment from './colorMatrix.frag';
+
+// Type Import
+import { ArrayFixed } from '@pixi/utils';
 
 export type ColorMatrix = ArrayFixed<number, 20>;
 

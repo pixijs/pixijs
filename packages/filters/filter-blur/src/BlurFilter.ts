@@ -1,7 +1,7 @@
 import { Filter, systems, RenderTexture } from '@pixi/core';
 import { settings } from '@pixi/settings';
 import { BlurFilterPass } from './BlurFilterPass';
-import { CLEAR_MODES } from '@pixi/constants';
+import { CLEAR_MODES, BLEND_MODES } from '@pixi/constants';
 
 /**
  * The BlurFilter applies a Gaussian blur to an object.
@@ -156,7 +156,7 @@ export class BlurFilter extends Filter
      * @member {number}
      * @default PIXI.BLEND_MODES.NORMAL
      */
-    get blendMode(): number
+    get blendMode(): BLEND_MODES
     {
         return this.blurYFilter.blendMode;
     }
