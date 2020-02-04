@@ -71,7 +71,7 @@ export class Framebuffer
          *  ```
          *
          * @member {PIXI.MSAA_QUALITY}
-         * @default {PIXI.MSAA_QUALITY.NONE}
+         * @default PIXI.MSAA_QUALITY.NONE
          */
         this.multisample = MSAA_QUALITY.NONE;
     }
