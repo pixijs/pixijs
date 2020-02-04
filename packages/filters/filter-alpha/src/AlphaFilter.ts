@@ -36,7 +36,7 @@ export class AlphaFilter extends Filter
      * @member {number}
      * @default 1
      */
-    get alpha()
+    get alpha(): number
     {
         return this.uniforms.uAlpha;
     }

@@ -1,7 +1,7 @@
-import { Filter } from '@pixi/core';
+import { Filter, systems, RenderTexture } from '@pixi/core';
 import { settings } from '@pixi/settings';
 import { BlurFilterPass } from './BlurFilterPass';
-import { CLEAR_MODES } from '@pixi/constants';
+import { CLEAR_MODES, BLEND_MODES } from '@pixi/constants';
 
 /**
  * The BlurFilter applies a Gaussian blur to an object.
@@ -14,22 +14,27 @@ import { CLEAR_MODES } from '@pixi/constants';
  */
 export class BlurFilter extends Filter
 {
+    public blurXFilter: BlurFilterPass;
+    public blurYFilter: BlurFilterPass;
+
+    private _repeatEdgePixels: boolean;
+
     /**
      * @param {number} [strength=8] - The strength of the blur filter.
      * @param {number} [quality=4] - The quality of the blur filter.
-     * @param {number} [resolution] - The resolution of the blur filter.
+     * @param {number} [resolution=1] - The resolution of the blur filter.
      * @param {number} [kernelSize=5] - The kernelSize of the blur filter.Options: 5, 7, 9, 11, 13, 15.
      */
-    constructor(strength, quality, resolution, kernelSize)
+    constructor(strength = 8, quality = 4, resolution = settings.RESOLUTION, kernelSize = 5)
     {
         super();
 
         this.blurXFilter = new BlurFilterPass(true, strength, quality, resolution, kernelSize);
         this.blurYFilter = new BlurFilterPass(false, strength, quality, resolution, kernelSize);
 
-        this.resolution = resolution || settings.RESOLUTION;
-        this.quality = quality || 4;
-        this.blur = strength || 8;
+        this.resolution = resolution;
+        this.quality = quality;
+        this.blur = strength;
 
         this.repeatEdgePixels = false;
     }
@@ -42,7 +47,7 @@ export class BlurFilter extends Filter
      * @param {PIXI.RenderTexture} output - The output target.
      * @param {PIXI.CLEAR_MODES} clearMode - How to clear
      */
-    apply(filterManager, input, output, clearMode)
+    apply(filterManager: systems.FilterSystem, input: RenderTexture, output: RenderTexture, clearMode: CLEAR_MODES): void
     {
         const xStrength = Math.abs(this.blurXFilter.strength);
         const yStrength = Math.abs(this.blurYFilter.strength);
@@ -66,7 +71,7 @@ export class BlurFilter extends Filter
         }
     }
 
-    updatePadding()
+    protected updatePadding(): void
     {
         if (this._repeatEdgePixels)
         {
@@ -84,7 +89,7 @@ export class BlurFilter extends Filter
      * @member {number}
      * @default 2
      */
-    get blur()
+    get blur(): number
     {
         return this.blurXFilter.blur;
     }
@@ -101,7 +106,7 @@ export class BlurFilter extends Filter
      * @member {number}
      * @default 1
      */
-    get quality()
+    get quality(): number
     {
         return this.blurXFilter.quality;
     }
@@ -117,7 +122,7 @@ export class BlurFilter extends Filter
      * @member {number}
      * @default 2
      */
-    get blurX()
+    get blurX(): number
     {
         return this.blurXFilter.blur;
     }
@@ -134,7 +139,7 @@ export class BlurFilter extends Filter
      * @member {number}
      * @default 2
      */
-    get blurY()
+    get blurY(): number
     {
         return this.blurYFilter.blur;
     }
@@ -151,7 +156,7 @@ export class BlurFilter extends Filter
      * @member {number}
      * @default PIXI.BLEND_MODES.NORMAL
      */
-    get blendMode()
+    get blendMode(): BLEND_MODES
     {
         return this.blurYFilter.blendMode;
     }
@@ -164,10 +169,10 @@ export class BlurFilter extends Filter
     /**
      * If set to true the edge of the target will be clamped
      *
-     * @member {bool}
+     * @member {boolean}
      * @default false
      */
-    get repeatEdgePixels()
+    get repeatEdgePixels(): boolean
     {
         return this._repeatEdgePixels;
     }

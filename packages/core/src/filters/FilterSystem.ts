@@ -394,7 +394,7 @@ export class FilterSystem extends System
      * @param {number} [resolution] override resolution of the renderTexture
      * @returns {PIXI.RenderTexture}
      */
-    getFilterTexture(input: RenderTexture, resolution: number): RenderTexture
+    getFilterTexture(input?: RenderTexture, resolution?: number): RenderTexture
     {
         if (typeof input === 'number')
         {
