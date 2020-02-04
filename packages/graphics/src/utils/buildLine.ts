@@ -1,26 +1,8 @@
-import { Point, SHAPES } from '@pixi/math';
+import { Point, SHAPES, Polygon } from '@pixi/math';
 
-/**
- * Builds a line to draw
- *
- * Ignored from docs since it is not directly exposed.
- *
- * @ignore
- * @private
- * @param {PIXI.GraphicsData} graphicsData - The graphics object containing all the necessary properties
- * @param {PIXI.GraphicsGeometry} graphicsGeometry - Geometry where to append output
- */
-export function buildLine(graphicsData, graphicsGeometry)
-{
-    if (graphicsData.lineStyle.native)
-    {
-        buildNativeLine(graphicsData, graphicsGeometry);
-    }
-    else
-    {
-        buildNonNativeLine(graphicsData, graphicsGeometry);
-    }
-}
+// for type only
+import { GraphicsData } from '../GraphicsData';
+import { GraphicsGeometry } from '../GraphicsGeometry';
 
 /**
  * Builds a line to draw using the polygon method.
@@ -32,9 +14,9 @@ export function buildLine(graphicsData, graphicsGeometry)
  * @param {PIXI.GraphicsData} graphicsData - The graphics object containing all the necessary properties
  * @param {PIXI.GraphicsGeometry} graphicsGeometry - Geometry where to append output
  */
-function buildNonNativeLine(graphicsData, graphicsGeometry)
+function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: GraphicsGeometry): void
 {
-    const shape = graphicsData.shape;
+    const shape = graphicsData.shape as Polygon;
     let points = graphicsData.points || shape.points.slice();
     const eps = graphicsGeometry.closePointEps;
 
@@ -248,11 +230,11 @@ function buildNonNativeLine(graphicsData, graphicsGeometry)
  * @param {PIXI.GraphicsData} graphicsData - The graphics object containing all the necessary properties
  * @param {PIXI.GraphicsGeometry} graphicsGeometry - Geometry where to append output
  */
-function buildNativeLine(graphicsData, graphicsGeometry)
+function buildNativeLine(graphicsData: GraphicsData, graphicsGeometry: GraphicsGeometry): void
 {
     let i = 0;
 
-    const shape = graphicsData.shape;
+    const shape = graphicsData.shape as Polygon;
     const points = graphicsData.points || shape.points;
     const closedShape = shape.type !== SHAPES.POLY || shape.closeStroke;
 
@@ -278,5 +260,27 @@ function buildNativeLine(graphicsData, graphicsGeometry)
     if (closedShape)
     {
         indices.push(currentIndex, startIndex);
+    }
+}
+
+/**
+ * Builds a line to draw
+ *
+ * Ignored from docs since it is not directly exposed.
+ *
+ * @ignore
+ * @private
+ * @param {PIXI.GraphicsData} graphicsData - The graphics object containing all the necessary properties
+ * @param {PIXI.GraphicsGeometry} graphicsGeometry - Geometry where to append output
+ */
+export function buildLine(graphicsData: GraphicsData, graphicsGeometry: GraphicsGeometry): void
+{
+    if (graphicsData.lineStyle.native)
+    {
+        buildNativeLine(graphicsData, graphicsGeometry);
+    }
+    else
+    {
+        buildNonNativeLine(graphicsData, graphicsGeometry);
     }
 }
