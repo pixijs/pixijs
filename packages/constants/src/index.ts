@@ -411,7 +411,18 @@ export enum MASK_TYPES {
 }
 
 /**
- * Constants for multi-sampling antialiasing
+ * Constants for multi-sampling antialiasing.
+ *
+ * Experimental WebGL2 feature, allows to use antialiasing in individual renderTextures.
+ * Antialiasing is the same as for main buffer with renderer `antialias:true` options.
+ * Seriously affects GPU memory consumption and GPU performance.
+ *
+ *```js
+ * renderTexture.framebuffer.multisample = PIXI.MSAA_QUALITY.HIGH;
+ * //...
+ * renderer.render(renderTexture, myContainer);
+ * renderer.framebuffer.blit(); // copies data from MSAA framebuffer to texture
+ *  ```
  *
  * @name MSAA_QUALITY
  * @memberof PIXI

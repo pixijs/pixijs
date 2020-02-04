@@ -10,7 +10,7 @@ export class GLFramebuffer
 {
     public framebuffer: WebGLFramebuffer;
     public stencil: WebGLRenderbuffer;
-    public multisample: number;
+    public multisample: MSAA_QUALITY;
     public msaaBuffer: WebGLRenderbuffer;
     public blitFramebuffer: Framebuffer;
     dirtyId: number;
@@ -50,7 +50,7 @@ export class GLFramebuffer
 
         /**
          * Detected AA samples number
-         * @member {MSAA_QUALITY}
+         * @member {PIXI.MSAA_QUALITY}
          */
         this.multisample = MSAA_QUALITY.NONE;
 
@@ -58,7 +58,7 @@ export class GLFramebuffer
          * In case MSAA, we use this Renderbuffer instead of colorTextures[0] when we write info
          * @member {WebGLRenderbuffer}
          */
-        this.multisample = null;
+        this.msaaBuffer = null;
 
         /**
          * In case we use MSAA, this is actual framebuffer that has colorTextures[0]
