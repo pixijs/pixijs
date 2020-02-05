@@ -95,11 +95,11 @@ export class Loader extends ResourceLoader
         const ee: EventEmitter = this as any;
 
         // Compat layer, translate the new v2 signals into old v1 events.
-        this.onStart.add((l: Loader) => ee.emit('start', l));
-        this.onProgress.add((l: Loader, r: LoaderResource) => ee.emit('progress', l, r));
-        this.onError.add((l: Loader, r: LoaderResource) => ee.emit('error', l, r));
-        this.onLoad.add((l: Loader, r: LoaderResource) => ee.emit('load', l, r));
-        this.onComplete.add((l: Loader, r: LoaderResource) => ee.emit('complete', l, r));
+        this.onStart.add((l: this) => ee.emit('start', l));
+        this.onProgress.add((l: this, r: LoaderResource) => ee.emit('progress', l, r));
+        this.onError.add((l: this, r: LoaderResource) => ee.emit('error', l, r));
+        this.onLoad.add((l: this, r: LoaderResource) => ee.emit('load', l, r));
+        this.onComplete.add((l: this, r: LoaderResource) => ee.emit('complete', l, r));
 
         /**
          * If this loader cannot be destroyed.
