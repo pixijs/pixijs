@@ -1,8 +1,8 @@
 import { BaseRenderTexture } from './BaseRenderTexture';
 import { Texture } from '../textures/Texture';
-import { IBaseTextureOptions } from '../textures/BaseTexture';
 
 import { Rectangle } from '@pixi/math';
+import { Framebuffer, IBaseTextureOptions } from '@pixi/core';
 
 /**
  * A RenderTexture is a special texture that allows any PixiJS display object to be rendered to it.
@@ -113,6 +113,16 @@ export class RenderTexture extends Texture
         this.filterPoolKey = null;
 
         this.updateUvs();
+    }
+
+    /**
+     * Shortcut to `this.baseTexture.framebuffer`, saves baseTexture cast.
+     * @member {PIXI.Framebuffer}
+     * @readonly
+     */
+    get framebuffer(): Framebuffer
+    {
+        return (this.baseTexture as BaseRenderTexture).framebuffer;
     }
 
     /**

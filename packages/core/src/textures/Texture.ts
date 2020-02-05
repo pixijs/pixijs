@@ -1,4 +1,4 @@
-import { BaseTexture, IBaseTextureOptions } from './BaseTexture';
+import { BaseTexture, IBaseTextureOptions, ImageSource } from './BaseTexture';
 import { ImageResource } from './resources/ImageResource';
 import { CanvasResource } from './resources/CanvasResource';
 import { TextureUvs } from './TextureUvs';
@@ -9,6 +9,8 @@ import { uid, TextureCache, getResolutionOfUrl, EventEmitter } from '@pixi/utils
 import { TextureMatrix } from './TextureMatrix';
 
 const DEFAULT_UVS = new TextureUvs();
+
+export type TextureSource = string|BaseTexture|ImageSource;
 
 /**
  * A texture stores the information that represents an image or part of an image.
@@ -336,7 +338,7 @@ export class Texture extends EventEmitter
      * @param {boolean} [strict] Enforce strict-mode, see {@link PIXI.settings.STRICT_TEXTURE_CACHE}.
      * @return {PIXI.Texture} The newly created texture
      */
-    static from(source: any, options: IBaseTextureOptions = {},
+    static from(source: TextureSource, options: IBaseTextureOptions = {},
         strict = settings.STRICT_TEXTURE_CACHE): Texture
     {
         const isFrame = typeof source === 'string';
@@ -348,12 +350,12 @@ export class Texture extends EventEmitter
         }
         else
         {
-            if (!source._pixiId)
+            if (!(source as any)._pixiId)
             {
-                source._pixiId = `pixiid_${uid()}`;
+                (source as any)._pixiId = `pixiid_${uid()}`;
             }
 
-            cacheId = source._pixiId;
+            cacheId = (source as any)._pixiId;
         }
 
         let texture = TextureCache[cacheId];
@@ -368,7 +370,7 @@ export class Texture extends EventEmitter
         {
             if (!options.resolution)
             {
-                options.resolution = getResolutionOfUrl(source);
+                options.resolution = getResolutionOfUrl(source as string);
             }
 
             texture = new Texture(new BaseTexture(source, options));

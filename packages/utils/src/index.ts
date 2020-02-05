@@ -123,3 +123,4 @@ export * from './network/decomposeDataUri';
 export * from './network/determineCrossOrigin';
 export * from './network/getResolutionOfUrl';
 export * from './const';
+export * from './types';
