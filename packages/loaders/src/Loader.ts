@@ -209,12 +209,11 @@ export interface ILoaderPlugin {
  * @returns {ICallbackID} - CallbackID
  */
 
- /**
+/**
  * @memberof PIXI.Loader
  * @typedef {function} ISignalDetach
  * @param {ICallbackID} id - CallbackID returned by `add`/`once` methods
  */
-
 
 /**
  * @memberof PIXI.Loader
