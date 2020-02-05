@@ -1,5 +1,5 @@
-import { SHAPES } from '@pixi/math';
-
+import { SHAPES, Matrix } from '@pixi/math';
+import { canvasUtils } from '@pixi/canvas-renderer';
 /**
  * @author Mat Groves
  *
@@ -27,6 +27,7 @@ export class CanvasGraphicsRenderer
     constructor(renderer)
     {
         this.renderer = renderer;
+        this._svgMatrix = null;
     }
 
     /**
@@ -54,6 +55,9 @@ export class CanvasGraphicsRenderer
 
         const graphicsData = graphics.geometry.graphicsData;
 
+        let contextFillStyle;
+        let contextStrokeStyle;
+
         for (let i = 0; i < graphicsData.length; i++)
         {
             const data = graphicsData[i];
@@ -61,8 +65,30 @@ export class CanvasGraphicsRenderer
             const fillStyle = data.fillStyle;
             const lineStyle = data.lineStyle;
 
-            const fillColor = data._fillTint;
-            const lineColor = data._lineTint;
+            if (fillStyle.visible)
+            {
+                if (fillStyle.texture)
+                {
+                    contextFillStyle = canvasUtils.getTintedPattern(fillStyle.texture, data._fillTint);
+                    this.setPatternTransform(contextFillStyle, fillStyle.matrix || Matrix.IDENTITY);
+                }
+                else
+                {
+                    contextFillStyle = `#${(`00000${(data._fillTint | 0).toString(16)}`).substr(-6)}`;
+                }
+            }
+            if (lineStyle.visible)
+            {
+                if (fillStyle.texture)
+                {
+                    contextStrokeStyle = canvasUtils.getTintedPattern(lineStyle.texture, data._lineTint);
+                    this.setPatternTransform(contextStrokeStyle, lineStyle.matrix || Matrix.IDENTITY);
+                }
+                else
+                {
+                    contextStrokeStyle = `#${(`00000${(data._lineTint | 0).toString(16)}`).substr(-6)}`;
+                }
+            }
 
             context.lineWidth = lineStyle.width;
 
@@ -147,15 +173,14 @@ export class CanvasGraphicsRenderer
                 if (fillStyle.visible)
                 {
                     context.globalAlpha = fillStyle.alpha * worldAlpha;
-
-                    context.fillStyle = `#${(`00000${(fillColor | 0).toString(16)}`).substr(-6)}`;
+                    context.fillStyle = contextFillStyle;
                     context.fill();
                 }
 
                 if (lineStyle.visible)
                 {
                     context.globalAlpha = lineStyle.alpha * worldAlpha;
-                    context.strokeStyle = `#${(`00000${(lineColor | 0).toString(16)}`).substr(-6)}`;
+                    context.strokeStyle = contextStrokeStyle;
                     context.stroke();
                 }
             }
@@ -164,13 +189,13 @@ export class CanvasGraphicsRenderer
                 if (fillStyle.visible)
                 {
                     context.globalAlpha = fillStyle.alpha * worldAlpha;
-                    context.fillStyle = `#${(`00000${(fillColor | 0).toString(16)}`).substr(-6)}`;
+                    context.fillStyle = contextFillStyle;
                     context.fillRect(shape.x, shape.y, shape.width, shape.height);
                 }
                 if (lineStyle.visible)
                 {
                     context.globalAlpha = lineStyle.alpha * worldAlpha;
-                    context.strokeStyle = `#${(`00000${(lineColor | 0).toString(16)}`).substr(-6)}`;
+                    context.strokeStyle = contextStrokeStyle;
                     context.strokeRect(shape.x, shape.y, shape.width, shape.height);
                 }
             }
@@ -184,14 +209,14 @@ export class CanvasGraphicsRenderer
                 if (fillStyle.visible)
                 {
                     context.globalAlpha = fillStyle.alpha * worldAlpha;
-                    context.fillStyle = `#${(`00000${(fillColor | 0).toString(16)}`).substr(-6)}`;
+                    context.fillStyle = contextFillStyle;
                     context.fill();
                 }
 
                 if (lineStyle.visible)
                 {
                     context.globalAlpha = lineStyle.alpha * worldAlpha;
-                    context.strokeStyle = `#${(`00000${(lineColor | 0).toString(16)}`).substr(-6)}`;
+                    context.strokeStyle = contextStrokeStyle;
                     context.stroke();
                 }
             }
@@ -226,13 +251,13 @@ export class CanvasGraphicsRenderer
                 if (fillStyle.visible)
                 {
                     context.globalAlpha = fillStyle.alpha * worldAlpha;
-                    context.fillStyle = `#${(`00000${(fillColor | 0).toString(16)}`).substr(-6)}`;
+                    context.fillStyle = contextFillStyle;
                     context.fill();
                 }
                 if (lineStyle.visible)
                 {
                     context.globalAlpha = lineStyle.alpha * worldAlpha;
-                    context.strokeStyle = `#${(`00000${(lineColor | 0).toString(16)}`).substr(-6)}`;
+                    context.strokeStyle = contextStrokeStyle;
                     context.stroke();
                 }
             }
@@ -263,13 +288,13 @@ export class CanvasGraphicsRenderer
                 if (fillStyle.visible)
                 {
                     context.globalAlpha = fillStyle.alpha * worldAlpha;
-                    context.fillStyle = `#${(`00000${(fillColor | 0).toString(16)}`).substr(-6)}`;
+                    context.fillStyle = contextFillStyle;
                     context.fill();
                 }
                 if (lineStyle.visible)
                 {
                     context.globalAlpha = lineStyle.alpha * worldAlpha;
-                    context.strokeStyle = `#${(`00000${(lineColor | 0).toString(16)}`).substr(-6)}`;
+                    context.strokeStyle = contextStrokeStyle;
                     context.stroke();
                 }
             }
@@ -314,6 +339,34 @@ export class CanvasGraphicsRenderer
         }
     }
 
+    setPatternTransform(pattern, matrix)
+    {
+        if (this._svgMatrix === false)
+        {
+            return;
+        }
+        if (!this._svgMatrix)
+        {
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+
+            if (svg)
+            {
+                this._svgMatrix = svg.createSVGMatrix();
+            }
+            if (!this._svgMatrix)
+            {
+                this._svgMatrix = false;
+            }
+        }
+
+        this._svgMatrix.a = matrix.a;
+        this._svgMatrix.b = matrix.b;
+        this._svgMatrix.c = matrix.c;
+        this._svgMatrix.d = matrix.d;
+        this._svgMatrix.e = matrix.tx;
+        this._svgMatrix.f = matrix.ty;
+        pattern.setTransform(this._svgMatrix.inverse());
+    }
     /**
      * destroy graphics object
      *
