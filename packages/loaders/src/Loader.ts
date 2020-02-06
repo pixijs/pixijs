@@ -1,7 +1,7 @@
 import { Loader as ResourceLoader, middleware, Resource } from 'resource-loader';
 import { EventEmitter } from '@pixi/utils';
 import { TextureLoader } from './TextureLoader';
-import { LoaderResource } from './LoaderResource';
+import { ILoaderResource } from './LoaderResource';
 
 /**
  * The new loader, extends Resource Loader by Chad Engler: https://github.com/englercj/resource-loader
@@ -96,10 +96,10 @@ export class Loader extends ResourceLoader
 
         // Compat layer, translate the new v2 signals into old v1 events.
         this.onStart.add((l: this) => ee.emit('start', l));
-        this.onProgress.add((l: this, r: LoaderResource) => ee.emit('progress', l, r));
-        this.onError.add((l: this, r: LoaderResource) => ee.emit('error', l, r));
-        this.onLoad.add((l: this, r: LoaderResource) => ee.emit('load', l, r));
-        this.onComplete.add((l: this, r: LoaderResource) => ee.emit('complete', l, r));
+        this.onProgress.add((l: this, r: ILoaderResource) => ee.emit('progress', l, r));
+        this.onError.add((l: this, r: ILoaderResource) => ee.emit('error', l, r));
+        this.onLoad.add((l: this, r: ILoaderResource) => ee.emit('load', l, r));
+        this.onComplete.add((l: this, r: ILoaderResource) => ee.emit('complete', l, r));
 
         /**
          * If this loader cannot be destroyed.

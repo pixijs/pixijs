@@ -13,14 +13,16 @@ import { Spritesheet } from '@pixi/spritesheet';
 export interface IResourceMetadata extends Resource.IMetadata {
     imageMetadata?: any;
 }
-export class LoaderResource extends Resource
+export interface ILoaderResource extends Resource
 {
-    public texture?: Texture;
-    public spritesheet?: Spritesheet;
+    texture?: Texture;
+    spritesheet?: Spritesheet;
 
     // required for Spritesheet
-    public textures?: {[key: string]: Texture};
+    textures?: {[key: string]: Texture};
 
     // required specific type for Spritesheet
-    public metadata: IResourceMetadata;
+    metadata: IResourceMetadata;
 }
+
+export const LoaderResource: ILoaderResource = Resource as any;
