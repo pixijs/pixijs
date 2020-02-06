@@ -20,7 +20,7 @@ export class SpritesheetLoader
      * @param {PIXI.LoaderResource} resource
      * @param {function} next
      */
-    static use(resource: LoaderResource, next: (...args: any[]) => void): void
+    static use(resource: any, next: (...args: any[]) => void): void
     {
         // because this is middleware, it execute in loader context. `this` = loader
         const loader = (this as any) as Loader;
@@ -47,7 +47,7 @@ export class SpritesheetLoader
         const resourcePath = SpritesheetLoader.getResourcePath(resource, loader.baseUrl);
 
         // load the image for this sheet
-        loader.add(imageResourceName, resourcePath, loadOptions, function onImageLoad(res: LoaderResource)
+        loader.add(imageResourceName, resourcePath, loadOptions, function onImageLoad(res: any)
         {
             if (res.error)
             {
@@ -78,7 +78,7 @@ export class SpritesheetLoader
      * @param {PIXI.LoaderResource} resource - Resource to check path
      * @param {string} baseUrl - Base root url
      */
-    private static getResourcePath(resource: LoaderResource, baseUrl: string): string
+    private static getResourcePath(resource: any, baseUrl: string): string
     {
         // Prepend url path unless the resource image is a data url
         if (resource.isDataUrl)
