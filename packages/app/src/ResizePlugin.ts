@@ -21,12 +21,6 @@ export class ResizePlugin
      */
     static init(options?: IApplicationOptions): void
     {
-        /**
-         * The element or window to resize the application to.
-         * @type {Window|HTMLElement}
-         * @name resizeTo
-         * @memberof PIXI.Application#
-         */
         Object.defineProperty(this, 'resizeTo',
             {
                 set(dom)
