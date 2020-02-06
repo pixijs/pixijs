@@ -65,7 +65,9 @@ export class SpritesheetLoader
             spritesheet.parse(() =>
             {
                 resource.spritesheet = spritesheet;
-                resource.textures = spritesheet.textures;
+
+                // TODO remove me
+                (resource as any).textures = spritesheet.textures;
                 next();
             });
         });
