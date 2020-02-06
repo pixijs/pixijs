@@ -3,6 +3,7 @@ import { EventEmitter } from '@pixi/utils';
 import { TextureLoader } from './TextureLoader';
 import { LoaderResource } from './LoaderResource';
 
+
 /**
  * The new loader, extends Resource Loader by Chad Engler: https://github.com/englercj/resource-loader
  *
