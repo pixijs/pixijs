@@ -1,6 +1,8 @@
 import { Rectangle } from '@pixi/math';
-import { Texture } from '@pixi/core';
+import { Texture, BaseTexture, resources } from '@pixi/core';
 import { getResolutionOfUrl } from '@pixi/utils';
+
+type Dict<T> = {[key: string]: T};
 
 /**
  * Utility class for maintaining reference to a collection
@@ -34,10 +36,18 @@ export class Spritesheet
      * @type {number}
      * @default 1000
      */
-    static get BATCH_SIZE()
-    {
-        return 1000;
-    }
+    static readonly BATCH_SIZE = 1000;
+
+    public baseTexture: BaseTexture;
+    public textures: Dict<Texture>;
+    public animations: Dict<Texture[]>;
+    public data: any;
+    public resolution: number;
+
+    private _frames: Dict<any>;
+    private _frameKeys: string[];
+    private _batchIndex: number;
+    private _callback: (textures: Dict<Texture>) => void;
 
     /**
      * @param {PIXI.BaseTexture} baseTexture Reference to the source BaseTexture object.
@@ -46,7 +56,7 @@ export class Spritesheet
      *        the resolution of the spritesheet. If not provided, the imageUrl will
      *        be used on the BaseTexture.
      */
-    constructor(baseTexture, data, resolutionFilename = null)
+    constructor(baseTexture: BaseTexture, data: any, resolutionFilename: string = null)
     {
         /**
          * Reference to ths source texture
@@ -80,14 +90,13 @@ export class Spritesheet
          */
         this.data = data;
 
+        const resource: resources.ImageResource = this.baseTexture.resource as any;
+
         /**
          * The resolution of the spritesheet.
          * @type {number}
          */
-        this.resolution = this._updateResolution(
-            resolutionFilename
-            || (this.baseTexture.resource ? this.baseTexture.resource.url : null)
-        );
+        this.resolution = this._updateResolution(resolutionFilename || (resource ? resource.url : null));
 
         /**
          * Map of spritesheet frames.
@@ -127,7 +136,7 @@ export class Spritesheet
      *        the default resolution.
      * @return {number} Resolution to use for spritesheet.
      */
-    _updateResolution(resolutionFilename)
+    private _updateResolution(resolutionFilename: string = null): number
     {
         const scale = this.data.meta.scale;
 
@@ -157,7 +166,7 @@ export class Spritesheet
      * @param {Function} callback - Callback when complete returns
      *        a map of the Textures for this spritesheet.
      */
-    parse(callback)
+    public parse(callback: () => void): void
     {
         this._batchIndex = 0;
         this._callback = callback;
@@ -180,7 +189,7 @@ export class Spritesheet
      * @private
      * @param {number} initialFrameIndex - The index of frame to start.
      */
-    _processFrames(initialFrameIndex)
+    private _processFrames(initialFrameIndex: number): void
     {
         let frameIndex = initialFrameIndex;
         const maxFrames = Spritesheet.BATCH_SIZE;
@@ -257,7 +266,7 @@ export class Spritesheet
      *
      * @private
      */
-    _processAnimations()
+    private _processAnimations(): void
     {
         const animations = this.data.animations || {};
 
@@ -278,7 +287,7 @@ export class Spritesheet
      *
      * @private
      */
-    _parseComplete()
+    private _parseComplete(): void
     {
         const callback = this._callback;
 
@@ -292,7 +301,7 @@ export class Spritesheet
      *
      * @private
      */
-    _nextBatch()
+    private _nextBatch(): void
     {
         this._processFrames(this._batchIndex * Spritesheet.BATCH_SIZE);
         this._batchIndex++;
@@ -315,7 +324,7 @@ export class Spritesheet
      *
      * @param {boolean} [destroyBase=false] Whether to destroy the base texture as well
      */
-    destroy(destroyBase = false)
+    public destroy(destroyBase = false): void
     {
         for (const i in this.textures)
         {
