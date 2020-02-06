@@ -1,7 +1,5 @@
 import { Loader as ResourceLoader, middleware, Resource } from 'resource-loader';
-import { EventEmitter } from '@pixi/utils';
 import { TextureLoader } from './TextureLoader';
-import { ILoaderResource } from './LoaderResource';
 
 /**
  * The new loader, extends Resource Loader by Chad Engler: https://github.com/englercj/resource-loader
@@ -72,9 +70,6 @@ export class Loader extends ResourceLoader
     {
         super(baseUrl, concurrency);
 
-        // Mix EE
-        EventEmitter.call(this as any);
-
         for (let i = 0; i < Loader._plugins.length; ++i)
         {
             const plugin = Loader._plugins[i];
@@ -91,16 +86,6 @@ export class Loader extends ResourceLoader
             }
         }
 
-        // TODO remove when resolve mixin problems
-        const ee: EventEmitter = this as any;
-
-        // Compat layer, translate the new v2 signals into old v1 events.
-        this.onStart.add((l: this) => ee.emit('start', l));
-        this.onProgress.add((l: this, r: ILoaderResource) => ee.emit('progress', l, r));
-        this.onError.add((l: this, r: ILoaderResource) => ee.emit('error', l, r));
-        this.onLoad.add((l: this, r: ILoaderResource) => ee.emit('load', l, r));
-        this.onComplete.add((l: this, r: ILoaderResource) => ee.emit('complete', l, r));
-
         /**
          * If this loader cannot be destroyed.
          * @member {boolean}
@@ -116,12 +101,8 @@ export class Loader extends ResourceLoader
      */
     public destroy(): void
     {
-        // TODO remove when resolve mixin problems
-        const ee: EventEmitter = this as any;
-
         if (!this._protected)
         {
-            ee.removeAllListeners();
             this.reset();
         }
     }
@@ -170,9 +151,6 @@ export class Loader extends ResourceLoader
     }
 }
 
-// Copy EE3 prototype (mixin)
-Object.assign(Loader.prototype, EventEmitter.prototype);
-
 // parse any blob into more usable objects (e.g. Image)
 Loader.registerPlugin({ use: middleware.parsing });
 
@@ -205,7 +183,7 @@ export interface ILoaderPlugin {
  * @memberof PIXI.Loader
  * @typedef {function} ISignalCallback
  * @param {function} callback - Callback function
- * @param {object} [contex] - Context
+ * @param {object} [context] - Context
  * @returns {ICallbackID} - CallbackID
  */
 
