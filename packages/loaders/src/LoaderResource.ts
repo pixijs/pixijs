@@ -15,6 +15,8 @@ export interface ILoaderResource extends Resource
 
     // required specific type for Spritesheet
     metadata: IResourceMetadata;
+
+    TYPE: typeof Resource.TYPE;
 }
 
 /**

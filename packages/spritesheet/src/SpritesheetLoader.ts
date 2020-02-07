@@ -1,7 +1,6 @@
 import { url } from '@pixi/utils';
 import { Spritesheet } from './Spritesheet';
-
-import { LoaderResource, Loader } from '@pixi/loaders';
+import { LoaderResource, Loader, ILoaderResource } from '@pixi/loaders';
 /**
  * {@link PIXI.Loader Loader} middleware for loading texture atlases that have been created with
  * TexturePacker or similar JSON-based spritesheet.
@@ -20,7 +19,7 @@ export class SpritesheetLoader
      * @param {PIXI.LoaderResource} resource
      * @param {function} next
      */
-    static use(resource: any, next: (...args: any[]) => void): void
+    static use(resource: ILoaderResource, next: (...args: any[]) => void): void
     {
         // because this is middleware, it execute in loader context. `this` = loader
         const loader = (this as any) as Loader;
@@ -40,7 +39,7 @@ export class SpritesheetLoader
 
         const loadOptions = {
             crossOrigin: resource.crossOrigin,
-            metadata: (resource.metadata as any).imageMetadata,
+            metadata: resource.metadata.imageMetadata,
             parentResource: resource,
         };
 
@@ -65,9 +64,7 @@ export class SpritesheetLoader
             spritesheet.parse(() =>
             {
                 resource.spritesheet = spritesheet;
-
-                // TODO remove me
-                (resource as any).textures = spritesheet.textures;
+                resource.textures = spritesheet.textures;
                 next();
             });
         });
