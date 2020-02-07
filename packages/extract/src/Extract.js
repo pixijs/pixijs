@@ -6,12 +6,25 @@ const TEMP_RECT = new Rectangle();
 const BYTES_PER_PIXEL = 4;
 
 /**
- * The extract manager provides functionality to export content from the renderers.
+ * This class provides renderer-specific plugins for exporting content from a renderer.
+ * For instance, these plugins can be used for saving an Image, Canvas element or for exporting the raw image data (pixels).
  *
- * An instance of this class is automatically created by default, and can be found at `renderer.plugins.extract`
+ * Do not instantiate these plugins directly. It is available from the `renderer.plugins` property.
+ * See {@link PIXI.CanvasRenderer#plugins} or {@link PIXI.Renderer#plugins}.
+ * @example
+ * // Create a new app (will auto-add extract plugin to renderer)
+ * const app = new PIXI.Application();
  *
+ * // Draw a red circle
+ * const graphics = new PIXI.Graphics()
+ *     .beginFill(0xFF0000)
+ *     .drawCircle(0, 0, 50);
+ *
+ * // Render the graphics as an HTMLImageElement
+ * const image = app.renderer.plugins.extract.image(graphics);
+ * document.body.appendChild(image);
  * @class
- * @memberof PIXI.extract
+ * @memberof PIXI
  */
 export class Extract
 {
@@ -24,9 +37,9 @@ export class Extract
         /**
          * Collection of methods for extracting data (image, pixels, etc.) from a display object or render texture
          *
-         * @member {PIXI.extract.Extract} extract
+         * @member {PIXI.Extract} extract
          * @memberof PIXI.Renderer#
-         * @see PIXI.extract.Extract
+         * @see PIXI.Extract
          */
         renderer.extract = this;
     }

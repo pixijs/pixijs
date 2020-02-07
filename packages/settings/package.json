@@ -1,6 +1,6 @@
 {
   "name": "@pixi/settings",
-  "version": "5.2.0",
+  "version": "5.2.1",
   "main": "lib/settings.js",
   "module": "lib/settings.es.js",
   "bundle": "dist/settings.js",
@@ -24,6 +24,6 @@
     "dist"
   ],
   "dependencies": {
-    "ismobilejs": "^0.5.1"
+    "ismobilejs": "^1.0.3"
   }
 }

@@ -1,14 +1,14 @@
 import '@pixi/polyfill';
 
 import * as accessibility from '@pixi/accessibility';
-import * as extract from '@pixi/extract';
 import * as interaction from '@pixi/interaction';
-import * as prepare from '@pixi/prepare';
 import * as utils from '@pixi/utils';
 import { Application } from '@pixi/app';
 import { Renderer, BatchRenderer } from '@pixi/core';
+import { Extract } from '@pixi/extract';
 import { Loader, AppLoaderPlugin } from '@pixi/loaders';
 import { ParticleRenderer } from '@pixi/particles';
+import { Prepare } from '@pixi/prepare';
 import { SpritesheetLoader } from '@pixi/spritesheet';
 import { TilingSpriteRenderer } from '@pixi/sprite-tiling';
 import { BitmapFontLoader } from '@pixi/text-bitmap';
@@ -30,10 +30,10 @@ import { useDeprecated } from './useDeprecated';
 
 // Install renderer plugins
 Renderer.registerPlugin('accessibility', accessibility.AccessibilityManager);
-Renderer.registerPlugin('extract', extract.Extract);
+Renderer.registerPlugin('extract', Extract);
 Renderer.registerPlugin('interaction', interaction.InteractionManager);
 Renderer.registerPlugin('particle', ParticleRenderer);
-Renderer.registerPlugin('prepare', prepare.Prepare);
+Renderer.registerPlugin('prepare', Prepare);
 Renderer.registerPlugin('batch', BatchRenderer);
 Renderer.registerPlugin('tilingSprite', TilingSpriteRenderer);
 
@@ -100,12 +100,14 @@ export * from '@pixi/app';
 export * from '@pixi/constants';
 export * from '@pixi/core';
 export * from '@pixi/display';
+export * from '@pixi/extract';
 export * from '@pixi/graphics';
 export * from '@pixi/loaders';
 export * from '@pixi/math';
 export * from '@pixi/mesh';
 export * from '@pixi/mesh-extras';
 export * from '@pixi/particles';
+export * from '@pixi/prepare';
 export * from '@pixi/runner';
 export * from '@pixi/sprite';
 export * from '@pixi/spritesheet';
@@ -117,9 +119,7 @@ export * from '@pixi/ticker';
 export * from '@pixi/settings';
 export {
     accessibility,
-    extract,
     interaction,
-    prepare,
     utils,
     useDeprecated,
 };

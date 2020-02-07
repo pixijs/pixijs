@@ -1,6 +1,6 @@
 {
   "name": "@pixi/unsafe-eval",
-  "version": "5.0.4",
+  "version": "5.2.1",
   "main": "lib/unsafe-eval.js",
   "module": "lib/unsafe-eval.es.js",
   "bundle": "dist/unsafe-eval.js",

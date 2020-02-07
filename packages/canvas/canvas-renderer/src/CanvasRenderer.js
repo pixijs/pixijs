@@ -37,9 +37,7 @@ export class CanvasRenderer extends AbstractRenderer
      */
     constructor(options, arg2, arg3)
     {
-        super('Canvas', options, arg2, arg3);
-
-        this.type = RENDERER_TYPE.CANVAS;
+        super(RENDERER_TYPE.CANVAS, options, arg2, arg3);
 
         /**
          * The root canvas 2d context that everything is drawn with.
@@ -360,9 +358,9 @@ export class CanvasRenderer extends AbstractRenderer
      * @type {object}
      * @readonly
      * @property {PIXI.accessibility.AccessibilityManager} accessibility Support tabbing interactive elements.
-     * @property {PIXI.extract.CanvasExtract} extract Extract image data from renderer.
+     * @property {PIXI.CanvasExtract} extract Extract image data from renderer.
      * @property {PIXI.interaction.InteractionManager} interaction Handles mouse, touch and pointer events.
-     * @property {PIXI.prepare.CanvasPrepare} prepare Pre-render display objects.
+     * @property {PIXI.CanvasPrepare} prepare Pre-render display objects.
      */
 
     /**

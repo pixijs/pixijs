@@ -1,6 +1,6 @@
 const path = require('path');
 const fs = require('fs');
-const { BitmapText } = require('../');
+const { BitmapText, BitmapFont } = require('../');
 const { Texture } = require('@pixi/core');
 
 describe('PIXI.BitmapText', function ()
@@ -47,6 +47,8 @@ describe('PIXI.BitmapText', function ()
 
     after(function ()
     {
+        BitmapFont.uninstall(this.font.font);
+        BitmapFont.uninstall(this.font2.font);
         this.texture.destroy(true);
         this.texture = null;
         this.font = null;
@@ -56,8 +58,12 @@ describe('PIXI.BitmapText', function ()
     it('should register fonts from preloaded images', function ()
     {
         this.texture = Texture.from(this.fontImage);
-        this.font = BitmapText.registerFont(this.fontXML, this.texture);
-        this.font2 = BitmapText.registerFont(this.font2XML, this.texture);
+        this.font = BitmapFont.install(this.fontXML, this.texture);
+        this.font2 = BitmapFont.install(this.font2XML, this.texture);
+        expect(this.font).instanceof(BitmapFont);
+        expect(this.font2).instanceof(BitmapFont);
+        expect(BitmapFont.available[this.font.font]).to.equal(this.font);
+        expect(BitmapFont.available[this.font2.font]).to.equal(this.font2);
     });
     it('should render text even if there are unsupported characters', function ()
     {
