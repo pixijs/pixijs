@@ -15,9 +15,10 @@ export interface ILoaderResource extends Resource
 
     // required specific type for Spritesheet
     metadata: IResourceMetadata;
-
-    TYPE: typeof Resource.TYPE;
 }
+
+// Mix constructor and typeof Resource , otherwise we can't access to statics field
+type TLoaderResource = { new(...args: any[]): ILoaderResource } & typeof Resource;
 
 /**
 * Reference to **{@link https://github.com/englercj/resource-loader
@@ -26,4 +27,4 @@ export interface ILoaderResource extends Resource
 * @class LoaderResource
 * @memberof PIXI
 */
-export const LoaderResource: ILoaderResource = Resource as any;
+export const LoaderResource: TLoaderResource = Resource;
