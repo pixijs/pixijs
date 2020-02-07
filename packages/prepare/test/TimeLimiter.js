@@ -1,6 +1,6 @@
 const { TimeLimiter } = require('../');
 
-describe('PIXI.prepare.TimeLimiter', function ()
+describe('PIXI.TimeLimiter', function ()
 {
     it('should limit to stop after time from beginFrame()', function (done)
     {

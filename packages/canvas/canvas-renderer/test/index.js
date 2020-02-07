@@ -1,1 +1,2 @@
 require('./CanvasRenderer');
+require('./CanvasMaskManager');

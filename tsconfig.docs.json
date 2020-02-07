@@ -3,6 +3,23 @@
     "compilerOptions": {
         "target": "es6",
         "outDir": "./dist/compiled",
-        "sourceMap": false
-    }
+        "sourceMap": false,
+        "allowJs": true
+    },
+    "include": [
+        "bundles",
+        "packages",
+        "./global.d.ts"
+    ],
+    "exclude": [
+        "node_modules",
+        "**/dist/**",
+        "**/lib/**",
+        "**/test/**",
+        "**/scripts/**",
+        "**/types/**",
+        "dist/**",
+        "bundles/*/*.d.ts",
+        "rollup.config.js",
+    ]
 }

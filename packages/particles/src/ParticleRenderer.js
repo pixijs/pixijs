@@ -1,5 +1,5 @@
 import { TYPES } from '@pixi/constants';
-import { ObjectRenderer, Shader } from '@pixi/core';
+import { ObjectRenderer, Shader, State } from '@pixi/core';
 import { correctBlendMode, premultiplyRgba, premultiplyTint } from '@pixi/utils';
 import { Matrix } from '@pixi/math';
 import { ParticleBuffer } from './ParticleBuffer';
@@ -90,6 +90,14 @@ export class ParticleRenderer extends ObjectRenderer
         ];
 
         this.shader = Shader.from(vertex, fragment, {});
+
+        /**
+         * The WebGL state in which this renderer will work.
+         *
+         * @member {PIXI.State}
+         * @readonly
+         */
+        this.state = State.for2d();
     }
 
     /**
@@ -124,7 +132,8 @@ export class ParticleRenderer extends ObjectRenderer
         const baseTexture = children[0]._texture.baseTexture;
 
         // if the uvs have not updated then no point rendering just yet!
-        this.renderer.state.setBlendMode(correctBlendMode(container.blendMode, baseTexture.alphaMode));
+        this.state.blendMode = correctBlendMode(container.blendMode, baseTexture.alphaMode);
+        renderer.state.set(this.state);
 
         const gl = renderer.gl;
 
