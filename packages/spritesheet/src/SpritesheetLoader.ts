@@ -1,7 +1,6 @@
 import { url } from '@pixi/utils';
-import { LoaderResource } from '@pixi/loaders';
 import { Spritesheet } from './Spritesheet';
-
+import { LoaderResource, Loader, ILoaderResource } from '@pixi/loaders';
 /**
  * {@link PIXI.Loader Loader} middleware for loading texture atlases that have been created with
  * TexturePacker or similar JSON-based spritesheet.
@@ -20,15 +19,17 @@ export class SpritesheetLoader
      * @param {PIXI.LoaderResource} resource
      * @param {function} next
      */
-    static use(resource, next)
+    static use(resource: ILoaderResource, next: (...args: any[]) => void): void
     {
+        // because this is middleware, it execute in loader context. `this` = loader
+        const loader = (this as any) as Loader;
         const imageResourceName = `${resource.name}_image`;
 
         // skip if no data, its not json, it isn't spritesheet data, or the image resource already exists
         if (!resource.data
             || resource.type !== LoaderResource.TYPE.JSON
             || !resource.data.frames
-            || this.resources[imageResourceName]
+            || loader.resources[imageResourceName]
         )
         {
             next();
@@ -42,10 +43,10 @@ export class SpritesheetLoader
             parentResource: resource,
         };
 
-        const resourcePath = SpritesheetLoader.getResourcePath(resource, this.baseUrl);
+        const resourcePath = SpritesheetLoader.getResourcePath(resource, loader.baseUrl);
 
         // load the image for this sheet
-        this.add(imageResourceName, resourcePath, loadOptions, function onImageLoad(res)
+        loader.add(imageResourceName, resourcePath, loadOptions, function onImageLoad(res: any)
         {
             if (res.error)
             {
@@ -74,7 +75,7 @@ export class SpritesheetLoader
      * @param {PIXI.LoaderResource} resource - Resource to check path
      * @param {string} baseUrl - Base root url
      */
-    static getResourcePath(resource, baseUrl)
+    private static getResourcePath(resource: any, baseUrl: string): string
     {
         // Prepend url path unless the resource image is a data url
         if (resource.isDataUrl)
