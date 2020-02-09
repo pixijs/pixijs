@@ -421,15 +421,6 @@ export class Text extends Sprite
     }
 
     /**
-     * Method to be called upon a TextStyle change.
-     * @private
-     */
-    private _onStyleChange(): void
-    {
-        this.dirty = true;
-    }
-
-    /**
      * Generates the fill style. Can automatically generate a gradient based on the fill style being an array
      *
      * @private
