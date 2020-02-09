@@ -52,8 +52,8 @@ export class Sprite extends Container
     protected uvs: Float32Array;
     protected _texture: Texture;
     protected _anchor: ObservablePoint;
+    protected vertexData: Float32Array;
 
-    private vertexData: Float32Array;
     private vertexTrimmedData: Float32Array;
     private _roundPixels: boolean;
     private _transformID: number;

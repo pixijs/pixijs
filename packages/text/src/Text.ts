@@ -1,14 +1,17 @@
 /* eslint max-depth: [2, 8] */
 import { Sprite } from '@pixi/sprite';
-import { Texture } from '@pixi/core';
+import { Texture, Renderer } from '@pixi/core';
 import { settings } from '@pixi/settings';
 import { Rectangle } from '@pixi/math';
 import { sign, trimCanvas, hex2rgb, string2hex } from '@pixi/utils';
 import { TEXT_GRADIENT } from './const';
-import { TextStyle } from './TextStyle';
+import { TextStyle, ITextStyle } from './TextStyle';
 import { TextMetrics } from './TextMetrics';
 
-const defaultDestroyOptions = {
+// TODO: import type
+import { IDestroyOptions } from '@pixi/display';
+
+const defaultDestroyOptions: IDestroyOptions = {
     texture: true,
     children: false,
     baseTexture: true,
@@ -41,12 +44,24 @@ const defaultDestroyOptions = {
  */
 export class Text extends Sprite
 {
+    public canvas: HTMLCanvasElement;
+    public context: CanvasRenderingContext2D;
+    public localStyleID: number;
+    public dirty: boolean;
+
+    protected _text: string;
+    protected _font: string;
+    protected _style: TextStyle;
+    protected _resolution: number;
+    protected _autoResolution: boolean;
+    protected _styleListener: () => void;
+
     /**
      * @param {string} text - The string that you would like the text to display
      * @param {object|PIXI.TextStyle} [style] - The style parameters
      * @param {HTMLCanvasElement} [canvas] - The canvas element for drawing text
      */
-    constructor(text, style, canvas)
+    constructor(text: string, style: TextStyle, canvas: HTMLCanvasElement)
     {
         canvas = canvas || document.createElement('canvas');
 
@@ -125,7 +140,7 @@ export class Text extends Sprite
      * @private
      * @param {boolean} respectDirty - Whether to abort updating the text if the Text isn't dirty and the function is called.
      */
-    updateText(respectDirty)
+    updateText(respectDirty: boolean): void
     {
         const style = this._style;
 
@@ -166,8 +181,8 @@ export class Text extends Sprite
         context.lineJoin = style.lineJoin;
         context.miterLimit = style.miterLimit;
 
-        let linePositionX;
-        let linePositionY;
+        let linePositionX: number;
+        let linePositionY: number;
 
         // require 2 passes if a shadow; the first to draw the drop shadow, the second to draw the text
         const passesCount = style.dropShadow ? 2 : 1;
@@ -209,9 +224,12 @@ export class Text extends Sprite
             {
                 // set canvas text styles
                 context.fillStyle = this._generateFillStyle(style, lines);
-                context.strokeStyle = style.stroke;
+                // TODO: Can't have different types for getter and setter. The getter shouldn't have the number type as
+                //       the setter converts to string. See this thread for more details:
+                //       https://github.com/microsoft/TypeScript/issues/2521
+                context.strokeStyle = style.stroke as string;
 
-                context.shadowColor = 0;
+                context.shadowColor = '0';
                 context.shadowBlur = 0;
                 context.shadowOffsetX = 0;
                 context.shadowOffsetY = 0;
@@ -265,7 +283,7 @@ export class Text extends Sprite
      *  text? If not, it's for the inside fill
      * @private
      */
-    drawLetterSpacing(text, x, y, isStroke = false)
+    drawLetterSpacing(text: string, x: number, y: number, isStroke = false): void
     {
         const style = this._style;
 
@@ -321,7 +339,7 @@ export class Text extends Sprite
      *
      * @private
      */
-    updateTexture()
+    updateTexture(): void
     {
         const canvas = this.canvas;
 
@@ -364,7 +382,7 @@ export class Text extends Sprite
      * @private
      * @param {PIXI.Renderer} renderer - The renderer
      */
-    _render(renderer)
+    _render(renderer: Renderer): void
     {
         if (this._autoResolution && this._resolution !== renderer.resolution)
         {
@@ -383,7 +401,7 @@ export class Text extends Sprite
      * @param {PIXI.Rectangle} rect - The output rectangle.
      * @return {PIXI.Rectangle} The bounds.
      */
-    getLocalBounds(rect)
+    getLocalBounds(rect: Rectangle): Rectangle
     {
         this.updateText(true);
 
@@ -394,7 +412,7 @@ export class Text extends Sprite
      * calculates the bounds of the Text as a rectangle. The bounds calculation takes the worldTransform into account.
      * @protected
      */
-    _calculateBounds()
+    protected _calculateBounds(): void
     {
         this.updateText(true);
         this.calculateVertices();
@@ -406,7 +424,7 @@ export class Text extends Sprite
      * Method to be called upon a TextStyle change.
      * @private
      */
-    _onStyleChange()
+    private _onStyleChange(): void
     {
         this.dirty = true;
     }
@@ -419,23 +437,28 @@ export class Text extends Sprite
      * @param {string[]} lines - The lines of text.
      * @return {string|number|CanvasGradient} The fill style
      */
-    _generateFillStyle(style, lines)
+    _generateFillStyle(style: TextStyle, lines: string[]): CanvasRenderingContext2D['fillStyle']
     {
-        if (!Array.isArray(style.fill))
+        // TODO: Can't have different types for getter and setter. The getter shouldn't have the number type as
+        //       the setter converts to string. See this thread for more details:
+        //       https://github.com/microsoft/TypeScript/issues/2521
+        const fillStyle: string|string[]|CanvasGradient|CanvasPattern = style.fill as any;
+
+        if (!Array.isArray(fillStyle))
         {
-            return style.fill;
+            return fillStyle;
         }
-        else if (style.fill.length === 1)
+        else if (fillStyle.length === 1)
         {
-            return style.fill[0];
+            return fillStyle[0];
         }
 
         // the gradient will be evenly spaced out according to how large the array is.
         // ['#FF0000', '#00FF00', '#0000FF'] would created stops at 0.25, 0.5 and 0.75
-        let gradient;
-        let totalIterations;
-        let currentIteration;
-        let stop;
+        let gradient: string[]|CanvasGradient;
+        let totalIterations: number;
+        let currentIteration: number;
+        let stop: number;
 
         // a dropshadow will enlarge the canvas and result in the gradient being
         // generated with the incorrect dimensions
@@ -445,7 +468,7 @@ export class Text extends Sprite
         const height = Math.ceil(this.canvas.height / this._resolution) - dropShadowCorrection;
 
         // make a copy of the style settings, so we can manipulate them later
-        const fill = style.fill.slice();
+        const fill = fillStyle.slice();
         const fillGradientStops = style.fillGradientStops.slice();
 
         // wanting to evenly distribute the fills. So an array of 4 colours should give fills of 0.25, 0.5 and 0.75
@@ -461,10 +484,10 @@ export class Text extends Sprite
 
         // stop the bleeding of the last gradient on the line above to the top gradient of the this line
         // by hard defining the first gradient colour at point 0, and last gradient colour at point 1
-        fill.unshift(style.fill[0]);
+        fill.unshift(fillStyle[0]);
         fillGradientStops.unshift(0);
 
-        fill.push(style.fill[style.fill.length - 1]);
+        fill.push(fillStyle[fillStyle.length - 1]);
         fillGradientStops.push(1);
 
         if (style.fillGradientType === TEXT_GRADIENT.LINEAR_VERTICAL)
@@ -534,7 +557,7 @@ export class Text extends Sprite
      * @param {boolean} [options.texture=true] - Should it destroy the current texture of the sprite as well
      * @param {boolean} [options.baseTexture=true] - Should it destroy the base texture of the sprite as well
      */
-    destroy(options)
+    destroy(options: IDestroyOptions): void
     {
         if (typeof options === 'boolean')
         {
@@ -557,7 +580,7 @@ export class Text extends Sprite
      *
      * @member {number}
      */
-    get width()
+    get width(): number
     {
         this.updateText(true);
 
@@ -579,7 +602,7 @@ export class Text extends Sprite
      *
      * @member {number}
      */
-    get height()
+    get height(): number
     {
         this.updateText(true);
 
@@ -602,8 +625,11 @@ export class Text extends Sprite
      *
      * @member {object|PIXI.TextStyle}
      */
-    get style()
+    get style(): TextStyle|Partial<ITextStyle>
     {
+        // TODO: Can't have different types for getter and setter. The getter shouldn't have the ITextStyle
+        //       since the setter creates the TextStyle. See this thread for more details:
+        //       https://github.com/microsoft/TypeScript/issues/2521
         return this._style;
     }
 
@@ -629,7 +655,7 @@ export class Text extends Sprite
      *
      * @member {string}
      */
-    get text()
+    get text(): string
     {
         return this._text;
     }
@@ -652,7 +678,7 @@ export class Text extends Sprite
      * @member {number}
      * @default 1
      */
-    get resolution()
+    get resolution(): number
     {
         return this._resolution;
     }
