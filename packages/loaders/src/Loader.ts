@@ -1,5 +1,4 @@
-import { Loader as ResourceLoader, middleware } from 'resource-loader';
-import { EventEmitter } from '@pixi/utils';
+import { Loader as ResourceLoader, middleware, Resource } from 'resource-loader';
 import { TextureLoader } from './TextureLoader';
 
 /**
@@ -55,10 +54,21 @@ import { TextureLoader } from './TextureLoader';
  */
 export class Loader extends ResourceLoader
 {
-    constructor(baseUrl, concurrency)
+    /**
+     * Collection of all installed `use` middleware for Loader.
+     *
+     * @static
+     * @member {Array<PIXI.ILoaderPlugin>} _plugins
+     * @memberof PIXI.Loader
+     * @private
+     */
+    private static _plugins: Array<ILoaderPlugin> = [];
+    private static _shared: Loader;
+    private _protected: boolean;
+
+    constructor(baseUrl?: string, concurrency?: number)
     {
         super(baseUrl, concurrency);
-        EventEmitter.call(this);
 
         for (let i = 0; i < Loader._plugins.length; ++i)
         {
@@ -76,13 +86,6 @@ export class Loader extends ResourceLoader
             }
         }
 
-        // Compat layer, translate the new v2 signals into old v1 events.
-        this.onStart.add((l) => this.emit('start', l));
-        this.onProgress.add((l, r) => this.emit('progress', l, r));
-        this.onError.add((e, l, r) => this.emit('error', e, l, r));
-        this.onLoad.add((l, r) => this.emit('load', l, r));
-        this.onComplete.add((l, r) => this.emit('complete', l, r));
-
         /**
          * If this loader cannot be destroyed.
          * @member {boolean}
@@ -94,13 +97,12 @@ export class Loader extends ResourceLoader
 
     /**
      * Destroy the loader, removes references.
-     * @private
+     * @public
      */
-    destroy()
+    public destroy(): void
     {
         if (!this._protected)
         {
-            this.removeAllListeners();
             this.reset();
         }
     }
@@ -112,7 +114,7 @@ export class Loader extends ResourceLoader
      * @static
      * @memberof PIXI.Loader
      */
-    static get shared()
+    public static get shared(): Loader
     {
         let shared = Loader._shared;
 
@@ -125,42 +127,29 @@ export class Loader extends ResourceLoader
 
         return shared;
     }
-}
 
-// Copy EE3 prototype (mixin)
-Object.assign(Loader.prototype, EventEmitter.prototype);
-
-/**
- * Collection of all installed `use` middleware for Loader.
- *
- * @static
- * @member {Array<PIXI.ILoaderPlugin>} _plugins
- * @memberof PIXI.Loader
- * @private
- */
-Loader._plugins = [];
-
-/**
- * Adds a Loader plugin for the global shared loader and all
- * new Loader instances created.
- *
- * @static
- * @method registerPlugin
- * @memberof PIXI.Loader
- * @param {PIXI.ILoaderPlugin} plugin - The plugin to add
- * @return {PIXI.Loader} Reference to PIXI.Loader for chaining
- */
-Loader.registerPlugin = function registerPlugin(plugin)
-{
-    Loader._plugins.push(plugin);
-
-    if (plugin.add)
+    /**
+     * Adds a Loader plugin for the global shared loader and all
+     * new Loader instances created.
+     *
+     * @static
+     * @method registerPlugin
+     * @memberof PIXI.Loader
+     * @param {PIXI.ILoaderPlugin} plugin - The plugin to add
+     * @return {PIXI.Loader} Reference to PIXI.Loader for chaining
+     */
+    public static registerPlugin(plugin: ILoaderPlugin): typeof Loader
     {
-        plugin.add();
-    }
+        Loader._plugins.push(plugin);
 
-    return Loader;
-};
+        if (plugin.add)
+        {
+            plugin.add();
+        }
+
+        return Loader;
+    }
+}
 
 // parse any blob into more usable objects (e.g. Image)
 Loader.registerPlugin({ use: middleware.parsing });
@@ -179,6 +168,38 @@ Loader.registerPlugin(TextureLoader);
  * @property {PIXI.Loader.loaderMiddleware} [use] - Middleware function to run after load, the
  *           arguments for this are `(resource, next)`
  */
+export interface ILoaderPlugin {
+    add?(): void;
+    pre?(resource: Resource, next?: (...args: any[]) => void): void;
+    use?(resource: Resource, next?: (...args: any[]) => void): void;
+}
+
+/**
+ * @memberof PIXI.Loader
+ * @typedef {object} ICallbackID
+ */
+
+/**
+ * @memberof PIXI.Loader
+ * @typedef {function} ISignalCallback
+ * @param {function} callback - Callback function
+ * @param {object} [context] - Context
+ * @returns {ICallbackID} - CallbackID
+ */
+
+/**
+ * @memberof PIXI.Loader
+ * @typedef {function} ISignalDetach
+ * @param {ICallbackID} id - CallbackID returned by `add`/`once` methods
+ */
+
+/**
+ * @memberof PIXI.Loader
+ * @typedef ILoaderSignal
+ * @property {ISignalCallback} add - Register callback
+ * @property {ISignalCallback} once - Register oneshot callback
+ * @property {ISignalDetach} detach - Detach specific callback by ID
+ */
 
 /**
  * @memberof PIXI.Loader
@@ -189,25 +210,30 @@ Loader.registerPlugin(TextureLoader);
 
 /**
  * @memberof PIXI.Loader#
- * @member {object} onStart
+ * @description Dispatched when the loader begins to loading process.
+ * @member {ILoaderSignal} onStart
  */
 
 /**
  * @memberof PIXI.Loader#
- * @member {object} onProgress
+ * @description Dispatched once per loaded or errored resource.
+ * @member {ILoaderSignal} onProgress
  */
 
 /**
  * @memberof PIXI.Loader#
- * @member {object} onError
+ * @description Dispatched once per errored resource.
+ * @member {ILoaderSignal} onError
  */
 
 /**
  * @memberof PIXI.Loader#
- * @member {object} onLoad
+ * @description Dispatched once per loaded resource.
+ * @member {ILoaderSignal} onLoad
  */
 
 /**
  * @memberof PIXI.Loader#
- * @member {object} onComplete
+ * @description Dispatched when completely loaded all resources.
+ * @member {ILoaderSignal} onComplete
  */

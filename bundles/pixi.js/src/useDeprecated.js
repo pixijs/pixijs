@@ -611,6 +611,47 @@ export function useDeprecated()
         return PIXI.loaders.Loader.registerPlugin({ use: middleware() });
     };
 
+    // convenience for converting event name to signal name
+    const eventToSignal = (event) =>
+        `on${event.charAt(0).toUpperCase()}${event.slice(1)}`;
+
+    Object.assign(PIXI.Loader.prototype,
+        {
+            /**
+             * Use the corresponding signal, e.g., event `start`` is signal `onStart`.
+             * @method PIXI.Loader#on
+             * @deprecated since 5.0.0
+             */
+            on(event)
+            {
+                const signal = eventToSignal(event);
+
+                deprecation(v5, `PIXI.Loader#on is completely deprecated, use PIXI.Loader#${signal}.add`);
+            },
+            /**
+             * Use the corresponding signal, e.g., event `start`` is signal `onStart`.
+             * @method PIXI.Loader#once
+             * @deprecated since 5.0.0
+             */
+            once(event)
+            {
+                const signal = eventToSignal(event);
+
+                deprecation(v5, `PIXI.Loader#once is completely deprecated, use PIXI.Loader#${signal}.once`);
+            },
+            /**
+             * Use the corresponding signal, e.g., event `start`` is signal `onStart`.
+             * @method PIXI.Loader#off
+             * @deprecated since 5.0.0
+             */
+            off(event)
+            {
+                const signal = eventToSignal(event);
+
+                deprecation(v5, `PIXI.Loader#off is completely deprecated, use PIXI.Loader#${signal}.detach`);
+            },
+        });
+
     /**
      * @class PIXI.extract.WebGLExtract
      * @deprecated since 5.0.0
