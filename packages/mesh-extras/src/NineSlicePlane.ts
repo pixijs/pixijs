@@ -1,4 +1,4 @@
-import { Texture } from '@pixi/core';
+import { Texture, ITypedArray } from '@pixi/core';
 import { SimplePlane } from './SimplePlane';
 
 const DEFAULT_BORDER_SIZE = 10;
@@ -36,6 +36,13 @@ const DEFAULT_BORDER_SIZE = 10;
  */
 export class NineSlicePlane extends SimplePlane
 {
+    private _origWidth: number;
+    private _origHeight: number;
+    private _leftWidth: number;
+    private _rightWidth: number;
+    private _topHeight: number;
+    private _bottomHeight: number;
+
     /**
      * @param {PIXI.Texture} texture - The texture to use on the NineSlicePlane.
      * @param {number} [leftWidth=10] size of the left vertical bar (A)
@@ -43,7 +50,13 @@ export class NineSlicePlane extends SimplePlane
      * @param {number} [rightWidth=10] size of the right vertical bar (B)
      * @param {number} [bottomHeight=10] size of the bottom horizontal bar (D)
      */
-    constructor(texture, leftWidth, topHeight, rightWidth, bottomHeight)
+    constructor(
+        texture: Texture,
+        leftWidth = DEFAULT_BORDER_SIZE,
+        topHeight = DEFAULT_BORDER_SIZE,
+        rightWidth = DEFAULT_BORDER_SIZE,
+        bottomHeight = DEFAULT_BORDER_SIZE
+    )
     {
         super(Texture.WHITE, 4, 4);
 
@@ -72,7 +85,7 @@ export class NineSlicePlane extends SimplePlane
          * @member {number}
          * @private
          */
-        this._leftWidth = typeof leftWidth !== 'undefined' ? leftWidth : DEFAULT_BORDER_SIZE;
+        this._leftWidth = leftWidth;
 
         /**
          * The width of the right column (b)
@@ -80,7 +93,7 @@ export class NineSlicePlane extends SimplePlane
          * @member {number}
          * @private
          */
-        this._rightWidth = typeof rightWidth !== 'undefined' ? rightWidth : DEFAULT_BORDER_SIZE;
+        this._rightWidth = rightWidth;
 
         /**
          * The height of the top row (c)
@@ -88,7 +101,7 @@ export class NineSlicePlane extends SimplePlane
          * @member {number}
          * @private
          */
-        this._topHeight = typeof topHeight !== 'undefined' ? topHeight : DEFAULT_BORDER_SIZE;
+        this._topHeight = topHeight;
 
         /**
          * The height of the bottom row (d)
@@ -96,19 +109,19 @@ export class NineSlicePlane extends SimplePlane
          * @member {number}
          * @private
          */
-        this._bottomHeight = typeof bottomHeight !== 'undefined' ? bottomHeight : DEFAULT_BORDER_SIZE;
+        this._bottomHeight = bottomHeight;
 
         // lets call the setter to ensure all necessary updates are performed
         this.texture = texture;
     }
 
-    textureUpdated()
+    public textureUpdated(): void
     {
         this._textureID = this.shader.texture._updateID;
         this._refresh();
     }
 
-    get vertices()
+    get vertices(): ITypedArray
     {
         return this.geometry.getBuffer('aVertexPosition').data;
     }
@@ -122,7 +135,7 @@ export class NineSlicePlane extends SimplePlane
      * Updates the horizontal vertices.
      *
      */
-    updateHorizontalVertices()
+    public updateHorizontalVertices(): void
     {
         const vertices = this.vertices;
 
@@ -137,7 +150,7 @@ export class NineSlicePlane extends SimplePlane
      * Updates the vertical vertices.
      *
      */
-    updateVerticalVertices()
+    public updateVerticalVertices(): void
     {
         const vertices = this.vertices;
 
@@ -154,7 +167,7 @@ export class NineSlicePlane extends SimplePlane
      * @return {number} Smaller number of vertical and horizontal scale.
      * @private
      */
-    _getMinScale()
+    private _getMinScale(): number
     {
         const w = this._leftWidth + this._rightWidth;
         const scaleW = this._width > w ? 1.0 : this._width / w;
@@ -172,7 +185,7 @@ export class NineSlicePlane extends SimplePlane
      *
      * @member {number}
      */
-    get width()
+    get width(): number
     {
         return this._width;
     }
@@ -188,7 +201,7 @@ export class NineSlicePlane extends SimplePlane
      *
      * @member {number}
      */
-    get height()
+    get height(): number
     {
         return this._height;
     }
@@ -204,7 +217,7 @@ export class NineSlicePlane extends SimplePlane
      *
      * @member {number}
      */
-    get leftWidth()
+    get leftWidth(): number
     {
         return this._leftWidth;
     }
@@ -220,7 +233,7 @@ export class NineSlicePlane extends SimplePlane
      *
      * @member {number}
      */
-    get rightWidth()
+    get rightWidth(): number
     {
         return this._rightWidth;
     }
@@ -236,7 +249,7 @@ export class NineSlicePlane extends SimplePlane
      *
      * @member {number}
      */
-    get topHeight()
+    get topHeight(): number
     {
         return this._topHeight;
     }
@@ -252,7 +265,7 @@ export class NineSlicePlane extends SimplePlane
      *
      * @member {number}
      */
-    get bottomHeight()
+    get bottomHeight(): number
     {
         return this._bottomHeight;
     }
@@ -266,7 +279,7 @@ export class NineSlicePlane extends SimplePlane
     /**
      * Refreshes NineSlicePlane coords. All of them.
      */
-    _refresh()
+    private _refresh(): void
     {
         const texture = this.texture;
 

@@ -1,5 +1,8 @@
 import { Mesh, MeshGeometry, MeshMaterial } from '@pixi/mesh';
-import { Texture } from '@pixi/core';
+
+// Import Types
+import { Texture, ITypedArray, IArrayBuffer, Renderer } from '@pixi/core';
+import { DRAW_MODES } from '@pixi/constants';
 
 /**
  * The Simple Mesh class mimics Mesh in PixiJS v4, providing easy-to-use constructor arguments.
@@ -11,6 +14,8 @@ import { Texture } from '@pixi/core';
  */
 export class SimpleMesh extends Mesh
 {
+    public autoUpdate: boolean;
+
     /**
      * @param {PIXI.Texture} [texture=Texture.EMPTY] - The texture to use
      * @param {Float32Array} [vertices] - if you want to specify the vertices
@@ -18,7 +23,13 @@ export class SimpleMesh extends Mesh
      * @param {Uint16Array} [indices] - if you want to specify the indices
      * @param {number} [drawMode] - the drawMode, can be any of the Mesh.DRAW_MODES consts
      */
-    constructor(texture = Texture.EMPTY, vertices, uvs, indices, drawMode)
+    constructor(
+        texture = Texture.EMPTY,
+        vertices?: IArrayBuffer,
+        uvs?: IArrayBuffer,
+        indices?: IArrayBuffer,
+        drawMode?: DRAW_MODES
+    )
     {
         const geometry = new MeshGeometry(vertices, uvs, indices);
 
@@ -39,7 +50,7 @@ export class SimpleMesh extends Mesh
      * Collection of vertices data.
      * @member {Float32Array}
      */
-    get vertices()
+    get vertices(): ITypedArray
     {
         return this.geometry.getBuffer('aVertexPosition').data;
     }
@@ -48,7 +59,7 @@ export class SimpleMesh extends Mesh
         this.geometry.getBuffer('aVertexPosition').data = value;
     }
 
-    _render(renderer)
+    _render(renderer: Renderer): void
     {
         if (this.autoUpdate)
         {
