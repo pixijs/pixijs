@@ -140,7 +140,7 @@ export class Text extends Sprite
      * @private
      * @param {boolean} respectDirty - Whether to abort updating the text if the Text isn't dirty and the function is called.
      */
-    updateText(respectDirty: boolean): void
+    private updateText(respectDirty: boolean): void
     {
         const style = this._style;
 
@@ -283,7 +283,7 @@ export class Text extends Sprite
      *  text? If not, it's for the inside fill
      * @private
      */
-    drawLetterSpacing(text: string, x: number, y: number, isStroke = false): void
+    private drawLetterSpacing(text: string, x: number, y: number, isStroke = false): void
     {
         const style = this._style;
 
@@ -339,7 +339,7 @@ export class Text extends Sprite
      *
      * @private
      */
-    updateTexture(): void
+    private updateTexture(): void
     {
         const canvas = this.canvas;
 
@@ -379,10 +379,10 @@ export class Text extends Sprite
     /**
      * Renders the object using the WebGL renderer
      *
-     * @private
+     * @protected
      * @param {PIXI.Renderer} renderer - The renderer
      */
-    _render(renderer: Renderer): void
+    protected _render(renderer: Renderer): void
     {
         if (this._autoResolution && this._resolution !== renderer.resolution)
         {
@@ -401,7 +401,7 @@ export class Text extends Sprite
      * @param {PIXI.Rectangle} rect - The output rectangle.
      * @return {PIXI.Rectangle} The bounds.
      */
-    getLocalBounds(rect: Rectangle): Rectangle
+    public getLocalBounds(rect: Rectangle): Rectangle
     {
         this.updateText(true);
 
@@ -548,7 +548,7 @@ export class Text extends Sprite
      * @param {boolean} [options.texture=true] - Should it destroy the current texture of the sprite as well
      * @param {boolean} [options.baseTexture=true] - Should it destroy the base texture of the sprite as well
      */
-    destroy(options: IDestroyOptions): void
+    public destroy(options: IDestroyOptions): void
     {
         if (typeof options === 'boolean')
         {

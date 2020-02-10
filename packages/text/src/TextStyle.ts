@@ -99,7 +99,7 @@ const genericFontFamilies = [
 export class TextStyle implements ITextStyle
 {
     public styleID: number;
-    
+
     protected _align: Align;
     protected _breakWords: boolean;
     protected _dropShadow: boolean;
@@ -193,7 +193,7 @@ export class TextStyle implements ITextStyle
      *
      * @return {PIXI.TextStyle} New cloned TextStyle object
      */
-    clone(): TextStyle
+    public clone(): TextStyle
     {
         const clonedProperties: Partial<ITextStyle> = {};
 
@@ -205,7 +205,7 @@ export class TextStyle implements ITextStyle
     /**
      * Resets all properties to the defaults specified in TextStyle.prototype._default
      */
-    reset()
+    public reset(): void
     {
         deepCopyProperties(this, defaultStyle, defaultStyle);
     }
@@ -768,7 +768,7 @@ export class TextStyle implements ITextStyle
      *
      * @return {string} Font style string, for passing to `TextMetrics.measureFont()`
      */
-    toFontString()
+    public toFontString()
     {
         // build canvas api font setting from individual components. Convert a numeric this.fontSize to px
         const fontSizeString = (typeof this.fontSize === 'number') ? `${this.fontSize}px` : this.fontSize;

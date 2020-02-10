@@ -129,7 +129,7 @@ export class TextMetrics
      * @param {HTMLCanvasElement} [canvas] - optional specification of the canvas to use for measuring.
      * @return {PIXI.TextMetrics} measured width and height of the text.
      */
-    static measureText(text: string, style: TextStyle, wordWrap: boolean, canvas = TextMetrics._canvas): TextMetrics
+    public static measureText(text: string, style: TextStyle, wordWrap: boolean, canvas = TextMetrics._canvas): TextMetrics
     {
         wordWrap = (wordWrap === undefined || wordWrap === null) ? style.wordWrap : wordWrap;
         const font = style.toFontString();
@@ -198,7 +198,7 @@ export class TextMetrics
      * @param {HTMLCanvasElement} [canvas] - optional specification of the canvas to use for measuring.
      * @return {string} New string with new lines applied where required
      */
-    static wordWrap(text: string, style: TextStyle, canvas = TextMetrics._canvas): string
+    private static wordWrap(text: string, style: TextStyle, canvas = TextMetrics._canvas): string
     {
         const context = canvas.getContext('2d');
 
@@ -394,7 +394,7 @@ export class TextMetrics
      * @param  {boolean}  newLine     - Add new line character to end
      * @return {string}   A formatted line
      */
-    static addLine(line: string, newLine = true): string
+    private static addLine(line: string, newLine = true): string
     {
         line = TextMetrics.trimRight(line);
 
@@ -413,7 +413,7 @@ export class TextMetrics
      * @param  {CanvasRenderingContext2D}  context        The canvas context
      * @return {number}                    The from cache.
      */
-    static getFromCache(key: string, letterSpacing: number, cache: CharacterWidthCache,
+    private static getFromCache(key: string, letterSpacing: number, cache: CharacterWidthCache,
         context: CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D): number
     {
         let width = cache[key];
@@ -460,7 +460,7 @@ export class TextMetrics
      * @param  {string}  text  The text
      * @return {string}  trimmed string
      */
-    static trimRight(text: string): string
+    private static trimRight(text: string): string
     {
         if (typeof text !== 'string')
         {
@@ -489,7 +489,7 @@ export class TextMetrics
      * @param  {string}  char  The character
      * @return {boolean}  True if newline, False otherwise.
      */
-    static isNewline(char: string): boolean
+    private static isNewline(char: string): boolean
     {
         if (typeof char !== 'string')
         {
@@ -506,7 +506,7 @@ export class TextMetrics
      * @param  {string}  char  The character
      * @return {boolean}  True if whitespace, False otherwise.
      */
-    static isBreakingSpace(char: string): boolean
+    private static isBreakingSpace(char: string): boolean
     {
         if (typeof char !== 'string')
         {
@@ -523,7 +523,7 @@ export class TextMetrics
      * @param  {string}  text       The text
      * @return {string[]}  A tokenized array
      */
-    static tokenize(text: string): string[]
+    private static tokenize(text: string): string[]
     {
         const tokens: string[] = [];
         let token = '';
@@ -626,7 +626,7 @@ export class TextMetrics
      * @param {string} font - String representing the style of the font
      * @return {PIXI.IFontMetrics} Font properties object
      */
-    static measureFont(font: string): IFontMetrics
+    public static measureFont(font: string): IFontMetrics
     {
         // as this method is used for preparing assets, don't recalculate things if we don't need to
         if (TextMetrics._fonts[font])
@@ -734,7 +734,7 @@ export class TextMetrics
      * @static
      * @param {string} [font] - font name. If font name not set then clear cache for all fonts.
      */
-    static clearMetrics(font = ''): void
+    public static clearMetrics(font = ''): void
     {
         if (font)
         {
