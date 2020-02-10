@@ -856,7 +856,7 @@ function getColor(color: string|number|(string|number)[]): string|string[]
  * @param {Array} array2 Second array to compare
  * @return {boolean} Do the arrays contain the same values in the same order
  */
-function areArraysEqual(array1: any[], array2: any[]): boolean
+function areArraysEqual<T>(array1: T[], array2: T[]): boolean
 {
     if (!Array.isArray(array1) || !Array.isArray(array2))
     {
@@ -879,8 +879,6 @@ function areArraysEqual(array1: any[], array2: any[]): boolean
     return true;
 }
 
-type DeepCopyObject = { [key: string]: any };
-
 /**
  * Utility function to ensure that object properties are copied by value, and not by reference
  * @private
@@ -888,7 +886,7 @@ type DeepCopyObject = { [key: string]: any };
  * @param {Object} source Source object for the properties to copy
  * @param {string} propertyObj Object containing properties names we want to loop over
  */
-function deepCopyProperties(target: DeepCopyObject, source: DeepCopyObject, propertyObj: DeepCopyObject): void {
+function deepCopyProperties(target: Record<string, any>, source: Record<string, any>, propertyObj: Record<string, any>): void {
     for (const prop in propertyObj) {
         if (Array.isArray(source[prop])) {
             target[prop] = source[prop].slice();
