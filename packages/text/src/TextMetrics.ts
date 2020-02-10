@@ -1,4 +1,4 @@
-import { TextStyle, WhiteSpace } from './TextStyle';
+import { TextStyle, TextStyleWhiteSpace } from './TextStyle';
 
 interface IFontMetrics {
     ascent: number;
@@ -436,7 +436,7 @@ export class TextMetrics
      * @param  {string}   whiteSpace  The TextStyle property whiteSpace
      * @return {boolean}  should collapse
      */
-    private static collapseSpaces(whiteSpace: WhiteSpace): boolean
+    private static collapseSpaces(whiteSpace: TextStyleWhiteSpace): boolean
     {
         return (whiteSpace === 'normal' || whiteSpace === 'pre-line');
     }
@@ -448,7 +448,7 @@ export class TextMetrics
      * @param  {string}   whiteSpace  The white space
      * @return {boolean}  should collapse
      */
-    private static collapseNewlines(whiteSpace: WhiteSpace): boolean
+    private static collapseNewlines(whiteSpace: TextStyleWhiteSpace): boolean
     {
         return (whiteSpace === 'normal');
     }
