@@ -26,6 +26,14 @@ import { System } from './System';
 import { IRenderingContext } from './IRenderingContext';
 import { Extract } from '@pixi/extract';
 
+export interface IRendererPluginConstructor {
+    new (renderer: Renderer): IRendererPlugin;
+}
+
+export interface IRendererPlugin {
+    destroy(): void;
+}
+
 /**
  * The Renderer draws the scene and all its content onto a WebGL enabled canvas.
  *
@@ -490,7 +498,7 @@ export class Renderer extends AbstractRenderer
      * @param {string} pluginName - The name of the plugin.
      * @param {Function} ctor - The constructor function or class for the plugin.
      */
-    static registerPlugin(pluginName: string, ctor: Function): void
+    static registerPlugin(pluginName: string, ctor: IRendererPluginConstructor): void
     {
         Renderer.__plugins = Renderer.__plugins || {};
         Renderer.__plugins[pluginName] = ctor;

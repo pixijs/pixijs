@@ -1,4 +1,4 @@
-import { RenderTexture, Renderer } from '@pixi/core';
+import { RenderTexture, Renderer, IRendererPlugin } from '@pixi/core';
 import { CanvasRenderTarget } from '@pixi/utils';
 import { Rectangle } from '@pixi/math';
 import { DisplayObject } from '@pixi/display';
@@ -27,7 +27,7 @@ const BYTES_PER_PIXEL = 4;
  * @class
  * @memberof PIXI
  */
-export class Extract
+export class Extract implements IRendererPlugin
 {
     private renderer: Renderer;
 
