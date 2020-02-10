@@ -1,5 +1,6 @@
 import { Resource } from 'resource-loader';
 import { Texture } from '@pixi/core';
+import { ILoaderResource } from './LoaderResource';
 
 /**
  * Loader plugin for handling Texture resources.
@@ -15,7 +16,7 @@ export class TextureLoader
      * @param {PIXI.LoaderResource} resource
      * @param {function} next
      */
-    static use(resource, next)
+    public static use(resource: ILoaderResource, next: (...args: any[]) => void): void
     {
         // create a new texture if the data is an Image object
         if (resource.data && resource.type === Resource.TYPE.IMAGE)
