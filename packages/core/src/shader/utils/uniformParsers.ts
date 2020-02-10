@@ -11,13 +11,20 @@
 //     test: (data, uniform) => {} <--- test is this code should be used for this uniform
 //     code: (name, uniform) => {} <--- returns the string of the piece of code that uploads the uniform
 // }
-export const uniformParsers = [
+
+export interface IUniformParser
+{
+    test(data: any, uniform: any): boolean;
+    code(name: string, uniform: any): string;
+}
+
+export const uniformParsers: IUniformParser[] = [
 
     // a float cache layer
     {
-        test: (data) =>
+        test: (data: any): boolean =>
             data.type === 'float' && data.size === 1,
-        code: (name) =>
+        code: (name: string): string =>
             `
             if(uv.${name} !== ud.${name}.value)
             {
@@ -28,13 +35,13 @@ export const uniformParsers = [
     },
     // handling samplers
     {
-        test: (data) =>
+        test: (data: any): boolean =>
             // eslint-disable-next-line max-len
             (data.type === 'sampler2D' || data.type === 'samplerCube' || data.type === 'sampler2DArray') && data.size === 1 && !data.isArray,
-        code: (name) => `t = syncData.textureCount++;
+        code: (name: string): string => `t = syncData.textureCount++;
 
             renderer.texture.bind(uv.${name}, t);
-            
+
             if(ud.${name}.value !== t)
             {
                 ud.${name}.value = t;
@@ -43,9 +50,9 @@ export const uniformParsers = [
     },
     // uploading pixi matrix object to mat3
     {
-        test: (data, uniform) =>
+        test: (data: any, uniform: any): boolean =>
             data.type === 'mat3' && data.size === 1 && uniform.a !== undefined,
-        code: (name) =>
+        code: (name: string): string =>
 
             // TODO and some smart caching dirty ids here!
             `
@@ -56,9 +63,9 @@ export const uniformParsers = [
     },
     // uploading a pixi point as a vec2 with caching layer
     {
-        test: (data, uniform) =>
+        test: (data: any, uniform: any): boolean =>
             data.type === 'vec2' && data.size === 1 && uniform.x !== undefined,
-        code: (name) =>
+        code: (name: string): string =>
             `
                 cv = ud.${name}.value;
                 v = uv.${name};
@@ -72,9 +79,9 @@ export const uniformParsers = [
     },
     // caching layer for a vec2
     {
-        test: (data) =>
+        test: (data: any): boolean =>
             data.type === 'vec2' && data.size === 1,
-        code: (name) =>
+        code: (name: string): string =>
             `
                 cv = ud.${name}.value;
                 v = uv.${name};
@@ -89,10 +96,10 @@ export const uniformParsers = [
     },
     // upload a pixi rectangle as a vec4 with caching layer
     {
-        test: (data, uniform) =>
+        test: (data: any, uniform: any): boolean =>
             data.type === 'vec4' && data.size === 1 && uniform.width !== undefined,
 
-        code: (name) =>
+        code: (name: string): string =>
             `
                 cv = ud.${name}.value;
                 v = uv.${name};
@@ -108,9 +115,9 @@ export const uniformParsers = [
     },
     // a caching layer for vec4 uploading
     {
-        test: (data) =>
+        test: (data: any): boolean =>
             data.type === 'vec4' && data.size === 1,
-        code: (name) =>
+        code: (name: string): string =>
             `
                 cv = ud.${name}.value;
                 v = uv.${name};
