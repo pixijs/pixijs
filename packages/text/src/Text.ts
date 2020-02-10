@@ -428,7 +428,7 @@ export class Text extends Sprite
      * @param {string[]} lines - The lines of text.
      * @return {string|number|CanvasGradient} The fill style
      */
-    _generateFillStyle(style: TextStyle, lines: string[]): CanvasRenderingContext2D['fillStyle']
+    private _generateFillStyle(style: TextStyle, lines: string[]): string|CanvasGradient|CanvasPattern
     {
         // TODO: Can't have different types for getter and setter. The getter shouldn't have the number type as
         //       the setter converts to string. See this thread for more details:

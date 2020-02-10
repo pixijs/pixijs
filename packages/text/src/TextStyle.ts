@@ -4,8 +4,17 @@
 import { TEXT_GRADIENT } from './const';
 import { hex2string } from '@pixi/utils';
 
+export type Align = 'left'|'center'|'right';
+export type Fill = string|string[]|number|number[]|CanvasGradient|CanvasPattern;
+export type FontStyle = 'normal'|'italic'|'oblique';
+export type FontVariant = 'normal'|'small-caps';
+export type FontWeight = 'normal'|'bold'|'bolder'|'lighter'|'100'|'200'|'300'|'400'|'500'|'600'|'700'|'800'|'900';
+export type LineJoin = 'miter'|'round'|'bevel';
+export type TextBaseline = 'alphabetic'|'top'|'hanging'|'middle'|'ideographic'|'bottom';
+export type WhiteSpace = 'normal'|'pre'|'pre-line';
+
 export interface ITextStyle {
-    align: 'left' | 'center' | 'right';
+    align: Align;
     breakWords: boolean;
     dropShadow: boolean;
     dropShadowAlpha: number;
@@ -13,24 +22,24 @@ export interface ITextStyle {
     dropShadowBlur: number;
     dropShadowColor: string|number;
     dropShadowDistance: number;
-    fill: string|string[]|number|number[]|CanvasGradient|CanvasPattern;
+    fill: Fill;
     fillGradientType: TEXT_GRADIENT;
     fillGradientStops: number[];
     fontFamily: string;
     fontSize: number;
-    fontStyle: 'normal'|'italic'|'oblique';
-    fontVariant: 'normal'|'small-caps';
-    fontWeight: 'normal'|'bold'|'bolder'|'lighter'|'100'|'200'|'300'|'400'|'500'|'600'|'700'|'800'|'900';
+    fontStyle: FontStyle;
+    fontVariant: FontVariant;
+    fontWeight: FontWeight;
     letterSpacing: number;
     lineHeight: number;
-    lineJoin: 'miter'|'round'|'bevel';
+    lineJoin: LineJoin;
     miterLimit: number;
     padding: number;
     stroke: string|number;
     strokeThickness: number;
-    textBaseline: 'alphabetic'|'top'|'hanging'|'middle'|'ideographic'|'bottom';
+    textBaseline: TextBaseline;
     trim: boolean;
-    whiteSpace: 'normal'|'pre'|'pre-line';
+    whiteSpace: WhiteSpace;
     wordWrap: boolean;
     wordWrapWidth: number;
     leading: number;
@@ -91,35 +100,35 @@ export class TextStyle
 {
     public styleID: number;
     
-    protected _align: ITextStyle['align'];
-    protected _breakWords: ITextStyle['breakWords'];
-    protected _dropShadow: ITextStyle['dropShadow'];
-    protected _dropShadowAlpha: ITextStyle['dropShadowAlpha'];
-    protected _dropShadowAngle: ITextStyle['dropShadowAngle'];
-    protected _dropShadowBlur: ITextStyle['dropShadowBlur'];
-    protected _dropShadowColor: ITextStyle['dropShadowColor'];
-    protected _dropShadowDistance: ITextStyle['dropShadowDistance'];
-    protected _fill: ITextStyle['fill'];
-    protected _fillGradientType: ITextStyle['fillGradientType'];
-    protected _fillGradientStops: ITextStyle['fillGradientStops'];
-    protected _fontFamily: ITextStyle['fontFamily'];
-    protected _fontSize: ITextStyle['fontSize'];
-    protected _fontStyle: ITextStyle['fontStyle'];
-    protected _fontVariant: ITextStyle['fontVariant'];
-    protected _fontWeight: ITextStyle['fontWeight'];
-    protected _letterSpacing: ITextStyle['letterSpacing'];
-    protected _lineHeight: ITextStyle['lineHeight'];
-    protected _lineJoin: ITextStyle['lineJoin'];
-    protected _miterLimit: ITextStyle['miterLimit'];
-    protected _padding: ITextStyle['padding'];
-    protected _stroke: ITextStyle['stroke'];
-    protected _strokeThickness: ITextStyle['strokeThickness'];
-    protected _textBaseline: ITextStyle['textBaseline'];
-    protected _trim: ITextStyle['trim'];
-    protected _whiteSpace: ITextStyle['whiteSpace'];
-    protected _wordWrap: ITextStyle['wordWrap'];
-    protected _wordWrapWidth: ITextStyle['wordWrapWidth'];
-    protected _leading: ITextStyle['leading'];
+    protected _align: Align;
+    protected _breakWords: boolean;
+    protected _dropShadow: boolean;
+    protected _dropShadowAlpha: number;
+    protected _dropShadowAngle: number;
+    protected _dropShadowBlur: number;
+    protected _dropShadowColor: string|number;
+    protected _dropShadowDistance: number;
+    protected _fill: Fill;
+    protected _fillGradientType: TEXT_GRADIENT;
+    protected _fillGradientStops: number[];
+    protected _fontFamily: string;
+    protected _fontSize: number;
+    protected _fontStyle: FontStyle;
+    protected _fontVariant: FontVariant;
+    protected _fontWeight: FontWeight;
+    protected _letterSpacing: number;
+    protected _lineHeight: number;
+    protected _lineJoin: LineJoin;
+    protected _miterLimit: number;
+    protected _padding: number;
+    protected _stroke: string|number;
+    protected _strokeThickness: number;
+    protected _textBaseline: TextBaseline;
+    protected _trim: boolean;
+    protected _whiteSpace: WhiteSpace;
+    protected _wordWrap: boolean;
+    protected _wordWrapWidth: number;
+    protected _leading: number;
 
     /**
      * @param {object} [style] - The style parameters

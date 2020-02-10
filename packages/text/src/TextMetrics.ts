@@ -1,4 +1,4 @@
-import { TextStyle } from './TextStyle';
+import { TextStyle, WhiteSpace } from './TextStyle';
 
 interface IFontMetrics {
     ascent: number;
@@ -436,7 +436,7 @@ export class TextMetrics
      * @param  {string}   whiteSpace  The TextStyle property whiteSpace
      * @return {boolean}  should collapse
      */
-    static collapseSpaces(whiteSpace: TextStyle['whiteSpace']): boolean
+    private static collapseSpaces(whiteSpace: WhiteSpace): boolean
     {
         return (whiteSpace === 'normal' || whiteSpace === 'pre-line');
     }
@@ -448,7 +448,7 @@ export class TextMetrics
      * @param  {string}   whiteSpace  The white space
      * @return {boolean}  should collapse
      */
-    static collapseNewlines(whiteSpace: TextStyle['whiteSpace']): boolean
+    private static collapseNewlines(whiteSpace: WhiteSpace): boolean
     {
         return (whiteSpace === 'normal');
     }
@@ -572,7 +572,7 @@ export class TextMetrics
      * @param  {boolean}  breakWords  The style attr break words
      * @return {boolean} whether to break word or not
      */
-    static canBreakWords(_token: string, breakWords: TextStyle['breakWords']): boolean
+    static canBreakWords(_token: string, breakWords: boolean): boolean
     {
         return breakWords;
     }
@@ -594,7 +594,7 @@ export class TextMetrics
      */
     /* eslint-disable @typescript-eslint/no-unused-vars */
     static canBreakChars(_char: string, _nextChar: string, _token: string, _index: number,
-        _breakWords: TextStyle['breakWords']): boolean
+        _breakWords: boolean): boolean
     /* eslint-enable @typescript-eslint/no-unused-vars */
     {
         return true;
