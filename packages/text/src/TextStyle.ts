@@ -96,7 +96,7 @@ const genericFontFamilies = [
  * @class
  * @memberof PIXI
  */
-export class TextStyle
+export class TextStyle implements ITextStyle
 {
     public styleID: number;
     
