@@ -44,13 +44,13 @@ export class Sprite extends Container
     public start: number;
     public pluginName: string;
 
-    protected _width: number;
-    protected _height: number;
+    _width: number;
+    _height: number;
+    _texture: Texture;
     protected _cachedTint: number;
     protected _textureID: number;
     protected _textureTrimmedID: number;
     protected uvs: Float32Array;
-    protected _texture: Texture;
     protected _anchor: ObservablePoint;
 
     private vertexData: Float32Array;
