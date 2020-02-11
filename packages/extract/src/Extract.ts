@@ -1,6 +1,7 @@
-import { RenderTexture } from '@pixi/core';
+import { RenderTexture, Renderer, IRendererPlugin } from '@pixi/core';
 import { CanvasRenderTarget } from '@pixi/utils';
 import { Rectangle } from '@pixi/math';
+import { DisplayObject } from '@pixi/display';
 
 const TEMP_RECT = new Rectangle();
 const BYTES_PER_PIXEL = 4;
@@ -26,12 +27,14 @@ const BYTES_PER_PIXEL = 4;
  * @class
  * @memberof PIXI
  */
-export class Extract
+export class Extract implements IRendererPlugin
 {
+    private renderer: Renderer;
+
     /**
      * @param {PIXI.Renderer} renderer - A reference to the current renderer
      */
-    constructor(renderer)
+    constructor(renderer: Renderer)
     {
         this.renderer = renderer;
         /**
@@ -53,7 +56,7 @@ export class Extract
      * @param {number} [quality] - JPEG or Webp compression from 0 to 1. Default is 0.92.
      * @return {HTMLImageElement} HTML Image of the target
      */
-    image(target, format, quality)
+    public image(target: DisplayObject|RenderTexture, format?: string, quality?: number): HTMLImageElement
     {
         const image = new Image();
 
@@ -72,7 +75,7 @@ export class Extract
      * @param {number} [quality] - JPEG or Webp compression from 0 to 1. Default is 0.92.
      * @return {string} A base64 encoded string of the texture.
      */
-    base64(target, format, quality)
+    public base64(target: DisplayObject|RenderTexture, format?: string, quality?: number): string
     {
         return this.canvas(target).toDataURL(format, quality);
     }
@@ -84,7 +87,7 @@ export class Extract
      *  to convert. If left empty will use the main renderer
      * @return {HTMLCanvasElement} A Canvas element with the texture rendered on.
      */
-    canvas(target)
+    public canvas(target: DisplayObject|RenderTexture): HTMLCanvasElement
     {
         const renderer = this.renderer;
         let resolution;
@@ -177,7 +180,7 @@ export class Extract
      *  to convert. If left empty will use the main renderer
      * @return {Uint8Array} One-dimensional array containing the pixel data of the entire texture
      */
-    pixels(target)
+    public pixels(target: DisplayObject|RenderTexture): Uint8Array
     {
         const renderer = this.renderer;
         let resolution;
@@ -249,7 +252,7 @@ export class Extract
      * Destroys the extract
      *
      */
-    destroy()
+    public destroy(): void
     {
         this.renderer.extract = null;
         this.renderer = null;
@@ -262,7 +265,9 @@ export class Extract
      * @param pixels {number[] | Uint8Array | Uint8ClampedArray} array of pixel data
      * @param out {number[] | Uint8Array | Uint8ClampedArray} output array
      */
-    static arrayPostDivide(pixels, out)
+    static arrayPostDivide(
+        pixels: number[] | Uint8Array | Uint8ClampedArray, out: number[] | Uint8Array | Uint8ClampedArray
+    ): void
     {
         for (let i = 0; i < pixels.length; i += 4)
         {
