@@ -345,7 +345,7 @@ export class AnimatedSprite extends Sprite
      *
      * @static
      * @param {string[]} frames - The array of frames ids the AnimatedSprite will use as its texture frames.
-     * @return {AnimatedSprite} The new animated sprite with the specified frames.
+     * @return {PIXI.AnimatedSprite} The new animated sprite with the specified frames.
      */
     public static fromFrames(frames: string[]): AnimatedSprite
     {
@@ -364,7 +364,7 @@ export class AnimatedSprite extends Sprite
      *
      * @static
      * @param {string[]} images - The array of image urls the AnimatedSprite will use as its texture frames.
-     * @return {AnimatedSprite} The new animate sprite with the specified images as frames.
+     * @return {PIXI.AnimatedSprite} The new animate sprite with the specified images as frames.
      */
     public static fromImages(images: string[]): AnimatedSprite
     {
@@ -453,6 +453,11 @@ export class AnimatedSprite extends Sprite
     }
 }
 
+export interface FrameObject {
+    texture: Texture;
+    time: number;
+}
+
 /**
  * @memberof PIXI.AnimatedSprite
  * @typedef {object} FrameObject
@@ -460,8 +465,3 @@ export class AnimatedSprite extends Sprite
  * @property {PIXI.Texture} texture - The {@link PIXI.Texture} of the frame
  * @property {number} time - the duration of the frame in ms
  */
-
-export interface FrameObject {
-    texture: Texture;
-    time: number;
-}
