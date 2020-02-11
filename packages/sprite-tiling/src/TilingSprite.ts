@@ -1,9 +1,8 @@
 import { Renderer, Texture, TextureMatrix, TextureSource, IBaseTextureOptions } from '@pixi/core';
-import { IDestroyOptions } from '@pixi/display/src';
-import { IPoint, Point, Rectangle, Transform } from '@pixi/math';
+import { IDestroyOptions } from '@pixi/display';
+import { IPoint, Point, Rectangle, Transform, ObservablePoint, ISize } from '@pixi/math';
 import { Sprite } from '@pixi/sprite';
-import { TextureCache } from '@pixi/utils';
-import { ObservablePoint, ISize } from 'pixi.js';
+import { TextureCache, deprecation } from '@pixi/utils';
 
 const tempPoint = new Point();
 
@@ -35,8 +34,6 @@ export class TilingSprite extends Sprite
          * @member {PIXI.Transform}
          */
         this.tileTransform = new Transform();
-
-        // /// private
 
         /**
          * The with of the tiling sprite
@@ -265,6 +262,14 @@ export class TilingSprite extends Sprite
      */
     static from(source: TextureSource, options: ISize): TilingSprite
     {
+        // Deprecated
+        if (typeof options === 'number')
+        {
+            deprecation('5.3.0', 'TilingSprite.from use options instead of width and height args');
+            // eslint-disable-next-line prefer-rest-params
+            options = { width: options, height: arguments[2] } as ISize;
+        }
+
         return new TilingSprite(Texture.from(source), options.width, options.height);
     }
 
