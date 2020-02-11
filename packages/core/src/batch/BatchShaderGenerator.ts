@@ -1,5 +1,5 @@
 import { Shader } from '../shader/Shader';
-import { Program } from '../shader/Program';
+import { Program, defaultProgramTemplate } from '../shader/Program';
 import { UniformGroup } from '../shader/UniformGroup';
 import { Matrix } from '@pixi/math';
 
@@ -67,7 +67,7 @@ export class BatchShaderGenerator
             fragmentSrc = fragmentSrc.replace(/%count%/gi, `${maxTextures}`);
             fragmentSrc = fragmentSrc.replace(/%forloop%/gi, this.generateSampleSrc(maxTextures));
 
-            this.programCache[maxTextures] = new Program({ vertexSrc: this.vertexSrc, fragmentSrc });
+            this.programCache[maxTextures] = new Program(defaultProgramTemplate, { vertexSrc: this.vertexSrc, fragmentSrc });
         }
 
         const uniforms = {

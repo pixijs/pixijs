@@ -17,7 +17,7 @@ import { GLProgram } from './GLProgram';
 let UID = 0;
 
 const nameCache: { [key: string]: number } = {};
-let pixiTemplate: PixiProgramTemplate;
+let pixiTemplate: DefaultProgramTemplate;
 
 export interface IAttributeData
 {
@@ -40,13 +40,20 @@ export interface IProgramParameters
     vertexSrc?: string;
     fragmentSrc?: string;
     name?: string;
-    template?: IProgramTemplate;
 }
 
 export interface IProgramTemplate
 {
+    constructProgram(program: Program): void;
     initProgram(program: Program): void;
 }
+
+/**
+ * Program template, creates program instances based on source code and parameters
+ *
+ * @memberof PIXI
+ * @typedef {object} IProgramTemplate
+ */
 
 /**
  * Class represents shader program
@@ -65,30 +72,29 @@ export class Program
     attributeData: { [key: string]: IAttributeData};
     uniformData: {[key: string]: IUniformData};
     valid: boolean;
+    template: IProgramTemplate;
     /**
      * Constructor is not supposed to be called directly, only through program templates (proprocessor)
      *
+     * @param {PIXI.ProgramTemplate}
      * @param {object} [params] - Parameters for the program
      */
-    constructor(params: IProgramParameters)
+    constructor(template: IProgramTemplate, params: IProgramParameters)
     {
         this.id = UID++;
 
-        if (typeof params === 'string' || params === undefined)
+        if (typeof template === 'string' || template === undefined)
         {
             // eslint-disable-next-line
             const [vertexSrc, fragmentSrc, name] = arguments as any;
 
             params = { vertexSrc, fragmentSrc, name };
+            template = undefined;
         }
 
-        if (!params.template)
-        {
-            // legacy
-            params.template = pixiTemplate;
-            Object.assign(params, pixiTemplate.defaultParameters);
-            params.template.initProgram(this);
-        }
+        this.template = template || pixiTemplate;
+
+        this.params = params;
 
         /**
          * Wheter program is tested
@@ -118,6 +124,8 @@ export class Program
         this.glPrograms = {};
 
         this.syncUniforms = null;
+
+        this.template.constructProgram(this);
     }
 
     /**
@@ -166,7 +174,7 @@ export class Program
  * @class
  * @memberof PIXI
  */
-export class PixiProgramTemplate implements IProgramTemplate
+export class DefaultProgramTemplate implements IProgramTemplate
 {
     defaultParameters: IProgramParameters =
     {
@@ -182,7 +190,7 @@ export class PixiProgramTemplate implements IProgramTemplate
      * @param {object} params - parameters for Program creation
      * @param {string} [params.vertexSrc] - The source of the vertex shader.
      * @param {string} [params.fragmentSrc] - The source of the fragment shader.
-     * @param {string} [params.name=pixi-shader] - Name for shader
+     * @param {string} [params.name='pixi-shader'] - Name for shader
      *
      * @returns {PIXI.Program} an shiny new Pixi shader!
      */
@@ -196,12 +204,16 @@ export class PixiProgramTemplate implements IProgramTemplate
 
         if (!program)
         {
-            Object.assign(params, this.defaultParameters);
-            params.template = this;
-            ProgramCache[key] = program = new Program(params);
+            ProgramCache[key] = program = new Program(this, params);
         }
 
         return program;
+    }
+
+    constructProgram(program: Program): void
+    {
+        Object.assign(program.params, this.defaultParameters);
+        this.initProgram(program);
     }
 
     /**
@@ -360,4 +372,4 @@ export class PixiProgramTemplate implements IProgramTemplate
     }
 }
 
-export const pixiProgramTemplate = pixiTemplate = new PixiProgramTemplate();
+export const defaultProgramTemplate = pixiTemplate = new DefaultProgramTemplate();
