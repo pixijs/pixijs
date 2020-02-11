@@ -6,11 +6,6 @@ declare namespace PIXI {
         defaultQueryString: string;
         resources: IResourceDictionary;
         concurrency: number;
-        onStart: ILoaderSignal;
-        onProgress: ILoaderSignal;
-        onError: ILoaderSignal;
-        onLoad: ILoaderSignal;
-        onComplete: ILoaderSignal;
 
         add(...params: any[]): this;
         //tslint:disable-next-line:ban-types forbidden-types
@@ -27,22 +22,6 @@ declare namespace PIXI {
         load(cb?: (loader: Loader, resources: Partial<Record<string, LoaderResource>>) => void): this;
 
         destroy(): void;
-    }
-
-    export type ICallbackID = any;
-    export type ISignalDetach = (id:ICallbackID) => void;
-    //tslint:disable-next-line:ban-types forbidden-types
-    export type ISignalCallback = (callback:Function, context:any) => ICallbackID;
-    export interface ILoaderSignal {
-        add:ISignalCallback;
-        once:ISignalCallback;
-        detach:ISignalCallback;
-    }
-
-    export interface ILoaderPlugin {
-        add?(): void;
-        pre?(resource: LoaderResource, next?: (...args: any[]) => void): void;
-        use?(resource: LoaderResource, next?: (...args: any[]) => void): void;
     }
 
     export interface IResourceDictionary {
