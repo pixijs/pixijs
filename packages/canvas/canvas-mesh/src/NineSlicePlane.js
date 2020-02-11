@@ -41,6 +41,11 @@ NineSlicePlane.prototype._renderCanvas = function _renderCanvas(renderer)
     const isTinted = this.tint !== 0xFFFFFF;
     const texture = this.texture;
 
+    if (!texture.valid)
+    {
+        return;
+    }
+
     // Work out tinting
     if (isTinted)
     {

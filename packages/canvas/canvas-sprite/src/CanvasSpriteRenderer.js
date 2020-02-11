@@ -59,7 +59,7 @@ export class CanvasSpriteRenderer
 
         const source = texture.baseTexture.getDrawableSource();
 
-        if (texture.orig.width <= 0 || texture.orig.height <= 0 || !source)
+        if (texture.orig.width <= 0 || texture.orig.height <= 0 || !texture.valid || !source)
         {
             return;
         }
