@@ -19,7 +19,7 @@ export class CubeTexture extends BaseTexture
      *        on the options available to each resource.
      * @returns {PIXI.CubeTexture} new cube texture
      */
-    static from(resources: any, options: ICubeResourceOptions): CubeTexture
+    static from(resources: any, options?: ICubeResourceOptions): CubeTexture
     {
         return new CubeTexture(new CubeResource(resources, options));
     }

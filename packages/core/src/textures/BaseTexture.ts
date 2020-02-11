@@ -602,7 +602,7 @@ export class BaseTexture extends EventEmitter
      * @param {boolean} [strict] Enforce strict-mode, see {@link PIXI.settings.STRICT_TEXTURE_CACHE}.
      * @returns {PIXI.BaseTexture} The new base texture.
      */
-    static from(source: ImageSource|string, options: IBaseTextureOptions,
+    static from(source: ImageSource|string, options?: IBaseTextureOptions,
         strict = settings.STRICT_TEXTURE_CACHE): BaseTexture
     {
         const isFrame = typeof source === 'string';
