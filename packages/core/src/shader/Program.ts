@@ -17,6 +17,7 @@ import { GLProgram } from './GLProgram';
 let UID = 0;
 
 const nameCache: { [key: string]: number } = {};
+let pixiTemplate: PixiProgramTemplate;
 
 export interface IAttributeData
 {
@@ -34,8 +35,21 @@ export interface IUniformData
     value: any;
 }
 
+export interface IProgramParameters
+{
+    vertexSrc?: string;
+    fragmentSrc?: string;
+    name?: string;
+    template?: IProgramTemplate;
+}
+
+export interface IProgramTemplate
+{
+    initProgram(program: Program): void;
+}
+
 /**
- * Helper class to create a shader program.
+ * Class represents shader program
  *
  * @class
  * @memberof PIXI
@@ -45,38 +59,170 @@ export class Program
     public id: number;
     public vertexSrc: string;
     public fragmentSrc: string;
-    nameCache: any;
+    params: IProgramParameters;
     glPrograms: { [ key: number ]: GLProgram};
     syncUniforms: any;
     attributeData: { [key: string]: IAttributeData};
     uniformData: {[key: string]: IUniformData};
+    valid: boolean;
     /**
-     * @param {string} [vertexSrc] - The source of the vertex shader.
-     * @param {string} [fragmentSrc] - The source of the fragment shader.
-     * @param {string} [name] - Name for shader
+     * Constructor is not supposed to be called directly, only through program templates (proprocessor)
+     *
+     * @param {object} [params] - Parameters for the program
      */
-    constructor(vertexSrc?: string, fragmentSrc?: string, name = 'pixi-shader')
+    constructor(params: IProgramParameters)
     {
         this.id = UID++;
+
+        if (typeof params === 'string' || params === undefined)
+        {
+            // eslint-disable-next-line
+            const [vertexSrc, fragmentSrc, name] = arguments as any;
+
+            params = { vertexSrc, fragmentSrc, name };
+        }
+
+        if (!params.template)
+        {
+            // legacy
+            params.template = pixiTemplate;
+            Object.assign(params, pixiTemplate.defaultParameters);
+            params.template.initProgram(this);
+        }
+
+        /**
+         * Wheter program is tested
+         *
+         * @member {boolean}
+         */
+        this.valid = false;
 
         /**
          * The vertex shader.
          *
          * @member {string}
          */
-        this.vertexSrc = vertexSrc || Program.defaultVertexSrc;
+        this.vertexSrc = null;
 
         /**
          * The fragment shader.
          *
          * @member {string}
          */
-        this.fragmentSrc = fragmentSrc || Program.defaultFragmentSrc;
+        this.fragmentSrc = null;
 
-        this.vertexSrc = this.vertexSrc.trim();
-        this.fragmentSrc = this.fragmentSrc.trim();
+        this.uniformData = null;
+        this.attributeData = null;
 
-        if (this.vertexSrc.substring(0, 8) !== '#version')
+        // this is where we store shader references..
+        this.glPrograms = {};
+
+        this.syncUniforms = null;
+    }
+
+    /**
+     * The default vertex shader source
+     *
+     * @static
+     * @constant
+     * @member {string}
+     */
+    static get defaultVertexSrc(): string
+    {
+        return defaultVertex;
+    }
+
+    /**
+     * The default fragment shader source
+     *
+     * @static
+     * @constant
+     * @member {string}
+     */
+    static get defaultFragmentSrc(): string
+    {
+        return defaultFragment;
+    }
+
+    /**
+     * A short hand function to create a program based of a vertex and fragment shader
+     * this method will also check to see if there is a cached program.
+     *
+     * @param {string} [vertexSrc] - The source of the vertex shader.
+     * @param {string} [fragmentSrc] - The source of the fragment shader.
+     * @param {string} [name=pixi-shader] - Name for shader
+     *
+     * @returns {PIXI.Program} an shiny new Pixi shader!
+     */
+    static from(vertexSrc?: string, fragmentSrc?: string, name?: string): Program
+    {
+        return pixiTemplate.from({ vertexSrc, fragmentSrc, name });
+    }
+}
+
+/**
+ * Helper class to create pixi shader programs
+ *
+ * @class
+ * @memberof PIXI
+ */
+export class PixiProgramTemplate implements IProgramTemplate
+{
+    defaultParameters: IProgramParameters =
+    {
+        vertexSrc: defaultVertex,
+        fragmentSrc: defaultFragment,
+        name: 'pixi-shader',
+    };
+
+    /**
+     * A short hand function to create a program based of a vertex and fragment shader
+     * this method will also check to see if there is a cached program.
+     *
+     * @param {object} params - parameters for Program creation
+     * @param {string} [params.vertexSrc] - The source of the vertex shader.
+     * @param {string} [params.fragmentSrc] - The source of the fragment shader.
+     * @param {string} [params.name=pixi-shader] - Name for shader
+     *
+     * @returns {PIXI.Program} an shiny new Pixi shader!
+     */
+    from(params: IProgramParameters): Program
+    {
+        const { vertexSrc, fragmentSrc } = params;
+
+        const key = vertexSrc + fragmentSrc;
+
+        let program = ProgramCache[key];
+
+        if (!program)
+        {
+            Object.assign(params, this.defaultParameters);
+            params.template = this;
+            ProgramCache[key] = program = new Program(params);
+        }
+
+        return program;
+    }
+
+    /**
+     * Uses test context to initialize Program instance: parse attributes and uniforms
+     *
+     * @param {PIXI.Program} program
+     */
+    initProgram(program: Program): void
+    {
+        const { params } = program;
+        let { vertexSrc, fragmentSrc, name } = params;
+
+        if (program.valid)
+        {
+            return;
+        }
+
+        vertexSrc = vertexSrc.trim();
+        fragmentSrc = fragmentSrc.trim();
+
+        if (vertexSrc.substring(0, 8) !== '#version')
         {
             name = name.replace(/\s+/g, '-');
 
@@ -90,20 +236,18 @@ export class Program
                 nameCache[name] = 1;
             }
 
-            this.vertexSrc = `#define SHADER_NAME ${name}\n${this.vertexSrc}`;
-            this.fragmentSrc = `#define SHADER_NAME ${name}\n${this.fragmentSrc}`;
+            vertexSrc = `#define SHADER_NAME ${name}\n${vertexSrc}`;
+            fragmentSrc = `#define SHADER_NAME ${name}\n${fragmentSrc}`;
 
-            this.vertexSrc = setPrecision(this.vertexSrc, settings.PRECISION_VERTEX, PRECISION.HIGH);
-            this.fragmentSrc = setPrecision(this.fragmentSrc, settings.PRECISION_FRAGMENT, getMaxFragmentPrecision());
+            vertexSrc = setPrecision(vertexSrc, settings.PRECISION_VERTEX, PRECISION.HIGH);
+            fragmentSrc = setPrecision(fragmentSrc, settings.PRECISION_FRAGMENT, getMaxFragmentPrecision());
         }
 
         // currently this does not extract structs only default types
-        this.extractData(this.vertexSrc, this.fragmentSrc);
-
-        // this is where we store shader references..
-        this.glPrograms = {};
-
-        this.syncUniforms = null;
+        program.vertexSrc = vertexSrc;
+        program.fragmentSrc = fragmentSrc;
+        this.extractData(program);
+        program.valid = true;
     }
 
     /**
@@ -111,26 +255,23 @@ export class Program
      * or reading the src directly.
      * @protected
      *
+     * @param {PIXI.Program} [program] - The program to analyze
      * @param {string} [vertexSrc] - The source of the vertex shader.
      * @param {string} [fragmentSrc] - The source of the fragment shader.
      */
-    protected extractData(vertexSrc: string, fragmentSrc: string): void
+    protected extractData(program: Program): void
     {
         const gl = getTestContext();
 
         if (gl)
         {
-            const program = compileProgram(gl, vertexSrc, fragmentSrc);
+            const { vertexSrc, fragmentSrc } = program;
+            const glProgram = compileProgram(gl, vertexSrc, fragmentSrc);
 
-            this.attributeData = this.getAttributeData(program, gl);
-            this.uniformData = this.getUniformData(program, gl);
+            program.attributeData = this.getAttributeData(glProgram, gl);
+            program.uniformData = this.getUniformData(glProgram, gl);
 
             gl.deleteProgram(program);
-        }
-        else
-        {
-            this.uniformData = {};
-            this.attributeData = {};
         }
     }
 
@@ -182,7 +323,7 @@ export class Program
      * returns the uniform data from the program
      * @private
      *
-     * @param {webGL-program} [program] - the webgl program
+     * @param {WebGLProgram} [program] - the webgl program
      * @param {context} [gl] - the WebGL context
      *
      * @returns {object} the uniform data for this program
@@ -217,52 +358,6 @@ export class Program
 
         return uniforms;
     }
-
-    /**
-     * The default vertex shader source
-     *
-     * @static
-     * @constant
-     * @member {string}
-     */
-    static get defaultVertexSrc(): string
-    {
-        return defaultVertex;
-    }
-
-    /**
-     * The default fragment shader source
-     *
-     * @static
-     * @constant
-     * @member {string}
-     */
-    static get defaultFragmentSrc(): string
-    {
-        return defaultFragment;
-    }
-
-    /**
-     * A short hand function to create a program based of a vertex and fragment shader
-     * this method will also check to see if there is a cached program.
-     *
-     * @param {string} [vertexSrc] - The source of the vertex shader.
-     * @param {string} [fragmentSrc] - The source of the fragment shader.
-     * @param {string} [name=pixi-shader] - Name for shader
-     *
-     * @returns {PIXI.Program} an shiny new Pixi shader!
-     */
-    static from(vertexSrc?: string, fragmentSrc?: string, name?: string): Program
-    {
-        const key = vertexSrc + fragmentSrc;
-
-        let program = ProgramCache[key];
-
-        if (!program)
-        {
-            ProgramCache[key] = program = new Program(vertexSrc, fragmentSrc, name);
-        }
-
-        return program;
-    }
 }
+
+export const pixiProgramTemplate = pixiTemplate = new PixiProgramTemplate();

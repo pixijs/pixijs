@@ -67,7 +67,7 @@ export class BatchShaderGenerator
             fragmentSrc = fragmentSrc.replace(/%count%/gi, `${maxTextures}`);
             fragmentSrc = fragmentSrc.replace(/%forloop%/gi, this.generateSampleSrc(maxTextures));
 
-            this.programCache[maxTextures] = new Program(this.vertexSrc, fragmentSrc);
+            this.programCache[maxTextures] = new Program({ vertexSrc: this.vertexSrc, fragmentSrc });
         }
 
         const uniforms = {

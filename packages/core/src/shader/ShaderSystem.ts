@@ -224,6 +224,8 @@ export class ShaderSystem extends System
 
         const program = shader.program;
 
+        program.params.template.initProgram(program);
+
         const attribMap: {[key: string]: number} = {};
 
         for (const i in program.attributeData)
