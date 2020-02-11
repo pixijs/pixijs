@@ -31,6 +31,38 @@ export class CanvasGraphicsRenderer
     }
 
     /**
+     * calculates fill/stroke style for canvas
+     *
+     * @private
+     * @param {PIXI.FillStyle} style
+     * @param {number} tint
+     * @returns {string|CanvasPattern}
+     */
+    _calcCanvasStyle(style, tint)
+    {
+        let res;
+
+        if (style.texture)
+        {
+            if (style.texture.valid)
+            {
+                res = canvasUtils.getTintedPattern(style.texture, tint);
+                this.setPatternTransform(res, style.matrix || Matrix.IDENTITY);
+            }
+            else
+            {
+                res = '#808080';
+            }
+        }
+        else
+        {
+            res = `#${(`00000${(tint | 0).toString(16)}`).substr(-6)}`;
+        }
+
+        return res;
+    }
+
+    /**
      * Renders a Graphics object to a canvas.
      *
      * @param {PIXI.Graphics} graphics - the actual graphics object to render
@@ -67,27 +99,11 @@ export class CanvasGraphicsRenderer
 
             if (fillStyle.visible)
             {
-                if (fillStyle.texture)
-                {
-                    contextFillStyle = canvasUtils.getTintedPattern(fillStyle.texture, data._fillTint);
-                    this.setPatternTransform(contextFillStyle, fillStyle.matrix || Matrix.IDENTITY);
-                }
-                else
-                {
-                    contextFillStyle = `#${(`00000${(data._fillTint | 0).toString(16)}`).substr(-6)}`;
-                }
+                contextFillStyle = this._calcCanvasStyle(fillStyle, data._fillTint);
             }
             if (lineStyle.visible)
             {
-                if (fillStyle.texture)
-                {
-                    contextStrokeStyle = canvasUtils.getTintedPattern(lineStyle.texture, data._lineTint);
-                    this.setPatternTransform(contextStrokeStyle, lineStyle.matrix || Matrix.IDENTITY);
-                }
-                else
-                {
-                    contextStrokeStyle = `#${(`00000${(data._lineTint | 0).toString(16)}`).substr(-6)}`;
-                }
+                contextStrokeStyle = this._calcCanvasStyle(lineStyle, data._lineTint);
             }
 
             context.lineWidth = lineStyle.width;
