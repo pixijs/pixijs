@@ -103,4 +103,16 @@ export class CubeResource extends ArrayResource
      * @default 6
      */
     static SIDES = 6;
+
+    /**
+     * Used to auto-detect the type of resource.
+     *
+     * @static
+     * @param {object} source - The source object
+     * @return {boolean} `true` if source is an array of 6 elements
+     */
+    static test(source: any): source is Array<string|Resource>
+    {
+        return Array.isArray(source) && source.length === CubeResource.SIDES;
+    }
 }
