@@ -9,7 +9,7 @@
  * @property {number} LINEAR_VERTICAL Vertical gradient
  * @property {number} LINEAR_HORIZONTAL Linear gradient
  */
-export const TEXT_GRADIENT = {
-    LINEAR_VERTICAL: 0,
-    LINEAR_HORIZONTAL: 1,
-};
+export enum TEXT_GRADIENT {
+    LINEAR_VERTICAL = 0,
+    LINEAR_HORIZONTAL = 1
+}
