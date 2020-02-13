@@ -1,3 +1,13 @@
+import { TextStyle, TextStyleWhiteSpace } from './TextStyle';
+
+interface IFontMetrics {
+    ascent: number;
+    descent: number;
+    fontSize: number;
+}
+
+type CharacterWidthCache = { [key: string]: number };
+
 /**
  * The TextMetrics object represents the measurement of a block of text with a specified style.
  *
@@ -11,6 +21,27 @@
  */
 export class TextMetrics
 {
+    public text: string;
+    public style: TextStyle;
+    public width: number;
+    public height: number;
+    public lines: string[];
+    public lineWidths: number[];
+    public lineHeight: number;
+    public maxLineWidth: number;
+    public fontProperties: IFontMetrics;
+
+    public static METRICS_STRING: string;
+    public static BASELINE_SYMBOL: string;
+    public static BASELINE_MULTIPLIER: number;
+
+    // TODO: These should be protected but they're initialized outside of the class.
+    public static _canvas: HTMLCanvasElement|OffscreenCanvas;
+    public static _context: CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D;
+    public static _fonts: { [font: string]: IFontMetrics };
+    public static _newlines: number[];
+    public static _breakingSpaces: number[];
+
     /**
      * @param {string} text - the text that was measured
      * @param {PIXI.TextStyle} style - the style that was measured
@@ -22,7 +53,8 @@ export class TextMetrics
      * @param {number} maxLineWidth - the maximum line width for all measured lines
      * @param {Object} fontProperties - the font properties object from TextMetrics.measureFont
      */
-    constructor(text, style, width, height, lines, lineWidths, lineHeight, maxLineWidth, fontProperties)
+    constructor(text: string, style: TextStyle, width: number, height: number, lines: string[], lineWidths: number[],
+        lineHeight: number, maxLineWidth: number, fontProperties: IFontMetrics)
     {
         /**
          * The text that was measured
@@ -97,7 +129,7 @@ export class TextMetrics
      * @param {HTMLCanvasElement} [canvas] - optional specification of the canvas to use for measuring.
      * @return {PIXI.TextMetrics} measured width and height of the text.
      */
-    static measureText(text, style, wordWrap, canvas = TextMetrics._canvas)
+    public static measureText(text: string, style: TextStyle, wordWrap: boolean, canvas = TextMetrics._canvas): TextMetrics
     {
         wordWrap = (wordWrap === undefined || wordWrap === null) ? style.wordWrap : wordWrap;
         const font = style.toFontString();
@@ -117,7 +149,7 @@ export class TextMetrics
 
         const outputText = wordWrap ? TextMetrics.wordWrap(text, style, canvas) : text;
         const lines = outputText.split(/(?:\r\n|\r|\n)/);
-        const lineWidths = new Array(lines.length);
+        const lineWidths = new Array<number>(lines.length);
         let maxLineWidth = 0;
 
         for (let i = 0; i < lines.length; i++)
@@ -166,7 +198,7 @@ export class TextMetrics
      * @param {HTMLCanvasElement} [canvas] - optional specification of the canvas to use for measuring.
      * @return {string} New string with new lines applied where required
      */
-    static wordWrap(text, style, canvas = TextMetrics._canvas)
+    private static wordWrap(text: string, style: TextStyle, canvas = TextMetrics._canvas): string
     {
         const context = canvas.getContext('2d');
 
@@ -174,7 +206,7 @@ export class TextMetrics
         let line = '';
         let lines = '';
 
-        const cache = {};
+        const cache: CharacterWidthCache = {};
         const { letterSpacing, whiteSpace } = style;
 
         // How to handle whitespaces
@@ -362,7 +394,7 @@ export class TextMetrics
      * @param  {boolean}  newLine     - Add new line character to end
      * @return {string}   A formatted line
      */
-    static addLine(line, newLine = true)
+    private static addLine(line: string, newLine = true): string
     {
         line = TextMetrics.trimRight(line);
 
@@ -381,7 +413,8 @@ export class TextMetrics
      * @param  {CanvasRenderingContext2D}  context        The canvas context
      * @return {number}                    The from cache.
      */
-    static getFromCache(key, letterSpacing, cache, context)
+    private static getFromCache(key: string, letterSpacing: number, cache: CharacterWidthCache,
+        context: CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D): number
     {
         let width = cache[key];
 
@@ -403,7 +436,7 @@ export class TextMetrics
      * @param  {string}   whiteSpace  The TextStyle property whiteSpace
      * @return {boolean}  should collapse
      */
-    static collapseSpaces(whiteSpace)
+    private static collapseSpaces(whiteSpace: TextStyleWhiteSpace): boolean
     {
         return (whiteSpace === 'normal' || whiteSpace === 'pre-line');
     }
@@ -415,7 +448,7 @@ export class TextMetrics
      * @param  {string}   whiteSpace  The white space
      * @return {boolean}  should collapse
      */
-    static collapseNewlines(whiteSpace)
+    private static collapseNewlines(whiteSpace: TextStyleWhiteSpace): boolean
     {
         return (whiteSpace === 'normal');
     }
@@ -427,7 +460,7 @@ export class TextMetrics
      * @param  {string}  text  The text
      * @return {string}  trimmed string
      */
-    static trimRight(text)
+    private static trimRight(text: string): string
     {
         if (typeof text !== 'string')
         {
@@ -456,7 +489,7 @@ export class TextMetrics
      * @param  {string}  char  The character
      * @return {boolean}  True if newline, False otherwise.
      */
-    static isNewline(char)
+    private static isNewline(char: string): boolean
     {
         if (typeof char !== 'string')
         {
@@ -473,7 +506,7 @@ export class TextMetrics
      * @param  {string}  char  The character
      * @return {boolean}  True if whitespace, False otherwise.
      */
-    static isBreakingSpace(char)
+    private static isBreakingSpace(char: string): boolean
     {
         if (typeof char !== 'string')
         {
@@ -490,9 +523,9 @@ export class TextMetrics
      * @param  {string}  text       The text
      * @return {string[]}  A tokenized array
      */
-    static tokenize(text)
+    private static tokenize(text: string): string[]
     {
-        const tokens = [];
+        const tokens: string[] = [];
         let token = '';
 
         if (typeof text !== 'string')
@@ -539,7 +572,7 @@ export class TextMetrics
      * @param  {boolean}  breakWords  The style attr break words
      * @return {boolean} whether to break word or not
      */
-    static canBreakWords(token, breakWords)
+    static canBreakWords(_token: string, breakWords: boolean): boolean
     {
         return breakWords;
     }
@@ -559,7 +592,10 @@ export class TextMetrics
      * @param  {boolean}  breakWords  The style attr break words
      * @return {boolean} whether to break word or not
      */
-    static canBreakChars(char, nextChar, token, index, breakWords) // eslint-disable-line no-unused-vars
+    /* eslint-disable @typescript-eslint/no-unused-vars */
+    static canBreakChars(_char: string, _nextChar: string, _token: string, _index: number,
+        _breakWords: boolean): boolean
+    /* eslint-enable @typescript-eslint/no-unused-vars */
     {
         return true;
     }
@@ -578,7 +614,7 @@ export class TextMetrics
      * @param  {string}  token The token to split
      * @return {string[]} The characters of the token
      */
-    static wordWrapSplit(token)
+    static wordWrapSplit(token: string): string[]
     {
         return token.split('');
     }
@@ -590,7 +626,7 @@ export class TextMetrics
      * @param {string} font - String representing the style of the font
      * @return {PIXI.IFontMetrics} Font properties object
      */
-    static measureFont(font)
+    public static measureFont(font: string): IFontMetrics
     {
         // as this method is used for preparing assets, don't recalculate things if we don't need to
         if (TextMetrics._fonts[font])
@@ -598,7 +634,11 @@ export class TextMetrics
             return TextMetrics._fonts[font];
         }
 
-        const properties = {};
+        const properties: IFontMetrics = {
+            ascent: 0,
+            descent: 0,
+            fontSize: 0,
+        };
 
         const canvas = TextMetrics._canvas;
         const context = TextMetrics._context;
@@ -694,7 +734,7 @@ export class TextMetrics
      * @static
      * @param {string} [font] - font name. If font name not set then clear cache for all fonts.
      */
-    static clearMetrics(font = '')
+    public static clearMetrics(font = ''): void
     {
         if (font)
         {
@@ -718,7 +758,7 @@ export class TextMetrics
  * @private
  */
 
-const canvas = (() =>
+const canvas = ((): HTMLCanvasElement|OffscreenCanvas =>
 {
     try
     {
