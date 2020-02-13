@@ -26,11 +26,11 @@ export class MeshGeometry extends Geometry
     private _updateId: number;
 
     /**
-     * @param {Float32Array|number[]} vertices - Positional data on geometry.
-     * @param {Float32Array|number[]} uvs - Texture UVs.
-     * @param {Uint16Array|number[]} index - IndexBuffer
+     * @param {Float32Array|number[]} [vertices] - Positional data on geometry.
+     * @param {Float32Array|number[]} [uvs] - Texture UVs.
+     * @param {Uint16Array|number[]} [index] - IndexBuffer
      */
-    constructor(vertices: IArrayBuffer, uvs: IArrayBuffer, index: IArrayBuffer)
+    constructor(vertices?: IArrayBuffer, uvs?: IArrayBuffer, index?: IArrayBuffer)
     {
         super();
 

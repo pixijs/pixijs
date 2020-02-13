@@ -1,4 +1,4 @@
-import { ObjectRenderer, Shader, State, QuadUv } from '@pixi/core';
+import { ObjectRenderer, Shader, State, QuadUv, Renderer } from '@pixi/core';
 import { WRAP_MODES } from '@pixi/constants';
 import { Matrix } from '@pixi/math';
 import { premultiplyTintToRgba, correctBlendMode } from '@pixi/utils';
@@ -6,6 +6,7 @@ import { premultiplyTintToRgba, correctBlendMode } from '@pixi/utils';
 import vertex from './tilingSprite.vert';
 import fragment from './tilingSprite.frag';
 import fragmentSimple from './tilingSprite_simple.frag';
+import { TilingSprite } from './TilingSprite';
 
 const tempMat = new Matrix();
 
@@ -18,12 +19,17 @@ const tempMat = new Matrix();
  */
 export class TilingSpriteRenderer extends ObjectRenderer
 {
+    public shader: Shader;
+    public simpleShader: Shader;
+    public quad: QuadUv;
+    public readonly state: State;
+
     /**
      * constructor for renderer
      *
      * @param {PIXI.Renderer} renderer The renderer this tiling awesomeness works for.
      */
-    constructor(renderer)
+    constructor(renderer: Renderer)
     {
         super(renderer);
 
@@ -48,7 +54,7 @@ export class TilingSpriteRenderer extends ObjectRenderer
      *
      * @param {PIXI.TilingSprite} ts tilingSprite to be rendered
      */
-    render(ts)
+    public render(ts: TilingSprite): void
     {
         const renderer = this.renderer;
         const quad = this.quad;
@@ -131,14 +137,14 @@ export class TilingSpriteRenderer extends ObjectRenderer
 
         shader.uniforms.uTransform = tempMat.toArray(true);
         shader.uniforms.uColor = premultiplyTintToRgba(ts.tint, ts.worldAlpha,
-            shader.uniforms.uColor, baseTex.alphaMode);
+            shader.uniforms.uColor, baseTex.alphaMode as any);
         shader.uniforms.translationMatrix = ts.transform.worldTransform.toArray(true);
         shader.uniforms.uSampler = tex;
 
         renderer.shader.bind(shader);
-        renderer.geometry.bind(quad);// , renderer.shader.getGLShader());
+        renderer.geometry.bind(quad);
 
-        this.state.blendMode = correctBlendMode(ts.blendMode, baseTex.alphaMode);
+        this.state.blendMode = correctBlendMode(ts.blendMode, baseTex.alphaMode as any);
         renderer.state.set(this.state);
         renderer.geometry.draw(this.renderer.gl.TRIANGLES, 6, 0);
     }

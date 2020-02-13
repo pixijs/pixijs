@@ -2,6 +2,11 @@ import { MeshGeometry } from '@pixi/mesh';
 
 export class PlaneGeometry extends MeshGeometry
 {
+    public segWidth: number;
+    public segHeight: number;
+    public width: number;
+    public height: number;
+
     constructor(width = 100, height = 100, segWidth = 10, segHeight = 10)
     {
         super();
@@ -19,7 +24,7 @@ export class PlaneGeometry extends MeshGeometry
      * Refreshes plane coordinates
      * @private
      */
-    build()
+    build(): void
     {
         const total = this.segWidth * this.segHeight;
         const verts = [];

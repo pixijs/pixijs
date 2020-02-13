@@ -39,6 +39,11 @@ ParticleContainer.prototype.renderCanvas = function renderCanvas(renderer)
             continue;
         }
 
+        if (!child._texture.valid)
+        {
+            continue;
+        }
+
         const frame = child._texture.frame;
 
         context.globalAlpha = this.worldAlpha * child.alpha;

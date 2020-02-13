@@ -4,7 +4,48 @@
 import { TEXT_GRADIENT } from './const';
 import { hex2string } from '@pixi/utils';
 
-const defaultStyle = {
+export type TextStyleAlign = 'left'|'center'|'right';
+export type TextStyleFill = string|string[]|number|number[]|CanvasGradient|CanvasPattern;
+export type TextStyleFontStyle = 'normal'|'italic'|'oblique';
+export type TextStyleFontVariant = 'normal'|'small-caps';
+export type TextStyleFontWeight = 'normal'|'bold'|'bolder'|'lighter'|'100'|'200'|'300'|'400'|'500'|'600'|'700'|'800'|'900';
+export type TextStyleLineJoin = 'miter'|'round'|'bevel';
+export type TextStyleTextBaseline = 'alphabetic'|'top'|'hanging'|'middle'|'ideographic'|'bottom';
+export type TextStyleWhiteSpace = 'normal'|'pre'|'pre-line';
+
+export interface ITextStyle {
+    align: TextStyleAlign;
+    breakWords: boolean;
+    dropShadow: boolean;
+    dropShadowAlpha: number;
+    dropShadowAngle: number;
+    dropShadowBlur: number;
+    dropShadowColor: string|number;
+    dropShadowDistance: number;
+    fill: TextStyleFill;
+    fillGradientType: TEXT_GRADIENT;
+    fillGradientStops: number[];
+    fontFamily: string;
+    fontSize: number;
+    fontStyle: TextStyleFontStyle;
+    fontVariant: TextStyleFontVariant;
+    fontWeight: TextStyleFontWeight;
+    letterSpacing: number;
+    lineHeight: number;
+    lineJoin: TextStyleLineJoin;
+    miterLimit: number;
+    padding: number;
+    stroke: string|number;
+    strokeThickness: number;
+    textBaseline: TextStyleTextBaseline;
+    trim: boolean;
+    whiteSpace: TextStyleWhiteSpace;
+    wordWrap: boolean;
+    wordWrapWidth: number;
+    leading: number;
+}
+
+const defaultStyle: ITextStyle = {
     align: 'left',
     breakWords: false,
     dropShadow: false,
@@ -43,7 +84,7 @@ const genericFontFamilies = [
     'cursive',
     'fantasy',
     'system-ui',
-]
+];
 
 /**
  * A TextStyle Object contains information to decorate a Text objects.
@@ -55,8 +96,40 @@ const genericFontFamilies = [
  * @class
  * @memberof PIXI
  */
-export class TextStyle
+export class TextStyle implements ITextStyle
 {
+    public styleID: number;
+
+    protected _align: TextStyleAlign;
+    protected _breakWords: boolean;
+    protected _dropShadow: boolean;
+    protected _dropShadowAlpha: number;
+    protected _dropShadowAngle: number;
+    protected _dropShadowBlur: number;
+    protected _dropShadowColor: string|number;
+    protected _dropShadowDistance: number;
+    protected _fill: TextStyleFill;
+    protected _fillGradientType: TEXT_GRADIENT;
+    protected _fillGradientStops: number[];
+    protected _fontFamily: string;
+    protected _fontSize: number;
+    protected _fontStyle: TextStyleFontStyle;
+    protected _fontVariant: TextStyleFontVariant;
+    protected _fontWeight: TextStyleFontWeight;
+    protected _letterSpacing: number;
+    protected _lineHeight: number;
+    protected _lineJoin: TextStyleLineJoin;
+    protected _miterLimit: number;
+    protected _padding: number;
+    protected _stroke: string|number;
+    protected _strokeThickness: number;
+    protected _textBaseline: TextStyleTextBaseline;
+    protected _trim: boolean;
+    protected _whiteSpace: TextStyleWhiteSpace;
+    protected _wordWrap: boolean;
+    protected _wordWrapWidth: number;
+    protected _leading: number;
+
     /**
      * @param {object} [style] - The style parameters
      * @param {string} [style.align='left'] - Alignment for multiline text ('left', 'center' or 'right'),
@@ -83,7 +156,7 @@ export class TextStyle
      * @param {string} [style.fontStyle='normal'] - The font style ('normal', 'italic' or 'oblique')
      * @param {string} [style.fontVariant='normal'] - The font variant ('normal' or 'small-caps')
      * @param {string} [style.fontWeight='normal'] - The font weight ('normal', 'bold', 'bolder', 'lighter' and '100',
-     *  '200', '300', '400', '500', '600', '700', 800' or '900')
+     *  '200', '300', '400', '500', '600', '700', '800' or '900')
      * @param {number} [style.leading=0] - The space between lines
      * @param {number} [style.letterSpacing=0] - The amount of spacing between letters, default is 0
      * @param {number} [style.lineHeight] - The line height, a number that represents the vertical space that a letter uses
@@ -105,7 +178,7 @@ export class TextStyle
      * @param {boolean} [style.wordWrap=false] - Indicates if word wrap should be used
      * @param {number} [style.wordWrapWidth=100] - The width at which text will wrap, it needs wordWrap to be set to true
      */
-    constructor(style)
+    constructor(style: Partial<ITextStyle>)
     {
         this.styleID = 0;
 
@@ -120,9 +193,9 @@ export class TextStyle
      *
      * @return {PIXI.TextStyle} New cloned TextStyle object
      */
-    clone()
+    public clone(): TextStyle
     {
-        const clonedProperties = {};
+        const clonedProperties: Partial<ITextStyle> = {};
 
         deepCopyProperties(clonedProperties, this, defaultStyle);
 
@@ -132,7 +205,7 @@ export class TextStyle
     /**
      * Resets all properties to the defaults specified in TextStyle.prototype._default
      */
-    reset()
+    public reset(): void
     {
         deepCopyProperties(this, defaultStyle, defaultStyle);
     }
@@ -295,7 +368,12 @@ export class TextStyle
     }
     set fill(fill) // eslint-disable-line require-jsdoc
     {
-        const outputColor = getColor(fill);
+        // TODO: Can't have different types for getter and setter. The getter shouldn't have the number type as
+        //       the setter converts to string. See this thread for more details:
+        //       https://github.com/microsoft/TypeScript/issues/2521
+        // TODO: Not sure if getColor works properly with CanvasGradient and/or CanvasPattern, can't pass in
+        //       without casting here.
+        const outputColor = getColor(fill as any);
         if (this._fill !== outputColor)
         {
             this._fill = outputColor;
@@ -558,6 +636,9 @@ export class TextStyle
     }
     set stroke(stroke) // eslint-disable-line require-jsdoc
     {
+        // TODO: Can't have different types for getter and setter. The getter shouldn't have the number type as
+        //       the setter converts to string. See this thread for more details:
+        //       https://github.com/microsoft/TypeScript/issues/2521
         const outputColor = getColor(stroke);
         if (this._stroke !== outputColor)
         {
@@ -687,14 +768,14 @@ export class TextStyle
      *
      * @return {string} Font style string, for passing to `TextMetrics.measureFont()`
      */
-    toFontString()
+    public toFontString()
     {
         // build canvas api font setting from individual components. Convert a numeric this.fontSize to px
         const fontSizeString = (typeof this.fontSize === 'number') ? `${this.fontSize}px` : this.fontSize;
 
         // Clean-up fontFamily property by quoting each font name
         // this will support font names with spaces
-        let fontFamilies = this.fontFamily;
+        let fontFamilies: string|string[] = this.fontFamily;
 
         if (!Array.isArray(this.fontFamily))
         {
@@ -711,26 +792,26 @@ export class TextStyle
             {
                 fontFamily = `"${fontFamily}"`;
             }
-            fontFamilies[i] = fontFamily;
+            (fontFamilies as string[])[i] = fontFamily;
         }
 
-        return `${this.fontStyle} ${this.fontVariant} ${this.fontWeight} ${fontSizeString} ${fontFamilies.join(',')}`;
+        return `${this.fontStyle} ${this.fontVariant} ${this.fontWeight} ${fontSizeString} ${(fontFamilies as string[]).join(',')}`;
     }
 }
 
 /**
  * Utility function to convert hexadecimal colors to strings, and simply return the color if it's a string.
  * @private
- * @param {number|number[]} color
+ * @param {string|number} color
  * @return {string} The color as a string.
  */
-function getSingleColor(color)
+function getSingleColor(color: string|number): string
 {
     if (typeof color === 'number')
     {
         return hex2string(color);
     }
-    else if ( typeof color === 'string' )
+    else if (typeof color === 'string')
     {
         if ( color.indexOf('0x') === 0 )
         {
@@ -745,10 +826,12 @@ function getSingleColor(color)
  * Utility function to convert hexadecimal colors to strings, and simply return the color if it's a string.
  * This version can also convert array of colors
  * @private
- * @param {number|number[]} color
+ * @param {string|number|number[]} color
  * @return {string} The color as a string.
  */
-function getColor(color)
+function getColor(color: (string|number)[]): string[];
+function getColor(color: string|number): string;
+function getColor(color: string|number|(string|number)[]): string|string[]
 {
     if (!Array.isArray(color))
     {
@@ -761,7 +844,7 @@ function getColor(color)
             color[i] = getSingleColor(color[i]);
         }
 
-        return color;
+        return color as string[];
     }
 }
 
@@ -773,7 +856,7 @@ function getColor(color)
  * @param {Array} array2 Second array to compare
  * @return {boolean} Do the arrays contain the same values in the same order
  */
-function areArraysEqual(array1, array2)
+function areArraysEqual<T>(array1: T[], array2: T[]): boolean
 {
     if (!Array.isArray(array1) || !Array.isArray(array2))
     {
@@ -803,7 +886,7 @@ function areArraysEqual(array1, array2)
  * @param {Object} source Source object for the properties to copy
  * @param {string} propertyObj Object containing properties names we want to loop over
  */
-function deepCopyProperties(target, source, propertyObj) {
+function deepCopyProperties(target: Record<string, any>, source: Record<string, any>, propertyObj: Record<string, any>): void {
     for (const prop in propertyObj) {
         if (Array.isArray(source[prop])) {
             target[prop] = source[prop].slice();

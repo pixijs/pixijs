@@ -1,6 +1,7 @@
 import { Texture } from '@pixi/core';
 import { Sprite } from '@pixi/sprite';
 import { Ticker, UPDATE_PRIORITY } from '@pixi/ticker';
+import { IDestroyOptions } from '@pixi/display';
 
 /**
  * An AnimatedSprite is a simple way to display an animation depicted by a list of textures.
@@ -37,12 +38,25 @@ import { Ticker, UPDATE_PRIORITY } from '@pixi/ticker';
  */
 export class AnimatedSprite extends Sprite
 {
+    public animationSpeed: number;
+    public loop: boolean;
+    public updateAnchor: boolean;
+    public onComplete: () => void;
+    public onFrameChange: (currentFrame: number) => void;
+    public onLoop: () => void;
+
+    private _playing: boolean;
+    private _textures: Texture[];
+    private _durations: number[];
+    private _autoUpdate: boolean;
+    private _currentTime: number;
+
     /**
      * @param {PIXI.Texture[]|PIXI.AnimatedSprite.FrameObject[]} textures - An array of {@link PIXI.Texture} or frame
      *  objects that make up the animation.
      * @param {boolean} [autoUpdate=true] - Whether to use PIXI.Ticker.shared to auto update animation time.
      */
-    constructor(textures, autoUpdate)
+    constructor(textures: Texture[]|FrameObject[], autoUpdate = true)
     {
         super(textures[0] instanceof Texture ? textures[0] : textures[0].texture);
 
@@ -66,7 +80,7 @@ export class AnimatedSprite extends Sprite
          * @default true
          * @private
          */
-        this._autoUpdate = autoUpdate !== false;
+        this._autoUpdate = autoUpdate;
 
         /**
          * The speed that the AnimatedSprite will play at. Higher is faster, lower is slower.
@@ -127,27 +141,21 @@ export class AnimatedSprite extends Sprite
          */
         this._currentTime = 0;
 
-        /**
-         * Indicates if the AnimatedSprite is currently playing.
-         *
-         * @member {boolean}
-         * @readonly
-         */
-        this.playing = false;
+        this._playing = false;
     }
 
     /**
      * Stops the AnimatedSprite.
      *
      */
-    stop()
+    public stop(): void
     {
-        if (!this.playing)
+        if (!this._playing)
         {
             return;
         }
 
-        this.playing = false;
+        this._playing = false;
         if (this._autoUpdate)
         {
             Ticker.shared.remove(this.update, this);
@@ -158,14 +166,14 @@ export class AnimatedSprite extends Sprite
      * Plays the AnimatedSprite.
      *
      */
-    play()
+    public play(): void
     {
-        if (this.playing)
+        if (this._playing)
         {
             return;
         }
 
-        this.playing = true;
+        this._playing = true;
         if (this._autoUpdate)
         {
             Ticker.shared.add(this.update, this, UPDATE_PRIORITY.HIGH);
@@ -177,7 +185,7 @@ export class AnimatedSprite extends Sprite
      *
      * @param {number} frameNumber - Frame index to stop at.
      */
-    gotoAndStop(frameNumber)
+    public gotoAndStop(frameNumber: number): void
     {
         this.stop();
 
@@ -196,7 +204,7 @@ export class AnimatedSprite extends Sprite
      *
      * @param {number} frameNumber - Frame index to start at.
      */
-    gotoAndPlay(frameNumber)
+    public gotoAndPlay(frameNumber: number): void
     {
         const previousFrame = this.currentFrame;
 
@@ -216,7 +224,7 @@ export class AnimatedSprite extends Sprite
      * @private
      * @param {number} deltaTime - Time since last tick.
      */
-    update(deltaTime)
+    private update(deltaTime: number): void
     {
         const elapsed = this.animationSpeed * deltaTime;
         const previousFrame = this.currentFrame;
@@ -293,7 +301,7 @@ export class AnimatedSprite extends Sprite
      *
      * @private
      */
-    updateTexture()
+    private updateTexture(): void
     {
         this._texture = this._textures[this.currentFrame];
         this._textureID = -1;
@@ -322,7 +330,7 @@ export class AnimatedSprite extends Sprite
      * @param {boolean} [options.texture=false] - Should it destroy the current texture of the sprite as well.
      * @param {boolean} [options.baseTexture=false] - Should it destroy the base texture of the sprite as well.
      */
-    destroy(options)
+    public destroy(options: IDestroyOptions|boolean): void
     {
         this.stop();
         super.destroy(options);
@@ -337,9 +345,9 @@ export class AnimatedSprite extends Sprite
      *
      * @static
      * @param {string[]} frames - The array of frames ids the AnimatedSprite will use as its texture frames.
-     * @return {AnimatedSprite} The new animated sprite with the specified frames.
+     * @return {PIXI.AnimatedSprite} The new animated sprite with the specified frames.
      */
-    static fromFrames(frames)
+    public static fromFrames(frames: string[]): AnimatedSprite
     {
         const textures = [];
 
@@ -356,9 +364,9 @@ export class AnimatedSprite extends Sprite
      *
      * @static
      * @param {string[]} images - The array of image urls the AnimatedSprite will use as its texture frames.
-     * @return {AnimatedSprite} The new animate sprite with the specified images as frames.
+     * @return {PIXI.AnimatedSprite} The new animate sprite with the specified images as frames.
      */
-    static fromImages(images)
+    public static fromImages(images: string[]): AnimatedSprite
     {
         const textures = [];
 
@@ -378,7 +386,7 @@ export class AnimatedSprite extends Sprite
      * @member {number}
      * @default 0
      */
-    get totalFrames()
+    get totalFrames(): number
     {
         return this._textures.length;
     }
@@ -388,7 +396,7 @@ export class AnimatedSprite extends Sprite
      *
      * @member {PIXI.Texture[]}
      */
-    get textures()
+    get textures(): Texture[]|FrameObject[]
     {
         return this._textures;
     }
@@ -397,7 +405,7 @@ export class AnimatedSprite extends Sprite
     {
         if (value[0] instanceof Texture)
         {
-            this._textures = value;
+            this._textures = value as Texture[];
             this._durations = null;
         }
         else
@@ -407,8 +415,8 @@ export class AnimatedSprite extends Sprite
 
             for (let i = 0; i < value.length; i++)
             {
-                this._textures.push(value[i].texture);
-                this._durations.push(value[i].time);
+                this._textures.push((value[i] as FrameObject).texture);
+                this._durations.push((value[i] as FrameObject).time);
             }
         }
         this.gotoAndStop(0);
@@ -421,7 +429,7 @@ export class AnimatedSprite extends Sprite
     * @member {number}
     * @readonly
     */
-    get currentFrame()
+    get currentFrame(): number
     {
         let currentFrame = Math.floor(this._currentTime) % this._textures.length;
 
@@ -432,6 +440,22 @@ export class AnimatedSprite extends Sprite
 
         return currentFrame;
     }
+
+    /**
+     * Indicates if the AnimatedSprite is currently playing.
+     *
+     * @member {boolean}
+     * @readonly
+     */
+    get playing(): boolean
+    {
+        return this._playing;
+    }
+}
+
+export interface FrameObject {
+    texture: Texture;
+    time: number;
 }
 
 /**
