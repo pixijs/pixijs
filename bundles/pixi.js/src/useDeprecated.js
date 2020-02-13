@@ -326,7 +326,7 @@ export function useDeprecated()
     {
         deprecation('5.3.0', 'TilingSprite.fromFrame is deprecated, use TilingSprite.from');
 
-        return new PIXI.TilingSprite(frameId, { width, height });
+        return PIXI.TilingSprite.from(frameId, { width, height });
     };
 
     /**
