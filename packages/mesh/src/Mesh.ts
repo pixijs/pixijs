@@ -59,7 +59,7 @@ export class Mesh extends Container
      *        if no state is provided, uses {@link PIXI.State.for2d} to create a 2D state for PixiJS.
      * @param {number} [drawMode=PIXI.DRAW_MODES.TRIANGLES] the drawMode, can be any of the PIXI.DRAW_MODES consts
      */
-    constructor(geometry: Geometry, shader: MeshMaterial, state: State, drawMode = DRAW_MODES.TRIANGLES)
+    constructor(geometry: Geometry, shader: MeshMaterial, state?: State, drawMode = DRAW_MODES.TRIANGLES)
     {
         super();
 
