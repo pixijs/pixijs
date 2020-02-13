@@ -1,6 +1,8 @@
 import { Mesh, MeshMaterial } from '@pixi/mesh';
 import { WRAP_MODES } from '@pixi/constants';
 import { RopeGeometry } from './geometry/RopeGeometry';
+import { Texture, Renderer } from '@pixi/core';
+import { IPoint } from '@pixi/math';
 
 /**
  * The rope allows you to draw a texture across several points and then manipulate these points
@@ -19,6 +21,8 @@ import { RopeGeometry } from './geometry/RopeGeometry';
  */
 export class SimpleRope extends Mesh
 {
+    public autoUpdate: boolean;
+
     /**
      * @param {PIXI.Texture} texture - The texture to use on the rope.
      * @param {PIXI.Point[]} points - An array of {@link PIXI.Point} objects to construct this rope.
@@ -26,7 +30,7 @@ export class SimpleRope extends Mesh
      * keeping its aspect ratio. You can reduce alpha channel artifacts by providing a larger texture
      * and downsampling here. If set to zero, texture will be streched instead.
      */
-    constructor(texture, points, textureScale = 0)
+    constructor(texture: Texture, points: IPoint[], textureScale = 0)
     {
         const ropeGeometry = new RopeGeometry(texture.height, points, textureScale);
         const meshMaterial = new MeshMaterial(texture);
@@ -46,13 +50,14 @@ export class SimpleRope extends Mesh
         this.autoUpdate = true;
     }
 
-    _render(renderer)
+    _render(renderer: Renderer): void
     {
-        if (this.autoUpdate
-            || this.geometry.width !== this.shader.texture.height)
+        const geometry: RopeGeometry = this.geometry as any;
+
+        if (this.autoUpdate || geometry._width !== this.shader.texture.height)
         {
-            this.geometry.width = this.shader.texture.height;
-            this.geometry.update();
+            geometry._width = this.shader.texture.height;
+            geometry.update();
         }
 
         super._render(renderer);
