@@ -1,4 +1,6 @@
 import { MeshGeometry } from '@pixi/mesh';
+import { IPoint } from '@pixi/math';
+
 /**
  * RopeGeometry allows you to draw a geometry across several points and then manipulate these points.
  *
@@ -16,6 +18,10 @@ import { MeshGeometry } from '@pixi/mesh';
  */
 export class RopeGeometry extends MeshGeometry
 {
+    public points: IPoint[];
+    public readonly textureScale: number;
+    _width: number;
+
     /**
      * @param {number} [width=200] - The width (i.e., thickness) of the rope.
      * @param {PIXI.Point[]} [points] - An array of {@link PIXI.Point} objects to construct this rope.
@@ -27,7 +33,7 @@ export class RopeGeometry extends MeshGeometry
      *     In order to reduce alpha channel artifacts provide a larger texture and downsample -
      *     i.e. set textureScale=0.5 to scale it down twice.
      */
-    constructor(width = 200, points, textureScale = 0)
+    constructor(width = 200, points: IPoint[], textureScale = 0)
     {
         super(new Float32Array(points.length * 4),
             new Float32Array(points.length * 4),
@@ -44,7 +50,7 @@ export class RopeGeometry extends MeshGeometry
          * @member {number}
          * @readOnly
          */
-        this.width = width;
+        this._width = width;
 
         /**
          * Rope texture scale, if zero then the rope texture is stretched.
@@ -55,11 +61,22 @@ export class RopeGeometry extends MeshGeometry
 
         this.build();
     }
+
+    /**
+     * The width (i.e., thickness) of the rope.
+     * @member {number}
+     * @readOnly
+     */
+    get width(): number
+    {
+        return this._width;
+    }
+
     /**
      * Refreshes Rope indices and uvs
      * @private
      */
-    build()
+    private build(): void
     {
         const points = this.points;
 
@@ -93,7 +110,7 @@ export class RopeGeometry extends MeshGeometry
 
         let amount = 0;
         let prev = points[0];
-        const textureWidth = this.width * this.textureScale;
+        const textureWidth = this._width * this.textureScale;
         const total = points.length; // - 1;
 
         for (let i = 0; i < total; i++)
@@ -149,7 +166,7 @@ export class RopeGeometry extends MeshGeometry
     /**
      * refreshes vertices of Rope mesh
      */
-    updateVertices()
+    public updateVertices(): void
     {
         const points = this.points;
 
@@ -191,7 +208,7 @@ export class RopeGeometry extends MeshGeometry
             }
 
             const perpLength = Math.sqrt((perpX * perpX) + (perpY * perpY));
-            const num = this.textureScale > 0 ? this.textureScale * this.width / 2 : this.width / 2;
+            const num = this.textureScale > 0 ? this.textureScale * this._width / 2 : this._width / 2;
 
             perpX /= perpLength;
             perpY /= perpLength;
@@ -210,7 +227,7 @@ export class RopeGeometry extends MeshGeometry
         this.buffers[0].update();
     }
 
-    update()
+    public update(): void
     {
         if (this.textureScale > 0)
         {

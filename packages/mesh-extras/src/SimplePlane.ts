@@ -1,4 +1,4 @@
-import { Texture } from '@pixi/core';
+import { Texture, Renderer } from '@pixi/core';
 import { Mesh, MeshMaterial } from '@pixi/mesh';
 import { PlaneGeometry } from './geometry/PlaneGeometry';
 
@@ -19,12 +19,14 @@ import { PlaneGeometry } from './geometry/PlaneGeometry';
  */
 export class SimplePlane extends Mesh
 {
+    protected _textureID: number;
+
     /**
      * @param {PIXI.Texture} texture - The texture to use on the SimplePlane.
      * @param {number} verticesX - The number of vertices in the x-axis
      * @param {number} verticesY - The number of vertices in the y-axis
      */
-    constructor(texture, verticesX, verticesY)
+    constructor(texture: Texture, verticesX: number, verticesY: number)
     {
         const planeGeometry = new PlaneGeometry(texture.width, texture.height, verticesX, verticesY);
         const meshMaterial = new MeshMaterial(Texture.WHITE);
@@ -39,14 +41,16 @@ export class SimplePlane extends Mesh
      * Method used for overrides, to do something in case texture frame was changed.
      * Meshes based on plane can override it and change more details based on texture.
      */
-    textureUpdated()
+    public textureUpdated(): void
     {
         this._textureID = this.shader.texture._updateID;
 
-        this.geometry.width = this.shader.texture.width;
-        this.geometry.height = this.shader.texture.height;
+        const geometry: PlaneGeometry = this.geometry as any;
 
-        this.geometry.build();
+        geometry.width = this.shader.texture.width;
+        geometry.height = this.shader.texture.height;
+
+        geometry.build();
     }
 
     set texture(value)
@@ -73,12 +77,12 @@ export class SimplePlane extends Mesh
         }
     }
 
-    get texture()
+    get texture(): Texture
     {
         return this.shader.texture;
     }
 
-    _render(renderer)
+    _render(renderer: Renderer): void
     {
         if (this._textureID !== this.shader.texture._updateID)
         {
