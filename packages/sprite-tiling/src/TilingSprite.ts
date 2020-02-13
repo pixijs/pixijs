@@ -2,7 +2,7 @@ import { Renderer, Texture, TextureMatrix, TextureSource, IBaseTextureOptions } 
 import { IDestroyOptions } from '@pixi/display';
 import { IPoint, Point, Rectangle, Transform, ObservablePoint, ISize } from '@pixi/math';
 import { Sprite } from '@pixi/sprite';
-import { TextureCache, deprecation } from '@pixi/utils';
+import { deprecation } from '@pixi/utils';
 
 const tempPoint = new Point();
 
@@ -256,11 +256,12 @@ export class TilingSprite extends Sprite
      *
      * @static
      * @param {string|PIXI.Texture|HTMLCanvasElement|HTMLVideoElement} source - Source to create texture from
-     * @param {number} width - the width of the tiling sprite
-     * @param {number} height - the height of the tiling sprite
+     * @param {Object} options - See {@link PIXI.BaseTexture}'s constructor for options.
+     * @param {number} options.width - required width of the tiling sprite
+     * @param {number} options.height - required height of the tiling sprite
      * @return {PIXI.TilingSprite} The newly created texture
      */
-    static from(source: TextureSource, options: ISize): TilingSprite
+    static from(source: TextureSource, options: ISize & IBaseTextureOptions): TilingSprite
     {
         // Deprecated
         if (typeof options === 'number')
@@ -270,58 +271,11 @@ export class TilingSprite extends Sprite
             options = { width: options, height: arguments[2] } as ISize;
         }
 
-        return new TilingSprite(Texture.from(source), options.width, options.height);
-    }
-
-    /**
-     * Helper function that creates a tiling sprite that will use a texture from the TextureCache based on the frameId
-     * The frame ids are created when a Texture packer file has been loaded
-     *
-     * @static
-     * @param {string} frameId - The frame Id of the texture in the cache
-     * @param {number} width - the width of the tiling sprite
-     * @param {number} height - the height of the tiling sprite
-     * @return {PIXI.TilingSprite} A new TilingSprite using a texture from the texture cache matching the frameId
-     */
-    static fromFrame(frameId: string, width: number, height: number): TilingSprite
-    {
-        const texture = TextureCache[frameId];
-
-        if (!texture)
-        {
-            throw new Error(`The frameId "${frameId}" does not exist in the texture cache ${this}`);
-        }
-
-        return new TilingSprite(texture, width, height);
-    }
-
-    /**
-     * Helper function that creates a sprite that will contain a texture based on an image url
-     * If the image is not in the texture cache it will be loaded
-     *
-     * @static
-     * @param {string} imageId - The image url of the texture
-     * @param {number} width - the width of the tiling sprite
-     * @param {number} height - the height of the tiling sprite
-     * @param {Object} [options] - See {@link PIXI.BaseTexture}'s constructor for options.
-     * @return {PIXI.TilingSprite} A new TilingSprite using a texture from the texture cache matching the image id
-     */
-    static fromImage(imageId: string, width: number, height: number, options?: IBaseTextureOptions): TilingSprite
-    {
-        // Fallback support for crossorigin, scaleMode parameters
-        if (options && typeof options !== 'object')
-        {
-            options = {
-                // eslint-disable-next-line prefer-rest-params
-                scaleMode: arguments[4],
-                resourceOptions: {
-                    // eslint-disable-next-line prefer-rest-params
-                    crossorigin: arguments[3],
-                },
-            };
-        }
-
-        return new TilingSprite(Texture.from(imageId, options), width, height);
+        return new TilingSprite(
+            Texture.from(source, options),
+            options.width,
+            options.height
+        );
     }
 
     /**
