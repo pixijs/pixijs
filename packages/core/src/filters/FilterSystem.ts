@@ -233,6 +233,11 @@ export class FilterSystem extends System
 
         const lastState = filterStack[filterStack.length - 1];
 
+        if (state.renderTexture.framebuffer.multisample > 1)
+        {
+            this.renderer.framebuffer.blit();
+        }
+
         if (filters.length === 1)
         {
             filters[0].apply(this, state.renderTexture, lastState.renderTexture, CLEAR_MODES.BLEND, state);
@@ -389,7 +394,7 @@ export class FilterSystem extends System
      * @param {number} [resolution] override resolution of the renderTexture
      * @returns {PIXI.RenderTexture}
      */
-    getFilterTexture(input: RenderTexture, resolution: number): RenderTexture
+    getFilterTexture(input?: RenderTexture, resolution?: number): RenderTexture
     {
         if (typeof input === 'number')
         {

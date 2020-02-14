@@ -1,7 +1,7 @@
 import { Runner } from '@pixi/runner';
 import { BaseTexture } from '../textures/BaseTexture';
 import { DepthResource } from '../textures/resources/DepthResource';
-import { FORMATS, MIPMAP_MODES, TYPES } from '@pixi/constants';
+import { FORMATS, MIPMAP_MODES, TYPES, MSAA_QUALITY } from '@pixi/constants';
 
 import { GLFramebuffer } from './GLFramebuffer';
 
@@ -15,6 +15,7 @@ export class Framebuffer
 {
     public width: number;
     public height: number;
+    public multisample: MSAA_QUALITY;
     stencil: boolean;
     depth: boolean;
     dirtyId: number;
@@ -30,7 +31,15 @@ export class Framebuffer
      */
     constructor(width: number, height: number)
     {
+        /**
+         * Width of framebuffer in pixels
+         * @member {number}
+         */
         this.width = Math.ceil(width || 100);
+        /**
+         * Height of framebuffer in pixels
+         * @member {number}
+         */
         this.height = Math.ceil(height || 100);
 
         this.stencil = false;
@@ -46,6 +55,25 @@ export class Framebuffer
         this.glFramebuffers = {};
 
         this.disposeRunner = new Runner('disposeFramebuffer');
+
+        /**
+         * Desired number of samples for antialiasing. 0 means AA should not be used.
+         *
+         * Experimental WebGL2 feature, allows to use antialiasing in individual renderTextures.
+         * Antialiasing is the same as for main buffer with renderer `antialias:true` options.
+         * Seriously affects GPU memory consumption and GPU performance.
+         *
+         *```js
+         * renderTexture.framebuffer.multisample = PIXI.MSAA_QUALITY.HIGH;
+         * //...
+         * renderer.render(renderTexture, myContainer);
+         * renderer.framebuffer.blit(); // copies data from MSAA framebuffer to texture
+         *  ```
+         *
+         * @member {PIXI.MSAA_QUALITY}
+         * @default PIXI.MSAA_QUALITY.NONE
+         */
+        this.multisample = MSAA_QUALITY.NONE;
     }
 
     /**

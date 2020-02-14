@@ -76,8 +76,8 @@ export class BatchSystem extends System
      * Handy function for batch renderers: copies bound textures in first maxTextures locations to array
      * sets actual _batchLocation for them
      *
-     * @param arr
-     * @param maxTextures
+     * @param {PIXI.BaseTexture[]} arr copy destination
+     * @param {number} maxTextures number of copied elements
      */
     copyBoundTextures(arr: BaseTexture[], maxTextures: number): void
     {

@@ -1,11 +1,13 @@
 import { System } from '../System';
 import { Rectangle } from '@pixi/math';
-import { ENV, BUFFER_BITS } from '@pixi/constants';
+import { ENV, BUFFER_BITS, MSAA_QUALITY } from '@pixi/constants';
 import { settings } from '../settings';
 import { Framebuffer } from './Framebuffer';
 import { GLFramebuffer } from './GLFramebuffer';
 
 import { Renderer, IRenderingContext } from '@pixi/core';
+
+const tempRectangle = new Rectangle();
 
 /**
  * System plugin to the renderer to manage framebuffers.
@@ -24,6 +26,7 @@ export class FramebufferSystem extends System
     protected CONTEXT_UID: number;
     protected gl: IRenderingContext;
     protected unknownFramebuffer: Framebuffer;
+    protected msaaSamples: Array<number>;
 
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
@@ -45,6 +48,8 @@ export class FramebufferSystem extends System
          * @readonly
          */
         this.unknownFramebuffer = new Framebuffer(10, 10);
+
+        this.msaaSamples = null;
     }
 
     /**
@@ -93,6 +98,12 @@ export class FramebufferSystem extends System
             {
                 this.writeDepthTexture = false;
             }
+        }
+        else
+        {
+            // WebGL2
+            // cache possible MSAA samples
+            this.msaaSamples = gl.getInternalformatParameter(gl.RENDERBUFFER, gl.RGBA8, gl.SAMPLES);
         }
     }
 
@@ -241,17 +252,18 @@ export class FramebufferSystem extends System
     }
 
     /**
-     * Initialize framebuffer
+     * Initialize framebuffer for this context
      *
      * @protected
      * @param {PIXI.Framebuffer} framebuffer
-     * @returns PIXI.GLFramebuffer
+     * @returns {PIXI.GLFramebuffer} created GLFramebuffer
      */
     initFramebuffer(framebuffer: Framebuffer): GLFramebuffer
     {
         const { gl } = this;
         const fbo = new GLFramebuffer(gl.createFramebuffer());
 
+        fbo.multisample = this.detectSamples(framebuffer.multisample);
         framebuffer.glFramebuffers[this.CONTEXT_UID] = fbo;
 
         this.managedFramebuffers.push(framebuffer);
@@ -313,10 +325,24 @@ export class FramebufferSystem extends System
             count = Math.min(count, 1);
         }
 
+        if (fbo.multisample > 1)
+        {
+            fbo.msaaBuffer = gl.createRenderbuffer();
+            gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.msaaBuffer);
+            gl.renderbufferStorageMultisample(gl.RENDERBUFFER, fbo.multisample,
+                gl.RGBA8, framebuffer.width, framebuffer.height);
+            gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.RENDERBUFFER, fbo.msaaBuffer);
+        }
+
         const activeTextures = [];
 
         for (let i = 0; i < count; i++)
         {
+            if (i === 0 && fbo.multisample > 1)
+            {
+                continue;
+            }
+
             const texture = framebuffer.colorTextures[i];
 
             if ((texture as any).texturePart)
@@ -380,6 +406,106 @@ export class FramebufferSystem extends System
                 gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, fbo.stencil);
             }
         }
+    }
+
+    /**
+     * Detects number of samples that is not more than a param but as close to it as possible
+     *
+     * @param {PIXI.MSAA_QUALITY} samples number of samples
+     * @returns {PIXI.MSAA_QUALITY} recommended number of samples
+     */
+    protected detectSamples(samples: MSAA_QUALITY): MSAA_QUALITY
+    {
+        const { msaaSamples } = this;
+        let res = MSAA_QUALITY.NONE;
+
+        if (samples <= 1 || msaaSamples === null)
+        {
+            return res;
+        }
+        for (let i = 0; i < msaaSamples.length; i++)
+        {
+            if (msaaSamples[i] <= samples)
+            {
+                res = msaaSamples[i];
+                break;
+            }
+        }
+
+        if (res === 1)
+        {
+            res = MSAA_QUALITY.NONE;
+        }
+
+        return res;
+    }
+
+    /**
+     * Only works with WebGL2
+     *
+     * blits framebuffer to another of the same or bigger size
+     * after that target framebuffer is bound
+     *
+     * Fails with WebGL warning if blits multisample framebuffer to different size
+     *
+     * @param {PIXI.Framebuffer} [framebuffer] by default it blits "into itself", from renderBuffer to texture.
+     * @param {PIXI.Rectangle} [sourcePixels] source rectangle in pixels
+     * @param {PIXI.Rectangle} [destPixels] dest rectangle in pixels, assumed to be the same as sourcePixels
+     */
+    public blit(framebuffer?: Framebuffer, sourcePixels?: Rectangle, destPixels?: Rectangle): void
+    {
+        const { current, renderer, gl, CONTEXT_UID } = this;
+
+        if (renderer.context.webGLVersion !== 2)
+        {
+            return;
+        }
+
+        if (!current)
+        {
+            return;
+        }
+        const fbo = current.glFramebuffers[CONTEXT_UID];
+
+        if (!fbo)
+        {
+            return;
+        }
+        if (!framebuffer)
+        {
+            if (fbo.multisample <= 1)
+            {
+                return;
+            }
+            if (!fbo.blitFramebuffer)
+            {
+                fbo.blitFramebuffer = new Framebuffer(current.width, current.height);
+                fbo.blitFramebuffer.addColorTexture(0, current.colorTextures[0]);
+            }
+            framebuffer = fbo.blitFramebuffer;
+            framebuffer.width = current.width;
+            framebuffer.height = current.height;
+        }
+
+        if (!sourcePixels)
+        {
+            sourcePixels = tempRectangle;
+            sourcePixels.width = current.width;
+            sourcePixels.height = current.height;
+        }
+        if (!destPixels)
+        {
+            destPixels = sourcePixels;
+        }
+
+        const sameSize = sourcePixels.width === destPixels.width && sourcePixels.height === destPixels.height;
+
+        this.bind(framebuffer);
+        gl.bindFramebuffer(gl.READ_FRAMEBUFFER, fbo.framebuffer);
+        gl.blitFramebuffer(sourcePixels.x, sourcePixels.y, sourcePixels.width, sourcePixels.height,
+            destPixels.x, destPixels.y, destPixels.width, destPixels.height,
+            gl.COLOR_BUFFER_BIT, sameSize ? gl.NEAREST : gl.LINEAR
+        );
     }
 
     /**

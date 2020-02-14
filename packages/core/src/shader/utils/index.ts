@@ -5,6 +5,7 @@ export * from './setPrecision';
 export * from './mapSize';
 export * from './mapType';
 export * from './generateUniformsSync';
+export * from './uniformParsers';
 export * from './getTestContext';
 export * from './checkMaxIfStatementsInShader';
 export * from './unsafeEvalSupported';
