@@ -1,7 +1,7 @@
 import { BLEND_MODES } from '@pixi/constants';
-import { hex2rgb } from '@pixi/utils';
-import { Container, IDestroyOptions } from '@pixi/display';
 import { BaseTexture, Renderer } from '@pixi/core';
+import { Container, IDestroyOptions } from '@pixi/display';
+import { hex2rgb } from '@pixi/utils';
 import { ParticleBuffer } from './ParticleBuffer';
 
 export interface IParticleProperties {
@@ -56,6 +56,7 @@ export class ParticleContainer extends Container
     _bufferUpdateIDs: number[];
     _updateID: number;
     private _tint: number;
+
     /**
      * @param {number} [maxSize=1500] - The maximum number of particles that can be rendered by the container.
      *  Affects size of allocated buffers.
@@ -244,7 +245,7 @@ export class ParticleContainer extends Container
 
         if (!this.baseTexture)
         {
-            this.baseTexture = this.children[0]._texture.baseTexture;
+            this.baseTexture = (this.children[0] as any)._texture.baseTexture;
             if (!this.baseTexture.valid)
             {
                 this.baseTexture.once('update', () => this.onChildrenChange(0));

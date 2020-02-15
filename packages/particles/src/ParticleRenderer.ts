@@ -1,12 +1,12 @@
 import { TYPES } from '@pixi/constants';
-import { ObjectRenderer, Shader, State, Renderer } from '@pixi/core';
-import { correctBlendMode, premultiplyRgba, premultiplyTint } from '@pixi/utils';
+import { ObjectRenderer, Renderer, Shader, State } from '@pixi/core';
+import { DisplayObject } from '@pixi/display';
 import { Matrix } from '@pixi/math';
+import { correctBlendMode, premultiplyRgba, premultiplyTint } from '@pixi/utils';
 import { ParticleBuffer } from './ParticleBuffer';
-import vertex from './particles.vert';
-import fragment from './particles.frag';
 import { ParticleContainer } from './ParticleContainer';
-import { Sprite } from '@pixi/sprite';
+import fragment from './particles.frag';
+import vertex from './particles.vert';
 
 export interface IParticleRendererProperty {
     attributeName: string;
@@ -36,10 +36,10 @@ export interface IParticleRendererProperty {
  */
 export class ParticleRenderer extends ObjectRenderer
 {
+    public readonly state: State;
     public shader: Shader;
     public tempMatrix: Matrix;
     public properties: IParticleRendererProperty[];
-    public readonly state: State;
 
     /**
      * @param {PIXI.Renderer} renderer - The renderer this sprite batch works for.
@@ -144,7 +144,7 @@ export class ParticleRenderer extends ObjectRenderer
             buffers = container._buffers = this.generateBuffers(container);
         }
 
-        const baseTexture = children[0]._texture.baseTexture;
+        const baseTexture = (children[0] as any)._texture.baseTexture;
 
         // if the uvs have not updated then no point rendering just yet!
         this.state.blendMode = correctBlendMode(container.blendMode, baseTexture.alphaMode);
@@ -251,7 +251,7 @@ export class ParticleRenderer extends ObjectRenderer
      * @param {number} offset - Offset to start at.
      */
     public uploadVertices(
-        children: Sprite[], startIndex: number, amount: number,
+        children: DisplayObject[], startIndex: number, amount: number,
         array: number[], stride: number, offset: number
     ): void
     {
@@ -262,7 +262,7 @@ export class ParticleRenderer extends ObjectRenderer
 
         for (let i = 0; i < amount; ++i)
         {
-            const sprite = children[startIndex + i];
+            const sprite: any = children[startIndex + i];
             const texture = sprite._texture;
             const sx = sprite.scale.x;
             const sy = sprite.scale.y;
@@ -315,7 +315,7 @@ export class ParticleRenderer extends ObjectRenderer
      * @param {number} offset - Offset to start at.
      */
     public uploadPosition(
-        children: Sprite[], startIndex: number, amount: number,
+        children: DisplayObject[], startIndex: number, amount: number,
         array: number[], stride: number, offset: number
     ): void
     {
@@ -350,7 +350,7 @@ export class ParticleRenderer extends ObjectRenderer
      * @param {number} offset - Offset to start at.
      */
     public uploadRotation(
-        children: Sprite[], startIndex: number, amount: number,
+        children: DisplayObject[], startIndex: number, amount: number,
         array: number[], stride: number, offset: number
     ): void
     {
@@ -378,13 +378,13 @@ export class ParticleRenderer extends ObjectRenderer
      * @param {number} offset - Offset to start at.
      */
     public uploadUvs(
-        children: Sprite[], startIndex: number, amount: number,
+        children: DisplayObject[], startIndex: number, amount: number,
         array: number[], stride: number, offset: number
     ): void
     {
         for (let i = 0; i < amount; ++i)
         {
-            const textureUvs = children[startIndex + i]._texture._uvs;
+            const textureUvs = (children[startIndex + i] as any)._texture._uvs;
 
             if (textureUvs)
             {
@@ -433,18 +433,19 @@ export class ParticleRenderer extends ObjectRenderer
      * @param {number} offset - Offset to start at.
      */
     public uploadTint(
-        children: Sprite[], startIndex: number, amount: number,
+        children: DisplayObject[], startIndex: number, amount: number,
         array: number[], stride: number, offset: number
     ): void
     {
         for (let i = 0; i < amount; ++i)
         {
-            const sprite = children[startIndex + i];
+            const sprite: any = children[startIndex + i];
             const premultiplied = sprite._texture.baseTexture.alphaMode > 0;
             const alpha = sprite.alpha;
+
             // we dont call extra function if alpha is 1.0, that's faster
-            const argb = alpha < 1.0 && premultiplied ? premultiplyTint(sprite._tintRGB, alpha)
-                : sprite._tintRGB + (alpha * 255 << 24);
+            const argb = alpha < 1.0 && premultiplied
+                ? premultiplyTint(sprite._tintRGB, alpha) : sprite._tintRGB + (alpha * 255 << 24);
 
             array[offset] = argb;
             array[offset + stride] = argb;
