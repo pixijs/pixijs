@@ -22,6 +22,6 @@ describe('PIXI.resources.CubeResource', function ()
         const path1 = this.baseTexUrl;
         const baseTex = BaseTexture.from([path1, path1, path1, path1, path1, path1]);
 
-        expect(baseTex.resource instanceof CubeResource).to.be.true;
+        expect(baseTex.resource).to.be.instanceof(CubeResource);
     });
 });
