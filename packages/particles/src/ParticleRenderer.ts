@@ -1,10 +1,20 @@
 import { TYPES } from '@pixi/constants';
-import { ObjectRenderer, Shader, State } from '@pixi/core';
+import { ObjectRenderer, Shader, State, Renderer } from '@pixi/core';
 import { correctBlendMode, premultiplyRgba, premultiplyTint } from '@pixi/utils';
 import { Matrix } from '@pixi/math';
 import { ParticleBuffer } from './ParticleBuffer';
 import vertex from './particles.vert';
 import fragment from './particles.frag';
+import { ParticleContainer } from './ParticleContainer';
+import { Sprite } from '@pixi/sprite';
+
+export interface IParticleRendererProperty {
+    attributeName: string;
+    size: number;
+    type?: TYPES;
+    uploadFunction: (...params: any[]) => any;
+    offset: number;
+}
 
 /**
  * @author Mat Groves
@@ -26,10 +36,15 @@ import fragment from './particles.frag';
  */
 export class ParticleRenderer extends ObjectRenderer
 {
+    public shader: Shader;
+    public tempMatrix: Matrix;
+    public properties: IParticleRendererProperty[];
+    public readonly state: State;
+
     /**
      * @param {PIXI.Renderer} renderer - The renderer this sprite batch works for.
      */
-    constructor(renderer)
+    constructor(renderer: Renderer)
     {
         super(renderer);
 
@@ -105,7 +120,7 @@ export class ParticleRenderer extends ObjectRenderer
      *
      * @param {PIXI.ParticleContainer} container - The container to render using this ParticleRenderer
      */
-    render(container)
+    public render(container: ParticleContainer): void
     {
         const children = container.children;
         const maxSize = container._maxSize;
@@ -195,7 +210,7 @@ export class ParticleRenderer extends ObjectRenderer
      * @return {PIXI.ParticleBuffer[]} The buffers
      * @private
      */
-    generateBuffers(container)
+    private generateBuffers(container: ParticleContainer): ParticleBuffer[]
     {
         const buffers = [];
         const size = container._maxSize;
@@ -217,7 +232,7 @@ export class ParticleRenderer extends ObjectRenderer
      * @return {PIXI.ParticleBuffer} generated buffer
      * @private
      */
-    _generateOneMoreBuffer(container)
+    private _generateOneMoreBuffer(container: ParticleContainer): ParticleBuffer
     {
         const batchSize = container._batchSize;
         const dynamicPropertyFlags = container._properties;
@@ -235,7 +250,10 @@ export class ParticleRenderer extends ObjectRenderer
      * @param {number} stride - Stride to use for iteration.
      * @param {number} offset - Offset to start at.
      */
-    uploadVertices(children, startIndex, amount, array, stride, offset)
+    public uploadVertices(
+        children: Sprite[], startIndex: number, amount: number,
+        array: number[], stride: number, offset: number
+    ): void
     {
         let w0 = 0;
         let w1 = 0;
@@ -296,7 +314,10 @@ export class ParticleRenderer extends ObjectRenderer
      * @param {number} stride - Stride to use for iteration.
      * @param {number} offset - Offset to start at.
      */
-    uploadPosition(children, startIndex, amount, array, stride, offset)
+    public uploadPosition(
+        children: Sprite[], startIndex: number, amount: number,
+        array: number[], stride: number, offset: number
+    ): void
     {
         for (let i = 0; i < amount; i++)
         {
@@ -319,7 +340,7 @@ export class ParticleRenderer extends ObjectRenderer
     }
 
     /**
-     * Uploads the rotiation.
+     * Uploads the rotation.
      *
      * @param {PIXI.DisplayObject[]} children - the array of display objects to render
      * @param {number} startIndex - the index to start from in the children array
@@ -328,7 +349,10 @@ export class ParticleRenderer extends ObjectRenderer
      * @param {number} stride - Stride to use for iteration.
      * @param {number} offset - Offset to start at.
      */
-    uploadRotation(children, startIndex, amount, array, stride, offset)
+    public uploadRotation(
+        children: Sprite[], startIndex: number, amount: number,
+        array: number[], stride: number, offset: number
+    ): void
     {
         for (let i = 0; i < amount; i++)
         {
@@ -353,7 +377,10 @@ export class ParticleRenderer extends ObjectRenderer
      * @param {number} stride - Stride to use for iteration.
      * @param {number} offset - Offset to start at.
      */
-    uploadUvs(children, startIndex, amount, array, stride, offset)
+    public uploadUvs(
+        children: Sprite[], startIndex: number, amount: number,
+        array: number[], stride: number, offset: number
+    ): void
     {
         for (let i = 0; i < amount; ++i)
         {
@@ -405,7 +432,10 @@ export class ParticleRenderer extends ObjectRenderer
      * @param {number} stride - Stride to use for iteration.
      * @param {number} offset - Offset to start at.
      */
-    uploadTint(children, startIndex, amount, array, stride, offset)
+    public uploadTint(
+        children: Sprite[], startIndex: number, amount: number,
+        array: number[], stride: number, offset: number
+    ): void
     {
         for (let i = 0; i < amount; ++i)
         {
@@ -428,7 +458,7 @@ export class ParticleRenderer extends ObjectRenderer
     /**
      * Destroys the ParticleRenderer.
      */
-    destroy()
+    public destroy(): void
     {
         super.destroy();
 

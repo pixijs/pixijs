@@ -1,6 +1,7 @@
 import { createIndicesForQuads } from '@pixi/utils';
 import { Geometry, Buffer } from '@pixi/core';
 import { TYPES } from '@pixi/constants';
+import { DisplayObject } from '@pixi/display';
 
 /**
  * @author Mat Groves
@@ -23,13 +24,29 @@ import { TYPES } from '@pixi/constants';
  */
 export class ParticleBuffer
 {
+    public geometry: Geometry;
+    public staticStride: number;
+    public staticBuffer: Buffer;
+    public staticData: Float32Array;
+    public staticDataUint32: Uint32Array;
+    public dynamicStride: number;
+    public dynamicBuffer: Buffer;
+    public dynamicData: Float32Array;
+    public dynamicDataUint32: Uint32Array;
+    public _updateID: number;
+
+    indexBuffer: Buffer;
+    private size: number;
+    private dynamicProperties: IParticleRendererProperty[];
+    private staticProperties: IParticleRendererProperty[];
+
     /**
      * @private
      * @param {object} properties - The properties to upload.
      * @param {boolean[]} dynamicPropertyFlags - Flags for which properties are dynamic.
      * @param {number} size - The size of the batch.
      */
-    constructor(properties, dynamicPropertyFlags, size)
+    constructor(properties: IParticleRendererProperty[], dynamicPropertyFlags: boolean[], size: number)
     {
         this.geometry = new Geometry();
 
@@ -103,7 +120,7 @@ export class ParticleBuffer
      *
      * @private
      */
-    initBuffers()
+    private initBuffers(): void
     {
         const geometry = this.geometry;
 
@@ -194,7 +211,7 @@ export class ParticleBuffer
      * @param {number} startIndex - The index to start at.
      * @param {number} amount - The number to upload.
      */
-    uploadDynamic(children, startIndex, amount)
+    uploadDynamic(children: DisplayObject[], startIndex: number, amount: number): void
     {
         for (let i = 0; i < this.dynamicProperties.length; i++)
         {
@@ -216,7 +233,7 @@ export class ParticleBuffer
      * @param {number} startIndex - The index to start at.
      * @param {number} amount - The number to upload.
      */
-    uploadStatic(children, startIndex, amount)
+    uploadStatic(children: DisplayObject[], startIndex: number, amount: number): void
     {
         for (let i = 0; i < this.staticProperties.length; i++)
         {
@@ -235,18 +252,16 @@ export class ParticleBuffer
      *
      * @private
      */
-    destroy()
+    destroy(): void
     {
         this.indexBuffer = null;
 
         this.dynamicProperties = null;
-        // this.dynamicBuffer.destroy();
         this.dynamicBuffer = null;
         this.dynamicData = null;
         this.dynamicDataUint32 = null;
 
         this.staticProperties = null;
-        // this.staticBuffer.destroy();
         this.staticBuffer = null;
         this.staticData = null;
         this.staticDataUint32 = null;
