@@ -2,6 +2,7 @@ import { ArrayResource } from './ArrayResource';
 import { Resource } from './Resource';
 import { TARGETS } from '@pixi/constants';
 import { ISize } from '@pixi/math';
+import { ArrayFixed } from '@pixi/utils';
 
 import { BaseTexture, Renderer, GLTexture } from '@pixi/core';
 
@@ -27,9 +28,9 @@ export interface ICubeResourceOptions extends ISize
  */
 export class CubeResource extends ArrayResource
 {
-    items: Array<BaseTexture>;
+    items: ArrayFixed<BaseTexture, 6>;
 
-    constructor(source: Array<string|Resource>, options?: ICubeResourceOptions)
+    constructor(source: ArrayFixed<string|Resource, 6>, options?: ICubeResourceOptions)
     {
         const { width, height, autoLoad } = options || {};
 
@@ -103,4 +104,16 @@ export class CubeResource extends ArrayResource
      * @default 6
      */
     static SIDES = 6;
+
+    /**
+     * Used to auto-detect the type of resource.
+     *
+     * @static
+     * @param {object} source - The source object
+     * @return {boolean} `true` if source is an array of 6 elements
+     */
+    static test(source: any): source is ArrayFixed<string|Resource, 6>
+    {
+        return Array.isArray(source) && source.length === CubeResource.SIDES;
+    }
 }
