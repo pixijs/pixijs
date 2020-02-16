@@ -26,7 +26,7 @@ export class ResizePlugin
     static init(options?: IApplicationOptions): void
     {
         /**
-         * The HTML element or window to automatically resize the 
+         * The HTML element or window to automatically resize the
          * renderer's view element to match width and height.
          * @type {Window|HTMLElement}
          * @name resizeTo
