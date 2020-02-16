@@ -38,6 +38,21 @@ describe('PIXI.Renderer', function ()
         }
     });
 
+    it('should emit resize event', function ()
+    {
+        const renderer = new Renderer(1, 1);
+        const spy = sinon.spy();
+
+        renderer.on('resize', spy);
+        renderer.resize(2, 4);
+
+        expect(spy.calledOnce).to.be.true;
+        expect(spy.firstCall.args[0]).to.equal(2);
+        expect(spy.firstCall.args[1]).to.equal(4);
+
+        renderer.destroy();
+    });
+
     describe('.setObjectRenderer()', function ()
     {
         before(function ()
