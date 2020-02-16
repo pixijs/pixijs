@@ -9,13 +9,13 @@ import { IApplicationOptions } from './Application';
  */
 export class ResizePlugin
 {
-    public static _resizeId: number;
-    public static _resizeTo: Window|HTMLElement;
     public static resizeTo: Window|HTMLElement;
     public static resize: () => void;
-    public static queueResize: () => void;
-    public static cancelResize: () => void;
     public static renderer: Renderer|CanvasRenderer;
+    public static queueResize: () => void;
+    private static _resizeId: number;
+    private static _resizeTo: Window|HTMLElement;
+    private static cancelResize: () => void;
 
     /**
      * Initialize the plugin with scope of application instance
@@ -54,7 +54,6 @@ export class ResizePlugin
          * Resize to happen on the next available animation frame, so it's
          * safe to call this multiple times per frame.
          * @method PIXI.Application#queueResize
-         * @private
          */
         this.queueResize = (): void =>
         {
