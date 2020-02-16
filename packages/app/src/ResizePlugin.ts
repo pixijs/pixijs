@@ -68,7 +68,7 @@ export class ResizePlugin
             this.cancelResize();
 
             // // Throttle resize events per raf
-            this._resizeId = setTimeout(() => this.resize(), throttle);
+            this._resizeId = window.setTimeout(() => this.resize(), throttle);
         };
 
         /**
@@ -80,7 +80,7 @@ export class ResizePlugin
         {
             if (this._resizeId)
             {
-                clearTimeout(this._resizeId);
+                window.clearTimeout(this._resizeId);
                 this._resizeId = null;
             }
         };
