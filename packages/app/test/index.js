@@ -127,7 +127,7 @@ describe('PIXI.Application', function ()
             app.destroy();
         });
 
-        it('should throttle multipe resizes', function (done)
+        it('should throttle multiple resizes', function (done)
         {
             const spy = sinon.spy();
             const app = new Application({
@@ -138,11 +138,32 @@ describe('PIXI.Application', function ()
             app.queueResize();
             app.queueResize();
 
-            requestAnimationFrame(() =>
+            setTimeout(() =>
             {
                 expect(spy.calledOnce).to.be.true;
                 app.destroy();
                 done();
+            }, 50);
+        });
+
+        it('should support throttle time', function (done)
+        {
+            const startTime = performance.now();
+            const app = new Application({
+                resizeTo: this.div,
+                resizeThrottle: 100,
+            });
+
+            app.queueResize();
+            app.renderer.once('resize', () =>
+            {
+                expect(performance.now() - startTime).to.be.at.least(100);
+                // wait for next process to destroy
+                setTimeout(() =>
+                {
+                    app.destroy();
+                    done();
+                });
             });
         });
 
