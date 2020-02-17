@@ -278,5 +278,22 @@ export class ContextSystem extends System
 
             /* eslint-enable max-len */
         }
+
+        const hasuint32
+            = (gl instanceof WebGL2RenderingContext)
+            || !!(gl as WebGLRenderingContext).getExtension('OES_element_index_uint');
+
+        if (!hasuint32 && settings.HAS_UINT32_INDEX)
+        {
+            /* eslint-disable max-len */
+
+            /* eslint-disable no-console */
+            console.warn('Provided WebGL context does not support 32 index buffer, large graphics may not render correctly');
+            /* eslint-enable no-console */
+
+            /* eslint-enable max-len */
+        }
+
+        settings.HAS_UINT32_INDEX = settings.HAS_UINT32_INDEX && hasuint32;
     }
 }

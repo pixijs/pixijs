@@ -21,6 +21,7 @@ import { premultiplyTint } from '@pixi/utils';
 import { Bounds } from '@pixi/display';
 import { FillStyle } from './styles/FillStyle';
 import { LineStyle } from './styles/LineStyle';
+import { settings } from '@pixi/settings';
 
 /**
  * @description Complex shape type
@@ -59,7 +60,7 @@ export class GraphicsGeometry extends BatchGeometry
     public boundsPadding: number;
 
     uvsFloat32: Float32Array = null;
-    indicesUint16: Uint16Array = null;
+    indicesUint16: Uint16Array | Uint32Array = null;
     batchable: boolean;
     points: Array<number>;
     colors: Array<number>;
@@ -533,11 +534,11 @@ export class GraphicsGeometry extends BatchGeometry
             }
         }
 
+        const index = this.indices.length;
+        const attrib = this.points.length / 2;
+
         if (batchPart)
         {
-            const index = this.indices.length;
-            const attrib = this.points.length / 2;
-
             batchPart.end(index, attrib);
         }
 
@@ -550,7 +551,17 @@ export class GraphicsGeometry extends BatchGeometry
             return;
         }
 
-        this.indicesUint16 = new Uint16Array(this.indices);
+        // prevent allocation when length is same as buffer
+        if (this.indicesUint16 && this.indices.length === this.indicesUint16.length)
+        {
+            this.indicesUint16.set(this.indices);
+        }
+        else
+        {
+            const need32 = attrib > 0xffff && settings.HAS_UINT32_INDEX;
+
+            this.indicesUint16 = need32 ? new Uint32Array(this.indices) : new Uint16Array(this.indices);
+        }
 
         // TODO make this a const..
         this.batchable = this.isBatchable();
@@ -654,6 +665,12 @@ export class GraphicsGeometry extends BatchGeometry
      */
     protected isBatchable(): boolean
     {
+        // prevent heavy mesh batching
+        if (this.points.length > 0xffff * 2)
+        {
+            return false;
+        }
+
         const batches = this.batches;
 
         for (let i = 0; i < batches.length; i++)

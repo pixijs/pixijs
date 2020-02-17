@@ -42,6 +42,7 @@ export interface ISettings {
     STRICT_TEXTURE_CACHE?: boolean;
     MESH_CANVAS_PADDING?: number;
     TARGET_FPMS?: number;
+    HAS_UINT32_INDEX?: boolean;
 }
 
 /**
