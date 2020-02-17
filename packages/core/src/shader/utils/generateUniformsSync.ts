@@ -1,4 +1,5 @@
 import { UniformGroup } from '../UniformGroup';
+import { uniformParsers } from './uniformParsers';
 
 // cv = CachedValue
 // v = value
@@ -82,11 +83,12 @@ const GLSL_TO_ARRAY_SETTERS: {[x: string]: string} = {
 
 export function generateUniformsSync(group: UniformGroup, uniformData: {[x: string]: any}): Function
 {
-    let func = `var v = null;
-    var cv = null
-    var t = 0;
-    var gl = renderer.gl
-    `;
+    const funcFragments = [`
+        var v = null;
+        var cv = null
+        var t = 0;
+        var gl = renderer.gl
+    `];
 
     for (const i in group.uniforms)
     {
@@ -96,135 +98,39 @@ export function generateUniformsSync(group: UniformGroup, uniformData: {[x: stri
         {
             if (group.uniforms[i].group)
             {
-                func += `
+                funcFragments.push(`
                     renderer.shader.syncUniformGroup(uv.${i}, syncData);
-                `;
+                `);
             }
 
             continue;
         }
 
-        // TODO && uniformData[i].value !== 0 <-- do we still need this?
-        if (data.type === 'float' && data.size === 1)
-        {
-            func += `
-            if(uv.${i} !== ud.${i}.value)
-            {
-                ud.${i}.value = uv.${i}
-                gl.uniform1f(ud.${i}.location, uv.${i})
-            }\n`;
-        }
-        /* eslint-disable max-len */
-        else if ((data.type === 'sampler2D' || data.type === 'samplerCube' || data.type === 'sampler2DArray') && data.size === 1 && !data.isArray)
-        /* eslint-disable max-len */
-        {
-            func += `
+        const uniform = group.uniforms[i];
 
-            t = syncData.textureCount++;
+        let parsed = false;
 
-            renderer.texture.bind(uv.${i}, t);
-
-            if(ud.${i}.value !== t)
-            {
-                ud.${i}.value = t;
-                gl.uniform1i(ud.${i}.location, t);\n; // eslint-disable-line max-len
-            }\n`;
-        }
-        else if (data.type === 'mat3' && data.size === 1)
+        for (let j = 0; j < uniformParsers.length; j++)
         {
-            if (group.uniforms[i].a !== undefined)
+            if (uniformParsers[j].test(data, uniform))
             {
-                // TODO and some smart caching dirty ids here!
-                func += `
-                gl.uniformMatrix3fv(ud.${i}.location, false, uv.${i}.toArray(true));
-                \n`;
-            }
-            else
-            {
-                func += `
-                gl.uniformMatrix3fv(ud.${i}.location, false, uv.${i});
-                \n`;
+                funcFragments.push(uniformParsers[j].code(i, uniform));
+                parsed = true;
+
+                break;
             }
         }
-        else if (data.type === 'vec2' && data.size === 1)
-        {
-            // TODO - do we need both here?
-            // maybe we can get away with only using points?
-            if (group.uniforms[i].x !== undefined)
-            {
-                func += `
-                cv = ud.${i}.value;
-                v = uv.${i};
 
-                if(cv[0] !== v.x || cv[1] !== v.y)
-                {
-                    cv[0] = v.x;
-                    cv[1] = v.y;
-                    gl.uniform2f(ud.${i}.location, v.x, v.y);
-                }\n`;
-            }
-            else
-            {
-                func += `
-                cv = ud.${i}.value;
-                v = uv.${i};
-
-                if(cv[0] !== v[0] || cv[1] !== v[1])
-                {
-                    cv[0] = v[0];
-                    cv[1] = v[1];
-                    gl.uniform2f(ud.${i}.location, v[0], v[1]);
-                }
-                \n`;
-            }
-        }
-        else if (data.type === 'vec4' && data.size === 1)
-        {
-            // TODO - do we need both here?
-            // maybe we can get away with only using points?
-            if (group.uniforms[i].width !== undefined)
-            {
-                func += `
-                cv = ud.${i}.value;
-                v = uv.${i};
-
-                if(cv[0] !== v.x || cv[1] !== v.y || cv[2] !== v.width || cv[3] !== v.height)
-                {
-                    cv[0] = v.x;
-                    cv[1] = v.y;
-                    cv[2] = v.width;
-                    cv[3] = v.height;
-                    gl.uniform4f(ud.${i}.location, v.x, v.y, v.width, v.height)
-                }\n`;
-            }
-            else
-            {
-                func += `
-                cv = ud.${i}.value;
-                v = uv.${i};
-
-                if(cv[0] !== v[0] || cv[1] !== v[1] || cv[2] !== v[2] || cv[3] !== v[3])
-                {
-                    cv[0] = v[0];
-                    cv[1] = v[1];
-                    cv[2] = v[2];
-                    cv[3] = v[3];
-
-                    gl.uniform4f(ud.${i}.location, v[0], v[1], v[2], v[3])
-                }
-                \n`;
-            }
-        }
-        else
+        if (!parsed)
         {
             const templateType = (data.size === 1) ? GLSL_TO_SINGLE_SETTERS_CACHED : GLSL_TO_ARRAY_SETTERS;
 
             const template =  templateType[data.type].replace('location', `ud.${i}.location`);
 
-            func += `
+            funcFragments.push(`
             cv = ud.${i}.value;
             v = uv.${i};
-            ${template};\n`;
+            ${template};`);
         }
     }
 
@@ -234,5 +140,5 @@ export function generateUniformsSync(group: UniformGroup, uniformData: {[x: stri
      * no matter which group is being used
      *
      */
-    return new Function('ud', 'uv', 'renderer', 'syncData', func); // eslint-disable-line no-new-func
+    return new Function('ud', 'uv', 'renderer', 'syncData', funcFragments.join('\n')); // eslint-disable-line no-new-func
 }

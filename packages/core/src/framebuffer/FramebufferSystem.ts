@@ -252,11 +252,11 @@ export class FramebufferSystem extends System
     }
 
     /**
-     * Initialize framebuffer
+     * Initialize framebuffer for this context
      *
      * @protected
      * @param {PIXI.Framebuffer} framebuffer
-     * @returns PIXI.GLFramebuffer
+     * @returns {PIXI.GLFramebuffer} created GLFramebuffer
      */
     initFramebuffer(framebuffer: Framebuffer): GLFramebuffer
     {

@@ -41,7 +41,7 @@ export class MeshMaterial extends Shader
      * @param {PIXI.Program} [options.program=0xFFFFFF] - Custom program.
      * @param {object} [options.uniforms] - Custom uniforms.
      */
-    constructor(uSampler: Texture, options: IMeshMaterialOptions)
+    constructor(uSampler: Texture, options?: IMeshMaterialOptions)
     {
         const uniforms = {
             uSampler,

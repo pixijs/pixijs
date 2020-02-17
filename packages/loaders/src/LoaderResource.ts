@@ -1,6 +1,7 @@
 import { Resource } from 'resource-loader';
 import { Texture } from '@pixi/core';
 import { Spritesheet } from '@pixi/spritesheet';
+import { Dict } from '@pixi/utils';
 
 export interface IResourceMetadata extends Resource.IMetadata {
     imageMetadata?: any;
@@ -11,11 +12,14 @@ export interface ILoaderResource extends Resource
     spritesheet?: Spritesheet;
 
     // required for Spritesheet
-    textures?: {[key: string]: Texture};
+    textures?: Dict<Texture>;
 
     // required specific type for Spritesheet
     metadata: IResourceMetadata;
 }
+
+// Mix constructor and typeof Resource , otherwise we can't access to statics field
+type TLoaderResource = { new(...args: any[]): ILoaderResource } & typeof Resource;
 
 /**
 * Reference to **{@link https://github.com/englercj/resource-loader
@@ -24,4 +28,4 @@ export interface ILoaderResource extends Resource
 * @class LoaderResource
 * @memberof PIXI
 */
-export const LoaderResource: ILoaderResource = Resource as any;
+export const LoaderResource: TLoaderResource = Resource;

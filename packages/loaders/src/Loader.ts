@@ -97,6 +97,8 @@ export class Loader extends ResourceLoader
 
     /**
      * Destroy the loader, removes references.
+     * @memberof PIXI.Loader#
+     * @method destroy
      * @public
      */
     public destroy(): void
@@ -157,22 +159,23 @@ Loader.registerPlugin({ use: middleware.parsing });
 // parse any Image objects into textures
 Loader.registerPlugin(TextureLoader);
 
+export interface ILoaderPlugin {
+    add?(): void;
+    pre?(resource: Resource, next?: (...args: any[]) => void): void;
+    use?(resource: Resource, next?: (...args: any[]) => void): void;
+}
+
 /**
  * Plugin to be installed for handling specific Loader resources.
  *
  * @memberof PIXI
- * @typedef ILoaderPlugin
+ * @typedef {object} ILoaderPlugin
  * @property {function} [add] - Function to call immediate after registering plugin.
  * @property {PIXI.Loader.loaderMiddleware} [pre] - Middleware function to run before load, the
  *           arguments for this are `(resource, next)`
  * @property {PIXI.Loader.loaderMiddleware} [use] - Middleware function to run after load, the
  *           arguments for this are `(resource, next)`
  */
-export interface ILoaderPlugin {
-    add?(): void;
-    pre?(resource: Resource, next?: (...args: any[]) => void): void;
-    use?(resource: Resource, next?: (...args: any[]) => void): void;
-}
 
 /**
  * @memberof PIXI.Loader
@@ -211,29 +214,29 @@ export interface ILoaderPlugin {
 /**
  * @memberof PIXI.Loader#
  * @description Dispatched when the loader begins to loading process.
- * @member {ILoaderSignal} onStart
+ * @member {PIXI.Loader.ILoaderSignal} onStart
  */
 
 /**
  * @memberof PIXI.Loader#
  * @description Dispatched once per loaded or errored resource.
- * @member {ILoaderSignal} onProgress
+ * @member {PIXI.Loader.ILoaderSignal} onProgress
  */
 
 /**
  * @memberof PIXI.Loader#
  * @description Dispatched once per errored resource.
- * @member {ILoaderSignal} onError
+ * @member {PIXI.Loader.ILoaderSignal} onError
  */
 
 /**
  * @memberof PIXI.Loader#
  * @description Dispatched once per loaded resource.
- * @member {ILoaderSignal} onLoad
+ * @member {PIXI.Loader.ILoaderSignal} onLoad
  */
 
 /**
  * @memberof PIXI.Loader#
  * @description Dispatched when completely loaded all resources.
- * @member {ILoaderSignal} onComplete
+ * @member {PIXI.Loader.ILoaderSignal} onComplete
  */
