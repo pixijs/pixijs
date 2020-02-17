@@ -1,7 +1,7 @@
 language: node_js
 
 services:
-    -xvfb
+    - xvfb
 
 node_js:
     - "10"
@@ -16,10 +16,6 @@ env:
 install:
     - npm install
     - npm install codecov -g
-
-cache:
-  directories:
-    - node_modules
 
 script:
   - xvfb-run --server-args="-screen 0 1024x768x24" npm run coverage:ci
