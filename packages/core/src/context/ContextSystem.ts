@@ -288,7 +288,7 @@ export class ContextSystem extends System
             /* eslint-disable max-len */
 
             /* eslint-disable no-console */
-            console.warn('Provided WebGL context does not support 32 index buffer, large graphics may not render correctly');
+            console.warn('Provided WebGL context does not support 32 index buffer, complex graphics may not render correctly');
             /* eslint-enable no-console */
 
             /* eslint-enable max-len */
