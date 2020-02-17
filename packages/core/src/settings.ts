@@ -40,7 +40,7 @@ settings.STRICT_TEXTURE_CACHE = false;
 
 /**
  *
- * Enable 32 bit indices instead of 16 indices when it supported.
+ * Enable 32-bit indices instead of 16-bit indices when it's available.
  *
  * @static
  * @constant
