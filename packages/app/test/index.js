@@ -132,7 +132,6 @@ describe('PIXI.Application', function ()
             const spy = sinon.spy();
             const app = new Application({
                 resizeTo: this.div,
-                resizeThrottle: 0,
             });
 
             app.renderer.on('resize', spy);
@@ -145,27 +144,6 @@ describe('PIXI.Application', function ()
                 app.destroy();
                 done();
             }, 50);
-        });
-
-        it('should support throttle time', function (done)
-        {
-            const startTime = performance.now();
-            const app = new Application({
-                resizeTo: this.div,
-                resizeThrottle: 100,
-            });
-
-            app.queueResize();
-            app.renderer.once('resize', () =>
-            {
-                expect(performance.now() - startTime).to.be.at.least(100);
-                // wait for next process to destroy
-                setTimeout(() =>
-                {
-                    app.destroy();
-                    done();
-                });
-            });
         });
 
         it('should cancel resize on destroy', function (done)

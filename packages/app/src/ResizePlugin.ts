@@ -25,10 +25,6 @@ export class ResizePlugin
      */
     static init(options?: IApplicationOptions): void
     {
-        // Amount of time for throttling resize
-        const throttle = options.resizeThrottle !== undefined
-            ? options.resizeThrottle : 100;
-
         /**
          * The HTML element or window to automatically resize the
          * renderer's view element to match width and height.
@@ -55,8 +51,9 @@ export class ResizePlugin
             });
 
         /**
-         * Resize to happen after resize throttle timeout, so it's
-         * safe to call this multiple times per frame.
+         * Resize is throttled, so it's
+         * safe to call this multiple times per frame and it'll
+         * only be called once.
          * @method PIXI.Application#queueResize
          */
         this.queueResize = (): void =>
@@ -69,7 +66,7 @@ export class ResizePlugin
             this.cancelResize();
 
             // // Throttle resize events per raf
-            this._resizeId = window.setTimeout(() => this.resize(), throttle);
+            this._resizeId = requestAnimationFrame(() => this.resize());
         };
 
         /**
@@ -81,7 +78,7 @@ export class ResizePlugin
         {
             if (this._resizeId)
             {
-                window.clearTimeout(this._resizeId);
+                cancelAnimationFrame(this._resizeId);
                 this._resizeId = null;
             }
         };
