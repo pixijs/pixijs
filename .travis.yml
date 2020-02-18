@@ -1,32 +1,24 @@
 language: node_js
-node_js:
-    - "8"
 
-env:
-  - CXX=g++-4.8
+services:
+    - xvfb
+
+node_js:
+    - "10"
 
 addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
-    packages:
-      - g++-4.8
+env:
+  - CXX=g++-4.8
 
 install:
-    - npm install xvfb-maybe
     - npm install
     - npm install codecov -g
 
-cache:
-  directories:
-    - node_modules
-
-before_script:
-  - export DISPLAY=':99.0'
-  - Xvfb :99 -screen 0 1024x768x24 -extension RANDR &
-
 script:
-  - xvfb-maybe npm run coverage:ci
+  - npm run coverage:ci
   - codecov
   - npm run dist
 
