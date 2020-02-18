@@ -132,6 +132,7 @@ describe('PIXI.Application', function ()
             const spy = sinon.spy();
             const app = new Application({
                 resizeTo: this.div,
+                resizeThrottle: 0,
             });
 
             app.renderer.on('resize', spy);

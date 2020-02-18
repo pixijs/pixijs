@@ -72,7 +72,7 @@ export class Application
      *  The system ticker will always run before both the shared ticker and the app ticker.
      * @param {boolean} [options.sharedLoader=false] - `true` to use PIXI.Loader.shared, `false` to create new Loader.
      * @param {Window|HTMLElement} [options.resizeTo] - Element to automatically resize stage to.
-     * @param {number} [options.resizeThrottle=0] - Throttle time in milliseconds between resizes, if using `resizeTo`.
+     * @param {number} [options.resizeThrottle=100] - Throttle time in milliseconds between resizes, if using `resizeTo`.
      */
     constructor(options?: IApplicationOptions)
     {

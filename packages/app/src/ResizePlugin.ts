@@ -26,7 +26,8 @@ export class ResizePlugin
     static init(options?: IApplicationOptions): void
     {
         // Amount of time for throttling resize
-        const throttle = options.resizeThrottle || 0;
+        const throttle = options.resizeThrottle !== undefined
+            ? options.resizeThrottle : 100;
 
         /**
          * The HTML element or window to automatically resize the
