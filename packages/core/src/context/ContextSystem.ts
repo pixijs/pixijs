@@ -1,8 +1,8 @@
+import { IRenderingContext, Renderer } from '@pixi/core';
+
+import { ENV } from '@pixi/constants';
 import { System } from '../System';
 import { settings } from '../settings';
-import { ENV } from '@pixi/constants';
-
-import { IRenderingContext, Renderer } from '@pixi/core';
 
 let CONTEXT_UID_COUNTER = 0;
 
@@ -182,7 +182,7 @@ export class ContextSystem extends System
         {
             Object.assign(this.extensions, {
                 drawBuffers: gl.getExtension('WEBGL_draw_buffers'),
-                depthTexture: gl.getExtension('WEBKIT_WEBGL_depth_texture'),
+                depthTexture: gl.getExtension('WEBGL_depth_texture'),
                 loseContext: gl.getExtension('WEBGL_lose_context'),
                 vertexArrayObject: gl.getExtension('OES_vertex_array_object')
                     || gl.getExtension('MOZ_OES_vertex_array_object')
