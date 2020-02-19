@@ -37,7 +37,7 @@ export class TextureMatrix
      * @param {number} [clampMargin] Changes frame clamping, 0.5 by default. Use -0.5 for extra border.
      * @constructor
      */
-    constructor(texture: Texture, clampMargin: number)
+    constructor(texture: Texture, clampMargin?: number)
     {
         this._texture = texture;
 

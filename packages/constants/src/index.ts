@@ -34,6 +34,23 @@ export enum RENDERER_TYPE {
 }
 
 /**
+ * Bitwise OR of masks that indicate the buffers to be cleared.
+ *
+ * @static
+ * @memberof PIXI
+ * @name BUFFER_BITS
+ * @enum {number}
+ * @property {number} COLOR - Indicates the buffers currently enabled for color writing.
+ * @property {number} DEPTH - Indicates the depth buffer.
+ * @property {number} STENCIL - Indicates the stencil buffer.
+ */
+export enum BUFFER_BITS {
+    COLOR = 0x00004000,
+    DEPTH = 0x00000100,
+    STENCIL = 0x00000400
+}
+
+/**
  * Various blend modes supported by PIXI.
  *
  * IMPORTANT - The WebGL renderer only supports the NORMAL, ADD, MULTIPLY and SCREEN blend modes.
@@ -391,4 +408,25 @@ export enum MASK_TYPES {
     SCISSOR = 1,
     STENCIL = 2,
     SPRITE = 3,
+}
+
+/**
+ * Constants for multi-sampling antialiasing.
+ *
+ * @see PIXI.Framebuffer#multisample
+ *
+ * @name MSAA_QUALITY
+ * @memberof PIXI
+ * @static
+ * @enum {number}
+ * @property {number} NONE - No multisampling for this renderTexture
+ * @property {number} LOW - Try 2 samples
+ * @property {number} MEDIUM - Try 4 samples
+ * @property {number} HIGH - Try 8 samples
+ */
+export enum MSAA_QUALITY {
+    NONE = 0,
+    LOW = 2,
+    MEDIUM = 4,
+    HIGH = 8
 }

@@ -1,6 +1,7 @@
+import './settings';
+
 import * as resources from './textures/resources';
 import * as systems from './systems';
-import './settings';
 
 export { systems };
 export { resources };
@@ -32,6 +33,7 @@ export * from './batch/BatchTextureArray';
 export * from './utils/Quad';
 export * from './utils/QuadUv';
 export * from './shader/utils/checkMaxIfStatementsInShader';
+export * from './shader/utils/uniformParsers';
 export * from './shader/Shader';
 export * from './shader/Program';
 export * from './shader/GLProgram';

@@ -3,6 +3,7 @@ import { DEG_TO_RAD, IPoint, Matrix, ObservablePoint, Point, RAD_TO_DEG, Rectang
 import { EventEmitter } from '@pixi/utils';
 import { Container } from './Container';
 import { Bounds } from './Bounds';
+import { IAccessibleTarget } from '@pixi/accessibility';
 
 export interface IDestroyOptions {
     children?: boolean;
@@ -10,7 +11,7 @@ export interface IDestroyOptions {
     baseTexture?: boolean;
 }
 
-export interface DisplayObject extends InteractiveTarget, EventEmitter {}
+export interface DisplayObject extends InteractiveTarget, IAccessibleTarget, EventEmitter {}
 
 /**
  * The base class for all objects that are rendered on the screen.

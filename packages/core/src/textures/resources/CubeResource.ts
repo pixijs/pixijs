@@ -1,8 +1,18 @@
 import { ArrayResource } from './ArrayResource';
 import { Resource } from './Resource';
 import { TARGETS } from '@pixi/constants';
+import { ISize } from '@pixi/math';
+import { ArrayFixed } from '@pixi/utils';
 
 import { BaseTexture, Renderer, GLTexture } from '@pixi/core';
+
+/**
+ * Constructor options for CubeResource
+ */
+export interface ICubeResourceOptions extends ISize
+{
+    autoLoad?: boolean;
+}
 
 /**
  * Resource for a CubeTexture which contains six resources.
@@ -18,13 +28,13 @@ import { BaseTexture, Renderer, GLTexture } from '@pixi/core';
  */
 export class CubeResource extends ArrayResource
 {
-    items: Array<BaseTexture>;
+    items: ArrayFixed<BaseTexture, 6>;
 
-    constructor(source: Array<string|Resource>, options?: any)
+    constructor(source: ArrayFixed<string|Resource, 6>, options?: ICubeResourceOptions)
     {
-        options = options || {};
+        const { width, height, autoLoad } = options || {};
 
-        super(source, options);
+        super(source, { width, height });
 
         if (this.length !== CubeResource.SIDES)
         {
@@ -36,7 +46,7 @@ export class CubeResource extends ArrayResource
             this.items[i].target = TARGETS.TEXTURE_CUBE_MAP_POSITIVE_X + i;
         }
 
-        if (options.autoLoad !== false)
+        if (autoLoad !== false)
         {
             this.load();
         }
@@ -94,4 +104,16 @@ export class CubeResource extends ArrayResource
      * @default 6
      */
     static SIDES = 6;
+
+    /**
+     * Used to auto-detect the type of resource.
+     *
+     * @static
+     * @param {object} source - The source object
+     * @return {boolean} `true` if source is an array of 6 elements
+     */
+    static test(source: any): source is ArrayFixed<string|Resource, 6>
+    {
+        return Array.isArray(source) && source.length === CubeResource.SIDES;
+    }
 }
