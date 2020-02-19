@@ -634,7 +634,7 @@ export class Graphics extends Container
      *  indicates counter-clockwise.
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    arc(cx: number, cy: number, radius: number, startAngle: number, endAngle: number, anticlockwise = false): this
+    public arc(cx: number, cy: number, radius: number, startAngle: number, endAngle: number, anticlockwise = false): this
     {
         if (startAngle === endAngle)
         {
@@ -835,8 +835,8 @@ export class Graphics extends Container
         return this.drawShape(new Ellipse(x, y, width, height));
     }
 
-    drawPolygon(...path: Array<number> | Array<Point>): this
-    drawPolygon(path: Array<number> | Array<Point> | Polygon): this
+    public drawPolygon(...path: Array<number> | Array<Point>): this
+    public drawPolygon(path: Array<number> | Array<Point> | Polygon): this
 
     /**
      * Draws a polygon using the given path.
@@ -844,7 +844,7 @@ export class Graphics extends Container
      * @param {number[]|PIXI.Point[]|PIXI.Polygon} path - The path data used to construct the polygon.
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    drawPolygon(...path: any[]): this
+    public drawPolygon(...path: any[]): this
     {
         let points: Array<number> | Array<Point>;
         let closeStroke = true;// !!this._fillStyle;
@@ -961,10 +961,11 @@ export class Graphics extends Container
         this.finishPoly();
 
         const geometry = this._geometry;
-
+        const hasuit32 = renderer.context.supports.uint32Indices;
         // batch part..
         // batch it!
-        geometry.updateBatches();
+
+        geometry.updateBatches(hasuit32);
 
         if (geometry.batchable)
         {

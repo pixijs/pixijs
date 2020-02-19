@@ -6,6 +6,9 @@ import { settings } from '../settings';
 
 let CONTEXT_UID_COUNTER = 0;
 
+export interface ISupportDict {
+    uint32Indices: boolean;
+}
 /**
  * System plugin to the renderer to manage the context.
  *
@@ -16,6 +19,8 @@ let CONTEXT_UID_COUNTER = 0;
 export class ContextSystem extends System
 {
     public webGLVersion: number;
+    public readonly supports: ISupportDict;
+
     protected CONTEXT_UID: number;
     protected gl: IRenderingContext;
     /* eslint-disable @typescript-eslint/camelcase */
@@ -61,6 +66,16 @@ export class ContextSystem extends System
          * @property {EXT_texture_filter_anisotropic} anisotropicFiltering - WebGL v1 and v2 extension
          */
         this.extensions = {};
+
+        /**
+         * Features supported by current context
+         * @member {object}
+         * @readonly
+         * @property {boolean} uint32Indices - Supports of 32-bit indices buffer
+         */
+        this.supports = {
+            uint32Indices: false,
+        };
 
         // Bind functions
         this.handleContextLost = this.handleContextLost.bind(this);
@@ -283,7 +298,9 @@ export class ContextSystem extends System
             = (gl instanceof WebGL2RenderingContext)
             || !!(gl as WebGLRenderingContext).getExtension('OES_element_index_uint');
 
-        if (!hasuint32 && settings.HAS_UINT32_INDEX)
+        this.supports.uint32Indices = hasuint32;
+
+        if (!hasuint32)
         {
             /* eslint-disable max-len */
 
@@ -293,7 +310,5 @@ export class ContextSystem extends System
 
             /* eslint-enable max-len */
         }
-
-        settings.HAS_UINT32_INDEX = settings.HAS_UINT32_INDEX && hasuint32;
     }
 }

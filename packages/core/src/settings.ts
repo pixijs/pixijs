@@ -38,16 +38,4 @@ settings.PREFER_ENV = isMobile.any ? ENV.WEBGL : ENV.WEBGL2;
  */
 settings.STRICT_TEXTURE_CACHE = false;
 
-/**
- *
- * Enable 32-bit indices instead of 16-bit indices when it's available.
- *
- * @static
- * @constant
- * @memberof PIXI.settings
- * @type {boolean}
- * @default true
- */
-settings.HAS_UINT32_INDEX = true;
-
 export { settings };

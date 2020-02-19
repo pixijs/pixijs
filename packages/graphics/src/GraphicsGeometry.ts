@@ -21,7 +21,6 @@ import { premultiplyTint } from '@pixi/utils';
 import { Bounds } from '@pixi/display';
 import { FillStyle } from './styles/FillStyle';
 import { LineStyle } from './styles/LineStyle';
-import { settings } from '@pixi/settings';
 
 /**
  * @description Complex shape type
@@ -444,8 +443,10 @@ export class GraphicsGeometry extends BatchGeometry
     /**
      * Generates intermediate batch data. Either gets converted to drawCalls
      * or used to convert to batch objects directly by the Graphics object.
+     *
+     * @param {boolean} [aloow32Indices] - Allow using 32-bit indices for preventings artefacts when more that 65535 vertices
      */
-    updateBatches(): void
+    updateBatches(allow32Indices?: boolean): void
     {
         if (!this.graphicsData.length)
         {
@@ -558,7 +559,8 @@ export class GraphicsGeometry extends BatchGeometry
         }
         else
         {
-            const need32 = attrib > 0xffff && settings.HAS_UINT32_INDEX;
+            const need32
+                = attrib > 0xffff && allow32Indices;
 
             this.indicesUint16 = need32 ? new Uint32Array(this.indices) : new Uint16Array(this.indices);
         }
