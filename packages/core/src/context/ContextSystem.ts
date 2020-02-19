@@ -19,7 +19,7 @@ export interface ISupportDict {
 export class ContextSystem extends System
 {
     public webGLVersion: number;
-    public readonly supports: ISupportDict;
+    readonly supports: ISupportDict;
 
     protected CONTEXT_UID: number;
     protected gl: IRenderingContext;
@@ -70,6 +70,7 @@ export class ContextSystem extends System
         /**
          * Features supported by current context
          * @member {object}
+         * @private
          * @readonly
          * @property {boolean} uint32Indices - Supports of 32-bit indices buffer
          */
@@ -285,13 +286,9 @@ export class ContextSystem extends System
         // this is going to be fairly simple for now.. but at least we have room to grow!
         if (!attributes.stencil)
         {
-            /* eslint-disable max-len */
-
-            /* eslint-disable no-console */
+            /* eslint-disable max-len, no-console */
             console.warn('Provided WebGL context does not have a stencil buffer, masks may not render correctly');
-            /* eslint-enable no-console */
-
-            /* eslint-enable max-len */
+            /* eslint-enable max-len, no-console */
         }
 
         const hasuint32
@@ -302,13 +299,9 @@ export class ContextSystem extends System
 
         if (!hasuint32)
         {
-            /* eslint-disable max-len */
-
-            /* eslint-disable no-console */
+            /* eslint-disable max-len, no-console */
             console.warn('Provided WebGL context does not support 32 index buffer, complex graphics may not render correctly');
-            /* eslint-enable no-console */
-
-            /* eslint-enable max-len */
+            /* eslint-enable max-len, no-console */
         }
     }
 }
