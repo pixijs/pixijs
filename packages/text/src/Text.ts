@@ -512,8 +512,9 @@ export class Text extends Sprite
                     }
 
                     // Prevent color stop generation going backwards from floating point imprecision
-                    const clampedStop = Math.max(lastIterationStop, stop);
+                    let clampedStop = Math.max(lastIterationStop, stop);
 
+                    clampedStop = Math.min(clampedStop, 1); // Cap at 1 as well for safety's sake to avoid a possible throw.
                     gradient.addColorStop(clampedStop, fill[j]);
                     currentIteration++;
                     lastIterationStop = clampedStop;
