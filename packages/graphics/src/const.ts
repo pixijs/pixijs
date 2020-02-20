@@ -29,7 +29,7 @@ export const GRAPHICS_CURVES: IGraphicsCurvesSettings = {
 
     _segmentsCount(length: number, defaultSegments = 20)
     {
-        if (!this.adaptive || !length || Number.isNaN(length))
+        if (!this.adaptive || !length || isNaN(length))
         {
             return defaultSegments;
         }
