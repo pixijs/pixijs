@@ -59,7 +59,7 @@ export class GraphicsGeometry extends BatchGeometry
     public boundsPadding: number;
 
     uvsFloat32: Float32Array = null;
-    indicesUint16: Uint16Array = null;
+    indicesUint16: Uint16Array | Uint32Array = null;
     batchable: boolean;
     points: Array<number>;
     colors: Array<number>;
@@ -443,8 +443,10 @@ export class GraphicsGeometry extends BatchGeometry
     /**
      * Generates intermediate batch data. Either gets converted to drawCalls
      * or used to convert to batch objects directly by the Graphics object.
+     *
+     * @param {boolean} [aloow32Indices] - Allow using 32-bit indices for preventings artefacts when more that 65535 vertices
      */
-    updateBatches(): void
+    updateBatches(allow32Indices?: boolean): void
     {
         if (!this.graphicsData.length)
         {
@@ -533,11 +535,11 @@ export class GraphicsGeometry extends BatchGeometry
             }
         }
 
+        const index = this.indices.length;
+        const attrib = this.points.length / 2;
+
         if (batchPart)
         {
-            const index = this.indices.length;
-            const attrib = this.points.length / 2;
-
             batchPart.end(index, attrib);
         }
 
@@ -550,7 +552,18 @@ export class GraphicsGeometry extends BatchGeometry
             return;
         }
 
-        this.indicesUint16 = new Uint16Array(this.indices);
+        // prevent allocation when length is same as buffer
+        if (this.indicesUint16 && this.indices.length === this.indicesUint16.length)
+        {
+            this.indicesUint16.set(this.indices);
+        }
+        else
+        {
+            const need32
+                = attrib > 0xffff && allow32Indices;
+
+            this.indicesUint16 = need32 ? new Uint32Array(this.indices) : new Uint16Array(this.indices);
+        }
 
         // TODO make this a const..
         this.batchable = this.isBatchable();
@@ -654,6 +667,12 @@ export class GraphicsGeometry extends BatchGeometry
      */
     protected isBatchable(): boolean
     {
+        // prevent heavy mesh batching
+        if (this.points.length > 0xffff * 2)
+        {
+            return false;
+        }
+
         const batches = this.batches;
 
         for (let i = 0; i < batches.length; i++)
