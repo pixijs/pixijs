@@ -558,6 +558,9 @@ export class Text extends Sprite
         options = Object.assign({}, defaultDestroyOptions, options);
 
         super.destroy(options);
+        
+        // set canvas width and height to 0 to make sure it's GC'd by some versions of Safari
+        this.canvas.height = this.canvas.width = 0;
 
         // make sure to reset the the context and canvas.. dont want this hanging around in memory!
         this.context = null;
