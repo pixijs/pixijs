@@ -490,6 +490,13 @@ export class Text extends Sprite
             // ['#FF0000', '#00FF00', '#0000FF'] over 2 lines would create stops at 0.125, 0.25, 0.375, 0.625, 0.75, 0.875
             totalIterations = (fill.length + 1) * lines.length;
             currentIteration = 0;
+
+            // There's potential for floating point precision issues at the seams between gradient repeats.
+            // The loop below generates the stops in order, so track the last generated one to prevent
+            // floating point precision from making us go the teeniest bit backwards, resulting in
+            // the first and last colors getting swapped.
+            let lastIterationStop = 0;
+
             for (let i = 0; i < lines.length; i++)
             {
                 currentIteration += 1;
@@ -503,8 +510,14 @@ export class Text extends Sprite
                     {
                         stop = currentIteration / totalIterations;
                     }
-                    gradient.addColorStop(stop, fill[j]);
+
+                    // Prevent color stop generation going backwards from floating point imprecision
+                    let clampedStop = Math.max(lastIterationStop, stop);
+
+                    clampedStop = Math.min(clampedStop, 1); // Cap at 1 as well for safety's sake to avoid a possible throw.
+                    gradient.addColorStop(clampedStop, fill[j]);
                     currentIteration++;
+                    lastIterationStop = clampedStop;
                 }
             }
         }
