@@ -1,7 +1,3 @@
-/**
- * Created by hazed on 30.01.2020.
- */
-
 import { setPrecision } from './setPrecision';
 import { getMaxFragmentPrecision } from './getMaxFragmentPrecision';
 import { PRECISION } from '@pixi/constants';
