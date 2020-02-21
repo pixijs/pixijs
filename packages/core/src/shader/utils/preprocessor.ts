@@ -58,14 +58,20 @@ export class Preprocessor
             // Setup default define for shader name
             options.defines.SHADER_NAME = name;
 
+            const defineStrings = [];
+
             // Setup custom defines
             for (const define in options.defines)
             {
                 const value = options.defines[define];
 
-                this.vertex = `#define ${define} ${value}\n${this.vertex}`;
-                this.fragment = `#define ${define} ${value}\n${this.fragment}`;
+                defineStrings.push(`#define ${define} ${value}`);
             }
+
+            const finalDefines = `${defineStrings.join('\n')}\n`;
+
+            this.vertex = finalDefines + this.vertex;
+            this.fragment = finalDefines + this.fragment;
 
             this.vertex = setPrecision(this.vertex, settings.PRECISION_VERTEX, PRECISION.HIGH);
             this.fragment = setPrecision(this.fragment, settings.PRECISION_FRAGMENT, getMaxFragmentPrecision());
