@@ -9,4 +9,4 @@ export * from './uniformParsers';
 export * from './getTestContext';
 export * from './checkMaxIfStatementsInShader';
 export * from './unsafeEvalSupported';
-export * from './Preprocessor.js';
+export * from './preprocessor';
