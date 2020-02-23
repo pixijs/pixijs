@@ -55,6 +55,7 @@ export class Text extends Sprite
     protected _resolution: number;
     protected _autoResolution: boolean;
     protected _styleListener: () => void;
+    private _ownCanvas: boolean;
 
     /**
      * @param {string} text - The string that you would like the text to display
@@ -63,7 +64,13 @@ export class Text extends Sprite
      */
     constructor(text: string, style: Partial<ITextStyle>|TextStyle, canvas: HTMLCanvasElement)
     {
-        canvas = canvas || document.createElement('canvas');
+        let ownCanvas = false;
+
+        if (!canvas)
+        {
+            canvas = document.createElement('canvas');
+            ownCanvas = true;
+        }
 
         canvas.width = 3;
         canvas.height = 3;
@@ -74,6 +81,17 @@ export class Text extends Sprite
         texture.trim = new Rectangle();
 
         super(texture);
+
+        /**
+         * Keep track if this Text object created it's own canvas
+         * element (`true`) or uses the constructor argument (`false`).
+         * Used to workaround a GC issues with Safari < 13 when
+         * destroying Text. See `destroy` for more info.
+         *
+         * @member {boolean}
+         * @private
+         */
+        this._ownCanvas = ownCanvas;
 
         /**
          * The canvas element that everything is drawn to
@@ -559,8 +577,12 @@ export class Text extends Sprite
 
         super.destroy(options);
 
-        // set canvas width and height to 0 to make sure it's GC'd by some versions of Safari
-        this.canvas.height = this.canvas.width = 0;
+        // set canvas width and height to 0 to workaround memory leak in Safari < 13
+        // https://stackoverflow.com/questions/52532614/total-canvas-memory-use-exceeds-the-maximum-limit-safari-12
+        if (this._ownCanvas)
+        {
+            this.canvas.height = this.canvas.width = 0;
+        }
 
         // make sure to reset the the context and canvas.. dont want this hanging around in memory!
         this.context = null;
