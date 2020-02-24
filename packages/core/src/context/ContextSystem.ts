@@ -292,7 +292,7 @@ export class ContextSystem extends System
         }
 
         const hasuint32
-            = (gl instanceof WebGL2RenderingContext)
+            = ('WebGL2RenderingContext' in window && gl instanceof window.WebGL2RenderingContext)
             || !!(gl as WebGLRenderingContext).getExtension('OES_element_index_uint');
 
         this.supports.uint32Indices = hasuint32;
