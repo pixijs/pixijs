@@ -928,6 +928,7 @@ export class Graphics extends Container
         this._lineStyle.reset();
         this._fillStyle.reset();
 
+        this._boundsID++;
         this._matrix = null;
         this._holeMode = false;
         this.currentPath = null;

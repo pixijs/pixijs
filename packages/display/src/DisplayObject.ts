@@ -194,7 +194,7 @@ export abstract class DisplayObject extends EventEmitter
         this._localBounds = new Bounds();
 
         /**
-         * TODO
+         * Flags the cached bounds as dirty.
          *
          * @member {number}
          * @protected
@@ -202,7 +202,7 @@ export abstract class DisplayObject extends EventEmitter
         this._boundsID = 0;
 
         /**
-         * TODO
+         * Cache of this display-object's bounds-rectangle.
          *
          * @member {PIXI.Bounds}
          * @protected
@@ -210,7 +210,7 @@ export abstract class DisplayObject extends EventEmitter
         this._boundsRect = null;
 
         /**
-         * TODO
+         * Cache of this display-object's local-bounds rectangle.
          *
          * @member {PIXI.Bounds}
          * @protected
@@ -291,6 +291,16 @@ export abstract class DisplayObject extends EventEmitter
         }
     }
 
+    private get localBoundsRect(): Rectangle
+    {
+        if (!this._localBoundsRect)
+        {
+            this._localBoundsRect = new Rectangle();
+        }
+
+        return this._localBoundsRect;
+    }
+
     /**
      * Updates the object transform for rendering.
      *
@@ -356,8 +366,18 @@ export abstract class DisplayObject extends EventEmitter
      * @param {PIXI.Rectangle} [rect] - Optional rectangle to store the result of the bounds calculation.
      * @return {PIXI.Rectangle} The rectangular bounding area.
      */
-    getLocalBounds(rect?: Rectangle): Rectangle
+    getLocalBounds(rect: Rectangle = this.localBoundsRect): Rectangle
     {
+        if (this._localBounds.updateID === this._boundsID)
+        {
+            if (rect)
+            {
+                this._localBounds.getRectangle(rect);
+            }
+
+            return rect;
+        }
+
         const transformRef = this.transform;
         const parentRef = this.parent;
 
@@ -368,16 +388,6 @@ export abstract class DisplayObject extends EventEmitter
         const worldBoundsID = this._boundsID;
 
         this._bounds = this._localBounds;
-
-        if (!rect)
-        {
-            if (!this._localBoundsRect)
-            {
-                this._localBoundsRect = new Rectangle();
-            }
-
-            rect = this._localBoundsRect;
-        }
 
         const bounds = this.getBounds(false, rect);
 
