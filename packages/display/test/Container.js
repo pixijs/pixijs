@@ -644,6 +644,52 @@ describe('PIXI.Container', function ()
         });
     });
 
+    describe('getLocalBounds', function ()
+    {
+        it('should recalculate children transform by default', function ()
+        {
+            const root = new Container();
+            const container = new Container();
+            const child = new Container();
+
+            root.addChild(container);
+            container.addChild(child);
+
+            container.position.set(10, 10);
+            child.position.set(20, 30);
+
+            container.updateTransform();
+            container.getLocalBounds();
+
+            expect(child.transform.worldTransform.tx).to.equal(30);
+            expect(child.transform.worldTransform.ty).to.equal(40);
+        });
+
+        it('should cache result for consecutive calls', function ()
+        {
+            const root = new Container();
+            const container = new Container();
+            const child = new Container();
+
+            root.addChild(container);
+            container.addChild(child);
+
+            container.position.set(10, 10);
+            child.position.set(20, 30);
+
+            const spy = sinon.spy(container, 'calculateBounds');
+
+            container.updateTransform();
+            container.getLocalBounds();
+
+            const callTimes = spy.callCount;
+
+            container.getLocalBounds();
+
+            expect(spy.callCount).to.equal(callTimes);
+        });
+    });
+
     describe('width', function ()
     {
         it('should reset scale', function ()
