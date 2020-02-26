@@ -40,12 +40,12 @@ export class CubeResource extends AbstractMultiResource
     {
         const { width, height, autoLoad, linkBaseTexture } = options || {};
 
-        super(6, { width, height });
-
-        if (this.length !== CubeResource.SIDES)
+        if (source && source.length !== CubeResource.SIDES)
         {
-            throw new Error(`Invalid length. Got ${this.length}, expected 6`);
+            throw new Error(`Invalid length. Got ${source.length}, expected 6`);
         }
+
+        super(6, { width, height });
 
         for (let i = 0; i < CubeResource.SIDES; i++)
         {
