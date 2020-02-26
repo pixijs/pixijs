@@ -138,15 +138,24 @@ export class CubeResource extends AbstractMultiResource
 
             if (dirty[i] < side.dirtyId)
             {
-                dirty[i] = side.dirtyId;
-                if (side.valid)
+                if (side.valid && side.resource)
                 {
                     side.resource.upload(renderer, side, glTexture);
                 }
-                else
+                else if (dirty[i] < 0)
                 {
-                    // TODO: upload zero buffer
+                    // either item is not valid yet, either its a renderTexture
+                    // allocate the memory
+                    renderer.gl.texImage2D(side.target, 0,
+                        glTexture.internalFormat,
+                        _baseTexture.realWidth,
+                        _baseTexture.realHeight,
+                        0,
+                        _baseTexture.format,
+                        glTexture.type,
+                        null);
                 }
+                dirty[i] = side.dirtyId;
             }
         }
 
