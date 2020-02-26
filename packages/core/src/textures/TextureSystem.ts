@@ -132,6 +132,12 @@ export class TextureSystem extends System
         {
             texture = texture.castToBaseTexture();
 
+            if (texture.parentTextureArray)
+            {
+                // cannot bind partial texture
+                return;
+            }
+
             if (texture.valid)
             {
                 texture.touched = this.renderer.textureGC.count;

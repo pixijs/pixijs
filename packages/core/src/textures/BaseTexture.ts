@@ -85,6 +85,7 @@ export class BaseTexture extends EventEmitter
     public resource: Resource;
     _batchEnabled: number;
     _batchLocation: number;
+    parentTextureArray: BaseTexture;
 
     constructor(resource: Resource | ImageSource | string | any = null, options: IBaseTextureOptions = null)
     {
@@ -300,6 +301,13 @@ export class BaseTexture extends EventEmitter
          * @member {number}
          */
         this._batchLocation = 0;
+
+        /**
+         * Whether its a part of another texture, handled by ArrayResource or CubeResource
+         *
+         * @member {PIXI.BaseTexture}
+         */
+        this.parentTextureArray = null;
 
         /**
          * Fired when a not-immediately-available source finishes loading.

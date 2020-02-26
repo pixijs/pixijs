@@ -1,4 +1,4 @@
-import { ArrayResource } from './ArrayResource';
+import { AbstractMultiResource } from './AbstractMultiResource';
 import { Resource } from './Resource';
 import { TARGETS } from '@pixi/constants';
 import { ISize } from '@pixi/math';
@@ -12,6 +12,7 @@ import { BaseTexture, Renderer, GLTexture } from '@pixi/core';
 export interface ICubeResourceOptions extends ISize
 {
     autoLoad?: boolean;
+    linkBaseTexture?: boolean;
 }
 
 /**
@@ -25,14 +26,19 @@ export interface ICubeResourceOptions extends ISize
  * @param {object} [options] - ImageResource options
  * @param {number} [options.width] - Width of resource
  * @param {number} [options.height] - Height of resource
+ * @param {number} [options.autoLoad=true] - Whether to auto-load resources
+ * @param {number} [options.linkBaseTexture=true] - In case BaseTextures are supplied,
+ *   whether to copy them or use
  */
-export class CubeResource extends ArrayResource
+export class CubeResource extends AbstractMultiResource
 {
     items: ArrayFixed<BaseTexture, 6>;
 
+    linkBaseTexture: boolean;
+
     constructor(source: ArrayFixed<string|Resource, 6>, options?: ICubeResourceOptions)
     {
-        const { width, height, autoLoad } = options || {};
+        const { width, height, autoLoad, linkBaseTexture } = options || {};
 
         super(source, { width, height });
 
@@ -45,6 +51,13 @@ export class CubeResource extends ArrayResource
         {
             this.items[i].target = TARGETS.TEXTURE_CUBE_MAP_POSITIVE_X + i;
         }
+
+        /**
+         * In case BaseTextures are supplied, whether to use same resource or bind baseTexture itself
+         * @member
+         * @protected
+         */
+        this.linkBaseTexture = linkBaseTexture !== false;
 
         if (autoLoad !== false)
         {
@@ -63,6 +76,51 @@ export class CubeResource extends ArrayResource
         super.bind(baseTexture);
 
         baseTexture.target = TARGETS.TEXTURE_CUBE_MAP;
+    }
+
+    addBaseTextureAt(baseTexture: BaseTexture, index: number, linkBaseTexture?: boolean): this
+    {
+        if (linkBaseTexture === undefined)
+        {
+            linkBaseTexture = this.linkBaseTexture;
+        }
+
+        if (!this.items[index])
+        {
+            throw new Error(`Index ${index} is out of bounds`);
+        }
+
+        if (!this.linkBaseTexture || baseTexture.parentTextureArray
+            || Object.keys(baseTexture._glTextures).length > 0)
+        {
+            // copy mode
+
+            if (baseTexture.resource)
+            {
+                this.addResourceAt(baseTexture.resource, index);
+            }
+            else
+            {
+                throw new Error(`CubeResource does not support copying of renderTexture`);
+            }
+        }
+        else
+        {
+            // link mode, the difficult one!
+            baseTexture.target = TARGETS.TEXTURE_CUBE_MAP_POSITIVE_X + index;
+            baseTexture.parentTextureArray = this.baseTexture;
+
+            this.items[index] = baseTexture;
+        }
+
+        if (baseTexture.valid && !this.valid)
+        {
+            this.resize(baseTexture.realWidth, baseTexture.realHeight);
+        }
+
+        this.items[index] = baseTexture;
+
+        return this;
     }
 
     /**

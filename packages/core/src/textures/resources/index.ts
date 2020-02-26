@@ -34,6 +34,7 @@ INSTALLED.push(
 );
 
 export * from './autoDetectResource';
+export * from './AbstractMultiResource';
 export * from './ArrayResource';
 export * from './BufferResource';
 export * from './CanvasResource';
