@@ -291,16 +291,6 @@ export abstract class DisplayObject extends EventEmitter
         }
     }
 
-    private get localBoundsRect(): Rectangle
-    {
-        if (!this._localBoundsRect)
-        {
-            this._localBoundsRect = new Rectangle();
-        }
-
-        return this._localBoundsRect;
-    }
-
     /**
      * Updates the object transform for rendering.
      *
@@ -366,8 +356,18 @@ export abstract class DisplayObject extends EventEmitter
      * @param {PIXI.Rectangle} [rect] - Optional rectangle to store the result of the bounds calculation.
      * @return {PIXI.Rectangle} The rectangular bounding area.
      */
-    getLocalBounds(rect: Rectangle = this.localBoundsRect): Rectangle
+    getLocalBounds(rect: Rectangle): Rectangle
     {
+        if (!rect)
+        {
+            if (!this._localBoundsRect)
+            {
+                this._localBoundsRect = new Rectangle();
+            }
+
+            rect = this._localBoundsRect;
+        }
+
         if (this._localBounds.updateID === this._boundsID)
         {
             if (rect)
