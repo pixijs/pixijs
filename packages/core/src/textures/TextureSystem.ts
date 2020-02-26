@@ -135,6 +135,7 @@ export class TextureSystem extends System
             if (texture.parentTextureArray)
             {
                 // cannot bind partial texture
+                // TODO: report a warning
                 return;
             }
 
