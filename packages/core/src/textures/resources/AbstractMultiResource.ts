@@ -1,7 +1,7 @@
 import { Resource } from './Resource';
 import { BaseTexture } from '../BaseTexture';
 import { ISize } from '@pixi/math';
-import { autoDetectResource } from './autoDetectResource';
+import { autoDetectResource, IAutoDetectOptions } from './autoDetectResource';
 
 /**
  * Resource that can manage several resource (items) inside.
@@ -24,21 +24,8 @@ export abstract class AbstractMultiResource extends Resource
 
     baseTexture: BaseTexture;
 
-    constructor(source: number|Array<any>, options?: ISize)
+    constructor(length: number, options?: ISize)
     {
-        let urls;
-        let length: number;
-
-        if (Array.isArray(source))
-        {
-            urls = source;
-            length = source.length;
-        }
-        else
-        {
-            length = source;
-        }
-
         const { width, height } = options || {};
 
         super(width, height);
@@ -84,19 +71,34 @@ export abstract class AbstractMultiResource extends Resource
          * Bound baseTexture, there can only be one
          */
         this.baseTexture = null;
+    }
 
-        if (urls)
+    /**
+     * used from ArrayResource and CubeResource constructors
+     * @param {Array<*>} resources - Can be resources, image elements, canvas, etc. ,
+     *  length should be same as constructor length
+     * @param {object} [options] - detect options for resources
+     * @protected
+     */
+    protected initFromArray(resources: Array<any>, options?: IAutoDetectOptions): void
+    {
+        for (let i = 0; i < this.length; i++)
         {
-            for (let i = 0; i < length; i++)
+            if (!resources[i])
             {
-                if (urls[i].castToBaseTexture)
-                {
-                    this.addBaseTextureAt(urls[i].castToBaseTexture(), i);
-                }
-                else
-                {
-                    this.addResourceAt(autoDetectResource(urls[i], options), i);
-                }
+                continue;
+            }
+            if (resources[i].castToBaseTexture)
+            {
+                this.addBaseTextureAt(resources[i].castToBaseTexture(), i);
+            }
+            else if (resources[i] instanceof Resource)
+            {
+                this.addResourceAt(resources[i], i);
+            }
+            else
+            {
+                this.addResourceAt(autoDetectResource(resources[i], options), i);
             }
         }
     }
@@ -206,9 +208,9 @@ export abstract class AbstractMultiResource extends Resource
         this._load = Promise.all(promises)
             .then(() =>
             {
-                const { width, height } = resources[0];
+                const { realWidth, realHeight } = this.items[0];
 
-                this.resize(width, height);
+                this.resize(realWidth, realHeight);
 
                 return Promise.resolve(this);
             }

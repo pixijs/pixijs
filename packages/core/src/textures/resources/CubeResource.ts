@@ -36,11 +36,11 @@ export class CubeResource extends AbstractMultiResource
 
     linkBaseTexture: boolean;
 
-    constructor(source: ArrayFixed<string|Resource, 6>, options?: ICubeResourceOptions)
+    constructor(source?: ArrayFixed<string|Resource, 6>, options?: ICubeResourceOptions)
     {
         const { width, height, autoLoad, linkBaseTexture } = options || {};
 
-        super(source, { width, height });
+        super(6, { width, height });
 
         if (this.length !== CubeResource.SIDES)
         {
@@ -58,6 +58,11 @@ export class CubeResource extends AbstractMultiResource
          * @protected
          */
         this.linkBaseTexture = linkBaseTexture !== false;
+
+        if (source)
+        {
+            this.initFromArray(source, options);
+        }
 
         if (autoLoad !== false)
         {
@@ -90,11 +95,11 @@ export class CubeResource extends AbstractMultiResource
             throw new Error(`Index ${index} is out of bounds`);
         }
 
-        if (!this.linkBaseTexture || baseTexture.parentTextureArray
+        if (!this.linkBaseTexture
+            || (baseTexture.parentTextureArray && baseTexture.parentTextureArray !== this.baseTexture)
             || Object.keys(baseTexture._glTextures).length > 0)
         {
             // copy mode
-
             if (baseTexture.resource)
             {
                 this.addResourceAt(baseTexture.resource, index);

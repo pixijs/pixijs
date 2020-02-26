@@ -4,6 +4,7 @@ import { BaseTexture } from '../BaseTexture';
 import { Renderer } from '../../Renderer';
 import { GLTexture } from '../GLTexture';
 import { TARGETS } from '@pixi/constants';
+import { ISize } from '@pixi/math';
 
 /**
  * A resource that contains a number of sources.
@@ -19,6 +20,30 @@ import { TARGETS } from '@pixi/constants';
  */
 export class ArrayResource extends AbstractMultiResource
 {
+    constructor(source: number|Array<any>, options?: ISize)
+    {
+        const { width, height } = options || {};
+
+        let urls;
+        let length: number;
+
+        if (Array.isArray(source))
+        {
+            urls = source;
+            length = source.length;
+        }
+        else
+        {
+            length = source;
+        }
+
+        super(length, { width, height });
+
+        if (urls)
+        {
+            this.initFromArray(urls, options);
+        }
+    }
     /**
      * Set a baseTexture by ID,
      * ArrayResource just takes resource from it, nothing more
