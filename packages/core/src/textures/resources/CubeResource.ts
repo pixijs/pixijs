@@ -106,7 +106,7 @@ export class CubeResource extends AbstractMultiResource
             }
             else
             {
-                throw new Error(`CubeResource does not support copying of renderTexture`);
+                throw new Error(`CubeResource does not support copying of renderTexture.`);
             }
         }
         else
@@ -146,8 +146,9 @@ export class CubeResource extends AbstractMultiResource
                 if (side.valid && side.resource)
                 {
                     side.resource.upload(renderer, side, glTexture);
+                    dirty[i] = side.dirtyId;
                 }
-                else if (dirty[i] < 0)
+                else if (dirty[i] < -1)
                 {
                     // either item is not valid yet, either its a renderTexture
                     // allocate the memory
@@ -159,8 +160,8 @@ export class CubeResource extends AbstractMultiResource
                         _baseTexture.format,
                         glTexture.type,
                         null);
+                    dirty[i] = -1;
                 }
-                dirty[i] = side.dirtyId;
             }
         }
 

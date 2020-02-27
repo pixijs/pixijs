@@ -48,7 +48,10 @@ export abstract class AbstractMultiResource extends Resource
             const partTexture = new BaseTexture();
 
             this.items.push(partTexture);
-            this.itemDirtyIds.push(-1);
+            // -2 - first run of texture array upload
+            // -1 - texture item was allocated
+            // >=0 - texture item uploaded , in sync with items[i].dirtyId
+            this.itemDirtyIds.push(-2);
         }
 
         /**
