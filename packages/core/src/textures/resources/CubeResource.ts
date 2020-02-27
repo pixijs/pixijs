@@ -96,7 +96,7 @@ export class CubeResource extends AbstractMultiResource
         }
 
         if (!this.linkBaseTexture
-            || (baseTexture.parentTextureArray && baseTexture.parentTextureArray !== this.baseTexture)
+            || baseTexture.parentTextureArray
             || Object.keys(baseTexture._glTextures).length > 0)
         {
             // copy mode
