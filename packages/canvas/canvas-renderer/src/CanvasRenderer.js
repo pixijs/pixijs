@@ -259,6 +259,7 @@ export class CanvasRenderer extends AbstractRenderer
         if (proj)
         {
             mat = tempMatrix;
+            mat.copyFrom(transform);
             mat.prepend(proj);
         }
 
