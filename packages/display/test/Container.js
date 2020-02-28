@@ -664,30 +664,6 @@ describe('PIXI.Container', function ()
             expect(child.transform.worldTransform.tx).to.equal(30);
             expect(child.transform.worldTransform.ty).to.equal(40);
         });
-
-        it('should cache result for consecutive calls', function ()
-        {
-            const root = new Container();
-            const container = new Container();
-            const child = new Container();
-
-            root.addChild(container);
-            container.addChild(child);
-
-            container.position.set(10, 10);
-            child.position.set(20, 30);
-
-            const spy = sinon.spy(container, 'calculateBounds');
-
-            container.updateTransform();
-            container.getLocalBounds();
-
-            const callTimes = spy.callCount;
-
-            container.getLocalBounds();
-
-            expect(spy.callCount).to.equal(callTimes);
-        });
     });
 
     describe('width', function ()

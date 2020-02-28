@@ -368,16 +368,6 @@ export abstract class DisplayObject extends EventEmitter
             rect = this._localBoundsRect;
         }
 
-        if (this._localBounds.updateID === this._boundsID)
-        {
-            if (rect)
-            {
-                this._localBounds.getRectangle(rect);
-            }
-
-            return rect;
-        }
-
         const transformRef = this.transform;
         const parentRef = this.parent;
 
