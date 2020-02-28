@@ -236,6 +236,7 @@ export class CanvasRenderer extends AbstractRenderer
         context.restore();
 
         this.resolution = rootResolution;
+        this._projTransform = null;
 
         this.emit('postrender');
     }
