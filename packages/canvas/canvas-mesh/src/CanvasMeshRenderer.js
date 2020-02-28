@@ -25,36 +25,11 @@ export class CanvasMeshRenderer
     render(mesh)
     {
         const renderer = this.renderer;
-        const context = renderer.context;
-
         const transform = mesh.worldTransform;
-        const res = renderer.resolution;
-
-        if (mesh.roundPixels)
-        {
-            context.setTransform(
-                transform.a * res,
-                transform.b * res,
-                transform.c * res,
-                transform.d * res,
-                (transform.tx * res) | 0,
-                (transform.ty * res) | 0
-            );
-        }
-        else
-        {
-            context.setTransform(
-                transform.a * res,
-                transform.b * res,
-                transform.c * res,
-                transform.d * res,
-                transform.tx * res,
-                transform.ty * res
-            );
-        }
 
         renderer.context.globalAlpha = mesh.worldAlpha;
         renderer.setBlendMode(mesh.blendMode);
+        renderer.setContextTransform(transform, mesh.roundPixels);
 
         if (mesh.drawMode !== DRAW_MODES.TRIANGLES)
         {
