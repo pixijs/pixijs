@@ -40,7 +40,7 @@ export class CanvasMaskManager
         this.recursiveFindShapes(maskObject, foundShapes);
         if (foundShapes.length > 0)
         {
-            const { context, resolution } = renderer;
+            const { context } = renderer;
 
             context.beginPath();
 
@@ -49,14 +49,7 @@ export class CanvasMaskManager
                 const shape = foundShapes[i];
                 const transform = shape.transform.worldTransform;
 
-                this.renderer.context.setTransform(
-                    transform.a * resolution,
-                    transform.b * resolution,
-                    transform.c * resolution,
-                    transform.d * resolution,
-                    transform.tx * resolution,
-                    transform.ty * resolution
-                );
+                this.renderer.setContextTransform(transform);
 
                 this.renderGraphicsShape(shape);
             }
