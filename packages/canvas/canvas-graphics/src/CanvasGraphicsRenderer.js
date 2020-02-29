@@ -73,16 +73,8 @@ export class CanvasGraphicsRenderer
         const context = renderer.context;
         const worldAlpha = graphics.worldAlpha;
         const transform = graphics.transform.worldTransform;
-        const resolution = renderer.resolution;
 
-        context.setTransform(
-            transform.a * resolution,
-            transform.b * resolution,
-            transform.c * resolution,
-            transform.d * resolution,
-            transform.tx * resolution,
-            transform.ty * resolution
-        );
+        renderer.setContextTransform(transform);
 
         // update tint if graphics was dirty
         if (graphics.canvasTintDirty !== graphics.geometry.dirty
