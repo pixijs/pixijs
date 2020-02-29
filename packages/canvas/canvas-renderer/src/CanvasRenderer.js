@@ -4,6 +4,9 @@ import { CanvasMaskManager } from './utils/CanvasMaskManager';
 import { mapCanvasBlendModesToPixi } from './utils/mapCanvasBlendModesToPixi';
 import { RENDERER_TYPE, SCALE_MODES, BLEND_MODES } from '@pixi/constants';
 import { settings } from '@pixi/settings';
+import { Matrix } from '@pixi/math';
+
+const tempMatrix = new Matrix();
 
 /**
  * The CanvasRenderer draws the scene and all its content onto a 2d canvas.
@@ -105,6 +108,13 @@ export class CanvasRenderer extends AbstractRenderer
         this._activeBlendMode = null;
         this._outerBlend = false;
 
+        /**
+         * Projection transform, passed in render() stored here
+         * @type {null}
+         * @private
+         */
+        this._projTransform = null;
+
         this.renderingToScreen = false;
 
         sayHello('Canvas');
@@ -173,6 +183,8 @@ export class CanvasRenderer extends AbstractRenderer
 
         const context = this.context;
 
+        this._projTransform = transform || null;
+
         if (!renderTexture)
         {
             this._lastObjectRendered = displayObject;
@@ -182,33 +194,10 @@ export class CanvasRenderer extends AbstractRenderer
         {
             // update the scene graph
             const cacheParent = displayObject.parent;
-            const tempWt = this._tempDisplayObjectParent.transform.worldTransform;
-
-            if (transform)
-            {
-                transform.copyTo(tempWt);
-                // Canvas Renderer doesn't use "context.translate"
-                // nor does it store current translation in projectionSystem
-                // we re-calculate all matrices,
-                // its not like CanvasRenderer can survive more than 1000 elements
-                displayObject.transform._parentID = -1;
-            }
-            else
-            {
-                // in this case matrix cache in displayObject works like expected
-                tempWt.identity();
-            }
 
             displayObject.parent = this._tempDisplayObjectParent;
-
             displayObject.updateTransform();
             displayObject.parent = cacheParent;
-            if (transform)
-            {
-                // Clear the matrix cache one more time,
-                // we dont have our computations to affect standard "transform=null" case
-                displayObject.transform._parentID = -1;
-            }
             // displayObject.hitArea = //TODO add a temp hit area
         }
 
@@ -247,8 +236,56 @@ export class CanvasRenderer extends AbstractRenderer
         context.restore();
 
         this.resolution = rootResolution;
+        this._projTransform = null;
 
         this.emit('postrender');
+    }
+
+    /**
+     * sets matrix of context
+     * called only from render() methods
+     * takes care about resolution
+     * @param {PIXI.Matrix} transform world matrix of current element
+     * @param {boolean} [roundPixels] whether to round (tx,ty) coords
+     * @param {number} [localResolution] If specified, used instead of `renderer.resolution` for local scaling
+     */
+    setContextTransform(transform, roundPixels, localResolution)
+    {
+        let mat = transform;
+        const proj = this._projTransform;
+        const resolution = this.resolution;
+
+        localResolution = localResolution || resolution;
+
+        if (proj)
+        {
+            mat = tempMatrix;
+            mat.copyFrom(transform);
+            mat.prepend(proj);
+        }
+
+        if (roundPixels)
+        {
+            this.context.setTransform(
+                mat.a * localResolution,
+                mat.b * localResolution,
+                mat.c * localResolution,
+                mat.d * localResolution,
+                (mat.tx * resolution) | 0,
+                (mat.ty * resolution) | 0
+            );
+        }
+        else
+        {
+            this.context.setTransform(
+                mat.a * localResolution,
+                mat.b * localResolution,
+                mat.c * localResolution,
+                mat.d * localResolution,
+                mat.tx * resolution,
+                mat.ty * resolution
+            );
+        }
     }
 
     /**

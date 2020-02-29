@@ -6,6 +6,9 @@ import { settings } from '../settings';
 
 let CONTEXT_UID_COUNTER = 0;
 
+export interface ISupportDict {
+    uint32Indices: boolean;
+}
 /**
  * System plugin to the renderer to manage the context.
  *
@@ -16,6 +19,8 @@ let CONTEXT_UID_COUNTER = 0;
 export class ContextSystem extends System
 {
     public webGLVersion: number;
+    readonly supports: ISupportDict;
+
     protected CONTEXT_UID: number;
     protected gl: IRenderingContext;
     /* eslint-disable @typescript-eslint/camelcase */
@@ -61,6 +66,17 @@ export class ContextSystem extends System
          * @property {EXT_texture_filter_anisotropic} anisotropicFiltering - WebGL v1 and v2 extension
          */
         this.extensions = {};
+
+        /**
+         * Features supported by current context
+         * @member {object}
+         * @private
+         * @readonly
+         * @property {boolean} uint32Indices - Supports of 32-bit indices buffer
+         */
+        this.supports = {
+            uint32Indices: false,
+        };
 
         // Bind functions
         this.handleContextLost = this.handleContextLost.bind(this);
@@ -270,13 +286,22 @@ export class ContextSystem extends System
         // this is going to be fairly simple for now.. but at least we have room to grow!
         if (!attributes.stencil)
         {
-            /* eslint-disable max-len */
-
-            /* eslint-disable no-console */
+            /* eslint-disable max-len, no-console */
             console.warn('Provided WebGL context does not have a stencil buffer, masks may not render correctly');
-            /* eslint-enable no-console */
+            /* eslint-enable max-len, no-console */
+        }
 
-            /* eslint-enable max-len */
+        const hasuint32
+            = ('WebGL2RenderingContext' in window && gl instanceof window.WebGL2RenderingContext)
+            || !!(gl as WebGLRenderingContext).getExtension('OES_element_index_uint');
+
+        this.supports.uint32Indices = hasuint32;
+
+        if (!hasuint32)
+        {
+            /* eslint-disable max-len, no-console */
+            console.warn('Provided WebGL context does not support 32 index buffer, complex graphics may not render correctly');
+            /* eslint-enable max-len, no-console */
         }
     }
 }
