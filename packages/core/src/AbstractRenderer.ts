@@ -281,6 +281,15 @@ export abstract class AbstractRenderer extends EventEmitter
             this.view.style.width = `${screenWidth}px`;
             this.view.style.height = `${screenHeight}px`;
         }
+
+        /**
+         * Fired after view has been resized.
+         *
+         * @event PIXI.Renderer#resize
+         * @param {number} screenWidth - The new width of the screen.
+         * @param {number} screenHeight - The new height of the screen.
+         */
+        this.emit('resize', screenWidth, screenHeight);
     }
 
     /**

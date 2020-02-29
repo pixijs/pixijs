@@ -110,6 +110,79 @@ describe('PIXI.Application', function ()
             app.destroy();
         });
 
+        it('should force multiple immediate resizes', function ()
+        {
+            const spy = sinon.spy();
+            const app = new Application({
+                resizeTo: this.div,
+            });
+
+            app.renderer.on('resize', spy);
+
+            app.resize();
+            app.resize();
+
+            expect(spy.calledTwice).to.be.true;
+
+            app.destroy();
+        });
+
+        it('should throttle multiple resizes', function (done)
+        {
+            const spy = sinon.spy();
+            const app = new Application({
+                resizeTo: this.div,
+            });
+
+            app.renderer.on('resize', spy);
+            app.queueResize();
+            app.queueResize();
+
+            setTimeout(() =>
+            {
+                expect(spy.calledOnce).to.be.true;
+                app.destroy();
+                done();
+            }, 50);
+        });
+
+        it('should cancel resize on destroy', function (done)
+        {
+            const spy = sinon.spy();
+            const app = new Application({
+                resizeTo: this.div,
+            });
+
+            app.renderer.on('resize', spy);
+            app.queueResize();
+            app.destroy();
+
+            requestAnimationFrame(() =>
+            {
+                expect(spy.called).to.be.false;
+                done();
+            });
+        });
+
+        it('should resize cancel resize queue', function (done)
+        {
+            const spy = sinon.spy();
+            const app = new Application({
+                resizeTo: this.div,
+            });
+
+            app.renderer.on('resize', spy);
+            app.queueResize();
+            app.resize();
+            app.destroy();
+
+            requestAnimationFrame(() =>
+            {
+                expect(spy.calledOnce).to.be.true;
+                done();
+            });
+        });
+
         it('should resizeTo with resolution', function ()
         {
             const app = new Application({
