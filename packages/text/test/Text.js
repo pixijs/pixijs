@@ -75,6 +75,29 @@ describe('PIXI.Text', function ()
 
     describe('destroy', function ()
     {
+        it('should now clear canvas size on imported canvas', function ()
+        {
+            const canvas = document.createElement('canvas');
+            const text = new Text('blah', {}, canvas);
+            const { width, height } = canvas;
+
+            text.destroy();
+
+            expect(canvas.width).to.equal(width);
+            expect(canvas.height).to.equal(height);
+        });
+
+        it('should clear size on owned canvas during destroy', function ()
+        {
+            const text = new Text('blah', {});
+            const { canvas } = text;
+
+            text.destroy();
+
+            expect(canvas.width).to.equal(0);
+            expect(canvas.height).to.equal(0);
+        });
+
         it('should call through to Sprite.destroy', function ()
         {
             const text = new Text('foo');
