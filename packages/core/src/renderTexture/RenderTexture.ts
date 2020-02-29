@@ -5,7 +5,7 @@ import { Rectangle } from '@pixi/math';
 import { Framebuffer, IBaseTextureOptions } from '@pixi/core';
 
 /**
- * A RenderTexture is a special texture that allows any PixiJS display object to be rendered to it.
+ * A `RenderTexture` is a special texture that allows any PixiJS display object to be rendered to it.
  *
  * __Hint__: All DisplayObjects (i.e. Sprites) that render to a RenderTexture should be preloaded
  * otherwise black rectangles will be drawn instead.
@@ -13,7 +13,7 @@ import { Framebuffer, IBaseTextureOptions } from '@pixi/core';
  * __Hint-2__: The actual memory allocation will happen on first render.
  * You shouldn't create renderTextures each frame just to delete them after, try to reuse them.
  *
- * A RenderTexture takes a snapshot of any Display Object given to its render method. For example:
+ * A `RenderTexture` takes a snapshot of any Display Object given to its render method. For example:
  *
  * ```js
  * let renderer = PIXI.autoDetectRenderer();

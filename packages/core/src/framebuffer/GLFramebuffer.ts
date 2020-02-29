@@ -2,7 +2,8 @@ import { Framebuffer } from './Framebuffer';
 import { MSAA_QUALITY } from '@pixi/constants';
 
 /**
- * Internal framebuffer for WebGL context
+ * Stores WebGL framebuffer resources attached to a WebGL rendering context.
+ *
  * @class
  * @memberof PIXI
  */
@@ -24,25 +25,29 @@ export class GLFramebuffer
          * @member {WebGLFramebuffer}
          */
         this.framebuffer = framebuffer;
+
         /**
          * stencil+depth , usually costs 32bits per pixel
          * @member {WebGLRenderbuffer}
          */
         this.stencil = null;
+
         /**
-         * latest known version of framebuffer
+         * Latest uploaded version of the framebuffer
          * @member {number}
          * @protected
          */
         this.dirtyId = 0;
+
         /**
-         * latest known version of framebuffer format
+         * Latest uploaded format of the framebuffer
          * @member {number}
          * @protected
          */
         this.dirtyFormat = 0;
+
         /**
-         * latest known version of framebuffer size
+         * Latest uploaded size of the framebuffer
          * @member {number}
          * @protected
          */
@@ -55,14 +60,15 @@ export class GLFramebuffer
         this.multisample = MSAA_QUALITY.NONE;
 
         /**
-         * In case MSAA, we use this Renderbuffer instead of colorTextures[0] when we write info
+         * When multisampling is used, this renderbuffer is uploaded instead of the color
+         * texture 0.
          * @member {WebGLRenderbuffer}
          */
         this.msaaBuffer = null;
 
         /**
-         * In case we use MSAA, this is actual framebuffer that has colorTextures[0]
-         * The contents of that framebuffer are read when we use that renderTexture in sprites
+         * When multisampling is used, this nested framebuffer is used to blit the antialiasing
+         * renderbuffer into the color texture 0.
          * @member {PIXI.Framebuffer}
          */
         this.blitFramebuffer = null;

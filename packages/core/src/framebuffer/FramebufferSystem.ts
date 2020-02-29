@@ -43,26 +43,54 @@ export class FramebufferSystem extends System
         this.managedFramebuffers = [];
 
         /**
-         * Framebuffer value that shows that we don't know what is bound
+         * Framebuffer value that shows that we don't know what is bound.
          * @member {Framebuffer}
          * @readonly
          */
         this.unknownFramebuffer = new Framebuffer(10, 10);
 
+        /**
+         * Samples per pixels that can be used for antialiasing.
+         * @member {number[]}
+         * @readonly
+         */
         this.msaaSamples = null;
     }
 
     /**
      * Sets up the renderer context and necessary buffers.
+     *
+     * @override
      */
     protected contextChange(): void
     {
         const gl = this.gl = this.renderer.gl;
 
         this.CONTEXT_UID = this.renderer.CONTEXT_UID;
+
+        /**
+         * Currently bound framebuffer. If this value is equal to `this.unknownFramebuffer`,
+         * that means the bound framebuffer is not known.
+         * @member {PIXI.Framebuffer}
+         */
         this.current = this.unknownFramebuffer;
+
+        /**
+         * The rectangle in the framebuffer (or canvas) onto which rendering will occur.
+         * @member {PIXI.Rectangle}
+         */
         this.viewport = new Rectangle();
+
+        /**
+         * Whether multiple render-targets are supported.
+         * @member {boolean}
+         */
         this.hasMRT = true;
+
+        /**
+         * Whether depth textures can be used for depth testing.
+         * @member {boolean}
+         */
         this.writeDepthTexture = true;
 
         this.disposeAll(true);
@@ -108,7 +136,7 @@ export class FramebufferSystem extends System
     }
 
     /**
-     * Bind a framebuffer
+     * Binds a framebuffer.
      *
      * @param {PIXI.Framebuffer} framebuffer
      * @param {PIXI.Rectangle} [frame] frame, default is framebuffer size
@@ -193,7 +221,8 @@ export class FramebufferSystem extends System
     }
 
     /**
-     * Set the WebGLRenderingContext's viewport.
+     * Sets the WebGL viewport. This will restrict rendering to the given frame in the
+     * framebuffer.
      *
      * @param {Number} x - X position of viewport
      * @param {Number} y - Y position of viewport
@@ -233,7 +262,7 @@ export class FramebufferSystem extends System
     }
 
     /**
-     * Clear the color of the context
+     * Clear the current framebuffer's buffers and fill them with the given color.
      *
      * @param {Number} r - Red value from 0 to 1
      * @param {Number} g - Green value from 0 to 1
@@ -252,7 +281,7 @@ export class FramebufferSystem extends System
     }
 
     /**
-     * Initialize framebuffer for this context
+     * Initialize the framebuffer to be used for this context.
      *
      * @protected
      * @param {PIXI.Framebuffer} framebuffer
@@ -273,7 +302,7 @@ export class FramebufferSystem extends System
     }
 
     /**
-     * Resize the framebuffer
+     * Resize the framebuffer for this context.
      *
      * @protected
      * @param {PIXI.Framebuffer} framebuffer
@@ -304,7 +333,7 @@ export class FramebufferSystem extends System
     }
 
     /**
-     * Update the framebuffer
+     * Update the framebuffer for this context.
      *
      * @protected
      * @param {PIXI.Framebuffer} framebuffer
@@ -409,7 +438,8 @@ export class FramebufferSystem extends System
     }
 
     /**
-     * Detects number of samples that is not more than a param but as close to it as possible
+     * Detects number of samples per pixels that can be used for antialiasing as close
+     * to the given `samples` but not more than it.
      *
      * @param {PIXI.MSAA_QUALITY} samples number of samples
      * @returns {PIXI.MSAA_QUALITY} recommended number of samples
@@ -598,9 +628,10 @@ export class FramebufferSystem extends System
     }
 
     /**
-     * resets framebuffer stored state, binds screen framebuffer
+     * Resets framebuffer state and unbinds the current framebuffers.
      *
-     * should be called before renderTexture reset()
+     * NOTE: If using render-texture, this should be called before resetting the
+     * render-texture system.
      */
     reset(): void
     {

@@ -6,7 +6,18 @@ import { FORMATS, MIPMAP_MODES, TYPES, MSAA_QUALITY } from '@pixi/constants';
 import { GLFramebuffer } from './GLFramebuffer';
 
 /**
- * Frame buffer used by the BaseRenderTexture
+ * A framebuffer can be used as the destination for rendering. It is a low-level construct
+ * that is used by `PIXI.BaseRenderTexture`.
+ *
+ * <pre><code>PIXI.Framebuffer</code></pre> supports the following features:
+ * 1. Multiple render targets that are textures.
+ * 2. Color attachment 0 can be antialiased (by using an intermediate renderbuffer).
+ * 3. Depth testing.
+ * 4. Stencil testing.
+ *
+ * NOTE:
+ * Multisampled antialiasing is an experimental feature. Although it is faster than rendering
+ * at higher resolutions, it still has performance & memory consumption effects.
  *
  * @class
  * @memberof PIXI
@@ -25,6 +36,7 @@ export class Framebuffer
     colorTextures: Array<BaseTexture>;
     glFramebuffers: {[key: string]: GLFramebuffer};
     disposeRunner: Runner;
+
     /**
      * @param {number} width - Width of the frame buffer
      * @param {number} height - Height of the frame buffer
@@ -33,25 +45,60 @@ export class Framebuffer
     {
         /**
          * Width of framebuffer in pixels
+         *
          * @member {number}
+         * @default {100}
          */
         this.width = Math.ceil(width || 100);
+
         /**
          * Height of framebuffer in pixels
+         *
          * @member {number}
+         * @default {100}
          */
         this.height = Math.ceil(height || 100);
 
+        /**
+         * Whether to use a stencil buffer.
+         *
+         * @private
+         * @member {boolean}
+         */
         this.stencil = false;
+
+        /**
+         * Whether to use a depth buffer.
+         *
+         * @private
+         * @member {boolean}
+         * @see {PIXI.Framebuffer#depthTexture}
+         */
         this.depth = false;
 
         this.dirtyId = 0;
         this.dirtyFormat = 0;
         this.dirtySize = 0;
 
-        this.depthTexture = null;
+        /**
+         * Color attachments for this framebuffer.
+         *
+         * @member {PIXI.BaseTexture[]}
+         */
         this.colorTextures = [];
 
+        /**
+         * Texture to use as buffer for depth testing.
+         *
+         * @member {PIXI.BaseTexture}
+         */
+        this.depthTexture = null;
+
+        /**
+         * Map of renderer context-UIDs to `PIXI.GLFramebuffer`s.
+         *
+         * @member {Map<number, PIXI.GLFramebuffer>}
+         */
         this.glFramebuffers = {};
 
         this.disposeRunner = new Runner('disposeFramebuffer');

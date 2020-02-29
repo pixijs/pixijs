@@ -5,13 +5,17 @@ import { MaskData } from '@pixi/core';
 import { CanvasRenderTarget } from '@pixi/utils';
 
 /**
- * A BaseRenderTexture is a special texture that allows any PixiJS display object to be rendered to it.
+ * A `PIXI.BaseRenderTexture` is a special base-texture that can be used to render any PixiJS
+ * display object onto it.
  *
- * __Hint__: All DisplayObjects (i.e. Sprites) that render to a BaseRenderTexture should be preloaded
+ * __Hint__: Before rendering a display-object onto a render-texture, you must ensure that it has loaded
  * otherwise black rectangles will be drawn instead.
  *
- * A BaseRenderTexture takes a snapshot of any Display Object given to its render method. The position
- * and rotation of the given Display Objects is ignored. For example:
+ * __Hint-2__: This is a base-texture, not a texture. It is must be used via `PIXI.RenderTexture`.
+ *
+ * __Hint-3__: The display-object rendered onto a render-texture will be transformed using its local-transform.
+ *
+ * The following example renders a sprite at `(400px, 300px)` onto the the render-texture.
  *
  * ```js
  * let renderer = PIXI.autoDetectRenderer();
@@ -27,11 +31,10 @@ import { CanvasRenderTarget } from '@pixi/utils';
  * renderer.render(sprite, renderTexture);
  * ```
  *
- * The Sprite in this case will be rendered using its local transform. To render this sprite at 0,0
- * you can clear the transform
+ * To render this sprite at (0, 0), you can clear its local-transform; however, this will erase
+ * the position, scale, and rotation properties and you must restore them yourself.
  *
  * ```js
- *
  * sprite.setTransform()
  *
  * let baseRenderTexture = new PIXI.BaseRenderTexture({ width: 100, height: 100 });
@@ -39,6 +42,12 @@ import { CanvasRenderTarget } from '@pixi/utils';
  *
  * renderer.render(sprite, renderTexture);  // Renders to center of RenderTexture
  * ```
+ *
+ * Description:
+ * A `PIXI.BaseRenderTexture` holds a framebuffer with one color attachment. The `WebGLTexture` backing
+ * the color attachment is lazily created; however, the base-texture itself has no `PIXI.Resource`
+ * associated with it. All of the texture data lives in graphics-memory and cannot be used between
+ * different (WebGL) contexts and (WebGL) renderers.
  *
  * @class
  * @extends PIXI.BaseTexture
@@ -51,6 +60,7 @@ export class BaseRenderTexture extends BaseTexture
     maskStack: Array<MaskData>;
     filterStack: Array<any>;
     _canvasRenderTarget: CanvasRenderTarget;
+
     /**
      * @param {object} [options]
      * @param {number} [options.width=100] - The width of the base render texture.
@@ -91,8 +101,21 @@ export class BaseRenderTexture extends BaseTexture
          */
         this._canvasRenderTarget = null;
 
+        /**
+         * The RGBA color used for erasing texture data and filling it with one solid
+         * color. By default, the transparent/black color is used.
+         *
+         * @member {number[]}
+         * @default [0, 0, 0, 0]
+         */
         this.clearColor = [0, 0, 0, 0];
 
+        /**
+         * The framebuffer used to attach this texture as a render-target.
+         *
+         * @member {PIXI.Framebuffer}
+         * @readonly
+         */
         this.framebuffer = new Framebuffer(this.width * this.resolution, this.height * this.resolution)
             .addColorTexture(0, this);
 
@@ -114,10 +137,10 @@ export class BaseRenderTexture extends BaseTexture
     }
 
     /**
-     * Resizes the BaseRenderTexture.
+     * Resizes this base render-texture.
      *
-     * @param {number} width - The width to resize to.
-     * @param {number} height - The height to resize to.
+     * @param {number} width - the new width
+     * @param {number} height - the new height
      */
     resize(width: number, height: number): void
     {
