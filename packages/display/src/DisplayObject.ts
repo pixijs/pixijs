@@ -191,7 +191,7 @@ export abstract class DisplayObject extends EventEmitter
          *
          * @member {PIXI.Bounds}
          */
-        this._localBounds = new Bounds();
+        this._localBounds = null;
 
         /**
          * Flags the cached bounds as dirty.
@@ -366,6 +366,11 @@ export abstract class DisplayObject extends EventEmitter
             }
 
             rect = this._localBoundsRect;
+        }
+
+        if (!this._localBounds)
+        {
+            this._localBounds = new Bounds();
         }
 
         const transformRef = this.transform;
