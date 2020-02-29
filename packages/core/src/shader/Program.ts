@@ -200,9 +200,9 @@ export class Program
         for (let i = 0; i < totalUniforms; i++)
         {
             const uniformData = gl.getActiveUniform(program, i);
-            const name = uniformData.name.replace(/\[.*?\]/, '');
+            const name = uniformData.name.replace(/\[.*?\]$/, '');
 
-            const isArray = uniformData.name.match(/\[.*?\]/);
+            const isArray = uniformData.name.match(/\[.*?\]$/);
             const type = mapType(gl, uniformData.type);
 
             /*eslint-disable */

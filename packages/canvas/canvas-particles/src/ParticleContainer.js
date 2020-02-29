@@ -53,15 +53,7 @@ ParticleContainer.prototype.renderCanvas = function renderCanvas(renderer)
             // this is the fastest  way to optimise! - if rotation is 0 then we can avoid any kind of setTransform call
             if (isRotated)
             {
-                context.setTransform(
-                    transform.a,
-                    transform.b,
-                    transform.c,
-                    transform.d,
-                    transform.tx * renderer.resolution,
-                    transform.ty * renderer.resolution
-                );
-
+                renderer.setContextTransform(transform, false, 1);
                 isRotated = false;
             }
 
@@ -82,28 +74,7 @@ ParticleContainer.prototype.renderCanvas = function renderCanvas(renderer)
 
             const childTransform = child.worldTransform;
 
-            if (this.roundPixels)
-            {
-                context.setTransform(
-                    childTransform.a,
-                    childTransform.b,
-                    childTransform.c,
-                    childTransform.d,
-                    (childTransform.tx * renderer.resolution) | 0,
-                    (childTransform.ty * renderer.resolution) | 0
-                );
-            }
-            else
-            {
-                context.setTransform(
-                    childTransform.a,
-                    childTransform.b,
-                    childTransform.c,
-                    childTransform.d,
-                    childTransform.tx * renderer.resolution,
-                    childTransform.ty * renderer.resolution
-                );
-            }
+            renderer.setContextTransform(childTransform, this.roundPixels, 1);
 
             positionX = ((child.anchor.x) * (-frame.width)) + 0.5;
             positionY = ((child.anchor.y) * (-frame.height)) + 0.5;

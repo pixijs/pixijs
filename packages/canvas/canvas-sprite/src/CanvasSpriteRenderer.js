@@ -105,31 +105,12 @@ export class CanvasSpriteRenderer
         dx -= width / 2;
         dy -= height / 2;
 
+        renderer.setContextTransform(wt, sprite.roundPixels, 1);
         // Allow for pixel rounding
         if (sprite.roundPixels)
         {
-            renderer.context.setTransform(
-                wt.a,
-                wt.b,
-                wt.c,
-                wt.d,
-                (wt.tx * renderer.resolution) | 0,
-                (wt.ty * renderer.resolution) | 0
-            );
-
             dx = dx | 0;
             dy = dy | 0;
-        }
-        else
-        {
-            renderer.context.setTransform(
-                wt.a,
-                wt.b,
-                wt.c,
-                wt.d,
-                wt.tx * renderer.resolution,
-                wt.ty * renderer.resolution
-            );
         }
 
         const resolution = texture.baseTexture.resolution;

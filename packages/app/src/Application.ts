@@ -13,6 +13,7 @@ export interface IApplicationOptions extends IRendererOptionsAuto {
     sharedTicker?: boolean;
     sharedLoader?: boolean;
     resizeTo?: Window | HTMLElement;
+    resizeThrottle?: number;
 }
 
 /**

@@ -6,6 +6,7 @@ require('./TextureSystem');
 require('./FramebufferSystem');
 require('./ShaderSystem');
 require('./FilterSystem');
+require('./Shader');
 require('./BatchRenderer');
 require('./Geometry');
 require('./CanvasResource');
