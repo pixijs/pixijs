@@ -1,12 +1,14 @@
 import { TYPES } from '@pixi/constants';
-import { ObjectRenderer, Renderer, Shader, State } from '@pixi/core';
-import { DisplayObject } from '@pixi/display';
+import { ObjectRenderer, Shader, State } from '@pixi/core';
 import { Matrix } from '@pixi/math';
 import { correctBlendMode, premultiplyRgba, premultiplyTint } from '@pixi/utils';
 import { ParticleBuffer } from './ParticleBuffer';
-import { ParticleContainer } from './ParticleContainer';
 import fragment from './particles.frag';
 import vertex from './particles.vert';
+
+import type { DisplayObject } from '@pixi/display';
+import type { ParticleContainer } from './ParticleContainer';
+import type { Renderer } from '@pixi/core';
 
 export interface IParticleRendererProperty {
     attributeName: string;

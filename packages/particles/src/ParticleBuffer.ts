@@ -1,8 +1,9 @@
 import { createIndicesForQuads } from '@pixi/utils';
 import { Geometry, Buffer } from '@pixi/core';
 import { TYPES } from '@pixi/constants';
-import { DisplayObject } from '@pixi/display';
-import { IParticleRendererProperty } from './ParticleRenderer';
+
+import type { DisplayObject } from '@pixi/display';
+import type { IParticleRendererProperty } from './ParticleRenderer';
 
 /**
  * @author Mat Groves

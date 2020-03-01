@@ -1,8 +1,10 @@
 import { BLEND_MODES } from '@pixi/constants';
-import { BaseTexture, Renderer } from '@pixi/core';
-import { Container, IDestroyOptions } from '@pixi/display';
+import { Container } from '@pixi/display';
 import { hex2rgb } from '@pixi/utils';
-import { ParticleBuffer } from './ParticleBuffer';
+
+import type { BaseTexture, Renderer } from '@pixi/core';
+import type { ParticleBuffer } from './ParticleBuffer';
+import type { IDestroyOptions } from '@pixi/display';
 
 export interface IParticleProperties {
     vertices?: boolean;
