@@ -1,7 +1,8 @@
 import { AbstractMaskSystem } from './AbstractMaskSystem';
 
-import { Renderer } from '@pixi/core';
-import { IMaskTarget, MaskData } from './MaskData';
+import type { Renderer } from '@pixi/core';
+import type { IMaskTarget, MaskData } from './MaskData';
+
 /**
  * System plugin to the renderer to manage stencils (used for masks).
  *

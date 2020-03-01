@@ -1,7 +1,9 @@
-import { MaskData, Renderer } from '@pixi/core';
 import { settings } from '@pixi/settings';
 import { removeItems } from '@pixi/utils';
-import { DisplayObject, IDestroyOptions } from './DisplayObject';
+import { DisplayObject } from './DisplayObject';
+
+import type { MaskData, Renderer } from '@pixi/core';
+import type { IDestroyOptions } from './DisplayObject';
 
 function sortChildren(a: DisplayObject, b: DisplayObject): number
 {

@@ -1,9 +1,13 @@
 import { BLEND_MODES } from '@pixi/constants';
-import { IBaseTextureOptions, Renderer, Texture, TextureSource } from '@pixi/core';
-import { Container, IDestroyOptions } from '@pixi/display';
-import { IPoint, ObservablePoint, Point, Rectangle } from '@pixi/math';
+import { Texture } from '@pixi/core';
+import { Container } from '@pixi/display';
+import { ObservablePoint, Point, Rectangle } from '@pixi/math';
 import { settings } from '@pixi/settings';
 import { sign } from '@pixi/utils';
+
+import type { IBaseTextureOptions, Renderer, TextureSource } from '@pixi/core';
+import type { IDestroyOptions } from '@pixi/display';
+import type { IPoint } from '@pixi/math';
 
 const tempPoint = new Point();
 const indices = new Uint16Array([0, 1, 2, 0, 2, 3]);
