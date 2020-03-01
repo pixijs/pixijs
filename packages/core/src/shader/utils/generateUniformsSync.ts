@@ -99,7 +99,7 @@ export function generateUniformsSync(group: UniformGroup, uniformData: {[x: stri
             if (group.uniforms[i].group)
             {
                 funcFragments.push(`
-                    renderer.shader.syncUniformGroup(uv.${i}, syncData);
+                    renderer.shader.syncUniformGroup(uv["${i}"], syncData);
                 `);
             }
 
@@ -125,11 +125,11 @@ export function generateUniformsSync(group: UniformGroup, uniformData: {[x: stri
         {
             const templateType = (data.size === 1) ? GLSL_TO_SINGLE_SETTERS_CACHED : GLSL_TO_ARRAY_SETTERS;
 
-            const template =  templateType[data.type].replace('location', `ud.${i}.location`);
+            const template =  templateType[data.type].replace('location', `ud["${i}"].location`);
 
             funcFragments.push(`
-            cv = ud.${i}.value;
-            v = uv.${i};
+            cv = ud["${i}"].value;
+            v = uv["${i}"];
             ${template};`);
         }
     }
@@ -142,3 +142,4 @@ export function generateUniformsSync(group: UniformGroup, uniformData: {[x: stri
      */
     return new Function('ud', 'uv', 'renderer', 'syncData', funcFragments.join('\n')); // eslint-disable-line no-new-func
 }
+

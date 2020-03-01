@@ -21,7 +21,6 @@ TilingSprite.prototype._renderCanvas = function _renderCanvas(renderer)
 
     const context = renderer.context;
     const transform = this.worldTransform;
-    const resolution = renderer.resolution;
     const baseTexture = texture.baseTexture;
     const source = baseTexture.getDrawableSource();
     const baseTextureResolution = baseTexture.resolution;
@@ -54,14 +53,8 @@ TilingSprite.prototype._renderCanvas = function _renderCanvas(renderer)
 
     // set context state..
     context.globalAlpha = this.worldAlpha;
-    context.setTransform(transform.a * resolution,
-        transform.b * resolution,
-        transform.c * resolution,
-        transform.d * resolution,
-        transform.tx * resolution,
-        transform.ty * resolution);
-
     renderer.setBlendMode(this.blendMode);
+    renderer.setContextTransform(transform);
 
     // fill the pattern!
     context.fillStyle = this._canvasPattern;
