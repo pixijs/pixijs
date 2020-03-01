@@ -1,6 +1,6 @@
 import { CLEAR_MODES } from '@pixi/constants';
 import { Filter, RenderTexture, systems, Texture, ISpriteMaskTarget } from '@pixi/core';
-import { Matrix, Point } from '@pixi/math/src';
+import { Matrix, Point } from '@pixi/math';
 import fragment from './displacement.frag';
 import vertex from './displacement.vert';
 

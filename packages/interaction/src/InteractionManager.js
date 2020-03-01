@@ -1,5 +1,5 @@
 import { Ticker, UPDATE_PRIORITY } from '@pixi/ticker';
-import { DisplayObject } from '@pixi/display';
+import { DisplayObject, TemporaryDisplayObject } from '@pixi/display';
 import { InteractionData } from './InteractionData';
 import { InteractionEvent } from './InteractionEvent';
 import { InteractionTrackingData } from './InteractionTrackingData';
@@ -268,6 +268,13 @@ export class InteractionManager extends EventEmitter
          * @member {PIXI.interaction.TreeSearch}
          */
         this.search = new TreeSearch();
+
+        /**
+         * Used as a last rendered object in case renderer doesnt have _lastObjectRendered
+         * @member {DisplayObject}
+         * @private
+         */
+        this._tempDisplayObject = new TemporaryDisplayObject();
 
         /**
          * Fired when a pointer device button (usually a mouse left-button) is pressed on the display
@@ -695,6 +702,17 @@ export class InteractionManager extends EventEmitter
     }
 
     /**
+     * Last rendered object or temp object
+     * @readonly
+     * @protected
+     * @member {PIXI.DisplayObject}
+     */
+    get lastObjectRendered()
+    {
+        return this.renderer._lastObjectRendered || this._tempDisplayObject;
+    }
+
+    /**
      * Hit tests a point against the display tree, returning the first interactive object that is hit.
      *
      * @param {PIXI.Point} globalPoint - A point to hit test with, in global space.
@@ -711,7 +729,7 @@ export class InteractionManager extends EventEmitter
         // ensure safety of the root
         if (!root)
         {
-            root = this.renderer._lastObjectRendered;
+            root = this.lastObjectRendered;
         }
         // run the hit test
         this.processInteractive(hitTestEvent, root, null, true);
@@ -953,7 +971,7 @@ export class InteractionManager extends EventEmitter
 
                     this.processInteractive(
                         interactionEvent,
-                        this.renderer._lastObjectRendered,
+                        this.lastObjectRendered,
                         this.processPointerOverOut,
                         true
                     );
@@ -1169,7 +1187,7 @@ export class InteractionManager extends EventEmitter
 
             interactionEvent.data.originalEvent = originalEvent;
 
-            this.processInteractive(interactionEvent, this.renderer._lastObjectRendered, this.processPointerDown, true);
+            this.processInteractive(interactionEvent, this.lastObjectRendered, this.processPointerDown, true);
 
             this.emit('pointerdown', interactionEvent);
             if (event.pointerType === 'touch')
@@ -1258,7 +1276,7 @@ export class InteractionManager extends EventEmitter
             interactionEvent.data.originalEvent = originalEvent;
 
             // perform hit testing for events targeting our canvas or cancel events
-            this.processInteractive(interactionEvent, this.renderer._lastObjectRendered, func, cancelled || !eventAppend);
+            this.processInteractive(interactionEvent, this.lastObjectRendered, func, cancelled || !eventAppend);
 
             this.emit(cancelled ? 'pointercancel' : `pointerup${eventAppend}`, interactionEvent);
 
@@ -1458,7 +1476,7 @@ export class InteractionManager extends EventEmitter
 
             interactionEvent.data.originalEvent = originalEvent;
 
-            this.processInteractive(interactionEvent, this.renderer._lastObjectRendered, this.processPointerMove, true);
+            this.processInteractive(interactionEvent, this.lastObjectRendered, this.processPointerMove, true);
 
             this.emit('pointermove', interactionEvent);
             if (event.pointerType === 'touch') this.emit('touchmove', interactionEvent);
@@ -1530,7 +1548,7 @@ export class InteractionManager extends EventEmitter
 
         interactionEvent.data.originalEvent = event;
 
-        this.processInteractive(interactionEvent, this.renderer._lastObjectRendered, this.processPointerOverOut, false);
+        this.processInteractive(interactionEvent, this.lastObjectRendered, this.processPointerOverOut, false);
 
         this.emit('pointerout', interactionEvent);
         if (event.pointerType === 'mouse' || event.pointerType === 'pen')

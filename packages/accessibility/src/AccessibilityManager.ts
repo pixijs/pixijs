@@ -330,7 +330,10 @@ export class AccessibilityManager
         }
 
         // update children...
-        this.updateAccessibleObjects(this.renderer._lastObjectRendered as Container);
+        if (this.renderer._lastObjectRendered)
+        {
+            this.updateAccessibleObjects(this.renderer._lastObjectRendered as Container);
+        }
 
         // TODO: Remove casting when CanvasRenderer is converted
         const rect = (this.renderer as AbstractRenderer).view.getBoundingClientRect();
