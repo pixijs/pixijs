@@ -1,4 +1,4 @@
-import { AbstractRenderer, IRendererOptions, IRendererPlugins } from './AbstractRenderer';
+import { AbstractRenderer } from './AbstractRenderer';
 import { sayHello, isWebGLSupported } from '@pixi/utils';
 import { MaskSystem } from './mask/MaskSystem';
 import { StencilSystem } from './mask/StencilSystem';
@@ -19,12 +19,12 @@ import { UniformGroup } from './shader/UniformGroup';
 import { Matrix } from '@pixi/math';
 import { Runner } from '@pixi/runner';
 
-// import types
-import { RenderTexture } from './renderTexture/RenderTexture';
-import { DisplayObject } from '@pixi/display';
-import { System } from './System';
-import { IRenderingContext } from './IRenderingContext';
-import { Extract } from '@pixi/extract';
+import type { IRendererOptions, IRendererPlugins } from './AbstractRenderer';
+import type { RenderTexture } from './renderTexture/RenderTexture';
+import type { DisplayObject } from '@pixi/display';
+import type { System } from './System';
+import type { IRenderingContext } from './IRenderingContext';
+import type { Extract } from '@pixi/extract';
 
 export interface IRendererPluginConstructor {
     new (renderer: Renderer): IRendererPlugin;

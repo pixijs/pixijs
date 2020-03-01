@@ -3,7 +3,7 @@ import { BaseTexture } from '../textures/BaseTexture';
 import { DepthResource } from '../textures/resources/DepthResource';
 import { FORMATS, MIPMAP_MODES, TYPES, MSAA_QUALITY } from '@pixi/constants';
 
-import { GLFramebuffer } from './GLFramebuffer';
+import type { GLFramebuffer } from './GLFramebuffer';
 
 /**
  * Frame buffer used by the BaseRenderTexture

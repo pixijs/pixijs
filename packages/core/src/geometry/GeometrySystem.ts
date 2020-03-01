@@ -1,10 +1,11 @@
 import { System } from '../System';
 import { GLBuffer } from './GLBuffer';
-import { ENV, DRAW_MODES } from '@pixi/constants';
+import { ENV } from '@pixi/constants';
 import { settings } from '../settings';
 
-import { Renderer, IRenderingContext, Geometry, Shader, Program } from '@pixi/core';
-import { Buffer } from './Buffer';
+import type { DRAW_MODES } from '@pixi/constants';
+import type { Renderer, IRenderingContext, Geometry, Shader, Program } from '@pixi/core';
+import type { Buffer } from './Buffer';
 
 const byteSizeMap: {[key: number]: number} = { 5126: 4, 5123: 2, 5121: 1 };
 

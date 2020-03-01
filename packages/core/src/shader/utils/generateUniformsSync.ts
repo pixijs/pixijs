@@ -1,5 +1,6 @@
-import { UniformGroup } from '../UniformGroup';
 import { uniformParsers } from './uniformParsers';
+
+import type { UniformGroup } from '../UniformGroup';
 
 // cv = CachedValue
 // v = value

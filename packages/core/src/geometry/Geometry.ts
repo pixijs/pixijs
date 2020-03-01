@@ -1,9 +1,11 @@
 import { Attribute } from './Attribute';
-import { Buffer, IArrayBuffer } from './Buffer';
+import { Buffer } from './Buffer';
 import { interleaveTypedArrays } from './utils/interleaveTypedArrays';
 import { getBufferType } from './utils/getBufferType';
-import { TYPES } from '@pixi/constants';
 import { Runner } from '@pixi/runner';
+
+import type { TYPES } from '@pixi/constants';
+import type { IArrayBuffer } from './Buffer';
 
 const byteSizeMap: {[key: number]: number} = { 5126: 4, 5123: 2, 5121: 1 };
 let UID = 0;

@@ -1,5 +1,7 @@
-import { DRAW_MODES, BLEND_MODES } from '@pixi/constants';
-import { BatchTextureArray } from './BatchTextureArray';
+import { DRAW_MODES } from '@pixi/constants';
+
+import type { BLEND_MODES } from '@pixi/constants';
+import type { BatchTextureArray } from './BatchTextureArray';
 
 /**
  * Used by the batcher to draw batches.

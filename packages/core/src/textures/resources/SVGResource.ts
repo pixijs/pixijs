@@ -1,7 +1,7 @@
 import { uid } from '@pixi/utils';
 import { BaseImageResource } from './BaseImageResource';
 
-import { ISize } from '@pixi/math';
+import type { ISize } from '@pixi/math';
 
 export interface ISVGResourceOptions
 {

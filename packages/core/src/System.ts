@@ -1,4 +1,5 @@
-import { Renderer } from './Renderer';
+import type { Renderer } from './Renderer';
+
 /**
  * System is a base class used for extending systems used by the {@link PIXI.Renderer}
  *

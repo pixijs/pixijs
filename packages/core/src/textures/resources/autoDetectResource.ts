@@ -1,9 +1,11 @@
 import { Resource } from './Resource';
-import { ImageResource, IImageResourceOptions } from './ImageResource';
-import { ISize } from '@pixi/math';
-import { ICubeResourceOptions } from './CubeResource';
-import { ISVGResourceOptions } from './SVGResource';
-import { IVideoResourceOptions } from './VideoResource';
+import { ImageResource } from './ImageResource';
+
+import type { IImageResourceOptions } from './ImageResource';
+import type{ ISize } from '@pixi/math';
+import type{ ICubeResourceOptions } from './CubeResource';
+import type{ ISVGResourceOptions } from './SVGResource';
+import type{ IVideoResourceOptions } from './VideoResource';
 
 /**
  * Allow flexible options for resource plugins

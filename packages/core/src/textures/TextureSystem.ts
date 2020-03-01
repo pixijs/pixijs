@@ -4,8 +4,8 @@ import { GLTexture } from './GLTexture';
 import { removeItems } from '@pixi/utils';
 import { MIPMAP_MODES, WRAP_MODES, SCALE_MODES, TYPES } from '@pixi/constants';
 
-import { Texture } from './Texture';
-import { Renderer, IRenderingContext } from '@pixi/core';
+import type { Texture } from './Texture';
+import type { Renderer, IRenderingContext } from '@pixi/core';
 
 /**
  * System plugin to the renderer to manage textures.

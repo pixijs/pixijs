@@ -1,5 +1,7 @@
-import { Loader as ResourceLoader, middleware, Resource } from 'resource-loader';
+import { Loader as ResourceLoader, middleware } from 'resource-loader';
 import { TextureLoader } from './TextureLoader';
+
+import type { Resource } from 'resource-loader';
 
 /**
  * The new loader, extends Resource Loader by Chad Engler: https://github.com/englercj/resource-loader
