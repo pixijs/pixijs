@@ -1,5 +1,6 @@
 import { Runner } from '@pixi/runner';
-import { GLBuffer } from './GLBuffer';
+
+import type { GLBuffer } from './GLBuffer';
 
 let UID = 0;
 /* eslint-disable max-len */

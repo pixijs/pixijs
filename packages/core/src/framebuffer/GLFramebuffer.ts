@@ -1,5 +1,6 @@
-import { Framebuffer } from './Framebuffer';
 import { MSAA_QUALITY } from '@pixi/constants';
+
+import type { Framebuffer } from './Framebuffer';
 
 /**
  * Internal framebuffer for WebGL context

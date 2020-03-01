@@ -1,6 +1,8 @@
 // for type only
-import { SHAPES, Circle, Ellipse } from '@pixi/math';
-import { IShapeBuildCommand } from './IShapeBuildCommand';
+import { SHAPES } from '@pixi/math';
+
+import type { Circle, Ellipse } from '@pixi/math';
+import type { IShapeBuildCommand } from './IShapeBuildCommand';
 
 /**
  * Builds a circle to draw

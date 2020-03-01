@@ -6,11 +6,11 @@ import { Rectangle, Matrix } from '@pixi/math';
 import { UniformGroup } from '../shader/UniformGroup';
 import { DRAW_MODES, CLEAR_MODES } from '@pixi/constants';
 import { deprecation } from '@pixi/utils';
-
 import { FilterState } from './FilterState';
-import { Filter } from './Filter';
-import { IFilterTarget } from './IFilterTarget';
-import { Renderer, RenderTexture, ISpriteMaskTarget } from '@pixi/core';
+
+import type { Filter } from './Filter';
+import type { IFilterTarget } from './IFilterTarget';
+import type { Renderer, RenderTexture, ISpriteMaskTarget } from '@pixi/core';
 
 /**
  * System plugin to the renderer to manage the filters.

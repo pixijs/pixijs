@@ -1,7 +1,8 @@
 import { Resource } from 'resource-loader';
-import { Texture } from '@pixi/core';
-import { Spritesheet } from '@pixi/spritesheet';
-import { Dict } from '@pixi/utils';
+
+import type { Spritesheet } from '@pixi/spritesheet';
+import type { Texture } from '@pixi/core';
+import type { Dict } from '@pixi/utils';
 
 export interface IResourceMetadata extends Resource.IMetadata {
     imageMetadata?: any;

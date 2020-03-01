@@ -1,5 +1,5 @@
 import { SHAPES } from '../const';
-import { IPoint } from '../IPoint';
+import type { IPoint } from '../IPoint';
 
 /**
  * A class to define a shape via user defined co-orinates.

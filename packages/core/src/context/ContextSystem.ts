@@ -1,8 +1,8 @@
-import { IRenderingContext, Renderer } from '@pixi/core';
-
 import { ENV } from '@pixi/constants';
 import { System } from '../System';
 import { settings } from '../settings';
+
+import type { IRenderingContext, Renderer } from '@pixi/core';
 
 let CONTEXT_UID_COUNTER = 0;
 

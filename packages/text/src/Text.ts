@@ -1,15 +1,16 @@
 /* eslint max-depth: [2, 8] */
 import { Sprite } from '@pixi/sprite';
-import { Texture, Renderer } from '@pixi/core';
+import { Texture  } from '@pixi/core';
 import { settings } from '@pixi/settings';
 import { Rectangle } from '@pixi/math';
 import { sign, trimCanvas, hex2rgb, string2hex } from '@pixi/utils';
 import { TEXT_GRADIENT } from './const';
-import { TextStyle, ITextStyle } from './TextStyle';
+import { TextStyle } from './TextStyle';
 import { TextMetrics } from './TextMetrics';
 
-// TODO: import type
-import { IDestroyOptions } from '@pixi/display';
+import type { IDestroyOptions } from '@pixi/display';
+import type { Renderer } from '@pixi/core';
+import type { ITextStyle } from './TextStyle';
 
 const defaultDestroyOptions: IDestroyOptions = {
     texture: true,

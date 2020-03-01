@@ -1,9 +1,11 @@
-import { Filter, MaskData, Renderer } from '@pixi/core';
-import { DEG_TO_RAD, IPoint, Matrix, ObservablePoint, Point, RAD_TO_DEG, Rectangle, Transform } from '@pixi/math';
+import { DEG_TO_RAD, Matrix, Point, RAD_TO_DEG, Rectangle, Transform } from '@pixi/math';
 import { EventEmitter } from '@pixi/utils';
 import { Container } from './Container';
 import { Bounds } from './Bounds';
-import { IAccessibleTarget } from '@pixi/accessibility';
+
+import type { Filter, MaskData, Renderer } from '@pixi/core';
+import type { IPoint, ObservablePoint } from '@pixi/math';
+import type { IAccessibleTarget } from '@pixi/accessibility';
 
 export interface IDestroyOptions {
     children?: boolean;

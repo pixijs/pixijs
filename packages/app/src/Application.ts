@@ -1,6 +1,9 @@
-import { Container, IDestroyOptions } from '@pixi/display';
-import { autoDetectRenderer, Renderer, IRendererOptionsAuto, AbstractRenderer } from '@pixi/core';
-import { Rectangle } from '@pixi/math';
+import { Container } from '@pixi/display';
+import { autoDetectRenderer } from '@pixi/core';
+
+import type { Rectangle } from '@pixi/math';
+import type { Renderer, IRendererOptionsAuto, AbstractRenderer } from '@pixi/core';
+import type { IDestroyOptions } from '@pixi/display';
 
 export interface IApplicationPlugin {
     init: (...params: any[]) => any;

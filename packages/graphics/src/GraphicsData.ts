@@ -1,6 +1,6 @@
-import { Matrix, SHAPES, IShape } from '@pixi/math';
-import { FillStyle } from './styles/FillStyle';
-import { LineStyle } from './styles/LineStyle';
+import type { Matrix, SHAPES, IShape } from '@pixi/math';
+import type { FillStyle } from './styles/FillStyle';
+import type { LineStyle } from './styles/LineStyle';
 
 /**
  * A class to contain data useful for Graphics objects

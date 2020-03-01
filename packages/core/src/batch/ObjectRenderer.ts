@@ -1,4 +1,4 @@
-import { Renderer } from '@pixi/core';
+import type { Renderer } from '@pixi/core';
 
 /**
  * Base for a common object renderer that can be used as a

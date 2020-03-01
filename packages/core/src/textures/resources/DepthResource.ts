@@ -1,7 +1,7 @@
-import { BaseTexture, GLTexture, Renderer } from '@pixi/core';
-
 import { ALPHA_MODES } from '@pixi/constants';
 import { BufferResource } from './BufferResource';
+
+import type { BaseTexture, GLTexture, Renderer } from '@pixi/core';
 
 /**
  * Resource type for DepthTexture.

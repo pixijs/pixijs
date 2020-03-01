@@ -2,8 +2,8 @@ import { RenderTexture } from './RenderTexture';
 import { BaseRenderTexture } from './BaseRenderTexture';
 import { nextPow2 } from '@pixi/utils';
 
-import { IBaseTextureOptions } from '../textures/BaseTexture';
-import { ISize } from '@pixi/math';
+import type { IBaseTextureOptions } from '../textures/BaseTexture';
+import type { ISize } from '@pixi/math';
 
 /**
  * Experimental!
