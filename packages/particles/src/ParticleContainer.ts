@@ -1,6 +1,20 @@
 import { BLEND_MODES } from '@pixi/constants';
-import { hex2rgb } from '@pixi/utils';
 import { Container } from '@pixi/display';
+import { hex2rgb } from '@pixi/utils';
+
+import type { BaseTexture, Renderer } from '@pixi/core';
+import type { ParticleBuffer } from './ParticleBuffer';
+import type { IDestroyOptions } from '@pixi/display';
+
+export interface IParticleProperties {
+    vertices?: boolean;
+    position?: boolean;
+    rotation?: boolean;
+    uvs?: boolean;
+    tint?: boolean;
+    alpha?: boolean;
+    scale?: boolean;
+}
 
 /**
  * The ParticleContainer class is a really fast version of the Container built solely for speed,
@@ -31,6 +45,20 @@ import { Container } from '@pixi/display';
  */
 export class ParticleContainer extends Container
 {
+    public readonly blendMode: BLEND_MODES;
+    public autoResize: boolean;
+    public roundPixels: boolean;
+    public baseTexture: BaseTexture;
+    public tintRgb: Float32Array;
+
+    _maxSize: number;
+    _buffers: ParticleBuffer[];
+    _batchSize: number;
+    _properties: boolean[];
+    _bufferUpdateIDs: number[];
+    _updateID: number;
+    private _tint: number;
+
     /**
      * @param {number} [maxSize=1500] - The maximum number of particles that can be rendered by the container.
      *  Affects size of allocated buffers.
@@ -45,7 +73,7 @@ export class ParticleContainer extends Container
      * @param {boolean} [autoResize=false] If true, container allocates more batches in case
      *  there are more than `maxSize` particles.
      */
-    constructor(maxSize = 1500, properties, batchSize = 16384, autoResize = false)
+    constructor(maxSize = 1500, properties: IParticleProperties, batchSize = 16384, autoResize = false)
     {
         super();
 
@@ -161,7 +189,7 @@ export class ParticleContainer extends Container
      *
      * @param {object} properties - The properties to be uploaded
      */
-    setProperties(properties)
+    public setProperties(properties: IParticleProperties): void
     {
         if (properties)
         {
@@ -180,11 +208,10 @@ export class ParticleContainer extends Container
      *
      * @private
      */
-    updateTransform()
+    updateTransform(): void
     {
         // TODO don't need to!
         this.displayObjectUpdateTransform();
-        //  PIXI.Container.prototype.updateTransform.call( this );
     }
 
     /**
@@ -194,7 +221,7 @@ export class ParticleContainer extends Container
      * @member {number}
      * @default 0xFFFFFF
      */
-    get tint()
+    get tint(): number
     {
         return this._tint;
     }
@@ -211,7 +238,7 @@ export class ParticleContainer extends Container
      * @private
      * @param {PIXI.Renderer} renderer - The webgl renderer
      */
-    render(renderer)
+    public render(renderer: Renderer): void
     {
         if (!this.visible || this.worldAlpha <= 0 || !this.children.length || !this.renderable)
         {
@@ -220,7 +247,7 @@ export class ParticleContainer extends Container
 
         if (!this.baseTexture)
         {
-            this.baseTexture = this.children[0]._texture.baseTexture;
+            this.baseTexture = (this.children[0] as any)._texture.baseTexture;
             if (!this.baseTexture.valid)
             {
                 this.baseTexture.once('update', () => this.onChildrenChange(0));
@@ -237,7 +264,7 @@ export class ParticleContainer extends Container
      * @private
      * @param {number} smallestChildIndex - The smallest child index
      */
-    onChildrenChange(smallestChildIndex)
+    protected onChildrenChange(smallestChildIndex: number): void
     {
         const bufferIndex = Math.floor(smallestChildIndex / this._batchSize);
 
@@ -248,7 +275,7 @@ export class ParticleContainer extends Container
         this._bufferUpdateIDs[bufferIndex] = ++this._updateID;
     }
 
-    dispose()
+    public dispose(): void
     {
         if (this._buffers)
         {
@@ -273,7 +300,7 @@ export class ParticleContainer extends Container
      * @param {boolean} [options.baseTexture=false] - Only used for child Sprites if options.children is set to true
      *  Should it destroy the base texture of the child sprite
      */
-    destroy(options)
+    public destroy(options: IDestroyOptions|boolean): void
     {
         super.destroy(options);
 

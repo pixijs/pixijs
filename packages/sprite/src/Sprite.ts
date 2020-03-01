@@ -66,7 +66,7 @@ export class Sprite extends Container
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
-    private _tintRGB: number;
+    _tintRGB: number;
 
     /**
      * @param {PIXI.Texture} [texture] - The texture for this sprite.
