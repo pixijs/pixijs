@@ -1,11 +1,12 @@
 import { hex2string, hex2rgb, deprecation, EventEmitter } from '@pixi/utils';
 import { Matrix, Rectangle } from '@pixi/math';
-import { RENDERER_TYPE, SCALE_MODES } from '@pixi/constants';
+import { RENDERER_TYPE } from '@pixi/constants';
 import { settings } from '@pixi/settings';
 import { DisplayObject } from '@pixi/display';
 import { RenderTexture } from './renderTexture/RenderTexture';
 
-import { IRenderingContext } from './IRenderingContext';
+import type { SCALE_MODES } from '@pixi/constants';
+import type { IRenderingContext } from './IRenderingContext';
 
 const tempMatrix = new Matrix();
 

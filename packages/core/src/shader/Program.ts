@@ -1,4 +1,3 @@
-// import * as from '../systems/shader/shader';
 import { setPrecision,
     defaultValue,
     compileProgram,
@@ -12,7 +11,7 @@ import defaultVertex from './defaultProgram.vert';
 import { settings } from '@pixi/settings';
 import { PRECISION } from '@pixi/constants';
 
-import { GLProgram } from './GLProgram';
+import type { GLProgram } from './GLProgram';
 
 let UID = 0;
 

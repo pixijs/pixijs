@@ -1,6 +1,8 @@
 import { url } from '@pixi/utils';
 import { Spritesheet } from './Spritesheet';
-import { LoaderResource, Loader, ILoaderResource } from '@pixi/loaders';
+import { LoaderResource } from '@pixi/loaders';
+import type { Loader, ILoaderResource } from '@pixi/loaders';
+
 /**
  * {@link PIXI.Loader Loader} middleware for loading texture atlases that have been created with
  * TexturePacker or similar JSON-based spritesheet.

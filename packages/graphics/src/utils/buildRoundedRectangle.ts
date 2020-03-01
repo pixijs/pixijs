@@ -1,8 +1,8 @@
 import { earcut } from '@pixi/utils';
 
 // for type only
-import { IShapeBuildCommand } from './IShapeBuildCommand';
-import { RoundedRectangle } from '@pixi/math';
+import type { IShapeBuildCommand } from './IShapeBuildCommand';
+import type { RoundedRectangle } from '@pixi/math';
 
 /**
  * Calculate a single point for a quadratic bezier curve.

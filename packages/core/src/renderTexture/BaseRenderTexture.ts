@@ -1,8 +1,9 @@
-import { BaseTexture, IBaseTextureOptions } from '../textures/BaseTexture';
+import { BaseTexture } from '../textures/BaseTexture';
 import { Framebuffer } from '../framebuffer/Framebuffer';
 
-import { MaskData } from '@pixi/core';
-import { CanvasRenderTarget } from '@pixi/utils';
+import type { IBaseTextureOptions } from '../textures/BaseTexture';
+import type { MaskData } from '@pixi/core';
+import type { CanvasRenderTarget } from '@pixi/utils';
 
 /**
  * A BaseRenderTexture is a special texture that allows any PixiJS display object to be rendered to it.

@@ -1,8 +1,11 @@
-import { Renderer, AbstractRenderer } from '@pixi/core';
-import { Container, DisplayObject } from '@pixi/display';
-import { Rectangle } from '@pixi/math';
+import { DisplayObject } from '@pixi/display';
 import { isMobile, removeItems } from '@pixi/utils';
-import { accessibleTarget, IAccessibleHTMLElement } from './accessibleTarget';
+import { accessibleTarget } from './accessibleTarget';
+
+import type { Rectangle } from '@pixi/math';
+import type { Container } from '@pixi/display';
+import type { Renderer, AbstractRenderer } from '@pixi/core';
+import type { IAccessibleHTMLElement } from './accessibleTarget';
 
 // add some extra variables to the container..
 DisplayObject.mixin(accessibleTarget);

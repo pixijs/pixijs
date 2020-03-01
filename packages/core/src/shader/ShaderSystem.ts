@@ -1,11 +1,9 @@
 import { System } from '../System';
-import { GLProgram, IGLUniformData } from './GLProgram';
-import { generateUniformsSync,
-    unsafeEvalSupported,
-    defaultValue,
-    compileProgram } from './utils';
+import { GLProgram } from './GLProgram';
+import { generateUniformsSync, unsafeEvalSupported, defaultValue, compileProgram } from './utils';
 
-import { Renderer, IRenderingContext, Shader, Program, UniformGroup } from '@pixi/core';
+import type { IGLUniformData } from './GLProgram';
+import type { Renderer, IRenderingContext, Shader, Program, UniformGroup } from '@pixi/core';
 
 let UID = 0;
 // defualt sync data so we don't create a new one each time!

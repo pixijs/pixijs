@@ -1,7 +1,8 @@
 import { System } from '../System';
 
-import { MaskData } from './MaskData';
-import { Renderer } from '@pixi/core';
+import type { MaskData } from './MaskData';
+import type { Renderer } from '@pixi/core';
+
 /**
  * System plugin to the renderer to manage masks of certain type
  *

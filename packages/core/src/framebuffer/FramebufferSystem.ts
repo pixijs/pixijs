@@ -5,7 +5,7 @@ import { settings } from '../settings';
 import { Framebuffer } from './Framebuffer';
 import { GLFramebuffer } from './GLFramebuffer';
 
-import { Renderer, IRenderingContext } from '@pixi/core';
+import type { Renderer, IRenderingContext } from '@pixi/core';
 
 const tempRectangle = new Rectangle();
 

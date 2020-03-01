@@ -1,6 +1,6 @@
-import { CanvasRenderer } from '@pixi/canvas-renderer';
-import { Renderer } from '@pixi/core';
-import { IApplicationOptions } from './Application';
+import type { CanvasRenderer } from '@pixi/canvas-renderer';
+import type { Renderer } from '@pixi/core';
+import type { IApplicationOptions } from './Application';
 
 /**
  * Middleware for for Application's resize functionality

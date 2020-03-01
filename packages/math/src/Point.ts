@@ -1,4 +1,4 @@
-import { IPoint } from './IPoint';
+import type { IPoint } from './IPoint';
 
 /**
  * The Point object represents a location in a two-dimensional coordinate system, where x represents

@@ -1,4 +1,4 @@
-import { IRenderingContext } from '@pixi/core';
+import type { IRenderingContext } from '@pixi/core';
 
 export function getMaxKernelSize(gl: IRenderingContext): number
 {
