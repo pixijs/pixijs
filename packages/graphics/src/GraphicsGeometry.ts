@@ -4,7 +4,8 @@ import {
     BatchPart,
     FILL_COMMANDS,
     BATCH_POOL,
-    DRAW_CALL_POOL } from './utils';
+    DRAW_CALL_POOL,
+} from './utils';
 
 import {
     BatchGeometry,
@@ -15,12 +16,14 @@ import {
 } from '@pixi/core';
 
 import { DRAW_MODES, WRAP_MODES } from '@pixi/constants';
-import { SHAPES, Point, Matrix, Circle, Ellipse, Polygon, Rectangle, RoundedRectangle } from '@pixi/math';
+import { SHAPES, Point, Matrix } from '@pixi/math';
 import { GraphicsData } from './GraphicsData';
 import { premultiplyTint } from '@pixi/utils';
 import { Bounds } from '@pixi/display';
-import { FillStyle } from './styles/FillStyle';
-import { LineStyle } from './styles/LineStyle';
+
+import type { Circle, Ellipse, Polygon, Rectangle, RoundedRectangle } from '@pixi/math';
+import type { FillStyle } from './styles/FillStyle';
+import type { LineStyle } from './styles/LineStyle';
 
 /**
  * @description Complex shape type

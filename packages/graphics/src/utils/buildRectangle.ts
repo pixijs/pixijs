@@ -1,6 +1,5 @@
-// for type only
-import { IShapeBuildCommand } from './IShapeBuildCommand';
-import { Rectangle } from '@pixi/math';
+import type { IShapeBuildCommand } from './IShapeBuildCommand';
+import type { Rectangle } from '@pixi/math';
 
 /**
  * Builds a rectangle to draw

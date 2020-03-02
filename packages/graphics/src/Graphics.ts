@@ -8,28 +8,20 @@ import {
     RoundedRectangle,
     Matrix,
     SHAPES,
-    IShape,
 } from '@pixi/math';
 
-import {
-    Texture,
-    Shader,
-    UniformGroup, State, Renderer, BatchDrawCall,
-} from '@pixi/core';
-
-import {
-    BezierUtils,
-    QuadraticUtils,
-    ArcUtils,
-    Star,
-} from './utils';
-
+import { Texture, UniformGroup, State, Renderer, BatchDrawCall } from '@pixi/core';
+import { BezierUtils, QuadraticUtils, ArcUtils, Star } from './utils';
 import { hex2rgb, deprecation } from '@pixi/utils';
 import { GraphicsGeometry } from './GraphicsGeometry';
 import { FillStyle } from './styles/FillStyle';
 import { LineStyle } from './styles/LineStyle';
 import { BLEND_MODES } from '@pixi/constants';
-import { Container, IDestroyOptions } from '@pixi/display';
+import { Container } from '@pixi/display';
+import { Shader } from '@pixi/core';
+
+import type { IShape } from '@pixi/math';
+import type { IDestroyOptions } from '@pixi/display';
 
 /**
  * Batch element computed from Graphics geometry

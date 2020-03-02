@@ -1,6 +1,8 @@
 import { Rectangle } from '@pixi/math';
-import { Texture, BaseTexture, resources } from '@pixi/core';
-import { getResolutionOfUrl, Dict } from '@pixi/utils';
+import { Texture } from '@pixi/core';
+import { getResolutionOfUrl } from '@pixi/utils';
+import type { Dict } from '@pixi/utils';
+import type { BaseTexture, resources } from '@pixi/core';
 
 /**
  * Utility class for maintaining reference to a collection

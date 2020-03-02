@@ -1,8 +1,8 @@
-import { Point, SHAPES, Polygon } from '@pixi/math';
+import { Point, SHAPES } from '@pixi/math';
 
-// for type only
-import { GraphicsData } from '../GraphicsData';
-import { GraphicsGeometry } from '../GraphicsGeometry';
+import type { Polygon } from '@pixi/math';
+import type { GraphicsData } from '../GraphicsData';
+import type { GraphicsGeometry } from '../GraphicsGeometry';
 
 /**
  * Builds a line to draw using the polygon method.

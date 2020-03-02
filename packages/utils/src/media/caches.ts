@@ -1,4 +1,4 @@
-import { Program, Texture, BaseTexture } from '@pixi/core';
+import type { Program, Texture, BaseTexture } from '@pixi/core';
 
 /**
  * @todo Describe property usage
