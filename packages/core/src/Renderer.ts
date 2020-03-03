@@ -98,8 +98,6 @@ export class Renderer extends AbstractRenderer
      *   resolutions other than 1.
      * @param {boolean} [options.antialias=false] - Sets antialias. If not available natively then FXAA
      *  antialiasing is used.
-     * @param {boolean} [options.forceFXAA=false] - Forces FXAA antialiasing to be used over native.
-     *  FXAA is faster, but may not always look as great.
      * @param {number} [options.resolution=1] - The resolution / device pixel ratio of the renderer.
      *  The resolution of the renderer retina would be 2.
      * @param {boolean} [options.clearBeforeRender=true] - This sets if the renderer will clear
