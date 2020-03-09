@@ -178,7 +178,7 @@ export class AnimatedSprite extends Sprite
         }
 
         this._playing = true;
-        if (this._autoUpdate && this._isAutoUpdating)
+        if (this._autoUpdate && !this._isAutoUpdating)
         {
             Ticker.shared.add(this.update, this, UPDATE_PRIORITY.HIGH);
             this._isAutoUpdating = true;
