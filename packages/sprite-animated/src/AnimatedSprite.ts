@@ -221,10 +221,9 @@ export class AnimatedSprite extends Sprite
     /**
      * Updates the object transform for rendering.
      *
-     * @private
      * @param {number} deltaTime - Time since last tick.
      */
-    private update(deltaTime: number): void
+    update(deltaTime: number): void
     {
         const elapsed = this.animationSpeed * deltaTime;
         const previousFrame = this.currentFrame;
