@@ -38,6 +38,7 @@ describe('PIXI.AnimatedSprite', function ()
         it('should be correct with autoUpdate=true but then turned off via setter', function ()
         {
             this.sprite = new AnimatedSprite(this.textures, true);
+            expect(this.sprite._autoUpdate).to.be.true;
             this.sprite.autoUpdate = false;
             expect(this.sprite._autoUpdate).to.be.false;
         });
