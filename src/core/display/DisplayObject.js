@@ -101,9 +101,16 @@ export default class DisplayObject extends EventEmitter
          */
         this._bounds = new Bounds();
         this._boundsID = 0;
-        this._lastBoundsID = -1;
         this._boundsRect = null;
         this._localBoundsRect = null;
+
+        /**
+         * Local bounds object, swapped with `_bounds` when using `getLocalBounds()`.
+         *
+         * @member {PIXI.Bounds}
+         * @private
+         */
+        this._localBounds = null;
 
         /**
          * The original, cached mask of the object
@@ -158,11 +165,11 @@ export default class DisplayObject extends EventEmitter
      */
     updateTransform()
     {
+        this._boundsID++;
+
         this.transform.updateTransform(this.parent.transform);
         // multiply the alphas..
         this.worldAlpha = this.alpha * this.parent.worldAlpha;
-
-        this._bounds.updateID++;
     }
 
     /**
@@ -208,9 +215,10 @@ export default class DisplayObject extends EventEmitter
             }
         }
 
-        if (this._boundsID !== this._lastBoundsID)
+        if (this._bounds.updateID)
         {
             this.calculateBounds();
+            this._bounds.updateID = this._boundsID;
         }
 
         if (!rect)
@@ -234,12 +242,6 @@ export default class DisplayObject extends EventEmitter
      */
     getLocalBounds(rect)
     {
-        const transformRef = this.transform;
-        const parentRef = this.parent;
-
-        this.parent = null;
-        this.transform = this._tempDisplayObjectParent.transform;
-
         if (!rect)
         {
             if (!this._localBoundsRect)
@@ -250,10 +252,29 @@ export default class DisplayObject extends EventEmitter
             rect = this._localBoundsRect;
         }
 
+        if (!this._localBounds)
+        {
+            this._localBounds = new Bounds();
+        }
+
+        const transformRef = this.transform;
+        const parentRef = this.parent;
+
+        this.parent = null;
+        this.transform = this._tempDisplayObjectParent.transform;
+
+        const worldBounds = this._bounds;
+        const worldBoundsID = this._boundsID;
+
+        this._bounds = this._localBounds;
+
         const bounds = this.getBounds(false, rect);
 
         this.parent = parentRef;
         this.transform = transformRef;
+
+        this._bounds = worldBounds;
+        this._bounds.updateID += this._boundsID - worldBoundsID;// reflect side-effects
 
         return bounds;
     }

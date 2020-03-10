@@ -373,7 +373,35 @@ export default class Container extends DisplayObject
             }
         }
 
-        this._lastBoundsID = this._boundsID;
+        this._bounds.updateID = this._boundsID;
+    }
+
+    /**
+     * Retrieves the local bounds of the displayObject as a rectangle object.
+     *
+     * @param {PIXI.Rectangle} [rect] - Optional rectangle to store the result of the bounds calculation.
+     * @param {boolean} [skipChildrenUpdate=false] Setting to `true` will stop re-calculation of children transforms,
+     *  it was default behaviour of pixi 4.0-5.2 and caused many problems to users.
+     * @return {PIXI.Rectangle} The rectangular bounding area.
+     */
+    getLocalBounds(rect, skipChildrenUpdate = false)
+    {
+        const result = super.getLocalBounds(rect);
+
+        if (!skipChildrenUpdate)
+        {
+            for (let i = 0, j = this.children.length; i < j; ++i)
+            {
+                const child = this.children[i];
+
+                if (child.visible)
+                {
+                    child.updateTransform();
+                }
+            }
+        }
+
+        return result;
     }
 
     /**
