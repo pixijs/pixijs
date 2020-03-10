@@ -303,6 +303,7 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
     this.alpha = 1;
 
     const cachedRenderTarget = renderer.context;
+    const cachedProjectionTransform = renderer._projTransform;
 
     bounds.ceil(settings.RESOLUTION);
 
@@ -328,11 +329,10 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
     // set all properties to there original so we can render to a texture
     this.renderCanvas = this._cacheData.originalRenderCanvas;
 
-    // renderTexture.render(this, m, true);
     renderer.render(this, renderTexture, true, m, false);
-
     // now restore the state be setting the new properties
     renderer.context = cachedRenderTarget;
+    renderer._projTransform = cachedProjectionTransform;
 
     this.renderCanvas = this._renderCachedCanvas;
     // the rest is the same as for WebGL
@@ -381,7 +381,7 @@ DisplayObject.prototype._calculateCachedBounds = function _calculateCachedBounds
     this._bounds.clear();
     this._cacheData.sprite.transform._worldID = this.transform._worldID;
     this._cacheData.sprite._calculateBounds();
-    this._lastBoundsID = this._boundsID;
+    this._bounds.updateID = this._boundsID;
 };
 
 /**

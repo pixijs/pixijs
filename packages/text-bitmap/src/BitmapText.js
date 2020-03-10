@@ -1,9 +1,9 @@
-import { Texture } from '@pixi/core';
 import { Container } from '@pixi/display';
-import { ObservablePoint, Point, Rectangle } from '@pixi/math';
+import { ObservablePoint, Point } from '@pixi/math';
 import { settings } from '@pixi/settings';
 import { Sprite } from '@pixi/sprite';
-import { removeItems, getResolutionOfUrl } from '@pixi/utils';
+import { removeItems, deprecation } from '@pixi/utils';
+import { BitmapFont } from './BitmapFont';
 
 /**
  * A BitmapText object will create a line or multiple lines of text using bitmap font.
@@ -163,7 +163,7 @@ export class BitmapText extends Container
      */
     updateText()
     {
-        const data = BitmapText.fonts[this._font.name];
+        const data = BitmapFont.available[this._font.name];
         const scale = this._font.size / data.size;
         const pos = new Point();
         const chars = [];
@@ -448,7 +448,7 @@ export class BitmapText extends Container
             value = value.split(' ');
 
             this._font.name = value.length === 1 ? value[0] : value.slice(1).join(' ');
-            this._font.size = value.length >= 2 ? parseInt(value[0], 10) : BitmapText.fonts[this._font.name].size;
+            this._font.size = value.length >= 2 ? parseInt(value[0], 10) : BitmapFont.available[this._font.name].size;
         }
         else
         {
@@ -567,89 +567,30 @@ export class BitmapText extends Container
     /**
      * Register a bitmap font with data and a texture.
      *
+     * @deprecated since 5.3.0
+     * @see PIXI.BitmapFont.install
      * @static
-     * @param {XMLDocument} xml - The XML document data.
-     * @param {Object.<string, PIXI.Texture>|PIXI.Texture|PIXI.Texture[]} textures - List of textures for each page.
-     *  If providing an object, the key is the `<page>` element's `file` attribute in the FNT file.
-     * @return {Object} Result font object with font, size, lineHeight and char fields.
      */
-    static registerFont(xml, textures)
+    static registerFont(data, textures)
     {
-        const data = {};
-        const info = xml.getElementsByTagName('info')[0];
-        const common = xml.getElementsByTagName('common')[0];
-        const pages = xml.getElementsByTagName('page');
-        const res = getResolutionOfUrl(pages[0].getAttribute('file'), settings.RESOLUTION);
-        const pagesTextures = {};
+        deprecation('5.3.0', 'PIXI.BitmapText.registerFont is deprecated, use PIXI.BitmapFont.install');
 
-        data.font = info.getAttribute('face');
-        data.size = parseInt(info.getAttribute('size'), 10);
-        data.lineHeight = parseInt(common.getAttribute('lineHeight'), 10) / res;
-        data.chars = {};
+        return BitmapFont.install(data, textures);
+    }
 
-        // Single texture, convert to list
-        if (textures instanceof Texture)
-        {
-            textures = [textures];
-        }
+    /**
+     * Get the list of installed fonts.
+     *
+     * @see PIXI.BitmapFont.available
+     * @deprecated since 5.3.0
+     * @static
+     * @readonly
+     * @member {Object.<string, PIXI.BitmapFont>}
+     */
+    static get fonts()
+    {
+        deprecation('5.3.0', 'PIXI.BitmapText.fonts is deprecated, use PIXI.BitmapFont.available');
 
-        // Convert the input Texture, Textures or object
-        // into a page Texture lookup by "id"
-        for (let i = 0; i < pages.length; i++)
-        {
-            const id = pages[i].getAttribute('id');
-            const file = pages[i].getAttribute('file');
-
-            pagesTextures[id] = textures instanceof Array ? textures[i] : textures[file];
-        }
-
-        // parse letters
-        const letters = xml.getElementsByTagName('char');
-
-        for (let i = 0; i < letters.length; i++)
-        {
-            const letter = letters[i];
-            const charCode = parseInt(letter.getAttribute('id'), 10);
-            const page = letter.getAttribute('page') || 0;
-            const textureRect = new Rectangle(
-                (parseInt(letter.getAttribute('x'), 10) / res) + (pagesTextures[page].frame.x / res),
-                (parseInt(letter.getAttribute('y'), 10) / res) + (pagesTextures[page].frame.y / res),
-                parseInt(letter.getAttribute('width'), 10) / res,
-                parseInt(letter.getAttribute('height'), 10) / res
-            );
-
-            data.chars[charCode] = {
-                xOffset: parseInt(letter.getAttribute('xoffset'), 10) / res,
-                yOffset: parseInt(letter.getAttribute('yoffset'), 10) / res,
-                xAdvance: parseInt(letter.getAttribute('xadvance'), 10) / res,
-                kerning: {},
-                texture: new Texture(pagesTextures[page].baseTexture, textureRect),
-                page,
-            };
-        }
-
-        // parse kernings
-        const kernings = xml.getElementsByTagName('kerning');
-
-        for (let i = 0; i < kernings.length; i++)
-        {
-            const kerning = kernings[i];
-            const first = parseInt(kerning.getAttribute('first'), 10) / res;
-            const second = parseInt(kerning.getAttribute('second'), 10) / res;
-            const amount = parseInt(kerning.getAttribute('amount'), 10) / res;
-
-            if (data.chars[second])
-            {
-                data.chars[second].kerning[first] = amount;
-            }
-        }
-
-        // I'm leaving this as a temporary fix so we can test the bitmap fonts in v3
-        // but it's very likely to change
-        BitmapText.fonts[data.font] = data;
-
-        return data;
+        return BitmapFont.available;
     }
 }
-
-BitmapText.fonts = {};

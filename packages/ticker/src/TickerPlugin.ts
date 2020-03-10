@@ -1,5 +1,7 @@
-import { Ticker } from './Ticker';
 import { UPDATE_PRIORITY } from './const';
+import { Ticker } from './Ticker';
+
+import type { IApplicationOptions } from '@pixi/app';
 
 /**
  * Middleware for for Application Ticker.

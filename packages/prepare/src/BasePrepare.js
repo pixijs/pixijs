@@ -9,7 +9,7 @@ import { CountLimiter } from './CountLimiter';
  * The prepare manager provides functionality to upload content to the GPU.
  *
  * BasePrepare handles basic queuing functionality and is extended by
- * {@link PIXI.prepare.Prepare} and {@link PIXI.prepare.CanvasPrepare}
+ * {@link PIXI.Prepare} and {@link PIXI.CanvasPrepare}
  * to provide preparation capabilities specific to their respective renderers.
  *
  * @example
@@ -26,7 +26,7 @@ import { CountLimiter } from './CountLimiter';
  *
  * @abstract
  * @class
- * @memberof PIXI.prepare
+ * @memberof PIXI
  */
 export class BasePrepare
 {
@@ -37,7 +37,7 @@ export class BasePrepare
     {
         /**
          * The limiter to be used to control how quickly items are prepared.
-         * @type {PIXI.prepare.CountLimiter|PIXI.prepare.TimeLimiter}
+         * @type {PIXI.CountLimiter|PIXI.TimeLimiter}
          */
         this.limiter = new CountLimiter(settings.UPLOADS_PER_FRAME);
 
@@ -51,7 +51,7 @@ export class BasePrepare
         /**
          * The only real difference between CanvasPrepare and Prepare is what they pass
          * to upload hooks. That different parameter is stored here.
-         * @type {PIXI.prepare.CanvasPrepare|PIXI.Renderer}
+         * @type {object}
          * @protected
          */
         this.uploadHookHelper = null;
@@ -231,7 +231,7 @@ export class BasePrepare
      *
      * @param {Function} addHook - Function call that takes two parameters: `item:*, queue:Array`
      *          function must return `true` if it was able to add item to the queue.
-     * @return {PIXI.prepare.BasePrepare} Instance of plugin for chaining.
+     * @return {this} Instance of plugin for chaining.
      */
     registerFindHook(addHook)
     {
@@ -248,7 +248,7 @@ export class BasePrepare
      *
      * @param {Function} uploadHook - Function call that takes two parameters: `prepare:CanvasPrepare, item:*` and
      *          function must return `true` if it was able to handle upload of item.
-     * @return {PIXI.prepare.BasePrepare} Instance of plugin for chaining.
+     * @return {this} Instance of plugin for chaining.
      */
     registerUploadHook(uploadHook)
     {
@@ -265,7 +265,7 @@ export class BasePrepare
      *
      * @param {PIXI.DisplayObject|PIXI.Container|PIXI.BaseTexture|PIXI.Texture|PIXI.Graphics|PIXI.Text|*} item - Object to
      *        add to the queue
-     * @return {PIXI.prepare.BasePrepare} Instance of plugin for chaining.
+     * @return {this} Instance of plugin for chaining.
      */
     add(item)
     {
