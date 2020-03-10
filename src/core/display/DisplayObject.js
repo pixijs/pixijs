@@ -215,7 +215,7 @@ export default class DisplayObject extends EventEmitter
             }
         }
 
-        if (this._bounds.updateID)
+        if (this._bounds.updateID !== this._boundsID)
         {
             this.calculateBounds();
             this._bounds.updateID = this._boundsID;
