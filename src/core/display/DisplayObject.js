@@ -110,7 +110,7 @@ export default class DisplayObject extends EventEmitter
          * @member {PIXI.Bounds}
          * @private
          */
-        this._localBounds = null;
+        this._$localBounds = null;
 
         /**
          * The original, cached mask of the object
@@ -252,9 +252,9 @@ export default class DisplayObject extends EventEmitter
             rect = this._localBoundsRect;
         }
 
-        if (!this._localBounds)
+        if (!this._$localBounds)
         {
-            this._localBounds = new Bounds();
+            this._$localBounds = new Bounds();
         }
 
         const transformRef = this.transform;
@@ -266,7 +266,7 @@ export default class DisplayObject extends EventEmitter
         const worldBounds = this._bounds;
         const worldBoundsID = this._boundsID;
 
-        this._bounds = this._localBounds;
+        this._bounds = this._$localBounds;
 
         const bounds = this.getBounds(false, rect);
 
