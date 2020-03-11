@@ -175,6 +175,8 @@ export class ParticleContainer extends Container
          * The tint applied to the container.
          * This is a hex value. A value of 0xFFFFFF will remove any tint effect.
          *
+         * Word-order is BGR, hex template is 0xRRGGBB.
+         *
          * @private
          * @member {number}
          * @default 0xFFFFFF

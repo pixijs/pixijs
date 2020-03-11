@@ -95,6 +95,7 @@ export class GraphicsGeometry extends BatchGeometry
 
         /**
          * The collection of colors
+         * Word-order is RGBA
          *
          * @member {number[]}
          * @protected
@@ -1020,7 +1021,7 @@ export class GraphicsGeometry extends BatchGeometry
      *
      * @protected
      * @param {number[]} colors - List of colors to add to
-     * @param {number} color - Color to add
+     * @param {number} color - Color to add, BGR
      * @param {number} alpha - Alpha to use
      * @param {number} size - Number of colors to add
      */

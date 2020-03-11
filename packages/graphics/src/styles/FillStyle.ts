@@ -11,6 +11,7 @@ export class FillStyle
 {
     /**
      * The hex color value used when coloring the Graphics object.
+     * Word-order is BGR
      *
      * @member {number}
      * @default 0xFFFFFF

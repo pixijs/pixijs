@@ -245,6 +245,8 @@ export class Mesh extends Container
      * The multiply tint applied to the Mesh. This is a hex value. A value of
      * `0xFFFFFF` will remove any tint effect.
      *
+     * Word-order is BGR, hex template is 0xRRGGBB.
+     *
      * @member {number}
      * @default 0xFFFFFF
      */

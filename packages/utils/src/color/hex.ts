@@ -1,5 +1,5 @@
 /**
- * Converts a hexadecimal color number to an [R, G, B] array of normalized floats (numbers from 0.0 to 1.0).
+ * Converts a hexadecimal color (BGR) number to an [R, G, B] array of normalized floats (numbers from 0.0 to 1.0).
  *
  * @example
  * PIXI.utils.hex2rgb(0xffffff); // returns [1, 1, 1]
@@ -58,7 +58,7 @@ export function string2hex(string: string): number
 }
 
 /**
- * Converts a color as an [R, G, B] array of normalized floats to a hexadecimal number.
+ * Converts a color (BGR) as an [R, G, B] array of normalized floats to a hexadecimal number.
  *
  * @example
  * PIXI.utils.rgb2hex([1, 1, 1]); // returns 0xffffff

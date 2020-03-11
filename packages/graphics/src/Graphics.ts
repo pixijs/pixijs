@@ -278,6 +278,8 @@ export class Graphics extends Container
      * The tint applied to the graphic shape. This is a hex value. A value of
      * 0xFFFFFF will remove any tint effect.
      *
+     * Word-order is BGR, hex template is 0xRRGGBB.
+     *
      * @member {number}
      * @default 0xFFFFFF
      */
@@ -319,7 +321,7 @@ export class Graphics extends Container
      *
      * @method PIXI.Graphics#lineStyle
      * @param {number} [width=0] - width of the line to draw, will update the objects stored style
-     * @param {number} [color=0x0] - color of the line to draw, will update the objects stored style
+     * @param {number} [color=0x0] - color (BGR) of the line to draw, will update the objects stored style
      * @param {number} [alpha=1] - alpha of the line to draw, will update the objects stored style
      * @param {number} [alignment=0.5] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outter)
      * @param {boolean} [native=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
@@ -331,7 +333,7 @@ export class Graphics extends Container
      *
      * @param {object} [options] - Line style options
      * @param {number} [options.width=0] - width of the line to draw, will update the objects stored style
-     * @param {number} [options.color=0x0] - color of the line to draw, will update the objects stored style
+     * @param {number} [options.color=0x0] - color (BGR) of the line to draw, will update the objects stored style
      * @param {number} [options.alpha=1] - alpha of the line to draw, will update the objects stored style
      * @param {number} [options.alignment=0.5] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outter)
      * @param {boolean} [options.native=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
@@ -363,7 +365,7 @@ export class Graphics extends Container
      * @param {object} [options] - Collection of options for setting line style.
      * @param {number} [options.width=0] - width of the line to draw, will update the objects stored style
      * @param {PIXI.Texture} [options.texture=PIXI.Texture.WHITE] - Texture to use
-     * @param {number} [options.color=0x0] - color of the line to draw, will update the objects stored style.
+     * @param {number} [options.color=0x0] - color (BGR) of the line to draw, will update the objects stored style.
      *  Default 0xFFFFFF if texture present.
      * @param {number} [options.alpha=1] - alpha of the line to draw, will update the objects stored style
      * @param {PIXI.Matrix} [options.matrix=null] Texture matrix to transform texture
@@ -1196,7 +1198,7 @@ export class Graphics extends Container
     }
 
     /**
-     * Recalcuate the tint by applying tin to batches using Graphics tint.
+     * Recalculate the tint by applying tin to batches using Graphics tint.
      * @protected
      */
     protected calculateTints(): void
@@ -1217,12 +1219,8 @@ export class Graphics extends Container
                 const g = (tintRGB[1] * batchTint[1]) * 255;
                 const b = (tintRGB[2] * batchTint[2]) * 255;
 
-                // TODO Ivan, can this be done in one go?
-                const color = (r << 16) + (g << 8) + (b | 0);
-
-                batch._tintRGB = (color >> 16)
-                        + (color & 0xff00)
-                        + ((color & 0xff) << 16);
+                // assemble word-order RGB
+                batch._tintRGB = (b << 16) + (g << 8) + (r | 0);
             }
         }
     }

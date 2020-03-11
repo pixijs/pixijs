@@ -38,7 +38,7 @@ export class MeshMaterial extends Shader
      * @param {PIXI.Texture} uSampler - Texture that material uses to render.
      * @param {object} [options] - Additional options
      * @param {number} [options.alpha=1] - Default alpha.
-     * @param {number} [options.tint=0xFFFFFF] - Default tint.
+     * @param {number} [options.tint=0xFFFFFF] - Default tint, BGR
      * @param {string} [options.pluginName='batch'] - Renderer plugin for batching.
      * @param {PIXI.Program} [options.program=0xFFFFFF] - Custom program.
      * @param {object} [options.uniforms] - Custom uniforms.

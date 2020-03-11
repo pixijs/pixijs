@@ -136,6 +136,8 @@ export class Sprite extends Container
         /**
          * The tint applied to the sprite. This is a RGB value. A value of 0xFFFFFF will remove any tint effect.
          *
+         * Word-order is RGB
+         *
          * @private
          * @member {number}
          * @default 16777215
@@ -643,6 +645,8 @@ export class Sprite extends Container
     /**
      * The tint applied to the sprite. This is a hex value.
      * A value of 0xFFFFFF will remove any tint effect.
+     *
+     * Word-order is BGR, hex template is 0xRRGGBB.
      *
      * @member {number}
      * @default 0xFFFFFF
