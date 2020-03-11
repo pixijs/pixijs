@@ -479,9 +479,8 @@ export class Text extends Sprite
         // should also take padding into account, padding can offset the gradient
         const padding = style.padding || 0;
 
-        // only minus x1 padding here, not x2, as gradient creation is x1 y1 x2 y2, not x y width height
-        const width = Math.ceil(this.canvas.width / this._resolution) - dropShadowCorrection - padding;
-        const height = Math.ceil(this.canvas.height / this._resolution) - dropShadowCorrection - padding;
+        const width = Math.ceil(this.canvas.width / this._resolution) - dropShadowCorrection - (padding * 2);
+        const height = Math.ceil(this.canvas.height / this._resolution) - dropShadowCorrection - (padding * 2);
 
         // make a copy of the style settings, so we can manipulate them later
         const fill = fillStyle.slice();
@@ -509,7 +508,7 @@ export class Text extends Sprite
         if (style.fillGradientType === TEXT_GRADIENT.LINEAR_VERTICAL)
         {
             // start the gradient at the top center of the canvas, and end at the bottom middle of the canvas
-            gradient = this.context.createLinearGradient(width / 2, padding, width / 2, height);
+            gradient = this.context.createLinearGradient(width / 2, padding, width / 2, height + padding);
 
             // we need to repeat the gradient so that each individual line of text has the same vertical gradient effect
             // ['#FF0000', '#00FF00', '#0000FF'] over 2 lines would create stops at 0.125, 0.25, 0.375, 0.625, 0.75, 0.875
@@ -549,7 +548,7 @@ export class Text extends Sprite
         else
         {
             // start the gradient at the center left of the canvas, and end at the center right of the canvas
-            gradient = this.context.createLinearGradient(padding, height / 2, width, height / 2);
+            gradient = this.context.createLinearGradient(padding, height / 2, width + padding, height / 2);
 
             // can just evenly space out the gradients in this case, as multiple lines makes no difference
             // to an even left to right gradient
