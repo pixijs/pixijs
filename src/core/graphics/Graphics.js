@@ -905,6 +905,7 @@ export default class Graphics extends Container
 
         this.currentPath = null;
         this._spriteRect = null;
+        this._boundsID++;
 
         return this;
     }
