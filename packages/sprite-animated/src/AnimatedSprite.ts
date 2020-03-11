@@ -49,7 +49,7 @@ export class AnimatedSprite extends Sprite
     private _textures: Texture[];
     private _durations: number[];
     private _autoUpdate: boolean;
-    private _isAutoUpdating: boolean;
+    private _isConnectedToTicker: boolean;
     private _currentTime: number;
 
     /**
@@ -83,7 +83,15 @@ export class AnimatedSprite extends Sprite
          * @private
          */
         this._autoUpdate = autoUpdate;
-        this._isAutoUpdating = false;
+
+        /**
+         * `true` if the instance is currently connected to PIXI.Ticker.shared to auto update animation time.
+         *
+         * @type {boolean}
+         * @default false
+         * @private
+         */
+        this._isConnectedToTicker = false;
 
         /**
          * The speed that the AnimatedSprite will play at. Higher is faster, lower is slower.
@@ -159,10 +167,10 @@ export class AnimatedSprite extends Sprite
         }
 
         this._playing = false;
-        if (this._autoUpdate && this._isAutoUpdating)
+        if (this._autoUpdate && this._isConnectedToTicker)
         {
             Ticker.shared.remove(this.update, this);
-            this._isAutoUpdating = false;
+            this._isConnectedToTicker = false;
         }
     }
 
@@ -178,10 +186,10 @@ export class AnimatedSprite extends Sprite
         }
 
         this._playing = true;
-        if (this._autoUpdate && !this._isAutoUpdating)
+        if (this._autoUpdate && !this._isConnectedToTicker)
         {
             Ticker.shared.add(this.update, this, UPDATE_PRIORITY.HIGH);
-            this._isAutoUpdating = true;
+            this._isConnectedToTicker = true;
         }
     }
 
@@ -472,15 +480,15 @@ export class AnimatedSprite extends Sprite
         {
             this._autoUpdate = value;
 
-            if (!this._autoUpdate && this._isAutoUpdating)
+            if (!this._autoUpdate && this._isConnectedToTicker)
             {
                 Ticker.shared.remove(this.update, this);
-                this._isAutoUpdating = false;
+                this._isConnectedToTicker = false;
             }
-            else if (this._autoUpdate && !this._isAutoUpdating && this._playing)
+            else if (this._autoUpdate && !this._isConnectedToTicker && this._playing)
             {
                 Ticker.shared.add(this.update, this);
-                this._isAutoUpdating = true;
+                this._isConnectedToTicker = true;
             }
         }
     }
