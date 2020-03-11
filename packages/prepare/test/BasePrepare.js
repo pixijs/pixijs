@@ -1,6 +1,6 @@
 const { BasePrepare } = require('../');
 
-describe('PIXI.prepare.BasePrepare', function ()
+describe('PIXI.BasePrepare', function ()
 {
     it('should create a new, empty, BasePrepare', function ()
     {
