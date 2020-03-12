@@ -5,7 +5,6 @@ import { Bounds } from './Bounds';
 
 import type { Filter, MaskData, Renderer } from '@pixi/core';
 import type { IPoint, ObservablePoint } from '@pixi/math';
-import type { IAccessibleTarget } from '@pixi/accessibility';
 
 export interface IDestroyOptions {
     children?: boolean;
@@ -13,7 +12,7 @@ export interface IDestroyOptions {
     baseTexture?: boolean;
 }
 
-export interface DisplayObject extends InteractiveTarget, IAccessibleTarget, EventEmitter {}
+export interface DisplayObject extends PixiGlobalMixins.DisplayObject, EventEmitter {}
 
 /**
  * The base class for all objects that are rendered on the screen.
