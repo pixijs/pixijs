@@ -1,11 +1,12 @@
 import { hex2string, hex2rgb, deprecation, EventEmitter } from '@pixi/utils';
 import { Matrix, Rectangle } from '@pixi/math';
-import { RENDERER_TYPE, SCALE_MODES } from '@pixi/constants';
+import { RENDERER_TYPE } from '@pixi/constants';
 import { settings } from '@pixi/settings';
 import { DisplayObject, TemporaryDisplayObject } from '@pixi/display';
 import { RenderTexture } from './renderTexture/RenderTexture';
 
-import { IRenderingContext } from './IRenderingContext';
+import type { SCALE_MODES } from '@pixi/constants';
+import type { IRenderingContext } from './IRenderingContext';
 
 const tempMatrix = new Matrix();
 
@@ -281,6 +282,15 @@ export abstract class AbstractRenderer extends EventEmitter
             this.view.style.width = `${screenWidth}px`;
             this.view.style.height = `${screenHeight}px`;
         }
+
+        /**
+         * Fired after view has been resized.
+         *
+         * @event PIXI.Renderer#resize
+         * @param {number} screenWidth - The new width of the screen.
+         * @param {number} screenHeight - The new height of the screen.
+         */
+        this.emit('resize', screenWidth, screenHeight);
     }
 
     /**

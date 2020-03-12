@@ -1,8 +1,8 @@
 import { BaseRenderTexture } from './BaseRenderTexture';
 import { Texture } from '../textures/Texture';
 
-import { Rectangle } from '@pixi/math';
-import { Framebuffer, IBaseTextureOptions } from '@pixi/core';
+import type { Rectangle } from '@pixi/math';
+import type { Framebuffer, IBaseTextureOptions } from '@pixi/core';
 
 /**
  * A RenderTexture is a special texture that allows any PixiJS display object to be rendered to it.

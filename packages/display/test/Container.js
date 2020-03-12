@@ -644,6 +644,55 @@ describe('PIXI.Container', function ()
         });
     });
 
+    describe('getLocalBounds', function ()
+    {
+        it('should recalculate children transform by default', function ()
+        {
+            const root = new Container();
+            const container = new Container();
+            const child = new Container();
+
+            root.addChild(container);
+            container.addChild(child);
+
+            container.position.set(10, 10);
+            child.position.set(20, 30);
+
+            container.updateTransform();
+            container.getLocalBounds();
+
+            expect(child.transform.worldTransform.tx).to.equal(30);
+            expect(child.transform.worldTransform.ty).to.equal(40);
+        });
+
+        it('should recalculate bounds if children position was changed', function ()
+        {
+            const root = new Container();
+            const container = new Container();
+            const child = new Container();
+            let bounds = null;
+
+            child._calculateBounds = function ()
+            {
+                this._bounds.addFrame(this.transform, 0, 0, 1, 1);
+            };
+
+            root.addChild(container);
+            container.addChild(child);
+            container.position.set(10, 10);
+            container.updateTransform();
+
+            child.position.set(20, 30);
+            bounds = container.getLocalBounds();
+            expect(bounds.x).to.equal(20);
+            expect(bounds.y).to.equal(30);
+            child.position.set(5, 5);
+            bounds = container.getLocalBounds();
+            expect(bounds.x).to.equal(5);
+            expect(bounds.y).to.equal(5);
+        });
+    });
+
     describe('width', function ()
     {
         it('should reset scale', function ()

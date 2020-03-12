@@ -1,6 +1,6 @@
-import { CanvasRenderer } from '@pixi/canvas-renderer';
-import { Renderer } from '@pixi/core';
-import { IApplicationOptions } from './Application';
+import type { CanvasRenderer } from '@pixi/canvas-renderer';
+import type { Renderer } from '@pixi/core';
+import type { IApplicationOptions } from './Application';
 
 /**
  * Middleware for for Application's resize functionality
@@ -9,9 +9,13 @@ import { IApplicationOptions } from './Application';
  */
 export class ResizePlugin
 {
-    public static _resizeTo: Window|HTMLElement;
+    public static resizeTo: Window|HTMLElement;
     public static resize: () => void;
     public static renderer: Renderer|CanvasRenderer;
+    public static queueResize: () => void;
+    private static _resizeId: number;
+    private static _resizeTo: Window|HTMLElement;
+    private static cancelResize: () => void;
 
     /**
      * Initialize the plugin with scope of application instance
@@ -21,15 +25,22 @@ export class ResizePlugin
      */
     static init(options?: IApplicationOptions): void
     {
+        /**
+         * The HTML element or window to automatically resize the
+         * renderer's view element to match width and height.
+         * @type {Window|HTMLElement}
+         * @name resizeTo
+         * @memberof PIXI.Application#
+         */
         Object.defineProperty(this, 'resizeTo',
             {
-                set(dom)
+                set(dom: Window|HTMLElement)
                 {
-                    window.removeEventListener('resize', this.resize);
+                    window.removeEventListener('resize', this.queueResize);
                     this._resizeTo = dom;
                     if (dom)
                     {
-                        window.addEventListener('resize', this.resize);
+                        window.addEventListener('resize', this.queueResize);
                         this.resize();
                     }
                 },
@@ -40,34 +51,77 @@ export class ResizePlugin
             });
 
         /**
-         * If `resizeTo` is set, calling this function
-         * will resize to the width and height of that element.
+         * Resize is throttled, so it's
+         * safe to call this multiple times per frame and it'll
+         * only be called once.
+         * @method PIXI.Application#queueResize
+         */
+        this.queueResize = (): void =>
+        {
+            if (!this._resizeTo)
+            {
+                return;
+            }
+
+            this.cancelResize();
+
+            // // Throttle resize events per raf
+            this._resizeId = requestAnimationFrame(() => this.resize());
+        };
+
+        /**
+         * Cancel the resize queue.
+         * @method PIXI.Application#cancelResize
+         * @private
+         */
+        this.cancelResize = (): void =>
+        {
+            if (this._resizeId)
+            {
+                cancelAnimationFrame(this._resizeId);
+                this._resizeId = null;
+            }
+        };
+
+        /**
+         * Execute an immediate resize on the renderer, this is not
+         * throttled and can be expensive to call many times in a row.
+         * Will resize only if `resizeTo` property is set.
          * @method PIXI.Application#resize
          */
         this.resize = (): void =>
         {
-            if (this._resizeTo)
+            if (!this._resizeTo)
             {
-                // Resize to the window
-                if (this._resizeTo === window)
-                {
-                    this.renderer.resize(
-                        window.innerWidth,
-                        window.innerHeight
-                    );
-                }
-                // Resize to other HTML entities
-                else
-                {
-                    this.renderer.resize(
-                        (this._resizeTo as HTMLElement).clientWidth,
-                        (this._resizeTo as HTMLElement).clientHeight
-                    );
-                }
+                return;
             }
+
+            // clear queue resize
+            this.cancelResize();
+
+            let width: number;
+            let height: number;
+
+            // Resize to the window
+            if (this._resizeTo === window)
+            {
+                width = window.innerWidth;
+                height = window.innerHeight;
+            }
+            // Resize to other HTML entities
+            else
+            {
+                const { clientWidth, clientHeight } = this._resizeTo as HTMLElement;
+
+                width = clientWidth;
+                height = clientHeight;
+            }
+
+            this.renderer.resize(width, height);
         };
 
         // On resize
+        this._resizeId = null;
         this._resizeTo = null;
         this.resizeTo = options.resizeTo || null;
     }
@@ -79,29 +133,10 @@ export class ResizePlugin
      */
     static destroy(): void
     {
+        this.cancelResize();
+        this.cancelResize = null;
+        this.queueResize = null;
         this.resizeTo = null;
         this.resize = null;
-    }
-
-    /**
-     * The element or window to resize the application to.
-     * @type {Window|HTMLElement}
-     * @name resizeTo
-     * @memberof PIXI.Application#
-     */
-    static get resizeTo(): Window|HTMLElement
-    {
-        return this._resizeTo;
-    }
-
-    static set resizeTo(dom)
-    {
-        window.removeEventListener('resize', this.resize);
-        this._resizeTo = dom;
-        if (dom)
-        {
-            window.addEventListener('resize', this.resize);
-            this.resize();
-        }
     }
 }

@@ -1,6 +1,9 @@
-import { Container, IDestroyOptions } from '@pixi/display';
-import { autoDetectRenderer, Renderer, IRendererOptionsAuto, AbstractRenderer } from '@pixi/core';
-import { Rectangle } from '@pixi/math';
+import { Container } from '@pixi/display';
+import { autoDetectRenderer } from '@pixi/core';
+
+import type { Rectangle } from '@pixi/math';
+import type { Renderer, IRendererOptionsAuto, AbstractRenderer } from '@pixi/core';
+import type { IDestroyOptions } from '@pixi/display';
 
 export interface IApplicationPlugin {
     init: (...params: any[]) => any;
@@ -9,10 +12,10 @@ export interface IApplicationPlugin {
 
 export interface IApplicationOptions extends IRendererOptionsAuto {
     autoStart?: boolean;
-    forceFXAA?: boolean;
     sharedTicker?: boolean;
     sharedLoader?: boolean;
     resizeTo?: Window | HTMLElement;
+    resizeThrottle?: number;
 }
 
 /**
@@ -62,8 +65,6 @@ export class Application
      *  (shown if not transparent).
      * @param {boolean} [options.clearBeforeRender=true] - This sets if the renderer will clear the canvas or
      *   not before the new render pass.
-     * @param {boolean} [options.forceFXAA=false] - Forces FXAA antialiasing to be used over native.
-     *  FXAA is faster, but may not always look as great. **(WebGL only)**.
      * @param {string} [options.powerPreference] - Parameter passed to webgl context, set to "high-performance"
      *  for devices with dual graphics card. **(WebGL only)**.
      * @param {boolean} [options.sharedTicker=false] - `true` to use PIXI.Ticker.shared, `false` to create new ticker.

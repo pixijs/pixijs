@@ -1,7 +1,9 @@
-import { RenderTexture, Renderer, IRendererPlugin } from '@pixi/core';
 import { CanvasRenderTarget } from '@pixi/utils';
 import { Rectangle } from '@pixi/math';
-import { DisplayObject } from '@pixi/display';
+import { RenderTexture } from '@pixi/core';
+
+import type { Renderer, IRendererPlugin } from '@pixi/core';
+import type { DisplayObject } from '@pixi/display';
 
 const TEMP_RECT = new Rectangle();
 const BYTES_PER_PIXEL = 4;

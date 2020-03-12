@@ -768,7 +768,7 @@ export class TextStyle implements ITextStyle
      *
      * @return {string} Font style string, for passing to `TextMetrics.measureFont()`
      */
-    public toFontString()
+    public toFontString(): string
     {
         // build canvas api font setting from individual components. Convert a numeric this.fontSize to px
         const fontSizeString = (typeof this.fontSize === 'number') ? `${this.fontSize}px` : this.fontSize;

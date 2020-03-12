@@ -1,7 +1,7 @@
 import { MASK_TYPES } from '@pixi/constants';
 
-import { Rectangle, Matrix } from '@pixi/math';
-import { Renderer, IFilterTarget } from '@pixi/core';
+import type { Rectangle, Matrix } from '@pixi/math';
+import type { Renderer, IFilterTarget } from '@pixi/core';
 
 export interface IMaskTarget extends IFilterTarget
 {

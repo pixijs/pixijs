@@ -1,4 +1,3 @@
-// import * as from '../systems/shader/shader';
 import { setPrecision,
     defaultValue,
     compileProgram,
@@ -12,7 +11,7 @@ import defaultVertex from './defaultProgram.vert';
 import { settings } from '@pixi/settings';
 import { PRECISION } from '@pixi/constants';
 
-import { GLProgram } from './GLProgram';
+import type { GLProgram } from './GLProgram';
 
 let UID = 0;
 
@@ -200,9 +199,9 @@ export class Program
         for (let i = 0; i < totalUniforms; i++)
         {
             const uniformData = gl.getActiveUniform(program, i);
-            const name = uniformData.name.replace(/\[.*?\]/, '');
+            const name = uniformData.name.replace(/\[.*?\]$/, '');
 
-            const isArray = uniformData.name.match(/\[.*?\]/);
+            const isArray = uniformData.name.match(/\[.*?\]$/);
             const type = mapType(gl, uniformData.type);
 
             /*eslint-disable */

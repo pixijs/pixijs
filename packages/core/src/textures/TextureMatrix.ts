@@ -1,6 +1,6 @@
 import { Matrix } from '@pixi/math';
 
-import { Texture } from './Texture';
+import type { Texture } from './Texture';
 
 const tempMat = new Matrix();
 

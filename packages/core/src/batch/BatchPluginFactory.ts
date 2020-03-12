@@ -5,7 +5,7 @@ import { AbstractBatchRenderer } from './AbstractBatchRenderer';
 import defaultVertex from './texture.vert';
 import defaultFragment from './texture.frag';
 
-import { Renderer } from '@pixi/core';
+import type { Renderer } from '@pixi/core';
 
 export interface IBatchFactoryOptions
 {

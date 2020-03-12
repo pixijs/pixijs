@@ -1,4 +1,4 @@
-import { ITypedArray } from '../Buffer';
+import type { ITypedArray } from '../Buffer';
 
 export function getBufferType(array: ITypedArray): string|null
 {

@@ -1,4 +1,4 @@
-import { ObjectRenderer, Shader, State, QuadUv, Renderer } from '@pixi/core';
+import { ObjectRenderer, Shader, State, QuadUv } from '@pixi/core';
 import { WRAP_MODES } from '@pixi/constants';
 import { Matrix } from '@pixi/math';
 import { premultiplyTintToRgba, correctBlendMode } from '@pixi/utils';
@@ -6,7 +6,9 @@ import { premultiplyTintToRgba, correctBlendMode } from '@pixi/utils';
 import vertex from './tilingSprite.vert';
 import fragment from './tilingSprite.frag';
 import fragmentSimple from './tilingSprite_simple.frag';
-import { TilingSprite } from './TilingSprite';
+
+import type { Renderer } from '@pixi/core';
+import type { TilingSprite } from './TilingSprite';
 
 const tempMat = new Matrix();
 
