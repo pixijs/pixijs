@@ -72,6 +72,7 @@ export abstract class AbstractMultiResource extends Resource
 
         /**
          * Bound baseTexture, there can only be one
+         * @member {PIXI.BaseTexture}
          */
         this.baseTexture = null;
     }
@@ -124,7 +125,7 @@ export abstract class AbstractMultiResource extends Resource
     /**
      * Set a baseTexture by ID
      *
-     * @param {PIXI.BaseTexture.BaseTexture} baseTexture
+     * @param {PIXI.BaseTexture} baseTexture
      * @param {number} index - Zero-based index of resource to set
      * @return {PIXI.resources.AbstractMultiResource} Instance for chaining
      */

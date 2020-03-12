@@ -49,7 +49,7 @@ export class ArrayResource extends AbstractMultiResource
      * Set a baseTexture by ID,
      * ArrayResource just takes resource from it, nothing more
      *
-     * @param {PIXI.BaseTexture.BaseTexture} baseTexture
+     * @param {PIXI.BaseTexture} baseTexture
      * @param {number} index - Zero-based index of resource to set
      * @return {PIXI.resources.ArrayResource} Instance for chaining
      */

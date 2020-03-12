@@ -54,7 +54,7 @@ export class CubeResource extends AbstractMultiResource
 
         /**
          * In case BaseTextures are supplied, whether to use same resource or bind baseTexture itself
-         * @member
+         * @member {boolean}
          * @protected
          */
         this.linkBaseTexture = linkBaseTexture !== false;
