@@ -65,11 +65,8 @@ const eventTypes = fs.readFileSync(path.join(__dirname, 'events.d.ts'), 'utf8');
 const loaderTypes = fs.readFileSync(path.join(__dirname, 'loader.d.ts'), 'utf8');
 
 // Lastly, tsd-jsdoc doesn't support this yet, so we'll inject the module
-// declaration at the end, so that users can use ambient namespace typings
-// like `import 'pixi.js';` OR module typings `import * as PIXI from 'pixi.js';`
-const declareModule = `declare module "${bundle}" {
-    export = PIXI;
-}`;
+// declaration at the end
+const declareModule = `export = PIXI;`;
 
 fs.writeFileSync(tempPath, [buffer, eventTypes, loaderTypes, declareModule].join('\n'));
 
