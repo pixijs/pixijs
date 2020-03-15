@@ -179,9 +179,9 @@ export class InteractionData
     /**
      * Copies properties from normalized event data.
      *
-     * @param {MouseEvent|TouchEvent|PointerEvent} event The normalized event data
+     * @param {Touch|MouseEvent|PointerEvent} event The normalized event data
      */
-    copyEvent(event: MouseEvent | TouchEvent | PointerEvent): void
+    copyEvent(event: Touch | MouseEvent | PointerEvent): void
     {
         // isPrimary should only change on touchstart/pointerdown, so we don't want to overwrite
         // it with "false" on later events when our shim for it on touch events might not be
@@ -195,7 +195,7 @@ export class InteractionData
         // event.which property instead, which conveys the same information.
         const buttons = 'buttons' in event && event.buttons;
 
-        this.buttons = Number.isInteger(buttons) ? buttons : 'which' in event && event.buttons;
+        this.buttons = Number.isInteger(buttons) ? buttons : 'which' in event && event.which;
         this.width = 'width' in event && event.width;
         this.height = 'height' in event && event.height;
         this.tiltX = 'tiltX' in event && event.tiltX;
