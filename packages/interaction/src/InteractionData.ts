@@ -12,7 +12,7 @@ export class InteractionData
 {
     public global: Point;
     public target: Sprite;
-    public originalEvent: Touch | MouseEvent | PointerEvent;
+    public originalEvent: MouseEvent | TouchEvent | PointerEvent;
     public identifier: number;
     public isPrimary: boolean;
     public button: number;
@@ -49,7 +49,7 @@ export class InteractionData
          * @see https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent
          * @see https://developer.mozilla.org/en-US/docs/Web/API/TouchEvent
          * @see https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent
-         * @member {Touch|MouseEvent|PointerEvent}
+         * @member {MouseEvent|TouchEvent|PointerEvent}
          */
         this.originalEvent = null;
 
@@ -179,9 +179,9 @@ export class InteractionData
     /**
      * Copies properties from normalized event data.
      *
-     * @param {Touch|MouseEvent|PointerEvent} event The normalized event data
+     * @param {MouseEvent|TouchEvent|PointerEvent} event The normalized event data
      */
-    copyEvent(event: Touch | MouseEvent | PointerEvent): void
+    copyEvent(event: MouseEvent | TouchEvent | PointerEvent): void
     {
         // isPrimary should only change on touchstart/pointerdown, so we don't want to overwrite
         // it with "false" on later events when our shim for it on touch events might not be
