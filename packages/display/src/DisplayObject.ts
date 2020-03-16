@@ -6,6 +6,8 @@ import { Bounds } from './Bounds';
 import type { Filter, MaskData, Renderer } from '@pixi/core';
 import type { IPoint, ObservablePoint } from '@pixi/math';
 import type { IAccessibleTarget } from '@pixi/accessibility';
+import type { Graphics } from '@pixi/graphics';
+import type { Sprite } from '@pixi/sprite';
 
 export interface IDestroyOptions {
     children?: boolean;
@@ -39,7 +41,7 @@ export abstract class DisplayObject extends EventEmitter
     public isSprite: boolean;
     public isMask: boolean;
     public _lastSortedIndex: number;
-    public _mask: Container|MaskData;
+    public _mask: Graphics|Sprite|MaskData|Container;
     public _bounds: Bounds;
     public _localBounds: Bounds;
 

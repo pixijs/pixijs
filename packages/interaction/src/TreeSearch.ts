@@ -1,4 +1,10 @@
 import { Point } from '@pixi/math';
+import { Container } from '@pixi/display';
+import { TilingSprite } from '@pixi/sprite-tiling';
+import { Sprite } from '@pixi/sprite';
+import { Graphics } from '@pixi/graphics';
+
+import type { InteractionEvent } from './InteractionEvent';
 
 /**
  * Strategy how to search through stage tree for interactive objects
@@ -9,6 +15,8 @@ import { Point } from '@pixi/math';
  */
 export class TreeSearch
 {
+    private readonly _tempPoint: Point;
+
     constructor()
     {
         this._tempPoint = new Point();
@@ -28,7 +36,8 @@ export class TreeSearch
      * @param {boolean} [interactive] - Whether the displayObject is interactive
      * @return {boolean} returns true if the displayObject hit the point
      */
-    recursiveFindHit(interactionEvent, displayObject, func, hitTest, interactive)
+    recursiveFindHit(interactionEvent: InteractionEvent, displayObject: Container | Sprite | TilingSprite,
+        func: Function, hitTest: boolean, interactive: boolean): boolean
     {
         if (!displayObject || !displayObject.visible)
         {
@@ -84,9 +93,12 @@ export class TreeSearch
         {
             if (hitTest)
             {
-                if (!(displayObject._mask.containsPoint && displayObject._mask.containsPoint(point)))
+                if (displayObject._mask instanceof Graphics || displayObject._mask instanceof Sprite)
                 {
-                    hitTest = false;
+                    if (!displayObject._mask.containsPoint(point))
+                    {
+                        hitTest = false;
+                    }
                 }
             }
         }
@@ -102,34 +114,38 @@ export class TreeSearch
             {
                 const child = children[i];
 
-                // time to get recursive.. if this function will return if something is hit..
-                const childHit = this.recursiveFindHit(interactionEvent, child, func, hitTest, interactiveParent);
-
-                if (childHit)
+                // check if child is one of the available display objects to find hit recursively
+                if (child instanceof Container || child instanceof Sprite || child instanceof TilingSprite)
                 {
-                    // its a good idea to check if a child has lost its parent.
-                    // this means it has been removed whilst looping so its best
-                    if (!child.parent)
-                    {
-                        continue;
-                    }
-
-                    // we no longer need to hit test any more objects in this container as we we
-                    // now know the parent has been hit
-                    interactiveParent = false;
-
-                    // If the child is interactive , that means that the object hit was actually
-                    // interactive and not just the child of an interactive object.
-                    // This means we no longer need to hit test anything else. We still need to run
-                    // through all objects, but we don't need to perform any hit tests.
+                    // time to get recursive.. if this function will return if something is hit..
+                    const childHit = this.recursiveFindHit(interactionEvent, child, func, hitTest, interactiveParent);
 
                     if (childHit)
                     {
-                        if (interactionEvent.target)
+                        // its a good idea to check if a child has lost its parent.
+                        // this means it has been removed whilst looping so its best
+                        if (!child.parent)
                         {
-                            hitTest = false;
+                            continue;
                         }
-                        hit = true;
+
+                        // we no longer need to hit test any more objects in this container as we we
+                        // now know the parent has been hit
+                        interactiveParent = false;
+
+                        // If the child is interactive , that means that the object hit was actually
+                        // interactive and not just the child of an interactive object.
+                        // This means we no longer need to hit test anything else. We still need to run
+                        // through all objects, but we don't need to perform any hit tests.
+
+                        if (childHit)
+                        {
+                            if (interactionEvent.target)
+                            {
+                                hitTest = false;
+                            }
+                            hit = true;
+                        }
                     }
                 }
             }
@@ -145,7 +161,7 @@ export class TreeSearch
             if (hitTest && !interactionEvent.target)
             {
                 // already tested against hitArea if it is defined
-                if (!displayObject.hitArea && displayObject.containsPoint)
+                if (!displayObject.hitArea && 'containsPoint' in displayObject)
                 {
                     if (displayObject.containsPoint(point))
                     {
@@ -186,7 +202,8 @@ export class TreeSearch
      * @param {boolean} [hitTest] - this indicates if the objects inside should be hit test against the point
      * @return {boolean} returns true if the displayObject hit the point
      */
-    findHit(interactionEvent, displayObject, func, hitTest)
+    findHit(interactionEvent: InteractionEvent, displayObject: Container | Sprite | TilingSprite, func: Function,
+        hitTest: boolean): void
     {
         this.recursiveFindHit(interactionEvent, displayObject, func, hitTest, false);
     }
