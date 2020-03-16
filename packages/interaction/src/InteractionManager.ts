@@ -1002,7 +1002,7 @@ export class InteractionManager extends EventEmitter
 
                     this.processInteractive(
                         interactionEvent,
-                        this.renderer._lastObjectRendered as DisplayObject,
+                        this.renderer._lastObjectRendered,
                         this.processPointerOverOut,
                         true
                     );
