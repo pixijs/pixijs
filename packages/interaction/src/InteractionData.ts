@@ -1,6 +1,5 @@
 import { Point } from '@pixi/math';
-import { Sprite } from '@pixi/sprite';
-import { DisplayObject } from '@pixi/display';
+import type { DisplayObject } from '@pixi/display';
 
 /**
  * Holds all information related to an Interaction event
@@ -11,7 +10,7 @@ import { DisplayObject } from '@pixi/display';
 export class InteractionData
 {
     public global: Point;
-    public target: Sprite;
+    public target: DisplayObject;
     public originalEvent: MouseEvent | TouchEvent | PointerEvent;
     public identifier: number;
     public isPrimary: boolean;
@@ -37,9 +36,9 @@ export class InteractionData
         this.global = new Point();
 
         /**
-         * The target Sprite that was interacted with
+         * The target DisplayObject that was interacted with
          *
-         * @member {PIXI.Sprite}
+         * @member {PIXI.DisplayObject}
          */
         this.target = null;
 
