@@ -60,11 +60,21 @@ export class AnimatedSprite extends Sprite
 
         /**
          * `true` uses PIXI.Ticker.shared to auto update animation time.
+         *
          * @type {boolean}
          * @default true
          * @private
          */
         this._autoUpdate = autoUpdate !== false;
+
+        /**
+         * `true` if the instance is currently connected to PIXI.Ticker.shared to auto update animation time.
+         *
+         * @type {boolean}
+         * @default false
+         * @private
+         */
+        this._isConnectedToTicker = false;
 
         /**
          * The speed that the AnimatedSprite will play at. Higher is faster, lower is slower.
@@ -149,10 +159,11 @@ export class AnimatedSprite extends Sprite
             return;
         }
 
-        this.playing = false;
-        if (this._autoUpdate)
+        this._playing = false;
+        if (this._autoUpdate && this._isConnectedToTicker)
         {
             Ticker.shared.remove(this.update, this);
+            this._isConnectedToTicker = false;
         }
     }
 
@@ -167,10 +178,11 @@ export class AnimatedSprite extends Sprite
             return;
         }
 
-        this.playing = true;
-        if (this._autoUpdate)
+        this._playing = true;
+        if (this._autoUpdate && !this._isConnectedToTicker)
         {
             Ticker.shared.add(this.update, this, UPDATE_PRIORITY.HIGH);
+            this._isConnectedToTicker = true;
         }
     }
 
@@ -215,7 +227,6 @@ export class AnimatedSprite extends Sprite
     /**
      * Updates the object transform for rendering.
      *
-     * @private
      * @param {number} deltaTime - Time since last tick.
      */
     update(deltaTime)
@@ -441,6 +452,46 @@ export class AnimatedSprite extends Sprite
         }
 
         return currentFrame;
+    }
+
+    /**
+     * Indicates if the AnimatedSprite is currently playing.
+     *
+     * @member {boolean}
+     * @readonly
+     */
+    get playing()
+    {
+        return this._playing;
+    }
+
+    /**
+     * Whether to use PIXI.Ticker.shared to auto update animation time
+     *
+     * @member {boolean}
+     */
+    get autoUpdate()
+    {
+        return this._autoUpdate;
+    }
+
+    set autoUpdate(value) // eslint-disable-line require-jsdoc
+    {
+        if (value !== this._autoUpdate)
+        {
+            this._autoUpdate = value;
+
+            if (!this._autoUpdate && this._isConnectedToTicker)
+            {
+                Ticker.shared.remove(this.update, this);
+                this._isConnectedToTicker = false;
+            }
+            else if (this._autoUpdate && !this._isConnectedToTicker && this._playing)
+            {
+                Ticker.shared.add(this.update, this);
+                this._isConnectedToTicker = true;
+            }
+        }
     }
 }
 
