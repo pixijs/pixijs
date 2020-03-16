@@ -296,7 +296,7 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
     }
 
     // get bounds actually transforms the object for us already!
-    const bounds = this.getLocalBounds(undefined, false);
+    const bounds = this.getLocalBounds(undefined, true);
 
     const cacheAlpha = this.alpha;
 
