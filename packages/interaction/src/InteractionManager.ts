@@ -7,7 +7,6 @@ import { TreeSearch } from './TreeSearch';
 import { EventEmitter } from '@pixi/utils';
 import { interactiveTarget } from './interactiveTarget';
 
-import type { Container } from '@pixi/display';
 import type { Point } from '@pixi/math';
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
 import type { Renderer, AbstractRenderer } from '@pixi/core';
@@ -39,7 +38,7 @@ export interface InteractionManagerOptions {
 }
 
 export interface DelayedEvent {
-    displayObject: InteractiveObject;
+    displayObject: DisplayObject;
     eventString: string;
     eventData: any;
 }
@@ -752,7 +751,7 @@ export class InteractionManager extends EventEmitter
      * to the last rendered root of the associated renderer.
      * @return {PIXI.DisplayObject} The hit display object, if any.
      */
-    hitTest(globalPoint: Point, root?: Container): DisplayObject
+    hitTest(globalPoint: Point, root?: DisplayObject): DisplayObject
     {
         // clear the target for our hit test
         hitTestEvent.target = null;
@@ -761,7 +760,7 @@ export class InteractionManager extends EventEmitter
         // ensure safety of the root
         if (!root)
         {
-            root = this.renderer._lastObjectRendered as InteractiveObject;
+            root = this.renderer._lastObjectRendered;
         }
         // run the hit test
         this.processInteractive(hitTestEvent, root, null, true);
@@ -1003,7 +1002,7 @@ export class InteractionManager extends EventEmitter
 
                     this.processInteractive(
                         interactionEvent,
-                        this.renderer._lastObjectRendered as InteractiveObject,
+                        this.renderer._lastObjectRendered as DisplayObject,
                         this.processPointerOverOut,
                         true
                     );
@@ -1066,7 +1065,7 @@ export class InteractionManager extends EventEmitter
      * @param {object} eventData - the event data object
      * @private
      */
-    dispatchEvent(displayObject: InteractiveObject, eventString: string, eventData: any): void
+    dispatchEvent(displayObject: DisplayObject, eventString: string, eventData: any): void
     {
         // Even if the event was stopped, at least dispatch any remaining events
         // for the same display object.
@@ -1097,7 +1096,7 @@ export class InteractionManager extends EventEmitter
      * @param {object} eventData - the event data object
      * @private
      */
-    delayDispatchEvent(displayObject: InteractiveObject, eventString: string, eventData: object): void
+    delayDispatchEvent(displayObject: DisplayObject, eventString: string, eventData: object): void
     {
         this._delayedEvents.push({ displayObject, eventString, eventData });
     }
@@ -1146,7 +1145,7 @@ export class InteractionManager extends EventEmitter
      * @param {boolean} [hitTest] - indicates whether we want to calculate hits
      *  or just iterate through all interactive objects
      */
-    processInteractive(interactionEvent: InteractionEvent, displayObject: InteractiveObject, func: Function,
+    processInteractive(interactionEvent: InteractionEvent, displayObject: DisplayObject, func: Function,
         hitTest: boolean): void
     {
         const hit = this._search.findHit(interactionEvent, displayObject, func, hitTest);
@@ -1232,8 +1231,7 @@ export class InteractionManager extends EventEmitter
 
             interactionEvent.data.originalEvent = originalEvent;
 
-            this.processInteractive(interactionEvent, this.renderer._lastObjectRendered as InteractiveObject,
-                this.processPointerDown, true);
+            this.processInteractive(interactionEvent, this.renderer._lastObjectRendered, this.processPointerDown, true);
 
             this.emit('pointerdown', interactionEvent);
             if (event.pointerType === 'touch')
@@ -1258,7 +1256,7 @@ export class InteractionManager extends EventEmitter
      * @param {PIXI.Container|PIXI.Sprite|PIXI.TilingSprite} displayObject - The display object that was tested
      * @param {boolean} hit - the result of the hit test on the display object
      */
-    processPointerDown(interactionEvent: InteractionEvent, displayObject: InteractiveObject, hit: boolean): void
+    processPointerDown(interactionEvent: InteractionEvent, displayObject: DisplayObject, hit: boolean): void
     {
         const data = interactionEvent.data;
         const id = interactionEvent.data.identifier;
@@ -1322,7 +1320,7 @@ export class InteractionManager extends EventEmitter
             interactionEvent.data.originalEvent = originalEvent;
 
             // perform hit testing for events targeting our canvas or cancel events
-            this.processInteractive(interactionEvent, this.renderer._lastObjectRendered as InteractiveObject, func,
+            this.processInteractive(interactionEvent, this.renderer._lastObjectRendered, func,
                 cancelled || !eventAppend);
 
             this.emit(cancelled ? 'pointercancel' : `pointerup${eventAppend}`, interactionEvent);
@@ -1368,7 +1366,7 @@ export class InteractionManager extends EventEmitter
      * @param {PIXI.interaction.InteractionEvent} interactionEvent - The interaction event wrapping the DOM event
      * @param {PIXI.Container|PIXI.Sprite|PIXI.TilingSprite} displayObject - The display object that was tested
      */
-    processPointerCancel(interactionEvent: InteractionEvent, displayObject: InteractiveObject): void
+    processPointerCancel(interactionEvent: InteractionEvent, displayObject: DisplayObject): void
     {
         const data = interactionEvent.data;
 
@@ -1415,7 +1413,7 @@ export class InteractionManager extends EventEmitter
      * @param {PIXI.Container|PIXI.Sprite|PIXI.TilingSprite} displayObject - The display object that was tested
      * @param {boolean} hit - the result of the hit test on the display object
      */
-    processPointerUp(interactionEvent: InteractionEvent, displayObject: InteractiveObject, hit: boolean): void
+    processPointerUp(interactionEvent: InteractionEvent, displayObject: DisplayObject, hit: boolean): void
     {
         const data = interactionEvent.data;
 
@@ -1542,7 +1540,7 @@ export class InteractionManager extends EventEmitter
 
             interactionEvent.data.originalEvent = originalEvent;
 
-            this.processInteractive(interactionEvent, this.renderer._lastObjectRendered as InteractiveObject,
+            this.processInteractive(interactionEvent, this.renderer._lastObjectRendered,
                 this.processPointerMove, true);
 
             this.emit('pointermove', interactionEvent);
@@ -1566,7 +1564,7 @@ export class InteractionManager extends EventEmitter
      * @param {PIXI.Container|PIXI.Sprite|PIXI.TilingSprite} displayObject - The display object that was tested
      * @param {boolean} hit - the result of the hit test on the display object
      */
-    processPointerMove(interactionEvent: InteractionEvent, displayObject: InteractiveObject, hit: boolean): void
+    processPointerMove(interactionEvent: InteractionEvent, displayObject: DisplayObject, hit: boolean): void
     {
         const data = interactionEvent.data;
 
@@ -1621,7 +1619,7 @@ export class InteractionManager extends EventEmitter
 
         interactionEvent.data.originalEvent = event;
 
-        this.processInteractive(interactionEvent, this.renderer._lastObjectRendered as InteractiveObject,
+        this.processInteractive(interactionEvent, this.renderer._lastObjectRendered,
             this.processPointerOverOut, false);
 
         this.emit('pointerout', interactionEvent);
@@ -1645,7 +1643,7 @@ export class InteractionManager extends EventEmitter
      * @param {PIXI.Container|PIXI.Sprite|PIXI.TilingSprite} displayObject - The display object that was tested
      * @param {boolean} hit - the result of the hit test on the display object
      */
-    processPointerOverOut(interactionEvent: InteractionEvent, displayObject: InteractiveObject, hit: boolean): void
+    processPointerOverOut(interactionEvent: InteractionEvent, displayObject: DisplayObject, hit: boolean): void
     {
         const data = interactionEvent.data;
 

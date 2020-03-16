@@ -1,9 +1,8 @@
 import { Point } from '@pixi/math';
-import { Container } from '@pixi/display';
+import { Container, DisplayObject } from '@pixi/display';
 import { MaskData } from '@pixi/core';
 
 import type { InteractionEvent } from './InteractionEvent';
-import { InteractiveObject } from './InteractionManager';
 
 /**
  * Strategy how to search through stage tree for interactive objects
@@ -35,7 +34,7 @@ export class TreeSearch
      * @param {boolean} [interactive] - Whether the displayObject is interactive
      * @return {boolean} returns true if the displayObject hit the point
      */
-    recursiveFindHit(interactionEvent: InteractionEvent, displayObject: InteractiveObject,
+    recursiveFindHit(interactionEvent: InteractionEvent, displayObject: DisplayObject,
         func: Function, hitTest: boolean, interactive: boolean): boolean
     {
         if (!displayObject || !displayObject.visible)
@@ -110,45 +109,48 @@ export class TreeSearch
         // ** FREE TIP **! If an object is not interactive or has no buttons in it
         // (such as a game scene!) set interactiveChildren to false for that displayObject.
         // This will allow PixiJS to completely ignore and bypass checking the displayObjects children.
-        if (hitTestChildren && displayObject.interactiveChildren && displayObject.children)
+        if (hitTestChildren && displayObject.interactiveChildren)
         {
-            const children = displayObject.children;
-
-            for (let i = children.length - 1; i >= 0; i--)
+            if (displayObject instanceof Container)
             {
-                const child = children[i];
+                const children = displayObject.children;
 
-                // check if child is one of the available display objects to find hit recursively
-                if (child instanceof Container)
+                for (let i = children.length - 1; i >= 0; i--)
                 {
-                    // time to get recursive.. if this function will return if something is hit..
-                    const childHit = this.recursiveFindHit(interactionEvent, child, func, hitTest, interactiveParent);
+                    const child = children[i];
 
-                    if (childHit)
+                    // check if child is one of the available display objects to find hit recursively
+                    if (child instanceof Container)
                     {
-                        // its a good idea to check if a child has lost its parent.
-                        // this means it has been removed whilst looping so its best
-                        if (!child.parent)
-                        {
-                            continue;
-                        }
-
-                        // we no longer need to hit test any more objects in this container as we we
-                        // now know the parent has been hit
-                        interactiveParent = false;
-
-                        // If the child is interactive , that means that the object hit was actually
-                        // interactive and not just the child of an interactive object.
-                        // This means we no longer need to hit test anything else. We still need to run
-                        // through all objects, but we don't need to perform any hit tests.
+                        // time to get recursive.. if this function will return if something is hit..
+                        const childHit = this.recursiveFindHit(interactionEvent, child, func, hitTest, interactiveParent);
 
                         if (childHit)
                         {
-                            if (interactionEvent.target)
+                            // its a good idea to check if a child has lost its parent.
+                            // this means it has been removed whilst looping so its best
+                            if (!child.parent)
                             {
-                                hitTest = false;
+                                continue;
                             }
-                            hit = true;
+
+                            // we no longer need to hit test any more objects in this container as we we
+                            // now know the parent has been hit
+                            interactiveParent = false;
+
+                            // If the child is interactive , that means that the object hit was actually
+                            // interactive and not just the child of an interactive object.
+                            // This means we no longer need to hit test anything else. We still need to run
+                            // through all objects, but we don't need to perform any hit tests.
+
+                            if (childHit)
+                            {
+                                if (interactionEvent.target)
+                                {
+                                    hitTest = false;
+                                }
+                                hit = true;
+                            }
                         }
                     }
                 }
@@ -167,6 +169,8 @@ export class TreeSearch
                 // already tested against hitArea if it is defined
                 if (!displayObject.hitArea && 'containsPoint' in displayObject)
                 {
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+                    // @ts-ignore
                     if (displayObject.containsPoint(point))
                     {
                         hit = true;
@@ -206,7 +210,7 @@ export class TreeSearch
      * @param {boolean} [hitTest] - this indicates if the objects inside should be hit test against the point
      * @return {boolean} returns true if the displayObject hit the point
      */
-    findHit(interactionEvent: InteractionEvent, displayObject: InteractiveObject, func: Function,
+    findHit(interactionEvent: InteractionEvent, displayObject: DisplayObject, func: Function,
         hitTest: boolean): void
     {
         this.recursiveFindHit(interactionEvent, displayObject, func, hitTest, false);
