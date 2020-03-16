@@ -75,7 +75,7 @@ export const interactiveTarget = {
      * @member {PIXI.IHitArea}
      * @memberof PIXI.DisplayObject#
      */
-    hitArea: null,
+    hitArea: null as IHitArea,
 
     /**
      * If enabled, the mouse cursor use the pointer behavior when hovered over the displayObject if it is interactive
@@ -88,7 +88,7 @@ export const interactiveTarget = {
      * @member {boolean}
      * @memberof PIXI.DisplayObject#
      */
-    get buttonMode()
+    get buttonMode(): boolean
     {
         return this.cursor === 'pointer';
     },
@@ -117,7 +117,7 @@ export const interactiveTarget = {
      * @member {string}
      * @memberof PIXI.DisplayObject#
      */
-    cursor: null,
+    cursor: null as string,
 
     /**
      * Internal set of all active pointers, by identifier
@@ -126,9 +126,10 @@ export const interactiveTarget = {
      * @memberof PIXI.DisplayObject#
      * @private
      */
-    get trackedPointers()
+    get trackedPointers(): Map<number, InteractionTrackingData>
     {
-        if (this._trackedPointers === undefined) this._trackedPointers = {};
+        if (this._trackedPointers === undefined)
+        { this._trackedPointers = new Map<number, InteractionTrackingData>(); }
 
         return this._trackedPointers;
     },
@@ -139,5 +140,5 @@ export const interactiveTarget = {
      * @private
      * @type {Map<number, InteractionTrackingData>}
      */
-    _trackedPointers: undefined,
+    _trackedPointers: undefined as Map<number, InteractionTrackingData>,
 };

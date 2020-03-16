@@ -1,5 +1,7 @@
 import { Point } from '@pixi/math';
+
 import type { DisplayObject } from '@pixi/display';
+import type { InteractivePointerEvent } from './InteractionManager';
 
 /**
  * Holds all information related to an Interaction event
@@ -180,7 +182,7 @@ export class InteractionData
      *
      * @param {Touch|MouseEvent|PointerEvent} event The normalized event data
      */
-    copyEvent(event: Touch | MouseEvent | PointerEvent): void
+    copyEvent(event: Touch | InteractivePointerEvent): void
     {
         // isPrimary should only change on touchstart/pointerdown, so we don't want to overwrite
         // it with "false" on later events when our shim for it on touch events might not be

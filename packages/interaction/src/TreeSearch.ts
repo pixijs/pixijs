@@ -5,6 +5,7 @@ import { Sprite } from '@pixi/sprite';
 import { Graphics } from '@pixi/graphics';
 
 import type { InteractionEvent } from './InteractionEvent';
+import { InteractiveObject } from './InteractionManager';
 
 /**
  * Strategy how to search through stage tree for interactive objects
@@ -36,7 +37,7 @@ export class TreeSearch
      * @param {boolean} [interactive] - Whether the displayObject is interactive
      * @return {boolean} returns true if the displayObject hit the point
      */
-    recursiveFindHit(interactionEvent: InteractionEvent, displayObject: Container | Sprite | TilingSprite,
+    recursiveFindHit(interactionEvent: InteractionEvent, displayObject: InteractiveObject,
         func: Function, hitTest: boolean, interactive: boolean): boolean
     {
         if (!displayObject || !displayObject.visible)
@@ -202,7 +203,7 @@ export class TreeSearch
      * @param {boolean} [hitTest] - this indicates if the objects inside should be hit test against the point
      * @return {boolean} returns true if the displayObject hit the point
      */
-    findHit(interactionEvent: InteractionEvent, displayObject: Container | Sprite | TilingSprite, func: Function,
+    findHit(interactionEvent: InteractionEvent, displayObject: InteractiveObject, func: Function,
         hitTest: boolean): void
     {
         this.recursiveFindHit(interactionEvent, displayObject, func, hitTest, false);

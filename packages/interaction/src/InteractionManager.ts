@@ -7,6 +7,13 @@ import { TreeSearch } from './TreeSearch';
 import { EventEmitter } from '@pixi/utils';
 import { interactiveTarget } from './interactiveTarget';
 
+import type { Container } from '@pixi/display';
+import type { Sprite } from '@pixi/sprite';
+import type { TilingSprite } from '@pixi/sprite-tiling';
+import type { Point } from '@pixi/math';
+import type { CanvasRenderer } from '@pixi/canvas-renderer';
+import type { Renderer, AbstractRenderer } from '@pixi/core';
+
 // Mix interactiveTarget into DisplayObject.prototype,
 // after deprecation has been handled
 DisplayObject.mixin(interactiveTarget);
@@ -14,12 +21,31 @@ DisplayObject.mixin(interactiveTarget);
 const MOUSE_POINTER_ID = 1;
 
 // helpers for hitTest() - only used inside hitTest()
-const hitTestEvent = {
-    target: null,
+// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+// @ts-ignore
+const hitTestEvent: InteractionEvent = {
+    target: null as DisplayObject,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // @ts-ignore
     data: {
-        global: null,
+        global: null as Point,
     },
 };
+
+export type InteractiveObject = Container | Sprite | TilingSprite;
+export type InteractivePointerEvent = PointerEvent | TouchEvent | MouseEvent;
+
+export interface InteractionManagerOptions {
+    autoPreventDefault?: boolean;
+    interactionFrequency?: number;
+    useSystemTicker?: boolean;
+}
+
+export interface DelayedEvent {
+    displayObject: InteractiveObject;
+    eventString: string;
+    eventData: any;
+}
 
 /**
  * The interaction manager deals with mouse, touch and pointer events.
@@ -36,14 +62,41 @@ const hitTestEvent = {
  */
 export class InteractionManager extends EventEmitter
 {
+    private readonly _activeInteractionData: { [key: number]: InteractionData };
+    private _interactionDataPool: InteractionData[];
+    private _cursor: string;
+    private _delayedEvents: DelayedEvent[];
+    private _search: TreeSearch;
+    private _useSystemTicker: boolean;
+    private _deltaTime: number;
+    private _didMove: boolean;
+
+    protected interactionDOMElement: HTMLElement;
+    protected eventsAdded: boolean;
+    protected tickerAdded: boolean;
+    protected mouseOverRenderer: boolean;
+
+    public readonly supportsTouchEvents: boolean;
+    public readonly supportsPointerEvents: boolean;
+    public renderer: AbstractRenderer;
+    public autoPreventDefault: boolean;
+    public interactionFrequency: number;
+    public mouse: InteractionData;
+    public eventData: InteractionEvent;
+    public moveWhenInside: boolean;
+    public cursorStyles: { [key: string]: string | Function | object };
+    public currentCursorMode: string;
+    public resolution: number;
+
     /**
      * @param {PIXI.CanvasRenderer|PIXI.Renderer} renderer - A reference to the current renderer
-     * @param {object} [options] - The options for the manager.
+     * @param {PIXI.interaction.InteractionManagerOptions} [options] - The options for the manager.
      * @param {boolean} [options.autoPreventDefault=true] - Should the manager automatically prevent default browser actions.
      * @param {number} [options.interactionFrequency=10] - Maximum requency (ms) at pointer over/out states will be checked.
-     * @param {number} [options.useSystemTicker=true] - Whether to add {@link tickerUpdate} to {@link PIXI.Ticker.system}.
+     * @param {boolean} [options.useSystemTicker=true] - Whether to add {@link tickerUpdate}
+     *  to {@link PIXI.Ticker.system}.app
      */
-    constructor(renderer, options)
+    constructor(renderer: CanvasRenderer | Renderer, options?: InteractionManagerOptions)
     {
         super();
 
@@ -54,7 +107,7 @@ export class InteractionManager extends EventEmitter
          *
          * @member {PIXI.AbstractRenderer}
          */
-        this.renderer = renderer;
+        this.renderer = renderer as AbstractRenderer;
 
         /**
          * Should default browser actions automatically be prevented.
@@ -65,7 +118,7 @@ export class InteractionManager extends EventEmitter
          * @member {boolean}
          * @default true
          */
-        this.autoPreventDefault = options.autoPreventDefault !== undefined ? options.autoPreventDefault : true;
+        this.autoPreventDefault = options.autoPreventDefault || true;
 
         /**
          * Maximum requency in milliseconds at which pointer over/out states will be checked by {@link tickerUpdate}.
@@ -93,8 +146,8 @@ export class InteractionManager extends EventEmitter
          * @private
          * @member {Object.<number,PIXI.interaction.InteractionData>}
          */
-        this.activeInteractionData = {};
-        this.activeInteractionData[MOUSE_POINTER_ID] = this.mouse;
+        this._activeInteractionData = {};
+        this._activeInteractionData[MOUSE_POINTER_ID] = this.mouse;
 
         /**
          * Pool of unused InteractionData
@@ -102,12 +155,12 @@ export class InteractionManager extends EventEmitter
          * @private
          * @member {PIXI.interaction.InteractionData[]}
          */
-        this.interactionDataPool = [];
+        this._interactionDataPool = [];
 
         /**
          * An event data object to handle all the event tracking/dispatching
          *
-         * @member {object}
+         * @member {PIXI.interaction.InteractionEvent}
          */
         this.eventData = new InteractionEvent();
 
@@ -120,7 +173,7 @@ export class InteractionManager extends EventEmitter
         this.interactionDOMElement = null;
 
         /**
-         * This property determines if mousemove and touchmove events are fired only when the cursor
+         * This property determines if mousemove and touchmove events are fired only when the _cursor
          * is over the object.
          * Setting to true will make things work more in line with how the DOM version works.
          * Setting to false can make things easier for things like dragging
@@ -218,10 +271,10 @@ export class InteractionManager extends EventEmitter
         this.onPointerOver = this.onPointerOver.bind(this);
 
         /**
-         * Dictionary of how different cursor modes are handled. Strings are handled as CSS cursor
+         * Dictionary of how different _cursor modes are handled. Strings are handled as CSS _cursor
          * values, objects are handled as dictionaries of CSS values for interactionDOMElement,
          * and functions are called instead of changing the CSS.
-         * Default CSS cursor values are provided for 'default' and 'pointer' modes.
+         * Default CSS _cursor values are provided for 'default' and 'pointer' modes.
          * @member {Object.<string, Object>}
          */
         this.cursorStyles = {
@@ -230,7 +283,7 @@ export class InteractionManager extends EventEmitter
         };
 
         /**
-         * The mode of the cursor that is being used.
+         * The mode of the _cursor that is being used.
          * The value of this is a key from the cursorStyles dictionary.
          *
          * @member {string}
@@ -243,7 +296,7 @@ export class InteractionManager extends EventEmitter
          * @private
          * @member {string}
          */
-        this.cursor = null;
+        this._cursor = null;
 
         /**
          * The current resolution / device pixel ratio.
@@ -259,7 +312,7 @@ export class InteractionManager extends EventEmitter
          * @private
          * @member {Array}
          */
-        this.delayedEvents = [];
+        this._delayedEvents = [];
 
         /**
          * TreeSearch component that is used to hitTest stage tree
@@ -267,7 +320,7 @@ export class InteractionManager extends EventEmitter
          * @private
          * @member {PIXI.interaction.TreeSearch}
          */
-        this.search = new TreeSearch();
+        this._search = new TreeSearch();
 
         /**
          * Fired when a pointer device button (usually a mouse left-button) is pressed on the display
@@ -665,7 +718,7 @@ export class InteractionManager extends EventEmitter
          * @param {PIXI.interaction.InteractionEvent} event - Interaction event
          */
 
-        this._useSystemTicker = options.useSystemTicker !== undefined ? options.useSystemTicker : true;
+        this._useSystemTicker = options.useSystemTicker || true;
 
         this.setTargetElement(this.renderer.view, this.renderer.resolution);
     }
@@ -676,7 +729,7 @@ export class InteractionManager extends EventEmitter
      * @member {boolean}
      * @default true
      */
-    get useSystemTicker()
+    get useSystemTicker(): boolean
     {
         return this._useSystemTicker;
     }
@@ -702,7 +755,7 @@ export class InteractionManager extends EventEmitter
      * to the last rendered root of the associated renderer.
      * @return {PIXI.DisplayObject} The hit display object, if any.
      */
-    hitTest(globalPoint, root)
+    hitTest(globalPoint: Point, root?: Container): DisplayObject
     {
         // clear the target for our hit test
         hitTestEvent.target = null;
@@ -711,7 +764,7 @@ export class InteractionManager extends EventEmitter
         // ensure safety of the root
         if (!root)
         {
-            root = this.renderer._lastObjectRendered;
+            root = this.renderer._lastObjectRendered as InteractiveObject;
         }
         // run the hit test
         this.processInteractive(hitTestEvent, root, null, true);
@@ -728,7 +781,7 @@ export class InteractionManager extends EventEmitter
      * @param {HTMLElement} element - the DOM element which will receive mouse and touch events.
      * @param {number} [resolution=1] - The resolution / device pixel ratio of the new element (relative to the canvas).
      */
-    setTargetElement(element, resolution = 1)
+    setTargetElement(element: HTMLElement, resolution = 1): void
     {
         this.removeTickerListener();
 
@@ -748,7 +801,7 @@ export class InteractionManager extends EventEmitter
      *
      * @private
      */
-    addTickerListener()
+    addTickerListener(): void
     {
         if (this.tickerAdded || !this.interactionDOMElement || !this._useSystemTicker)
         {
@@ -765,7 +818,7 @@ export class InteractionManager extends EventEmitter
      *
      * @private
      */
-    removeTickerListener()
+    removeTickerListener(): void
     {
         if (!this.tickerAdded)
         {
@@ -782,7 +835,7 @@ export class InteractionManager extends EventEmitter
      *
      * @private
      */
-    addEvents()
+    addEvents(): void
     {
         if (this.eventsAdded || !this.interactionDOMElement)
         {
@@ -791,12 +844,12 @@ export class InteractionManager extends EventEmitter
 
         if (window.navigator.msPointerEnabled)
         {
-            this.interactionDOMElement.style['-ms-content-zooming'] = 'none';
-            this.interactionDOMElement.style['-ms-touch-action'] = 'none';
+            this.interactionDOMElement.style.msContentZooming = 'none';
+            this.interactionDOMElement.style.msTouchAction = 'none';
         }
         else if (this.supportsPointerEvents)
         {
-            this.interactionDOMElement.style['touch-action'] = 'none';
+            this.interactionDOMElement.style.touchAction = 'none';
         }
 
         /**
@@ -843,7 +896,7 @@ export class InteractionManager extends EventEmitter
      *
      * @private
      */
-    removeEvents()
+    removeEvents(): void
     {
         if (!this.eventsAdded || !this.interactionDOMElement)
         {
@@ -852,12 +905,12 @@ export class InteractionManager extends EventEmitter
 
         if (window.navigator.msPointerEnabled)
         {
-            this.interactionDOMElement.style['-ms-content-zooming'] = '';
-            this.interactionDOMElement.style['-ms-touch-action'] = '';
+            this.interactionDOMElement.style.msContentZooming = '';
+            this.interactionDOMElement.style.msTouchAction = '';
         }
         else if (this.supportsPointerEvents)
         {
-            this.interactionDOMElement.style['touch-action'] = '';
+            this.interactionDOMElement.style.touchAction = '';
         }
 
         if (this.supportsPointerEvents)
@@ -899,7 +952,7 @@ export class InteractionManager extends EventEmitter
      *
      * @param {number} deltaTime - time delta since the last call
      */
-    tickerUpdate(deltaTime)
+    tickerUpdate(deltaTime: number): void
     {
         this._deltaTime += deltaTime;
 
@@ -916,7 +969,7 @@ export class InteractionManager extends EventEmitter
     /**
      * Updates the state of interactive objects.
      */
-    update()
+    update(): void
     {
         if (!this.interactionDOMElement)
         {
@@ -924,36 +977,36 @@ export class InteractionManager extends EventEmitter
         }
 
         // if the user move the mouse this check has already been done using the mouse move!
-        if (this.didMove)
+        if (this._didMove)
         {
-            this.didMove = false;
+            this._didMove = false;
 
             return;
         }
 
-        this.cursor = null;
+        this._cursor = null;
 
         // Resets the flag as set by a stopPropagation call. This flag is usually reset by a user interaction of any kind,
-        // but there was a scenario of a display object moving under a static mouse cursor.
+        // but there was a scenario of a display object moving under a static mouse _cursor.
         // In this case, mouseover and mouseevents would not pass the flag test in dispatchEvent function
-        for (const k in this.activeInteractionData)
+        for (const k in this._activeInteractionData)
         {
             // eslint-disable-next-line no-prototype-builtins
-            if (this.activeInteractionData.hasOwnProperty(k))
+            if (this._activeInteractionData.hasOwnProperty(k))
             {
-                const interactionData = this.activeInteractionData[k];
+                const interactionData = this._activeInteractionData[k];
 
                 if (interactionData.originalEvent && interactionData.pointerType !== 'touch')
                 {
                     const interactionEvent = this.configureInteractionEventForDOMEvent(
                         this.eventData,
-                        interactionData.originalEvent,
+                        interactionData.originalEvent as PointerEvent,
                         interactionData
                     );
 
                     this.processInteractive(
                         interactionEvent,
-                        this.renderer._lastObjectRendered,
+                        this.renderer._lastObjectRendered as InteractiveObject,
                         this.processPointerOverOut,
                         true
                     );
@@ -961,15 +1014,15 @@ export class InteractionManager extends EventEmitter
             }
         }
 
-        this.setCursorMode(this.cursor);
+        this.setCursorMode(this._cursor);
     }
 
     /**
-     * Sets the current cursor mode, handling any callbacks or CSS style changes.
+     * Sets the current _cursor mode, handling any callbacks or CSS style changes.
      *
-     * @param {string} mode - cursor mode, a key from the cursorStyles dictionary
+     * @param {string} mode - _cursor mode, a key from the cursorStyles dictionary
      */
-    setCursorMode(mode)
+    setCursorMode(mode: string): void
     {
         mode = mode || 'default';
         // if the mode didn't actually change, bail early
@@ -980,17 +1033,17 @@ export class InteractionManager extends EventEmitter
         this.currentCursorMode = mode;
         const style = this.cursorStyles[mode];
 
-        // only do things if there is a cursor style for it
+        // only do things if there is a _cursor style for it
         if (style)
         {
             switch (typeof style)
             {
                 case 'string':
-                    // string styles are handled as cursor CSS
+                    // string styles are handled as _cursor CSS
                     this.interactionDOMElement.style.cursor = style;
                     break;
                 case 'function':
-                    // functions are just called, and passed the cursor mode
+                    // functions are just called, and passed the _cursor mode
                     style(mode);
                     break;
                 case 'object':
@@ -1003,7 +1056,7 @@ export class InteractionManager extends EventEmitter
         else if (typeof mode === 'string' && !Object.prototype.hasOwnProperty.call(this.cursorStyles, mode))
         {
             // if it mode is a string (not a Symbol) and cursorStyles doesn't have any entry
-            // for the mode, then assume that the dev wants it to be CSS for the cursor.
+            // for the mode, then assume that the dev wants it to be CSS for the _cursor.
             this.interactionDOMElement.style.cursor = mode;
         }
     }
@@ -1016,7 +1069,7 @@ export class InteractionManager extends EventEmitter
      * @param {object} eventData - the event data object
      * @private
      */
-    dispatchEvent(displayObject, eventString, eventData)
+    dispatchEvent(displayObject: InteractiveObject, eventString: string, eventData: any): void
     {
         // Even if the event was stopped, at least dispatch any remaining events
         // for the same display object.
@@ -1027,8 +1080,12 @@ export class InteractionManager extends EventEmitter
 
             displayObject.emit(eventString, eventData);
 
-            if (displayObject[eventString])
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            if (displayObject[eventString] && displayObject[eventString] instanceof Function)
             {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+                // @ts-ignore
                 displayObject[eventString](eventData);
             }
         }
@@ -1043,9 +1100,9 @@ export class InteractionManager extends EventEmitter
      * @param {object} eventData - the event data object
      * @private
      */
-    delayDispatchEvent(displayObject, eventString, eventData)
+    delayDispatchEvent(displayObject: InteractiveObject, eventString: string, eventData: object): void
     {
-        this.delayedEvents.push({ displayObject, eventString, eventData });
+        this._delayedEvents.push({ displayObject, eventString, eventData });
     }
 
     /**
@@ -1057,7 +1114,7 @@ export class InteractionManager extends EventEmitter
      * @param  {number} x - the x coord of the position to map
      * @param  {number} y - the y coord of the position to map
      */
-    mapPositionToPoint(point, x, y)
+    mapPositionToPoint(point: Point, x: number, y: number): void
     {
         let rect;
 
@@ -1073,8 +1130,8 @@ export class InteractionManager extends EventEmitter
 
         const resolutionMultiplier = 1.0 / this.resolution;
 
-        point.x = ((x - rect.left) * (this.interactionDOMElement.width / rect.width)) * resolutionMultiplier;
-        point.y = ((y - rect.top) * (this.interactionDOMElement.height / rect.height)) * resolutionMultiplier;
+        point.x = ((x - rect.left) * (this.interactionDOMElement.clientWidth / rect.width)) * resolutionMultiplier;
+        point.y = ((y - rect.top) * (this.interactionDOMElement.clientHeight / rect.height)) * resolutionMultiplier;
     }
 
     /**
@@ -1092,11 +1149,12 @@ export class InteractionManager extends EventEmitter
      * @param {boolean} [hitTest] - indicates whether we want to calculate hits
      *  or just iterate through all interactive objects
      */
-    processInteractive(interactionEvent, displayObject, func, hitTest)
+    processInteractive(interactionEvent: InteractionEvent, displayObject: InteractiveObject, func: Function,
+        hitTest: boolean): void
     {
-        const hit = this.search.findHit(interactionEvent, displayObject, func, hitTest);
+        const hit = this._search.findHit(interactionEvent, displayObject, func, hitTest);
 
-        const delayedEvents = this.delayedEvents;
+        const delayedEvents = this._delayedEvents;
 
         if (!delayedEvents.length)
         {
@@ -1107,7 +1165,7 @@ export class InteractionManager extends EventEmitter
 
         const delayedLen = delayedEvents.length;
 
-        this.delayedEvents = [];
+        this._delayedEvents = [];
 
         for (let i = 0; i < delayedLen; i++)
         {
@@ -1130,12 +1188,18 @@ export class InteractionManager extends EventEmitter
      * Is called when the pointer button is pressed down on the renderer element
      *
      * @private
-     * @param {PointerEvent} originalEvent - The DOM event of a pointer button being pressed down
+     * @param {InteractivePointerEvent} originalEvent - The DOM event of a pointer button being pressed down
      */
-    onPointerDown(originalEvent)
+    onPointerDown(originalEvent: InteractivePointerEvent): void
     {
         // if we support touch events, then only use those for touch events, not pointer events
-        if (this.supportsTouchEvents && originalEvent.pointerType === 'touch') return;
+        if (originalEvent instanceof PointerEvent)
+        {
+            if (this.supportsTouchEvents && originalEvent.pointerType === 'touch')
+            {
+                return;
+            }
+        }
 
         const events = this.normalizeToPointerData(originalEvent);
 
@@ -1147,6 +1211,8 @@ export class InteractionManager extends EventEmitter
 
         // Guaranteed that there will be at least one event in events, and all events must have the same pointer type
 
+        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+        // @ts-ignore
         if (this.autoPreventDefault && events[0].isNormalized)
         {
             const cancelable = originalEvent.cancelable || !('cancelable' in originalEvent);
@@ -1169,7 +1235,8 @@ export class InteractionManager extends EventEmitter
 
             interactionEvent.data.originalEvent = originalEvent;
 
-            this.processInteractive(interactionEvent, this.renderer._lastObjectRendered, this.processPointerDown, true);
+            this.processInteractive(interactionEvent, this.renderer._lastObjectRendered as InteractiveObject,
+                this.processPointerDown, true);
 
             this.emit('pointerdown', interactionEvent);
             if (event.pointerType === 'touch')
@@ -1194,16 +1261,16 @@ export class InteractionManager extends EventEmitter
      * @param {PIXI.Container|PIXI.Sprite|PIXI.TilingSprite} displayObject - The display object that was tested
      * @param {boolean} hit - the result of the hit test on the display object
      */
-    processPointerDown(interactionEvent, displayObject, hit)
+    processPointerDown(interactionEvent: InteractionEvent, displayObject: InteractiveObject, hit: boolean): void
     {
         const data = interactionEvent.data;
         const id = interactionEvent.data.identifier;
 
         if (hit)
         {
-            if (!displayObject.trackedPointers[id])
+            if (!displayObject.trackedPointers.get(id))
             {
-                displayObject.trackedPointers[id] = new InteractionTrackingData(id);
+                displayObject.trackedPointers.set(id, new InteractionTrackingData(id));
             }
             this.dispatchEvent(displayObject, 'pointerdown', interactionEvent);
 
@@ -1217,11 +1284,11 @@ export class InteractionManager extends EventEmitter
 
                 if (isRightButton)
                 {
-                    displayObject.trackedPointers[id].rightDown = true;
+                    displayObject.trackedPointers.get(id).rightDown = true;
                 }
                 else
                 {
-                    displayObject.trackedPointers[id].leftDown = true;
+                    displayObject.trackedPointers.get(id).leftDown = true;
                 }
 
                 this.dispatchEvent(displayObject, isRightButton ? 'rightdown' : 'mousedown', interactionEvent);
@@ -1237,7 +1304,7 @@ export class InteractionManager extends EventEmitter
      * @param {boolean} cancelled - true if the pointer is cancelled
      * @param {Function} func - Function passed to {@link processInteractive}
      */
-    onPointerComplete(originalEvent, cancelled, func)
+    onPointerComplete(originalEvent: InteractivePointerEvent, cancelled: boolean, func: Function): void
     {
         const events = this.normalizeToPointerData(originalEvent);
 
@@ -1258,7 +1325,8 @@ export class InteractionManager extends EventEmitter
             interactionEvent.data.originalEvent = originalEvent;
 
             // perform hit testing for events targeting our canvas or cancel events
-            this.processInteractive(interactionEvent, this.renderer._lastObjectRendered, func, cancelled || !eventAppend);
+            this.processInteractive(interactionEvent, this.renderer._lastObjectRendered as InteractiveObject, func,
+                cancelled || !eventAppend);
 
             this.emit(cancelled ? 'pointercancel' : `pointerup${eventAppend}`, interactionEvent);
 
@@ -1271,7 +1339,7 @@ export class InteractionManager extends EventEmitter
             else if (event.pointerType === 'touch')
             {
                 this.emit(cancelled ? 'touchcancel' : `touchend${eventAppend}`, interactionEvent);
-                this.releaseInteractionDataForPointerId(event.pointerId, interactionData);
+                this.releaseInteractionDataForPointerId(event.pointerId);
             }
         }
     }
@@ -1282,10 +1350,16 @@ export class InteractionManager extends EventEmitter
      * @private
      * @param {PointerEvent} event - The DOM event of a pointer button being released
      */
-    onPointerCancel(event)
+    onPointerCancel(event: InteractivePointerEvent): void
     {
         // if we support touch events, then only use those for touch events, not pointer events
-        if (this.supportsTouchEvents && event.pointerType === 'touch') return;
+        if (event instanceof PointerEvent)
+        {
+            if (this.supportsTouchEvents && event.pointerType === 'touch')
+            {
+                return;
+            }
+        }
 
         this.onPointerComplete(event, true, this.processPointerCancel);
     }
@@ -1297,15 +1371,16 @@ export class InteractionManager extends EventEmitter
      * @param {PIXI.interaction.InteractionEvent} interactionEvent - The interaction event wrapping the DOM event
      * @param {PIXI.Container|PIXI.Sprite|PIXI.TilingSprite} displayObject - The display object that was tested
      */
-    processPointerCancel(interactionEvent, displayObject)
+    processPointerCancel(interactionEvent: InteractionEvent, displayObject: InteractiveObject): void
     {
         const data = interactionEvent.data;
 
         const id = interactionEvent.data.identifier;
 
-        if (displayObject.trackedPointers[id] !== undefined)
+        if (displayObject.trackedPointers.has(id))
         {
-            delete displayObject.trackedPointers[id];
+            displayObject.trackedPointers.delete(id);
+
             this.dispatchEvent(displayObject, 'pointercancel', interactionEvent);
 
             if (data.pointerType === 'touch')
@@ -1321,10 +1396,16 @@ export class InteractionManager extends EventEmitter
      * @private
      * @param {PointerEvent} event - The DOM event of a pointer button being released
      */
-    onPointerUp(event)
+    onPointerUp(event: InteractivePointerEvent): void
     {
         // if we support touch events, then only use those for touch events, not pointer events
-        if (this.supportsTouchEvents && event.pointerType === 'touch') return;
+        if (event instanceof PointerEvent)
+        {
+            if (this.supportsTouchEvents && event.pointerType === 'touch')
+            {
+                return;
+            }
+        }
 
         this.onPointerComplete(event, false, this.processPointerUp);
     }
@@ -1337,13 +1418,13 @@ export class InteractionManager extends EventEmitter
      * @param {PIXI.Container|PIXI.Sprite|PIXI.TilingSprite} displayObject - The display object that was tested
      * @param {boolean} hit - the result of the hit test on the display object
      */
-    processPointerUp(interactionEvent, displayObject, hit)
+    processPointerUp(interactionEvent: InteractionEvent, displayObject: InteractiveObject, hit: boolean): void
     {
         const data = interactionEvent.data;
 
         const id = interactionEvent.data.identifier;
 
-        const trackingData = displayObject.trackedPointers[id];
+        const trackingData = displayObject.trackedPointers.get(id);
 
         const isTouch = data.pointerType === 'touch';
 
@@ -1422,7 +1503,7 @@ export class InteractionManager extends EventEmitter
         // Only remove the tracking data if there is no over/down state still associated with it
         if (trackingData && trackingData.none)
         {
-            delete displayObject.trackedPointers[id];
+            displayObject.trackedPointers.delete(id);
         }
     }
 
@@ -1432,18 +1513,24 @@ export class InteractionManager extends EventEmitter
      * @private
      * @param {PointerEvent} originalEvent - The DOM event of a pointer moving
      */
-    onPointerMove(originalEvent)
+    onPointerMove(originalEvent: InteractivePointerEvent): void
     {
         // if we support touch events, then only use those for touch events, not pointer events
-        if (this.supportsTouchEvents && originalEvent.pointerType === 'touch') return;
+        if (originalEvent instanceof PointerEvent)
+        {
+            if (this.supportsTouchEvents && originalEvent.pointerType === 'touch')
+            {
+                return;
+            }
+        }
 
         const events = this.normalizeToPointerData(originalEvent);
 
         if (events[0].pointerType === 'mouse' || events[0].pointerType === 'pen')
         {
-            this.didMove = true;
+            this._didMove = true;
 
-            this.cursor = null;
+            this._cursor = null;
         }
 
         const eventLen = events.length;
@@ -1458,7 +1545,8 @@ export class InteractionManager extends EventEmitter
 
             interactionEvent.data.originalEvent = originalEvent;
 
-            this.processInteractive(interactionEvent, this.renderer._lastObjectRendered, this.processPointerMove, true);
+            this.processInteractive(interactionEvent, this.renderer._lastObjectRendered as InteractiveObject,
+                this.processPointerMove, true);
 
             this.emit('pointermove', interactionEvent);
             if (event.pointerType === 'touch') this.emit('touchmove', interactionEvent);
@@ -1467,7 +1555,7 @@ export class InteractionManager extends EventEmitter
 
         if (events[0].pointerType === 'mouse')
         {
-            this.setCursorMode(this.cursor);
+            this.setCursorMode(this._cursor);
 
             // TODO BUG for parents interactive object (border order issue)
         }
@@ -1481,7 +1569,7 @@ export class InteractionManager extends EventEmitter
      * @param {PIXI.Container|PIXI.Sprite|PIXI.TilingSprite} displayObject - The display object that was tested
      * @param {boolean} hit - the result of the hit test on the display object
      */
-    processPointerMove(interactionEvent, displayObject, hit)
+    processPointerMove(interactionEvent: InteractionEvent, displayObject: InteractiveObject, hit: boolean): void
     {
         const data = interactionEvent.data;
 
@@ -1508,10 +1596,16 @@ export class InteractionManager extends EventEmitter
      * @private
      * @param {PointerEvent} originalEvent - The DOM event of a pointer being moved out
      */
-    onPointerOut(originalEvent)
+    onPointerOut(originalEvent: InteractivePointerEvent): void
     {
         // if we support touch events, then only use those for touch events, not pointer events
-        if (this.supportsTouchEvents && originalEvent.pointerType === 'touch') return;
+        if (originalEvent instanceof PointerEvent)
+        {
+            if (this.supportsTouchEvents && originalEvent.pointerType === 'touch')
+            {
+                return;
+            }
+        }
 
         const events = this.normalizeToPointerData(originalEvent);
 
@@ -1530,7 +1624,8 @@ export class InteractionManager extends EventEmitter
 
         interactionEvent.data.originalEvent = event;
 
-        this.processInteractive(interactionEvent, this.renderer._lastObjectRendered, this.processPointerOverOut, false);
+        this.processInteractive(interactionEvent, this.renderer._lastObjectRendered as InteractiveObject,
+            this.processPointerOverOut, false);
 
         this.emit('pointerout', interactionEvent);
         if (event.pointerType === 'mouse' || event.pointerType === 'pen')
@@ -1553,7 +1648,7 @@ export class InteractionManager extends EventEmitter
      * @param {PIXI.Container|PIXI.Sprite|PIXI.TilingSprite} displayObject - The display object that was tested
      * @param {boolean} hit - the result of the hit test on the display object
      */
-    processPointerOverOut(interactionEvent, displayObject, hit)
+    processPointerOverOut(interactionEvent: InteractionEvent, displayObject: InteractiveObject, hit: boolean): void
     {
         const data = interactionEvent.data;
 
@@ -1561,12 +1656,14 @@ export class InteractionManager extends EventEmitter
 
         const isMouse = (data.pointerType === 'mouse' || data.pointerType === 'pen');
 
-        let trackingData = displayObject.trackedPointers[id];
+        let trackingData = displayObject.trackedPointers.get(id);
 
         // if we just moused over the display object, then we need to track that state
         if (hit && !trackingData)
         {
-            trackingData = displayObject.trackedPointers[id] = new InteractionTrackingData(id);
+            trackingData = new InteractionTrackingData(id);
+
+            displayObject.trackedPointers.set(id, trackingData);
         }
 
         if (trackingData === undefined) return;
@@ -1583,11 +1680,11 @@ export class InteractionManager extends EventEmitter
                 }
             }
 
-            // only change the cursor if it has not already been changed (by something deeper in the
+            // only change the _cursor if it has not already been changed (by something deeper in the
             // display tree)
-            if (isMouse && this.cursor === null)
+            if (isMouse && this._cursor === null)
             {
-                this.cursor = displayObject.cursor;
+                this._cursor = displayObject.cursor;
             }
         }
         else if (trackingData.over)
@@ -1601,7 +1698,7 @@ export class InteractionManager extends EventEmitter
             // if there is no mouse down information for the pointer, then it is safe to delete
             if (trackingData.none)
             {
-                delete displayObject.trackedPointers[id];
+                displayObject.trackedPointers.delete(id);
             }
         }
     }
@@ -1612,7 +1709,7 @@ export class InteractionManager extends EventEmitter
      * @private
      * @param {PointerEvent} originalEvent - The DOM event of a pointer button being moved into the renderer view
      */
-    onPointerOver(originalEvent)
+    onPointerOver(originalEvent: InteractivePointerEvent): void
     {
         const events = this.normalizeToPointerData(originalEvent);
 
@@ -1644,25 +1741,25 @@ export class InteractionManager extends EventEmitter
      * @param {PointerEvent} event - Normalized pointer event, output from normalizeToPointerData
      * @return {PIXI.interaction.InteractionData} - Interaction data for the given pointer identifier
      */
-    getInteractionDataForPointerId(event)
+    getInteractionDataForPointerId(event: PointerEvent): InteractionData
     {
         const pointerId = event.pointerId;
 
         let interactionData;
 
-        if (pointerId === MOUSE_POINTER_ID || event.pointerType === 'mouse')
+        if (pointerId === MOUSE_POINTER_ID || event.type === 'mouse')
         {
             interactionData = this.mouse;
         }
-        else if (this.activeInteractionData[pointerId])
+        else if (this._activeInteractionData[pointerId])
         {
-            interactionData = this.activeInteractionData[pointerId];
+            interactionData = this._activeInteractionData[pointerId];
         }
         else
         {
-            interactionData = this.interactionDataPool.pop() || new InteractionData();
+            interactionData = this._interactionDataPool.pop() || new InteractionData();
             interactionData.identifier = pointerId;
-            this.activeInteractionData[pointerId] = interactionData;
+            this._activeInteractionData[pointerId] = interactionData;
         }
         // copy properties from the event, so that we can make sure that touch/pointer specific
         // data is available
@@ -1677,15 +1774,15 @@ export class InteractionManager extends EventEmitter
      * @private
      * @param {number} pointerId - Identifier from a pointer event
      */
-    releaseInteractionDataForPointerId(pointerId)
+    releaseInteractionDataForPointerId(pointerId: number): void
     {
-        const interactionData = this.activeInteractionData[pointerId];
+        const interactionData = this._activeInteractionData[pointerId];
 
         if (interactionData)
         {
-            delete this.activeInteractionData[pointerId];
+            delete this._activeInteractionData[pointerId];
             interactionData.reset();
-            this.interactionDataPool.push(interactionData);
+            this._interactionDataPool.push(interactionData);
         }
     }
 
@@ -1699,7 +1796,8 @@ export class InteractionManager extends EventEmitter
      *        with the InteractionEvent
      * @return {PIXI.interaction.InteractionEvent} the interaction event that was passed in
      */
-    configureInteractionEventForDOMEvent(interactionEvent, pointerEvent, interactionData)
+    configureInteractionEventForDOMEvent(interactionEvent: InteractionEvent, pointerEvent: PointerEvent,
+        interactionData: InteractionData): InteractionEvent
     {
         interactionEvent.data = interactionData;
 
@@ -1708,7 +1806,11 @@ export class InteractionManager extends EventEmitter
         // Not really sure why this is happening, but it's how a previous version handled things
         if (pointerEvent.pointerType === 'touch')
         {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
             pointerEvent.globalX = interactionData.global.x;
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
             pointerEvent.globalY = interactionData.global.y;
         }
 
@@ -1726,7 +1828,7 @@ export class InteractionManager extends EventEmitter
      * @return {PointerEvent[]} An array containing a single normalized pointer event, in the case of a pointer
      *  or mouse event, or a multiple normalized pointer events if there are multiple changed touches
      */
-    normalizeToPointerData(event)
+    normalizeToPointerData(event: InteractivePointerEvent): PointerEvent[]
     {
         const normalizedEvents = [];
 
@@ -1736,28 +1838,61 @@ export class InteractionManager extends EventEmitter
             {
                 const touch = event.changedTouches[i];
 
+                // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+                // @ts-ignore
                 if (typeof touch.button === 'undefined') touch.button = event.touches.length ? 1 : 0;
+                // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+                // @ts-ignore
                 if (typeof touch.buttons === 'undefined') touch.buttons = event.touches.length ? 1 : 0;
+                // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+                // @ts-ignore
                 if (typeof touch.isPrimary === 'undefined')
                 {
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+                    // @ts-ignore
                     touch.isPrimary = event.touches.length === 1 && event.type === 'touchstart';
                 }
+                // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+                // @ts-ignore
                 if (typeof touch.width === 'undefined') touch.width = touch.radiusX || 1;
+                // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+                // @ts-ignore
                 if (typeof touch.height === 'undefined') touch.height = touch.radiusY || 1;
+                // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+                // @ts-ignore
                 if (typeof touch.tiltX === 'undefined') touch.tiltX = 0;
+                // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+                // @ts-ignore
                 if (typeof touch.tiltY === 'undefined') touch.tiltY = 0;
+                // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+                // @ts-ignore
                 if (typeof touch.pointerType === 'undefined') touch.pointerType = 'touch';
+                // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+                // @ts-ignore
                 if (typeof touch.pointerId === 'undefined') touch.pointerId = touch.identifier || 0;
+                // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+                // @ts-ignore
                 if (typeof touch.pressure === 'undefined') touch.pressure = touch.force || 0.5;
+                // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+                // @ts-ignore
                 if (typeof touch.twist === 'undefined') touch.twist = 0;
+                // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+                // @ts-ignore
                 if (typeof touch.tangentialPressure === 'undefined') touch.tangentialPressure = 0;
                 // TODO: Remove these, as layerX/Y is not a standard, is deprecated, has uneven
                 // support, and the fill ins are not quite the same
                 // offsetX/Y might be okay, but is not the same as clientX/Y when the canvas's top
                 // left is not 0,0 on the page
+
+                // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+                // @ts-ignore
                 if (typeof touch.layerX === 'undefined') touch.layerX = touch.offsetX = touch.clientX;
+                // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+                // @ts-ignore
                 if (typeof touch.layerY === 'undefined') touch.layerY = touch.offsetY = touch.clientY;
 
+                // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+                // @ts-ignore
                 // mark the touch as normalized, just so that we know we did it
                 touch.isNormalized = true;
 
@@ -1767,17 +1902,39 @@ export class InteractionManager extends EventEmitter
         // apparently PointerEvent subclasses MouseEvent, so yay
         else if (event instanceof MouseEvent && (!this.supportsPointerEvents || !(event instanceof window.PointerEvent)))
         {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
             if (typeof event.isPrimary === 'undefined') event.isPrimary = true;
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
             if (typeof event.width === 'undefined') event.width = 1;
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
             if (typeof event.height === 'undefined') event.height = 1;
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
             if (typeof event.tiltX === 'undefined') event.tiltX = 0;
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
             if (typeof event.tiltY === 'undefined') event.tiltY = 0;
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
             if (typeof event.pointerType === 'undefined') event.pointerType = 'mouse';
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
             if (typeof event.pointerId === 'undefined') event.pointerId = MOUSE_POINTER_ID;
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
             if (typeof event.pressure === 'undefined') event.pressure = 0.5;
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
             if (typeof event.twist === 'undefined') event.twist = 0;
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
             if (typeof event.tangentialPressure === 'undefined') event.tangentialPressure = 0;
 
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
             // mark the mouse event as normalized, just so that we know we did it
             event.isNormalized = true;
 
@@ -1788,14 +1945,14 @@ export class InteractionManager extends EventEmitter
             normalizedEvents.push(event);
         }
 
-        return normalizedEvents;
+        return normalizedEvents as PointerEvent[];
     }
 
     /**
      * Destroys the interaction manager
      *
      */
-    destroy()
+    destroy(): void
     {
         this.removeEvents();
 
@@ -1828,6 +1985,6 @@ export class InteractionManager extends EventEmitter
 
         this.onPointerOver = null;
 
-        this.search = null;
+        this._search = null;
     }
 }
