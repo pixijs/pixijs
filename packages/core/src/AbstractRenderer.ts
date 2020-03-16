@@ -2,7 +2,7 @@ import { hex2string, hex2rgb, deprecation, EventEmitter } from '@pixi/utils';
 import { Matrix, Rectangle } from '@pixi/math';
 import { RENDERER_TYPE } from '@pixi/constants';
 import { settings } from '@pixi/settings';
-import { DisplayObject, TemporaryDisplayObject } from '@pixi/display';
+import { DisplayObject, TemporaryDisplayObject, Container } from '@pixi/display';
 import { RenderTexture } from './renderTexture/RenderTexture';
 
 import type { SCALE_MODES } from '@pixi/constants';
@@ -307,7 +307,7 @@ export abstract class AbstractRenderer extends EventEmitter
     generateTexture(displayObject: DisplayObject,
         scaleMode?: SCALE_MODES, resolution?: number, region?: Rectangle): RenderTexture
     {
-        region = region || displayObject.getLocalBounds();
+        region = region || (displayObject as Container).getLocalBounds(undefined, true);
 
         // minimum texture size is 1x1, 0x0 will throw an error
         if (region.width === 0) region.width = 1;
