@@ -1,5 +1,13 @@
 import { Point } from '@pixi/math';
+import { InteractionEvent } from './InteractionEvent';
+import { DisplayObject, Container } from '@pixi/display';
+import { Sprite } from '@pixi/sprite';
+import { TilingSprite } from '@pixi/sprite-tiling';
 
+type tDisplayObject = Sprite | TilingSprite | Container | DisplayObject;
+export interface ICallback {
+    (interactionEvent: InteractionEvent, displayObject: tDisplayObject, hit: boolean): void;
+}
 /**
  * Strategy how to search through stage tree for interactive objects
  *
@@ -9,6 +17,8 @@ import { Point } from '@pixi/math';
  */
 export class TreeSearch
 {
+    private _tempPoint: Point;
+
     constructor()
     {
         this._tempPoint = new Point();
@@ -28,7 +38,7 @@ export class TreeSearch
      * @param {boolean} [interactive] - Whether the displayObject is interactive
      * @return {boolean} returns true if the displayObject hit the point
      */
-    recursiveFindHit(interactionEvent, displayObject, func, hitTest, interactive)
+    recursiveFindHit(interactionEvent: InteractionEvent, displayObject: tDisplayObject, func: ICallback, hitTest: boolean, interactive: boolean): boolean
     {
         if (!displayObject || !displayObject.visible)
         {
@@ -80,11 +90,11 @@ export class TreeSearch
         // If there is a mask, no need to hitTest against anything else if the pointer is not within the mask.
         // We still want to hitTestChildren, however, to ensure a mouseout can still be generated.
         // https://github.com/pixijs/pixi.js/issues/5135
-        else if (displayObject._mask)
+        else if (displayObject.mask)
         {
             if (hitTest)
             {
-                if (!(displayObject._mask.containsPoint && displayObject._mask.containsPoint(point)))
+                if (!(typeof displayObject.mask.containsPoint === 'function' && displayObject.mask.containsPoint(point)))
                 {
                     hitTest = false;
                 }
@@ -186,7 +196,7 @@ export class TreeSearch
      * @param {boolean} [hitTest] - this indicates if the objects inside should be hit test against the point
      * @return {boolean} returns true if the displayObject hit the point
      */
-    findHit(interactionEvent, displayObject, func, hitTest)
+    findHit(interactionEvent: InteractionEvent, displayObject: tDisplayObject, func: ICallback, hitTest: boolean): void
     {
         this.recursiveFindHit(interactionEvent, displayObject, func, hitTest, false);
     }

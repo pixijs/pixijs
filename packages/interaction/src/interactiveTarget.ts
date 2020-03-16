@@ -11,6 +11,24 @@
  * @memberof PIXI
  */
 
+import { DisplayObject } from '@pixi/display';
+import { Point } from '@pixi/math';
+
+interface IHitArea {
+    contains(x: number, y: number): boolean;
+}
+
+export interface InteractiveTarget {
+    interactive: boolean;
+    interactiveChildren: boolean;
+    hitArea: IHitArea;
+    cursor: Cursor;
+    buttonMode: boolean;
+    trackedPointers: Map<number, InteractionTrackingData>;
+    _trackedPointers: Map<number, InteractionTrackingData>;
+    containsPoint?: (point: Point) => boolean;
+}
+
 /**
  * Checks whether the x and y coordinates given are contained within this area
  *
@@ -38,7 +56,7 @@
  *          PIXI.interaction.interactiveTarget
  *      );
  */
-export const interactiveTarget = {
+export const interactiveTarget: InteractiveTarget = {
 
     /**
      * Enable interaction events for the DisplayObject. Touch, pointer and mouse
@@ -126,9 +144,9 @@ export const interactiveTarget = {
      * @memberof PIXI.DisplayObject#
      * @private
      */
-    get trackedPointers()
+    get trackedPointers(): Map<number, DisplayObject>
     {
-        if (this._trackedPointers === undefined) this._trackedPointers = {};
+        if (this._trackedPointers === undefined) this._trackedPointers = new Map();
 
         return this._trackedPointers;
     },

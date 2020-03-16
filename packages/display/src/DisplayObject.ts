@@ -6,6 +6,7 @@ import { Bounds } from './Bounds';
 import type { Filter, MaskData, Renderer } from '@pixi/core';
 import type { IPoint, ObservablePoint } from '@pixi/math';
 import type { IAccessibleTarget } from '@pixi/accessibility';
+import type { InteractiveTarget } from '@pixi/interaction';
 
 export interface IDestroyOptions {
     children?: boolean;
@@ -27,6 +28,7 @@ export interface DisplayObject extends InteractiveTarget, IAccessibleTarget, Eve
 export abstract class DisplayObject extends EventEmitter
 {
     abstract sortDirty: boolean;
+    abstract children: DisplayObject[]
 
     public parent: DisplayObject;
     public worldAlpha: number;

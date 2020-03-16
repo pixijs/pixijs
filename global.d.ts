@@ -49,15 +49,3 @@ declare type Cursor = 'auto'
     | 'grab'
     | 'grabbing';
 
-declare interface IHitArea {
-    contains(x: number, y: number): boolean;
-}
-
-declare interface InteractiveTarget {
-    interactive: boolean;
-    interactiveChildren: boolean;
-    hitArea: IHitArea;
-    cursor: Cursor;
-    buttonMode: boolean;
-    trackedPointers: Map<number, InteractionTrackingData>;
-}

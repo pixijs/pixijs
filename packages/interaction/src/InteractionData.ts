@@ -1,4 +1,8 @@
 import { Point } from '@pixi/math';
+import { DisplayObject } from '@pixi/display';
+import { Sprite } from '@pixi/sprite';
+
+type event = MouseEvent | TouchEvent | PointerEvent;
 
 /**
  * Holds all information related to an Interaction event
@@ -8,6 +12,23 @@ import { Point } from '@pixi/math';
  */
 export class InteractionData
 {
+    public global: Point;
+    public target: Sprite;
+    public originalEvent: event;
+    public identifier: number;
+    public isPrimary: boolean;
+    public button: number;
+    public buttons: number;
+    public width: number;
+    public height: number;
+    public tiltX: number;
+    public tiltY: number;
+    public pointerType: string;
+    public pressure: number;
+    public rotationAngle: number;
+    public twist: number;
+    public tangentialPressure: number;
+
     constructor()
     {
         /**
@@ -135,7 +156,7 @@ export class InteractionData
      * @member {number}
      * @see https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent/pointerId
      */
-    get pointerId()
+    get pointerId(): number
     {
         return this.identifier;
     }
@@ -152,7 +173,7 @@ export class InteractionData
      * @return {PIXI.Point} A point containing the coordinates of the InteractionData position relative
      *  to the DisplayObject
      */
-    getLocalPosition(displayObject, point, globalPos)
+    getLocalPosition(displayObject: DisplayObject, point: Point, globalPos: Point): Point
     {
         return displayObject.worldTransform.applyInverse(globalPos || this.global, point);
     }
@@ -162,7 +183,7 @@ export class InteractionData
      *
      * @param {Touch|MouseEvent|PointerEvent} event The normalized event data
      */
-    copyEvent(event)
+    copyEvent(event: event): void
     {
         // isPrimary should only change on touchstart/pointerdown, so we don't want to overwrite
         // it with "false" on later events when our shim for it on touch events might not be
@@ -189,7 +210,7 @@ export class InteractionData
     /**
      * Resets the data for pooling.
      */
-    reset()
+    reset(): void
     {
         // isPrimary is the only property that we really need to reset - everything else is
         // guaranteed to be overwritten
