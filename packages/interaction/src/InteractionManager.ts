@@ -8,8 +8,6 @@ import { EventEmitter } from '@pixi/utils';
 import { interactiveTarget } from './interactiveTarget';
 
 import type { Container } from '@pixi/display';
-import type { Sprite } from '@pixi/sprite';
-import type { TilingSprite } from '@pixi/sprite-tiling';
 import type { Point } from '@pixi/math';
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
 import type { Renderer, AbstractRenderer } from '@pixi/core';
@@ -32,7 +30,6 @@ const hitTestEvent: InteractionEvent = {
     },
 };
 
-export type InteractiveObject = Container | Sprite | TilingSprite;
 export type InteractivePointerEvent = PointerEvent | TouchEvent | MouseEvent;
 
 export interface InteractionManagerOptions {

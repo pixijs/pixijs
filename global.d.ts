@@ -61,3 +61,9 @@ declare interface InteractiveTarget {
     buttonMode: boolean;
     trackedPointers: Map<number, InteractionTrackingData>;
 }
+
+import type { Container } from '@pixi/display';
+import type { Sprite } from '@pixi/sprite';
+import type { TilingSprite } from '@pixi/sprite-tiling';
+
+declare type InteractiveObject = Container | Sprite | TilingSprite;

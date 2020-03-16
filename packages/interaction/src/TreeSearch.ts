@@ -1,8 +1,6 @@
 import { Point } from '@pixi/math';
 import { Container } from '@pixi/display';
-import { TilingSprite } from '@pixi/sprite-tiling';
-import { Sprite } from '@pixi/sprite';
-import { Graphics } from '@pixi/graphics';
+import { MaskData } from '@pixi/core';
 
 import type { InteractionEvent } from './InteractionEvent';
 import { InteractiveObject } from './InteractionManager';
@@ -94,11 +92,16 @@ export class TreeSearch
         {
             if (hitTest)
             {
-                if (displayObject._mask instanceof Graphics || displayObject._mask instanceof Sprite)
+                if (displayObject._mask)
                 {
-                    if (!displayObject._mask.containsPoint(point))
+                    if (!(displayObject._mask instanceof Container) && !(displayObject._mask instanceof MaskData))
                     {
-                        hitTest = false;
+                        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+                        // @ts-ignore
+                        if (!displayObject._mask.containsPoint(point))
+                        {
+                            hitTest = false;
+                        }
                     }
                 }
             }
@@ -116,7 +119,7 @@ export class TreeSearch
                 const child = children[i];
 
                 // check if child is one of the available display objects to find hit recursively
-                if (child instanceof Container || child instanceof Sprite || child instanceof TilingSprite)
+                if (child instanceof Container)
                 {
                     // time to get recursive.. if this function will return if something is hit..
                     const childHit = this.recursiveFindHit(interactionEvent, child, func, hitTest, interactiveParent);
