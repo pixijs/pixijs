@@ -358,7 +358,7 @@ export abstract class DisplayObject extends EventEmitter
      * @param {PIXI.Rectangle} [rect] - Optional rectangle to store the result of the bounds calculation.
      * @return {PIXI.Rectangle} The rectangular bounding area.
      */
-    getLocalBounds(rect?: Rectangle, ): Rectangle
+    getLocalBounds(rect?: Rectangle): Rectangle
     {
         if (!rect)
         {
