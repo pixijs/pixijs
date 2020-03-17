@@ -2,11 +2,12 @@ import { hex2string, hex2rgb, deprecation, EventEmitter } from '@pixi/utils';
 import { Matrix, Rectangle } from '@pixi/math';
 import { RENDERER_TYPE } from '@pixi/constants';
 import { settings } from '@pixi/settings';
-import { DisplayObject, TemporaryDisplayObject, Container } from '@pixi/display';
+import { DisplayObject, TemporaryDisplayObject } from '@pixi/display';
 import { RenderTexture } from './renderTexture/RenderTexture';
 
 import type { SCALE_MODES } from '@pixi/constants';
 import type { IRenderingContext } from './IRenderingContext';
+import type { Container } from '@pixi/display';
 
 const tempMatrix = new Matrix();
 
