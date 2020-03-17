@@ -3,6 +3,7 @@ import { InteractionEvent } from './InteractionEvent';
 import { DisplayObject, Container } from '@pixi/display';
 import { Sprite } from '@pixi/sprite';
 import { TilingSprite } from '@pixi/sprite-tiling';
+import { MaskData } from '@pixi/core';
 
 type tDisplayObject = Sprite | TilingSprite | Container | DisplayObject;
 export interface ICallback {
@@ -94,7 +95,9 @@ export class TreeSearch
         {
             if (hitTest)
             {
-                if (!(typeof displayObject.mask.containsPoint === 'function' && displayObject.mask.containsPoint(point)))
+                const maskObject = ((displayObject.mask as MaskData).maskObject || displayObject.mask) as Container;
+
+                if (!(typeof maskObject.containsPoint === 'function' && maskObject.containsPoint(point)))
                 {
                     hitTest = false;
                 }

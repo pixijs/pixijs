@@ -2,7 +2,33 @@ import { Point } from '@pixi/math';
 import { DisplayObject } from '@pixi/display';
 import { Sprite } from '@pixi/sprite';
 
-type event = MouseEvent | TouchEvent | PointerEvent;
+export interface INormalizedEvent{
+    width?: number;
+    height?: number;
+    tiltX?: number;
+    tiltY?: number;
+    isNormalized?: boolean;
+    pointerType?: string;
+    button?: number;
+    buttons?: number;
+    isPrimary?: boolean;
+    pointerId?: number;
+    pressure?: number;
+    twist?: number;
+    tangentialPressure?: number;
+    layerX?: number;
+    layerY?: number;
+    offsetX?: number;
+    offsetY?: number;
+    which?: number;
+    radiusX?: number;
+    radiusY?: number;
+    identifier?: number;
+    force?: number;
+    clientX?: number;
+    clientY?: number;
+    rotationAngle?: number;
+}
 
 /**
  * Holds all information related to an Interaction event
@@ -14,7 +40,7 @@ export class InteractionData
 {
     public global: Point;
     public target: Sprite;
-    public originalEvent: event;
+    public originalEvent: INormalizedEvent;
     public identifier: number;
     public isPrimary: boolean;
     public button: number;
@@ -183,7 +209,7 @@ export class InteractionData
      *
      * @param {Touch|MouseEvent|PointerEvent} event The normalized event data
      */
-    copyEvent(event: event): void
+    copyEvent(event: INormalizedEvent): void
     {
         // isPrimary should only change on touchstart/pointerdown, so we don't want to overwrite
         // it with "false" on later events when our shim for it on touch events might not be
