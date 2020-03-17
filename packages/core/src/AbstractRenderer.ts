@@ -308,7 +308,7 @@ export abstract class AbstractRenderer extends EventEmitter
     generateTexture(displayObject: DisplayObject,
         scaleMode?: SCALE_MODES, resolution?: number, region?: Rectangle): RenderTexture
     {
-        region = region || (displayObject as Container).getLocalBounds(undefined, true);
+        region = region || (displayObject as Container).getLocalBounds(null, true);
 
         // minimum texture size is 1x1, 0x0 will throw an error
         if (region.width === 0) region.width = 1;
