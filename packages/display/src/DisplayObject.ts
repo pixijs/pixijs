@@ -28,7 +28,7 @@ export interface DisplayObject extends InteractiveTarget, IAccessibleTarget, Eve
 export abstract class DisplayObject extends EventEmitter
 {
     abstract sortDirty: boolean;
-    abstract children: DisplayObject[]
+    abstract children: DisplayObject[];
 
     public parent: DisplayObject;
     public worldAlpha: number;
