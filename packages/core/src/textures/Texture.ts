@@ -312,7 +312,7 @@ export class Texture extends EventEmitter
         return new Texture(this.baseTexture,
             this.frame.clone(),
             this.orig.clone(),
-            this.trim.clone(),
+            this.trim && this.trim.clone(),
             this.rotate,
             this.defaultAnchor
         );
