@@ -148,13 +148,17 @@ describe('PIXI.Texture', function ()
         const anchor = new Point(1, 0.5);
         const texture = new Texture(baseTexture, frame, orig, trim, rotate, anchor);
         const clone = texture.clone();
+        const toJSON = ({ x, y, width, height }) => ({ x, y, width, height });
 
         expect(clone.baseTexture).to.equal(baseTexture);
         expect(clone.defaultAnchor.x).to.equal(texture.defaultAnchor.x);
         expect(clone.defaultAnchor.y).to.equal(texture.defaultAnchor.y);
-        expect(clone.frame).to.equal(texture.frame);
-        expect(clone.trim).to.equal(texture.trim);
-        expect(clone.orig).to.equal(texture.orig);
+        expect(clone.frame).to.not.equal(texture.frame);
+        expect(toJSON(clone.frame)).to.deep.equal(toJSON(texture.frame));
+        expect(clone.trim).to.not.equal(texture.trim);
+        expect(toJSON(clone.trim)).to.deep.equal(toJSON(texture.trim));
+        expect(clone.orig).to.not.equal(texture.orig);
+        expect(toJSON(clone.orig)).to.deep.equal(toJSON(texture.orig));
         expect(clone.rotate).to.equal(texture.rotate);
 
         clone.destroy();
