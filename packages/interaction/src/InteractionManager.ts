@@ -1742,7 +1742,7 @@ export class InteractionManager extends EventEmitter
 
         let interactionData;
 
-        if (pointerId === MOUSE_POINTER_ID || event.type === 'mouse')
+        if (pointerId === MOUSE_POINTER_ID || event.pointerType === 'mouse')
         {
             interactionData = this.mouse;
         }

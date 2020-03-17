@@ -1,6 +1,5 @@
 import { Point } from '@pixi/math';
 import { Container, DisplayObject } from '@pixi/display';
-import { MaskData } from '@pixi/core';
 
 import type { InteractionEvent } from './InteractionEvent';
 
@@ -91,17 +90,11 @@ export class TreeSearch
         {
             if (hitTest)
             {
-                if (displayObject._mask)
+                // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+                // @ts-ignore
+                if (!(displayObject._mask.containsPoint && displayObject._mask.containsPoint(point)))
                 {
-                    if (!(displayObject._mask instanceof Container) && !(displayObject._mask instanceof MaskData))
-                    {
-                        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-                        // @ts-ignore
-                        if (!displayObject._mask.containsPoint(point))
-                        {
-                            hitTest = false;
-                        }
-                    }
+                    hitTest = false;
                 }
             }
         }
