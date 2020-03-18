@@ -7,7 +7,7 @@ import { BitmapFont } from './BitmapFont';
 
 import type { Rectangle } from '@pixi/math';
 import type { Texture } from '@pixi/core';
-import type { IBitmapTextStyle } from './BitmapTextStyle';
+import type { IBitmapTextStyle, BitmapTextAlign, IBitmapTextFontDescriptor } from './BitmapTextStyle';
 import type { BitmapFontData } from './BitmapFontData';
 
 /**
@@ -43,12 +43,17 @@ export class BitmapText extends Container
     protected _textWidth: number;
     protected _textHeight: number;
     protected _glyphs: Sprite[];
-    protected _font: any;
     protected _text: string;
     protected _maxWidth: number;
     protected _maxLineHeight: number;
     protected _letterSpacing: number;
     protected _anchor: ObservablePoint;
+    protected _font: {
+        name: string;
+        size: number;
+        tint: number;
+        align: BitmapTextAlign;
+    };
 
     /**
      * @param {string} text - A string that you would like the text to display.
@@ -403,7 +408,7 @@ export class BitmapText extends Container
      * @member {string}
      * @default 'left'
      */
-    public get align(): string
+    public get align(): BitmapTextAlign
     {
         return this._font.align;
     }
@@ -448,12 +453,12 @@ export class BitmapText extends Container
      *
      * @member {object}
      */
-    public get font(): any
+    public get font(): IBitmapTextFontDescriptor | string
     {
         return this._font;
     }
 
-    public set font(value) // eslint-disable-line require-jsdoc
+    public set font(value: IBitmapTextFontDescriptor | string) // eslint-disable-line require-jsdoc
     {
         if (!value)
         {
@@ -462,10 +467,15 @@ export class BitmapText extends Container
 
         if (typeof value === 'string')
         {
-            value = value.split(' ');
+            const valueSplit = value.split(' ');
 
-            this._font.name = value.length === 1 ? value[0] : value.slice(1).join(' ');
-            this._font.size = value.length >= 2 ? parseInt(value[0], 10) : BitmapFont.available[this._font.name].size;
+            this._font.name = valueSplit.length === 1
+                ? valueSplit[0]
+                : valueSplit.slice(1).join(' ');
+
+            this._font.size = valueSplit.length >= 2
+                ? parseInt(valueSplit[0], 10)
+                : BitmapFont.available[this._font.name].size;
         }
         else
         {
