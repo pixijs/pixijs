@@ -1,7 +1,8 @@
-import { LoaderResource, ILoaderResource } from '@pixi/loaders';
+import { LoaderResource } from '@pixi/loaders';
 import { autoDetectFormat } from './formats';
 import { BitmapFont } from './BitmapFont';
 
+import type { ILoaderResource } from '@pixi/loaders';
 import type { Loader } from '@pixi/loaders';
 import type { Texture } from '@pixi/core';
 
@@ -14,8 +15,6 @@ import type { Texture } from '@pixi/core';
  */
 export class BitmapFontLoader
 {
-    public static resources: { [key: string]: ILoaderResource };
-
     /**
      * Called when the plugin is installed.
      *
