@@ -5,6 +5,11 @@ import { Sprite } from '@pixi/sprite';
 import { removeItems, deprecation } from '@pixi/utils';
 import { BitmapFont } from './BitmapFont';
 
+import type { Rectangle } from '@pixi/math';
+import type { Texture } from '@pixi/core';
+import type { IBitmapTextStyle } from './BitmapTextStyle';
+import type { BitmapFontData } from './BitmapFontData';
+
 /**
  * A BitmapText object will create a line or multiple lines of text using bitmap font.
  *
@@ -33,6 +38,18 @@ import { BitmapFont } from './BitmapFont';
  */
 export class BitmapText extends Container
 {
+    public roundPixels: boolean;
+    public dirty: boolean;
+    protected _textWidth: number;
+    protected _textHeight: number;
+    protected _glyphs: Sprite[];
+    protected _font: any;
+    protected _text: string;
+    protected _maxWidth: number;
+    protected _maxLineHeight: number;
+    protected _letterSpacing: number;
+    protected _anchor: ObservablePoint;
+
     /**
      * @param {string} text - A string that you would like the text to display.
      * @param {object} style - The style parameters.
@@ -44,7 +61,7 @@ export class BitmapText extends Container
      *      single line text.
      * @param {number} [style.tint=0xFFFFFF] - The tint color.
      */
-    constructor(text, style = {})
+    constructor(text: string, style: Partial<IBitmapTextStyle>|IBitmapTextStyle = {})
     {
         super();
 
@@ -133,7 +150,7 @@ export class BitmapText extends Container
          * @member {PIXI.ObservablePoint}
          * @private
          */
-        this._anchor = new ObservablePoint(() => { this.dirty = true; }, this, 0, 0);
+        this._anchor = new ObservablePoint((): void => { this.dirty = true; }, this, 0, 0);
 
         /**
          * The dirty state of this object.
@@ -161,7 +178,7 @@ export class BitmapText extends Container
      *
      * @private
      */
-    updateText()
+    public updateText(): void
     {
         const data = BitmapFont.available[this._font.name];
         const scale = this._font.size / data.size;
@@ -331,7 +348,7 @@ export class BitmapText extends Container
      *
      * @private
      */
-    updateTransform()
+    public updateTransform(): void
     {
         this.validate();
         this.containerUpdateTransform();
@@ -342,7 +359,7 @@ export class BitmapText extends Container
      *
      * @return {PIXI.Rectangle} The rectangular bounding area
      */
-    getLocalBounds()
+    public getLocalBounds(): Rectangle
     {
         this.validate();
 
@@ -354,7 +371,7 @@ export class BitmapText extends Container
      *
      * @private
      */
-    validate()
+    protected validate(): void
     {
         if (this.dirty)
         {
@@ -368,12 +385,12 @@ export class BitmapText extends Container
      *
      * @member {number}
      */
-    get tint()
+    public get tint(): number
     {
         return this._font.tint;
     }
 
-    set tint(value) // eslint-disable-line require-jsdoc
+    public set tint(value) // eslint-disable-line require-jsdoc
     {
         this._font.tint = (typeof value === 'number' && value >= 0) ? value : 0xFFFFFF;
 
@@ -386,12 +403,12 @@ export class BitmapText extends Container
      * @member {string}
      * @default 'left'
      */
-    get align()
+    public get align(): string
     {
         return this._font.align;
     }
 
-    set align(value) // eslint-disable-line require-jsdoc
+    public set align(value) // eslint-disable-line require-jsdoc
     {
         this._font.align = value || 'left';
 
@@ -409,12 +426,12 @@ export class BitmapText extends Container
      *
      * @member {PIXI.Point | number}
      */
-    get anchor()
+    public get anchor(): ObservablePoint
     {
         return this._anchor;
     }
 
-    set anchor(value) // eslint-disable-line require-jsdoc
+    public set anchor(value: ObservablePoint) // eslint-disable-line require-jsdoc
     {
         if (typeof value === 'number')
         {
@@ -431,12 +448,12 @@ export class BitmapText extends Container
      *
      * @member {object}
      */
-    get font()
+    public get font(): any
     {
         return this._font;
     }
 
-    set font(value) // eslint-disable-line require-jsdoc
+    public set font(value) // eslint-disable-line require-jsdoc
     {
         if (!value)
         {
@@ -464,12 +481,12 @@ export class BitmapText extends Container
      *
      * @member {string}
      */
-    get text()
+    public get text(): string
     {
         return this._text;
     }
 
-    set text(text) // eslint-disable-line require-jsdoc
+    public set text(text) // eslint-disable-line require-jsdoc
     {
         text = String(text === null || text === undefined ? '' : text);
 
@@ -488,12 +505,12 @@ export class BitmapText extends Container
      *
      * @member {number}
      */
-    get maxWidth()
+    public get maxWidth(): number
     {
         return this._maxWidth;
     }
 
-    set maxWidth(value) // eslint-disable-line require-jsdoc
+    public set maxWidth(value) // eslint-disable-line require-jsdoc
     {
         if (this._maxWidth === value)
         {
@@ -510,7 +527,7 @@ export class BitmapText extends Container
      * @member {number}
      * @readonly
      */
-    get maxLineHeight()
+    public get maxLineHeight(): number
     {
         this.validate();
 
@@ -524,7 +541,7 @@ export class BitmapText extends Container
      * @member {number}
      * @readonly
      */
-    get textWidth()
+    public get textWidth(): number
     {
         this.validate();
 
@@ -536,12 +553,12 @@ export class BitmapText extends Container
      *
      * @member {number}
      */
-    get letterSpacing()
+    public get letterSpacing(): number
     {
         return this._letterSpacing;
     }
 
-    set letterSpacing(value) // eslint-disable-line require-jsdoc
+    public set letterSpacing(value) // eslint-disable-line require-jsdoc
     {
         if (this._letterSpacing !== value)
         {
@@ -557,7 +574,7 @@ export class BitmapText extends Container
      * @member {number}
      * @readonly
      */
-    get textHeight()
+    public get textHeight(): number
     {
         this.validate();
 
@@ -571,7 +588,10 @@ export class BitmapText extends Container
      * @see PIXI.BitmapFont.install
      * @static
      */
-    static registerFont(data, textures)
+    static registerFontinstall(
+        data: string|XMLDocument|BitmapFontData,
+        textures: Texture|Texture[]|{[key: string]: Texture}
+    ): BitmapFont
     {
         deprecation('5.3.0', 'PIXI.BitmapText.registerFont is deprecated, use PIXI.BitmapFont.install');
 
@@ -587,7 +607,7 @@ export class BitmapText extends Container
      * @readonly
      * @member {Object.<string, PIXI.BitmapFont>}
      */
-    static get fonts()
+    static get fonts(): { [key: string]: BitmapFont }
     {
         deprecation('5.3.0', 'PIXI.BitmapText.fonts is deprecated, use PIXI.BitmapFont.available');
 

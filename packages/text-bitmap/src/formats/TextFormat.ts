@@ -16,7 +16,7 @@ export class TextFormat
      * @param {any} data
      * @return {boolean} True if resource could be treated as font data, false otherwise.
      */
-    static test(data)
+    public static test(data: any): boolean
     {
         return typeof data === 'string' && data.indexOf('info face=') === 0;
     }
@@ -29,7 +29,7 @@ export class TextFormat
      * @param {string} txt Raw string data to be converted
      * @return {PIXI.BitmapFontData} Parsed font data
      */
-    static parse(txt)
+    public static parse(txt: string): BitmapFontData
     {
         // Retrieve data item
         const items = txt.match(/^[a-z]+\s+.+$/gm);
@@ -44,7 +44,7 @@ export class TextFormat
             const attributeList = items[i].match(/[a-zA-Z]+=([^\s"']+|"([^"]*)")/gm);
 
             // Convert attribute list into an object
-            const itemData = {};
+            const itemData: any = {};
 
             for (const i in attributeList)
             {
@@ -65,30 +65,30 @@ export class TextFormat
             }
 
             // Push current item to the resulting data
-            if (!data[name])
+            if (!(data as any)[name])
             {
-                data[name] = [];
+                (data as any)[name] = [];
             }
 
-            data[name].push(itemData);
+            (data as any)[name].push(itemData);
         }
 
-        data.info.forEach((info) =>
+        data.info.forEach((info: any) =>
         {
             info.size = parseInt(info.size, 10);
         });
 
-        data.common.forEach((common) =>
+        data.common.forEach((common: any) =>
         {
             common.lineHeight = parseInt(common.lineHeight, 10);
         });
 
-        data.page.forEach((page) =>
+        data.page.forEach((page: any) =>
         {
             page.id = parseInt(page.id, 10);
         });
 
-        data.char.forEach((char) =>
+        data.char.forEach((char: any) =>
         {
             char.id = parseInt(char.id, 10);
             char.page = parseInt(char.page, 10);
@@ -101,7 +101,7 @@ export class TextFormat
             char.xadvance = parseInt(char.xadvance, 10);
         });
 
-        data.kerning.forEach((kerning) =>
+        data.kerning.forEach((kerning: any) =>
         {
             kerning.first = parseInt(kerning.first, 10);
             kerning.second = parseInt(kerning.second, 10);

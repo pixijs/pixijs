@@ -8,11 +8,11 @@
  */
 export class BitmapFontData
 {
-    public readonly info: IBitmapFontDataInfo[];
-    public readonly common: IBitmapFontDataCommon[];
-    public readonly page: IBitmapFontDataPage[];
-    public readonly char: IBitmapFontDataChar[];
-    public readonly kerning: IBitmapFontDataKerning[];
+    public info: IBitmapFontDataInfo[];
+    public common: IBitmapFontDataCommon[];
+    public page: IBitmapFontDataPage[];
+    public char: IBitmapFontDataChar[];
+    public kerning: IBitmapFontDataKerning[];
 
     constructor()
     {
@@ -63,7 +63,7 @@ export interface IBitmapFontDataPage {
 }
 
 export interface IBitmapFontDataChar {
-    id: string;
+    id: number;
     page: number;
     x: number;
     y: number;

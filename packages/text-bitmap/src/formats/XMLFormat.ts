@@ -16,7 +16,7 @@ export class XMLFormat
      * @param {any} data
      * @return {boolean} True if resource could be treated as font data, false otherwise.
      */
-    static test(data)
+    public static test(data: any): boolean
     {
         return data instanceof XMLDocument
             && data.getElementsByTagName('page').length
@@ -31,7 +31,7 @@ export class XMLFormat
      * @param {XMLDocument} xml
      * @return {BitmapFontData} Data to use for BitmapFont
      */
-    static parse(xml)
+    public static parse(xml: XMLDocument): BitmapFontData
     {
         const data = new BitmapFontData();
         const info = xml.getElementsByTagName('info');
