@@ -2,6 +2,7 @@ import { Point } from '@pixi/math';
 import { Container, DisplayObject } from '@pixi/display';
 
 import type { InteractionEvent } from './InteractionEvent';
+import type { InteractionCallback } from './InteractionManager';
 
 /**
  * Strategy how to search through stage tree for interactive objects
@@ -34,7 +35,7 @@ export class TreeSearch
      * @return {boolean} returns true if the displayObject hit the point
      */
     recursiveFindHit(interactionEvent: InteractionEvent, displayObject: DisplayObject,
-        func: Function, hitTest: boolean, interactive: boolean): boolean
+        func?: InteractionCallback, hitTest?: boolean, interactive?: boolean): boolean
     {
         if (!displayObject || !displayObject.visible)
         {
@@ -203,8 +204,8 @@ export class TreeSearch
      * @param {boolean} [hitTest] - this indicates if the objects inside should be hit test against the point
      * @return {boolean} returns true if the displayObject hit the point
      */
-    findHit(interactionEvent: InteractionEvent, displayObject: DisplayObject, func: Function,
-        hitTest: boolean): void
+    findHit(interactionEvent: InteractionEvent, displayObject: DisplayObject, func?: InteractionCallback,
+        hitTest?: boolean): void
     {
         this.recursiveFindHit(interactionEvent, displayObject, func, hitTest, false);
     }

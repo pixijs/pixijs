@@ -172,7 +172,7 @@ export class InteractionData
      * @return {PIXI.Point} A point containing the coordinates of the InteractionData position relative
      *  to the DisplayObject
      */
-    getLocalPosition(displayObject: DisplayObject, point: Point, globalPos: Point): Point
+    getLocalPosition(displayObject: DisplayObject, point?: Point, globalPos?: Point): Point
     {
         return displayObject.worldTransform.applyInverse(globalPos || this.global, point);
     }

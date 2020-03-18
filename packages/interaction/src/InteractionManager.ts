@@ -30,6 +30,7 @@ const hitTestEvent: InteractionEvent = {
 };
 
 export type InteractivePointerEvent = PointerEvent | TouchEvent | MouseEvent;
+export type InteractionCallback = (interactionEvent: InteractionEvent, displayObject: DisplayObject, hit?: boolean) => void;
 
 export interface InteractionManagerOptions {
     autoPreventDefault?: boolean;
@@ -58,11 +59,6 @@ export interface DelayedEvent {
  */
 export class InteractionManager extends EventEmitter
 {
-    private readonly _activeInteractionData: { [key: number]: InteractionData };
-    private _interactionDataPool: InteractionData[];
-    private _cursor: string;
-    private _delayedEvents: DelayedEvent[];
-    private _search: TreeSearch;
     private _useSystemTicker: boolean;
     private _deltaTime: number;
     private _didMove: boolean;
@@ -72,15 +68,20 @@ export class InteractionManager extends EventEmitter
     protected tickerAdded: boolean;
     protected mouseOverRenderer: boolean;
 
+    public readonly activeInteractionData: { [key: number]: InteractionData };
     public readonly supportsTouchEvents: boolean;
     public readonly supportsPointerEvents: boolean;
+    public interactionDataPool: InteractionData[];
+    public cursor: string;
+    public delayedEvents: DelayedEvent[];
+    public search: TreeSearch;
     public renderer: AbstractRenderer;
     public autoPreventDefault: boolean;
     public interactionFrequency: number;
     public mouse: InteractionData;
     public eventData: InteractionEvent;
     public moveWhenInside: boolean;
-    public cursorStyles: { [key: string]: string | Function | object };
+    public cursorStyles: { [key: string]: string | ((mode: string) => void) | object };
     public currentCursorMode: string;
     public resolution: number;
 
@@ -142,8 +143,8 @@ export class InteractionManager extends EventEmitter
          * @private
          * @member {Object.<number,PIXI.interaction.InteractionData>}
          */
-        this._activeInteractionData = {};
-        this._activeInteractionData[MOUSE_POINTER_ID] = this.mouse;
+        this.activeInteractionData = {};
+        this.activeInteractionData[MOUSE_POINTER_ID] = this.mouse;
 
         /**
          * Pool of unused InteractionData
@@ -151,7 +152,7 @@ export class InteractionManager extends EventEmitter
          * @private
          * @member {PIXI.interaction.InteractionData[]}
          */
-        this._interactionDataPool = [];
+        this.interactionDataPool = [];
 
         /**
          * An event data object to handle all the event tracking/dispatching
@@ -169,7 +170,7 @@ export class InteractionManager extends EventEmitter
         this.interactionDOMElement = null;
 
         /**
-         * This property determines if mousemove and touchmove events are fired only when the _cursor
+         * This property determines if mousemove and touchmove events are fired only when the cursor
          * is over the object.
          * Setting to true will make things work more in line with how the DOM version works.
          * Setting to false can make things easier for things like dragging
@@ -267,10 +268,10 @@ export class InteractionManager extends EventEmitter
         this.onPointerOver = this.onPointerOver.bind(this);
 
         /**
-         * Dictionary of how different _cursor modes are handled. Strings are handled as CSS _cursor
+         * Dictionary of how different cursor modes are handled. Strings are handled as CSS cursor
          * values, objects are handled as dictionaries of CSS values for interactionDOMElement,
          * and functions are called instead of changing the CSS.
-         * Default CSS _cursor values are provided for 'default' and 'pointer' modes.
+         * Default CSS cursor values are provided for 'default' and 'pointer' modes.
          * @member {Object.<string, Object>}
          */
         this.cursorStyles = {
@@ -279,7 +280,7 @@ export class InteractionManager extends EventEmitter
         };
 
         /**
-         * The mode of the _cursor that is being used.
+         * The mode of the cursor that is being used.
          * The value of this is a key from the cursorStyles dictionary.
          *
          * @member {string}
@@ -292,7 +293,7 @@ export class InteractionManager extends EventEmitter
          * @private
          * @member {string}
          */
-        this._cursor = null;
+        this.cursor = null;
 
         /**
          * The current resolution / device pixel ratio.
@@ -308,7 +309,7 @@ export class InteractionManager extends EventEmitter
          * @private
          * @member {Array}
          */
-        this._delayedEvents = [];
+        this.delayedEvents = [];
 
         /**
          * TreeSearch component that is used to hitTest stage tree
@@ -316,7 +317,7 @@ export class InteractionManager extends EventEmitter
          * @private
          * @member {PIXI.interaction.TreeSearch}
          */
-        this._search = new TreeSearch();
+        this.search = new TreeSearch();
 
         /**
          * Fired when a pointer device button (usually a mouse left-button) is pressed on the display
@@ -980,17 +981,17 @@ export class InteractionManager extends EventEmitter
             return;
         }
 
-        this._cursor = null;
+        this.cursor = null;
 
         // Resets the flag as set by a stopPropagation call. This flag is usually reset by a user interaction of any kind,
-        // but there was a scenario of a display object moving under a static mouse _cursor.
+        // but there was a scenario of a display object moving under a static mouse cursor.
         // In this case, mouseover and mouseevents would not pass the flag test in dispatchEvent function
-        for (const k in this._activeInteractionData)
+        for (const k in this.activeInteractionData)
         {
             // eslint-disable-next-line no-prototype-builtins
-            if (this._activeInteractionData.hasOwnProperty(k))
+            if (this.activeInteractionData.hasOwnProperty(k))
             {
-                const interactionData = this._activeInteractionData[k];
+                const interactionData = this.activeInteractionData[k];
 
                 if (interactionData.originalEvent && interactionData.pointerType !== 'touch')
                 {
@@ -1010,13 +1011,13 @@ export class InteractionManager extends EventEmitter
             }
         }
 
-        this.setCursorMode(this._cursor);
+        this.setCursorMode(this.cursor);
     }
 
     /**
-     * Sets the current _cursor mode, handling any callbacks or CSS style changes.
+     * Sets the current cursor mode, handling any callbacks or CSS style changes.
      *
-     * @param {string} mode - _cursor mode, a key from the cursorStyles dictionary
+     * @param {string} mode - cursor mode, a key from the cursorStyles dictionary
      */
     setCursorMode(mode: string): void
     {
@@ -1029,17 +1030,17 @@ export class InteractionManager extends EventEmitter
         this.currentCursorMode = mode;
         const style = this.cursorStyles[mode];
 
-        // only do things if there is a _cursor style for it
+        // only do things if there is a cursor style for it
         if (style)
         {
             switch (typeof style)
             {
                 case 'string':
-                    // string styles are handled as _cursor CSS
+                    // string styles are handled as cursor CSS
                     this.interactionDOMElement.style.cursor = style;
                     break;
                 case 'function':
-                    // functions are just called, and passed the _cursor mode
+                    // functions are just called, and passed the cursor mode
                     style(mode);
                     break;
                 case 'object':
@@ -1052,7 +1053,7 @@ export class InteractionManager extends EventEmitter
         else if (typeof mode === 'string' && !Object.prototype.hasOwnProperty.call(this.cursorStyles, mode))
         {
             // if it mode is a string (not a Symbol) and cursorStyles doesn't have any entry
-            // for the mode, then assume that the dev wants it to be CSS for the _cursor.
+            // for the mode, then assume that the dev wants it to be CSS for the cursor.
             this.interactionDOMElement.style.cursor = mode;
         }
     }
@@ -1098,7 +1099,7 @@ export class InteractionManager extends EventEmitter
      */
     delayDispatchEvent(displayObject: DisplayObject, eventString: string, eventData: object): void
     {
-        this._delayedEvents.push({ displayObject, eventString, eventData });
+        this.delayedEvents.push({ displayObject, eventString, eventData });
     }
 
     /**
@@ -1145,12 +1146,12 @@ export class InteractionManager extends EventEmitter
      * @param {boolean} [hitTest] - indicates whether we want to calculate hits
      *  or just iterate through all interactive objects
      */
-    processInteractive(interactionEvent: InteractionEvent, displayObject: DisplayObject, func: Function,
-        hitTest: boolean): void
+    processInteractive(interactionEvent: InteractionEvent, displayObject: DisplayObject, func?: InteractionCallback,
+        hitTest?: boolean): void
     {
-        const hit = this._search.findHit(interactionEvent, displayObject, func, hitTest);
+        const hit = this.search.findHit(interactionEvent, displayObject, func, hitTest);
 
-        const delayedEvents = this._delayedEvents;
+        const delayedEvents = this.delayedEvents;
 
         if (!delayedEvents.length)
         {
@@ -1161,7 +1162,7 @@ export class InteractionManager extends EventEmitter
 
         const delayedLen = delayedEvents.length;
 
-        this._delayedEvents = [];
+        this.delayedEvents = [];
 
         for (let i = 0; i < delayedLen; i++)
         {
@@ -1299,7 +1300,7 @@ export class InteractionManager extends EventEmitter
      * @param {boolean} cancelled - true if the pointer is cancelled
      * @param {Function} func - Function passed to {@link processInteractive}
      */
-    onPointerComplete(originalEvent: InteractivePointerEvent, cancelled: boolean, func: Function): void
+    onPointerComplete(originalEvent: InteractivePointerEvent, cancelled: boolean, func: InteractionCallback): void
     {
         const events = this.normalizeToPointerData(originalEvent);
 
@@ -1525,7 +1526,7 @@ export class InteractionManager extends EventEmitter
         {
             this._didMove = true;
 
-            this._cursor = null;
+            this.cursor = null;
         }
 
         const eventLen = events.length;
@@ -1550,7 +1551,7 @@ export class InteractionManager extends EventEmitter
 
         if (events[0].pointerType === 'mouse')
         {
-            this.setCursorMode(this._cursor);
+            this.setCursorMode(this.cursor);
 
             // TODO BUG for parents interactive object (border order issue)
         }
@@ -1675,11 +1676,11 @@ export class InteractionManager extends EventEmitter
                 }
             }
 
-            // only change the _cursor if it has not already been changed (by something deeper in the
+            // only change the cursor if it has not already been changed (by something deeper in the
             // display tree)
-            if (isMouse && this._cursor === null)
+            if (isMouse && this.cursor === null)
             {
-                this._cursor = displayObject.cursor;
+                this.cursor = displayObject.cursor;
             }
         }
         else if (trackingData.over)
@@ -1746,15 +1747,15 @@ export class InteractionManager extends EventEmitter
         {
             interactionData = this.mouse;
         }
-        else if (this._activeInteractionData[pointerId])
+        else if (this.activeInteractionData[pointerId])
         {
-            interactionData = this._activeInteractionData[pointerId];
+            interactionData = this.activeInteractionData[pointerId];
         }
         else
         {
-            interactionData = this._interactionDataPool.pop() || new InteractionData();
+            interactionData = this.interactionDataPool.pop() || new InteractionData();
             interactionData.identifier = pointerId;
-            this._activeInteractionData[pointerId] = interactionData;
+            this.activeInteractionData[pointerId] = interactionData;
         }
         // copy properties from the event, so that we can make sure that touch/pointer specific
         // data is available
@@ -1771,13 +1772,13 @@ export class InteractionManager extends EventEmitter
      */
     releaseInteractionDataForPointerId(pointerId: number): void
     {
-        const interactionData = this._activeInteractionData[pointerId];
+        const interactionData = this.activeInteractionData[pointerId];
 
         if (interactionData)
         {
-            delete this._activeInteractionData[pointerId];
+            delete this.activeInteractionData[pointerId];
             interactionData.reset();
-            this._interactionDataPool.push(interactionData);
+            this.interactionDataPool.push(interactionData);
         }
     }
 
@@ -1980,6 +1981,6 @@ export class InteractionManager extends EventEmitter
 
         this.onPointerOver = null;
 
-        this._search = null;
+        this.search = null;
     }
 }

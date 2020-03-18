@@ -1994,11 +1994,11 @@ describe('PIXI.interaction.InteractionManager', function ()
             graphics.interactive = true;
 
             pointer.touchstart(10, 10, 42);
-            expect(pointer.interaction._activeInteractionData[42]).to.exist;
+            expect(pointer.interaction.activeInteractionData[42]).to.exist;
             pointer.touchend(10, 10, 42);
-            expect(pointer.interaction._activeInteractionData[42]).to.be.undefined;
+            expect(pointer.interaction.activeInteractionData[42]).to.be.undefined;
             pointer.touchleave(10, 10, 42);
-            expect(pointer.interaction._activeInteractionData[42]).to.be.undefined;
+            expect(pointer.interaction.activeInteractionData[42]).to.be.undefined;
         });
     });
 
@@ -2097,18 +2097,18 @@ describe('PIXI.interaction.InteractionManager', function ()
             graphics.interactive = true;
 
             pointer.touchstart(10, 10, 1);
-            expect(pointer.interaction._activeInteractionData[1]).to.exist;
-            expect(pointer.interaction._activeInteractionData[1].isPrimary,
+            expect(pointer.interaction.activeInteractionData[1]).to.exist;
+            expect(pointer.interaction.activeInteractionData[1].isPrimary,
                 'first touch should be primary on touch start').to.be.true;
             pointer.touchstart(13, 9, 2);
-            expect(pointer.interaction._activeInteractionData[2].isPrimary,
+            expect(pointer.interaction.activeInteractionData[2].isPrimary,
                 'second touch should not be primary').to.be.false;
             pointer.touchmove(10, 20, 1);
-            expect(pointer.interaction._activeInteractionData[1].isPrimary,
+            expect(pointer.interaction.activeInteractionData[1].isPrimary,
                 'first touch should still be primary after move').to.be.true;
             pointer.touchend(10, 10, 1);
             pointer.touchmove(13, 29, 2);
-            expect(pointer.interaction._activeInteractionData[2].isPrimary,
+            expect(pointer.interaction.activeInteractionData[2].isPrimary,
                 'second touch should still not be primary after first is done').to.be.false;
         });
     });
