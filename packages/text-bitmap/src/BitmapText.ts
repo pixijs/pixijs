@@ -598,7 +598,7 @@ export class BitmapText extends Container
      * @see PIXI.BitmapFont.install
      * @static
      */
-    static registerFontinstall(
+    static registerFont(
         data: string|XMLDocument|BitmapFontData,
         textures: Texture|Texture[]|{[key: string]: Texture}
     ): BitmapFont
