@@ -5,16 +5,36 @@ const { getPackages } = require('@lerna/project');
 const { Extractor, ExtractorConfig, CompilerState } = require('@microsoft/api-extractor');
 const chalk = require('chalk');
 const glob = require('glob');
+const batchPackages = require('@lerna/batch-packages');
+const filterPackages = require('@lerna/filter-packages');
+
+/**
+ * Get a list of the non-private sorted packages with Lerna v3
+ * @see https://github.com/lerna/lerna/issues/1848
+ * @return {Promise<Package[]>} List of packages
+ */
+
+async function getSortedPackages(scope, ignore)
+{
+    const packages = await getPackages(__dirname);
+    const filtered = filterPackages(
+        packages,
+        scope,
+        ignore,
+        false
+    ).filter((pkg) => !pkg.get('standalone'))
+        .filter((pkg) => pkg.get('types'));
+
+    return batchPackages(filtered)
+        .reduce((arr, batch) => arr.concat(batch), []);
+}
 
 main();
 
 async function main()
 {
     const baseDir = path.join(__dirname, '..');
-    let packages = await getPackages(baseDir);
-
-    packages = packages.filter((pkg) => !pkg.get('standalone') && !pkg.private);
-    packages = packages.filter((pkg) => pkg.get('types'));
+    const packages = await getSortedPackages();
 
     /**
      * Represents the TypeScript compiler state.
@@ -41,7 +61,7 @@ async function main()
     }));
 
     entryPoints.push(path.join(baseDir, 'global.d.ts'));
-    
+
     for (const pkg of packages)
     {
         const extractorConfigPath = path.join(pkg.location, 'api-extractor.json');

@@ -10,7 +10,8 @@
         "allowJs": true
     },
     "include": [
-        "packages",
+        "packages/*/src",
+        "packages/*/*/src",
         "./global.d.ts"
     ],
     "exclude": [
