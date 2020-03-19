@@ -1,0 +1,8 @@
+{
+    "extends": "../../../api-extractor.json",
+    "mainEntryPointFilePath": "<projectFolder>/dist/packages/filters/<unscopedPackageName>/src/index.d.ts",
+    "dtsRollup": {
+        "enabled": true,
+        "untrimmedFilePath": "lib/filter-noise.d.ts"
+    }
+}

@@ -4,6 +4,7 @@
   "main": "lib/filter-displacement.js",
   "module": "lib/filter-displacement.es.js",
   "bundle": "dist/filter-displacement.js",
+  "types": "lib/filter-displacement.d.ts",
   "namespace": "PIXI.filters",
   "description": "Filter that allows offsetting of pixel values to create warping effects",
   "author": "Mat Groves",

@@ -4,6 +4,7 @@
   "main": "lib/graphics.js",
   "module": "lib/graphics.es.js",
   "bundle": "dist/graphics.js",
+  "types": "lib/graphics.d.ts",
   "description": "Draw primitive shapes such as lines, circles and rectangles to the display",
   "author": "Mat Groves",
   "contributors": [

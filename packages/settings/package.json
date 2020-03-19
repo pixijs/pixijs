@@ -4,6 +4,7 @@
   "main": "lib/settings.js",
   "module": "lib/settings.es.js",
   "bundle": "dist/settings.js",
+  "types": "lib/settings.d.ts",
   "description": "Collecting of user configurable settings used throughout PixiJS",
   "author": "Mat Groves",
   "contributors": [

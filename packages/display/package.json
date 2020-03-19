@@ -4,6 +4,7 @@
   "main": "lib/display.js",
   "module": "lib/display.es.js",
   "bundle": "dist/display.js",
+  "types": "lib/display.d.ts",
   "description": "Core display functionality",
   "author": "Mat Groves",
   "contributors": [

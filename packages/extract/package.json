@@ -4,6 +4,7 @@
   "main": "lib/extract.js",
   "module": "lib/extract.es.js",
   "bundle": "dist/extract.js",
+  "types": "lib/extract.d.ts",
   "description": "Extract raw graphics data from renderer",
   "author": "Mat Groves",
   "contributors": [

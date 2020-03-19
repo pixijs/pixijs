@@ -4,6 +4,7 @@
   "main": "lib/sprite.js",
   "module": "lib/sprite.es.js",
   "bundle": "dist/sprite.js",
+  "types": "lib/sprite.d.ts",
   "description": "Base object for textured objects rendered to the screen",
   "author": "Mat Groves",
   "contributors": [

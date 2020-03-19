@@ -4,6 +4,7 @@
   "main": "lib/loaders.js",
   "module": "lib/loaders.es.js",
   "bundle": "dist/loaders.js",
+  "types": "lib/loader.d.ts",
   "description": "Load assets and resources",
   "author": "Mat Groves",
   "contributors": [

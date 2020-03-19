@@ -4,6 +4,7 @@
   "main": "lib/sprite-animated.js",
   "module": "lib/sprite-animated.es.js",
   "bundle": "dist/sprite-animated.js",
+  "types": "lib/sprite-animated.d.ts",
   "description": "Sprite Animations as depicted by playing a series of Textures",
   "author": "Mat Groves",
   "contributors": [

@@ -4,6 +4,7 @@
   "main": "lib/mesh.js",
   "module": "lib/mesh.es.js",
   "bundle": "dist/mesh.js",
+  "types": "lib/mesh.d.ts",
   "description": "Core Mesh functionality",
   "author": "Mat Groves",
   "contributors": [
