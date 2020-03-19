@@ -1,0 +1,28 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "target": "es6",
+        "outDir": "./dist/packages",
+        "declaration": true,
+        "declarationMap": true,
+        "emitDeclarationOnly": true,
+        "sourceMap": false,
+        "allowJs": true
+    },
+    "include": [
+        "packages",
+        "./global.d.ts"
+    ],
+    "exclude": [
+        "types",
+        "node_modules",
+        "**/dist/**",
+        "**/lib/**",
+        "**/test/**",
+        "**/scripts/**",
+        "**/types/**",
+        "dist/**",
+        "bundles/*/*.d.ts",
+        "rollup.config.js",
+    ]
+}
