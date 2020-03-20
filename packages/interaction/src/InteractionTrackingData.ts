@@ -27,7 +27,7 @@ export class InteractionTrackingData
      * @param {number} flag - The interaction flag to set
      * @param {boolean} yn - Should the flag be set or unset
      */
-    _doSet(flag: number, yn: boolean): void
+    private _doSet(flag: number, yn: boolean): void
     {
         if (yn)
         {

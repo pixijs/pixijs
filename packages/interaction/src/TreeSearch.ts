@@ -34,7 +34,7 @@ export class TreeSearch
      * @param {boolean} [interactive] - Whether the displayObject is interactive
      * @return {boolean} returns true if the displayObject hit the point
      */
-    recursiveFindHit(interactionEvent: InteractionEvent, displayObject: DisplayObject,
+    private recursiveFindHit(interactionEvent: InteractionEvent, displayObject: DisplayObject,
         func?: InteractionCallback, hitTest?: boolean, interactive?: boolean): boolean
     {
         if (!displayObject || !displayObject.visible)
