@@ -10,7 +10,7 @@ import { FilterState } from './FilterState';
 
 import type { Filter } from './Filter';
 import type { IFilterTarget } from './IFilterTarget';
-import type { ISpriteMaskTarget } from '../filters/spriteMask/SpriteMaskFilter';
+import type { ISpriteMaskTarget } from './spriteMask/SpriteMaskFilter';
 import type { RenderTexture } from '../renderTexture/RenderTexture';
 import type { Renderer } from '../Renderer';
 /**
