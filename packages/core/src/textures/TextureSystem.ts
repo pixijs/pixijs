@@ -5,8 +5,8 @@ import { removeItems } from '@pixi/utils';
 import { MIPMAP_MODES, WRAP_MODES, SCALE_MODES, TYPES } from '@pixi/constants';
 
 import type { Texture } from './Texture';
-import type { Renderer, IRenderingContext } from '@pixi/core';
-
+import type { IRenderingContext } from '../IRenderingContext';
+import type { Renderer } from '../Renderer';
 /**
  * System plugin to the renderer to manage textures.
  *
