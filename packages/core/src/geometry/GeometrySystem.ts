@@ -4,7 +4,11 @@ import { ENV } from '@pixi/constants';
 import { settings } from '../settings';
 
 import type { DRAW_MODES } from '@pixi/constants';
-import type { Renderer, IRenderingContext, Geometry, Shader, Program } from '@pixi/core';
+import type { Renderer } from '../Renderer';
+import type { IRenderingContext } from '../IRenderingContext';
+import type { Geometry } from '../geometry/Geometry';
+import type { Shader } from '../shader/Shader';
+import type { Program } from '../shader/Program';
 import type { Buffer } from './Buffer';
 
 const byteSizeMap: {[key: number]: number} = { 5126: 4, 5123: 2, 5121: 1 };

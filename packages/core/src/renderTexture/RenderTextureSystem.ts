@@ -5,7 +5,7 @@ import { BUFFER_BITS } from '@pixi/constants';
 import type { Renderer } from '../Renderer';
 import type { RenderTexture } from './RenderTexture';
 import type { BaseRenderTexture } from './BaseRenderTexture';
-import type { MaskData } from '@pixi/core';
+import type { MaskData } from '../mask/MaskData';
 
 const tempRect = new Rectangle();
 
