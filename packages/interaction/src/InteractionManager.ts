@@ -1392,7 +1392,7 @@ export class InteractionManager extends EventEmitter
      * @private
      * @param {PointerEvent} event - The DOM event of a pointer button being released
      */
-   private onPointerUp(event: InteractivePointerEvent): void
+    private onPointerUp(event: InteractivePointerEvent): void
     {
         // if we support touch events, then only use those for touch events, not pointer events
         if (event instanceof PointerEvent)
