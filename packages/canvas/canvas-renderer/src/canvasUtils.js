@@ -44,7 +44,7 @@ export const canvasUtils = {
         }
         else
         {
-            canvas = canvasUtils.canvas || document.createElement('canvas');
+            canvas = document.createElement('canvas');
         }
 
         canvasUtils.tintMethod(texture, color, canvas);
@@ -63,11 +63,43 @@ export const canvasUtils = {
         else
         {
             texture.tintCache[stringColor] = canvas;
-            // if we are not converting the texture to an image then we need to lose the reference to the canvas
-            canvasUtils.canvas = null;
         }
 
         return canvas;
+    },
+
+    /**
+     * Basically this method just needs a sprite and a color and tints the sprite with the given color.
+     *
+     * @memberof PIXI.canvasUtils
+     * @param {PIXI.Sprite} sprite - the sprite to tint
+     * @param {number} color - the color to use to tint the sprite with
+     * @return {HTMLCanvasElement} The tinted canvas
+     */
+    getTintedPattern: (texture, color) =>
+    {
+        color = canvasUtils.roundColor(color);
+
+        const stringColor = `#${(`00000${(color | 0).toString(16)}`).substr(-6)}`;
+
+        texture.patternCache = texture.patternCache || {};
+
+        let pattern = texture.patternCache[stringColor];
+
+        if (pattern && pattern.tintId === texture._updateID)
+        {
+            return pattern;
+        }
+        if (!canvasUtils.canvas)
+        {
+            canvasUtils.canvas = document.createElement('canvas');
+        }
+        canvasUtils.tintMethod(texture, color, canvasUtils.canvas);
+        pattern = canvasUtils.canvas.getContext('2d').createPattern(canvasUtils.canvas, 'repeat');
+        pattern.tintId = texture._updateID;
+        texture.patternCache[stringColor] = pattern;
+
+        return pattern;
     },
 
     /**

@@ -1,4 +1,4 @@
-import { IPoint } from './IPoint';
+import type { IPoint } from './IPoint';
 
 /**
  * The Point object represents a location in a two-dimensional coordinate system, where x represents
@@ -14,8 +14,8 @@ export class ObservablePoint<T = any> implements IPoint
 {
     public cb: (this: T) => any;
     public scope: any;
-    protected _x: number;
-    protected _y: number;
+    _x: number;
+    _y: number;
 
     /**
      * @param {Function} cb - callback when changed

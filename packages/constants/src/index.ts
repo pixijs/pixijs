@@ -34,6 +34,23 @@ export enum RENDERER_TYPE {
 }
 
 /**
+ * Bitwise OR of masks that indicate the buffers to be cleared.
+ *
+ * @static
+ * @memberof PIXI
+ * @name BUFFER_BITS
+ * @enum {number}
+ * @property {number} COLOR - Indicates the buffers currently enabled for color writing.
+ * @property {number} DEPTH - Indicates the depth buffer.
+ * @property {number} STENCIL - Indicates the stencil buffer.
+ */
+export enum BUFFER_BITS {
+    COLOR = 0x00004000,
+    DEPTH = 0x00000100,
+    STENCIL = 0x00000400
+}
+
+/**
  * Various blend modes supported by PIXI.
  *
  * IMPORTANT - The WebGL renderer only supports the NORMAL, ADD, MULTIPLY and SCREEN blend modes.
@@ -309,6 +326,29 @@ export enum ALPHA_MODES {
 }
 
 /**
+ * How to clear renderTextures in filter
+ *
+ * @name CLEAR_MODES
+ * @memberof PIXI
+ * @static
+ * @enum {number}
+ * @property {number} BLEND - Preserve the information in the texture, blend above
+ * @property {number} CLEAR - Must use `gl.clear` operation
+ * @property {number} BLIT - Clear or blit it, depends on device and level of paranoia
+ * @property {number} NO - Alias for BLEND, same as `false` in earlier versions
+ * @property {number} YES - Alias for CLEAR, same as `true` in earlier versions
+ * @property {number} AUTO - Alias for BLIT
+ */
+export enum CLEAR_MODES {
+    NO = 0,
+    YES = 1,
+    AUTO = 2,
+    BLEND = 0,
+    CLEAR = 1,
+    BLIT = 2,
+}
+
+/**
  * The gc modes that are supported by pixi.
  *
  * The {@link PIXI.settings.GC_MODE} Garbage Collection mode for PixiJS textures is AUTO
@@ -368,4 +408,25 @@ export enum MASK_TYPES {
     SCISSOR = 1,
     STENCIL = 2,
     SPRITE = 3,
+}
+
+/**
+ * Constants for multi-sampling antialiasing.
+ *
+ * @see PIXI.Framebuffer#multisample
+ *
+ * @name MSAA_QUALITY
+ * @memberof PIXI
+ * @static
+ * @enum {number}
+ * @property {number} NONE - No multisampling for this renderTexture
+ * @property {number} LOW - Try 2 samples
+ * @property {number} MEDIUM - Try 4 samples
+ * @property {number} HIGH - Try 8 samples
+ */
+export enum MSAA_QUALITY {
+    NONE = 0,
+    LOW = 2,
+    MEDIUM = 4,
+    HIGH = 8
 }

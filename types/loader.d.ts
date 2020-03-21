@@ -1,5 +1,5 @@
 declare namespace PIXI {
-    export interface Loader extends utils.EventEmitter {
+    export interface Loader {
         baseUrl: string;
         progress: number;
         loading: boolean;
@@ -22,21 +22,6 @@ declare namespace PIXI {
         load(cb?: (loader: Loader, resources: Partial<Record<string, LoaderResource>>) => void): this;
 
         destroy(): void;
-
-        // depreciation
-
-        on(event: "complete", fn: (loader: Loader, object: any) => void, context?: any): this;
-        on(event: "error", fn: (error: Error, loader: Loader, resource: LoaderResource) => void, context?: any): this;
-        on(event: "load" | "progress", fn: (loader: Loader, resource: LoaderResource) => void, context?: any): this;
-        on(event: "start", fn: (loader: Loader) => void, context?: any): this;
-
-        once(event: "complete", fn: (loader: Loader, object: any) => void, context?: any): this;
-        once(event: "error", fn: (error: Error, loader: Loader, resource: LoaderResource) => void, context?: any): this;
-        once(event: "load" | "progress", fn: (loader: Loader, resource: LoaderResource) => void, context?: any): this;
-        once(event: "start", fn: (loader: Loader) => void, context?: any): this;
-        //tslint:disable-next-line:ban-types forbidden-types
-        off(event: "complete" | "error" | "load" | "progress" | "start" | string, fn?: Function, context?: any): this;
-
     }
 
     export interface IResourceDictionary {

@@ -316,6 +316,48 @@ export function useDeprecated()
         },
     });
 
+    /**
+     * @static
+     * @method PIXI.TilingSprite.fromFrame
+     * @deprecated since 5.3.0
+     * @see PIXI.TilingSprite.from
+     */
+    PIXI.TilingSprite.fromFrame = function fromFrame(frameId, width, height)
+    {
+        deprecation('5.3.0', 'TilingSprite.fromFrame is deprecated, use TilingSprite.from');
+
+        return PIXI.TilingSprite.from(frameId, { width, height });
+    };
+
+    /**
+     * @static
+     * @method PIXI.TilingSprite.fromImage
+     * @deprecated since 5.3.0
+     * @see PIXI.TilingSprite.from
+     */
+    PIXI.TilingSprite.fromImage = function fromImage(imageId, width, height, options = {})
+    {
+        deprecation('5.3.0', 'TilingSprite.fromImage is deprecated, use TilingSprite.from');
+
+        // Fallback support for crossorigin, scaleMode parameters
+        if (options && typeof options !== 'object')
+        {
+            options = {
+                // eslint-disable-next-line prefer-rest-params
+                scaleMode: arguments[4],
+                resourceOptions: {
+                    // eslint-disable-next-line prefer-rest-params
+                    crossorigin: arguments[3],
+                },
+            };
+        }
+
+        options.width = width;
+        options.height = height;
+
+        return PIXI.TilingSprite.from(imageId, options);
+    };
+
     Object.defineProperties(PIXI.utils, {
         /**
          * @function PIXI.utils.getSvgSize
@@ -610,6 +652,47 @@ export function useDeprecated()
 
         return PIXI.loaders.Loader.registerPlugin({ use: middleware() });
     };
+
+    // convenience for converting event name to signal name
+    const eventToSignal = (event) =>
+        `on${event.charAt(0).toUpperCase()}${event.slice(1)}`;
+
+    Object.assign(PIXI.Loader.prototype,
+        {
+            /**
+             * Use the corresponding signal, e.g., event `start`` is signal `onStart`.
+             * @method PIXI.Loader#on
+             * @deprecated since 5.0.0
+             */
+            on(event)
+            {
+                const signal = eventToSignal(event);
+
+                deprecation(v5, `PIXI.Loader#on is completely deprecated, use PIXI.Loader#${signal}.add`);
+            },
+            /**
+             * Use the corresponding signal, e.g., event `start`` is signal `onStart`.
+             * @method PIXI.Loader#once
+             * @deprecated since 5.0.0
+             */
+            once(event)
+            {
+                const signal = eventToSignal(event);
+
+                deprecation(v5, `PIXI.Loader#once is completely deprecated, use PIXI.Loader#${signal}.once`);
+            },
+            /**
+             * Use the corresponding signal, e.g., event `start`` is signal `onStart`.
+             * @method PIXI.Loader#off
+             * @deprecated since 5.0.0
+             */
+            off(event)
+            {
+                const signal = eventToSignal(event);
+
+                deprecation(v5, `PIXI.Loader#off is completely deprecated, use PIXI.Loader#${signal}.detach`);
+            },
+        });
 
     /**
      * @class PIXI.extract.WebGLExtract
