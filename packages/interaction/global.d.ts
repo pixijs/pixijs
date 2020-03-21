@@ -41,7 +41,7 @@ declare interface IHitArea {
     contains(x: number, y: number): boolean;
 }
 
-declare namespace PixiGlobalMixins
+declare namespace GlobalMixins
 {
     interface InteractiveTarget {
         interactive: boolean;

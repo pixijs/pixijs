@@ -12,7 +12,7 @@ export interface IDestroyOptions {
     baseTexture?: boolean;
 }
 
-export interface DisplayObject extends PixiGlobalMixins.DisplayObject, EventEmitter {}
+export interface DisplayObject extends GlobalMixins.DisplayObject, EventEmitter {}
 
 /**
  * The base class for all objects that are rendered on the screen.
