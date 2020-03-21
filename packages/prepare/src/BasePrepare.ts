@@ -1,10 +1,27 @@
-import { Texture, BaseTexture } from '@pixi/core';
+import { Texture, BaseTexture, AbstractRenderer, Renderer } from '@pixi/core';
 import { Ticker, UPDATE_PRIORITY } from '@pixi/ticker';
 import { settings } from '@pixi/settings';
-import { Container } from '@pixi/display';
+import { Container, DisplayObject } from '@pixi/display';
 import { Text, TextStyle, TextMetrics } from '@pixi/text';
 import { CountLimiter } from './CountLimiter';
+import { CanvasPrepare } from 'pixi.js-legacy';
 
+interface IArrowFunction {
+    (): void;
+}
+interface IUploadHook {
+    (helper: Renderer | CanvasPrepare, item: IDisplayObjectExtended): boolean;
+}
+
+interface IFindHook {
+    (item: any, queue: Array<any>): boolean;
+}
+
+interface IDisplayObjectExtended extends DisplayObject {
+    _textures?: Array<Texture>;
+    _texture?: Texture;
+    style?: TextStyle;
+}
 /**
  * The prepare manager provides functionality to upload content to the GPU.
  *
@@ -30,10 +47,19 @@ import { CountLimiter } from './CountLimiter';
  */
 export class BasePrepare
 {
+    private limiter: CountLimiter;
+    public renderer: AbstractRenderer;
+    public uploadHookHelper: any;
+    public queue: Array<any>;
+    public addHooks: Array<any>;
+    public uploadHooks: Array<any>;
+    public completes: Array<any>;
+    public ticking: boolean;
+    private delayedTick: IArrowFunction;
     /**
      * @param {PIXI.AbstractRenderer} renderer - A reference to the current renderer
      */
-    constructor(renderer)
+    constructor(renderer: AbstractRenderer)
     {
         /**
          * The limiter to be used to control how quickly items are prepared.
@@ -96,7 +122,7 @@ export class BasePrepare
          * @type {Function}
          * @private
          */
-        this.delayedTick = () =>
+        this.delayedTick = (): void =>
         {
             // unlikely, but in case we were destroyed between tick() and delayedTick()
             if (!this.queue)
@@ -126,7 +152,7 @@ export class BasePrepare
      *        or the callback function, if items have been added using `prepare.add`.
      * @param {Function} [done] - Optional callback when all queued uploads have completed
      */
-    upload(item, done)
+    upload(item: IDisplayObjectExtended | ICallback, done: ICallback): void
     {
         if (typeof item === 'function')
         {
@@ -166,7 +192,7 @@ export class BasePrepare
      *
      * @private
      */
-    tick()
+    tick(): void
     {
         setTimeout(this.delayedTick, 0);
     }
@@ -177,7 +203,7 @@ export class BasePrepare
      *
      * @private
      */
-    prepareItems()
+    prepareItems(): void
     {
         this.limiter.beginFrame();
         // Upload the graphics
@@ -233,7 +259,7 @@ export class BasePrepare
      *          function must return `true` if it was able to add item to the queue.
      * @return {this} Instance of plugin for chaining.
      */
-    registerFindHook(addHook)
+    registerFindHook(addHook: IFindHook): BasePrepare
     {
         if (addHook)
         {
@@ -250,7 +276,7 @@ export class BasePrepare
      *          function must return `true` if it was able to handle upload of item.
      * @return {this} Instance of plugin for chaining.
      */
-    registerUploadHook(uploadHook)
+    registerUploadHook(uploadHook: IUploadHook): BasePrepare
     {
         if (uploadHook)
         {
@@ -267,7 +293,7 @@ export class BasePrepare
      *        add to the queue
      * @return {this} Instance of plugin for chaining.
      */
-    add(item)
+    add(item: IDisplayObjectExtended | IUploadHook | IFindHook): BasePrepare
     {
         // Add additional hooks for finding elements on special
         // types of objects that
@@ -295,7 +321,7 @@ export class BasePrepare
      * Destroys the plugin, don't use after this.
      *
      */
-    destroy()
+    destroy(): void
     {
         if (this.ticking)
         {
@@ -320,7 +346,8 @@ export class BasePrepare
  * @param {Array<*>} queue - Collection of items to upload
  * @return {boolean} if a PIXI.Texture object was found.
  */
-function findMultipleBaseTextures(item, queue)
+
+function findMultipleBaseTextures(item: IDisplayObjectExtended, queue: Array<any>): any
 {
     let result = false;
 
@@ -353,7 +380,7 @@ function findMultipleBaseTextures(item, queue)
  * @param {Array<*>} queue - Collection of items to upload
  * @return {boolean} if a PIXI.Texture object was found.
  */
-function findBaseTexture(item, queue)
+function findBaseTexture(item: Texture, queue: Array<any>): boolean
 {
     if (item.baseTexture instanceof BaseTexture)
     {
@@ -378,7 +405,7 @@ function findBaseTexture(item, queue)
  * @param {Array<*>} queue - Collection of items to upload
  * @return {boolean} if a PIXI.Texture object was found.
  */
-function findTexture(item, queue)
+function findTexture(item: IDisplayObjectExtended, queue: Array<any>): boolean
 {
     if (item._texture && item._texture instanceof Texture)
     {
@@ -403,7 +430,7 @@ function findTexture(item, queue)
  * @param {PIXI.DisplayObject} item - Item to check
  * @return {boolean} If item was uploaded.
  */
-function drawText(helper, item)
+function drawText(helper: Renderer | CanvasPrepare, item: IDisplayObjectExtended): boolean
 {
     if (item instanceof Text)
     {
@@ -424,7 +451,7 @@ function drawText(helper, item)
  * @param {PIXI.DisplayObject} item - Item to check
  * @return {boolean} If item was uploaded.
  */
-function calculateTextStyle(helper, item)
+function calculateTextStyle(helper: Renderer | CanvasPrepare, item: IDisplayObjectExtended): boolean
 {
     if (item instanceof TextStyle)
     {
@@ -446,7 +473,7 @@ function calculateTextStyle(helper, item)
  * @param {Array<*>} queue - Collection of items to upload
  * @return {boolean} if a PIXI.Text object was found.
  */
-function findText(item, queue)
+function findText(item: IDisplayObjectExtended, queue: Array<any>): boolean
 {
     if (item instanceof Text)
     {
@@ -482,7 +509,7 @@ function findText(item, queue)
  * @param {Array<*>} queue - Collection of items to upload
  * @return {boolean} if a PIXI.TextStyle object was found.
  */
-function findTextStyle(item, queue)
+function findTextStyle(item: TextStyle, queue: Array<any>): boolean
 {
     if (item instanceof TextStyle)
     {
