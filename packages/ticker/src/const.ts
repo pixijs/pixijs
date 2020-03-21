@@ -12,7 +12,7 @@
  * @property {number} HIGH=25 High priority updating, {@link PIXI.VideoBaseTexture} and {@link PIXI.AnimatedSprite}
  * @property {number} NORMAL=0 Default priority for ticker events, see {@link PIXI.Ticker#add}.
  * @property {number} LOW=-25 Low priority used for {@link PIXI.Application} rendering.
- * @property {number} UTILITY=-50 Lowest priority used for {@link PIXI.prepare.BasePrepare} utility.
+ * @property {number} UTILITY=-50 Lowest priority used for {@link PIXI.BasePrepare} utility.
  */
 export enum UPDATE_PRIORITY {
     INTERACTION = 50,

@@ -2,8 +2,9 @@ import { Resource } from './Resource';
 import { ALPHA_MODES } from '@pixi/constants';
 
 import type { ISize } from '@pixi/math';
-import type { BaseTexture, Renderer, GLTexture } from '@pixi/core';
-
+import type { BaseTexture } from '../BaseTexture';
+import type { Renderer } from '../../Renderer';
+import type { GLTexture } from '../GLTexture';
 /**
  * @interface SharedArrayBuffer
  */

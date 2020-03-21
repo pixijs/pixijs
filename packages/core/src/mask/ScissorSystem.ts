@@ -1,6 +1,6 @@
 import { AbstractMaskSystem } from './AbstractMaskSystem';
 
-import type { Renderer } from '@pixi/core';
+import type { Renderer } from '../Renderer';
 import type { MaskData } from './MaskData';
 
 /**
