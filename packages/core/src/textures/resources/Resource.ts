@@ -1,6 +1,8 @@
 import { Runner } from '@pixi/runner';
 
-import type { BaseTexture, Renderer, GLTexture } from '@pixi/core';
+import type { BaseTexture } from '../BaseTexture';
+import type { Renderer } from '../../Renderer';
+import type { GLTexture } from '../GLTexture';
 
 /**
  * Base resource class for textures that manages validation and uploading, depending on its type.

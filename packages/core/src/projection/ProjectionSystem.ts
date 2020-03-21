@@ -2,7 +2,7 @@ import { System } from '../System';
 import { Matrix } from '@pixi/math';
 
 import type { Rectangle } from '@pixi/math';
-import type { Renderer } from '@pixi/core';
+import type { Renderer } from '../Renderer';
 
 /**
  * System plugin to the renderer to manage the projection matrix.
