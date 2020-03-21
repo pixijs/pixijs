@@ -272,7 +272,16 @@ export class AnimatedSprite extends Sprite
 
         if (this._currentTime < 0 && !this.loop)
         {
-            this.gotoAndStop(0);
+            this._currentTime = 0;
+
+            if (previousFrame !== this.currentFrame)
+            {
+                this.gotoAndStop(0);
+            }
+            else
+            {
+                this.stop();
+            }
 
             if (this.onComplete)
             {
@@ -281,7 +290,16 @@ export class AnimatedSprite extends Sprite
         }
         else if (this._currentTime >= this._textures.length && !this.loop)
         {
-            this.gotoAndStop(this._textures.length - 1);
+            this._currentTime = this._textures.length - 1;
+
+            if (previousFrame !== this.currentFrame)
+            {
+                this.gotoAndStop(this._textures.length - 1);
+            }
+            else
+            {
+                this.stop();
+            }
 
             if (this.onComplete)
             {
@@ -441,8 +459,7 @@ export class AnimatedSprite extends Sprite
     */
     get currentFrame(): number
     {
-        const length = this._textures.length;
-        let currentFrame = Math.floor(Math.min(this._currentTime || 0, length - 1)) % length;
+        let currentFrame = Math.floor(this._currentTime) % this._textures.length;
 
         if (currentFrame < 0)
         {
