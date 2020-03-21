@@ -272,8 +272,7 @@ export class AnimatedSprite extends Sprite
 
         if (this._currentTime < 0 && !this.loop)
         {
-            this._currentTime = 0;
-            this.stop();
+            this.gotoAndStop(0);
 
             if (this.onComplete)
             {
@@ -282,8 +281,7 @@ export class AnimatedSprite extends Sprite
         }
         else if (this._currentTime >= this._textures.length && !this.loop)
         {
-            this._currentTime = this._textures.length - 1;
-            this.stop();
+            this.gotoAndStop(this._textures.length - 1);
 
             if (this.onComplete)
             {
@@ -443,7 +441,8 @@ export class AnimatedSprite extends Sprite
     */
     get currentFrame(): number
     {
-        let currentFrame = Math.floor(this._currentTime) % this._textures.length;
+        const length = this._textures.length;
+        let currentFrame = Math.floor(Math.min(this._currentTime || 0, length - 1)) % length;
 
         if (currentFrame < 0)
         {
