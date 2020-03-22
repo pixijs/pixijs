@@ -599,10 +599,7 @@ export class BitmapText extends Container
      * @see PIXI.BitmapFont.install
      * @static
      */
-    static registerFont(
-        data: string|XMLDocument|BitmapFontData,
-        textures: Texture|Texture[]|Dict<Texture>
-    ): BitmapFont
+    static registerFont(data: string|XMLDocument|BitmapFontData, textures: Texture|Texture[]|Dict<Texture>): BitmapFont
     {
         deprecation('5.3.0', 'PIXI.BitmapText.registerFont is deprecated, use PIXI.BitmapFont.install');
 
