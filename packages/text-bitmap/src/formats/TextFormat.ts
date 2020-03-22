@@ -38,7 +38,7 @@ export class TextFormat
         for (const i in items)
         {
             // Extract item name
-            const name = items[i].match(/^[a-z]+/gm)[0];
+            const name = items[i].match(/^[a-z]+/gm)[0] as keyof BitmapFontData;
 
             // Extract item attribute list as string ex.: "width=10"
             const attributeList = items[i].match(/[a-zA-Z]+=([^\s"']+|"([^"]*)")/gm);
@@ -65,12 +65,12 @@ export class TextFormat
             }
 
             // Push current item to the resulting data
-            if (!(data as any)[name])
+            if (!data[name])
             {
-                (data as any)[name] = [];
+                data[name] = [];
             }
 
-            (data as any)[name].push(itemData);
+            data[name].push(itemData);
         }
 
         data.info.forEach((info: any) =>
