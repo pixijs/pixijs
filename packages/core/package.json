@@ -30,6 +30,7 @@
   "dependencies": {
     "@pixi/constants": "5.2.1",
     "@pixi/display": "5.2.1",
+    "@pixi/extract": "5.2.1",
     "@pixi/math": "5.2.1",
     "@pixi/runner": "5.2.1",
     "@pixi/settings": "5.2.1",

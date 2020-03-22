@@ -23,11 +23,13 @@
     "lib",
     "dist"
   ],
-  "dependencies": {
-    "@pixi/core": "5.2.1",
-    "resource-loader": "^3.0.1"
+  "peerDependencies": {
+    "@pixi/spritesheet": "5.2.1"
   },
-  "devDependencies": {
-    "@pixi/utils": "5.2.1"
+  "dependencies": {
+    "@pixi/app": "5.2.1",
+    "@pixi/core": "5.2.1",
+    "@pixi/utils": "5.2.1",
+    "resource-loader": "^3.0.1"
   }
 }

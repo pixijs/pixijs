@@ -25,6 +25,7 @@
   ],
   "dependencies": {
     "@pixi/core": "5.2.1",
+    "@pixi/display": "5.2.1",
     "@pixi/math": "5.2.1",
     "@pixi/settings": "5.2.1",
     "@pixi/sprite": "5.2.1",
