@@ -67,7 +67,7 @@ export class BitmapText extends Container
      *      single line text.
      * @param {number} [style.tint=0xFFFFFF] - The tint color.
      */
-    constructor(text: string, style: Partial<IBitmapTextStyle>|IBitmapTextStyle = {})
+    constructor(text: string, style: Partial<IBitmapTextStyle> = {})
     {
         super();
 
