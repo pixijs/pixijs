@@ -7,7 +7,7 @@ import { BitmapFontData } from './BitmapFontData';
 
 import type { Dict } from '@pixi/utils';
 
-interface BitmapFontCharacter {
+interface IBitmapFontCharacter {
     xOffset: number;
     yOffset: number;
     xAdvance: number;
@@ -34,7 +34,7 @@ export class BitmapFont
     public font: string;
     public size: number;
     public lineHeight: number;
-    public chars: Dict<BitmapFontCharacter>;
+    public chars: Dict<IBitmapFontCharacter>;
 
     constructor(data: BitmapFontData, textures: Texture[]|Dict<Texture>)
     {
