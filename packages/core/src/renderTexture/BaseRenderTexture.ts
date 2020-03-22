@@ -2,7 +2,7 @@ import { BaseTexture } from '../textures/BaseTexture';
 import { Framebuffer } from '../framebuffer/Framebuffer';
 
 import type { IBaseTextureOptions } from '../textures/BaseTexture';
-import type { MaskData } from '@pixi/core';
+import type { MaskData } from '../mask/MaskData';
 import type { CanvasRenderTarget } from '@pixi/utils';
 
 /**

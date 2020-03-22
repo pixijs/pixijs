@@ -10,8 +10,9 @@ import { FilterState } from './FilterState';
 
 import type { Filter } from './Filter';
 import type { IFilterTarget } from './IFilterTarget';
-import type { Renderer, RenderTexture, ISpriteMaskTarget } from '@pixi/core';
-
+import type { ISpriteMaskTarget } from './spriteMask/SpriteMaskFilter';
+import type { RenderTexture } from '../renderTexture/RenderTexture';
+import type { Renderer } from '../Renderer';
 /**
  * System plugin to the renderer to manage the filters.
  *

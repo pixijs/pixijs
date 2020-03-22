@@ -5,7 +5,7 @@ import { settings } from '@pixi/settings';
 import defaultVertex from './defaultFilter.vert';
 import defaultFragment from './defaultFilter.frag';
 
-import type { RenderTexture } from '@pixi/core';
+import type { RenderTexture } from '../renderTexture/RenderTexture';
 import type { FilterSystem } from './FilterSystem';
 import type { FilterState } from './FilterState';
 import type { BLEND_MODES, CLEAR_MODES } from '@pixi/constants';
