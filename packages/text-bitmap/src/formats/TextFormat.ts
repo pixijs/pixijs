@@ -73,41 +73,46 @@ export class TextFormat
             data[name].push(itemData);
         }
 
-        data.info.forEach((info: any) =>
+        data.info.forEach((info) =>
         {
-            info.size = parseInt(info.size, 10);
+            info.size = this.parseValue(info.size);
         });
 
-        data.common.forEach((common: any) =>
+        data.common.forEach((common) =>
         {
-            common.lineHeight = parseInt(common.lineHeight, 10);
+            common.lineHeight = this.parseValue(common.lineHeight);
         });
 
-        data.page.forEach((page: any) =>
+        data.page.forEach((page) =>
         {
-            page.id = parseInt(page.id, 10);
+            page.id = this.parseValue(page.id);
         });
 
-        data.char.forEach((char: any) =>
+        data.char.forEach((char) =>
         {
-            char.id = parseInt(char.id, 10);
-            char.page = parseInt(char.page, 10);
-            char.x = parseInt(char.x, 10);
-            char.y = parseInt(char.y, 10);
-            char.width = parseInt(char.width, 10);
-            char.height = parseInt(char.height, 10);
-            char.xoffset = parseInt(char.xoffset, 10);
-            char.yoffset = parseInt(char.yoffset, 10);
-            char.xadvance = parseInt(char.xadvance, 10);
+            char.id = this.parseValue(char.id);
+            char.page = this.parseValue(char.page);
+            char.x = this.parseValue(char.x);
+            char.y = this.parseValue(char.y);
+            char.width = this.parseValue(char.width);
+            char.height = this.parseValue(char.height);
+            char.xoffset = this.parseValue(char.xoffset);
+            char.yoffset = this.parseValue(char.yoffset);
+            char.xadvance = this.parseValue(char.xadvance);
         });
 
-        data.kerning.forEach((kerning: any) =>
+        data.kerning.forEach((kerning) =>
         {
-            kerning.first = parseInt(kerning.first, 10);
-            kerning.second = parseInt(kerning.second, 10);
-            kerning.amount = parseInt(kerning.amount, 10);
+            kerning.first = this.parseValue(kerning.first);
+            kerning.second = this.parseValue(kerning.second);
+            kerning.amount = this.parseValue(kerning.amount);
         });
 
         return data;
+    }
+
+    private static parseValue(value: string|number): number
+    {
+        return typeof value === 'number' ? Math.floor(value) : parseInt(value, 10);
     }
 }
