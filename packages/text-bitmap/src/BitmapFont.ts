@@ -5,17 +5,19 @@ import { Texture } from '@pixi/core';
 import { autoDetectFormat } from './formats';
 import { BitmapFontData } from './BitmapFontData';
 
+import type { Dict } from '@pixi/utils';
+
 interface BitmapFontCharacter {
     xOffset: number;
     yOffset: number;
     xAdvance: number;
     texture: Texture;
     page: number;
-    kerning: {[key: string]: number};
+    kerning: Dict<number>;
 }
 
 // Internal map of available fonts, by name
-const available: { [key: string]: BitmapFont } = {};
+const available: Dict<BitmapFont> = {};
 
 /**
  * BitmapFont represents a typeface available for use
@@ -32,15 +34,15 @@ export class BitmapFont
     public font: string;
     public size: number;
     public lineHeight: number;
-    public chars: {[key: string]: BitmapFontCharacter};
+    public chars: Dict<BitmapFontCharacter>;
 
-    constructor(data: BitmapFontData, textures: Texture[]|{[key: string]: Texture})
+    constructor(data: BitmapFontData, textures: Texture[]|Dict<Texture>)
     {
         const [info] = data.info;
         const [common] = data.common;
         const [page] = data.page;
         const res = getResolutionOfUrl(page.file, settings.RESOLUTION);
-        const pagesTextures: {[key: string]: Texture} = {};
+        const pagesTextures: Dict<Texture> = {};
 
         /**
          * The name of the font face.
@@ -159,7 +161,7 @@ export class BitmapFont
      */
     public static install(
         data: string|XMLDocument|BitmapFontData,
-        textures: Texture|Texture[]|{[key: string]: Texture}
+        textures: Texture|Texture[]|Dict<Texture>
     ): BitmapFont
     {
         let fontData;
@@ -219,7 +221,7 @@ export class BitmapFont
      * @static
      * @member {Object.<string, PIXI.BitmapFont>}
      */
-    public static get available(): { [key: string]: BitmapFont }
+    public static get available(): Dict<BitmapFont>
     {
         return available;
     }

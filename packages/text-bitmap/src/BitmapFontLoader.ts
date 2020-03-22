@@ -3,6 +3,7 @@ import { autoDetectFormat } from './formats';
 import { BitmapFont } from './BitmapFont';
 
 import type { ILoaderResource } from '@pixi/loaders';
+import type { Dict } from '@pixi/utils';
 import type { Loader } from '@pixi/loaders';
 import type { Texture } from '@pixi/core';
 
@@ -45,7 +46,7 @@ export class BitmapFontLoader
 
         const baseUrl = BitmapFontLoader.getBaseUrl(this, resource);
         const data = format.parse(resource.data);
-        const textures: { [key: string]: Texture } = {};
+        const textures: Dict<Texture> = {};
 
         // Handle completed, when the number of textures
         // load is the same number as references in the fnt file

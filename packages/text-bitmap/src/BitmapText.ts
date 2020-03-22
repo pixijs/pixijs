@@ -5,6 +5,7 @@ import { Sprite } from '@pixi/sprite';
 import { removeItems, deprecation } from '@pixi/utils';
 import { BitmapFont } from './BitmapFont';
 
+import type { Dict } from '@pixi/utils';
 import type { Rectangle } from '@pixi/math';
 import type { Texture } from '@pixi/core';
 import type { IBitmapTextStyle, BitmapTextAlign, IBitmapTextFontDescriptor } from './BitmapTextStyle';
@@ -600,7 +601,7 @@ export class BitmapText extends Container
      */
     static registerFont(
         data: string|XMLDocument|BitmapFontData,
-        textures: Texture|Texture[]|{[key: string]: Texture}
+        textures: Texture|Texture[]|Dict<Texture>
     ): BitmapFont
     {
         deprecation('5.3.0', 'PIXI.BitmapText.registerFont is deprecated, use PIXI.BitmapFont.install');
@@ -617,7 +618,7 @@ export class BitmapText extends Container
      * @readonly
      * @member {Object.<string, PIXI.BitmapFont>}
      */
-    static get fonts(): { [key: string]: BitmapFont }
+    static get fonts(): Dict<BitmapFont>
     {
         deprecation('5.3.0', 'PIXI.BitmapText.fonts is deprecated, use PIXI.BitmapFont.available');
 
