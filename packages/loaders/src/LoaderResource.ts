@@ -7,7 +7,7 @@ import type { Dict } from '@pixi/utils';
 export interface IResourceMetadata extends Resource.IMetadata {
     imageMetadata?: any;
 }
-export interface ILoaderResource extends Resource
+export interface ILoaderResource extends PixiGlobalMixins.ILoaderResource, Resource
 {
     texture?: Texture;
     spritesheet?: Spritesheet;
