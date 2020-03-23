@@ -73,46 +73,60 @@ export class TextFormat
             data[name].push(itemData);
         }
 
+        /* eslint-disable @typescript-eslint/ban-ts-ignore */
+
         data.info.forEach((info) =>
         {
-            info.size = this.parseValue(info.size);
+            // @ts-ignore
+            info.size = parseInt(info.size, 10);
         });
 
         data.common.forEach((common) =>
         {
-            common.lineHeight = this.parseValue(common.lineHeight);
+            // @ts-ignore
+            common.lineHeight = parseInt(common.lineHeight, 10);
         });
 
         data.page.forEach((page) =>
         {
-            page.id = this.parseValue(page.id);
+            // @ts-ignore
+            page.id = parseInt(page.id, 10);
         });
 
         data.char.forEach((char) =>
         {
-            char.id = this.parseValue(char.id);
-            char.page = this.parseValue(char.page);
-            char.x = this.parseValue(char.x);
-            char.y = this.parseValue(char.y);
-            char.width = this.parseValue(char.width);
-            char.height = this.parseValue(char.height);
-            char.xoffset = this.parseValue(char.xoffset);
-            char.yoffset = this.parseValue(char.yoffset);
-            char.xadvance = this.parseValue(char.xadvance);
+            // @ts-ignore
+            char.id = parseInt(char.id, 10);
+            // @ts-ignore
+            char.page = parseInt(char.page, 10);
+            // @ts-ignore
+            char.x = parseInt(char.x, 10);
+            // @ts-ignore
+            char.y = parseInt(char.y, 10);
+            // @ts-ignore
+            char.width = parseInt(char.width, 10);
+            // @ts-ignore
+            char.height = parseInt(char.height, 10);
+            // @ts-ignore
+            char.xoffset = parseInt(char.xoffset, 10);
+            // @ts-ignore
+            char.yoffset = parseInt(char.yoffset, 10);
+            // @ts-ignore
+            char.xadvance = parseInt(char.xadvance, 10);
         });
 
         data.kerning.forEach((kerning) =>
         {
-            kerning.first = this.parseValue(kerning.first);
-            kerning.second = this.parseValue(kerning.second);
-            kerning.amount = this.parseValue(kerning.amount);
+            // @ts-ignore
+            kerning.first = parseInt(kerning.first, 10);
+            // @ts-ignore
+            kerning.second = parseInt(kerning.second, 10);
+            // @ts-ignore
+            kerning.amount = parseInt(kerning.amount, 10);
         });
 
-        return data;
-    }
+        /* eslint-enable @typescript-eslint/ban-ts-ignore */
 
-    private static parseValue(value: string|number): number
-    {
-        return typeof value === 'number' ? Math.floor(value) : parseInt(value, 10);
+        return data;
     }
 }
