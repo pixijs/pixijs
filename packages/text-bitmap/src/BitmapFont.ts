@@ -31,10 +31,10 @@ const available: Dict<BitmapFont> = {};
  */
 export class BitmapFont
 {
-    public font: string;
-    public size: number;
+    public readonly font: string;
+    public readonly size: number;
     public lineHeight: number;
-    public chars: Dict<IBitmapFontCharacter>;
+    public readonly chars: Dict<IBitmapFontCharacter>;
 
     constructor(data: BitmapFontData, textures: Texture[]|Dict<Texture>)
     {
