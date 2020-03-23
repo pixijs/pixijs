@@ -1,6 +1,6 @@
 const { CountLimiter } = require('../');
 
-describe('PIXI.prepare.CountLimiter', function ()
+describe('PIXI.CountLimiter', function ()
 {
     it('should limit to specified number per beginFrame()', function ()
     {
