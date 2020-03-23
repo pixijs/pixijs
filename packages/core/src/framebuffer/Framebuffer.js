@@ -1,7 +1,7 @@
 import { Runner } from '@pixi/runner';
 import { BaseTexture } from '../textures/BaseTexture';
 import { DepthResource } from '../textures/resources/DepthResource';
-import { FORMATS, TYPES } from '@pixi/constants';
+import { FORMATS, TYPES, SCALE_MODES } from '@pixi/constants';
 
 /**
  * Frame buffer used by the BaseRenderTexture
@@ -55,11 +55,13 @@ export class Framebuffer
     addColorTexture(index = 0, texture)
     {
         // TODO add some validation to the texture - same width / height etc?
-        this.colorTextures[index] = texture || new BaseTexture(null, { scaleMode: 0,
+        this.colorTextures[index] = texture || new BaseTexture(null, {
+            scaleMode: SCALE_MODES.NEAREST,
             resolution: 1,
             mipmap: false,
             width: this.width,
-            height: this.height });
+            height: this.height,
+        });
 
         this.dirtyId++;
         this.dirtyFormat++;
@@ -75,14 +77,16 @@ export class Framebuffer
     addDepthTexture(texture)
     {
         /* eslint-disable max-len */
-        this.depthTexture = texture || new BaseTexture(new DepthResource(null, { width: this.width, height: this.height }), { scaleMode: 0,
+        this.depthTexture = texture || new BaseTexture(new DepthResource(null, { width: this.width, height: this.height }), {
+            scaleMode: SCALE_MODES.NEAREST,
             resolution: 1,
             width: this.width,
             height: this.height,
             mipmap: false,
             format: FORMATS.DEPTH_COMPONENT,
-            type: TYPES.UNSIGNED_SHORT });
-        /* eslint-disable max-len */
+            type: TYPES.UNSIGNED_SHORT,
+        });
+
         this.dirtyId++;
         this.dirtyFormat++;
 
