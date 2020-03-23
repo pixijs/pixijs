@@ -4,15 +4,14 @@ import { settings } from '@pixi/settings';
 import { Container, DisplayObject } from '@pixi/display';
 import { Text, TextStyle, TextMetrics } from '@pixi/text';
 import { CountLimiter } from './CountLimiter';
-import { CanvasPrepare } from 'pixi.js-legacy';
 
-import type { AbstractRenderer, Renderer } from '@pixi/core';
+import type { AbstractRenderer } from '@pixi/core';
 
 interface IArrowFunction {
     (): void;
 }
 interface IUploadHook {
-    (helper: Renderer | CanvasPrepare, item: IDisplayObjectExtended): boolean;
+    (helper: AbstractRenderer | BasePrepare, item: IDisplayObjectExtended): boolean;
 }
 
 interface IFindHook {
@@ -113,11 +112,13 @@ function findTexture(item: IDisplayObjectExtended, queue: Array<any>): boolean
  * Built-in hook to draw PIXI.Text to its texture.
  *
  * @private
- * @param {PIXI.Renderer|PIXI.CanvasPrepare} helper - Not used by this upload handler
+ * @param {PIXI.AbstractRenderer|PIXI.BasePrepare} helper - Not used by this upload handler
  * @param {PIXI.DisplayObject} item - Item to check
  * @return {boolean} If item was uploaded.
  */
-function drawText(helper: Renderer | CanvasPrepare, item: IDisplayObjectExtended): boolean
+// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+// @ts-ignore
+function drawText(helper: AbstractRenderer | BasePrepare, item: IDisplayObjectExtended): boolean
 {
     if (item instanceof Text)
     {
@@ -134,11 +135,13 @@ function drawText(helper: Renderer | CanvasPrepare, item: IDisplayObjectExtended
  * Built-in hook to calculate a text style for a PIXI.Text object.
  *
  * @private
- * @param {PIXI.Renderer|PIXI.CanvasPrepare} helper - Not used by this upload handler
+ * @param {PIXI.AbstractRenderer|PIXI.BasePrepare} helper - Not used by this upload handler
  * @param {PIXI.DisplayObject} item - Item to check
  * @return {boolean} If item was uploaded.
  */
-function calculateTextStyle(helper: Renderer | CanvasPrepare, item: IDisplayObjectExtended): boolean
+// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+// @ts-ignore
+function calculateTextStyle(helper: AbstractRenderer | BasePrepare, item: IDisplayObjectExtended): boolean
 {
     if (item instanceof TextStyle)
     {
