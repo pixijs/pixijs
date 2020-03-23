@@ -33,8 +33,8 @@ export class BitmapFont
 {
     public readonly font: string;
     public readonly size: number;
-    public lineHeight: number;
-    public readonly chars: Dict<IBitmapFontCharacter>;
+    public readonly lineHeight: number;
+    public chars: Dict<IBitmapFontCharacter>;
 
     constructor(data: BitmapFontData, textures: Texture[]|Dict<Texture>)
     {
