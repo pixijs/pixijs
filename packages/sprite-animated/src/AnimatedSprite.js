@@ -127,13 +127,15 @@ export class AnimatedSprite extends Sprite
          */
         this._currentTime = 0;
 
+        this._playing = false;
+
         /**
-         * Indicates if the AnimatedSprite is currently playing.
+         * The texture index that was displayed last time
          *
-         * @member {boolean}
-         * @readonly
+         * @member {number}
+         * @private
          */
-        this.playing = false;
+        this._previousFrame = null;
     }
 
     /**
@@ -252,8 +254,7 @@ export class AnimatedSprite extends Sprite
 
         if (this._currentTime < 0 && !this.loop)
         {
-            this._currentTime = 0;
-            this.stop();
+            this.gotoAndStop(0);
 
             if (this.onComplete)
             {
@@ -262,8 +263,7 @@ export class AnimatedSprite extends Sprite
         }
         else if (this._currentTime >= this._textures.length && !this.loop)
         {
-            this._currentTime = this._textures.length - 1;
-            this.stop();
+            this.gotoAndStop(this._textures.length - 1);
 
             if (this.onComplete)
             {
@@ -295,7 +295,16 @@ export class AnimatedSprite extends Sprite
      */
     updateTexture()
     {
-        this._texture = this._textures[this.currentFrame];
+        const currentFrame = this.currentFrame;
+
+        if (this._previousFrame === currentFrame)
+        {
+            return;
+        }
+
+        this._previousFrame = currentFrame;
+
+        this._texture = this._textures[currentFrame];
         this._textureID = -1;
         this._textureTrimmedID = -1;
         this._cachedTint = 0xFFFFFF;
