@@ -35,21 +35,21 @@ export class TextFormat
         const items = txt.match(/^[a-z]+\s+.+$/gm);
         const data = new BitmapFontData();
 
-        for (const itemKey in items)
+        for (const i in items)
         {
             // Extract item name
-            const name = items[itemKey].match(/^[a-z]+/gm)[0] as keyof BitmapFontData;
+            const name = items[i].match(/^[a-z]+/gm)[0] as keyof BitmapFontData;
 
             // Extract item attribute list as string ex.: "width=10"
-            const attributeList = items[itemKey].match(/[a-zA-Z]+=([^\s"']+|"([^"]*)")/gm);
+            const attributeList = items[i].match(/[a-zA-Z]+=([^\s"']+|"([^"]*)")/gm);
 
             // Convert attribute list into an object
             const itemData: any = {};
 
-            for (const attributeKey in attributeList)
+            for (const i in attributeList)
             {
                 // Split key-value pairs
-                const split = attributeList[attributeKey].split('=');
+                const split = attributeList[i].split('=');
                 const key = split[0];
 
                 // Remove eventual quotes from value
