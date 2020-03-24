@@ -476,11 +476,14 @@ export class Container extends DisplayObject
             this._localBounds = new Bounds();
         }
 
-        const worldBounds = this._bounds;
+        if (this._localBounds.updateID !== this._subtreeBoundsID)
+        {
+            const worldBounds = this._bounds;
 
-        this._bounds = this._localBounds;
-        this.calculateBounds(worldTransformInverse);
-        this._bounds = worldBounds;
+            this._bounds = this._localBounds;
+            this.calculateBounds(worldTransformInverse);
+            this._bounds = worldBounds;
+        }
 
         return this._localBounds.getRectangle(rect);
     }
