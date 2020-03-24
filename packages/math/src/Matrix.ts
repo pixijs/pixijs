@@ -5,14 +5,52 @@ import type { Transform } from './Transform';
 import type { IPoint } from './IPoint';
 
 /**
- * The PixiJS Matrix as a class makes it a lot faster.
+ * The `Matrix` class represents an affine transformation that performs a linear
+ * mapping from one 2D frame-of-reference to another 2D frame-of-reference. It preserves
+ * straightness and parallelness of lines. It can be constructed to perform sequences of
+ * translations, scales, rotations, and skews.
  *
- * Here is a representation of it:
+ * ## Linear map
+ * The transformation matrix for a `Matrix` object is:
+ *
  * ```js
- * | a | c | tx|
- * | b | d | ty|
- * | 0 | 0 | 1 |
+ * | a  | b  | 0 |
+ * | c  | d  | 0 |
+ * | tx | ty | 1 |
  * ```
+ *
+ * The output 2D coordinates (X,Y) for an input (x,y) is:
+ * ```
+ * X = a*x + c*y + tx
+ * Y = b*x + d*y + ty
+ * ```
+ *
+ * ## Order of transformations
+ * Because matrix multiplication is not commutative, the order of simple transformations
+ * applied on a matrix is relevant!
+ *
+ * ## Invertibility of transformation matrices
+ * All matrix transforms are assumed to be invertible. This means that scaling an object
+ * to zero width or height is illegal in pixi.js!
+ *
+ * ## Local transformation matrix
+ * In the context of display objects, a local transformation will map a 2D point in a
+ * display-object's reference frame to that of its parent. If a parent doesn't exist, it
+ * will map the point to the canvas/render-target's reference frame.
+ *
+ * ## World transformation matrix
+ * A world transformation will map a 2D point in a display-object's reference frame to the
+ * canvas/render-target's reference frame. By definition, the local transformation of the
+ * root display-object (or "stage") is equal to its world transformation.
+ *
+ * ## Other non-local transformation matrices
+ * If the depth of a display-object in the scene graph is D, there are D - 1 ancestors for
+ * which an additional transformation can be defined to map a point in the display-object's
+ * reference frame to that ancestor's reference frame. These are called non-local transformations.
+ * The world transformation is a special non-local transformation that maps a point to the
+ * 0th ancestor (the canvas/render-target). `PIXI.Transform` caches the world transformation
+ * for a display-object.
+ *
  * @class
  * @memberof PIXI
  */
@@ -97,15 +135,20 @@ export class Matrix
     }
 
     /**
-     * sets the matrix properties
+     * Set the matrix coefficients directly to define a linear map (or transformation)
+     * as follows:
      *
-     * @param {number} a - Matrix component
-     * @param {number} b - Matrix component
-     * @param {number} c - Matrix component
-     * @param {number} d - Matrix component
-     * @param {number} tx - Matrix component
-     * @param {number} ty - Matrix component
+     * ```
+     * X = a*x + b*y + tx
+     * Y = c*x + d*y + ty
+     * ```
      *
+     * @param {number} a - matrix coefficient
+     * @param {number} b - matrix coefficient
+     * @param {number} c - matrix coefficient
+     * @param {number} d - matrix coefficient
+     * @param {number} tx - matrix coefficient
+     * @param {number} ty - matrix coefficient
      * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
      */
     set(a: number, b: number, c: number, d: number, tx: number, ty: number): this
@@ -121,11 +164,17 @@ export class Matrix
     }
 
     /**
-     * Creates an array from the current Matrix object.
+     * Create an array of the matrix coefficients in this transform.
      *
-     * @param {boolean} transpose - Whether we need to transpose the matrix or not
-     * @param {Float32Array} [out=new Float32Array(9)] - If provided the array will be assigned to out
-     * @return {number[]} the newly created array which contains the matrix
+     * By default, the array is built column-wise (coefficents in one column
+     * are stored together). You can store the transposed matrix, which will insert
+     * the coefficients row-wise (coefficients in one row are stored together) into
+     * the array.
+     *
+     * @param {boolean} transpose - whether to write the tranposed form of this matrix. By default,
+     *  the array is built column-wise.
+     * @param {Float32Array} [out=new Float32Array(9)] - destination array
+     * @return {number[]} the array containing the matrix coefficients
      */
     toArray(transpose: boolean, out?: Float32Array): Float32Array
     {
@@ -165,12 +214,12 @@ export class Matrix
     }
 
     /**
-     * Get a new position with the current transformation applied.
-     * Can be used to go from a child's coordinate space to the world coordinate space. (e.g. rendering)
+     * Applies this transformation on the given 2D point. This is useful to go from a
+     * display-object content's coordinate system to the world coordinate system.
      *
-     * @param {PIXI.Point} pos - The origin
-     * @param {PIXI.Point} [newPos] - The point that the new position is assigned to (allowed to be same as input)
-     * @return {PIXI.Point} The new point, transformed through this matrix
+     * @param {PIXI.Point} pos - the point to transform
+     * @param {PIXI.Point} [newPos] - the `Point` object into which the result is stored (may be same as input `pos`)
+     * @return {PIXI.Point} the point after transformation
      */
     apply(pos: IPoint, newPos?: Point): Point
     {
@@ -186,12 +235,15 @@ export class Matrix
     }
 
     /**
-     * Get a new position with the inverse of the current transformation applied.
-     * Can be used to go from the world coordinate space to a child's coordinate space. (e.g. input)
+     * Applies the inverse transformation for this matrix on the given 2D point. This is useful
+     * to go from the world coordinate system to a display-object's coordinate system.
      *
-     * @param {PIXI.Point} pos - The origin
-     * @param {PIXI.Point} [newPos] - The point that the new position is assigned to (allowed to be same as input)
-     * @return {PIXI.Point} The new point, inverse-transformed through this matrix
+     * If this transformation is applied on the returned 2D point, then the input point will
+     * be received.
+     *
+     * @param {PIXI.Point} pos - the point to inverse transform
+     * @param {PIXI.Point} [newPos] - the `Point` object into which the result is stored (may be same as input `pos`)
+     * @return {PIXI.Point} the point after inverse transformation
      */
     applyInverse(pos: IPoint, newPos?: Point): Point
     {
@@ -209,10 +261,10 @@ export class Matrix
     }
 
     /**
-     * Translates the matrix on the x and y.
+     * Appends a translation of (x, y) to this transformation.
      *
-     * @param {number} x How much to translate x by
-     * @param {number} y How much to translate y by
+     * @param {number} x - translation in x-direction
+     * @param {number} y - translation in y-direction
      * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
      */
     translate(x: number, y: number): this
@@ -224,10 +276,10 @@ export class Matrix
     }
 
     /**
-     * Applies a scale transformation to the matrix.
+     * Appends a scaling transform to this matrix.
      *
-     * @param {number} x The amount to scale horizontally
-     * @param {number} y The amount to scale vertically
+     * @param {number} x - horizontal scaling/magnification/minification factor
+     * @param {number} y - vertical scaling/magnification/minification factor
      * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
      */
     scale(x: number, y: number): this
@@ -243,9 +295,9 @@ export class Matrix
     }
 
     /**
-     * Applies a rotation transformation to the matrix.
+     * Appends a rotation to this transformation.
      *
-     * @param {number} angle - The angle in radians.
+     * @param {number} angle - the angle to rotate in radians.
      * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
      */
     rotate(angle: number): this
@@ -268,9 +320,9 @@ export class Matrix
     }
 
     /**
-     * Appends the given Matrix to this Matrix.
+     * Appends the transformations in the given matrix to this one.
      *
-     * @param {PIXI.Matrix} matrix - The matrix to append.
+     * @param {PIXI.Matrix} matrix - the matrix to append.
      * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
      */
     append(matrix: Matrix): this
@@ -292,7 +344,7 @@ export class Matrix
     }
 
     /**
-     * Sets the matrix based on all the available properties
+     * Sets the transformation based on all the given properties
      *
      * @param {number} x - Position on the x axis
      * @param {number} y - Position on the y axis
@@ -320,9 +372,10 @@ export class Matrix
     }
 
     /**
-     * Prepends the given Matrix to this Matrix.
+     * Prepends the transformation in the given matrix to this one. This is the
+     * equivalent of appending this matrix to the given one.
      *
-     * @param {PIXI.Matrix} matrix - The matrix to prepend
+     * @param {PIXI.Matrix} matrix - the matrix to prepend
      * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
      */
     prepend(matrix: Matrix): this
@@ -347,10 +400,15 @@ export class Matrix
     }
 
     /**
-     * Decomposes the matrix (x, y, scaleX, scaleY, and rotation) and sets the properties on to a transform.
+     * Decomposes this matrix into its consitituent simple transformations (translation,
+     * scale, rotation, and skew) and sets the corresponding properties on a `Transform`
+     * object.
      *
-     * @param {PIXI.Transform} transform - The transform to apply the properties to.
-     * @return {PIXI.Transform} The transform with the newly applied properties
+     * This does loose the information related to order and multiple simple
+     * transformations (a scale, translate, scale will turn into an equivalent translate, scale).
+     *
+     * @param {PIXI.Transform} transform - the transform to set the properties on
+     * @return {PIXI.Transform} the transform with the newly set properties
      */
     decompose(transform: Transform): Transform
     {
@@ -389,7 +447,8 @@ export class Matrix
     }
 
     /**
-     * Inverts this matrix
+     * Inverts this matrix. It will map 2D points from the destination reference frame
+     * of this matrix to the source reference frame of this matrix.
      *
      * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
      */
@@ -430,7 +489,7 @@ export class Matrix
     }
 
     /**
-     * Creates a new Matrix object with the same values as this one.
+     * Create a new `Matrix` object with the same values as this one.
      *
      * @return {PIXI.Matrix} A copy of this matrix. Good for chaining method calls.
      */
@@ -449,7 +508,7 @@ export class Matrix
     }
 
     /**
-     * Changes the values of the given matrix to be the same as the ones in this matrix
+     * Changes the values of the given matrix to be the same as the ones in this matrix.
      *
      * @param {PIXI.Matrix} matrix - The matrix to copy to.
      * @return {PIXI.Matrix} The matrix given in parameter with its values updated.
@@ -467,7 +526,7 @@ export class Matrix
     }
 
     /**
-     * Changes the values of the matrix to be the same as the ones in given matrix
+     * Changes the values of the matrix to be the same as the ones in given matrix.
      *
      * @param {PIXI.Matrix} matrix - The matrix to copy from.
      * @return {PIXI.Matrix} this
@@ -485,7 +544,7 @@ export class Matrix
     }
 
     /**
-     * A default (identity) matrix
+     * A default (identity) matrix. The identity matrix will map a 2D point to itself.
      *
      * @static
      * @const
@@ -497,7 +556,7 @@ export class Matrix
     }
 
     /**
-     * A temp matrix
+     * A temporary matrix.
      *
      * @static
      * @const

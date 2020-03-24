@@ -1,4 +1,5 @@
 const { Container, DisplayObject } = require('../');
+const { Matrix } = require('@pixi/math');
 
 function testAddChild(fn)
 {
@@ -450,63 +451,6 @@ describe('PIXI.Container', function ()
         });
     });
 
-    describe('updateTransform', function ()
-    {
-        it('should call sortChildren if sortDirty and sortableChildren are true', function ()
-        {
-            const parent = new Container();
-            const container = new Container();
-            const child = new Container();
-            const canvasSpy = sinon.spy(container, 'sortChildren');
-
-            parent.addChild(container);
-            container.addChild(child);
-
-            container.sortDirty = true;
-            container.sortableChildren = true;
-
-            container.updateTransform();
-
-            expect(canvasSpy).to.have.been.called;
-        });
-
-        it('should not call sortChildren if sortDirty is false', function ()
-        {
-            const parent = new Container();
-            const container = new Container();
-            const child = new Container();
-            const canvasSpy = sinon.spy(container, 'sortChildren');
-
-            parent.addChild(container);
-            container.addChild(child);
-
-            container.sortDirty = false;
-            container.sortableChildren = true;
-
-            container.updateTransform();
-
-            expect(canvasSpy).to.not.have.been.called;
-        });
-
-        it('should not call sortChildren if sortableChildren is false', function ()
-        {
-            const parent = new Container();
-            const container = new Container();
-            const child = new Container();
-            const canvasSpy = sinon.spy(container, 'sortChildren');
-
-            parent.addChild(container);
-            container.addChild(child);
-
-            container.sortDirty = true;
-            container.sortableChildren = false;
-
-            container.updateTransform();
-
-            expect(canvasSpy).to.not.have.been.called;
-        });
-    });
-
     describe('render', function ()
     {
         it('should not render when object not visible', function ()
@@ -644,8 +588,132 @@ describe('PIXI.Container', function ()
         });
     });
 
+    describe('updateTransform', function ()
+    {
+        it('should call sortChildren if sortDirty and sortableChildren are true', function ()
+        {
+            const parent = new Container();
+            const container = new Container();
+            const child = new Container();
+            const canvasSpy = sinon.spy(container, 'sortChildren');
+
+            parent.addChild(container);
+            container.addChild(child);
+
+            container.sortDirty = true;
+            container.sortableChildren = true;
+
+            container.updateTransform();
+
+            expect(canvasSpy).to.have.been.called;
+        });
+
+        it('should not call sortChildren if sortDirty is false', function ()
+        {
+            const parent = new Container();
+            const container = new Container();
+            const child = new Container();
+            const canvasSpy = sinon.spy(container, 'sortChildren');
+
+            parent.addChild(container);
+            container.addChild(child);
+
+            container.sortDirty = false;
+            container.sortableChildren = true;
+
+            container.updateTransform();
+
+            expect(canvasSpy).to.not.have.been.called;
+        });
+
+        it('should not call sortChildren if sortableChildren is false', function ()
+        {
+            const parent = new Container();
+            const container = new Container();
+            const child = new Container();
+            const canvasSpy = sinon.spy(container, 'sortChildren');
+
+            parent.addChild(container);
+            container.addChild(child);
+
+            container.sortDirty = true;
+            container.sortableChildren = false;
+
+            container.updateTransform();
+
+            expect(canvasSpy).to.not.have.been.called;
+        });
+
+        it('should update _subtreeBoundsID if parent transform changed', function ()
+        {
+            const root = new Container();
+            const parent = root.addChild(new Container());
+            const container = parent.addChild(new Container());
+
+            expect(container._subtreeBoundsID).to.equal(0);
+
+            parent.position.set(16);
+            parent.updateTransform();
+            container.updateTransform();
+
+            expect(container._subtreeBoundsID).to.not.equal(0);
+        });
+
+        it('using worldTransformInv should set world transformation matrix to identity', function ()
+        {
+            const root = new Container();
+            const container = new Container();
+
+            container.position.set(16, 24);
+            container.scale.set(2, 3);
+
+            root.addChild(container);
+            container.updateTransform();
+
+            container.updateTransform(container.transform.worldTransform.clone().invert());
+
+            expect(container.transform.nlStack.length).to.equal(1);
+            expect(container.transform.worldTransform).to.eql(Matrix.IDENTITY);
+        });
+
+        it('should update _subtreeBoundsID if child local transform has changed', function ()
+        {
+            const root = new Container();
+            const container = root.addChild(new Container());
+            const child = container.addChild(new Container());
+
+            child.transform._localID++;
+            expect(child.updateTransform()).to.equal(1);
+            expect(child._subtreeBoundsID).to.equal(1);
+
+            expect(container.updateTransform()).to.be.greaterThan(1);
+            expect(container._boundsID).to.equal(1);
+            expect(container._subtreeBoundsID).to.be.greaterThan(1);
+        });
+    });
+
     describe('getLocalBounds', function ()
     {
+        it('nlStack should properly be popped off', function ()
+        {
+            const root = new Container();
+            const container = root.addChild(new Container());
+            const child = container.addChild(new Container());
+            const containerSpy = sinon.spy(container.transform.nlStack, 'push');
+            const childSpy = sinon.spy(child.transform.nlStack, 'push');
+
+            container.position.set(16);
+            container.updateTransform();
+            container.getLocalBounds();
+
+            expect(container.transform.nlStack.length).to.equal(0);
+            expect(child.transform.nlStack.length).to.equal(0);
+            expect(containerSpy.calledOnce);
+            expect(childSpy.calledOnce);
+
+            expect(container.transform.worldTransform.tx).to.equal(16);
+        });
+
         it('should recalculate children transform by default', function ()
         {
             const root = new Container();

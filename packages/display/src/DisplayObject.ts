@@ -31,8 +31,6 @@ export abstract class DisplayObject extends EventEmitter
     public worldAlpha: number;
     public transform: Transform;
     public alpha: number;
-    public visible: boolean;
-    public renderable: boolean;
     public filterArea: Rectangle;
     public filters: Filter[];
     public isSprite: boolean;
@@ -45,12 +43,16 @@ export abstract class DisplayObject extends EventEmitter
     protected _zIndex: number;
     protected _enabledFilters: Filter[];
     protected _boundsID: number;
+    protected _subtreeBoundsID: number;
     protected _boundsRect: Rectangle;
     protected _localBoundsRect: Rectangle;
     protected _destroyed: boolean;
 
+    private _renderable: boolean;
+    private _visible: boolean;
+
     private tempDisplayObjectParent: TemporaryDisplayObject;
-    public displayObjectUpdateTransform: () => void;
+    public displayObjectUpdateTransform: () => number;
 
     /**
      * Mixes all enumerable properties and methods from a source object to DisplayObject.
@@ -195,12 +197,21 @@ export abstract class DisplayObject extends EventEmitter
         this._localBounds = null;
 
         /**
-         * Flags the cached bounds as dirty.
+         * Flags the content bounds of this display-object as dirty.
          *
          * @member {number}
          * @protected
          */
         this._boundsID = 0;
+
+        /**
+         * Flags the bounds of this display-object dirty. It is the sum of all display-object
+         * bounds-ID in this one's subtree.
+         *
+         * @member {number}
+         * @protected
+         */
+        this._subtreeBoundsID = 0;
 
         /**
          * Cache of this display-object's bounds-rectangle.
@@ -279,7 +290,7 @@ export abstract class DisplayObject extends EventEmitter
      * Recursively updates transform of all objects from the root to this one
      * internal function for toLocal()
      */
-    private _recursivePostUpdateTransform(): void
+    protected _recursivePostUpdateTransform(): void
     {
         if (this.parent)
         {
@@ -293,17 +304,29 @@ export abstract class DisplayObject extends EventEmitter
     }
 
     /**
-     * Updates the object transform for rendering.
+     * Updates the local and world transformation matrices, world alpha value, the
+     * bounds-ID if something has changed, and the subtree bounds-ID.
+     *
+     * This will throw an error if the display-object does not have a parent.
      *
      * TODO - Optimization pass!
+     *
+     * @returns {number} - a +ve value if bounds-ID has been changed!
      */
-    updateTransform(): void
+    updateTransform(): number
     {
-        this._boundsID++;
+        const bid = this._subtreeBoundsID;
 
+        // Update world transformation matrix (along with local transformation matrix)
         this.transform.updateTransform(this.parent.transform);
-        // multiply the alphas..
+
+        // Recalculate world-alpha value
         this.worldAlpha = this.alpha * this.parent.worldAlpha;
+
+        // No children?
+        this._subtreeBoundsID = this._boundsID + this.transform._worldID;
+
+        return this._subtreeBoundsID - bid;
     }
 
     /**
@@ -327,15 +350,15 @@ export abstract class DisplayObject extends EventEmitter
             }
             else
             {
-                this._recursivePostUpdateTransform();
+                this.parent._recursivePostUpdateTransform();
                 this.updateTransform();
             }
         }
 
-        if (this._bounds.updateID !== this._boundsID)
+        if (this._bounds.updateID !== this._subtreeBoundsID)
         {
             this.calculateBounds();
-            this._bounds.updateID = this._boundsID;
+            this._bounds.updateID = this._subtreeBoundsID;
         }
 
         if (!rect)
@@ -381,7 +404,7 @@ export abstract class DisplayObject extends EventEmitter
         this.transform = this._tempDisplayObjectParent.transform;
 
         const worldBounds = this._bounds;
-        const worldBoundsID = this._boundsID;
+        const worldBoundsID = this._subtreeBoundsID;
 
         this._bounds = this._localBounds;
 
@@ -391,7 +414,7 @@ export abstract class DisplayObject extends EventEmitter
         this.transform = transformRef;
 
         this._bounds = worldBounds;
-        this._bounds.updateID += this._boundsID - worldBoundsID;// reflect side-effects
+        this._bounds.updateID += this._subtreeBoundsID - worldBoundsID;// reflect side-effects
 
         return bounds;
     }
@@ -758,6 +781,34 @@ export abstract class DisplayObject extends EventEmitter
         return true;
     }
 
+    get renderable(): boolean
+    {
+        return this._renderable;
+    }
+
+    set renderable(value: boolean)
+    {
+        if (this._renderable !== value)
+        {
+            ++this._boundsID;
+            this._renderable = value;
+        }
+    }
+
+    get visible(): boolean
+    {
+        return this._visible;
+    }
+
+    set visible(value: boolean)
+    {
+        if (this._visible !== value)
+        {
+            ++this._boundsID;
+            this._visible = value;
+        }
+    }
+
     /**
      * Sets a mask for the displayObject. A mask is an object that limits the visibility of an
      * object to the shape of the mask applied to it. In PixiJS a regular mask must be a
@@ -801,6 +852,8 @@ export abstract class DisplayObject extends EventEmitter
             maskObject.renderable = false;
             maskObject.isMask = true;
         }
+
+        ++this._boundsID;
     }
 }
 

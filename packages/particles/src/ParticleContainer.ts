@@ -208,10 +208,10 @@ export class ParticleContainer extends Container
      *
      * @private
      */
-    updateTransform(): void
+    updateTransform(): number
     {
         // TODO don't need to!
-        this.displayObjectUpdateTransform();
+        return this.displayObjectUpdateTransform();
     }
 
     /**

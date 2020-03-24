@@ -2,7 +2,37 @@ import { ObservablePoint } from './ObservablePoint';
 import { Matrix } from './Matrix';
 
 /**
- * Transform that takes care about its versions
+ * Used by `PIXI.Transform` for saving world transformation matrices.
+ *
+ * @memberof PIXI
+ * @class
+ */
+class VersionedMatrix
+{
+    worldID: number;
+    parentID: number;
+    localID: number;
+
+    matrix: Matrix;
+
+    constructor()
+    {
+        this.matrix = new Matrix();
+    }
+}
+
+const versionedMatrixPool: VersionedMatrix[] = [];
+
+/**
+ * Transform stores local transformations in the form of their simple constituents
+ * (translation, scale, rotation, and skew) rather than just a matrix. The backing
+ * matrix is lazily updated after changes to any constituent's magnitude (see `updateLocalTransform`).
+ *
+ * World transformations are an ordered product of the local transformations of
+ * a display-object's ancestors. Another way to calculate the world transformation is
+ * to multiply a display-object's parent's world transformation with the display-object's
+ * local transformation. This is how pixi.js lazily calculates world transformations
+ * (see `updateTransform`) too.
  *
  * @class
  * @memberof PIXI
@@ -20,6 +50,8 @@ export class Transform
 
     public worldTransform: Matrix;
     public localTransform: Matrix;
+    public nlStack: Array<VersionedMatrix>;
+
     public position: ObservablePoint;
     public scale: ObservablePoint;
     public pivot: ObservablePoint;
@@ -39,49 +71,50 @@ export class Transform
     {
         /**
          * The world transformation matrix.
-         *
          * @member {PIXI.Matrix}
+         * @readonly
          */
         this.worldTransform = new Matrix();
 
         /**
          * The local transformation matrix.
-         *
          * @member {PIXI.Matrix}
+         * @readonly
          */
         this.localTransform = new Matrix();
 
         /**
+         * Stack of world transforms that have been pushed.
+         * @member {Array<PIXI.VersionedMatrix>}
+         */
+        this.nlStack = [];
+
+        /**
          * The coordinate of the object relative to the local coordinates of the parent.
-         *
          * @member {PIXI.ObservablePoint}
          */
         this.position = new ObservablePoint(this.onChange, this, 0, 0);
 
         /**
          * The scale factor of the object.
-         *
          * @member {PIXI.ObservablePoint}
          */
         this.scale = new ObservablePoint(this.onChange, this, 1, 1);
 
         /**
          * The pivot point of the displayObject that it rotates around.
-         *
          * @member {PIXI.ObservablePoint}
          */
         this.pivot = new ObservablePoint(this.onChange, this, 0, 0);
 
         /**
          * The skew amount, on the x and y axis.
-         *
          * @member {PIXI.ObservablePoint}
          */
         this.skew = new ObservablePoint(this.updateSkew, this, 0, 0);
 
         /**
          * The rotation amount.
-         *
          * @protected
          * @member {number}
          */
@@ -90,7 +123,6 @@ export class Transform
         /**
          * The X-coordinate value of the normalized local X axis,
          * the first column of the local transformation matrix without a scale.
-         *
          * @protected
          * @member {number}
          */
@@ -99,7 +131,6 @@ export class Transform
         /**
          * The Y-coordinate value of the normalized local X axis,
          * the first column of the local transformation matrix without a scale.
-         *
          * @protected
          * @member {number}
          */
@@ -108,7 +139,6 @@ export class Transform
         /**
          * The X-coordinate value of the normalized local Y axis,
          * the second column of the local transformation matrix without a scale.
-         *
          * @protected
          * @member {number}
          */
@@ -117,7 +147,6 @@ export class Transform
         /**
          * The Y-coordinate value of the normalized local Y axis,
          * the second column of the local transformation matrix without a scale.
-         *
          * @protected
          * @member {number}
          */
@@ -125,7 +154,6 @@ export class Transform
 
         /**
          * The locally unique ID of the local transform.
-         *
          * @protected
          * @member {number}
          */
@@ -134,7 +162,6 @@ export class Transform
         /**
          * The locally unique ID of the local transform
          * used to calculate the current local transformation matrix.
-         *
          * @protected
          * @member {number}
          */
@@ -142,7 +169,6 @@ export class Transform
 
         /**
          * The locally unique ID of the world transform.
-         *
          * @protected
          * @member {number}
          */
@@ -151,7 +177,6 @@ export class Transform
         /**
          * The locally unique ID of the parent's world transform
          * used to calculate the current world transformation matrix.
-         *
          * @protected
          * @member {number}
          */
@@ -186,7 +211,7 @@ export class Transform
     /**
      * Updates the local transformation matrix.
      */
-    updateLocalTransform(): void
+    updateLocalTransform(): Matrix
     {
         const lt = this.localTransform;
 
@@ -205,6 +230,8 @@ export class Transform
             // force an update..
             this._parentID = -1;
         }
+
+        return lt;
     }
 
     /**
@@ -214,23 +241,7 @@ export class Transform
      */
     updateTransform(parentTransform: Transform): void
     {
-        const lt = this.localTransform;
-
-        if (this._localID !== this._currentLocalID)
-        {
-            // get the matrix values of the displayobject based on its transform properties..
-            lt.a = this._cx * this.scale.x;
-            lt.b = this._sx * this.scale.x;
-            lt.c = this._cy * this.scale.y;
-            lt.d = this._sy * this.scale.y;
-
-            lt.tx = this.position.x - ((this.pivot.x * lt.a) + (this.pivot.y * lt.c));
-            lt.ty = this.position.y - ((this.pivot.x * lt.b) + (this.pivot.y * lt.d));
-            this._currentLocalID = this._localID;
-
-            // force an update..
-            this._parentID = -1;
-        }
+        const lt = this.updateLocalTransform();
 
         if (this._parentID !== parentTransform._worldID)
         {
@@ -250,6 +261,44 @@ export class Transform
             // update the id of the transform..
             this._worldID++;
         }
+    }
+
+    /**
+     * Pushes a copy of the current world transformation matrix. This can be used to
+     * restore it later without dirtying the transform of a display-object's subtree.
+     */
+    pushWorldTransform(): void
+    {
+        const worldTransform = versionedMatrixPool.pop() || new VersionedMatrix();
+
+        worldTransform.worldID = this._worldID;
+        worldTransform.parentID = this._parentID;
+        worldTransform.localID = this._currentLocalID;
+        worldTransform.matrix.copyFrom(this.worldTransform);
+
+        this.nlStack.push(worldTransform);
+    }
+
+    /**
+     * Pops off the last saved world transformation matrix.
+     */
+    popWorldTransform(): void
+    {
+        const worldTransform = this.nlStack.pop();
+        const { matrix: worldMatrix } = worldTransform;
+
+        if (!worldTransform)
+        {
+            throw new Error('nlStack does not contain any world transforms. Did you forget to push one?');
+        }
+
+        this._worldID = worldTransform.worldID;
+        this._parentID = worldTransform.parentID;
+        this._currentLocalID = worldTransform.localID;
+
+        this.worldTransform.copyFrom(worldMatrix);
+
+        versionedMatrixPool.push(worldTransform);
     }
 
     /**

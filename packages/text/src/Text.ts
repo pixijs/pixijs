@@ -48,7 +48,6 @@ export class Text extends Sprite
     public canvas: HTMLCanvasElement;
     public context: CanvasRenderingContext2D;
     public localStyleID: number;
-    public dirty: boolean;
 
     protected _text: string;
     protected _font: string;
@@ -56,7 +55,9 @@ export class Text extends Sprite
     protected _resolution: number;
     protected _autoResolution: boolean;
     protected _styleListener: () => void;
+
     private _ownCanvas: boolean;
+    private _dirty: boolean;
 
     /**
      * @param {string} text - The string that you would like the text to display
@@ -611,6 +612,20 @@ export class Text extends Sprite
         this._style = null;
     }
 
+    get dirty(): boolean
+    {
+        return this._dirty;
+    }
+    set dirty(value: boolean)
+    {
+        if (value)
+        {
+            ++this._boundsID;
+        }
+
+        this._dirty = value;
+    }
+
     /**
      * The width of the Text, setting this will actually modify the scale to achieve the value set
      *
@@ -704,6 +719,7 @@ export class Text extends Sprite
         {
             return;
         }
+
         this._text = text;
         this.dirty = true;
     }

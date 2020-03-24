@@ -1,10 +1,9 @@
 import { settings } from '@pixi/settings';
 import { removeItems } from '@pixi/utils';
-import { DisplayObject } from './DisplayObject';
-import { Rectangle } from '@pixi/math';
-
-import type { MaskData, Renderer } from '@pixi/core';
-import type { IDestroyOptions } from './DisplayObject';
+import { DisplayObject, IDestroyOptions } from './DisplayObject';
+import { Matrix, Rectangle } from '@pixi/math';
+import { Bounds } from './Bounds';
+import { MaskData, Renderer } from '@pixi/core';
 
 function sortChildren(a: DisplayObject, b: DisplayObject): number
 {
@@ -414,20 +413,19 @@ export class Container extends DisplayObject
 
     /**
      * Updates the transform on all children of this container for rendering
+     *
+     * @returns {number} - a +ve value if bounds-ID has changed.
      */
-    updateTransform(): void
+    updateTransform(rootWorldInv?: Matrix): number
     {
         if (this.sortableChildren && this.sortDirty)
         {
             this.sortChildren();
         }
 
-        this._boundsID++;
+        const bid = this._subtreeBoundsID;
 
-        this.transform.updateTransform(this.parent.transform);
-
-        // TODO: check render flags, how to process stuff here
-        this.worldAlpha = this.alpha * this.parent.worldAlpha;
+        super.updateTransform();
 
         for (let i = 0, j = this.children.length; i < j; ++i)
         {
@@ -435,20 +433,78 @@ export class Container extends DisplayObject
 
             if (child.visible)
             {
-                child.updateTransform();
+                (child as Container).updateTransform(rootWorldInv);
+                this._subtreeBoundsID += (child as Container)._subtreeBoundsID;
             }
         }
+
+        if (rootWorldInv)
+        {
+            this.transform.pushWorldTransform();
+            this.transform.worldTransform.prepend(rootWorldInv);
+        }
+
+        return this._subtreeBoundsID - bid;
+    }
+
+    getLocalBounds(rect?: Rectangle): Rectangle
+    {
+        let wasNull = false;
+
+        if (this.parent === null)
+        {
+            wasNull = true;
+            this.parent = this._tempDisplayObjectParent;
+        }
+
+        this._recursivePostUpdateTransform();
+
+        const worldTransformInverse = this.transform.worldTransform.clone().invert();
+
+        this.updateTransform(worldTransformInverse);
+
+        if (wasNull)
+        {
+            this.parent = null;
+        }
+
+        if (!rect)
+        {
+            if (!this._localBoundsRect)
+            {
+                this._localBoundsRect = new Rectangle();
+            }
+
+            rect = this._localBoundsRect;
+        }
+        if (!this._localBounds)
+        {
+            this._localBounds = new Bounds();
+        }
+
+        const worldBounds = this._bounds;
+
+        this._bounds = this._localBounds;
+        this.calculateBounds(true);
+        this._bounds = worldBounds;
+
+        return this._localBounds.getRectangle(rect);
     }
 
     /**
      * Recalculates the bounds of the container.
      *
      */
-    calculateBounds(): void
+    calculateBounds(restoreWorld = false): void
     {
         this._bounds.clear();
 
         this._calculateBounds();
+
+        if (restoreWorld)
+        {
+            this.transform.popWorldTransform();
+        }
 
         for (let i = 0; i < this.children.length; i++)
         {
@@ -459,7 +515,7 @@ export class Container extends DisplayObject
                 continue;
             }
 
-            child.calculateBounds();
+            (child as Container).calculateBounds(restoreWorld);
 
             // TODO: filter+mask, need to mask both somehow
             if (child._mask)
@@ -480,34 +536,6 @@ export class Container extends DisplayObject
         }
 
         this._bounds.updateID = this._boundsID;
-    }
-
-    /**
-     * Retrieves the local bounds of the displayObject as a rectangle object.
-     *
-     * @param {PIXI.Rectangle} [rect] - Optional rectangle to store the result of the bounds calculation.
-     * @param {boolean} [skipChildrenUpdate=false] Setting to `true` will stop re-calculation of children transforms,
-     *  it was default behaviour of pixi 4.0-5.2 and caused many problems to users.
-     * @return {PIXI.Rectangle} The rectangular bounding area.
-     */
-    public getLocalBounds(rect?: Rectangle, skipChildrenUpdate = false): Rectangle
-    {
-        const result = super.getLocalBounds(rect);
-
-        if (!skipChildrenUpdate)
-        {
-            for (let i = 0, j = this.children.length; i < j; ++i)
-            {
-                const child = this.children[i];
-
-                if (child.visible)
-                {
-                    child.updateTransform();
-                }
-            }
-        }
-
-        return result;
     }
 
     /**

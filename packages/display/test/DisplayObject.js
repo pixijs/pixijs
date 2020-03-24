@@ -39,6 +39,22 @@ describe('PIXI.DisplayObject', function ()
         });
     });
 
+    describe('updateTransform', function ()
+    {
+        it('should update _boundsID after change in local transformation matrix', function ()
+        {
+            const object = new DisplayObject();
+
+            object.parent = object._tempDisplayObjectParent;
+
+            expect(object.updateTransform()).to.equal(0);
+
+            object.position.set(12, 24);
+
+            expect(object.updateTransform()).to.not.equal(0);
+        });
+    });
+
     describe('setTransform', function ()
     {
         it('should set correct properties', function ()
