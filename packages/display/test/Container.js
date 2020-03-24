@@ -1,5 +1,4 @@
 const { Container, DisplayObject } = require('../');
-const { Matrix } = require('@pixi/math');
 
 function testAddChild(fn)
 {
@@ -657,23 +656,6 @@ describe('PIXI.Container', function ()
             container.updateTransform();
 
             expect(container._subtreeBoundsID).to.not.equal(0);
-        });
-
-        it('using worldTransformInv should set world transformation matrix to identity', function ()
-        {
-            const root = new Container();
-            const container = new Container();
-
-            container.position.set(16, 24);
-            container.scale.set(2, 3);
-
-            root.addChild(container);
-            container.updateTransform();
-
-            container.updateTransform(container.transform.worldTransform.clone().invert());
-
-            expect(container.transform.nlStack.length).to.equal(1);
-            expect(container.transform.worldTransform).to.eql(Matrix.IDENTITY);
         });
 
         it('should update _subtreeBoundsID if child local transform has changed', function ()

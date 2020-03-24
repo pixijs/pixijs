@@ -416,7 +416,7 @@ export class Container extends DisplayObject
      *
      * @returns {number} - a +ve value if bounds-ID has changed.
      */
-    updateTransform(rootWorldInv?: Matrix): number
+    updateTransform(): number
     {
         if (this.sortableChildren && this.sortDirty)
         {
@@ -433,15 +433,9 @@ export class Container extends DisplayObject
 
             if (child.visible)
             {
-                (child as Container).updateTransform(rootWorldInv);
+                (child as Container).updateTransform();
                 this._subtreeBoundsID += (child as Container)._subtreeBoundsID;
             }
-        }
-
-        if (rootWorldInv)
-        {
-            this.transform.pushWorldTransform();
-            this.transform.worldTransform.prepend(rootWorldInv);
         }
 
         return this._subtreeBoundsID - bid;
@@ -461,7 +455,7 @@ export class Container extends DisplayObject
 
         const worldTransformInverse = this.transform.worldTransform.clone().invert();
 
-        this.updateTransform(worldTransformInverse);
+        this.updateTransform();
 
         if (wasNull)
         {
@@ -485,7 +479,7 @@ export class Container extends DisplayObject
         const worldBounds = this._bounds;
 
         this._bounds = this._localBounds;
-        this.calculateBounds(true);
+        this.calculateBounds(worldTransformInverse);
         this._bounds = worldBounds;
 
         return this._localBounds.getRectangle(rect);
@@ -495,13 +489,19 @@ export class Container extends DisplayObject
      * Recalculates the bounds of the container.
      *
      */
-    calculateBounds(restoreWorld = false): void
+    calculateBounds(rootInv?: Matrix): void
     {
         this._bounds.clear();
 
+        if (rootInv)
+        {
+            this.transform.pushWorldTransform();
+            this.transform.worldTransform.prepend(rootInv);
+        }
+
         this._calculateBounds();
 
-        if (restoreWorld)
+        if (rootInv)
         {
             this.transform.popWorldTransform();
         }
@@ -515,7 +515,7 @@ export class Container extends DisplayObject
                 continue;
             }
 
-            (child as Container).calculateBounds(restoreWorld);
+            (child as Container).calculateBounds(rootInv);
 
             // TODO: filter+mask, need to mask both somehow
             if (child._mask)
