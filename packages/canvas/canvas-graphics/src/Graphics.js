@@ -11,7 +11,7 @@ const tempMatrix = new Matrix();
  * or the **@pixi/canvas-graphics** package.
  * @method generateCanvasTexture
  * @memberof PIXI.Graphics#
- * @param {number} scaleMode - The scale mode of the texture.
+ * @param {PIXI.SCALE_MODES} scaleMode - The scale mode of the texture.
  * @param {number} resolution - The resolution of the texture.
  * @return {PIXI.Texture} The new texture.
  */

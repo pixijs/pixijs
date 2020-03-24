@@ -11,7 +11,8 @@ import { settings } from '@pixi/settings';
 import { premultiplyBlendMode, premultiplyTint, nextPow2, log2 } from '@pixi/utils';
 import { ENV } from '@pixi/constants';
 
-import type { Renderer, Shader } from '@pixi/core';
+import type { Renderer } from '../Renderer';
+import type { Shader } from '../shader/Shader';
 import type { BatchShaderGenerator } from './BatchShaderGenerator';
 import type { BatchGeometry } from './BatchGeometry';
 
