@@ -301,8 +301,8 @@ export class Container extends DisplayObject
             child.transform._parentID = -1;
             removeItems(this.children, index, 1);
 
-            // ensure bounds will be recalculated
-            this._boundsID++;
+            // ensure bounds will be recalculated and _subtreeBoundsID doesn't decrease
+            this._boundsID += (child as any)._subtreeBoundsID + 1;
 
             // TODO - lets either do all callbacks or all events.. not both!
             this.onChildrenChange(index);
@@ -329,7 +329,7 @@ export class Container extends DisplayObject
         removeItems(this.children, index, 1);
 
         // ensure bounds will be recalculated
-        this._boundsID++;
+        this._boundsID += (child as any)._subtreeBoundsID + 1;
 
         // TODO - lets either do all callbacks or all events.. not both!
         this.onChildrenChange(index);
@@ -360,10 +360,14 @@ export class Container extends DisplayObject
             for (let i = 0; i < removed.length; ++i)
             {
                 removed[i].parent = null;
+
                 if (removed[i].transform)
                 {
                     removed[i].transform._parentID = -1;
                 }
+
+                /* Prevent _subtreeBoundsID from reducing next time. */
+                this._boundsID += (removed[i] as any)._subtreeBoundsID;
             }
 
             this._boundsID++;
