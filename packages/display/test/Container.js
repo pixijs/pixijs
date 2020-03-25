@@ -676,26 +676,6 @@ describe('PIXI.Container', function ()
 
     describe('getLocalBounds', function ()
     {
-        it('nlStack should properly be popped off', function ()
-        {
-            const root = new Container();
-            const container = root.addChild(new Container());
-            const child = container.addChild(new Container());
-            const containerSpy = sinon.spy(container.transform.nlStack, 'push');
-            const childSpy = sinon.spy(child.transform.nlStack, 'push');
-
-            container.position.set(16);
-            container.updateTransform();
-            container.getLocalBounds();
-
-            expect(container.transform.nlStack.length).to.equal(0);
-            expect(child.transform.nlStack.length).to.equal(0);
-            expect(containerSpy.calledOnce);
-            expect(childSpy.calledOnce);
-
-            expect(container.transform.worldTransform.tx).to.equal(16);
-        });
-
         it('should recalculate children transform by default', function ()
         {
             const root = new Container();
