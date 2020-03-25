@@ -418,14 +418,12 @@ export class Container extends DisplayObject
      *
      * @returns {number} - a +ve value if bounds-ID has changed.
      */
-    updateTransform(): number
+    updateTransform(): void
     {
         if (this.sortableChildren && this.sortDirty)
         {
             this.sortChildren();
         }
-
-        const bid = this._subtreeBoundsID;
 
         super.updateTransform();
 
@@ -435,12 +433,10 @@ export class Container extends DisplayObject
 
             if (child.visible)
             {
-                (child as Container).updateTransform();
+                child.updateTransform();
                 this._subtreeBoundsID += (child as Container)._subtreeBoundsID;
             }
         }
-
-        return this._subtreeBoundsID - bid;
     }
 
     getLocalBounds(rect?: Rectangle): Rectangle

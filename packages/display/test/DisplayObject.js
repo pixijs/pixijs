@@ -47,7 +47,8 @@ describe('PIXI.DisplayObject', function ()
 
             object.parent = object._tempDisplayObjectParent;
 
-            expect(object.updateTransform()).to.equal(0);
+            object.updateTransform();
+            expect(object._subtreeBoundsID).to.equal(0);
 
             object.position.set(12, 24);
 

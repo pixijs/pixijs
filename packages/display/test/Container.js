@@ -665,10 +665,10 @@ describe('PIXI.Container', function ()
             const child = container.addChild(new Container());
 
             child.transform._localID++;
-            expect(child.updateTransform()).to.equal(1);
+            child.updateTransform();
             expect(child._subtreeBoundsID).to.equal(1);
 
-            expect(container.updateTransform()).to.be.greaterThan(1);
+            container.updateTransform();
             expect(container._boundsID).to.equal(1);
             expect(container._subtreeBoundsID).to.be.greaterThan(1);
         });

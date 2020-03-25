@@ -52,7 +52,7 @@ export abstract class DisplayObject extends EventEmitter
     private _visible: boolean;
 
     private tempDisplayObjectParent: TemporaryDisplayObject;
-    public displayObjectUpdateTransform: () => number;
+    public displayObjectUpdateTransform: () => void;
 
     /**
      * Mixes all enumerable properties and methods from a source object to DisplayObject.
@@ -313,10 +313,8 @@ export abstract class DisplayObject extends EventEmitter
      *
      * @returns {number} - a +ve value if bounds-ID has been changed!
      */
-    updateTransform(): number
+    updateTransform(): void
     {
-        const bid = this._subtreeBoundsID;
-
         // Update world transformation matrix (along with local transformation matrix)
         this.transform.updateTransform(this.parent.transform);
 
@@ -325,8 +323,6 @@ export abstract class DisplayObject extends EventEmitter
 
         // No children?
         this._subtreeBoundsID = this._boundsID + this.transform._worldID;
-
-        return this._subtreeBoundsID - bid;
     }
 
     /**
