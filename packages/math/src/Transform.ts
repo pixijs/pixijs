@@ -2,28 +2,6 @@ import { ObservablePoint } from './ObservablePoint';
 import { Matrix } from './Matrix';
 
 /**
- * Used by `PIXI.Transform` for saving world transformation matrices.
- *
- * @memberof PIXI
- * @class
- */
-class VersionedMatrix
-{
-    worldID: number;
-    parentID: number;
-    localID: number;
-
-    matrix: Matrix;
-
-    constructor()
-    {
-        this.matrix = new Matrix();
-    }
-}
-
-const versionedMatrixPool: VersionedMatrix[] = [];
-
-/**
  * Transform stores local transformations in the form of their simple constituents
  * (translation, scale, rotation, and skew) rather than just a matrix. The backing
  * matrix is lazily updated after changes to any constituent's magnitude (see `updateLocalTransform`).
@@ -50,7 +28,6 @@ export class Transform
 
     public worldTransform: Matrix;
     public localTransform: Matrix;
-    public nlStack: Array<VersionedMatrix>;
 
     public position: ObservablePoint;
     public scale: ObservablePoint;
@@ -82,12 +59,6 @@ export class Transform
          * @readonly
          */
         this.localTransform = new Matrix();
-
-        /**
-         * Stack of world transforms that have been pushed.
-         * @member {Array<PIXI.VersionedMatrix>}
-         */
-        this.nlStack = [];
 
         /**
          * The coordinate of the object relative to the local coordinates of the parent.
@@ -261,44 +232,6 @@ export class Transform
             // update the id of the transform..
             this._worldID++;
         }
-    }
-
-    /**
-     * Pushes a copy of the current world transformation matrix. This can be used to
-     * restore it later without dirtying the transform of a display-object's subtree.
-     */
-    pushWorldTransform(): void
-    {
-        const worldTransform = versionedMatrixPool.pop() || new VersionedMatrix();
-
-        worldTransform.worldID = this._worldID;
-        worldTransform.parentID = this._parentID;
-        worldTransform.localID = this._currentLocalID;
-        worldTransform.matrix.copyFrom(this.worldTransform);
-
-        this.nlStack.push(worldTransform);
-    }
-
-    /**
-     * Pops off the last saved world transformation matrix.
-     */
-    popWorldTransform(): void
-    {
-        const worldTransform = this.nlStack.pop();
-        const { matrix: worldMatrix } = worldTransform;
-
-        if (!worldTransform)
-        {
-            throw new Error('nlStack does not contain any world transforms. Did you forget to push one?');
-        }
-
-        this._worldID = worldTransform.worldID;
-        this._parentID = worldTransform.parentID;
-        this._currentLocalID = worldTransform.localID;
-
-        this.worldTransform.copyFrom(worldMatrix);
-
-        versionedMatrixPool.push(worldTransform);
     }
 
     /**

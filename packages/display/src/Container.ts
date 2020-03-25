@@ -5,6 +5,8 @@ import { Matrix, Rectangle } from '@pixi/math';
 import { Bounds } from './Bounds';
 import { MaskData, Renderer } from '@pixi/core';
 
+const matrixPool: Array<Matrix> = [];
+
 function sortChildren(a: DisplayObject, b: DisplayObject): number
 {
     if (a.zIndex === b.zIndex)
@@ -498,9 +500,12 @@ export class Container extends DisplayObject
     {
         this._bounds.clear();
 
+        let worldTransform;
+
         if (rootInv)
         {
-            this.transform.pushWorldTransform();
+            worldTransform = matrixPool.pop() || new Matrix();
+            worldTransform.copyFrom(this.transform.worldTransform);
             this.transform.worldTransform.prepend(rootInv);
         }
 
@@ -508,7 +513,9 @@ export class Container extends DisplayObject
 
         if (rootInv)
         {
-            this.transform.popWorldTransform();
+            // swap instead of copy into
+            matrixPool.push(this.transform.worldTransform);
+            this.transform.worldTransform = worldTransform;
         }
 
         for (let i = 0; i < this.children.length; i++)
