@@ -1,4 +1,4 @@
-import { BaseTexture, BaseRenderTexture } from '@pixi/core';
+import { BaseTexture, BaseRenderTexture, Texture } from '@pixi/core';
 
 /**
  * Get the drawable source, such as HTMLCanvasElement or HTMLImageElement suitable
@@ -23,3 +23,7 @@ BaseTexture.prototype.getDrawableSource = function getDrawableSource(): CanvasIm
  */
 
 BaseRenderTexture.prototype._canvasRenderTarget = null;
+
+Texture.prototype.patternCache = null;
+
+Texture.prototype.tintCache = null;
