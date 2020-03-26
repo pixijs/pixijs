@@ -208,7 +208,7 @@ export class CanvasMaskManager
      * Destroys this canvas mask manager.
      *
      */
-    destroy(): void
+    public destroy(): void
     {
         /* empty */
     }

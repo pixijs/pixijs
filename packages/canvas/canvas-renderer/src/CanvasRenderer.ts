@@ -177,7 +177,7 @@ export class CanvasRenderer extends AbstractRenderer
      * @param {PIXI.Matrix} [transform] - A transformation to be applied
      * @param {boolean} [skipUpdateTransform=false] - Whether to skip the update transform
      */
-    render(displayObject: DisplayObject, renderTexture?: RenderTexture | BaseRenderTexture,
+    public render(displayObject: DisplayObject, renderTexture?: RenderTexture | BaseRenderTexture,
         clear?: boolean, transform?: Matrix, skipUpdateTransform?: boolean): void
     {
         if (!this.view)
@@ -327,7 +327,7 @@ export class CanvasRenderer extends AbstractRenderer
      *
      * @param {string} [clearColor] - Clear the canvas with this color, except the canvas is transparent.
      */
-    clear(clearColor: string): void
+    public clear(clearColor: string): void
     {
         const context = this.context;
 
@@ -378,7 +378,7 @@ export class CanvasRenderer extends AbstractRenderer
      *
      * @param {boolean} [removeView=false] - Removes the Canvas element from the DOM.
      */
-    destroy(removeView?: boolean): void
+    public destroy(removeView?: boolean): void
     {
         // call the base destroy
         super.destroy(removeView);
@@ -401,7 +401,7 @@ export class CanvasRenderer extends AbstractRenderer
      * @param {number} screenWidth - the new width of the screen
      * @param {number} screenHeight - the new height of the screen
      */
-    resize(screenWidth: number, screenHeight: number): void
+    public resize(screenWidth: number, screenHeight: number): void
     {
         super.resize(screenWidth, screenHeight);
 
