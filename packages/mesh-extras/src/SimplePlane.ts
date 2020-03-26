@@ -6,10 +6,14 @@ import { PlaneGeometry } from './geometry/PlaneGeometry';
  * The SimplePlane allows you to draw a texture across several points and then manipulate these points
  *
  *```js
- * for (let i = 0; i < 20; i++) {
- *     points.push(new PIXI.Point(i * 50, 0));
- * };
- * let SimplePlane = new PIXI.SimplePlane(PIXI.Texture.from("snake.png"), points);
+ * let plane = new PIXI.SimplePlane(PIXI.Texture.from("snake.png"));
+ * let geometry = new PIXI.Geometry();
+ *
+ * geometry.addAttribute('positions', [0, 0, 100, 0, 100, 100, 0, 100], 2);
+ * geometry.addAttribute('uvs', [0,0,1,0,1,1,0,1], 2);
+ * geometry.addIndex([0,1,2,1,3,2]);
+ *
+ * plane.geometry = geometry;
  *  ```
  *
  * @class
