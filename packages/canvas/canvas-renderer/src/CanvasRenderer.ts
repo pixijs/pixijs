@@ -6,7 +6,24 @@ import { RENDERER_TYPE, SCALE_MODES, BLEND_MODES } from '@pixi/constants';
 import { settings } from '@pixi/settings';
 import { Matrix } from '@pixi/math';
 
+import type { DisplayObject } from '@pixi/display';
+import type {
+    IRendererOptions, IRendererPlugin,
+    IRendererPlugins,
+    RenderTexture,
+    BaseRenderTexture,
+} from '@pixi/core';
+
 const tempMatrix = new Matrix();
+
+export interface ICanvasRendererPluginConstructor {
+    new (renderer: CanvasRenderer): IRendererPlugin;
+}
+
+export interface ICanvasRendererPlugins
+{
+    [key: string]: any;
+}
 
 /**
  * The CanvasRenderer draws the scene and all its content onto a 2d canvas.
@@ -20,6 +37,19 @@ const tempMatrix = new Matrix();
  */
 export class CanvasRenderer extends AbstractRenderer
 {
+    public readonly rootContext: CanvasRenderingContext2D;
+    public context: CanvasRenderingContext2D;
+    public refresh: boolean;
+    public maskManager: CanvasMaskManager;
+    public smoothProperty: string;
+    public readonly blendModes: string[];
+    public renderingToScreen: boolean;
+
+    private _activeBlendMode: BLEND_MODES;
+    private _projTransform: Matrix;
+
+    _outerBlend: boolean;
+
     /**
      * @param {object} [options] - The optional renderer parameters
      * @param {number} [options.width=800] - the width of the screen
@@ -38,16 +68,16 @@ export class CanvasRenderer extends AbstractRenderer
      * @param {number} [options.backgroundColor=0x000000] - The background color of the rendered area
      *  (shown if not transparent).
      */
-    constructor(options, arg2, arg3)
+    constructor(options?: IRendererOptions)
     {
-        super(RENDERER_TYPE.CANVAS, options, arg2, arg3);
+        super(RENDERER_TYPE.CANVAS, options);
 
         /**
          * The root canvas 2d context that everything is drawn with.
          *
          * @member {CanvasRenderingContext2D}
          */
-        this.rootContext = this.view.getContext('2d', { alpha: this.transparent });
+        this.rootContext = this.view.getContext('2d', { alpha: this.transparent }) as any;
 
         /**
          * The currently active canvas 2d context (could change with renderTextures)
@@ -79,19 +109,21 @@ export class CanvasRenderer extends AbstractRenderer
 
         if (!this.rootContext.imageSmoothingEnabled)
         {
-            if (this.rootContext.webkitImageSmoothingEnabled)
+            const rcAny = this.rootContext as any;
+
+            if (rcAny.webkitImageSmoothingEnabled)
             {
                 this.smoothProperty = 'webkitImageSmoothingEnabled';
             }
-            else if (this.rootContext.mozImageSmoothingEnabled)
+            else if (rcAny.mozImageSmoothingEnabled)
             {
                 this.smoothProperty = 'mozImageSmoothingEnabled';
             }
-            else if (this.rootContext.oImageSmoothingEnabled)
+            else if (rcAny.oImageSmoothingEnabled)
             {
                 this.smoothProperty = 'oImageSmoothingEnabled';
             }
-            else if (this.rootContext.msImageSmoothingEnabled)
+            else if (rcAny.msImageSmoothingEnabled)
             {
                 this.smoothProperty = 'msImageSmoothingEnabled';
             }
@@ -144,7 +176,8 @@ export class CanvasRenderer extends AbstractRenderer
      * @param {PIXI.Matrix} [transform] - A transformation to be applied
      * @param {boolean} [skipUpdateTransform=false] - Whether to skip the update transform
      */
-    render(displayObject, renderTexture, clear, transform, skipUpdateTransform)
+    render(displayObject: DisplayObject, renderTexture?: RenderTexture | BaseRenderTexture,
+        clear?: boolean, transform?: Matrix, skipUpdateTransform?: boolean): void
     {
         if (!this.view)
         {
@@ -160,7 +193,7 @@ export class CanvasRenderer extends AbstractRenderer
 
         if (renderTexture)
         {
-            renderTexture = renderTexture.baseTexture || renderTexture;
+            renderTexture = renderTexture.castToBaseTexture() as BaseRenderTexture;
 
             if (!renderTexture._canvasRenderTarget)
             {
@@ -249,7 +282,7 @@ export class CanvasRenderer extends AbstractRenderer
      * @param {boolean} [roundPixels] whether to round (tx,ty) coords
      * @param {number} [localResolution] If specified, used instead of `renderer.resolution` for local scaling
      */
-    setContextTransform(transform, roundPixels, localResolution)
+    setContextTransform(transform: Matrix, roundPixels?: boolean, localResolution?: number): void
     {
         let mat = transform;
         const proj = this._projTransform;
@@ -293,7 +326,7 @@ export class CanvasRenderer extends AbstractRenderer
      *
      * @param {string} [clearColor] - Clear the canvas with this color, except the canvas is transparent.
      */
-    clear(clearColor)
+    clear(clearColor: string): void
     {
         const context = this.context;
 
@@ -317,7 +350,7 @@ export class CanvasRenderer extends AbstractRenderer
      * @param {boolean} [readyForOuterBlend=false] - Some blendModes are dangerous, they affect outer space of sprite.
      * Pass `true` only if you are ready to use them.
      */
-    setBlendMode(blendMode, readyForOuterBlend)
+    setBlendMode(blendMode: BLEND_MODES, readyForOuterBlend?: boolean): void
     {
         const outerBlend = blendMode === BLEND_MODES.SRC_IN
             || blendMode === BLEND_MODES.SRC_OUT
@@ -344,7 +377,7 @@ export class CanvasRenderer extends AbstractRenderer
      *
      * @param {boolean} [removeView=false] - Removes the Canvas element from the DOM.
      */
-    destroy(removeView)
+    destroy(removeView?: boolean): void
     {
         // call the base destroy
         super.destroy(removeView);
@@ -367,7 +400,7 @@ export class CanvasRenderer extends AbstractRenderer
      * @param {number} screenWidth - the new width of the screen
      * @param {number} screenHeight - the new height of the screen
      */
-    resize(screenWidth, screenHeight)
+    resize(screenWidth: number, screenHeight: number): void
     {
         super.resize(screenWidth, screenHeight);
 
@@ -375,17 +408,19 @@ export class CanvasRenderer extends AbstractRenderer
         // surely a browser bug?? Let PixiJS fix that for you..
         if (this.smoothProperty)
         {
-            this.rootContext[this.smoothProperty] = (settings.SCALE_MODE === SCALE_MODES.LINEAR);
+            (this.rootContext as any)[this.smoothProperty] = (settings.SCALE_MODE === SCALE_MODES.LINEAR);
         }
     }
 
     /**
      * Checks if blend mode has changed.
      */
-    invalidateBlendMode()
+    invalidateBlendMode(): void
     {
         this._activeBlendMode = this.blendModes.indexOf(this.context.globalCompositeOperation);
     }
+
+    static __plugins: IRendererPlugins;
 
     /**
      * Collection of installed plugins. These are included by default in PIXI, but can be excluded
@@ -407,7 +442,7 @@ export class CanvasRenderer extends AbstractRenderer
      * @param {string} pluginName - The name of the plugin.
      * @param {Function} ctor - The constructor function or class for the plugin.
      */
-    static registerPlugin(pluginName, ctor)
+    static registerPlugin(pluginName: string, ctor: ICanvasRendererPluginConstructor): void
     {
         CanvasRenderer.__plugins = CanvasRenderer.__plugins || {};
         CanvasRenderer.__plugins[pluginName] = ctor;

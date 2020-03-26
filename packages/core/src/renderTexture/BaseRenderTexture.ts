@@ -5,6 +5,8 @@ import type { IBaseTextureOptions } from '../textures/BaseTexture';
 import type { MaskData } from '../mask/MaskData';
 import type { CanvasRenderTarget } from '@pixi/utils';
 
+export interface BaseRenderTexture extends GlobalMixins.BaseRenderTexture, BaseTexture {}
+
 /**
  * A BaseRenderTexture is a special texture that allows any PixiJS display object to be rendered to it.
  *

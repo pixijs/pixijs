@@ -7,9 +7,9 @@ import { BaseTexture } from '@pixi/core';
  * @memberof PIXI.BaseTexture#
  * @return {PIXI.ICanvasImageSource} Source to render with CanvasRenderer
  */
-BaseTexture.prototype.getDrawableSource = function getDrawableSource()
+BaseTexture.prototype.getDrawableSource = function getDrawableSource(): CanvasImageSource
 {
-    const resource = this.resource;
+    const resource = this.resource as any;
 
     return resource ? (resource.bitmap || resource.source) : null;
 };
