@@ -18,7 +18,7 @@ interface IFindHook {
     (item: any, queue: Array<any>): boolean;
 }
 
-interface IDisplayObjectExtended extends DisplayObject {
+export interface IDisplayObjectExtended extends DisplayObject {
     _textures?: Array<Texture>;
     _texture?: Texture;
     style?: TextStyle;
@@ -240,9 +240,9 @@ function findTextStyle(item: TextStyle, queue: Array<any>): boolean
 export class BasePrepare
 {
     private limiter: CountLimiter;
-    public renderer: AbstractRenderer;
-    public uploadHookHelper: any;
-    public queue: Array<any>;
+    protected renderer: AbstractRenderer;
+    protected uploadHookHelper: any;
+    protected queue: Array<any>;
     public addHooks: Array<any>;
     public uploadHooks: Array<any>;
     public completes: Array<any>;
