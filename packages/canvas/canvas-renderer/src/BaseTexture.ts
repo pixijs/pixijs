@@ -1,4 +1,4 @@
-import { BaseTexture } from '@pixi/core';
+import { BaseTexture, BaseRenderTexture } from '@pixi/core';
 
 /**
  * Get the drawable source, such as HTMLCanvasElement or HTMLImageElement suitable
@@ -13,3 +13,13 @@ BaseTexture.prototype.getDrawableSource = function getDrawableSource(): CanvasIm
 
     return resource ? (resource.bitmap || resource.source) : null;
 };
+
+/**
+ * A reference to the canvas render target (we only need one as this can be shared across renderers)
+ *
+ * @protected
+ * @member {PIXI.utils.CanvasRenderTarget} _canvasRenderTarget
+ * @memberof PIXI.BaseRenderTexture#
+ */
+
+BaseRenderTexture.prototype._canvasRenderTarget = null;
