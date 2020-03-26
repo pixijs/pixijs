@@ -299,7 +299,7 @@ export abstract class AbstractRenderer extends EventEmitter
      * This can be quite useful if your displayObject is complicated and needs to be reused multiple times.
      *
      * @param {PIXI.DisplayObject} displayObject - The displayObject the object will be generated from.
-     * @param {number} scaleMode - Should be one of the scaleMode consts.
+     * @param {PIXI.SCALE_MODES} scaleMode - The scale mode of the texture.
      * @param {number} resolution - The resolution / device pixel ratio of the texture being generated.
      * @param {PIXI.Rectangle} [region] - The region of the displayObject, that shall be rendered,
      *        if no region is specified, defaults to the local bounds of the displayObject.
@@ -318,7 +318,8 @@ export abstract class AbstractRenderer extends EventEmitter
             {
                 width: region.width | 0,
                 height: region.height | 0,
-                scaleMode, resolution,
+                scaleMode,
+                resolution,
             });
 
         tempMatrix.tx = -region.x;
