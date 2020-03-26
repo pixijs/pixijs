@@ -77,7 +77,8 @@ export class CanvasRenderer extends AbstractRenderer
          *
          * @member {CanvasRenderingContext2D}
          */
-        this.rootContext = this.view.getContext('2d', { alpha: this.transparent }) as any;
+        this.rootContext = this.view.getContext('2d', { alpha: this.transparent }) as
+            CanvasRenderingContext2D;
 
         /**
          * The currently active canvas 2d context (could change with renderTextures)
