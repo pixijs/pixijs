@@ -184,7 +184,7 @@ export class BitmapText extends Container
      *
      * @private
      */
-    public updateText(): void
+    private updateText(): void
     {
         const data = BitmapFont.available[this._font.name];
         const scale = this._font.size / data.size;
@@ -354,7 +354,7 @@ export class BitmapText extends Container
      *
      * @private
      */
-    public updateTransform(): void
+    updateTransform(): void
     {
         this.validate();
         this.containerUpdateTransform();
