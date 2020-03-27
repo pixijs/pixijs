@@ -1,5 +1,5 @@
 import { FillStyle } from './FillStyle';
-import { LINE_JOIN } from '@pixi/constants';
+import { LINE_JOIN, LINE_CAP } from '@pixi/constants';
 
 /**
  * Represents the line style for Graphics.
@@ -34,6 +34,14 @@ export class LineStyle extends FillStyle
     public native = false;
 
     /**
+     * Line cap style.
+     *
+     * @member {PIXI.LINE_CAP}
+     * @default PIXI.LINE_CAP.BUTT
+     */
+    public cap = LINE_CAP.BUTT;
+
+    /**
      * Line join style.
      *
      * @member {PIXI.LINE_JOIN}
@@ -66,6 +74,7 @@ export class LineStyle extends FillStyle
         obj.width = this.width;
         obj.alignment = this.alignment;
         obj.native = this.native;
+        obj.cap = this.cap;
         obj.join = this.join;
         obj.miterLimit = this.miterLimit;
 

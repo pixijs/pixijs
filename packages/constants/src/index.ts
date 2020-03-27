@@ -450,3 +450,22 @@ export enum LINE_JOIN {
     BEVEL = 'bevel',
     ROUND = 'round'
 }
+
+/**
+ * Support line caps in `PIXI.LineStyle` for graphics.
+ *
+ * @see PIXI.Graphics#lineStyle
+ *
+ * @name LINE_CAP
+ * @memberof PIXI
+ * @static
+ * @enum {string}
+ * @property {string} BUTT - 'butt': don't add any cap at line ends (leaves orthogonal edges)
+ * @property {string} ROUND - 'round': add semicircle at ends
+ * @property {string} SQUARE - 'square': add square at end (like `BUTT` except more length at end)
+ */
+export enum LINE_CAP {
+    BUTT = 'butt',
+    ROUND = 'round',
+    SQUARE = 'square'
+}

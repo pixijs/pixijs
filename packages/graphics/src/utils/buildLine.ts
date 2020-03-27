@@ -3,7 +3,7 @@ import { Point, SHAPES } from '@pixi/math';
 import type { Polygon } from '@pixi/math';
 import type { GraphicsData } from '../GraphicsData';
 import type { GraphicsGeometry } from '../GraphicsGeometry';
-import { LINE_JOIN } from '@pixi/constants';
+import { LINE_JOIN, LINE_CAP } from '@pixi/constants';
 import { settings } from '@pixi/settings';
 
 /* Useful constants! */
@@ -11,7 +11,70 @@ const HALF_PI = Math.PI / 2;
 const PI_LBOUND = Math.PI - settings.EPSILON;
 
 /**
- * Buffers vertices to draw an arc at the line joint.
+ * Buffers vertices to draw a square cap.
+ *
+ * Ignored from docs since it is not directly exposed.
+ *
+ * @ignore
+ * @private
+ * @param {number} x - X-coord of end point
+ * @param {number} y - Y-coord of end point
+ * @param {number} nx - X-coord of line normal pointing inside
+ * @param {number} ny - Y-coord of line normal pointing inside
+ * @param {Array<number>} verts - vertex buffer
+ * @returns {}
+ */
+function square(
+    x: number,
+    y: number,
+    nx: number,
+    ny: number,
+    innerWeight: number,
+    outerWeight: number,
+    clockwise: boolean, /* rotation for square (true at left end, false at right end) */
+    verts: Array<number>
+): number
+{
+    const ix = x - (nx * innerWeight);
+    const iy = y - (ny * innerWeight);
+    const ox = x + (nx * outerWeight);
+    const oy = y + (ny * outerWeight);
+
+    /* Rotate nx,ny for extension vector */
+    let exx; let
+        eyy;
+
+    if (clockwise)
+    {
+        exx = ny;
+        eyy = -nx;
+    }
+    else
+    {
+        exx = -ny;
+        eyy = nx;
+    }
+
+    /* [i|0]x,y extended at cap */
+    const eix = ix + exx;
+    const eiy = iy + eyy;
+    const eox = ox + exx;
+    const eoy = oy + eyy;
+
+    /* Square itself must be inserted clockwise*/
+    verts.push(eix, eiy);
+    verts.push(eox, eoy);
+
+    return 2;
+}
+
+/**
+ * Buffers vertices to draw an arc at the line joint or cap.
+ *
+ * Ignored from docs since it is not directly exposed.
+ *
+ * @ignore
+ * @private
  * @param {number} cx - X-coord of center
  * @param {number} cy - Y-coord of center
  * @param {number} sx - X-coord of arc start
@@ -31,9 +94,8 @@ function round(
     ex: number,
     ey: number,
     verts: Array<number>,
-    clockwise: boolean,
-    // nxtPx: number,
-    // nxtPy: number,
+    clockwise: boolean, /* if not cap, then clockwise is turn of joint, otherwise rotation from angle0 to angle1 */
+    cap = false
 ): number
 {
     const cx2p0x = sx - cx;
@@ -42,20 +104,30 @@ function round(
     let angle0 = Math.atan2(cx2p0x, cy2p0y);
     let angle1 = Math.atan2(ex - cx, ey - cy);
 
-    let startAngle = angle0;
-
-    if (angle1 > angle0)
+    if (!cap)
     {
-        if ((angle1 - angle0) >= PI_LBOUND)
+        if (angle1 > angle0)
         {
-            angle1 = angle1 - HALF_PI;
+            if ((angle1 - angle0) >= PI_LBOUND)
+            {
+                angle1 -= HALF_PI;
+            }
+        }
+        else if ((angle0 - angle1) >= PI_LBOUND)
+        {
+            angle0 -= HALF_PI;
         }
     }
-    else if ((angle0 - angle1) >= PI_LBOUND)
+    else if (clockwise && angle0 < angle1)
     {
-        angle0 = angle0 - HALF_PI;
+        angle0 += Math.PI * 2;
+    }
+    else if (!clockwise && angle0 > angle1)
+    {
+        angle1 += Math.PI * 2;
     }
 
+    let startAngle = angle0;
     const angleDiff = angle1 - angle0;
     const absAngleDiff = Math.abs(angleDiff);
 
@@ -96,8 +168,7 @@ function round(
         }
 
         verts.push(cx, cy);
-        verts.push(cx + ((Math.sin(angle1) * radius)),
-            cy + ((Math.cos(angle1) * radius)));
+        verts.push(ex, ey);
     }
     else
     {
@@ -209,6 +280,25 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
     const ratio = style.alignment;// 0.5;
     const innerWeight = (1 - ratio) * 2;
     const outerWeight = ratio * 2;
+
+    if (style.cap === LINE_CAP.ROUND)
+    {
+        indexCount += round(
+            x0 - (perpx * (innerWeight - outerWeight) * 0.5),
+            y0 - (perpy * (innerWeight - outerWeight) * 0.5),
+            x0 - (perpx * innerWeight),
+            y0 - (perpy * innerWeight),
+            x0 + (perpx * outerWeight),
+            y0 + (perpy * outerWeight),
+            verts,
+            true,
+            true
+        ) + 2;
+    }
+    else if (style.cap === LINE_CAP.SQUARE)
+    {
+        indexCount += square(x0, y0, perpx, perpy, innerWeight, outerWeight, true, verts);
+    }
 
     // Push first point (below & above vertices)
     verts.push(
@@ -352,8 +442,26 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
     perpy *= width;
 
     verts.push(x1 - (perpx * innerWeight), y1 - (perpy * innerWeight));
-
     verts.push(x1 + (perpx * outerWeight), y1 + (perpy * outerWeight));
+
+    if (style.cap === LINE_CAP.ROUND)
+    {
+        indexCount += round(
+            x1 - (perpx * (innerWeight - outerWeight) * 0.5),
+            y1 - (perpy * (innerWeight - outerWeight) * 0.5),
+            x1 - (perpx * innerWeight),
+            y1 - (perpy * innerWeight),
+            x1 + (perpx * outerWeight),
+            y1 + (perpy * outerWeight),
+            verts,
+            false,
+            true
+        ) + 2;
+    }
+    else if (style.cap === LINE_CAP.SQUARE)
+    {
+        indexCount += square(x1, y1, perpx, perpy, innerWeight, outerWeight, false, verts);
+    }
 
     const indices = graphicsGeometry.indices;
 
