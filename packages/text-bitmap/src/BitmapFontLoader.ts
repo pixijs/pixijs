@@ -116,7 +116,7 @@ export class BitmapFontLoader
      * @param {PIXI.LoaderResource} resource
      * @return {string}
      */
-    static getBaseUrl(loader: Loader, resource: ILoaderResource): string
+    private static getBaseUrl(loader: Loader, resource: ILoaderResource): string
     {
         let resUrl = !resource.isDataUrl ? BitmapFontLoader.dirname(resource.url) : '';
 
@@ -154,7 +154,7 @@ export class BitmapFontLoader
      * @private
      * @param {string} url Path to get directory for
      */
-    static dirname(url: string): string
+    private static dirname(url: string): string
     {
         const dir = url
             .replace(/\\/g, '/') // convert windows notation to UNIX notation, URL-safe because it's a forbidden character
