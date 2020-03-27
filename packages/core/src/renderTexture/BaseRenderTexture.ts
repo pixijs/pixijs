@@ -3,7 +3,8 @@ import { Framebuffer } from '../framebuffer/Framebuffer';
 
 import type { IBaseTextureOptions } from '../textures/BaseTexture';
 import type { MaskData } from '../mask/MaskData';
-import type { CanvasRenderTarget } from '@pixi/utils';
+
+export interface BaseRenderTexture extends GlobalMixins.BaseRenderTexture, BaseTexture {}
 
 /**
  * A BaseRenderTexture is a special texture that allows any PixiJS display object to be rendered to it.
@@ -51,7 +52,6 @@ export class BaseRenderTexture extends BaseTexture
     public framebuffer: Framebuffer;
     maskStack: Array<MaskData>;
     filterStack: Array<any>;
-    _canvasRenderTarget: CanvasRenderTarget;
     /**
      * @param {object} [options]
      * @param {number} [options.width=100] - The width of the base render texture.
@@ -83,14 +83,6 @@ export class BaseRenderTexture extends BaseTexture
         this.width = Math.ceil(width) || 100;
         this.height = Math.ceil(height) || 100;
         this.valid = true;
-
-        /**
-         * A reference to the canvas render target (we only need one as this can be shared across renderers)
-         *
-         * @protected
-         * @member {object}
-         */
-        this._canvasRenderTarget = null;
 
         this.clearColor = [0, 0, 0, 0];
 
