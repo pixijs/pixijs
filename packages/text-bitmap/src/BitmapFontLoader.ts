@@ -71,7 +71,7 @@ export class BitmapFontLoader
             // using the same loader, resource will be available
             for (const name in this.resources)
             {
-                const bitmapResource: any = this.resources[name];
+                const bitmapResource: ILoaderResource = this.resources[name];
 
                 if (bitmapResource.url === url)
                 {

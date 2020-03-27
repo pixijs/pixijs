@@ -4,10 +4,10 @@ import type { Spritesheet } from '@pixi/spritesheet';
 import type { Texture } from '@pixi/core';
 import type { Dict } from '@pixi/utils';
 
-export interface IResourceMetadata extends Resource.IMetadata {
+export interface IResourceMetadata extends GlobalMixins.IResourceMetadata, Resource.IMetadata {
     imageMetadata?: any;
 }
-export interface ILoaderResource extends PixiGlobalMixins.ILoaderResource, Resource
+export interface ILoaderResource extends GlobalMixins.ILoaderResource, Resource
 {
     texture?: Texture;
     spritesheet?: Spritesheet;
