@@ -25,6 +25,9 @@ export interface ICanvasRendererPlugins
     [key: string]: any;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface CanvasRenderer extends GlobalMixins.CanvasRenderer {}
+
 /**
  * The CanvasRenderer draws the scene and all its content onto a 2d canvas.
  *
