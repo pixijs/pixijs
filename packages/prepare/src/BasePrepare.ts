@@ -1,9 +1,218 @@
 import { Texture, BaseTexture } from '@pixi/core';
 import { Ticker, UPDATE_PRIORITY } from '@pixi/ticker';
 import { settings } from '@pixi/settings';
-import { Container } from '@pixi/display';
+import { Container, DisplayObject } from '@pixi/display';
 import { Text, TextStyle, TextMetrics } from '@pixi/text';
 import { CountLimiter } from './CountLimiter';
+
+import type { AbstractRenderer } from '@pixi/core';
+
+interface IArrowFunction {
+    (): void;
+}
+interface IUploadHook {
+    (helper: AbstractRenderer | BasePrepare, item: IDisplayObjectExtended): boolean;
+}
+
+interface IFindHook {
+    (item: any, queue: Array<any>): boolean;
+}
+
+export interface IDisplayObjectExtended extends DisplayObject {
+    _textures?: Array<Texture>;
+    _texture?: Texture;
+    style?: TextStyle;
+}
+
+/**
+ * Built-in hook to find multiple textures from objects like AnimatedSprites.
+ *
+ * @private
+ * @param {PIXI.DisplayObject} item - Display object to check
+ * @param {Array<*>} queue - Collection of items to upload
+ * @return {boolean} if a PIXI.Texture object was found.
+ */
+
+function findMultipleBaseTextures(item: IDisplayObjectExtended, queue: Array<any>): boolean
+{
+    let result = false;
+
+    // Objects with multiple textures
+    if (item && item._textures && item._textures.length)
+    {
+        for (let i = 0; i < item._textures.length; i++)
+        {
+            if (item._textures[i] instanceof Texture)
+            {
+                const baseTexture = item._textures[i].baseTexture;
+
+                if (queue.indexOf(baseTexture) === -1)
+                {
+                    queue.push(baseTexture);
+                    result = true;
+                }
+            }
+        }
+    }
+
+    return result;
+}
+
+/**
+ * Built-in hook to find BaseTextures from Texture.
+ *
+ * @private
+ * @param {PIXI.Texture} item - Display object to check
+ * @param {Array<*>} queue - Collection of items to upload
+ * @return {boolean} if a PIXI.Texture object was found.
+ */
+function findBaseTexture(item: Texture, queue: Array<any>): boolean
+{
+    if (item.baseTexture instanceof BaseTexture)
+    {
+        const texture = item.baseTexture;
+
+        if (queue.indexOf(texture) === -1)
+        {
+            queue.push(texture);
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
+/**
+ * Built-in hook to find textures from objects.
+ *
+ * @private
+ * @param {PIXI.DisplayObject} item - Display object to check
+ * @param {Array<*>} queue - Collection of items to upload
+ * @return {boolean} if a PIXI.Texture object was found.
+ */
+function findTexture(item: IDisplayObjectExtended, queue: Array<any>): boolean
+{
+    if (item._texture && item._texture instanceof Texture)
+    {
+        const texture = item._texture.baseTexture;
+
+        if (queue.indexOf(texture) === -1)
+        {
+            queue.push(texture);
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
+/**
+ * Built-in hook to draw PIXI.Text to its texture.
+ *
+ * @private
+ * @param {PIXI.AbstractRenderer|PIXI.BasePrepare} helper - Not used by this upload handler
+ * @param {PIXI.DisplayObject} item - Item to check
+ * @return {boolean} If item was uploaded.
+ */
+// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+// @ts-ignore
+function drawText(helper: AbstractRenderer | BasePrepare, item: IDisplayObjectExtended): boolean
+{
+    if (item instanceof Text)
+    {
+        // updating text will return early if it is not dirty
+        item.updateText(true);
+
+        return true;
+    }
+
+    return false;
+}
+
+/**
+ * Built-in hook to calculate a text style for a PIXI.Text object.
+ *
+ * @private
+ * @param {PIXI.AbstractRenderer|PIXI.BasePrepare} helper - Not used by this upload handler
+ * @param {PIXI.DisplayObject} item - Item to check
+ * @return {boolean} If item was uploaded.
+ */
+// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+// @ts-ignore
+function calculateTextStyle(helper: AbstractRenderer | BasePrepare, item: IDisplayObjectExtended): boolean
+{
+    if (item instanceof TextStyle)
+    {
+        const font = item.toFontString();
+
+        TextMetrics.measureFont(font);
+
+        return true;
+    }
+
+    return false;
+}
+
+/**
+ * Built-in hook to find Text objects.
+ *
+ * @private
+ * @param {PIXI.DisplayObject} item - Display object to check
+ * @param {Array<*>} queue - Collection of items to upload
+ * @return {boolean} if a PIXI.Text object was found.
+ */
+function findText(item: IDisplayObjectExtended, queue: Array<any>): boolean
+{
+    if (item instanceof Text)
+    {
+        // push the text style to prepare it - this can be really expensive
+        if (queue.indexOf(item.style) === -1)
+        {
+            queue.push(item.style);
+        }
+        // also push the text object so that we can render it (to canvas/texture) if needed
+        if (queue.indexOf(item) === -1)
+        {
+            queue.push(item);
+        }
+        // also push the Text's texture for upload to GPU
+        const texture = item._texture.baseTexture;
+
+        if (queue.indexOf(texture) === -1)
+        {
+            queue.push(texture);
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
+/**
+ * Built-in hook to find TextStyle objects.
+ *
+ * @private
+ * @param {PIXI.TextStyle} item - Display object to check
+ * @param {Array<*>} queue - Collection of items to upload
+ * @return {boolean} if a PIXI.TextStyle object was found.
+ */
+function findTextStyle(item: TextStyle, queue: Array<any>): boolean
+{
+    if (item instanceof TextStyle)
+    {
+        if (queue.indexOf(item) === -1)
+        {
+            queue.push(item);
+        }
+
+        return true;
+    }
+
+    return false;
+}
 
 /**
  * The prepare manager provides functionality to upload content to the GPU.
@@ -30,10 +239,19 @@ import { CountLimiter } from './CountLimiter';
  */
 export class BasePrepare
 {
+    private limiter: CountLimiter;
+    protected renderer: AbstractRenderer;
+    protected uploadHookHelper: any;
+    protected queue: Array<any>;
+    public addHooks: Array<any>;
+    public uploadHooks: Array<any>;
+    public completes: Array<any>;
+    public ticking: boolean;
+    private delayedTick: IArrowFunction;
     /**
      * @param {PIXI.AbstractRenderer} renderer - A reference to the current renderer
      */
-    constructor(renderer)
+    constructor(renderer: AbstractRenderer)
     {
         /**
          * The limiter to be used to control how quickly items are prepared.
@@ -96,7 +314,7 @@ export class BasePrepare
          * @type {Function}
          * @private
          */
-        this.delayedTick = () =>
+        this.delayedTick = (): void =>
         {
             // unlikely, but in case we were destroyed between tick() and delayedTick()
             if (!this.queue)
@@ -126,7 +344,7 @@ export class BasePrepare
      *        or the callback function, if items have been added using `prepare.add`.
      * @param {Function} [done] - Optional callback when all queued uploads have completed
      */
-    upload(item, done)
+    upload(item: IDisplayObjectExtended | IUploadHook | IFindHook, done: any): void
     {
         if (typeof item === 'function')
         {
@@ -166,7 +384,7 @@ export class BasePrepare
      *
      * @private
      */
-    tick()
+    tick(): void
     {
         setTimeout(this.delayedTick, 0);
     }
@@ -177,7 +395,7 @@ export class BasePrepare
      *
      * @private
      */
-    prepareItems()
+    prepareItems(): void
     {
         this.limiter.beginFrame();
         // Upload the graphics
@@ -233,7 +451,7 @@ export class BasePrepare
      *          function must return `true` if it was able to add item to the queue.
      * @return {this} Instance of plugin for chaining.
      */
-    registerFindHook(addHook)
+    registerFindHook(addHook: IFindHook): this
     {
         if (addHook)
         {
@@ -250,7 +468,7 @@ export class BasePrepare
      *          function must return `true` if it was able to handle upload of item.
      * @return {this} Instance of plugin for chaining.
      */
-    registerUploadHook(uploadHook)
+    registerUploadHook(uploadHook: IUploadHook): this
     {
         if (uploadHook)
         {
@@ -267,7 +485,7 @@ export class BasePrepare
      *        add to the queue
      * @return {this} Instance of plugin for chaining.
      */
-    add(item)
+    add(item: IDisplayObjectExtended | IUploadHook | IFindHook): this
     {
         // Add additional hooks for finding elements on special
         // types of objects that
@@ -295,7 +513,7 @@ export class BasePrepare
      * Destroys the plugin, don't use after this.
      *
      */
-    destroy()
+    destroy(): void
     {
         if (this.ticking)
         {
@@ -310,189 +528,4 @@ export class BasePrepare
         this.limiter = null;
         this.uploadHookHelper = null;
     }
-}
-
-/**
- * Built-in hook to find multiple textures from objects like AnimatedSprites.
- *
- * @private
- * @param {PIXI.DisplayObject} item - Display object to check
- * @param {Array<*>} queue - Collection of items to upload
- * @return {boolean} if a PIXI.Texture object was found.
- */
-function findMultipleBaseTextures(item, queue)
-{
-    let result = false;
-
-    // Objects with multiple textures
-    if (item && item._textures && item._textures.length)
-    {
-        for (let i = 0; i < item._textures.length; i++)
-        {
-            if (item._textures[i] instanceof Texture)
-            {
-                const baseTexture = item._textures[i].baseTexture;
-
-                if (queue.indexOf(baseTexture) === -1)
-                {
-                    queue.push(baseTexture);
-                    result = true;
-                }
-            }
-        }
-    }
-
-    return result;
-}
-
-/**
- * Built-in hook to find BaseTextures from Texture.
- *
- * @private
- * @param {PIXI.Texture} item - Display object to check
- * @param {Array<*>} queue - Collection of items to upload
- * @return {boolean} if a PIXI.Texture object was found.
- */
-function findBaseTexture(item, queue)
-{
-    if (item.baseTexture instanceof BaseTexture)
-    {
-        const texture = item.baseTexture;
-
-        if (queue.indexOf(texture) === -1)
-        {
-            queue.push(texture);
-        }
-
-        return true;
-    }
-
-    return false;
-}
-
-/**
- * Built-in hook to find textures from objects.
- *
- * @private
- * @param {PIXI.DisplayObject} item - Display object to check
- * @param {Array<*>} queue - Collection of items to upload
- * @return {boolean} if a PIXI.Texture object was found.
- */
-function findTexture(item, queue)
-{
-    if (item._texture && item._texture instanceof Texture)
-    {
-        const texture = item._texture.baseTexture;
-
-        if (queue.indexOf(texture) === -1)
-        {
-            queue.push(texture);
-        }
-
-        return true;
-    }
-
-    return false;
-}
-
-/**
- * Built-in hook to draw PIXI.Text to its texture.
- *
- * @private
- * @param {PIXI.Renderer|PIXI.CanvasPrepare} helper - Not used by this upload handler
- * @param {PIXI.DisplayObject} item - Item to check
- * @return {boolean} If item was uploaded.
- */
-function drawText(helper, item)
-{
-    if (item instanceof Text)
-    {
-        // updating text will return early if it is not dirty
-        item.updateText(true);
-
-        return true;
-    }
-
-    return false;
-}
-
-/**
- * Built-in hook to calculate a text style for a PIXI.Text object.
- *
- * @private
- * @param {PIXI.Renderer|PIXI.CanvasPrepare} helper - Not used by this upload handler
- * @param {PIXI.DisplayObject} item - Item to check
- * @return {boolean} If item was uploaded.
- */
-function calculateTextStyle(helper, item)
-{
-    if (item instanceof TextStyle)
-    {
-        const font = item.toFontString();
-
-        TextMetrics.measureFont(font);
-
-        return true;
-    }
-
-    return false;
-}
-
-/**
- * Built-in hook to find Text objects.
- *
- * @private
- * @param {PIXI.DisplayObject} item - Display object to check
- * @param {Array<*>} queue - Collection of items to upload
- * @return {boolean} if a PIXI.Text object was found.
- */
-function findText(item, queue)
-{
-    if (item instanceof Text)
-    {
-        // push the text style to prepare it - this can be really expensive
-        if (queue.indexOf(item.style) === -1)
-        {
-            queue.push(item.style);
-        }
-        // also push the text object so that we can render it (to canvas/texture) if needed
-        if (queue.indexOf(item) === -1)
-        {
-            queue.push(item);
-        }
-        // also push the Text's texture for upload to GPU
-        const texture = item._texture.baseTexture;
-
-        if (queue.indexOf(texture) === -1)
-        {
-            queue.push(texture);
-        }
-
-        return true;
-    }
-
-    return false;
-}
-
-/**
- * Built-in hook to find TextStyle objects.
- *
- * @private
- * @param {PIXI.TextStyle} item - Display object to check
- * @param {Array<*>} queue - Collection of items to upload
- * @return {boolean} if a PIXI.TextStyle object was found.
- */
-function findTextStyle(item, queue)
-{
-    if (item instanceof TextStyle)
-    {
-        if (queue.indexOf(item) === -1)
-        {
-            queue.push(item);
-        }
-
-        return true;
-    }
-
-    return false;
 }
