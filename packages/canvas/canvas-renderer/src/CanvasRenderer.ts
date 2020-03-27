@@ -13,6 +13,7 @@ import type {
     RenderTexture,
     BaseRenderTexture,
 } from '@pixi/core';
+import type { CanvasExtract } from '@pixi/canvas-extract';
 
 const tempMatrix = new Matrix();
 
@@ -24,9 +25,6 @@ export interface ICanvasRendererPlugins
 {
     [key: string]: any;
 }
-
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface CanvasRenderer extends GlobalMixins.CanvasRenderer {}
 
 /**
  * The CanvasRenderer draws the scene and all its content onto a 2d canvas.
@@ -47,6 +45,7 @@ export class CanvasRenderer extends AbstractRenderer
     public smoothProperty: string;
     public readonly blendModes: string[];
     public renderingToScreen: boolean;
+    public extract: CanvasExtract;
 
     private _activeBlendMode: BLEND_MODES;
     private _projTransform: Matrix;
