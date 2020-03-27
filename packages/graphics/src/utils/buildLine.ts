@@ -367,7 +367,7 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
         const py = ((dy1 * c1) - (dy0 * c2)) / cross;
         const pdist = ((px - x1) * (px - x1)) + ((py - y1) * (py - y1));
 
-        if (style.join === LINE_JOIN.BEVEL || pdist > style.miterLimit)
+        if (style.join === LINE_JOIN.BEVEL || pdist > style.miterLimit * style.miterLimit)
         {
             if (clockwise) /* rotating at inner angle */
             {
