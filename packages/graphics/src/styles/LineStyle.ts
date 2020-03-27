@@ -1,4 +1,5 @@
 import { FillStyle } from './FillStyle';
+import { LineJoin } from './LineJoin';
 
 /**
  * Represents the line style for Graphics.
@@ -33,6 +34,14 @@ export class LineStyle extends FillStyle
     public native = false;
 
     /**
+     * Shape to be used at corners formed when two lines join.
+     *
+     * @member {PIXI.LineJoin}
+     * @default PIXI.LineJoin.MITER
+     */
+    public join: LineJoin = LineJoin.BEVEL;
+
+    /**
      * Clones the object
      *
      * @return {PIXI.LineStyle}
@@ -49,6 +58,7 @@ export class LineStyle extends FillStyle
         obj.width = this.width;
         obj.alignment = this.alignment;
         obj.native = this.native;
+        obj.join = this.join;
 
         return obj;
     }
