@@ -30,6 +30,8 @@ export interface IBaseTextureOptions {
     resourceOptions?: any;
 }
 
+export interface BaseTexture extends GlobalMixins.BaseTexture, EventEmitter {}
+
 /**
  * A Texture stores the information that represents an image.
  * All textures have a base texture, which contains information about the source.
