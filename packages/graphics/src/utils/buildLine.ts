@@ -4,11 +4,6 @@ import type { Polygon } from '@pixi/math';
 import type { GraphicsData } from '../GraphicsData';
 import type { GraphicsGeometry } from '../GraphicsGeometry';
 import { LINE_JOIN, LINE_CAP } from '@pixi/constants';
-import { settings } from '@pixi/settings';
-
-/* Useful constants! */
-const HALF_PI = Math.PI / 2;
-const PI_LBOUND = Math.PI - settings.EPSILON;
 
 /**
  * Buffers vertices to draw a square cap.
@@ -95,7 +90,6 @@ function round(
     ey: number,
     verts: Array<number>,
     clockwise: boolean, /* if not cap, then clockwise is turn of joint, otherwise rotation from angle0 to angle1 */
-    cap = false
 ): number
 {
     const cx2p0x = sx - cx;
@@ -104,21 +98,7 @@ function round(
     let angle0 = Math.atan2(cx2p0x, cy2p0y);
     let angle1 = Math.atan2(ex - cx, ey - cy);
 
-    if (!cap)
-    {
-        if (angle1 > angle0)
-        {
-            if ((angle1 - angle0) >= PI_LBOUND)
-            {
-                angle1 -= HALF_PI;
-            }
-        }
-        else if ((angle0 - angle1) >= PI_LBOUND)
-        {
-            angle0 -= HALF_PI;
-        }
-    }
-    else if (clockwise && angle0 < angle1)
+    if (clockwise && angle0 < angle1)
     {
         angle0 += Math.PI * 2;
     }
@@ -281,23 +261,26 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
     const innerWeight = (1 - ratio) * 2;
     const outerWeight = ratio * 2;
 
-    if (style.cap === LINE_CAP.ROUND)
+    if (!closedShape)
     {
-        indexCount += round(
-            x0 - (perpx * (innerWeight - outerWeight) * 0.5),
-            y0 - (perpy * (innerWeight - outerWeight) * 0.5),
-            x0 - (perpx * innerWeight),
-            y0 - (perpy * innerWeight),
-            x0 + (perpx * outerWeight),
-            y0 + (perpy * outerWeight),
-            verts,
-            true,
-            true
-        ) + 2;
-    }
-    else if (style.cap === LINE_CAP.SQUARE)
-    {
-        indexCount += square(x0, y0, perpx, perpy, innerWeight, outerWeight, true, verts);
+        if (style.cap === LINE_CAP.ROUND)
+        {
+            indexCount += round(
+                x0 - (perpx * (innerWeight - outerWeight) * 0.5),
+                y0 - (perpy * (innerWeight - outerWeight) * 0.5),
+                x0 - (perpx * innerWeight),
+                y0 - (perpy * innerWeight),
+                x0 + (perpx * outerWeight),
+                y0 + (perpy * outerWeight),
+                verts,
+                true,
+                true
+            ) + 2;
+        }
+        else if (style.cap === LINE_CAP.SQUARE)
+        {
+            indexCount += square(x0, y0, perpx, perpy, innerWeight, outerWeight, true, verts);
+        }
     }
 
     // Push first point (below & above vertices)
@@ -444,23 +427,26 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
     verts.push(x1 - (perpx * innerWeight), y1 - (perpy * innerWeight));
     verts.push(x1 + (perpx * outerWeight), y1 + (perpy * outerWeight));
 
-    if (style.cap === LINE_CAP.ROUND)
+    if (!closedShape)
     {
-        indexCount += round(
-            x1 - (perpx * (innerWeight - outerWeight) * 0.5),
-            y1 - (perpy * (innerWeight - outerWeight) * 0.5),
-            x1 - (perpx * innerWeight),
-            y1 - (perpy * innerWeight),
-            x1 + (perpx * outerWeight),
-            y1 + (perpy * outerWeight),
-            verts,
-            false,
-            true
-        ) + 2;
-    }
-    else if (style.cap === LINE_CAP.SQUARE)
-    {
-        indexCount += square(x1, y1, perpx, perpy, innerWeight, outerWeight, false, verts);
+        if (style.cap === LINE_CAP.ROUND)
+        {
+            indexCount += round(
+                x1 - (perpx * (innerWeight - outerWeight) * 0.5),
+                y1 - (perpy * (innerWeight - outerWeight) * 0.5),
+                x1 - (perpx * innerWeight),
+                y1 - (perpy * innerWeight),
+                x1 + (perpx * outerWeight),
+                y1 + (perpy * outerWeight),
+                verts,
+                false,
+                true
+            ) + 2;
+        }
+        else if (style.cap === LINE_CAP.SQUARE)
+        {
+            indexCount += square(x1, y1, perpx, perpy, innerWeight, outerWeight, false, verts);
+        }
     }
 
     const indices = graphicsGeometry.indices;
