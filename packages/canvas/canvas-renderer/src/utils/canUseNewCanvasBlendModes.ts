@@ -5,7 +5,7 @@
  * @param {string} color - The color to make the canvas
  * @return {canvas} a small canvas element
  */
-function createColoredCanvas(color)
+function createColoredCanvas(color: string): HTMLCanvasElement
 {
     const canvas = document.createElement('canvas');
 
@@ -26,7 +26,7 @@ function createColoredCanvas(color)
  * @private
  * @return {boolean} whether they are supported
  */
-export function canUseNewCanvasBlendModes()
+export function canUseNewCanvasBlendModes(): boolean
 {
     if (typeof document === 'undefined')
     {
