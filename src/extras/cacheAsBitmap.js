@@ -170,7 +170,7 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
     // this function also calls updatetransform on all its children as part of the measuring.
     // This means we don't need to update the transform again in this function
     // TODO pass an object to clone too? saves having to create a new one each time!
-    const bounds = this.getLocalBounds().clone();
+    const bounds = this.getLocalBounds(null, true).clone();
 
     // add some padding!
     if (this._filters && this._filters.length)
@@ -291,7 +291,7 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
     }
 
     // get bounds actually transforms the object for us already!
-    const bounds = this.getLocalBounds();
+    const bounds = this.getLocalBounds(null, true);
 
     const cacheAlpha = this.alpha;
 

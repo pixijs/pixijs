@@ -250,7 +250,7 @@ export default class SystemRenderer extends EventEmitter
      */
     generateTexture(displayObject, scaleMode, resolution, region)
     {
-        region = region || displayObject.getLocalBounds();
+        region = region || displayObject.getLocalBounds(null, true);
 
         const renderTexture = RenderTexture.create(region.width | 0, region.height | 0, scaleMode, resolution);
 
