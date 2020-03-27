@@ -4,14 +4,14 @@ declare namespace GlobalMixins
         bitmapFont: import('@pixi/text-bitmap').BitmapFont;
     }
 
-    interface IBitmapFontResourceMetadata {
-        pageFile: string;
-    }
-
     // eslint-disable-next-line @typescript-eslint/no-empty-interface
     interface ILoaderResource extends Partial<IBitmapFontResource>
     {
 
+    }
+
+    interface IBitmapFontResourceMetadata {
+        pageFile: string;
     }
 
     // eslint-disable-next-line @typescript-eslint/no-empty-interface
