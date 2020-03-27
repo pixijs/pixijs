@@ -440,13 +440,13 @@ export enum MSAA_QUALITY {
  * @name LINE_JOIN
  * @memberof PIXI
  * @static
- * @enum {number}
- * @property {number} MITER - make a sharp corner where outer part of lines meet
- * @property {number} BEVEL - add a square butt at each end of line segment and fill the triangle at turn
- * @property {number} ROUND - add an arc at the joint
+ * @enum {string}
+ * @property {string} MITER - 'miter': make a sharp corner where outer part of lines meet
+ * @property {string} BEVEL - 'bevel': add a square butt at each end of line segment and fill the triangle at turn
+ * @property {string} ROUND - 'round': add an arc at the joint
  */
 export enum LINE_JOIN {
-    MITER = 0,
-    BEVEL = 1,
-    ROUND = 2
+    MITER = 'miter',
+    BEVEL = 'bevel',
+    ROUND = 'round'
 }

@@ -50,6 +50,7 @@ export interface ILineStyleOptions extends IFillStyleOptions {
     alignment?: number;
     native?: boolean;
     join?: LINE_JOIN;
+    miterLimit?: number;
 }
 
 const temp = new Float32Array(3);
@@ -399,6 +400,7 @@ export class Graphics extends Container
             alignment: 0.5,
             native: false,
             join: LINE_JOIN.MITER,
+            miterLimit: 196,
         }, options);
 
         if (this.currentPath)

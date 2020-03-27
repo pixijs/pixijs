@@ -41,6 +41,7 @@ export interface ISettings {
     STRICT_TEXTURE_CACHE?: boolean;
     MESH_CANVAS_PADDING?: number;
     TARGET_FPMS?: number;
+    EPSILON?: number;
 }
 
 /**
@@ -274,4 +275,15 @@ export const settings: ISettings = {
      * @default false
      */
     ROUND_PIXELS: false,
+
+    /**
+     * Tolerance for errors in floating-point operations.
+     *
+     * @static
+     * @constant
+     * @memberof PIXI.settings
+     * @type {number}
+     * @default .001
+     */
+    EPSILON: 0.001,
 };

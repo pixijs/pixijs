@@ -4,6 +4,119 @@ import type { Polygon } from '@pixi/math';
 import type { GraphicsData } from '../GraphicsData';
 import type { GraphicsGeometry } from '../GraphicsGeometry';
 import { LINE_JOIN } from '@pixi/constants';
+import { settings } from '@pixi/settings';
+
+/* Useful constants! */
+const HALF_PI = Math.PI / 2;
+const PI_LBOUND = Math.PI - settings.EPSILON;
+
+/**
+ * Buffers vertices to draw an arc at the line joint.
+ * @param {number} cx - X-coord of center
+ * @param {number} cy - Y-coord of center
+ * @param {number} sx - X-coord of arc start
+ * @param {number} sy - Y-coord of arc start
+ * @param {number} ex - X-coord of arc end
+ * @param {number} ey - Y-coord of arc end
+ * @param nxtPx
+ * @param nxtPy
+ * @param {Array<number>} verts - buffer of vertices
+ * @returns {number} - no. of vertices pushed
+ */
+function round(
+    cx: number,
+    cy: number,
+    sx: number,
+    sy: number,
+    ex: number,
+    ey: number,
+    verts: Array<number>,
+    clockwise: boolean,
+    // nxtPx: number,
+    // nxtPy: number,
+): number
+{
+    const cx2p0x = sx - cx;
+    const cy2p0y = sy - cy;
+
+    let angle0 = Math.atan2(cx2p0x, cy2p0y);
+    let angle1 = Math.atan2(ex - cx, ey - cy);
+
+    let startAngle = angle0;
+
+    if (angle1 > angle0)
+    {
+        if ((angle1 - angle0) >= PI_LBOUND)
+        {
+            angle1 = angle1 - HALF_PI;
+        }
+    }
+    else if ((angle0 - angle1) >= PI_LBOUND)
+    {
+        angle0 = angle0 - HALF_PI;
+    }
+
+    const angleDiff = angle1 - angle0;
+    const absAngleDiff = Math.abs(angleDiff);
+
+    /* if (absAngleDiff >= PI_LBOUND && absAngleDiff <= PI_UBOUND)
+    {
+        const r1x = cx - nxtPx;
+        const r1y = cy - nxtPy;
+
+        if (r1x === 0)
+        {
+            if (r1y > 0)
+            {
+                angleDiff = -angleDiff;
+            }
+        }
+        else if (r1x >= -settings.EPSILON)
+        {
+            angleDiff = -angleDiff;
+        }
+    }*/
+
+    const radius = Math.sqrt((cx2p0x * cx2p0x) + (cy2p0y * cy2p0y));
+    const segCount = ((15 * absAngleDiff * Math.sqrt(radius) / Math.PI) >> 0) + 1;
+    const angleInc = angleDiff / segCount;
+
+    startAngle += angleInc;
+
+    if (clockwise)
+    {
+        verts.push(cx, cy);
+        verts.push(sx, sy);
+
+        for (let i = 1, angle = startAngle; i < segCount; i++, angle += angleInc)
+        {
+            verts.push(cx, cy);
+            verts.push(cx + ((Math.sin(angle) * radius)),
+                cy + ((Math.cos(angle) * radius)));
+        }
+
+        verts.push(cx, cy);
+        verts.push(cx + ((Math.sin(angle1) * radius)),
+            cy + ((Math.cos(angle1) * radius)));
+    }
+    else
+    {
+        verts.push(sx, sy);
+        verts.push(cx, cy);
+
+        for (let i = 1, angle = startAngle; i < segCount; i++, angle += angleInc)
+        {
+            verts.push(cx + ((Math.sin(angle) * radius)),
+                cy + ((Math.cos(angle) * radius)));
+            verts.push(cx, cy);
+        }
+
+        verts.push(ex, ey);
+        verts.push(cx, cy);
+    }
+
+    return segCount * 2;
+}
 
 /**
  * Builds a line to draw using the polygon method.
@@ -164,7 +277,7 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
         const py = ((dy1 * c1) - (dy0 * c2)) / cross;
         const pdist = ((px - x1) * (px - x1)) + ((py - y1) * (py - y1));
 
-        if (style.join === LINE_JOIN.BEVEL || pdist > (196 * width * width))
+        if (style.join === LINE_JOIN.BEVEL || pdist > style.miterLimit)
         {
             if (clockwise) /* rotating at inner angle */
             {
@@ -182,6 +295,39 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
             }
 
             indexCount += 2;
+        }
+        else if (style.join === LINE_JOIN.ROUND)
+        {
+            if (clockwise) /* arc is outside */
+            {
+                verts.push(x1 + ((px - x1) * innerWeight), y1 + ((py - y1) * innerWeight));
+                verts.push(x1 + (perpx * outerWeight), y1 + (perpy * outerWeight));
+
+                indexCount += round(
+                    x1, y1,
+                    x1 + (perpx * outerWeight), y1 + (perpy * outerWeight),
+                    x1 + (perp1x * outerWeight), y1 + (perp1y * outerWeight),
+                    verts, true
+                ) + 4;
+
+                verts.push(x1 + ((px - x1) * innerWeight), y1 + ((py - y1) * innerWeight));
+                verts.push(x1 + (perp1x * outerWeight), y1 + (perp1y * outerWeight));
+            }
+            else /* arc is inside */
+            {
+                verts.push(x1 - (perpx * innerWeight), y1 - (perpy * innerWeight));
+                verts.push(x1 - ((px - x1) * outerWeight), y1 - ((py - y1) * outerWeight));
+
+                indexCount += round(
+                    x1, y1,
+                    x1 - (perpx * innerWeight), y1 - (perpy * innerWeight),
+                    x1 - (perp1x * innerWeight), y1 - (perp1y * innerWeight),
+                    verts, false
+                ) + 4;
+
+                verts.push(x1 - (perp1x * innerWeight), y1 - (perp1y * innerWeight));
+                verts.push(x1 - ((px - x1) * outerWeight), y1 - ((py - y1) * outerWeight));
+            }
         }
         else
         {

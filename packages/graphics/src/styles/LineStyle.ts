@@ -42,6 +42,14 @@ export class LineStyle extends FillStyle
     public join = LINE_JOIN.MITER;
 
     /**
+     * Miter limit.
+     *
+     * @member {number}
+     * @default 196
+     */
+    public miterLimit = 196;
+
+    /**
      * Clones the object
      *
      * @return {PIXI.LineStyle}
@@ -59,6 +67,7 @@ export class LineStyle extends FillStyle
         obj.alignment = this.alignment;
         obj.native = this.native;
         obj.join = this.join;
+        obj.miterLimit = this.miterLimit;
 
         return obj;
     }
