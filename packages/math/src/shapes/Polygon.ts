@@ -11,7 +11,7 @@ export class Polygon
 {
     public points: number[];
     public closeStroke: boolean;
-    public readonly type: number;
+    public readonly type: SHAPES.POLY;
 
     constructor(points: IPoint[]|number[]);
     constructor(...points: IPoint[]|number[]);
