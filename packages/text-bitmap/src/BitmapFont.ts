@@ -34,7 +34,7 @@ export class BitmapFont
     public readonly font: string;
     public readonly size: number;
     public readonly lineHeight: number;
-    public chars: Dict<IBitmapFontCharacter>;
+    public readonly chars: Dict<IBitmapFontCharacter>;
 
     constructor(data: BitmapFontData, textures: Texture[]|Dict<Texture>)
     {
@@ -145,7 +145,9 @@ export class BitmapFont
         {
             this.chars[id].texture.destroy();
         }
-        this.chars = null;
+
+        // Set readonly null.
+        (this as any).chars = null;
     }
 
     /**
