@@ -78,7 +78,7 @@ export class Renderer extends AbstractRenderer
      * @static
      * @private
      */
-    static create(options: any): Renderer
+    static create(options: IRendererOptions): AbstractRenderer
     {
         if (isWebGLSupported())
         {
