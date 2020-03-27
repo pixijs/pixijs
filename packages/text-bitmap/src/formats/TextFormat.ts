@@ -16,7 +16,7 @@ export class TextFormat
      * @param {any} data
      * @return {boolean} True if resource could be treated as font data, false otherwise.
      */
-    public static test(data: any): boolean
+    static test(data: any): boolean
     {
         return typeof data === 'string' && data.indexOf('info face=') === 0;
     }
@@ -29,7 +29,7 @@ export class TextFormat
      * @param {string} txt Raw string data to be converted
      * @return {PIXI.BitmapFontData} Parsed font data
      */
-    public static parse(txt: string): BitmapFontData
+    static parse(txt: string): BitmapFontData
     {
         // Retrieve data item
         const items = txt.match(/^[a-z]+\s+.+$/gm);
