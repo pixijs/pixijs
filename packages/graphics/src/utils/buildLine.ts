@@ -274,7 +274,6 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
                 y0 + (perpy * outerWeight),
                 verts,
                 true,
-                true
             ) + 2;
         }
         else if (style.cap === LINE_CAP.SQUARE)
@@ -439,8 +438,7 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
                 x1 + (perpx * outerWeight),
                 y1 + (perpy * outerWeight),
                 verts,
-                false,
-                true
+                false
             ) + 2;
         }
         else if (style.cap === LINE_CAP.SQUARE)
