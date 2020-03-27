@@ -27,7 +27,7 @@ export class MaskData
     public autoDetect: boolean;
     public maskObject: IMaskTarget;
     public pooled: boolean;
-    public isMaskData: boolean;
+    public isMaskData: true;
     _stencilCounter: number;
     _scissorCounter: number;
     _scissorRect: Rectangle;

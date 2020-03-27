@@ -1,5 +1,10 @@
 import { SHAPES } from '@pixi/math';
 
+import type { CanvasRenderer } from '../CanvasRenderer';
+import type { Graphics } from '@pixi/graphics';
+import type { MaskData } from '@pixi/core';
+import type { Container } from '@pixi/display';
+
 /**
  * A set of functions used to handle masking.
  *
@@ -10,10 +15,13 @@ import { SHAPES } from '@pixi/math';
  */
 export class CanvasMaskManager
 {
+    private renderer: CanvasRenderer;
+    private _foundShapes: Array<Graphics>;
+
     /**
      * @param {PIXI.CanvasRenderer} renderer - The canvas renderer.
      */
-    constructor(renderer)
+    constructor(renderer: CanvasRenderer)
     {
         this.renderer = renderer;
 
@@ -25,10 +33,10 @@ export class CanvasMaskManager
      *
      * @param {PIXI.MaskData | PIXI.Graphics} maskData - the maskData that will be pushed
      */
-    pushMask(maskData)
+    pushMask(maskData: MaskData | Graphics): void
     {
         const renderer = this.renderer;
-        const maskObject = maskData.isMaskData ? maskData.maskObject : maskData;
+        const maskObject = ((maskData as MaskData).maskObject || maskData) as Container;
 
         renderer.context.save();
 
@@ -65,11 +73,11 @@ export class CanvasMaskManager
      * @param {PIXI.Container} container - container to scan.
      * @param {PIXI.Graphics[]} out - where to put found shapes
      */
-    recursiveFindShapes(container, out)
+    recursiveFindShapes(container: Container, out: Array<Graphics>): void
     {
-        if (container.geometry && container.geometry.graphicsData)
+        if ((container as Graphics).geometry && (container as Graphics).geometry.graphicsData)
         {
-            out.push(container);
+            out.push(container as Graphics);
         }
 
         const { children } = container;
@@ -78,7 +86,7 @@ export class CanvasMaskManager
         {
             for (let i = 0; i < children.length; i++)
             {
-                this.recursiveFindShapes(children[i], out);
+                this.recursiveFindShapes(children[i] as Container, out);
             }
         }
     }
@@ -88,7 +96,7 @@ export class CanvasMaskManager
      *
      * @param {PIXI.Graphics} graphics - The object to render.
      */
-    renderGraphicsShape(graphics)
+    renderGraphicsShape(graphics: Graphics): void
     {
         graphics.finishPoly();
 
@@ -106,7 +114,7 @@ export class CanvasMaskManager
             const data = graphicsData[i];
             const shape = data.shape;
 
-            if (data.type === SHAPES.POLY)
+            if (shape.type === SHAPES.POLY)
             {
                 const points = shape.points;
 
@@ -123,18 +131,18 @@ export class CanvasMaskManager
                     context.closePath();
                 }
             }
-            else if (data.type === SHAPES.RECT)
+            else if (shape.type === SHAPES.RECT)
             {
                 context.rect(shape.x, shape.y, shape.width, shape.height);
                 context.closePath();
             }
-            else if (data.type === SHAPES.CIRC)
+            else if (shape.type === SHAPES.CIRC)
             {
                 // TODO - need to be Undefined!
                 context.arc(shape.x, shape.y, shape.radius, 0, 2 * Math.PI);
                 context.closePath();
             }
-            else if (data.type === SHAPES.ELIP)
+            else if (shape.type === SHAPES.ELIP)
             {
                 // ellipse code taken from: http://stackoverflow.com/questions/2172798/how-to-draw-an-oval-in-html5-canvas
 
@@ -159,7 +167,7 @@ export class CanvasMaskManager
                 context.bezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);
                 context.closePath();
             }
-            else if (data.type === SHAPES.RREC)
+            else if (shape.type === SHAPES.RREC)
             {
                 const rx = shape.x;
                 const ry = shape.y;
@@ -190,7 +198,7 @@ export class CanvasMaskManager
      *
      * @param {PIXI.CanvasRenderer} renderer - The renderer context to use.
      */
-    popMask(renderer)
+    popMask(renderer: CanvasRenderer): void
     {
         renderer.context.restore();
         renderer.invalidateBlendMode();
@@ -200,7 +208,7 @@ export class CanvasMaskManager
      * Destroys this canvas mask manager.
      *
      */
-    destroy()
+    public destroy(): void
     {
         /* empty */
     }

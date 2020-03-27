@@ -14,7 +14,7 @@ export class RoundedRectangle
     public width: number;
     public height: number;
     public radius: number;
-    public readonly type: number;
+    public readonly type: SHAPES.RREC;
 
     /**
      * @param {number} [x=0] - The X coordinate of the upper-left corner of the rounded rectangle
