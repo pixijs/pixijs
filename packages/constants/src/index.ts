@@ -430,3 +430,23 @@ export enum MSAA_QUALITY {
     MEDIUM = 4,
     HIGH = 8
 }
+
+/**
+ * Supported line joints in `PIXI.LineStyle` for graphics.
+ *
+ * @see PIXI.Graphics#lineStyle
+ * @see https://graphicdesign.stackexchange.com/questions/59018/what-is-a-bevel-join-of-two-lines-exactly-illustrator
+ *
+ * @name LINE_JOIN
+ * @memberof PIXI
+ * @static
+ * @enum {number}
+ * @property {number} MITER - make a sharp corner where outer part of lines meet
+ * @property {number} BEVEL - add a square butt at each end of line segment and fill the triangle at turn
+ * @property {number} ROUND - add an arc at the joint
+ */
+export enum LINE_JOIN {
+    MITER = 0,
+    BEVEL = 1,
+    ROUND = 2
+}

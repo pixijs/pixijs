@@ -1,4 +1,5 @@
 import { FillStyle } from './FillStyle';
+import { LINE_JOIN } from '@pixi/constants';
 
 /**
  * Represents the line style for Graphics.
@@ -33,6 +34,14 @@ export class LineStyle extends FillStyle
     public native = false;
 
     /**
+     * Line join style.
+     *
+     * @member {PIXI.LINE_JOIN}
+     * @default PIXI.LINE_JOIN.MITER
+     */
+    public join = LINE_JOIN.MITER;
+
+    /**
      * Clones the object
      *
      * @return {PIXI.LineStyle}
@@ -49,6 +58,7 @@ export class LineStyle extends FillStyle
         obj.width = this.width;
         obj.alignment = this.alignment;
         obj.native = this.native;
+        obj.join = this.join;
 
         return obj;
     }
