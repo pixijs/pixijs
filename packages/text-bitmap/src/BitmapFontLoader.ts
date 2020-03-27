@@ -50,7 +50,7 @@ export class BitmapFontLoader
 
         // Handle completed, when the number of textures
         // load is the same number as references in the fnt file
-        const completed = (page: any): void =>
+        const completed = (page: ILoaderResource): void =>
         {
             textures[page.metadata.pageFile] = page.texture;
 
