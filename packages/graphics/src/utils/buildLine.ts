@@ -221,8 +221,8 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
             lastPoint.set(points[points.length - 2], points[points.length - 1]);
         }
 
-        const midPointX = lastPoint.x + ((firstPoint.x - lastPoint.x) * 0.5);
-        const midPointY = lastPoint.y + ((firstPoint.y - lastPoint.y) * 0.5);
+        const midPointX = (firstPoint.x + lastPoint.x) * 0.5;
+        const midPointY = (lastPoint.y + firstPoint.y) * 0.5;
 
         points.unshift(midPointX, midPointY);
         points.push(midPointX, midPointY);
@@ -231,7 +231,7 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
     const verts = graphicsGeometry.points;
     const length = points.length / 2;
     let indexCount = points.length;
-    let indexStart = verts.length / 2;
+    const indexStart = verts.length / 2;
 
     // Max. inner and outer width
     const width = style.width / 2;
@@ -351,13 +351,32 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
         const py = ((dy1 * c1) - (dy0 * c2)) / cross;
         const pdist = ((px - x1) * (px - x1)) + ((py - y1) * (py - y1));
 
+        /* Inner miter point */
+        let imx = x1 + ((px - x1) * innerWeight);
+        let imy = y1 - (perp1y * innerWeight);
+
+        /* Check if inner miter point is on same side as p1 w.r.t vector p02 */
+        // Take normal to v02
+        const n02x = y2 - y0;
+        const n02y = -(x2 - x0);
+        // Take dot products of p1 and im with normal to v02
+        const dotp1 = (n02x * x1) + (n02y * y1);
+        const dotim = (n02x * imx) + (n02y * imy);
+
+        // Not on same side?, make inner miter point the mid-point instead
+        if (Math.sign(dotp1) !== Math.sign(dotim))
+        {
+            imx = (x0 + x2) * 0.5;
+            imy = (y0 + y2) * 0.5;
+        }
+
         if (style.join === LINE_JOIN.BEVEL || pdist / widthSquared > miterLimitSquared)
         {
             if (clockwise) /* rotating at inner angle */
             {
-                verts.push(x1 + ((px - x1) * innerWeight), y1 + ((py - y1) * innerWeight));// inner miter point
+                verts.push(imx, imy);// inner miter point
                 verts.push(x1 + (perpx * outerWeight), y1 + (perpy * outerWeight));// first segment's outer vertex
-                verts.push(x1 + ((px - x1) * innerWeight), y1 + ((py - y1) * innerWeight));// inner miter point
+                verts.push(imx, imy);// inner miter point
                 verts.push(x1 + (perp1x * outerWeight), y1 + (perp1y * outerWeight));// second segment's outer vertex
             }
             else /* rotating at outer angle */
@@ -405,7 +424,7 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
         }
         else
         {
-            verts.push(x1 + ((px - x1) * innerWeight), y1 + ((py - y1) * innerWeight));
+            verts.push(imx, imy);
             verts.push(x1 - ((px - x1) * outerWeight), y1 - ((py - y1) * outerWeight));
         }
     }
@@ -452,12 +471,24 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
     const indices = graphicsGeometry.indices;
 
     // indices.push(indexStart);
-
-    for (let i = 0; i < indexCount - 2; ++i)
+    for (let i = indexStart; i < indexCount + indexStart - 2; ++i)
     {
-        indices.push(indexStart, indexStart + 1, indexStart + 2);
+        x0 = verts[(i * 2)];
+        y0 = verts[(i * 2) + 1];
 
-        indexStart++;
+        x1 = verts[(i + 1) * 2];
+        y1 = verts[((i + 1) * 2) + 1];
+
+        x2 = verts[(i + 2) * 2];
+        y2 = verts[((i + 2) * 2) + 1];
+
+        /* Skip zero area triangles */
+        if ((x0 * (y1 - y2)) + (x1 * (y2 - y0)) + (x2 * (y0 - y1)) === 0)
+        {
+            continue;
+        }
+
+        indices.push(i, i + 1, i + 2);
     }
 }
 
