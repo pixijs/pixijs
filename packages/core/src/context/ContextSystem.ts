@@ -155,6 +155,15 @@ export class ContextSystem extends System
     {
         let gl;
 
+        if (settings.WEBGL_DISABLE_ANTIALIAS)
+        {
+            options.antialias = false;
+        }
+        if (settings.WEBGL_DISABLE_STENCIL)
+        {
+            options.stencil = false;
+        }
+
         if (settings.PREFER_ENV >= ENV.WEBGL2)
         {
             gl = canvas.getContext('webgl2', options);

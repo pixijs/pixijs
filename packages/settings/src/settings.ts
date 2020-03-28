@@ -41,6 +41,8 @@ export interface ISettings {
     STRICT_TEXTURE_CACHE?: boolean;
     MESH_CANVAS_PADDING?: number;
     TARGET_FPMS?: number;
+    WEBGL_DISABLE_ANTIALIAS?: boolean;
+    WEBGL_DISABLE_STENCIL?: boolean;
 }
 
 /**
@@ -56,6 +58,26 @@ export interface ISettings {
  * @namespace PIXI.settings
  */
 export const settings: ISettings = {
+    /**
+     * Whether webgl context supports antialiasing,
+     * Detected by test context.
+     * If `true`, PixiJS wont use antialias even if its specified in renderer options.
+     *
+     * @static
+     * @member {boolean} WEBGL_ENABLE_STENCIL
+     * @memberof PIXI.settings
+     */
+    WEBGL_DISABLE_ANTIALIAS: false,
+    /**
+     * Whether webgl context supports stencil,
+     * Detected by test context.
+     * If `true`, PixiJS wont use stencil if user wants stencil mask.
+     *
+     * @static
+     * @member {boolean} WEBGL_ENABLE_STENCIL
+     * @memberof PIXI.settings
+     */
+    WEBGL_DISABLE_STENCIL: false,
 
     /**
      * If set to true WebGL will attempt make textures mimpaped by default.
