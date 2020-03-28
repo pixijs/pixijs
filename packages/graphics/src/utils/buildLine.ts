@@ -363,11 +363,11 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
         const n02x = y2 - y0;
         const n02y = -(x2 - x0);
         // Take dot products of p1 and im with normal to v02
-        const dotp1 = (n02x * x1) + (n02y * y1);
+        const dotp1 = (n02x * (x1 - x0)) + (n02y * (y1 - y0));
 
         if (clockwise)
         {
-            const dotim = (n02x * imx) + (n02y * imy);
+            const dotim = (n02x * (imx - x0)) + (n02y * (imy - y0));
 
             // Not on same side?, make inner miter point the mid-point instead
             if (Math.abs(dotp1 - dotim) > 0.1 && Math.sign(dotp1) !== Math.sign(dotim))
@@ -378,7 +378,7 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
         }
         else
         {
-            const dotom = (n02x * omx) + (n02y * omy);
+            const dotom = (n02x * (omx - x0)) + (n02y * (omy - y0));
 
             // Not on same side?, make outer miter point the mid-point instead
             if (Math.abs(dotp1 - dotom) > 0.1 && Math.sign(dotp1) !== Math.sign(dotom))
