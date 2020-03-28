@@ -401,7 +401,7 @@ export class Graphics extends Container
             native: false,
             cap: LINE_CAP.BUTT,
             join: LINE_JOIN.MITER,
-            miterLimit: 196,
+            miterLimit: 10,
         }, options);
 
         if (this.currentPath)

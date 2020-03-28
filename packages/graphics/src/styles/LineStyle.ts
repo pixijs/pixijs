@@ -53,9 +53,9 @@ export class LineStyle extends FillStyle
      * Miter limit.
      *
      * @member {number}
-     * @default 196
+     * @default 10
      */
-    public miterLimit = 196;
+    public miterLimit = 10;
 
     /**
      * Clones the object
@@ -80,6 +80,7 @@ export class LineStyle extends FillStyle
 
         return obj;
     }
+
     /**
      * Reset the line style to default.
      */
