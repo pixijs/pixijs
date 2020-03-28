@@ -353,7 +353,9 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
 
         /* Inner miter point */
         let imx = x1 + ((px - x1) * innerWeight);
-        let imy = y1 - (perp1y * innerWeight);
+        let imy = y1 + ((py - y1) * innerWeight);
+        let omx = x1 - ((px - x1) * outerWeight);
+        let omy = y1 - ((py - y1) * outerWeight);
 
         /* Check if inner miter point is on same side as p1 w.r.t vector p02 */
         // Take normal to v02
@@ -361,13 +363,28 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
         const n02y = -(x2 - x0);
         // Take dot products of p1 and im with normal to v02
         const dotp1 = (n02x * x1) + (n02y * y1);
-        const dotim = (n02x * imx) + (n02y * imy);
 
-        // Not on same side?, make inner miter point the mid-point instead
-        if (Math.sign(dotp1) !== Math.sign(dotim))
+        if (clockwise)
         {
-            imx = (x0 + x2) * 0.5;
-            imy = (y0 + y2) * 0.5;
+            const dotim = (n02x * imx) + (n02y * imy);
+
+            // Not on same side?, make inner miter point the mid-point instead
+            if (Math.abs(dotp1 - dotim) > 0.1 && Math.sign(dotp1) !== Math.sign(dotim))
+            {
+                imx = (x0 + x2) * 0.5;
+                imy = (y0 + y2) * 0.5;
+            }
+        }
+        else
+        {
+            const dotom = (n02x * omx) + (n02y * omy);
+
+            // Not on same side?, make outer miter point the mid-point instead
+            if (Math.abs(dotp1 - dotom) > 0.1 && Math.sign(dotp1) !== Math.sign(dotom))
+            {
+                omx = (x0 + x2) * 0.5;
+                omy = (y0 + y2) * 0.5;
+            }
         }
 
         if (style.join === LINE_JOIN.BEVEL || pdist / widthSquared > miterLimitSquared)
@@ -382,9 +399,9 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
             else /* rotating at outer angle */
             {
                 verts.push(x1 - (perpx * innerWeight), y1 - (perpy * innerWeight));// first segment's inner vertex
-                verts.push(x1 - ((px - x1) * outerWeight), y1 - ((py - y1) * outerWeight));// outer miter point
+                verts.push(omx, omy);// outer miter point
                 verts.push(x1 - (perp1x * innerWeight), y1 - (perp1y * innerWeight));// second segment's outer vertex
-                verts.push(x1 - ((px - x1) * outerWeight), y1 - ((py - y1) * outerWeight));// outer miter point
+                verts.push(omx, omy);// outer miter point
             }
 
             indexCount += 2;
@@ -393,7 +410,7 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
         {
             if (clockwise) /* arc is outside */
             {
-                verts.push(x1 + ((px - x1) * innerWeight), y1 + ((py - y1) * innerWeight));
+                verts.push(imx, imy);
                 verts.push(x1 + (perpx * outerWeight), y1 + (perpy * outerWeight));
 
                 indexCount += round(
@@ -403,13 +420,13 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
                     verts, true
                 ) + 4;
 
-                verts.push(x1 + ((px - x1) * innerWeight), y1 + ((py - y1) * innerWeight));
+                verts.push(imx, imy);
                 verts.push(x1 + (perp1x * outerWeight), y1 + (perp1y * outerWeight));
             }
             else /* arc is inside */
             {
                 verts.push(x1 - (perpx * innerWeight), y1 - (perpy * innerWeight));
-                verts.push(x1 - ((px - x1) * outerWeight), y1 - ((py - y1) * outerWeight));
+                verts.push(omx, omy);
 
                 indexCount += round(
                     x1, y1,
@@ -419,13 +436,13 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
                 ) + 4;
 
                 verts.push(x1 - (perp1x * innerWeight), y1 - (perp1y * innerWeight));
-                verts.push(x1 - ((px - x1) * outerWeight), y1 - ((py - y1) * outerWeight));
+                verts.push(omx, omy);
             }
         }
         else
         {
             verts.push(imx, imy);
-            verts.push(x1 - ((px - x1) * outerWeight), y1 - ((py - y1) * outerWeight));
+            verts.push(omx, omx);
         }
     }
 
