@@ -354,6 +354,7 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
         /* Inner miter point */
         let imx = x1 + ((px - x1) * innerWeight);
         let imy = y1 + ((py - y1) * innerWeight);
+        /* Outer miter point */
         let omx = x1 - ((px - x1) * outerWeight);
         let omy = y1 - ((py - y1) * outerWeight);
 
@@ -442,7 +443,7 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
         else
         {
             verts.push(imx, imy);
-            verts.push(omx, omx);
+            verts.push(omx, omy);
         }
     }
 
