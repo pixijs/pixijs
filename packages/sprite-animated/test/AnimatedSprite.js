@@ -108,7 +108,7 @@ describe('PIXI.AnimatedSprite', function ()
     {
         before(function ()
         {
-            this.sprite = new AnimatedSprite([Texture.EMPTY, Texture.EMPTY, Texture.EMPTY]);
+            this.sprite = new AnimatedSprite([Texture.WHITE, Texture.WHITE, Texture.EMPTY]);
             this.sprite.animationSpeed = 0.5;
             this.sprite.loop = false;
         });
@@ -132,6 +132,17 @@ describe('PIXI.AnimatedSprite', function ()
             };
             this.sprite.play();
             expect(this.sprite.playing).to.be.true;
+        });
+
+        it('should the current texture be the last item in textures', function (done)
+        {
+            this.sprite.play();
+            this.sprite.onComplete = () =>
+            {
+                expect(this.sprite.texture === this.sprite.textures[this.sprite.currentFrame]).to.be.true;
+                this.sprite.onComplete = null;
+                done();
+            };
         });
     });
 
@@ -231,7 +242,7 @@ describe('PIXI.AnimatedSprite', function ()
     {
         before(function ()
         {
-            this.sprite = new AnimatedSprite([Texture.EMPTY, Texture.EMPTY, Texture.EMPTY]);
+            this.sprite = new AnimatedSprite([Texture.EMPTY, Texture.WHITE, Texture.EMPTY]);
             this.sprite.animationSpeed = 1;
             this.sprite.loop = false;
         });

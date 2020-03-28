@@ -1,5 +1,5 @@
 import { Renderer } from './Renderer';
-import type { IRendererOptions } from './AbstractRenderer';
+import type { AbstractRenderer, IRendererOptions } from './AbstractRenderer';
 
 export interface IRendererOptionsAuto extends IRendererOptions
 {
@@ -34,7 +34,7 @@ export interface IRendererOptionsAuto extends IRendererOptions
  *  for devices with dual graphics card **webgl only**
  * @return {PIXI.Renderer|PIXI.CanvasRenderer} Returns WebGL renderer if available, otherwise CanvasRenderer
  */
-export function autoDetectRenderer(options: IRendererOptionsAuto): Renderer
+export function autoDetectRenderer(options: IRendererOptionsAuto): AbstractRenderer
 {
     return Renderer.create(options);
 }

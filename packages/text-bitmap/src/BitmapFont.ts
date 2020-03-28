@@ -5,8 +5,19 @@ import { Texture } from '@pixi/core';
 import { autoDetectFormat } from './formats';
 import { BitmapFontData } from './BitmapFontData';
 
+import type { Dict } from '@pixi/utils';
+
+interface IBitmapFontCharacter {
+    xOffset: number;
+    yOffset: number;
+    xAdvance: number;
+    texture: Texture;
+    page: number;
+    kerning: Dict<number>;
+}
+
 // Internal map of available fonts, by name
-const available = {};
+const available: Dict<BitmapFont> = {};
 
 /**
  * BitmapFont represents a typeface available for use
@@ -20,13 +31,18 @@ const available = {};
  */
 export class BitmapFont
 {
-    constructor(data, textures)
+    public readonly font: string;
+    public readonly size: number;
+    public readonly lineHeight: number;
+    public readonly chars: Dict<IBitmapFontCharacter>;
+
+    constructor(data: BitmapFontData, textures: Texture[]|Dict<Texture>)
     {
         const [info] = data.info;
         const [common] = data.common;
         const [page] = data.page;
         const res = getResolutionOfUrl(page.file, settings.RESOLUTION);
-        const pagesTextures = {};
+        const pagesTextures: Dict<Texture> = {};
 
         /**
          * The name of the font face.
@@ -123,13 +139,15 @@ export class BitmapFont
     /**
      * Remove references to created glyph textures.
      */
-    destroy()
+    public destroy(): void
     {
         for (const id in this.chars)
         {
             this.chars[id].texture.destroy();
         }
-        this.chars = null;
+
+        // Set readonly null.
+        (this as any).chars = null;
     }
 
     /**
@@ -143,7 +161,10 @@ export class BitmapFont
      * @return {PIXI.BitmapFont} Result font object with font, size, lineHeight
      *         and char fields.
      */
-    static install(data, textures)
+    public static install(
+        data: string|XMLDocument|BitmapFontData,
+        textures: Texture|Texture[]|Dict<Texture>
+    ): BitmapFont
     {
         let fontData;
 
@@ -160,7 +181,7 @@ export class BitmapFont
                 throw new Error('Unrecognized data format for font.');
             }
 
-            fontData = format.parse(data);
+            fontData = format.parse(data as any);
         }
 
         // Single texture, convert to list
@@ -182,7 +203,7 @@ export class BitmapFont
      * @static
      * @param {string} name
      */
-    static uninstall(name)
+    public static uninstall(name: string): void
     {
         const font = available[name];
 
@@ -202,7 +223,7 @@ export class BitmapFont
      * @static
      * @member {Object.<string, PIXI.BitmapFont>}
      */
-    static get available()
+    public static get available(): Dict<BitmapFont>
     {
         return available;
     }
