@@ -13,6 +13,8 @@ const DEFAULT_UVS = new TextureUvs();
 
 export type TextureSource = string|BaseTexture|ImageSource;
 
+export interface Texture extends GlobalMixins.Texture, EventEmitter {}
+
 /**
  * A texture stores the information that represents an image or part of an image.
  *

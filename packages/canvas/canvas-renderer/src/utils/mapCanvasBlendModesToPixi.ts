@@ -10,7 +10,7 @@ import { canUseNewCanvasBlendModes } from './canUseNewCanvasBlendModes';
  * @param {string[]} [array=[]] - The array to output into.
  * @return {string[]} Mapped modes.
  */
-export function mapCanvasBlendModesToPixi(array = [])
+export function mapCanvasBlendModesToPixi(array: string[] = []): string[]
 {
     if (canUseNewCanvasBlendModes())
     {
