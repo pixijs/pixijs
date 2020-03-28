@@ -26,45 +26,10 @@ export function getTestContext(): WebGLRenderingContext | WebGL2RenderingContext
 
         if (!gl)
         {
-            // try antialias + stencil
+            const options: any = { antialias: false, stencil: false };
 
-            const options: any = { antialias: true, stencil: true };
-
-            gl = canvas.getContext('webgl', options) as WebGLRenderingContext;
-
-            if (!gl)
-            {
-                // Hello, windows XP mozilla!
-
-                options.antialias = false;
-                options.stencil = true;
-
-                gl = canvas.getContext('webgl', options) as WebGLRenderingContext;
-            }
-
-            if (!gl)
-            {
-                options.antialias = false;
-                options.stencil = false;
-
-                gl = canvas.getContext('webgl', options) as WebGLRenderingContext;
-            }
-
-            if (!gl)
-            {
-                options.antialias = true;
-                options.stencil = false;
-
-                gl = canvas.getContext('webgl', options) as WebGLRenderingContext;
-            }
-
-            if (!gl)
-            {
-                options.antialias = true;
-                options.stencil = true;
-
-                gl = canvas.getContext('experimental-webgl', options) as WebGLRenderingContext;
-            }
+            gl = canvas.getContext('webgl', options) as WebGLRenderingContext
+            || canvas.getContext('experimental-webgl', options) as WebGLRenderingContext;
 
             if (!gl)
             {
