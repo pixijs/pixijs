@@ -4,7 +4,7 @@ const { Texture, BaseTexture } = require('@pixi/core');
 const { BaseTextureCache, TextureCache } = require('@pixi/utils');
 const { SpritesheetLoader, Spritesheet } = require('../');
 
-describe.only('PIXI.SpritesheetLoader', function ()
+describe('PIXI.SpritesheetLoader', function ()
 {
     it('should exist and return a function', function ()
     {
