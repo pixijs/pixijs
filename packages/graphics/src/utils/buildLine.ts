@@ -4,7 +4,7 @@ import type { Polygon } from '@pixi/math';
 import type { GraphicsData } from '../GraphicsData';
 import type { GraphicsGeometry } from '../GraphicsGeometry';
 import { LINE_JOIN, LINE_CAP } from '@pixi/constants';
-import { settings } from '@pixi/settings';
+import { GRAPHICS_CURVES } from '../const';
 
 /**
  * Buffers vertices to draw a square cap.
@@ -124,7 +124,7 @@ function round(
                 angleDiff = -angleDiff;
             }
         }
-        else if (r1x >= -settings.EPSILON)
+        else if (r1x >= -GRAPHICS_CURVES.epsilon)
         {
             angleDiff = -angleDiff;
         }
@@ -488,7 +488,7 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
     }
 
     const indices = graphicsGeometry.indices;
-    const eps2 = settings.EPSILON * settings.EPSILON;
+    const eps2 = GRAPHICS_CURVES.epsilon * GRAPHICS_CURVES.epsilon;
 
     // indices.push(indexStart);
     for (let i = indexStart; i < indexCount + indexStart - 2; ++i)
