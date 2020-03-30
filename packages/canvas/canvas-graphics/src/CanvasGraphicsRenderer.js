@@ -107,6 +107,9 @@ export class CanvasGraphicsRenderer
             }
 
             context.lineWidth = lineStyle.width;
+            context.lineCap = lineStyle.cap;
+            context.lineJoin = lineStyle.join;
+            context.miterLimit = lineStyle.miterLimit;
 
             if (data.type === SHAPES.POLY)
             {
