@@ -4,6 +4,7 @@ import type { Polygon } from '@pixi/math';
 import type { GraphicsData } from '../GraphicsData';
 import type { GraphicsGeometry } from '../GraphicsGeometry';
 import { LINE_JOIN, LINE_CAP } from '@pixi/constants';
+import { settings } from '@pixi/settings';
 
 /**
  * Buffers vertices to draw a square cap.
@@ -487,6 +488,7 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
     }
 
     const indices = graphicsGeometry.indices;
+    const eps2 = settings.EPSILON * settings.EPSILON;
 
     // indices.push(indexStart);
     for (let i = indexStart; i < indexCount + indexStart - 2; ++i)
@@ -501,7 +503,7 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
         y2 = verts[((i + 2) * 2) + 1];
 
         /* Skip zero area triangles */
-        if ((x0 * (y1 - y2)) + (x1 * (y2 - y0)) + (x2 * (y0 - y1)) === 0)
+        if (Math.abs((x0 * (y1 - y2)) + (x1 * (y2 - y0)) + (x2 * (y0 - y1))) < eps2)
         {
             continue;
         }
