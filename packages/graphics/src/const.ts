@@ -3,6 +3,9 @@ export interface IGraphicsCurvesSettings {
     maxLength: number;
     minSegments: number;
     maxSegments: number;
+
+    epsilon: number;
+
     _segmentsCount(length: number, defaultSegments?: number): number;
 }
 
@@ -26,6 +29,8 @@ export const GRAPHICS_CURVES: IGraphicsCurvesSettings = {
     maxLength: 10,
     minSegments: 8,
     maxSegments:  2048,
+
+    epsilon: 0.0001,
 
     _segmentsCount(length: number, defaultSegments = 20)
     {

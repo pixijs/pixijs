@@ -8,6 +8,12 @@
  */
 export class BitmapFontData
 {
+    public info: IBitmapFontDataInfo[];
+    public common: IBitmapFontDataCommon[];
+    public page: IBitmapFontDataPage[];
+    public char: IBitmapFontDataChar[];
+    public kerning: IBitmapFontDataKerning[];
+
     constructor()
     {
         /**
@@ -40,6 +46,38 @@ export class BitmapFontData
          */
         this.kerning = [];
     }
+}
+
+export interface IBitmapFontDataInfo {
+    face: string;
+    size: number;
+}
+
+export interface IBitmapFontDataCommon {
+    lineHeight: number;
+}
+
+export interface IBitmapFontDataPage {
+    id: number;
+    file: string;
+}
+
+export interface IBitmapFontDataChar {
+    id: number;
+    page: number;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    xoffset: number;
+    yoffset: number;
+    xadvance: number;
+}
+
+export interface IBitmapFontDataKerning {
+    first: number;
+    second: number;
+    amount: number;
 }
 
 /**
