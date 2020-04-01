@@ -324,4 +324,34 @@ describe('PIXI.AnimatedSprite', function ()
             expect(this.sprite.playing).to.be.true;
         });
     });
+
+    describe('.textures', function ()
+    {
+        it('should set the first frame when setting new textures', function (done)
+        {
+            const orig1 = Texture.EMPTY.clone();
+            const orig2 = Texture.EMPTY.clone();
+            const orig3 = Texture.EMPTY.clone();
+            const sprite = new AnimatedSprite([orig1, orig2, orig3]);
+
+            sprite.gotoAndPlay(0);
+            sprite.loop = false;
+
+            sprite.onComplete = () =>
+            {
+                sprite.gotoAndStop(0);
+
+                const frame1 = Texture.EMPTY.clone();
+                const frame2 = Texture.EMPTY.clone();
+                const frame3 = Texture.EMPTY.clone();
+
+                sprite.textures = [frame1, frame2, frame3];
+
+                expect(sprite.currentFrame).to.equal(0);
+                expect(sprite._texture).to.equal(frame1);
+
+                done();
+            };
+        });
+    });
 });
