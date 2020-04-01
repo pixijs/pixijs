@@ -74,8 +74,6 @@ export class AnimatedSprite extends Sprite
          */
         this._durations = null;
 
-        this.textures = textures;
-
         /**
          * `true` uses PIXI.Ticker.shared to auto update animation time.
          *
@@ -162,6 +160,8 @@ export class AnimatedSprite extends Sprite
          * @private
          */
         this._previousFrame = null;
+
+        this.textures = textures;
     }
 
     /**
@@ -447,6 +447,7 @@ export class AnimatedSprite extends Sprite
                 this._durations.push((value[i] as FrameObject).time);
             }
         }
+        this._previousFrame = null;
         this.gotoAndStop(0);
         this.updateTexture();
     }
