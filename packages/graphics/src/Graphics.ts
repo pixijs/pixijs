@@ -16,7 +16,7 @@ import { hex2rgb, deprecation } from '@pixi/utils';
 import { GraphicsGeometry } from './GraphicsGeometry';
 import { FillStyle } from './styles/FillStyle';
 import { LineStyle } from './styles/LineStyle';
-import { BLEND_MODES } from '@pixi/constants';
+import { BLEND_MODES, LINE_JOIN, LINE_CAP } from '@pixi/constants';
 import { Container } from '@pixi/display';
 import { Shader } from '@pixi/core';
 
@@ -49,6 +49,8 @@ export interface ILineStyleOptions extends IFillStyleOptions {
     width?: number;
     alignment?: number;
     native?: boolean;
+    join?: LINE_JOIN;
+    miterLimit?: number;
 }
 
 const temp = new Float32Array(3);
@@ -397,6 +399,9 @@ export class Graphics extends Container
             matrix: null,
             alignment: 0.5,
             native: false,
+            cap: LINE_CAP.BUTT,
+            join: LINE_JOIN.MITER,
+            miterLimit: 10,
         }, options);
 
         if (this.currentPath)

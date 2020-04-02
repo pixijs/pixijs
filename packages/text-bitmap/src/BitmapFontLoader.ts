@@ -2,6 +2,11 @@ import { LoaderResource } from '@pixi/loaders';
 import { autoDetectFormat } from './formats';
 import { BitmapFont } from './BitmapFont';
 
+import type { ILoaderResource } from '@pixi/loaders';
+import type { Dict } from '@pixi/utils';
+import type { Loader } from '@pixi/loaders';
+import type { Texture } from '@pixi/core';
+
 /**
  * {@link PIXI.Loader Loader} middleware for loading
  * bitmap-based fonts suitable for using with {@link PIXI.BitmapText}.
@@ -16,7 +21,7 @@ export class BitmapFontLoader
      *
      * @see PIXI.Loader.registerPlugin
      */
-    static add()
+    public static add(): void
     {
         LoaderResource.setExtensionXhrType('fnt', LoaderResource.XHR_RESPONSE_TYPE.DOCUMENT);
     }
@@ -27,7 +32,7 @@ export class BitmapFontLoader
      * @param {PIXI.LoaderResource} resource
      * @param {function} next
      */
-    static use(resource, next)
+    static use(this: Loader, resource: ILoaderResource, next: (...args: any[]) => void): void
     {
         const format = autoDetectFormat(resource.data);
 
@@ -41,11 +46,11 @@ export class BitmapFontLoader
 
         const baseUrl = BitmapFontLoader.getBaseUrl(this, resource);
         const data = format.parse(resource.data);
-        const textures = {};
+        const textures: Dict<Texture> = {};
 
         // Handle completed, when the number of textures
         // load is the same number as references in the fnt file
-        const completed = (page) =>
+        const completed = (page: ILoaderResource): void =>
         {
             textures[page.metadata.pageFile] = page.texture;
 
@@ -66,7 +71,7 @@ export class BitmapFontLoader
             // using the same loader, resource will be available
             for (const name in this.resources)
             {
-                const bitmapResource = this.resources[name];
+                const bitmapResource: ILoaderResource = this.resources[name];
 
                 if (bitmapResource.url === url)
                 {
@@ -111,7 +116,7 @@ export class BitmapFontLoader
      * @param {PIXI.LoaderResource} resource
      * @return {string}
      */
-    static getBaseUrl(loader, resource)
+    private static getBaseUrl(loader: Loader, resource: ILoaderResource): string
     {
         let resUrl = !resource.isDataUrl ? BitmapFontLoader.dirname(resource.url) : '';
 
@@ -149,7 +154,7 @@ export class BitmapFontLoader
      * @private
      * @param {string} url Path to get directory for
      */
-    static dirname(url)
+    private static dirname(url: string): string
     {
         const dir = url
             .replace(/\\/g, '/') // convert windows notation to UNIX notation, URL-safe because it's a forbidden character

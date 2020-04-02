@@ -12,7 +12,7 @@ export class Circle
     public x: number;
     public y: number;
     public radius: number;
-    public readonly type: number;
+    public readonly type: SHAPES.CIRC;
 
     /**
      * @param {number} [x=0] - The X coordinate of the center of this circle
