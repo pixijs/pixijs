@@ -244,7 +244,7 @@ export class Text extends Sprite
             else
             {
                 // set canvas text styles
-                context.fillStyle = this._generateFillStyle(style, lines);
+                context.fillStyle = this._generateFillStyle(style, lines, measured);
                 // TODO: Can't have different types for getter and setter. The getter shouldn't have the number type as
                 //       the setter converts to string. See this thread for more details:
                 //       https://github.com/microsoft/TypeScript/issues/2521
@@ -449,7 +449,7 @@ export class Text extends Sprite
      * @param {string[]} lines - The lines of text.
      * @return {string|number|CanvasGradient} The fill style
      */
-    private _generateFillStyle(style: TextStyle, lines: string[]): string|CanvasGradient|CanvasPattern
+    private _generateFillStyle(style: TextStyle, lines: string[], metrics: TextMetrics): string|CanvasGradient|CanvasPattern
     {
         // TODO: Can't have different types for getter and setter. The getter shouldn't have the number type as
         //       the setter converts to string. See this thread for more details:
@@ -515,8 +515,6 @@ export class Text extends Sprite
             // floating point precision from making us go the teeniest bit backwards, resulting in
             // the first and last colors getting swapped.
             let lastIterationStop = 0;
-
-            const metrics = TextMetrics.measureText(this.text, style, style.wordWrap, this.canvas);
 
             // Actual height of the text itself, not counting spacing for lineHeight/leading/dropShadow etc
             const textHeight = metrics.fontProperties.fontSize + style.strokeThickness;
