@@ -96,23 +96,25 @@ export class CanvasGraphicsRenderer
             const fillColor = data.fillStyle.color | 0;
             const lineColor = data.lineStyle.color | 0;
 
-            const fillTint = (
-                (((fillColor >> 16) & 0xFF) / 255 * tintR * 255 << 16)
-                + (((fillColor >> 8) & 0xFF) / 255 * tintG * 255 << 8)
-                + (((fillColor & 0xFF) / 255) * tintB * 255)
-            );
-            const lineTint = (
-                (((lineColor >> 16) & 0xFF) / 255 * tintR * 255 << 16)
-                + (((lineColor >> 8) & 0xFF) / 255 * tintG * 255 << 8)
-                + (((lineColor & 0xFF) / 255) * tintB * 255)
-            );
 
             if (fillStyle.visible)
             {
+                const fillTint = (
+                    (((fillColor >> 16) & 0xFF) / 255 * tintR * 255 << 16)
+                    + (((fillColor >> 8) & 0xFF) / 255 * tintG * 255 << 8)
+                    + (((fillColor & 0xFF) / 255) * tintB * 255)
+                );
+
                 contextFillStyle = this._calcCanvasStyle(fillStyle, fillTint);
             }
             if (lineStyle.visible)
             {
+                const lineTint = (
+                    (((lineColor >> 16) & 0xFF) / 255 * tintR * 255 << 16)
+                    + (((lineColor >> 8) & 0xFF) / 255 * tintG * 255 << 8)
+                    + (((lineColor & 0xFF) / 255) * tintB * 255)
+                );
+
                 contextStrokeStyle = this._calcCanvasStyle(lineStyle, lineTint);
             }
 
