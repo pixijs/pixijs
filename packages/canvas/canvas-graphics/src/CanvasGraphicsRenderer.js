@@ -96,7 +96,6 @@ export class CanvasGraphicsRenderer
             const fillColor = data.fillStyle.color | 0;
             const lineColor = data.lineStyle.color | 0;
 
-
             if (fillStyle.visible)
             {
                 const fillTint = (
