@@ -11,9 +11,9 @@ import { SimpleRope } from '@pixi/mesh-extras';
 SimpleRope.prototype._renderCanvas = function _renderCanvas(renderer)
 {
     if (this.autoUpdate
-        || this.geometry.width !== this.shader.texture.height)
+        || this.geometry._width !== this.shader.texture.height)
     {
-        this.geometry.width = this.shader.texture.height;
+        this.geometry._width = this.shader.texture.height;
         this.geometry.update();
     }
 
