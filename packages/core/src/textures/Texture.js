@@ -274,6 +274,7 @@ export class Texture extends EventEmitter
                 this.baseTexture.destroy();
             }
 
+            this.baseTexture.off('loaded', this.onBaseTextureUpdated, this);
             this.baseTexture.off('update', this.onBaseTextureUpdated, this);
 
             this.baseTexture = null;
