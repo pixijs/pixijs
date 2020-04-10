@@ -138,6 +138,15 @@ describe('PIXI.Texture', function ()
         texture.destroy(true);
     });
 
+    it('should not throw if base texture loaded after destroy', function ()
+    {
+        const base = new BaseTexture();
+        const texture = new Texture(base);
+
+        texture.destroy();
+        base.emit('loaded', base);
+    });
+
     it('should clone a minimal texture', function ()
     {
         const baseTexture = new BaseTexture();
