@@ -12,7 +12,8 @@ export interface IDestroyOptions {
     baseTexture?: boolean;
 }
 
-export interface DisplayObject extends GlobalMixins.DisplayObject, EventEmitter {}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface DisplayObject extends GlobalMixins.DisplayObject {}
 
 /**
  * The base class for all objects that are rendered on the screen.
@@ -23,7 +24,7 @@ export interface DisplayObject extends GlobalMixins.DisplayObject, EventEmitter 
  * @extends PIXI.utils.EventEmitter
  * @memberof PIXI
  */
-export abstract class DisplayObject extends EventEmitter
+export abstract class DisplayObject extends EventEmitter<GlobalMixins.DisplayObjectEvents>
 {
     abstract sortDirty: boolean;
 

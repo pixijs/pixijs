@@ -41,6 +41,38 @@ declare interface IHitArea {
     contains(x: number, y: number): boolean;
 }
 
+declare type InteractionPointerEvents = 'pointerdown'
+    | 'pointercancel'
+    | 'pointerup'
+    | 'pointertap'
+    | 'pointerupoutside'
+    | 'pointermove'
+    | 'pointerover'
+    | 'pointerout';
+
+declare type InteractionTouchEvents = 'touchstart'
+    | 'touchcancel'
+    | 'touchend'
+    | 'touchendoutside'
+    | 'touchmove'
+    | 'tap';
+
+declare type InteractionMouseEvents = 'rightdown'
+    | 'mousedown'
+    | 'rightup'
+    | 'mouseup'
+    | 'rightclick'
+    | 'click'
+    | 'rightupoutside'
+    | 'mouseupoutside'
+    | 'mousemove'
+    | 'mouseover'
+    | 'mouseout';
+
+declare type InteractionEventTypes = InteractionPointerEvents | InteractionTouchEvents | InteractionMouseEvents;
+
+declare type InteractionEvents = { [EventType in InteractionEventTypes]: [import('./src').InteractionEvent] };
+
 declare namespace GlobalMixins
 {
     interface InteractiveTarget {
@@ -54,6 +86,12 @@ declare namespace GlobalMixins
 
     // eslint-disable-next-line @typescript-eslint/no-empty-interface
     interface DisplayObject extends Partial<InteractiveTarget>
+    {
+
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-empty-interface
+    interface DisplayObjectEvents extends InteractionEvents
     {
 
     }

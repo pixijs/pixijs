@@ -63,8 +63,10 @@ export { isMobile } from '@pixi/settings';
     stored in this very repository.
  */
 // @ts-ignore
-import EventEmitter from 'eventemitter3';
+import _EventEmitter from 'eventemitter3';
 /* eslint-enable */
+
+import '../../../types/events';
 
 /**
  * A high performance event emitter
@@ -75,6 +77,14 @@ import EventEmitter from 'eventemitter3';
  * @class EventEmitter
  * @type {EventEmitter}
  */
+// overwrite the type of static side, first cast it to `any` because it's missing the `__events` property
+// eslint-disable-next-line no-undef
+const EventEmitter = _EventEmitter as any as typeof PIXI.utils.EventEmitter;
+
+// overwrite the type of instance side
+type EventEmitter<EventTypes extends PIXI.utils.BaseEventTypes = PIXI.utils.BaseEventTypes>
+    = PIXI.utils.EventEmitter<EventTypes>;
+
 export { EventEmitter };
 
 /**
