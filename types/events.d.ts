@@ -11,14 +11,16 @@ declare namespace PIXI {
             (...args: Args): void;
         }
 
+        namespace EventEmitter {
+            let prefixed: string | boolean;
+        }
+
         /**
          * Minimal `EventEmitter` interface that is molded against the Node.js
          * `EventEmitter` interface.
          */
-        export class EventEmitter<EventTypes extends BaseEventTypes = BaseEventTypes>
+        export interface EventEmitter<EventTypes extends BaseEventTypes = BaseEventTypes>
         {
-            static prefixed: string | boolean;
-
             /**
              * A fake property to store the event types. Do not use it as value.
              */

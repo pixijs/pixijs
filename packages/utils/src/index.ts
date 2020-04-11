@@ -48,45 +48,6 @@
  */
 export { isMobile } from '@pixi/settings';
 
-/* eslint-disable */
-/*
-    - `eventemitter3` uses CommonJS export
-    - PIXI uses module exports, but thanks to `"esModuleInterop": true` in tsconfig.json this works
-    - Unfortunately `tsconfig.docs.json` (used for documentation genereation) exports to ES6
-      which for reasons unknown just doesn't work even with the interop above
-    - Changing docs' export to ES5 fixes the problem with `eventemitter3` but causes a lot
-      of other bugs when building for docs, therefore it's not a solution
-    - Adding @ts-ignore to this line makes docs build stop complaining about something it doesn't
-      have to care about, but then linter's rule is broken
-    - Therefore the whole thing is wrapped in eslint-disable just to be able to progress with this change
-    - This is a temporary measure. Possibly the best solution would be custom typings for `eventemitter3`
-    stored in this very repository.
- */
-// @ts-ignore
-import _EventEmitter from 'eventemitter3';
-/* eslint-enable */
-
-import '../../../types/events';
-
-/**
- * A high performance event emitter
- *
- * @see {@link https://github.com/primus/eventemitter3}
- *
- * @memberof PIXI.utils
- * @class EventEmitter
- * @type {EventEmitter}
- */
-// overwrite the type of static side, first cast it to `any` because it's missing the `__events` property
-// eslint-disable-next-line no-undef
-const EventEmitter = _EventEmitter as any as typeof PIXI.utils.EventEmitter;
-
-// overwrite the type of instance side
-type EventEmitter<EventTypes extends PIXI.utils.BaseEventTypes = PIXI.utils.BaseEventTypes>
-    = PIXI.utils.EventEmitter<EventTypes>;
-
-export { EventEmitter };
-
 /**
  * A polygon triangulation library
  *
@@ -134,3 +95,4 @@ export * from './network/determineCrossOrigin';
 export * from './network/getResolutionOfUrl';
 export * from './const';
 export * from './types';
+export * from './eventemitter';
