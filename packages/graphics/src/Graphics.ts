@@ -802,6 +802,11 @@ export class Graphics extends Container
      */
     public drawRoundedRect(x: number, y: number, width: number, height: number, radius: number): this
     {
+        if (radius === 0)
+        {
+            return this.drawRect(x, y, width, height);
+        }
+
         return this.drawShape(new RoundedRectangle(x, y, width, height, radius));
     }
 
