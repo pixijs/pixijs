@@ -5,6 +5,7 @@ import { Bounds } from './Bounds';
 
 import type { Filter, MaskData, Renderer } from '@pixi/core';
 import type { IPoint, ObservablePoint } from '@pixi/math';
+import type { DisplayObjectEvents } from './events';
 
 export interface IDestroyOptions {
     children?: boolean;
@@ -24,7 +25,7 @@ export interface DisplayObject extends GlobalMixins.DisplayObject {}
  * @extends PIXI.utils.EventEmitter
  * @memberof PIXI
  */
-export abstract class DisplayObject extends EventEmitter<GlobalMixins.DisplayObjectEvents>
+export abstract class DisplayObject extends EventEmitter<DisplayObjectEvents>
 {
     abstract sortDirty: boolean;
 

@@ -41,37 +41,7 @@ declare interface IHitArea {
     contains(x: number, y: number): boolean;
 }
 
-declare type InteractionPointerEvents = 'pointerdown'
-    | 'pointercancel'
-    | 'pointerup'
-    | 'pointertap'
-    | 'pointerupoutside'
-    | 'pointermove'
-    | 'pointerover'
-    | 'pointerout';
-
-declare type InteractionTouchEvents = 'touchstart'
-    | 'touchcancel'
-    | 'touchend'
-    | 'touchendoutside'
-    | 'touchmove'
-    | 'tap';
-
-declare type InteractionMouseEvents = 'rightdown'
-    | 'mousedown'
-    | 'rightup'
-    | 'mouseup'
-    | 'rightclick'
-    | 'click'
-    | 'rightupoutside'
-    | 'mouseupoutside'
-    | 'mousemove'
-    | 'mouseover'
-    | 'mouseout';
-
-declare type InteractionEventTypes = InteractionPointerEvents | InteractionTouchEvents | InteractionMouseEvents;
-
-declare type InteractionEvents = { [EventType in InteractionEventTypes]: [import('./src').InteractionEvent] };
+declare type InteractionEvents = import('./src').InteractionEvents;
 
 declare namespace GlobalMixins
 {

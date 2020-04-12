@@ -1,5 +1,3 @@
-declare type Container = import('./src').Container;
-
 declare namespace GlobalMixins {
     // eslint-disable-next-line @typescript-eslint/no-empty-interface
     interface DisplayObject
@@ -7,15 +5,9 @@ declare namespace GlobalMixins {
 
     }
 
-    interface DisplayObjectEvents extends PIXI.utils.BaseEventTypes
+    // eslint-disable-next-line @typescript-eslint/no-empty-interface
+    interface DisplayObjectEvents
     {
-        added: [Container];
-        removed: [Container];
-    }
 
-    interface ContainerEvents extends DisplayObjectEvents
-    {
-        childAdded: [GlobalMixins.DisplayObject, Container, number];
-        childRemoved: [GlobalMixins.DisplayObject, Container, number];
     }
 }

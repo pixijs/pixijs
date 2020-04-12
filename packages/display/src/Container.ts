@@ -5,6 +5,7 @@ import { Rectangle } from '@pixi/math';
 
 import type { MaskData, Renderer } from '@pixi/core';
 import type { IDestroyOptions } from './DisplayObject';
+import type { ContainerEvents } from './events';
 
 function sortChildren(a: DisplayObject, b: DisplayObject): number
 {
@@ -16,9 +17,8 @@ function sortChildren(a: DisplayObject, b: DisplayObject): number
     return a.zIndex - b.zIndex;
 }
 
-export interface Container
-{
-    __events: GlobalMixins.ContainerEvents;
+export interface Container {
+    __events: ContainerEvents;
 }
 
 /**

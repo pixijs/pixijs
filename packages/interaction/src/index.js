@@ -10,3 +10,4 @@ export * from './InteractionManager';
 export * from './interactiveTarget';
 export * from './InteractionTrackingData';
 export * from './InteractionEvent';
+export * from './events';
