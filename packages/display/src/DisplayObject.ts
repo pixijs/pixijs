@@ -22,7 +22,7 @@ export interface DisplayObject extends GlobalMixins.DisplayObject {}
  * This is an abstract class and should not be used on its own; rather it should b e extended.
  *
  * @class
- * @extends PIXI.utils.EventEmitter
+ * @extends PIXI.utils.EventEmitter<PIXI.DisplayObjectEvents>
  * @memberof PIXI
  */
 export abstract class DisplayObject extends EventEmitter<DisplayObjectEvents>

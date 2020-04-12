@@ -22,6 +22,11 @@ export interface Container {
 }
 
 /**
+ * @member {PIXI.ContainerEvents} __events
+ * @memberof PIXI.Container#
+ */
+
+/**
  * A Container represents a collection of display objects.
  *
  * It is the base class of all display objects that act as a container for other objects (like Sprites).

@@ -59,6 +59,11 @@ buffer = buffer.replace(
     'addChildAt<T extends PIXI.DisplayObject>(child: T, index: number): T;'
 );
 
+// while tsd-jsdoc doesn't support tuples yet, using generic as placeholder can be a workaround
+// for example the JSDoc "@type {Tuple<string, number>}" will be compiled into `Tuple<string, number>`,
+// which can be easily replaced with `[string, number]`
+buffer = buffer.replace(/Tuple<(.+?)>/g, '[$1]');
+
 // EventEmitter3 and resource-loader are external dependencies, we'll
 // inject these into the find output
 const eventTypes = fs.readFileSync(path.join(__dirname, 'events.d.ts'), 'utf8');
