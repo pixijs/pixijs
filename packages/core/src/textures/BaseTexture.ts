@@ -6,6 +6,7 @@ import { autoDetectResource } from './resources/autoDetectResource';
 import { settings } from '@pixi/settings';
 
 import type { GLTexture } from './GLTexture';
+import type { BaseTextureEvents } from '../events';
 
 const defaultBufferOptions = {
     scaleMode: SCALE_MODES.NEAREST,
@@ -30,7 +31,8 @@ export interface IBaseTextureOptions {
     resourceOptions?: any;
 }
 
-export interface BaseTexture extends GlobalMixins.BaseTexture, EventEmitter {}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface BaseTexture extends GlobalMixins.BaseTexture {}
 
 /**
  * A Texture stores the information that represents an image.
@@ -38,7 +40,7 @@ export interface BaseTexture extends GlobalMixins.BaseTexture, EventEmitter {}
  * Therefore you can have many textures all using a single BaseTexture
  *
  * @class
- * @extends PIXI.utils.EventEmitter
+ * @extends PIXI.utils.EventEmitter<PIXI.BaseTextureEvents>
  * @memberof PIXI
  * @param {PIXI.resources.Resource|string|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement} [resource=null]
  *        The current resource to use, for things that aren't Resource objects, will be converted
@@ -58,7 +60,7 @@ export interface BaseTexture extends GlobalMixins.BaseTexture, EventEmitter {}
  * @param {object} [options.resourceOptions] - Optional resource options,
  *        see {@link PIXI.resources.autoDetectResource autoDetectResource}
  */
-export class BaseTexture extends EventEmitter
+export class BaseTexture extends EventEmitter<BaseTextureEvents>
 {
     public width: number;
     public height: number;

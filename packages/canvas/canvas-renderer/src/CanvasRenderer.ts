@@ -13,6 +13,7 @@ import type {
     RenderTexture,
     BaseRenderTexture,
 } from '@pixi/core';
+import type { CanvasRendererEvents } from './events';
 
 const tempMatrix = new Matrix();
 
@@ -24,6 +25,15 @@ export interface ICanvasRendererPlugins
 {
     [key: string]: any;
 }
+
+export interface CanvasRenderer {
+    __events: CanvasRendererEvents;
+}
+
+/**
+ * @member {PIXI.CanvasRendererEvents} __events
+ * @memberof PIXI.CanvasRenderer#
+ */
 
 /**
  * The CanvasRenderer draws the scene and all its content onto a 2d canvas.

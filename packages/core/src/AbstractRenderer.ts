@@ -8,6 +8,7 @@ import { RenderTexture } from './renderTexture/RenderTexture';
 import type { SCALE_MODES } from '@pixi/constants';
 import type { IRenderingContext } from './IRenderingContext';
 import type { Container } from '@pixi/display';
+import type { AbstractRendererEvents } from './events';
 
 const tempMatrix = new Matrix();
 
@@ -44,10 +45,10 @@ export interface IRendererPlugins
  *
  * @abstract
  * @class
- * @extends PIXI.utils.EventEmitter
+ * @extends PIXI.utils.EventEmitter<PIXI.AbstractRendererEvents>
  * @memberof PIXI
  */
-export abstract class AbstractRenderer extends EventEmitter
+export abstract class AbstractRenderer extends EventEmitter<AbstractRendererEvents>
 {
     public resolution: number;
     public clearBeforeRender?: boolean;

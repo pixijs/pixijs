@@ -8,12 +8,14 @@ import { uid, TextureCache, getResolutionOfUrl, EventEmitter } from '@pixi/utils
 
 import type { IBaseTextureOptions, ImageSource } from './BaseTexture';
 import type { TextureMatrix } from './TextureMatrix';
+import type { TextureEvents } from '../events';
 
 const DEFAULT_UVS = new TextureUvs();
 
 export type TextureSource = string|BaseTexture|ImageSource;
 
-export interface Texture extends GlobalMixins.Texture, EventEmitter {}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface Texture extends GlobalMixins.Texture {}
 
 /**
  * A texture stores the information that represents an image or part of an image.
@@ -42,10 +44,10 @@ export interface Texture extends GlobalMixins.Texture, EventEmitter {}
  * You can use a ticker or rAF to ensure your sprites load the finished textures after processing. See issue #3068.
  *
  * @class
- * @extends PIXI.utils.EventEmitter
+ * @extends PIXI.utils.EventEmitter<PIXI.TextureEvents>
  * @memberof PIXI
  */
-export class Texture extends EventEmitter
+export class Texture extends EventEmitter<TextureEvents>
 {
     public baseTexture: BaseTexture;
     public orig: Rectangle;
@@ -217,6 +219,14 @@ export class Texture extends EventEmitter
         {
             baseTexture.on('update', this.onBaseTextureUpdated, this);
         }
+
+        /**
+         * Fired when Texture is updated.
+         *
+         * @protected
+         * @event PIXI.Texture#update
+         * @param {PIXI.Texture} texture - Instance of texture being updated.
+         */
     }
 
     /**

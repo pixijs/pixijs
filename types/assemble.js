@@ -62,7 +62,9 @@ buffer = buffer.replace(
 // while tsd-jsdoc doesn't support tuples yet, using generic as placeholder can be a workaround
 // for example the JSDoc "@type {Tuple<string, number>}" will be compiled into `Tuple<string, number>`,
 // which can be easily replaced with `[string, number]`
-buffer = buffer.replace(/Tuple<(.+?)>/g, '[$1]');
+// for empty tuples, use "@type {EmptyTuple}" because "@type {Tuple<>}" is invalid syntax
+buffer = buffer.replace(/Tuple<(.+?)>/g, '[$1]')
+    .replace(/EmptyTuple/g, '[]');
 
 // EventEmitter3 and resource-loader are external dependencies, we'll
 // inject these into the find output

@@ -23,13 +23,13 @@ export interface ContainerEvents extends DisplayObjectEvents
  */
 
 /**
- * @see {@link event:PIXI.DisplayObject#added}
+ * @see {@link PIXI.DisplayObject#event:added}
  * @memberof PIXI.DisplayObjectEvents#
  * @member {Tuple<PIXI.Container>} added
  */
 
 /**
- * @see {@link event:PIXI.DisplayObject#removed}
+ * @see {@link PIXI.DisplayObject#event:removed}
  * @memberof PIXI.DisplayObjectEvents#
  * @member {Tuple<PIXI.Container>} removed
  */
@@ -43,13 +43,13 @@ export interface ContainerEvents extends DisplayObjectEvents
  */
 
 /**
- * @see {@link event:PIXI.Container#childAdded}
+ * @see {@link PIXI.Container#event:childAdded}
  * @memberof PIXI.ContainerEvents#
  * @member {Tuple<PIXI.DisplayObject, PIXI.Container, number>} childAdded
  */
 
 /**
- * @see {@link event:PIXI.Container#childRemoved}
+ * @see {@link PIXI.Container#event:childRemoved}
  * @memberof PIXI.ContainerEvents#
  * @member {Tuple<PIXI.DisplayObject, PIXI.Container, number>} childRemoved
  */

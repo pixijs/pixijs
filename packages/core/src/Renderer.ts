@@ -25,6 +25,7 @@ import type { DisplayObject } from '@pixi/display';
 import type { System } from './System';
 import type { IRenderingContext } from './IRenderingContext';
 import type { Extract } from '@pixi/extract';
+import type { RendererEvents } from './events';
 
 export interface IRendererPluginConstructor {
     new (renderer: Renderer): IRendererPlugin;
@@ -33,6 +34,15 @@ export interface IRendererPluginConstructor {
 export interface IRendererPlugin {
     destroy(): void;
 }
+
+export interface Renderer {
+    __events: RendererEvents;
+}
+
+/**
+ * @member {PIXI.RendererEvents} __events
+ * @memberof PIXI.Renderer#
+ */
 
 /**
  * The Renderer draws the scene and all its content onto a WebGL enabled canvas.
