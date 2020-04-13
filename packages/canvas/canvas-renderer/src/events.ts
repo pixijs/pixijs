@@ -1,4 +1,4 @@
-import type { AbstractRendererEvents } from '@pixi/core/src/events';
+import type { AbstractRendererEvents } from '@pixi/core';
 
 export interface CanvasRendererEvents extends AbstractRendererEvents {
     prerender: [];

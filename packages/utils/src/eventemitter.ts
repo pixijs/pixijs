@@ -22,8 +22,7 @@
 import _EventEmitter from 'eventemitter3';
 /* eslint-enable */
 
-// eslint-disable-next-line no-undef
-import BaseEventTypes = PIXI.utils.BaseEventTypes;
+export type BaseEventTypes = PIXI.utils.BaseEventTypes;
 
 type EventEmitter<EventTypes extends BaseEventTypes = BaseEventTypes> = PIXI.utils.EventEmitter<EventTypes>;
 
@@ -43,4 +42,4 @@ const EventEmitter = _EventEmitter as any as {
     new<EventTypes extends BaseEventTypes = BaseEventTypes>(): EventEmitter<EventTypes>;
 };
 
-export { EventEmitter, BaseEventTypes };
+export { EventEmitter };
