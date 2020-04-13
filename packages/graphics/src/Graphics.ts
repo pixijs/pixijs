@@ -8,28 +8,20 @@ import {
     RoundedRectangle,
     Matrix,
     SHAPES,
-    IShape,
 } from '@pixi/math';
 
-import {
-    Texture,
-    Shader,
-    UniformGroup, State, Renderer, BatchDrawCall,
-} from '@pixi/core';
-
-import {
-    BezierUtils,
-    QuadraticUtils,
-    ArcUtils,
-    Star,
-} from './utils';
-
+import { Texture, UniformGroup, State, Renderer, BatchDrawCall } from '@pixi/core';
+import { BezierUtils, QuadraticUtils, ArcUtils, Star } from './utils';
 import { hex2rgb, deprecation } from '@pixi/utils';
 import { GraphicsGeometry } from './GraphicsGeometry';
 import { FillStyle } from './styles/FillStyle';
 import { LineStyle } from './styles/LineStyle';
-import { BLEND_MODES } from '@pixi/constants';
-import { Container, IDestroyOptions } from '@pixi/display';
+import { BLEND_MODES, LINE_JOIN, LINE_CAP } from '@pixi/constants';
+import { Container } from '@pixi/display';
+import { Shader } from '@pixi/core';
+
+import type { IShape } from '@pixi/math';
+import type { IDestroyOptions } from '@pixi/display';
 
 /**
  * Batch element computed from Graphics geometry
@@ -57,6 +49,8 @@ export interface ILineStyleOptions extends IFillStyleOptions {
     width?: number;
     alignment?: number;
     native?: boolean;
+    join?: LINE_JOIN;
+    miterLimit?: number;
 }
 
 const temp = new Float32Array(3);
@@ -405,6 +399,9 @@ export class Graphics extends Container
             matrix: null,
             alignment: 0.5,
             native: false,
+            cap: LINE_CAP.BUTT,
+            join: LINE_JOIN.MITER,
+            miterLimit: 10,
         }, options);
 
         if (this.currentPath)
@@ -928,6 +925,7 @@ export class Graphics extends Container
         this._lineStyle.reset();
         this._fillStyle.reset();
 
+        this._boundsID++;
         this._matrix = null;
         this._holeMode = false;
         this.currentPath = null;

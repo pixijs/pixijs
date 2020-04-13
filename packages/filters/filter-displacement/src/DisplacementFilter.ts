@@ -1,8 +1,10 @@
-import { CLEAR_MODES } from '@pixi/constants';
-import { Filter, RenderTexture, systems, Texture, ISpriteMaskTarget } from '@pixi/core';
-import { Matrix, Point } from '@pixi/math/src';
+import { Filter } from '@pixi/core';
+import { Matrix, Point } from '@pixi/math';
 import fragment from './displacement.frag';
 import vertex from './displacement.vert';
+
+import type { CLEAR_MODES } from '@pixi/constants';
+import type { RenderTexture, systems, Texture, ISpriteMaskTarget } from '@pixi/core';
 
 /**
  * The DisplacementFilter class uses the pixel values from the specified texture

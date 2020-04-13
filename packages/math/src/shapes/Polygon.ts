@@ -1,5 +1,5 @@
 import { SHAPES } from '../const';
-import { IPoint } from '../IPoint';
+import type { IPoint } from '../IPoint';
 
 /**
  * A class to define a shape via user defined co-orinates.
@@ -11,7 +11,7 @@ export class Polygon
 {
     public points: number[];
     public closeStroke: boolean;
-    public readonly type: number;
+    public readonly type: SHAPES.POLY;
 
     constructor(points: IPoint[]|number[]);
     constructor(...points: IPoint[]|number[]);

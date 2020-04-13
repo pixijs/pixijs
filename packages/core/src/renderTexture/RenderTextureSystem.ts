@@ -2,11 +2,10 @@ import { System } from '../System';
 import { Rectangle } from '@pixi/math';
 import { BUFFER_BITS } from '@pixi/constants';
 
-import { Renderer } from '../Renderer';
-import { RenderTexture } from './RenderTexture';
-import { BaseRenderTexture } from './BaseRenderTexture';
-
-import { MaskData } from '@pixi/core';
+import type { Renderer } from '../Renderer';
+import type { RenderTexture } from './RenderTexture';
+import type { BaseRenderTexture } from './BaseRenderTexture';
+import type { MaskData } from '../mask/MaskData';
 
 const tempRect = new Rectangle();
 

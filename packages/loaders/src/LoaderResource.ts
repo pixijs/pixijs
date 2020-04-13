@@ -1,12 +1,13 @@
 import { Resource } from 'resource-loader';
-import { Texture } from '@pixi/core';
-import { Spritesheet } from '@pixi/spritesheet';
-import { Dict } from '@pixi/utils';
 
-export interface IResourceMetadata extends Resource.IMetadata {
+import type { Spritesheet } from '@pixi/spritesheet';
+import type { Texture } from '@pixi/core';
+import type { Dict } from '@pixi/utils';
+
+export interface IResourceMetadata extends GlobalMixins.IResourceMetadata, Resource.IMetadata {
     imageMetadata?: any;
 }
-export interface ILoaderResource extends Resource
+export interface ILoaderResource extends GlobalMixins.ILoaderResource, Resource
 {
     texture?: Texture;
     spritesheet?: Spritesheet;

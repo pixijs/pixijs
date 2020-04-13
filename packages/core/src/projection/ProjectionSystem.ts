@@ -1,7 +1,8 @@
 import { System } from '../System';
-import { Rectangle, Matrix } from '@pixi/math';
+import { Matrix } from '@pixi/math';
 
-import { Renderer } from '@pixi/core';
+import type { Rectangle } from '@pixi/math';
+import type { Renderer } from '../Renderer';
 
 /**
  * System plugin to the renderer to manage the projection matrix.

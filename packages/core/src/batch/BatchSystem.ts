@@ -1,8 +1,9 @@
 import { System } from '../System';
 import { ObjectRenderer } from './ObjectRenderer';
 
-import { Renderer, BaseTexture, BatchTextureArray } from '@pixi/core';
-
+import type { Renderer } from '../Renderer';
+import type { BaseTexture } from '../textures/BaseTexture';
+import type { BatchTextureArray } from './BatchTextureArray';
 /**
  * System plugin to the renderer to manage batching.
  *

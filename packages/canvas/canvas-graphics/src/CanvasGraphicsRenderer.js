@@ -73,30 +73,18 @@ export class CanvasGraphicsRenderer
         const context = renderer.context;
         const worldAlpha = graphics.worldAlpha;
         const transform = graphics.transform.worldTransform;
-        const resolution = renderer.resolution;
 
-        context.setTransform(
-            transform.a * resolution,
-            transform.b * resolution,
-            transform.c * resolution,
-            transform.d * resolution,
-            transform.tx * resolution,
-            transform.ty * resolution
-        );
-
-        // update tint if graphics was dirty
-        if (graphics.canvasTintDirty !== graphics.geometry.dirty
-            || graphics._prevTint !== graphics.tint)
-        {
-            this.updateGraphicsTint(graphics);
-        }
-
+        renderer.setContextTransform(transform);
         renderer.setBlendMode(graphics.blendMode);
 
         const graphicsData = graphics.geometry.graphicsData;
 
         let contextFillStyle;
         let contextStrokeStyle;
+
+        const tintR = ((graphics.tint >> 16) & 0xFF) / 255;
+        const tintG = ((graphics.tint >> 8) & 0xFF) / 255;
+        const tintB = (graphics.tint & 0xFF) / 255;
 
         for (let i = 0; i < graphicsData.length; i++)
         {
@@ -105,16 +93,34 @@ export class CanvasGraphicsRenderer
             const fillStyle = data.fillStyle;
             const lineStyle = data.lineStyle;
 
+            const fillColor = data.fillStyle.color | 0;
+            const lineColor = data.lineStyle.color | 0;
+
             if (fillStyle.visible)
             {
-                contextFillStyle = this._calcCanvasStyle(fillStyle, data._fillTint);
+                const fillTint = (
+                    (((fillColor >> 16) & 0xFF) / 255 * tintR * 255 << 16)
+                    + (((fillColor >> 8) & 0xFF) / 255 * tintG * 255 << 8)
+                    + (((fillColor & 0xFF) / 255) * tintB * 255)
+                );
+
+                contextFillStyle = this._calcCanvasStyle(fillStyle, fillTint);
             }
             if (lineStyle.visible)
             {
-                contextStrokeStyle = this._calcCanvasStyle(lineStyle, data._lineTint);
+                const lineTint = (
+                    (((lineColor >> 16) & 0xFF) / 255 * tintR * 255 << 16)
+                    + (((lineColor >> 8) & 0xFF) / 255 * tintG * 255 << 8)
+                    + (((lineColor & 0xFF) / 255) * tintB * 255)
+                );
+
+                contextStrokeStyle = this._calcCanvasStyle(lineStyle, lineTint);
             }
 
             context.lineWidth = lineStyle.width;
+            context.lineCap = lineStyle.cap;
+            context.lineJoin = lineStyle.join;
+            context.miterLimit = lineStyle.miterLimit;
 
             if (data.type === SHAPES.POLY)
             {
@@ -322,44 +328,6 @@ export class CanvasGraphicsRenderer
                     context.stroke();
                 }
             }
-        }
-    }
-
-    /**
-     * Updates the tint of a graphics object
-     *
-     * @protected
-     * @param {PIXI.Graphics} graphics - the graphics that will have its tint updated
-     */
-    updateGraphicsTint(graphics)
-    {
-        graphics._prevTint = graphics.tint;
-        graphics.canvasTintDirty = graphics.geometry.dirty;
-
-        const tintR = ((graphics.tint >> 16) & 0xFF) / 255;
-        const tintG = ((graphics.tint >> 8) & 0xFF) / 255;
-        const tintB = (graphics.tint & 0xFF) / 255;
-        const graphicsData = graphics.geometry.graphicsData;
-
-        for (let i = 0; i < graphicsData.length; ++i)
-        {
-            const data = graphicsData[i];
-
-            const fillColor = data.fillStyle.color | 0;
-            const lineColor = data.lineStyle.color | 0;
-
-            // super inline, cos optimization :)
-            data._fillTint = (
-                (((fillColor >> 16) & 0xFF) / 255 * tintR * 255 << 16)
-                + (((fillColor >> 8) & 0xFF) / 255 * tintG * 255 << 8)
-                + (((fillColor & 0xFF) / 255) * tintB * 255)
-            );
-
-            data._lineTint = (
-                (((lineColor >> 16) & 0xFF) / 255 * tintR * 255 << 16)
-                + (((lineColor >> 8) & 0xFF) / 255 * tintG * 255 << 8)
-                + (((lineColor & 0xFF) / 255) * tintB * 255)
-            );
         }
     }
 

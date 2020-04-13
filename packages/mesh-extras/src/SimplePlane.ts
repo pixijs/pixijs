@@ -1,6 +1,8 @@
-import { Texture, Renderer } from '@pixi/core';
+import { Texture } from '@pixi/core';
 import { Mesh, MeshMaterial } from '@pixi/mesh';
 import { PlaneGeometry } from './geometry/PlaneGeometry';
+
+import type{ Renderer } from '@pixi/core';
 
 /**
  * The SimplePlane allows you to draw a texture across several points and then manipulate these points

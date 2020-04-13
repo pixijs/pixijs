@@ -1,8 +1,10 @@
-import { Program, Shader, Texture, TextureMatrix } from '@pixi/core';
+import { Program, Shader, TextureMatrix } from '@pixi/core';
 import { Matrix } from '@pixi/math';
 import { premultiplyTintToRgba } from '@pixi/utils';
 import fragment from './shader/mesh.frag';
 import vertex from './shader/mesh.vert';
+
+import type { Texture } from '@pixi/core';
 
 export interface IMeshMaterialOptions {
     alpha?: number;

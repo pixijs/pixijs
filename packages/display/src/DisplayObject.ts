@@ -1,9 +1,10 @@
-import { Filter, MaskData, Renderer } from '@pixi/core';
-import { DEG_TO_RAD, IPoint, Matrix, ObservablePoint, Point, RAD_TO_DEG, Rectangle, Transform } from '@pixi/math';
+import { DEG_TO_RAD, Matrix, Point, RAD_TO_DEG, Rectangle, Transform } from '@pixi/math';
 import { EventEmitter } from '@pixi/utils';
 import { Container } from './Container';
 import { Bounds } from './Bounds';
-import { IAccessibleTarget } from '@pixi/accessibility';
+
+import type { Filter, MaskData, Renderer } from '@pixi/core';
+import type { IPoint, ObservablePoint } from '@pixi/math';
 
 export interface IDestroyOptions {
     children?: boolean;
@@ -11,7 +12,7 @@ export interface IDestroyOptions {
     baseTexture?: boolean;
 }
 
-export interface DisplayObject extends InteractiveTarget, IAccessibleTarget, EventEmitter {}
+export interface DisplayObject extends GlobalMixins.DisplayObject, EventEmitter {}
 
 /**
  * The base class for all objects that are rendered on the screen.
@@ -39,6 +40,7 @@ export abstract class DisplayObject extends EventEmitter
     public _lastSortedIndex: number;
     public _mask: Container|MaskData;
     public _bounds: Bounds;
+    public _localBounds: Bounds;
 
     protected _zIndex: number;
     protected _enabledFilters: Filter[];
@@ -186,7 +188,14 @@ export abstract class DisplayObject extends EventEmitter
         this._bounds = new Bounds();
 
         /**
-         * TODO
+         * Local bounds object, swapped with `_bounds` when using `getLocalBounds()`.
+         *
+         * @member {PIXI.Bounds}
+         */
+        this._localBounds = null;
+
+        /**
+         * Flags the cached bounds as dirty.
          *
          * @member {number}
          * @protected
@@ -194,7 +203,7 @@ export abstract class DisplayObject extends EventEmitter
         this._boundsID = 0;
 
         /**
-         * TODO
+         * Cache of this display-object's bounds-rectangle.
          *
          * @member {PIXI.Bounds}
          * @protected
@@ -202,7 +211,7 @@ export abstract class DisplayObject extends EventEmitter
         this._boundsRect = null;
 
         /**
-         * TODO
+         * Cache of this display-object's local-bounds rectangle.
          *
          * @member {PIXI.Bounds}
          * @protected
@@ -350,12 +359,6 @@ export abstract class DisplayObject extends EventEmitter
      */
     getLocalBounds(rect?: Rectangle): Rectangle
     {
-        const transformRef = this.transform;
-        const parentRef = this.parent;
-
-        this.parent = null;
-        this.transform = this._tempDisplayObjectParent.transform;
-
         if (!rect)
         {
             if (!this._localBoundsRect)
@@ -366,10 +369,29 @@ export abstract class DisplayObject extends EventEmitter
             rect = this._localBoundsRect;
         }
 
+        if (!this._localBounds)
+        {
+            this._localBounds = new Bounds();
+        }
+
+        const transformRef = this.transform;
+        const parentRef = this.parent;
+
+        this.parent = null;
+        this.transform = this._tempDisplayObjectParent.transform;
+
+        const worldBounds = this._bounds;
+        const worldBoundsID = this._boundsID;
+
+        this._bounds = this._localBounds;
+
         const bounds = this.getBounds(false, rect);
 
         this.parent = parentRef;
         this.transform = transformRef;
+
+        this._bounds = worldBounds;
+        this._bounds.updateID += this._boundsID - worldBoundsID;// reflect side-effects
 
         return bounds;
     }

@@ -1,8 +1,7 @@
 import { earcut } from '@pixi/utils';
 
-// for type only
-import { IShapeBuildCommand } from './IShapeBuildCommand';
-import { Polygon } from '@pixi/math';
+import type { IShapeBuildCommand } from './IShapeBuildCommand';
+import type { Polygon } from '@pixi/math';
 
 /**
  * Builds a polygon to draw

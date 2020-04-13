@@ -5,10 +5,10 @@ import { settings } from '@pixi/settings';
 import defaultVertex from './defaultFilter.vert';
 import defaultFragment from './defaultFilter.frag';
 
-import { RenderTexture } from '@pixi/core';
-import { FilterSystem } from './FilterSystem';
-import { FilterState } from './FilterState';
-import { BLEND_MODES, CLEAR_MODES } from '@pixi/constants';
+import type { RenderTexture } from '../renderTexture/RenderTexture';
+import type { FilterSystem } from './FilterSystem';
+import type { FilterState } from './FilterState';
+import type { BLEND_MODES, CLEAR_MODES } from '@pixi/constants';
 
 /**
  * Filter is a special type of WebGL shader that is applied to the screen.

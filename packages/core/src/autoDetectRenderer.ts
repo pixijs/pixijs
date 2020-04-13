@@ -1,5 +1,5 @@
 import { Renderer } from './Renderer';
-import { IRendererOptions } from './AbstractRenderer';
+import type { AbstractRenderer, IRendererOptions } from './AbstractRenderer';
 
 export interface IRendererOptionsAuto extends IRendererOptions
 {
@@ -30,13 +30,11 @@ export interface IRendererOptionsAuto extends IRendererOptions
  * @param {boolean} [options.forceCanvas=false] - prevents selection of WebGL renderer, even if such is present, this
  *   option only is available when using **pixi.js-legacy** or **@pixi/canvas-renderer** modules, otherwise
  *   it is ignored.
- * @param {boolean} [options.forceFXAA=false] - forces FXAA antialiasing to be used over native.
- *  FXAA is faster, but may not always look as great **webgl only**
  * @param {string} [options.powerPreference] - Parameter passed to webgl context, set to "high-performance"
  *  for devices with dual graphics card **webgl only**
  * @return {PIXI.Renderer|PIXI.CanvasRenderer} Returns WebGL renderer if available, otherwise CanvasRenderer
  */
-export function autoDetectRenderer(options: IRendererOptionsAuto): Renderer
+export function autoDetectRenderer(options: IRendererOptionsAuto): AbstractRenderer
 {
     return Renderer.create(options);
 }

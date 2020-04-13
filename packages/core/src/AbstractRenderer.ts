@@ -1,15 +1,17 @@
 import { hex2string, hex2rgb, deprecation, EventEmitter } from '@pixi/utils';
 import { Matrix, Rectangle } from '@pixi/math';
-import { RENDERER_TYPE, SCALE_MODES } from '@pixi/constants';
+import { RENDERER_TYPE } from '@pixi/constants';
 import { settings } from '@pixi/settings';
 import { DisplayObject, TemporaryDisplayObject } from '@pixi/display';
 import { RenderTexture } from './renderTexture/RenderTexture';
 
-import { IRenderingContext } from './IRenderingContext';
+import type { SCALE_MODES } from '@pixi/constants';
+import type { IRenderingContext } from './IRenderingContext';
+import type { Container } from '@pixi/display';
 
 const tempMatrix = new Matrix();
 
-export interface IRendererOptions
+export interface IRendererOptions extends GlobalMixins.IRendererOptions
 {
     width?: number;
     height?: number;
@@ -281,6 +283,15 @@ export abstract class AbstractRenderer extends EventEmitter
             this.view.style.width = `${screenWidth}px`;
             this.view.style.height = `${screenHeight}px`;
         }
+
+        /**
+         * Fired after view has been resized.
+         *
+         * @event PIXI.Renderer#resize
+         * @param {number} screenWidth - The new width of the screen.
+         * @param {number} screenHeight - The new height of the screen.
+         */
+        this.emit('resize', screenWidth, screenHeight);
     }
 
     /**
@@ -288,7 +299,7 @@ export abstract class AbstractRenderer extends EventEmitter
      * This can be quite useful if your displayObject is complicated and needs to be reused multiple times.
      *
      * @param {PIXI.DisplayObject} displayObject - The displayObject the object will be generated from.
-     * @param {number} scaleMode - Should be one of the scaleMode consts.
+     * @param {PIXI.SCALE_MODES} scaleMode - The scale mode of the texture.
      * @param {number} resolution - The resolution / device pixel ratio of the texture being generated.
      * @param {PIXI.Rectangle} [region] - The region of the displayObject, that shall be rendered,
      *        if no region is specified, defaults to the local bounds of the displayObject.
@@ -297,7 +308,7 @@ export abstract class AbstractRenderer extends EventEmitter
     generateTexture(displayObject: DisplayObject,
         scaleMode?: SCALE_MODES, resolution?: number, region?: Rectangle): RenderTexture
     {
-        region = region || displayObject.getLocalBounds();
+        region = region || (displayObject as Container).getLocalBounds(null, true);
 
         // minimum texture size is 1x1, 0x0 will throw an error
         if (region.width === 0) region.width = 1;
@@ -307,7 +318,8 @@ export abstract class AbstractRenderer extends EventEmitter
             {
                 width: region.width | 0,
                 height: region.height | 0,
-                scaleMode, resolution,
+                scaleMode,
+                resolution,
             });
 
         tempMatrix.tx = -region.x;

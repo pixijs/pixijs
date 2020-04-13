@@ -1,7 +1,8 @@
-import { Filter } from './Filter';
-import { IFilterTarget } from './IFilterTarget';
-import { RenderTexture } from '@pixi/core';
 import { Rectangle } from '@pixi/math';
+
+import type { Filter } from './Filter';
+import type { IFilterTarget } from './IFilterTarget';
+import type { RenderTexture } from '../renderTexture/RenderTexture';
 
 /**
  * System plugin to the renderer to manage filter states.

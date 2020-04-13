@@ -170,7 +170,7 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
     // this function also calls updatetransform on all its children as part of the measuring.
     // This means we don't need to update the transform again in this function
     // TODO pass an object to clone too? saves having to create a new one each time!
-    const bounds = this.getLocalBounds().clone();
+    const bounds = this.getLocalBounds(null, true).clone();
 
     // add some padding!
     if (this.filters)
@@ -185,7 +185,7 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
     // for now we cache the current renderTarget that the WebGL renderer is currently using.
     // this could be more elegant..
     const cachedRenderTexture = renderer.renderTexture.current;
-    const cachedSourceFrame = renderer.renderTexture.sourceFrame;
+    const cachedSourceFrame = renderer.renderTexture.sourceFrame.clone();
     const cachedProjectionTransform = renderer.projection.transform;
 
     // We also store the filter stack - I will definitely look to change how this works a little later down the line.
@@ -296,13 +296,14 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
     }
 
     // get bounds actually transforms the object for us already!
-    const bounds = this.getLocalBounds();
+    const bounds = this.getLocalBounds(null, true);
 
     const cacheAlpha = this.alpha;
 
     this.alpha = 1;
 
     const cachedRenderTarget = renderer.context;
+    const cachedProjectionTransform = renderer._projTransform;
 
     bounds.ceil(settings.RESOLUTION);
 
@@ -328,11 +329,10 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
     // set all properties to there original so we can render to a texture
     this.renderCanvas = this._cacheData.originalRenderCanvas;
 
-    // renderTexture.render(this, m, true);
     renderer.render(this, renderTexture, true, m, false);
-
     // now restore the state be setting the new properties
     renderer.context = cachedRenderTarget;
+    renderer._projTransform = cachedProjectionTransform;
 
     this.renderCanvas = this._renderCachedCanvas;
     // the rest is the same as for WebGL

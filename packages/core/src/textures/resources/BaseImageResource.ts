@@ -2,8 +2,9 @@ import { Resource } from './Resource';
 import { determineCrossOrigin } from '@pixi/utils';
 import { ALPHA_MODES } from '@pixi/constants';
 
-import { BaseTexture, Renderer, GLTexture, ImageSource } from '@pixi/core';
-
+import type { BaseTexture, ImageSource } from '../BaseTexture';
+import type { Renderer } from '../../Renderer';
+import type { GLTexture } from '../GLTexture';
 /**
  * Base for all the image/canvas resources
  * @class

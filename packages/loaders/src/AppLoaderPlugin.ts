@@ -1,5 +1,6 @@
 import { Loader } from './Loader';
-import { IApplicationOptions } from '@pixi/app';
+
+import type { IApplicationOptions } from '@pixi/app';
 /**
  * Application plugin for supporting loader option. Installing the LoaderPlugin
  * is not necessary if using **pixi.js** or **pixi.js-legacy**.

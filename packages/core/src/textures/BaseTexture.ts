@@ -1,12 +1,11 @@
 import { BaseTextureCache, EventEmitter, isPow2, TextureCache, uid } from '@pixi/utils';
 import { FORMATS, SCALE_MODES, TARGETS, TYPES, ALPHA_MODES, MIPMAP_MODES, WRAP_MODES } from '@pixi/constants';
-
 import { Resource } from './resources/Resource';
 import { BufferResource } from './resources/BufferResource';
 import { autoDetectResource } from './resources/autoDetectResource';
-import { GLTexture } from './GLTexture';
-
 import { settings } from '@pixi/settings';
+
+import type { GLTexture } from './GLTexture';
 
 const defaultBufferOptions = {
     scaleMode: SCALE_MODES.NEAREST,
@@ -30,6 +29,8 @@ export interface IBaseTextureOptions {
     resolution?: number;
     resourceOptions?: any;
 }
+
+export interface BaseTexture extends GlobalMixins.BaseTexture, EventEmitter {}
 
 /**
  * A Texture stores the information that represents an image.

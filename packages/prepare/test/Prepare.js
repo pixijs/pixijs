@@ -3,7 +3,7 @@ const { Renderer, Texture } = require('@pixi/core');
 const { Container } = require('@pixi/display');
 const { Graphics } = require('@pixi/graphics');
 
-describe('PIXI.prepare.Prepare', function ()
+describe('PIXI.Prepare', function ()
 {
     it('should upload graphics vao and textures', function ()
     {

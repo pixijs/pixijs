@@ -1,4 +1,4 @@
-import { Rectangle } from '@pixi/math';
+import type { Rectangle } from '@pixi/math';
 
 export interface IFilterTarget
 {

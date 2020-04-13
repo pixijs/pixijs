@@ -7,10 +7,12 @@
  */
 export class CountLimiter
 {
+    public maxItemsPerFrame: number;
+    public itemsLeft: number;
     /**
      * @param {number} maxItemsPerFrame - The maximum number of items that can be prepared each frame.
      */
-    constructor(maxItemsPerFrame)
+    constructor(maxItemsPerFrame: number)
     {
         /**
          * The maximum number of items that can be prepared each frame.
@@ -29,7 +31,7 @@ export class CountLimiter
     /**
      * Resets any counting properties to start fresh on a new frame.
      */
-    beginFrame()
+    beginFrame(): void
     {
         this.itemsLeft = this.maxItemsPerFrame;
     }
@@ -38,7 +40,7 @@ export class CountLimiter
      * Checks to see if another item can be uploaded. This should only be called once per item.
      * @return {boolean} If the item is allowed to be uploaded.
      */
-    allowedToUpload()
+    allowedToUpload(): boolean
     {
         return this.itemsLeft-- > 0;
     }

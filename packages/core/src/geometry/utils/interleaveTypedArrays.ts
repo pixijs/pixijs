@@ -1,5 +1,6 @@
-import { ITypedArray } from '../Buffer';
 import { getBufferType } from './getBufferType';
+
+import type { ITypedArray } from '../Buffer';
 
 /* eslint-disable object-shorthand */
 const map: {[x: string]: any} = {

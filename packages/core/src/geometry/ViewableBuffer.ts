@@ -1,4 +1,4 @@
-import { ITypedArray } from './Buffer';
+import type { ITypedArray } from './Buffer';
 
 /**
  * Flexible wrapper around `ArrayBuffer` that also provides

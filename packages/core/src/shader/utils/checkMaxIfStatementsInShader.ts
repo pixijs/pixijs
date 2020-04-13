@@ -1,4 +1,4 @@
-import { IRenderingContext } from '@pixi/core';
+import type { IRenderingContext } from '../../IRenderingContext';
 
 const fragTemplate = [
     'precision mediump float;',
