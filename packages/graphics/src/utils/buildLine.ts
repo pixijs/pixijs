@@ -359,12 +359,12 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
         let omx = x1 - ((px - x1) * outerWeight);
         let omy = y1 - ((py - y1) * outerWeight);
 
-        const p0ix = x1 - (perpx * innerWeight);
-        const p0iy = y1 - (perpy * innerWeight);
+        const p0ix = x0 - (perpx * innerWeight);
+        const p0iy = y0 - (perpy * innerWeight);
         const p2ix = x2 - (perp1x * innerWeight);
         const p2iy = y2 - (perp1y * innerWeight);
-        const p0ox = x1 + (perpx * outerWeight);
-        const p0oy = y1 + (perpy * outerWeight);
+        const p0ox = x0 + (perpx * outerWeight);
+        const p0oy = y0 + (perpy * outerWeight);
         const p2ox = x2 + (perp1x * outerWeight);
         const p2oy = y2 + (perp1y * outerWeight);
         /* Check if inner miter point is on same side as p1 w.r.t vector p02 */
@@ -379,7 +379,7 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
             const dotim = (n02x * (imx - p0ix)) + (n02y * (imy - p0iy));
 
             // Not on same side?, make inner miter point the mid-point instead
-            if (Math.abs(dotp1 - dotim) > 0.1 * dotim && Math.sign(dotp1) !== Math.sign(dotim))
+            if (Math.abs(dotp1 - dotim) > 0.1 && Math.sign(dotp1) !== Math.sign(dotim))
             {
                 imx = (p0ix + p2ix) * 0.5;
                 imy = (p0iy + p2iy) * 0.5;
