@@ -3,6 +3,6 @@
 // designed for Node-only environments
 import isMobileCall from 'ismobilejs';
 
-const isMobile = isMobileCall();
+const isMobile = isMobileCall(window.navigator);
 
 export { isMobile };

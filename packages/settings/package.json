@@ -24,6 +24,6 @@
     "dist"
   ],
   "dependencies": {
-    "ismobilejs": "~1.0.3"
+    "ismobilejs": "^1.1.0"
   }
 }
