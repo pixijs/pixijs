@@ -630,8 +630,8 @@ export class GraphicsGeometry extends BatchGeometry
             const fill = data.fillStyle;
             const line = data.lineStyle;
 
-            if (fill && !fill.texture.baseTexture.valid) return false;
-            if (line && !line.texture.baseTexture.valid) return false;
+            if (fill && !fill.texture.baseTexture.valid && fill.texture !== Texture.EMPTY) return false;
+            if (line && !line.texture.baseTexture.valid && line.texture !== Texture.EMPTY) return false;
         }
 
         return true;
