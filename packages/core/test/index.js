@@ -17,3 +17,4 @@ require('./VideoResource');
 require('./ArrayResource');
 require('./autoDetectResource');
 require('./CubeResource');
+require('./RenderTexture');
