@@ -1,5 +1,5 @@
 // const MockPointer = require('../interaction/MockPointer');
-const { Renderer, BatchRenderer, Texture } = require('@pixi/core');
+const { Renderer, BatchRenderer, Texture, BaseTexture } = require('@pixi/core');
 const { Graphics, GRAPHICS_CURVES, FillStyle, LineStyle, graphicsUtils } = require('../');
 const { FILL_COMMANDS, buildLine } = graphicsUtils;
 const { BLEND_MODES } = require('@pixi/constants');
@@ -801,7 +801,7 @@ describe('PIXI.Graphics', function ()
         it('validateBatching should return false if any of textures is invalid', function ()
         {
             const graphics = new Graphics();
-            const invalidTex = Texture.EMPTY;
+            const invalidTex = new Texture(new BaseTexture());
             const validTex = Texture.WHITE;
 
             graphics.beginTextureFill({ texture: invalidTex });
