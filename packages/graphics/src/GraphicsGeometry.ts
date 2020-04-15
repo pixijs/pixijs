@@ -80,6 +80,7 @@ export class GraphicsGeometry extends BatchGeometry
     protected shapeIndex: number;
     protected _bounds: Bounds;
     protected boundsDirty: number;
+    protected _validTextureCount: number;
 
     constructor()
     {
@@ -214,6 +215,14 @@ export class GraphicsGeometry extends BatchGeometry
          * @default 0
          */
         this.boundsPadding = 0;
+
+        /**
+         * Number of loaded textures on last update.
+         *
+         * @member {number}
+         * @protected
+         */
+        this._validTextureCount = 0;
 
         this.batchable = false;
 
@@ -472,6 +481,8 @@ export class GraphicsGeometry extends BatchGeometry
 
         let currentStyle = null;
 
+        let validTextureCount = 0;
+
         if (this.batches.length > 0)
         {
             batchPart = this.batches[this.batches.length - 1];
@@ -511,6 +522,10 @@ export class GraphicsGeometry extends BatchGeometry
                 {
                     continue;
                 }
+                else
+                {
+                    ++validTextureCount;
+                }
 
                 if (j === 0)
                 {
@@ -542,6 +557,8 @@ export class GraphicsGeometry extends BatchGeometry
                 this.addUvs(this.points, uvs, style.texture, attribIndex, size, style.matrix);
             }
         }
+
+        this._validTextureCount = validTextureCount;
 
         const index = this.indices.length;
         const attrib = this.points.length / 2;
@@ -624,7 +641,19 @@ export class GraphicsGeometry extends BatchGeometry
      */
     protected validateBatching(): boolean
     {
-        if (this.dirty === this.cacheDirty || !this.graphicsData.length)
+        let validTextureCount = 0;
+
+        for (let i = 0, l = this.graphicsData.length; i < l; i++)
+        {
+            const data = this.graphicsData[i];
+            const fill = data.fillStyle;
+            const line = data.lineStyle;
+
+            if (fill && fill.texture.baseTexture.valid) ++validTextureCount;
+            if (line && line.texture.baseTexture.valid) ++validTextureCount;
+        }
+
+        if ((this.dirty === this.cacheDirty && validTextureCount === this._validTextureCount) || !this.graphicsData.length)
         {
             return false;
         }

@@ -798,6 +798,39 @@ describe('PIXI.Graphics', function ()
 
     describe('geometry', function ()
     {
+        it('validateBatching should return false if no texture loaded', function ()
+        {
+            const graphics = new Graphics();
+            const invalidTex = Texture.EMPTY;
+
+            graphics.beginTextureFill({ texture: invalidTex });
+            graphics.lineTextureStyle({ texture: invalidTex, width: 1 });
+            graphics.drawRect(0, 0, 10, 10);
+
+            const geometry = graphics.geometry;
+
+            geometry.cacheDirty = geometry.dirty;// assume that everything else is update-to-date
+
+            expect(geometry.validateBatching()).to.be.false;
+        });
+
+        it('validateBatching should return true if a texture loaded', function ()
+        {
+            const graphics = new Graphics();
+            const validTex = Texture.WHITE;
+
+            graphics.beginTextureFill({ texture: validTex });
+            graphics.drawRect(0, 0, 10, 10);
+            graphics.beginTextureFill({ texture: validTex });
+            graphics.drawRect(0, 0, 10, 10);
+
+            const geometry = graphics.geometry;
+
+            geometry.cacheDirty = geometry.dirty;// assume everything else to be update-to-date
+
+            expect(geometry.validateBatching()).to.be.true;
+        });
+
         it('should be batchable if graphicsData is empty', function ()
         {
             const graphics = new Graphics();
