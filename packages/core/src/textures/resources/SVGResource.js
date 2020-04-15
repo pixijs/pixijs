@@ -125,12 +125,22 @@ export class SVGResource extends BaseImageResource
 
         tempImage.onerror = (event) =>
         {
+            if (!this._resolve)
+            {
+                return;
+            }
+
             tempImage.onerror = null;
             this.onError.run(event);
         };
 
         tempImage.onload = () =>
         {
+            if (!this._resolve)
+            {
+                return;
+            }
+
             const svgWidth = tempImage.width;
             const svgHeight = tempImage.height;
 
