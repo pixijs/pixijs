@@ -1,5 +1,5 @@
 // const MockPointer = require('../interaction/MockPointer');
-const { Renderer, BatchRenderer, Texture, BaseTexture } = require('@pixi/core');
+const { Renderer, BatchRenderer, Texture } = require('@pixi/core');
 const { Graphics, GRAPHICS_CURVES, FillStyle, LineStyle, graphicsUtils } = require('../');
 const { FILL_COMMANDS, buildLine } = graphicsUtils;
 const { BLEND_MODES } = require('@pixi/constants');
@@ -798,37 +798,6 @@ describe('PIXI.Graphics', function ()
 
     describe('geometry', function ()
     {
-        it('validateBatching should return false if any of textures is invalid', function ()
-        {
-            const graphics = new Graphics();
-            const invalidTex = new Texture(new BaseTexture());
-            const validTex = Texture.WHITE;
-
-            graphics.beginTextureFill({ texture: invalidTex });
-            graphics.drawRect(0, 0, 10, 10);
-            graphics.beginTextureFill({ texture: validTex });
-            graphics.drawRect(0, 0, 10, 10);
-
-            const geometry = graphics.geometry;
-
-            expect(geometry.validateBatching()).to.be.false;
-        });
-
-        it('validateBatching should return true if all textures is valid', function ()
-        {
-            const graphics = new Graphics();
-            const validTex = Texture.WHITE;
-
-            graphics.beginTextureFill({ texture: validTex });
-            graphics.drawRect(0, 0, 10, 10);
-            graphics.beginTextureFill({ texture: validTex });
-            graphics.drawRect(0, 0, 10, 10);
-
-            const geometry = graphics.geometry;
-
-            expect(geometry.validateBatching()).to.be.true;
-        });
-
         it('should be batchable if graphicsData is empty', function ()
         {
             const graphics = new Graphics();

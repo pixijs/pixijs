@@ -507,6 +507,11 @@ export class GraphicsGeometry extends BatchGeometry
 
                 nextTexture.wrapMode = WRAP_MODES.REPEAT;
 
+                if (!style.texture.baseTexture.valid)
+                {
+                    continue;
+                }
+
                 if (j === 0)
                 {
                     this.processFill(data);
@@ -622,16 +627,6 @@ export class GraphicsGeometry extends BatchGeometry
         if (this.dirty === this.cacheDirty || !this.graphicsData.length)
         {
             return false;
-        }
-
-        for (let i = 0, l = this.graphicsData.length; i < l; i++)
-        {
-            const data = this.graphicsData[i];
-            const fill = data.fillStyle;
-            const line = data.lineStyle;
-
-            if (fill && !fill.texture.baseTexture.valid && fill.texture !== Texture.EMPTY) return false;
-            if (line && !line.texture.baseTexture.valid && line.texture !== Texture.EMPTY) return false;
         }
 
         return true;
