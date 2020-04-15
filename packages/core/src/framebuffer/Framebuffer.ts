@@ -197,10 +197,25 @@ export class Framebuffer
     }
 
     /**
-     * disposes WebGL resources that are connected to this geometry
+     * Disposes WebGL resources that are connected to this geometry
      */
     dispose(): void
     {
         this.disposeRunner.emit(this, false);
+    }
+
+    /**
+     * Destroys and removes the depth texture added to this framebuffer.
+     */
+    destroyDepthTexture(): void
+    {
+        if (this.depthTexture)
+        {
+            this.depthTexture.destroy();
+            this.depthTexture = null;
+
+            ++this.dirtyId;
+            ++this.dirtyFormat;
+        }
     }
 }
