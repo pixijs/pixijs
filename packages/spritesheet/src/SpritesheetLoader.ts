@@ -57,8 +57,13 @@ export class SpritesheetLoader
                 return;
             }
 
+            const { baseTexture } = res.texture;
+
+            // Don't need this Texture anymore
+            res.texture.destroy();
+
             const spritesheet = new Spritesheet(
-                res.texture.baseTexture,
+                baseTexture,
                 resource.data,
                 resource.url
             );
