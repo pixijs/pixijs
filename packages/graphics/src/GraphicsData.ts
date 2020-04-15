@@ -17,6 +17,7 @@ export class GraphicsData
     type: SHAPES;
     points: number[];
     holes: Array<GraphicsData>;
+
     /**
      *
      * @param {PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.Rectangle|PIXI.RoundedRectangle} shape - The shape object to draw.
