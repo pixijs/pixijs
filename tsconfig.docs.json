@@ -4,7 +4,8 @@
         "target": "es6",
         "outDir": "./dist/compiled",
         "sourceMap": false,
-        "allowJs": true
+        "allowJs": true,
+        "moduleResolution": "node"
     },
     "include": [
         "bundles",
