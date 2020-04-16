@@ -49,9 +49,6 @@ export const buildCircle = {
 
         const seg = (Math.PI * 2) / totalSegs;
 
-        // Push center
-        points.push(x, y);
-
         for (let i = 0; i < totalSegs - 0.5; i++)
         {
             points.push(
@@ -60,8 +57,7 @@ export const buildCircle = {
             );
         }
 
-        // Join last point over first point on circumference
-        points.push(points[2], points[3]);
+        points.push(points[0], points[1]);
     },
 
     triangulate(graphicsData, graphicsGeometry)
@@ -73,10 +69,17 @@ export const buildCircle = {
         let vertPos = verts.length / 2;
         const center = vertPos;
 
-        // Push center (special point)
-        verts.push(points[0], points[1]);
+        const circle = graphicsData.shape;
+        const matrix = graphicsData.matrix;
+        const x = circle.x;
+        const y = circle.y;
 
-        for (let i = 2; i < points.length; i += 2)
+        // Push center (special point)
+        verts.push(
+            graphicsData.matrix ? (matrix.a * x) + (matrix.c * y) + matrix.tx : x,
+            graphicsData.matrix ? (matrix.b * x) + (matrix.d * y) + matrix.ty : y);
+
+        for (let i = 0; i < points.length; i += 2)
         {
             verts.push(points[i], points[i + 1]);
 
