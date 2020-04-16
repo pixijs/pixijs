@@ -4,7 +4,7 @@ services:
     - xvfb
 
 node_js:
-    - "10"
+    - "12"
 
 addons:
   apt:
