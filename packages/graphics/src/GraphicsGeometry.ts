@@ -518,15 +518,6 @@ export class GraphicsGeometry extends BatchGeometry
 
                 nextTexture.wrapMode = WRAP_MODES.REPEAT;
 
-                if (!style.texture.baseTexture.valid)
-                {
-                    continue;
-                }
-                else
-                {
-                    ++validTextureCount;
-                }
-
                 if (j === 0)
                 {
                     this.processFill(data);
@@ -556,6 +547,14 @@ export class GraphicsGeometry extends BatchGeometry
 
                 this.addUvs(this.points, uvs, style.texture, attribIndex, size, style.matrix);
             }
+        }
+
+        for (let i = 0; i < graphicsData.length; i++)
+        {
+            const data = graphicsData[i];
+
+            if (data.fillStyle.texture.baseTexture.valid) ++validTextureCount;
+            if (data.lineStyle.texture.baseTexture.valid) ++validTextureCount;
         }
 
         this._validTextureCount = validTextureCount;
