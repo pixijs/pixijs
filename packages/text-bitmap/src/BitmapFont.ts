@@ -40,7 +40,7 @@ export class BitmapFont
         const [info] = data.info;
         const [common] = data.common;
         const [page] = data.page;
-        const res = getResolutionOfUrl(page.file, 1);
+        const res = getResolutionOfUrl(page.file);
         const pagesTextures: Dict<Texture> = {};
 
         /**
