@@ -3,6 +3,8 @@ name: Node.js CI
 on:
   push:
     branches: [ '*' ]
+  release:
+    types: [ 'created' ]
   pull_request:
     branches: [ '*' ]
 
@@ -25,3 +27,61 @@ jobs:
       with:
         run: npm run coverage:ci
     - run: codecov
+
+    # All the below are deploy-related steps
+    - name: Extract branch name
+      id: branch_name
+      if: github.event_name == 'push'
+      run: echo ::set-output name=BRANCH_NAME::${GITHUB_REF/refs\/heads\//}
+
+    - name: Extract tag name
+      id: tag_name
+      if: github.event_name == 'release'
+      run: echo ::set-output name=TAG_NAME::${GITHUB_REF/refs\/tags\//}
+
+    - run: npm run dist
+
+    # Examples:
+    # 1) PR feature/acme merged into dev
+    # 2) branch A merged into branch B
+    # 3) branch A pushed directly to git
+    - uses: jakejarvis/s3-sync-action@master
+      name: Deploy non-tag branches
+      if: github.event_name == 'push'
+      with:
+        args: --acl public-read --follow-symlinks --delete --cache-control "max-age=60"
+      env:
+        AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET || 'pixi.js' }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: 'eu-west-1'
+        SOURCE_DIR: 'dist'
+        DEST_DIR: ${{ steps.branch_name.outputs.BRANCH_NAME }}
+
+    # Release is published and deployed into s3://bucket-name/v5.22/
+    - uses: jakejarvis/s3-sync-action@master
+      name: Deploy released branches
+      if: github.event_name == 'release'
+      with:
+        args: --acl public-read --follow-symlinks --delete --cache-control "max-age=2592000"
+      env:
+        AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET || 'pixi.js' }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: 'eu-west-1'
+        SOURCE_DIR: 'dist'
+        DEST_DIR: ${{ steps.tag_name.outputs.TAG_NAME }}
+
+    # Same release from previous deployed into s3://bucket-name/release/
+    - uses: jakejarvis/s3-sync-action@master
+      name: Deploy latest release
+      if: github.event_name == 'release'
+      with:
+        args: --acl public-read --follow-symlinks --delete --cache-control "max-age=1209600"
+      env:
+        AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET || 'pixi.js' }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: 'eu-west-1'
+        SOURCE_DIR: 'dist'
+        DEST_DIR: 'release'
