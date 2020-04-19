@@ -135,12 +135,12 @@ export class BaseRenderTexture extends BaseTexture
 
     /**
      * Destroys this texture.
-     *
      */
     destroy(): void
     {
         super.destroy();
 
+        this.framebuffer.destroyDepthTexture();
         this.framebuffer = null;
     }
 }
