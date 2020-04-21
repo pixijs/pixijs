@@ -1,4 +1,3 @@
-import { settings } from '@pixi/settings';
 import { getResolutionOfUrl } from '@pixi/utils';
 import { Rectangle } from '@pixi/math';
 import { Texture } from '@pixi/core';
@@ -41,7 +40,7 @@ export class BitmapFont
         const [info] = data.info;
         const [common] = data.common;
         const [page] = data.page;
-        const res = getResolutionOfUrl(page.file, settings.RESOLUTION);
+        const res = getResolutionOfUrl(page.file);
         const pagesTextures: Dict<Texture> = {};
 
         /**
