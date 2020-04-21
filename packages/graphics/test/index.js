@@ -627,6 +627,7 @@ describe('PIXI.Graphics', function ()
                 renderer.render(graphics);
                 const points = graphics.geometry.graphicsData[0].points;
 
+                // The first point is center, not first point on circumference
                 const firstX = points[0];
                 const firstY = points[1];
 

@@ -163,8 +163,19 @@ export class FilterSystem extends System
             filterClamp: new Float32Array(4),
         }, true);
 
-        this._pixelsWidth = renderer.view.width;
-        this._pixelsHeight = renderer.view.height;
+        /**
+         * Whether to clear output renderTexture in AUTO/BLIT mode. See {@link PIXI.CLEAR_MODES}
+         * @member {boolean}
+         */
+        this.forceClear = false;
+
+        /**
+         * Old padding behavior is to use the max amount instead of sum padding.
+         * Use this flag if you need the old behavior.
+         * @member {boolean}
+         * @default false
+         */
+        this.useMaxPadding = false;
     }
 
     /**
@@ -190,8 +201,12 @@ export class FilterSystem extends System
 
             // lets use the lowest resolution..
             resolution = Math.min(resolution, filter.resolution);
-            // and the largest amount of padding!
-            padding = Math.max(padding, filter.padding);
+            // figure out the padding required for filters
+            padding = this.useMaxPadding
+                // old behavior: use largest amount of padding!
+                ? Math.max(padding, filter.padding)
+                // new behavior: sum the padding
+                : padding + filter.padding;
             // only auto fit if all filters are autofit
             autoFit = autoFit || filter.autoFit;
 

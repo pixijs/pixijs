@@ -47,10 +47,10 @@ export class LineStyle extends FillStyle
         this.width = 0;
 
         /**
-         * The alignment of any lines drawn (0.5 = middle, 1 = outter, 0 = inner).
+         * The alignment of any lines drawn (0.5 = middle, 1 = outer, 0 = inner).
          *
          * @member {number}
-         * @default 0
+         * @default 0.5
          */
         this.alignment = 0.5;
 

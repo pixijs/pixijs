@@ -34,6 +34,14 @@ describe('PIXI.AnimatedSprite', function ()
             this.sprite = new AnimatedSprite(this.textures, false);
             expect(this.sprite._autoUpdate).to.be.false;
         });
+
+        it('should be correct with autoUpdate=true but then turned off via setter', function ()
+        {
+            this.sprite = new AnimatedSprite(this.textures, true);
+            expect(this.sprite._autoUpdate).to.be.true;
+            this.sprite.autoUpdate = false;
+            expect(this.sprite._autoUpdate).to.be.false;
+        });
     });
 
     describe('.stop()', function ()
@@ -100,7 +108,7 @@ describe('PIXI.AnimatedSprite', function ()
     {
         before(function ()
         {
-            this.sprite = new AnimatedSprite([Texture.EMPTY, Texture.EMPTY, Texture.EMPTY]);
+            this.sprite = new AnimatedSprite([Texture.WHITE, Texture.WHITE, Texture.EMPTY]);
             this.sprite.animationSpeed = 0.5;
             this.sprite.loop = false;
         });
@@ -124,6 +132,17 @@ describe('PIXI.AnimatedSprite', function ()
             };
             this.sprite.play();
             expect(this.sprite.playing).to.be.true;
+        });
+
+        it('should the current texture be the last item in textures', function (done)
+        {
+            this.sprite.play();
+            this.sprite.onComplete = () =>
+            {
+                expect(this.sprite.texture === this.sprite.textures[this.sprite.currentFrame]).to.be.true;
+                this.sprite.onComplete = null;
+                done();
+            };
         });
     });
 
@@ -223,7 +242,7 @@ describe('PIXI.AnimatedSprite', function ()
     {
         before(function ()
         {
-            this.sprite = new AnimatedSprite([Texture.EMPTY, Texture.EMPTY, Texture.EMPTY]);
+            this.sprite = new AnimatedSprite([Texture.EMPTY, Texture.WHITE, Texture.EMPTY]);
             this.sprite.animationSpeed = 1;
             this.sprite.loop = false;
         });
@@ -303,6 +322,36 @@ describe('PIXI.AnimatedSprite', function ()
             };
             this.sprite.play();
             expect(this.sprite.playing).to.be.true;
+        });
+    });
+
+    describe('.textures', function ()
+    {
+        it('should set the first frame when setting new textures', function (done)
+        {
+            const orig1 = Texture.EMPTY.clone();
+            const orig2 = Texture.EMPTY.clone();
+            const orig3 = Texture.EMPTY.clone();
+            const sprite = new AnimatedSprite([orig1, orig2, orig3]);
+
+            sprite.gotoAndPlay(0);
+            sprite.loop = false;
+
+            sprite.onComplete = () =>
+            {
+                sprite.gotoAndStop(0);
+
+                const frame1 = Texture.EMPTY.clone();
+                const frame2 = Texture.EMPTY.clone();
+                const frame3 = Texture.EMPTY.clone();
+
+                sprite.textures = [frame1, frame2, frame3];
+
+                expect(sprite.currentFrame).to.equal(0);
+                expect(sprite._texture).to.equal(frame1);
+
+                done();
+            };
         });
     });
 });

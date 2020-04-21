@@ -14,7 +14,7 @@ import { Texture } from '../textures/Texture';
  *
  * ```js
  * let renderer = PIXI.autoDetectRenderer();
- * let renderTexture = PIXI.RenderTexture.create(800, 600);
+ * let renderTexture = PIXI.RenderTexture.create({ width: 800, height: 600 });
  * let sprite = PIXI.Sprite.from("spinObj_01.png");
  *
  * sprite.position.x = 800/2;

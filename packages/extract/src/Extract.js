@@ -129,7 +129,7 @@ export class Extract
         const width = Math.floor((frame.width * resolution) + 1e-4);
         const height = Math.floor((frame.height * resolution) + 1e-4);
 
-        const canvasBuffer = new CanvasRenderTarget(width, height, 1);
+        let canvasBuffer = new CanvasRenderTarget(width, height, 1);
 
         const webglPixels = new Uint8Array(BYTES_PER_PIXEL * width * height);
 
@@ -156,8 +156,15 @@ export class Extract
         // pulling pixels
         if (flipY)
         {
-            canvasBuffer.context.scale(1, -1);
-            canvasBuffer.context.drawImage(canvasBuffer.canvas, 0, -height);
+            const target = new CanvasRenderTarget(canvasBuffer.width, canvasBuffer.height, 1);
+
+            target.context.scale(1, -1);
+
+            // we can't render to itself because we should be empty before render.
+            target.context.drawImage(canvasBuffer.canvas, 0, -height);
+
+            canvasBuffer.destroy();
+            canvasBuffer = target;
         }
 
         if (generated)

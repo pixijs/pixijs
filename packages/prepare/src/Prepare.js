@@ -113,7 +113,7 @@ function uploadGraphics(renderer, item)
     // if its not batchable - update vao for particular shader
     if (!geometry.batchable)
     {
-        renderer.geometry.bind(geometry, item._resolveDirectShader());
+        renderer.geometry.bind(geometry, item._resolveDirectShader(renderer));
     }
 
     return true;

@@ -166,8 +166,6 @@ export class Sprite extends Container
         // Batchable stuff..
         // TODO could make this a mixin?
         this.indices = indices;
-        this.size = 4;
-        this.start = 0;
 
         /**
          * Plugin that is responsible for rendering this element.

@@ -58,15 +58,23 @@ export class AnimatedSprite extends Sprite
          */
         this._durations = null;
 
-        this.textures = textures;
-
         /**
          * `true` uses PIXI.Ticker.shared to auto update animation time.
+         *
          * @type {boolean}
          * @default true
          * @private
          */
         this._autoUpdate = autoUpdate !== false;
+
+        /**
+         * `true` if the instance is currently connected to PIXI.Ticker.shared to auto update animation time.
+         *
+         * @type {boolean}
+         * @default false
+         * @private
+         */
+        this._isConnectedToTicker = false;
 
         /**
          * The speed that the AnimatedSprite will play at. Higher is faster, lower is slower.
@@ -127,13 +135,17 @@ export class AnimatedSprite extends Sprite
          */
         this._currentTime = 0;
 
+        this._playing = false;
+
         /**
-         * Indicates if the AnimatedSprite is currently playing.
+         * The texture index that was displayed last time
          *
-         * @member {boolean}
-         * @readonly
+         * @member {number}
+         * @private
          */
-        this.playing = false;
+        this._previousFrame = null;
+
+        this.textures = textures;
     }
 
     /**
@@ -147,10 +159,11 @@ export class AnimatedSprite extends Sprite
             return;
         }
 
-        this.playing = false;
-        if (this._autoUpdate)
+        this._playing = false;
+        if (this._autoUpdate && this._isConnectedToTicker)
         {
             Ticker.shared.remove(this.update, this);
+            this._isConnectedToTicker = false;
         }
     }
 
@@ -165,10 +178,11 @@ export class AnimatedSprite extends Sprite
             return;
         }
 
-        this.playing = true;
-        if (this._autoUpdate)
+        this._playing = true;
+        if (this._autoUpdate && !this._isConnectedToTicker)
         {
             Ticker.shared.add(this.update, this, UPDATE_PRIORITY.HIGH);
+            this._isConnectedToTicker = true;
         }
     }
 
@@ -213,7 +227,6 @@ export class AnimatedSprite extends Sprite
     /**
      * Updates the object transform for rendering.
      *
-     * @private
      * @param {number} deltaTime - Time since last tick.
      */
     update(deltaTime)
@@ -252,8 +265,7 @@ export class AnimatedSprite extends Sprite
 
         if (this._currentTime < 0 && !this.loop)
         {
-            this._currentTime = 0;
-            this.stop();
+            this.gotoAndStop(0);
 
             if (this.onComplete)
             {
@@ -262,8 +274,7 @@ export class AnimatedSprite extends Sprite
         }
         else if (this._currentTime >= this._textures.length && !this.loop)
         {
-            this._currentTime = this._textures.length - 1;
-            this.stop();
+            this.gotoAndStop(this._textures.length - 1);
 
             if (this.onComplete)
             {
@@ -295,7 +306,16 @@ export class AnimatedSprite extends Sprite
      */
     updateTexture()
     {
-        this._texture = this._textures[this.currentFrame];
+        const currentFrame = this.currentFrame;
+
+        if (this._previousFrame === currentFrame)
+        {
+            return;
+        }
+
+        this._previousFrame = currentFrame;
+
+        this._texture = this._textures[currentFrame];
         this._textureID = -1;
         this._textureTrimmedID = -1;
         this._cachedTint = 0xFFFFFF;
@@ -411,6 +431,7 @@ export class AnimatedSprite extends Sprite
                 this._durations.push(value[i].time);
             }
         }
+        this._previousFrame = null;
         this.gotoAndStop(0);
         this.updateTexture();
     }
@@ -431,6 +452,46 @@ export class AnimatedSprite extends Sprite
         }
 
         return currentFrame;
+    }
+
+    /**
+     * Indicates if the AnimatedSprite is currently playing.
+     *
+     * @member {boolean}
+     * @readonly
+     */
+    get playing()
+    {
+        return this._playing;
+    }
+
+    /**
+     * Whether to use PIXI.Ticker.shared to auto update animation time
+     *
+     * @member {boolean}
+     */
+    get autoUpdate()
+    {
+        return this._autoUpdate;
+    }
+
+    set autoUpdate(value) // eslint-disable-line require-jsdoc
+    {
+        if (value !== this._autoUpdate)
+        {
+            this._autoUpdate = value;
+
+            if (!this._autoUpdate && this._isConnectedToTicker)
+            {
+                Ticker.shared.remove(this.update, this);
+                this._isConnectedToTicker = false;
+            }
+            else if (this._autoUpdate && !this._isConnectedToTicker && this._playing)
+            {
+                Ticker.shared.add(this.update, this);
+                this._isConnectedToTicker = true;
+            }
+        }
     }
 }
 

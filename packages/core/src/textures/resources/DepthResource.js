@@ -1,5 +1,5 @@
-import { BufferResource } from './BufferResource';
 import { ALPHA_MODES } from '@pixi/constants';
+import { BufferResource } from './BufferResource';
 
 /**
  * Resource type for DepthTexture.
@@ -33,7 +33,7 @@ export class DepthResource extends BufferResource
                 baseTexture.height,
                 baseTexture.format,
                 baseTexture.type,
-                this.data
+                this.data,
             );
         }
         else
@@ -44,13 +44,14 @@ export class DepthResource extends BufferResource
             gl.texImage2D(
                 baseTexture.target,
                 0,
-                gl.DEPTH_COMPONENT16, // Needed for depth to render properly in webgl2.0
+                //  gl.DEPTH_COMPONENT16 Needed for depth to render properly in webgl2.0
+                renderer.context.webGLVersion === 1 ? gl.DEPTH_COMPONENT : gl.DEPTH_COMPONENT16,
                 baseTexture.width,
                 baseTexture.height,
                 0,
                 baseTexture.format,
                 baseTexture.type,
-                this.data
+                this.data,
             );
         }
 

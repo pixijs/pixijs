@@ -57,10 +57,7 @@ export const buildCircle = {
             );
         }
 
-        points.push(
-            points[0],
-            points[1]
-        );
+        points.push(points[0], points[1]);
     },
 
     triangulate(graphicsData, graphicsGeometry)
@@ -72,7 +69,15 @@ export const buildCircle = {
         let vertPos = verts.length / 2;
         const center = vertPos;
 
-        verts.push(graphicsData.shape.x, graphicsData.shape.y);
+        const circle = graphicsData.shape;
+        const matrix = graphicsData.matrix;
+        const x = circle.x;
+        const y = circle.y;
+
+        // Push center (special point)
+        verts.push(
+            graphicsData.matrix ? (matrix.a * x) + (matrix.c * y) + matrix.tx : x,
+            graphicsData.matrix ? (matrix.b * x) + (matrix.d * y) + matrix.ty : y);
 
         for (let i = 0; i < points.length; i += 2)
         {

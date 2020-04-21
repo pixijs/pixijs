@@ -579,7 +579,7 @@ export class BitmapText extends Container
         const info = xml.getElementsByTagName('info')[0];
         const common = xml.getElementsByTagName('common')[0];
         const pages = xml.getElementsByTagName('page');
-        const res = getResolutionOfUrl(pages[0].getAttribute('file'), settings.RESOLUTION);
+        const res = getResolutionOfUrl(pages[0].getAttribute('file'));
         const pagesTextures = {};
 
         data.font = info.getAttribute('face');
