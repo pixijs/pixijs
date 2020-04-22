@@ -345,10 +345,7 @@ export class Spritesheet
         this.textures = null;
         if (destroyBase)
         {
-            if (this._texture)
-            {
-                this._texture.destroy();
-            }
+            this._texture?.destroy();
             this.baseTexture.destroy();
         }
         this._texture = null;
