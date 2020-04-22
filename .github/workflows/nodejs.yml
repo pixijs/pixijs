@@ -26,7 +26,11 @@ jobs:
       uses: GabrielBB/xvfb-action@v1.0
       with:
         run: npm run coverage:ci
-    - run: codecov -t secrets.CODECOV_TOKEN
+
+    - name: Report code coverage
+      run: codecov
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
     # All the below are deploy-related steps
     - name: Extract branch name
