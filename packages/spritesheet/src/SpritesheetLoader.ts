@@ -61,6 +61,16 @@ export class SpritesheetLoader
 
             // Don't need this Texture anymore
             res.texture.destroy();
+            // @popelyshev: before 5.3 people had access to it! This is a breaking change!
+            res.texture = null;
+            Object.defineProperty(res, 'texture',
+                {
+                    get()
+                    {
+                        throw new Error('`resource.texture` for spritesheets is deprecated since 5.3, '
+                            + 'Please use resource.spritesheet.baseTexture');
+                    },
+                });
 
             const spritesheet = new Spritesheet(
                 baseTexture,
