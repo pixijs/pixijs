@@ -343,14 +343,15 @@ export class Spritesheet
         this._frameKeys = null;
         this.data = null;
         this.textures = null;
-        if (this._texture)
-        {
-            this._texture.destroy();
-        }
         if (destroyBase)
         {
+            if (this._texture)
+            {
+                this._texture.destroy();
+            }
             this.baseTexture.destroy();
         }
+        this._texture = null;
         this.baseTexture = null;
     }
 }
