@@ -150,14 +150,7 @@ export class FramebufferSystem extends System
 
             for (let i = 0; i < framebuffer.colorTextures.length; i++)
             {
-                if ((framebuffer.colorTextures[i] as any).texturePart)
-                {
-                    this.renderer.texture.unbind(framebuffer.colorTextures[i]);
-                }
-                else
-                {
-                    this.renderer.texture.unbind(framebuffer.colorTextures[i]);
-                }
+                this.renderer.texture.unbind(framebuffer.colorTextures[i]);
             }
 
             if (framebuffer.depthTexture)
