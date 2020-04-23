@@ -137,7 +137,7 @@ export class ArrayResource extends Resource
 
     /**
      * Set the parent base texture
-     * @member {PIXI.BaseTexture}
+     * @param {PIXI.BaseTexture} baseTexture
      * @override
      */
     bind(baseTexture: BaseTexture): void
@@ -154,7 +154,7 @@ export class ArrayResource extends Resource
 
     /**
      * Unset the parent base texture
-     * @member {PIXI.BaseTexture}
+     * @param {PIXI.BaseTexture} baseTexture
      * @override
      */
     unbind(baseTexture: BaseTexture): void
