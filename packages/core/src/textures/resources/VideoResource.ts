@@ -60,7 +60,7 @@ export class VideoResource extends BaseImageResource
 
             BaseImageResource.crossOrigin(videoElement, firstSrc, options.crossorigin);
 
-            const extToFormat: { [key: string]: string } = {
+            const extToSubtype: { [key: string]: string } = {
                 ogv: 'ogg',
                 mov: 'quicktime',
                 m4v: 'mp4',
@@ -77,9 +77,9 @@ export class VideoResource extends BaseImageResource
 
                 const baseSrc = src.split('?').shift().toLowerCase();
                 const ext = baseSrc.substr(baseSrc.lastIndexOf('.') + 1);
-                const format = extToFormat[ext] || ext;
+                const subtype = extToSubtype[ext] || ext;
 
-                mime = mime || `video/${format}`;
+                mime = mime || `video/${subtype}`;
 
                 sourceElement.src = src;
                 sourceElement.type = mime;
