@@ -418,7 +418,7 @@ export class VideoResource extends BaseImageResource
     /**
      * Map of video MIME types that can't be directly derived from file extensions.
      * @constant
-     * @member {[ext: string]: string}
+     * @member {object}
      * @static
      * @readonly
      */
