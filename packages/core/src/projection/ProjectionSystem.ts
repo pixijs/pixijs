@@ -106,26 +106,16 @@ export class ProjectionSystem extends System
     calculateProjection(destinationFrame: Rectangle, sourceFrame: Rectangle, resolution: number, root: boolean): void
     {
         const pm = this.projectionMatrix;
+        const sign = !root ? 1 : -1;
 
         // I don't think we will need this line..
         // pm.identity();
 
-        if (!root)
-        {
-            pm.a = (1 / destinationFrame.width * 2) * resolution;
-            pm.d = (1 / destinationFrame.height * 2) * resolution;
+        pm.a = (1 / destinationFrame.width * 2) * resolution;
+        pm.d = sign * (1 / destinationFrame.height * 2) * resolution;
 
-            pm.tx = -1 - (sourceFrame.x * pm.a);
-            pm.ty = -1 - (sourceFrame.y * pm.d);
-        }
-        else
-        {
-            pm.a = (1 / destinationFrame.width * 2) * resolution;
-            pm.d = (-1 / destinationFrame.height * 2) * resolution;
-
-            pm.tx = -1 - (sourceFrame.x * pm.a);
-            pm.ty = 1 - (sourceFrame.y * pm.d);
-        }
+        pm.tx = -1 - (sourceFrame.x * pm.a);
+        pm.ty = -sign - (sourceFrame.y * pm.d);
     }
 
     /**
