@@ -60,12 +60,6 @@ export class VideoResource extends BaseImageResource
 
             BaseImageResource.crossOrigin(videoElement, firstSrc, options.crossorigin);
 
-            const extToSubtype: { [key: string]: string } = {
-                ogv: 'ogg',
-                mov: 'quicktime',
-                m4v: 'mp4',
-            };
-
             // array of objects or strings
             for (let i = 0; i < source.length; ++i)
             {
@@ -77,9 +71,8 @@ export class VideoResource extends BaseImageResource
 
                 const baseSrc = src.split('?').shift().toLowerCase();
                 const ext = baseSrc.substr(baseSrc.lastIndexOf('.') + 1);
-                const subtype = extToSubtype[ext] || ext;
 
-                mime = mime || `video/${subtype}`;
+                mime = mime || VideoResource.MIME_TYPES[ext] || `video/${ext}`;
 
                 sourceElement.src = src;
                 sourceElement.type = mime;
@@ -421,4 +414,17 @@ export class VideoResource extends BaseImageResource
      * @readonly
      */
     static TYPES = ['mp4', 'm4v', 'webm', 'ogg', 'ogv', 'h264', 'avi', 'mov'];
+
+    /**
+     * Map of video MIME types that can't be directly derived from file extensions.
+     * @constant
+     * @member {[ext: string]: string}
+     * @static
+     * @readonly
+     */
+    static MIME_TYPES: {[ext: string]: string} = {
+        ogv: 'video/ogg',
+        mov: 'video/quicktime',
+        m4v: 'video/mp4',
+    };
 }
