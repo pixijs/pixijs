@@ -254,7 +254,7 @@ export class Ticker
      * Register a handler for tick events. Calls continuously unless
      * it is removed or the ticker is stopped.
      *
-     * @param {Function} fn - The listener function to be added for updates
+     * @param {PIXI.Ticker~TickerCallback} fn - The listener function to be added for updates
      * @param {*} [context] - The listener context
      * @param {number} [priority=PIXI.UPDATE_PRIORITY.NORMAL] - The priority for emitting
      * @returns {PIXI.Ticker} This instance of a ticker
@@ -267,7 +267,7 @@ export class Ticker
     /**
      * Add a handler for the tick event which is only execute once.
      *
-     * @param {Function} fn - The listener function to be added for one update
+     * @param {PIXI.Ticker~TickerCallback} fn - The listener function to be added for one update
      * @param {*} [context] - The listener context
      * @param {number} [priority=PIXI.UPDATE_PRIORITY.NORMAL] - The priority for emitting
      * @returns {PIXI.Ticker} This instance of a ticker
@@ -327,7 +327,7 @@ export class Ticker
      * Removes any handlers matching the function and context parameters.
      * If no handlers are left after removing, then it cancels the animation frame.
      *
-     * @param {Function} fn - The listener function to be removed
+     * @param {PIXI.Ticker~TickerCallback} fn - The listener function to be removed
      * @param {*} [context] - The listener context to be removed
      * @returns {PIXI.Ticker} This instance of a ticker
      */
@@ -674,3 +674,14 @@ export class Ticker
         return Ticker._system;
     }
 }
+
+/**
+ * The function to call when it's time to update your animation.
+ *
+ * The callback function is passed a scalar value of the number of frames elapsed since the previous call.
+ * The value is 1 when animation runs at {@link PIXI.settings.TARGET_FPMS}.
+ * The default value of {@link PIXI.settings.TARGET_FPMS} relates to 60 FPS.
+ *
+ * @callback PIXI.Ticker~TickerCallback
+ * @param {number} dt A scalar value of the number of frames elapsed.
+ */
