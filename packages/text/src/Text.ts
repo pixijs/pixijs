@@ -1,22 +1,27 @@
 /* eslint max-depth: [2, 8] */
 import { Sprite } from '@pixi/sprite';
-import { Texture  } from '@pixi/core';
+import { Texture } from '@pixi/core';
 import { settings } from '@pixi/settings';
 import { Rectangle } from '@pixi/math';
 import { sign, trimCanvas, hex2rgb, string2hex } from '@pixi/utils';
+
+import { GlyphManager, GlyphLoc } from './GlyphManager';
 import { TEXT_GRADIENT } from './const';
 import { TextStyle } from './TextStyle';
 import { TextMetrics } from './TextMetrics';
 
 import type { IDestroyOptions } from '@pixi/display';
-import type { Renderer } from '@pixi/core';
+import { Renderer } from '@pixi/core';
 import type { ITextStyle } from './TextStyle';
+import { BLEND_MODES } from '@pixi/constants';
 
 const defaultDestroyOptions: IDestroyOptions = {
     texture: true,
     children: false,
     baseTexture: true,
 };
+
+const glyphs = new GlyphManager(new Renderer());
 
 /**
  * A Text Object will create a line or multiple lines of text.
@@ -56,6 +61,11 @@ export class Text extends Sprite
     protected _resolution: number;
     protected _autoResolution: boolean;
     protected _styleListener: () => void;
+    protected _fallbackMode: boolean;
+    protected _glyphLocs: GlyphLoc[];
+
+    protected _batches: any[];
+
     private _ownCanvas: boolean;
 
     /**
@@ -131,6 +141,7 @@ export class Text extends Sprite
          * @private
          */
         this._style = null;
+
         /**
          * Private listener to track style changes.
          *
@@ -147,6 +158,16 @@ export class Text extends Sprite
          */
         this._font = '';
 
+        /**
+         * Fallback mode uses a local canvas to render text into, instead of rendering each letter
+         * from the glyph-manager. This is turn on when using:
+         *
+         * + horizontal gradients in text style
+         *
+         * @member {boolean}
+         */
+        this._fallbackMode = false;
+
         this.text = text;
         this.style = style;
 
@@ -154,14 +175,61 @@ export class Text extends Sprite
     }
 
     /**
-     * Renders text to its canvas, and updates its texture.
-     * By default this is used internally to ensure the texture is correct before rendering,
-     * but it can be used called externally, for example from this class to 'pre-generate' the texture from a piece of text,
-     * and then shared across multiple Sprites.
+     * Ensures text is pre-rendered into canvas-based caches. By default, this is called internally
+     * before rendering text. It can be called externally, for example, to do rendering in the background
+     * or during initialization.
      *
-     * @param {boolean} respectDirty - Whether to abort updating the text if the Text isn't dirty and the function is called.
+     * @param {boolean}[respectDirty=true]
      */
-    public updateText(respectDirty: boolean): void
+    public updateText(respectDirty = true): void
+    {
+        if (this._fallbackMode)
+        {
+            this._updateCanvas(respectDirty);
+        }
+        else
+        {
+            this._updateGlyphs(respectDirty);
+        }
+    }
+
+    protected _updateGlyphs(respectDirty: boolean): void
+    {
+        const style = this._style;
+
+        // check if style has changed..
+        if (this.localStyleID !== style.styleID)
+        {
+            // this.dirty = true;
+            this.localStyleID = style.styleID;
+        }
+
+        if (!this.dirty && respectDirty)
+        {
+            return;
+        }
+
+        const text = this.text;
+        const glyphLocs: GlyphLoc[] = this._glyphLocs = [];
+
+        for (let i = 0; i < text.length; i++)
+        {
+            const loc = glyphs.locate(glyphs.id(text.charAt(i), style, this.resolution));
+
+            if (!loc)
+            {
+                glyphLocs.push(glyphs.storeGlyph(text.charAt(i), style, this.resolution));
+            }
+            else
+            {
+                glyphLocs.push(loc);
+            }
+        }
+
+        this.dirty = false;
+    }
+
+    protected _updateCanvas(respectDirty: boolean): void
     {
         const style = this._style;
 
@@ -397,6 +465,44 @@ export class Text extends Sprite
         this.dirty = false;
     }
 
+    protected _populateBatches(): void
+    {
+        const batches: any[] = this._batches = [];
+        let x = this.x;
+        const y = this.y;
+
+        for (let i = 0; i < this._glyphLocs.length; i++)
+        {
+            const glyph = this._glyphLocs[i];
+            const tframe = glyph.texture.frame;
+            const resolution = glyph.resolution;
+
+            const vertexData = Float32Array.from([
+                x, y,
+                x + (tframe.width / resolution), y,
+                x + (tframe.width / resolution), y + (tframe.height / resolution),
+                x, y + (tframe.height / resolution),
+            ]);
+            const uvs = glyph.texture._uvs.uvsFloat32;
+            const indices = Float32Array.from([0, 1, 2, 0, 2, 3]);
+
+            x += this.style.letterSpacing + (tframe.width / 2);
+
+            const batch = {
+                vertexData,
+                blendMode: BLEND_MODES.NORMAL,
+                indices,
+                uvs,
+                _batchRGB: hex2rgb(0xffffff) as Array<number>,
+                _tintRGB: 0xffffff,
+                _texture: glyph.texture,
+                alpha: 0.5,
+                worldAlpha: 1 };
+
+            batches.push(batch);
+        }
+    }
+
     /**
      * Renders the object using the WebGL renderer
      *
@@ -413,7 +519,30 @@ export class Text extends Sprite
 
         this.updateText(true);
 
-        super._render(renderer);
+        if (this._fallbackMode)
+        {
+            super._render(renderer);
+
+            return;
+        }
+
+        this._populateBatches();
+
+        if (!this._batches.length)
+        {
+            return;
+        }
+
+        renderer.batch.setObjectRenderer(renderer.plugins[this.pluginName]);
+
+        for (let i = 0, l = this._batches.length; i < l; i++)
+        {
+            const batch = this._batches[i];
+
+            batch.worldAlpha = this.worldAlpha * batch.alpha;
+
+            renderer.plugins[this.pluginName].render(batch);
+        }
     }
 
     /**
@@ -691,6 +820,8 @@ export class Text extends Sprite
 
         this.localStyleID = -1;
         this.dirty = true;
+
+        this._fallbackMode = (this._style.fillGradientType === TEXT_GRADIENT.LINEAR_HORIZONTAL);
     }
 
     /**

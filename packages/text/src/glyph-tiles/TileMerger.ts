@@ -1,4 +1,4 @@
-import { Rectangle } from 'pixi.js';
+import { Rectangle } from '@pixi/math';
 
 const rangePool: Range[] = [];
 
@@ -62,7 +62,6 @@ export class Range
         if (afterSize > 0)
         {
             subintervals.push(newRange().set(end + 1, this.end));
-            // subintervals[subintervals.length - 1].isend = true;
         }
 
         return subintervals;
@@ -147,7 +146,7 @@ export class TileMerger
         loader(this._tiles);
     }
 
-    heal(): Rectangle[]
+    mergeAll(): Rectangle[]
     {
         const intervals = this._buildRangeTable();
 
@@ -166,6 +165,7 @@ export class TileMerger
             }
 
             next = mappedRects;
+            let pushed = false;
 
             for (let t = 0, length = subIntervals.length; t < length; t++)
             {
@@ -174,7 +174,13 @@ export class TileMerger
                 if (!mark)
                 {
                     next.push(new Rectangle(start, i, size, 1));
+                    pushed = true;
                 }
+            }
+
+            if (pushed)
+            {
+                next.sort((a, b) => a.left - b.left);
             }
 
             for (let c = 0; c < current.length; c++)
@@ -203,7 +209,10 @@ export class TileMerger
             }
         }
 
-        basket.push(...current);
+        for (let i = 0; i < current.length; i++)
+        {
+            basket.push(current[i]);
+        }
 
         return basket;
     }
@@ -265,22 +274,22 @@ export class TileMerger
     //
     // The intervals that fit inside a rectangle's breadth are "marked".
     //
-    // This also separates a list of rectangle that have a mapping to a subinterval in
-    // `this.breakerContext.brokeRects`.
+    // This also separates a list of rectangles that have a mapping to a subinterval in
+    // `this.breakerContext.mappedRects`.
     private _breakIntervals(intervals: Range[], rects: Rectangle[]):
         { subIntervals: Range[]; mappedRects: Rectangle[]}
     {
         const rectsCount = rects.length;
 
-        const subIntervals = [...intervals];
+        const subIntervals = intervals.slice(0);
         const mappedRects = [];
 
         for (let subIndex = 0, rectSearchStart = 0; subIndex < subIntervals.length; subIndex++)
         {
             let interval = subIntervals[subIndex];
 
-            let s = rectSearchStart; let
-                fitFound = false;
+            let s = rectSearchStart;
+            let fitFound = false;
 
             for (fitFound = false; s < rectsCount; s++)
             {
@@ -292,7 +301,7 @@ export class TileMerger
 
                     const splitSubs = interval.splitAround(currentRect.left, currentRect.right - 1, true);
 
-                    subIntervals.splice(subIndex, 1, ...splitSubs);
+                    Array.prototype.splice.apply(subIntervals, ([subIndex, 1] as any).concat(splitSubs));
                     subIndex += splitSubs.length - 1;
                     interval = subIntervals[subIndex];
 

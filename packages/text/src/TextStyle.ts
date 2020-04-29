@@ -797,14 +797,6 @@ export class TextStyle implements ITextStyle
 
         return `${this.fontStyle} ${this.fontVariant} ${this.fontWeight} ${fontSizeString} ${(fontFamilies as string[]).join(',')}`;
     }
-
-    /**
-     * Generates a string uniquely identifying this style.
-     * @return {string}
-     */
-    public toString(): string {
-
-    }
 }
 
 /**

@@ -14,7 +14,6 @@ export class GlyphTiles
 
     private tiles: boolean[];
     private _tileMerger: TileMerger;
-    private filledPoints: number;
 
     constructor(rows: number, columns: number)
     {
@@ -46,17 +45,29 @@ export class GlyphTiles
          * @member {PIXI.TileMerger}
          */
         this._tileMerger = new TileMerger(rows, columns);
-        this.filledPoints = 0;
-    }
-
-    get filledLength(): number
-    {
-        return this.filledPoints;
     }
 
     getBlankTileRects(): Rectangle[]
     {
         return this._searchTileRects(0, 0, this.columns - 1, this.rows - 1, false);
+    }
+
+    reserveTileRect(tileRect: Rectangle): void
+    {
+        const {
+            left,
+            top,
+            right,
+            bottom,
+        } = tileRect;
+
+        for (let r = top; r <= bottom; r++)
+        {
+            for (let c = left; c <= right; c++)
+            {
+                this.tiles[(r * this.columns) + c] = true;
+            }
+        }
     }
 
     private _searchTileRects(
@@ -78,13 +89,12 @@ export class GlyphTiles
                         gridArray[point] = true;
                         this.tiles[point] = framesToBeRendered;
                         ++frames;
-                        ++this.filledPoints;
                     }
                 }
             }
         });
 
-        const tileRects = this._tileMerger.heal();
+        const tileRects = this._tileMerger.mergeAll();
 
         if (tileRects.length > frames)
         {
