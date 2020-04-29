@@ -496,8 +496,8 @@ export class Text extends Sprite
                 _batchRGB: hex2rgb(0xffffff) as Array<number>,
                 _tintRGB: 0xffffff,
                 _texture: glyph.texture,
-                alpha: 0.5,
-                worldAlpha: 1 };
+                alpha: this.alpha,
+                worldAlpha: this.worldAlpha };
 
             batches.push(batch);
         }
