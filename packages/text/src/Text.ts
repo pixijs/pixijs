@@ -10,7 +10,7 @@ import { TEXT_GRADIENT } from './const';
 import { TextStyle } from './TextStyle';
 import { TextMetrics } from './TextMetrics';
 
-import type { IDestroyOptions } from '@pixi/display';
+import { IDestroyOptions } from '@pixi/display';
 import { Renderer } from '@pixi/core';
 import type { ITextStyle } from './TextStyle';
 import { BLEND_MODES } from '@pixi/constants';
@@ -659,10 +659,19 @@ export class Text extends Sprite
      */
     protected _calculateBounds(): void
     {
-        this.updateText(true);
-        this.calculateVertices();
-        // if we have already done this on THIS frame.
-        this._bounds.addQuad(this.vertexData);
+        if (this.fallbackMode)
+        {
+            this.updateText(true);
+            this.calculateVertices();
+            // if we have already done this on THIS frame.
+            this._bounds.addQuad(this.vertexData);
+        }
+        else
+        {
+            const metrics = TextMetrics.measureText(this._text, this._style, this._style.wordWrap);
+
+            this._bounds.addFrame(this.transform, 0, 0, metrics.width, metrics.height);
+        }
     }
 
     /**
@@ -849,18 +858,17 @@ export class Text extends Sprite
      */
     get width(): number
     {
-        this.updateText(true);
+        const owidth = TextMetrics.measureText(this._text, this._style, this._style.wordWrap).width;
 
-        return Math.abs(this.scale.x) * this._texture.orig.width;
+        return Math.abs(this.scale.x) * owidth;
     }
 
     set width(value) // eslint-disable-line require-jsdoc
     {
-        this.updateText(true);
-
+        const owidth = TextMetrics.measureText(this._text, this._style, this._style.wordWrap).width;
         const s = sign(this.scale.x) || 1;
 
-        this.scale.x = s * value / this._texture.orig.width;
+        this.scale.x = s * value / owidth;
         this._width = value;
     }
 
@@ -871,18 +879,17 @@ export class Text extends Sprite
      */
     get height(): number
     {
-        this.updateText(true);
+        const oheight = TextMetrics.measureText(this._text, this._style, this._style.wordWrap).height;
 
-        return Math.abs(this.scale.y) * this._texture.orig.height;
+        return Math.abs(this.scale.y) * oheight;
     }
 
     set height(value) // eslint-disable-line require-jsdoc
     {
-        this.updateText(true);
-
+        const oheight = TextMetrics.measureText(this._text, this._style, this._style.wordWrap).height;
         const s = sign(this.scale.y) || 1;
 
-        this.scale.y = s * value / this._texture.orig.height;
+        this.scale.y = s * value / oheight;
         this._height = value;
     }
 

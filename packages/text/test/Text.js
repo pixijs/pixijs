@@ -203,6 +203,8 @@ describe('PIXI.Text', function ()
         {
             const text = new Text('');
 
+            text.fallbackMode = true;
+
             text.updateText();
 
             expect(text.canvas.width).to.be.above(1);
