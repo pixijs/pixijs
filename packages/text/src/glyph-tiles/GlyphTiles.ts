@@ -52,6 +52,24 @@ export class GlyphTiles
         return this._searchTileRects(0, 0, this.columns - 1, this.rows - 1, false);
     }
 
+    clearTileRect(tileRect: Rectangle): void
+    {
+        const {
+            left,
+            top,
+            right,
+            bottom,
+        } = tileRect;
+
+        for (let r = top; r <= bottom; r++)
+        {
+            for (let c = left; c <= right; c++)
+            {
+                this.tiles[(r * this.columns) + c] = false;
+            }
+        }
+    }
+
     reserveTileRect(tileRect: Rectangle): void
     {
         const {

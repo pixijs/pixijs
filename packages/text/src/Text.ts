@@ -54,6 +54,7 @@ export class Text extends Sprite
     public context: CanvasRenderingContext2D;
     public localStyleID: number;
     public dirty: boolean;
+    public fallbackMode: boolean;
 
     protected _text: string;
     protected _font: string;
@@ -61,7 +62,6 @@ export class Text extends Sprite
     protected _resolution: number;
     protected _autoResolution: boolean;
     protected _styleListener: () => void;
-    protected _fallbackMode: boolean;
     protected _glyphLocs: GlyphLoc[];
 
     protected _batches: any[];
@@ -166,7 +166,12 @@ export class Text extends Sprite
          *
          * @member {boolean}
          */
-        this._fallbackMode = false;
+        this.fallbackMode = false;
+
+        /**
+         * References to the glyphs used
+         */
+        this._glyphLocs = [];
 
         this.text = text;
         this.style = style;
@@ -183,7 +188,7 @@ export class Text extends Sprite
      */
     public updateText(respectDirty = true): void
     {
-        if (this._fallbackMode)
+        if (this.fallbackMode)
         {
             this._updateCanvas(respectDirty);
         }
@@ -196,6 +201,8 @@ export class Text extends Sprite
     protected _updateGlyphs(respectDirty: boolean): void
     {
         const style = this._style;
+
+        this._font = this._style.toFontString();
 
         // check if style has changed..
         if (this.localStyleID !== style.styleID)
@@ -210,21 +217,29 @@ export class Text extends Sprite
         }
 
         const text = this.text;
+
+        for (let i = 0, j = this._glyphLocs.length; i < j; i++)
+        {
+            --this._glyphLocs[i].references;
+        }
+
         const glyphLocs: GlyphLoc[] = this._glyphLocs = [];
 
         for (let i = 0; i < text.length; i++)
         {
-            const loc = glyphs.locate(glyphs.id(text.charAt(i), style, this.resolution));
+            let loc = glyphs.locate(glyphs.id(text.charAt(i), style, this.resolution));
 
             if (!loc)
             {
-                glyphLocs.push(glyphs.storeGlyph(text.charAt(i), style, this.resolution));
+                loc = glyphs.storeGlyph(text.charAt(i), style, this.resolution);
             }
-            else
-            {
-                glyphLocs.push(loc);
-            }
+
+            ++loc.references;
+            glyphLocs.push(loc);
         }
+
+        glyphs.prune();
+        this._populateBatches();
 
         this.dirty = false;
     }
@@ -417,6 +432,7 @@ export class Text extends Sprite
             {
                 this.context.fillText(currentChar, currentPosition, y);
             }
+
             currentWidth = this.context.measureText(text.substring(i + 1)).width;
             currentPosition += previousWidth - currentWidth + letterSpacing;
             previousWidth = currentWidth;
@@ -468,38 +484,112 @@ export class Text extends Sprite
     protected _populateBatches(): void
     {
         const batches: any[] = this._batches = [];
-        let x = this.x;
-        const y = this.y;
+        let x = 0;
 
-        for (let i = 0; i < this._glyphLocs.length; i++)
+        const { a, c, tx, b, d, ty } = this.transform.worldTransform;
+
+        const style = this._style;
+        const measured = TextMetrics.measureText(this._text || ' ', style, style.wordWrap);
+        const lines = measured.lines;
+        const lineHeight = measured.lineHeight;
+        const fontProperties = measured.fontProperties;
+        const maxLineWidth = measured.maxLineWidth;
+        const lineWidths = measured.lineWidths;
+
+        // For measurement
+        const context = this.context;
+
+        context.font = this._font;
+        context.lineWidth = style.strokeThickness;
+        context.textBaseline = style.textBaseline;
+        context.lineJoin = style.lineJoin;
+        context.miterLimit = style.miterLimit;
+        context.fillStyle = this._generateFillStyle(style, lines, measured);
+        context.strokeStyle = style.stroke as string;
+        context.shadowColor = '0';
+        context.shadowBlur = 0;
+        context.shadowOffsetX = 0;
+        context.shadowOffsetY = 0;
+
+        for (let i = 0, g = 0; i < lines.length; i++)// lines remove spaces
         {
-            const glyph = this._glyphLocs[i];
-            const tframe = glyph.texture.frame;
-            const resolution = glyph.resolution;
+            const line = lines[i];
 
-            const vertexData = Float32Array.from([
-                x, y,
-                x + (tframe.width / resolution), y,
-                x + (tframe.width / resolution), y + (tframe.height / resolution),
-                x, y + (tframe.height / resolution),
-            ]);
-            const uvs = glyph.texture._uvs.uvsFloat32;
-            const indices = Float32Array.from([0, 1, 2, 0, 2, 3]);
+            let linePositionX = style.strokeThickness / 2;
+            const linePositionY = (i * (style.strokeThickness + lineHeight)) + fontProperties.ascent;
 
-            x += this.style.letterSpacing + (tframe.width / 2);
+            if (style.align === 'right')
+            {
+                linePositionX += maxLineWidth - lineWidths[i];
+            }
+            else if (style.align === 'center')
+            {
+                linePositionX += (maxLineWidth - lineWidths[i]) / 2;
+            }
 
-            const batch = {
-                vertexData,
-                blendMode: BLEND_MODES.NORMAL,
-                indices,
-                uvs,
-                _batchRGB: hex2rgb(0xffffff) as Array<number>,
-                _tintRGB: 0xffffff,
-                _texture: glyph.texture,
-                alpha: this.alpha,
-                worldAlpha: this.worldAlpha };
+            x = linePositionX;
+            let previousWidth = this.context.measureText(line).width;
 
-            batches.push(batch);
+            for (let ch = 0; ch < line.length; ch++, g++)
+            {
+                const glyph = this._glyphLocs[g];
+
+                const tframe = glyph.texture.frame;
+                const resolution = glyph.resolution;
+                const y = linePositionY - lineHeight + ((fontProperties.descent + (style.strokeThickness / 2)) / resolution);
+
+                const lxf = x + (tframe.width / resolution);
+                const lyf = y + (tframe.height / resolution);
+
+                const x0 = (a * x) + (c * y) + tx;
+                const y0 = (b * x) + (d * y) + ty;
+                const x1 = (a * lxf) + (c * y) + tx;
+                const y1 = (b * lxf) + (d * y) + ty;
+                const x2 = (a * lxf) + (c * lyf) + tx;
+                const y2 = (b * lxf) + (d * lyf) + ty;
+                const x3 = (a * x) + (c * lyf) + tx;
+                const y3 = (b * x) + (d * lyf) + ty;
+
+                const vertexData = Float32Array.from([
+                    x0, y0,
+                    x1, y1,
+                    x2, y2,
+                    x3, y3,
+                ]);
+                const uvs = glyph.texture._uvs.uvsFloat32;
+                const indices = Float32Array.from([0, 1, 2, 0, 2, 3]);
+
+                const currentWidth = this.context.measureText(line.substring(ch + 1)).width;
+
+                x += style.letterSpacing - currentWidth + previousWidth;
+
+                const batch = {
+                    vertexData,
+                    blendMode: BLEND_MODES.NORMAL,
+                    indices,
+                    uvs,
+                    _batchRGB: hex2rgb(0xffffff) as Array<number>,
+                    _tintRGB: 0xffffff,
+                    _texture: glyph.texture,
+                    alpha: this.alpha,
+                    worldAlpha: this.worldAlpha };
+
+                batches.push(batch);
+                previousWidth = currentWidth;
+            }
+
+            if (g === this._glyphLocs.length)
+            {
+                continue;
+            }
+
+            let nchar = this._glyphLocs[g].metrics.text;
+
+            while (g < this._glyphLocs.length && (nchar === ' ' || nchar === '\r' || nchar === '\n'))
+            {
+                ++g;
+                nchar = this._glyphLocs[g].metrics.text;
+            }
         }
     }
 
@@ -519,14 +609,12 @@ export class Text extends Sprite
 
         this.updateText(true);
 
-        if (this._fallbackMode)
+        if (this.fallbackMode)
         {
             super._render(renderer);
 
             return;
         }
-
-        this._populateBatches();
 
         if (!this._batches.length)
         {
@@ -555,7 +643,14 @@ export class Text extends Sprite
     {
         this.updateText(true);
 
-        return super.getLocalBounds.call(this, rect);
+        if (this.fallbackMode)
+        {
+            return super.getLocalBounds.call(this, rect);
+        }
+
+        const metrics = TextMetrics.measureText(this._text, this._style, false);
+
+        return new Rectangle(0, 0, metrics.width, metrics.height);
     }
 
     /**
@@ -821,7 +916,12 @@ export class Text extends Sprite
         this.localStyleID = -1;
         this.dirty = true;
 
-        this._fallbackMode = (this._style.fillGradientType === TEXT_GRADIENT.LINEAR_HORIZONTAL);
+        // + Linear gradients not supported
+        // + Drop shadows not supported
+        // + Large strokes not supported
+        this.fallbackMode = (this._style.fillGradientType === TEXT_GRADIENT.LINEAR_HORIZONTAL)
+            || (this._style.dropShadow)
+            || (this._style.stroke && this._style.strokeThickness > this._style.fontSize * 0.1);
     }
 
     /**

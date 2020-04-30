@@ -3,17 +3,19 @@ import { Rectangle } from '@pixi/math';
 import { GlyphTiles } from './glyph-tiles';
 import { TextStyle, ITextStyle } from './TextStyle';
 import { TextMetrics } from './TextMetrics';
-import { settings } from '@pixi/settings';
 import { generateFillStyle } from './utils/generateFillStyle';
 
 // Min. size that a glyph must occupy.
-const TILE_SIZE = 24;
+const TILE_SIZE = 16;
 
 // Min. padding around a glyph
 const GLYPH_PADDING = 2;
 
 /**
+ * Represents a cached glyph
+ *
  * @ignore
+ * @class
  */
 export class GlyphLoc
 {
@@ -21,8 +23,10 @@ export class GlyphLoc
     public context: CanvasRenderingContext2D;
     public texture: Texture;
     public resolution: number;
-
     public metrics: TextMetrics;
+    public baseline: number;
+
+    public references: number;
 
     constructor(
         canvas: HTMLCanvasElement,
@@ -30,10 +34,44 @@ export class GlyphLoc
         texture: Texture,
         resolution: number)
     {
+        /**
+         * The canvas on which the glyph was drawn
+         * @member {HTMLCanvasElement}
+         */
         this.canvas = canvas;
+
+        /**
+         * The canvas-2d context used to render the glyph
+         * @member {CanvasRenderingContext2D}
+         */
         this.context = context;
+
+        /**
+         * A texture whose frame contains the glyph
+         * @member {PIXI.Texture}
+         */
         this.texture = texture;
+
+        /**
+         * Resolution at which the glyph was cached
+         * @member {number}
+         */
         this.resolution = resolution;
+
+        /**
+         * The baseline is the horizontal axis in the texture frame where the letter sits on the
+         * on-screen line.
+         * @member {number}
+         */
+        this.baseline = 0;
+
+        /**
+         * The no. of text objects using this glyph. If this drops to zero, then the
+         * glyph can be removed safely.
+         * @member {number}
+         * @default 0
+         */
+        this.references = 0;
     }
 }
 
@@ -83,7 +121,7 @@ export class GlyphManager
             throw new Error('Can\'t store >512px glyph');
         }
 
-        let { width, height } = TextMetrics.measureText(char, style, false);
+        let { width, height } = GlyphManager.measureGlyph(char, style);
 
         width *= resolution;
         height *= resolution;
@@ -126,6 +164,8 @@ export class GlyphManager
 
                     this._glyphMap.set(this.id(char, style, resolution), loc);
 
+                    texture.update();
+
                     return loc;
                 }
             }
@@ -134,6 +174,7 @@ export class GlyphManager
         const canvas = document.createElement('canvas');
 
         canvas.width = canvas.height = 1024;
+
         const texture = Texture.from(canvas);
 
         texture.frame = new Rectangle(GLYPH_PADDING, GLYPH_PADDING, width, height);
@@ -166,11 +207,36 @@ export class GlyphManager
         return this._glyphMap.get(glyphId);
     }
 
+    prune(): void
+    {
+        this._glyphMap.forEach((glyph: GlyphLoc, id: string) =>
+        {
+            if (glyph.references <= 0)
+            {
+                const index = this._canvasList.indexOf(glyph.canvas);
+
+                if (index >= 0)
+                {
+                    const frame = glyph.texture.frame;
+
+                    this._atlasTiles[index].clearTileRect(new Rectangle(
+                        Math.floor(0.00001 + (frame.x / TILE_SIZE)),
+                        Math.floor(0.00001 + (frame.y / TILE_SIZE)),
+                        Math.ceil(-0.00001 + (frame.width / TILE_SIZE)),
+                        Math.ceil(-0.00001 + (frame.height / TILE_SIZE))
+                    ));
+                }
+
+                this._glyphMap.delete(id);
+            }
+        });
+    }
+
     /**
      * Generates a string uniquely identifying the style.
      * @return {string}
      */
-    public styleToString(style: any): string
+    styleToString(style: any): string
     {
         return `
             ${style.dropShadow}
@@ -197,33 +263,44 @@ export class GlyphManager
         `;
     }
 
-    private _renderGlyph(char: string, style: TextStyle, loc: GlyphLoc): void
+    private _renderGlyph(char: string, style: TextStyle, glyph: GlyphLoc): void
     {
         const {
             canvas,
             context,
-        } = loc;
+        } = glyph;
 
-        const { x, y } = loc.texture.frame;
-        const measured = TextMetrics.measureText(char, style, style.wordWrap, canvas);
+        const { x, y } = glyph.texture.frame;
 
-        loc.metrics = measured;
+        const measured = GlyphManager.measureGlyph(char, style, canvas);
+        const fontProperties = measured.fontProperties;
 
-        // context.fillStyle = 'red';
-        // context.fillRect(loc.position.x, loc.position.y, loc.size.x, loc.size.y);
+        glyph.metrics = measured;
+        glyph.baseline = measured.lineHeight - measured.fontProperties.descent;
 
         context.translate(x, y);
-        context.scale(loc.resolution, loc.resolution);
+        context.scale(glyph.resolution, glyph.resolution);
 
-        context.fillStyle = generateFillStyle(canvas, context, style, settings.RESOLUTION, [char], measured);
+        context.clearRect(
+            -GLYPH_PADDING,
+            -GLYPH_PADDING,
+            measured.width + (2 * GLYPH_PADDING),
+            measured.height + (2 * GLYPH_PADDING)
+        );
 
-        context.strokeStyle = style.stroke as string;
+        const tx = style.strokeThickness / 2;
+        const ty = -(style.strokeThickness / 2);
 
         context.font = style.toFontString();
         context.lineWidth = style.strokeThickness;
         context.textBaseline = style.textBaseline;
         context.lineJoin = style.lineJoin;
         context.miterLimit = style.miterLimit;
+
+        // set canvas text styles
+        context.fillStyle = generateFillStyle(canvas, context, style, glyph.resolution, [char], measured);
+        context.strokeStyle = style.stroke as string;
+
         context.shadowColor = '0';
         context.shadowBlur = 0;
         context.shadowOffsetX = 0;
@@ -231,13 +308,57 @@ export class GlyphManager
 
         if (style.stroke && style.strokeThickness)
         {
-            loc.context.strokeText(char, 0, 0);
+            glyph.context.strokeText(char, tx, ty + measured.lineHeight - fontProperties.descent);
         }
         if (style.fill)
         {
-            loc.context.fillText(char, 0, measured.lineHeight - measured.fontProperties.descent);
+            glyph.context.fillText(char, tx, ty + measured.lineHeight - fontProperties.descent);
         }
 
         context.setTransform();
+
+        context.fillStyle = 'rgba(0, 0, 0, 0)';
+    }
+
+    /**
+     * Measures the supplied character.
+     *
+     * @param {string} char - the text to measure.
+     * @param {PIXI.TextStyle} style - the text style to use for measuring
+     * @param {HTMLCanvasElement} [canvas] - optional specification of the canvas to use for measuring.
+     * @return {PIXI.TextMetrics} measured width and height of the text.
+     */
+    public static measureGlyph(char: string, style: TextStyle, canvas = TextMetrics._canvas): TextMetrics
+    {
+        const font = style.toFontString();
+        const fontProperties = TextMetrics.measureFont(font);
+
+        // fallback in case UA disallow canvas data extraction
+        // (toDataURI, getImageData functions)
+        if (fontProperties.fontSize === 0)
+        {
+            fontProperties.fontSize = style.fontSize;
+            fontProperties.ascent = style.fontSize;
+        }
+
+        const context = canvas.getContext('2d');
+
+        context.font = font;
+
+        const width = context.measureText(char).width + style.strokeThickness;
+        const lineHeight = style.lineHeight || fontProperties.fontSize + (2 * style.strokeThickness);
+        const height = Math.max(lineHeight, fontProperties.fontSize + (2 * style.strokeThickness));
+
+        return new TextMetrics(
+            char,
+            style,
+            width,
+            height,
+            [char],
+            [width],
+            lineHeight + style.leading,
+            width,
+            fontProperties
+        );
     }
 }
