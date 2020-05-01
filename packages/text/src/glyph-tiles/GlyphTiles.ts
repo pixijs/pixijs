@@ -17,22 +17,8 @@ export class GlyphTiles
 
     constructor(rows: number, columns: number)
     {
-        /**
-         * The number of tile rows
-         * @member {number}
-         */
         this.rows = rows;
-
-        /**
-         * The number of tile columns
-         * @member {number}
-         */
         this.columns = columns;
-
-        /**
-         * A 2D boolean array tracking which tiles are "used"
-         * @member {boolean[]}
-         */
         this.tiles = new Array(rows * columns);
 
         for (let i = 0; i < this.tiles.length; i++)
@@ -40,10 +26,6 @@ export class GlyphTiles
             this.tiles[i] = false;
         }
 
-        /**
-         * {@code TileMerger} for merging tiles into rectangles.
-         * @member {PIXI.TileMerger}
-         */
         this._tileMerger = new TileMerger(rows, columns);
     }
 

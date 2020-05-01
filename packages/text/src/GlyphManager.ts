@@ -17,7 +17,7 @@ const GLYPH_PADDING = 2;
  * @ignore
  * @class
  */
-export class GlyphLoc
+class GlyphLoc
 {
     public canvas: HTMLCanvasElement;
     public context: CanvasRenderingContext2D;
@@ -74,6 +74,8 @@ export class GlyphLoc
         this.references = 0;
     }
 }
+
+export { GlyphLoc };
 
 /**
  * This is the record for where and on which texture each glyph is cached.

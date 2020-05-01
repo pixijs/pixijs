@@ -170,6 +170,8 @@ export class Text extends Sprite
 
         /**
          * References to the glyphs used
+         *
+         * @member {Array<object>}
          */
         this._glyphLocs = [];
 

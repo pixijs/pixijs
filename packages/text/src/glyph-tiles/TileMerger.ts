@@ -109,13 +109,6 @@ export class TileMerger
         };
     }
 
-    /**
-     * Reset this healer to a new configuration. The grid size is increased if needed.
-     *
-     * @param {number} rows
-     * @param {number} columns
-     * @param {Function} loader - should initialize the grid for healing
-     */
     reset(rows: number, columns: number, loader: (arg: boolean[]) => void): void
     {
         this.rows = rows;
