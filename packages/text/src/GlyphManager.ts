@@ -123,7 +123,8 @@ export class GlyphManager
             throw new Error('Can\'t store >512px glyph');
         }
 
-        let { width, height } = GlyphManager.measureGlyph(char, style);
+        const metrics = GlyphManager.measureGlyph(char, style);
+        let { width, height } = metrics;
 
         width *= resolution;
         height *= resolution;
@@ -155,13 +156,24 @@ export class GlyphManager
                         height);
                     texture.updateUvs();
 
+                    const context = this._contextList[i];
+
                     const loc = new GlyphLoc(
                         this._canvasList[i],
                         this._contextList[i],
                         texture,
                         resolution);
 
+                    loc.metrics = metrics;
+
                     tileManager.reserveTileRect(new Rectangle(rect.x, rect.y, tilesHorz, tilesVert));
+
+                    context.clearRect(
+                        texture.frame.x - GLYPH_PADDING,
+                        texture.frame.y - GLYPH_PADDING,
+                        texture.frame.width + (2 * GLYPH_PADDING),
+                        texture.frame.height + (2 * GLYPH_PADDING));
+
                     this._renderGlyph(char, style, loc);
 
                     this._glyphMap.set(this.id(char, style, resolution), loc);
@@ -189,6 +201,8 @@ export class GlyphManager
         this._atlasTiles.push(tileManager);
 
         const loc = new GlyphLoc(canvas, context, texture, resolution);
+
+        loc.metrics = metrics;
 
         this._renderGlyph(char, style, loc);
         tileManager.reserveTileRect(new Rectangle(0, 0,
@@ -270,24 +284,23 @@ export class GlyphManager
         const {
             canvas,
             context,
+            metrics: measured,
         } = glyph;
 
         const { x, y } = glyph.texture.frame;
 
-        const measured = GlyphManager.measureGlyph(char, style, canvas);
         const fontProperties = measured.fontProperties;
 
-        glyph.metrics = measured;
         glyph.baseline = measured.lineHeight - measured.fontProperties.descent;
 
         context.translate(x, y);
         context.scale(glyph.resolution, glyph.resolution);
 
         context.clearRect(
-            -GLYPH_PADDING,
-            -GLYPH_PADDING,
-            measured.width + (2 * GLYPH_PADDING),
-            measured.height + (2 * GLYPH_PADDING)
+            0,
+            0,
+            measured.width,
+            measured.height
         );
 
         const tx = style.strokeThickness / 2;

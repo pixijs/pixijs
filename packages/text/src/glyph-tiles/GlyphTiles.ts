@@ -43,9 +43,9 @@ export class GlyphTiles
             bottom,
         } = tileRect;
 
-        for (let r = top; r <= bottom; r++)
+        for (let r = top; r < bottom; r++)
         {
-            for (let c = left; c <= right; c++)
+            for (let c = left; c < right; c++)
             {
                 this.tiles[(r * this.columns) + c] = false;
             }
@@ -61,11 +61,18 @@ export class GlyphTiles
             bottom,
         } = tileRect;
 
-        for (let r = top; r <= bottom; r++)
+        for (let r = top; r < bottom; r++)
         {
-            for (let c = left; c <= right; c++)
+            for (let c = left; c < right; c++)
             {
-                this.tiles[(r * this.columns) + c] = true;
+                const i = (r * this.columns) + c;
+
+                if (this.tiles[i])
+                {
+                    throw new Error('Tile already reserved');
+                }
+
+                this.tiles[i] = true;
             }
         }
     }
