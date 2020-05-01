@@ -22,6 +22,8 @@ const defaultDestroyOptions: IDestroyOptions = {
 };
 
 const glyphs = new GlyphManager(new Renderer());
+const INDICES = Float32Array.from([0, 1, 2, 0, 2, 3]);
+const BATCH_RGB = hex2rgb(0xffffff) as Array<number>;
 
 /**
  * A Text Object will create a line or multiple lines of text.
@@ -174,6 +176,13 @@ export class Text extends Sprite
          * @member {Array<object>}
          */
         this._glyphLocs = [];
+
+        /**
+         * Batchable geometries for each glyph.
+         *
+         * @member {Array<object>}
+         */
+        this._batches = [];
 
         this.text = text;
         this.style = style;
@@ -485,7 +494,10 @@ export class Text extends Sprite
 
     protected _populateBatches(): void
     {
-        const batches: any[] = this._batches = [];
+        const batches: any[] = this._batches;
+
+        batches.length = this._glyphLocs.length;
+
         let x = 0;
 
         const { a, c, tx, b, d, ty } = this.transform.worldTransform;
@@ -535,6 +547,7 @@ export class Text extends Sprite
             for (let ch = 0; ch < line.length; ch++, g++)
             {
                 const glyph = this._glyphLocs[g];
+                const batch = batches[g] || {};
 
                 const tframe = glyph.texture.frame;
                 const resolution = glyph.resolution;
@@ -552,31 +565,32 @@ export class Text extends Sprite
                 const x3 = (a * x) + (c * lyf) + tx;
                 const y3 = (b * x) + (d * lyf) + ty;
 
-                const vertexData = Float32Array.from([
-                    x0, y0,
-                    x1, y1,
-                    x2, y2,
-                    x3, y3,
-                ]);
-                const uvs = glyph.texture._uvs.uvsFloat32;
-                const indices = Float32Array.from([0, 1, 2, 0, 2, 3]);
+                const vertexData = batch.vertexData || new Float32Array(8);
+
+                vertexData[0] = x0;
+                vertexData[1] = y0;
+                vertexData[2] = x1;
+                vertexData[3] = y1;
+                vertexData[4] = x2;
+                vertexData[5] = y2;
+                vertexData[6] = x3;
+                vertexData[7] = y3;
 
                 const currentWidth = this.context.measureText(line.substring(ch + 1)).width;
 
                 x += style.letterSpacing - currentWidth + previousWidth;
 
-                const batch = {
-                    vertexData,
-                    blendMode: BLEND_MODES.NORMAL,
-                    indices,
-                    uvs,
-                    _batchRGB: hex2rgb(0xffffff) as Array<number>,
-                    _tintRGB: 0xffffff,
-                    _texture: glyph.texture,
-                    alpha: this.alpha,
-                    worldAlpha: this.worldAlpha };
+                batch.vertexData = vertexData;
+                batch.blendMode = BLEND_MODES.NORMAL;
+                batch.indices = INDICES;
+                batch.uvs = glyph.texture._uvs.uvsFloat32;
+                batch._batchRGB = BATCH_RGB;
+                batch._tintRGB = 0xffffff;
+                batch._texture = glyph.texture;
+                batch.alpha = this.alpha;
+                batch.worldAlpha = this.worldAlpha;
 
-                batches.push(batch);
+                batches[g] = batch;
                 previousWidth = currentWidth;
             }
 
@@ -629,7 +643,10 @@ export class Text extends Sprite
         {
             const batch = this._batches[i];
 
-            batch.worldAlpha = this.worldAlpha * batch.alpha;
+            if (!batch)
+            {
+                continue;
+            }
 
             renderer.plugins[this.pluginName].render(batch);
         }
