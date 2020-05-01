@@ -7,10 +7,12 @@
  */
 export class TimeLimiter
 {
+    public maxMilliseconds: number;
+    public frameStart: number;
     /**
      * @param {number} maxMilliseconds - The maximum milliseconds that can be spent preparing items each frame.
      */
-    constructor(maxMilliseconds)
+    constructor(maxMilliseconds: number)
     {
         /**
          * The maximum milliseconds that can be spent preparing items each frame.
@@ -29,7 +31,7 @@ export class TimeLimiter
     /**
      * Resets any counting properties to start fresh on a new frame.
      */
-    beginFrame()
+    beginFrame(): void
     {
         this.frameStart = Date.now();
     }
@@ -38,7 +40,7 @@ export class TimeLimiter
      * Checks to see if another item can be uploaded. This should only be called once per item.
      * @return {boolean} If the item is allowed to be uploaded.
      */
-    allowedToUpload()
+    allowedToUpload(): boolean
     {
         return Date.now() - this.frameStart < this.maxMilliseconds;
     }
