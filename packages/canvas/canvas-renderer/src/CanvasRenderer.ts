@@ -13,7 +13,6 @@ import type {
     RenderTexture,
     BaseRenderTexture,
 } from '@pixi/core';
-import type { CanvasExtract } from '@pixi/canvas-extract';
 
 const tempMatrix = new Matrix();
 
@@ -45,7 +44,6 @@ export class CanvasRenderer extends AbstractRenderer
     public smoothProperty: string;
     public readonly blendModes: string[];
     public renderingToScreen: boolean;
-    public extract: CanvasExtract;
 
     private _activeBlendMode: BLEND_MODES;
     private _projTransform: Matrix;
