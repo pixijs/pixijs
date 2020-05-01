@@ -29,6 +29,8 @@ jobs:
       uses: GabrielBB/xvfb-action@v1.0
       with:
         run: npm run coverage:ci
+      env:
+        NODE_ENV: production
 
     - name: Report Code Coverage
       run: codecov
