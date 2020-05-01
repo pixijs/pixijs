@@ -24,7 +24,9 @@
     "dist"
   ],
   "dependencies": {
+    "@pixi/canvas-renderer": "5.2.3",
     "@pixi/core": "5.2.3",
+    "@pixi/display": "5.2.3",
     "@pixi/math": "5.2.3",
     "@pixi/utils": "5.2.3"
   }
