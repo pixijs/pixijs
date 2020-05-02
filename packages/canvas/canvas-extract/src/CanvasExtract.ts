@@ -1,7 +1,8 @@
 import { RenderTexture } from '@pixi/core';
 import { CanvasRenderTarget } from '@pixi/utils';
 import { Rectangle } from '@pixi/math';
-import type { CanvasRenderer } from '@pixi/canvas-renderer';
+import { CanvasRenderer } from '@pixi/canvas-renderer';
+import { deprecation } from '@pixi/utils';
 import type { DisplayObject } from '@pixi/display';
 import type { BaseRenderTexture } from '@pixi/core';
 
@@ -25,14 +26,6 @@ export class CanvasExtract
     constructor(renderer: CanvasRenderer)
     {
         this.renderer = renderer;
-        /**
-         * Collection of methods for extracting data (image, pixels, etc.) from a display object or render texture
-         *
-         * @member {PIXI.CanvasExtract} extract
-         * @memberof PIXI.CanvasRenderer#
-         * @see PIXI.CanvasExtract
-         */
-        renderer.extract = this;
     }
 
     /**
@@ -174,7 +167,24 @@ export class CanvasExtract
      */
     public destroy(): void
     {
-        this.renderer.extract = null;
         this.renderer = null;
     }
 }
+
+/**
+ * @name PIXI.CanvasRenderer#extract
+ * @type {PIXI.CanvasExtract}
+ * @see PIXI.CanvasRenderer#plugins
+ * @deprecated since 5.3.0
+ */
+Object.defineProperty(CanvasRenderer.prototype, 'extract',
+    {
+        get()
+        {
+            deprecation('v5.3.0', 'CanvasRenderer#extract is deprecated, use CanvasRenderer#plugins.extract');
+
+            return this.plugins.extract;
+        },
+    }
+);
+
