@@ -19,14 +19,11 @@ interface IBitmapFontCharacter {
 const available: Dict<BitmapFont> = {};
 
 /**
- * BitmapFont represents a typeface available for use
- * with the BitmapText class. Use the `install` method
- * for adding a font to be used.
+ * BitmapFont represents a typeface available for use with the BitmapText class. Use the `install`
+ * method for adding a font to be used.
  *
  * @class
  * @memberof PIXI
- * @param {PIXI.BitmapFontData} data
- * @param {PIXI.Texture[]|Object.<string, PIXI.Texture>} textures
  */
 export class BitmapFont
 {
@@ -35,6 +32,10 @@ export class BitmapFont
     public readonly lineHeight: number;
     public readonly chars: Dict<IBitmapFontCharacter>;
 
+    /**
+     * @param {PIXI.BitmapFontData} data
+     * @param {PIXI.Texture[]|Object.<string, PIXI.Texture>} textures
+     */
     constructor(data: BitmapFontData, textures: Texture[]|Dict<Texture>)
     {
         const [info] = data.info;
@@ -47,7 +48,7 @@ export class BitmapFont
          * The name of the font face.
          *
          * @member {string}
-         * @readOnly
+         * @readonly
          */
         this.font = info.face;
 
@@ -55,7 +56,7 @@ export class BitmapFont
          * The size of the font face in pixels.
          *
          * @member {number}
-         * @readOnly
+         * @readonly
          */
         this.size = info.size;
 
@@ -63,7 +64,7 @@ export class BitmapFont
          * The line-height of the font face in pixels.
          *
          * @member {number}
-         * @readOnly
+         * @readonly
          */
         this.lineHeight = common.lineHeight / res;
 
@@ -71,7 +72,7 @@ export class BitmapFont
          * The map of characters by character code.
          *
          * @member {object}
-         * @readOnly
+         * @readonly
          */
         this.chars = {};
 

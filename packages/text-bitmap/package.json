@@ -30,7 +30,8 @@
     "@pixi/math": "5.2.3",
     "@pixi/settings": "5.2.3",
     "@pixi/sprite": "5.2.3",
-    "@pixi/utils": "5.2.3"
+    "@pixi/utils": "5.2.3",
+    "@pixi/text": "5.2.3"
   },
   "devDependencies": {
     "@pixi/spritesheet": "5.2.3"

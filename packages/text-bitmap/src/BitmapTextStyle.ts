@@ -1,9 +1,16 @@
-export type BitmapTextAlign = 'left' | 'center' | 'right';
+import type { TextStyleWhiteSpace, TextStyleAlign } from '@pixi/text';
 
 export interface IBitmapTextStyle {
     font: string | IBitmapTextFontDescriptor;
     tint: number;
-    align: BitmapTextAlign;
+
+    align: TextStyleAlign;
+    breakWords: boolean;
+    letterSpacing: number;
+    lineHeight: number;
+    whiteSpace: TextStyleWhiteSpace;
+    wordWrap: boolean;
+    wordWrapWidth: number;
 }
 
 export interface IBitmapTextFontDescriptor {
