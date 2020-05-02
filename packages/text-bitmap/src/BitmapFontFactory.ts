@@ -83,10 +83,10 @@ export class BitmapFontFactory
             }
 
             const metrics = TextMetrics.measureText(chars[i], style, false, canvas);
-            const width = metrics.maxLineWidth;
-            const height = metrics.lineHeight;
+            const width = metrics.width;
+            const height = metrics.height;
 
-            maxCharHeight = Math.max(height, maxCharHeight);
+            maxCharHeight = Math.max(height + metrics.fontProperties.descent, maxCharHeight);
 
             if ((width * resolution) + positionX >= lineWidth)
             {
@@ -122,7 +122,7 @@ export class BitmapFontFactory
                 height,
                 xoffset: 0,
                 yoffset: 0,
-                xadvance: width,
+                xadvance: width - (style.dropShadow ? style.dropShadowDistance : 0),
             };
             fontData.page[id] = {
                 id,
@@ -177,10 +177,20 @@ export class BitmapFontFactory
         const dropShadowColor = style.dropShadowColor;
         const rgb = hex2rgb(typeof dropShadowColor === 'number' ? dropShadowColor : string2hex(dropShadowColor));
 
-        context.shadowColor = `rgba(${rgb[0] * 255},${rgb[1] * 255},${rgb[2] * 255},${style.dropShadowAlpha})`;
-        context.shadowBlur = style.dropShadowBlur;
-        context.shadowOffsetX = Math.cos(style.dropShadowAngle) * style.dropShadowDistance;
-        context.shadowOffsetY = (Math.sin(style.dropShadowAngle) * style.dropShadowDistance);
+        if (style.dropShadow)
+        {
+            context.shadowColor = `rgba(${rgb[0] * 255},${rgb[1] * 255},${rgb[2] * 255},${style.dropShadowAlpha})`;
+            context.shadowBlur = style.dropShadowBlur;
+            context.shadowOffsetX = Math.cos(style.dropShadowAngle) * style.dropShadowDistance;
+            context.shadowOffsetY = (Math.sin(style.dropShadowAngle) * style.dropShadowDistance);
+        }
+        else
+        {
+            context.shadowColor = '0';
+            context.shadowBlur = 0;
+            context.shadowOffsetX = 0;
+            context.shadowOffsetY = 0;
+        }
 
         if (style.stroke && style.strokeThickness)
         {

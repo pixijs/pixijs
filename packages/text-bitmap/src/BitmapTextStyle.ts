@@ -1,16 +1,9 @@
-import type { TextStyleWhiteSpace, TextStyleAlign } from '@pixi/text';
+import type { TextStyleAlign } from '@pixi/text';
 
 export interface IBitmapTextStyle {
     font: string | IBitmapTextFontDescriptor;
     tint: number;
-
     align: TextStyleAlign;
-    breakWords: boolean;
-    letterSpacing: number;
-    lineHeight: number;
-    whiteSpace: TextStyleWhiteSpace;
-    wordWrap: boolean;
-    wordWrapWidth: number;
 }
 
 export interface IBitmapTextFontDescriptor {
