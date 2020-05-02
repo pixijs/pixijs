@@ -5,6 +5,7 @@ import { generateFillStyle } from './utils/generateFillStyle';
 import { Texture, BaseTexture } from '@pixi/core';
 import { BitmapFontData } from './BitmapFontData';
 import { Rectangle } from '@pixi/math';
+import { hex2rgb, string2hex } from '@pixi/utils';
 
 const BMT_SIZE = 1024;
 const BMT_PADDING = 4;
@@ -163,11 +164,6 @@ export class BitmapFontFactory
         context.fillStyle = generateFillStyle(canvas, context, style, resolution, [char], metrics);
         context.strokeStyle = style.stroke as string;
 
-        context.shadowColor = '0';
-        context.shadowBlur = 0;
-        context.shadowOffsetX = 0;
-        context.shadowOffsetY = 0;
-
         context.font = style.toFontString();
         context.lineWidth = style.strokeThickness;
         context.textBaseline = style.textBaseline;
@@ -178,7 +174,10 @@ export class BitmapFontFactory
         context.fillStyle = generateFillStyle(canvas, context, style, resolution, [char], metrics);
         context.strokeStyle = style.stroke as string;
 
-        context.shadowColor = '0';
+        const dropShadowColor = style.dropShadowColor;
+        const rgb = hex2rgb(typeof dropShadowColor === 'number' ? dropShadowColor : string2hex(dropShadowColor));
+
+        context.shadowColor = `rgba(${rgb[0] * 255},${rgb[1] * 255},${rgb[2] * 255},${style.dropShadowAlpha})`;
         context.shadowBlur = style.dropShadowBlur;
         context.shadowOffsetX = Math.cos(style.dropShadowAngle) * style.dropShadowDistance;
         context.shadowOffsetY = (Math.sin(style.dropShadowAngle) * style.dropShadowDistance);
