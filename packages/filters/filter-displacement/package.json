@@ -1,6 +1,6 @@
 {
   "name": "@pixi/filter-displacement",
-  "version": "5.2.3",
+  "version": "5.2.4",
   "main": "lib/filter-displacement.js",
   "module": "lib/filter-displacement.es.js",
   "bundle": "dist/filter-displacement.js",
@@ -25,7 +25,7 @@
     "dist"
   ],
   "dependencies": {
-    "@pixi/core": "5.2.3",
-    "@pixi/math": "5.2.3"
+    "@pixi/core": "5.2.4",
+    "@pixi/math": "5.2.4"
   }
 }
