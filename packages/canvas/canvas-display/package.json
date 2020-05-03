@@ -1,6 +1,6 @@
 {
   "name": "@pixi/canvas-display",
-  "version": "5.2.3",
+  "version": "5.2.4",
   "main": "lib/canvas-display.js",
   "module": "lib/canvas-display.es.js",
   "bundle": "dist/canvas-display.js",
@@ -25,6 +25,6 @@
     "dist"
   ],
   "dependencies": {
-    "@pixi/display": "5.2.3"
+    "@pixi/display": "5.2.4"
   }
 }
