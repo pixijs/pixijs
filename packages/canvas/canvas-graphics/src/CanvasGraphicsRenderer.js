@@ -341,13 +341,15 @@ export class CanvasGraphicsRenderer
         {
             const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
 
-            if (svg)
+            if (svg && svg.createSVGMatrix)
             {
                 this._svgMatrix = svg.createSVGMatrix();
             }
-            if (!this._svgMatrix)
+            if (!this._svgMatrix || !pattern.setTransform)
             {
                 this._svgMatrix = false;
+
+                return;
             }
         }
 

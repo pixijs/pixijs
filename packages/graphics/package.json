@@ -1,6 +1,6 @@
 {
   "name": "@pixi/graphics",
-  "version": "5.2.3",
+  "version": "5.2.4",
   "main": "lib/graphics.js",
   "module": "lib/graphics.es.js",
   "bundle": "dist/graphics.js",
@@ -24,11 +24,11 @@
     "dist"
   ],
   "dependencies": {
-    "@pixi/constants": "5.2.3",
-    "@pixi/core": "5.2.3",
-    "@pixi/display": "5.2.3",
-    "@pixi/math": "5.2.3",
-    "@pixi/sprite": "5.2.3",
-    "@pixi/utils": "5.2.3"
+    "@pixi/constants": "5.2.4",
+    "@pixi/core": "5.2.4",
+    "@pixi/display": "5.2.4",
+    "@pixi/math": "5.2.4",
+    "@pixi/sprite": "5.2.4",
+    "@pixi/utils": "5.2.4"
   }
 }
