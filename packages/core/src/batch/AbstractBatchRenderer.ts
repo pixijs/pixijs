@@ -153,7 +153,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
         this._bufferedElements = [];
 
         /**
-         * Data for texture batch builder, helps to save a bit of CPU on a pass
+         * Data for texture batch builder, helps to save a bit of CPU on a pass.
          * @type {PIXI.BaseTexture[]}
          * @private
          */
@@ -683,7 +683,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
 
     /**
      * Fetches an index buffer from `this._iBuffers` that can
-     * has atleast `size` capacity.
+     * have at least `size` capacity.
      *
      * @param {number} size - minimum required capacity
      * @return {Uint16Array} - buffer that can fit `size`
