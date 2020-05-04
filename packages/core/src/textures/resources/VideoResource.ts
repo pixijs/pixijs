@@ -31,7 +31,7 @@ export interface IVideoResourceOptionsElement
 export class VideoResource extends BaseImageResource
 {
     protected _autoUpdate: boolean;
-    protected _isAutoUpdating: boolean;
+    protected _isConnectedToTicker: boolean;
     protected _updateFPS: number;
     protected _msToNextUpdate: number;
     protected autoPlay: boolean;
@@ -72,7 +72,7 @@ export class VideoResource extends BaseImageResource
                 const baseSrc = src.split('?').shift().toLowerCase();
                 const ext = baseSrc.substr(baseSrc.lastIndexOf('.') + 1);
 
-                mime = mime || `video/${ext}`;
+                mime = mime || VideoResource.MIME_TYPES[ext] || `video/${ext}`;
 
                 sourceElement.src = src;
                 sourceElement.type = mime;
@@ -87,8 +87,25 @@ export class VideoResource extends BaseImageResource
         super(source);
 
         this.noSubImage = true;
+
+        /**
+         * `true` to use PIXI.Ticker.shared to auto update the base texture.
+         *
+         * @type {boolean}
+         * @default true
+         * @private
+         */
         this._autoUpdate = true;
-        this._isAutoUpdating = false;
+
+        /**
+         * `true` if the instance is currently connected to PIXI.Ticker.shared to auto update the base texture.
+         *
+         * @type {boolean}
+         * @default false
+         * @private
+         */
+        this._isConnectedToTicker = false;
+
         this._updateFPS = options.updateFPS || 0;
         this._msToNextUpdate = 0;
 
@@ -250,10 +267,10 @@ export class VideoResource extends BaseImageResource
             this._onCanPlay();
         }
 
-        if (!this._isAutoUpdating && this.autoUpdate)
+        if (this.autoUpdate && !this._isConnectedToTicker)
         {
             Ticker.shared.add(this.update, this);
-            this._isAutoUpdating = true;
+            this._isConnectedToTicker = true;
         }
     }
 
@@ -264,10 +281,10 @@ export class VideoResource extends BaseImageResource
      */
     private _onPlayStop(): void
     {
-        if (this._isAutoUpdating)
+        if (this._isConnectedToTicker)
         {
             Ticker.shared.remove(this.update, this);
-            this._isAutoUpdating = false;
+            this._isConnectedToTicker = false;
         }
     }
 
@@ -310,7 +327,7 @@ export class VideoResource extends BaseImageResource
      */
     dispose(): void
     {
-        if (this._isAutoUpdating)
+        if (this._isConnectedToTicker)
         {
             Ticker.shared.remove(this.update, this);
         }
@@ -343,15 +360,15 @@ export class VideoResource extends BaseImageResource
         {
             this._autoUpdate = value;
 
-            if (!this._autoUpdate && this._isAutoUpdating)
+            if (!this._autoUpdate && this._isConnectedToTicker)
             {
                 Ticker.shared.remove(this.update, this);
-                this._isAutoUpdating = false;
+                this._isConnectedToTicker = false;
             }
-            else if (this._autoUpdate && !this._isAutoUpdating)
+            else if (this._autoUpdate && !this._isConnectedToTicker && this._isSourcePlaying())
             {
                 Ticker.shared.add(this.update, this);
-                this._isAutoUpdating = true;
+                this._isConnectedToTicker = true;
             }
         }
     }
@@ -397,4 +414,17 @@ export class VideoResource extends BaseImageResource
      * @readonly
      */
     static TYPES = ['mp4', 'm4v', 'webm', 'ogg', 'ogv', 'h264', 'avi', 'mov'];
+
+    /**
+     * Map of video MIME types that can't be directly derived from file extensions.
+     * @constant
+     * @member {object}
+     * @static
+     * @readonly
+     */
+    static MIME_TYPES: {[ext: string]: string} = {
+        ogv: 'video/ogg',
+        mov: 'video/quicktime',
+        m4v: 'video/mp4',
+    };
 }

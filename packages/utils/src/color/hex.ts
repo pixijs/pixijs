@@ -67,7 +67,7 @@ export function string2hex(string: string): number
  * @param {number[]} rgb - Array of numbers where all values are normalized floats from 0.0 to 1.0.
  * @return {number} Number in hexadecimal.
  */
-export function rgb2hex(rgb: number[]): number
+export function rgb2hex(rgb: number[] | Float32Array): number
 {
     return (((rgb[0] * 255) << 16) + ((rgb[1] * 255) << 8) + (rgb[2] * 255 | 0));
 }

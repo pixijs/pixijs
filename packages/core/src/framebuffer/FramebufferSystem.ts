@@ -5,7 +5,8 @@ import { settings } from '../settings';
 import { Framebuffer } from './Framebuffer';
 import { GLFramebuffer } from './GLFramebuffer';
 
-import type { Renderer, IRenderingContext } from '@pixi/core';
+import type { Renderer } from '../Renderer';
+import type { IRenderingContext } from '../IRenderingContext';
 
 const tempRectangle = new Rectangle();
 
@@ -149,14 +150,7 @@ export class FramebufferSystem extends System
 
             for (let i = 0; i < framebuffer.colorTextures.length; i++)
             {
-                if ((framebuffer.colorTextures[i] as any).texturePart)
-                {
-                    this.renderer.texture.unbind(framebuffer.colorTextures[i]);
-                }
-                else
-                {
-                    this.renderer.texture.unbind(framebuffer.colorTextures[i]);
-                }
+                this.renderer.texture.unbind(framebuffer.colorTextures[i]);
             }
 
             if (framebuffer.depthTexture)
@@ -537,6 +531,7 @@ export class FramebufferSystem extends System
         if (!contextLost)
         {
             gl.deleteFramebuffer(fbo.framebuffer);
+
             if (fbo.stencil)
             {
                 gl.deleteRenderbuffer(fbo.stencil);

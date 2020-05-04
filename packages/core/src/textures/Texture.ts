@@ -13,6 +13,8 @@ const DEFAULT_UVS = new TextureUvs();
 
 export type TextureSource = string|BaseTexture|ImageSource;
 
+export interface Texture extends GlobalMixins.Texture, EventEmitter {}
+
 /**
  * A texture stores the information that represents an image or part of an image.
  *
@@ -286,6 +288,7 @@ export class Texture extends EventEmitter
                 this.baseTexture.destroy();
             }
 
+            this.baseTexture.off('loaded', this.onBaseTextureUpdated, this);
             this.baseTexture.off('update', this.onBaseTextureUpdated, this);
 
             this.baseTexture = null;
@@ -309,7 +312,13 @@ export class Texture extends EventEmitter
      */
     clone(): Texture
     {
-        return new Texture(this.baseTexture, this.frame, this.orig, this.trim, this.rotate, this.defaultAnchor);
+        return new Texture(this.baseTexture,
+            this.frame.clone(),
+            this.orig.clone(),
+            this.trim && this.trim.clone(),
+            this.rotate,
+            this.defaultAnchor
+        );
     }
 
     /**

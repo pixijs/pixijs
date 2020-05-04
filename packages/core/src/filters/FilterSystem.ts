@@ -10,8 +10,9 @@ import { FilterState } from './FilterState';
 
 import type { Filter } from './Filter';
 import type { IFilterTarget } from './IFilterTarget';
-import type { Renderer, RenderTexture, ISpriteMaskTarget } from '@pixi/core';
-
+import type { ISpriteMaskTarget } from './spriteMask/SpriteMaskFilter';
+import type { RenderTexture } from '../renderTexture/RenderTexture';
+import type { Renderer } from '../Renderer';
 /**
  * System plugin to the renderer to manage the filters.
  *
@@ -25,6 +26,7 @@ export class FilterSystem extends System
     public statePool: Array<FilterState>;
     public texturePool: RenderTexturePool;
     public forceClear: boolean;
+    public useMaxPadding: boolean;
     protected quad: Quad;
     protected quadUv: QuadUv;
     protected activeState: FilterState;
@@ -111,6 +113,14 @@ export class FilterSystem extends System
          * @member {boolean}
          */
         this.forceClear = false;
+
+        /**
+         * Old padding behavior is to use the max amount instead of sum padding.
+         * Use this flag if you need the old behavior.
+         * @member {boolean}
+         * @default false
+         */
+        this.useMaxPadding = false;
     }
 
     /**
@@ -136,8 +146,12 @@ export class FilterSystem extends System
 
             // lets use the lowest resolution..
             resolution = Math.min(resolution, filter.resolution);
-            // and the largest amount of padding!
-            padding = Math.max(padding, filter.padding);
+            // figure out the padding required for filters
+            padding = this.useMaxPadding
+                // old behavior: use largest amount of padding!
+                ? Math.max(padding, filter.padding)
+                // new behavior: sum the padding
+                : padding + filter.padding;
             // only auto fit if all filters are autofit
             autoFit = autoFit || filter.autoFit;
 
