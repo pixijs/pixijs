@@ -3,7 +3,7 @@ import { Point, SHAPES } from '@pixi/math';
 import type { Polygon } from '@pixi/math';
 import type { GraphicsData } from '../GraphicsData';
 import type { GraphicsGeometry } from '../GraphicsGeometry';
-import { LINE_JOIN, LINE_CAP } from '@pixi/constants';
+import { LINE_JOIN, LINE_CAP } from '../const';
 import { GRAPHICS_CURVES } from '../const';
 
 /**
@@ -359,33 +359,41 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
         let omx = x1 - ((px - x1) * outerWeight);
         let omy = y1 - ((py - y1) * outerWeight);
 
+        const p0ix = x0 - (perpx * innerWeight);
+        const p0iy = y0 - (perpy * innerWeight);
+        const p2ix = x2 - (perp1x * innerWeight);
+        const p2iy = y2 - (perp1y * innerWeight);
+        const p0ox = x0 + (perpx * outerWeight);
+        const p0oy = y0 + (perpy * outerWeight);
+        const p2ox = x2 + (perp1x * outerWeight);
+        const p2oy = y2 + (perp1y * outerWeight);
         /* Check if inner miter point is on same side as p1 w.r.t vector p02 */
         // Take normal to v02
         const n02x = y2 - y0;
         const n02y = -(x2 - x0);
         // Take dot products of p1 and im with normal to v02
-        const dotp1 = (n02x * (x1 - x0)) + (n02y * (y1 - y0));
+        const dotp1 = (n02x * (x1 - p0ix)) + (n02y * (y1 - p0iy));
 
         if (clockwise)
         {
-            const dotim = (n02x * (imx - x0)) + (n02y * (imy - y0));
+            const dotim = (n02x * (imx - p0ix)) + (n02y * (imy - p0iy));
 
             // Not on same side?, make inner miter point the mid-point instead
             if (Math.abs(dotp1 - dotim) > 0.1 && Math.sign(dotp1) !== Math.sign(dotim))
             {
-                imx = (x0 + x2) * 0.5;
-                imy = (y0 + y2) * 0.5;
+                imx = (p0ix + p2ix) * 0.5;
+                imy = (p0iy + p2iy) * 0.5;
             }
         }
         else
         {
-            const dotom = (n02x * (omx - x0)) + (n02y * (omy - y0));
+            const dotom = (n02x * (omx - p0ix)) + (n02y * (omy - p0iy));
 
             // Not on same side?, make outer miter point the mid-point instead
             if (Math.abs(dotp1 - dotom) > 0.1 && Math.sign(dotp1) !== Math.sign(dotom))
             {
-                omx = (x0 + x2) * 0.5;
-                omy = (y0 + y2) * 0.5;
+                omx = (p0ox + p2ox) * 0.5;
+                omy = (p0oy + p2oy) * 0.5;
             }
         }
 

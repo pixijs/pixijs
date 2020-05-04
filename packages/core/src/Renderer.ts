@@ -120,6 +120,7 @@ export class Renderer extends AbstractRenderer
      * @param {string} [options.powerPreference] - Parameter passed to WebGL context, set to "high-performance"
      *  for devices with dual graphics card.
      * @param {object} [options.context] If WebGL context already exists, all parameters must be taken from it.
+     * @public
      */
     constructor(options? : IRendererOptions)
     {

@@ -1,6 +1,10 @@
 import { RenderTexture } from '@pixi/core';
 import { CanvasRenderTarget } from '@pixi/utils';
 import { Rectangle } from '@pixi/math';
+import { CanvasRenderer } from '@pixi/canvas-renderer';
+import { deprecation } from '@pixi/utils';
+import type { DisplayObject } from '@pixi/display';
+import type { BaseRenderTexture } from '@pixi/core';
 
 const TEMP_RECT = new Rectangle();
 
@@ -14,20 +18,14 @@ const TEMP_RECT = new Rectangle();
  */
 export class CanvasExtract
 {
+    public renderer: CanvasRenderer;
+
     /**
      * @param {PIXI.CanvasRenderer} renderer - A reference to the current renderer
      */
-    constructor(renderer)
+    constructor(renderer: CanvasRenderer)
     {
         this.renderer = renderer;
-        /**
-         * Collection of methods for extracting data (image, pixels, etc.) from a display object or render texture
-         *
-         * @member {PIXI.CanvasExtract} extract
-         * @memberof PIXI.CanvasRenderer#
-         * @see PIXI.CanvasExtract
-         */
-        renderer.extract = this;
     }
 
     /**
@@ -39,7 +37,7 @@ export class CanvasExtract
      * @param {number} [quality] - JPEG or Webp compression from 0 to 1. Default is 0.92.
      * @return {HTMLImageElement} HTML Image of the target
      */
-    image(target, format, quality)
+    public image(target: DisplayObject|RenderTexture, format?: string, quality?: number): HTMLImageElement
     {
         const image = new Image();
 
@@ -58,7 +56,7 @@ export class CanvasExtract
      * @param {number} [quality] - JPEG or Webp compression from 0 to 1. Default is 0.92.
      * @return {string} A base64 encoded string of the texture.
      */
-    base64(target, format, quality)
+    public base64(target: DisplayObject|RenderTexture, format?: string, quality?: number): string
     {
         return this.canvas(target).toDataURL(format, quality);
     }
@@ -70,7 +68,7 @@ export class CanvasExtract
      *  to convert. If left empty will use the main renderer
      * @return {HTMLCanvasElement} A Canvas element with the texture rendered on.
      */
-    canvas(target)
+    public canvas(target: DisplayObject|RenderTexture): HTMLCanvasElement
     {
         const renderer = this.renderer;
         let context;
@@ -92,8 +90,8 @@ export class CanvasExtract
 
         if (renderTexture)
         {
-            context = renderTexture.baseTexture._canvasRenderTarget.context;
-            resolution = renderTexture.baseTexture._canvasRenderTarget.resolution;
+            context = (renderTexture.baseTexture as BaseRenderTexture)._canvasRenderTarget.context;
+            resolution = (renderTexture.baseTexture as BaseRenderTexture)._canvasRenderTarget.resolution;
             frame = renderTexture.frame;
         }
         else
@@ -125,7 +123,7 @@ export class CanvasExtract
      *  to convert. If left empty will use the main renderer
      * @return {Uint8ClampedArray} One-dimensional array containing the pixel data of the entire texture
      */
-    pixels(target)
+    public pixels(target: DisplayObject|RenderTexture): Uint8ClampedArray
     {
         const renderer = this.renderer;
         let context;
@@ -147,8 +145,8 @@ export class CanvasExtract
 
         if (renderTexture)
         {
-            context = renderTexture.baseTexture._canvasRenderTarget.context;
-            resolution = renderTexture.baseTexture._canvasRenderTarget.resolution;
+            context = (renderTexture.baseTexture as BaseRenderTexture)._canvasRenderTarget.context;
+            resolution = (renderTexture.baseTexture as BaseRenderTexture)._canvasRenderTarget.resolution;
             frame = renderTexture.frame;
         }
         else
@@ -167,9 +165,26 @@ export class CanvasExtract
      * Destroys the extract
      *
      */
-    destroy()
+    public destroy(): void
     {
-        this.renderer.extract = null;
         this.renderer = null;
     }
 }
+
+/**
+ * @name PIXI.CanvasRenderer#extract
+ * @type {PIXI.CanvasExtract}
+ * @see PIXI.CanvasRenderer#plugins
+ * @deprecated since 5.3.0
+ */
+Object.defineProperty(CanvasRenderer.prototype, 'extract',
+    {
+        get()
+        {
+            deprecation('v5.3.0', 'CanvasRenderer#extract is deprecated, use CanvasRenderer#plugins.extract');
+
+            return this.plugins.extract;
+        },
+    }
+);
+

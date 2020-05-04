@@ -1,6 +1,6 @@
 {
   "name": "@pixi/canvas-sprite",
-  "version": "5.2.1",
+  "version": "5.2.4",
   "main": "lib/canvas-sprite.js",
   "module": "lib/canvas-sprite.es.js",
   "bundle": "dist/canvas-sprite.js",
@@ -24,10 +24,10 @@
     "dist"
   ],
   "dependencies": {
-    "@pixi/canvas-renderer": "5.2.1",
-    "@pixi/constants": "5.2.1",
-    "@pixi/math": "5.2.1",
-    "@pixi/sprite": "5.2.1",
-    "@pixi/utils": "5.2.1"
+    "@pixi/canvas-renderer": "5.2.4",
+    "@pixi/constants": "5.2.4",
+    "@pixi/math": "5.2.4",
+    "@pixi/sprite": "5.2.4",
+    "@pixi/utils": "5.2.4"
   }
 }
