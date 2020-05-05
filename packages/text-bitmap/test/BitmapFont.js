@@ -22,5 +22,17 @@ describe('BitmapFont', function ()
         {
             expect(BitmapFont.from.bind(BitmapFont, { chars: [['l', 'i', 'm']] })).to.throw;
         });
+
+        it('should render resolution with proportional size', function ()
+        {
+            const fontRes1 = BitmapFont.from({ chars: 'a' });
+            const fontRes2 = BitmapFont.from({ chars: 'a', resolution: 2 });
+
+            // BitmapFont.from IDs are charCodes
+            const id = 'a'.charCodeAt(0);
+
+            expect(fontRes1.chars[id].texture.baseTexture.resolution).to.equal(1);
+            expect(fontRes2.chars[id].texture.baseTexture.resolution).to.equal(2);
+        });
     });
 });
