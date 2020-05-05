@@ -1228,12 +1228,12 @@ export class Graphics extends Container
 
                 const batchTint = batch._batchRGB;
 
-                const r = (tintRGB[0] * batchTint[0]) * 255;
-                const g = (tintRGB[1] * batchTint[1]) * 255;
-                const b = (tintRGB[2] * batchTint[2]) * 255;
+                const r = Math.round((tintRGB[0] * batchTint[0]) * 255);
+                const g = Math.round((tintRGB[1] * batchTint[1]) * 255);
+                const b = Math.round((tintRGB[2] * batchTint[2]) * 255);
 
                 // assemble word-order RGB
-                batch._tintRGB = (b << 16) + (g << 8) + (r | 0);
+                batch._tintRGB = (b << 16) + (g << 8) + r;
             }
         }
     }
