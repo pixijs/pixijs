@@ -261,6 +261,7 @@ export class BitmapFont
      */
     public static from(options: IBitmapFontFactoryOptions): BitmapFont
     {
+        const name = options.name || options.fontFamily;
         let chars = options.chars;
 
         // Split the chars string into individual characters
@@ -415,7 +416,14 @@ export class BitmapFont
             positionX += (width + (2 * BMT_PADDING)) * resolution;
         }
 
-        return new BitmapFont(fontData, textures);
+        const font = new BitmapFont(fontData, textures);
+
+        if (name)
+        {
+            BitmapFont.available[name] = font;
+        }
+
+        return font;
     }
 }
 
@@ -504,6 +512,7 @@ function drawGlyph(
 export interface IBitmapFontFactoryOptions extends Partial<ITextStyle>
 {
     chars: string | string[];
+    name?: string;
     resolution?: number;
 }
 
