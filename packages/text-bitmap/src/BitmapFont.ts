@@ -251,17 +251,20 @@ export class BitmapFont
      * @example
      * const font = PIXI.BitmapFont.from({
      *     chars: [['a', 'z'], ['A', 'Z'], "!#$%^&*()~`{}[]"]
-     *     font: "Arial",
+     *     name: "TitleFont", // optional
+     *     fontFamily: "Arial",
      *     fontSize: 12,
      *     strokeThickness: 2,
      *     fill: "purple"
      * });
      *
      * const text = new PIXI.BitmapText("This is an example using Pixi's BitmapText+Font", font);
+     *
+     * const title = new PIXI.BitmapText("This is the title", { font: "TitleFont" });
      */
     public static from(options: IBitmapFontFactoryOptions): BitmapFont
     {
-        const name = options.name || options.fontFamily;
+        const name = options.name;
         let chars = options.chars;
 
         // Split the chars string into individual characters
