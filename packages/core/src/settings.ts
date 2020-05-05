@@ -21,9 +21,9 @@ import { isMobile } from '@pixi/utils';
 settings.PREFER_ENV = isMobile.any ? ENV.WEBGL : ENV.WEBGL2;
 
 /**
- * If set to `true`, Textures and BaseTexture objects stored
+ * If set to `true`, *only* Textures and BaseTexture objects stored
  * in the caches ({@link PIXI.utils.TextureCache TextureCache} and
- * {@link PIXI.utils.BaseTextureCache BaseTextureCache}) can *only* be
+ * {@link PIXI.utils.BaseTextureCache BaseTextureCache}) can be
  * used when calling {@link PIXI.Texture.from Texture.from} or
  * {@link PIXI.BaseTexture.from BaseTexture.from}.
  * Otherwise, these `from` calls throw an exception. Using this property
