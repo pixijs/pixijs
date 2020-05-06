@@ -346,7 +346,7 @@ export class BitmapFont
 
         for (let i = 0; i < chars.length; i++)
         {
-            if (positionY >= BMT_DIMEN - style.fontSize)
+            if (positionY >= BMT_DIMEN - ((style.fontSize + BMT_PADDING) * resolution))
             {
                 // Create new atlas once current has filled up
                 canvas = null;
