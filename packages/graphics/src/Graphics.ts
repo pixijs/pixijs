@@ -325,7 +325,7 @@ export class Graphics extends Container
      *
      * @method PIXI.Graphics#lineStyle
      * @param {number} [width=0] - width of the line to draw, will update the objects stored style
-     * @param {number} [color=0x0] - color (BGR) of the line to draw, will update the objects stored style
+     * @param {number} [color=0x0] - color 0xRRGGBB (BGR) of the line to draw, will update the objects stored style
      * @param {number} [alpha=1] - alpha of the line to draw, will update the objects stored style
      * @param {number} [alignment=0.5] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outter)
      * @param {boolean} [native=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
@@ -337,7 +337,7 @@ export class Graphics extends Container
      *
      * @param {object} [options] - Line style options
      * @param {number} [options.width=0] - width of the line to draw, will update the objects stored style
-     * @param {number} [options.color=0x0] - color (BGR) of the line to draw, will update the objects stored style
+     * @param {number} [options.color=0x0] - color 0xRRGGBB (BGR) of the line to draw, will update the objects stored style
      * @param {number} [options.alpha=1] - alpha of the line to draw, will update the objects stored style
      * @param {number} [options.alignment=0.5] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outter)
      * @param {boolean} [options.native=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
