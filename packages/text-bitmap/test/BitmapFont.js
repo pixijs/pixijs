@@ -34,5 +34,12 @@ describe('BitmapFont', function ()
             expect(fontRes1.chars[id].texture.baseTexture.resolution).to.equal(1);
             expect(fontRes2.chars[id].texture.baseTexture.resolution).to.equal(2);
         });
+
+        it('should throw an error when name collision is detected in bitmap font registry', function ()
+        {
+            BitmapFont.from({ chars: 'a', name: 'Thor' });
+
+            expect(BitmapFont.from.bind(BitmapFont, { chars: 'b', name: 'Thor' })).to.throw;
+        });
     });
 });
