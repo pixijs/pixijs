@@ -267,6 +267,11 @@ export class BitmapFont
         const name = options.name;
         let chars = options.chars;
 
+        if (name && BitmapFont.available[name])
+        {
+            throw new Error(`[Name Collision]: The name "${name}" has already been taken by another bitmap font`);
+        }
+
         // Split the chars string into individual characters
         if (typeof chars === 'string')
         {
