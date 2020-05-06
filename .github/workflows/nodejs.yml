@@ -2,11 +2,11 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ '*' ]
+    branches: [ '**' ]
   release:
     types: [ 'created' ]
   pull_request:
-    branches: [ '*' ]
+    branches: [ '**' ]
 
 jobs:
   build:
