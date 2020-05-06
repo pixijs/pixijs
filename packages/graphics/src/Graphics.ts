@@ -372,7 +372,7 @@ export class Graphics extends Container
      * @param {object} [options] - Collection of options for setting line style.
      * @param {number} [options.width=0] - width of the line to draw, will update the objects stored style
      * @param {PIXI.Texture} [options.texture=PIXI.Texture.WHITE] - Texture to use
-     * @param {number} [options.color=0x0] - color (BGR) of the line to draw, will update the objects stored style.
+     * @param {number} [options.color=0x0] - color 0xRRGGBB (BGR of the line to draw, will update the objects stored style.
      *  Default 0xFFFFFF if texture present.
      * @param {number} [options.alpha=1] - alpha of the line to draw, will update the objects stored style
      * @param {PIXI.Matrix} [options.matrix=null] Texture matrix to transform texture
