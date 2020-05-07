@@ -1,10 +1,12 @@
-import { setPrecision,
+import {
+    setPrecision,
     defaultValue,
     compileProgram,
     mapSize,
     mapType,
-    getTestContext,
-    getMaxFragmentPrecision } from './utils';
+    getMaxFragmentPrecision,
+} from './utils';
+import { testContext } from './utils/testContext';
 import { ProgramCache } from '@pixi/utils';
 import defaultFragment from './defaultProgram.frag';
 import defaultVertex from './defaultProgram.vert';
@@ -17,16 +19,14 @@ let UID = 0;
 
 const nameCache: { [key: string]: number } = {};
 
-export interface IAttributeData
-{
+export interface IAttributeData {
     type: string;
     size: number;
     location: number;
     name: string;
 }
 
-export interface IUniformData
-{
+export interface IUniformData {
     type: string;
     size: number;
     isArray: RegExpMatchArray;
@@ -45,10 +45,10 @@ export class Program
     public vertexSrc: string;
     public fragmentSrc: string;
     nameCache: any;
-    glPrograms: { [ key: number ]: GLProgram};
+    glPrograms: { [key: number]: GLProgram };
     syncUniforms: any;
-    attributeData: { [key: string]: IAttributeData};
-    uniformData: {[key: string]: IUniformData};
+    attributeData: { [key: string]: IAttributeData };
+    uniformData: { [key: string]: IUniformData };
     /**
      * @param {string} [vertexSrc] - The source of the vertex shader.
      * @param {string} [fragmentSrc] - The source of the fragment shader.
@@ -115,7 +115,7 @@ export class Program
      */
     protected extractData(vertexSrc: string, fragmentSrc: string): void
     {
-        const gl = getTestContext();
+        const gl = testContext.getTestContext();
 
         if (gl)
         {
@@ -142,9 +142,9 @@ export class Program
      *
      * @returns {object} the attribute data for this program
      */
-    protected getAttributeData(program: WebGLProgram, gl: WebGLRenderingContextBase): {[key: string]: IAttributeData}
+    protected getAttributeData(program: WebGLProgram, gl: WebGLRenderingContextBase): { [key: string]: IAttributeData }
     {
-        const attributes: {[key: string]: IAttributeData} = {};
+        const attributes: { [key: string]: IAttributeData } = {};
         const attributesArray: Array<IAttributeData> = [];
 
         const totalAttributes = gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES);
@@ -186,9 +186,9 @@ export class Program
      *
      * @returns {object} the uniform data for this program
      */
-    private getUniformData(program: WebGLProgram, gl: WebGLRenderingContextBase): {[key: string]: IUniformData}
+    private getUniformData(program: WebGLProgram, gl: WebGLRenderingContextBase): { [key: string]: IUniformData }
     {
-        const uniforms: {[key: string]: IUniformData} = {};
+        const uniforms: { [key: string]: IUniformData } = {};
 
         const totalUniforms = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
 
@@ -208,7 +208,7 @@ export class Program
             uniforms[name] = {
                 type: type,
                 size: uniformData.size,
-                isArray:isArray,
+                isArray: isArray,
                 value: defaultValue(type, uniformData.size),
             };
             /* eslint-enable */
