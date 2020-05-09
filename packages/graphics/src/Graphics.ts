@@ -60,6 +60,8 @@ const temp = new Float32Array(3);
 // a default shaders map used by graphics..
 const DEFAULT_SHADERS: {[key: string]: Shader} = {};
 
+export interface Graphics extends GlobalMixins.Graphics, Container {}
+
 /**
  * The Graphics class contains methods used to draw primitive shapes such as lines, circles and
  * rectangles to the display, and to color and fill them.
