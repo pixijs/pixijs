@@ -22,7 +22,7 @@ interface IBitmapFontCharacter {
 const available: Dict<BitmapFont> = {};
 
 // Default dimensions of the bitmap font atlas texture
-const BMT_DIMEN = 1024;
+const BMT_DIMEN = 2048;
 
 // Default padding b/w glyphs in the bitmap font atlas
 const BMT_PADDING = 4;
@@ -244,7 +244,7 @@ export class BitmapFont
      * @member {string[][]}
      * @example BitmapFont.from({ chars: [...BitmapFont.ALPHA], name: "ExampleFont" })
      */
-    public static ALPHA = [['a', 'z'], ['A', 'Z']];
+    public static ALPHA = [['a', 'z'], ['A', 'Z'], ' '];
 
     /**
      * This character set includes all decimal digits (from 0 to 9).
@@ -261,7 +261,7 @@ export class BitmapFont
      * @static
      * @member {string[][]}
      */
-    public static ALPHANUMERIC = [['a', 'z'], ['A', 'Z'], ['0', '9']];
+    public static ALPHANUMERIC = [['a', 'z'], ['A', 'Z'], ['0', '9'], ' '];
 
     /**
      * This character set consists of all the ASCII table.
@@ -270,7 +270,7 @@ export class BitmapFont
      * @member {string[][]}
      * @see http://www.asciitable.com/
      */
-    public static ASCII = [['\0', '~']];
+    public static ASCII = [[' ', '~']];
 
     /**
      * Generates a bitmap-font for the given style and character set. This does not support
@@ -302,11 +302,12 @@ export class BitmapFont
         const name = options.name;
         const chars = processCharData(options.chars);// eslint-disable-line @typescript-eslint/no-use-before-define
         const padding = options.padding || BMT_PADDING;
-
         const resolution = options.resolution || 1;
-        const style = textStyle instanceof TextStyle ? textStyle : new TextStyle(textStyle);
+        const textureWidth = options.textureWidth || BMT_DIMEN;
+        const textureHeight = options.textureHeight || BMT_DIMEN;
 
-        const lineWidth = BMT_DIMEN;
+        const style = textStyle instanceof TextStyle ? textStyle : new TextStyle(textStyle);
+        const lineWidth = textureWidth;
 
         const fontData = new BitmapFontData();
 
@@ -334,20 +335,11 @@ export class BitmapFont
 
         for (let i = 0; i < chars.length; i++)
         {
-            if (positionY >= BMT_DIMEN - ((style.fontSize + padding) * resolution))
-            {
-                // Create new atlas once current has filled up
-                canvas = null;
-                context = null;
-                baseTexture = null;
-                positionY = 0;
-                positionX = 0;
-            }
             if (!canvas)
             {
                 canvas = document.createElement('canvas');
-                canvas.width = BMT_DIMEN;
-                canvas.height = BMT_DIMEN;
+                canvas.width = textureWidth;
+                canvas.height = textureHeight;
 
                 context = canvas.getContext('2d');
                 baseTexture = new BaseTexture(canvas, { resolution });
@@ -358,6 +350,26 @@ export class BitmapFont
             const width = metrics.width;
             const height = metrics.height;
 
+            // Can't fit char anymore: next canvas please!
+            if (positionY >= textureHeight - (height * resolution))
+            {
+                if (positionY === 0)
+                {
+                    // We don't want user debugging an infinite loop (or do we? :)
+                    throw new Error(`textureHeight ${textureHeight}px is too small for ${style.fontSize}px fonts`);
+                }
+
+                // Create new atlas once current has filled up
+                canvas = null;
+                context = null;
+                baseTexture = null;
+                positionY = 0;
+                positionX = 0;
+                maxCharHeight = 0;
+
+                continue;
+            }
+
             maxCharHeight = Math.max(height + metrics.fontProperties.descent, maxCharHeight);
 
             // Wrap line once full row has been rendered
@@ -367,6 +379,7 @@ export class BitmapFont
                 positionY += maxCharHeight * resolution;
                 positionX = 0;
                 maxCharHeight = 0;
+
                 continue;
             }
 
@@ -573,6 +586,8 @@ export interface IBitmapFontOptions
     name?: string;
     resolution?: number;
     padding?: number;
+    textureWidth?: number;
+    textureHeight?: number;
 }
 
 /**
@@ -581,4 +596,6 @@ export interface IBitmapFontOptions
  * @property {string | string[]} chars - the character set to generate
  * @property {number} resolution - the resolution for rendering
  * @property {number} padding - the padding between glyphs in the atlas
+ * @property {number} atlasWidth - the width of the texture atlas
+ * @property {number} atlasHeight - the height of the texture atlas
  */
