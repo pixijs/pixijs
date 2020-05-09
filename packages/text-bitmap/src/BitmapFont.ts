@@ -228,7 +228,7 @@ export class BitmapFont
     /**
      * Collection of available fonts.
      *
-     * @readOnly
+     * @readonly
      * @static
      * @member {Object.<string, PIXI.BitmapFont>}
      */
@@ -236,6 +236,41 @@ export class BitmapFont
     {
         return available;
     }
+
+    /**
+     * This character set includes all the letters in the alphabet (both lower- and upper- case).
+     * @readonly
+     * @static
+     * @member {string[][]}
+     * @example BitmapFont.from({ chars: [...BitmapFont.ALPHA], name: "ExampleFont" })
+     */
+    public static ALPHA = [['a', 'z'], ['A', 'Z']];
+
+    /**
+     * This character set includes all decimal digits (from 0 to 9).
+     * @readonly
+     * @static
+     * @member {string[][]}
+     * @example BitmapFont.from({ chars: [...BitmapFont.NUMERIC], name: "ExampleFont" })
+     */
+    public static NUMERIC = [['0', '9']];
+
+    /**
+     * This character set is the union of `BitmapFont.ALPHA` and `BitmapFont.NUMERIC`.
+     * @readonly
+     * @static
+     * @member {string[][]}
+     */
+    public static ALPHANUMERIC = [['a', 'z'], ['A', 'Z'], ['0', '9']];
+
+    /**
+     * This character set consists of all the ASCII table.
+     * @readonly
+     * @static
+     * @member {string[][]}
+     * @see http://www.asciitable.com/
+     */
+    public static ASCII = [['\0', '~']];
 
     /**
      * Generates a bitmap-font for the given style and character set. This does not support
@@ -262,66 +297,14 @@ export class BitmapFont
      *
      * const title = new PIXI.BitmapText("This is the title", { font: "TitleFont" });
      */
-    public static from(options: IBitmapFontFactoryOptions): BitmapFont
+    public static from(options: IBitmapFontOptions, textStyle?: TextStyle | Partial<ITextStyle>): BitmapFont
     {
         const name = options.name;
-        let chars = options.chars;
-
-        if (name && BitmapFont.available[name])
-        {
-            throw new Error(`[Name Collision]: The name "${name}" has already been taken by another bitmap font`);
-        }
-
-        // Split the chars string into individual characters
-        if (typeof chars === 'string')
-        {
-            chars = chars.split('');
-        }
-        // Handle an array of characters+ranges
-        else if (chars.find((elem) => Array.isArray(elem)))
-        {
-            const flatChars = [];
-
-            for (let i = 0, j = chars.length; i < j; i++)
-            {
-                const elem = chars[i];
-
-                // Handle range delimited by start/end chars
-                if (Array.isArray(elem))
-                {
-                    if (elem.length !== 2)
-                    {
-                        let suffix;
-
-                        switch (i)
-                        {
-                            case 1: suffix = 'st'; break;
-                            case 2: suffix = 'nd'; break;
-                            case 3: suffix = 'rd'; break;
-                            default: suffix = 'th';
-                        }
-
-                        throw new Error('BitmapFont.from was provided a character range is more than two limits. '
-                            + `This is the ${i}${suffix} input in the character set.`);
-                    }
-
-                    for (let i = elem[0].charCodeAt(0), j = elem[1].charCodeAt(0); i <= j; i++)
-                    {
-                        flatChars.push(String.fromCharCode(i));
-                    }
-                }
-                // Handle a character set string
-                else
-                {
-                    flatChars.push(...elem.split(''));
-                }
-            }
-
-            chars = flatChars;
-        }
+        const chars = processCharData(options.chars);// eslint-disable-line @typescript-eslint/no-use-before-define
+        const padding = options.padding || BMT_PADDING;
 
         const resolution = options.resolution || 1;
-        const style = new TextStyle(options);
+        const style = textStyle instanceof TextStyle ? textStyle : new TextStyle(textStyle);
 
         const lineWidth = BMT_DIMEN;
 
@@ -351,7 +334,7 @@ export class BitmapFont
 
         for (let i = 0; i < chars.length; i++)
         {
-            if (positionY >= BMT_DIMEN - ((style.fontSize + BMT_PADDING) * resolution))
+            if (positionY >= BMT_DIMEN - ((style.fontSize + padding) * resolution))
             {
                 // Create new atlas once current has filled up
                 canvas = null;
@@ -421,7 +404,7 @@ export class BitmapFont
                 file: '',
             };
 
-            positionX += (width + (2 * BMT_PADDING)) * resolution;
+            positionX += (width + (2 * padding)) * resolution;
         }
 
         const font = new BitmapFont(fontData, textures);
@@ -435,9 +418,14 @@ export class BitmapFont
     }
 }
 
+// TODO: Prevent code duplication b/w drawGlyph & Text#updateText
+
 /**
  * Draws the glyph `metrics.text` on the given canvas.
  *
+ * Ignored because not directly exposed.
+ *
+ * @ignore
  * @param {HTMLCanvasElement} canvas
  * @param {CanvasRenderingContext2D} context
  * @param {TextMetrics} metrics
@@ -517,17 +505,81 @@ function drawGlyph(
     context.fillStyle = 'rgba(0, 0, 0, 0)';
 }
 
-export interface IBitmapFontFactoryOptions extends Partial<ITextStyle>
+/**
+ * Processes the passed character set data and returns a flattened array of all the characters.
+ *
+ * Ignored because not directly exposed.
+ *
+ * @ignore
+ * @param {string | string[]} chars
+ * @returns {string[]}
+ */
+function processCharData(chars: string | string[]): string[]
+{
+    // Split the chars string into individual characters
+    if (typeof chars === 'string')
+    {
+        chars = chars.split('');
+    }
+    // Handle an array of characters+ranges
+    else if (chars.find((elem) => Array.isArray(elem)))
+    {
+        const flatChars = [];
+
+        for (let i = 0, j = chars.length; i < j; i++)
+        {
+            const elem = chars[i];
+
+            // Handle range delimited by start/end chars
+            if (Array.isArray(elem))
+            {
+                if (elem.length !== 2)
+                {
+                    let suffix;
+
+                    switch (i)
+                    {
+                        case 1: suffix = 'st'; break;
+                        case 2: suffix = 'nd'; break;
+                        case 3: suffix = 'rd'; break;
+                        default: suffix = 'th';
+                    }
+
+                    throw new Error('[BitmapFont]: BitmapFont.from was provided a character range is more than two limits. '
+                        + `This is the ${i}${suffix} input in the character set.`);
+                }
+
+                for (let i = elem[0].charCodeAt(0), j = elem[1].charCodeAt(0); i <= j; i++)
+                {
+                    flatChars.push(String.fromCharCode(i));
+                }
+            }
+            // Handle a character set string
+            else
+            {
+                flatChars.push(...elem.split(''));
+            }
+        }
+
+        chars = flatChars;
+    }
+
+    return chars;
+}
+
+export interface IBitmapFontOptions
 {
     chars: string | string[];
     name?: string;
     resolution?: number;
+    padding?: number;
 }
 
 /**
  * @memberof PIXI
- * @interface IBitmapFontFactoryOptions
- * @extends Partial<ITextStyle>
+ * @interface IBitmapFontOptions
  * @property {string | string[]} chars - the character set to generate
  * @property {number} resolution - the resolution for rendering
+ * @property {number} padding - the padding between glyphs in the atlas
+ * @property {number}
  */

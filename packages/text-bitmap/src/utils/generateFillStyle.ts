@@ -1,5 +1,7 @@
 import { TextStyle, TextMetrics, TEXT_GRADIENT } from '@pixi/text';
 
+// TODO: Prevent code duplication b/w generateFillStyle & Text#generateFillStyle
+
 /**
  * Generates the fill style. Can automatically generate a gradient based on the fill style being an array
  *
