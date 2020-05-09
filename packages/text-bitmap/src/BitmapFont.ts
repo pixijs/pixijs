@@ -596,6 +596,6 @@ export interface IBitmapFontOptions
  * @property {string | string[]} chars - the character set to generate
  * @property {number} resolution - the resolution for rendering
  * @property {number} padding - the padding between glyphs in the atlas
- * @property {number} atlasWidth - the width of the texture atlas
- * @property {number} atlasHeight - the height of the texture atlas
+ * @property {number} textureWidth - the width of the texture atlas
+ * @property {number} textureHeight - the height of the texture atlas
  */
