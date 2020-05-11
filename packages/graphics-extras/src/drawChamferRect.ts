@@ -8,7 +8,7 @@ import type { Graphics } from '@pixi/graphics';
  * @method PIXI.Graphics#drawChamferRect
  * @param {number} x - Upper left corner of rect
  * @param {number} y - Upper right corner of rect
- * @param {nmber} width - Width of rect
+ * @param {number} width - Width of rect
  * @param {number} height - Height of rect
  * @param {number} chamfer - accept negative or positive values
  * @return {PIXI.Graphics} Returns self.
