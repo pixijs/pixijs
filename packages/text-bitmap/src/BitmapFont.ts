@@ -244,7 +244,7 @@ export class BitmapFont
      * @member {string[][]}
      * @example BitmapFont.from({ chars: [...BitmapFont.ALPHA], name: "ExampleFont" })
      */
-    public static ALPHA = [['a', 'z'], ['A', 'Z'], ' '];
+    public static readonly ALPHA = [['a', 'z'], ['A', 'Z'], ' '];
 
     /**
      * This character set includes all decimal digits (from 0 to 9).
@@ -253,7 +253,7 @@ export class BitmapFont
      * @member {string[][]}
      * @example BitmapFont.from({ chars: [...BitmapFont.NUMERIC], name: "ExampleFont" })
      */
-    public static NUMERIC = [['0', '9']];
+    public static readonly NUMERIC = [['0', '9']];
 
     /**
      * This character set is the union of `BitmapFont.ALPHA` and `BitmapFont.NUMERIC`.
@@ -261,7 +261,7 @@ export class BitmapFont
      * @static
      * @member {string[][]}
      */
-    public static ALPHANUMERIC = [['a', 'z'], ['A', 'Z'], ['0', '9'], ' '];
+    public static readonly ALPHANUMERIC = [['a', 'z'], ['A', 'Z'], ['0', '9'], ' '];
 
     /**
      * This character set consists of all the ASCII table.
@@ -270,7 +270,7 @@ export class BitmapFont
      * @member {string[][]}
      * @see http://www.asciitable.com/
      */
-    public static ASCII = [[' ', '~']];
+    public static readonly ASCII = [[' ', '~']];
 
     /**
      * Generates a bitmap-font for the given style and character set. This does not support
