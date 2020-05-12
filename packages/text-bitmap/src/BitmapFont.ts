@@ -318,12 +318,6 @@ export class BitmapFont
         fontData.common[0] = {
             lineHeight: style.fontSize,
         };
-        fontData.page[0] = {
-            id: 0,
-            file: '',
-        };
-
-        const textures: Texture[] = [];
 
         let positionX = 0;
         let positionY = 0;
@@ -332,6 +326,8 @@ export class BitmapFont
         let context;
         let baseTexture;
         let maxCharHeight = 0;
+        const baseTextures = [];
+        const textures: Texture[] = [];
 
         for (let i = 0; i < chars.length; i++)
         {
@@ -343,6 +339,14 @@ export class BitmapFont
 
                 context = canvas.getContext('2d');
                 baseTexture = new BaseTexture(canvas, { resolution });
+
+                baseTextures.push(baseTexture);
+                textures.push(new Texture(baseTexture));
+
+                fontData.page.push({
+                    id: textures.length - 1,
+                    file: '',
+                });
             }
 
             // Measure glyph dimensions
@@ -401,15 +405,15 @@ export class BitmapFont
             const id = metrics.text.charCodeAt(0);
 
             // Create a texture holding just the glyph
-            textures[id] = new Texture(baseTexture, new Rectangle(positionX / resolution, positionY / resolution,
+            /* textures[id] = new Texture(baseTexture, new Rectangle(positionX / resolution, positionY / resolution,
                 textureGlyphWidth,
-                height));
+                height));*/
 
             fontData.char[id] = {
                 id,
-                page: id,
-                x: 0,
-                y: 0,
+                page: textures.length - 1,
+                x: positionX / resolution,
+                y: positionY / resolution,
                 width: textureGlyphWidth,
                 height,
                 xoffset: 0,
@@ -417,10 +421,6 @@ export class BitmapFont
                 xadvance: Math.ceil(width
                         - (style.dropShadow ? style.dropShadowDistance : 0)
                         - (style.stroke ? style.strokeThickness : 0)),
-            };
-            fontData.page[id] = {
-                id,
-                file: '',
             };
 
             positionX += (textureGlyphWidth + (2 * padding)) * resolution;
