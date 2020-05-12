@@ -41,5 +41,10 @@ describe('BitmapFont', function ()
 
             expect(BitmapFont.from.bind(BitmapFont, { chars: 'b', name: 'Thor' })).to.throw;
         });
+
+        it('should throw an error when no characters are passed', function ()
+        {
+            expect(BitmapFont.from.bind(BitmapFont, { chars: [] })).to.throw;
+        });
     });
 });

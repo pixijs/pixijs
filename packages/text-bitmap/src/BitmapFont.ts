@@ -579,6 +579,11 @@ function processCharData(chars: string | string[]): string[]
             }
         }
 
+        if (flatChars.length === 0)
+        {
+            throw new Error('[BitmapFont]: No characters were passed when creating character atlas!');
+        }
+
         chars = flatChars;
     }
 
