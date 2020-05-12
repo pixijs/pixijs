@@ -410,7 +410,9 @@ export class BitmapFont
                 height,
                 xoffset: 0,
                 yoffset: 0,
-                xadvance: width - (style.dropShadow ? style.dropShadowDistance : 0),
+                xadvance: Math.ceil(width
+                        - (style.dropShadow ? style.dropShadowDistance : 0)
+                        - (style.stroke ? style.strokeThickness : 0)),
             };
             fontData.page[id] = {
                 id,
@@ -494,7 +496,7 @@ function drawGlyph(
         context.shadowColor = `rgba(${rgb[0] * 255},${rgb[1] * 255},${rgb[2] * 255},${style.dropShadowAlpha})`;
         context.shadowBlur = style.dropShadowBlur;
         context.shadowOffsetX = Math.cos(style.dropShadowAngle) * style.dropShadowDistance;
-        context.shadowOffsetY = (Math.sin(style.dropShadowAngle) * style.dropShadowDistance);
+        context.shadowOffsetY = Math.sin(style.dropShadowAngle) * style.dropShadowDistance;
     }
     else
     {
