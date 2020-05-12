@@ -348,10 +348,10 @@ export class BitmapFont
             // Measure glyph dimensions
             const metrics = TextMetrics.measureText(chars[i], style, false, canvas);
             const width = metrics.width;
-            const height = metrics.height;
+            const height = Math.ceil(metrics.height);
 
             // This is ugly - but italics are given more space so they don't overlap
-            const textureGlyphWidth = (style.fontStyle === 'italic' ? 2 : 1) * width;
+            const textureGlyphWidth = Math.ceil((style.fontStyle === 'italic' ? 2 : 1) * width);
 
             // Can't fit char anymore: next canvas please!
             if (positionY >= textureHeight - (height * resolution))
@@ -380,6 +380,7 @@ export class BitmapFont
             {
                 --i;
                 positionY += maxCharHeight * resolution;
+                positionY = Math.ceil(positionY);
                 positionX = 0;
                 maxCharHeight = 0;
 
@@ -423,6 +424,7 @@ export class BitmapFont
             };
 
             positionX += (textureGlyphWidth + (2 * padding)) * resolution;
+            positionX = Math.ceil(positionX);
         }
 
         const font = new BitmapFont(fontData, textures);
