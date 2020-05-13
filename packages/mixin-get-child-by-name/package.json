@@ -1,6 +1,6 @@
 {
   "name": "@pixi/mixin-get-child-by-name",
-  "version": "5.2.4",
+  "version": "5.2.5-alpha.0",
   "main": "lib/mixin-get-child-by-name.js",
   "module": "lib/mixin-get-child-by-name.es.js",
   "bundle": "dist/mixin-get-child-by-name.js",
@@ -25,6 +25,6 @@
     "dist"
   ],
   "dependencies": {
-    "@pixi/display": "5.2.4"
+    "@pixi/display": "5.2.5-alpha.0"
   }
 }

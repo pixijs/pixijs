@@ -1,6 +1,6 @@
 {
   "name": "@pixi/filter-noise",
-  "version": "5.2.4",
+  "version": "5.2.5-alpha.0",
   "main": "lib/filter-noise.js",
   "module": "lib/filter-noise.es.js",
   "bundle": "dist/filter-noise.js",
@@ -25,6 +25,6 @@
     "dist"
   ],
   "dependencies": {
-    "@pixi/core": "5.2.4"
+    "@pixi/core": "5.2.5-alpha.0"
   }
 }

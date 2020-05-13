@@ -1,6 +1,6 @@
 {
   "name": "@pixi/constants",
-  "version": "5.2.4",
+  "version": "5.2.5-alpha.0",
   "main": "lib/constants.js",
   "module": "lib/constants.es.js",
   "bundle": "dist/constants.js",
