@@ -1,8 +1,8 @@
 declare namespace GlobalMixins
 {
-    // eslint-disable-next-line @typescript-eslint/no-empty-interface
     interface DisplayObject
     {
-
+        name?: string;
+        getChildByName?(name: string): DisplayObject;
     }
 }
