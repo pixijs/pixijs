@@ -1,6 +1,6 @@
 {
   "name": "@pixi/text-bitmap",
-  "version": "5.2.5-alpha.0",
+  "version": "5.2.4",
   "main": "lib/text-bitmap.js",
   "module": "lib/text-bitmap.es.js",
   "bundle": "dist/text-bitmap.js",
@@ -24,15 +24,15 @@
     "dist"
   ],
   "dependencies": {
-    "@pixi/core": "5.2.5-alpha.0",
-    "@pixi/display": "5.2.5-alpha.0",
-    "@pixi/loaders": "5.2.5-alpha.0",
-    "@pixi/math": "5.2.5-alpha.0",
-    "@pixi/settings": "5.2.5-alpha.0",
-    "@pixi/sprite": "5.2.5-alpha.0",
-    "@pixi/utils": "5.2.5-alpha.0"
+    "@pixi/core": "5.2.4",
+    "@pixi/display": "5.2.4",
+    "@pixi/loaders": "5.2.4",
+    "@pixi/math": "5.2.4",
+    "@pixi/settings": "5.2.4",
+    "@pixi/sprite": "5.2.4",
+    "@pixi/utils": "5.2.4"
   },
   "devDependencies": {
-    "@pixi/spritesheet": "5.2.5-alpha.0"
+    "@pixi/spritesheet": "5.2.4"
   }
 }
