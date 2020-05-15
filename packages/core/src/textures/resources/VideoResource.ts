@@ -72,7 +72,7 @@ export class VideoResource extends BaseImageResource
                 const baseSrc = src.split('?').shift().toLowerCase();
                 const ext = baseSrc.substr(baseSrc.lastIndexOf('.') + 1);
 
-                mime = mime || `video/${ext}`;
+                mime = mime || VideoResource.MIME_TYPES[ext] || `video/${ext}`;
 
                 sourceElement.src = src;
                 sourceElement.type = mime;
@@ -414,4 +414,17 @@ export class VideoResource extends BaseImageResource
      * @readonly
      */
     static TYPES = ['mp4', 'm4v', 'webm', 'ogg', 'ogv', 'h264', 'avi', 'mov'];
+
+    /**
+     * Map of video MIME types that can't be directly derived from file extensions.
+     * @constant
+     * @member {object}
+     * @static
+     * @readonly
+     */
+    static MIME_TYPES: {[ext: string]: string} = {
+        ogv: 'video/ogg',
+        mov: 'video/quicktime',
+        m4v: 'video/mp4',
+    };
 }

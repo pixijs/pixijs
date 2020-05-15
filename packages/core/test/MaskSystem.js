@@ -136,6 +136,8 @@ describe('PIXI.systems.MaskSystem', function ()
 
     it('should correctly calculate alpha mask area if filter is present', function ()
     {
+        // fixes slow runs on CI #6604
+        this.timeout(5000);
         // the bug was fixed in #5444
         this.renderer.resize(10, 10);
 
