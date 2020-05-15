@@ -16,7 +16,7 @@ DisplayObject.prototype.name = null;
  * @param {string} name - Instance name.
  * @return {PIXI.DisplayObject} The child with the specified name.
  */
-Container.prototype.getChildByName = function getChildByName(name)
+Container.prototype.getChildByName = function getChildByName(name: string): DisplayObject
 {
     for (let i = 0; i < this.children.length; i++)
     {
