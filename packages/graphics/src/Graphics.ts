@@ -60,6 +60,8 @@ const temp = new Float32Array(3);
 // a default shaders map used by graphics..
 const DEFAULT_SHADERS: {[key: string]: Shader} = {};
 
+export interface Graphics extends GlobalMixins.Graphics, Container {}
+
 /**
  * The Graphics class contains methods used to draw primitive shapes such as lines, circles and
  * rectangles to the display, and to color and fill them.
@@ -249,7 +251,7 @@ export class Graphics extends Container
 
     /**
      * Creates a new Graphics object with the same values as this one.
-     * Note that the only the properties of the object are cloned, not its transform (position,scale,etc)
+     * Note that only the geometry of the object is cloned, not its transform (position,scale,etc)
      *
      * @return {PIXI.Graphics} A clone of the graphics object
      */
