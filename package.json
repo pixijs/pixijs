@@ -27,7 +27,7 @@
     "build": "npm run build:dev",
     "build:prod": "cross-env NODE_ENV=production rollup -c",
     "build:dev": "rollup -c",
-    "postbuild": "npm run types",
+    "postbuild": "echo Port-TSD-JSDOC-TO_WEBDOC",
     "watch": "rollup -cw",
     "lerna": "lerna",
     "predist": "rimraf dist/*",
