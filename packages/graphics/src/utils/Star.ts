@@ -32,7 +32,7 @@ export class Star extends Polygon
 
             polygon.push(
                 x + (r * Math.cos(angle)),
-                y + (r * Math.sin(angle)),
+                y + (r * Math.sin(angle))
             );
         }
 

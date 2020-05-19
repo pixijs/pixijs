@@ -498,7 +498,7 @@ export class FramebufferSystem extends System
         gl.bindFramebuffer(gl.READ_FRAMEBUFFER, fbo.framebuffer);
         gl.blitFramebuffer(sourcePixels.x, sourcePixels.y, sourcePixels.width, sourcePixels.height,
             destPixels.x, destPixels.y, destPixels.width, destPixels.height,
-            gl.COLOR_BUFFER_BIT, sameSize ? gl.NEAREST : gl.LINEAR,
+            gl.COLOR_BUFFER_BIT, sameSize ? gl.NEAREST : gl.LINEAR
         );
     }
 

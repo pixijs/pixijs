@@ -183,7 +183,7 @@ export class CanvasMeshRenderer
             deltaB / delta,
             deltaE / delta,
             deltaC / delta,
-            deltaF / delta,
+            deltaF / delta
         );
 
         context.drawImage(
@@ -195,7 +195,7 @@ export class CanvasMeshRenderer
             0,
             0,
             textureWidth,
-            textureHeight,
+            textureHeight
         );
 
         context.restore();

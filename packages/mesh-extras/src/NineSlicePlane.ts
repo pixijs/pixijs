@@ -57,7 +57,7 @@ export class NineSlicePlane extends SimplePlane
         leftWidth = DEFAULT_BORDER_SIZE,
         topHeight = DEFAULT_BORDER_SIZE,
         rightWidth = DEFAULT_BORDER_SIZE,
-        bottomHeight = DEFAULT_BORDER_SIZE,
+        bottomHeight = DEFAULT_BORDER_SIZE
     )
     {
         super(Texture.WHITE, 4, 4);

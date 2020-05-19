@@ -43,7 +43,7 @@ describe('PIXI.Spritesheet', function ()
                 meta: { scale: 1 },
             };
             const baseTexture = BaseTexture.from(
-                document.createElement('canvas'),
+                document.createElement('canvas')
             );
 
             baseTexture.imageUrl = 'test.png';

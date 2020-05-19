@@ -148,7 +148,7 @@ export class Extract implements IRendererPlugin
             height,
             gl.RGBA,
             gl.UNSIGNED_BYTE,
-            webglPixels,
+            webglPixels
         );
 
         // add the pixels to the canvas
@@ -244,7 +244,7 @@ export class Extract implements IRendererPlugin
             height,
             gl.RGBA,
             gl.UNSIGNED_BYTE,
-            webglPixels,
+            webglPixels
         );
 
         if (generated)
@@ -275,7 +275,7 @@ export class Extract implements IRendererPlugin
      * @param out {number[] | Uint8Array | Uint8ClampedArray} output array
      */
     static arrayPostDivide(
-        pixels: number[] | Uint8Array | Uint8ClampedArray, out: number[] | Uint8Array | Uint8ClampedArray,
+        pixels: number[] | Uint8Array | Uint8ClampedArray, out: number[] | Uint8Array | Uint8ClampedArray
     ): void
     {
         for (let i = 0; i < pixels.length; i += 4)

@@ -72,7 +72,7 @@ export function premultiplyRgba(
     rgb: Float32Array|number[],
     alpha: number,
     out: Float32Array,
-    premultiply: boolean,
+    premultiply: boolean
 ): Float32Array
 {
     out = out || new Float32Array(4);

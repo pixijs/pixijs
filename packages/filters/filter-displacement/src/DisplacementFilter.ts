@@ -71,7 +71,7 @@ export class DisplacementFilter extends Filter
      * @param {PIXI.CLEAR_MODES} clearMode - clearMode.
      */
     public apply(
-        filterManager: systems.FilterSystem, input: RenderTexture, output: RenderTexture, clearMode: CLEAR_MODES,
+        filterManager: systems.FilterSystem, input: RenderTexture, output: RenderTexture, clearMode: CLEAR_MODES
     ): void
     {
         // fill maskMatrix with _normalized sprite texture coords_

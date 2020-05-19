@@ -28,7 +28,7 @@ function square(
     innerWeight: number,
     outerWeight: number,
     clockwise: boolean, /* rotation for square (true at left end, false at right end) */
-    verts: Array<number>,
+    verts: Array<number>
 ): number
 {
     const ix = x - (nx * innerWeight);
@@ -427,7 +427,7 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
                     x1, y1,
                     x1 + (perpx * outerWeight), y1 + (perpy * outerWeight),
                     x1 + (perp1x * outerWeight), y1 + (perp1y * outerWeight),
-                    verts, true,
+                    verts, true
                 ) + 4;
 
                 verts.push(imx, imy);
@@ -442,7 +442,7 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
                     x1, y1,
                     x1 - (perpx * innerWeight), y1 - (perpy * innerWeight),
                     x1 - (perp1x * innerWeight), y1 - (perp1y * innerWeight),
-                    verts, false,
+                    verts, false
                 ) + 4;
 
                 verts.push(x1 - (perp1x * innerWeight), y1 - (perp1y * innerWeight));
@@ -486,7 +486,7 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
                 x1 + (perpx * outerWeight),
                 y1 + (perpy * outerWeight),
                 verts,
-                false,
+                false
             ) + 2;
         }
         else if (style.cap === LINE_CAP.SQUARE)

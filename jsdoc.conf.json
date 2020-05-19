@@ -9,7 +9,8 @@
         "excludePattern": "(node_modules|lib|test)"
     },
     "plugins": [
-        "plugins/markdown"
+        "plugins/markdown",
+        "@pixi/jsdoc-template/plugins/es6-fix"
     ],
     "templates": {
         "cleverLinks"   : false,
@@ -36,7 +37,7 @@
         },
         "linenums"      : true
     },
-    "plugin/markdown"  : {
+    "markdown"  : {
         "parser"        : "gfm",
         "hardwrap"      : false
     },
@@ -45,7 +46,6 @@
         "recurse"       : true,
         "lenient"       : true,
         "destination"   : "./dist/docs",
-        "template"      : "pixi-webdoc-template",
-        "export"        : "./pixi.api.json"
+        "template"      : "./node_modules/@pixi/jsdoc-template"
     }
 }

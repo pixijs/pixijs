@@ -276,7 +276,7 @@ export class TilingSprite extends Sprite
         return new TilingSprite(
             Texture.from(source, options),
             options.width,
-            options.height,
+            options.height
         );
     }
 

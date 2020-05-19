@@ -41,11 +41,11 @@ export function install(PIXI)
                         shader.program.uniformData,
                         glProgram.uniformData,
                         group.uniforms,
-                        renderer,
+                        renderer
                     );
                 /* eslint-disable max-len */
                 },
-            },
+            }
         );
     }
 }

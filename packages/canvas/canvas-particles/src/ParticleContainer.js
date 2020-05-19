@@ -94,7 +94,7 @@ ParticleContainer.prototype.renderCanvas = function renderCanvas(renderer)
             positionX * renderer.resolution,
             positionY * renderer.resolution,
             finalWidth * renderer.resolution,
-            finalHeight * renderer.resolution,
+            finalHeight * renderer.resolution
         );
     }
 };

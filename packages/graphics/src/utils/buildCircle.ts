@@ -57,7 +57,7 @@ export const buildCircle: IShapeBuildCommand = {
         {
             points.push(
                 x + (Math.sin(-seg * i) * width),
-                y + (Math.cos(-seg * i) * height),
+                y + (Math.cos(-seg * i) * height)
             );
         }
 

@@ -647,7 +647,7 @@ export function useDeprecated()
     PIXI.Loader.addPixiMiddleware = function addPixiMiddleware(middleware)
     {
         deprecation(v5,
-            'PIXI.loaders.Loader.addPixiMiddleware function is deprecated, use PIXI.loaders.Loader.registerPlugin',
+            'PIXI.loaders.Loader.addPixiMiddleware function is deprecated, use PIXI.loaders.Loader.registerPlugin'
         );
 
         return PIXI.loaders.Loader.registerPlugin({ use: middleware() });
@@ -1076,7 +1076,7 @@ export function useDeprecated()
         getRenderTarget(clear, resolution)
         {
             deprecation(v5,
-                'PIXI.FilterManager.getRenderTarget method has been replaced with PIXI.systems.FilterSystem#getFilterTexture',
+                'PIXI.FilterManager.getRenderTarget method has been replaced with PIXI.systems.FilterSystem#getFilterTexture'
             );
 
             return this.getFilterTexture(resolution);
@@ -1091,7 +1091,7 @@ export function useDeprecated()
         {
             deprecation(v5,
                 'PIXI.FilterManager.returnRenderTarget method has been replaced with '
-                + 'PIXI.systems.FilterSystem.returnFilterTexture',
+                + 'PIXI.systems.FilterSystem.returnFilterTexture'
             );
 
             this.returnFilterTexture(renderTexture);
