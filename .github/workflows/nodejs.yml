@@ -49,7 +49,7 @@ jobs:
       run: echo ::set-output name=TAG_NAME::${GITHUB_REF/refs\/tags\//}
 
     - name: Build for Distribution
-      run: npm run dist && ls dist/docs
+      run: npm run dist && ls dist/docs && cat dist/docs/index.html
 
     # Examples:
     # 1) PR feature/acme merged into dev
