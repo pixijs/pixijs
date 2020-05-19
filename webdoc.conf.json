@@ -1,0 +1,51 @@
+{
+    "tags": {
+        "allowUnknownTags": false
+    },
+    "source": {
+        "include": [
+            "dist/compiled"
+        ],
+        "excludePattern": "(node_modules|lib|test)"
+    },
+    "plugins": [
+        "plugins/markdown"
+    ],
+    "templates": {
+        "cleverLinks"   : false,
+        "monospaceLinks": false,
+        "default"       : {
+            "outputSourceFiles" : true
+        },
+        "applicationName": "PixiJS",
+        "footer"        : "Made with ♥ by Goodboy Digital (goodboydigital.com)",
+        "copyright"     : "PixiJS Copyright © 2013-2017 Mat Groves.",
+        "disqus": "",
+        "googleAnalytics": "UA-103772589-5",
+        "openGraph": {
+            "title": "",
+            "type": "website",
+            "image": "",
+            "site_name": "",
+            "url": ""
+        },
+        "meta": {
+            "title": "PixiJS API Documentation",
+            "description": "Documentation for PixiJS library",
+            "keyword": "docs, documentation, pixi, pixijs, renderer, html5, javascript, jsdoc"
+        },
+        "linenums"      : true
+    },
+    "plugin/markdown"  : {
+        "parser"        : "gfm",
+        "hardwrap"      : false
+    },
+    "opts": {
+        "encoding"      : "utf8",
+        "recurse"       : true,
+        "lenient"       : true,
+        "destination"   : "./dist/docs",
+        "template"      : "pixi-webdoc-template",
+        "export"        : "./dist/docs/pixi.api.json"
+    }
+}
