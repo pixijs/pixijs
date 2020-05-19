@@ -1,3 +1,6 @@
+# package.lock
+packages/**/package.lock.json
+
 # sublime text files
 *.sublime*
 *.*~*.TMP
