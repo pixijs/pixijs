@@ -158,7 +158,7 @@ export class Geometry
     /**
      * returns the requested attribute
      *
-     * @param {String} id  the name of the attribute required
+     * @param {String} id - the name of the attribute required
      * @return {PIXI.Attribute} the attribute requested.
      */
     getAttribute(id: string): Attribute
@@ -169,7 +169,7 @@ export class Geometry
     /**
      * returns the requested buffer
      *
-     * @param {String} id  the name of the buffer required
+     * @param {String} id - the name of the buffer required
      * @return {PIXI.Buffer} the buffer requested.
      */
     getBuffer(id: string): Buffer
@@ -182,7 +182,7 @@ export class Geometry
     * Adds an index buffer to the geometry
     * The index buffer contains integers, three for each triangle in the geometry, which reference the various attribute buffers (position, colour, UV coordinates, other UV coordinates, normal, …). There is only ONE index buffer.
     *
-    * @param {PIXI.Buffer|number[]} [buffer] the buffer that holds the data of the index buffer. You can also provide an Array and a buffer will be created from it.
+    * @param {PIXI.Buffer|number[]} [buffer] - the buffer that holds the data of the index buffer. You can also provide an Array and a buffer will be created from it.
     * @return {PIXI.Geometry} returns self, useful for chaining.
     */
     addIndex(buffer?: Buffer | IArrayBuffer | number[]): Geometry
@@ -344,7 +344,7 @@ export class Geometry
      * merges an array of geometries into a new single one
      * geometry attribute styles must match for this operation to work
      *
-     * @param {PIXI.Geometry[]} geometries array of geometries to merge
+     * @param {PIXI.Geometry[]} geometries - array of geometries to merge
      * @returns {PIXI.Geometry} shiny new geometry!
      */
     static merge(geometries: Array<Geometry>): Geometry

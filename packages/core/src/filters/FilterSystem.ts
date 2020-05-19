@@ -293,8 +293,8 @@ export class FilterSystem extends System
 
     /**
      * Binds a renderTexture with corresponding `filterFrame`, clears it if mode corresponds.
-     * @param {PIXI.RenderTexture} filterTexture renderTexture to bind, should belong to filter pool or filter stack
-     * @param {PIXI.CLEAR_MODES} [clearMode] clearMode, by default its CLEAR/YES. See {@link PIXI.CLEAR_MODES}
+     * @param {PIXI.RenderTexture} filterTexture - renderTexture to bind, should belong to filter pool or filter stack
+     * @param {PIXI.CLEAR_MODES} [clearMode] - clearMode, by default its CLEAR/YES. See {@link PIXI.CLEAR_MODES}
      */
     bindAndClear(filterTexture: RenderTexture, clearMode = CLEAR_MODES.CLEAR): void
     {

@@ -119,8 +119,8 @@ export abstract class Resource
 
     /**
      * Trigger a resize event
-     * @param {number} width X dimension
-     * @param {number} height Y dimension
+     * @param {number} width - X dimension
+     * @param {number} height - Y dimension
      */
     resize(width: number, height: number): void
     {

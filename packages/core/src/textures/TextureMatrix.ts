@@ -33,8 +33,8 @@ export class TextureMatrix
     isSimple: boolean;
     /**
      *
-     * @param {PIXI.Texture} texture observed texture
-     * @param {number} [clampMargin] Changes frame clamping, 0.5 by default. Use -0.5 for extra border.
+     * @param {PIXI.Texture} texture - observed texture
+     * @param {number} [clampMargin] - Changes frame clamping, 0.5 by default. Use -0.5 for extra border.
      * @constructor
      */
     constructor(texture: Texture, clampMargin?: number)
@@ -117,7 +117,7 @@ export class TextureMatrix
 
     /**
      * Multiplies uvs array to transform
-     * @param {Float32Array} uvs mesh uvs
+     * @param {Float32Array} uvs - mesh uvs
      * @param {Float32Array} [out=uvs] output
      * @returns {Float32Array} output
      */

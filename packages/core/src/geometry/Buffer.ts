@@ -46,9 +46,9 @@ export class Buffer
     _glBuffers: {[key: number]: GLBuffer};
     _updateID: number;
     /**
-     * @param {ArrayBuffer| SharedArrayBuffer|ArrayBufferView} data the data to store in the buffer.
-     * @param {boolean} [_static=true] `true` for static buffer
-     * @param {boolean} [index=false] `true` for index buffer
+     * @param {ArrayBuffer| SharedArrayBuffer|ArrayBufferView} data - the data to store in the buffer.
+     * @param {boolean} [_static=true] - `true` for static buffer
+     * @param {boolean} [index=false] - `true` for index buffer
      */
     constructor(data?: IArrayBuffer, _static = true, index = false)
     {
@@ -111,7 +111,7 @@ export class Buffer
      * Helper function that creates a buffer based on an array or TypedArray
      *
      * @static
-     * @param {ArrayBufferView | number[]} data the TypedArray that the buffer will store. If this is a regular Array it will be converted to a Float32Array.
+     * @param {ArrayBufferView | number[]} data - the TypedArray that the buffer will store. If this is a regular Array it will be converted to a Float32Array.
      * @return {PIXI.Buffer} A new Buffer based on the data provided.
      */
     static from(data: IArrayBuffer | number[]): Buffer

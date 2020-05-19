@@ -160,7 +160,7 @@ export class InteractionData
     /**
      * Copies properties from normalized event data.
      *
-     * @param {Touch|MouseEvent|PointerEvent} event The normalized event data
+     * @param {Touch|MouseEvent|PointerEvent} event - The normalized event data
      */
     copyEvent(event)
     {

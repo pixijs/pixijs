@@ -372,8 +372,8 @@ export class Bounds
     /**
      * Adds other Bounds, multiplied by matrix. Bounds shouldn't be empty.
      *
-     * @param {PIXI.Bounds} bounds other bounds
-     * @param {PIXI.Matrix} matrix multiplicator
+     * @param {PIXI.Bounds} bounds - other bounds
+     * @param {PIXI.Matrix} matrix - multiplicator
      */
     addBoundsMatrix(bounds: Bounds, matrix: Matrix): void
     {

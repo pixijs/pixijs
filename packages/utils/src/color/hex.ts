@@ -44,7 +44,7 @@ export function hex2string(hex: number): string
  * PIXI.utils.string2hex("#ffffff"); // returns 0xffffff
  * @memberof PIXI.utils
  * @function string2hex
- * @param {string} The string color (e.g., `"#ffffff"`)
+ * @param {string} - The string color (e.g., `"#ffffff"`)
  * @return {number} Number in hexadecimal.
  */
 export function string2hex(string: string): number
