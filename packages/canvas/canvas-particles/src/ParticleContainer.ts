@@ -1,4 +1,5 @@
 import { ParticleContainer } from '@pixi/particles';
+import { Sprite } from '@pixi/sprite';
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
 
 /**
@@ -33,7 +34,7 @@ ParticleContainer.prototype.renderCanvas = function renderCanvas(renderer: Canva
 
     for (let i = 0; i < this.children.length; ++i)
     {
-        const child: any = this.children[i];
+        const child = this.children[i] as Sprite;
 
         if (!child.visible)
         {
