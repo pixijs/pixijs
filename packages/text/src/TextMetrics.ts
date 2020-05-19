@@ -568,8 +568,8 @@ export class TextMetrics
      * Examples are if the token is CJK or numbers.
      * It must return a boolean.
      *
-     * @param  {string}  token      - The token
-     * @param  {boolean}  breakWords- The style attr break words
+     * @param  {string}  token       - The token
+     * @param  {boolean}  breakWords - The style attr break words
      * @return {boolean} whether to break word or not
      */
     static canBreakWords(_token: string, breakWords: boolean): boolean
@@ -887,4 +887,3 @@ TextMetrics._breakingSpaces = [
  * @property {number} descent - Font descent
  * @property {number} fontSize - Font size
  */
-
