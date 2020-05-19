@@ -1,3 +1,5 @@
+/** @namespace PIXI.glCore */
+/** @namespace PIXI.glCore.shader */
 export * from './compileProgram';
 export * from './defaultValue';
 export * from './getMaxFragmentPrecision';
