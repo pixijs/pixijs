@@ -148,7 +148,7 @@ export class RenderTexturePool
     /**
      * Clears the pool
      *
-     * @param {boolean} [destroyTextures=true] destroy all stored textures
+     * @param {boolean} [destroyTextures=true] - destroy all stored textures
      */
     clear(destroyTextures: boolean): void
     {

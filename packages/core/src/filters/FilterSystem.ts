@@ -404,8 +404,8 @@ export class FilterSystem extends System
      * Gets extra render texture to use inside current filter
      * To be compliant with older filters, you can use params in any order
      *
-     * @param {PIXI.RenderTexture} [input] renderTexture from which size and resolution will be copied
-     * @param {number} [resolution] override resolution of the renderTexture
+     * @param {PIXI.RenderTexture} [input] - renderTexture from which size and resolution will be copied
+     * @param {number} [resolution] - override resolution of the renderTexture
      * @returns {PIXI.RenderTexture}
      */
     getFilterTexture(input?: RenderTexture, resolution?: number): RenderTexture

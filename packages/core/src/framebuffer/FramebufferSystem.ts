@@ -442,9 +442,9 @@ export class FramebufferSystem extends System
      *
      * Fails with WebGL warning if blits multisample framebuffer to different size
      *
-     * @param {PIXI.Framebuffer} [framebuffer] by default it blits "into itself", from renderBuffer to texture.
-     * @param {PIXI.Rectangle} [sourcePixels] source rectangle in pixels
-     * @param {PIXI.Rectangle} [destPixels] dest rectangle in pixels, assumed to be the same as sourcePixels
+     * @param {PIXI.Framebuffer} [framebuffer] - by default it blits "into itself", from renderBuffer to texture.
+     * @param {PIXI.Rectangle} [sourcePixels] - source rectangle in pixels
+     * @param {PIXI.Rectangle} [destPixels] - dest rectangle in pixels, assumed to be the same as sourcePixels
      */
     public blit(framebuffer?: Framebuffer, sourcePixels?: Rectangle, destPixels?: Rectangle): void
     {
@@ -541,7 +541,7 @@ export class FramebufferSystem extends System
 
     /**
      * Disposes all framebuffers, but not textures bound to them
-     * @param {boolean} [contextLost=false] If context was lost, we suppress all delete function calls
+     * @param {boolean} [contextLost=false] - If context was lost, we suppress all delete function calls
      */
     disposeAll(contextLost?: boolean): void
     {

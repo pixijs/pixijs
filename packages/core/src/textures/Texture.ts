@@ -268,7 +268,7 @@ export class Texture extends EventEmitter
     /**
      * Destroys this texture
      *
-     * @param {boolean} [destroyBase=false] Whether to destroy the base texture as well
+     * @param {boolean} [destroyBase=false] - Whether to destroy the base texture as well
      */
     destroy(destroyBase?: boolean): void
     {
@@ -345,7 +345,7 @@ export class Texture extends EventEmitter
      * @param {string|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|PIXI.BaseTexture} source
      *        Source to create texture from
      * @param {object} [options] See {@link PIXI.BaseTexture}'s constructor for options.
-     * @param {boolean} [strict] Enforce strict-mode, see {@link PIXI.settings.STRICT_TEXTURE_CACHE}.
+     * @param {boolean} [strict] - Enforce strict-mode, see {@link PIXI.settings.STRICT_TEXTURE_CACHE}.
      * @return {PIXI.Texture} The newly created texture
      */
     static from(source: TextureSource, options: IBaseTextureOptions = {},

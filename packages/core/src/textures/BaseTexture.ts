@@ -405,7 +405,7 @@ export class BaseTexture extends EventEmitter
      *
      * @param {number} width - Visual width
      * @param {number} height - Visual height
-     * @param {number} [resolution] Optionally set resolution
+     * @param {number} [resolution] - Optionally set resolution
      * @returns {PIXI.BaseTexture} this
      */
     setSize(width: number, height: number, resolution?: number): this
@@ -424,7 +424,7 @@ export class BaseTexture extends EventEmitter
      *
      * @param {number} realWidth - Full rendered width
      * @param {number} realHeight - Full rendered height
-     * @param {number} [resolution] Optionally set resolution
+     * @param {number} [resolution] - Optionally set resolution
      * @returns {PIXI.BaseTexture} this
      */
     setRealSize(realWidth: number, realHeight: number, resolution?: number): this
@@ -600,7 +600,7 @@ export class BaseTexture extends EventEmitter
      * @param {string|HTMLImageElement|HTMLCanvasElement|SVGElement|HTMLVideoElement} source - The
      *        source to create base texture from.
      * @param {object} [options] See {@link PIXI.BaseTexture}'s constructor for options.
-     * @param {boolean} [strict] Enforce strict-mode, see {@link PIXI.settings.STRICT_TEXTURE_CACHE}.
+     * @param {boolean} [strict] - Enforce strict-mode, see {@link PIXI.settings.STRICT_TEXTURE_CACHE}.
      * @returns {PIXI.BaseTexture} The new base texture.
      */
     static from(source: ImageSource|string, options: IBaseTextureOptions,

@@ -331,7 +331,7 @@ export class Spritesheet
     /**
      * Destroy Spritesheet and don't use after this.
      *
-     * @param {boolean} [destroyBase=false] Whether to destroy the base texture as well
+     * @param {boolean} [destroyBase=false] - Whether to destroy the base texture as well
      */
     public destroy(destroyBase = false): void
     {
