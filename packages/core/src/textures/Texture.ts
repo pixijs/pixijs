@@ -317,7 +317,7 @@ export class Texture extends EventEmitter
             this.orig.clone(),
             this.trim && this.trim.clone(),
             this.rotate,
-            this.defaultAnchor
+            this.defaultAnchor,
         );
     }
 

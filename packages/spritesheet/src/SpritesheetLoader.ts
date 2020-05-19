@@ -60,7 +60,7 @@ export class SpritesheetLoader
             const spritesheet = new Spritesheet(
                 res.texture,
                 resource.data,
-                resource.url
+                resource.url,
             );
 
             spritesheet.parse(() =>

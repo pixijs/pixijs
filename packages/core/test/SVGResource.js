@@ -33,7 +33,7 @@ describe('PIXI.resources.SVGResource', function ()
         {
             const resource = new SVGResource(
                 path.join(this.resources, 'heart.svg'),
-                { autoLoad: false }
+                { autoLoad: false },
             );
 
             expect(resource.valid).to.equal(false);
@@ -54,7 +54,7 @@ describe('PIXI.resources.SVGResource', function ()
                 {
                     autoLoad: false,
                     scale: 2.123,
-                }
+                },
             );
 
             resource.load().then(function ()
@@ -73,7 +73,7 @@ describe('PIXI.resources.SVGResource', function ()
                 {
                     autoLoad: false,
                     width: 10,
-                }
+                },
             );
 
             resource.load().then(function ()
@@ -93,7 +93,7 @@ describe('PIXI.resources.SVGResource', function ()
                     autoLoad: false,
                     width: 10,
                     height: 10,
-                }
+                },
             );
 
             resource.load().then(function ()

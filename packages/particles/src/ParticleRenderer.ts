@@ -254,7 +254,7 @@ export class ParticleRenderer extends ObjectRenderer
      */
     public uploadVertices(
         children: DisplayObject[], startIndex: number, amount: number,
-        array: number[], stride: number, offset: number
+        array: number[], stride: number, offset: number,
     ): void
     {
         let w0 = 0;
@@ -318,7 +318,7 @@ export class ParticleRenderer extends ObjectRenderer
      */
     public uploadPosition(
         children: DisplayObject[], startIndex: number, amount: number,
-        array: number[], stride: number, offset: number
+        array: number[], stride: number, offset: number,
     ): void
     {
         for (let i = 0; i < amount; i++)
@@ -353,7 +353,7 @@ export class ParticleRenderer extends ObjectRenderer
      */
     public uploadRotation(
         children: DisplayObject[], startIndex: number, amount: number,
-        array: number[], stride: number, offset: number
+        array: number[], stride: number, offset: number,
     ): void
     {
         for (let i = 0; i < amount; i++)
@@ -381,7 +381,7 @@ export class ParticleRenderer extends ObjectRenderer
      */
     public uploadUvs(
         children: DisplayObject[], startIndex: number, amount: number,
-        array: number[], stride: number, offset: number
+        array: number[], stride: number, offset: number,
     ): void
     {
         for (let i = 0; i < amount; ++i)
@@ -436,7 +436,7 @@ export class ParticleRenderer extends ObjectRenderer
      */
     public uploadTint(
         children: DisplayObject[], startIndex: number, amount: number,
-        array: number[], stride: number, offset: number
+        array: number[], stride: number, offset: number,
     ): void
     {
         for (let i = 0; i < amount; ++i)

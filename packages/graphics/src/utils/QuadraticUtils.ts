@@ -67,7 +67,7 @@ export class QuadraticUtils
         const fromY = points[points.length - 1];
 
         const n = GRAPHICS_CURVES._segmentsCount(
-            QuadraticUtils.curveLength(fromX, fromY, cpX, cpY, toX, toY)
+            QuadraticUtils.curveLength(fromX, fromY, cpX, cpY, toX, toY),
         );
 
         let xa = 0;

@@ -264,7 +264,7 @@ export class FilterSystem extends System
             let flop = this.getOptimalFilterTexture(
                 flip.width,
                 flip.height,
-                state.resolution
+                state.resolution,
             );
 
             flop.filterFrame = flip.filterFrame;

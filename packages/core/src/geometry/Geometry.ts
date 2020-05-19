@@ -327,7 +327,7 @@ export class Geometry
                 attrib.type,
                 attrib.stride,
                 attrib.start,
-                attrib.instance
+                attrib.instance,
             );
         }
 

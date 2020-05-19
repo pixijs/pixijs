@@ -16,7 +16,7 @@ describe('PIXI.Polygon', function ()
             const polygon = new Polygon(
                 new Point(0, 0),
                 new Point(10, 0),
-                new Point(0, 10)
+                new Point(0, 10),
             );
 
             expect(polygon.points.length).to.be.equals(6);

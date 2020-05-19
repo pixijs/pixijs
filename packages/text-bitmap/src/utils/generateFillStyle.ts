@@ -16,7 +16,7 @@ export function generateFillStyle(
     style: TextStyle,
     resolution: number,
     lines: string[],
-    metrics: TextMetrics
+    metrics: TextMetrics,
 ): string|CanvasGradient|CanvasPattern
 {
     // TODO: Can't have different types for getter and setter. The getter shouldn't have the number type as

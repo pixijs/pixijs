@@ -948,14 +948,14 @@ export class InteractionManager extends EventEmitter
                     const interactionEvent = this.configureInteractionEventForDOMEvent(
                         this.eventData,
                         interactionData.originalEvent,
-                        interactionData
+                        interactionData,
                     );
 
                     this.processInteractive(
                         interactionEvent,
                         this.renderer._lastObjectRendered,
                         this.processPointerOverOut,
-                        true
+                        true,
                     );
                 }
             }

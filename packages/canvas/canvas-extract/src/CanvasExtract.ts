@@ -185,6 +185,6 @@ Object.defineProperty(CanvasRenderer.prototype, 'extract',
 
             return this.plugins.extract;
         },
-    }
+    },
 );
 

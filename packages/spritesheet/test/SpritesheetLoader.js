@@ -74,7 +74,7 @@ describe('PIXI.SpritesheetLoader', function ()
         expect(spy).to.have.been.calledOnce;
         expect(addStub).to.have.been.calledWith(
             `${res.name}_image`,
-            `${path.dirname(res.url)}/${res.data.meta.image}`
+            `${path.dirname(res.url)}/${res.data.meta.image}`,
         );
         expect(res).to.have.property('textures')
             .that.is.an('object')

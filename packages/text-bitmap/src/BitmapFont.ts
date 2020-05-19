@@ -113,7 +113,7 @@ export class BitmapFont
                 x + (pagesTextures[page].frame.x / res),
                 y + (pagesTextures[page].frame.y / res),
                 width,
-                height
+                height,
             );
 
             this.chars[id] = {
@@ -123,7 +123,7 @@ export class BitmapFont
                 kerning: {},
                 texture: new Texture(
                     pagesTextures[page].baseTexture,
-                    rect
+                    rect,
                 ),
                 page,
             };
@@ -172,7 +172,7 @@ export class BitmapFont
      */
     public static install(
         data: string|XMLDocument|BitmapFontData,
-        textures: Texture|Texture[]|Dict<Texture>
+        textures: Texture|Texture[]|Dict<Texture>,
     ): BitmapFont
     {
         let fontData;
@@ -398,7 +398,7 @@ export class BitmapFont
                 positionX,
                 positionY,
                 resolution,
-                style
+                style,
             );
 
             // Unique (numeric) ID mapping to this glyph
@@ -461,7 +461,7 @@ function drawGlyph(
     x: number,
     y: number,
     resolution: number,
-    style: TextStyle
+    style: TextStyle,
 ): void
 {
     const char = metrics.text;

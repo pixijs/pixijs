@@ -185,7 +185,7 @@ describe('PIXI.Matrix', function ()
                 0, 0,
                 transformInitial.scale.x, transformInitial.scale.y,
                 transformInitial.rotation,
-                transformInitial.skew.x, transformInitial.skew.y
+                transformInitial.skew.x, transformInitial.skew.y,
             );
             matrix.decompose(transformDecomposed);
 

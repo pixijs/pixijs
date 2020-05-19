@@ -40,7 +40,7 @@ export function deprecation(version: string, message: string, ignoreDepth = 3): 
                 '%cPixiJS Deprecation Warning: %c%s',
                 'color:#614108;background:#fffbe6',
                 'font-weight:normal;color:#614108;background:#fffbe6',
-                `${message}\nDeprecated since v${version}`
+                `${message}\nDeprecated since v${version}`,
             );
             console.warn(stack);
             console.groupEnd();

@@ -74,7 +74,7 @@ export abstract class DisplayObject extends EventEmitter
             Object.defineProperty(
                 DisplayObject.prototype,
                 propertyName,
-                Object.getOwnPropertyDescriptor(source, propertyName)
+                Object.getOwnPropertyDescriptor(source, propertyName),
             );
         }
     }

@@ -95,7 +95,7 @@ export class Sprite extends Container
             this._onAnchorUpdate,
             this,
             (texture ? texture.defaultAnchor.x : 0),
-            (texture ? texture.defaultAnchor.y : 0)
+            (texture ? texture.defaultAnchor.y : 0),
         );
 
         /**

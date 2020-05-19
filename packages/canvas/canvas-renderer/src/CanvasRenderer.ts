@@ -201,7 +201,7 @@ export class CanvasRenderer extends AbstractRenderer
                 renderTexture._canvasRenderTarget = new CanvasRenderTarget(
                     renderTexture.width,
                     renderTexture.height,
-                    renderTexture.resolution
+                    renderTexture.resolution,
                 );
                 renderTexture.resource = new resources.CanvasResource(renderTexture._canvasRenderTarget.canvas);
                 renderTexture.valid = true;
@@ -306,7 +306,7 @@ export class CanvasRenderer extends AbstractRenderer
                 mat.c * localResolution,
                 mat.d * localResolution,
                 (mat.tx * resolution) | 0,
-                (mat.ty * resolution) | 0
+                (mat.ty * resolution) | 0,
             );
         }
         else
@@ -317,7 +317,7 @@ export class CanvasRenderer extends AbstractRenderer
                 mat.c * localResolution,
                 mat.d * localResolution,
                 mat.tx * resolution,
-                mat.ty * resolution
+                mat.ty * resolution,
             );
         }
     }

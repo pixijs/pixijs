@@ -124,7 +124,7 @@ export class CanvasSpriteRenderer
                 dx * renderer.resolution,
                 dy * renderer.resolution,
                 width * renderer.resolution,
-                height * renderer.resolution
+                height * renderer.resolution,
             );
             context.clip();
         }
@@ -148,7 +148,7 @@ export class CanvasSpriteRenderer
                 Math.floor(dx * renderer.resolution),
                 Math.floor(dy * renderer.resolution),
                 Math.floor(width * renderer.resolution),
-                Math.floor(height * renderer.resolution)
+                Math.floor(height * renderer.resolution),
             );
         }
         else
@@ -162,7 +162,7 @@ export class CanvasSpriteRenderer
                 Math.floor(dx * renderer.resolution),
                 Math.floor(dy * renderer.resolution),
                 Math.floor(width * renderer.resolution),
-                Math.floor(height * renderer.resolution)
+                Math.floor(height * renderer.resolution),
             );
         }
 

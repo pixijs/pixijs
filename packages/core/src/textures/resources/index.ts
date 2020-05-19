@@ -30,7 +30,7 @@ INSTALLED.push(
     SVGResource,
     BufferResource,
     CubeResource,
-    ArrayResource
+    ArrayResource,
 );
 
 export * from './autoDetectResource';

@@ -31,7 +31,7 @@ export function drawRegularPolygon(this: Graphics,
 
         polygon.push(
             x + (radius * Math.cos(angle)),
-            y + (radius * Math.sin(angle))
+            y + (radius * Math.sin(angle)),
         );
     }
 

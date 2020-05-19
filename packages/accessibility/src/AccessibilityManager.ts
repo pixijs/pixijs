@@ -554,13 +554,13 @@ export class AccessibilityManager
         const interactionManager = (this.renderer as AbstractRenderer).plugins.interaction;
 
         interactionManager.dispatchEvent(
-            (e.target as IAccessibleHTMLElement).displayObject, 'click', interactionManager.eventData
+            (e.target as IAccessibleHTMLElement).displayObject, 'click', interactionManager.eventData,
         );
         interactionManager.dispatchEvent(
-            (e.target as IAccessibleHTMLElement).displayObject, 'pointertap', interactionManager.eventData
+            (e.target as IAccessibleHTMLElement).displayObject, 'pointertap', interactionManager.eventData,
         );
         interactionManager.dispatchEvent(
-            (e.target as IAccessibleHTMLElement).displayObject, 'tap', interactionManager.eventData
+            (e.target as IAccessibleHTMLElement).displayObject, 'tap', interactionManager.eventData,
         );
     }
 
@@ -581,7 +581,7 @@ export class AccessibilityManager
         const interactionManager = (this.renderer as AbstractRenderer).plugins.interaction;
 
         interactionManager.dispatchEvent(
-            (e.target as IAccessibleHTMLElement).displayObject, 'mouseover', interactionManager.eventData
+            (e.target as IAccessibleHTMLElement).displayObject, 'mouseover', interactionManager.eventData,
         );
     }
 

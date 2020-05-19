@@ -28,7 +28,7 @@ export class SimpleMesh extends Mesh
         vertices?: IArrayBuffer,
         uvs?: IArrayBuffer,
         indices?: IArrayBuffer,
-        drawMode?: DRAW_MODES
+        drawMode?: DRAW_MODES,
     )
     {
         const geometry = new MeshGeometry(vertices, uvs, indices);
