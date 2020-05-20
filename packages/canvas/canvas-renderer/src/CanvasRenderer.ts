@@ -279,9 +279,9 @@ export class CanvasRenderer extends AbstractRenderer
      * sets matrix of context
      * called only from render() methods
      * takes care about resolution
-     * @param {PIXI.Matrix} transform world matrix of current element
-     * @param {boolean} [roundPixels] whether to round (tx,ty) coords
-     * @param {number} [localResolution] If specified, used instead of `renderer.resolution` for local scaling
+     * @param {PIXI.Matrix} transform - world matrix of current element
+     * @param {boolean} [roundPixels] - whether to round (tx,ty) coords
+     * @param {number} [localResolution] - If specified, used instead of `renderer.resolution` for local scaling
      */
     setContextTransform(transform: Matrix, roundPixels?: boolean, localResolution?: number): void
     {
