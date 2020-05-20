@@ -3,6 +3,39 @@ import { deprecation } from '@pixi/utils';
 const v5 = '5.0.0';
 
 /**
+ * @namespace PIXI.mesh
+ * @deprecated
+ */
+/**
+ * @namespace PIXI.extract
+ * @deprecated
+ */
+/**
+ * @namespace PIXI.particles
+ * @deprecated
+ */
+/**
+ * @namespace PIXI.utils.mixins
+ * @deprecated
+ */
+/**
+ * @namespace PIXI.extras
+ * @deprecated
+ */
+/**
+ * @namespace PIXI.prepare
+ * @deprecated
+ */
+/**
+ * @namespace PIXI.ticker
+ * @deprecated
+ */
+/**
+ * @namespace PIXI.loaders
+ * @deprecated
+ */
+
+/**
  * Deprecations (backward compatibilities) are automatically applied for browser bundles
  * in the UMD module format. If using Webpack or Rollup, you'll need to apply these
  * deprecations manually by doing something like this:
