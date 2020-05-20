@@ -55,7 +55,7 @@ export abstract class DisplayObject extends EventEmitter
     /**
      * Mixes all enumerable properties and methods from a source object to DisplayObject.
      *
-     * @param {object} source The source of properties and methods to mix in.
+     * @param {object} source - The source of properties and methods to mix in.
      */
     static mixin(source: {[x: string]: any}): void
     {

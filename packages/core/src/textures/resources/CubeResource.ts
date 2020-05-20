@@ -22,7 +22,7 @@ export interface ICubeResourceOptions extends ISize
  * @class
  * @extends PIXI.resources.ArrayResource
  * @memberof PIXI.resources
- * @param {Array<string|PIXI.resources.Resource>} [source] Collection of URLs or resources
+ * @param {Array<string|PIXI.resources.Resource>} [source] - Collection of URLs or resources
  *        to use as the sides of the cube.
  * @param {object} [options] - ImageResource options
  * @param {number} [options.width] - Width of resource

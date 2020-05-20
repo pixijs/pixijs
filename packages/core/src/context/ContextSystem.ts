@@ -99,7 +99,7 @@ export class ContextSystem extends System
 
     /**
      * Handle the context change event
-     * @param {WebGLRenderingContext} gl new webgl context
+     * @param {WebGLRenderingContext} gl - new webgl context
      */
     protected contextChange(gl: IRenderingContext): void
     {
