@@ -488,7 +488,7 @@ export class Container extends DisplayObject
      * Retrieves the local bounds of the displayObject as a rectangle object.
      *
      * @param {PIXI.Rectangle} [rect] - Optional rectangle to store the result of the bounds calculation.
-     * @param {boolean} [skipChildrenUpdate=false] Setting to `true` will stop re-calculation of children transforms,
+     * @param {boolean} [skipChildrenUpdate=false] - Setting to `true` will stop re-calculation of children transforms,
      *  it was default behaviour of pixi 4.0-5.2 and caused many problems to users.
      * @return {PIXI.Rectangle} The rectangular bounding area.
      */

@@ -2,7 +2,7 @@ PixiJS — The HTML5 Creation Engine
 =============
 
 ![pixi.js logo](https://pixijs.download/pixijs-banner-v5.png)
-
+[<img src="https://img.shields.io/badge/slack/pixijs-gray.svg?logo=slack">](https://join.slack.com/t/pixijs/shared_invite/zt-dcem1map-uVuVGC7pZ0trF8SrcA2p9g)
 [![Inline docs](http://inch-ci.org/github/pixijs/pixi.js.svg?branch=dev)](http://inch-ci.org/github/pixijs/pixi.js)
 [![Node.js CI](https://github.com/pixijs/pixi.js/workflows/Node.js%20CI/badge.svg)](https://github.com/pixi.js/pixi.js/actions?query=workflow%3A%22Node.js+CI%22)
 

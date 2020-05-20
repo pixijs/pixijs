@@ -57,11 +57,11 @@ export class Mesh extends Container
     /* eslint-enable @typescript-eslint/ban-ts-ignore */
 
     /**
-     * @param {PIXI.Geometry} geometry  the geometry the mesh will use
-     * @param {PIXI.MeshMaterial} shader  the shader the mesh will use
-     * @param {PIXI.State} [state] the state that the WebGL context is required to be in to render the mesh
+     * @param {PIXI.Geometry} geometry - the geometry the mesh will use
+     * @param {PIXI.MeshMaterial} shader - the shader the mesh will use
+     * @param {PIXI.State} [state] - the state that the WebGL context is required to be in to render the mesh
      *        if no state is provided, uses {@link PIXI.State.for2d} to create a 2D state for PixiJS.
-     * @param {number} [drawMode=PIXI.DRAW_MODES.TRIANGLES] the drawMode, can be any of the PIXI.DRAW_MODES consts
+     * @param {number} [drawMode=PIXI.DRAW_MODES.TRIANGLES] - the drawMode, can be any of the PIXI.DRAW_MODES consts
      */
     constructor(geometry: Geometry, shader: MeshMaterial, state?: State, drawMode = DRAW_MODES.TRIANGLES)
     {
@@ -451,7 +451,7 @@ export class Mesh extends Container
     /**
      * Tests if a point is inside this mesh. Works only for PIXI.DRAW_MODES.TRIANGLES.
      *
-     * @param {PIXI.IPoint} point the point to test
+     * @param {PIXI.IPoint} point - the point to test
      * @return {boolean} the result of the test
      */
     public containsPoint(point: IPoint): boolean

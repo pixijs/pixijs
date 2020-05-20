@@ -26,7 +26,7 @@ export class TextFormat
      *
      * @static
      * @private
-     * @param {string} txt Raw string data to be converted
+     * @param {string} txt - Raw string data to be converted
      * @return {PIXI.BitmapFontData} Parsed font data
      */
     static parse(txt: string): BitmapFontData
