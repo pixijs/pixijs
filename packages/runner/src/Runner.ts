@@ -50,7 +50,7 @@ export class Runner
     private _aliasCount: number;
 
     /**
-     *  @param {string} name the function name that will be executed on the listeners added to this Runner.
+     *  @param {string} name - the function name that will be executed on the listeners added to this Runner.
      */
     constructor(name: string)
     {
