@@ -1,5 +1,5 @@
 import { ParticleContainer } from '@pixi/particles';
-import { Sprite } from '@pixi/sprite';
+import type { Sprite } from '@pixi/sprite';
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
 
 /**
