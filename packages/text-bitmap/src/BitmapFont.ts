@@ -104,7 +104,7 @@ export class BitmapFont
     public readonly size: number;
     public readonly lineHeight: number;
     public readonly chars: Dict<IBitmapFontCharacter>;
-    private readonly pagesTextures: Dict<Texture>;
+    private readonly pageTextures: Dict<Texture>;
 
     /**
      * @param {PIXI.BitmapFontData} data
@@ -116,7 +116,7 @@ export class BitmapFont
         const [common] = data.common;
         const [page] = data.page;
         const res = getResolutionOfUrl(page.file);
-        const pagesTextures: Dict<Texture> = {};
+        const pageTextures: Dict<Texture> = {};
 
         /**
          * The name of the font face.
@@ -157,7 +157,7 @@ export class BitmapFont
          * @readonly
          * @private
          */
-        this.pagesTextures = pagesTextures;
+        this.pageTextures = pageTextures;
 
         // Convert the input Texture, Textures or object
         // into a page Texture lookup by "id"
@@ -165,7 +165,7 @@ export class BitmapFont
         {
             const { id, file } = data.page[i];
 
-            pagesTextures[id] = textures instanceof Array
+            pageTextures[id] = textures instanceof Array
                 ? textures[i] : textures[file];
         }
 
@@ -184,8 +184,8 @@ export class BitmapFont
             xadvance /= res;
 
             const rect = new Rectangle(
-                x + (pagesTextures[page].frame.x / res),
-                y + (pagesTextures[page].frame.y / res),
+                x + (pageTextures[page].frame.x / res),
+                y + (pageTextures[page].frame.y / res),
                 width,
                 height
             );
@@ -196,7 +196,7 @@ export class BitmapFont
                 xAdvance: xadvance,
                 kerning: {},
                 texture: new Texture(
-                    pagesTextures[page].baseTexture,
+                    pageTextures[page].baseTexture,
                     rect
                 ),
                 page,
@@ -230,15 +230,15 @@ export class BitmapFont
             this.chars[id].texture = null;
         }
 
-        for (const id in this.pagesTextures)
+        for (const id in this.pageTextures)
         {
-            this.pagesTextures[id].destroy(true);
-            this.pagesTextures[id] = null;
+            this.pageTextures[id].destroy(true);
+            this.pageTextures[id] = null;
         }
 
         // Set readonly null.
         (this as any).chars = null;
-        (this as any).pagesTextures = null;
+        (this as any).pageTextures = null;
     }
 
     /**
