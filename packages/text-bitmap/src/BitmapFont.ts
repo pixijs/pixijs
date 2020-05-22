@@ -339,7 +339,13 @@ export class BitmapFont
             options = { name: options };
         }
 
-        const { name, padding, resolution, textureWidth, textureHeight } = Object.assign(
+        const {
+            name,
+            chars,
+            padding,
+            resolution,
+            textureWidth,
+            textureHeight } = Object.assign(
             {}, BitmapFont.defaultOptions, options);
 
         if (!name)
@@ -347,7 +353,7 @@ export class BitmapFont
             throw new Error('[BitmapFont] Property `name` is required.');
         }
 
-        const chars = resolveCharacters(options.chars);
+        const charsList = resolveCharacters(chars);
         const style = textStyle instanceof TextStyle ? textStyle : new TextStyle(textStyle);
         const lineWidth = textureWidth;
         const fontData = new BitmapFontData();
@@ -370,7 +376,7 @@ export class BitmapFont
         const baseTextures = [];
         const textures: Texture[] = [];
 
-        for (let i = 0; i < chars.length; i++)
+        for (let i = 0; i < charsList.length; i++)
         {
             if (!canvas)
             {
@@ -391,7 +397,7 @@ export class BitmapFont
             }
 
             // Measure glyph dimensions
-            const metrics = TextMetrics.measureText(chars[i], style, false, canvas);
+            const metrics = TextMetrics.measureText(charsList[i], style, false, canvas);
             const width = metrics.width;
             const height = Math.ceil(metrics.height);
 
