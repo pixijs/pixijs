@@ -341,6 +341,12 @@ export class BitmapFont
 
         const { name, padding, resolution, textureWidth, textureHeight } = Object.assign(
             {}, BitmapFont.defaultOptions, options);
+
+        if (!name)
+        {
+            throw new Error('[BitmapFont] Property `name` is required.');
+        }
+
         const chars = resolveCharacters(options.chars);
         const style = textStyle instanceof TextStyle ? textStyle : new TextStyle(textStyle);
         const lineWidth = textureWidth;
@@ -398,7 +404,8 @@ export class BitmapFont
                 if (positionY === 0)
                 {
                     // We don't want user debugging an infinite loop (or do we? :)
-                    throw new Error(`textureHeight ${textureHeight}px is too small for ${style.fontSize}px fonts`);
+                    throw new Error(`[BitmapFont] textureHeight ${textureHeight}px is `
+                        + `too small for ${style.fontSize}px fonts`);
                 }
 
                 // Create new atlas once current has filled up
