@@ -56,6 +56,18 @@ describe('BitmapFont', function ()
             expect(fontRes2.chars[id].texture.baseTexture.resolution).to.equal(2);
         });
 
+        it('should override and replace font', function ()
+        {
+            const id = 'a'.charCodeAt(0);
+
+            BitmapFont.from({ name: 'foo', chars: 'a' });
+            expect(Object.keys(BitmapFont.available.foo.chars).length).to.equal(1);
+
+            BitmapFont.from({ name: 'foo', chars: 'bc' });
+            expect(Object.keys(BitmapFont.available.foo.chars).length).to.equal(2);
+            expect(BitmapFont.available.foo.chars[id]).to.be.undefined;
+        });
+
         it('should throw an error when no characters are passed', function ()
         {
             expect(() => BitmapFont.from({ name: 'foo', chars: [] })).to.throw;
