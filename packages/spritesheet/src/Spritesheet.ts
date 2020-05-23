@@ -51,7 +51,7 @@ export class Spritesheet
     private _callback: (textures: Dict<Texture>) => void;
 
     /**
-     * @param {PIXI.BaseTexture|PIXI.Texture} baseTexture Reference to the source BaseTexture object.
+     * @param {PIXI.BaseTexture|PIXI.Texture} baseTexture - Reference to the source BaseTexture object.
      * @param {Object} data - Spritesheet image data.
      * @param {string} [resolutionFilename] - The filename to consider when determining
      *        the resolution of the spritesheet. If not provided, the imageUrl will
@@ -331,7 +331,7 @@ export class Spritesheet
     /**
      * Destroy Spritesheet and don't use after this.
      *
-     * @param {boolean} [destroyBase=false] Whether to destroy the base texture as well
+     * @param {boolean} [destroyBase=false] - Whether to destroy the base texture as well
      */
     public destroy(destroyBase = false): void
     {

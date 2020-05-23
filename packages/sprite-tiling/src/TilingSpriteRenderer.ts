@@ -29,7 +29,7 @@ export class TilingSpriteRenderer extends ObjectRenderer
     /**
      * constructor for renderer
      *
-     * @param {PIXI.Renderer} renderer The renderer this tiling awesomeness works for.
+     * @param {PIXI.Renderer} renderer - The renderer this tiling awesomeness works for.
      */
     constructor(renderer: Renderer)
     {
@@ -54,7 +54,7 @@ export class TilingSpriteRenderer extends ObjectRenderer
 
     /**
      *
-     * @param {PIXI.TilingSprite} ts tilingSprite to be rendered
+     * @param {PIXI.TilingSprite} ts - tilingSprite to be rendered
      */
     public render(ts: TilingSprite): void
     {
