@@ -22,7 +22,6 @@ export interface IBitmapFontCharacter
 export interface IBitmapFontOptions
 {
     chars?: string | (string | string[])[];
-    name?: string;
     resolution?: number;
     padding?: number;
     textureWidth?: number;
@@ -43,7 +42,8 @@ export class BitmapFont
      * @readonly
      * @static
      * @member {string[][]}
-     * @example BitmapFont.from({ chars: BitmapFont.ALPHA, name: "ExampleFont" })
+     * @example
+     * BitmapFont.from("ExampleFont", style, { chars: BitmapFont.ALPHA })
      */
     public static readonly ALPHA = [['a', 'z'], ['A', 'Z'], ' '];
 
@@ -52,7 +52,8 @@ export class BitmapFont
      * @readonly
      * @static
      * @member {string[][]}
-     * @example BitmapFont.from({ chars: BitmapFont.NUMERIC, name: "ExampleFont" })
+     * @example
+     * BitmapFont.from("ExampleFont", style, { chars: BitmapFont.NUMERIC })
      */
     public static readonly NUMERIC = [['0', '9']];
 
@@ -83,7 +84,7 @@ export class BitmapFont
      * @property {number} textureWidth=2048
      * @property {number} textureHeight=2048
      * @property {number} padding=4
-     * @property {string|string[]|string[][]} chars=BitmapFont.ALPHANUMERIC
+     * @property {string|string[]|string[][]} chars=PIXI.BitmapFont.ALPHANUMERIC
      */
     public static readonly defaultOptions: IBitmapFontOptions = {
         resolution: 1,
@@ -315,9 +316,9 @@ export class BitmapFont
      * @param {string} name - The name of the custom font to use with BitmapText.
      * @param {PIXI.ITextStyle|PIXI.TextStyle} [style] - Style options to render with BitmapFont.
      * @param {PIXI.IBitmapFontOptions} [options] - Setup options for font or name of the font.
-     * @param {string|string[]|string[][]} [options.chars=BitmapFont.ALPHANUMERIC] - characters included in the font set.
-     *      You can also use ranges. For example, `[['a', 'z'], ['A', 'Z'], "!@#$%^&*()~{}[] "]`. Don't forget to
-     *      include spaces ' ' in your character set!
+     * @param {string|string[]|string[][]} [options.chars=PIXI.BitmapFont.ALPHANUMERIC] - characters included
+     *      in the font set. You can also use ranges. For example, `[['a', 'z'], ['A', 'Z'], "!@#$%^&*()~{}[] "]`.
+     *      Don't forget to include spaces ' ' in your character set!
      * @param {number} [options.resolution=1] - Render resolution for glyphs.
      * @param {number} [options.textureWidth=2048] - Optional width of atlas, smaller values to reduce memory.
      * @param {number} [options.textureHeight=2048] - Optional height of atlas, smaller values to reduce memory.
@@ -476,10 +477,10 @@ export class BitmapFont
 /**
  * @memberof PIXI
  * @interface IBitmapFontOptions
- * @property {string | string[] | string[][]} chars - the character set to generate
- * @property {number} resolution - the resolution for rendering
- * @property {number} padding - the padding between glyphs in the atlas
- * @property {number} textureWidth - the width of the texture atlas
- * @property {number} textureHeight - the height of the texture atlas
+ * @property {string | string[] | string[][]} [chars=PIXI.BitmapFont.ALPHANUMERIC] - the character set to generate
+ * @property {number} [resolution=1] - the resolution for rendering
+ * @property {number} [padding=4] - the padding between glyphs in the atlas
+ * @property {number} [textureWidth=2048] - the width of the texture atlas
+ * @property {number} [textureHeight=2048] - the height of the texture atlas
  */
 
