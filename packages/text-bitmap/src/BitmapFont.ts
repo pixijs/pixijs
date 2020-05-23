@@ -1,12 +1,13 @@
 import { getResolutionOfUrl } from '@pixi/utils';
 import { Rectangle } from '@pixi/math';
 import { Texture, BaseTexture } from '@pixi/core';
+import { TextStyle, TextMetrics } from '@pixi/text';
 import { autoDetectFormat } from './formats';
 import { BitmapFontData } from './BitmapFontData';
+import { resolveCharacters, drawGlyph } from './utils';
 
 import type { Dict } from '@pixi/utils';
-import { TextStyle, TextMetrics, ITextStyle } from '@pixi/text';
-import { resolveCharacters, drawGlyph } from './utils';
+import type { ITextStyle } from '@pixi/text';
 
 export interface IBitmapFontCharacter
 {

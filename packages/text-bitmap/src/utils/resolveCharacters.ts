@@ -12,52 +12,48 @@ export function resolveCharacters(chars: string | (string | string[])[]): string
     // Split the chars string into individual characters
     if (typeof chars === 'string')
     {
-        chars = chars.split('');
+        chars = [chars];
     }
+
     // Handle an array of characters+ranges
-    else if (chars.find((elem) => Array.isArray(elem)))
+    const result: string[] = [];
+
+    for (let i = 0, j = chars.length; i < j; i++)
     {
-        const flatChars = [];
+        const item = chars[i];
 
-        for (let i = 0, j = chars.length; i < j; i++)
+        // Handle range delimited by start/end chars
+        if (Array.isArray(item))
         {
-            const elem = chars[i];
-
-            // Handle range delimited by start/end chars
-            if (Array.isArray(elem))
+            if (item.length !== 2)
             {
-                if (elem.length !== 2)
-                {
-                    throw new Error(`[BitmapFont]: Invalid character range length, expecting 2 got ${elem.length}.`);
-                }
-
-                const startCode = elem[0].charCodeAt(0);
-                const endCode = elem[1].charCodeAt(0);
-
-                if (endCode < startCode)
-                {
-                    throw new Error('[BitmapFont]: Invalid character range.');
-                }
-
-                for (let i = startCode, j = endCode; i <= j; i++)
-                {
-                    flatChars.push(String.fromCharCode(i));
-                }
+                throw new Error(`[BitmapFont]: Invalid character range length, expecting 2 got ${item.length}.`);
             }
-            // Handle a character set string
-            else
+
+            const startCode = item[0].charCodeAt(0);
+            const endCode = item[1].charCodeAt(0);
+
+            if (endCode < startCode)
             {
-                flatChars.push(...elem.split(''));
+                throw new Error('[BitmapFont]: Invalid character range.');
+            }
+
+            for (let i = startCode, j = endCode; i <= j; i++)
+            {
+                result.push(String.fromCharCode(i));
             }
         }
-
-        if (flatChars.length === 0)
+        // Handle a character set string
+        else
         {
-            throw new Error('[BitmapFont]: Empty set when resolving characters.');
+            result.push(...item.split(''));
         }
-
-        chars = flatChars;
     }
 
-    return chars as string[];
+    if (result.length === 0)
+    {
+        throw new Error('[BitmapFont]: Empty set when resolving characters.');
+    }
+
+    return result;
 }
