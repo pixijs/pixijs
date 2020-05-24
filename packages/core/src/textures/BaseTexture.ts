@@ -72,7 +72,7 @@ export class BaseTexture extends EventEmitter
     public type?: TYPES;
     public target?: TARGETS;
 
-    protected uid: number;
+    public readonly uid: number;
     touched: number;
     isPowerOfTwo: boolean;
 
