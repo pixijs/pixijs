@@ -58,7 +58,6 @@ const charRenderDataPool: CharRenderData[] = [];
  * @extends PIXI.Container
  * @memberof PIXI
  */
-
 export class BitmapText extends Container
 {
     public roundPixels: boolean;
