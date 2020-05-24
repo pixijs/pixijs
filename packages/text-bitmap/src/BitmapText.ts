@@ -43,7 +43,7 @@ const charRenderDataPool: CharRenderData[] = [];
  *
  * To split a line you can use '\n', '\r' or '\r\n' in your string.
  *
- * Pixi can can auto generate the fonts for you or you can generate the fnt files using
+ * PixiJS can auto-generate fonts on-the-fly using BitmapFont or use fnt files provided by:
  * http://www.angelcode.com/products/bmfont/ for Windows or
  * http://www.bmglyph.com/ for Mac.
  *
