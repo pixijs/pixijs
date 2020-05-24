@@ -75,7 +75,7 @@ export class BitmapText extends Container
         tint: number;
         align: BitmapTextAlign;
     };
-    protected _currentMeshes: Mesh[];
+    protected _activePagesMeshData: PageMeshData[];
     protected _tint = 0xFFFFFF;
 
     /**
@@ -93,7 +93,7 @@ export class BitmapText extends Container
     {
         super();
 
-        this._currentMeshes = [];
+        this._activePagesMeshData = [];
 
         /**
          * Private tracker for the width of the overall text
@@ -256,17 +256,12 @@ export class BitmapText extends Container
                 pos.x += charData.kerning[prevCharCode];
             }
 
-            let charRenderData = charRenderDataPool.pop();
-
-            if (!charRenderData)
-            {
-                charRenderData = {
-                    texture: Texture.EMPTY,
-                    line: 0,
-                    charCode: 0,
-                    position: new Point(),
-                };
-            }
+            const charRenderData = charRenderDataPool.pop() || {
+                texture: Texture.EMPTY,
+                line: 0,
+                charCode: 0,
+                position: new Point(),
+            };
 
             charRenderData.texture = charData.texture;
             charRenderData.line = line;
@@ -333,8 +328,7 @@ export class BitmapText extends Container
 
         const pagesMeshData: Record<number, PageMeshData> = {};
 
-        // new Map<BaseTexture, PageMeshData>();
-        const meshesToAdd: Mesh[] = [];
+        const newPagesMeshData: PageMeshData[] = [];
 
         for (let i = 0; i < lenChars; i++)
         {
@@ -375,7 +369,7 @@ export class BitmapText extends Container
                 pageMeshData.mesh.texture = new Texture(texture.baseTexture);
                 pageMeshData.mesh.tint = this._tint;
 
-                meshesToAdd.push(pageMeshData.mesh);
+                newPagesMeshData.push(pageMeshData);
 
                 pagesMeshData[baseTextureUid] = pageMeshData;
             }
@@ -383,25 +377,32 @@ export class BitmapText extends Container
             pagesMeshData[baseTextureUid].total++;
         }
 
-        const currentMeshes = this._currentMeshes;
+        const currentMeshes = this._activePagesMeshData;
 
+        // lets find any previously active pageMeshDatas that are no longer required for
+        // the updated text (if any), removed and return them to the pool.
         for (let i = 0; i < currentMeshes.length; i++)
         {
-            if (meshesToAdd.indexOf(currentMeshes[i]) === -1)
+            if (newPagesMeshData.indexOf(currentMeshes[i]) === -1)
             {
-                this.removeChild(currentMeshes[i]);
+                this.removeChild(currentMeshes[i].mesh);
+
+                pageMeshDataPool.push(currentMeshes[i]);
             }
         }
 
-        for (let i = 0; i < meshesToAdd.length; i++)
+        // next lets add any new meshes, that have not yet been added to this BitmapText
+        // we only add if its not already a child of this BitmapObject
+        for (let i = 0; i < newPagesMeshData.length; i++)
         {
-            if (meshesToAdd[i].parent !== this)
+            if (newPagesMeshData[i].mesh.parent !== this)
             {
-                this.addChild(meshesToAdd[i]);
+                this.addChild(newPagesMeshData[i].mesh);
             }
         }
 
-        this._currentMeshes = meshesToAdd;
+        // active page mesh datas are set to be the new pages added.
+        this._activePagesMeshData = newPagesMeshData;
 
         for (const i in pagesMeshData)
         {
@@ -513,12 +514,6 @@ export class BitmapText extends Container
             indexBuffer.update();
         }
 
-        // return back to the pool..
-        for (const i in pagesMeshData)
-        {
-            pageMeshDataPool.push(pagesMeshData[i]);
-        }
-
         for (let i = 0; i < chars.length; i++)
         {
             charRenderDataPool.push(chars[i]);
@@ -578,9 +573,9 @@ export class BitmapText extends Container
 
         this._tint = value;
 
-        for (let i = 0; i < this._currentMeshes.length; i++)
+        for (let i = 0; i < this._activePagesMeshData.length; i++)
         {
-            this._currentMeshes[i].tint = value;
+            this._activePagesMeshData[i].tint = value;
         }
     }
 
