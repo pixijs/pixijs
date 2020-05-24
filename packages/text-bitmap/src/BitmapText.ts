@@ -575,7 +575,7 @@ export class BitmapText extends Container
 
         for (let i = 0; i < this._activePagesMeshData.length; i++)
         {
-            this._activePagesMeshData[i].tint = value;
+            this._activePagesMeshData[i].mesh.tint = value;
         }
     }
 
