@@ -8,7 +8,8 @@ import { BitmapFont } from './BitmapFont';
 import type { Dict } from '@pixi/utils';
 import type { Rectangle } from '@pixi/math';
 import type { Texture } from '@pixi/core';
-import type { IBitmapTextStyle, BitmapTextAlign, IBitmapTextFontDescriptor } from './BitmapTextStyle';
+import type { IBitmapTextStyle, IBitmapTextFontDescriptor } from './BitmapTextStyle';
+import type { TextStyleAlign as BitmapTextAlign } from '@pixi/text';
 import type { BitmapFontData } from './BitmapFontData';
 
 /**

@@ -152,7 +152,7 @@ export class BitmapFontLoader
     /**
      * Replacement for NodeJS's path.dirname
      * @private
-     * @param {string} url Path to get directory for
+     * @param {string} url - Path to get directory for
      */
     private static dirname(url: string): string
     {

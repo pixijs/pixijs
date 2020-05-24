@@ -5,7 +5,7 @@
  *
  * @function nextPow2
  * @memberof PIXI.utils
- * @param {number} v input value
+ * @param {number} v - input value
  * @return {number}
  */
 export function nextPow2(v: number): number
@@ -26,7 +26,7 @@ export function nextPow2(v: number): number
  *
  * @function isPow2
  * @memberof PIXI.utils
- * @param {number} v input value
+ * @param {number} v - input value
  * @return {boolean} `true` if value is power of two
  */
 export function isPow2(v: number): boolean
@@ -39,7 +39,7 @@ export function isPow2(v: number): boolean
  *
  * @function log2
  * @memberof PIXI.utils
- * @param {number} v input value
+ * @param {number} v - input value
  * @return {number} logarithm base 2
  */
 export function log2(v: number): number

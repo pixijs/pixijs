@@ -36,7 +36,7 @@ export class MaskData
     /**
      * Create MaskData
      *
-     * @param {PIXI.DisplayObject} [maskObject=null] object that describes the mask
+     * @param {PIXI.DisplayObject} [maskObject=null] - object that describes the mask
      */
     constructor(maskObject: IMaskTarget = null)
     {
