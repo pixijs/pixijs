@@ -1,15 +1,16 @@
 import { getResolutionOfUrl } from '@pixi/utils';
 import { Rectangle } from '@pixi/math';
 import { Texture, BaseTexture } from '@pixi/core';
+import { TextStyle, TextMetrics } from '@pixi/text';
 import { autoDetectFormat } from './formats';
 import { BitmapFontData } from './BitmapFontData';
+import { resolveCharacters, drawGlyph } from './utils';
 
 import type { Dict } from '@pixi/utils';
-import { TextStyle, TextMetrics, ITextStyle } from '@pixi/text';
-import { generateFillStyle } from './utils/generateFillStyle';
-import { hex2rgb, string2hex } from '@pixi/utils';
+import type { ITextStyle } from '@pixi/text';
 
-interface IBitmapFontCharacter {
+export interface IBitmapFontCharacter
+{
     xOffset: number;
     yOffset: number;
     xAdvance: number;
@@ -18,14 +19,14 @@ interface IBitmapFontCharacter {
     kerning: Dict<number>;
 }
 
-// Internal map of available fonts, by name
-const available: Dict<BitmapFont> = {};
-
-// Default dimensions of the bitmap font atlas texture
-const BMT_DIMEN = 2048;
-
-// Default padding b/w glyphs in the bitmap font atlas
-const BMT_PADDING = 4;
+export interface IBitmapFontOptions
+{
+    chars?: string | (string | string[])[];
+    resolution?: number;
+    padding?: number;
+    textureWidth?: number;
+    textureHeight?: number;
+}
 
 /**
  * BitmapFont represents a typeface available for use with the BitmapText class. Use the `install`
@@ -36,10 +37,76 @@ const BMT_PADDING = 4;
  */
 export class BitmapFont
 {
+    /**
+     * This character set includes all the letters in the alphabet (both lower- and upper- case).
+     * @readonly
+     * @static
+     * @member {string[][]}
+     * @example
+     * BitmapFont.from("ExampleFont", style, { chars: BitmapFont.ALPHA })
+     */
+    public static readonly ALPHA = [['a', 'z'], ['A', 'Z'], ' '];
+
+    /**
+     * This character set includes all decimal digits (from 0 to 9).
+     * @readonly
+     * @static
+     * @member {string[][]}
+     * @example
+     * BitmapFont.from("ExampleFont", style, { chars: BitmapFont.NUMERIC })
+     */
+    public static readonly NUMERIC = [['0', '9']];
+
+    /**
+     * This character set is the union of `BitmapFont.ALPHA` and `BitmapFont.NUMERIC`.
+     * @readonly
+     * @static
+     * @member {string[][]}
+     */
+    public static readonly ALPHANUMERIC = [['a', 'z'], ['A', 'Z'], ['0', '9'], ' '];
+
+    /**
+     * This character set consists of all the ASCII table.
+     * @readonly
+     * @static
+     * @member {string[][]}
+     * @see http://www.asciitable.com/
+     */
+    public static readonly ASCII = [[' ', '~']];
+
+    /**
+     * Collection of default options when using `BitmapFont.from`.
+     *
+     * @readonly
+     * @static
+     * @member {PIXI.IBitmapFontOptions}
+     * @property {number} resolution=1
+     * @property {number} textureWidth=2048
+     * @property {number} textureHeight=2048
+     * @property {number} padding=4
+     * @property {string|string[]|string[][]} chars=PIXI.BitmapFont.ALPHANUMERIC
+     */
+    public static readonly defaultOptions: IBitmapFontOptions = {
+        resolution: 1,
+        textureWidth: 2048,
+        textureHeight: 2048,
+        padding: 4,
+        chars: BitmapFont.ALPHANUMERIC,
+    };
+
+    /**
+     * Collection of available/installed fonts.
+     *
+     * @readonly
+     * @static
+     * @member {Object.<string, PIXI.BitmapFont>}
+     */
+    public static readonly available: Dict<BitmapFont> = {};
     public readonly font: string;
     public readonly size: number;
     public readonly lineHeight: number;
     public readonly chars: Dict<IBitmapFontCharacter>;
+    private readonly pageTextures: Dict<Texture>;
 
     /**
      * @param {PIXI.BitmapFontData} data
@@ -51,7 +118,7 @@ export class BitmapFont
         const [common] = data.common;
         const [page] = data.page;
         const res = getResolutionOfUrl(page.file);
-        const pagesTextures: Dict<Texture> = {};
+        const pageTextures: Dict<Texture> = {};
 
         /**
          * The name of the font face.
@@ -85,13 +152,22 @@ export class BitmapFont
          */
         this.chars = {};
 
+        /**
+         * The map of base page textures (i.e., sheets of glyphs).
+         *
+         * @member {object}
+         * @readonly
+         * @private
+         */
+        this.pageTextures = pageTextures;
+
         // Convert the input Texture, Textures or object
         // into a page Texture lookup by "id"
         for (const i in data.page)
         {
             const { id, file } = data.page[i];
 
-            pagesTextures[id] = textures instanceof Array
+            pageTextures[id] = textures instanceof Array
                 ? textures[i] : textures[file];
         }
 
@@ -110,8 +186,8 @@ export class BitmapFont
             xadvance /= res;
 
             const rect = new Rectangle(
-                x + (pagesTextures[page].frame.x / res),
-                y + (pagesTextures[page].frame.y / res),
+                x + (pageTextures[page].frame.x / res),
+                y + (pageTextures[page].frame.y / res),
                 width,
                 height
             );
@@ -122,7 +198,7 @@ export class BitmapFont
                 xAdvance: xadvance,
                 kerning: {},
                 texture: new Texture(
-                    pagesTextures[page].baseTexture,
+                    pageTextures[page].baseTexture,
                     rect
                 ),
                 page,
@@ -153,10 +229,18 @@ export class BitmapFont
         for (const id in this.chars)
         {
             this.chars[id].texture.destroy();
+            this.chars[id].texture = null;
+        }
+
+        for (const id in this.pageTextures)
+        {
+            this.pageTextures[id].destroy(true);
+            this.pageTextures[id] = null;
         }
 
         // Set readonly null.
         (this as any).chars = null;
+        (this as any).pageTextures = null;
     }
 
     /**
@@ -201,7 +285,7 @@ export class BitmapFont
 
         const font = new BitmapFont(fontData, textures);
 
-        available[font.font] = font;
+        BitmapFont.available[font.font] = font;
 
         return font;
     }
@@ -214,7 +298,7 @@ export class BitmapFont
      */
     public static uninstall(name: string): void
     {
-        const font = available[name];
+        const font = BitmapFont.available[name];
 
         if (!font)
         {
@@ -222,93 +306,53 @@ export class BitmapFont
         }
 
         font.destroy();
-        delete available[name];
+        delete BitmapFont.available[name];
     }
-
-    /**
-     * Collection of available fonts.
-     *
-     * @readonly
-     * @static
-     * @member {Object.<string, PIXI.BitmapFont>}
-     */
-    public static get available(): Dict<BitmapFont>
-    {
-        return available;
-    }
-
-    /**
-     * This character set includes all the letters in the alphabet (both lower- and upper- case).
-     * @readonly
-     * @static
-     * @member {string[][]}
-     * @example BitmapFont.from({ chars: [...BitmapFont.ALPHA], name: "ExampleFont" })
-     */
-    public static readonly ALPHA = [['a', 'z'], ['A', 'Z'], ' '];
-
-    /**
-     * This character set includes all decimal digits (from 0 to 9).
-     * @readonly
-     * @static
-     * @member {string[][]}
-     * @example BitmapFont.from({ chars: [...BitmapFont.NUMERIC], name: "ExampleFont" })
-     */
-    public static readonly NUMERIC = [['0', '9']];
-
-    /**
-     * This character set is the union of `BitmapFont.ALPHA` and `BitmapFont.NUMERIC`.
-     * @readonly
-     * @static
-     * @member {string[][]}
-     */
-    public static readonly ALPHANUMERIC = [['a', 'z'], ['A', 'Z'], ['0', '9'], ' '];
-
-    /**
-     * This character set consists of all the ASCII table.
-     * @readonly
-     * @static
-     * @member {string[][]}
-     * @see http://www.asciitable.com/
-     */
-    public static readonly ASCII = [[' ', '~']];
 
     /**
      * Generates a bitmap-font for the given style and character set. This does not support
      * kernings yet.
      *
-     * @param {PIXI.IBitmapFontFactoryOptions} options - includes all `ITextStyle` properties.
-     * @param {string|string[]} options.chars - characters included in the font set. You can also
-     *      use ranges. For example, `[['a', 'z'], ['A', 'Z'], "!@#$%^&*()~`{}[]"]. Don't forget to
-     *      include spaces ' ' in your character set!
-     * @param {number} [options.resolution=1] - optional resolution to render the glyphs at
-     * @return {PIXI.BitmapFont} font generated by style options.
+     * @param {string} name - The name of the custom font to use with BitmapText.
+     * @param {PIXI.ITextStyle|PIXI.TextStyle} [style] - Style options to render with BitmapFont.
+     * @param {PIXI.IBitmapFontOptions} [options] - Setup options for font or name of the font.
+     * @param {string|string[]|string[][]} [options.chars=PIXI.BitmapFont.ALPHANUMERIC] - characters included
+     *      in the font set. You can also use ranges. For example, `[['a', 'z'], ['A', 'Z'], "!@#$%^&*()~{}[] "]`.
+     *      Don't forget to include spaces ' ' in your character set!
+     * @param {number} [options.resolution=1] - Render resolution for glyphs.
+     * @param {number} [options.textureWidth=2048] - Optional width of atlas, smaller values to reduce memory.
+     * @param {number} [options.textureHeight=2048] - Optional height of atlas, smaller values to reduce memory.
+     * @param {number} [options.padding=4] - Padding between glyphs on texture atlas.
+     * @return {PIXI.BitmapFont} Font generated by style options.
      * @static
      * @example
-     * const font = PIXI.BitmapFont.from({
-     *     chars: [['a', 'z'], ['A', 'Z'], "!#$%^&*()~`{}[]"]
-     *     name: "TitleFont", // optional
+     * PIXI.BitmapFont.from("TitleFont", {
      *     fontFamily: "Arial",
      *     fontSize: 12,
      *     strokeThickness: 2,
      *     fill: "purple"
      * });
      *
-     * const text = new PIXI.BitmapText("This is an example using Pixi's BitmapText+Font", font);
-     *
      * const title = new PIXI.BitmapText("This is the title", { font: "TitleFont" });
      */
-    public static from(options: IBitmapFontOptions, textStyle?: TextStyle | Partial<ITextStyle>): BitmapFont
+    public static from(name: string, textStyle?: TextStyle | Partial<ITextStyle>, options?: IBitmapFontOptions): BitmapFont
     {
-        const name = options.name;
-        const chars = processCharData(options.chars);// eslint-disable-line @typescript-eslint/no-use-before-define
-        const padding = options.padding || BMT_PADDING;
-        const resolution = options.resolution || 1;
-        const textureWidth = options.textureWidth || BMT_DIMEN;
-        const textureHeight = options.textureHeight || BMT_DIMEN;
+        if (!name)
+        {
+            throw new Error('[BitmapFont] Property `name` is required.');
+        }
 
+        const {
+            chars,
+            padding,
+            resolution,
+            textureWidth,
+            textureHeight } = Object.assign(
+            {}, BitmapFont.defaultOptions, options);
+
+        const charsList = resolveCharacters(chars);
         const style = textStyle instanceof TextStyle ? textStyle : new TextStyle(textStyle);
         const lineWidth = textureWidth;
-
         const fontData = new BitmapFontData();
 
         fontData.info[0] = {
@@ -329,7 +373,7 @@ export class BitmapFont
         const baseTextures = [];
         const textures: Texture[] = [];
 
-        for (let i = 0; i < chars.length; i++)
+        for (let i = 0; i < charsList.length; i++)
         {
             if (!canvas)
             {
@@ -350,7 +394,7 @@ export class BitmapFont
             }
 
             // Measure glyph dimensions
-            const metrics = TextMetrics.measureText(chars[i], style, false, canvas);
+            const metrics = TextMetrics.measureText(charsList[i], style, false, canvas);
             const width = metrics.width;
             const height = Math.ceil(metrics.height);
 
@@ -363,7 +407,8 @@ export class BitmapFont
                 if (positionY === 0)
                 {
                     // We don't want user debugging an infinite loop (or do we? :)
-                    throw new Error(`textureHeight ${textureHeight}px is too small for ${style.fontSize}px fonts`);
+                    throw new Error(`[BitmapFont] textureHeight ${textureHeight}px is `
+                        + `too small for ${style.fontSize}px fonts`);
                 }
 
                 // Create new atlas once current has filled up
@@ -391,24 +436,12 @@ export class BitmapFont
                 continue;
             }
 
-            drawGlyph(// eslint-disable-line @typescript-eslint/no-use-before-define
-                canvas,
-                context,
-                metrics,
-                positionX,
-                positionY,
-                resolution,
-                style
-            );
+            drawGlyph(canvas, context, metrics, positionX, positionY, resolution, style);
 
             // Unique (numeric) ID mapping to this glyph
             const id = metrics.text.charCodeAt(0);
 
             // Create a texture holding just the glyph
-            /* textures[id] = new Texture(baseTexture, new Rectangle(positionX / resolution, positionY / resolution,
-                textureGlyphWidth,
-                height));*/
-
             fontData.char[id] = {
                 id,
                 page: textures.length - 1,
@@ -429,185 +462,25 @@ export class BitmapFont
 
         const font = new BitmapFont(fontData, textures);
 
-        if (name)
+        // Make it easier to replace a font
+        if (BitmapFont.available[name] !== undefined)
         {
-            BitmapFont.available[name] = font;
+            BitmapFont.uninstall(name);
         }
+
+        BitmapFont.available[name] = font;
 
         return font;
     }
 }
 
-// TODO: Prevent code duplication b/w drawGlyph & Text#updateText
-
-/**
- * Draws the glyph `metrics.text` on the given canvas.
- *
- * Ignored because not directly exposed.
- *
- * @ignore
- * @param {HTMLCanvasElement} canvas
- * @param {CanvasRenderingContext2D} context
- * @param {TextMetrics} metrics
- * @param {number} x
- * @param {number} y
- * @param {number} resolution
- * @param {TextStyle} style
- */
-function drawGlyph(
-    canvas: HTMLCanvasElement,
-    context: CanvasRenderingContext2D,
-    metrics: TextMetrics,
-    x: number,
-    y: number,
-    resolution: number,
-    style: TextStyle
-): void
-{
-    const char = metrics.text;
-    const fontProperties = metrics.fontProperties;
-
-    context.translate(x, y);
-    context.scale(resolution, resolution);
-
-    const tx = style.strokeThickness / 2;
-    const ty = -(style.strokeThickness / 2);
-
-    context.font = style.toFontString();
-    context.lineWidth = style.strokeThickness;
-    context.textBaseline = style.textBaseline;
-    context.lineJoin = style.lineJoin;
-    context.miterLimit = style.miterLimit;
-
-    // set canvas text styles
-    context.fillStyle = generateFillStyle(canvas, context, style, resolution, [char], metrics);
-    context.strokeStyle = style.stroke as string;
-
-    context.font = style.toFontString();
-    context.lineWidth = style.strokeThickness;
-    context.textBaseline = style.textBaseline;
-    context.lineJoin = style.lineJoin;
-    context.miterLimit = style.miterLimit;
-
-    // set canvas text styles
-    context.fillStyle = generateFillStyle(canvas, context, style, resolution, [char], metrics);
-    context.strokeStyle = style.stroke as string;
-
-    const dropShadowColor = style.dropShadowColor;
-    const rgb = hex2rgb(typeof dropShadowColor === 'number' ? dropShadowColor : string2hex(dropShadowColor));
-
-    if (style.dropShadow)
-    {
-        context.shadowColor = `rgba(${rgb[0] * 255},${rgb[1] * 255},${rgb[2] * 255},${style.dropShadowAlpha})`;
-        context.shadowBlur = style.dropShadowBlur;
-        context.shadowOffsetX = Math.cos(style.dropShadowAngle) * style.dropShadowDistance;
-        context.shadowOffsetY = Math.sin(style.dropShadowAngle) * style.dropShadowDistance;
-    }
-    else
-    {
-        context.shadowColor = '0';
-        context.shadowBlur = 0;
-        context.shadowOffsetX = 0;
-        context.shadowOffsetY = 0;
-    }
-
-    if (style.stroke && style.strokeThickness)
-    {
-        context.strokeText(char, tx, ty + metrics.lineHeight - fontProperties.descent);
-    }
-    if (style.fill)
-    {
-        context.fillText(char, tx, ty + metrics.lineHeight - fontProperties.descent);
-    }
-
-    context.setTransform();
-
-    context.fillStyle = 'rgba(0, 0, 0, 0)';
-}
-
-/**
- * Processes the passed character set data and returns a flattened array of all the characters.
- *
- * Ignored because not directly exposed.
- *
- * @ignore
- * @param {string | string[]} chars
- * @returns {string[]}
- */
-function processCharData(chars: string | string[]): string[]
-{
-    // Split the chars string into individual characters
-    if (typeof chars === 'string')
-    {
-        chars = chars.split('');
-    }
-    // Handle an array of characters+ranges
-    else if (chars.find((elem) => Array.isArray(elem)))
-    {
-        const flatChars = [];
-
-        for (let i = 0, j = chars.length; i < j; i++)
-        {
-            const elem = chars[i];
-
-            // Handle range delimited by start/end chars
-            if (Array.isArray(elem))
-            {
-                if (elem.length !== 2)
-                {
-                    let suffix;
-
-                    switch (i)
-                    {
-                        case 1: suffix = 'st'; break;
-                        case 2: suffix = 'nd'; break;
-                        case 3: suffix = 'rd'; break;
-                        default: suffix = 'th';
-                    }
-
-                    throw new Error('[BitmapFont]: BitmapFont.from was provided a character range is more than two limits. '
-                        + `This is the ${i}${suffix} input in the character set.`);
-                }
-
-                for (let i = elem[0].charCodeAt(0), j = elem[1].charCodeAt(0); i <= j; i++)
-                {
-                    flatChars.push(String.fromCharCode(i));
-                }
-            }
-            // Handle a character set string
-            else
-            {
-                flatChars.push(...elem.split(''));
-            }
-        }
-
-        if (flatChars.length === 0)
-        {
-            throw new Error('[BitmapFont]: No characters were passed when creating character atlas!');
-        }
-
-        chars = flatChars;
-    }
-
-    return chars;
-}
-
-export interface IBitmapFontOptions
-{
-    chars: string | string[];
-    name?: string;
-    resolution?: number;
-    padding?: number;
-    textureWidth?: number;
-    textureHeight?: number;
-}
-
 /**
  * @memberof PIXI
  * @interface IBitmapFontOptions
- * @property {string | string[]} chars - the character set to generate
- * @property {number} resolution - the resolution for rendering
- * @property {number} padding - the padding between glyphs in the atlas
- * @property {number} textureWidth - the width of the texture atlas
- * @property {number} textureHeight - the height of the texture atlas
+ * @property {string | string[] | string[][]} [chars=PIXI.BitmapFont.ALPHANUMERIC] - the character set to generate
+ * @property {number} [resolution=1] - the resolution for rendering
+ * @property {number} [padding=4] - the padding between glyphs in the atlas
+ * @property {number} [textureWidth=2048] - the width of the texture atlas
+ * @property {number} [textureHeight=2048] - the height of the texture atlas
  */
+
