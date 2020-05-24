@@ -60,6 +60,8 @@ const temp = new Float32Array(3);
 // a default shaders map used by graphics..
 const DEFAULT_SHADERS: {[key: string]: Shader} = {};
 
+export interface Graphics extends GlobalMixins.Graphics, Container {}
+
 /**
  * The Graphics class contains methods used to draw primitive shapes such as lines, circles and
  * rectangles to the display, and to color and fill them.
@@ -249,7 +251,7 @@ export class Graphics extends Container
 
     /**
      * Creates a new Graphics object with the same values as this one.
-     * Note that the only the properties of the object are cloned, not its transform (position,scale,etc)
+     * Note that only the geometry of the object is cloned, not its transform (position,scale,etc)
      *
      * @return {PIXI.Graphics} A clone of the graphics object
      */
@@ -373,7 +375,7 @@ export class Graphics extends Container
      * @param {number} [options.color=0x0] - color of the line to draw, will update the objects stored style.
      *  Default 0xFFFFFF if texture present.
      * @param {number} [options.alpha=1] - alpha of the line to draw, will update the objects stored style
-     * @param {PIXI.Matrix} [options.matrix=null] Texture matrix to transform texture
+     * @param {PIXI.Matrix} [options.matrix=null] - Texture matrix to transform texture
      * @param {number} [options.alignment=0.5] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outter)
      * @param {boolean} [options.native=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
      * @param {PIXI.LINE_CAP}[options.cap=PIXI.LINE_CAP.BUTT] - line cap style
