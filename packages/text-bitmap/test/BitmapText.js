@@ -71,7 +71,7 @@ describe('PIXI.BitmapText', function ()
             font: this.font.font,
         });
 
-        expect(text.children.length).to.equal(4);
+        expect(text._activePagesMeshData[0].total).to.equal(4);
     });
     it('should support font without page reference', function ()
     {
