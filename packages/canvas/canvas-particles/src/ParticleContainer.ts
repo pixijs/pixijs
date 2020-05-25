@@ -1,4 +1,6 @@
 import { ParticleContainer } from '@pixi/particles';
+import type { Sprite } from '@pixi/sprite';
+import type { CanvasRenderer } from '@pixi/canvas-renderer';
 
 /**
  * Renders the object using the Canvas renderer
@@ -7,7 +9,7 @@ import { ParticleContainer } from '@pixi/particles';
  * @private
  * @param {PIXI.CanvasRenderer} renderer - a reference to the canvas renderer
  */
-ParticleContainer.prototype.renderCanvas = function renderCanvas(renderer)
+ParticleContainer.prototype.renderCanvas = function renderCanvas(renderer: CanvasRenderer): void
 {
     if (!this.visible || this.worldAlpha <= 0 || !this.children.length || !this.renderable)
     {
@@ -32,7 +34,7 @@ ParticleContainer.prototype.renderCanvas = function renderCanvas(renderer)
 
     for (let i = 0; i < this.children.length; ++i)
     {
-        const child = this.children[i];
+        const child = this.children[i] as Sprite;
 
         if (!child.visible)
         {
