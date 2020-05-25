@@ -179,7 +179,7 @@ export class BitmapText extends Container
          *
          * @member {boolean}
          */
-        this.dirty = false;
+        this.dirty = true;
 
         /**
          * If true PixiJS will Math.floor() x/y values when rendering, stopping pixel interpolation.
@@ -191,8 +191,6 @@ export class BitmapText extends Container
          * @default false
          */
         this.roundPixels = settings.ROUND_PIXELS;
-
-        this.updateText();
     }
 
     /**
@@ -330,6 +328,13 @@ export class BitmapText extends Container
 
         const newPagesMeshData: PageMeshData[] = [];
 
+        const activePagesMeshData = this._activePagesMeshData;
+
+        for (let i = 0; i < activePagesMeshData.length; i++)
+        {
+            pageMeshDataPool.push(activePagesMeshData[i]);
+        }
+
         for (let i = 0; i < lenChars; i++)
         {
             const texture = chars[i].texture;
@@ -377,17 +382,13 @@ export class BitmapText extends Container
             pagesMeshData[baseTextureUid].total++;
         }
 
-        const currentMeshes = this._activePagesMeshData;
-
         // lets find any previously active pageMeshDatas that are no longer required for
         // the updated text (if any), removed and return them to the pool.
-        for (let i = 0; i < currentMeshes.length; i++)
+        for (let i = 0; i < activePagesMeshData.length; i++)
         {
-            if (newPagesMeshData.indexOf(currentMeshes[i]) === -1)
+            if (newPagesMeshData.indexOf(activePagesMeshData[i]) === -1)
             {
-                this.removeChild(currentMeshes[i].mesh);
-
-                pageMeshDataPool.push(currentMeshes[i]);
+                this.removeChild(activePagesMeshData[i].mesh);
             }
         }
 
@@ -410,7 +411,8 @@ export class BitmapText extends Container
             const total = pageMeshData.total;
 
             // lets only allocate new buffers if we can fit the new text in the current ones..
-            if (!(pageMeshData.indices?.length > 6 * total))
+            // unless that is, we will be batching. Currently batching dose not respect the size property of mesh
+            if (!(pageMeshData.indices?.length > 6 * total) || pageMeshData.vertices.length < Mesh.BATCHABLE_SIZE * 2)
             {
                 pageMeshData.vertices = new Float32Array(4 * 2 * total);
                 pageMeshData.uvs = new Float32Array(4 * 2 * total);
