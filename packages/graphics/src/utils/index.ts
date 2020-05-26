@@ -56,6 +56,6 @@ export const BATCH_POOL: Array<BatchPart> = [];
  * Draw call pool, stores unused draw calls for preventing allocations.
  *
  * @memberof PIXI.graphicsUtils
- * @name {Array<PIXI.BatchDrawCall>} DRAW_CALL_POOL
+ * @member {Array<PIXI.BatchDrawCall>} DRAW_CALL_POOL
  */
 export const DRAW_CALL_POOL: Array<BatchDrawCall> = [];
