@@ -57,7 +57,7 @@ export abstract class DisplayObject extends EventEmitter
     /**
      * Mixes all enumerable properties and methods from a source object to DisplayObject.
      *
-     * @param {object} source The source of properties and methods to mix in.
+     * @param {object} source - The source of properties and methods to mix in.
      */
     static mixin(source: {[x: string]: any}): void
     {
@@ -232,7 +232,7 @@ export abstract class DisplayObject extends EventEmitter
         /**
          * The original, cached mask of the object.
          *
-         * @member {PIXI.Graphics|PIXI.Sprite|null}
+         * @member {PIXI.Container|PIXI.MaskData|null}
          * @protected
          */
         this._mask = null;
@@ -822,9 +822,9 @@ export abstract class DisplayObject extends EventEmitter
      * sprite.mask = graphics;
      * @todo At the moment, PIXI.CanvasRenderer doesn't support PIXI.Sprite as mask.
      *
-     * @member {PIXI.Container|PIXI.MaskData}
+     * @member {PIXI.Container|PIXI.MaskData|null}
      */
-    get mask(): Container|MaskData
+    get mask(): Container|MaskData|null
     {
         return this._mask;
     }

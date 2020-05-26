@@ -17,6 +17,8 @@ function sortChildren(a: DisplayObject, b: DisplayObject): number
     return a.zIndex - b.zIndex;
 }
 
+export interface Container extends GlobalMixins.Container, DisplayObject {}
+
 /**
  * A Container represents a collection of display objects.
  *

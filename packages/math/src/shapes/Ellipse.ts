@@ -13,7 +13,7 @@ export class Ellipse
     public y: number;
     public width: number;
     public height: number;
-    public readonly type: number;
+    public readonly type: SHAPES.ELIP;
 
     /**
      * @param {number} [x=0] - The X coordinate of the center of this ellipse

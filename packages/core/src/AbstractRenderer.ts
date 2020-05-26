@@ -11,7 +11,7 @@ import type { Container } from '@pixi/display';
 
 const tempMatrix = new Matrix();
 
-export interface IRendererOptions
+export interface IRendererOptions extends GlobalMixins.IRendererOptions
 {
     width?: number;
     height?: number;

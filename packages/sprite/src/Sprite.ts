@@ -44,8 +44,6 @@ export class Sprite extends Container
 {
     public blendMode: BLEND_MODES;
     public indices: Uint16Array;
-    public size: number;
-    public start: number;
     public pluginName: string;
 
     _width: number;
@@ -200,8 +198,6 @@ export class Sprite extends Container
         // Batchable stuff..
         // TODO could make this a mixin?
         this.indices = indices;
-        this.size = 4;
-        this.start = 0;
 
         /**
          * Plugin that is responsible for rendering this element.
@@ -540,8 +536,8 @@ export class Sprite extends Container
      * The source can be - frame id, image url, video url, canvas element, video element, base texture
      *
      * @static
-     * @param {string|PIXI.Texture|HTMLCanvasElement|HTMLVideoElement} source Source to create texture from
-     * @param {object} [options] See {@link PIXI.BaseTexture}'s constructor for options.
+     * @param {string|PIXI.Texture|HTMLCanvasElement|HTMLVideoElement} source - Source to create texture from
+     * @param {object} [options] - See {@link PIXI.BaseTexture}'s constructor for options.
      * @return {PIXI.Sprite} The newly created sprite
      */
     static from(source: SpriteSource, options: IBaseTextureOptions): Sprite

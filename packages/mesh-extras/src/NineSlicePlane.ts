@@ -47,10 +47,10 @@ export class NineSlicePlane extends SimplePlane
 
     /**
      * @param {PIXI.Texture} texture - The texture to use on the NineSlicePlane.
-     * @param {number} [leftWidth=10] size of the left vertical bar (A)
-     * @param {number} [topHeight=10] size of the top horizontal bar (C)
-     * @param {number} [rightWidth=10] size of the right vertical bar (B)
-     * @param {number} [bottomHeight=10] size of the bottom horizontal bar (D)
+     * @param {number} [leftWidth=10] - size of the left vertical bar (A)
+     * @param {number} [topHeight=10] - size of the top horizontal bar (C)
+     * @param {number} [rightWidth=10] - size of the right vertical bar (B)
+     * @param {number} [bottomHeight=10] - size of the bottom horizontal bar (D)
      */
     constructor(
         texture: Texture,

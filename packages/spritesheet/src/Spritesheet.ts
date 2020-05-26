@@ -1,8 +1,8 @@
 import { Rectangle } from '@pixi/math';
-import { Texture } from '@pixi/core';
+import { Texture, BaseTexture } from '@pixi/core';
 import { getResolutionOfUrl } from '@pixi/utils';
 import type { Dict } from '@pixi/utils';
-import type { BaseTexture, resources } from '@pixi/core';
+import type { resources } from '@pixi/core';
 
 /**
  * Utility class for maintaining reference to a collection
@@ -44,25 +44,34 @@ export class Spritesheet
     public data: any;
     public resolution: number;
 
+    private _texture: Texture;
     private _frames: Dict<any>;
     private _frameKeys: string[];
     private _batchIndex: number;
     private _callback: (textures: Dict<Texture>) => void;
 
     /**
-     * @param {PIXI.BaseTexture} baseTexture Reference to the source BaseTexture object.
+     * @param {PIXI.BaseTexture|PIXI.Texture} baseTexture - Reference to the source BaseTexture object.
      * @param {Object} data - Spritesheet image data.
      * @param {string} [resolutionFilename] - The filename to consider when determining
      *        the resolution of the spritesheet. If not provided, the imageUrl will
      *        be used on the BaseTexture.
      */
-    constructor(baseTexture: BaseTexture, data: any, resolutionFilename: string = null)
+    constructor(texture: BaseTexture | Texture, data: any, resolutionFilename: string = null)
     {
         /**
-         * Reference to ths source texture
+         * Reference to original source image from the Loader. This reference is retained so we
+         * can destroy the Texture later on. It is never used internally.
+         * @type {PIXI.Texture}
+         * @private
+         */
+        this._texture = texture instanceof Texture ? texture : null;
+
+        /**
+         * Reference to ths source texture.
          * @type {PIXI.BaseTexture}
          */
-        this.baseTexture = baseTexture;
+        this.baseTexture = texture instanceof BaseTexture ? texture : this._texture.baseTexture;
 
         /**
          * A map containing all textures of the sprite sheet.
@@ -322,7 +331,7 @@ export class Spritesheet
     /**
      * Destroy Spritesheet and don't use after this.
      *
-     * @param {boolean} [destroyBase=false] Whether to destroy the base texture as well
+     * @param {boolean} [destroyBase=false] - Whether to destroy the base texture as well
      */
     public destroy(destroyBase = false): void
     {
@@ -336,8 +345,10 @@ export class Spritesheet
         this.textures = null;
         if (destroyBase)
         {
+            this._texture?.destroy();
             this.baseTexture.destroy();
         }
+        this._texture = null;
         this.baseTexture = null;
     }
 }

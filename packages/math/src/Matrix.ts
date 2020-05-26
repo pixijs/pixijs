@@ -263,8 +263,8 @@ export class Matrix
     /**
      * Appends a translation of (x, y) to this transformation.
      *
-     * @param {number} x - translation in x-direction
-     * @param {number} y - translation in y-direction
+     * @param {number} x - How much to translate x by
+     * @param {number} y - How much to translate y by
      * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
      */
     translate(x: number, y: number): this
@@ -278,8 +278,8 @@ export class Matrix
     /**
      * Appends a scaling transform to this matrix.
      *
-     * @param {number} x - horizontal scaling/magnification/minification factor
-     * @param {number} y - vertical scaling/magnification/minification factor
+     * @param {number} x - The amount to scale horizontally
+     * @param {number} y - The amount to scale vertically
      * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
      */
     scale(x: number, y: number): this
