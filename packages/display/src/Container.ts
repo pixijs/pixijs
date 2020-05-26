@@ -515,7 +515,7 @@ export class Container extends DisplayObject
      */
     calculateBounds(rootInv?: Matrix): void
     {
-        if (this._bounds.updateID === this._subtreeBoundsID)
+        if (!rootInv && this._bounds.updateID === this._subtreeBoundsID)
         {
             return;
         }
@@ -569,7 +569,14 @@ export class Container extends DisplayObject
             }
         }
 
-        this._bounds.updateID = this._subtreeBoundsID;
+        if (!rootInv)
+        {
+            this._bounds.updateID = this._subtreeBoundsID;
+        }
+        else
+        {
+            this._bounds.updateID = 0;
+        }
     }
 
     /**
