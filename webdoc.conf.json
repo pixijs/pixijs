@@ -9,6 +9,9 @@
     "plugins": [
         "plugins/markdown"
     ],
+    "template": {
+        "readme": "./README.md"
+    },
     "templates": {
         "cleverLinks"   : false,
         "monospaceLinks": false,
