@@ -5,8 +5,11 @@ import { Matrix, Rectangle } from '@pixi/math';
 import { Bounds } from './Bounds';
 import { MaskData, Renderer } from '@pixi/core';
 
-// Matrices used for prepending inversion matrix to world transformation
-const matrixPool: Array<Matrix> = [];
+// Temp inversion matrix used to calculate local-bounds
+const tempInversionMatrix = new Matrix();
+
+// Temp relative matrix used in calculateBounds when inversion matrix is passed
+let tempRelativeMatrix = new Matrix();
 
 function sortChildren(a: DisplayObject, b: DisplayObject): number
 {
@@ -482,7 +485,7 @@ export class Container extends DisplayObject
         if (this._localBounds.updateID !== this._subtreeBoundsID)
         {
             // Prepend inverse of our world transform on children to get relative transformation
-            const worldTransformInverse = matrixPool.pop() || new Matrix();
+            const worldTransformInverse = tempInversionMatrix;
 
             worldTransformInverse.copyFrom(this.transform.worldTransform);
             worldTransformInverse.invert();
@@ -505,13 +508,18 @@ export class Container extends DisplayObject
      */
     calculateBounds(rootInv?: Matrix): void
     {
+        if (this._bounds.updateID === this._subtreeBoundsID)
+        {
+            return;
+        }
+
         this._bounds.clear();
 
         let worldTransform;
 
         if (rootInv)
         {
-            worldTransform = matrixPool.pop() || new Matrix();
+            worldTransform = tempRelativeMatrix;
             worldTransform.copyFrom(this.transform.worldTransform);
             this.transform.worldTransform.prepend(rootInv);
         }
@@ -521,7 +529,7 @@ export class Container extends DisplayObject
         if (rootInv)
         {
             // swap instead of copy into
-            matrixPool.push(this.transform.worldTransform);
+            tempRelativeMatrix = this.transform.worldTransform;
             this.transform.worldTransform = worldTransform;
         }
 
@@ -554,7 +562,7 @@ export class Container extends DisplayObject
             }
         }
 
-        this._bounds.updateID = this._boundsID;
+        this._bounds.updateID = this._subtreeBoundsID;
     }
 
     /**
