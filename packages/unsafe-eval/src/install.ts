@@ -1,6 +1,8 @@
 import { syncUniforms } from './syncUniforms';
 
-export function install(PIXI)
+import type { Program, UniformGroup } from '@pixi/core';
+
+export function install(PIXI: any): void
 {
     if (!PIXI || !PIXI.systems || !PIXI.systems.ShaderSystem)
     {
@@ -31,9 +33,9 @@ export function install(PIXI)
                 {
                 // do nothing, don't throw error
                 },
-                syncUniforms(group, glProgram)
+                syncUniforms(group: UniformGroup, glProgram: Program)
                 {
-                    const { shader, renderer } = this;
+                    const { shader, renderer } = (this as any);
 
                     /* eslint-disable max-len */
                     syncUniforms(
