@@ -487,7 +487,7 @@ export class Texture extends EventEmitter
      * @param {string|PIXI.Texture} texture - id of a Texture to be removed, or a Texture instance itself
      * @return {PIXI.Texture|null} The Texture that was removed
      */
-    static removeFromCache(texture: Texture): Texture|null
+    static removeFromCache(texture: string|Texture): Texture|null
     {
         if (typeof texture === 'string')
         {
