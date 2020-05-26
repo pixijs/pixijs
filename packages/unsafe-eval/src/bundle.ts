@@ -1,8 +1,8 @@
 import { install } from './install';
 
-if (typeof window.PIXI === 'undefined')
+if (typeof (window as any).PIXI === 'undefined')
 {
     throw new Error('Global PIXI not found.');
 }
 
-install(window.PIXI);
+install((window as any).PIXI);
