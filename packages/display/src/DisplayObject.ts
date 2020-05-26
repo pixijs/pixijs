@@ -308,10 +308,6 @@ export abstract class DisplayObject extends EventEmitter
      * bounds-ID if something has changed, and the subtree bounds-ID.
      *
      * This will throw an error if the display-object does not have a parent.
-     *
-     * TODO - Optimization pass!
-     *
-     * @returns {number} - a +ve value if bounds-ID has been changed!
      */
     updateTransform(): void
     {

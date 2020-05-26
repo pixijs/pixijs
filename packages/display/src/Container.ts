@@ -435,7 +435,14 @@ export class Container extends DisplayObject
             this.sortChildren();
         }
 
-        super.updateTransform();
+        // Update world transformation matrix (along with local transformation matrix)
+        this.transform.updateTransform(this.parent.transform);
+
+        // Recalculate world-alpha value
+        this.worldAlpha = this.alpha * this.parent.worldAlpha;
+
+        // No children?
+        this._subtreeBoundsID = this._boundsID + this.transform._worldID;
 
         for (let i = 0, j = this.children.length; i < j; ++i)
         {
