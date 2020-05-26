@@ -5,6 +5,7 @@ import { Matrix, Rectangle } from '@pixi/math';
 import { Bounds } from './Bounds';
 import { MaskData, Renderer } from '@pixi/core';
 
+// Matrices used for prepending inversion matrix to world transformation
 const matrixPool: Array<Matrix> = [];
 
 function sortChildren(a: DisplayObject, b: DisplayObject): number
@@ -457,8 +458,6 @@ export class Container extends DisplayObject
 
         this._recursivePostUpdateTransform();
 
-        const worldTransformInverse = this.transform.worldTransform.clone().invert();
-
         this.updateTransform();
 
         if (wasNull)
@@ -482,6 +481,12 @@ export class Container extends DisplayObject
 
         if (this._localBounds.updateID !== this._subtreeBoundsID)
         {
+            // Prepend inverse of our world transform on children to get relative transformation
+            const worldTransformInverse = matrixPool.pop() || new Matrix();
+
+            worldTransformInverse.copyFrom(this.transform.worldTransform);
+            worldTransformInverse.invert();
+
             const worldBounds = this._bounds;
 
             this._bounds = this._localBounds;
