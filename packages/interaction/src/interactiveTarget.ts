@@ -45,7 +45,7 @@ export interface InteractiveTarget {
     interactive: boolean;
     interactiveChildren: boolean;
     hitArea: IHitArea;
-    cursor: Cursor;
+    cursor: Cursor | string;
     buttonMode: boolean;
     trackedPointers: {[x: number]: InteractionTrackingData};
     _trackedPointers: {[x: number]: InteractionTrackingData};
