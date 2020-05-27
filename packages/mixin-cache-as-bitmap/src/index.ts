@@ -397,6 +397,11 @@ DisplayObject.prototype._calculateCachedBounds = function _calculateCachedBounds
     this._cacheData.sprite.transform._worldID = this.transform._worldID;
     (this._cacheData.sprite as any)._calculateBounds();
     this._bounds.updateID = (this as any)._boundsID;
+
+    this._bounds.minX = this._cacheData.sprite._bounds.minX;
+    this._bounds.minY = this._cacheData.sprite._bounds.minY;
+    this._bounds.maxX = this._cacheData.sprite._bounds.maxX;
+    this._bounds.maxY = this._cacheData.sprite._bounds.maxY;
 };
 
 /**

@@ -579,6 +579,7 @@ export class Container extends DisplayObject
                 this._bounds.addBounds(child._bounds);
             }
 
+            (child as any)._usedBounds = childBounds;
             child._bounds = realChildBounds;
         }
 
