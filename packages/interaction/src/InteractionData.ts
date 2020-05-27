@@ -1,5 +1,9 @@
 import { Point } from '@pixi/math';
 
+import type { DisplayObject } from '@pixi/display';
+
+export type InteractivePointerEvent = PointerEvent | TouchEvent | MouseEvent;
+
 /**
  * Holds all information related to an Interaction event
  *
@@ -8,6 +12,23 @@ import { Point } from '@pixi/math';
  */
 export class InteractionData
 {
+    public global: Point;
+    public target: DisplayObject;
+    public originalEvent: InteractivePointerEvent;
+    public identifier: number;
+    public isPrimary: boolean;
+    public button: number;
+    public buttons: number;
+    public width: number;
+    public height: number;
+    public tiltX: number;
+    public tiltY: number;
+    public pointerType: string;
+    public pressure = 0;
+    public rotationAngle = 0;
+    public twist = 0;
+    public tangentialPressure = 0;
+
     constructor()
     {
         /**
@@ -135,7 +156,7 @@ export class InteractionData
      * @member {number}
      * @see https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent/pointerId
      */
-    get pointerId()
+    get pointerId(): number
     {
         return this.identifier;
     }
@@ -152,7 +173,7 @@ export class InteractionData
      * @return {PIXI.Point} A point containing the coordinates of the InteractionData position relative
      *  to the DisplayObject
      */
-    getLocalPosition(displayObject, point, globalPos)
+    public getLocalPosition(displayObject: DisplayObject, point?: Point, globalPos?: Point): Point
     {
         return displayObject.worldTransform.applyInverse(globalPos || this.global, point);
     }
@@ -162,34 +183,36 @@ export class InteractionData
      *
      * @param {Touch|MouseEvent|PointerEvent} event - The normalized event data
      */
-    copyEvent(event)
+    public copyEvent(event: Touch | InteractivePointerEvent): void
     {
         // isPrimary should only change on touchstart/pointerdown, so we don't want to overwrite
         // it with "false" on later events when our shim for it on touch events might not be
         // accurate
-        if (event.isPrimary)
+        if ('isPrimary' in event && event.isPrimary)
         {
             this.isPrimary = true;
         }
-        this.button = event.button;
+        this.button = 'button' in event && event.button;
         // event.buttons is not available in all browsers (ie. Safari), but it does have a non-standard
         // event.which property instead, which conveys the same information.
-        this.buttons = Number.isInteger(event.buttons) ? event.buttons : event.which;
-        this.width = event.width;
-        this.height = event.height;
-        this.tiltX = event.tiltX;
-        this.tiltY = event.tiltY;
-        this.pointerType = event.pointerType;
-        this.pressure = event.pressure;
-        this.rotationAngle = event.rotationAngle;
-        this.twist = event.twist || 0;
-        this.tangentialPressure = event.tangentialPressure || 0;
+        const buttons = 'buttons' in event && event.buttons;
+
+        this.buttons = Number.isInteger(buttons) ? buttons : 'which' in event && event.which;
+        this.width = 'width' in event && event.width;
+        this.height = 'height' in event && event.height;
+        this.tiltX = 'tiltX' in event && event.tiltX;
+        this.tiltY = 'tiltY' in event && event.tiltY;
+        this.pointerType = 'pointerType' in event && event.pointerType;
+        this.pressure = 'pressure' in event && event.pressure;
+        this.rotationAngle = 'rotationAngle' in event && event.rotationAngle;
+        this.twist = ('twist' in event && event.twist) || 0;
+        this.tangentialPressure = ('tangentialPressure' in event && event.tangentialPressure) || 0;
     }
 
     /**
      * Resets the data for pooling.
      */
-    reset()
+    public reset(): void
     {
         // isPrimary is the only property that we really need to reset - everything else is
         // guaranteed to be overwritten
