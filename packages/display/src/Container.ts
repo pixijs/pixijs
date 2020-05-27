@@ -11,6 +11,9 @@ const tempInversionMatrix = new Matrix();
 // Temp relative matrix used in calculateBounds when inversion matrix is passed
 let tempRelativeMatrix = new Matrix();
 
+// Pool of temporary bounds
+const tempBoundsPool: Bounds[] = [];
+
 function sortChildren(a: DisplayObject, b: DisplayObject): number
 {
     if (a.zIndex === b.zIndex)
@@ -533,11 +536,15 @@ export class Container extends DisplayObject
 
         this._calculateBounds();
 
+        let childBounds;
+
         if (rootInv)
         {
             // swap instead of copy into
             tempRelativeMatrix = this.transform.worldTransform;
             this.transform.worldTransform = worldTransform;
+
+            childBounds = tempBoundsPool.pop() || new Bounds();
         }
 
         for (let i = 0; i < this.children.length; i++)
@@ -548,6 +555,10 @@ export class Container extends DisplayObject
             {
                 continue;
             }
+
+            const realChildBounds = child._bounds;
+
+            child._bounds = childBounds || child._bounds;
 
             (child as Container).calculateBounds(rootInv);
 
@@ -567,16 +578,16 @@ export class Container extends DisplayObject
             {
                 this._bounds.addBounds(child._bounds);
             }
+
+            child._bounds = realChildBounds;
         }
 
-        if (!rootInv)
+        if (childBounds)
         {
-            this._bounds.updateID = this._subtreeBoundsID;
+            tempBoundsPool.push(childBounds);
         }
-        else
-        {
-            this._bounds.updateID = 0;
-        }
+
+        this._bounds.updateID = this._subtreeBoundsID;
     }
 
     /**
