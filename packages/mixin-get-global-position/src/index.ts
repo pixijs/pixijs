@@ -12,7 +12,7 @@ import { Point } from '@pixi/math';
  *  nice performance boost.
  * @return {PIXI.Point} The updated point.
  */
-DisplayObject.prototype.getGlobalPosition = function getGlobalPosition(point = new Point(), skipUpdate = false)
+DisplayObject.prototype.getGlobalPosition = function getGlobalPosition(point: Point = new Point(), skipUpdate = false): Point
 {
     if (this.parent)
     {
