@@ -1,5 +1,8 @@
 import { Point } from '@pixi/math';
 
+import type { InteractionEvent, InteractionCallback } from './InteractionEvent';
+import type { Container, DisplayObject } from '@pixi/display';
+
 /**
  * Strategy how to search through stage tree for interactive objects
  *
@@ -9,6 +12,8 @@ import { Point } from '@pixi/math';
  */
 export class TreeSearch
 {
+    private readonly _tempPoint: Point;
+
     constructor()
     {
         this._tempPoint = new Point();
@@ -28,7 +33,9 @@ export class TreeSearch
      * @param {boolean} [interactive] - Whether the displayObject is interactive
      * @return {boolean} returns true if the displayObject hit the point
      */
-    recursiveFindHit(interactionEvent, displayObject, func, hitTest, interactive)
+    public recursiveFindHit(interactionEvent: InteractionEvent, displayObject: DisplayObject,
+        func?: InteractionCallback, hitTest?: boolean, interactive?: boolean
+    ): boolean
     {
         if (!displayObject || !displayObject.visible)
         {
@@ -84,7 +91,7 @@ export class TreeSearch
         {
             if (hitTest)
             {
-                if (!(displayObject._mask.containsPoint && displayObject._mask.containsPoint(point)))
+                if (!((displayObject._mask as any).containsPoint && (displayObject._mask as any).containsPoint(point)))
                 {
                     hitTest = false;
                 }
@@ -94,9 +101,9 @@ export class TreeSearch
         // ** FREE TIP **! If an object is not interactive or has no buttons in it
         // (such as a game scene!) set interactiveChildren to false for that displayObject.
         // This will allow PixiJS to completely ignore and bypass checking the displayObjects children.
-        if (hitTestChildren && displayObject.interactiveChildren && displayObject.children)
+        if (hitTestChildren && displayObject.interactiveChildren && (displayObject as Container).children)
         {
-            const children = displayObject.children;
+            const children = (displayObject as Container).children;
 
             for (let i = children.length - 1; i >= 0; i--)
             {
@@ -145,9 +152,9 @@ export class TreeSearch
             if (hitTest && !interactionEvent.target)
             {
                 // already tested against hitArea if it is defined
-                if (!displayObject.hitArea && displayObject.containsPoint)
+                if (!displayObject.hitArea && (displayObject as any).containsPoint)
                 {
-                    if (displayObject.containsPoint(point))
+                    if ((displayObject as any).containsPoint(point))
                     {
                         hit = true;
                     }
@@ -186,7 +193,9 @@ export class TreeSearch
      * @param {boolean} [hitTest] - this indicates if the objects inside should be hit test against the point
      * @return {boolean} returns true if the displayObject hit the point
      */
-    findHit(interactionEvent, displayObject, func, hitTest)
+    public findHit(interactionEvent: InteractionEvent, displayObject: DisplayObject,
+        func?: InteractionCallback, hitTest?: boolean
+    ): void
     {
         this.recursiveFindHit(interactionEvent, displayObject, func, hitTest, false);
     }

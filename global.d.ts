@@ -9,3 +9,13 @@ declare module '*.vert' {
 
     export default value;
 }
+
+declare module 'es6-promise-polyfill'
+
+declare namespace NodeJS {
+    interface Global {
+        performance: Performance|{[x: string]: any};
+        requestAnimationFrame: (callback: FrameRequestCallback) => NodeJS.Timeout;
+        cancelAnimationFrame: (handle: number) => void;
+    }
+}
