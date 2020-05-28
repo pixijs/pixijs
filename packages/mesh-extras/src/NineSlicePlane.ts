@@ -5,6 +5,9 @@ import type { ITypedArray } from '@pixi/core';
 
 const DEFAULT_BORDER_SIZE = 10;
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface NineSlicePlane extends GlobalMixins.NineSlicePlane {}
+
 /**
  * The NineSlicePlane allows you to stretch a texture using 9-slice scaling. The corners will remain unscaled (useful
  * for buttons with rounded corners for example) and the other areas will be scaled horizontally and or vertically
@@ -40,10 +43,10 @@ export class NineSlicePlane extends SimplePlane
 {
     private _origWidth: number;
     private _origHeight: number;
-    private _leftWidth: number;
-    private _rightWidth: number;
-    private _topHeight: number;
-    private _bottomHeight: number;
+    _leftWidth: number;
+    _rightWidth: number;
+    _topHeight: number;
+    _bottomHeight: number;
 
     /**
      * @param {PIXI.Texture} texture - The texture to use on the NineSlicePlane.
