@@ -343,7 +343,7 @@ export class Graphics extends Container
      * @param {boolean} [options.native=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
      * @param {PIXI.LINE_CAP}[options.cap=PIXI.LINE_CAP.BUTT] - line cap style
      * @param {PIXI.LINE_JOIN}[options.join=PIXI.LINE_JOIN.MITER] - line join style
-     * @param {number}[miterLimit=10] - miter limit ratio
+     * @param {number}[options.miterLimit=10] - miter limit ratio
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
     public lineStyle(options: ILineStyleOptions = null): this
@@ -380,7 +380,7 @@ export class Graphics extends Container
      * @param {boolean} [options.native=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
      * @param {PIXI.LINE_CAP}[options.cap=PIXI.LINE_CAP.BUTT] - line cap style
      * @param {PIXI.LINE_JOIN}[options.join=PIXI.LINE_JOIN.MITER] - line join style
-     * @param {number}[miterLimit=10] - miter limit ratio
+     * @param {number}[options.miterLimit=10] - miter limit ratio
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
     public lineTextureStyle(options: ILineStyleOptions): this
