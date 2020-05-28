@@ -8,6 +8,9 @@ import type { IPoint, ISize, ObservablePoint } from '@pixi/math';
 
 const tempPoint = new Point();
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface TilingSprite extends GlobalMixins.TilingSprite {}
+
 /**
  * A tiling sprite is a fast way of rendering a tiling image
  *

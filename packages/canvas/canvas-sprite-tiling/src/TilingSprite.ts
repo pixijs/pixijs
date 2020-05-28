@@ -2,6 +2,8 @@ import { TilingSprite } from '@pixi/sprite-tiling';
 import { canvasUtils } from '@pixi/canvas-renderer';
 import { CanvasRenderTarget } from '@pixi/utils';
 
+import type { CanvasRenderer } from '@pixi/canvas-renderer';
+
 /**
  * Renders the object using the Canvas renderer
  *
@@ -10,7 +12,7 @@ import { CanvasRenderTarget } from '@pixi/utils';
  * @memberof PIXI.TilingSprite#
  * @param {PIXI.CanvasRenderer} renderer - a reference to the canvas renderer
  */
-TilingSprite.prototype._renderCanvas = function _renderCanvas(renderer)
+TilingSprite.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRenderer): void
 {
     const texture = this._texture;
 
@@ -39,7 +41,7 @@ TilingSprite.prototype._renderCanvas = function _renderCanvas(renderer)
         // Tint the tiling sprite
         if (this.tint !== 0xFFFFFF)
         {
-            this._tintedCanvas = canvasUtils.getTintedCanvas(this, this.tint);
+            this._tintedCanvas = canvasUtils.getTintedCanvas(this, this.tint) as HTMLCanvasElement;
             tempCanvas.context.drawImage(this._tintedCanvas, 0, 0);
         }
         else
