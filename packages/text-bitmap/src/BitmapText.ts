@@ -121,22 +121,6 @@ export class BitmapText extends Container
         this._align = style.align || 'left';
 
         /**
-         * Private tracker for font name.
-         *
-         * @member {string}
-         * @private
-         */
-        this._fontName = null;
-
-        /**
-         * Private tracker for font size
-         *
-         * @member {number}
-         * @private
-         */
-        this._fontSize = 0;
-
-        /**
          * Private tracker for the current tint.
          *
          * @member {number}
@@ -181,7 +165,7 @@ export class BitmapText extends Container
              * @member {object}
              * @private
              */
-            this._fontSize = style.fontSize;
+            this._fontSize = style.fontSize || BitmapFont.available[this._fontName].size;
         }
 
         /**
