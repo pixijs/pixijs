@@ -123,7 +123,9 @@ export class ProjectionSystem extends System
      *
      * @param {PIXI.Matrix} matrix - The transformation matrix
      */
-    setTransform(): void // matrix)
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // @ts-ignore
+    setTransform(matrix: Matrix): void // eslint-disable-line @typescript-eslint/no-unused-vars
     {
         // this._activeRenderTarget.transform = matrix;
     }

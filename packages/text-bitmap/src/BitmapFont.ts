@@ -106,7 +106,7 @@ export class BitmapFont
     public readonly size: number;
     public readonly lineHeight: number;
     public readonly chars: Dict<IBitmapFontCharacter>;
-    private readonly pageTextures: Dict<Texture>;
+    public readonly pageTextures: Dict<Texture>;
 
     /**
      * @param {PIXI.BitmapFontData} data

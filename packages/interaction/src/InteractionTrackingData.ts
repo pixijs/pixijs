@@ -1,3 +1,11 @@
+export interface InteractionTrackingFlags
+{
+    OVER: number;
+    LEFT_DOWN: number;
+    RIGHT_DOWN: number;
+    NONE: number;
+}
+
 /**
  * DisplayObjects with the {@link PIXI.interaction.interactiveTarget} mixin use this class to track interactions
  *
@@ -7,11 +15,21 @@
  */
 export class InteractionTrackingData
 {
+    public static FLAGS: Readonly<InteractionTrackingFlags> = Object.freeze({
+        NONE: 0,
+        OVER: 1 << 0,
+        LEFT_DOWN: 1 << 1,
+        RIGHT_DOWN: 1 << 2,
+    });
+
+    private readonly _pointerId: number;
+    private _flags: number;
+
     /**
      * @param {number} pointerId - Unique pointer id of the event
      * @private
      */
-    constructor(pointerId)
+    constructor(pointerId: number)
     {
         this._pointerId = pointerId;
         this._flags = InteractionTrackingData.FLAGS.NONE;
@@ -23,7 +41,7 @@ export class InteractionTrackingData
      * @param {number} flag - The interaction flag to set
      * @param {boolean} yn - Should the flag be set or unset
      */
-    _doSet(flag, yn)
+    private _doSet(flag: number, yn: boolean): void
     {
         if (yn)
         {
@@ -42,7 +60,7 @@ export class InteractionTrackingData
      * @private
      * @member {number}
      */
-    get pointerId()
+    get pointerId(): number
     {
         return this._pointerId;
     }
@@ -53,7 +71,7 @@ export class InteractionTrackingData
      * @private
      * @member {number}
      */
-    get flags()
+    get flags(): number
     {
         return this._flags;
     }
@@ -69,9 +87,9 @@ export class InteractionTrackingData
      * @private
      * @member {number}
      */
-    get none()
+    get none(): boolean
     {
-        return this._flags === this.constructor.FLAGS.NONE;
+        return this._flags === InteractionTrackingData.FLAGS.NONE;
     }
 
     /**
@@ -80,14 +98,14 @@ export class InteractionTrackingData
      * @private
      * @member {boolean}
      */
-    get over()
+    get over(): boolean
     {
-        return (this._flags & this.constructor.FLAGS.OVER) !== 0;
+        return (this._flags & InteractionTrackingData.FLAGS.OVER) !== 0;
     }
 
     set over(yn) // eslint-disable-line require-jsdoc
     {
-        this._doSet(this.constructor.FLAGS.OVER, yn);
+        this._doSet(InteractionTrackingData.FLAGS.OVER, yn);
     }
 
     /**
@@ -96,14 +114,14 @@ export class InteractionTrackingData
      * @private
      * @member {boolean}
      */
-    get rightDown()
+    get rightDown(): boolean
     {
-        return (this._flags & this.constructor.FLAGS.RIGHT_DOWN) !== 0;
+        return (this._flags & InteractionTrackingData.FLAGS.RIGHT_DOWN) !== 0;
     }
 
     set rightDown(yn) // eslint-disable-line require-jsdoc
     {
-        this._doSet(this.constructor.FLAGS.RIGHT_DOWN, yn);
+        this._doSet(InteractionTrackingData.FLAGS.RIGHT_DOWN, yn);
     }
 
     /**
@@ -112,20 +130,13 @@ export class InteractionTrackingData
      * @private
      * @member {boolean}
      */
-    get leftDown()
+    get leftDown(): boolean
     {
-        return (this._flags & this.constructor.FLAGS.LEFT_DOWN) !== 0;
+        return (this._flags & InteractionTrackingData.FLAGS.LEFT_DOWN) !== 0;
     }
 
     set leftDown(yn) // eslint-disable-line require-jsdoc
     {
-        this._doSet(this.constructor.FLAGS.LEFT_DOWN, yn);
+        this._doSet(InteractionTrackingData.FLAGS.LEFT_DOWN, yn);
     }
 }
-
-InteractionTrackingData.FLAGS = Object.freeze({
-    NONE: 0,
-    OVER: 1 << 0,
-    LEFT_DOWN: 1 << 1,
-    RIGHT_DOWN: 1 << 2,
-});
