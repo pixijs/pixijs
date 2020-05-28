@@ -6,6 +6,8 @@ import type { Sprite } from '@pixi/sprite';
 
 const canvasRenderWorldTransform = new Matrix();
 
+type CanvasRenderingContext2DKey = keyof CanvasRenderingContext2D;
+
 /**
  * Types that can be passed to drawImage
  * @typedef {HTMLImageElement | HTMLCanvasElement | HTMLVideoElement | ImageBitmap} ICanvasImageSource
@@ -80,9 +82,10 @@ export class CanvasSpriteRenderer
         // If smoothingEnabled is supported and we need to change the smoothing property for sprite texture
         const smoothingEnabled = texture.baseTexture.scaleMode === SCALE_MODES.LINEAR;
 
-        if (renderer.smoothProperty && (renderer.context as any)[renderer.smoothProperty] !== smoothingEnabled)
+        if (renderer.smoothProperty
+            && renderer.context[renderer.smoothProperty as CanvasRenderingContext2DKey] !== smoothingEnabled)
         {
-            (context as any)[renderer.smoothProperty] = smoothingEnabled;
+            (context as any)[renderer.smoothProperty as CanvasRenderingContext2DKey] = smoothingEnabled;
         }
 
         if (texture.trim)
@@ -135,9 +138,9 @@ export class CanvasSpriteRenderer
 
         if (sprite.tint !== 0xFFFFFF)
         {
-            if ((sprite as any)._cachedTint !== sprite.tint || sprite._tintedCanvas.tintId !== sprite._texture._updateID)
+            if (sprite._cachedTint !== sprite.tint || sprite._tintedCanvas.tintId !== sprite._texture._updateID)
             {
-                (sprite as any)._cachedTint = sprite.tint;
+                sprite._cachedTint = sprite.tint;
 
                 // TODO clean up caching - how to clean up the caches?
                 sprite._tintedCanvas = canvasUtils.getTintedCanvas(sprite, sprite.tint);
