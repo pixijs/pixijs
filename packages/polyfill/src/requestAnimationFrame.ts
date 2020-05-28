@@ -21,34 +21,34 @@ if (!(Date.now && Date.prototype.getTime))
 }
 
 // performance.now
-if (!(global.performance && global.performance.now))
+if (!(window.performance && window.performance.now))
 {
     const startTime = Date.now();
 
-    if (!global.performance)
+    if (!window.performance)
     {
-        global.performance = {};
+        (window as any).performance = {};
     }
 
-    global.performance.now = (): number => Date.now() - startTime;
+    window.performance.now = (): number => Date.now() - startTime;
 }
 
 // requestAnimationFrame
 let lastTime = Date.now();
 const vendors = ['ms', 'moz', 'webkit', 'o'];
 
-for (let x = 0; x < vendors.length && !global.requestAnimationFrame; ++x)
+for (let x = 0; x < vendors.length && !window.requestAnimationFrame; ++x)
 {
     const p = vendors[x];
 
-    global.requestAnimationFrame = (global as any)[`${p}RequestAnimationFrame`];
-    global.cancelAnimationFrame = (global as any)[`${p}CancelAnimationFrame`]
-        || (global as any)[`${p}CancelRequestAnimationFrame`];
+    window.requestAnimationFrame = (window as any)[`${p}RequestAnimationFrame`];
+    window.cancelAnimationFrame = (window as any)[`${p}CancelAnimationFrame`]
+        || (window as any)[`${p}CancelRequestAnimationFrame`];
 }
 
-if (!global.requestAnimationFrame)
+if (!window.requestAnimationFrame)
 {
-    global.requestAnimationFrame = (callback: (...parms: any[]) => void): NodeJS.Timeout =>
+    window.requestAnimationFrame = (callback: (...parms: any[]) => void): number =>
     {
         if (typeof callback !== 'function')
         {
@@ -65,7 +65,7 @@ if (!global.requestAnimationFrame)
 
         lastTime = currentTime;
 
-        return setTimeout(() =>
+        return window.setTimeout(() =>
         {
             lastTime = Date.now();
             callback(performance.now());
@@ -73,7 +73,7 @@ if (!global.requestAnimationFrame)
     };
 }
 
-if (!global.cancelAnimationFrame)
+if (!window.cancelAnimationFrame)
 {
-    global.cancelAnimationFrame = (id: number): void => clearTimeout(id);
+    window.cancelAnimationFrame = (id: number): void => clearTimeout(id);
 }
