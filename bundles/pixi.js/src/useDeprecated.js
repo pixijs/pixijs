@@ -1,6 +1,7 @@
 import { deprecation } from '@pixi/utils';
 
 const v5 = '5.0.0';
+const v524 = '5.2.4';
 
 /**
  * Deprecations (backward compatibilities) are automatically applied for browser bundles
@@ -1434,4 +1435,54 @@ export function useDeprecated()
             deprecation(v5, 'PIXI.utils.mixins.performMixins function is no longer available');
         },
     };
+
+    Object.defineProperty(PIXI.BitmapText.prototype, 'font', {
+        /**
+         * The font descriptor of the BitmapText object.
+         *
+         * @memberof PIXI.
+         * @member {object}
+         * @deprecated since 5.2.4
+         */
+        get()
+        {
+            deprecation(v524, 'PIXI.BitmapText.font property is deprecated, '
+                + 'use PIXI.BitmapText.name');
+
+            return {
+                name: this._name,
+                size: this._size,
+            };
+        },
+        set(value) // eslint-disable-line require-jsdoc
+        {
+            deprecation(v524, 'PIXI.BitmapText.font property is deprecated, '
+                + 'use PIXI.BitmapText.name');
+
+            if (!value)
+            {
+                return;
+            }
+
+            if (typeof value === 'string')
+            {
+                const valueSplit = value.split(' ');
+
+                this._name = valueSplit.length === 1
+                    ? valueSplit[0]
+                    : valueSplit.slice(1).join(' ');
+
+                this._size = valueSplit.length >= 2
+                    ? parseInt(valueSplit[0], 10)
+                    : PIXI.BitmapFont.available[this._name].size;
+            }
+            else
+            {
+                this._name = value.name;
+                this._size = typeof value.size === 'number' ? value.size : parseInt(value.size, 10);
+            }
+
+            this.dirty = true;
+        },
+    });
 }

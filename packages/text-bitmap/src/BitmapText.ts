@@ -7,7 +7,7 @@ import { BitmapFont } from './BitmapFont';
 import type { Dict } from '@pixi/utils';
 import type { Rectangle } from '@pixi/math';
 import { Texture } from '@pixi/core';
-import type { IBitmapTextStyle, IBitmapTextFontDescriptor } from './BitmapTextStyle';
+import type { IBitmapTextStyle } from './BitmapTextStyle';
 import type { TextStyleAlign as BitmapTextAlign } from '@pixi/text';
 import type { BitmapFontData } from './BitmapFontData';
 import { Container } from '@pixi/display';
@@ -69,8 +69,8 @@ export class BitmapText extends Container
     protected _maxLineHeight: number;
     protected _letterSpacing: number;
     protected _anchor: ObservablePoint;
-    protected _name: string;
-    protected _size: number;
+    protected _fontName: string;
+    protected _fontSize: number;
     protected _align: BitmapTextAlign;
     protected _activePagesMeshData: PageMeshData[];
     protected _tint = 0xFFFFFF;
@@ -78,10 +78,10 @@ export class BitmapText extends Container
     /**
      * @param {string} text - A string that you would like the text to display.
      * @param {object} style - The style parameters.
-     * @param {string|object} style.font - The font descriptor for the object, can be passed as a string of form
-     *      "24px FontName" or "FontName" or as an object with explicit name/size properties.
-     * @param {string} [style.font.name] - The bitmap font id.
-     * @param {number} [style.font.size] - The size of the font in pixels, e.g. 24
+     * @param {string|object} [style.font] - (DEPRECATED) The font descriptor for the object, can be passed as a
+     *      string of form "24px FontName" or "FontName" or as an object with explicit name/size properties.
+     * @param {string} [style.fontName] - The bitmap font id.
+     * @param {number} [style.fontSize] - The size of the font in pixels, e.g. 24
      * @param {string} [style.align='left'] - Alignment for multiline text ('left', 'center' or 'right'), does not affect
      *      single line text.
      * @param {number} [style.tint=0xFFFFFF] - The tint color.
@@ -126,7 +126,7 @@ export class BitmapText extends Container
          * @member {string}
          * @private
          */
-        this._name = null;
+        this._fontName = null;
 
         /**
          * Private tracker for font size
@@ -134,7 +134,7 @@ export class BitmapText extends Container
          * @member {number}
          * @private
          */
-        this._size = 0;
+        this._fontSize = 0;
 
         /**
          * Private tracker for the current tint.
@@ -144,13 +144,45 @@ export class BitmapText extends Container
          */
         this._tint = style.tint !== undefined ? style.tint : 0xFFFFFF;
 
-        /**
-         * Private tracker for the current font.
-         *
-         * @member {object}
-         * @private
-         */
-        this.font = style.font; // run font setter
+        // Backward compatiblity
+        if (style.font)
+        {
+            if (typeof style.font === 'string')
+            {
+                const valueSplit = style.font.split(' ');
+
+                this._fontName = valueSplit.length === 1
+                    ? valueSplit[0]
+                    : valueSplit.slice(1).join(' ');
+
+                this._fontSize = valueSplit.length >= 2
+                    ? parseInt(valueSplit[0], 10)
+                    : BitmapFont.available[this._fontName].size;
+            }
+            else
+            {
+                this._fontName = style.font.name;
+                this._fontSize = typeof style.font.size === 'number' ? style.font.size : parseInt(style.font.size, 10);
+            }
+        }
+        else
+        {
+            /**
+             * Private tracker for the current font name.
+             *
+             * @member {object}
+             * @private
+             */
+            this._fontName = style.fontName;
+
+            /**
+             * Private tracker for the current font size.
+             *
+             * @member {object}
+             * @private
+             */
+            this._fontSize = style.fontSize;
+        }
 
         /**
          * Private tracker for the current text.
@@ -225,14 +257,14 @@ export class BitmapText extends Container
      */
     private updateText(): void
     {
-        const data = BitmapFont.available[this._name];
-        const scale = this._size / data.size;
+        const data = BitmapFont.available[this._fontName];
+        const scale = this._fontSize / data.size;
         const pos = new Point();
         const chars: CharRenderData[] = [];
         const lineWidths = [];
         const text = this._text.replace(/(?:\r\n|\r)/g, '\n') || ' ';
         const textLength = text.length;
-        const maxWidth = this._maxWidth * data.size / this._size;
+        const maxWidth = this._maxWidth * data.size / this._fontSize;
 
         let prevCharCode = null;
         let lastLineWidth = 0;
@@ -624,6 +656,11 @@ export class BitmapText extends Container
         this.dirty = true;
     }
 
+    public get fontName(): string
+    {
+        return this._fontName;
+    }
+
     /**
      * The anchor sets the origin point of the text.
      *
@@ -650,48 +687,6 @@ export class BitmapText extends Container
         {
             this._anchor.copyFrom(value);
         }
-    }
-
-    /**
-     * The font descriptor of the BitmapText object.
-     *
-     * @member {object}
-     * @deprecated since 5.2.4
-     */
-    public get font(): IBitmapTextFontDescriptor | string
-    {
-        return {
-            name: this._name,
-            size: this._size,
-        };
-    }
-
-    public set font(value: IBitmapTextFontDescriptor | string) // eslint-disable-line require-jsdoc
-    {
-        if (!value)
-        {
-            return;
-        }
-
-        if (typeof value === 'string')
-        {
-            const valueSplit = value.split(' ');
-
-            this._name = valueSplit.length === 1
-                ? valueSplit[0]
-                : valueSplit.slice(1).join(' ');
-
-            this._size = valueSplit.length >= 2
-                ? parseInt(valueSplit[0], 10)
-                : BitmapFont.available[this._name].size;
-        }
-        else
-        {
-            this._name = value.name;
-            this._size = typeof value.size === 'number' ? value.size : parseInt(value.size, 10);
-        }
-
-        this.dirty = true;
     }
 
     /**
