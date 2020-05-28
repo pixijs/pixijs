@@ -6,8 +6,6 @@ import type { Sprite } from '@pixi/sprite';
 
 const canvasRenderWorldTransform = new Matrix();
 
-type CanvasRenderingContext2DKey = keyof CanvasRenderingContext2D;
-
 /**
  * Types that can be passed to drawImage
  * @typedef {HTMLImageElement | HTMLCanvasElement | HTMLVideoElement | ImageBitmap} ICanvasImageSource
@@ -83,9 +81,9 @@ export class CanvasSpriteRenderer
         const smoothingEnabled = texture.baseTexture.scaleMode === SCALE_MODES.LINEAR;
 
         if (renderer.smoothProperty
-            && renderer.context[renderer.smoothProperty as CanvasRenderingContext2DKey] !== smoothingEnabled)
+            && renderer.context[renderer.smoothProperty] !== smoothingEnabled)
         {
-            (context as any)[renderer.smoothProperty as CanvasRenderingContext2DKey] = smoothingEnabled;
+            context[renderer.smoothProperty] = smoothingEnabled;
         }
 
         if (texture.trim)
