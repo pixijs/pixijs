@@ -77,9 +77,8 @@ function square(
  * @param {number} sy - Y-coord of arc start
  * @param {number} ex - X-coord of arc end
  * @param {number} ey - Y-coord of arc end
- * @param nxtPx
- * @param nxtPy
  * @param {Array<number>} verts - buffer of vertices
+ * @param {boolean} clockwise - orientation of vertices
  * @returns {number} - no. of vertices pushed
  */
 function round(

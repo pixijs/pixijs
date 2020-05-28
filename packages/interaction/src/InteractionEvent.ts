@@ -1,3 +1,8 @@
+import type { DisplayObject } from '@pixi/display';
+import type { InteractionData } from './InteractionData';
+
+export type InteractionCallback = (interactionEvent: InteractionEvent, displayObject: DisplayObject, hit?: boolean) => void;
+
 /**
  * Event class that mimics native DOM events.
  *
@@ -6,6 +11,14 @@
  */
 export class InteractionEvent
 {
+    public stopped: boolean;
+    public stopsPropagatingAt: DisplayObject;
+    public stopPropagationHint: boolean;
+    public target: DisplayObject;
+    public currentTarget: DisplayObject;
+    public type: string;
+    public data: InteractionData;
+
     constructor()
     {
         /**
@@ -70,7 +83,7 @@ export class InteractionEvent
      * Prevents event from reaching any objects other than the current object.
      *
      */
-    stopPropagation()
+    public stopPropagation(): void
     {
         this.stopped = true;
         this.stopPropagationHint = true;
@@ -80,7 +93,7 @@ export class InteractionEvent
     /**
      * Resets the event.
      */
-    reset()
+    public reset(): void
     {
         this.stopped = false;
         this.stopsPropagatingAt = null;

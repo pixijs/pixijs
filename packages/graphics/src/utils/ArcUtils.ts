@@ -92,7 +92,6 @@ export class ArcUtils
      * @param {boolean} anticlockwise - Specifies whether the drawing should be
      *  counter-clockwise or clockwise. False is default, and indicates clockwise, while true
      *  indicates counter-clockwise.
-     * @param {number} n - Number of segments
      * @param {number[]} points - Collection of points to add to
      */
 

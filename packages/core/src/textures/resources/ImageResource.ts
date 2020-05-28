@@ -31,6 +31,7 @@ export class ImageResource extends BaseImageResource
     bitmap: ImageBitmap;
     /**
      * @param {HTMLImageElement|string} source - image source or URL
+     * @param {object} [options]
      * @param {boolean} [options.autoLoad=true] - start loading process
      * @param {boolean} [options.createBitmap=PIXI.settings.CREATE_IMAGE_BITMAP] - whether its required to create
      *        a bitmap before upload
