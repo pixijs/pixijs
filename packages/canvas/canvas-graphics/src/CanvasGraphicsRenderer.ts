@@ -134,7 +134,8 @@ export class CanvasGraphicsRenderer
             {
                 context.beginPath();
 
-                let points = (shape as Polygon).points;
+                const tempShape = shape as Polygon;
+                let points = tempShape.points;
                 const holes = data.holes;
                 let outerArea;
                 let innerArea;
@@ -148,7 +149,7 @@ export class CanvasGraphicsRenderer
                     context.lineTo(points[j], points[j + 1]);
                 }
 
-                if ((shape as Polygon).closeStroke)
+                if (tempShape.closeStroke)
                 {
                     context.closePath();
                 }
@@ -224,34 +225,28 @@ export class CanvasGraphicsRenderer
             }
             else if (data.type === SHAPES.RECT)
             {
+                const tempShape = shape as Rectangle;
+
                 if (fillStyle.visible)
                 {
                     context.globalAlpha = fillStyle.alpha * worldAlpha;
                     context.fillStyle = contextFillStyle;
-                    context.fillRect(
-                        (shape as Rectangle).x,
-                        (shape as Rectangle).y,
-                        (shape as Rectangle).width,
-                        (shape as Rectangle).height
-                    );
+                    context.fillRect(tempShape.x, tempShape.y, tempShape.width, tempShape.height);
                 }
                 if (lineStyle.visible)
                 {
                     context.globalAlpha = lineStyle.alpha * worldAlpha;
                     context.strokeStyle = contextStrokeStyle;
-                    context.strokeRect(
-                        (shape as Rectangle).x,
-                        (shape as Rectangle).y,
-                        (shape as Rectangle).width,
-                        (shape as Rectangle).height
-                    );
+                    context.strokeRect(tempShape.x, tempShape.y, tempShape.width, tempShape.height);
                 }
             }
             else if (data.type === SHAPES.CIRC)
             {
+                const tempShape = shape as Circle;
+
                 // TODO - need to be Undefined!
                 context.beginPath();
-                context.arc((shape as Circle).x, (shape as Circle).y, (shape as Circle).radius, 0, 2 * Math.PI);
+                context.arc(tempShape.x, tempShape.y, tempShape.radius, 0, 2 * Math.PI);
                 context.closePath();
 
                 if (fillStyle.visible)
@@ -272,11 +267,13 @@ export class CanvasGraphicsRenderer
             {
                 // ellipse code taken from: http://stackoverflow.com/questions/2172798/how-to-draw-an-oval-in-html5-canvas
 
-                const w = (shape as Ellipse).width * 2;
-                const h = (shape as Ellipse).height * 2;
+                const tempShape = shape as Ellipse;
 
-                const x = (shape as Ellipse).x - (w / 2);
-                const y = (shape as Ellipse).y - (h / 2);
+                const w = tempShape.width * 2;
+                const h = tempShape.height * 2;
+
+                const x = tempShape.x - (w / 2);
+                const y = tempShape.y - (h / 2);
 
                 context.beginPath();
 
@@ -311,11 +308,13 @@ export class CanvasGraphicsRenderer
             }
             else if (data.type === SHAPES.RREC)
             {
-                const rx = (shape as RoundedRectangle).x;
-                const ry = (shape as RoundedRectangle).y;
-                const width = (shape as RoundedRectangle).width;
-                const height = (shape as RoundedRectangle).height;
-                let radius = (shape as RoundedRectangle).radius;
+                const tempShape = shape as RoundedRectangle;
+
+                const rx = tempShape.x;
+                const ry = tempShape.y;
+                const width = tempShape.width;
+                const height = tempShape.height;
+                let radius = tempShape.radius;
 
                 const maxRadius = Math.min(width, height) / 2 | 0;
 
