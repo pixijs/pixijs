@@ -123,7 +123,6 @@ export class BaseImageResource extends Resource
     /**
      * Destroy this BaseImageResource
      * @override
-     * @param {PIXI.BaseTexture} [fromTexture] - Optional base texture
      */
     dispose(): void
     {
