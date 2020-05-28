@@ -88,10 +88,10 @@ export class BitmapText extends Container
      *      single line text.
      * @param {number} [style.tint=0xFFFFFF] - The tint color.
      * @param {number} [style.letterSpacing=0] - The letter spacing
-     * @param {number} [maxWidth=0] - The max width of the text before line wrapping
-     * @param {number} [maxLineHeight=0] - The max line height of the whole text
-     * @param {number} [anchor] - The text anchor
-     * @param {boolean}[roundPixels] - Whether to round pixels to prevent aliasing
+     * @param {number} [style.maxWidth=0] - The max width of the text before line wrapping
+     * @param {number} [style.maxLineHeight=0] - The max line height of the whole text
+     * @param {PIXI.Point} [style.anchor] - The text anchor
+     * @param {boolean} [style.roundPixels=PIXI.settings.ROUND_PIXELS] - Whether to round pixels to prevent aliasing
      */
     constructor(text: string, style: Partial<IBitmapTextStyle> = {})
     {
