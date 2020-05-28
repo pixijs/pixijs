@@ -72,7 +72,6 @@ export class BitmapText extends Container
     protected _font: {
         name: string;
         size: number;
-        tint: number;
         align: BitmapTextAlign;
     };
     protected _activePagesMeshData: PageMeshData[];
@@ -88,6 +87,11 @@ export class BitmapText extends Container
      * @param {string} [style.align='left'] - Alignment for multiline text ('left', 'center' or 'right'), does not affect
      *      single line text.
      * @param {number} [style.tint=0xFFFFFF] - The tint color.
+     * @param {number} [style.letterSpacing=0] - The letter spacing
+     * @param {number} [maxWidth=0] - The max width of the text before line wrapping
+     * @param {number} [maxLineHeight=0] - The max line height of the whole text
+     * @param {number} [anchor] - The text anchor
+     * @param {boolean}[roundPixels] - Whether to round pixels to prevent aliasing
      */
     constructor(text: string, style: Partial<IBitmapTextStyle> = {})
     {
@@ -118,11 +122,18 @@ export class BitmapText extends Container
          * @private
          */
         this._font = {
-            tint: style.tint !== undefined ? style.tint : 0xFFFFFF,
             align: style.align || 'left',
             name: null,
             size: 0,
         };
+
+        /**
+         * Private tracker for the current tint.
+         *
+         * @member {number}
+         * @private
+         */
+        this._tint = style.tint !== undefined ? style.tint : 0xFFFFFF;
 
         /**
          * Private tracker for the current font.
@@ -148,7 +159,7 @@ export class BitmapText extends Container
          * @member {number}
          * @private
          */
-        this._maxWidth = 0;
+        this._maxWidth = style.maxWidth || 0;
 
         /**
          * The max line height. This is useful when trying to use the total height of the Text,
@@ -157,14 +168,14 @@ export class BitmapText extends Container
          * @member {number}
          * @private
          */
-        this._maxLineHeight = 0;
+        this._maxLineHeight = style.maxLineHeight || 0;
 
         /**
          * Letter spacing. This is useful for setting the space between characters.
          * @member {number}
          * @private
          */
-        this._letterSpacing = 0;
+        this._letterSpacing = style.letterSpacing || 0;
 
         /**
          * Text anchor. read-only
@@ -173,6 +184,11 @@ export class BitmapText extends Container
          * @private
          */
         this._anchor = new ObservablePoint((): void => { this.dirty = true; }, this, 0, 0);
+
+        if (style.anchor)
+        {
+            this._anchor.copyFrom(style.anchor);
+        }
 
         /**
          * The dirty state of this object.
@@ -190,7 +206,7 @@ export class BitmapText extends Container
          * @member {boolean}
          * @default false
          */
-        this.roundPixels = settings.ROUND_PIXELS;
+        this.roundPixels = style.roundPixels !== undefined ? style.roundPixels : settings.ROUND_PIXELS;
     }
 
     /**
