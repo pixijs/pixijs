@@ -7,7 +7,6 @@ export interface IBitmapTextStyle {
     align: TextStyleAlign;
     letterSpacing: number;
     maxWidth: number;
-    maxLineHeight: number;
     anchor: Point;
     roundPixels: boolean;
 }

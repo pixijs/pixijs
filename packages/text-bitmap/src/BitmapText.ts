@@ -69,11 +69,9 @@ export class BitmapText extends Container
     protected _maxLineHeight: number;
     protected _letterSpacing: number;
     protected _anchor: ObservablePoint;
-    protected _font: {
-        name: string;
-        size: number;
-        align: BitmapTextAlign;
-    };
+    protected _name: string;
+    protected _size: number;
+    protected _align: BitmapTextAlign;
     protected _activePagesMeshData: PageMeshData[];
     protected _tint = 0xFFFFFF;
 
@@ -89,7 +87,6 @@ export class BitmapText extends Container
      * @param {number} [style.tint=0xFFFFFF] - The tint color.
      * @param {number} [style.letterSpacing=0] - The letter spacing
      * @param {number} [style.maxWidth=0] - The max width of the text before line wrapping
-     * @param {number} [style.maxLineHeight=0] - The max line height of the whole text
      * @param {PIXI.Point} [style.anchor] - The text anchor
      * @param {boolean} [style.roundPixels=PIXI.settings.ROUND_PIXELS] - Whether to round pixels to prevent aliasing
      */
@@ -116,16 +113,28 @@ export class BitmapText extends Container
         this._textHeight = 0;
 
         /**
-         * Private tracker for the current style.
+         * Private tracker for the current text align.
          *
          * @member {object}
          * @private
          */
-        this._font = {
-            align: style.align || 'left',
-            name: null,
-            size: 0,
-        };
+        this._align = style.align || 'left';
+
+        /**
+         * Private tracker for font name.
+         *
+         * @member {string}
+         * @private
+         */
+        this._name = null;
+
+        /**
+         * Private tracker for font size
+         *
+         * @member {number}
+         * @private
+         */
+        this._size = 0;
 
         /**
          * Private tracker for the current tint.
@@ -163,12 +172,12 @@ export class BitmapText extends Container
 
         /**
          * The max line height. This is useful when trying to use the total height of the Text,
-         * ie: when trying to vertically align.
+         * ie: when trying to vertically align. (Internally used)
          *
          * @member {number}
          * @private
          */
-        this._maxLineHeight = style.maxLineHeight || 0;
+        this._maxLineHeight = 0;
 
         /**
          * Letter spacing. This is useful for setting the space between characters.
@@ -216,14 +225,14 @@ export class BitmapText extends Container
      */
     private updateText(): void
     {
-        const data = BitmapFont.available[this._font.name];
-        const scale = this._font.size / data.size;
+        const data = BitmapFont.available[this._name];
+        const scale = this._size / data.size;
         const pos = new Point();
         const chars: CharRenderData[] = [];
         const lineWidths = [];
         const text = this._text.replace(/(?:\r\n|\r)/g, '\n') || ' ';
         const textLength = text.length;
-        const maxWidth = this._maxWidth * data.size / this._font.size;
+        const maxWidth = this._maxWidth * data.size / this._size;
 
         let prevCharCode = null;
         let lastLineWidth = 0;
@@ -326,11 +335,11 @@ export class BitmapText extends Container
         {
             let alignOffset = 0;
 
-            if (this._font.align === 'right')
+            if (this._align === 'right')
             {
                 alignOffset = maxLineWidth - lineWidths[i];
             }
-            else if (this._font.align === 'center')
+            else if (this._align === 'center')
             {
                 alignOffset = (maxLineWidth - lineWidths[i]) / 2;
             }
@@ -605,12 +614,12 @@ export class BitmapText extends Container
      */
     public get align(): BitmapTextAlign
     {
-        return this._font.align;
+        return this._align;
     }
 
     public set align(value) // eslint-disable-line require-jsdoc
     {
-        this._font.align = value || 'left';
+        this._align = value || 'left';
 
         this.dirty = true;
     }
@@ -647,10 +656,14 @@ export class BitmapText extends Container
      * The font descriptor of the BitmapText object.
      *
      * @member {object}
+     * @deprecated since 5.2.4
      */
     public get font(): IBitmapTextFontDescriptor | string
     {
-        return this._font;
+        return {
+            name: this._name,
+            size: this._size,
+        };
     }
 
     public set font(value: IBitmapTextFontDescriptor | string) // eslint-disable-line require-jsdoc
@@ -664,18 +677,18 @@ export class BitmapText extends Container
         {
             const valueSplit = value.split(' ');
 
-            this._font.name = valueSplit.length === 1
+            this._name = valueSplit.length === 1
                 ? valueSplit[0]
                 : valueSplit.slice(1).join(' ');
 
-            this._font.size = valueSplit.length >= 2
+            this._size = valueSplit.length >= 2
                 ? parseInt(valueSplit[0], 10)
-                : BitmapFont.available[this._font.name].size;
+                : BitmapFont.available[this._name].size;
         }
         else
         {
-            this._font.name = value.name;
-            this._font.size = typeof value.size === 'number' ? value.size : parseInt(value.size, 10);
+            this._name = value.name;
+            this._size = typeof value.size === 'number' ? value.size : parseInt(value.size, 10);
         }
 
         this.dirty = true;
