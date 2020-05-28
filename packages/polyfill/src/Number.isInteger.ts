@@ -3,7 +3,7 @@
 
 if (!Number.isInteger)
 {
-    Number.isInteger = function numberIsInteger(value)
+    Number.isInteger = function numberIsInteger(value): boolean
     {
         return typeof value === 'number' && isFinite(value) && Math.floor(value) === value;
     };

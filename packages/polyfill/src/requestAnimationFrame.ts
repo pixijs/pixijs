@@ -14,7 +14,7 @@ const ONE_FRAME_TIME = 16;
 // Date.now
 if (!(Date.now && Date.prototype.getTime))
 {
-    Date.now = function now()
+    Date.now = function now(): number
     {
         return new Date().getTime();
     };
@@ -30,7 +30,7 @@ if (!(global.performance && global.performance.now))
         global.performance = {};
     }
 
-    global.performance.now = () => Date.now() - startTime;
+    global.performance.now = (): number => Date.now() - startTime;
 }
 
 // requestAnimationFrame
@@ -41,13 +41,14 @@ for (let x = 0; x < vendors.length && !global.requestAnimationFrame; ++x)
 {
     const p = vendors[x];
 
-    global.requestAnimationFrame = global[`${p}RequestAnimationFrame`];
-    global.cancelAnimationFrame = global[`${p}CancelAnimationFrame`] || global[`${p}CancelRequestAnimationFrame`];
+    global.requestAnimationFrame = (global as any)[`${p}RequestAnimationFrame`];
+    global.cancelAnimationFrame = (global as any)[`${p}CancelAnimationFrame`]
+        || (global as any)[`${p}CancelRequestAnimationFrame`];
 }
 
 if (!global.requestAnimationFrame)
 {
-    global.requestAnimationFrame = (callback) =>
+    global.requestAnimationFrame = (callback: (...parms: any[]) => void): NodeJS.Timeout =>
     {
         if (typeof callback !== 'function')
         {
@@ -74,5 +75,5 @@ if (!global.requestAnimationFrame)
 
 if (!global.cancelAnimationFrame)
 {
-    global.cancelAnimationFrame = (id) => clearTimeout(id);
+    global.cancelAnimationFrame = (id: number): void => clearTimeout(id);
 }

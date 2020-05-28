@@ -5,7 +5,7 @@ import { Polygon, PI_2 } from '@pixi/math';
  *
  * @class
  * @extends PIXI.Polygon
- * @memberof PIXI
+ * @memberof PIXI.graphicsUtils
  * @param {number} x - Center X position of the star
  * @param {number} y - Center Y position of the star
  * @param {number} points - The number of points of the star, must be > 1
