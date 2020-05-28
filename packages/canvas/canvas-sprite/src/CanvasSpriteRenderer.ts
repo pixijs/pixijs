@@ -6,7 +6,7 @@ import type { Sprite } from '@pixi/sprite';
 
 const canvasRenderWorldTransform = new Matrix();
 
-type CanvasRenderingContext2DKey = keyof CanvasRenderingContext2D;
+type CanvasRenderingContext2DKey = keyof Pick<CanvasRenderingContext2D, 'imageSmoothingEnabled'>;
 
 /**
  * Types that can be passed to drawImage
@@ -85,7 +85,7 @@ export class CanvasSpriteRenderer
         if (renderer.smoothProperty
             && renderer.context[renderer.smoothProperty as CanvasRenderingContext2DKey] !== smoothingEnabled)
         {
-            (context as any)[renderer.smoothProperty as CanvasRenderingContext2DKey] = smoothingEnabled;
+            context[renderer.smoothProperty as CanvasRenderingContext2DKey] = smoothingEnabled;
         }
 
         if (texture.trim)
