@@ -74,7 +74,7 @@ describe('PIXI.BitmapText', function ()
         });
 
         const text = new BitmapText('ABCDEFG', {
-            font: 'testFont',
+            fontName: 'testFont',
         });
 
         const listener = sinon.spy(text, 'addChild');
@@ -100,7 +100,7 @@ describe('PIXI.BitmapText', function ()
     it('should render text even if there are unsupported characters', function ()
     {
         const text = new BitmapText('ABCDEFG', {
-            font: this.font.font,
+            fontName: this.font.font,
         });
 
         text.updateText();
@@ -109,7 +109,7 @@ describe('PIXI.BitmapText', function ()
     it('should support font without page reference', function ()
     {
         const text = new BitmapText('A', {
-            font: this.font2.font,
+            fontName: this.font2.font,
         });
 
         text.updateText();
@@ -120,7 +120,7 @@ describe('PIXI.BitmapText', function ()
     it('should break line on space', function ()
     {
         const bmpText = new BitmapText('', {
-            font: this.font.font,
+            fontName: this.font.font,
             size: 24,
         });
 
@@ -142,7 +142,7 @@ describe('PIXI.BitmapText', function ()
     {
         const text = 'ABCD zz DCBA';
         const bmpText = new BitmapText(text, {
-            font: this.font.font,
+            fontName: this.font.font,
         });
 
         bmpText.updateText();
