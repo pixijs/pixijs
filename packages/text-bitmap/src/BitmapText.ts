@@ -99,6 +99,8 @@ export class BitmapText extends Container
 
         if (style.font)
         {
+            deprecation('5.3.0', 'PIXI.BitmapText constructor style.font property is deprecated.');
+
             this._upgradeStyle(style);
         }
 
@@ -820,8 +822,6 @@ export class BitmapText extends Container
      */
     private _upgradeStyle(style: Partial<IBitmapTextStyle>): void
     {
-        deprecation('5.3.0', 'PIXI.BitmapText style.font is deprecated');
-
         if (typeof style.font === 'string')
         {
             const valueSplit = style.font.split(' ');
