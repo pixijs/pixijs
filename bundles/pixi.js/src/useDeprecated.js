@@ -1463,25 +1463,14 @@ export function useDeprecated()
                 return;
             }
 
-            if (typeof value === 'string')
-            {
-                const valueSplit = value.split(' ');
+            const style = { font: value };
 
-                this._fontName = valueSplit.length === 1
-                    ? valueSplit[0]
-                    : valueSplit.slice(1).join(' ');
+            this._upgradeStyle(style);
 
-                this._fontSize = valueSplit.length >= 2
-                    ? parseInt(valueSplit[0], 10)
-                    : PIXI.BitmapFont.available[this._fontName].size;
-            }
-            else
-            {
-                this._fontName = value.name;
-                this._fontSize = typeof value.size === 'number'
-                    ? value.size
-                    : parseInt(value.size, 10);
-            }
+            style.fontSize = style.fontSize || PIXI.BitmapFont.available[style.fontName].size;
+
+            this._fontName = style.fontName;
+            this._fontSize = style.fontSize;
 
             this.dirty = true;
         },

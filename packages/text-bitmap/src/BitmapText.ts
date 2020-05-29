@@ -818,9 +818,9 @@ export class BitmapText extends Container
      * @private
      * @deprecated since 5.3.0
      */
-    private _upgradeStyle(style: IBitmapTextStyle): void
+    private _upgradeStyle(style: Partial<IBitmapTextStyle>): void
     {
-        deprecation('5.3.0', 'PIXI.BitmapText constructor style.font is deprecated');
+        deprecation('5.3.0', 'PIXI.BitmapText style.font is deprecated');
 
         if (typeof style.font === 'string')
         {
