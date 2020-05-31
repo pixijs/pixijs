@@ -1,6 +1,8 @@
 import { Mesh } from '@pixi/mesh';
 import { settings } from './settings';
 
+import type { CanvasRenderer } from '@pixi/canvas-renderer';
+
 /**
  * Renders the object using the Canvas renderer
  *
@@ -9,7 +11,7 @@ import { settings } from './settings';
  * @memberof PIXI.Mesh#
  * @param {PIXI.CanvasRenderer} renderer - The canvas renderer.
  */
-Mesh.prototype._renderCanvas = function _renderCanvas(renderer)
+Mesh.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRenderer): void
 {
     if (this.shader.uvMatrix)
     {

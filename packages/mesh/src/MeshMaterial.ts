@@ -14,6 +14,9 @@ export interface IMeshMaterialOptions {
     uniforms?: {};
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface MeshMaterial extends GlobalMixins.MeshMaterial {}
+
 /**
  * Slightly opinionated default shader for PixiJS 2D objects.
  * @class
