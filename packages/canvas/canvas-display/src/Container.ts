@@ -1,4 +1,6 @@
 import { Container } from '@pixi/display';
+import type { CanvasRenderer } from '@pixi/canvas-renderer';
+import type { MaskData } from '@pixi/core';
 
 /**
  * To be overridden by the subclass
@@ -7,7 +9,10 @@ import { Container } from '@pixi/display';
  * @protected
  * @param {PIXI.CanvasRenderer} renderer - The renderer
  */
-Container.prototype._renderCanvas = function _renderCanvas(renderer) // eslint-disable-line no-unused-vars
+// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+// @ts-ignore
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+Container.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRenderer): void
 {
     // this is where content itself gets rendered...
 };
@@ -18,7 +23,7 @@ Container.prototype._renderCanvas = function _renderCanvas(renderer) // eslint-d
  * @memberof PIXI.Container#
  * @param {PIXI.CanvasRenderer} renderer - The renderer
  */
-Container.prototype.renderCanvas = function renderCanvas(renderer)
+Container.prototype.renderCanvas = function renderCanvas(renderer: CanvasRenderer): void
 {
     // if not visible or the alpha is 0 then no need to render this
     if (!this.visible || this.worldAlpha <= 0 || !this.renderable)
@@ -28,7 +33,7 @@ Container.prototype.renderCanvas = function renderCanvas(renderer)
 
     if (this._mask)
     {
-        renderer.maskManager.pushMask(this._mask);
+        renderer.maskManager.pushMask(this._mask as MaskData);
     }
 
     this._renderCanvas(renderer);
