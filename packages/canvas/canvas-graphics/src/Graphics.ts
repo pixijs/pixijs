@@ -3,7 +3,10 @@ import { CanvasRenderer } from '@pixi/canvas-renderer';
 import { RenderTexture, Texture } from '@pixi/core';
 import { Matrix } from '@pixi/math';
 
-let canvasRenderer;
+import type { SCALE_MODES } from '@pixi/constants';
+import type { BaseRenderTexture } from '@pixi/core';
+
+let canvasRenderer: CanvasRenderer;
 const tempMatrix = new Matrix();
 
 /**
@@ -15,10 +18,12 @@ const tempMatrix = new Matrix();
  * @param {number} resolution - The resolution of the texture.
  * @return {PIXI.Texture} The new texture.
  */
-Graphics.prototype.generateCanvasTexture = function generateCanvasTexture(scaleMode, resolution = 1)
+Graphics.prototype.generateCanvasTexture = function generateCanvasTexture(scaleMode: SCALE_MODES, resolution = 1): Texture
 {
     const bounds = this.getLocalBounds();
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // @ts-ignore
     const canvasBuffer = RenderTexture.create(bounds.width, bounds.height, scaleMode, resolution);
 
     if (!canvasRenderer)
@@ -36,7 +41,7 @@ Graphics.prototype.generateCanvasTexture = function generateCanvasTexture(scaleM
 
     canvasRenderer.render(this, canvasBuffer, true, tempMatrix);
 
-    const texture = Texture.from(canvasBuffer.baseTexture._canvasRenderTarget.canvas, {
+    const texture = Texture.from((canvasBuffer.baseTexture as BaseRenderTexture)._canvasRenderTarget.canvas, {
         scaleMode,
     });
 
@@ -56,7 +61,7 @@ Graphics.prototype.cachedGraphicsData = [];
  * @private
  * @param {PIXI.CanvasRenderer} renderer - The renderer
  */
-Graphics.prototype._renderCanvas = function _renderCanvas(renderer)
+Graphics.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRenderer): void
 {
     if (this.isMask === true)
     {
