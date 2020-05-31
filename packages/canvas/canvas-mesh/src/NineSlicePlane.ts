@@ -1,6 +1,8 @@
 import { canvasUtils } from '@pixi/canvas-renderer';
 import { NineSlicePlane } from '@pixi/mesh-extras';
 
+import type { CanvasRenderer } from '@pixi/canvas-renderer';
+
 /**
  * Cached tint value so we can tell when the tint is changed.
  * @memberof PIXI.NineSlicePlane#
@@ -33,7 +35,7 @@ NineSlicePlane.prototype._canvasUvs = null;
  * @memberof PIXI.NineSlicePlane#
  * @param {PIXI.CanvasRenderer} renderer - The canvas renderer to render with.
  */
-NineSlicePlane.prototype._renderCanvas = function _renderCanvas(renderer)
+NineSlicePlane.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRenderer): void
 {
     const context = renderer.context;
     const transform = this.worldTransform;
@@ -54,7 +56,7 @@ NineSlicePlane.prototype._renderCanvas = function _renderCanvas(renderer)
 
             this._cachedTint = this.tint;
 
-            this._tintedCanvas = canvasUtils.getTintedCanvas(this, this.tint);
+            this._tintedCanvas = canvasUtils.getTintedCanvas(this, this.tint) as HTMLCanvasElement;
         }
     }
 

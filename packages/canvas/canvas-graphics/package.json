@@ -27,6 +27,7 @@
     "@pixi/canvas-renderer": "5.2.4",
     "@pixi/core": "5.2.4",
     "@pixi/graphics": "5.2.4",
-    "@pixi/math": "5.2.4"
+    "@pixi/math": "5.2.4",
+    "@pixi/constants": "5.2.4"
   }
 }
