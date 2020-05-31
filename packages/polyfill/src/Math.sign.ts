@@ -3,7 +3,7 @@
 
 if (!Math.sign)
 {
-    Math.sign = function mathSign(x)
+    Math.sign = function mathSign(x): number
     {
         x = Number(x);
 
