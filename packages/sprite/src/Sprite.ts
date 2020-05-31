@@ -51,8 +51,8 @@ export class Sprite extends Container
     _width: number;
     _height: number;
     _texture: Texture;
+    _textureID: number;
     _cachedTint: number;
-    protected _textureID: number;
     protected _textureTrimmedID: number;
     protected uvs: Float32Array;
     protected _anchor: ObservablePoint;
