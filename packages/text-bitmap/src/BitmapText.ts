@@ -7,8 +7,8 @@ import { BitmapFont } from './BitmapFont';
 import type { Dict } from '@pixi/utils';
 import type { Rectangle } from '@pixi/math';
 import { Texture } from '@pixi/core';
-import type { IBitmapTextStyle, IBitmapTextFontDescriptor } from './BitmapTextStyle';
-import type { TextStyleAlign as BitmapTextAlign } from '@pixi/text';
+import type { IBitmapTextStyle } from './BitmapTextStyle';
+import type { TextStyleAlign } from '@pixi/text';
 import type { BitmapFontData } from './BitmapFontData';
 import { Container } from '@pixi/display';
 
@@ -60,6 +60,12 @@ const charRenderDataPool: CharRenderData[] = [];
  */
 export class BitmapText extends Container
 {
+    public static styleDefaults: Partial<IBitmapTextStyle> = {
+        align: 'left',
+        tint: 0xFFFFFF,
+        maxWidth: 0,
+        letterSpacing: 0,
+    };
     public roundPixels: boolean;
     public dirty: boolean;
     protected _textWidth: number;
@@ -69,30 +75,50 @@ export class BitmapText extends Container
     protected _maxLineHeight: number;
     protected _letterSpacing: number;
     protected _anchor: ObservablePoint;
-    protected _font: {
-        name: string;
-        size: number;
-        tint: number;
-        align: BitmapTextAlign;
-    };
+    protected _fontName: string;
+    protected _fontSize: number;
+    protected _align: TextStyleAlign;
     protected _activePagesMeshData: PageMeshData[];
     protected _tint = 0xFFFFFF;
 
     /**
      * @param {string} text - A string that you would like the text to display.
      * @param {object} style - The style parameters.
-     * @param {string|object} style.font - The font descriptor for the object, can be passed as a string of form
-     *      "24px FontName" or "FontName" or as an object with explicit name/size properties.
-     * @param {string} [style.font.name] - The bitmap font id.
-     * @param {number} [style.font.size] - The size of the font in pixels, e.g. 24
-     * @param {string} [style.align='left'] - Alignment for multiline text ('left', 'center' or 'right'), does not affect
-     *      single line text.
+     * @param {string} style.fontName - The installed BitmapFont name.
+     * @param {number} [style.fontSize] - The size of the font in pixels, e.g. 24. If undefined,
+     *.     this will default to the BitmapFont size.
+     * @param {string} [style.align='left'] - Alignment for multiline text ('left', 'center' or 'right'),
+     *      does not affect single line text.
      * @param {number} [style.tint=0xFFFFFF] - The tint color.
+     * @param {number} [style.letterSpacing=0] - The amount of spacing between letters.
+     * @param {number} [style.maxWidth=0] - The max width of the text before line wrapping.
      */
     constructor(text: string, style: Partial<IBitmapTextStyle> = {})
     {
         super();
 
+        if (style.font)
+        {
+            deprecation('5.3.0', 'PIXI.BitmapText constructor style.font property is deprecated.');
+
+            this._upgradeStyle(style);
+        }
+
+        // Apply the defaults
+        const { align, tint, maxWidth, letterSpacing, fontName, fontSize } = Object.assign(
+            {}, BitmapText.styleDefaults, style);
+
+        if (!BitmapFont.available[fontName])
+        {
+            throw new Error(`Missing BitmapFont "${fontName}"`);
+        }
+
+        /**
+         * Collection of page mesh data.
+         *
+         * @member {object}
+         * @private
+         */
         this._activePagesMeshData = [];
 
         /**
@@ -112,25 +138,36 @@ export class BitmapText extends Container
         this._textHeight = 0;
 
         /**
-         * Private tracker for the current style.
+         * Private tracker for the current text align.
          *
-         * @member {object}
+         * @member {string}
          * @private
          */
-        this._font = {
-            tint: style.tint !== undefined ? style.tint : 0xFFFFFF,
-            align: style.align || 'left',
-            name: null,
-            size: 0,
-        };
+        this._align = align;
 
         /**
-         * Private tracker for the current font.
+         * Private tracker for the current tint.
          *
-         * @member {object}
+         * @member {number}
          * @private
          */
-        this.font = style.font; // run font setter
+        this._tint = tint;
+
+        /**
+         * Private tracker for the current font name.
+         *
+         * @member {string}
+         * @private
+         */
+        this._fontName = fontName;
+
+        /**
+         * Private tracker for the current font size.
+         *
+         * @member {number}
+         * @private
+         */
+        this._fontSize = fontSize || BitmapFont.available[fontName].size;
 
         /**
          * Private tracker for the current text.
@@ -148,11 +185,11 @@ export class BitmapText extends Container
          * @member {number}
          * @private
          */
-        this._maxWidth = 0;
+        this._maxWidth = maxWidth;
 
         /**
          * The max line height. This is useful when trying to use the total height of the Text,
-         * ie: when trying to vertically align.
+         * ie: when trying to vertically align. (Internally used)
          *
          * @member {number}
          * @private
@@ -164,7 +201,7 @@ export class BitmapText extends Container
          * @member {number}
          * @private
          */
-        this._letterSpacing = 0;
+        this._letterSpacing = letterSpacing;
 
         /**
          * Text anchor. read-only
@@ -175,39 +212,38 @@ export class BitmapText extends Container
         this._anchor = new ObservablePoint((): void => { this.dirty = true; }, this, 0, 0);
 
         /**
-         * The dirty state of this object.
-         *
-         * @member {boolean}
-         */
-        this.dirty = true;
-
-        /**
          * If true PixiJS will Math.floor() x/y values when rendering, stopping pixel interpolation.
          * Advantages can include sharper image quality (like text) and faster rendering on canvas.
          * The main disadvantage is movement of objects may appear less smooth.
          * To set the global default, change {@link PIXI.settings.ROUND_PIXELS}
          *
          * @member {boolean}
-         * @default false
+         * @default PIXI.settings.ROUND_PIXELS
          */
         this.roundPixels = settings.ROUND_PIXELS;
+
+        /**
+         * Set to `true` if the BitmapText needs to be redrawn.
+         *
+         * @member {boolean}
+         */
+        this.dirty = true;
     }
 
     /**
-     * Renders text and updates it when needed
-     *
-     * @private
+     * Renders text and updates it when needed. This should only be called
+     * if the BitmapFont is regenerated.
      */
-    private updateText(): void
+    public updateText(): void
     {
-        const data = BitmapFont.available[this._font.name];
-        const scale = this._font.size / data.size;
+        const data = BitmapFont.available[this._fontName];
+        const scale = this._fontSize / data.size;
         const pos = new Point();
         const chars: CharRenderData[] = [];
         const lineWidths = [];
         const text = this._text.replace(/(?:\r\n|\r)/g, '\n') || ' ';
         const textLength = text.length;
-        const maxWidth = this._maxWidth * data.size / this._font.size;
+        const maxWidth = this._maxWidth * data.size / this._fontSize;
 
         let prevCharCode = null;
         let lastLineWidth = 0;
@@ -310,11 +346,11 @@ export class BitmapText extends Container
         {
             let alignOffset = 0;
 
-            if (this._font.align === 'right')
+            if (this._align === 'right')
             {
                 alignOffset = maxLineWidth - lineWidths[i];
             }
-            else if (this._font.align === 'center')
+            else if (this._align === 'center')
             {
                 alignOffset = (maxLineWidth - lineWidths[i]) / 2;
             }
@@ -563,6 +599,7 @@ export class BitmapText extends Container
      * The tint of the BitmapText object.
      *
      * @member {number}
+     * @default 0xffffff
      */
     public get tint(): number
     {
@@ -587,16 +624,61 @@ export class BitmapText extends Container
      * @member {string}
      * @default 'left'
      */
-    public get align(): BitmapTextAlign
+    public get align(): TextStyleAlign
     {
-        return this._font.align;
+        return this._align;
     }
 
     public set align(value) // eslint-disable-line require-jsdoc
     {
-        this._font.align = value || 'left';
+        if (this._align !== value)
+        {
+            this._align = value;
+            this.dirty = true;
+        }
+    }
 
-        this.dirty = true;
+    /**
+     * The name of the BitmapFont.
+     *
+     * @member {string}
+     */
+    public get fontName(): string
+    {
+        return this._fontName;
+    }
+
+    public set fontName(value: string) // eslint-disable-line require-jsdoc
+    {
+        if (!BitmapFont.available[value])
+        {
+            throw new Error(`Missing BitmapFont "${value}"`);
+        }
+
+        if (this._fontName !== value)
+        {
+            this._fontName = value;
+            this.dirty = true;
+        }
+    }
+
+    /**
+     * The size of the font to display.
+     *
+     * @member {number}
+     */
+    public get fontSize(): number
+    {
+        return this._fontSize;
+    }
+
+    public set fontSize(value: number) // eslint-disable-line require-jsdoc
+    {
+        if (this._fontSize !== value)
+        {
+            this._fontSize = value;
+            this.dirty = true;
+        }
     }
 
     /**
@@ -625,44 +707,6 @@ export class BitmapText extends Container
         {
             this._anchor.copyFrom(value);
         }
-    }
-
-    /**
-     * The font descriptor of the BitmapText object.
-     *
-     * @member {object}
-     */
-    public get font(): IBitmapTextFontDescriptor | string
-    {
-        return this._font;
-    }
-
-    public set font(value: IBitmapTextFontDescriptor | string) // eslint-disable-line require-jsdoc
-    {
-        if (!value)
-        {
-            return;
-        }
-
-        if (typeof value === 'string')
-        {
-            const valueSplit = value.split(' ');
-
-            this._font.name = valueSplit.length === 1
-                ? valueSplit[0]
-                : valueSplit.slice(1).join(' ');
-
-            this._font.size = valueSplit.length >= 2
-                ? parseInt(valueSplit[0], 10)
-                : BitmapFont.available[this._font.name].size;
-        }
-        else
-        {
-            this._font.name = value.name;
-            this._font.size = typeof value.size === 'number' ? value.size : parseInt(value.size, 10);
-        }
-
-        this.dirty = true;
     }
 
     /**
@@ -768,6 +812,36 @@ export class BitmapText extends Container
         this.validate();
 
         return this._textHeight;
+    }
+
+    /**
+     * For backward compatibility, convert old style.font constructor param to fontName & fontSize properties.
+     *
+     * @private
+     * @deprecated since 5.3.0
+     */
+    private _upgradeStyle(style: Partial<IBitmapTextStyle>): void
+    {
+        if (typeof style.font === 'string')
+        {
+            const valueSplit = style.font.split(' ');
+
+            style.fontName = valueSplit.length === 1
+                ? valueSplit[0]
+                : valueSplit.slice(1).join(' ');
+
+            if (valueSplit.length >= 2)
+            {
+                style.fontSize = parseInt(valueSplit[0], 10);
+            }
+        }
+        else
+        {
+            style.fontName = style.font.name;
+            style.fontSize = typeof style.font.size === 'number'
+                ? style.font.size
+                : parseInt(style.font.size, 10);
+        }
     }
 
     /**

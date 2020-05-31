@@ -1434,4 +1434,45 @@ export function useDeprecated()
             deprecation(v5, 'PIXI.utils.mixins.performMixins function is no longer available');
         },
     };
+
+    /**
+     * @memberof PIXI.BitmapText
+     * @member {object} font
+     * @deprecated since 5.3.0
+     */
+    Object.defineProperty(PIXI.BitmapText.prototype, 'font', {
+        get()
+        {
+            deprecation('5.3.0', 'PIXI.BitmapText.font property is deprecated, '
+                + 'use fontName, fontSize, tint or align properties');
+
+            return {
+                name: this._fontName,
+                size: this._fontSize,
+                tint: this._tint,
+                align: this._align,
+            };
+        },
+        set(value) // eslint-disable-line require-jsdoc
+        {
+            deprecation('5.3.0', 'PIXI.BitmapText.font property is deprecated, '
+                + 'use fontName, fontSize, tint or align properties');
+
+            if (!value)
+            {
+                return;
+            }
+
+            const style = { font: value };
+
+            this._upgradeStyle(style);
+
+            style.fontSize = style.fontSize || PIXI.BitmapFont.available[style.fontName].size;
+
+            this._fontName = style.fontName;
+            this._fontSize = style.fontSize;
+
+            this.dirty = true;
+        },
+    });
 }

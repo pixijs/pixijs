@@ -333,7 +333,7 @@ export class BitmapFont
      *     fill: "purple"
      * });
      *
-     * const title = new PIXI.BitmapText("This is the title", { font: "TitleFont" });
+     * const title = new PIXI.BitmapText("This is the title", { fontName: "TitleFont" });
      */
     public static from(name: string, textStyle?: TextStyle | Partial<ITextStyle>, options?: IBitmapFontOptions): BitmapFont
     {
