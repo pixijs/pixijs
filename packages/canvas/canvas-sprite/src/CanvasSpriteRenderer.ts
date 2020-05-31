@@ -1,6 +1,8 @@
 import { SCALE_MODES, BLEND_MODES } from '@pixi/constants';
 import { Matrix, groupD8 } from '@pixi/math';
 import { canvasUtils } from '@pixi/canvas-renderer';
+import type { CanvasRenderer } from '@pixi/canvas-renderer';
+import type { Sprite } from '@pixi/sprite';
 
 const canvasRenderWorldTransform = new Matrix();
 
@@ -31,10 +33,12 @@ const canvasRenderWorldTransform = new Matrix();
  */
 export class CanvasSpriteRenderer
 {
+    protected renderer: CanvasRenderer;
+
     /**
      * @param {PIXI.Renderer} renderer -The renderer sprite this batch works for.
      */
-    constructor(renderer)
+    constructor(renderer: CanvasRenderer)
     {
         this.renderer = renderer;
     }
@@ -44,7 +48,7 @@ export class CanvasSpriteRenderer
      *
      * @param {PIXI.Sprite} sprite - the sprite to render when using this spritebatch
      */
-    render(sprite)
+    render(sprite: Sprite): void
     {
         const texture = sprite._texture;
         const renderer = this.renderer;
@@ -76,7 +80,8 @@ export class CanvasSpriteRenderer
         // If smoothingEnabled is supported and we need to change the smoothing property for sprite texture
         const smoothingEnabled = texture.baseTexture.scaleMode === SCALE_MODES.LINEAR;
 
-        if (renderer.smoothProperty && renderer.context[renderer.smoothProperty] !== smoothingEnabled)
+        if (renderer.smoothProperty
+            && renderer.context[renderer.smoothProperty] !== smoothingEnabled)
         {
             context[renderer.smoothProperty] = smoothingEnabled;
         }
@@ -178,7 +183,7 @@ export class CanvasSpriteRenderer
      * destroy the sprite object.
      *
      */
-    destroy()
+    destroy(): void
     {
         this.renderer = null;
     }
