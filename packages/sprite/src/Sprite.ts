@@ -14,6 +14,8 @@ const indices = new Uint16Array([0, 1, 2, 0, 2, 3]);
 
 export type SpriteSource = TextureSource|Texture;
 
+export interface Sprite extends GlobalMixins.Sprite, Container {}
+
 /**
  * The Sprite object is the base for all textured objects that are rendered to the screen
 *

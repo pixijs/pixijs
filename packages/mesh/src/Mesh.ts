@@ -13,6 +13,9 @@ import type { IPoint } from '@pixi/math';
 const tempPoint = new Point();
 const tempPolygon = new Polygon();
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface Mesh extends GlobalMixins.Mesh {}
+
 /**
  * Base mesh class.
  *
@@ -45,9 +48,8 @@ export class Mesh extends Container
     private _transformID: number;
     private _roundPixels: boolean;
     private batchUvs: MeshBatchUvs;
+    uvs: Float32Array;
     /* eslint-disable @typescript-eslint/ban-ts-ignore */
-    // @ts-ignore
-    private uvs: Float32Array;
     // @ts-ignore
     private indices: Uint16Array;
     // @ts-ignore
