@@ -4,7 +4,7 @@
   "main": "lib/unsafe-eval.js",
   "module": "lib/unsafe-eval.es.js",
   "bundle": "dist/unsafe-eval.js",
-  "bundleInput": "src/bundle.js",
+  "bundleInput": "src/bundle.ts",
   "standalone": true,
   "description": "Adds support for environments that disallow support of new Function",
   "author": "Matt Karl <matt@mattkarl.com>",
@@ -21,5 +21,8 @@
   "files": [
     "lib/",
     "dist/"
-  ]
+  ],
+  "dependencies": {
+      "@pixi/core": "5.2.4"
+  }
 }
