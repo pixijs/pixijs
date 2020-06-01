@@ -1,4 +1,5 @@
 import { Sprite } from '@pixi/sprite';
+import type { CanvasRenderer } from '@pixi/canvas-renderer';
 
 /**
  * Cached tinted texture.
@@ -16,7 +17,7 @@ Sprite.prototype._tintedCanvas = null;
 * @memberof PIXI.Sprite#
 * @param {PIXI.CanvasRenderer} renderer - The renderer
 */
-Sprite.prototype._renderCanvas = function _renderCanvas(renderer)
+Sprite.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRenderer): void
 {
     renderer.plugins.sprite.render(this);
 };

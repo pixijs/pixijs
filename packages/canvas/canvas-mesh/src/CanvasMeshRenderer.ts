@@ -1,5 +1,8 @@
 import { DRAW_MODES } from '@pixi/constants';
 
+import type { CanvasRenderer } from '@pixi/canvas-renderer';
+import type { Mesh } from '@pixi/mesh';
+
 /**
  * Renderer dedicated to meshes.
  *
@@ -9,10 +12,12 @@ import { DRAW_MODES } from '@pixi/constants';
  */
 export class CanvasMeshRenderer
 {
+    public renderer: CanvasRenderer;
+
     /**
      * @param {PIXI.CanvasRenderer} renderer - The renderer this downport works for
      */
-    constructor(renderer)
+    constructor(renderer: CanvasRenderer)
     {
         this.renderer = renderer;
     }
@@ -22,7 +27,7 @@ export class CanvasMeshRenderer
      *
      * @param {PIXI.Mesh} mesh - the Mesh to render
      */
-    render(mesh)
+    public render(mesh: Mesh): void
     {
         const renderer = this.renderer;
         const transform = mesh.worldTransform;
@@ -47,7 +52,7 @@ export class CanvasMeshRenderer
      * @private
      * @param {PIXI.Mesh} mesh - the Mesh to render
      */
-    _renderTriangleMesh(mesh)
+    private _renderTriangleMesh(mesh: Mesh): void
     {
         // draw triangles!!
         const length = mesh.geometry.buffers[0].data.length;
@@ -67,7 +72,7 @@ export class CanvasMeshRenderer
      * @private
      * @param {PIXI.Mesh} mesh - the current mesh
      */
-    _renderTriangles(mesh)
+    private _renderTriangles(mesh: Mesh): void
     {
         // draw triangles!!
         const indices = mesh.geometry.getIndex().data;
@@ -93,7 +98,7 @@ export class CanvasMeshRenderer
      * @param {number} index1 - the index of the second vertex
      * @param {number} index2 - the index of the third vertex
      */
-    _renderDrawTriangle(mesh, index0, index1, index2)
+    private _renderDrawTriangle(mesh: Mesh, index0: number, index1: number, index2: number): void
     {
         const context = this.renderer.context;
         const vertices = mesh.geometry.buffers[0].data;
@@ -208,7 +213,7 @@ export class CanvasMeshRenderer
      * @private
      * @param {PIXI.Mesh} mesh - The Mesh to render
      */
-    renderMeshFlat(mesh)
+    renderMeshFlat(mesh: Mesh): void
     {
         const context = this.renderer.context;
         const vertices = mesh.geometry.getBuffer('aVertexPosition').data;
@@ -246,7 +251,7 @@ export class CanvasMeshRenderer
      * destroy the the renderer.
      *
      */
-    destroy()
+    public destroy(): void
     {
         this.renderer = null;
     }
