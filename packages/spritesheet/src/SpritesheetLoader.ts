@@ -77,7 +77,7 @@ export class SpritesheetLoader
      * @param {PIXI.LoaderResource} resource - Resource to check path
      * @param {string} baseUrl - Base root url
      */
-    private static getResourcePath(resource: any, baseUrl: string): string
+    static getResourcePath(resource: any, baseUrl: string): string
     {
         // Prepend url path unless the resource image is a data url
         if (resource.isDataUrl)

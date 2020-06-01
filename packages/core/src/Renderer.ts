@@ -27,7 +27,7 @@ import type { IRenderingContext } from './IRenderingContext';
 import type { Extract } from '@pixi/extract';
 
 export interface IRendererPluginConstructor {
-    new (renderer: Renderer): IRendererPlugin;
+    new (renderer: Renderer, options?: any): IRendererPlugin;
 }
 
 export interface IRendererPlugin {

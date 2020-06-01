@@ -17,7 +17,7 @@ import type {
 const tempMatrix = new Matrix();
 
 export interface ICanvasRendererPluginConstructor {
-    new (renderer: CanvasRenderer): IRendererPlugin;
+    new (renderer: CanvasRenderer, options?: any): IRendererPlugin;
 }
 
 export interface ICanvasRendererPlugins
