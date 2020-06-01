@@ -1,5 +1,8 @@
 import { SimpleRope } from '@pixi/mesh-extras';
 
+import type { RopeGeometry } from '@pixi/mesh-extras';
+import type { CanvasRenderer } from '@pixi/canvas-renderer';
+
 /**
  * Renders the object using the Canvas renderer
  *
@@ -8,13 +11,13 @@ import { SimpleRope } from '@pixi/mesh-extras';
  * @memberof PIXI.Mesh#
  * @param {PIXI.CanvasRenderer} renderer - The canvas renderer.
  */
-SimpleRope.prototype._renderCanvas = function _renderCanvas(renderer)
+SimpleRope.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRenderer): void
 {
     if (this.autoUpdate
-        || this.geometry._width !== this.shader.texture.height)
+        || (this.geometry as RopeGeometry)._width !== this.shader.texture.height)
     {
-        this.geometry._width = this.shader.texture.height;
-        this.geometry.update();
+        (this.geometry as RopeGeometry)._width = this.shader.texture.height;
+        (this.geometry as RopeGeometry).update();
     }
 
     if (this.shader.update)

@@ -1,5 +1,7 @@
 import { SimpleMesh } from '@pixi/mesh-extras';
 
+import type { CanvasRenderer } from '@pixi/canvas-renderer';
+
 /**
  * Renders the object using the Canvas renderer
  *
@@ -8,7 +10,7 @@ import { SimpleMesh } from '@pixi/mesh-extras';
  * @memberof PIXI.Mesh#
  * @param {PIXI.CanvasRenderer} renderer - The canvas renderer.
  */
-SimpleMesh.prototype._renderCanvas = function _renderCanvas(renderer)
+SimpleMesh.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRenderer): void
 {
     if (this.autoUpdate)
     {

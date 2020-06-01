@@ -1,5 +1,10 @@
 import { SHAPES, Matrix } from '@pixi/math';
 import { canvasUtils } from '@pixi/canvas-renderer';
+
+import type { CanvasRenderer } from '@pixi/canvas-renderer';
+import type { FillStyle, Graphics } from '@pixi/graphics';
+import type { Polygon, Rectangle, Circle, Ellipse, RoundedRectangle } from '@pixi/math';
+
 /**
  * @author Mat Groves
  *
@@ -21,10 +26,13 @@ import { canvasUtils } from '@pixi/canvas-renderer';
  */
 export class CanvasGraphicsRenderer
 {
+    public renderer: CanvasRenderer;
+    private _svgMatrix: DOMMatrix|boolean;
+
     /**
      * @param {PIXI.CanvasRenderer} renderer - The current PIXI renderer.
      */
-    constructor(renderer)
+    constructor(renderer: CanvasRenderer)
     {
         this.renderer = renderer;
         this._svgMatrix = null;
@@ -38,7 +46,7 @@ export class CanvasGraphicsRenderer
      * @param {number} tint
      * @returns {string|CanvasPattern}
      */
-    _calcCanvasStyle(style, tint)
+    private _calcCanvasStyle(style: FillStyle, tint: number): string|CanvasPattern
     {
         let res;
 
@@ -67,7 +75,7 @@ export class CanvasGraphicsRenderer
      *
      * @param {PIXI.Graphics} graphics - the actual graphics object to render
      */
-    render(graphics)
+    public render(graphics: Graphics): void
     {
         const renderer = this.renderer;
         const context = renderer.context;
@@ -126,7 +134,8 @@ export class CanvasGraphicsRenderer
             {
                 context.beginPath();
 
-                let points = shape.points;
+                const tempShape = shape as Polygon;
+                let points = tempShape.points;
                 const holes = data.holes;
                 let outerArea;
                 let innerArea;
@@ -140,7 +149,7 @@ export class CanvasGraphicsRenderer
                     context.lineTo(points[j], points[j + 1]);
                 }
 
-                if (shape.closeStroke)
+                if (tempShape.closeStroke)
                 {
                     context.closePath();
                 }
@@ -158,7 +167,7 @@ export class CanvasGraphicsRenderer
 
                     for (let k = 0; k < holes.length; k++)
                     {
-                        points = holes[k].shape.points;
+                        points = (holes[k].shape as Polygon).points;
 
                         if (!points)
                         {
@@ -193,7 +202,7 @@ export class CanvasGraphicsRenderer
                             }
                         }
 
-                        if (holes[k].shape.closeStroke)
+                        if ((holes[k].shape as Polygon).closeStroke)
                         {
                             context.closePath();
                         }
@@ -216,24 +225,28 @@ export class CanvasGraphicsRenderer
             }
             else if (data.type === SHAPES.RECT)
             {
+                const tempShape = shape as Rectangle;
+
                 if (fillStyle.visible)
                 {
                     context.globalAlpha = fillStyle.alpha * worldAlpha;
                     context.fillStyle = contextFillStyle;
-                    context.fillRect(shape.x, shape.y, shape.width, shape.height);
+                    context.fillRect(tempShape.x, tempShape.y, tempShape.width, tempShape.height);
                 }
                 if (lineStyle.visible)
                 {
                     context.globalAlpha = lineStyle.alpha * worldAlpha;
                     context.strokeStyle = contextStrokeStyle;
-                    context.strokeRect(shape.x, shape.y, shape.width, shape.height);
+                    context.strokeRect(tempShape.x, tempShape.y, tempShape.width, tempShape.height);
                 }
             }
             else if (data.type === SHAPES.CIRC)
             {
+                const tempShape = shape as Circle;
+
                 // TODO - need to be Undefined!
                 context.beginPath();
-                context.arc(shape.x, shape.y, shape.radius, 0, 2 * Math.PI);
+                context.arc(tempShape.x, tempShape.y, tempShape.radius, 0, 2 * Math.PI);
                 context.closePath();
 
                 if (fillStyle.visible)
@@ -254,11 +267,13 @@ export class CanvasGraphicsRenderer
             {
                 // ellipse code taken from: http://stackoverflow.com/questions/2172798/how-to-draw-an-oval-in-html5-canvas
 
-                const w = shape.width * 2;
-                const h = shape.height * 2;
+                const tempShape = shape as Ellipse;
 
-                const x = shape.x - (w / 2);
-                const y = shape.y - (h / 2);
+                const w = tempShape.width * 2;
+                const h = tempShape.height * 2;
+
+                const x = tempShape.x - (w / 2);
+                const y = tempShape.y - (h / 2);
 
                 context.beginPath();
 
@@ -293,11 +308,13 @@ export class CanvasGraphicsRenderer
             }
             else if (data.type === SHAPES.RREC)
             {
-                const rx = shape.x;
-                const ry = shape.y;
-                const width = shape.width;
-                const height = shape.height;
-                let radius = shape.radius;
+                const tempShape = shape as RoundedRectangle;
+
+                const rx = tempShape.x;
+                const ry = tempShape.y;
+                const width = tempShape.width;
+                const height = tempShape.height;
+                let radius = tempShape.radius;
 
                 const maxRadius = Math.min(width, height) / 2 | 0;
 
@@ -331,7 +348,7 @@ export class CanvasGraphicsRenderer
         }
     }
 
-    setPatternTransform(pattern, matrix)
+    public setPatternTransform(pattern: CanvasPattern, matrix: Matrix): void
     {
         if (this._svgMatrix === false)
         {
@@ -353,19 +370,19 @@ export class CanvasGraphicsRenderer
             }
         }
 
-        this._svgMatrix.a = matrix.a;
-        this._svgMatrix.b = matrix.b;
-        this._svgMatrix.c = matrix.c;
-        this._svgMatrix.d = matrix.d;
-        this._svgMatrix.e = matrix.tx;
-        this._svgMatrix.f = matrix.ty;
-        pattern.setTransform(this._svgMatrix.inverse());
+        (this._svgMatrix as DOMMatrix).a = matrix.a;
+        (this._svgMatrix as DOMMatrix).b = matrix.b;
+        (this._svgMatrix as DOMMatrix).c = matrix.c;
+        (this._svgMatrix as DOMMatrix).d = matrix.d;
+        (this._svgMatrix as DOMMatrix).e = matrix.tx;
+        (this._svgMatrix as DOMMatrix).f = matrix.ty;
+        pattern.setTransform((this._svgMatrix as DOMMatrix).inverse());
     }
     /**
      * destroy graphics object
      *
      */
-    destroy()
+    public destroy(): void
     {
         this.renderer = null;
     }
