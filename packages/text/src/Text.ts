@@ -18,9 +18,6 @@ const defaultDestroyOptions: IDestroyOptions = {
     baseTexture: true,
 };
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface Text extends GlobalMixins.Text {}
-
 /**
  * A Text Object will create a line or multiple lines of text.
  *
