@@ -21,8 +21,5 @@ Text.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRenderer):
 
     this.updateText(true);
 
-    // TODO: remove when canvas-sprite is merged
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    // @ts-ignore
     Sprite.prototype._renderCanvas.call(this, renderer);
 };
