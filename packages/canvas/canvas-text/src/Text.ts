@@ -1,6 +1,8 @@
 import { Text } from '@pixi/text';
 import { Sprite } from '@pixi/sprite';
 
+import type { CanvasRenderer } from '@pixi/canvas-renderer';
+
 /**
  * Renders the object using the Canvas renderer
  *
@@ -9,7 +11,7 @@ import { Sprite } from '@pixi/sprite';
  * @private
  * @param {PIXI.CanvasRenderer} renderer - The renderer
  */
-Text.prototype._renderCanvas = function _renderCanvas(renderer)
+Text.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRenderer): void
 {
     if (this._autoResolution && this._resolution !== renderer.resolution)
     {

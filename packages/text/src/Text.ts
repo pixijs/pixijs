@@ -50,11 +50,11 @@ export class Text extends Sprite
     public localStyleID: number;
     public dirty: boolean;
 
+    _resolution: number;
+    _autoResolution: boolean;
     protected _text: string;
     protected _font: string;
     protected _style: TextStyle;
-    protected _resolution: number;
-    protected _autoResolution: boolean;
     protected _styleListener: () => void;
     private _ownCanvas: boolean;
 
