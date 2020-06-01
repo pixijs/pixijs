@@ -29,7 +29,7 @@
     "@pixi/loaders": "5.2.4",
     "@pixi/math": "5.2.4",
     "@pixi/settings": "5.2.4",
-    "@pixi/sprite": "5.2.4",
+    "@pixi/mesh": "5.2.4",
     "@pixi/utils": "5.2.4",
     "@pixi/text": "5.2.4"
   },

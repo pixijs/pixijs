@@ -1,7 +1,8 @@
 /**
  * Generalized convenience utilities for Graphics.
  *
- * @namespace PIXI.graphicsUtils
+ * @namespace graphicsUtils
+ * @memberof PIXI
  */
 
 import { buildPoly } from './buildPoly';
@@ -33,7 +34,7 @@ import { IShapeBuildCommand } from './IShapeBuildCommand';
  * Map of fill commands for each shape type.
  *
  * @memberof PIXI.graphicsUtils
- * @member {Object}
+ * @member {Object} FILL_COMMANDS
  */
 export const FILL_COMMANDS: Record<SHAPES, IShapeBuildCommand> = {
     [SHAPES.POLY]: buildPoly,
@@ -47,7 +48,7 @@ export const FILL_COMMANDS: Record<SHAPES, IShapeBuildCommand> = {
  * Batch pool, stores unused batches for preventing allocations.
  *
  * @memberof PIXI.graphicsUtils
- * @type {Array<PIXI.graphicsUtils.BatchPart>}
+ * @member {Array<PIXI.graphicsUtils.BatchPart>} BATCH_POOL
  */
 export const BATCH_POOL: Array<BatchPart> = [];
 
@@ -55,6 +56,6 @@ export const BATCH_POOL: Array<BatchPart> = [];
  * Draw call pool, stores unused draw calls for preventing allocations.
  *
  * @memberof PIXI.graphicsUtils
- * @type {Array<PIXI.BatchDrawCall>}
+ * @member {Array<PIXI.BatchDrawCall>} DRAW_CALL_POOL
  */
 export const DRAW_CALL_POOL: Array<BatchDrawCall> = [];
