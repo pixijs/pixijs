@@ -1,6 +1,48 @@
 import { deprecation } from '@pixi/utils';
+import type {
+    systems,
+    resources,
+    Renderer,
+    ImageSource,
+    BaseTexture,
+    RenderTexture,
+    Texture,
+    State,
+    AbstractRenderer } from '@pixi/core';
+import type { DisplayObject, Container } from '@pixi/display';
+import type { TilingSprite } from '@pixi/sprite-tiling';
+import type {
+    Point,
+    ObservablePoint,
+    IPoint,
+    Rectangle,
+    Transform,
+    groupD8,
+    Matrix } from '@pixi/math';
+import type { Ticker } from '@pixi/ticker';
+import type { Graphics, GraphicsData } from '@pixi/graphics';
+import type { Sprite } from '@pixi/sprite';
+import type { BitmapText, BitmapFontLoader } from '@pixi/text-bitmap';
+import type { CanvasRenderTarget } from '@pixi/utils';
+import type { Loader, LoaderResource } from '@pixi/loaders';
+import type { BasePrepare, Prepare } from '@pixi/prepare';
+import type { Extract } from '@pixi/extract';
+import type { AnimatedSprite } from '@pixi/sprite-animated';
+import type { Mesh } from '@pixi/mesh';
+import type { ParticleContainer } from '@pixi/particles';
+import type { SpritesheetLoader } from '@pixi/spritesheet';
+import type {
+    SimpleRope,
+    NineSlicePlane,
+    SimpleMesh,
+    SimplePlane } from '@pixi/mesh-extras';
 
 const v5 = '5.0.0';
+
+// Canvas deprecations needs to get moved
+// to the legacy package, but for now, we'll
+// ad this reminder
+type $FixLegacy = any;
 
 /**
  * Deprecations (backward compatibilities) are automatically applied for browser bundles
@@ -12,8 +54,9 @@ const v5 = '5.0.0';
  * @memberof PIXI
  * @function useDeprecated
  */
-export function useDeprecated()
+export function useDeprecated(this: any): void
 {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const PIXI = this;
 
     Object.defineProperties(PIXI, {
@@ -24,7 +67,7 @@ export function useDeprecated()
          * @deprecated since 5.0.0
          */
         SVG_SIZE: {
-            get()
+            get(): RegExp
             {
                 deprecation(v5, 'PIXI.utils.SVG_SIZE property has moved to PIXI.resources.SVGResource.SVG_SIZE');
 
@@ -38,7 +81,7 @@ export function useDeprecated()
          * @see PIXI.Transform
          */
         TransformStatic: {
-            get()
+            get(): Transform
             {
                 deprecation(v5, 'PIXI.TransformStatic class has been removed, use PIXI.Transform');
 
@@ -52,7 +95,7 @@ export function useDeprecated()
          * @see PIXI.Transform
          */
         TransformBase: {
-            get()
+            get(): Transform
             {
                 deprecation(v5, 'PIXI.TransformBase class has been removed, use PIXI.Transform');
 
@@ -73,7 +116,7 @@ export function useDeprecated()
          * @property {number} DYNAMIC
          */
         TRANSFORM_MODE: {
-            get()
+            get(): {[name: string]: number}
             {
                 deprecation(v5, 'PIXI.TRANSFORM_MODE property has been removed');
 
@@ -87,7 +130,7 @@ export function useDeprecated()
          * @deprecated since 5.0.0
          */
         WebGLRenderer: {
-            get()
+            get(): typeof Renderer
             {
                 deprecation(v5, 'PIXI.WebGLRenderer class has moved to PIXI.Renderer');
 
@@ -101,7 +144,7 @@ export function useDeprecated()
          * @deprecated since 5.0.0
          */
         CanvasRenderTarget: {
-            get()
+            get(): CanvasRenderTarget
             {
                 deprecation(v5, 'PIXI.CanvasRenderTarget class has moved to PIXI.utils.CanvasRenderTarget');
 
@@ -117,7 +160,7 @@ export function useDeprecated()
          * @deprecated since 5.0.0
          */
         loader: {
-            get()
+            get(): Loader
             {
                 deprecation(v5, 'PIXI.loader instance has moved to PIXI.Loader.shared');
 
@@ -131,7 +174,7 @@ export function useDeprecated()
          * @deprecated since 5.0.0
          */
         FilterManager: {
-            get()
+            get(): systems.FilterSystem
             {
                 deprecation(v5, 'PIXI.FilterManager class has moved to PIXI.systems.FilterSystem');
 
@@ -145,7 +188,7 @@ export function useDeprecated()
          * @deprecated since 5.2.0
          */
         CanvasTinter: {
-            get()
+            get(): $FixLegacy
             {
                 deprecation('5.2.0', 'PIXI.CanvasTinter namespace has moved to PIXI.canvasUtils');
 
@@ -159,7 +202,7 @@ export function useDeprecated()
          * @deprecated since 5.2.0
          */
         GroupD8: {
-            get()
+            get(): typeof groupD8
             {
                 deprecation('5.2.0', 'PIXI.GroupD8 namespace has moved to PIXI.groupD8');
 
@@ -182,7 +225,7 @@ export function useDeprecated()
          * @see PIXI.BasePrepare
          */
         BasePrepare: {
-            get()
+            get(): typeof BasePrepare
             {
                 deprecation('5.2.1', 'PIXI.prepare.BasePrepare moved to PIXI.BasePrepare');
 
@@ -195,7 +238,7 @@ export function useDeprecated()
          * @see PIXI.Prepare
          */
         Prepare: {
-            get()
+            get(): typeof Prepare
             {
                 deprecation('5.2.1', 'PIXI.prepare.Prepare moved to PIXI.Prepare');
 
@@ -208,7 +251,7 @@ export function useDeprecated()
          * @see PIXI.CanvasPrepare
          */
         CanvasPrepare: {
-            get()
+            get(): $FixLegacy
             {
                 deprecation('5.2.1', 'PIXI.prepare.CanvasPrepare moved to PIXI.CanvasPrepare');
 
@@ -231,7 +274,7 @@ export function useDeprecated()
          * @see PIXI.Extract
          */
         Extract: {
-            get()
+            get(): typeof Extract
             {
                 deprecation('5.2.1', 'PIXI.extract.Extract moved to PIXI.Extract');
 
@@ -244,7 +287,7 @@ export function useDeprecated()
          * @see PIXI.CanvasExtract
          */
         CanvasExtract: {
-            get()
+            get(): $FixLegacy
             {
                 deprecation('5.2.1', 'PIXI.extract.CanvasExtract moved to PIXI.CanvasExtract');
 
@@ -268,7 +311,7 @@ export function useDeprecated()
          * @deprecated since 5.0.0
          */
         TilingSprite: {
-            get()
+            get(): typeof TilingSprite
             {
                 deprecation(v5, 'PIXI.extras.TilingSprite class has moved to PIXI.TilingSprite');
 
@@ -281,7 +324,7 @@ export function useDeprecated()
          * @deprecated since 5.0.0
          */
         TilingSpriteRenderer: {
-            get()
+            get(): $FixLegacy
             {
                 deprecation(v5, 'PIXI.extras.TilingSpriteRenderer class has moved to PIXI.TilingSpriteRenderer');
 
@@ -294,7 +337,7 @@ export function useDeprecated()
          * @deprecated since 5.0.0
          */
         AnimatedSprite: {
-            get()
+            get(): typeof AnimatedSprite
             {
                 deprecation(v5, 'PIXI.extras.AnimatedSprite class has moved to PIXI.AnimatedSprite');
 
@@ -307,7 +350,7 @@ export function useDeprecated()
          * @deprecated since 5.0.0
          */
         BitmapText: {
-            get()
+            get(): typeof BitmapText
             {
                 deprecation(v5, 'PIXI.extras.BitmapText class has moved to PIXI.BitmapText');
 
@@ -322,7 +365,7 @@ export function useDeprecated()
      * @deprecated since 5.3.0
      * @see PIXI.TilingSprite.from
      */
-    PIXI.TilingSprite.fromFrame = function fromFrame(frameId, width, height)
+    PIXI.TilingSprite.fromFrame = function fromFrame(frameId: string, width: number, height: number): TilingSprite
     {
         deprecation('5.3.0', 'TilingSprite.fromFrame is deprecated, use TilingSprite.from');
 
@@ -335,7 +378,11 @@ export function useDeprecated()
      * @deprecated since 5.3.0
      * @see PIXI.TilingSprite.from
      */
-    PIXI.TilingSprite.fromImage = function fromImage(imageId, width, height, options = {})
+    PIXI.TilingSprite.fromImage = function fromImage(
+        imageId: string,
+        width: number,
+        height: number,
+        options: any = {}): TilingSprite
     {
         deprecation('5.3.0', 'TilingSprite.fromImage is deprecated, use TilingSprite.from');
 
@@ -365,11 +412,11 @@ export function useDeprecated()
          * @deprecated since 5.0.0
          */
         getSvgSize: {
-            get()
+            get(): typeof resources.SVGResource.getSize
             {
                 deprecation(v5, 'PIXI.utils.getSvgSize function has moved to PIXI.resources.SVGResource.getSize');
 
-                return PIXI.SVGResource.getSize;
+                return PIXI.resources.SVGResource.getSize;
             },
         },
     });
@@ -388,7 +435,7 @@ export function useDeprecated()
          * @deprecated since 5.0.0
          */
         Mesh: {
-            get()
+            get(): typeof SimpleMesh
             {
                 deprecation(v5, 'PIXI.mesh.Mesh class has moved to PIXI.SimpleMesh');
 
@@ -401,7 +448,7 @@ export function useDeprecated()
          * @deprecated since 5.0.0
          */
         NineSlicePlane: {
-            get()
+            get(): typeof NineSlicePlane
             {
                 deprecation(v5, 'PIXI.mesh.NineSlicePlane class has moved to PIXI.NineSlicePlane');
 
@@ -414,7 +461,7 @@ export function useDeprecated()
          * @deprecated since 5.0.0
          */
         Plane: {
-            get()
+            get(): typeof SimplePlane
             {
                 deprecation(v5, 'PIXI.mesh.Plane class has moved to PIXI.SimplePlane');
 
@@ -427,7 +474,7 @@ export function useDeprecated()
          * @deprecated since 5.0.0
          */
         Rope: {
-            get()
+            get(): typeof SimpleRope
             {
                 deprecation(v5, 'PIXI.mesh.Rope class has moved to PIXI.SimpleRope');
 
@@ -440,7 +487,7 @@ export function useDeprecated()
          * @deprecated since 5.0.0
          */
         RawMesh: {
-            get()
+            get(): typeof Mesh
             {
                 deprecation(v5, 'PIXI.mesh.RawMesh class has moved to PIXI.Mesh');
 
@@ -453,7 +500,7 @@ export function useDeprecated()
          * @deprecated since 5.0.0
          */
         CanvasMeshRenderer: {
-            get()
+            get(): $FixLegacy
             {
                 deprecation(v5, 'PIXI.mesh.CanvasMeshRenderer class has moved to PIXI.CanvasMeshRenderer');
 
@@ -466,7 +513,7 @@ export function useDeprecated()
          * @deprecated since 5.0.0
          */
         MeshRenderer: {
-            get()
+            get(): $FixLegacy
             {
                 deprecation(v5, 'PIXI.mesh.MeshRenderer class has moved to PIXI.MeshRenderer');
 
@@ -490,7 +537,7 @@ export function useDeprecated()
          * @see PIXI.ParticleContainer
          */
         ParticleContainer: {
-            get()
+            get(): typeof ParticleContainer
             {
                 deprecation(v5, 'PIXI.particles.ParticleContainer class has moved to PIXI.ParticleContainer');
 
@@ -503,7 +550,7 @@ export function useDeprecated()
          * @see PIXI.ParticleRenderer
          */
         ParticleRenderer: {
-            get()
+            get(): $FixLegacy
             {
                 deprecation(v5, 'PIXI.particles.ParticleRenderer class has moved to PIXI.ParticleRenderer');
 
@@ -527,7 +574,7 @@ export function useDeprecated()
          * @see PIXI.Ticker
          */
         Ticker: {
-            get()
+            get(): typeof Ticker
             {
                 deprecation(v5, 'PIXI.ticker.Ticker class has moved to PIXI.Ticker');
 
@@ -541,7 +588,7 @@ export function useDeprecated()
          * @see PIXI.Ticker.shared
          */
         shared: {
-            get()
+            get(): Ticker
             {
                 deprecation(v5, 'PIXI.ticker.shared instance has moved to PIXI.Ticker.shared');
 
@@ -564,7 +611,7 @@ export function useDeprecated()
          * @deprecated since 5.0.0
          */
         Loader: {
-            get()
+            get(): typeof Loader
             {
                 deprecation(v5, 'PIXI.loaders.Loader class has moved to PIXI.Loader');
 
@@ -577,7 +624,7 @@ export function useDeprecated()
          * @deprecated since 5.0.0
          */
         Resource: {
-            get()
+            get(): typeof LoaderResource
             {
                 deprecation(v5, 'PIXI.loaders.Resource class has moved to PIXI.LoaderResource');
 
@@ -590,7 +637,7 @@ export function useDeprecated()
          * @deprecated since 5.0.0
          */
         bitmapFontParser: {
-            get()
+            get(): typeof BitmapFontLoader.use
             {
                 deprecation(v5, 'PIXI.loaders.bitmapFontParser function has moved to PIXI.BitmapFontLoader.use');
 
@@ -599,15 +646,12 @@ export function useDeprecated()
         },
         /**
          * @function PIXI.loaders.parseBitmapFontData
-         * @see PIXI.BitmapFontLoader.parse
          * @deprecated since 5.0.0
          */
         parseBitmapFontData: {
-            get()
+            get(): void
             {
-                deprecation(v5, 'PIXI.loaders.parseBitmapFontData function has moved to PIXI.BitmapFontLoader.parse');
-
-                return PIXI.BitmapFontLoader.parse;
+                deprecation(v5, 'PIXI.loaders.parseBitmapFontData function has removed');
             },
         },
         /**
@@ -616,7 +660,7 @@ export function useDeprecated()
          * @deprecated since 5.0.0
          */
         spritesheetParser: {
-            get()
+            get(): typeof SpritesheetLoader.use
             {
                 deprecation(v5, 'PIXI.loaders.spritesheetParser function has moved to PIXI.SpritesheetLoader.use');
 
@@ -629,7 +673,7 @@ export function useDeprecated()
          * @deprecated since 5.0.0
          */
         getResourcePath: {
-            get()
+            get(): typeof SpritesheetLoader.getResourcePath
             {
                 deprecation(v5, 'PIXI.loaders.getResourcePath property has moved to PIXI.SpritesheetLoader.getResourcePath');
 
@@ -644,7 +688,7 @@ export function useDeprecated()
      * @deprecated since 5.0.0
      * @param {function} middleware
      */
-    PIXI.Loader.addPixiMiddleware = function addPixiMiddleware(middleware)
+    PIXI.Loader.addPixiMiddleware = function addPixiMiddleware(middleware: any): typeof Loader
     {
         deprecation(v5,
             'PIXI.loaders.Loader.addPixiMiddleware function is deprecated, use PIXI.loaders.Loader.registerPlugin'
@@ -654,7 +698,7 @@ export function useDeprecated()
     };
 
     // convenience for converting event name to signal name
-    const eventToSignal = (event) =>
+    const eventToSignal = (event: any): string =>
         `on${event.charAt(0).toUpperCase()}${event.slice(1)}`;
 
     Object.assign(PIXI.Loader.prototype,
@@ -664,7 +708,7 @@ export function useDeprecated()
              * @method PIXI.Loader#on
              * @deprecated since 5.0.0
              */
-            on(event)
+            on(event: any)
             {
                 const signal = eventToSignal(event);
 
@@ -675,7 +719,7 @@ export function useDeprecated()
              * @method PIXI.Loader#once
              * @deprecated since 5.0.0
              */
-            once(event)
+            once(event: any)
             {
                 const signal = eventToSignal(event);
 
@@ -686,7 +730,7 @@ export function useDeprecated()
              * @method PIXI.Loader#off
              * @deprecated since 5.0.0
              */
-            off(event)
+            off(event: any)
             {
                 const signal = eventToSignal(event);
 
@@ -700,7 +744,7 @@ export function useDeprecated()
      * @see PIXI.Extract
      */
     Object.defineProperty(PIXI.extract, 'WebGLExtract', {
-        get()
+        get(): typeof Extract
         {
             deprecation(v5, 'PIXI.extract.WebGLExtract method has moved to PIXI.Extract');
 
@@ -714,7 +758,7 @@ export function useDeprecated()
      * @see PIXI.Prepare
      */
     Object.defineProperty(PIXI.prepare, 'WebGLPrepare', {
-        get()
+        get(): typeof Prepare
         {
             deprecation(v5, 'PIXI.prepare.WebGLPrepare class has moved to PIXI.Prepare');
 
@@ -729,7 +773,7 @@ export function useDeprecated()
      * @see PIXI.Container#render
      * @param {PIXI.Renderer} renderer Instance of renderer
      */
-    PIXI.Container.prototype._renderWebGL = function _renderWebGL(renderer)
+    PIXI.Container.prototype._renderWebGL = function _renderWebGL(this: Container, renderer: Renderer): void
     {
         deprecation(v5, 'PIXI.Container._renderWebGL method has moved to PIXI.Container._render');
 
@@ -742,7 +786,7 @@ export function useDeprecated()
      * @see PIXI.Container#render
      * @param {PIXI.Renderer} renderer Instance of renderer
      */
-    PIXI.Container.prototype.renderWebGL = function renderWebGL(renderer)
+    PIXI.Container.prototype.renderWebGL = function renderWebGL(this: Container, renderer: Renderer): void
     {
         deprecation(v5, 'PIXI.Container.renderWebGL method has moved to PIXI.Container.render');
 
@@ -755,7 +799,7 @@ export function useDeprecated()
      * @see PIXI.DisplayObject#render
      * @param {PIXI.Renderer} renderer Instance of renderer
      */
-    PIXI.DisplayObject.prototype.renderWebGL = function renderWebGL(renderer)
+    PIXI.DisplayObject.prototype.renderWebGL = function renderWebGL(this: DisplayObject, renderer: Renderer): void
     {
         deprecation(v5, 'PIXI.DisplayObject.renderWebGL method has moved to PIXI.DisplayObject.render');
 
@@ -768,7 +812,7 @@ export function useDeprecated()
      * @see PIXI.Container#renderAdvanced
      * @param {PIXI.Renderer} renderer Instance of renderer
      */
-    PIXI.Container.prototype.renderAdvancedWebGL = function renderAdvancedWebGL(renderer)
+    PIXI.Container.prototype.renderAdvancedWebGL = function renderAdvancedWebGL(this: Container, renderer: Renderer): void
     {
         deprecation(v5, 'PIXI.Container.renderAdvancedWebGL method has moved to PIXI.Container.renderAdvanced');
 
@@ -786,27 +830,27 @@ export function useDeprecated()
          * @default PIXI.TRANSFORM_MODE.STATIC
          */
         TRANSFORM_MODE: {
-            get()
+            get(): number
             {
                 deprecation(v5, 'PIXI.settings.TRANSFORM_MODE property has been removed');
 
                 return 0;
             },
-            set()
+            set(): void
             {
                 deprecation(v5, 'PIXI.settings.TRANSFORM_MODE property has been removed');
             },
         },
     });
 
-    const { BaseTexture } = PIXI;
+    const { BaseTexture: BaseTextureAny } = PIXI;
 
     /**
      * @method loadSource
      * @memberof PIXI.BaseTexture#
      * @deprecated since 5.0.0
      */
-    BaseTexture.prototype.loadSource = function loadSource(image)
+    BaseTextureAny.prototype.loadSource = function loadSource(image: string | HTMLImageElement): void
     {
         deprecation(v5, 'PIXI.BaseTexture.loadSource method has been deprecated');
 
@@ -820,7 +864,7 @@ export function useDeprecated()
 
     let baseTextureIdDeprecation = false;
 
-    Object.defineProperties(BaseTexture.prototype, {
+    Object.defineProperties(BaseTextureAny.prototype, {
         /**
          * @name PIXI.BaseTexture#hasLoaded
          * @type {boolean}
@@ -829,7 +873,7 @@ export function useDeprecated()
          * @see PIXI.BaseTexture#valid
          */
         hasLoaded: {
-            get()
+            get(): boolean
             {
                 deprecation(v5, 'PIXI.BaseTexture.hasLoaded property has been removed, use PIXI.BaseTexture.valid');
 
@@ -840,23 +884,23 @@ export function useDeprecated()
          * @name PIXI.BaseTexture#imageUrl
          * @type {string}
          * @deprecated since 5.0.0
-         * @see PIXI.resource.ImageResource#url
+         * @see PIXI.resources.ImageResource#url
          */
         imageUrl: {
-            get()
+            get(this: BaseTexture): string
             {
                 deprecation(v5, 'PIXI.BaseTexture.imageUrl property has been removed, use PIXI.BaseTexture.resource.url');
 
-                return this.resource && this.resource.url;
+                return (this.resource as resources.ImageResource)?.url;
             },
 
-            set(imageUrl)
+            set(this: BaseTexture, imageUrl: string): void
             {
                 deprecation(v5, 'PIXI.BaseTexture.imageUrl property has been removed, use PIXI.BaseTexture.resource.url');
 
                 if (this.resource)
                 {
-                    this.resource.url = imageUrl;
+                    (this.resource as resources.ImageResource).url = imageUrl;
                 }
             },
         },
@@ -868,20 +912,20 @@ export function useDeprecated()
          * @see PIXI.resources.BaseImageResource#source
          */
         source: {
-            get()
+            get(this: BaseTexture): ImageSource
             {
                 deprecation(v5, 'PIXI.BaseTexture.source property has been moved, use `PIXI.BaseTexture.resource.source`');
 
-                return this.resource && this.resource.source;
+                return (this.resource as resources.BaseImageResource).source;
             },
-            set(source)
+            set(this: BaseTexture, source: ImageSource): void
             {
                 deprecation(v5, 'PIXI.BaseTexture.source property has been moved, use `PIXI.BaseTexture.resource.source` '
                     + 'if you want to set HTMLCanvasElement. Otherwise, create new BaseTexture.');
 
                 if (this.resource)
                 {
-                    this.resource.source = source;
+                    (this.resource as resources.BaseImageResource).source = source;
                 }
             },
         },
@@ -894,14 +938,14 @@ export function useDeprecated()
          * @see PIXI.BaseTexture#alphaMode
          */
         premultiplyAlpha: {
-            get()
+            get(this: BaseTexture): boolean
             {
                 deprecation('5.2.0', 'PIXI.BaseTexture.premultiplyAlpha property has been changed to `alphaMode`'
                     + ', see `PIXI.ALPHA_MODES`');
 
                 return this.alphaMode !== 0;
             },
-            set(value)
+            set(this: BaseTexture, value: boolean): void
             {
                 deprecation('5.2.0', 'PIXI.BaseTexture.premultiplyAlpha property has been changed to `alphaMode`'
                     + ', see `PIXI.ALPHA_MODES`');
@@ -918,7 +962,7 @@ export function useDeprecated()
          * @see PIXI.BaseTexture#_batchLocation
          */
         _id: {
-            get()
+            get(this: BaseTexture): number
             {
                 if (!baseTextureIdDeprecation)
                 {
@@ -929,7 +973,7 @@ export function useDeprecated()
 
                 return this._batchLocation;
             },
-            set(value)
+            set(this: BaseTexture, value: number): void
             {
                 this._batchLocation = value;
             },
@@ -943,13 +987,17 @@ export function useDeprecated()
      * @deprecated since 5.0.0
      * @see PIXI.BaseTexture.from
      */
-    BaseTexture.fromImage = function fromImage(canvas, crossorigin, scaleMode, scale)
+    BaseTextureAny.fromImage = function fromImage(
+        canvas: HTMLCanvasElement,
+        crossorigin: string | boolean,
+        scaleMode: number,
+        scale: number): BaseTexture
     {
         deprecation(v5, 'PIXI.BaseTexture.fromImage method has been replaced with PIXI.BaseTexture.from');
 
         const resourceOptions = { scale, crossorigin };
 
-        return BaseTexture.from(canvas, { scaleMode, resourceOptions });
+        return BaseTextureAny.from(canvas, { scaleMode, resourceOptions });
     };
 
     /**
@@ -959,11 +1007,11 @@ export function useDeprecated()
      * @deprecated since 5.0.0
      * @see PIXI.BaseTexture.from
      */
-    BaseTexture.fromCanvas = function fromCanvas(canvas, scaleMode)
+    BaseTextureAny.fromCanvas = function fromCanvas(canvas: HTMLCanvasElement, scaleMode: number): BaseTexture
     {
         deprecation(v5, 'PIXI.BaseTexture.fromCanvas method has been replaced with PIXI.BaseTexture.from');
 
-        return BaseTexture.from(canvas, { scaleMode });
+        return BaseTextureAny.from(canvas, { scaleMode });
     };
 
     /**
@@ -973,13 +1021,17 @@ export function useDeprecated()
      * @deprecated since 5.0.0
      * @see PIXI.BaseTexture.from
      */
-    BaseTexture.fromSVG = function fromSVG(canvas, crossorigin, scaleMode, scale)
+    BaseTextureAny.fromSVG = function fromSVG(
+        canvas: HTMLCanvasElement,
+        crossorigin: string | boolean,
+        scaleMode: number,
+        scale: number): BaseTexture
     {
         deprecation(v5, 'PIXI.BaseTexture.fromSVG method has been replaced with PIXI.BaseTexture.from');
 
         const resourceOptions = { scale, crossorigin };
 
-        return BaseTexture.from(canvas, { scaleMode, resourceOptions });
+        return BaseTextureAny.from(canvas, { scaleMode, resourceOptions });
     };
 
     Object.defineProperties(PIXI.resources.ImageResource.prototype, {
@@ -991,14 +1043,14 @@ export function useDeprecated()
          * @see PIXI.resources.ImageResource#alphaMode
          */
         premultiplyAlpha: {
-            get()
+            get(this: resources.ImageResource): boolean
             {
                 deprecation('5.2.0', 'PIXI.resources.ImageResource.premultiplyAlpha property '
                     + 'has been changed to `alphaMode`, see `PIXI.ALPHA_MODES`');
 
                 return this.alphaMode !== 0;
             },
-            set(value)
+            set(this: resources.ImageResource, value: boolean): void
             {
                 deprecation('5.2.0', 'PIXI.resources.ImageResource.premultiplyAlpha property '
                     + 'has been changed to `alphaMode`, see `PIXI.ALPHA_MODES`');
@@ -1012,7 +1064,7 @@ export function useDeprecated()
      * @deprecated since 5.0.0
      * @see PIXI.Point#copyFrom
      */
-    PIXI.Point.prototype.copy = function copy(p)
+    PIXI.Point.prototype.copy = function copy(this: Point, p: IPoint): Point
     {
         deprecation(v5, 'PIXI.Point.copy method has been replaced with PIXI.Point.copyFrom');
 
@@ -1024,7 +1076,7 @@ export function useDeprecated()
      * @deprecated since 5.0.0
      * @see PIXI.ObservablePoint#copyFrom
      */
-    PIXI.ObservablePoint.prototype.copy = function copy(p)
+    PIXI.ObservablePoint.prototype.copy = function copy(this: ObservablePoint, p: IPoint): ObservablePoint
     {
         deprecation(v5, 'PIXI.ObservablePoint.copy method has been replaced with PIXI.ObservablePoint.copyFrom');
 
@@ -1036,7 +1088,7 @@ export function useDeprecated()
      * @deprecated since 5.0.0
      * @see PIXI.Rectangle#copyFrom
      */
-    PIXI.Rectangle.prototype.copy = function copy(p)
+    PIXI.Rectangle.prototype.copy = function copy(this: Rectangle, p: Rectangle): Rectangle
     {
         deprecation(v5, 'PIXI.Rectangle.copy method has been replaced with PIXI.Rectangle.copyFrom');
 
@@ -1048,7 +1100,7 @@ export function useDeprecated()
      * @deprecated since 5.0.0
      * @see PIXI.Matrix#copyTo
      */
-    PIXI.Matrix.prototype.copy = function copy(p)
+    PIXI.Matrix.prototype.copy = function copy(this: Matrix, p: Matrix): Matrix
     {
         deprecation(v5, 'PIXI.Matrix.copy method has been replaced with PIXI.Matrix.copyTo');
 
@@ -1060,7 +1112,7 @@ export function useDeprecated()
      * @deprecated since 5.1.0
      * @see PIXI.systems.StateSystem#set
      */
-    PIXI.systems.StateSystem.prototype.setState = function setState(s)
+    PIXI.systems.StateSystem.prototype.setState = function setState(this: systems.StateSystem, s: State): void
     {
         deprecation('v5.1.0', 'StateSystem.setState has been renamed to StateSystem.set');
 
@@ -1073,13 +1125,13 @@ export function useDeprecated()
          * @deprecated since 5.0.0
          * @see PIXI.systems.FilterSystem#getFilterTexture
          */
-        getRenderTarget(clear, resolution)
+        getRenderTarget(this: systems.FilterSystem, _clear: boolean, resolution: number)
         {
             deprecation(v5,
                 'PIXI.FilterManager.getRenderTarget method has been replaced with PIXI.systems.FilterSystem#getFilterTexture'
             );
 
-            return this.getFilterTexture(resolution);
+            return this.getFilterTexture(null, resolution);
         },
 
         /**
@@ -1087,7 +1139,7 @@ export function useDeprecated()
          * @deprecated since 5.0.0
          * @see PIXI.systems.FilterSystem#returnFilterTexture
          */
-        returnRenderTarget(renderTexture)
+        returnRenderTarget(this: systems.FilterSystem, renderTexture: any)
         {
             deprecation(v5,
                 'PIXI.FilterManager.returnRenderTarget method has been replaced with '
@@ -1103,7 +1155,7 @@ export function useDeprecated()
          * @param {PIXI.Matrix} outputMatrix - the matrix to output to.
          * @return {PIXI.Matrix} The mapped matrix.
          */
-        calculateScreenSpaceMatrix(outputMatrix)
+        calculateScreenSpaceMatrix(this: systems.FilterSystem, outputMatrix: any)
         {
             deprecation(v5, 'PIXI.systems.FilterSystem.calculateScreenSpaceMatrix method is removed, '
                 + 'use `(vTextureCoord * inputSize.xy) + outputFrame.xy` instead');
@@ -1123,7 +1175,7 @@ export function useDeprecated()
          * @param {PIXI.Matrix} outputMatrix - The matrix to output to.
          * @return {PIXI.Matrix} The mapped matrix.
          */
-        calculateNormalizedScreenSpaceMatrix(outputMatrix)
+        calculateNormalizedScreenSpaceMatrix(this: systems.FilterSystem, outputMatrix: Matrix): Matrix
         {
             deprecation(v5, 'PIXI.systems.FilterManager.calculateNormalizedScreenSpaceMatrix method is removed, '
                 + 'use `((vTextureCoord * inputSize.xy) + outputFrame.xy) / outputFrame.zw` instead.');
@@ -1150,7 +1202,7 @@ export function useDeprecated()
          * @readonly
          */
         sourceFrame: {
-            get()
+            get(this: RenderTexture): Rectangle
             {
                 deprecation(v5, 'PIXI.RenderTexture.sourceFrame property has been removed');
 
@@ -1164,7 +1216,7 @@ export function useDeprecated()
          * @readonly
          */
         size: {
-            get()
+            get(this: RenderTexture): Rectangle
             {
                 deprecation(v5, 'PIXI.RenderTexture.size property has been removed');
 
@@ -1181,7 +1233,7 @@ export function useDeprecated()
      */
     class BlurXFilter extends PIXI.filters.BlurFilterPass
     {
-        constructor(strength, quality, resolution, kernelSize)
+        constructor(strength: number, quality: number, resolution: number, kernelSize: number)
         {
             deprecation(v5, 'PIXI.filters.BlurXFilter class is deprecated, use PIXI.filters.BlurFilterPass');
 
@@ -1197,7 +1249,7 @@ export function useDeprecated()
      */
     class BlurYFilter extends PIXI.filters.BlurFilterPass
     {
-        constructor(strength, quality, resolution, kernelSize)
+        constructor(strength: number, quality: number, resolution: number, kernelSize: number)
         {
             deprecation(v5, 'PIXI.filters.BlurYFilter class is deprecated, use PIXI.filters.BlurFilterPass');
 
@@ -1210,13 +1262,16 @@ export function useDeprecated()
         BlurYFilter,
     });
 
-    const { Sprite, Texture, Graphics } = PIXI;
+    const {
+        Sprite: SpriteAny,
+        Texture: TextureAny,
+        Graphics: GraphicsAny } = PIXI;
 
     // Support for pixi.js-legacy bifurcation
     // give users a friendly assist to use legacy
-    if (!Graphics.prototype.generateCanvasTexture)
+    if (!GraphicsAny.prototype.generateCanvasTexture)
     {
-        Graphics.prototype.generateCanvasTexture = function generateCanvasTexture()
+        GraphicsAny.prototype.generateCanvasTexture = function generateCanvasTexture(): void
         {
             deprecation(v5, 'PIXI.Graphics.generateCanvasTexture method is only available in "pixi.js-legacy"');
         };
@@ -1228,8 +1283,8 @@ export function useDeprecated()
      * @see PIXI.Graphics#geometry
      * @readonly
      */
-    Object.defineProperty(PIXI.Graphics.prototype, 'graphicsData', {
-        get()
+    Object.defineProperty(GraphicsAny.prototype, 'graphicsData', {
+        get(this: Graphics): GraphicsData[]
         {
             deprecation(v5, 'PIXI.Graphics.graphicsData property is deprecated, use PIXI.Graphics.geometry.graphicsData');
 
@@ -1237,34 +1292,12 @@ export function useDeprecated()
         },
     });
 
-    /**
-     * @deprecated since 5.0.0
-     * @member {PIXI.Point[]} PIXI.SimpleRope#points
-     * @see PIXI.Mesh#geometry
-     */
-    Object.defineProperty(PIXI.SimpleRope.prototype, 'points', {
-        get()
-        {
-            deprecation(v5, 'PIXI.SimpleRope.points property is deprecated, '
-                + 'use PIXI.SimpleRope.geometry.points');
-
-            return this.geometry.points;
-        },
-        set(value)
-        {
-            deprecation(v5, 'PIXI.SimpleRope.points property is deprecated, '
-                + 'use PIXI.SimpleRope.geometry.points');
-
-            this.geometry.points = value;
-        },
-    });
-
     // Use these to deprecate all the Sprite from* methods
-    function spriteFrom(name, source, crossorigin, scaleMode)
+    function spriteFrom(name: string, source: string, crossorigin: string | boolean, scaleMode: number): Sprite
     {
         deprecation(v5, `PIXI.Sprite.${name} method is deprecated, use PIXI.Sprite.from`);
 
-        return Sprite.from(source, {
+        return SpriteAny.from(source, {
             resourceOptions: {
                 scale: scaleMode,
                 crossorigin,
@@ -1278,7 +1311,7 @@ export function useDeprecated()
      * @method PIXI.Sprite.fromImage
      * @return {PIXI.Sprite}
      */
-    Sprite.fromImage = spriteFrom.bind(null, 'fromImage');
+    SpriteAny.fromImage = spriteFrom.bind(null, 'fromImage');
 
     /**
      * @deprecated since 5.0.0
@@ -1286,7 +1319,7 @@ export function useDeprecated()
      * @see PIXI.Sprite.from
      * @return {PIXI.Sprite}
      */
-    Sprite.fromSVG = spriteFrom.bind(null, 'fromSVG');
+    SpriteAny.fromSVG = spriteFrom.bind(null, 'fromSVG');
 
     /**
      * @deprecated since 5.0.0
@@ -1294,7 +1327,7 @@ export function useDeprecated()
      * @see PIXI.Sprite.from
      * @return {PIXI.Sprite}
      */
-    Sprite.fromCanvas = spriteFrom.bind(null, 'fromCanvas');
+    SpriteAny.fromCanvas = spriteFrom.bind(null, 'fromCanvas');
 
     /**
      * @deprecated since 5.0.0
@@ -1302,7 +1335,7 @@ export function useDeprecated()
      * @see PIXI.Sprite.from
      * @return {PIXI.Sprite}
      */
-    Sprite.fromVideo = spriteFrom.bind(null, 'fromVideo');
+    SpriteAny.fromVideo = spriteFrom.bind(null, 'fromVideo');
 
     /**
      * @deprecated since 5.0.0
@@ -1310,14 +1343,14 @@ export function useDeprecated()
      * @see PIXI.Sprite.from
      * @return {PIXI.Sprite}
      */
-    Sprite.fromFrame = spriteFrom.bind(null, 'fromFrame');
+    SpriteAny.fromFrame = spriteFrom.bind(null, 'fromFrame');
 
     // Use these to deprecate all the Texture from* methods
-    function textureFrom(name, source, crossorigin, scaleMode)
+    function textureFrom(name: string, source: string, crossorigin: string | boolean, scaleMode: number): Texture
     {
         deprecation(v5, `PIXI.Texture.${name} method is deprecated, use PIXI.Texture.from`);
 
-        return Texture.from(source, {
+        return TextureAny.from(source, {
             resourceOptions: {
                 scale: scaleMode,
                 crossorigin,
@@ -1331,7 +1364,7 @@ export function useDeprecated()
      * @see PIXI.Texture.from
      * @return {PIXI.Texture}
      */
-    Texture.fromImage = textureFrom.bind(null, 'fromImage');
+    TextureAny.fromImage = textureFrom.bind(null, 'fromImage');
 
     /**
      * @deprecated since 5.0.0
@@ -1339,7 +1372,7 @@ export function useDeprecated()
      * @see PIXI.Texture.from
      * @return {PIXI.Texture}
      */
-    Texture.fromSVG = textureFrom.bind(null, 'fromSVG');
+    TextureAny.fromSVG = textureFrom.bind(null, 'fromSVG');
 
     /**
      * @deprecated since 5.0.0
@@ -1347,7 +1380,7 @@ export function useDeprecated()
      * @see PIXI.Texture.from
      * @return {PIXI.Texture}
      */
-    Texture.fromCanvas = textureFrom.bind(null, 'fromCanvas');
+    TextureAny.fromCanvas = textureFrom.bind(null, 'fromCanvas');
 
     /**
      * @deprecated since 5.0.0
@@ -1355,7 +1388,7 @@ export function useDeprecated()
      * @see PIXI.Texture.from
      * @return {PIXI.Texture}
      */
-    Texture.fromVideo = textureFrom.bind(null, 'fromVideo');
+    TextureAny.fromVideo = textureFrom.bind(null, 'fromVideo');
 
     /**
      * @deprecated since 5.0.0
@@ -1363,7 +1396,7 @@ export function useDeprecated()
      * @see PIXI.Texture.from
      * @return {PIXI.Texture}
      */
-    Texture.fromFrame = textureFrom.bind(null, 'fromFrame');
+    TextureAny.fromFrame = textureFrom.bind(null, 'fromFrame');
 
     /**
      * @deprecated since 5.0.0
@@ -1371,14 +1404,14 @@ export function useDeprecated()
      * @see PIXI.AbstractRenderer#autoDensity
      */
     Object.defineProperty(PIXI.AbstractRenderer.prototype, 'autoResize', {
-        get()
+        get(this: AbstractRenderer): boolean
         {
             deprecation(v5, 'PIXI.AbstractRenderer.autoResize property is deprecated, '
                 + 'use PIXI.AbstractRenderer.autoDensity');
 
             return this.autoDensity;
         },
-        set(value)
+        set(this: any, value: boolean): void
         {
             deprecation(v5, 'PIXI.AbstractRenderer.autoResize property is deprecated, '
                 + 'use PIXI.AbstractRenderer.autoDensity');
@@ -1393,7 +1426,7 @@ export function useDeprecated()
      * @see PIXI.Renderer#texture
      */
     Object.defineProperty(PIXI.Renderer.prototype, 'textureManager', {
-        get()
+        get(this: Renderer)
         {
             deprecation(v5, 'PIXI.Renderer.textureManager property is deprecated, use PIXI.Renderer.texture');
 
@@ -1411,7 +1444,7 @@ export function useDeprecated()
          * @function mixin
          * @deprecated since 5.0.0
          */
-        mixin()
+        mixin(): void
         {
             deprecation(v5, 'PIXI.utils.mixins.mixin function is no longer available');
         },
@@ -1420,7 +1453,7 @@ export function useDeprecated()
          * @function delayMixin
          * @deprecated since 5.0.0
          */
-        delayMixin()
+        delayMixin(): void
         {
             deprecation(v5, 'PIXI.utils.mixins.delayMixin function is no longer available');
         },
@@ -1429,7 +1462,7 @@ export function useDeprecated()
          * @function performMixins
          * @deprecated since 5.0.0
          */
-        performMixins()
+        performMixins(): void
         {
             deprecation(v5, 'PIXI.utils.mixins.performMixins function is no longer available');
         },
@@ -1441,7 +1474,7 @@ export function useDeprecated()
      * @deprecated since 5.3.0
      */
     Object.defineProperty(PIXI.BitmapText.prototype, 'font', {
-        get()
+        get(this: BitmapText): any
         {
             deprecation('5.3.0', 'PIXI.BitmapText.font property is deprecated, '
                 + 'use fontName, fontSize, tint or align properties');
@@ -1453,7 +1486,7 @@ export function useDeprecated()
                 align: this._align,
             };
         },
-        set(value) // eslint-disable-line require-jsdoc
+        set(this: BitmapText, value: any)
         {
             deprecation('5.3.0', 'PIXI.BitmapText.font property is deprecated, '
                 + 'use fontName, fontSize, tint or align properties');
@@ -1463,7 +1496,7 @@ export function useDeprecated()
                 return;
             }
 
-            const style = { font: value };
+            const style: any = { font: value };
 
             this._upgradeStyle(style);
 

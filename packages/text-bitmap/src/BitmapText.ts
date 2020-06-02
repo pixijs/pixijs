@@ -820,7 +820,7 @@ export class BitmapText extends Container
      * @private
      * @deprecated since 5.3.0
      */
-    private _upgradeStyle(style: Partial<IBitmapTextStyle>): void
+    _upgradeStyle(style: Partial<IBitmapTextStyle>): void
     {
         if (typeof style.font === 'string')
         {
