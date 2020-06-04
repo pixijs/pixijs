@@ -4,6 +4,7 @@
   "main": "lib/display.js",
   "module": "lib/display.es.js",
   "bundle": "dist/display.js",
+  "types": "src/index.ts",
   "description": "Core display functionality",
   "author": "Mat Groves",
   "contributors": [
@@ -21,7 +22,8 @@
   },
   "files": [
     "lib",
-    "dist"
+    "dist",
+    "src"
   ],
   "dependencies": {
     "@pixi/math": "5.2.4",

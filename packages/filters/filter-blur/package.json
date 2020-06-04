@@ -4,6 +4,7 @@
   "main": "lib/filter-blur.js",
   "module": "lib/filter-blur.es.js",
   "bundle": "dist/filter-blur.js",
+  "types": "src/index.ts",
   "namespace": "PIXI.filters",
   "description": "Filter that blurs the display object",
   "author": "Mat Groves",
@@ -22,7 +23,8 @@
   },
   "files": [
     "lib",
-    "dist"
+    "dist",
+    "src"
   ],
   "dependencies": {
     "@pixi/core": "5.2.4",

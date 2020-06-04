@@ -4,6 +4,7 @@
   "main": "lib/filter-noise.js",
   "module": "lib/filter-noise.es.js",
   "bundle": "dist/filter-noise.js",
+  "types": "src/index.ts",
   "namespace": "PIXI.filters",
   "description": "Filter that applies noise to a display object",
   "author": "Mat Groves",
@@ -22,7 +23,8 @@
   },
   "files": [
     "lib",
-    "dist"
+    "dist",
+    "src"
   ],
   "dependencies": {
     "@pixi/core": "5.2.4"

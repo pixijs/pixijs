@@ -4,6 +4,7 @@
   "main": "lib/interaction.js",
   "module": "lib/interaction.es.js",
   "bundle": "dist/interaction.js",
+  "types": "src/index.ts",
   "namespace": "PIXI.interaction",
   "description": "Plugin for handling mouse, touch and pointer events",
   "author": "Mat Groves",
@@ -22,7 +23,8 @@
   },
   "files": [
     "lib",
-    "dist"
+    "dist",
+    "src"
   ],
   "dependencies": {
     "@pixi/core": "5.2.4",

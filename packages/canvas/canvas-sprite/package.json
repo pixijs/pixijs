@@ -4,6 +4,7 @@
   "main": "lib/canvas-sprite.js",
   "module": "lib/canvas-sprite.es.js",
   "bundle": "dist/canvas-sprite.js",
+  "types": "src/index.ts",
   "description": "Canvas mixin for the sprite package",
   "author": "Mat Groves",
   "contributors": [
@@ -21,7 +22,8 @@
   },
   "files": [
     "lib",
-    "dist"
+    "dist",
+    "src"
   ],
   "dependencies": {
     "@pixi/canvas-renderer": "5.2.4",

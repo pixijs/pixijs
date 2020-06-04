@@ -4,6 +4,7 @@
   "main": "lib/accessibility.js",
   "module": "lib/accessibility.es.js",
   "bundle": "dist/accessibility.js",
+  "types": "src/index.ts",
   "namespace": "PIXI.accessibility",
   "description": "Accessibility Plugin for visually impared users",
   "author": "Mat Groves",
@@ -22,7 +23,8 @@
   },
   "files": [
     "lib",
-    "dist"
+    "dist",
+    "src"
   ],
   "dependencies": {
     "@pixi/core": "5.2.4",

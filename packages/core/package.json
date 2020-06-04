@@ -4,6 +4,7 @@
   "main": "lib/core.js",
   "module": "lib/core.es.js",
   "bundle": "dist/core.js",
+  "types": "src/index.ts",
   "description": "Core PixiJS",
   "author": "Mat Groves",
   "contributors": [
@@ -21,7 +22,8 @@
   },
   "files": [
     "lib",
-    "dist"
+    "dist",
+    "src"
   ],
   "funding": {
     "type": "opencollective",

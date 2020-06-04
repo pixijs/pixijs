@@ -4,6 +4,7 @@
   "main": "lib/mesh-extras.js",
   "module": "lib/mesh-extras.es.js",
   "bundle": "dist/mesh-extras.js",
+  "types": "src/index.ts",
   "description": "Custom Mesh display objects, like Rope and SimplePlane",
   "author": "Mat Groves",
   "contributors": [
@@ -21,7 +22,8 @@
   },
   "files": [
     "lib",
-    "dist"
+    "dist",
+    "src"
   ],
   "dependencies": {
     "@pixi/constants": "5.2.4",

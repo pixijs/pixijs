@@ -4,6 +4,7 @@
   "main": "lib/polyfill.js",
   "module": "lib/polyfill.es.js",
   "bundle": "dist/polyfill.js",
+  "types": "src/index.ts",
   "standalone": true,
   "description": "Support for legacy browser JavaScript environments",
   "author": "Mat Groves",
@@ -22,7 +23,8 @@
   },
   "files": [
     "lib",
-    "dist"
+    "dist",
+    "src"
   ],
   "dependencies": {
     "es6-promise-polyfill": "^1.2.0",

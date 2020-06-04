@@ -4,6 +4,7 @@
   "main": "lib/constants.js",
   "module": "lib/constants.es.js",
   "bundle": "dist/constants.js",
+  "types": "src/index.ts",
   "description": "Constants used across PixiJS",
   "author": "Mat Groves",
   "contributors": [
@@ -21,6 +22,7 @@
   },
   "files": [
     "lib",
-    "dist"
+    "dist",
+    "src"
   ]
 }
