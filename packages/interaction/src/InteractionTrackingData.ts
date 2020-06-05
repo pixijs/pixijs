@@ -7,11 +7,11 @@ export interface InteractionTrackingFlags
 }
 
 /**
- * DisplayObjects with the {@link PIXI.interaction.interactiveTarget} mixin use this class to track interactions
+ * DisplayObjects with the {@link PIXI.interactiveTarget} mixin use this class to track interactions
  *
  * @class
  * @private
- * @memberof PIXI.interaction
+ * @memberof PIXI
  */
 export class InteractionTrackingData
 {

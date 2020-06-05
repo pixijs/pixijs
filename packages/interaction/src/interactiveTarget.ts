@@ -77,18 +77,18 @@ export interface InteractiveTarget {
 
 /**
  * Default property values of interactive objects
- * Used by {@link PIXI.interaction.InteractionManager} to automatically give all DisplayObjects these properties
+ * Used by {@link PIXI.InteractionManager} to automatically give all DisplayObjects these properties
  *
  * @private
  * @name interactiveTarget
  * @type {Object}
- * @memberof PIXI.interaction
+ * @memberof PIXI
  * @example
  *      function MyObject() {}
  *
  *      Object.assign(
  *          DisplayObject.prototype,
- *          PIXI.interaction.interactiveTarget
+ *          PIXI.interactiveTarget
  *      );
  */
 export const interactiveTarget: InteractiveTarget = {

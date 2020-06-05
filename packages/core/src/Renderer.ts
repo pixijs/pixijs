@@ -483,9 +483,9 @@ export class Renderer extends AbstractRenderer
      * @name PIXI.Renderer#plugins
      * @type {object}
      * @readonly
-     * @property {PIXI.accessibility.AccessibilityManager} accessibility Support tabbing interactive elements.
-     * @property {PIXI.extract.Extract} extract Extract image data from renderer.
-     * @property {PIXI.interaction.InteractionManager} interaction Handles mouse, touch and pointer events.
+     * @property {PIXI.AccessibilityManager} accessibility Support tabbing interactive elements.
+     * @property {PIXI.Extract} extract Extract image data from renderer.
+     * @property {PIXI.InteractionManager} interaction Handles mouse, touch and pointer events.
      * @property {PIXI.Prepare} prepare Pre-render display objects.
      */
 

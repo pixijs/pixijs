@@ -7,7 +7,7 @@ export type InteractionCallback = (interactionEvent: InteractionEvent, displayOb
  * Event class that mimics native DOM events.
  *
  * @class
- * @memberof PIXI.interaction
+ * @memberof PIXI
  */
 export class InteractionEvent
 {
@@ -51,7 +51,7 @@ export class InteractionEvent
 
         /**
          * The object which caused this event to be dispatched.
-         * For listener callback see {@link PIXI.interaction.InteractionEvent.currentTarget}.
+         * For listener callback see {@link PIXI.InteractionEvent.currentTarget}.
          *
          * @member {PIXI.DisplayObject}
          */
@@ -74,7 +74,7 @@ export class InteractionEvent
         /**
          * InteractionData related to this event
          *
-         * @member {PIXI.interaction.InteractionData}
+         * @member {PIXI.InteractionData}
          */
         this.data = null;
     }

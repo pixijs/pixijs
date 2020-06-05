@@ -8,7 +8,7 @@ import type { Container, DisplayObject } from '@pixi/display';
  *
  * @private
  * @class
- * @memberof PIXI.interaction
+ * @memberof PIXI
  */
 export class TreeSearch
 {
@@ -23,7 +23,7 @@ export class TreeSearch
      * Recursive implementation for findHit
      *
      * @private
-     * @param {PIXI.interaction.InteractionEvent} interactionEvent - event containing the point that
+     * @param {PIXI.InteractionEvent} interactionEvent - event containing the point that
      *  is tested for collision
      * @param {PIXI.Container|PIXI.Sprite|PIXI.TilingSprite} displayObject - the displayObject
      *  that will be hit test (recursively crawls its children)
@@ -184,7 +184,7 @@ export class TreeSearch
      * testing the interactive objects and passes the hit across in the function.
      *
      * @private
-     * @param {PIXI.interaction.InteractionEvent} interactionEvent - event containing the point that
+     * @param {PIXI.InteractionEvent} interactionEvent - event containing the point that
      *  is tested for collision
      * @param {PIXI.Container|PIXI.Sprite|PIXI.TilingSprite} displayObject - the displayObject
      *  that will be hit test (recursively crawls its children)

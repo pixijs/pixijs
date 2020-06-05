@@ -1,8 +1,8 @@
 import '@pixi/polyfill';
 
-import * as accessibility from '@pixi/accessibility';
-import * as interaction from '@pixi/interaction';
 import * as utils from '@pixi/utils';
+import { AccessibilityManager } from '@pixi/accessibility';
+import { InteractionManager } from '@pixi/interaction';
 import { Application } from '@pixi/app';
 import { Renderer, BatchRenderer } from '@pixi/core';
 import { Extract } from '@pixi/extract';
@@ -29,9 +29,9 @@ import '@pixi/mixin-get-global-position';
 import { useDeprecated } from './useDeprecated';
 
 // Install renderer plugins
-Renderer.registerPlugin('accessibility', accessibility.AccessibilityManager);
+Renderer.registerPlugin('accessibility', AccessibilityManager);
 Renderer.registerPlugin('extract', Extract);
-Renderer.registerPlugin('interaction', interaction.InteractionManager);
+Renderer.registerPlugin('interaction', InteractionManager);
 Renderer.registerPlugin('particle', ParticleRenderer);
 Renderer.registerPlugin('prepare', Prepare);
 Renderer.registerPlugin('batch', BatchRenderer);
@@ -96,6 +96,7 @@ export const filters = {
 };
 
 // Export ES for those importing specifically by name,
+export * from '@pixi/accessibility';
 export * from '@pixi/app';
 export * from '@pixi/constants';
 export * from '@pixi/core';
@@ -103,6 +104,7 @@ export * from '@pixi/display';
 export * from '@pixi/extract';
 export * from '@pixi/graphics';
 export * from '@pixi/loaders';
+export * from '@pixi/interaction';
 export * from '@pixi/math';
 export * from '@pixi/mesh';
 export * from '@pixi/mesh-extras';
@@ -118,8 +120,6 @@ export * from '@pixi/text-bitmap';
 export * from '@pixi/ticker';
 export * from '@pixi/settings';
 export {
-    accessibility,
-    interaction,
     utils,
     useDeprecated,
 };
