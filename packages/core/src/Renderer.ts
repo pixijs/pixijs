@@ -89,7 +89,7 @@ export class Renderer extends AbstractRenderer
     }
 
     /**
-     * @param {object} [options] - The optional renderer parameters.
+     * @param [options] - The optional renderer parameters.
      * @param {number} [options.width=800] - The width of the screen.
      * @param {number} [options.height=600] - The height of the screen.
      * @param {HTMLCanvasElement} [options.view] - The canvas to use as a view, optional.
@@ -301,8 +301,8 @@ export class Renderer extends AbstractRenderer
 
     /**
      * Add a new system to the renderer.
-     * @param {Function} ClassRef - Class reference
-     * @param {string} [name] - Property name for system, if not specified
+     * @param ClassRef - Class reference
+     * @param [name] - Property name for system, if not specified
      *        will use a static `name` property on the class itself. This
      *        name will be assigned as s property on the Renderer so make
      *        sure it doesn't collide with properties on Renderer.
@@ -354,11 +354,11 @@ export class Renderer extends AbstractRenderer
     /**
      * Renders the object to its WebGL view
      *
-     * @param {PIXI.DisplayObject} displayObject - The object to be rendered.
-     * @param {PIXI.RenderTexture} [renderTexture] - The render texture to render to.
-     * @param {boolean} [clear=true] - Should the canvas be cleared before the new render.
-     * @param {PIXI.Matrix} [transform] - A transform to apply to the render texture before rendering.
-     * @param {boolean} [skipUpdateTransform=false] - Should we skip the update transform pass?
+     * @param displayObject - The object to be rendered.
+     * @param [renderTexture] - The render texture to render to.
+     * @param [clear=true] - Should the canvas be cleared before the new render.
+     * @param [transform] - A transform to apply to the render texture before rendering.
+     * @param [skipUpdateTransform=false] - Should we skip the update transform pass?
      */
     render(displayObject: DisplayObject, renderTexture?: RenderTexture,
         clear?: boolean, transform?: Matrix, skipUpdateTransform?: boolean): void
@@ -423,8 +423,8 @@ export class Renderer extends AbstractRenderer
     /**
      * Resizes the WebGL view to the specified width and height.
      *
-     * @param {number} screenWidth - The new width of the screen.
-     * @param {number} screenHeight - The new height of the screen.
+     * @param screenWidth - The new width of the screen.
+     * @param screenHeight - The new height of the screen.
      */
     resize(screenWidth: number, screenHeight: number): void
     {
@@ -457,7 +457,7 @@ export class Renderer extends AbstractRenderer
     /**
      * Removes everything from the renderer (event listeners, spritebatch, etc...)
      *
-     * @param {boolean} [removeView=false] - Removes the Canvas element from the DOM.
+     * @param [removeView=false] - Removes the Canvas element from the DOM.
      *  See: https://github.com/pixijs/pixi.js/issues/2233
      */
     destroy(removeView?: boolean): void
@@ -494,8 +494,8 @@ export class Renderer extends AbstractRenderer
      * Adds a plugin to the renderer.
      *
      * @method
-     * @param {string} pluginName - The name of the plugin.
-     * @param {Function} ctor - The constructor function or class for the plugin.
+     * @param pluginName - The name of the plugin.
+     * @param ctor - The constructor function or class for the plugin.
      */
     static registerPlugin(pluginName: string, ctor: IRendererPluginConstructor): void
     {
