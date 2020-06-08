@@ -19,6 +19,8 @@ import type {
     Transform,
     groupD8,
     Matrix } from '@pixi/math';
+import type { InteractionManager, InteractionData, InteractionEvent } from '@pixi/interaction';
+import type { AccessibilityManager } from '@pixi/accessibility';
 import type { Ticker } from '@pixi/ticker';
 import type { Graphics, GraphicsData } from '@pixi/graphics';
 import type { Sprite } from '@pixi/sprite';
@@ -207,6 +209,80 @@ export function useDeprecated(this: any): void
                 deprecation('5.2.0', 'PIXI.GroupD8 namespace has moved to PIXI.groupD8');
 
                 return PIXI.groupD8;
+            },
+        },
+    });
+
+    /**
+     * @namespace PIXI.accessibility
+     * @see PIXI
+     * @deprecated since 5.3.0
+     */
+    PIXI.accessibility = {};
+
+    Object.defineProperties(PIXI.accessibility, {
+        /**
+         * @class PIXI.accessibility.AccessibilityManager
+         * @deprecated since 5.3.0
+         * @see PIXI.AccessibilityManager
+         */
+        AccessibilityManager: {
+            get(): typeof AccessibilityManager
+            {
+                deprecation('5.3.0', 'PIXI.accessibility.AccessibilityManager moved to PIXI.AccessibilityManager');
+
+                return PIXI.AccessibilityManager;
+            },
+        },
+    });
+
+    /**
+     * @namespace PIXI.interaction
+     * @see PIXI
+     * @deprecated since 5.3.0
+     */
+    PIXI.interaction = {};
+
+    Object.defineProperties(PIXI.interaction, {
+        /**
+         * @class PIXI.interaction.InteractionManager
+         * @deprecated since 5.3.0
+         * @see PIXI.InteractionManager
+         */
+        InteractionManager: {
+            get(): typeof InteractionManager
+            {
+                deprecation('5.3.0', 'PIXI.accessibility.InteractionManager moved to PIXI.InteractionManager');
+
+                return PIXI.InteractionManager;
+            },
+        },
+
+        /**
+         * @class PIXI.interaction.InteractionData
+         * @deprecated since 5.3.0
+         * @see PIXI.InteractionData
+         */
+        InteractionData: {
+            get(): typeof InteractionData
+            {
+                deprecation('5.3.0', 'PIXI.accessibility.InteractionData moved to PIXI.InteractionData');
+
+                return PIXI.InteractionData;
+            },
+        },
+
+        /**
+         * @class PIXI.interaction.InteractionEvent
+         * @deprecated since 5.3.0
+         * @see PIXI.InteractionEvent
+         */
+        InteractionEvent: {
+            get(): typeof InteractionEvent
+            {
+                deprecation('5.3.0', 'PIXI.accessibility.InteractionEvent moved to PIXI.InteractionEvent');
+
+                return PIXI.InteractionEvent;
             },
         },
     });
