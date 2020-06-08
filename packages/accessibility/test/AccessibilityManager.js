@@ -2,7 +2,7 @@ const { AccessibilityManager } = require('../');
 const { CanvasRenderer } = require('@pixi/canvas-renderer');
 const { isMobile } = require('@pixi/utils');
 
-describe('PIXI.accessibility.AccessibilityManager', function ()
+describe('PIXI.AccessibilityManager', function ()
 {
     it('should exist', function ()
     {

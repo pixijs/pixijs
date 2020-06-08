@@ -4,7 +4,6 @@
   "main": "lib/accessibility.js",
   "module": "lib/accessibility.es.js",
   "bundle": "dist/accessibility.js",
-  "namespace": "PIXI.accessibility",
   "description": "Accessibility Plugin for visually impared users",
   "author": "Mat Groves",
   "contributors": [
