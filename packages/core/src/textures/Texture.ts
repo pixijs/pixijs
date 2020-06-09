@@ -395,6 +395,30 @@ export class Texture extends EventEmitter
     }
 
     /**
+     * Useful for loading textures via URLs. Use instead of `Texture.from` because
+     * it does a better job of handling failed URLs more effectively. This also ignores
+     * `PIXI.settings.STRICT_TEXTURE_CACHE`. Works for Videos, SVGs, Images.
+     * @param {string} url The remote URL to load.
+     * @param {PIXI.IBaseTextureOptions} [options] Optional options to include
+     * @return A Promise that resolves to a Texture.
+     */
+    static fromURL(url: string, options?: IBaseTextureOptions): Promise<Texture>
+    {
+        const resourceOptions = Object.assign({ autoLoad: false }, options?.resourceOptions);
+        const texture = Texture.from(url, Object.assign({ resourceOptions }, options), false);
+        const resource = texture.baseTexture.resource as ImageResource;
+
+        // The texture was already loaded
+        if (texture.baseTexture.valid)
+        {
+            return Promise.resolve(texture);
+        }
+
+        // Manually load the texture, this should allow users to handle load errors
+        return resource.load().then(() => Promise.resolve(texture));
+    }
+
+    /**
      * Create a new Texture with a BufferResource from a Float32Array.
      * RGBA values are floats from 0 to 1.
      * @static
