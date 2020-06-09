@@ -8,7 +8,7 @@ export type InteractivePointerEvent = PointerEvent | TouchEvent | MouseEvent;
  * Holds all information related to an Interaction event
  *
  * @class
- * @memberof PIXI.interaction
+ * @memberof PIXI
  */
 export class InteractionData
 {

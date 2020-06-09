@@ -453,9 +453,9 @@ export class CanvasRenderer extends AbstractRenderer
      * @name PIXI.CanvasRenderer#plugins
      * @type {object}
      * @readonly
-     * @property {PIXI.accessibility.AccessibilityManager} accessibility Support tabbing interactive elements.
+     * @property {PIXI.AccessibilityManager} accessibility Support tabbing interactive elements.
      * @property {PIXI.CanvasExtract} extract Extract image data from renderer.
-     * @property {PIXI.interaction.InteractionManager} interaction Handles mouse, touch and pointer events.
+     * @property {PIXI.InteractionManager} interaction Handles mouse, touch and pointer events.
      * @property {PIXI.CanvasPrepare} prepare Pre-render display objects.
      */
 
