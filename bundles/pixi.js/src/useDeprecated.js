@@ -815,7 +815,7 @@ export function useDeprecated()
          * @static
          * @deprecated since 5.0.0
          * @memberof PIXI.settings
-         * @type {PIXI.TRANSFORM_MODE}
+         * @member {PIXI.TRANSFORM_MODE}
          * @default PIXI.TRANSFORM_MODE.STATIC
          */
         TRANSFORM_MODE: {
