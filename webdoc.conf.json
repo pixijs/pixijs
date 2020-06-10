@@ -6,6 +6,7 @@
         "includePattern": [
             "packages/*/src/**/*.ts",
             "bundles/pixi.js/src/*.js",
+            "bundles/pixi.js/src/*.ts",
             "packages/filters/*/src/**/*.(ts|js)",
             "packages/canvas/*/src/**/*.(ts|js)"],
         "excludePattern": "(node_modules|lib|test)"
