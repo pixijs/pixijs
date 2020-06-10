@@ -17,12 +17,35 @@ import type {
 const tempMatrix = new Matrix();
 
 export interface ICanvasRendererPluginConstructor {
-    new (renderer: CanvasRenderer): IRendererPlugin;
+    new (renderer: CanvasRenderer, options?: any): IRendererPlugin;
 }
 
 export interface ICanvasRendererPlugins
 {
     [key: string]: any;
+}
+
+/**
+ * Different browsers support different smoothing property names
+ * this is the list of all platform props.
+ */
+type SmoothingEnabledProperties =
+    'imageSmoothingEnabled' |
+    'webkitImageSmoothingEnabled' |
+    'mozImageSmoothingEnabled' |
+    'oImageSmoothingEnabled' |
+    'msImageSmoothingEnabled';
+
+/**
+ * Renderering context for all browsers. This includes platform-specific
+ * properties that are not included in the spec for CanvasRenderingContext2D
+ */
+export interface CrossPlatformCanvasRenderingContext2D extends CanvasRenderingContext2D
+{
+    webkitImageSmoothingEnabled: boolean;
+    mozImageSmoothingEnabled: boolean;
+    oImageSmoothingEnabled: boolean;
+    msImageSmoothingEnabled: boolean;
 }
 
 /**
@@ -37,11 +60,11 @@ export interface ICanvasRendererPlugins
  */
 export class CanvasRenderer extends AbstractRenderer
 {
-    public readonly rootContext: CanvasRenderingContext2D;
-    public context: CanvasRenderingContext2D;
+    public readonly rootContext: CrossPlatformCanvasRenderingContext2D;
+    public context: CrossPlatformCanvasRenderingContext2D;
     public refresh: boolean;
     public maskManager: CanvasMaskManager;
-    public smoothProperty: string;
+    public smoothProperty: SmoothingEnabledProperties;
     public readonly blendModes: string[];
     public renderingToScreen: boolean;
 
@@ -78,7 +101,7 @@ export class CanvasRenderer extends AbstractRenderer
          * @member {CanvasRenderingContext2D}
          */
         this.rootContext = this.view.getContext('2d', { alpha: this.transparent }) as
-            CanvasRenderingContext2D;
+            CrossPlatformCanvasRenderingContext2D;
 
         /**
          * The currently active canvas 2d context (could change with renderTextures)
@@ -110,21 +133,21 @@ export class CanvasRenderer extends AbstractRenderer
 
         if (!this.rootContext.imageSmoothingEnabled)
         {
-            const rcAny = this.rootContext as any;
+            const rc = this.rootContext;
 
-            if (rcAny.webkitImageSmoothingEnabled)
+            if (rc.webkitImageSmoothingEnabled)
             {
                 this.smoothProperty = 'webkitImageSmoothingEnabled';
             }
-            else if (rcAny.mozImageSmoothingEnabled)
+            else if (rc.mozImageSmoothingEnabled)
             {
                 this.smoothProperty = 'mozImageSmoothingEnabled';
             }
-            else if (rcAny.oImageSmoothingEnabled)
+            else if (rc.oImageSmoothingEnabled)
             {
                 this.smoothProperty = 'oImageSmoothingEnabled';
             }
-            else if (rcAny.msImageSmoothingEnabled)
+            else if (rc.msImageSmoothingEnabled)
             {
                 this.smoothProperty = 'msImageSmoothingEnabled';
             }
@@ -207,7 +230,7 @@ export class CanvasRenderer extends AbstractRenderer
                 renderTexture.valid = true;
             }
 
-            this.context = renderTexture._canvasRenderTarget.context;
+            this.context = renderTexture._canvasRenderTarget.context as CrossPlatformCanvasRenderingContext2D;
             this.resolution = renderTexture._canvasRenderTarget.resolution;
         }
         else
@@ -409,7 +432,7 @@ export class CanvasRenderer extends AbstractRenderer
         // surely a browser bug?? Let PixiJS fix that for you..
         if (this.smoothProperty)
         {
-            (this.rootContext as any)[this.smoothProperty] = (settings.SCALE_MODE === SCALE_MODES.LINEAR);
+            this.rootContext[this.smoothProperty] = (settings.SCALE_MODE === SCALE_MODES.LINEAR);
         }
     }
 
@@ -430,9 +453,9 @@ export class CanvasRenderer extends AbstractRenderer
      * @name PIXI.CanvasRenderer#plugins
      * @type {object}
      * @readonly
-     * @property {PIXI.accessibility.AccessibilityManager} accessibility Support tabbing interactive elements.
+     * @property {PIXI.AccessibilityManager} accessibility Support tabbing interactive elements.
      * @property {PIXI.CanvasExtract} extract Extract image data from renderer.
-     * @property {PIXI.interaction.InteractionManager} interaction Handles mouse, touch and pointer events.
+     * @property {PIXI.InteractionManager} interaction Handles mouse, touch and pointer events.
      * @property {PIXI.CanvasPrepare} prepare Pre-render display objects.
      */
 
