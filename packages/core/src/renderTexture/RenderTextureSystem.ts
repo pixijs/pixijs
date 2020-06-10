@@ -27,6 +27,8 @@ export class RenderTextureSystem extends System
     public readonly sourceFrame: Rectangle;
     public readonly destinationFrame: Rectangle;
 
+    private readonly viewportFrame: Rectangle;
+
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
@@ -69,6 +71,14 @@ export class RenderTextureSystem extends System
          * @readonly
          */
         this.destinationFrame = new Rectangle();
+
+        /**
+         * Destination frame, multiplied by the render-target resolution. This is the destination-frame
+         * in framebuffer pixels.
+         * @member {PIXI.Rectangle}
+         * @readonly
+         */
+        this.viewportFrame = new Rectangle();
     }
 
     /**
@@ -79,74 +89,74 @@ export class RenderTextureSystem extends System
      */
     bind(renderTexture: RenderTexture = null, sourceFrame?: Rectangle, destinationFrame?: Rectangle): void
     {
-        this.current = renderTexture;
-
         const renderer = this.renderer;
 
+        this.current = renderTexture;
+
+        let baseTexture: BaseRenderTexture;
+        let framebuffer;
         let resolution;
 
         if (renderTexture)
         {
-            const baseTexture = renderTexture.baseTexture as BaseRenderTexture;
+            baseTexture = renderTexture.baseTexture as BaseRenderTexture;
 
             resolution = baseTexture.resolution;
 
+            if (!sourceFrame)
+            {
+                tempRect.width = baseTexture.width;
+                tempRect.height = baseTexture.height;
+
+                sourceFrame = tempRect;
+            }
+
             if (!destinationFrame)
             {
-                tempRect.width = baseTexture.realWidth;
-                tempRect.height = baseTexture.realHeight;
-
-                destinationFrame = tempRect;
+                destinationFrame = sourceFrame;
             }
+
+            framebuffer = baseTexture.framebuffer;
+        }
+        else
+        {
+            resolution = renderer.resolution;
 
             if (!sourceFrame)
             {
-                sourceFrame = destinationFrame;
+                tempRect.width = renderer.screen.width;
+                tempRect.height = renderer.screen.height;
+
+                sourceFrame = tempRect;
             }
 
-            this.renderer.framebuffer.bind(baseTexture.framebuffer, destinationFrame);
+            if (!destinationFrame)
+            {
+                destinationFrame = sourceFrame;
+            }
+        }
 
-            this.renderer.projection.update(destinationFrame, sourceFrame, resolution, false);
+        const viewportFrame = this.viewportFrame;
+
+        viewportFrame.x = destinationFrame.x * resolution;
+        viewportFrame.y = destinationFrame.y * resolution;
+        viewportFrame.width = destinationFrame.width * resolution;
+        viewportFrame.height = destinationFrame.height * resolution;
+
+        this.renderer.framebuffer.bind(framebuffer, viewportFrame);
+        this.renderer.projection.update(destinationFrame, sourceFrame, resolution, false);
+
+        if (renderTexture)
+        {
             this.renderer.mask.setMaskStack(baseTexture.maskStack);
         }
         else
         {
-            resolution = this.renderer.resolution;
-
-            // TODO these validation checks happen deeper down..
-            // thing they can be avoided..
-            if (!destinationFrame)
-            {
-                tempRect.width = renderer.width;
-                tempRect.height = renderer.height;
-
-                destinationFrame = tempRect;
-            }
-
-            if (!sourceFrame)
-            {
-                sourceFrame = destinationFrame;
-            }
-
-            renderer.framebuffer.bind(null, destinationFrame);
-
-            // TODO store this..
-            this.renderer.projection.update(destinationFrame, sourceFrame, resolution, true);
             this.renderer.mask.setMaskStack(this.defaultMaskStack);
         }
 
         this.sourceFrame.copyFrom(sourceFrame);
-
-        this.destinationFrame.x = destinationFrame.x / resolution;
-        this.destinationFrame.y = destinationFrame.y / resolution;
-
-        this.destinationFrame.width = destinationFrame.width / resolution;
-        this.destinationFrame.height = destinationFrame.height / resolution;
-
-        if (sourceFrame === destinationFrame)
-        {
-            this.sourceFrame.copyFrom(this.destinationFrame);
-        }
+        this.destinationFrame.copyFrom(destinationFrame);
     }
 
     /**
