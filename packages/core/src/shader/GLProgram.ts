@@ -15,11 +15,12 @@ export class GLProgram
     public program: WebGLProgram;
     public uniformData: {[x: string]: any};
     public uniformGroups: {[x: string]: any};
+
     /**
      * Makes a new Pixi program
      *
-     * @param program {WebGLProgram} webgl program
-     * @param uniformData {Object} uniforms
+     * @param {WebGLProgram} program - webgl program
+     * @param {Object} uniformData - uniforms
      */
     constructor(program: WebGLProgram, uniformData: {[key: string]: IGLUniformData})
     {

@@ -880,7 +880,7 @@ export function useDeprecated(this: any): void
      * @private
      * @deprecated since 5.0.0
      * @see PIXI.Container#render
-     * @param {PIXI.Renderer} renderer Instance of renderer
+     * @param {PIXI.Renderer} renderer - Instance of renderer
      */
     PIXI.Container.prototype._renderWebGL = function _renderWebGL(this: Container, renderer: Renderer): void
     {
@@ -893,7 +893,7 @@ export function useDeprecated(this: any): void
      * @method PIXI.Container#renderWebGL
      * @deprecated since 5.0.0
      * @see PIXI.Container#render
-     * @param {PIXI.Renderer} renderer Instance of renderer
+     * @param {PIXI.Renderer} renderer - Instance of renderer
      */
     PIXI.Container.prototype.renderWebGL = function renderWebGL(this: Container, renderer: Renderer): void
     {
@@ -906,7 +906,7 @@ export function useDeprecated(this: any): void
      * @method PIXI.DisplayObject#renderWebGL
      * @deprecated since 5.0.0
      * @see PIXI.DisplayObject#render
-     * @param {PIXI.Renderer} renderer Instance of renderer
+     * @param {PIXI.Renderer} renderer - Instance of renderer
      */
     PIXI.DisplayObject.prototype.renderWebGL = function renderWebGL(this: DisplayObject, renderer: Renderer): void
     {
@@ -919,7 +919,7 @@ export function useDeprecated(this: any): void
      * @method PIXI.Container#renderAdvancedWebGL
      * @deprecated since 5.0.0
      * @see PIXI.Container#renderAdvanced
-     * @param {PIXI.Renderer} renderer Instance of renderer
+     * @param {PIXI.Renderer} renderer - Instance of renderer
      */
     PIXI.Container.prototype.renderAdvancedWebGL = function renderAdvancedWebGL(this: Container, renderer: Renderer): void
     {

@@ -25,7 +25,7 @@ const GLSL_TO_SIZE: {[x: string]: number} = {
  * @private
  * @method mapSize
  * @memberof PIXI.glCore.shader
- * @param type {String}
+ * @param {String} type
  * @return {Number}
  */
 export function mapSize(type: string): number

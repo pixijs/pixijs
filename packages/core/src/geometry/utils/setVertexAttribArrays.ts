@@ -3,9 +3,9 @@ import type { IRenderingContext } from '../../IRenderingContext';
 // var GL_MAP = {};
 
 /**
- * @param gl {WebGLRenderingContext} The current WebGL context
- * @param attribs {*}
- * @param state {*}
+ * @param {WebGLRenderingContext} gl - The current WebGL context
+ * @param {*} attribs
+ * @param {*} state
  * @private
  */
 export function setVertexAttribArrays(gl: IRenderingContext,

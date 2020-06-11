@@ -450,8 +450,7 @@ export class CanvasRenderer extends AbstractRenderer
      * Collection of installed plugins. These are included by default in PIXI, but can be excluded
      * by creating a custom build. Consult the README for more information about creating custom
      * builds and excluding plugins.
-     * @name PIXI.CanvasRenderer#plugins
-     * @type {object}
+     * @member {object} plugins
      * @readonly
      * @property {PIXI.AccessibilityManager} accessibility Support tabbing interactive elements.
      * @property {PIXI.CanvasExtract} extract Extract image data from renderer.
@@ -462,7 +461,6 @@ export class CanvasRenderer extends AbstractRenderer
     /**
      * Adds a plugin to the renderer.
      *
-     * @method
      * @param {string} pluginName - The name of the plugin.
      * @param {Function} ctor - The constructor function or class for the plugin.
      */
