@@ -7,7 +7,11 @@ import type { RenderTexture } from './RenderTexture';
 import type { BaseRenderTexture } from './BaseRenderTexture';
 import type { MaskData } from '../mask/MaskData';
 
+// Temporary rectangle for assigned sourceFrame or destinationFrame
 const tempRect = new Rectangle();
+
+// Temporary rectangle for passing the framebuffer viewport
+const viewportFrame = new Rectangle();
 
 /**
  * System plugin to the renderer to manage render textures.
@@ -18,7 +22,6 @@ const tempRect = new Rectangle();
  * @extends PIXI.System
  * @memberof PIXI.systems
  */
-
 export class RenderTextureSystem extends System
 {
     public clearColor: number[];
@@ -26,8 +29,6 @@ export class RenderTextureSystem extends System
     public current: RenderTexture;
     public readonly sourceFrame: Rectangle;
     public readonly destinationFrame: Rectangle;
-
-    private readonly viewportFrame: Rectangle;
 
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
@@ -71,18 +72,11 @@ export class RenderTextureSystem extends System
          * @readonly
          */
         this.destinationFrame = new Rectangle();
-
-        /**
-         * Destination frame, multiplied by the render-target resolution. This is the destination-frame
-         * in framebuffer pixels.
-         * @member {PIXI.Rectangle}
-         * @readonly
-         */
-        this.viewportFrame = new Rectangle();
     }
 
     /**
      * Bind the current render texture
+     *
      * @param {PIXI.RenderTexture} [renderTexture] - RenderTexture to bind, by default its `null`, the screen
      * @param {PIXI.Rectangle} [sourceFrame] - part of screen that is mapped to the renderTexture
      * @param {PIXI.Rectangle} [destinationFrame] - part of renderTexture, by default it has the same size as sourceFrame
@@ -113,7 +107,10 @@ export class RenderTextureSystem extends System
 
             if (!destinationFrame)
             {
-                destinationFrame = sourceFrame;
+                destinationFrame = tempRect;
+
+                tempRect.width = sourceFrame.width;
+                tempRect.height = sourceFrame.height;
             }
 
             framebuffer = baseTexture.framebuffer;
@@ -132,11 +129,12 @@ export class RenderTextureSystem extends System
 
             if (!destinationFrame)
             {
-                destinationFrame = sourceFrame;
+                destinationFrame = tempRect;
+
+                destinationFrame.width = sourceFrame.width;
+                destinationFrame.height = sourceFrame.height;
             }
         }
-
-        const viewportFrame = this.viewportFrame;
 
         viewportFrame.x = destinationFrame.x * resolution;
         viewportFrame.y = destinationFrame.y * resolution;

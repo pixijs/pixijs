@@ -1,4 +1,5 @@
 const { Renderer } = require('./..');
+const { Rectangle } = require('@pixi/math');
 
 describe('PIXI.systems.RenderTextureSystem', function ()
 {
@@ -33,6 +34,21 @@ describe('PIXI.systems.RenderTextureSystem', function ()
 
     it('rebinding with the same source & destination frame should change nothing', function ()
     {
-        // TODO:
+        const sourceFrame = new Rectangle(16, 16, 512, 512);
+        const destinationFrame = new Rectangle(24, 24, 64, 64);
+        const renderTextureSystem = this.renderer.renderTexture;
+
+        renderTextureSystem.bind(null, sourceFrame, destinationFrame);
+        renderTextureSystem.bind(null, renderTextureSystem.sourceFrame, renderTextureSystem.destinationFrame);
+
+        expect(destinationFrame.x).to.equal(renderTextureSystem.destinationFrame.x);
+        expect(destinationFrame.y).to.equal(renderTextureSystem.destinationFrame.y);
+        expect(destinationFrame.width).to.equal(renderTextureSystem.destinationFrame.width);
+        expect(destinationFrame.height).to.equal(renderTextureSystem.destinationFrame.height);
+
+        expect(sourceFrame.x).to.equal(renderTextureSystem.sourceFrame.x);
+        expect(sourceFrame.y).to.equal(renderTextureSystem.sourceFrame.y);
+        expect(sourceFrame.width).to.equal(renderTextureSystem.sourceFrame.width);
+        expect(sourceFrame.height).to.equal(renderTextureSystem.sourceFrame.height);
     });
 });
