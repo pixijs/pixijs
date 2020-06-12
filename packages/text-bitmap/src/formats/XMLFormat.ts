@@ -16,7 +16,7 @@ export class XMLFormat
      * @param {any} data
      * @return {boolean} True if resource could be treated as font data, false otherwise.
      */
-    static test(data: any): boolean
+    static test(data: unknown): boolean
     {
         return data instanceof XMLDocument
             && data.getElementsByTagName('page').length
