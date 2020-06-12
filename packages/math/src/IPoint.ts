@@ -1,7 +1,11 @@
-export interface IPoint
+export interface IPointData
 {
     x: number;
     y: number;
+}
+
+export interface IPoint extends IPointData
+{
     copyFrom(p: IPoint): this;
     copyTo<T extends IPoint>(p: T): T;
     equals(p: IPoint): boolean;

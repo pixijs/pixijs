@@ -16,7 +16,7 @@
     "plugins": ["@typescript-eslint"],
     "rules": {
         // Possible Errors
-        "comma-dangle": [1, "always-multiline"],
+        "comma-dangle": [1, "only-multiline"],
         "no-cond-assign": [1, "except-parens"],
         "no-console": [1, { "allow": ["warn", "error"] }],
         "no-constant-condition": 1,
@@ -100,7 +100,7 @@
         "no-sequences": 1,
         "no-throw-literal": 1,
         "no-unmodified-loop-condition": 1,
-        "no-unused-expressions": 1,
+        "no-unused-expressions": "off",
         "no-unused-labels": 1,
         "no-useless-call": 1,
         "no-useless-concat": 1,
@@ -127,7 +127,7 @@
         "no-undef": 1,
         "no-undef-init": 1,
         "no-undefined": 0,
-        "no-unused-vars": 1,
+        "no-unused-vars": "off",
         "no-use-before-define": [1, "nofunc"],
 
         // Node.js and CommonJS
@@ -256,7 +256,9 @@
           "rules": {
             "@typescript-eslint/semi": 1,
             "@typescript-eslint/no-explicit-any": 0,
-            "@typescript-eslint/interface-name-prefix": 0
+            "@typescript-eslint/interface-name-prefix": 0,
+            "@typescript-eslint/no-unused-expressions": 1,
+            "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }]
           }
         }
     ]

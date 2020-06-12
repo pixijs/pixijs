@@ -71,7 +71,7 @@ export class InteractionManager extends EventEmitter
     public mouse: InteractionData;
     public eventData: InteractionEvent;
     public moveWhenInside: boolean;
-    public cursorStyles: { [key: string]: string | ((mode: string) => void) | object };
+    public cursorStyles: { [key: string]: string | ((mode: string) => void) | CSSStyleDeclaration };
     public currentCursorMode: string;
     public resolution: number;
 
@@ -728,7 +728,7 @@ export class InteractionManager extends EventEmitter
     {
         return this._useSystemTicker;
     }
-    set useSystemTicker(useSystemTicker)
+    set useSystemTicker(useSystemTicker: boolean)
     {
         this._useSystemTicker = useSystemTicker;
 

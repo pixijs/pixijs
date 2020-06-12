@@ -92,7 +92,7 @@ export class TilingSprite extends Sprite
         return this.uvMatrix.clampMargin;
     }
 
-    set clampMargin(value) // eslint-disable-line require-jsdoc
+    set clampMargin(value: number)
     {
         this.uvMatrix.clampMargin = value;
         this.uvMatrix.update(true);
@@ -108,7 +108,7 @@ export class TilingSprite extends Sprite
         return this.tileTransform.scale;
     }
 
-    set tileScale(value) // eslint-disable-line require-jsdoc
+    set tileScale(value: ObservablePoint)
     {
         this.tileTransform.scale.copyFrom(value as IPoint);
     }
@@ -123,7 +123,7 @@ export class TilingSprite extends Sprite
         return this.tileTransform.position;
     }
 
-    set tilePosition(value) // eslint-disable-line require-jsdoc
+    set tilePosition(value: ObservablePoint)
     {
         this.tileTransform.position.copyFrom(value as IPoint);
     }
@@ -293,7 +293,7 @@ export class TilingSprite extends Sprite
         return this._width;
     }
 
-    set width(value) // eslint-disable-line require-jsdoc
+    set width(value: number)
     {
         this._width = value;
     }
@@ -308,7 +308,7 @@ export class TilingSprite extends Sprite
         return this._height;
     }
 
-    set height(value) // eslint-disable-line require-jsdoc
+    set height(value: number)
     {
         this._height = value;
     }

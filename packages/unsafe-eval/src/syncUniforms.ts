@@ -6,7 +6,7 @@ import type { UniformGroup, IUniformData, Renderer, IRenderingContext } from '@p
 // uv = uniformValue
 // l = location
 
-/* eslint-disable max-len */
+/* eslint-disable max-len, @typescript-eslint/explicit-module-boundary-types */
 const GLSL_TO_SINGLE_SETTERS = {
     float(gl: IRenderingContext, location: WebGLUniformLocation, cv: any, v: number): void
     {

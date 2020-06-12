@@ -27,8 +27,8 @@ export type IAutoDetectOptions = ISize
  */
 export interface IResourcePlugin
 {
-    test(source: any, extension: string): boolean;
-    new (source: any, options?: any): Resource;
+    test(source: unknown, extension: string): boolean;
+    new (source: unknown, options?: any): Resource;
 }
 
 /**
@@ -88,7 +88,7 @@ export const INSTALLED: Array<IResourcePlugin> = [];
  *        texture should be updated from the video. Leave at 0 to update at every render
  * @return {PIXI.resources.Resource} The created resource.
  */
-export function autoDetectResource(source: any, options?: IAutoDetectOptions): Resource
+export function autoDetectResource(source: unknown, options?: IAutoDetectOptions): Resource
 {
     if (!source)
     {

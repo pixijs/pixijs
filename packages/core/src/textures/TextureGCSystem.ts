@@ -128,7 +128,7 @@ export class TextureGCSystem extends System
             managedTextures.length = j;
         }
     }
-
+    /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
     /**
      * Removes all the textures within the specified displayObject and its children from the GPU
      *
@@ -139,7 +139,7 @@ export class TextureGCSystem extends System
         const tm = this.renderer.texture;
 
         // only destroy non generated textures
-        if (displayObject._texture && displayObject._texture._glRenderTargets)
+        if (displayObject._texture?._glRenderTargets)
         {
             tm.destroyTexture(displayObject._texture);
         }
@@ -149,4 +149,5 @@ export class TextureGCSystem extends System
             this.unload(displayObject.children[i]);
         }
     }
+    /* eslint-enable @typescript-eslint/explicit-module-boundary-types */
 }

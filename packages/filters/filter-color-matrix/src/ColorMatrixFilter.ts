@@ -573,7 +573,7 @@ export class ColorMatrixFilter extends Filter
         return this.uniforms.m;
     }
 
-    set matrix(value) // eslint-disable-line require-jsdoc
+    set matrix(value: ColorMatrix)
     {
         this.uniforms.m = value;
     }
@@ -593,7 +593,7 @@ export class ColorMatrixFilter extends Filter
         return this.uniforms.uAlpha;
     }
 
-    set alpha(value) // eslint-disable-line require-jsdoc
+    set alpha(value: number)
     {
         this.uniforms.uAlpha = value;
     }

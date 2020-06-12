@@ -131,7 +131,7 @@ export class NineSlicePlane extends SimplePlane
         return this.geometry.getBuffer('aVertexPosition').data;
     }
 
-    set vertices(value)
+    set vertices(value: ITypedArray)
     {
         this.geometry.getBuffer('aVertexPosition').data = value;
     }
@@ -195,7 +195,7 @@ export class NineSlicePlane extends SimplePlane
         return this._width;
     }
 
-    set width(value) // eslint-disable-line require-jsdoc
+    set width(value: number)
     {
         this._width = value;
         this._refresh();
@@ -211,7 +211,7 @@ export class NineSlicePlane extends SimplePlane
         return this._height;
     }
 
-    set height(value) // eslint-disable-line require-jsdoc
+    set height(value: number)
     {
         this._height = value;
         this._refresh();
@@ -227,7 +227,7 @@ export class NineSlicePlane extends SimplePlane
         return this._leftWidth;
     }
 
-    set leftWidth(value) // eslint-disable-line require-jsdoc
+    set leftWidth(value: number)
     {
         this._leftWidth = value;
         this._refresh();
@@ -243,7 +243,7 @@ export class NineSlicePlane extends SimplePlane
         return this._rightWidth;
     }
 
-    set rightWidth(value) // eslint-disable-line require-jsdoc
+    set rightWidth(value: number)
     {
         this._rightWidth = value;
         this._refresh();
@@ -259,7 +259,7 @@ export class NineSlicePlane extends SimplePlane
         return this._topHeight;
     }
 
-    set topHeight(value) // eslint-disable-line require-jsdoc
+    set topHeight(value: number)
     {
         this._topHeight = value;
         this._refresh();
@@ -275,7 +275,7 @@ export class NineSlicePlane extends SimplePlane
         return this._bottomHeight;
     }
 
-    set bottomHeight(value) // eslint-disable-line require-jsdoc
+    set bottomHeight(value: number)
     {
         this._bottomHeight = value;
         this._refresh();

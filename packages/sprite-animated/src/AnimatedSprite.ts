@@ -429,7 +429,7 @@ export class AnimatedSprite extends Sprite
         return this._textures;
     }
 
-    set textures(value) // eslint-disable-line require-jsdoc
+    set textures(value: Texture[]|FrameObject[])
     {
         if (value[0] instanceof Texture)
         {
@@ -491,7 +491,7 @@ export class AnimatedSprite extends Sprite
         return this._autoUpdate;
     }
 
-    set autoUpdate(value) // eslint-disable-line require-jsdoc
+    set autoUpdate(value: boolean)
     {
         if (value !== this._autoUpdate)
         {

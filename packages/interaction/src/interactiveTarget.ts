@@ -145,7 +145,7 @@ export const interactiveTarget: InteractiveTarget = {
     {
         return this.cursor === 'pointer';
     },
-    set buttonMode(value)
+    set buttonMode(value: boolean)
     {
         if (value)
         {

@@ -1,6 +1,8 @@
-let GL_TABLE: {[x: string]: string} = null;
+import type { Dict } from '@pixi/utils';
 
-const GL_TO_GLSL_TYPES: {[x: string]: string} = {
+let GL_TABLE: Dict<string> = null;
+
+const GL_TO_GLSL_TYPES: Dict<string> = {
     FLOAT:       'float',
     FLOAT_VEC2:  'vec2',
     FLOAT_VEC3:  'vec3',
@@ -25,6 +27,7 @@ const GL_TO_GLSL_TYPES: {[x: string]: string} = {
     SAMPLER_2D_ARRAY:  'sampler2DArray',
 };
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function mapType(gl: any, type: number): string
 {
     if (!GL_TABLE)

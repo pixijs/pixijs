@@ -119,7 +119,7 @@ export class ObservablePoint<T = any> implements IPoint
         return this._x;
     }
 
-    set x(value) // eslint-disable-line require-jsdoc
+    set x(value: number)
     {
         if (this._x !== value)
         {
@@ -138,7 +138,7 @@ export class ObservablePoint<T = any> implements IPoint
         return this._y;
     }
 
-    set y(value) // eslint-disable-line require-jsdoc
+    set y(value: number)
     {
         if (this._y !== value)
         {

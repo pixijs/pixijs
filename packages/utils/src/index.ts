@@ -48,7 +48,6 @@
  */
 export { isMobile } from '@pixi/settings';
 
-/* eslint-disable */
 /*
     - `eventemitter3` uses CommonJS export
     - PIXI uses module exports, but thanks to `"esModuleInterop": true` in tsconfig.json this works
@@ -62,9 +61,7 @@ export { isMobile } from '@pixi/settings';
     - This is a temporary measure. Possibly the best solution would be custom typings for `eventemitter3`
     stored in this very repository.
  */
-// @ts-ignore
 import EventEmitter from 'eventemitter3';
-/* eslint-enable */
 
 /**
  * A high performance event emitter

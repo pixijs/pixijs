@@ -55,7 +55,7 @@ export class SimplePlane extends Mesh
         geometry.build();
     }
 
-    set texture(value)
+    set texture(value: Texture)
     {
         // Track texture same way sprite does.
         // For generated meshes like NineSlicePlane it can change the geometry.
