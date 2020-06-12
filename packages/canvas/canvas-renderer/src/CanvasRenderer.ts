@@ -25,7 +25,7 @@ export interface ICanvasRendererPlugins
     [key: string]: any;
 }
 
-/**
+/*
  * Different browsers support different smoothing property names
  * this is the list of all platform props.
  */
@@ -39,6 +39,7 @@ type SmoothingEnabledProperties =
 /**
  * Renderering context for all browsers. This includes platform-specific
  * properties that are not included in the spec for CanvasRenderingContext2D
+ * @private
  */
 export interface CrossPlatformCanvasRenderingContext2D extends CanvasRenderingContext2D
 {

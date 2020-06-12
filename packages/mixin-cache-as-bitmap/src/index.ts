@@ -17,6 +17,7 @@ DisplayObject.prototype._cacheData = null;
 /**
  * @class
  * @ignore
+ * @private
  */
 export class CacheData
 {

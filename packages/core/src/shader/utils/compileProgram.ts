@@ -16,7 +16,7 @@ function compileShader(gl: WebGLRenderingContextBase, type: number, src: string)
 }
 
 /**
- * @method compileProgram
+ * @function compileProgram
  * @private
  * @memberof PIXI.glCore.shader
  * @param {WebGLRenderingContext} gl - The current WebGL context {WebGLProgram}

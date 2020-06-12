@@ -135,7 +135,7 @@ export class Renderer extends AbstractRenderer
          * Internal signal instances of **runner**, these
          * are assigned to each system created.
          * @see PIXI.Runner
-         * @name PIXI.Renderer#runners
+         * @name runners
          * @private
          * @type {object}
          * @readonly
@@ -267,7 +267,7 @@ export class Renderer extends AbstractRenderer
 
         this.initPlugins(Renderer.__plugins);
 
-        /**
+        /*
          * The options passed in to create a new WebGL context.
          */
         if (options.context)
@@ -480,7 +480,7 @@ export class Renderer extends AbstractRenderer
      * Collection of installed plugins. These are included by default in PIXI, but can be excluded
      * by creating a custom build. Consult the README for more information about creating custom
      * builds and excluding plugins.
-     * @name PIXI.Renderer#plugins
+     * @name plugins
      * @type {object}
      * @readonly
      * @property {PIXI.AccessibilityManager} accessibility Support tabbing interactive elements.
@@ -488,8 +488,8 @@ export class Renderer extends AbstractRenderer
      * @property {PIXI.InteractionManager} interaction Handles mouse, touch and pointer events.
      * @property {PIXI.Prepare} prepare Pre-render display objects.
      */
-
     static __plugins: IRendererPlugins;
+
     /**
      * Adds a plugin to the renderer.
      *

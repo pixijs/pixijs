@@ -21,6 +21,7 @@ export abstract class Resource
     protected onResize: Runner;
     protected onUpdate: Runner;
     protected onError: Runner;
+
     /**
      * @param {number} [width=0] - Width of the resource
      * @param {number} [height=0] - Height of the resource
