@@ -858,7 +858,8 @@ export function useDeprecated(this: any): void
     };
 
     /**
-     * @method PIXI.Container#renderWebGL
+     * @memberof PIXI.Container#
+     * @method renderWebGL
      * @deprecated since 5.0.0
      * @see PIXI.Container#render
      * @param {PIXI.Renderer} renderer - Instance of renderer
@@ -871,7 +872,8 @@ export function useDeprecated(this: any): void
     };
 
     /**
-     * @method PIXI.DisplayObject#renderWebGL
+     * @memberof PIXI.DisplayObject#
+     * @method renderWebGL
      * @deprecated since 5.0.0
      * @see PIXI.DisplayObject#render
      * @param {PIXI.Renderer} renderer - Instance of renderer
