@@ -254,7 +254,7 @@ export abstract class Resource
     /* eslint-disable @typescript-eslint/no-unused-vars */
     /* eslint-disable @typescript-eslint/ban-ts-ignore */
     // @ts-ignore
-    static test(source: any, extension?: string): boolean
+    static test(source: unknown, extension?: string): boolean
     {
         return false;
     }
