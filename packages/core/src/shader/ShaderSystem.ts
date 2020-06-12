@@ -66,7 +66,7 @@ export class ShaderSystem extends System
      *
      * @private
      */
-    private systemCheck(): void
+    systemCheck(): void
     {
         if (!unsafeEvalSupported())
         {

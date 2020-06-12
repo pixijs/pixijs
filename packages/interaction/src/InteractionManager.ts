@@ -43,6 +43,12 @@ export interface DelayedEvent {
     eventData: InteractionEvent;
 }
 
+interface CrossCSSStyleDeclaration extends CSSStyleDeclaration
+{
+    msContentZooming: string;
+    msTouchAction: string;
+}
+
 /**
  * The interaction manager deals with mouse, touch and pointer events.
  *
@@ -837,14 +843,16 @@ export class InteractionManager extends EventEmitter
             return;
         }
 
+        const style = this.interactionDOMElement.style as CrossCSSStyleDeclaration;
+
         if (window.navigator.msPointerEnabled)
         {
-            this.interactionDOMElement.style.msContentZooming = 'none';
-            this.interactionDOMElement.style.msTouchAction = 'none';
+            style.msContentZooming = 'none';
+            style.msTouchAction = 'none';
         }
         else if (this.supportsPointerEvents)
         {
-            this.interactionDOMElement.style.touchAction = 'none';
+            style.touchAction = 'none';
         }
 
         /**
@@ -898,14 +906,16 @@ export class InteractionManager extends EventEmitter
             return;
         }
 
+        const style = this.interactionDOMElement.style as CrossCSSStyleDeclaration;
+
         if (window.navigator.msPointerEnabled)
         {
-            this.interactionDOMElement.style.msContentZooming = '';
-            this.interactionDOMElement.style.msTouchAction = '';
+            style.msContentZooming = '';
+            style.msTouchAction = '';
         }
         else if (this.supportsPointerEvents)
         {
-            this.interactionDOMElement.style.touchAction = '';
+            style.touchAction = '';
         }
 
         if (this.supportsPointerEvents)
