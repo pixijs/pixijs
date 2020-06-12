@@ -33,7 +33,7 @@ export interface ISpritesheetFrameData {
  */
 export interface ISpritesheetData {
     frames: Dict<ISpritesheetFrameData>;
-    animations: Dict<string[]>;
+    animations?: Dict<string[]>;
     meta: {
         scale: string;
     };
