@@ -10,6 +10,9 @@ interface IBitmapFontRawData {
         id: string;
         file: string;
     }[],
+    chars: {
+        count: number;
+    }[];
     char: {
         id: string;
         page: string;
@@ -21,7 +24,7 @@ interface IBitmapFontRawData {
         yoffset: string;
         xadvance: string;
     }[],
-    kerning: {
+    kerning?: {
         first: string;
         second: string;
         amount: string;
@@ -61,7 +64,14 @@ export class TextFormat
     {
         // Retrieve data item
         const items = txt.match(/^[a-z]+\s+.+$/gm);
-        const rawData: Partial<IBitmapFontRawData> = {};
+        const rawData: IBitmapFontRawData = {
+            info: [],
+            common: [],
+            page: [],
+            char: [],
+            chars: [],
+            kerning: [],
+        };
 
         for (const i in items)
         {
@@ -93,11 +103,6 @@ export class TextFormat
             }
 
             // Push current item to the resulting data
-            if (!rawData[name])
-            {
-                rawData[name] = [];
-            }
-
             rawData[name].push(itemData);
         }
 
