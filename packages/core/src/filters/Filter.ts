@@ -9,6 +9,7 @@ import type { RenderTexture } from '../renderTexture/RenderTexture';
 import type { FilterSystem } from './FilterSystem';
 import type { FilterState } from './FilterState';
 import type { BLEND_MODES, CLEAR_MODES } from '@pixi/constants';
+import type { Dict } from '@pixi/utils';
 
 /**
  * Filter is a special type of WebGL shader that is applied to the screen.
@@ -159,7 +160,7 @@ export class Filter extends Shader
      * @param {string} [fragmentSrc] - The source of the fragment shader.
      * @param {object} [uniforms] - Custom uniforms to use to augment the built-in ones.
      */
-    constructor(vertexSrc?: string, fragmentSrc?: string, uniforms?: {[key: string]: any})
+    constructor(vertexSrc?: string, fragmentSrc?: string, uniforms?: Dict<any>)
     {
         const program = Program.from(vertexSrc || Filter.defaultVertexSrc,
             fragmentSrc || Filter.defaultFragmentSrc);
@@ -281,5 +282,5 @@ export class Filter extends Shader
      * @type {object}
      * @protected
      */
-    static SOURCE_KEY_MAP: {[key: string]: string};
+    static SOURCE_KEY_MAP: Dict<string>;
 }

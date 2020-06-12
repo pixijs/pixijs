@@ -6,12 +6,13 @@ import { Runner } from '@pixi/runner';
 
 import type { TYPES } from '@pixi/constants';
 import type { IArrayBuffer } from './Buffer';
+import type { Dict } from '@pixi/utils';
 
 const byteSizeMap: {[key: number]: number} = { 5126: 4, 5123: 2, 5121: 1 };
 let UID = 0;
 
 /* eslint-disable object-shorthand */
-const map: {[x: string]: any} = {
+const map: Dict<any> = {
     Float32Array: Float32Array,
     Uint32Array: Uint32Array,
     Int32Array: Int32Array,

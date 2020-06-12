@@ -1,6 +1,8 @@
 import { BaseImageResource } from './BaseImageResource';
 import { Ticker } from '@pixi/ticker';
 
+import type { Dict } from '@pixi/utils';
+
 export interface IVideoResourceOptions
 {
     autoLoad?: boolean;
@@ -422,7 +424,7 @@ export class VideoResource extends BaseImageResource
      * @static
      * @readonly
      */
-    static MIME_TYPES: {[ext: string]: string} = {
+    static MIME_TYPES: Dict<string> = {
         ogv: 'video/ogg',
         mov: 'video/quicktime',
         m4v: 'video/mp4',
