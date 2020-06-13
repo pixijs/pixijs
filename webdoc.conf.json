@@ -15,7 +15,9 @@
         "plugins/markdown"
     ],
     "template": {
-        "readme": "./README.md"
+        "outputSourceFiles": true,
+        "readme": "./README.md",
+        "repository": "https://github.com/pixijs/pixi.js/"
     },
     "templates": {
         "cleverLinks"   : false,
