@@ -354,7 +354,7 @@ export class VideoResource extends BaseImageResource
         return this._autoUpdate;
     }
 
-    set autoUpdate(value) // eslint-disable-line require-jsdoc
+    set autoUpdate(value)
     {
         if (value !== this._autoUpdate)
         {
@@ -384,7 +384,7 @@ export class VideoResource extends BaseImageResource
         return this._updateFPS;
     }
 
-    set updateFPS(value) // eslint-disable-line require-jsdoc
+    set updateFPS(value)
     {
         if (value !== this._updateFPS)
         {
