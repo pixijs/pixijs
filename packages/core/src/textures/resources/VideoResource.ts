@@ -150,7 +150,6 @@ export class VideoResource extends BaseImageResource
      *
      * @param {number} [deltaTime=0] - time delta since last tick
      */
-    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     update(_deltaTime = 0): void
     {
         if (!this.destroyed)
@@ -356,7 +355,7 @@ export class VideoResource extends BaseImageResource
         return this._autoUpdate;
     }
 
-    set autoUpdate(value) // eslint-disable-line require-jsdoc
+    set autoUpdate(value)
     {
         if (value !== this._autoUpdate)
         {
@@ -386,7 +385,7 @@ export class VideoResource extends BaseImageResource
         return this._updateFPS;
     }
 
-    set updateFPS(value) // eslint-disable-line require-jsdoc
+    set updateFPS(value)
     {
         if (value !== this._updateFPS)
         {

@@ -225,7 +225,6 @@ export class Filter extends Shader
      *        target, filters, sourceFrame, destinationFrame, renderTarget, resolution
      */
     apply(filterManager: FilterSystem, input: RenderTexture, output: RenderTexture, clearMode: CLEAR_MODES,
-        /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
         _currentState?: FilterState): void
     {
         // do as you please!
@@ -246,7 +245,7 @@ export class Filter extends Shader
         return this.state.blendMode;
     }
 
-    set blendMode(value) // eslint-disable-line require-jsdoc
+    set blendMode(value)
     {
         this.state.blendMode = value;
     }

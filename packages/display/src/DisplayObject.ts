@@ -525,7 +525,6 @@ export abstract class DisplayObject extends EventEmitter
      * after calling `destroy()`.
      *
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     destroy(_options?: IDestroyOptions|boolean): void
     {
         if (this.parent)
@@ -575,7 +574,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.position.x;
     }
 
-    set x(value) // eslint-disable-line require-jsdoc
+    set x(value)
     {
         this.transform.position.x = value;
     }
@@ -591,7 +590,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.position.y;
     }
 
-    set y(value) // eslint-disable-line require-jsdoc
+    set y(value)
     {
         this.transform.position.y = value;
     }
@@ -629,7 +628,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.transform.position;
     }
 
-    set position(value) // eslint-disable-line require-jsdoc
+    set position(value)
     {
         this.transform.position.copyFrom(value);
     }
@@ -645,7 +644,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.transform.scale;
     }
 
-    set scale(value) // eslint-disable-line require-jsdoc
+    set scale(value)
     {
         this.transform.scale.copyFrom(value);
     }
@@ -661,7 +660,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.transform.pivot;
     }
 
-    set pivot(value) // eslint-disable-line require-jsdoc
+    set pivot(value)
     {
         this.transform.pivot.copyFrom(value);
     }
@@ -677,7 +676,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.transform.skew;
     }
 
-    set skew(value) // eslint-disable-line require-jsdoc
+    set skew(value)
     {
         this.transform.skew.copyFrom(value);
     }
@@ -693,7 +692,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.transform.rotation;
     }
 
-    set rotation(value) // eslint-disable-line require-jsdoc
+    set rotation(value)
     {
         this.transform.rotation = value;
     }
@@ -709,7 +708,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.transform.rotation * RAD_TO_DEG;
     }
 
-    set angle(value) // eslint-disable-line require-jsdoc
+    set angle(value)
     {
         this.transform.rotation = value * DEG_TO_RAD;
     }
@@ -727,7 +726,7 @@ export abstract class DisplayObject extends EventEmitter
         return this._zIndex;
     }
 
-    set zIndex(value) // eslint-disable-line require-jsdoc
+    set zIndex(value)
     {
         this._zIndex = value;
         if (this.parent)
@@ -783,7 +782,7 @@ export abstract class DisplayObject extends EventEmitter
         return this._mask;
     }
 
-    set mask(value) // eslint-disable-line require-jsdoc
+    set mask(value)
     {
         if (this._mask)
         {
