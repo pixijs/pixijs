@@ -592,10 +592,8 @@ export class TextMetrics
      * @param  {boolean}  breakWords - The style attr break words
      * @return {boolean} whether to break word or not
      */
-    /* eslint-disable @typescript-eslint/no-unused-vars */
     static canBreakChars(_char: string, _nextChar: string, _token: string, _index: number,
         _breakWords: boolean): boolean
-    /* eslint-enable @typescript-eslint/no-unused-vars */
     {
         return true;
     }

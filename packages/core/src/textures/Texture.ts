@@ -6,6 +6,7 @@ import { settings } from '@pixi/settings';
 import { Rectangle, Point } from '@pixi/math';
 import { uid, TextureCache, getResolutionOfUrl, EventEmitter } from '@pixi/utils';
 
+import type { IPointData } from '@pixi/math';
 import type { IBaseTextureOptions, ImageSource } from './BaseTexture';
 import type { TextureMatrix } from './TextureMatrix';
 
@@ -69,7 +70,7 @@ export class Texture extends EventEmitter
      * @param {PIXI.Point} [anchor] - Default anchor point used for sprite placement / rotation
      */
     constructor(baseTexture: BaseTexture, frame?: Rectangle,
-        orig?: Rectangle, trim?: Rectangle, rotate?: number, anchor?: Point)
+        orig?: Rectangle, trim?: Rectangle, rotate?: number, anchor?: IPointData)
     {
         super();
 
@@ -572,7 +573,7 @@ export class Texture extends EventEmitter
         return this._frame;
     }
 
-    set frame(frame: Rectangle) // eslint-disable-line require-jsdoc
+    set frame(frame: Rectangle)
     {
         this._frame = frame;
 
@@ -619,7 +620,7 @@ export class Texture extends EventEmitter
         return this._rotate;
     }
 
-    set rotate(rotate) // eslint-disable-line require-jsdoc
+    set rotate(rotate)
     {
         this._rotate = rotate;
         if (this.valid)

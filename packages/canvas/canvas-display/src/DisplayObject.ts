@@ -7,11 +7,7 @@ import type { CanvasRenderer } from '@pixi/canvas-renderer';
  * @memberof PIXI.Container#
  * @param {PIXI.CanvasRenderer} renderer - The renderer
  */
-
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-DisplayObject.prototype.renderCanvas = function renderCanvas(renderer: CanvasRenderer): void
+DisplayObject.prototype.renderCanvas = function renderCanvas(_renderer: CanvasRenderer): void
 {
     // OVERWRITE;
 };

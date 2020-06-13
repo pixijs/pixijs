@@ -1,6 +1,8 @@
 import { BaseImageResource } from './BaseImageResource';
 import { Ticker } from '@pixi/ticker';
 
+import type { Dict } from '@pixi/utils';
+
 export interface IVideoResourceOptions
 {
     autoLoad?: boolean;
@@ -148,7 +150,6 @@ export class VideoResource extends BaseImageResource
      *
      * @param {number} [deltaTime=0] - time delta since last tick
      */
-    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     update(_deltaTime = 0): void
     {
         if (!this.destroyed)
@@ -354,7 +355,7 @@ export class VideoResource extends BaseImageResource
         return this._autoUpdate;
     }
 
-    set autoUpdate(value) // eslint-disable-line require-jsdoc
+    set autoUpdate(value)
     {
         if (value !== this._autoUpdate)
         {
@@ -384,7 +385,7 @@ export class VideoResource extends BaseImageResource
         return this._updateFPS;
     }
 
-    set updateFPS(value) // eslint-disable-line require-jsdoc
+    set updateFPS(value)
     {
         if (value !== this._updateFPS)
         {
@@ -422,7 +423,7 @@ export class VideoResource extends BaseImageResource
      * @static
      * @readonly
      */
-    static MIME_TYPES: {[ext: string]: string} = {
+    static MIME_TYPES: Dict<string> = {
         ogv: 'video/ogg',
         mov: 'video/quicktime',
         m4v: 'video/mp4',
