@@ -103,7 +103,6 @@ export class Container extends DisplayObject
      *
      * @protected
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     protected onChildrenChange(_length: number): void
     {
         /* empty */
@@ -623,7 +622,6 @@ export class Container extends DisplayObject
      * @protected
      * @param {PIXI.Renderer} renderer - The renderer
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     protected _render(_renderer: Renderer): void // eslint-disable-line no-unused-vars
     {
         // this is where content itself gets rendered...

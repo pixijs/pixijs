@@ -148,7 +148,6 @@ export class VideoResource extends BaseImageResource
      *
      * @param {number} [deltaTime=0] - time delta since last tick
      */
-    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     update(_deltaTime = 0): void
     {
         if (!this.destroyed)

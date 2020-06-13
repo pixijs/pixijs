@@ -524,7 +524,6 @@ export abstract class DisplayObject extends EventEmitter
      * after calling `destroy()`.
      *
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     destroy(_options?: IDestroyOptions|boolean): void
     {
         if (this.parent)
