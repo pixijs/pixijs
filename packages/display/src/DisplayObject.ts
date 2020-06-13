@@ -5,6 +5,7 @@ import { Bounds } from './Bounds';
 
 import type { Filter, MaskData, Renderer } from '@pixi/core';
 import type { IPoint, ObservablePoint } from '@pixi/math';
+import type { Dict } from '@pixi/utils';
 
 export interface IDestroyOptions {
     children?: boolean;
@@ -57,7 +58,7 @@ export abstract class DisplayObject extends EventEmitter
      *
      * @param {object} source - The source of properties and methods to mix in.
      */
-    static mixin(source: {[x: string]: any}): void
+    static mixin(source: Dict<any>): void
     {
         // in ES8/ES2017, this would be really easy:
         // Object.defineProperties(DisplayObject.prototype, Object.getOwnPropertyDescriptors(source));
