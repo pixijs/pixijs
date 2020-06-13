@@ -9,10 +9,7 @@ import type { MaskData } from '@pixi/core';
  * @protected
  * @param {PIXI.CanvasRenderer} renderer - The renderer
  */
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-Container.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRenderer): void
+Container.prototype._renderCanvas = function _renderCanvas(_renderer: CanvasRenderer): void
 {
     // this is where content itself gets rendered...
 };

@@ -44,7 +44,7 @@ export class State
         return !!(this.data & (1 << BLEND));
     }
 
-    set blend(value) // eslint-disable-line require-jsdoc
+    set blend(value)
     {
         if (!!(this.data & (1 << BLEND)) !== value)
         {
@@ -63,7 +63,7 @@ export class State
         return !!(this.data & (1 << OFFSET));
     }
 
-    set offsets(value) // eslint-disable-line require-jsdoc
+    set offsets(value)
     {
         if (!!(this.data & (1 << OFFSET)) !== value)
         {
@@ -82,7 +82,7 @@ export class State
         return !!(this.data & (1 << CULLING));
     }
 
-    set culling(value) // eslint-disable-line require-jsdoc
+    set culling(value)
     {
         if (!!(this.data & (1 << CULLING)) !== value)
         {
@@ -101,7 +101,7 @@ export class State
         return !!(this.data & (1 << DEPTH_TEST));
     }
 
-    set depthTest(value) // eslint-disable-line require-jsdoc
+    set depthTest(value)
     {
         if (!!(this.data & (1 << DEPTH_TEST)) !== value)
         {
@@ -119,7 +119,7 @@ export class State
         return !!(this.data & (1 << WINDING));
     }
 
-    set clockwiseFrontFace(value) // eslint-disable-line require-jsdoc
+    set clockwiseFrontFace(value)
     {
         if (!!(this.data & (1 << WINDING)) !== value)
         {
@@ -140,7 +140,7 @@ export class State
         return this._blendMode;
     }
 
-    set blendMode(value) // eslint-disable-line require-jsdoc
+    set blendMode(value)
     {
         this.blend = (value !== BLEND_MODES.NONE);
         this._blendMode = value;
@@ -157,7 +157,7 @@ export class State
         return this._polygonOffset;
     }
 
-    set polygonOffset(value) // eslint-disable-line require-jsdoc
+    set polygonOffset(value)
     {
         this.offsets = !!value;
         this._polygonOffset = value;
