@@ -22,9 +22,12 @@ Graphics.prototype.generateCanvasTexture = function generateCanvasTexture(scaleM
 {
     const bounds = this.getLocalBounds();
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    // @ts-ignore
-    const canvasBuffer = RenderTexture.create(bounds.width, bounds.height, scaleMode, resolution);
+    const canvasBuffer = RenderTexture.create({
+        width: bounds.width,
+        height: bounds.height,
+        scaleMode,
+        resolution,
+    });
 
     if (!canvasRenderer)
     {

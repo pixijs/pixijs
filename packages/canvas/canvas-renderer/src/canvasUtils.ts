@@ -315,15 +315,7 @@ export const canvasUtils = {
      * @memberof PIXI.canvasUtils
      * @type {Function}
      */
-    /* eslint-disable @typescript-eslint/no-unused-vars */
-    /* eslint-disable @typescript-eslint/ban-ts-ignore */
-    // @ts-ignore
-    tintMethod: (texture: Texture, color: number, canvas: HTMLCanvasElement): void =>
-    { // jslint-disable no-empty-function
-
-    },
-    /* eslint-enable @typescript-eslint/no-unused-vars */
-    /* eslint-enable @typescript-eslint/ban-ts-ignore */
+    tintMethod: null as (texture: Texture, color: number, canvas: HTMLCanvasElement) => void,
 };
 
 canvasUtils.tintMethod = canvasUtils.canUseMultiply ? canvasUtils.tintWithMultiply : canvasUtils.tintWithPerPixel;
