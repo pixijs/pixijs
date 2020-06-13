@@ -606,7 +606,7 @@ export class BitmapText extends Container
         return this._tint;
     }
 
-    public set tint(value) // eslint-disable-line require-jsdoc
+    public set tint(value)
     {
         if (this._tint === value) return;
 
@@ -629,7 +629,7 @@ export class BitmapText extends Container
         return this._align;
     }
 
-    public set align(value) // eslint-disable-line require-jsdoc
+    public set align(value)
     {
         if (this._align !== value)
         {
@@ -648,7 +648,7 @@ export class BitmapText extends Container
         return this._fontName;
     }
 
-    public set fontName(value: string) // eslint-disable-line require-jsdoc
+    public set fontName(value: string)
     {
         if (!BitmapFont.available[value])
         {
@@ -672,7 +672,7 @@ export class BitmapText extends Container
         return this._fontSize;
     }
 
-    public set fontSize(value: number) // eslint-disable-line require-jsdoc
+    public set fontSize(value: number)
     {
         if (this._fontSize !== value)
         {
@@ -697,7 +697,7 @@ export class BitmapText extends Container
         return this._anchor;
     }
 
-    public set anchor(value: ObservablePoint) // eslint-disable-line require-jsdoc
+    public set anchor(value: ObservablePoint)
     {
         if (typeof value === 'number')
         {
@@ -719,7 +719,7 @@ export class BitmapText extends Container
         return this._text;
     }
 
-    public set text(text) // eslint-disable-line require-jsdoc
+    public set text(text)
     {
         text = String(text === null || text === undefined ? '' : text);
 
@@ -743,7 +743,7 @@ export class BitmapText extends Container
         return this._maxWidth;
     }
 
-    public set maxWidth(value) // eslint-disable-line require-jsdoc
+    public set maxWidth(value)
     {
         if (this._maxWidth === value)
         {
@@ -791,7 +791,7 @@ export class BitmapText extends Container
         return this._letterSpacing;
     }
 
-    public set letterSpacing(value) // eslint-disable-line require-jsdoc
+    public set letterSpacing(value)
     {
         if (this._letterSpacing !== value)
         {
