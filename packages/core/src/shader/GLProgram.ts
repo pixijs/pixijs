@@ -1,4 +1,5 @@
-/** @private */
+import type { Dict } from '@pixi/utils';
+
 export class IGLUniformData
 {
     location: WebGLUniformLocation;
@@ -14,9 +15,8 @@ export class IGLUniformData
 export class GLProgram
 {
     public program: WebGLProgram;
-    public uniformData: {[x: string]: any};
-    public uniformGroups: {[x: string]: any};
-
+    public uniformData: Dict<any>;
+    public uniformGroups: Dict<any>;
     /**
      * Makes a new Pixi program
      *

@@ -1,4 +1,6 @@
-const GLSL_TO_SIZE: {[x: string]: number} = {
+import type { Dict } from '@pixi/utils';
+
+const GLSL_TO_SIZE: Dict<number> = {
     float:    1,
     vec2:     2,
     vec3:     3,

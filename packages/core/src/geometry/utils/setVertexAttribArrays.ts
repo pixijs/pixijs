@@ -1,4 +1,5 @@
 import type { IRenderingContext } from '../../IRenderingContext';
+import type { Dict } from '@pixi/utils';
 
 // var GL_MAP = {};
 
@@ -9,7 +10,7 @@ import type { IRenderingContext } from '../../IRenderingContext';
  * @private
  */
 export function setVertexAttribArrays(gl: IRenderingContext,
-    attribs: {[x: string]: any}, state: {[x: string]: any}): void
+    attribs: Dict<any>, state: Dict<any>): void
 {
     let i;
 

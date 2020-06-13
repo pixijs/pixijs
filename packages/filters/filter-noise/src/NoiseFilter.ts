@@ -39,7 +39,7 @@ export class NoiseFilter extends Filter
         return this.uniforms.uNoise;
     }
 
-    set noise(value) // eslint-disable-line require-jsdoc
+    set noise(value)
     {
         this.uniforms.uNoise = value;
     }
@@ -54,7 +54,7 @@ export class NoiseFilter extends Filter
         return this.uniforms.uSeed;
     }
 
-    set seed(value) // eslint-disable-line require-jsdoc
+    set seed(value)
     {
         this.uniforms.uSeed = value;
     }

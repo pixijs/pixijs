@@ -376,7 +376,7 @@ export abstract class AbstractRenderer extends EventEmitter
         return this._backgroundColor;
     }
 
-    set backgroundColor(value) // eslint-disable-line require-jsdoc
+    set backgroundColor(value)
     {
         this._backgroundColor = value;
         this._backgroundColorString = hex2string(value);
