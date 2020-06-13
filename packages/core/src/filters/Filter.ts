@@ -244,7 +244,7 @@ export class Filter extends Shader
         return this.state.blendMode;
     }
 
-    set blendMode(value) // eslint-disable-line require-jsdoc
+    set blendMode(value)
     {
         this.state.blendMode = value;
     }
