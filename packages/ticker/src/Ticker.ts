@@ -549,7 +549,7 @@ export class Ticker
         return 1000 / this._maxElapsedMS;
     }
 
-    set minFPS(fps) // eslint-disable-line require-jsdoc
+    set minFPS(fps)
     {
         // Minimum must be below the maxFPS
         const minFPS = Math.min(this.maxFPS, fps);

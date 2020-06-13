@@ -109,7 +109,7 @@ export class TextureMatrix
         return this._texture;
     }
 
-    set texture(value: Texture) // eslint-disable-line require-jsdoc
+    set texture(value: Texture)
     {
         this._texture = value;
         this._updateID = -1;

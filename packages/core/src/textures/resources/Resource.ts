@@ -204,15 +204,10 @@ export abstract class Resource
      * @param {PIXI.GLTexture} glTexture - texture instance for this webgl context
      * @returns {boolean} `true` is success
      */
-    /* eslint-disable @typescript-eslint/no-unused-vars */
-    /* eslint-disable @typescript-eslint/ban-ts-ignore */
-    // @ts-ignore
-    style(renderer: Renderer, baseTexture: BaseTexture, glTexture: GLTexture): boolean
+    style(_renderer: Renderer, _baseTexture: BaseTexture, _glTexture: GLTexture): boolean
     {
         return false;
     }
-    /* eslint-enable @typescript-eslint/no-unused-vars */
-    /* eslint-enable @typescript-eslint/ban-ts-ignore */
 
     /**
      * Clean up anything, this happens when destroying is ready.
@@ -251,13 +246,8 @@ export abstract class Resource
      * @param {*} source - The source object
      * @param {string} extension - The extension of source, if set
      */
-    /* eslint-disable @typescript-eslint/no-unused-vars */
-    /* eslint-disable @typescript-eslint/ban-ts-ignore */
-    // @ts-ignore
-    static test(source: any, extension?: string): boolean
+    static test(_source: any, _extension?: string): boolean
     {
         return false;
     }
-    /* eslint-enable @typescript-eslint/no-unused-vars */
-    /* eslint-enable @typescript-eslint/ban-ts-ignore */
 }
