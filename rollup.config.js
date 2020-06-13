@@ -97,12 +97,6 @@ async function main()
         const basePath = path.relative(__dirname, pkg.location);
         let input = path.join(basePath, 'src/index.ts');
 
-        // TODO: remove check once all packages have been converted to typescript
-        if (!fs.existsSync(input))
-        {
-            input = path.join(basePath, 'src/index.js');
-        }
-
         const {
             main,
             module,

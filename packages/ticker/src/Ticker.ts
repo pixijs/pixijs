@@ -549,7 +549,7 @@ export class Ticker
         return 1000 / this._maxElapsedMS;
     }
 
-    set minFPS(fps) // eslint-disable-line require-jsdoc
+    set minFPS(fps)
     {
         // Minimum must be below the maxFPS
         const minFPS = Math.min(this.maxFPS, fps);
@@ -652,7 +652,7 @@ export class Ticker
     }
 
     /**
-     * The system ticker instance used by {@link PIXI.interaction.InteractionManager} and by
+     * The system ticker instance used by {@link PIXI.InteractionManager} and by
      * {@link PIXI.BasePrepare} for core timing functionality that shouldn't usually need to be paused,
      * unlike the `shared` ticker which drives visual animations and rendering which may want to be paused.
      *

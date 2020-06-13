@@ -14,6 +14,8 @@ const indices = new Uint16Array([0, 1, 2, 0, 2, 3]);
 
 export type SpriteSource = TextureSource|Texture;
 
+export interface Sprite extends GlobalMixins.Sprite, Container {}
+
 /**
  * The Sprite object is the base for all textured objects that are rendered to the screen
 *
@@ -44,15 +46,13 @@ export class Sprite extends Container
 {
     public blendMode: BLEND_MODES;
     public indices: Uint16Array;
-    public size: number;
-    public start: number;
     public pluginName: string;
 
     _width: number;
     _height: number;
     _texture: Texture;
-    protected _cachedTint: number;
-    protected _textureID: number;
+    _textureID: number;
+    _cachedTint: number;
     protected _textureTrimmedID: number;
     protected uvs: Float32Array;
     protected _anchor: ObservablePoint;
@@ -200,8 +200,6 @@ export class Sprite extends Container
         // Batchable stuff..
         // TODO could make this a mixin?
         this.indices = indices;
-        this.size = 4;
-        this.start = 0;
 
         /**
          * Plugin that is responsible for rendering this element.
@@ -540,8 +538,8 @@ export class Sprite extends Container
      * The source can be - frame id, image url, video url, canvas element, video element, base texture
      *
      * @static
-     * @param {string|PIXI.Texture|HTMLCanvasElement|HTMLVideoElement} source Source to create texture from
-     * @param {object} [options] See {@link PIXI.BaseTexture}'s constructor for options.
+     * @param {string|PIXI.Texture|HTMLCanvasElement|HTMLVideoElement} source - Source to create texture from
+     * @param {object} [options] - See {@link PIXI.BaseTexture}'s constructor for options.
      * @return {PIXI.Sprite} The newly created sprite
      */
     static from(source: SpriteSource, options: IBaseTextureOptions): Sprite
@@ -586,7 +584,7 @@ export class Sprite extends Container
         return Math.abs(this.scale.x) * this._texture.orig.width;
     }
 
-    set width(value) // eslint-disable-line require-jsdoc
+    set width(value)
     {
         const s = sign(this.scale.x) || 1;
 
@@ -604,7 +602,7 @@ export class Sprite extends Container
         return Math.abs(this.scale.y) * this._texture.orig.height;
     }
 
-    set height(value) // eslint-disable-line require-jsdoc
+    set height(value)
     {
         const s = sign(this.scale.y) || 1;
 
@@ -635,7 +633,7 @@ export class Sprite extends Container
         return this._anchor;
     }
 
-    set anchor(value) // eslint-disable-line require-jsdoc
+    set anchor(value)
     {
         this._anchor.copyFrom(value);
     }
@@ -652,7 +650,7 @@ export class Sprite extends Container
         return this._tint;
     }
 
-    set tint(value) // eslint-disable-line require-jsdoc
+    set tint(value)
     {
         this._tint = value;
         this._tintRGB = (value >> 16) + (value & 0xff00) + ((value & 0xff) << 16);
@@ -668,7 +666,7 @@ export class Sprite extends Container
         return this._texture;
     }
 
-    set texture(value) // eslint-disable-line require-jsdoc
+    set texture(value)
     {
         if (this._texture === value)
         {

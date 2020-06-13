@@ -12,7 +12,6 @@ export interface IApplicationPlugin {
 
 export interface IApplicationOptions extends IRendererOptionsAuto {
     autoStart?: boolean;
-    forceFXAA?: boolean;
     sharedTicker?: boolean;
     sharedLoader?: boolean;
     resizeTo?: Window | HTMLElement;
@@ -66,8 +65,6 @@ export class Application
      *  (shown if not transparent).
      * @param {boolean} [options.clearBeforeRender=true] - This sets if the renderer will clear the canvas or
      *   not before the new render pass.
-     * @param {boolean} [options.forceFXAA=false] - Forces FXAA antialiasing to be used over native.
-     *  FXAA is faster, but may not always look as great. **(WebGL only)**.
      * @param {string} [options.powerPreference] - Parameter passed to webgl context, set to "high-performance"
      *  for devices with dual graphics card. **(WebGL only)**.
      * @param {boolean} [options.sharedTicker=false] - `true` to use PIXI.Ticker.shared, `false` to create new ticker.
@@ -144,7 +141,7 @@ export class Application
 
     /**
      * Destroy and don't use after this.
-     * @param {Boolean} [removeView=false] Automatically remove canvas from DOM.
+     * @param {Boolean} [removeView=false] - Automatically remove canvas from DOM.
      * @param {object|boolean} [stageOptions] - Options parameter. A boolean will act as if all options
      *  have been set to that value
      * @param {boolean} [stageOptions.children=false] - if set to true, all the children will have their destroy

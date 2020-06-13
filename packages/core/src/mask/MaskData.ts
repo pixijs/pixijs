@@ -1,7 +1,8 @@
 import { MASK_TYPES } from '@pixi/constants';
 
 import type { Rectangle, Matrix } from '@pixi/math';
-import type { Renderer, IFilterTarget } from '@pixi/core';
+import type { IFilterTarget } from '../filters/IFilterTarget';
+import type { Renderer } from '../Renderer';
 
 export interface IMaskTarget extends IFilterTarget
 {
@@ -26,7 +27,7 @@ export class MaskData
     public autoDetect: boolean;
     public maskObject: IMaskTarget;
     public pooled: boolean;
-    public isMaskData: boolean;
+    public isMaskData: true;
     _stencilCounter: number;
     _scissorCounter: number;
     _scissorRect: Rectangle;
@@ -35,7 +36,7 @@ export class MaskData
     /**
      * Create MaskData
      *
-     * @param {PIXI.DisplayObject} [maskObject=null] object that describes the mask
+     * @param {PIXI.DisplayObject} [maskObject=null] - object that describes the mask
      */
     constructor(maskObject: IMaskTarget = null)
     {

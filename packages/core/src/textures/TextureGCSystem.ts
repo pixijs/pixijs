@@ -2,7 +2,7 @@ import { System } from '../System';
 import { GC_MODES } from '@pixi/constants';
 import { settings } from '@pixi/settings';
 
-import type { Renderer } from '@pixi/core';
+import type { Renderer } from '../Renderer';
 
 /**
  * System plugin to the renderer to manage texture garbage collection on the GPU,

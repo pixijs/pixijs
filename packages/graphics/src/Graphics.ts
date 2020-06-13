@@ -22,6 +22,7 @@ import { Shader } from '@pixi/core';
 
 import type { IShape } from '@pixi/math';
 import type { IDestroyOptions } from '@pixi/display';
+import { LINE_JOIN, LINE_CAP } from './const';
 
 /**
  * Batch element computed from Graphics geometry
@@ -49,12 +50,17 @@ export interface ILineStyleOptions extends IFillStyleOptions {
     width?: number;
     alignment?: number;
     native?: boolean;
+    cap?: LINE_CAP;
+    join?: LINE_JOIN;
+    miterLimit?: number;
 }
 
 const temp = new Float32Array(3);
 
 // a default shaders map used by graphics..
 const DEFAULT_SHADERS: {[key: string]: Shader} = {};
+
+export interface Graphics extends GlobalMixins.Graphics, Container {}
 
 /**
  * The Graphics class contains methods used to draw primitive shapes such as lines, circles and
@@ -245,7 +251,7 @@ export class Graphics extends Container
 
     /**
      * Creates a new Graphics object with the same values as this one.
-     * Note that the only the properties of the object are cloned, not its transform (position,scale,etc)
+     * Note that only the geometry of the object is cloned, not its transform (position,scale,etc)
      *
      * @return {PIXI.Graphics} A clone of the graphics object
      */
@@ -335,6 +341,9 @@ export class Graphics extends Container
      * @param {number} [options.alpha=1] - alpha of the line to draw, will update the objects stored style
      * @param {number} [options.alignment=0.5] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outter)
      * @param {boolean} [options.native=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
+     * @param {PIXI.LINE_CAP}[options.cap=PIXI.LINE_CAP.BUTT] - line cap style
+     * @param {PIXI.LINE_JOIN}[options.join=PIXI.LINE_JOIN.MITER] - line join style
+     * @param {number}[options.miterLimit=10] - miter limit ratio
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
     public lineStyle(options: ILineStyleOptions = null): this
@@ -366,9 +375,12 @@ export class Graphics extends Container
      * @param {number} [options.color=0x0] - color of the line to draw, will update the objects stored style.
      *  Default 0xFFFFFF if texture present.
      * @param {number} [options.alpha=1] - alpha of the line to draw, will update the objects stored style
-     * @param {PIXI.Matrix} [options.matrix=null] Texture matrix to transform texture
+     * @param {PIXI.Matrix} [options.matrix=null] - Texture matrix to transform texture
      * @param {number} [options.alignment=0.5] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outter)
      * @param {boolean} [options.native=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
+     * @param {PIXI.LINE_CAP}[options.cap=PIXI.LINE_CAP.BUTT] - line cap style
+     * @param {PIXI.LINE_JOIN}[options.join=PIXI.LINE_JOIN.MITER] - line join style
+     * @param {number}[options.miterLimit=10] - miter limit ratio
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
     public lineTextureStyle(options: ILineStyleOptions): this
@@ -397,6 +409,9 @@ export class Graphics extends Container
             matrix: null,
             alignment: 0.5,
             native: false,
+            cap: LINE_CAP.BUTT,
+            join: LINE_JOIN.MITER,
+            miterLimit: 10,
         }, options);
 
         if (this.currentPath)
@@ -920,6 +935,7 @@ export class Graphics extends Container
         this._lineStyle.reset();
         this._fillStyle.reset();
 
+        this._boundsID++;
         this._matrix = null;
         this._holeMode = false;
         this.currentPath = null;

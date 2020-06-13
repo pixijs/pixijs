@@ -32,7 +32,7 @@ const DIV_HOOK_ZINDEX = 2;
  * An instance of this class is automatically created by default, and can be found at `renderer.plugins.accessibility`
  *
  * @class
- * @memberof PIXI.accessibility
+ * @memberof PIXI
  */
 export class AccessibilityManager
 {

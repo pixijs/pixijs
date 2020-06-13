@@ -4,7 +4,7 @@ import { SpriteMaskFilter } from '../filters/spriteMask/SpriteMaskFilter';
 import { MASK_TYPES } from '@pixi/constants';
 
 import type { IMaskTarget } from './MaskData';
-import type { Renderer } from '@pixi/core';
+import type { Renderer } from '../Renderer';
 
 /**
  * System plugin to the renderer to manage masks.

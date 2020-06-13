@@ -22,7 +22,7 @@ export class Rectangle
     public y: number;
     public width: number;
     public height: number;
-    public readonly type: number;
+    public readonly type: SHAPES.RECT;
 
     /**
      * @param {number} [x=0] - The X coordinate of the upper-left corner of the rectangle

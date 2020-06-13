@@ -6,12 +6,13 @@ import { Runner } from '@pixi/runner';
 
 import type { TYPES } from '@pixi/constants';
 import type { IArrayBuffer } from './Buffer';
+import type { Dict } from '@pixi/utils';
 
 const byteSizeMap: {[key: number]: number} = { 5126: 4, 5123: 2, 5121: 1 };
 let UID = 0;
 
 /* eslint-disable object-shorthand */
-const map: {[x: string]: any} = {
+const map: Dict<any> = {
     Float32Array: Float32Array,
     Uint32Array: Uint32Array,
     Int32Array: Int32Array,
@@ -52,8 +53,8 @@ export class Geometry
     disposeRunner: Runner;
     refCount: number;
     /**
-     * @param {PIXI.Buffer[]} [buffers]  an array of buffers. optional.
-     * @param {object} [attributes] of the geometry, optional structure of the attributes layout
+     * @param {PIXI.Buffer[]} [buffers] - an array of buffers. optional.
+     * @param {object} [attributes] - of the geometry, optional structure of the attributes layout
      */
     constructor(buffers: Array<Buffer> = [], attributes: {[key: string]: Attribute} = {})
     {
@@ -97,13 +98,13 @@ export class Geometry
     * Note: `stride` and `start` should be `undefined` if you dont know them, not 0!
     *
     * @param {String} id - the name of the attribute (matching up to a shader)
-    * @param {PIXI.Buffer|number[]} [buffer] the buffer that holds the data of the attribute . You can also provide an Array and a buffer will be created from it.
-    * @param {Number} [size=0] the size of the attribute. If you have 2 floats per vertex (eg position x and y) this would be 2
-    * @param {Boolean} [normalized=false] should the data be normalized.
-    * @param {Number} [type=PIXI.TYPES.FLOAT] what type of number is the attribute. Check {PIXI.TYPES} to see the ones available
-    * @param {Number} [stride] How far apart (in floats) the start of each value is. (used for interleaving data)
-    * @param {Number} [start] How far into the array to start reading values (used for interleaving data)
-    * @param {boolean} [instance=false] Instancing flag
+    * @param {PIXI.Buffer|number[]} [buffer] - the buffer that holds the data of the attribute . You can also provide an Array and a buffer will be created from it.
+    * @param {Number} [size=0] - the size of the attribute. If you have 2 floats per vertex (eg position x and y) this would be 2
+    * @param {Boolean} [normalized=false] - should the data be normalized.
+    * @param {Number} [type=PIXI.TYPES.FLOAT] - what type of number is the attribute. Check {PIXI.TYPES} to see the ones available
+    * @param {Number} [stride] - How far apart (in floats) the start of each value is. (used for interleaving data)
+    * @param {Number} [start] - How far into the array to start reading values (used for interleaving data)
+    * @param {boolean} [instance=false] - Instancing flag
     *
     * @return {PIXI.Geometry} returns self, useful for chaining.
     */
@@ -158,7 +159,7 @@ export class Geometry
     /**
      * returns the requested attribute
      *
-     * @param {String} id  the name of the attribute required
+     * @param {String} id - the name of the attribute required
      * @return {PIXI.Attribute} the attribute requested.
      */
     getAttribute(id: string): Attribute
@@ -169,7 +170,7 @@ export class Geometry
     /**
      * returns the requested buffer
      *
-     * @param {String} id  the name of the buffer required
+     * @param {String} id - the name of the buffer required
      * @return {PIXI.Buffer} the buffer requested.
      */
     getBuffer(id: string): Buffer
@@ -182,7 +183,7 @@ export class Geometry
     * Adds an index buffer to the geometry
     * The index buffer contains integers, three for each triangle in the geometry, which reference the various attribute buffers (position, colour, UV coordinates, other UV coordinates, normal, …). There is only ONE index buffer.
     *
-    * @param {PIXI.Buffer|number[]} [buffer] the buffer that holds the data of the index buffer. You can also provide an Array and a buffer will be created from it.
+    * @param {PIXI.Buffer|number[]} [buffer] - the buffer that holds the data of the index buffer. You can also provide an Array and a buffer will be created from it.
     * @return {PIXI.Geometry} returns self, useful for chaining.
     */
     addIndex(buffer?: Buffer | IArrayBuffer | number[]): Geometry
@@ -344,7 +345,7 @@ export class Geometry
      * merges an array of geometries into a new single one
      * geometry attribute styles must match for this operation to work
      *
-     * @param {PIXI.Geometry[]} geometries array of geometries to merge
+     * @param {PIXI.Geometry[]} geometries - array of geometries to merge
      * @returns {PIXI.Geometry} shiny new geometry!
      */
     static merge(geometries: Array<Geometry>): Geometry

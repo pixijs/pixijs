@@ -6,7 +6,9 @@ import fragment from './spriteMaskFilter.frag';
 import { TextureMatrix } from '../../textures/TextureMatrix';
 
 import type { FilterSystem } from '../FilterSystem';
-import type { IMaskTarget, Texture, RenderTexture } from '@pixi/core';
+import type { IMaskTarget } from '../../mask/MaskData';
+import type { Texture } from '../../textures/Texture';
+import type { RenderTexture } from '../../renderTexture/RenderTexture';
 
 export interface ISpriteMaskTarget extends IMaskTarget
 {

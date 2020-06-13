@@ -70,7 +70,7 @@ export class ParticleContainer extends Container
      * @param {boolean} [properties.uvs=false] - When true, uvs be uploaded and applied.
      * @param {boolean} [properties.tint=false] - When true, alpha and tint be uploaded and applied.
      * @param {number} [batchSize=16384] - Number of particles per batch. If less than maxSize, it uses maxSize instead.
-     * @param {boolean} [autoResize=false] If true, container allocates more batches in case
+     * @param {boolean} [autoResize=false] - If true, container allocates more batches in case
      *  there are more than `maxSize` particles.
      */
     constructor(maxSize = 1500, properties: IParticleProperties, batchSize = 16384, autoResize = false)
@@ -226,7 +226,7 @@ export class ParticleContainer extends Container
         return this._tint;
     }
 
-    set tint(value) // eslint-disable-line require-jsdoc
+    set tint(value)
     {
         this._tint = value;
         hex2rgb(value, this.tintRgb);

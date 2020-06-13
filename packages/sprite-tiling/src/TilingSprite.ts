@@ -8,6 +8,9 @@ import type { IPoint, ISize, ObservablePoint } from '@pixi/math';
 
 const tempPoint = new Point();
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface TilingSprite extends GlobalMixins.TilingSprite {}
+
 /**
  * A tiling sprite is a fast way of rendering a tiling image
  *
@@ -89,7 +92,7 @@ export class TilingSprite extends Sprite
         return this.uvMatrix.clampMargin;
     }
 
-    set clampMargin(value) // eslint-disable-line require-jsdoc
+    set clampMargin(value)
     {
         this.uvMatrix.clampMargin = value;
         this.uvMatrix.update(true);
@@ -105,7 +108,7 @@ export class TilingSprite extends Sprite
         return this.tileTransform.scale;
     }
 
-    set tileScale(value) // eslint-disable-line require-jsdoc
+    set tileScale(value)
     {
         this.tileTransform.scale.copyFrom(value as IPoint);
     }
@@ -120,7 +123,7 @@ export class TilingSprite extends Sprite
         return this.tileTransform.position;
     }
 
-    set tilePosition(value) // eslint-disable-line require-jsdoc
+    set tilePosition(value)
     {
         this.tileTransform.position.copyFrom(value as IPoint);
     }
@@ -290,7 +293,7 @@ export class TilingSprite extends Sprite
         return this._width;
     }
 
-    set width(value) // eslint-disable-line require-jsdoc
+    set width(value)
     {
         this._width = value;
     }
@@ -305,7 +308,7 @@ export class TilingSprite extends Sprite
         return this._height;
     }
 
-    set height(value) // eslint-disable-line require-jsdoc
+    set height(value)
     {
         this._height = value;
     }

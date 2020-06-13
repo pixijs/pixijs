@@ -2,7 +2,7 @@ import { System } from '../System';
 import { Matrix } from '@pixi/math';
 
 import type { Rectangle } from '@pixi/math';
-import type { Renderer } from '@pixi/core';
+import type { Renderer } from '../Renderer';
 
 /**
  * System plugin to the renderer to manage the projection matrix.
@@ -106,26 +106,16 @@ export class ProjectionSystem extends System
     calculateProjection(destinationFrame: Rectangle, sourceFrame: Rectangle, resolution: number, root: boolean): void
     {
         const pm = this.projectionMatrix;
+        const sign = !root ? 1 : -1;
 
         // I don't think we will need this line..
         // pm.identity();
 
-        if (!root)
-        {
-            pm.a = (1 / destinationFrame.width * 2) * resolution;
-            pm.d = (1 / destinationFrame.height * 2) * resolution;
+        pm.a = (1 / destinationFrame.width * 2) * resolution;
+        pm.d = sign * (1 / destinationFrame.height * 2) * resolution;
 
-            pm.tx = -1 - (sourceFrame.x * pm.a);
-            pm.ty = -1 - (sourceFrame.y * pm.d);
-        }
-        else
-        {
-            pm.a = (1 / destinationFrame.width * 2) * resolution;
-            pm.d = (-1 / destinationFrame.height * 2) * resolution;
-
-            pm.tx = -1 - (sourceFrame.x * pm.a);
-            pm.ty = 1 - (sourceFrame.y * pm.d);
-        }
+        pm.tx = -1 - (sourceFrame.x * pm.a);
+        pm.ty = -sign - (sourceFrame.y * pm.d);
     }
 
     /**
@@ -133,7 +123,7 @@ export class ProjectionSystem extends System
      *
      * @param {PIXI.Matrix} matrix - The transformation matrix
      */
-    setTransform(): void // matrix)
+    setTransform(_matrix: Matrix): void
     {
         // this._activeRenderTarget.transform = matrix;
     }

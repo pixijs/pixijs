@@ -5,7 +5,6 @@ import { canUploadSameBuffer } from './utils/canUploadSameBuffer';
 export interface IRenderOptions {
     view: HTMLCanvasElement;
     antialias: boolean;
-    forceFXAA: boolean;
     autoDensity: boolean;
     transparent: boolean;
     backgroundColor: number;
@@ -142,7 +141,6 @@ export const settings: ISettings = {
      * @property {HTMLCanvasElement} view=null
      * @property {number} resolution=1
      * @property {boolean} antialias=false
-     * @property {boolean} forceFXAA=false
      * @property {boolean} autoDensity=false
      * @property {boolean} transparent=false
      * @property {number} backgroundColor=0x000000
@@ -155,7 +153,6 @@ export const settings: ISettings = {
     RENDER_OPTIONS: {
         view: null,
         antialias: false,
-        forceFXAA: false,
         autoDensity: false,
         transparent: false,
         backgroundColor: 0x000000,

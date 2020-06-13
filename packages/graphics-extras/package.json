@@ -1,0 +1,27 @@
+{
+  "name": "@pixi/graphics-extras",
+  "version": "5.2.4",
+  "main": "lib/graphics-extras.js",
+  "module": "lib/graphics-extras.es.js",
+  "bundle": "dist/graphics-extras.js",
+  "bundleNoExports": true,
+  "description": "Additional Graphics functions for drawing special shapes.",
+  "author": "Matt Karl <matt@mattkarl.com>",
+  "homepage": "http://pixijs.com/",
+  "bugs": "https://github.com/pixijs/pixi.js/issues",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pixijs/pixi.js.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "lib",
+    "dist"
+  ],
+  "dependencies": {
+    "@pixi/graphics": "5.2.4"
+  }
+}

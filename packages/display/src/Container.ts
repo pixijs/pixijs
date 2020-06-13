@@ -1,6 +1,7 @@
 import { settings } from '@pixi/settings';
 import { removeItems } from '@pixi/utils';
 import { DisplayObject } from './DisplayObject';
+import { Rectangle } from '@pixi/math';
 
 import type { MaskData, Renderer } from '@pixi/core';
 import type { IDestroyOptions } from './DisplayObject';
@@ -14,6 +15,8 @@ function sortChildren(a: DisplayObject, b: DisplayObject): number
 
     return a.zIndex - b.zIndex;
 }
+
+export interface Container extends GlobalMixins.Container, DisplayObject {}
 
 /**
  * A Container represents a collection of display objects.
@@ -100,7 +103,6 @@ export class Container extends DisplayObject
      *
      * @protected
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     protected onChildrenChange(_length: number): void
     {
         /* empty */
@@ -482,6 +484,34 @@ export class Container extends DisplayObject
     }
 
     /**
+     * Retrieves the local bounds of the displayObject as a rectangle object.
+     *
+     * @param {PIXI.Rectangle} [rect] - Optional rectangle to store the result of the bounds calculation.
+     * @param {boolean} [skipChildrenUpdate=false] - Setting to `true` will stop re-calculation of children transforms,
+     *  it was default behaviour of pixi 4.0-5.2 and caused many problems to users.
+     * @return {PIXI.Rectangle} The rectangular bounding area.
+     */
+    public getLocalBounds(rect?: Rectangle, skipChildrenUpdate = false): Rectangle
+    {
+        const result = super.getLocalBounds(rect);
+
+        if (!skipChildrenUpdate)
+        {
+            for (let i = 0, j = this.children.length; i < j; ++i)
+            {
+                const child = this.children[i];
+
+                if (child.visible)
+                {
+                    child.updateTransform();
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * Recalculates the bounds of the object. Override this to
      * calculate the bounds of the specific object (not including children).
      *
@@ -592,7 +622,6 @@ export class Container extends DisplayObject
      * @protected
      * @param {PIXI.Renderer} renderer - The renderer
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     protected _render(_renderer: Renderer): void // eslint-disable-line no-unused-vars
     {
         // this is where content itself gets rendered...
@@ -640,7 +669,7 @@ export class Container extends DisplayObject
         return this.scale.x * this.getLocalBounds().width;
     }
 
-    set width(value) // eslint-disable-line require-jsdoc
+    set width(value)
     {
         const width = this.getLocalBounds().width;
 
@@ -666,7 +695,7 @@ export class Container extends DisplayObject
         return this.scale.y * this.getLocalBounds().height;
     }
 
-    set height(value) // eslint-disable-line require-jsdoc
+    set height(value)
     {
         const height = this.getLocalBounds().height;
 
