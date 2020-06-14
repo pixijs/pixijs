@@ -82,9 +82,7 @@ const GLSL_TO_ARRAY_SETTERS: Dict<string> = {
     sampler2DArray: 'gl.uniform1iv(location, v)',
 };
 
-export type UniformsSyncCallback = (...args:any[]) => void;
-
-export function generateUniformsSync(group: UniformGroup, uniformData: {[x: string]: any}): UniformsSyncCallback
+export function generateUniformsSync(group: UniformGroup, uniformData: Dict<any>): Function
 {
     const funcFragments = [`
         var v = null;

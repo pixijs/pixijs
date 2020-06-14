@@ -32,6 +32,41 @@ interface IBitmapFontRawData {
 }
 
 /**
+ * Internal data format used to convert to BitmapFontData.
+ * @private
+ */
+interface IBitmapFontRawData {
+    info: {
+        face: string;
+        size: string;
+    }[];
+    common: { lineHeight: string }[];
+    page: {
+        id: string;
+        file: string;
+    }[];
+    chars: {
+        count: number;
+    }[];
+    char: {
+        id: string;
+        page: string;
+        x: string;
+        y: string;
+        width: string;
+        height: string;
+        xoffset: string;
+        yoffset: string;
+        xadvance: string;
+    }[];
+    kerning?: {
+        first: string;
+        second: string;
+        amount: string;
+    }[];
+}
+
+/**
  * BitmapFont format that's Text-based.
  *
  * @class

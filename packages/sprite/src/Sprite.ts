@@ -583,7 +583,7 @@ export class Sprite extends Container
         return Math.abs(this.scale.x) * this._texture.orig.width;
     }
 
-    set width(value: number)
+    set width(value)
     {
         const s = sign(this.scale.x) || 1;
 
@@ -601,7 +601,7 @@ export class Sprite extends Container
         return Math.abs(this.scale.y) * this._texture.orig.height;
     }
 
-    set height(value: number)
+    set height(value)
     {
         const s = sign(this.scale.y) || 1;
 
@@ -632,7 +632,7 @@ export class Sprite extends Container
         return this._anchor;
     }
 
-    set anchor(value: ObservablePoint)
+    set anchor(value)
     {
         this._anchor.copyFrom(value);
     }
@@ -649,7 +649,7 @@ export class Sprite extends Container
         return this._tint;
     }
 
-    set tint(value: number)
+    set tint(value)
     {
         this._tint = value;
         this._tintRGB = (value >> 16) + (value & 0xff00) + ((value & 0xff) << 16);
@@ -665,7 +665,7 @@ export class Sprite extends Container
         return this._texture;
     }
 
-    set texture(value: Texture)
+    set texture(value)
     {
         if (this._texture === value)
         {

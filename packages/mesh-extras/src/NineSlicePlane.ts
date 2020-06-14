@@ -195,7 +195,7 @@ export class NineSlicePlane extends SimplePlane
         return this._width;
     }
 
-    set width(value: number)
+    set width(value)
     {
         this._width = value;
         this._refresh();
@@ -211,7 +211,7 @@ export class NineSlicePlane extends SimplePlane
         return this._height;
     }
 
-    set height(value: number)
+    set height(value)
     {
         this._height = value;
         this._refresh();
@@ -227,7 +227,7 @@ export class NineSlicePlane extends SimplePlane
         return this._leftWidth;
     }
 
-    set leftWidth(value: number)
+    set leftWidth(value)
     {
         this._leftWidth = value;
         this._refresh();
@@ -243,7 +243,7 @@ export class NineSlicePlane extends SimplePlane
         return this._rightWidth;
     }
 
-    set rightWidth(value: number)
+    set rightWidth(value)
     {
         this._rightWidth = value;
         this._refresh();
@@ -259,7 +259,7 @@ export class NineSlicePlane extends SimplePlane
         return this._topHeight;
     }
 
-    set topHeight(value: number)
+    set topHeight(value)
     {
         this._topHeight = value;
         this._refresh();
@@ -275,7 +275,7 @@ export class NineSlicePlane extends SimplePlane
         return this._bottomHeight;
     }
 
-    set bottomHeight(value: number)
+    set bottomHeight(value)
     {
         this._bottomHeight = value;
         this._refresh();

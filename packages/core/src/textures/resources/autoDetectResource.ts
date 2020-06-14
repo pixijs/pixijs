@@ -1,4 +1,5 @@
-import type { Resource } from './Resource';
+import { Resource } from './Resource';
+
 import type { IImageResourceOptions } from './ImageResource';
 import type{ ISize } from '@pixi/math';
 import type{ ICubeResourceOptions } from './CubeResource';
@@ -26,7 +27,6 @@ export type IAutoDetectOptions = ISize
 export interface IResourcePlugin
 {
     test(source: unknown, extension: string): boolean;
-    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     new (source: any, options?: any): Resource;
 }
 
@@ -117,5 +117,5 @@ export function autoDetectResource(source: unknown, options?: IAutoDetectOptions
         }
     }
 
-    throw new Error('Unrecognized resource type source');
+    throw new Error('Unrecognized source type to auto-detect Resource');
 }

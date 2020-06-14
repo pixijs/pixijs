@@ -18,14 +18,17 @@ import type { BatchGeometry } from './BatchGeometry';
 import type { Texture } from '../textures/Texture';
 import type { BLEND_MODES } from '@pixi/constants';
 
-export interface IRenderableElement {
+/**
+ * Interface for elements like Sprite, Mesh etc. for batching.
+ */
+export interface IBatchableElement {
     _texture: Texture;
     vertexData: Float32Array;
     indices: Uint16Array | Uint32Array | Array<number>;
     uvs: Float32Array;
     worldAlpha: number;
     _tintRGB: number;
-    blendMode: BLEND_MODES
+    blendMode: BLEND_MODES;
 }
 
 /**
@@ -52,7 +55,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
     protected vertexSize: number;
     protected _vertexCount: number;
     protected _indexCount: number;
-    protected _bufferedElements: Array<IRenderableElement>;
+    protected _bufferedElements: Array<IBatchableElement>;
     protected _bufferedTextures: Array<BaseTexture>;
     protected _bufferSize: number;
     protected _shader: Shader;
@@ -368,7 +371,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
      * @param {PIXI.DisplayObject} element - the element to render when
      *    using this renderer
      */
-    render(element: IRenderableElement): void
+    render(element: IBatchableElement): void
     {
         if (!element._texture.valid)
         {
@@ -738,7 +741,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
      * @param {number} aIndex - number of floats already in the attribute buffer
      * @param {number} iIndex - number of indices already in `indexBuffer`
      */
-    packInterleavedGeometry(element: IRenderableElement, attributeBuffer: ViewableBuffer, indexBuffer: Uint16Array,
+    packInterleavedGeometry(element: IBatchableElement, attributeBuffer: ViewableBuffer, indexBuffer: Uint16Array,
         aIndex: number, iIndex: number): void
     {
         const {

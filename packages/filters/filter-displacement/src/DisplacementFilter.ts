@@ -106,7 +106,7 @@ export class DisplacementFilter extends Filter
         return this.uniforms.mapSampler;
     }
 
-    set map(value: Texture)
+    set map(value)
     {
         this.uniforms.mapSampler = value;
     }

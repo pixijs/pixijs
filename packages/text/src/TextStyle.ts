@@ -219,7 +219,7 @@ export class TextStyle implements ITextStyle
     {
         return this._align;
     }
-    set align(align: TextStyleAlign)
+    set align(align)
     {
         if (this._align !== align)
         {
@@ -237,7 +237,7 @@ export class TextStyle implements ITextStyle
     {
         return this._breakWords;
     }
-    set breakWords(breakWords: boolean)
+    set breakWords(breakWords)
     {
         if (this._breakWords !== breakWords)
         {
@@ -255,7 +255,7 @@ export class TextStyle implements ITextStyle
     {
         return this._dropShadow;
     }
-    set dropShadow(dropShadow: boolean)
+    set dropShadow(dropShadow)
     {
         if (this._dropShadow !== dropShadow)
         {
@@ -273,7 +273,7 @@ export class TextStyle implements ITextStyle
     {
         return this._dropShadowAlpha;
     }
-    set dropShadowAlpha(dropShadowAlpha: number)
+    set dropShadowAlpha(dropShadowAlpha)
     {
         if (this._dropShadowAlpha !== dropShadowAlpha)
         {
@@ -291,7 +291,7 @@ export class TextStyle implements ITextStyle
     {
         return this._dropShadowAngle;
     }
-    set dropShadowAngle(dropShadowAngle: number)
+    set dropShadowAngle(dropShadowAngle)
     {
         if (this._dropShadowAngle !== dropShadowAngle)
         {
@@ -309,7 +309,7 @@ export class TextStyle implements ITextStyle
     {
         return this._dropShadowBlur;
     }
-    set dropShadowBlur(dropShadowBlur: number)
+    set dropShadowBlur(dropShadowBlur)
     {
         if (this._dropShadowBlur !== dropShadowBlur)
         {
@@ -327,7 +327,7 @@ export class TextStyle implements ITextStyle
     {
         return this._dropShadowColor;
     }
-    set dropShadowColor(dropShadowColor: string|number)
+    set dropShadowColor(dropShadowColor)
     {
         const outputColor = getColor(dropShadowColor);
         if (this._dropShadowColor !== outputColor)
@@ -346,7 +346,7 @@ export class TextStyle implements ITextStyle
     {
         return this._dropShadowDistance;
     }
-    set dropShadowDistance(dropShadowDistance: number)
+    set dropShadowDistance(dropShadowDistance)
     {
         if (this._dropShadowDistance !== dropShadowDistance)
         {
@@ -366,7 +366,7 @@ export class TextStyle implements ITextStyle
     {
         return this._fill;
     }
-    set fill(fill: TextStyleFill)
+    set fill(fill)
     {
         // TODO: Can't have different types for getter and setter. The getter shouldn't have the number type as
         //       the setter converts to string. See this thread for more details:
@@ -391,7 +391,7 @@ export class TextStyle implements ITextStyle
     {
         return this._fillGradientType;
     }
-    set fillGradientType(fillGradientType: TEXT_GRADIENT)
+    set fillGradientType(fillGradientType)
     {
         if (this._fillGradientType !== fillGradientType)
         {
@@ -410,7 +410,7 @@ export class TextStyle implements ITextStyle
     {
         return this._fillGradientStops;
     }
-    set fillGradientStops(fillGradientStops: number[])
+    set fillGradientStops(fillGradientStops)
     {
         if (!areArraysEqual(this._fillGradientStops,fillGradientStops))
         {
@@ -428,7 +428,7 @@ export class TextStyle implements ITextStyle
     {
         return this._fontFamily;
     }
-    set fontFamily(fontFamily: string|string[])
+    set fontFamily(fontFamily)
     {
         if (this.fontFamily !== fontFamily)
         {
@@ -447,7 +447,7 @@ export class TextStyle implements ITextStyle
     {
         return this._fontSize;
     }
-    set fontSize(fontSize: number|string)
+    set fontSize(fontSize)
     {
         if (this._fontSize !== fontSize)
         {
@@ -466,7 +466,7 @@ export class TextStyle implements ITextStyle
     {
         return this._fontStyle;
     }
-    set fontStyle(fontStyle: TextStyleFontStyle)
+    set fontStyle(fontStyle)
     {
         if (this._fontStyle !== fontStyle)
         {
@@ -485,7 +485,7 @@ export class TextStyle implements ITextStyle
     {
         return this._fontVariant;
     }
-    set fontVariant(fontVariant: TextStyleFontVariant)
+    set fontVariant(fontVariant)
     {
         if (this._fontVariant !== fontVariant)
         {
@@ -504,7 +504,7 @@ export class TextStyle implements ITextStyle
     {
         return this._fontWeight;
     }
-    set fontWeight(fontWeight: TextStyleFontWeight)
+    set fontWeight(fontWeight)
     {
         if (this._fontWeight !== fontWeight)
         {
@@ -522,7 +522,7 @@ export class TextStyle implements ITextStyle
     {
         return this._letterSpacing;
     }
-    set letterSpacing(letterSpacing: number)
+    set letterSpacing(letterSpacing)
     {
         if (this._letterSpacing !== letterSpacing)
         {
@@ -540,7 +540,7 @@ export class TextStyle implements ITextStyle
     {
         return this._lineHeight;
     }
-    set lineHeight(lineHeight: number)
+    set lineHeight(lineHeight)
     {
         if (this._lineHeight !== lineHeight)
         {
@@ -558,7 +558,7 @@ export class TextStyle implements ITextStyle
     {
         return this._leading;
     }
-    set leading(leading: number)
+    set leading(leading)
     {
         if (this._leading !== leading)
         {
@@ -577,7 +577,7 @@ export class TextStyle implements ITextStyle
     {
         return this._lineJoin;
     }
-    set lineJoin(lineJoin: TextStyleLineJoin)
+    set lineJoin(lineJoin)
     {
         if (this._lineJoin !== lineJoin)
         {
@@ -596,7 +596,7 @@ export class TextStyle implements ITextStyle
     {
         return this._miterLimit;
     }
-    set miterLimit(miterLimit: number)
+    set miterLimit(miterLimit)
     {
         if (this._miterLimit !== miterLimit)
         {
@@ -615,7 +615,7 @@ export class TextStyle implements ITextStyle
     {
         return this._padding;
     }
-    set padding(padding: number)
+    set padding(padding)
     {
         if (this._padding !== padding)
         {
@@ -634,7 +634,7 @@ export class TextStyle implements ITextStyle
     {
         return this._stroke;
     }
-    set stroke(stroke: number|string)
+    set stroke(stroke)
     {
         // TODO: Can't have different types for getter and setter. The getter shouldn't have the number type as
         //       the setter converts to string. See this thread for more details:
@@ -657,7 +657,7 @@ export class TextStyle implements ITextStyle
     {
         return this._strokeThickness;
     }
-    set strokeThickness(strokeThickness: number)
+    set strokeThickness(strokeThickness)
     {
         if (this._strokeThickness !== strokeThickness)
         {
@@ -675,7 +675,7 @@ export class TextStyle implements ITextStyle
     {
         return this._textBaseline;
     }
-    set textBaseline(textBaseline: TextStyleTextBaseline)
+    set textBaseline(textBaseline)
     {
         if (this._textBaseline !== textBaseline)
         {
@@ -693,7 +693,7 @@ export class TextStyle implements ITextStyle
     {
         return this._trim;
     }
-    set trim(trim: boolean)
+    set trim(trim)
     {
         if (this._trim !== trim)
         {
@@ -718,7 +718,7 @@ export class TextStyle implements ITextStyle
     {
         return this._whiteSpace;
     }
-    set whiteSpace(whiteSpace: TextStyleWhiteSpace)
+    set whiteSpace(whiteSpace)
     {
         if (this._whiteSpace !== whiteSpace)
         {
@@ -736,7 +736,7 @@ export class TextStyle implements ITextStyle
     {
         return this._wordWrap;
     }
-    set wordWrap(wordWrap: boolean)
+    set wordWrap(wordWrap)
     {
         if (this._wordWrap !== wordWrap)
         {
@@ -754,7 +754,7 @@ export class TextStyle implements ITextStyle
     {
         return this._wordWrapWidth;
     }
-    set wordWrapWidth(wordWrapWidth: number)
+    set wordWrapWidth(wordWrapWidth)
     {
         if (this._wordWrapWidth !== wordWrapWidth)
         {

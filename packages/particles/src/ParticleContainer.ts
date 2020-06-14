@@ -226,7 +226,7 @@ export class ParticleContainer extends Container
         return this._tint;
     }
 
-    set tint(value: number)
+    set tint(value)
     {
         this._tint = value;
         hex2rgb(value, this.tintRgb);

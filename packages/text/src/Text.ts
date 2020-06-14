@@ -630,7 +630,7 @@ export class Text extends Sprite
         return Math.abs(this.scale.x) * this._texture.orig.width;
     }
 
-    set width(value: number)
+    set width(value)
     {
         this.updateText(true);
 
@@ -652,7 +652,7 @@ export class Text extends Sprite
         return Math.abs(this.scale.y) * this._texture.orig.height;
     }
 
-    set height(value: number)
+    set height(value)
     {
         this.updateText(true);
 
@@ -676,7 +676,7 @@ export class Text extends Sprite
         return this._style;
     }
 
-    set style(style: TextStyle|Partial<ITextStyle>)
+    set style(style)
     {
         style = style || {};
 
@@ -703,7 +703,7 @@ export class Text extends Sprite
         return this._text;
     }
 
-    set text(text: string)
+    set text(text)
     {
         text = String(text === null || text === undefined ? '' : text);
 
@@ -726,7 +726,7 @@ export class Text extends Sprite
         return this._resolution;
     }
 
-    set resolution(value: number)
+    set resolution(value)
     {
         this._autoResolution = false;
 

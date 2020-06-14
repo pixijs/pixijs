@@ -10,6 +10,7 @@ import type { Geometry } from './Geometry';
 import type { Shader } from '../shader/Shader';
 import type { Program } from '../shader/Program';
 import type { Buffer } from './Buffer';
+import type { Dict } from '@pixi/utils';
 
 const byteSizeMap: {[key: number]: number} = { 5126: 4, 5123: 2, 5121: 1 };
 
@@ -334,8 +335,8 @@ export class GeometrySystem extends System
 
         const buffers = geometry.buffers;
         const attributes = geometry.attributes;
-        const tempStride: {[x: string]: number} = {};
-        const tempStart: {[x: string]: number} = {};
+        const tempStride: Dict<number> = {};
+        const tempStart: Dict<number> = {};
 
         for (const j in buffers)
         {

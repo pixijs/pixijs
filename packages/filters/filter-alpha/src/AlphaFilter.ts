@@ -41,7 +41,7 @@ export class AlphaFilter extends Filter
         return this.uniforms.uAlpha;
     }
 
-    set alpha(value: number)
+    set alpha(value)
     {
         this.uniforms.uAlpha = value;
     }

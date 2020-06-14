@@ -429,7 +429,7 @@ export class AnimatedSprite extends Sprite
         return this._textures;
     }
 
-    set textures(value: Texture[]|FrameObject[])
+    set textures(value)
     {
         if (value[0] instanceof Texture)
         {
@@ -491,7 +491,7 @@ export class AnimatedSprite extends Sprite
         return this._autoUpdate;
     }
 
-    set autoUpdate(value: boolean)
+    set autoUpdate(value)
     {
         if (value !== this._autoUpdate)
         {

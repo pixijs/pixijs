@@ -10,33 +10,33 @@ import type { IPointData } from '@pixi/math';
  */
 export interface ISpritesheetFrameData {
     frame: {
-        x: number,
-        y: number,
-        w: number,
-        h: number,
-    },
-    trimmed?: boolean,
-    rotated?: boolean,
+        x: number;
+        y: number;
+        w: number;
+        h: number;
+    };
+    trimmed?: boolean;
+    rotated?: boolean;
     sourceSize?: {
-        w: number,
-        h: number,
-    },
+        w: number;
+        h: number;
+    };
     spriteSourceSize?: {
-        x: number,
-        y: number,
-    },
-    anchor?: IPointData
+        x: number;
+        y: number;
+    };
+    anchor?: IPointData;
 }
 
 /**
  * Atlas format.
  */
 export interface ISpritesheetData {
-    frames: Dict<ISpritesheetFrameData>,
-    animations: Dict<string[]>,
+    frames: Dict<ISpritesheetFrameData>;
+    animations?: Dict<string[]>;
     meta: {
-        scale: string
-    }
+        scale: string;
+    };
 }
 
 /**
@@ -76,7 +76,7 @@ export class Spritesheet
     public baseTexture: BaseTexture;
     public textures: Dict<Texture>;
     public animations: Dict<Texture[]>;
-    public data: ISpritesheetData;
+    public data: ISpritesheetData;;
     public resolution: number;
 
     private _texture: Texture;

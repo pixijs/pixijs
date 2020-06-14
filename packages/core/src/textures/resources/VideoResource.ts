@@ -1,6 +1,8 @@
 import { BaseImageResource } from './BaseImageResource';
 import { Ticker } from '@pixi/ticker';
 
+import type { Dict } from '@pixi/utils';
+
 export interface IVideoResourceOptions
 {
     autoLoad?: boolean;
@@ -148,7 +150,6 @@ export class VideoResource extends BaseImageResource
      *
      * @param {number} [deltaTime=0] - time delta since last tick
      */
-    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     update(_deltaTime = 0): void
     {
         if (!this.destroyed)
@@ -354,7 +355,7 @@ export class VideoResource extends BaseImageResource
         return this._autoUpdate;
     }
 
-    set autoUpdate(value: boolean)
+    set autoUpdate(value)
     {
         if (value !== this._autoUpdate)
         {
@@ -384,7 +385,7 @@ export class VideoResource extends BaseImageResource
         return this._updateFPS;
     }
 
-    set updateFPS(value: number)
+    set updateFPS(value)
     {
         if (value !== this._updateFPS)
         {
@@ -400,7 +401,7 @@ export class VideoResource extends BaseImageResource
      * @param {string} extension - The extension of source, if set
      * @return {boolean} `true` if video source
      */
-    static test(source: unknown, extension?: string): boolean
+    static test(source: unknown, extension?: string): source is HTMLVideoElement
     {
         return (source instanceof HTMLVideoElement)
             || VideoResource.TYPES.indexOf(extension) > -1;
@@ -422,7 +423,7 @@ export class VideoResource extends BaseImageResource
      * @static
      * @readonly
      */
-    static MIME_TYPES: {[ext: string]: string} = {
+    static MIME_TYPES: Dict<string> = {
         ogv: 'video/ogg',
         mov: 'video/quicktime',
         m4v: 'video/mp4',

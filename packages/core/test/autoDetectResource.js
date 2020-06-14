@@ -80,4 +80,12 @@ describe('PIXI.resources.autoDetectResource', function ()
 
         expect(resource).to.equal(null);
     });
+
+    it('should throw for unknown types', function ()
+    {
+        expect(() => autoDetectResource({})).throws;
+        expect(() => autoDetectResource(document.createElement('input'))).throws;
+        expect(() => autoDetectResource(2)).throws;
+        expect(() => autoDetectResource(true)).throws;
+    });
 });
