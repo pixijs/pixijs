@@ -8,7 +8,7 @@ import { MeshMaterial } from './MeshMaterial';
 
 import type { IDestroyOptions } from '@pixi/display';
 import type { Texture, Renderer, Geometry, Buffer } from '@pixi/core';
-import type { IPoint } from '@pixi/math';
+import type { IPointData } from '@pixi/math';
 
 const tempPoint = new Point();
 const tempPolygon = new Polygon();
@@ -453,10 +453,10 @@ export class Mesh extends Container
     /**
      * Tests if a point is inside this mesh. Works only for PIXI.DRAW_MODES.TRIANGLES.
      *
-     * @param {PIXI.IPoint} point - the point to test
+     * @param {PIXI.IPointData} point - the point to test
      * @return {boolean} the result of the test
      */
-    public containsPoint(point: IPoint): boolean
+    public containsPoint(point: IPointData): boolean
     {
         if (!this.getBounds().contains(point.x, point.y))
         {

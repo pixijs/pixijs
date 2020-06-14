@@ -20,7 +20,7 @@ import { BLEND_MODES } from '@pixi/constants';
 import { Container } from '@pixi/display';
 import { Shader } from '@pixi/core';
 
-import type { IShape } from '@pixi/math';
+import type { IShape, IPointData } from '@pixi/math';
 import type { IDestroyOptions } from '@pixi/display';
 import { LINE_JOIN, LINE_CAP } from './const';
 
@@ -1200,10 +1200,10 @@ export class Graphics extends Container
     /**
      * Tests if a point is inside this graphics object
      *
-     * @param {PIXI.Point} point - the point to test
+     * @param {PIXI.IPointData} point - the point to test
      * @return {boolean} the result of the test
      */
-    public containsPoint(point: Point): boolean
+    public containsPoint(point: IPointData): boolean
     {
         this.worldTransform.applyInverse(point, Graphics._TEMP_POINT);
 

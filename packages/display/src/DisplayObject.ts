@@ -4,7 +4,7 @@ import { Container } from './Container';
 import { Bounds } from './Bounds';
 
 import type { Filter, MaskData, Renderer } from '@pixi/core';
-import type { IPoint, ObservablePoint } from '@pixi/math';
+import type { IPointData, ObservablePoint } from '@pixi/math';
 import type { Dict } from '@pixi/utils';
 
 export interface IDestroyOptions {
@@ -400,13 +400,13 @@ export abstract class DisplayObject extends EventEmitter
     /**
      * Calculates the global position of the display object.
      *
-     * @param {PIXI.IPoint} position - The world origin to calculate from.
+     * @param {PIXI.IPointData} position - The world origin to calculate from.
      * @param {PIXI.Point} [point] - A Point object in which to store the value, optional
      *  (otherwise will create a new Point).
      * @param {boolean} [skipUpdate=false] - Should we skip the update transform.
      * @return {PIXI.Point} A point object representing the position of this object.
      */
-    toGlobal(position: IPoint, point?: Point, skipUpdate = false): Point
+    toGlobal(position: IPointData, point?: Point, skipUpdate = false): Point
     {
         if (!skipUpdate)
         {
@@ -434,14 +434,14 @@ export abstract class DisplayObject extends EventEmitter
     /**
      * Calculates the local position of the display object relative to another point.
      *
-     * @param {PIXI.IPoint} position - The world origin to calculate from.
+     * @param {PIXI.IPointData} position - The world origin to calculate from.
      * @param {PIXI.DisplayObject} [from] - The DisplayObject to calculate the global position from.
      * @param {PIXI.Point} [point] - A Point object in which to store the value, optional
      *  (otherwise will create a new Point).
      * @param {boolean} [skipUpdate=false] - Should we skip the update transform
      * @return {PIXI.Point} A point object representing the position of this object
      */
-    toLocal(position: IPoint, from: DisplayObject, point?: Point, skipUpdate?: boolean): Point
+    toLocal(position: IPointData, from: DisplayObject, point?: Point, skipUpdate?: boolean): Point
     {
         if (from)
         {

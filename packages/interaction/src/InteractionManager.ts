@@ -8,7 +8,7 @@ import { EventEmitter } from '@pixi/utils';
 import { interactiveTarget } from './interactiveTarget';
 
 import type { AbstractRenderer } from '@pixi/core';
-import type { Point } from '@pixi/math';
+import type { Point, IPointData } from '@pixi/math';
 
 // Mix interactiveTarget into DisplayObject.prototype,
 // after deprecation has been handled
@@ -1101,11 +1101,11 @@ export class InteractionManager extends EventEmitter
      * resulting value is stored in the point. This takes into account the fact that the DOM
      * element could be scaled and positioned anywhere on the screen.
      *
-     * @param  {PIXI.Point} point - the point that the result will be stored in
+     * @param  {PIXI.IPointData} point - the point that the result will be stored in
      * @param  {number} x - the x coord of the position to map
      * @param  {number} y - the y coord of the position to map
      */
-    public mapPositionToPoint(point: Point, x: number, y: number): void
+    public mapPositionToPoint(point: IPointData, x: number, y: number): void
     {
         let rect;
 

@@ -1,3 +1,4 @@
+import type { IPointData } from './IPointData';
 import type { IPoint } from './IPoint';
 
 /**
@@ -70,10 +71,10 @@ export class ObservablePoint<T = any> implements IPoint
     /**
      * Copies x and y from the given point
      *
-     * @param {PIXI.IPoint} p - The point to copy from.
+     * @param {PIXI.IPointData} p - The point to copy from.
      * @returns {this} Returns itself.
      */
-    copyFrom(p: IPoint): this
+    copyFrom(p: IPointData): this
     {
         if (this._x !== p.x || this._y !== p.y)
         {
@@ -101,10 +102,10 @@ export class ObservablePoint<T = any> implements IPoint
     /**
      * Returns true if the given point is equal to this point
      *
-     * @param {PIXI.IPoint} p - The point to check
+     * @param {PIXI.IPointData} p - The point to check
      * @returns {boolean} Whether the given point equal to this point
      */
-    equals(p: IPoint): boolean
+    equals(p: IPointData): boolean
     {
         return (p.x === this._x) && (p.y === this._y);
     }

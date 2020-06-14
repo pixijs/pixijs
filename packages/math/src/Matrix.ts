@@ -2,7 +2,7 @@ import { Point } from './Point';
 import { PI_2 } from './const';
 
 import type { Transform } from './Transform';
-import type { IPoint } from './IPoint';
+import type { IPointData } from './IPointData';
 
 /**
  * The PixiJS Matrix as a class makes it a lot faster.
@@ -168,11 +168,11 @@ export class Matrix
      * Get a new position with the current transformation applied.
      * Can be used to go from a child's coordinate space to the world coordinate space. (e.g. rendering)
      *
-     * @param {PIXI.Point} pos - The origin
+     * @param {PIXI.IPointData} pos - The origin
      * @param {PIXI.Point} [newPos] - The point that the new position is assigned to (allowed to be same as input)
      * @return {PIXI.Point} The new point, transformed through this matrix
      */
-    apply(pos: IPoint, newPos?: Point): Point
+    apply(pos: IPointData, newPos?: Point): Point
     {
         newPos = newPos || new Point();
 
@@ -189,11 +189,11 @@ export class Matrix
      * Get a new position with the inverse of the current transformation applied.
      * Can be used to go from the world coordinate space to a child's coordinate space. (e.g. input)
      *
-     * @param {PIXI.Point} pos - The origin
+     * @param {PIXI.IPointData} pos - The origin
      * @param {PIXI.Point} [newPos] - The point that the new position is assigned to (allowed to be same as input)
      * @return {PIXI.Point} The new point, inverse-transformed through this matrix
      */
-    applyInverse(pos: IPoint, newPos?: Point): Point
+    applyInverse(pos: IPointData, newPos?: Point): Point
     {
         newPos = newPos || new Point();
 
