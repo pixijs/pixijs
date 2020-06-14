@@ -236,7 +236,7 @@ export class SVGResource extends BaseImageResource
      * @param {*} source - The source object
      * @param {string} extension - The extension of source, if set
      */
-    static test(source: any, extension?: string): boolean
+    static test(source: unknown, extension?: string): boolean
     {
         // url file extension is SVG
         return extension === 'svg'

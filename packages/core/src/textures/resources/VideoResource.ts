@@ -401,7 +401,7 @@ export class VideoResource extends BaseImageResource
      * @param {string} extension - The extension of source, if set
      * @return {boolean} `true` if video source
      */
-    static test(source: any, extension?: string): boolean
+    static test(source: unknown, extension?: string): source is HTMLVideoElement
     {
         return (source instanceof HTMLVideoElement)
             || VideoResource.TYPES.indexOf(extension) > -1;
