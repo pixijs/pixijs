@@ -400,8 +400,8 @@ export class Texture extends EventEmitter
      * it does a better job of handling failed URLs more effectively. This also ignores
      * `PIXI.settings.STRICT_TEXTURE_CACHE`. Works for Videos, SVGs, Images.
      * @param {string} url The remote URL to load.
-     * @param {PIXI.IBaseTextureOptions} [options] Optional options to include
-     * @return A Promise that resolves to a Texture.
+     * @param {object} [options] Optional options to include
+     * @return {Promise<PIXI.Texture>} A Promise that resolves to a Texture.
      */
     static fromURL(url: string, options?: IBaseTextureOptions): Promise<Texture>
     {
