@@ -240,6 +240,25 @@ describe('PIXI.Texture', function ()
         texture.destroy(true);
     });
 
+    it('should handle loading an invalid URL', function ()
+    {
+        expect(() => Texture.fromURL('invalid/image.png')).throws;
+    });
+
+    it('should handle loading an cached URL', async function ()
+    {
+        const url = 'noop.png';
+
+        TextureCache[url] = Texture.WHITE;
+
+        expect(Texture.WHITE.valid).to.be.true;
+
+        const texture = await Texture.fromURL(url);
+
+        expect(texture).equals(Texture.WHITE);
+        delete TextureCache[url];
+    });
+
     it('should throw and error in strict from mode', function ()
     {
         const id = 'baz';
