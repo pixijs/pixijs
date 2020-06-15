@@ -14,9 +14,9 @@ export class MeshBatchUvs
 
     private _bufferUpdateId: number;
     private _textureUpdateId: number;
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    // @ts-ignore
-    private _updateID: number;
+
+    // Internal-only properties
+    _updateID: number;
 
     /**
      * @param {PIXI.Buffer} uvBuffer - Buffer with normalized uv's

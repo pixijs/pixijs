@@ -29,8 +29,8 @@ export class MeshMaterial extends Shader
 
     public batchable: boolean;
     public pluginName: string;
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    // @ts-ignore
+
+    // Internal-only properties
     _tintRGB: number;
 
     private _colorDirty: boolean;
