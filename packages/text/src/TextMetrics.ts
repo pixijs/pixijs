@@ -139,8 +139,8 @@ export class TextMetrics
         // (toDataURI, getImageData functions)
         if (fontProperties.fontSize === 0)
         {
-            fontProperties.fontSize = style.fontSize;
-            fontProperties.ascent = style.fontSize;
+            fontProperties.fontSize = style.fontSize as number;
+            fontProperties.ascent = style.fontSize as number;
         }
 
         const context = canvas.getContext('2d');

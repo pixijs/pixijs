@@ -735,7 +735,7 @@ export class InteractionManager extends EventEmitter
     {
         return this._useSystemTicker;
     }
-    set useSystemTicker(useSystemTicker)
+    set useSystemTicker(useSystemTicker: boolean)
     {
         this._useSystemTicker = useSystemTicker;
 

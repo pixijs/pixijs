@@ -356,11 +356,11 @@ export class BitmapFont
         const fontData = new BitmapFontData();
 
         fontData.info[0] = {
-            face: style.fontFamily,
-            size: style.fontSize,
+            face: style.fontFamily as string,
+            size: style.fontSize as number,
         };
         fontData.common[0] = {
-            lineHeight: style.fontSize,
+            lineHeight: style.fontSize as number,
         };
 
         let positionX = 0;

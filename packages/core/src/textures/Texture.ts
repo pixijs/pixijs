@@ -620,7 +620,7 @@ export class Texture extends EventEmitter
         return this._rotate;
     }
 
-    set rotate(rotate)
+    set rotate(rotate: number)
     {
         this._rotate = rotate;
         if (this.valid)

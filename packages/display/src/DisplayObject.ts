@@ -574,7 +574,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.position.x;
     }
 
-    set x(value)
+    set x(value: number)
     {
         this.transform.position.x = value;
     }
@@ -590,7 +590,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.position.y;
     }
 
-    set y(value)
+    set y(value: number)
     {
         this.transform.position.y = value;
     }
@@ -628,7 +628,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.transform.position;
     }
 
-    set position(value)
+    set position(value: ObservablePoint)
     {
         this.transform.position.copyFrom(value);
     }
@@ -644,7 +644,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.transform.scale;
     }
 
-    set scale(value)
+    set scale(value: ObservablePoint)
     {
         this.transform.scale.copyFrom(value);
     }
@@ -660,7 +660,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.transform.pivot;
     }
 
-    set pivot(value)
+    set pivot(value: ObservablePoint)
     {
         this.transform.pivot.copyFrom(value);
     }
@@ -676,7 +676,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.transform.skew;
     }
 
-    set skew(value)
+    set skew(value: ObservablePoint)
     {
         this.transform.skew.copyFrom(value);
     }
@@ -692,7 +692,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.transform.rotation;
     }
 
-    set rotation(value)
+    set rotation(value: number)
     {
         this.transform.rotation = value;
     }
@@ -708,7 +708,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.transform.rotation * RAD_TO_DEG;
     }
 
-    set angle(value)
+    set angle(value: number)
     {
         this.transform.rotation = value * DEG_TO_RAD;
     }
@@ -726,7 +726,7 @@ export abstract class DisplayObject extends EventEmitter
         return this._zIndex;
     }
 
-    set zIndex(value)
+    set zIndex(value: number)
     {
         this._zIndex = value;
         if (this.parent)
@@ -782,7 +782,7 @@ export abstract class DisplayObject extends EventEmitter
         return this._mask;
     }
 
-    set mask(value)
+    set mask(value: Container|MaskData|null)
     {
         if (this._mask)
         {
