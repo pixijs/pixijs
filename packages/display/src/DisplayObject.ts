@@ -406,7 +406,7 @@ export abstract class DisplayObject extends EventEmitter
      * @param {boolean} [skipUpdate=false] - Should we skip the update transform.
      * @return {PIXI.Point} A point object representing the position of this object.
      */
-    toGlobal(position: IPointData, point?: Point, skipUpdate = false): Point
+    toGlobal<P extends IPointData = Point>(position: IPointData, point?: P, skipUpdate = false): P
     {
         if (!skipUpdate)
         {
@@ -428,7 +428,7 @@ export abstract class DisplayObject extends EventEmitter
         }
 
         // don't need to update the lot
-        return this.worldTransform.apply(position, point);
+        return this.worldTransform.apply<P>(position, point);
     }
 
     /**
@@ -441,7 +441,7 @@ export abstract class DisplayObject extends EventEmitter
      * @param {boolean} [skipUpdate=false] - Should we skip the update transform
      * @return {PIXI.Point} A point object representing the position of this object
      */
-    toLocal(position: IPointData, from: DisplayObject, point?: Point, skipUpdate?: boolean): Point
+    toLocal<P extends IPointData = Point>(position: IPointData, from: DisplayObject, point?: P, skipUpdate?: boolean): P
     {
         if (from)
         {
@@ -468,7 +468,7 @@ export abstract class DisplayObject extends EventEmitter
         }
 
         // simply apply the matrix..
-        return this.worldTransform.applyInverse(position, point);
+        return this.worldTransform.applyInverse<P>(position, point);
     }
 
     /**

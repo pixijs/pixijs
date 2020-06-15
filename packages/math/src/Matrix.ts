@@ -172,9 +172,9 @@ export class Matrix
      * @param {PIXI.Point} [newPos] - The point that the new position is assigned to (allowed to be same as input)
      * @return {PIXI.Point} The new point, transformed through this matrix
      */
-    apply(pos: IPointData, newPos?: Point): Point
+    apply<P extends IPointData = Point>(pos: IPointData, newPos?: P): P
     {
-        newPos = newPos || new Point();
+        newPos = (newPos || new Point()) as P;
 
         const x = pos.x;
         const y = pos.y;
@@ -193,9 +193,9 @@ export class Matrix
      * @param {PIXI.Point} [newPos] - The point that the new position is assigned to (allowed to be same as input)
      * @return {PIXI.Point} The new point, inverse-transformed through this matrix
      */
-    applyInverse(pos: IPointData, newPos?: Point): Point
+    applyInverse<P extends IPointData = Point>(pos: IPointData, newPos?: P): P
     {
-        newPos = newPos || new Point();
+        newPos = (newPos || new Point()) as P;
 
         const id = 1 / ((this.a * this.d) + (this.c * -this.b));
 
