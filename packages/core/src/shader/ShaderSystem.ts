@@ -9,6 +9,7 @@ import type { Shader } from './Shader';
 import type { Program } from './Program';
 import type { UniformGroup } from './UniformGroup';
 import type { Dict } from '@pixi/utils';
+import type { UniformsSyncCallback } from './utils';
 
 let UID = 0;
 // defualt sync data so we don't create a new one each time!
@@ -28,7 +29,7 @@ export class ShaderSystem extends System
     public program: Program;
     public id: number;
     public destroyed = false;
-    private cache: { [key: string]: Function };
+    private cache: Dict<UniformsSyncCallback>;
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
@@ -157,7 +158,7 @@ export class ShaderSystem extends System
         syncFunc(glProgram.uniformData, group.uniforms, this.renderer, syncData);
     }
 
-    createSyncGroups(group: UniformGroup): Function
+    createSyncGroups(group: UniformGroup): UniformsSyncCallback
     {
         const id = this.getSignature(group, this.shader.program.uniformData);
 
