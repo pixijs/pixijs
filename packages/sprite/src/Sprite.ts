@@ -7,7 +7,7 @@ import { sign } from '@pixi/utils';
 
 import type { IBaseTextureOptions, Renderer, TextureSource } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
-import type { IPoint } from '@pixi/math';
+import type { IPointData } from '@pixi/math';
 
 const tempPoint = new Point();
 const indices = new Uint16Array([0, 1, 2, 0, 2, 3]);
@@ -475,10 +475,10 @@ export class Sprite extends Container
     /**
      * Tests if a point is inside this sprite
      *
-     * @param {PIXI.IPoint} point - the point to test
+     * @param {PIXI.IPointData} point - the point to test
      * @return {boolean} the result of the test
      */
-    public containsPoint(point: IPoint): boolean
+    public containsPoint(point: IPointData): boolean
     {
         this.worldTransform.applyInverse(point, tempPoint);
 

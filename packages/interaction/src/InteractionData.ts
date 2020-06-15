@@ -1,4 +1,4 @@
-import { Point } from '@pixi/math';
+import { Point, IPointData } from '@pixi/math';
 
 import type { DisplayObject } from '@pixi/display';
 
@@ -173,9 +173,9 @@ export class InteractionData
      * @return {PIXI.Point} A point containing the coordinates of the InteractionData position relative
      *  to the DisplayObject
      */
-    public getLocalPosition(displayObject: DisplayObject, point?: Point, globalPos?: Point): Point
+    public getLocalPosition<P extends IPointData = Point>(displayObject: DisplayObject, point?: P, globalPos?: IPointData): P
     {
-        return displayObject.worldTransform.applyInverse(globalPos || this.global, point);
+        return displayObject.worldTransform.applyInverse<P>(globalPos || this.global, point);
     }
 
     /**
