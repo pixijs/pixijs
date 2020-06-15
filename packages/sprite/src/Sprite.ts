@@ -64,8 +64,7 @@ export class Sprite extends Container
     private _transformTrimmedID: number;
     private _tint: number;
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    // @ts-ignore
+    // Internal-only properties
     _tintRGB: number;
 
     /**

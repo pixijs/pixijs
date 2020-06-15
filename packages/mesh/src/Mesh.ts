@@ -48,15 +48,12 @@ export class Mesh extends Container
     private _transformID: number;
     private _roundPixels: boolean;
     private batchUvs: MeshBatchUvs;
+
+    // Internal-only properties
     uvs: Float32Array;
-    /* eslint-disable @typescript-eslint/ban-ts-ignore */
-    // @ts-ignore
-    private indices: Uint16Array;
-    // @ts-ignore
-    private _tintRGB: number;
-    // @ts-ignore
-    private _texture: Texture;
-    /* eslint-enable @typescript-eslint/ban-ts-ignore */
+    indices: Uint16Array;
+    _tintRGB: number;
+    _texture: Texture;
 
     /**
      * @param {PIXI.Geometry} geometry - the geometry the mesh will use
