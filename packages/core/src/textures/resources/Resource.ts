@@ -246,7 +246,7 @@ export abstract class Resource
      * @param {*} source - The source object
      * @param {string} extension - The extension of source, if set
      */
-    static test(_source: any, _extension?: string): boolean
+    static test(_source: unknown, _extension?: string): boolean
     {
         return false;
     }

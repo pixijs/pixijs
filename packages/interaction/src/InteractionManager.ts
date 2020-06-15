@@ -9,6 +9,7 @@ import { interactiveTarget } from './interactiveTarget';
 
 import type { AbstractRenderer } from '@pixi/core';
 import type { Point } from '@pixi/math';
+import type { Dict } from '@pixi/utils';
 
 // Mix interactiveTarget into DisplayObject.prototype,
 // after deprecation has been handled
@@ -43,6 +44,12 @@ export interface DelayedEvent {
     eventData: InteractionEvent;
 }
 
+interface CrossCSSStyleDeclaration extends CSSStyleDeclaration
+{
+    msContentZooming: string;
+    msTouchAction: string;
+}
+
 /**
  * The interaction manager deals with mouse, touch and pointer events.
  *
@@ -71,7 +78,7 @@ export class InteractionManager extends EventEmitter
     public mouse: InteractionData;
     public eventData: InteractionEvent;
     public moveWhenInside: boolean;
-    public cursorStyles: { [key: string]: string | ((mode: string) => void) | object };
+    public cursorStyles: Dict<string | ((mode: string) => void) | CSSStyleDeclaration>;
     public currentCursorMode: string;
     public resolution: number;
 
@@ -728,7 +735,7 @@ export class InteractionManager extends EventEmitter
     {
         return this._useSystemTicker;
     }
-    set useSystemTicker(useSystemTicker)
+    set useSystemTicker(useSystemTicker: boolean)
     {
         this._useSystemTicker = useSystemTicker;
 
@@ -837,14 +844,16 @@ export class InteractionManager extends EventEmitter
             return;
         }
 
+        const style = this.interactionDOMElement.style as CrossCSSStyleDeclaration;
+
         if (window.navigator.msPointerEnabled)
         {
-            this.interactionDOMElement.style.msContentZooming = 'none';
-            this.interactionDOMElement.style.msTouchAction = 'none';
+            style.msContentZooming = 'none';
+            style.msTouchAction = 'none';
         }
         else if (this.supportsPointerEvents)
         {
-            this.interactionDOMElement.style.touchAction = 'none';
+            style.touchAction = 'none';
         }
 
         /**
@@ -898,14 +907,16 @@ export class InteractionManager extends EventEmitter
             return;
         }
 
+        const style = this.interactionDOMElement.style as CrossCSSStyleDeclaration;
+
         if (window.navigator.msPointerEnabled)
         {
-            this.interactionDOMElement.style.msContentZooming = '';
-            this.interactionDOMElement.style.msTouchAction = '';
+            style.msContentZooming = '';
+            style.msTouchAction = '';
         }
         else if (this.supportsPointerEvents)
         {
-            this.interactionDOMElement.style.touchAction = '';
+            style.touchAction = '';
         }
 
         if (this.supportsPointerEvents)
