@@ -30,7 +30,7 @@ export class SVGResource extends BaseImageResource
     public readonly scale: number;
     readonly _overrideWidth: number;
     readonly _overrideHeight: number;
-    private _resolve: Function;
+    private _resolve: () => void;
     private _load: Promise<SVGResource>;
     private _crossorigin?: boolean|string;
 
