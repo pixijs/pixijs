@@ -92,7 +92,7 @@ export class TilingSprite extends Sprite
         return this.uvMatrix.clampMargin;
     }
 
-    set clampMargin(value)
+    set clampMargin(value: number)
     {
         this.uvMatrix.clampMargin = value;
         this.uvMatrix.update(true);
@@ -108,7 +108,7 @@ export class TilingSprite extends Sprite
         return this.tileTransform.scale;
     }
 
-    set tileScale(value)
+    set tileScale(value: ObservablePoint)
     {
         this.tileTransform.scale.copyFrom(value as IPoint);
     }
@@ -123,7 +123,7 @@ export class TilingSprite extends Sprite
         return this.tileTransform.position;
     }
 
-    set tilePosition(value)
+    set tilePosition(value: ObservablePoint)
     {
         this.tileTransform.position.copyFrom(value as IPoint);
     }
@@ -293,7 +293,7 @@ export class TilingSprite extends Sprite
         return this._width;
     }
 
-    set width(value)
+    set width(value: number)
     {
         this._width = value;
     }
@@ -308,7 +308,7 @@ export class TilingSprite extends Sprite
         return this._height;
     }
 
-    set height(value)
+    set height(value: number)
     {
         this._height = value;
     }

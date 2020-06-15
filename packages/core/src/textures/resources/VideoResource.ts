@@ -355,7 +355,7 @@ export class VideoResource extends BaseImageResource
         return this._autoUpdate;
     }
 
-    set autoUpdate(value)
+    set autoUpdate(value: boolean)
     {
         if (value !== this._autoUpdate)
         {
@@ -385,7 +385,7 @@ export class VideoResource extends BaseImageResource
         return this._updateFPS;
     }
 
-    set updateFPS(value)
+    set updateFPS(value: number)
     {
         if (value !== this._updateFPS)
         {
