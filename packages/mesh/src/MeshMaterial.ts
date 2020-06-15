@@ -112,7 +112,7 @@ export class MeshMaterial extends Shader
     {
         return this.uniforms.uSampler;
     }
-    set texture(value)
+    set texture(value: Texture)
     {
         if (this.uniforms.uSampler !== value)
         {
@@ -127,7 +127,7 @@ export class MeshMaterial extends Shader
      * @default 1
      * @member {number}
      */
-    set alpha(value)
+    set alpha(value: number)
     {
         if (value === this._alpha) return;
 
@@ -144,7 +144,7 @@ export class MeshMaterial extends Shader
      * @member {number}
      * @default 0xFFFFFF
      */
-    set tint(value)
+    set tint(value: number)
     {
         if (value === this._tint) return;
 

@@ -192,7 +192,7 @@ export class Mesh extends Container
      * Alias for {@link PIXI.Mesh#shader}.
      * @member {PIXI.MeshMaterial}
      */
-    set material(value)
+    set material(value: MeshMaterial)
     {
         this.shader = value;
     }
@@ -210,7 +210,7 @@ export class Mesh extends Container
      * @default PIXI.BLEND_MODES.NORMAL;
      * @see PIXI.BLEND_MODES
      */
-    set blendMode(value)
+    set blendMode(value: BLEND_MODES)
     {
         this.state.blendMode = value;
     }
@@ -229,7 +229,7 @@ export class Mesh extends Container
      * @member {boolean}
      * @default false
      */
-    set roundPixels(value)
+    set roundPixels(value: boolean)
     {
         if (this._roundPixels !== value)
         {
@@ -255,7 +255,7 @@ export class Mesh extends Container
         return this.shader.tint;
     }
 
-    set tint(value)
+    set tint(value: number)
     {
         this.shader.tint = value;
     }
@@ -270,7 +270,7 @@ export class Mesh extends Container
         return this.shader.texture;
     }
 
-    set texture(value)
+    set texture(value: Texture)
     {
         this.shader.texture = value;
     }

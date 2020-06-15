@@ -549,7 +549,7 @@ export class Ticker
         return 1000 / this._maxElapsedMS;
     }
 
-    set minFPS(fps)
+    set minFPS(fps: number)
     {
         // Minimum must be below the maxFPS
         const minFPS = Math.min(this.maxFPS, fps);
@@ -580,7 +580,7 @@ export class Ticker
         return 0;
     }
 
-    set maxFPS(fps)
+    set maxFPS(fps: number)
     {
         if (fps === 0)
         {

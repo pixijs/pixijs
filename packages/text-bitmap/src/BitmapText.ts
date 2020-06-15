@@ -606,7 +606,7 @@ export class BitmapText extends Container
         return this._tint;
     }
 
-    public set tint(value)
+    public set tint(value: number)
     {
         if (this._tint === value) return;
 
@@ -629,7 +629,7 @@ export class BitmapText extends Container
         return this._align;
     }
 
-    public set align(value)
+    public set align(value: TextStyleAlign)
     {
         if (this._align !== value)
         {
@@ -719,7 +719,7 @@ export class BitmapText extends Container
         return this._text;
     }
 
-    public set text(text)
+    public set text(text: string)
     {
         text = String(text === null || text === undefined ? '' : text);
 
@@ -743,7 +743,7 @@ export class BitmapText extends Container
         return this._maxWidth;
     }
 
-    public set maxWidth(value)
+    public set maxWidth(value: number)
     {
         if (this._maxWidth === value)
         {
@@ -791,7 +791,7 @@ export class BitmapText extends Container
         return this._letterSpacing;
     }
 
-    public set letterSpacing(value)
+    public set letterSpacing(value: number)
     {
         if (this._letterSpacing !== value)
         {

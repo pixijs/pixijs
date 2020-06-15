@@ -76,7 +76,7 @@ export class InteractionTrackingData
         return this._flags;
     }
 
-    set flags(flags)
+    set flags(flags: number)
     {
         this._flags = flags;
     }
@@ -103,7 +103,7 @@ export class InteractionTrackingData
         return (this._flags & InteractionTrackingData.FLAGS.OVER) !== 0;
     }
 
-    set over(yn)
+    set over(yn: boolean)
     {
         this._doSet(InteractionTrackingData.FLAGS.OVER, yn);
     }
@@ -119,7 +119,7 @@ export class InteractionTrackingData
         return (this._flags & InteractionTrackingData.FLAGS.RIGHT_DOWN) !== 0;
     }
 
-    set rightDown(yn)
+    set rightDown(yn: boolean)
     {
         this._doSet(InteractionTrackingData.FLAGS.RIGHT_DOWN, yn);
     }
@@ -135,7 +135,7 @@ export class InteractionTrackingData
         return (this._flags & InteractionTrackingData.FLAGS.LEFT_DOWN) !== 0;
     }
 
-    set leftDown(yn)
+    set leftDown(yn: boolean)
     {
         this._doSet(InteractionTrackingData.FLAGS.LEFT_DOWN, yn);
     }
