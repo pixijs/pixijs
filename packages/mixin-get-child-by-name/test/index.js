@@ -23,13 +23,27 @@ describe('PIXI.Container#getChildByName', function ()
         expect(parent.getChildByName).to.be.function;
     });
 
-    it('should enable getChildByName', function ()
+    it('should correctly find a child by its name', function ()
     {
         const obj = new DisplayObject();
         const parent = new Container();
 
         obj.name = 'foo';
         parent.addChild(obj);
+
         expect(parent.getChildByName('foo')).to.equal(obj);
+    });
+
+    it('should correctly find a indirect child by its name in recursive search', function ()
+    {
+        const obj = new DisplayObject();
+        const parent = new Container();
+        const grandParent = new Container();
+
+        obj.name = 'foo';
+        parent.addChild(obj);
+        grandParent.addChild(obj);
+
+        expect(grandParent.getChildByName('foo', true)).to.equal(obj);
     });
 });
