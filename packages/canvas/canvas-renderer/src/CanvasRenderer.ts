@@ -196,7 +196,7 @@ export class CanvasRenderer extends AbstractRenderer
      * @param {PIXI.DisplayObject} displayObject - The object to be rendered
      * @param {PIXI.RenderTexture} [renderTexture] - A render texture to be rendered to.
      *  If unset, it will render to the root context.
-     * @param {boolean} [clear=false] - Whether to clear the canvas before drawing
+     * @param {boolean} [clear=this.clearBeforeRender] - Whether to clear the canvas before drawing
      * @param {PIXI.Matrix} [transform] - A transformation to be applied
      * @param {boolean} [skipUpdateTransform=false] - Whether to skip the update transform
      */
