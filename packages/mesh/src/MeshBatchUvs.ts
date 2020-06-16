@@ -14,7 +14,8 @@ export class MeshBatchUvs
 
     private _bufferUpdateId: number;
     private _textureUpdateId: number;
-    // internal only properties:
+
+    // Internal-only properties
     _updateID: number;
 
     /**

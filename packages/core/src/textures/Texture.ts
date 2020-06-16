@@ -68,7 +68,7 @@ export class Texture extends EventEmitter
      * @param {PIXI.Rectangle} [orig] - The area of original texture
      * @param {PIXI.Rectangle} [trim] - Trimmed rectangle of original texture
      * @param {number} [rotate] - indicates how the texture was rotated by texture packer. See {@link PIXI.groupD8}
-     * @param {PIXI.Point} [anchor] - Default anchor point used for sprite placement / rotation
+     * @param {PIXI.IPointData} [anchor] - Default anchor point used for sprite placement / rotation
      */
     constructor(baseTexture: BaseTexture, frame?: Rectangle,
         orig?: Rectangle, trim?: Rectangle, rotate?: number, anchor?: IPointData)
@@ -621,7 +621,7 @@ export class Texture extends EventEmitter
         return this._rotate;
     }
 
-    set rotate(rotate)
+    set rotate(rotate: number)
     {
         this._rotate = rotate;
         if (this.valid)

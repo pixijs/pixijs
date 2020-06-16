@@ -4,7 +4,7 @@ import { Container } from './Container';
 import { Bounds } from './Bounds';
 
 import type { Filter, MaskData, Renderer } from '@pixi/core';
-import type { IPoint, ObservablePoint } from '@pixi/math';
+import type { IPointData, ObservablePoint } from '@pixi/math';
 import type { Dict } from '@pixi/utils';
 
 export interface IDestroyOptions {
@@ -400,13 +400,13 @@ export abstract class DisplayObject extends EventEmitter
     /**
      * Calculates the global position of the display object.
      *
-     * @param {PIXI.IPoint} position - The world origin to calculate from.
+     * @param {PIXI.IPointData} position - The world origin to calculate from.
      * @param {PIXI.Point} [point] - A Point object in which to store the value, optional
      *  (otherwise will create a new Point).
      * @param {boolean} [skipUpdate=false] - Should we skip the update transform.
      * @return {PIXI.Point} A point object representing the position of this object.
      */
-    toGlobal(position: IPoint, point?: Point, skipUpdate = false): Point
+    toGlobal<P extends IPointData = Point>(position: IPointData, point?: P, skipUpdate = false): P
     {
         if (!skipUpdate)
         {
@@ -428,20 +428,20 @@ export abstract class DisplayObject extends EventEmitter
         }
 
         // don't need to update the lot
-        return this.worldTransform.apply(position, point);
+        return this.worldTransform.apply<P>(position, point);
     }
 
     /**
      * Calculates the local position of the display object relative to another point.
      *
-     * @param {PIXI.IPoint} position - The world origin to calculate from.
+     * @param {PIXI.IPointData} position - The world origin to calculate from.
      * @param {PIXI.DisplayObject} [from] - The DisplayObject to calculate the global position from.
      * @param {PIXI.Point} [point] - A Point object in which to store the value, optional
      *  (otherwise will create a new Point).
      * @param {boolean} [skipUpdate=false] - Should we skip the update transform
      * @return {PIXI.Point} A point object representing the position of this object
      */
-    toLocal(position: IPoint, from: DisplayObject, point?: Point, skipUpdate?: boolean): Point
+    toLocal<P extends IPointData = Point>(position: IPointData, from: DisplayObject, point?: P, skipUpdate?: boolean): P
     {
         if (from)
         {
@@ -468,7 +468,7 @@ export abstract class DisplayObject extends EventEmitter
         }
 
         // simply apply the matrix..
-        return this.worldTransform.applyInverse(position, point);
+        return this.worldTransform.applyInverse<P>(position, point);
     }
 
     /**
@@ -574,7 +574,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.position.x;
     }
 
-    set x(value)
+    set x(value: number)
     {
         this.transform.position.x = value;
     }
@@ -590,7 +590,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.position.y;
     }
 
-    set y(value)
+    set y(value: number)
     {
         this.transform.position.y = value;
     }
@@ -628,7 +628,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.transform.position;
     }
 
-    set position(value)
+    set position(value: ObservablePoint)
     {
         this.transform.position.copyFrom(value);
     }
@@ -644,7 +644,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.transform.scale;
     }
 
-    set scale(value)
+    set scale(value: ObservablePoint)
     {
         this.transform.scale.copyFrom(value);
     }
@@ -660,7 +660,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.transform.pivot;
     }
 
-    set pivot(value)
+    set pivot(value: ObservablePoint)
     {
         this.transform.pivot.copyFrom(value);
     }
@@ -676,7 +676,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.transform.skew;
     }
 
-    set skew(value)
+    set skew(value: ObservablePoint)
     {
         this.transform.skew.copyFrom(value);
     }
@@ -692,7 +692,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.transform.rotation;
     }
 
-    set rotation(value)
+    set rotation(value: number)
     {
         this.transform.rotation = value;
     }
@@ -708,7 +708,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.transform.rotation * RAD_TO_DEG;
     }
 
-    set angle(value)
+    set angle(value: number)
     {
         this.transform.rotation = value * DEG_TO_RAD;
     }
@@ -726,7 +726,7 @@ export abstract class DisplayObject extends EventEmitter
         return this._zIndex;
     }
 
-    set zIndex(value)
+    set zIndex(value: number)
     {
         this._zIndex = value;
         if (this.parent)
@@ -782,7 +782,7 @@ export abstract class DisplayObject extends EventEmitter
         return this._mask;
     }
 
-    set mask(value)
+    set mask(value: Container|MaskData|null)
     {
         if (this._mask)
         {

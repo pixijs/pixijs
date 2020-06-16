@@ -22,7 +22,7 @@ import type { IArrayBuffer } from '@pixi/core';
  */
 export class MeshGeometry extends Geometry
 {
-    // Internal-only property:
+    // Internal-only properties
     _updateId: number;
 
     /**

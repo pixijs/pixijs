@@ -10,6 +10,7 @@ import type { Shader } from './Shader';
 import type { Program } from './Program';
 import type { UniformGroup } from './UniformGroup';
 import type { Dict } from '@pixi/utils';
+import type { UniformsSyncCallback } from './utils';
 
 let UID = 0;
 // defualt sync data so we don't create a new one each time!

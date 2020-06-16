@@ -1,4 +1,5 @@
 import type { Dict } from '@pixi/utils';
+import type { UniformsSyncCallback } from './utils';
 
 let UID = 0;
 

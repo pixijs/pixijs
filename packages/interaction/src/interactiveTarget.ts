@@ -141,7 +141,7 @@ export const interactiveTarget: InteractiveTarget = {
      * @member {boolean}
      * @memberof PIXI.DisplayObject#
      */
-    get buttonMode()
+    get buttonMode(): boolean
     {
         return this.cursor === 'pointer';
     },

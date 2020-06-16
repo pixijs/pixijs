@@ -4,7 +4,7 @@ import { Sprite } from '@pixi/sprite';
 import { deprecation } from '@pixi/utils';
 import type { Renderer, IBaseTextureOptions, TextureSource } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
-import type { IPoint, ISize, ObservablePoint } from '@pixi/math';
+import type { IPoint, IPointData, ISize, ObservablePoint } from '@pixi/math';
 
 const tempPoint = new Point();
 
@@ -92,7 +92,7 @@ export class TilingSprite extends Sprite
         return this.uvMatrix.clampMargin;
     }
 
-    set clampMargin(value)
+    set clampMargin(value: number)
     {
         this.uvMatrix.clampMargin = value;
         this.uvMatrix.update(true);
@@ -108,7 +108,7 @@ export class TilingSprite extends Sprite
         return this.tileTransform.scale;
     }
 
-    set tileScale(value)
+    set tileScale(value: ObservablePoint)
     {
         this.tileTransform.scale.copyFrom(value as IPoint);
     }
@@ -123,7 +123,7 @@ export class TilingSprite extends Sprite
         return this.tileTransform.position;
     }
 
-    set tilePosition(value)
+    set tilePosition(value: ObservablePoint)
     {
         this.tileTransform.position.copyFrom(value as IPoint);
     }
@@ -213,10 +213,10 @@ export class TilingSprite extends Sprite
     /**
      * Checks if a point is inside this tiling sprite.
      *
-     * @param {PIXI.IPoint} point - the point to check
+     * @param {PIXI.IPointData} point - the point to check
      * @return {boolean} Whether or not the sprite contains the point.
      */
-    public containsPoint(point: IPoint): boolean
+    public containsPoint(point: IPointData): boolean
     {
         this.worldTransform.applyInverse(point, tempPoint);
 
@@ -293,7 +293,7 @@ export class TilingSprite extends Sprite
         return this._width;
     }
 
-    set width(value)
+    set width(value: number)
     {
         this._width = value;
     }
@@ -308,7 +308,7 @@ export class TilingSprite extends Sprite
         return this._height;
     }
 
-    set height(value)
+    set height(value: number)
     {
         this._height = value;
     }

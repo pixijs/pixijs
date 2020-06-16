@@ -29,7 +29,8 @@ export class MeshMaterial extends Shader
 
     public batchable: boolean;
     public pluginName: string;
-    // Internal-only property
+
+    // Internal-only properties
     _tintRGB: number;
 
     private _colorDirty: boolean;

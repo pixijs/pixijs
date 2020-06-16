@@ -573,7 +573,7 @@ export class ColorMatrixFilter extends Filter
         return this.uniforms.m;
     }
 
-    set matrix(value)
+    set matrix(value: ColorMatrix)
     {
         this.uniforms.m = value;
     }
@@ -593,7 +593,7 @@ export class ColorMatrixFilter extends Filter
         return this.uniforms.uAlpha;
     }
 
-    set alpha(value)
+    set alpha(value: number)
     {
         this.uniforms.uAlpha = value;
     }

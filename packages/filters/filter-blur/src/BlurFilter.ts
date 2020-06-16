@@ -97,7 +97,7 @@ export class BlurFilter extends Filter
         return this.blurXFilter.blur;
     }
 
-    set blur(value)
+    set blur(value: number)
     {
         this.blurXFilter.blur = this.blurYFilter.blur = value;
         this.updatePadding();
@@ -114,7 +114,7 @@ export class BlurFilter extends Filter
         return this.blurXFilter.quality;
     }
 
-    set quality(value)
+    set quality(value: number)
     {
         this.blurXFilter.quality = this.blurYFilter.quality = value;
     }
@@ -130,7 +130,7 @@ export class BlurFilter extends Filter
         return this.blurXFilter.blur;
     }
 
-    set blurX(value)
+    set blurX(value: number)
     {
         this.blurXFilter.blur = value;
         this.updatePadding();
@@ -147,7 +147,7 @@ export class BlurFilter extends Filter
         return this.blurYFilter.blur;
     }
 
-    set blurY(value)
+    set blurY(value: number)
     {
         this.blurYFilter.blur = value;
         this.updatePadding();
@@ -164,7 +164,7 @@ export class BlurFilter extends Filter
         return this.blurYFilter.blendMode;
     }
 
-    set blendMode(value)
+    set blendMode(value: BLEND_MODES)
     {
         this.blurYFilter.blendMode = value;
     }
