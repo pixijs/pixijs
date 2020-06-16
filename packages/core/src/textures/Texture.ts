@@ -9,7 +9,6 @@ import { uid, TextureCache, getResolutionOfUrl, EventEmitter } from '@pixi/utils
 import type { IPointData } from '@pixi/math';
 import type { IBaseTextureOptions, ImageSource } from './BaseTexture';
 import type { TextureMatrix } from './TextureMatrix';
-import type { IPointData } from '@pixi/math';
 
 const DEFAULT_UVS = new TextureUvs();
 

@@ -76,7 +76,7 @@ export class Spritesheet
     public baseTexture: BaseTexture;
     public textures: Dict<Texture>;
     public animations: Dict<Texture[]>;
-    public data: ISpritesheetData;;
+    public data: ISpritesheetData;
     public resolution: number;
 
     private _texture: Texture;

@@ -2,7 +2,6 @@ import { System } from '../System';
 import { GLProgram } from './GLProgram';
 import { generateUniformsSync, unsafeEvalSupported, defaultValue, compileProgram } from './utils';
 
-import type { UniformsSyncCallback } from './utils';
 import type { IGLUniformData } from './GLProgram';
 import type { Renderer } from '../Renderer';
 import type { IRenderingContext } from '../IRenderingContext';
