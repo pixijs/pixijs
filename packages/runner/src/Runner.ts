@@ -118,9 +118,9 @@ export class Runner
      * @param {any} item - The object that will be listening.
      * @return {PIXI.Runner}
      */
-    public add(item: any): this // eslint-disable-line @typescript-eslint/explicit-module-boundary-types
+    public add(item: unknown): this
     {
-        if (item[this._name])
+        if ((item as any)[this._name])
         {
             this.ensureNonAliasedItems();
             this.remove(item);
@@ -135,7 +135,7 @@ export class Runner
      * @param {any} item - The listenr that you would like to remove.
      * @return {PIXI.Runner}
      */
-    public remove(item: any): this // eslint-disable-line @typescript-eslint/explicit-module-boundary-types
+    public remove(item: unknown): this
     {
         const index = this.items.indexOf(item);
 
@@ -152,7 +152,7 @@ export class Runner
      * Check to see if the listener is already in the Runner
      * @param {any} item - The listener that you would like to check.
      */
-    public contains(item: any): boolean // eslint-disable-line @typescript-eslint/explicit-module-boundary-types
+    public contains(item: unknown): boolean
     {
         return this.items.indexOf(item) !== -1;
     }
