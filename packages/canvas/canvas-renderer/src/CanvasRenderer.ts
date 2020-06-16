@@ -286,7 +286,7 @@ export class CanvasRenderer extends AbstractRenderer
 
                 const clearColor = renderTexture.clearColor;
 
-                if (clearColor[0] !== 0 || clearColor[1] !== 0 || clearColor[2] !== 0 || clearColor[3] !== 0)
+                if (clearColor[3] > 0)
                 {
                     context.fillStyle = hex2string(rgb2hex(clearColor));
                     context.fillRect(0, 0, renderTexture.realWidth, renderTexture.realHeight);
