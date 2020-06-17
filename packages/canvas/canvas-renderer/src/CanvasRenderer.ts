@@ -1,5 +1,5 @@
 import { AbstractRenderer, resources } from '@pixi/core';
-import { CanvasRenderTarget, sayHello } from '@pixi/utils';
+import { CanvasRenderTarget, sayHello, rgb2hex, hex2string } from '@pixi/utils';
 import { CanvasMaskManager } from './utils/CanvasMaskManager';
 import { mapCanvasBlendModesToPixi } from './utils/mapCanvasBlendModesToPixi';
 import { RENDERER_TYPE, SCALE_MODES, BLEND_MODES } from '@pixi/constants';
@@ -196,7 +196,7 @@ export class CanvasRenderer extends AbstractRenderer
      * @param {PIXI.DisplayObject} displayObject - The object to be rendered
      * @param {PIXI.RenderTexture} [renderTexture] - A render texture to be rendered to.
      *  If unset, it will render to the root context.
-     * @param {boolean} [clear=false] - Whether to clear the canvas before drawing
+     * @param {boolean} [clear=this.clearBeforeRender] - Whether to clear the canvas before drawing
      * @param {PIXI.Matrix} [transform] - A transformation to be applied
      * @param {boolean} [skipUpdateTransform=false] - Whether to skip the update transform
      */
@@ -278,9 +278,20 @@ export class CanvasRenderer extends AbstractRenderer
                     context.fillStyle = this._backgroundColorString;
                     context.fillRect(0, 0, this.width, this.height);
                 }
-            } // else {
-            // TODO: implement background for CanvasRenderTarget or RenderTexture?
-            // }
+            }
+            else
+            {
+                renderTexture = (renderTexture as BaseRenderTexture);
+                renderTexture._canvasRenderTarget.clear();
+
+                const clearColor = renderTexture.clearColor;
+
+                if (clearColor[3] > 0)
+                {
+                    context.fillStyle = hex2string(rgb2hex(clearColor));
+                    context.fillRect(0, 0, renderTexture.realWidth, renderTexture.realHeight);
+                }
+            }
         }
 
         // TODO RENDER TARGET STUFF HERE..
