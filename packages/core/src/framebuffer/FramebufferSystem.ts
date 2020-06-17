@@ -5,7 +5,8 @@ import { settings } from '../settings';
 import { Framebuffer } from './Framebuffer';
 import { GLFramebuffer } from './GLFramebuffer';
 
-import type { Renderer, IRenderingContext } from '@pixi/core';
+import type { Renderer } from '../Renderer';
+import type { IRenderingContext } from '../IRenderingContext';
 
 const tempRectangle = new Rectangle();
 
@@ -393,8 +394,8 @@ export class FramebufferSystem extends System
     /**
      * Detects number of samples that is not more than a param but as close to it as possible
      *
-     * @param {PIXI.MSAA_QUALITY} samples number of samples
-     * @returns {PIXI.MSAA_QUALITY} recommended number of samples
+     * @param {PIXI.MSAA_QUALITY} samples - number of samples
+     * @returns {PIXI.MSAA_QUALITY} - recommended number of samples
      */
     protected detectSamples(samples: MSAA_QUALITY): MSAA_QUALITY
     {
@@ -430,9 +431,9 @@ export class FramebufferSystem extends System
      *
      * Fails with WebGL warning if blits multisample framebuffer to different size
      *
-     * @param {PIXI.Framebuffer} [framebuffer] by default it blits "into itself", from renderBuffer to texture.
-     * @param {PIXI.Rectangle} [sourcePixels] source rectangle in pixels
-     * @param {PIXI.Rectangle} [destPixels] dest rectangle in pixels, assumed to be the same as sourcePixels
+     * @param {PIXI.Framebuffer} [framebuffer] - by default it blits "into itself", from renderBuffer to texture.
+     * @param {PIXI.Rectangle} [sourcePixels] - source rectangle in pixels
+     * @param {PIXI.Rectangle} [destPixels] - dest rectangle in pixels, assumed to be the same as sourcePixels
      */
     public blit(framebuffer?: Framebuffer, sourcePixels?: Rectangle, destPixels?: Rectangle): void
     {
@@ -492,8 +493,8 @@ export class FramebufferSystem extends System
 
     /**
      * Disposes framebuffer
-     * @param {PIXI.Framebuffer} framebuffer framebuffer that has to be disposed of
-     * @param {boolean} [contextLost=false] If context was lost, we suppress all delete function calls
+     * @param {PIXI.Framebuffer} framebuffer - framebuffer that has to be disposed of
+     * @param {boolean} [contextLost=false] - If context was lost, we suppress all delete function calls
      */
     disposeFramebuffer(framebuffer: Framebuffer, contextLost?: boolean): void
     {
@@ -519,6 +520,7 @@ export class FramebufferSystem extends System
         if (!contextLost)
         {
             gl.deleteFramebuffer(fbo.framebuffer);
+
             if (fbo.stencil)
             {
                 gl.deleteRenderbuffer(fbo.stencil);
@@ -528,7 +530,7 @@ export class FramebufferSystem extends System
 
     /**
      * Disposes all framebuffers, but not textures bound to them
-     * @param {boolean} [contextLost=false] If context was lost, we suppress all delete function calls
+     * @param {boolean} [contextLost=false] - If context was lost, we suppress all delete function calls
      */
     disposeAll(contextLost?: boolean): void
     {

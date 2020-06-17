@@ -1,6 +1,8 @@
 import { Program } from './Program';
 import { UniformGroup } from './UniformGroup';
 
+import type { Dict } from '@pixi/utils';
+
 /**
  * A helper class for shaders
  *
@@ -15,7 +17,7 @@ export class Shader
      * @param {PIXI.Program} [program] - The program the shader will use.
      * @param {object} [uniforms] - Custom uniforms to use to augment the built-in ones.
      */
-    constructor(program: Program, uniforms: {[x: string]: any})
+    constructor(program: Program, uniforms: Dict<any>)
     {
         /**
          * Program that the shader uses
@@ -90,7 +92,7 @@ export class Shader
      * @readonly
      * @member {object}
      */
-    get uniforms(): {[x: string]: any}
+    get uniforms(): Dict<any>
     {
         return this.uniformGroup.uniforms;
     }
@@ -104,7 +106,7 @@ export class Shader
      *
      * @returns {PIXI.Shader} an shiny new Pixi shader!
      */
-    static from(vertexSrc?: string, fragmentSrc?: string, uniforms?: {[x: string]: any}): Shader
+    static from(vertexSrc?: string, fragmentSrc?: string, uniforms?: Dict<any>): Shader
     {
         const program = Program.from(vertexSrc, fragmentSrc);
 

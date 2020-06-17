@@ -5,10 +5,11 @@ import { settings } from '@pixi/settings';
 import defaultVertex from './defaultFilter.vert';
 import defaultFragment from './defaultFilter.frag';
 
-import type { RenderTexture } from '@pixi/core';
+import type { RenderTexture } from '../renderTexture/RenderTexture';
 import type { FilterSystem } from './FilterSystem';
 import type { FilterState } from './FilterState';
 import type { BLEND_MODES, CLEAR_MODES } from '@pixi/constants';
+import type { Dict } from '@pixi/utils';
 
 /**
  * Filter is a special type of WebGL shader that is applied to the screen.
@@ -159,7 +160,7 @@ export class Filter extends Shader
      * @param {string} [fragmentSrc] - The source of the fragment shader.
      * @param {object} [uniforms] - Custom uniforms to use to augment the built-in ones.
      */
-    constructor(vertexSrc?: string, fragmentSrc?: string, uniforms?: {[key: string]: any})
+    constructor(vertexSrc?: string, fragmentSrc?: string, uniforms?: Dict<any>)
     {
         const program = Program.from(vertexSrc || Filter.defaultVertexSrc,
             fragmentSrc || Filter.defaultFragmentSrc);
@@ -224,7 +225,6 @@ export class Filter extends Shader
      *        target, filters, sourceFrame, destinationFrame, renderTarget, resolution
      */
     apply(filterManager: FilterSystem, input: RenderTexture, output: RenderTexture, clearMode: CLEAR_MODES,
-        /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
         _currentState?: FilterState): void
     {
         // do as you please!
@@ -245,7 +245,7 @@ export class Filter extends Shader
         return this.state.blendMode;
     }
 
-    set blendMode(value) // eslint-disable-line require-jsdoc
+    set blendMode(value: BLEND_MODES)
     {
         this.state.blendMode = value;
     }
@@ -281,5 +281,5 @@ export class Filter extends Shader
      * @type {object}
      * @protected
      */
-    static SOURCE_KEY_MAP: {[key: string]: string};
+    static SOURCE_KEY_MAP: Dict<string>;
 }

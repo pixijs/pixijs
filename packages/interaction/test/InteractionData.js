@@ -4,7 +4,7 @@ const { Point } = require('@pixi/math');
 
 require('@pixi/canvas-display');
 
-describe('PIXI.interaction.InteractionData', function ()
+describe('PIXI.InteractionData', function ()
 {
     describe('getLocalPosition', function ()
     {

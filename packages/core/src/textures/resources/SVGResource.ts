@@ -19,10 +19,10 @@ export interface ISVGResourceOptions
  * @memberof PIXI.resources
  * @param {string} source - Base64 encoded SVG element or URL for SVG file.
  * @param {object} [options] - Options to use
- * @param {number} [options.scale=1] Scale to apply to SVG. Overridden by...
- * @param {number} [options.width] Rasterize SVG this wide. Aspect ratio preserved if height not specified.
- * @param {number} [options.height] Rasterize SVG this high. Aspect ratio preserved if width not specified.
- * @param {boolean} [options.autoLoad=true] Start loading right away.
+ * @param {number} [options.scale=1] - Scale to apply to SVG. Overridden by...
+ * @param {number} [options.width] - Rasterize SVG this wide. Aspect ratio preserved if height not specified.
+ * @param {number} [options.height] - Rasterize SVG this high. Aspect ratio preserved if width not specified.
+ * @param {boolean} [options.autoLoad=true] - Start loading right away.
  */
 export class SVGResource extends BaseImageResource
 {
@@ -30,7 +30,7 @@ export class SVGResource extends BaseImageResource
     public readonly scale: number;
     readonly _overrideWidth: number;
     readonly _overrideHeight: number;
-    private _resolve: Function;
+    private _resolve: () => void;
     private _load: Promise<SVGResource>;
     private _crossorigin?: boolean|string;
 
@@ -144,12 +144,22 @@ export class SVGResource extends BaseImageResource
 
         tempImage.onerror = (event): void =>
         {
+            if (!this._resolve)
+            {
+                return;
+            }
+
             tempImage.onerror = null;
             this.onError.emit(event);
         };
 
         tempImage.onload = (): void =>
         {
+            if (!this._resolve)
+            {
+                return;
+            }
+
             const svgWidth = tempImage.width;
             const svgHeight = tempImage.height;
 
@@ -226,7 +236,7 @@ export class SVGResource extends BaseImageResource
      * @param {*} source - The source object
      * @param {string} extension - The extension of source, if set
      */
-    static test(source: any, extension?: string): boolean
+    static test(source: unknown, extension?: string): boolean
     {
         // url file extension is SVG
         return extension === 'svg'

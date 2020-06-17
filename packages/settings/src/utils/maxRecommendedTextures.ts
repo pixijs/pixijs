@@ -19,8 +19,6 @@ export function maxRecommendedTextures(max: number): number
 
     if (isMobile.tablet || isMobile.phone)
     {
-        allowMax = false;
-
         if (isMobile.apple.device)
         {
             const match = (navigator.userAgent).match(/OS (\d+)_(\d+)?/);
@@ -29,10 +27,10 @@ export function maxRecommendedTextures(max: number): number
             {
                 const majorVersion = parseInt(match[1], 10);
 
-                // All texture units can be used on devices that support ios 11 or above
-                if (majorVersion >= 11)
+                // Limit texture units on devices below iOS 11, which will be older hardware
+                if (majorVersion < 11)
                 {
-                    allowMax = true;
+                    allowMax = false;
                 }
             }
         }
@@ -44,10 +42,10 @@ export function maxRecommendedTextures(max: number): number
             {
                 const majorVersion = parseInt(match[1], 10);
 
-                // All texture units can be used on devices that support Android 7 (Nougat) or above
-                if (majorVersion >= 7)
+                // Limit texture units on devices below Android 7 (Nougat), which will be older hardware
+                if (majorVersion < 7)
                 {
-                    allowMax = true;
+                    allowMax = false;
                 }
             }
         }

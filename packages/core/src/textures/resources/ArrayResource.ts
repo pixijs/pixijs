@@ -15,7 +15,7 @@ import type { ISize } from '@pixi/math';
  * @memberof PIXI.resources
  * @param {number|Array<*>} source - Number of items in array or the collection
  *        of image URLs to use. Can also be resources, image elements, canvas, etc.
- * @param {object} [options] Options to apply to {@link PIXI.resources.autoDetectResource}
+ * @param {object} [options] - Options to apply to {@link PIXI.resources.autoDetectResource}
  * @param {number} [options.width] - Width of the resource
  * @param {number} [options.height] - Height of the resource
  */

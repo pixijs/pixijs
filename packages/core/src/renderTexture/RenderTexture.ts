@@ -2,8 +2,8 @@ import { BaseRenderTexture } from './BaseRenderTexture';
 import { Texture } from '../textures/Texture';
 
 import type { Rectangle } from '@pixi/math';
-import type { Framebuffer, IBaseTextureOptions } from '@pixi/core';
-
+import type { Framebuffer } from '../framebuffer/Framebuffer';
+import type { IBaseTextureOptions } from '../textures/BaseTexture';
 /**
  * A RenderTexture is a special texture that allows any PixiJS display object to be rendered to it.
  *
@@ -17,7 +17,7 @@ import type { Framebuffer, IBaseTextureOptions } from '@pixi/core';
  *
  * ```js
  * let renderer = PIXI.autoDetectRenderer();
- * let renderTexture = PIXI.RenderTexture.create(800, 600);
+ * let renderTexture = PIXI.RenderTexture.create({ width: 800, height: 600 });
  * let sprite = PIXI.Sprite.from("spinObj_01.png");
  *
  * sprite.position.x = 800/2;

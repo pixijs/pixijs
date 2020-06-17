@@ -3,9 +3,9 @@
  *
  * @function removeItems
  * @memberof PIXI.utils
- * @param {Array<any>} arr Array to remove elements from
- * @param {number} startIdx starting index
- * @param {number} removeCount how many to remove
+ * @param {Array<any>} arr - Array to remove elements from
+ * @param {number} startIdx - starting index
+ * @param {number} removeCount - how many to remove
  */
 export function removeItems(arr: any[], startIdx: number, removeCount: number): void
 {

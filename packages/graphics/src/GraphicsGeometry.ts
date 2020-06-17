@@ -21,7 +21,7 @@ import { GraphicsData } from './GraphicsData';
 import { premultiplyTint } from '@pixi/utils';
 import { Bounds } from '@pixi/display';
 
-import type { Circle, Ellipse, Polygon, Rectangle, RoundedRectangle } from '@pixi/math';
+import type { Circle, Ellipse, Polygon, Rectangle, RoundedRectangle, IPointData } from '@pixi/math';
 import type { FillStyle } from './styles/FillStyle';
 import type { LineStyle } from './styles/LineStyle';
 
@@ -386,10 +386,10 @@ export class GraphicsGeometry extends BatchGeometry
     /**
      * Check to see if a point is contained within this geometry.
      *
-     * @param {PIXI.Point} point - Point to check if it's contained.
+     * @param {PIXI.IPointData} point - Point to check if it's contained.
      * @return {Boolean} `true` if the point is contained within geometry.
      */
-    public containsPoint(point: Point): boolean
+    public containsPoint(point: IPointData): boolean
     {
         const graphicsData = this.graphicsData;
 
@@ -1107,10 +1107,10 @@ export class GraphicsGeometry extends BatchGeometry
      * Modify uvs array according to position of texture region
      * Does not work with rotated or trimmed textures
      *
-     * @param {number[]} uvs array
-     * @param {PIXI.Texture} texture region
-     * @param {number} start starting index for uvs
-     * @param {number} size how many points to adjust
+     * @param {number[]} uvs - array
+     * @param {PIXI.Texture} texture - region
+     * @param {number} start - starting index for uvs
+     * @param {number} size - how many points to adjust
      */
     protected adjustUvs(uvs: Array<number>, texture: Texture, start: number, size: number): void
     {

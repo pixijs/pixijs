@@ -2,8 +2,9 @@ import { Resource } from './Resource';
 import { determineCrossOrigin } from '@pixi/utils';
 import { ALPHA_MODES } from '@pixi/constants';
 
-import type { BaseTexture, Renderer, GLTexture, ImageSource } from '@pixi/core';
-
+import type { BaseTexture, ImageSource } from '../BaseTexture';
+import type { Renderer } from '../../Renderer';
+import type { GLTexture } from '../GLTexture';
 /**
  * Base for all the image/canvas resources
  * @class
@@ -64,8 +65,8 @@ export class BaseImageResource extends Resource
 
     /**
      * Upload the texture to the GPU.
-     * @param {PIXI.Renderer} renderer Upload to the renderer
-     * @param {PIXI.BaseTexture} baseTexture Reference to parent texture
+     * @param {PIXI.Renderer} renderer - Upload to the renderer
+     * @param {PIXI.BaseTexture} baseTexture - Reference to parent texture
      * @param {PIXI.GLTexture} glTexture
      * @param {HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|SVGElement} [source] (optional)
      * @returns {boolean} true is success
@@ -122,7 +123,6 @@ export class BaseImageResource extends Resource
     /**
      * Destroy this BaseImageResource
      * @override
-     * @param {PIXI.BaseTexture} [fromTexture] Optional base texture
      */
     dispose(): void
     {

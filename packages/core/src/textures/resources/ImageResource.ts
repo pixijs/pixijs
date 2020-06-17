@@ -2,7 +2,9 @@ import { BaseImageResource } from './BaseImageResource';
 import { settings } from '@pixi/settings';
 import { ALPHA_MODES } from '@pixi/constants';
 
-import type { BaseTexture, Renderer, GLTexture } from '@pixi/core';
+import type { BaseTexture } from '../BaseTexture';
+import type { Renderer } from '../../Renderer';
+import type { GLTexture } from '../GLTexture';
 
 export interface IImageResourceOptions
 {
@@ -29,8 +31,9 @@ export class ImageResource extends BaseImageResource
     bitmap: ImageBitmap;
     /**
      * @param {HTMLImageElement|string} source - image source or URL
-     * @param {boolean} [options.autoLoad=true] start loading process
-     * @param {boolean} [options.createBitmap=PIXI.settings.CREATE_IMAGE_BITMAP] whether its required to create
+     * @param {object} [options]
+     * @param {boolean} [options.autoLoad=true] - start loading process
+     * @param {boolean} [options.createBitmap=PIXI.settings.CREATE_IMAGE_BITMAP] - whether its required to create
      *        a bitmap before upload
      * @param {boolean} [options.crossorigin=true] - Load image using cross origin
      * @param {PIXI.ALPHA_MODES} [options.alphaMode=PIXI.ALPHA_MODES.UNPACK] - Premultiply image alpha in bitmap
@@ -129,7 +132,7 @@ export class ImageResource extends BaseImageResource
     /**
      * returns a promise when image will be loaded and processed
      *
-     * @param {boolean} [createBitmap] whether process image into bitmap
+     * @param {boolean} [createBitmap] - whether process image into bitmap
      * @returns {Promise<void>}
      */
     load(createBitmap?: boolean): Promise<ImageResource>
@@ -315,5 +318,17 @@ export class ImageResource extends BaseImageResource
         }
         this._process = null;
         this._load = null;
+    }
+
+    /**
+     * Used to auto-detect the type of resource.
+     *
+     * @static
+     * @param {string|HTMLImageElement} source - The source object
+     * @return {boolean} `true` if source is string or HTMLImageElement
+     */
+    static test(source: unknown): source is string|HTMLImageElement
+    {
+        return typeof source === 'string' || source instanceof HTMLImageElement;
     }
 }

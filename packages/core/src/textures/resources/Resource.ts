@@ -1,6 +1,8 @@
 import { Runner } from '@pixi/runner';
 
-import type { BaseTexture, Renderer, GLTexture } from '@pixi/core';
+import type { BaseTexture } from '../BaseTexture';
+import type { Renderer } from '../../Renderer';
+import type { GLTexture } from '../GLTexture';
 
 /**
  * Base resource class for textures that manages validation and uploading, depending on its type.
@@ -20,8 +22,8 @@ export abstract class Resource
     protected onUpdate: Runner;
     protected onError: Runner;
     /**
-     * @param {number} [width=0] Width of the resource
-     * @param {number} [height=0] Height of the resource
+     * @param {number} [width=0] - Width of the resource
+     * @param {number} [height=0] - Height of the resource
      */
     constructor(width = 0, height = 0)
     {
@@ -117,8 +119,8 @@ export abstract class Resource
 
     /**
      * Trigger a resize event
-     * @param {number} width X dimension
-     * @param {number} height Y dimension
+     * @param {number} width - X dimension
+     * @param {number} height - Y dimension
      */
     resize(width: number, height: number): void
     {
@@ -202,15 +204,10 @@ export abstract class Resource
      * @param {PIXI.GLTexture} glTexture - texture instance for this webgl context
      * @returns {boolean} `true` is success
      */
-    /* eslint-disable @typescript-eslint/no-unused-vars */
-    /* eslint-disable @typescript-eslint/ban-ts-ignore */
-    // @ts-ignore
-    style(renderer: Renderer, baseTexture: BaseTexture, glTexture: GLTexture): boolean
+    style(_renderer: Renderer, _baseTexture: BaseTexture, _glTexture: GLTexture): boolean
     {
         return false;
     }
-    /* eslint-enable @typescript-eslint/no-unused-vars */
-    /* eslint-enable @typescript-eslint/ban-ts-ignore */
 
     /**
      * Clean up anything, this happens when destroying is ready.
@@ -249,13 +246,8 @@ export abstract class Resource
      * @param {*} source - The source object
      * @param {string} extension - The extension of source, if set
      */
-    /* eslint-disable @typescript-eslint/no-unused-vars */
-    /* eslint-disable @typescript-eslint/ban-ts-ignore */
-    // @ts-ignore
-    static test(source: any, extension?: string): boolean
+    static test(_source: unknown, _extension?: string): boolean
     {
         return false;
     }
-    /* eslint-enable @typescript-eslint/no-unused-vars */
-    /* eslint-enable @typescript-eslint/ban-ts-ignore */
 }

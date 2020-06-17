@@ -5,6 +5,9 @@ import type { ITypedArray } from '@pixi/core';
 
 const DEFAULT_BORDER_SIZE = 10;
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface NineSlicePlane extends GlobalMixins.NineSlicePlane {}
+
 /**
  * The NineSlicePlane allows you to stretch a texture using 9-slice scaling. The corners will remain unscaled (useful
  * for buttons with rounded corners for example) and the other areas will be scaled horizontally and or vertically
@@ -40,17 +43,17 @@ export class NineSlicePlane extends SimplePlane
 {
     private _origWidth: number;
     private _origHeight: number;
-    private _leftWidth: number;
-    private _rightWidth: number;
-    private _topHeight: number;
-    private _bottomHeight: number;
+    _leftWidth: number;
+    _rightWidth: number;
+    _topHeight: number;
+    _bottomHeight: number;
 
     /**
      * @param {PIXI.Texture} texture - The texture to use on the NineSlicePlane.
-     * @param {number} [leftWidth=10] size of the left vertical bar (A)
-     * @param {number} [topHeight=10] size of the top horizontal bar (C)
-     * @param {number} [rightWidth=10] size of the right vertical bar (B)
-     * @param {number} [bottomHeight=10] size of the bottom horizontal bar (D)
+     * @param {number} [leftWidth=10] - size of the left vertical bar (A)
+     * @param {number} [topHeight=10] - size of the top horizontal bar (C)
+     * @param {number} [rightWidth=10] - size of the right vertical bar (B)
+     * @param {number} [bottomHeight=10] - size of the bottom horizontal bar (D)
      */
     constructor(
         texture: Texture,
@@ -128,7 +131,7 @@ export class NineSlicePlane extends SimplePlane
         return this.geometry.getBuffer('aVertexPosition').data;
     }
 
-    set vertices(value)
+    set vertices(value: ITypedArray)
     {
         this.geometry.getBuffer('aVertexPosition').data = value;
     }
@@ -192,7 +195,7 @@ export class NineSlicePlane extends SimplePlane
         return this._width;
     }
 
-    set width(value) // eslint-disable-line require-jsdoc
+    set width(value: number)
     {
         this._width = value;
         this._refresh();
@@ -208,7 +211,7 @@ export class NineSlicePlane extends SimplePlane
         return this._height;
     }
 
-    set height(value) // eslint-disable-line require-jsdoc
+    set height(value: number)
     {
         this._height = value;
         this._refresh();
@@ -224,7 +227,7 @@ export class NineSlicePlane extends SimplePlane
         return this._leftWidth;
     }
 
-    set leftWidth(value) // eslint-disable-line require-jsdoc
+    set leftWidth(value: number)
     {
         this._leftWidth = value;
         this._refresh();
@@ -240,7 +243,7 @@ export class NineSlicePlane extends SimplePlane
         return this._rightWidth;
     }
 
-    set rightWidth(value) // eslint-disable-line require-jsdoc
+    set rightWidth(value: number)
     {
         this._rightWidth = value;
         this._refresh();
@@ -256,7 +259,7 @@ export class NineSlicePlane extends SimplePlane
         return this._topHeight;
     }
 
-    set topHeight(value) // eslint-disable-line require-jsdoc
+    set topHeight(value: number)
     {
         this._topHeight = value;
         this._refresh();
@@ -272,7 +275,7 @@ export class NineSlicePlane extends SimplePlane
         return this._bottomHeight;
     }
 
-    set bottomHeight(value) // eslint-disable-line require-jsdoc
+    set bottomHeight(value: number)
     {
         this._bottomHeight = value;
         this._refresh();

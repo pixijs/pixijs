@@ -1,6 +1,6 @@
 import { Rectangle } from '@pixi/math';
 
-import type { IPoint, Transform, Matrix } from '@pixi/math';
+import type { IPointData, Transform, Matrix } from '@pixi/math';
 
 /**
  * 'Builder' pattern for bounds rectangles.
@@ -107,9 +107,9 @@ export class Bounds
     /**
      * This function should be inlined when its possible.
      *
-     * @param {PIXI.IPoint} point - The point to add.
+     * @param {PIXI.IPointData} point - The point to add.
      */
-    addPoint(point: IPoint): void
+    addPoint(point: IPointData): void
     {
         this.minX = Math.min(this.minX, point.x);
         this.maxX = Math.max(this.maxX, point.x);
@@ -372,8 +372,8 @@ export class Bounds
     /**
      * Adds other Bounds, multiplied by matrix. Bounds shouldn't be empty.
      *
-     * @param {PIXI.Bounds} bounds other bounds
-     * @param {PIXI.Matrix} matrix multiplicator
+     * @param {PIXI.Bounds} bounds - other bounds
+     * @param {PIXI.Matrix} matrix - multiplicator
      */
     addBoundsMatrix(bounds: Bounds, matrix: Matrix): void
     {

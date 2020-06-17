@@ -1,8 +1,9 @@
 import { ALPHA_MODES } from '@pixi/constants';
 import { BufferResource } from './BufferResource';
 
-import type { BaseTexture, GLTexture, Renderer } from '@pixi/core';
-
+import type { BaseTexture } from '../BaseTexture';
+import type { Renderer } from '../../Renderer';
+import type { GLTexture } from '../GLTexture';
 /**
  * Resource type for DepthTexture.
  * @class
@@ -13,9 +14,9 @@ export class DepthResource extends BufferResource
 {
     /**
      * Upload the texture to the GPU.
-     * @param {PIXI.Renderer} renderer Upload to the renderer
-     * @param {PIXI.BaseTexture} baseTexture Reference to parent texture
-     * @param {PIXI.GLTexture} glTexture glTexture
+     * @param {PIXI.Renderer} renderer - Upload to the renderer
+     * @param {PIXI.BaseTexture} baseTexture - Reference to parent texture
+     * @param {PIXI.GLTexture} glTexture - glTexture
      * @returns {boolean} true is success
      */
     upload(renderer: Renderer, baseTexture: BaseTexture, glTexture: GLTexture): boolean

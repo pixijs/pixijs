@@ -141,7 +141,7 @@ export class Application
 
     /**
      * Destroy and don't use after this.
-     * @param {Boolean} [removeView=false] Automatically remove canvas from DOM.
+     * @param {Boolean} [removeView=false] - Automatically remove canvas from DOM.
      * @param {object|boolean} [stageOptions] - Options parameter. A boolean will act as if all options
      *  have been set to that value
      * @param {boolean} [stageOptions.children=false] - if set to true, all the children will have their destroy

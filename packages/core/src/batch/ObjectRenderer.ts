@@ -1,4 +1,4 @@
-import type { Renderer } from '@pixi/core';
+import type { Renderer } from '../Renderer';
 
 /**
  * Base for a common object renderer that can be used as a
@@ -68,7 +68,6 @@ export class ObjectRenderer
      *
      * @param {PIXI.DisplayObject} object - The object to render.
      */
-    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     render(_object: any): void
     {
         // render the object

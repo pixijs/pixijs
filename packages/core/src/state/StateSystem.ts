@@ -3,7 +3,8 @@ import { System } from '../System';
 import { State } from './State';
 import { BLEND_MODES } from '@pixi/constants';
 
-import type { Renderer, IRenderingContext } from '@pixi/core';
+import type { IRenderingContext } from '../IRenderingContext';
+import type { Renderer } from '../Renderer';
 
 const BLEND = 0;
 const OFFSET = 1;
@@ -296,8 +297,8 @@ export class StateSystem extends System
      * or if polygon fill is activated then we need to check if the polygon offset changes.
      * The idea is that we only check what we have too.
      *
-     * @param {Function} func  the checking function to add or remove
-     * @param {boolean} value  should the check function be added or removed.
+     * @param {Function} func - the checking function to add or remove
+     * @param {boolean} value - should the check function be added or removed.
      */
     updateCheck(func: (system: this, state: State) => void, value: boolean): void
     {
@@ -318,8 +319,8 @@ export class StateSystem extends System
      *
      * @static
      * @private
-     * @param {PIXI.StateSystem} System  the System to perform the state check on
-     * @param {PIXI.State} state  the state that the blendMode will pulled from
+     * @param {PIXI.StateSystem} System - the System to perform the state check on
+     * @param {PIXI.State} state - the state that the blendMode will pulled from
      */
     static checkBlendMode(system: StateSystem, state: State): void
     {
@@ -331,11 +332,11 @@ export class StateSystem extends System
      *
      * @static
      * @private
-     * @param {PIXI.StateSystem} System  the System to perform the state check on
-     * @param {PIXI.State} state  the state that the blendMode will pulled from
+     * @param {PIXI.StateSystem} System - the System to perform the state check on
+     * @param {PIXI.State} state - the state that the blendMode will pulled from
      */
     static checkPolygonOffset(system: StateSystem, state: State): void
     {
-        system.setPolygonOffset(state.polygonOffset, 0);
+        system.setPolygonOffset(1, state.polygonOffset);
     }
 }

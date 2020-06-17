@@ -30,6 +30,8 @@ export interface IBaseTextureOptions {
     resourceOptions?: any;
 }
 
+export interface BaseTexture extends GlobalMixins.BaseTexture, EventEmitter {}
+
 /**
  * A Texture stores the information that represents an image.
  * All textures have a base texture, which contains information about the source.
@@ -70,7 +72,7 @@ export class BaseTexture extends EventEmitter
     public type?: TYPES;
     public target?: TARGETS;
 
-    protected uid: number;
+    public readonly uid: number;
     touched: number;
     isPowerOfTwo: boolean;
 
@@ -409,9 +411,9 @@ export class BaseTexture extends EventEmitter
     /**
      * Changes w/h/resolution. Texture becomes valid if width and height are greater than zero.
      *
-     * @param {number} width Visual width
-     * @param {number} height Visual height
-     * @param {number} [resolution] Optionally set resolution
+     * @param {number} width - Visual width
+     * @param {number} height - Visual height
+     * @param {number} [resolution] - Optionally set resolution
      * @returns {PIXI.BaseTexture} this
      */
     setSize(width: number, height: number, resolution?: number): this
@@ -428,9 +430,9 @@ export class BaseTexture extends EventEmitter
     /**
      * Sets real size of baseTexture, preserves current resolution.
      *
-     * @param {number} realWidth Full rendered width
-     * @param {number} realHeight Full rendered height
-     * @param {number} [resolution] Optionally set resolution
+     * @param {number} realWidth - Full rendered width
+     * @param {number} realHeight - Full rendered height
+     * @param {number} [resolution] - Optionally set resolution
      * @returns {PIXI.BaseTexture} this
      */
     setRealSize(realWidth: number, realHeight: number, resolution?: number): this
@@ -457,7 +459,7 @@ export class BaseTexture extends EventEmitter
     /**
      * Changes resolution
      *
-     * @param {number} resolution res
+     * @param {number} resolution - res
      * @returns {PIXI.BaseTexture} this
      */
     setResolution(resolution: number): this
@@ -606,7 +608,7 @@ export class BaseTexture extends EventEmitter
      * @param {string|HTMLImageElement|HTMLCanvasElement|SVGElement|HTMLVideoElement} source - The
      *        source to create base texture from.
      * @param {object} [options] See {@link PIXI.BaseTexture}'s constructor for options.
-     * @param {boolean} [strict] Enforce strict-mode, see {@link PIXI.settings.STRICT_TEXTURE_CACHE}.
+     * @param {boolean} [strict] - Enforce strict-mode, see {@link PIXI.settings.STRICT_TEXTURE_CACHE}.
      * @returns {PIXI.BaseTexture} The new base texture.
      */
     static from(source: ImageSource|string, options: IBaseTextureOptions,
@@ -651,7 +653,7 @@ export class BaseTexture extends EventEmitter
      * Create a new BaseTexture with a BufferResource from a Float32Array.
      * RGBA values are floats from 0 to 1.
      * @static
-     * @param {Float32Array|Uint8Array} buffer The optional array to use, if no data
+     * @param {Float32Array|Uint8Array} buffer - The optional array to use, if no data
      *        is provided, a new Float32Array is created.
      * @param {number} width - Width of the resource
      * @param {number} height - Height of the resource

@@ -32,18 +32,18 @@ export interface IAccessibleHTMLElement extends HTMLElement {
 
 /**
  * Default property values of accessible objects
- * used by {@link PIXI.accessibility.AccessibilityManager}.
+ * used by {@link PIXI.AccessibilityManager}.
  *
  * @private
  * @function accessibleTarget
- * @memberof PIXI.accessibility
+ * @memberof PIXI
  * @type {Object}
  * @example
  *      function MyObject() {}
  *
  *      Object.assign(
  *          MyObject.prototype,
- *          PIXI.accessibility.accessibleTarget
+ *          PIXI.accessibleTarget
  *      );
  */
 export const accessibleTarget: IAccessibleTarget = {

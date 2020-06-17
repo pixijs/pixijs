@@ -54,7 +54,7 @@ export class SimpleMesh extends Mesh
     {
         return this.geometry.getBuffer('aVertexPosition').data;
     }
-    set vertices(value)
+    set vertices(value: ITypedArray)
     {
         this.geometry.getBuffer('aVertexPosition').data = value;
     }

@@ -65,19 +65,54 @@ describe('PIXI.BitmapText', function ()
         expect(BitmapFont.available[this.font.font]).to.equal(this.font);
         expect(BitmapFont.available[this.font2.font]).to.equal(this.font2);
     });
+
+    it('should have correct children when modified', function ()
+    {
+        BitmapFont.from('testFont', {
+            fill: '#333333',
+            fontSize: 4,
+        });
+
+        const text = new BitmapText('ABCDEFG', {
+            fontName: 'testFont',
+        });
+
+        const listener = sinon.spy(text, 'addChild');
+
+        text.updateText();
+
+        expect(listener.callCount).to.equal(1);
+        expect(text.children.length).to.equal(1);
+
+        text.updateText();
+
+        expect(listener.callCount).to.equal(1);
+        expect(text.children.length).to.equal(1);
+
+        text.text = 'hiya';
+
+        text.updateText();
+
+        expect(listener.callCount).to.equal(1);
+        expect(text.children.length).to.equal(1);
+    });
+
     it('should render text even if there are unsupported characters', function ()
     {
         const text = new BitmapText('ABCDEFG', {
-            font: this.font.font,
+            fontName: this.font.font,
         });
 
-        expect(text.children.length).to.equal(4);
+        text.updateText();
+        expect(text._activePagesMeshData[0].total).to.equal(4);
     });
     it('should support font without page reference', function ()
     {
         const text = new BitmapText('A', {
-            font: this.font2.font,
+            fontName: this.font2.font,
         });
+
+        text.updateText();
 
         expect(text.children[0].width).to.equal(19);
         expect(text.children[0].height).to.equal(20);
@@ -85,9 +120,11 @@ describe('PIXI.BitmapText', function ()
     it('should break line on space', function ()
     {
         const bmpText = new BitmapText('', {
-            font: this.font.font,
+            fontName: this.font.font,
             size: 24,
         });
+
+        bmpText.updateText();
 
         bmpText.maxWidth = 40;
         bmpText.text = 'A A A A A A A ';
@@ -105,8 +142,11 @@ describe('PIXI.BitmapText', function ()
     {
         const text = 'ABCD zz DCBA';
         const bmpText = new BitmapText(text, {
-            font: this.font.font,
+            fontName: this.font.font,
         });
+
+        bmpText.updateText();
+
         const positions = [];
         const renderedChars = bmpText.children.length;
 

@@ -4,9 +4,12 @@ import { Sprite } from '@pixi/sprite';
 import { deprecation } from '@pixi/utils';
 import type { Renderer, IBaseTextureOptions, TextureSource } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
-import type { IPoint, ISize, ObservablePoint } from '@pixi/math';
+import type { IPoint, IPointData, ISize, ObservablePoint } from '@pixi/math';
 
 const tempPoint = new Point();
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface TilingSprite extends GlobalMixins.TilingSprite {}
 
 /**
  * A tiling sprite is a fast way of rendering a tiling image
@@ -89,7 +92,7 @@ export class TilingSprite extends Sprite
         return this.uvMatrix.clampMargin;
     }
 
-    set clampMargin(value) // eslint-disable-line require-jsdoc
+    set clampMargin(value: number)
     {
         this.uvMatrix.clampMargin = value;
         this.uvMatrix.update(true);
@@ -105,7 +108,7 @@ export class TilingSprite extends Sprite
         return this.tileTransform.scale;
     }
 
-    set tileScale(value) // eslint-disable-line require-jsdoc
+    set tileScale(value: ObservablePoint)
     {
         this.tileTransform.scale.copyFrom(value as IPoint);
     }
@@ -120,7 +123,7 @@ export class TilingSprite extends Sprite
         return this.tileTransform.position;
     }
 
-    set tilePosition(value) // eslint-disable-line require-jsdoc
+    set tilePosition(value: ObservablePoint)
     {
         this.tileTransform.position.copyFrom(value as IPoint);
     }
@@ -210,10 +213,10 @@ export class TilingSprite extends Sprite
     /**
      * Checks if a point is inside this tiling sprite.
      *
-     * @param {PIXI.IPoint} point - the point to check
+     * @param {PIXI.IPointData} point - the point to check
      * @return {boolean} Whether or not the sprite contains the point.
      */
-    public containsPoint(point: IPoint): boolean
+    public containsPoint(point: IPointData): boolean
     {
         this.worldTransform.applyInverse(point, tempPoint);
 
@@ -290,7 +293,7 @@ export class TilingSprite extends Sprite
         return this._width;
     }
 
-    set width(value) // eslint-disable-line require-jsdoc
+    set width(value: number)
     {
         this._width = value;
     }
@@ -305,7 +308,7 @@ export class TilingSprite extends Sprite
         return this._height;
     }
 
-    set height(value) // eslint-disable-line require-jsdoc
+    set height(value: number)
     {
         this._height = value;
     }

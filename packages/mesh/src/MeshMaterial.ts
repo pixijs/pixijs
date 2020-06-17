@@ -14,6 +14,9 @@ export interface IMeshMaterialOptions {
     uniforms?: {};
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface MeshMaterial extends GlobalMixins.MeshMaterial {}
+
 /**
  * Slightly opinionated default shader for PixiJS 2D objects.
  * @class
@@ -26,8 +29,8 @@ export class MeshMaterial extends Shader
 
     public batchable: boolean;
     public pluginName: string;
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    // @ts-ignore
+
+    // Internal-only properties
     _tintRGB: number;
 
     private _colorDirty: boolean;
@@ -109,7 +112,7 @@ export class MeshMaterial extends Shader
     {
         return this.uniforms.uSampler;
     }
-    set texture(value)
+    set texture(value: Texture)
     {
         if (this.uniforms.uSampler !== value)
         {
@@ -124,7 +127,7 @@ export class MeshMaterial extends Shader
      * @default 1
      * @member {number}
      */
-    set alpha(value)
+    set alpha(value: number)
     {
         if (value === this._alpha) return;
 
@@ -141,7 +144,7 @@ export class MeshMaterial extends Shader
      * @member {number}
      * @default 0xFFFFFF
      */
-    set tint(value)
+    set tint(value: number)
     {
         if (value === this._tint) return;
 
