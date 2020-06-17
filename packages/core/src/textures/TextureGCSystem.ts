@@ -3,6 +3,13 @@ import { GC_MODES } from '@pixi/constants';
 import { settings } from '@pixi/settings';
 
 import type { Renderer } from '../Renderer';
+import type { Texture } from './Texture';
+import type { RenderTexture } from '../renderTexture/RenderTexture';
+
+export interface IUnloadableTexture {
+    _texture: Texture | RenderTexture;
+    children: IUnloadableTexture[];
+}
 
 /**
  * System plugin to the renderer to manage texture garbage collection on the GPU,
@@ -128,18 +135,18 @@ export class TextureGCSystem extends System
             managedTextures.length = j;
         }
     }
-    /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+
     /**
      * Removes all the textures within the specified displayObject and its children from the GPU
      *
      * @param {PIXI.DisplayObject} displayObject - the displayObject to remove the textures from.
      */
-    unload(displayObject: any): void
+    unload(displayObject: IUnloadableTexture): void
     {
         const tm = this.renderer.texture;
 
         // only destroy non generated textures
-        if (displayObject._texture?._glRenderTargets)
+        if ((displayObject._texture as RenderTexture)?.framebuffer)
         {
             tm.destroyTexture(displayObject._texture);
         }
@@ -149,5 +156,4 @@ export class TextureGCSystem extends System
             this.unload(displayObject.children[i]);
         }
     }
-    /* eslint-enable @typescript-eslint/explicit-module-boundary-types */
 }
