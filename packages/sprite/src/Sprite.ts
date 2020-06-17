@@ -7,7 +7,7 @@ import { sign } from '@pixi/utils';
 
 import type { IBaseTextureOptions, Renderer, TextureSource } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
-import type { IPoint } from '@pixi/math';
+import type { IPointData } from '@pixi/math';
 
 const tempPoint = new Point();
 const indices = new Uint16Array([0, 1, 2, 0, 2, 3]);
@@ -64,8 +64,7 @@ export class Sprite extends Container
     private _transformTrimmedID: number;
     private _tint: number;
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    // @ts-ignore
+    // Internal-only properties
     _tintRGB: number;
 
     /**
@@ -476,10 +475,10 @@ export class Sprite extends Container
     /**
      * Tests if a point is inside this sprite
      *
-     * @param {PIXI.IPoint} point - the point to test
+     * @param {PIXI.IPointData} point - the point to test
      * @return {boolean} the result of the test
      */
-    public containsPoint(point: IPoint): boolean
+    public containsPoint(point: IPointData): boolean
     {
         this.worldTransform.applyInverse(point, tempPoint);
 
@@ -560,7 +559,7 @@ export class Sprite extends Container
      * @member {boolean}
      * @default false
      */
-    set roundPixels(value)
+    set roundPixels(value: boolean)
     {
         if (this._roundPixels !== value)
         {
@@ -584,7 +583,7 @@ export class Sprite extends Container
         return Math.abs(this.scale.x) * this._texture.orig.width;
     }
 
-    set width(value)
+    set width(value: number)
     {
         const s = sign(this.scale.x) || 1;
 
@@ -602,7 +601,7 @@ export class Sprite extends Container
         return Math.abs(this.scale.y) * this._texture.orig.height;
     }
 
-    set height(value)
+    set height(value: number)
     {
         const s = sign(this.scale.y) || 1;
 
@@ -633,7 +632,7 @@ export class Sprite extends Container
         return this._anchor;
     }
 
-    set anchor(value)
+    set anchor(value: ObservablePoint)
     {
         this._anchor.copyFrom(value);
     }
@@ -650,7 +649,7 @@ export class Sprite extends Container
         return this._tint;
     }
 
-    set tint(value)
+    set tint(value: number)
     {
         this._tint = value;
         this._tintRGB = (value >> 16) + (value & 0xff00) + ((value & 0xff) << 16);
@@ -666,7 +665,7 @@ export class Sprite extends Container
         return this._texture;
     }
 
-    set texture(value)
+    set texture(value: Texture)
     {
         if (this._texture === value)
         {

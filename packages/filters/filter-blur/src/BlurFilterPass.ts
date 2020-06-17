@@ -136,7 +136,7 @@ export class BlurFilterPass extends Filter
         return this.strength;
     }
 
-    set blur(value)
+    set blur(value: number)
     {
         this.padding = 1 + (Math.abs(value) * 2);
         this.strength = value;
@@ -154,7 +154,7 @@ export class BlurFilterPass extends Filter
         return this._quality;
     }
 
-    set quality(value)
+    set quality(value: number)
     {
         this._quality = value;
         this.passes = value;

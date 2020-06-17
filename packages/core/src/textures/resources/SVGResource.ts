@@ -30,7 +30,7 @@ export class SVGResource extends BaseImageResource
     public readonly scale: number;
     readonly _overrideWidth: number;
     readonly _overrideHeight: number;
-    private _resolve: Function;
+    private _resolve: () => void;
     private _load: Promise<SVGResource>;
     private _crossorigin?: boolean|string;
 
@@ -236,7 +236,7 @@ export class SVGResource extends BaseImageResource
      * @param {*} source - The source object
      * @param {string} extension - The extension of source, if set
      */
-    static test(source: any, extension?: string): boolean
+    static test(source: unknown, extension?: string): boolean
     {
         // url file extension is SVG
         return extension === 'svg'

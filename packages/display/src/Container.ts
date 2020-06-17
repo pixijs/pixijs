@@ -669,7 +669,7 @@ export class Container extends DisplayObject
         return this.scale.x * this.getLocalBounds().width;
     }
 
-    set width(value)
+    set width(value: number)
     {
         const width = this.getLocalBounds().width;
 
@@ -695,7 +695,7 @@ export class Container extends DisplayObject
         return this.scale.y * this.getLocalBounds().height;
     }
 
-    set height(value)
+    set height(value: number)
     {
         const height = this.getLocalBounds().height;
 
