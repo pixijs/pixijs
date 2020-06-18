@@ -16,10 +16,10 @@ DisplayObject.prototype.name = null;
  * @method getChildByName
  * @memberof PIXI.Container#
  * @param {string} name - Instance name.
- * @param {boolean}[isRecursive=false] - Whether to search recursively
+ * @param {boolean}[deep=false] - Whether to search recursively
  * @return {PIXI.DisplayObject} The child with the specified name.
  */
-Container.prototype.getChildByName = function getChildByName(name: string, isRecursive?: boolean): DisplayObject
+Container.prototype.getChildByName = function getChildByName(name: string, deep?: boolean): DisplayObject
 {
     for (let i = 0, j = this.children.length; i < j; i++)
     {
@@ -29,10 +29,17 @@ Container.prototype.getChildByName = function getChildByName(name: string, isRec
         }
     }
 
-    if (isRecursive)
+    if (deep)
     {
         for (let i = 0, j = this.children.length; i < j; i++)
         {
+            const child = (this.children[i] as Container);
+
+            if (!child.getChildByName)
+            {
+                continue;
+            }
+
             const target = (this.children[i] as Container).getChildByName(name, true);
 
             if (target)
