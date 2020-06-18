@@ -250,12 +250,10 @@ export class CanvasRenderer extends AbstractRenderer
         if (!skipUpdateTransform)
         {
             // update the scene graph
-            const cacheParent = displayObject.parent;
+            const cacheParent = displayObject.enableTempParent();
 
-            displayObject.parent = this._tempDisplayObjectParent;
             displayObject.updateTransform();
-            displayObject.parent = cacheParent;
-            // displayObject.hitArea = //TODO add a temp hit area
+            displayObject.disableTempParent(cacheParent);
         }
 
         context.save();
