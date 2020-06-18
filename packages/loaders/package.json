@@ -27,5 +27,8 @@
     "@pixi/core": "5.2.4",
     "@pixi/utils": "5.2.4",
     "resource-loader": "^3.0.1"
+  },
+  "devDependencies": {
+    "@pixi/utils": "5.2.1"
   }
 }

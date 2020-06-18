@@ -1,4 +1,5 @@
-import { IPoint } from './IPoint';
+import type { IPoint } from './IPoint';
+import type { IPointData } from './IPointData';
 
 /**
  * The Point object represents a location in a two-dimensional coordinate system, where x represents
@@ -45,10 +46,10 @@ export class Point implements IPoint
     /**
      * Copies x and y from the given point
      *
-     * @param {PIXI.IPoint} p - The point to copy from
+     * @param {PIXI.IPointData} p - The point to copy from
      * @returns {this} Returns itself.
      */
-    copyFrom(p: IPoint): this
+    copyFrom(p: IPointData): this
     {
         this.set(p.x, p.y);
 
@@ -71,10 +72,10 @@ export class Point implements IPoint
     /**
      * Returns true if the given point is equal to this point
      *
-     * @param {PIXI.IPoint} p - The point to check
+     * @param {PIXI.IPointData} p - The point to check
      * @returns {boolean} Whether the given point equal to this point
      */
-    equals(p: IPoint): boolean
+    equals(p: IPointData): boolean
     {
         return (p.x === this.x) && (p.y === this.y);
     }

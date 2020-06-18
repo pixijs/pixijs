@@ -1,28 +1,17 @@
-export interface IPoint
+import { IPointData } from './IPointData';
+
+export interface IPoint extends IPointData
 {
-    x: number;
-    y: number;
-    copyFrom(p: IPoint): this;
+    copyFrom(p: IPointData): this;
     copyTo<T extends IPoint>(p: T): T;
-    equals(p: IPoint): boolean;
+    equals(p: IPointData): boolean;
     set(x?: number, y?: number): void;
 }
 /**
  * Common interface for points. Both Point and ObservablePoint implement it
  * @memberof PIXI
  * @interface IPoint
- */
-
-/**
- * X coord
- * @memberof PIXI.IPoint#
- * @member {number} x
- */
-
-/**
- * Y coord
- * @memberof PIXI.IPoint#
- * @member {number} y
+ * @extends PIXI.IPointData
  */
 
 /**
@@ -39,7 +28,7 @@ export interface IPoint
  * Copies x and y from the given point
  * @method copyFrom
  * @memberof PIXI.IPoint#
- * @param {PIXI.IPoint} p - The point to copy from
+ * @param {PIXI.IPointData} p - The point to copy from
  * @returns {this} Returns itself.
  */
 
@@ -56,7 +45,7 @@ export interface IPoint
  *
  * @method equals
  * @memberof PIXI.IPoint#
- * @param {PIXI.IPoint} p - The point to check
+ * @param {PIXI.IPointData} p - The point to check
  * @returns {boolean} Whether the given point equal to this point
  */
 

@@ -1,5 +1,7 @@
+import type { Dict } from '../types';
+
 // A map of warning messages already fired
-const warnings: {[key: string]: boolean} = {};
+const warnings: Dict<boolean> = {};
 
 /**
  * Helper for warning developers about deprecated features & settings.

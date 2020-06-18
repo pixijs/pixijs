@@ -359,9 +359,10 @@ export class Ticker
     }
 
     /**
-     * Counts the number of listeners on this ticker.
+     * The number of listeners on this ticker, calculated by walking through linked list
      *
-     * @returns {number} The number of listeners on this ticker
+     * @readonly
+     * @member {number}
      */
     get count(): number
     {
@@ -548,7 +549,7 @@ export class Ticker
         return 1000 / this._maxElapsedMS;
     }
 
-    set minFPS(fps) // eslint-disable-line require-jsdoc
+    set minFPS(fps: number)
     {
         // Minimum must be below the maxFPS
         const minFPS = Math.min(this.maxFPS, fps);
@@ -579,7 +580,7 @@ export class Ticker
         return 0;
     }
 
-    set maxFPS(fps)
+    set maxFPS(fps: number)
     {
         if (fps === 0)
         {
@@ -651,7 +652,7 @@ export class Ticker
     }
 
     /**
-     * The system ticker instance used by {@link PIXI.interaction.InteractionManager} and by
+     * The system ticker instance used by {@link PIXI.InteractionManager} and by
      * {@link PIXI.BasePrepare} for core timing functionality that shouldn't usually need to be paused,
      * unlike the `shared` ticker which drives visual animations and rendering which may want to be paused.
      *

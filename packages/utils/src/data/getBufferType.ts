@@ -1,4 +1,6 @@
-export function getBufferType(array: any): 'Float32Array'|'Uint32Array'|'Int32Array'|'Uint16Array'|'Uint8Array'|null
+import type { ITypedArray } from '@pixi/core';
+
+export function getBufferType(array: ITypedArray): 'Float32Array'|'Uint32Array'|'Int32Array'|'Uint16Array'|'Uint8Array'|null
 {
     if (array.BYTES_PER_ELEMENT === 4)
     {

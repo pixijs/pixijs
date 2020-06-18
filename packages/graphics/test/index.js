@@ -3,7 +3,7 @@ const { Renderer, BatchRenderer, Texture } = require('@pixi/core');
 const { Graphics, GRAPHICS_CURVES, FillStyle, LineStyle, graphicsUtils } = require('../');
 const { FILL_COMMANDS, buildLine } = graphicsUtils;
 const { BLEND_MODES } = require('@pixi/constants');
-const { Point, Matrix, SHAPES } = require('@pixi/math');
+const { Point, Matrix, SHAPES, Polygon } = require('@pixi/math');
 const { skipHello } = require('@pixi/utils');
 
 Renderer.registerPlugin('batch', BatchRenderer);
@@ -428,6 +428,89 @@ describe('PIXI.Graphics', function ()
                 .clear();
 
             expect(graphics).to.be.not.null;
+        });
+    });
+
+    describe('drawPolygon', function ()
+    {
+        before(function ()
+        {
+            this.numbers = [0, 0, 10, 10, 20, 20];
+            this.points = [new Point(0, 0), new Point(10, 10), new Point(20, 20)];
+            this.poly = new Polygon(this.points);
+        });
+
+        it('should support polygon argument', function ()
+        {
+            const graphics = new Graphics();
+
+            expect(graphics.currentPath).to.be.null;
+
+            graphics.drawPolygon(this.poly);
+
+            expect(graphics.geometry.graphicsData[0]).to.be.not.null;
+
+            const result = graphics.geometry.graphicsData[0].shape.points;
+
+            expect(result).to.deep.equals(this.numbers);
+        });
+
+        it('should support array of numbers', function ()
+        {
+            const graphics = new Graphics();
+
+            expect(graphics.currentPath).to.be.null;
+
+            graphics.drawPolygon(this.numbers);
+
+            expect(graphics.geometry.graphicsData[0]).to.be.not.null;
+
+            const result = graphics.geometry.graphicsData[0].shape.points;
+
+            expect(result).to.deep.equals(this.numbers);
+        });
+
+        it('should support array of points', function ()
+        {
+            const graphics = new Graphics();
+
+            graphics.drawPolygon(this.points);
+
+            expect(graphics.geometry.graphicsData[0]).to.be.not.null;
+
+            const result = graphics.geometry.graphicsData[0].shape.points;
+
+            expect(result).to.deep.equals(this.numbers);
+        });
+
+        it('should support flat arguments of numbers', function ()
+        {
+            const graphics = new Graphics();
+
+            expect(graphics.currentPath).to.be.null;
+
+            graphics.drawPolygon(...this.numbers);
+
+            expect(graphics.geometry.graphicsData[0]).to.be.not.null;
+
+            const result = graphics.geometry.graphicsData[0].shape.points;
+
+            expect(result).to.deep.equals(this.numbers);
+        });
+
+        it('should support flat arguments of points', function ()
+        {
+            const graphics = new Graphics();
+
+            expect(graphics.currentPath).to.be.null;
+
+            graphics.drawPolygon(...this.points);
+
+            expect(graphics.geometry.graphicsData[0]).to.be.not.null;
+
+            const result = graphics.geometry.graphicsData[0].shape.points;
+
+            expect(result).to.deep.equals(this.numbers);
         });
     });
 
