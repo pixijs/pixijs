@@ -87,7 +87,7 @@ export class Bounds
      * @param {PIXI.Rectangle} rect - temporary object will be used if AABB is not empty
      * @returns {PIXI.Rectangle} A rectangle of the bounds
      */
-    getRectangle(rect: Rectangle): Rectangle
+    getRectangle(rect?: Rectangle): Rectangle
     {
         if (this.minX > this.maxX || this.minY > this.maxY)
         {

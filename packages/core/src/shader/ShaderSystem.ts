@@ -66,7 +66,7 @@ export class ShaderSystem extends System
      *
      * @private
      */
-    private systemCheck(): void
+    systemCheck(): void
     {
         if (!unsafeEvalSupported())
         {
@@ -127,6 +127,7 @@ export class ShaderSystem extends System
         shader.syncUniforms(glProgram.uniformData, uniforms, this.renderer);
     }
 
+    /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
     /**
      *
      * syncs uniforms on the group
@@ -157,6 +158,7 @@ export class ShaderSystem extends System
 
         syncFunc(glProgram.uniformData, group.uniforms, this.renderer, syncData);
     }
+    /* eslint-enable @typescript-eslint/explicit-module-boundary-types */
 
     createSyncGroups(group: UniformGroup): UniformsSyncCallback
     {

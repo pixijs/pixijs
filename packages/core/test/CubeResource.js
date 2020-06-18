@@ -14,7 +14,7 @@ describe('PIXI.resources.CubeResource', function ()
         expect(() =>
         {
             // eslint-disable-next-line no-new
-            new CubeResource(8);
+            new CubeResource([null, null, null, null, null, null, null, null]);
         }).to.throw(Error, /invalid length/i);
     });
     it('should be created through BaseTexture.from()', function ()

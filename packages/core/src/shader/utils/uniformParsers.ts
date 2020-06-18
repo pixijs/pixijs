@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 // Parsers, each one of these will take a look at the type of shader property and uniform.
 // if they pass the test function then the code function is called that returns a the shader upload code for that uniform.
 // Shader upload code is automagically generated with these parsers.
@@ -14,7 +15,7 @@
 
 export interface IUniformParser
 {
-    test(data: any, uniform: any): boolean;
+    test(data: unknown, uniform: any): boolean;
     code(name: string, uniform: any): string;
 }
 

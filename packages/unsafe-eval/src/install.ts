@@ -1,10 +1,14 @@
 import { syncUniforms } from './syncUniforms';
 
-import type { Program, UniformGroup } from '@pixi/core';
+import type { Program, UniformGroup, systems } from '@pixi/core';
 
-export function install(PIXI: any): void
+interface PIXICore {
+    systems?: typeof systems
+}
+
+export function install(PIXI: PIXICore): void
 {
-    if (!PIXI || !PIXI.systems || !PIXI.systems.ShaderSystem)
+    if (!(PIXI?.systems?.ShaderSystem))
     {
         throw new Error('Unable to patch ShaderSystem, class not found.');
     }
