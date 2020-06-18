@@ -27,6 +27,7 @@ const GL_TO_GLSL_TYPES: Dict<string> = {
     SAMPLER_2D_ARRAY:  'sampler2DArray',
 };
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function mapType(gl: any, type: number): string
 {
     if (!GL_TABLE)

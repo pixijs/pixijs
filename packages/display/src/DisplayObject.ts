@@ -556,7 +556,7 @@ export abstract class DisplayObject extends EventEmitter
     {
         if (this.tempDisplayObjectParent === null)
         {
-            // eslint-disable-next-line @typescript-eslint/no-use-before-define
+            // eslint-disable-next-line no-use-before-define
             this.tempDisplayObjectParent = new TemporaryDisplayObject();
         }
 
@@ -835,9 +835,9 @@ export abstract class DisplayObject extends EventEmitter
 
 export class TemporaryDisplayObject extends DisplayObject
 {
-    calculateBounds: () => {} = null;
-    removeChild: (child: DisplayObject) => {} = null;
-    render: (renderer: Renderer) => {} = null;
+    calculateBounds: () => null;
+    removeChild: (child: DisplayObject) => null;
+    render: (renderer: Renderer) => null;
     sortDirty: boolean = null;
 }
 
