@@ -564,6 +564,35 @@ export abstract class DisplayObject extends EventEmitter
     }
 
     /**
+     * Used in Renderer, cacheAsBitmap and other places where you call an `updateTransform` on root
+     *
+     * ```
+     * const cacheParent = elem.enableTempParent();
+     * elem.updateTransform();
+     * elem.disableTempParent(cacheParent);
+     * ```
+     *
+     * @returns {PIXI.DisplayObject} current parent
+     */
+    enableTempParent(): DisplayObject
+    {
+        const myParent = this.parent;
+
+        this.parent = this._tempDisplayObjectParent;
+
+        return myParent;
+    }
+
+    /**
+     * Pair method for `enableTempParent`
+     * @param {PIXI.DisplayObject} cacheParent actual parent of element
+     */
+    disableTempParent(cacheParent: DisplayObject): void
+    {
+        this.parent = cacheParent;
+    }
+
+    /**
      * The position of the displayObject on the x axis relative to the local coordinates of the parent.
      * An alias to position.x
      *
