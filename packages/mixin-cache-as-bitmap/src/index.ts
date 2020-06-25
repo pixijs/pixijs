@@ -258,9 +258,9 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
     // restore the transform of the cached sprite to avoid the nasty flicker..
     if (!this.parent)
     {
-        this.parent = (renderer as any)._tempDisplayObjectParent;
+        this.enableTempParent();
         this.updateTransform();
-        this.parent = null;
+        this.disableTempParent(null);
     }
     else
     {

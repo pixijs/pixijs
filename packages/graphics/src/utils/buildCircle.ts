@@ -20,7 +20,7 @@ export const buildCircle: IShapeBuildCommand = {
     build(graphicsData)
     {
         // need to convert points to a nice regular data
-        const circleData = graphicsData.shape as Circle & Ellipse;
+        const circleData = graphicsData.shape as Circle;
         const points = graphicsData.points;
         const x = circleData.x;
         const y = circleData.y;
@@ -37,8 +37,10 @@ export const buildCircle: IShapeBuildCommand = {
         }
         else
         {
-            width = circleData.width;
-            height = circleData.height;
+            const ellipseData = graphicsData.shape as Ellipse;
+
+            width = ellipseData.width;
+            height = ellipseData.height;
         }
 
         if (width === 0 || height === 0)
@@ -47,7 +49,7 @@ export const buildCircle: IShapeBuildCommand = {
         }
 
         let totalSegs = Math.floor(30 * Math.sqrt(circleData.radius))
-            || Math.floor(15 * Math.sqrt(circleData.width + circleData.height));
+            || Math.floor(15 * Math.sqrt(width + height));
 
         totalSegs /= 2.3;
 

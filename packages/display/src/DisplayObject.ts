@@ -556,11 +556,40 @@ export abstract class DisplayObject extends EventEmitter
     {
         if (this.tempDisplayObjectParent === null)
         {
-            // eslint-disable-next-line @typescript-eslint/no-use-before-define
+            // eslint-disable-next-line no-use-before-define
             this.tempDisplayObjectParent = new TemporaryDisplayObject();
         }
 
         return this.tempDisplayObjectParent;
+    }
+
+    /**
+     * Used in Renderer, cacheAsBitmap and other places where you call an `updateTransform` on root
+     *
+     * ```
+     * const cacheParent = elem.enableTempParent();
+     * elem.updateTransform();
+     * elem.disableTempParent(cacheParent);
+     * ```
+     *
+     * @returns {PIXI.DisplayObject} current parent
+     */
+    enableTempParent(): DisplayObject
+    {
+        const myParent = this.parent;
+
+        this.parent = this._tempDisplayObjectParent;
+
+        return myParent;
+    }
+
+    /**
+     * Pair method for `enableTempParent`
+     * @param {PIXI.DisplayObject} cacheParent actual parent of element
+     */
+    disableTempParent(cacheParent: DisplayObject): void
+    {
+        this.parent = cacheParent;
     }
 
     /**
@@ -806,9 +835,9 @@ export abstract class DisplayObject extends EventEmitter
 
 export class TemporaryDisplayObject extends DisplayObject
 {
-    calculateBounds: () => {} = null;
-    removeChild: (child: DisplayObject) => {} = null;
-    render: (renderer: Renderer) => {} = null;
+    calculateBounds: () => null;
+    removeChild: (child: DisplayObject) => null;
+    render: (renderer: Renderer) => null;
     sortDirty: boolean = null;
 }
 
