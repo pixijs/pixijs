@@ -77,6 +77,7 @@ export class ArcUtils
         };
     }
 
+    /* eslint-disable max-len */
     /**
      * The arc method creates an arc/curve (used to create circles, or parts of circles).
      *
@@ -94,10 +95,8 @@ export class ArcUtils
      *  indicates counter-clockwise.
      * @param {number[]} points - Collection of points to add to
      */
-
-    /* eslint-disable max-len, @typescript-eslint/no-unused-vars, @typescript-eslint/ban-ts-ignore */
-    // @ts-ignore
-    static arc(startX: number, startY: number, cx: number, cy: number, radius: number, startAngle: number, endAngle: number, anticlockwise: boolean, points: Array<number>): void
+    static arc(_startX: number, _startY: number, cx: number, cy: number, radius: number,
+        startAngle: number, endAngle: number, _anticlockwise: boolean, points: Array<number>): void
     {
         const sweep = endAngle - startAngle;
         const n = GRAPHICS_CURVES._segmentsCount(
@@ -125,5 +124,5 @@ export class ArcUtils
             );
         }
     }
-    /* eslint-enable max-len, @typescript-eslint/no-unused-vars, @typescript-eslint/ban-ts-ignore */
+    /* eslint-enable max-len */
 }

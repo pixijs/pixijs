@@ -106,7 +106,7 @@ export class DisplacementFilter extends Filter
         return this.uniforms.mapSampler;
     }
 
-    set map(value) // eslint-disable-line require-jsdoc
+    set map(value: Texture)
     {
         this.uniforms.mapSampler = value;
     }

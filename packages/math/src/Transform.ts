@@ -273,7 +273,7 @@ export class Transform
         return this._rotation;
     }
 
-    set rotation(value) // eslint-disable-line require-jsdoc
+    set rotation(value: number)
     {
         if (this._rotation !== value)
         {

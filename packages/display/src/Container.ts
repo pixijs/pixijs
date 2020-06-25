@@ -103,7 +103,6 @@ export class Container extends DisplayObject
      *
      * @protected
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     protected onChildrenChange(_length: number): void
     {
         /* empty */
@@ -623,7 +622,6 @@ export class Container extends DisplayObject
      * @protected
      * @param {PIXI.Renderer} renderer - The renderer
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     protected _render(_renderer: Renderer): void // eslint-disable-line no-unused-vars
     {
         // this is where content itself gets rendered...
@@ -671,7 +669,7 @@ export class Container extends DisplayObject
         return this.scale.x * this.getLocalBounds().width;
     }
 
-    set width(value) // eslint-disable-line require-jsdoc
+    set width(value: number)
     {
         const width = this.getLocalBounds().width;
 
@@ -697,7 +695,7 @@ export class Container extends DisplayObject
         return this.scale.y * this.getLocalBounds().height;
     }
 
-    set height(value) // eslint-disable-line require-jsdoc
+    set height(value: number)
     {
         const height = this.getLocalBounds().height;
 

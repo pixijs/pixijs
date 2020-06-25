@@ -319,4 +319,16 @@ export class ImageResource extends BaseImageResource
         this._process = null;
         this._load = null;
     }
+
+    /**
+     * Used to auto-detect the type of resource.
+     *
+     * @static
+     * @param {string|HTMLImageElement} source - The source object
+     * @return {boolean} `true` if source is string or HTMLImageElement
+     */
+    static test(source: unknown): source is string|HTMLImageElement
+    {
+        return typeof source === 'string' || source instanceof HTMLImageElement;
+    }
 }

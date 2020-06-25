@@ -1,3 +1,6 @@
+import type { Dict } from '@pixi/utils';
+import type { UniformsSyncCallback } from './utils';
+
 let UID = 0;
 
 /**
@@ -8,10 +11,10 @@ let UID = 0;
  */
 export class UniformGroup
 {
-    public readonly uniforms: {[key: string]: any};
+    public readonly uniforms: Dict<any>;
     public readonly group: boolean;
     public id: number;
-    syncUniforms: {[key: string]: Function};
+    syncUniforms: Dict<UniformsSyncCallback>;
     dirtyId: number;
     static: boolean;
 
@@ -19,7 +22,7 @@ export class UniformGroup
      * @param {object} [uniforms] - Custom uniforms to use to augment the built-in ones.
      * @param {boolean} [_static] - Uniforms wont be changed after creation
      */
-    constructor(uniforms: {[key: string]: any}, _static?: boolean)
+    constructor(uniforms: Dict<any>, _static?: boolean)
     {
         /**
          * uniform values
@@ -65,12 +68,12 @@ export class UniformGroup
         this.dirtyId++;
     }
 
-    add(name: string, uniforms: {[key: string]: any}, _static: boolean): void
+    add(name: string, uniforms: Dict<any>, _static: boolean): void
     {
         this.uniforms[name] = new UniformGroup(uniforms, _static);
     }
 
-    static from(uniforms: {[key: string]: any}, _static: boolean): UniformGroup
+    static from(uniforms: Dict<any>, _static: boolean): UniformGroup
     {
         return new UniformGroup(uniforms, _static);
     }

@@ -114,7 +114,7 @@ export class CubeResource extends ArrayResource
      * @param {object} source - The source object
      * @return {boolean} `true` if source is an array of 6 elements
      */
-    static test(source: any): source is ArrayFixed<string|Resource, 6>
+    static test(source: unknown): source is ArrayFixed<string|Resource, 6>
     {
         return Array.isArray(source) && source.length === CubeResource.SIDES;
     }

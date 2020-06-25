@@ -5,6 +5,7 @@ import { Bounds } from './Bounds';
 
 import type { Filter, MaskData, Renderer } from '@pixi/core';
 import type { IPoint, ObservablePoint } from '@pixi/math';
+import type { Dict } from '@pixi/utils';
 
 export interface IDestroyOptions {
     children?: boolean;
@@ -57,7 +58,7 @@ export abstract class DisplayObject extends EventEmitter
      *
      * @param {object} source - The source of properties and methods to mix in.
      */
-    static mixin(source: {[x: string]: any}): void
+    static mixin(source: Dict<any>): void
     {
         // in ES8/ES2017, this would be really easy:
         // Object.defineProperties(DisplayObject.prototype, Object.getOwnPropertyDescriptors(source));
@@ -524,7 +525,6 @@ export abstract class DisplayObject extends EventEmitter
      * after calling `destroy()`.
      *
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     destroy(_options?: IDestroyOptions|boolean): void
     {
         if (this.parent)
@@ -574,7 +574,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.position.x;
     }
 
-    set x(value) // eslint-disable-line require-jsdoc
+    set x(value: number)
     {
         this.transform.position.x = value;
     }
@@ -590,7 +590,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.position.y;
     }
 
-    set y(value) // eslint-disable-line require-jsdoc
+    set y(value: number)
     {
         this.transform.position.y = value;
     }
@@ -628,7 +628,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.transform.position;
     }
 
-    set position(value) // eslint-disable-line require-jsdoc
+    set position(value: ObservablePoint)
     {
         this.transform.position.copyFrom(value);
     }
@@ -644,7 +644,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.transform.scale;
     }
 
-    set scale(value) // eslint-disable-line require-jsdoc
+    set scale(value: ObservablePoint)
     {
         this.transform.scale.copyFrom(value);
     }
@@ -660,7 +660,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.transform.pivot;
     }
 
-    set pivot(value) // eslint-disable-line require-jsdoc
+    set pivot(value: ObservablePoint)
     {
         this.transform.pivot.copyFrom(value);
     }
@@ -676,7 +676,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.transform.skew;
     }
 
-    set skew(value) // eslint-disable-line require-jsdoc
+    set skew(value: ObservablePoint)
     {
         this.transform.skew.copyFrom(value);
     }
@@ -692,7 +692,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.transform.rotation;
     }
 
-    set rotation(value) // eslint-disable-line require-jsdoc
+    set rotation(value: number)
     {
         this.transform.rotation = value;
     }
@@ -708,7 +708,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.transform.rotation * RAD_TO_DEG;
     }
 
-    set angle(value) // eslint-disable-line require-jsdoc
+    set angle(value: number)
     {
         this.transform.rotation = value * DEG_TO_RAD;
     }
@@ -726,7 +726,7 @@ export abstract class DisplayObject extends EventEmitter
         return this._zIndex;
     }
 
-    set zIndex(value) // eslint-disable-line require-jsdoc
+    set zIndex(value: number)
     {
         this._zIndex = value;
         if (this.parent)
@@ -782,7 +782,7 @@ export abstract class DisplayObject extends EventEmitter
         return this._mask;
     }
 
-    set mask(value) // eslint-disable-line require-jsdoc
+    set mask(value: Container|MaskData|null)
     {
         if (this._mask)
         {

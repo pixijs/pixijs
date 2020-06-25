@@ -292,7 +292,7 @@ export class Graphics extends Container
         return this._tint;
     }
 
-    public set tint(value)
+    public set tint(value: number)
     {
         this._tint = value;
     }

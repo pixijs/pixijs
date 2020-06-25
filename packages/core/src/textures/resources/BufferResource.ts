@@ -109,7 +109,7 @@ export class BufferResource extends Resource
      * @param {*} source - The source object
      * @return {boolean} `true` if <canvas>
      */
-    static test(source: any): boolean
+    static test(source: unknown): source is Float32Array|Uint8Array|Uint32Array
     {
         return source instanceof Float32Array
             || source instanceof Uint8Array

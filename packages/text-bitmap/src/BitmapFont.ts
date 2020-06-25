@@ -314,7 +314,7 @@ export class BitmapFont
      * kernings yet.
      *
      * @param {string} name - The name of the custom font to use with BitmapText.
-     * @param {PIXI.ITextStyle|PIXI.TextStyle} [style] - Style options to render with BitmapFont.
+     * @param {object|PIXI.TextStyle} [style] - Style options to render with BitmapFont.
      * @param {PIXI.IBitmapFontOptions} [options] - Setup options for font or name of the font.
      * @param {string|string[]|string[][]} [options.chars=PIXI.BitmapFont.ALPHANUMERIC] - characters included
      *      in the font set. You can also use ranges. For example, `[['a', 'z'], ['A', 'Z'], "!@#$%^&*()~{}[] "]`.
@@ -356,11 +356,11 @@ export class BitmapFont
         const fontData = new BitmapFontData();
 
         fontData.info[0] = {
-            face: style.fontFamily,
-            size: style.fontSize,
+            face: style.fontFamily as string,
+            size: style.fontSize as number,
         };
         fontData.common[0] = {
-            lineHeight: style.fontSize,
+            lineHeight: style.fontSize as number,
         };
 
         let positionX = 0;
