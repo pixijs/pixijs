@@ -106,7 +106,7 @@ export class ProjectionSystem extends System
      * @param {Number} resolution - Resolution
      * @param {boolean} root - If is root
      */
-    calculateProjection(_: Rectangle, sourceFrame: Rectangle, __: number, root: boolean): void
+    calculateProjection(_destinationFrame: Rectangle, sourceFrame: Rectangle, _resolution: number, root: boolean): void
     {
         const pm = this.projectionMatrix;
         const sign = !root ? 1 : -1;
