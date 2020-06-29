@@ -7,6 +7,6 @@ declare namespace GlobalMixins
 
     interface Container
     {
-        getChildByName?(name: string): import('@pixi/display').DisplayObject;
+        getChildByName?(name: string, isRecursive?: boolean): import('@pixi/display').DisplayObject;
     }
 }

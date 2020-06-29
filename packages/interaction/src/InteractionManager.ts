@@ -1,5 +1,5 @@
 import { Ticker, UPDATE_PRIORITY } from '@pixi/ticker';
-import { DisplayObject } from '@pixi/display';
+import { DisplayObject, TemporaryDisplayObject } from '@pixi/display';
 import { InteractionData, InteractivePointerEvent } from './InteractionData';
 import { InteractionEvent, InteractionCallback } from './InteractionEvent';
 import { InteractionTrackingData } from './InteractionTrackingData';
@@ -8,7 +8,7 @@ import { EventEmitter } from '@pixi/utils';
 import { interactiveTarget } from './interactiveTarget';
 
 import type { AbstractRenderer } from '@pixi/core';
-import type { Point } from '@pixi/math';
+import type { Point, IPointData } from '@pixi/math';
 import type { Dict } from '@pixi/utils';
 
 // Mix interactiveTarget into DisplayObject.prototype,
@@ -90,6 +90,7 @@ export class InteractionManager extends EventEmitter
     private _useSystemTicker: boolean;
     private _deltaTime: number;
     private _didMove: boolean;
+    private _tempDisplayObject: DisplayObject;
 
     /**
      * @param {PIXI.CanvasRenderer|PIXI.Renderer} renderer - A reference to the current renderer
@@ -323,6 +324,13 @@ export class InteractionManager extends EventEmitter
          * @member {PIXI.TreeSearch}
          */
         this.search = new TreeSearch();
+
+        /**
+         * Used as a last rendered object in case renderer doesnt have _lastObjectRendered
+         * @member {DisplayObject}
+         * @private
+         */
+        this._tempDisplayObject = new TemporaryDisplayObject();
 
         /**
          * Fired when a pointer device button (usually a mouse left-button) is pressed on the display
@@ -750,6 +758,17 @@ export class InteractionManager extends EventEmitter
     }
 
     /**
+     * Last rendered object or temp object
+     * @readonly
+     * @protected
+     * @member {PIXI.DisplayObject}
+     */
+    get lastObjectRendered(): DisplayObject
+    {
+        return this.renderer._lastObjectRendered || this._tempDisplayObject;
+    }
+
+    /**
      * Hit tests a point against the display tree, returning the first interactive object that is hit.
      *
      * @param {PIXI.Point} globalPoint - A point to hit test with, in global space.
@@ -766,7 +785,7 @@ export class InteractionManager extends EventEmitter
         // ensure safety of the root
         if (!root)
         {
-            root = this.renderer._lastObjectRendered;
+            root = this.lastObjectRendered;
         }
         // run the hit test
         this.processInteractive(hitTestEvent as InteractionEvent, root, null, true);
@@ -1012,7 +1031,7 @@ export class InteractionManager extends EventEmitter
 
                     this.processInteractive(
                         interactionEvent,
-                        this.renderer._lastObjectRendered,
+                        this.lastObjectRendered,
                         this.processPointerOverOut,
                         true
                     );
@@ -1112,11 +1131,11 @@ export class InteractionManager extends EventEmitter
      * resulting value is stored in the point. This takes into account the fact that the DOM
      * element could be scaled and positioned anywhere on the screen.
      *
-     * @param  {PIXI.Point} point - the point that the result will be stored in
+     * @param  {PIXI.IPointData} point - the point that the result will be stored in
      * @param  {number} x - the x coord of the position to map
      * @param  {number} y - the y coord of the position to map
      */
-    public mapPositionToPoint(point: Point, x: number, y: number): void
+    public mapPositionToPoint(point: IPointData, x: number, y: number): void
     {
         let rect;
 
@@ -1230,7 +1249,7 @@ export class InteractionManager extends EventEmitter
 
             interactionEvent.data.originalEvent = originalEvent;
 
-            this.processInteractive(interactionEvent, this.renderer._lastObjectRendered, this.processPointerDown, true);
+            this.processInteractive(interactionEvent, this.lastObjectRendered, this.processPointerDown, true);
 
             this.emit('pointerdown', interactionEvent);
             if (event.pointerType === 'touch')
@@ -1319,7 +1338,7 @@ export class InteractionManager extends EventEmitter
             interactionEvent.data.originalEvent = originalEvent;
 
             // perform hit testing for events targeting our canvas or cancel events
-            this.processInteractive(interactionEvent, this.renderer._lastObjectRendered, func, cancelled || !eventAppend);
+            this.processInteractive(interactionEvent, this.lastObjectRendered, func, cancelled || !eventAppend);
 
             this.emit(cancelled ? 'pointercancel' : `pointerup${eventAppend}`, interactionEvent);
 
@@ -1519,7 +1538,7 @@ export class InteractionManager extends EventEmitter
 
             interactionEvent.data.originalEvent = originalEvent;
 
-            this.processInteractive(interactionEvent, this.renderer._lastObjectRendered, this.processPointerMove, true);
+            this.processInteractive(interactionEvent, this.lastObjectRendered, this.processPointerMove, true);
 
             this.emit('pointermove', interactionEvent);
             if (event.pointerType === 'touch') this.emit('touchmove', interactionEvent);
@@ -1591,7 +1610,7 @@ export class InteractionManager extends EventEmitter
 
         interactionEvent.data.originalEvent = event;
 
-        this.processInteractive(interactionEvent, this.renderer._lastObjectRendered, this.processPointerOverOut, false);
+        this.processInteractive(interactionEvent, this.lastObjectRendered, this.processPointerOverOut, false);
 
         this.emit('pointerout', interactionEvent);
         if (event.pointerType === 'mouse' || event.pointerType === 'pen')

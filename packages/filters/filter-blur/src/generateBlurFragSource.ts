@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/class-name-casing
 interface IGAUSSIAN_VALUES {
     [x: number]: number[];
 }

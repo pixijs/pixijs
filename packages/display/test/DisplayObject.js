@@ -109,6 +109,41 @@ describe('PIXI.DisplayObject', function ()
         });
     });
 
+    describe('enableTempParent', function ()
+    {
+        it('should allow to recalc children transform', function ()
+        {
+            const child = new DisplayObject();
+            const container = new Container();
+
+            container.addChild(child);
+            container.position.set(10, 10);
+            child.position.set(15, 10);
+
+            container.enableTempParent();
+            container.updateTransform();
+            container.disableTempParent(null);
+
+            expect(child.worldTransform.tx).to.equal(25);
+            expect(child.worldTransform.ty).to.equal(20);
+
+            const cacheParent = child.enableTempParent();
+
+            child.updateTransform();
+            child.disableTempParent(cacheParent);
+
+            expect(cacheParent).to.equal(container);
+            expect(child.parent).to.equal(container);
+            expect(child.worldTransform.tx).to.equal(15);
+            expect(child.worldTransform.ty).to.equal(10);
+
+            child.updateTransform();
+
+            expect(child.worldTransform.tx).to.equal(25);
+            expect(child.worldTransform.ty).to.equal(20);
+        });
+    });
+
     describe('destroy', function ()
     {
         it('should trigger removed listeners', function ()

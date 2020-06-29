@@ -150,7 +150,9 @@ export class FramebufferSystem extends System
 
             for (let i = 0; i < framebuffer.colorTextures.length; i++)
             {
-                this.renderer.texture.unbind(framebuffer.colorTextures[i]);
+                const tex = framebuffer.colorTextures[i];
+
+                this.renderer.texture.unbind(tex.parentTextureArray || tex);
             }
 
             if (framebuffer.depthTexture)
@@ -338,28 +340,15 @@ export class FramebufferSystem extends System
             }
 
             const texture = framebuffer.colorTextures[i];
+            const parentTexture = texture.parentTextureArray || texture;
 
-            if ((texture as any).texturePart)
-            {
-                // @popelyshev: make an example, I'm not sure that this part works at all
-                this.renderer.texture.bind(texture, 0);
+            this.renderer.texture.bind(parentTexture, 0);
 
-                gl.framebufferTexture2D(gl.FRAMEBUFFER,
-                    gl.COLOR_ATTACHMENT0 + i,
-                    gl.TEXTURE_CUBE_MAP_NEGATIVE_X + (texture as any).side,
-                    texture._glTextures[this.CONTEXT_UID].texture,
-                    0);
-            }
-            else
-            {
-                this.renderer.texture.bind(texture, 0);
-
-                gl.framebufferTexture2D(gl.FRAMEBUFFER,
-                    gl.COLOR_ATTACHMENT0 + i,
-                    gl.TEXTURE_2D,
-                    texture._glTextures[this.CONTEXT_UID].texture,
-                    0);
-            }
+            gl.framebufferTexture2D(gl.FRAMEBUFFER,
+                gl.COLOR_ATTACHMENT0 + i,
+                texture.target,
+                parentTexture._glTextures[this.CONTEXT_UID].texture,
+                0);
 
             activeTextures.push(gl.COLOR_ATTACHMENT0 + i);
         }

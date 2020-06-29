@@ -21,7 +21,7 @@ import { GraphicsData } from './GraphicsData';
 import { premultiplyTint } from '@pixi/utils';
 import { Bounds } from '@pixi/display';
 
-import type { Circle, Ellipse, Polygon, Rectangle, RoundedRectangle } from '@pixi/math';
+import type { Circle, Ellipse, Polygon, Rectangle, RoundedRectangle, IPointData } from '@pixi/math';
 import type { FillStyle } from './styles/FillStyle';
 import type { LineStyle } from './styles/LineStyle';
 
@@ -386,10 +386,10 @@ export class GraphicsGeometry extends BatchGeometry
     /**
      * Check to see if a point is contained within this geometry.
      *
-     * @param {PIXI.Point} point - Point to check if it's contained.
+     * @param {PIXI.IPointData} point - Point to check if it's contained.
      * @return {Boolean} `true` if the point is contained within geometry.
      */
-    public containsPoint(point: Point): boolean
+    public containsPoint(point: IPointData): boolean
     {
         const graphicsData = this.graphicsData;
 

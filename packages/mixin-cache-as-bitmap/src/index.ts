@@ -1,7 +1,7 @@
 import { Texture, BaseTexture, RenderTexture, Renderer, MaskData } from '@pixi/core';
 import { Sprite } from '@pixi/sprite';
 import { Container, DisplayObject, IDestroyOptions } from '@pixi/display';
-import { IPoint, Matrix, Rectangle } from '@pixi/math';
+import { IPointData, Matrix, Rectangle } from '@pixi/math';
 import { uid } from '@pixi/utils';
 import { settings } from '@pixi/settings';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
@@ -29,7 +29,7 @@ export class CacheData
     public originalDestroy: (options?: IDestroyOptions|boolean) => void;
     public originalMask: Container|MaskData;
     public originalFilterArea: Rectangle;
-    public originalContainsPoint: (point: IPoint) => boolean;
+    public originalContainsPoint: (point: IPointData) => boolean;
     public sprite: Sprite;
 
     constructor()
@@ -258,9 +258,9 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
     // restore the transform of the cached sprite to avoid the nasty flicker..
     if (!this.parent)
     {
-        this.parent = (renderer as any)._tempDisplayObjectParent;
+        this.enableTempParent();
         this.updateTransform();
-        this.parent = null;
+        this.disableTempParent(null);
     }
     else
     {
