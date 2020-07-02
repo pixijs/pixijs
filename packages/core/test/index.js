@@ -18,3 +18,4 @@ require('./ArrayResource');
 require('./autoDetectResource');
 require('./CubeResource');
 require('./RenderTexture');
+require('./ProjectionSystem');
