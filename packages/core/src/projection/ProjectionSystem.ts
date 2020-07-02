@@ -63,7 +63,9 @@ export class ProjectionSystem extends System
     }
 
     /**
-     * Updates the projection matrix based on a projection frame (which is a rectangle)
+     * Updates the projection matrix based on a projection frame (which is a rectangle).
+     *
+     * Make sure to run `renderer.framebuffer.setViewport(destinationFrame)` after calling this.
      *
      * @param {PIXI.Rectangle} destinationFrame - The destination frame.
      * @param {PIXI.Rectangle} sourceFrame - The source frame.
@@ -75,6 +77,7 @@ export class ProjectionSystem extends System
         this.destinationFrame = destinationFrame || this.destinationFrame || this.defaultFrame;
         this.sourceFrame = sourceFrame || this.sourceFrame || destinationFrame;
 
+        // Calculate object-space to clip-space projection
         this.calculateProjection(this.destinationFrame, this.sourceFrame, resolution, root);
 
         if (this.transform)
@@ -98,12 +101,12 @@ export class ProjectionSystem extends System
     /**
      * Updates the projection matrix based on a projection frame (which is a rectangle)
      *
-     * @param {PIXI.Rectangle} destinationFrame - The destination frame.
+     * @param {PIXI.Rectangle}[destinationFrame] - The destination frame.
      * @param {PIXI.Rectangle} sourceFrame - The source frame.
      * @param {Number} resolution - Resolution
      * @param {boolean} root - If is root
      */
-    calculateProjection(destinationFrame: Rectangle, sourceFrame: Rectangle, resolution: number, root: boolean): void
+    calculateProjection(_destinationFrame: Rectangle, sourceFrame: Rectangle, _resolution: number, root: boolean): void
     {
         const pm = this.projectionMatrix;
         const sign = !root ? 1 : -1;
@@ -111,8 +114,8 @@ export class ProjectionSystem extends System
         // I don't think we will need this line..
         // pm.identity();
 
-        pm.a = (1 / destinationFrame.width * 2) * resolution;
-        pm.d = sign * (1 / destinationFrame.height * 2) * resolution;
+        pm.a = (1 / sourceFrame.width * 2);
+        pm.d = sign * (1 / sourceFrame.height * 2);
 
         pm.tx = -1 - (sourceFrame.x * pm.a);
         pm.ty = -sign - (sourceFrame.y * pm.d);
