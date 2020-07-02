@@ -19,6 +19,7 @@ export class ProjectionSystem extends System
     public defaultFrame: Rectangle;
     public projectionMatrix: Matrix;
     public transform: Matrix;
+
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
