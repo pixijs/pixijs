@@ -19,6 +19,7 @@ export class ProjectionSystem extends System
     public defaultFrame: Rectangle;
     public projectionMatrix: Matrix;
     public transform: Matrix;
+
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
@@ -111,8 +112,7 @@ export class ProjectionSystem extends System
         const pm = this.projectionMatrix;
         const sign = !root ? 1 : -1;
 
-        // I don't think we will need this line..
-        // pm.identity();
+        pm.identity();
 
         pm.a = (1 / sourceFrame.width * 2);
         pm.d = sign * (1 / sourceFrame.height * 2);
