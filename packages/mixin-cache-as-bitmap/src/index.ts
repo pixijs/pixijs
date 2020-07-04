@@ -217,9 +217,6 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
     // need to set //
     const m = this.transform.localTransform.copyTo(_tempMatrix).invert().translate(-bounds.x, -bounds.y);
 
-    // reset
-    this.transform.worldTransform.identity();
-
     // set all properties to there original so we can render to a texture
     this.render = this._cacheData.originalRender;
 
