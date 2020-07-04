@@ -104,6 +104,11 @@ export class CanvasGraphicsRenderer
             const fillColor = data.fillStyle.color | 0;
             const lineColor = data.lineStyle.color | 0;
 
+            if (data.matrix)
+            {
+                renderer.setContextTransform(transform.clone().append(data.matrix));
+            }
+
             if (fillStyle.visible)
             {
                 const fillTint = (
