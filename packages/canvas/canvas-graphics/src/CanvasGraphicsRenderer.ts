@@ -28,6 +28,7 @@ export class CanvasGraphicsRenderer
 {
     public renderer: CanvasRenderer;
     private _svgMatrix: DOMMatrix|boolean;
+    private _tempMatrix: Matrix;
 
     /**
      * @param {PIXI.CanvasRenderer} renderer - The current PIXI renderer.
@@ -36,6 +37,7 @@ export class CanvasGraphicsRenderer
     {
         this.renderer = renderer;
         this._svgMatrix = null;
+        this._tempMatrix = new Matrix();
     }
 
     /**
@@ -106,7 +108,7 @@ export class CanvasGraphicsRenderer
 
             if (data.matrix)
             {
-                renderer.setContextTransform(transform.clone().append(data.matrix));
+                renderer.setContextTransform(transform.copyTo(this._tempMatrix).append(data.matrix));
             }
 
             if (fillStyle.visible)
@@ -390,5 +392,7 @@ export class CanvasGraphicsRenderer
     public destroy(): void
     {
         this.renderer = null;
+        this._svgMatrix = null;
+        this._tempMatrix = null;
     }
 }
