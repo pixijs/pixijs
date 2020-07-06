@@ -3,6 +3,8 @@ import { settings } from './settings';
 
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
 
+let warned = false;
+
 /**
  * Renders the object using the Canvas renderer
  *
@@ -22,6 +24,11 @@ Mesh.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRenderer):
     if (this.material._renderCanvas)
     {
         this.material._renderCanvas(renderer, this);
+    }
+    else if (!warned)
+    {
+        warned = true;
+        console.warn('Mesh is not supported in canvasRender');
     }
 };
 
