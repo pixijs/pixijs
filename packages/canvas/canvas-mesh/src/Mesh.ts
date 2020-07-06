@@ -28,7 +28,7 @@ Mesh.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRenderer):
     else if (!warned)
     {
         warned = true;
-        console.warn('Mesh is not supported in canvasRender');
+        console.warn('Mesh is not supported in canvasRenderer.');
     }
 };
 
