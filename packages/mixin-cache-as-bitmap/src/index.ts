@@ -215,18 +215,12 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
     Texture.addToCache(renderTexture, textureCacheId);
 
     // need to set //
-    const m = _tempMatrix;
-
-    m.tx = -bounds.x;
-    m.ty = -bounds.y;
-
-    // reset
-    this.transform.worldTransform.identity();
+    const m = this.transform.localTransform.copyTo(_tempMatrix).invert().translate(-bounds.x, -bounds.y);
 
     // set all properties to there original so we can render to a texture
     this.render = this._cacheData.originalRender;
 
-    renderer.render(this, renderTexture, true, m, true);
+    renderer.render(this, renderTexture, true, m, false);
 
     // now restore the state be setting the new properties
     renderer.projection.transform = cachedProjectionTransform;
