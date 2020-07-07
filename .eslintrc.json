@@ -121,7 +121,7 @@
         "no-catch-shadow": 1,
         "no-delete-var": 1,
         "no-label-var": 1,
-        "no-restricted-globals": 1,
+        "no-restricted-globals": ["error", "event", "fdescribe"],
         "no-shadow": 0,
         "no-shadow-restricted-names": 1,
         "no-undef": 1,
