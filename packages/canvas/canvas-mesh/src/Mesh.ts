@@ -28,7 +28,10 @@ Mesh.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRenderer):
     else if (!warned)
     {
         warned = true;
-        console.warn('Mesh is not supported in canvasRenderer.');
+        if (window.console) 
+        {
+            console.warn('Mesh with custom shaders are not supported in CanvasRenderer.');
+        }
     }
 };
 
