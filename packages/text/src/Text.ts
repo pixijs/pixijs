@@ -147,8 +147,8 @@ export class Text extends Sprite
          */
         this._font = '';
 
-        this.text = text;
         this.style = style;
+        this.text = text;
 
         this.localStyleID = -1;
     }
@@ -164,11 +164,6 @@ export class Text extends Sprite
     public updateText(respectDirty: boolean): void
     {
         const style = this._style;
-
-        if (!style)
-        {
-            return;
-        }
 
         // check if style has changed..
         if (this.localStyleID !== style.styleID)
