@@ -223,7 +223,7 @@ export class VideoResource extends BaseImageResource
      *
      * @private
      */
-    private _onError(): void
+    private _onError(event: ErrorEvent): void
     {
         (this.source as HTMLVideoElement).removeEventListener('error', this._onError, true);
         this.onError.emit(event);
