@@ -147,8 +147,8 @@ export class Text extends Sprite
          */
         this._font = '';
 
-        this.style = style;
         this.text = text;
+        this.style = style;
 
         this.localStyleID = -1;
     }
@@ -393,6 +393,10 @@ export class Text extends Sprite
         this._onTextureUpdate();
 
         baseTexture.setRealSize(canvas.width, canvas.height, this._resolution);
+
+        // HACK: The scale property is immediately copied to worldTranform for render
+        this.transform.worldTransform.a = this.scale.x;
+        this.transform.worldTransform.d = this.scale.y;
 
         this.dirty = false;
     }
@@ -713,7 +717,6 @@ export class Text extends Sprite
         }
         this._text = text;
         this.dirty = true;
-        this.updateText(true);
     }
 
     /**
