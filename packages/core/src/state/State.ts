@@ -122,7 +122,7 @@ export class State
         return !!(this.data & (1 << DEPTH_MASK));
     }
 
-    set depthMask(value) // eslint-disable-line require-jsdoc
+    set depthMask(value: boolean)
     {
         if (!!(this.data & (1 << DEPTH_MASK)) !== value)
         {
