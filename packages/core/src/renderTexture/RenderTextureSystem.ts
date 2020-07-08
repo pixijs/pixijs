@@ -99,8 +99,8 @@ export class RenderTextureSystem extends System
 
             if (!sourceFrame)
             {
-                tempRect.width = baseTexture.width;
-                tempRect.height = baseTexture.height;
+                tempRect.width = renderTexture.frame.width;
+                tempRect.height = renderTexture.frame.height;
 
                 sourceFrame = tempRect;
             }
