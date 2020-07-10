@@ -77,7 +77,7 @@ export class TextureMatrix
          * @member {number}
          * @protected
          */
-        this._updateID = -1;
+        this._updateID = 0;
 
         /**
          * Changes frame clamping
