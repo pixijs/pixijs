@@ -10,6 +10,9 @@ import type { MaskData } from '../mask/MaskData';
 // Temporary rectangle for assigned sourceFrame or destinationFrame
 const tempRect = new Rectangle();
 
+// Temporary rectangle for renderTexture destinationFrame
+const tempRect2 = new Rectangle();
+
 // Temporary rectangle for passing the framebuffer viewport
 const viewportFrame = new Rectangle();
 
@@ -107,7 +110,12 @@ export class RenderTextureSystem extends System
 
             if (!destinationFrame)
             {
-                destinationFrame = renderTexture.frame;
+                tempRect2.x = renderTexture.frame.x;
+                tempRect2.y = renderTexture.frame.y;
+                tempRect2.width = sourceFrame.width;
+                tempRect2.height = sourceFrame.height;
+
+                destinationFrame = tempRect2;
             }
 
             framebuffer = baseTexture.framebuffer;
