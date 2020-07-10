@@ -145,7 +145,8 @@ export class AnimatedSprite extends Sprite
         this.onFrameChange = null;
 
         /**
-         * User-assigned function to call when `loop` is true, and an AnimatedSprite is played and loops around to start again.
+         * User-assigned function to call when `loop` is true, and an AnimatedSprite is played and
+         * loops around to start again.
          *
          * @example
          * animation.onLoop = function () {
