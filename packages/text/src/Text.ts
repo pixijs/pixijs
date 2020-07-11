@@ -8,7 +8,7 @@ import { TEXT_GRADIENT } from './const';
 import { TextStyle } from './TextStyle';
 import { TextMetrics } from './TextMetrics';
 
-import type { IDestroyOptions, DisplayObject } from '@pixi/display';
+import type { IDestroyOptions } from '@pixi/display';
 import type { Renderer } from '@pixi/core';
 import type { ITextStyle } from './TextStyle';
 
