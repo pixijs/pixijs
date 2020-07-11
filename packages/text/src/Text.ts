@@ -8,7 +8,7 @@ import { TEXT_GRADIENT } from './const';
 import { TextStyle } from './TextStyle';
 import { TextMetrics } from './TextMetrics';
 
-import type { IDestroyOptions } from '@pixi/display';
+import type { IDestroyOptions, DisplayObject } from '@pixi/display';
 import type { Renderer } from '@pixi/core';
 import type { ITextStyle } from './TextStyle';
 
@@ -394,9 +394,8 @@ export class Text extends Sprite
 
         baseTexture.setRealSize(canvas.width, canvas.height, this._resolution);
 
-        // HACK: The scale property is immediately copied to worldTranform for render
-        this.transform.worldTransform.a = this.scale.x;
-        this.transform.worldTransform.d = this.scale.y;
+        // Recursively updates transform of all objects from the root to this one
+        (this as any)._recursivePostUpdateTransform();
 
         this.dirty = false;
     }
