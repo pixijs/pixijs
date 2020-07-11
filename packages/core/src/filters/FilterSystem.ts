@@ -188,9 +188,14 @@ export class FilterSystem extends System
         state.destinationFrame.width = state.renderTexture.width;
         state.destinationFrame.height = state.renderTexture.height;
 
+        const destinationFrame = this.tempRect;
+
+        destinationFrame.width = state.sourceFrame.width;
+        destinationFrame.height = state.sourceFrame.height;
+
         state.renderTexture.filterFrame = state.sourceFrame;
 
-        renderer.renderTexture.bind(state.renderTexture, state.sourceFrame);// /, state.destinationFrame);
+        renderer.renderTexture.bind(state.renderTexture, state.sourceFrame, destinationFrame);
         renderer.renderTexture.clear();
     }
 
@@ -298,7 +303,20 @@ export class FilterSystem extends System
      */
     bindAndClear(filterTexture: RenderTexture, clearMode = CLEAR_MODES.CLEAR): void
     {
-        this.renderer.renderTexture.bind(filterTexture, filterTexture ? filterTexture.filterFrame : null);
+        if (filterTexture && filterTexture.filterFrame)
+        {
+            const destinationFrame = this.tempRect;
+
+            destinationFrame.width = filterTexture.filterFrame.width;
+            destinationFrame.height = filterTexture.filterFrame.height;
+
+            this.renderer.renderTexture.bind(filterTexture, filterTexture.filterFrame, destinationFrame);
+        }
+        else
+        {
+            this.renderer.renderTexture.bind(filterTexture);
+        }
+
         // TODO: remove in next major version
         if (typeof clearMode === 'boolean')
         {
