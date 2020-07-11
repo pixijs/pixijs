@@ -56,6 +56,7 @@ type $FixLegacy = any;
  * @memberof PIXI
  * @function useDeprecated
  */
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function useDeprecated(this: any): void
 {
     // eslint-disable-next-line @typescript-eslint/no-this-alias

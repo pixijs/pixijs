@@ -13,7 +13,7 @@ const formats = [
  * @param {any} data - Data to detect format
  * @return {any} Format or null
  */
-export function autoDetectFormat(data: any): typeof formats[number] | null
+export function autoDetectFormat(data: unknown): typeof formats[number] | null
 {
     for (let i = 0; i < formats.length; i++)
     {

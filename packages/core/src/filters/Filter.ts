@@ -245,7 +245,7 @@ export class Filter extends Shader
         return this.state.blendMode;
     }
 
-    set blendMode(value)
+    set blendMode(value: BLEND_MODES)
     {
         this.state.blendMode = value;
     }

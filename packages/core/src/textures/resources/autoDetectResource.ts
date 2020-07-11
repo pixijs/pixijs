@@ -1,5 +1,4 @@
 import { Resource } from './Resource';
-import { ImageResource } from './ImageResource';
 
 import type { IImageResourceOptions } from './ImageResource';
 import type{ ISize } from '@pixi/math';
@@ -29,15 +28,7 @@ export type IAutoDetectOptions = ISize
  */
 export interface IResourcePlugin
 {
-    /**
-     * Should test if the type of resource is handled by the plugin
-     *
-     * @param source - the source object (e.g. canvas, video)
-     * @param extension - the file extension from which the source was loaded
-     * @returns whether this plugin will handle uploading this type of resource to the GPU
-     */
-    test(source: any, extension: string): boolean;
-
+    test(source: unknown, extension: string): boolean;
     new (source: any, options?: any): Resource;
 }
 
@@ -99,7 +90,7 @@ export const INSTALLED: Array<IResourcePlugin> = [];
  *        texture should be updated from the video. Leave at 0 to update at every render
  * @return {PIXI.resources.Resource} The created resource.
  */
-export function autoDetectResource(source: any, options?: IAutoDetectOptions): Resource
+export function autoDetectResource(source: unknown, options?: IAutoDetectOptions): Resource
 {
     if (!source)
     {
@@ -129,7 +120,5 @@ export function autoDetectResource(source: any, options?: IAutoDetectOptions): R
         }
     }
 
-    // When in doubt: probably an image
-    // might be appropriate to throw an error or return null
-    return new ImageResource(source, options as IImageResourceOptions);
+    throw new Error('Unrecognized source type to auto-detect Resource');
 }

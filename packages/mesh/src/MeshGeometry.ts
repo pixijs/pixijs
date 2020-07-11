@@ -22,10 +22,8 @@ import type { IArrayBuffer } from '@pixi/core';
  */
 export class MeshGeometry extends Geometry
 {
-    // TODO: is this needed?
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    // @ts-ignore
-    private _updateId: number;
+    // Internal-only properties
+    _updateId: number;
 
     /**
      * @param {Float32Array|number[]} [vertices] - Positional data on geometry.

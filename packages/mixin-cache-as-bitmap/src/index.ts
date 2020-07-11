@@ -1,7 +1,7 @@
 import { Texture, BaseTexture, RenderTexture, Renderer, MaskData } from '@pixi/core';
 import { Sprite } from '@pixi/sprite';
 import { Container, DisplayObject, IDestroyOptions } from '@pixi/display';
-import { IPoint, Matrix, Rectangle } from '@pixi/math';
+import { IPointData, Matrix, Rectangle } from '@pixi/math';
 import { uid } from '@pixi/utils';
 import { settings } from '@pixi/settings';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
@@ -30,7 +30,7 @@ export class CacheData
     public originalDestroy: (options?: IDestroyOptions|boolean) => void;
     public originalMask: Container|MaskData;
     public originalFilterArea: Rectangle;
-    public originalContainsPoint: (point: IPoint) => boolean;
+    public originalContainsPoint: (point: IPointData) => boolean;
     public sprite: Sprite;
 
     constructor()
@@ -216,18 +216,12 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
     Texture.addToCache(renderTexture, textureCacheId);
 
     // need to set //
-    const m = _tempMatrix;
-
-    m.tx = -bounds.x;
-    m.ty = -bounds.y;
-
-    // reset
-    this.transform.worldTransform.identity();
+    const m = this.transform.localTransform.copyTo(_tempMatrix).invert().translate(-bounds.x, -bounds.y);
 
     // set all properties to there original so we can render to a texture
     this.render = this._cacheData.originalRender;
 
-    renderer.render(this, renderTexture, true, m, true);
+    renderer.render(this, renderTexture, true, m, false);
 
     // now restore the state be setting the new properties
     renderer.projection.transform = cachedProjectionTransform;
@@ -259,9 +253,9 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
     // restore the transform of the cached sprite to avoid the nasty flicker..
     if (!this.parent)
     {
-        this.parent = (renderer as any)._tempDisplayObjectParent;
+        this.enableTempParent();
         this.updateTransform();
-        this.parent = null;
+        this.disableTempParent(null);
     }
     else
     {

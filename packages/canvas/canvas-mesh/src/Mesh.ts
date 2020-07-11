@@ -3,6 +3,8 @@ import { settings } from './settings';
 
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
 
+let warned = false;
+
 /**
  * Renders the object using the Canvas renderer
  *
@@ -19,7 +21,18 @@ Mesh.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRenderer):
         this.calculateUvs();
     }
 
-    this.material._renderCanvas(renderer, this);
+    if (this.material._renderCanvas)
+    {
+        this.material._renderCanvas(renderer, this);
+    }
+    else if (!warned)
+    {
+        warned = true;
+        if (window.console)
+        {
+            console.warn('Mesh with custom shaders are not supported in CanvasRenderer.');
+        }
+    }
 };
 
 // IMPORTANT: Please do NOT use this as a precedent to use `settings` after the object is created

@@ -8,6 +8,7 @@ import { Polygon } from './shapes/Polygon';
 import { Rectangle } from './shapes/Rectangle';
 import { RoundedRectangle } from './shapes/RoundedRectangle';
 
+export * from './IPointData';
 export * from './IPoint';
 export * from './Point';
 export * from './ObservablePoint';

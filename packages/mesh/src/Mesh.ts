@@ -8,7 +8,7 @@ import { MeshMaterial } from './MeshMaterial';
 
 import type { IDestroyOptions } from '@pixi/display';
 import type { Texture, Renderer, Geometry, Buffer } from '@pixi/core';
-import type { IPoint } from '@pixi/math';
+import type { IPointData } from '@pixi/math';
 
 const tempPoint = new Point();
 const tempPolygon = new Polygon();
@@ -48,15 +48,12 @@ export class Mesh extends Container
     private _transformID: number;
     private _roundPixels: boolean;
     private batchUvs: MeshBatchUvs;
+
+    // Internal-only properties
     uvs: Float32Array;
-    /* eslint-disable @typescript-eslint/ban-ts-ignore */
-    // @ts-ignore
-    private indices: Uint16Array;
-    // @ts-ignore
-    private _tintRGB: number;
-    // @ts-ignore
-    private _texture: Texture;
-    /* eslint-enable @typescript-eslint/ban-ts-ignore */
+    indices: Uint16Array;
+    _tintRGB: number;
+    _texture: Texture;
 
     /**
      * @param {PIXI.Geometry} geometry - the geometry the mesh will use
@@ -192,7 +189,7 @@ export class Mesh extends Container
      * Alias for {@link PIXI.Mesh#shader}.
      * @member {PIXI.MeshMaterial}
      */
-    set material(value)
+    set material(value: MeshMaterial)
     {
         this.shader = value;
     }
@@ -210,7 +207,7 @@ export class Mesh extends Container
      * @default PIXI.BLEND_MODES.NORMAL;
      * @see PIXI.BLEND_MODES
      */
-    set blendMode(value)
+    set blendMode(value: BLEND_MODES)
     {
         this.state.blendMode = value;
     }
@@ -229,7 +226,7 @@ export class Mesh extends Container
      * @member {boolean}
      * @default false
      */
-    set roundPixels(value)
+    set roundPixels(value: boolean)
     {
         if (this._roundPixels !== value)
         {
@@ -255,7 +252,7 @@ export class Mesh extends Container
         return this.shader.tint;
     }
 
-    set tint(value)
+    set tint(value: number)
     {
         this.shader.tint = value;
     }
@@ -270,7 +267,7 @@ export class Mesh extends Container
         return this.shader.texture;
     }
 
-    set texture(value)
+    set texture(value: Texture)
     {
         this.shader.texture = value;
     }
@@ -453,10 +450,10 @@ export class Mesh extends Container
     /**
      * Tests if a point is inside this mesh. Works only for PIXI.DRAW_MODES.TRIANGLES.
      *
-     * @param {PIXI.IPoint} point - the point to test
+     * @param {PIXI.IPointData} point - the point to test
      * @return {boolean} the result of the test
      */
-    public containsPoint(point: IPoint): boolean
+    public containsPoint(point: IPointData): boolean
     {
         if (!this.getBounds().contains(point.x, point.y))
         {

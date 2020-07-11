@@ -39,7 +39,7 @@ export class NoiseFilter extends Filter
         return this.uniforms.uNoise;
     }
 
-    set noise(value)
+    set noise(value: number)
     {
         this.uniforms.uNoise = value;
     }
@@ -54,7 +54,7 @@ export class NoiseFilter extends Filter
         return this.uniforms.uSeed;
     }
 
-    set seed(value)
+    set seed(value: number)
     {
         this.uniforms.uSeed = value;
     }

@@ -273,7 +273,7 @@ export class Transform
         return this._rotation;
     }
 
-    set rotation(value)
+    set rotation(value: number)
     {
         if (this._rotation !== value)
         {

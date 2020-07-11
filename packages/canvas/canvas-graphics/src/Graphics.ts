@@ -48,8 +48,7 @@ Graphics.prototype.generateCanvasTexture = function generateCanvasTexture(scaleM
         scaleMode,
     });
 
-    texture.baseTexture.resolution = resolution;
-    texture.baseTexture.update();
+    texture.baseTexture.setResolution(resolution);
 
     return texture;
 };

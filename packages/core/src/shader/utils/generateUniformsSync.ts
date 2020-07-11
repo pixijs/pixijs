@@ -3,6 +3,8 @@ import { uniformParsers } from './uniformParsers';
 import type { UniformGroup } from '../UniformGroup';
 import type { Dict } from '@pixi/utils';
 
+export type UniformsSyncCallback = (...args: any[]) => void;
+
 // cv = CachedValue
 // v = value
 // ud = uniformData
@@ -83,7 +85,7 @@ const GLSL_TO_ARRAY_SETTERS: Dict<string> = {
     sampler2DArray: 'gl.uniform1iv(location, v)',
 };
 
-export function generateUniformsSync(group: UniformGroup, uniformData: Dict<any>): Function
+export function generateUniformsSync(group: UniformGroup, uniformData: Dict<any>): UniformsSyncCallback
 {
     const funcFragments = [`
         var v = null;
@@ -142,5 +144,6 @@ export function generateUniformsSync(group: UniformGroup, uniformData: Dict<any>
      * no matter which group is being used
      *
      */
-    return new Function('ud', 'uv', 'renderer', 'syncData', funcFragments.join('\n')); // eslint-disable-line no-new-func
+    // eslint-disable-next-line no-new-func
+    return new Function('ud', 'uv', 'renderer', 'syncData', funcFragments.join('\n')) as UniformsSyncCallback;
 }
