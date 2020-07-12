@@ -395,7 +395,7 @@ export class Text extends Sprite
         baseTexture.setRealSize(canvas.width, canvas.height, this._resolution);
 
         // Recursively updates transform of all objects from the root to this one
-        (this as any)._recursivePostUpdateTransform();
+        this._recursivePostUpdateTransform();
 
         this.dirty = false;
     }
