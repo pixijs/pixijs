@@ -28,6 +28,7 @@ export interface IBaseTextureOptions {
     target?: TARGETS;
     resolution?: number;
     resourceOptions?: any;
+    pixiIdPrefix?: string;
 }
 
 export interface BaseTexture extends GlobalMixins.BaseTexture, EventEmitter {}
@@ -608,6 +609,7 @@ export class BaseTexture extends EventEmitter
      * @param {string|HTMLImageElement|HTMLCanvasElement|SVGElement|HTMLVideoElement} source - The
      *        source to create base texture from.
      * @param {object} [options] See {@link PIXI.BaseTexture}'s constructor for options.
+     * @param {string} [options.pixiIdPrefix=pixiid] - If a source has no id, this is the prefix of the generated id
      * @param {boolean} [strict] - Enforce strict-mode, see {@link PIXI.settings.STRICT_TEXTURE_CACHE}.
      * @returns {PIXI.BaseTexture} The new base texture.
      */
@@ -625,7 +627,9 @@ export class BaseTexture extends EventEmitter
         {
             if (!(source as any)._pixiId)
             {
-                (source as any)._pixiId = `pixiid_${uid()}`;
+                const prefix = (options && options.pixiIdPrefix) || 'pixiid';
+
+                (source as any)._pixiId = `${prefix}_${uid()}`;
             }
 
             cacheId = (source as any)._pixiId;
