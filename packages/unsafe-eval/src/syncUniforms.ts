@@ -51,8 +51,6 @@ const GLSL_TO_SINGLE_SETTERS = {
     mat4(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: number[]): void { gl.uniformMatrix4fv(location, false, value); },
 
     sampler2D(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: number): void { gl.uniform1i(location, value); },
-    isampler2D(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: number): void { gl.uniform1i(location, value); },
-    usampler2D(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: number): void { gl.uniform1i(location, value); },
     samplerCube(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: number): void { gl.uniform1i(location, value); },
     sampler2DArray(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: number): void { gl.uniform1i(location, value); },
 };
@@ -71,8 +69,6 @@ const GLSL_TO_ARRAY_SETTERS = {
     bvec3(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: Int32List): void { gl.uniform3iv(location, value); },
     bvec4(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: Int32List): void { gl.uniform4iv(location, value); },
     sampler2D(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: Int32List): void { gl.uniform1iv(location, value); },
-    isampler2D(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: Int32List): void { gl.uniform1iv(location, value); },
-    usampler2D(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: Int32List): void { gl.uniform1iv(location, value); },
     samplerCube(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: Int32List): void { gl.uniform1iv(location, value); },
     sampler2DArray(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: Int32List): void { gl.uniform1iv(location, value); },
 };
@@ -111,7 +107,7 @@ export function syncUniforms(group: UniformGroup, uniformData: {[x: string]: IUn
             }
         }
         /* eslint-disable max-len */
-        else if ((data.type === 'sampler2D' || data.type === 'isampler2D' || data.type === 'usampler2D' || data.type === 'samplerCube' || data.type === 'sampler2DArray') && data.size === 1 && !data.isArray)
+        else if ((data.type === 'sampler2D' || data.type === 'samplerCube' || data.type === 'sampler2DArray') && data.size === 1 && !data.isArray)
         /* eslint-disable max-len */
         {
             renderer.texture.bind(uvi, textureCount);
