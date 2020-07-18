@@ -53,6 +53,22 @@ describe('PIXI.Texture', function ()
         expect(TextureCache[NAME2]).to.equal(undefined);
     });
 
+    it('should use pixiIdPrefix correctly', function ()
+    {
+        cleanCache();
+
+        const canvas = document.createElement('canvas');
+        const texture = Texture.from(canvas, { pixiIdPrefix: 'unittest' });
+        const baseTexture = texture.baseTexture;
+        const _pixiId = baseTexture.resource.source._pixiId;
+
+        expect(_pixiId.indexOf('unittest_')).to.equal(0);
+        expect(baseTexture.textureCacheIds.indexOf(_pixiId)).to.equal(0);
+        expect(BaseTextureCache[_pixiId]).to.equal(baseTexture);
+        expect(texture.textureCacheIds.indexOf(_pixiId)).to.equal(0);
+        expect(TextureCache[_pixiId]).to.equal(texture);
+    });
+
     it('should be added to the texture cache correctly, '
      + 'and should remove only itself, not effecting the base texture and its cache', function ()
     {
