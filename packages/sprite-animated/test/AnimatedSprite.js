@@ -151,7 +151,7 @@ describe('PIXI.AnimatedSprite', function ()
         before(function ()
         {
             this.sprite = new AnimatedSprite([Texture.EMPTY, Texture.EMPTY, Texture.EMPTY]);
-            this.sprite.animationSpeed = 1;
+            this.sprite.animationSpeed = 0.5;
             this.sprite.loop = false;
         });
 
@@ -165,7 +165,6 @@ describe('PIXI.AnimatedSprite', function ()
         {
             const frameIds = [];
 
-            this.sprite.animationSpeed = 1;
             this.sprite.onComplete = () =>
             {
                 expect(frameIds).to.deep.equal([1, 2]);
@@ -188,7 +187,7 @@ describe('PIXI.AnimatedSprite', function ()
         before(function ()
         {
             this.sprite = new AnimatedSprite([Texture.EMPTY, Texture.EMPTY, Texture.EMPTY]);
-            this.sprite.animationSpeed = 1;
+            this.sprite.animationSpeed = 0.5;
             this.sprite.loop = false;
         });
 
@@ -207,7 +206,6 @@ describe('PIXI.AnimatedSprite', function ()
         {
             const targetFrame = 1;
 
-            this.sprite.animationSpeed = 1;
             this.sprite.onFrameChange = (frame) =>
             {
                 expect(frame).to.equal(targetFrame);
@@ -227,7 +225,6 @@ describe('PIXI.AnimatedSprite', function ()
 
             this.sprite.gotoAndStop(targetFrame);
 
-            this.sprite.animationSpeed = 1;
             this.sprite.onFrameChange = () =>
             {
                 fired = true;
@@ -243,7 +240,7 @@ describe('PIXI.AnimatedSprite', function ()
         before(function ()
         {
             this.sprite = new AnimatedSprite([Texture.EMPTY, Texture.WHITE, Texture.EMPTY]);
-            this.sprite.animationSpeed = 1;
+            this.sprite.animationSpeed = 0.5;
             this.sprite.loop = false;
         });
 
@@ -263,7 +260,6 @@ describe('PIXI.AnimatedSprite', function ()
             const frameIds = [];
 
             this.sprite.gotoAndStop(0);
-            this.sprite.animationSpeed = 1;
             this.sprite.onComplete = () =>
             {
                 expect(frameIds).to.deep.equal([1, 2]); // from 0 to 2, triggers onFrameChange at 1,2.
@@ -285,7 +281,7 @@ describe('PIXI.AnimatedSprite', function ()
             const frameIds = [];
 
             this.sprite.gotoAndStop(2);
-            this.sprite.animationSpeed = -1;
+            this.sprite.animationSpeed = -0.5;
             this.sprite.onComplete = () =>
             {
                 expect(frameIds).to.deep.equal([1, 0]); // from 2 to 0, triggers onFrameChange at 1,0.
@@ -307,7 +303,7 @@ describe('PIXI.AnimatedSprite', function ()
             const frameIds = [];
 
             this.sprite.gotoAndStop(1);
-            this.sprite.animationSpeed = -1;
+            this.sprite.animationSpeed = -0.5;
             this.sprite.onComplete = () =>
             {
                 expect(frameIds).to.deep.equal([0]); // from 1 to 0, triggers onFrameChange at 0.
