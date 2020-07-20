@@ -13,6 +13,11 @@ const GL_TO_GLSL_TYPES: Dict<string> = {
     INT_VEC3:    'ivec3',
     INT_VEC4:    'ivec4',
 
+    UNSIGNED_INT:         'uint',
+    UNSIGNED_INT_VEC2:    'uvec2',
+    UNSIGNED_INT_VEC3:    'uvec3',
+    UNSIGNED_INT_VEC4:    'uvec4',
+
     BOOL:        'bool',
     BOOL_VEC2:   'bvec2',
     BOOL_VEC3:   'bvec3',
