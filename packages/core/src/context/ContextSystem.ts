@@ -242,7 +242,7 @@ export class ContextSystem extends System
             floatTextureLinear: gl.getExtension('OES_texture_float_linear'),
 
             s3tc: gl.getExtension('WEBGL_compressed_texture_s3tc'),
-            s3tc_sRGB: gl.getExtension('WEBGL_compressed_texture_s3tc_srgb'),
+            s3tc_sRGB: gl.getExtension('WEBGL_compressed_texture_s3tc_srgb'), // eslint-disable-line camelcase
             etc: gl.getExtension('WEBGL_compressed_texture_etc'),
             etc1: gl.getExtension('WEBGL_compressed_texture_etc1'),
             pvrtc: gl.getExtension('WEBGL_compressed_texture_pvrtc'),
