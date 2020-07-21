@@ -7,9 +7,43 @@ import type { Renderer } from '../Renderer';
 
 let CONTEXT_UID_COUNTER = 0;
 
+/* eslint-disable camelcase */
+interface WEBGL_compressed_texture_pvrtc
+{
+    COMPRESSED_RGB_PVRTC_4BPPV1_IMG: number;
+    COMPRESSED_RGBA_PVRTC_4BPPV1_IMG: number;
+    COMPRESSED_RGB_PVRTC_2BPPV1_IMG: number;
+    COMPRESSED_RGBA_PVRTC_2BPPV1_IMG: number;
+}
+interface WEBGL_compressed_texture_etc
+{
+    COMPRESSED_R11_EAC: number;
+    COMPRESSED_SIGNED_R11_EAC: number;
+    COMPRESSED_RG11_EAC: number;
+    COMPRESSED_SIGNED_RG11_EAC: number;
+    COMPRESSED_RGB8_ETC2: number;
+    COMPRESSED_RGBA8_ETC2_EAC: number;
+    COMPRESSED_SRGB8_ETC2: number;
+    COMPRESSED_SRGB8_ALPHA8_ETC2_EAC: number;
+    COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2: number;
+    COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2: number;
+}
+interface WEBGL_compressed_texture_etc1
+{
+    COMPRESSED_RGB_ETC1_WEBGL: number;
+}
+interface WEBGL_compressed_texture_atc
+{
+    COMPRESSED_RGB_ATC_WEBGL: number;
+    COMPRESSED_RGBA_ATC_EXPLICIT_ALPHA_WEBGL: number;
+    COMPRESSED_RGBA_ATC_INTERPOLATED_ALPHA_WEBGL: number;
+}
+/* eslint-enable camelcase */
+
 export interface ISupportDict {
     uint32Indices: boolean;
 }
+
 /**
  * System plugin to the renderer to manage the context.
  *
@@ -38,6 +72,14 @@ export class ContextSystem extends System
         textureHalfFloat?: OES_texture_half_float;
         textureHalfFloatLinear?: OES_texture_half_float_linear;
         colorBufferFloat?: WEBGL_color_buffer_float;
+
+        s3tc?: WEBGL_compressed_texture_s3tc;
+        s3tc_sRGB?: WEBGL_compressed_texture_s3tc_srgb;
+        etc?: WEBGL_compressed_texture_etc;
+        etc1?: WEBGL_compressed_texture_etc1;
+        pvrtc?: WEBGL_compressed_texture_pvrtc;
+        atc?: WEBGL_compressed_texture_atc;
+        astc?: WEBGL_compressed_texture_astc;
     };
     /* eslint-enable camelcase */
 
@@ -195,16 +237,28 @@ export class ContextSystem extends System
         // time to set up default extensions that Pixi uses.
         const { gl } = this;
 
+        const common = {
+            anisotropicFiltering: gl.getExtension('EXT_texture_filter_anisotropic'),
+            floatTextureLinear: gl.getExtension('OES_texture_float_linear'),
+
+            s3tc: gl.getExtension('WEBGL_compressed_texture_s3tc'),
+            s3tc_sRGB: gl.getExtension('WEBGL_compressed_texture_s3tc_srgb'),
+            etc: gl.getExtension('WEBGL_compressed_texture_etc'),
+            etc1: gl.getExtension('WEBGL_compressed_texture_etc1'),
+            pvrtc: gl.getExtension('WEBGL_compressed_texture_pvrtc'),
+            atc: gl.getExtension('WEBGL_compressed_texture_atc'),
+            astc: gl.getExtension('WEBGL_compressed_texture_astc')
+        };
+
         if (this.webGLVersion === 1)
         {
-            Object.assign(this.extensions, {
+            Object.assign(this.extensions, common, {
                 drawBuffers: gl.getExtension('WEBGL_draw_buffers'),
                 depthTexture: gl.getExtension('WEBGL_depth_texture'),
                 loseContext: gl.getExtension('WEBGL_lose_context'),
                 vertexArrayObject: gl.getExtension('OES_vertex_array_object')
                     || gl.getExtension('MOZ_OES_vertex_array_object')
                     || gl.getExtension('WEBKIT_OES_vertex_array_object'),
-                anisotropicFiltering: gl.getExtension('EXT_texture_filter_anisotropic'),
                 uint32ElementIndex: gl.getExtension('OES_element_index_uint'),
                 // Floats and half-floats
                 floatTexture: gl.getExtension('OES_texture_float'),
@@ -215,11 +269,9 @@ export class ContextSystem extends System
         }
         else if (this.webGLVersion === 2)
         {
-            Object.assign(this.extensions, {
-                anisotropicFiltering: gl.getExtension('EXT_texture_filter_anisotropic'),
+            Object.assign(this.extensions, common, {
                 // Floats and half-floats
-                colorBufferFloat: gl.getExtension('EXT_color_buffer_float'),
-                floatTextureLinear: gl.getExtension('OES_texture_float_linear'),
+                colorBufferFloat: gl.getExtension('EXT_color_buffer_float')
             });
         }
     }

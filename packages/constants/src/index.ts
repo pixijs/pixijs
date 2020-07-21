@@ -179,6 +179,47 @@ export enum FORMATS {
     DEPTH_STENCIL = 34041,
 }
 
+// webdoc should handle the @property list for us now (test it, & fix it if it doesn't)
+/**
+ * WebGL internal formats, including compressed texture formats provided by extensions
+ *
+ * @memberof PIXI
+ * @static
+ */
+export enum INTERNAL_FORMATS {
+    // WEBGL_compressed_texture_s3tc
+    COMPRESSED_RGB_S3TC_DXT1_EXT = 0x83F0,
+    COMPRESSED_RGBA_S3TC_DXT1_EXT = 0x83F1,
+    COMPRESSED_RGBA_S3TC_DXT3_EXT = 0x83F2,
+    COMPRESSED_RGBA_S3TC_DXT5_EXT = 0x83F3,
+
+    // WEBGL_compressed_texture_etc
+    COMPRESSED_R11_EAC = 0x9270,
+    COMPRESSED_SIGNED_R11_EAC = 0x9271,
+    COMPRESSED_RG11_EAC = 0x9272,
+    COMPRESSED_SIGNED_RG11_EAC = 0x9273,
+    COMPRESSED_RGB8_ETC2 = 0x9274,
+    COMPRESSED_RGBA8_ETC2_EAC = 0x9275,
+    COMPRESSED_SRGB8_ETC2 = 0x9276,
+    COMPRESSED_SRGB8_ALPHA8_ETC2_EAC = 0x9277,
+    COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2 = 0x9278,
+    COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2 = 0x9279,
+
+    // WEBGL_compressed_texture_pvrtc
+    COMPRESSED_RGB_PVRTC_4BPPV1_IMG = 0x8C00,
+    COMPRESSED_RGBA_PVRTC_4BPPV1_IMG = 0x8C02,
+    COMPRESSED_RGB_PVRTC_2BPPV1_IMG = 0x8C01,
+    COMPRESSED_RGBA_PVRTC_2BPPV1_IMG = 0x8C03,
+
+    // WEBGL_compressed_texture_etc1
+    COMPRESSED_RGB_ETC1_WEBGL = 0x8D64,
+
+    // WEBGL_compressed_texture_atc
+    COMPRESSED_RGB_ATC_WEBGL = 0x8C92,
+    COMPRESSED_RGBA_ATC_EXPLICIT_ALPHA_WEBGL = 0x8C92, // TODO: Probably a bug on the MDN site
+    COMPRESSED_RGBA_ATC_INTERPOLATED_ALPHA_WEBGL = 0x87EE,
+}
+
 /**
  * Various GL target types.
  *

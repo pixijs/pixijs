@@ -21,9 +21,16 @@ export class ViewableBuffer
     private _int32View: Int32Array;
 
     /**
-     * @param {number} size - The size of the buffer in bytes.
+     * @param {number} length - The size of the buffer in bytes.
      */
-    constructor(size: number)
+    constructor(length: number);
+
+    /**
+     * @param {ArrayBuffer} arrayBuffer - The source array buffer.
+     */
+    constructor(arrayBuffer: ArrayBuffer);
+
+    constructor(sizeOrBuffer: number | ArrayBuffer | Uint8Array)
     {
         /**
          * Underlying `ArrayBuffer` that holds all the data
@@ -31,7 +38,7 @@ export class ViewableBuffer
          *
          * @member {ArrayBuffer}
          */
-        this.rawBinaryData = new ArrayBuffer(size);
+        this.rawBinaryData = typeof sizeOrBuffer === 'number' ? new ArrayBuffer(sizeOrBuffer) : (sizeOrBuffer instanceof ArrayBuffer ? sizeOrBuffer : sizeOrBuffer.buffer);
 
         /**
          * View on the raw binary data as a `Uint32Array`.
