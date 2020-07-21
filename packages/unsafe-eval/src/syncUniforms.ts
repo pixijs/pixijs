@@ -41,6 +41,11 @@ const GLSL_TO_SINGLE_SETTERS = {
     ivec3(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: number[]): void { gl.uniform3i(location, value[0], value[1], value[2]); },
     ivec4(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: number[]): void { gl.uniform4i(location, value[0], value[1], value[2], value[3]); },
 
+    uint(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: number): void { gl.uniform1ui(location, value); },
+    uvec2(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: number[]): void { gl.uniform2ui(location, value[0], value[1]); },
+    uvec3(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: number[]): void { gl.uniform3ui(location, value[0], value[1], value[2]); },
+    uvec4(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: number[]): void { gl.uniform4ui(location, value[0], value[1], value[2], value[3]); },
+
     bool(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: number): void { gl.uniform1i(location, value); },
     bvec2(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: number[]): void { gl.uniform2i(location, value[0], value[1]); },
     bvec3(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: number[]): void { gl.uniform3i(location, value[0], value[1], value[2]); },
@@ -64,6 +69,10 @@ const GLSL_TO_ARRAY_SETTERS = {
     ivec2(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: Int32List): void { gl.uniform2iv(location, value); },
     ivec3(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: Int32List): void { gl.uniform3iv(location, value); },
     ivec4(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: Int32List): void { gl.uniform4iv(location, value); },
+    uint(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: Uint32List): void { gl.uniform1uiv(location, value); },
+    uvec2(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: Uint32List): void { gl.uniform2uiv(location, value); },
+    uvec3(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: Uint32List): void { gl.uniform3uiv(location, value); },
+    uvec4(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: Uint32List): void { gl.uniform4uiv(location, value); },
     bool(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: Int32List): void { gl.uniform1iv(location, value); },
     bvec2(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: Int32List): void { gl.uniform2iv(location, value); },
     bvec3(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: Int32List): void { gl.uniform3iv(location, value); },
