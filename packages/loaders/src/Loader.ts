@@ -1,4 +1,5 @@
 import { Loader as ResourceLoader, middleware } from 'resource-loader';
+import { KTXLoader } from './KTXLoader';
 import { TextureLoader } from './TextureLoader';
 
 import type { Resource } from 'resource-loader';
@@ -160,6 +161,9 @@ Loader.registerPlugin({ use: middleware.parsing });
 
 // parse any Image objects into textures
 Loader.registerPlugin(TextureLoader);
+
+// parse any KTX container files into textures
+Loader.registerPlugin(KTXLoader);
 
 export interface ILoaderPlugin {
     add?(): void;

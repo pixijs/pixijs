@@ -74,5 +74,8 @@
     "sinon-chai": "^3.3.0",
     "tsd-jsdoc": "^2.1.3",
     "typescript": "^3.9.5"
+  },
+  "dependencies": {
+    "resource-loader": "^3.0.1"
   }
 }
