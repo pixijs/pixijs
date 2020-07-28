@@ -15,7 +15,7 @@ CanvasRenderer.registerPlugin('interaction', InteractionManager);
 CanvasRenderer.registerPlugin('graphics', CanvasGraphicsRenderer);
 CanvasRenderer.registerPlugin('sprite', CanvasSpriteRenderer);
 
-describe('PIXI.interaction.InteractionManager', function ()
+describe('PIXI.InteractionManager', function ()
 {
     afterEach(function ()
     {

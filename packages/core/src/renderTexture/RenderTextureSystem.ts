@@ -7,7 +7,14 @@ import type { RenderTexture } from './RenderTexture';
 import type { BaseRenderTexture } from './BaseRenderTexture';
 import type { MaskData } from '../mask/MaskData';
 
+// Temporary rectangle for assigned sourceFrame or destinationFrame
 const tempRect = new Rectangle();
+
+// Temporary rectangle for renderTexture destinationFrame
+const tempRect2 = new Rectangle();
+
+// Temporary rectangle for passing the framebuffer viewport
+const viewportFrame = new Rectangle();
 
 /**
  * System plugin to the renderer to manage render textures.
@@ -18,7 +25,6 @@ const tempRect = new Rectangle();
  * @extends PIXI.System
  * @memberof PIXI.systems
  */
-
 export class RenderTextureSystem extends System
 {
     public clearColor: number[];
@@ -73,80 +79,87 @@ export class RenderTextureSystem extends System
 
     /**
      * Bind the current render texture
+     *
      * @param {PIXI.RenderTexture} [renderTexture] - RenderTexture to bind, by default its `null`, the screen
      * @param {PIXI.Rectangle} [sourceFrame] - part of screen that is mapped to the renderTexture
      * @param {PIXI.Rectangle} [destinationFrame] - part of renderTexture, by default it has the same size as sourceFrame
      */
     bind(renderTexture: RenderTexture = null, sourceFrame?: Rectangle, destinationFrame?: Rectangle): void
     {
-        this.current = renderTexture;
-
         const renderer = this.renderer;
 
+        this.current = renderTexture;
+
+        let baseTexture: BaseRenderTexture;
+        let framebuffer;
         let resolution;
 
         if (renderTexture)
         {
-            const baseTexture = renderTexture.baseTexture as BaseRenderTexture;
+            baseTexture = renderTexture.baseTexture as BaseRenderTexture;
 
             resolution = baseTexture.resolution;
 
+            if (!sourceFrame)
+            {
+                tempRect.width = renderTexture.frame.width;
+                tempRect.height = renderTexture.frame.height;
+
+                sourceFrame = tempRect;
+            }
+
             if (!destinationFrame)
             {
-                tempRect.width = baseTexture.realWidth;
-                tempRect.height = baseTexture.realHeight;
+                tempRect2.x = renderTexture.frame.x;
+                tempRect2.y = renderTexture.frame.y;
+                tempRect2.width = sourceFrame.width;
+                tempRect2.height = sourceFrame.height;
 
-                destinationFrame = tempRect;
+                destinationFrame = tempRect2;
             }
+
+            framebuffer = baseTexture.framebuffer;
+        }
+        else
+        {
+            resolution = renderer.resolution;
 
             if (!sourceFrame)
             {
-                sourceFrame = destinationFrame;
+                tempRect.width = renderer.screen.width;
+                tempRect.height = renderer.screen.height;
+
+                sourceFrame = tempRect;
             }
 
-            this.renderer.framebuffer.bind(baseTexture.framebuffer, destinationFrame);
+            if (!destinationFrame)
+            {
+                destinationFrame = tempRect;
 
-            this.renderer.projection.update(destinationFrame, sourceFrame, resolution, false);
+                destinationFrame.width = sourceFrame.width;
+                destinationFrame.height = sourceFrame.height;
+            }
+        }
+
+        viewportFrame.x = destinationFrame.x * resolution;
+        viewportFrame.y = destinationFrame.y * resolution;
+        viewportFrame.width = destinationFrame.width * resolution;
+        viewportFrame.height = destinationFrame.height * resolution;
+
+        this.renderer.framebuffer.bind(framebuffer, viewportFrame);
+        this.renderer.projection.update(destinationFrame, sourceFrame, resolution, !framebuffer);
+
+        if (renderTexture)
+        {
             this.renderer.mask.setMaskStack(baseTexture.maskStack);
         }
         else
         {
-            resolution = this.renderer.resolution;
-
-            // TODO these validation checks happen deeper down..
-            // thing they can be avoided..
-            if (!destinationFrame)
-            {
-                tempRect.width = renderer.width;
-                tempRect.height = renderer.height;
-
-                destinationFrame = tempRect;
-            }
-
-            if (!sourceFrame)
-            {
-                sourceFrame = destinationFrame;
-            }
-
-            renderer.framebuffer.bind(null, destinationFrame);
-
-            // TODO store this..
-            this.renderer.projection.update(destinationFrame, sourceFrame, resolution, true);
             this.renderer.mask.setMaskStack(this.defaultMaskStack);
         }
 
         this.sourceFrame.copyFrom(sourceFrame);
-
-        this.destinationFrame.x = destinationFrame.x / resolution;
-        this.destinationFrame.y = destinationFrame.y / resolution;
-
-        this.destinationFrame.width = destinationFrame.width / resolution;
-        this.destinationFrame.height = destinationFrame.height / resolution;
-
-        if (sourceFrame === destinationFrame)
-        {
-            this.sourceFrame.copyFrom(this.destinationFrame);
-        }
+        this.destinationFrame.copyFrom(destinationFrame);
     }
 
     /**

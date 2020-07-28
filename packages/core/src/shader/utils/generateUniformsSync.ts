@@ -1,13 +1,16 @@
 import { uniformParsers } from './uniformParsers';
 
 import type { UniformGroup } from '../UniformGroup';
+import type { Dict } from '@pixi/utils';
+
+export type UniformsSyncCallback = (...args: any[]) => void;
 
 // cv = CachedValue
 // v = value
 // ud = uniformData
 // uv = uniformValue
 // l = location
-const GLSL_TO_SINGLE_SETTERS_CACHED: {[x: string]: string} = {
+const GLSL_TO_SINGLE_SETTERS_CACHED: Dict<string> = {
 
     float: `
     if(cv !== v)
@@ -55,7 +58,7 @@ const GLSL_TO_SINGLE_SETTERS_CACHED: {[x: string]: string} = {
     sampler2DArray: 'gl.uniform1i(location, v)',
 };
 
-const GLSL_TO_ARRAY_SETTERS: {[x: string]: string} = {
+const GLSL_TO_ARRAY_SETTERS: Dict<string> = {
 
     float:    `gl.uniform1fv(location, v)`,
 
@@ -82,7 +85,7 @@ const GLSL_TO_ARRAY_SETTERS: {[x: string]: string} = {
     sampler2DArray: 'gl.uniform1iv(location, v)',
 };
 
-export function generateUniformsSync(group: UniformGroup, uniformData: {[x: string]: any}): Function
+export function generateUniformsSync(group: UniformGroup, uniformData: Dict<any>): UniformsSyncCallback
 {
     const funcFragments = [`
         var v = null;
@@ -141,6 +144,7 @@ export function generateUniformsSync(group: UniformGroup, uniformData: {[x: stri
      * no matter which group is being used
      *
      */
-    return new Function('ud', 'uv', 'renderer', 'syncData', funcFragments.join('\n')); // eslint-disable-line no-new-func
+    // eslint-disable-next-line no-new-func
+    return new Function('ud', 'uv', 'renderer', 'syncData', funcFragments.join('\n')) as UniformsSyncCallback;
 }
 

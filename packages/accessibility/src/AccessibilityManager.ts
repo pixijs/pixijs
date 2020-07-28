@@ -32,7 +32,7 @@ const DIV_HOOK_ZINDEX = 2;
  * An instance of this class is automatically created by default, and can be found at `renderer.plugins.accessibility`
  *
  * @class
- * @memberof PIXI.accessibility
+ * @memberof PIXI
  */
 export class AccessibilityManager
 {
@@ -333,7 +333,10 @@ export class AccessibilityManager
         }
 
         // update children...
-        this.updateAccessibleObjects(this.renderer._lastObjectRendered as Container);
+        if (this.renderer._lastObjectRendered)
+        {
+            this.updateAccessibleObjects(this.renderer._lastObjectRendered as Container);
+        }
 
         // TODO: Remove casting when CanvasRenderer is converted
         const rect = (this.renderer as AbstractRenderer).view.getBoundingClientRect();

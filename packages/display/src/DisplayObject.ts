@@ -4,7 +4,8 @@ import { Container } from './Container';
 import { Bounds } from './Bounds';
 
 import type { Filter, MaskData, Renderer } from '@pixi/core';
-import type { IPoint, ObservablePoint } from '@pixi/math';
+import type { IPointData, ObservablePoint } from '@pixi/math';
+import type { Dict } from '@pixi/utils';
 
 export interface IDestroyOptions {
     children?: boolean;
@@ -55,9 +56,9 @@ export abstract class DisplayObject extends EventEmitter
     /**
      * Mixes all enumerable properties and methods from a source object to DisplayObject.
      *
-     * @param {object} source The source of properties and methods to mix in.
+     * @param {object} source - The source of properties and methods to mix in.
      */
-    static mixin(source: {[x: string]: any}): void
+    static mixin(source: Dict<any>): void
     {
         // in ES8/ES2017, this would be really easy:
         // Object.defineProperties(DisplayObject.prototype, Object.getOwnPropertyDescriptors(source));
@@ -221,7 +222,7 @@ export abstract class DisplayObject extends EventEmitter
         /**
          * The original, cached mask of the object.
          *
-         * @member {PIXI.Graphics|PIXI.Sprite|null}
+         * @member {PIXI.Container|PIXI.MaskData|null}
          * @protected
          */
         this._mask = null;
@@ -279,7 +280,7 @@ export abstract class DisplayObject extends EventEmitter
      * Recursively updates transform of all objects from the root to this one
      * internal function for toLocal()
      */
-    private _recursivePostUpdateTransform(): void
+    protected _recursivePostUpdateTransform(): void
     {
         if (this.parent)
         {
@@ -399,13 +400,13 @@ export abstract class DisplayObject extends EventEmitter
     /**
      * Calculates the global position of the display object.
      *
-     * @param {PIXI.IPoint} position - The world origin to calculate from.
+     * @param {PIXI.IPointData} position - The world origin to calculate from.
      * @param {PIXI.Point} [point] - A Point object in which to store the value, optional
      *  (otherwise will create a new Point).
      * @param {boolean} [skipUpdate=false] - Should we skip the update transform.
      * @return {PIXI.Point} A point object representing the position of this object.
      */
-    toGlobal(position: IPoint, point?: Point, skipUpdate = false): Point
+    toGlobal<P extends IPointData = Point>(position: IPointData, point?: P, skipUpdate = false): P
     {
         if (!skipUpdate)
         {
@@ -427,20 +428,20 @@ export abstract class DisplayObject extends EventEmitter
         }
 
         // don't need to update the lot
-        return this.worldTransform.apply(position, point);
+        return this.worldTransform.apply<P>(position, point);
     }
 
     /**
      * Calculates the local position of the display object relative to another point.
      *
-     * @param {PIXI.IPoint} position - The world origin to calculate from.
+     * @param {PIXI.IPointData} position - The world origin to calculate from.
      * @param {PIXI.DisplayObject} [from] - The DisplayObject to calculate the global position from.
      * @param {PIXI.Point} [point] - A Point object in which to store the value, optional
      *  (otherwise will create a new Point).
      * @param {boolean} [skipUpdate=false] - Should we skip the update transform
      * @return {PIXI.Point} A point object representing the position of this object
      */
-    toLocal(position: IPoint, from: DisplayObject, point?: Point, skipUpdate?: boolean): Point
+    toLocal<P extends IPointData = Point>(position: IPointData, from: DisplayObject, point?: P, skipUpdate?: boolean): P
     {
         if (from)
         {
@@ -467,7 +468,7 @@ export abstract class DisplayObject extends EventEmitter
         }
 
         // simply apply the matrix..
-        return this.worldTransform.applyInverse(position, point);
+        return this.worldTransform.applyInverse<P>(position, point);
     }
 
     /**
@@ -524,7 +525,6 @@ export abstract class DisplayObject extends EventEmitter
      * after calling `destroy()`.
      *
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     destroy(_options?: IDestroyOptions|boolean): void
     {
         if (this.parent)
@@ -556,11 +556,40 @@ export abstract class DisplayObject extends EventEmitter
     {
         if (this.tempDisplayObjectParent === null)
         {
-            // eslint-disable-next-line @typescript-eslint/no-use-before-define
+            // eslint-disable-next-line no-use-before-define
             this.tempDisplayObjectParent = new TemporaryDisplayObject();
         }
 
         return this.tempDisplayObjectParent;
+    }
+
+    /**
+     * Used in Renderer, cacheAsBitmap and other places where you call an `updateTransform` on root
+     *
+     * ```
+     * const cacheParent = elem.enableTempParent();
+     * elem.updateTransform();
+     * elem.disableTempParent(cacheParent);
+     * ```
+     *
+     * @returns {PIXI.DisplayObject} current parent
+     */
+    enableTempParent(): DisplayObject
+    {
+        const myParent = this.parent;
+
+        this.parent = this._tempDisplayObjectParent;
+
+        return myParent;
+    }
+
+    /**
+     * Pair method for `enableTempParent`
+     * @param {PIXI.DisplayObject} cacheParent actual parent of element
+     */
+    disableTempParent(cacheParent: DisplayObject): void
+    {
+        this.parent = cacheParent;
     }
 
     /**
@@ -574,7 +603,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.position.x;
     }
 
-    set x(value) // eslint-disable-line require-jsdoc
+    set x(value: number)
     {
         this.transform.position.x = value;
     }
@@ -590,7 +619,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.position.y;
     }
 
-    set y(value) // eslint-disable-line require-jsdoc
+    set y(value: number)
     {
         this.transform.position.y = value;
     }
@@ -628,7 +657,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.transform.position;
     }
 
-    set position(value) // eslint-disable-line require-jsdoc
+    set position(value: ObservablePoint)
     {
         this.transform.position.copyFrom(value);
     }
@@ -644,7 +673,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.transform.scale;
     }
 
-    set scale(value) // eslint-disable-line require-jsdoc
+    set scale(value: ObservablePoint)
     {
         this.transform.scale.copyFrom(value);
     }
@@ -660,7 +689,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.transform.pivot;
     }
 
-    set pivot(value) // eslint-disable-line require-jsdoc
+    set pivot(value: ObservablePoint)
     {
         this.transform.pivot.copyFrom(value);
     }
@@ -676,7 +705,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.transform.skew;
     }
 
-    set skew(value) // eslint-disable-line require-jsdoc
+    set skew(value: ObservablePoint)
     {
         this.transform.skew.copyFrom(value);
     }
@@ -692,7 +721,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.transform.rotation;
     }
 
-    set rotation(value) // eslint-disable-line require-jsdoc
+    set rotation(value: number)
     {
         this.transform.rotation = value;
     }
@@ -708,7 +737,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.transform.rotation * RAD_TO_DEG;
     }
 
-    set angle(value) // eslint-disable-line require-jsdoc
+    set angle(value: number)
     {
         this.transform.rotation = value * DEG_TO_RAD;
     }
@@ -726,7 +755,7 @@ export abstract class DisplayObject extends EventEmitter
         return this._zIndex;
     }
 
-    set zIndex(value) // eslint-disable-line require-jsdoc
+    set zIndex(value: number)
     {
         this._zIndex = value;
         if (this.parent)
@@ -775,14 +804,14 @@ export abstract class DisplayObject extends EventEmitter
      * sprite.mask = graphics;
      * @todo At the moment, PIXI.CanvasRenderer doesn't support PIXI.Sprite as mask.
      *
-     * @member {PIXI.Container|PIXI.MaskData}
+     * @member {PIXI.Container|PIXI.MaskData|null}
      */
-    get mask(): Container|MaskData
+    get mask(): Container|MaskData|null
     {
         return this._mask;
     }
 
-    set mask(value) // eslint-disable-line require-jsdoc
+    set mask(value: Container|MaskData|null)
     {
         if (this._mask)
         {
@@ -806,9 +835,9 @@ export abstract class DisplayObject extends EventEmitter
 
 export class TemporaryDisplayObject extends DisplayObject
 {
-    calculateBounds: () => {} = null;
-    removeChild: (child: DisplayObject) => {} = null;
-    render: (renderer: Renderer) => {} = null;
+    calculateBounds: () => null;
+    removeChild: (child: DisplayObject) => null;
+    render: (renderer: Renderer) => null;
     sortDirty: boolean = null;
 }
 

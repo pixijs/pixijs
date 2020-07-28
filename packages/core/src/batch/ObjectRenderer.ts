@@ -68,8 +68,7 @@ export class ObjectRenderer
      *
      * @param {PIXI.DisplayObject} object - The object to render.
      */
-    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    render(_object: any): void
+    render(_object: any): void // eslint-disable-line @typescript-eslint/explicit-module-boundary-types
     {
         // render the object
     }

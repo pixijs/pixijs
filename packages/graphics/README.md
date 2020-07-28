@@ -9,8 +9,7 @@ npm install @pixi/graphics
 ## Usage
 
 ```js
-import { GraphicsRenderer } from '@pixi/graphics';
-import { Renderer } from '@pixi/core';
+import { Graphics } from '@pixi/graphics';
 
-Renderer.registerPlugin('graphics', GraphicsRenderer);
+const shapes = new Graphics();
 ```

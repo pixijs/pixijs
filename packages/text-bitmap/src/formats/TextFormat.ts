@@ -1,6 +1,41 @@
 import { BitmapFontData } from '../BitmapFontData';
 
 /**
+ * Internal data format used to convert to BitmapFontData.
+ * @private
+ */
+interface IBitmapFontRawData {
+    info: {
+        face: string;
+        size: string;
+    }[];
+    common: { lineHeight: string }[];
+    page: {
+        id: string;
+        file: string;
+    }[];
+    chars: {
+        count: number;
+    }[];
+    char: {
+        id: string;
+        page: string;
+        x: string;
+        y: string;
+        width: string;
+        height: string;
+        xoffset: string;
+        yoffset: string;
+        xadvance: string;
+    }[];
+    kerning?: {
+        first: string;
+        second: string;
+        amount: string;
+    }[];
+}
+
+/**
  * BitmapFont format that's Text-based.
  *
  * @class
@@ -16,7 +51,7 @@ export class TextFormat
      * @param {any} data
      * @return {boolean} True if resource could be treated as font data, false otherwise.
      */
-    static test(data: any): boolean
+    static test(data: unknown): boolean
     {
         return typeof data === 'string' && data.indexOf('info face=') === 0;
     }
@@ -26,14 +61,21 @@ export class TextFormat
      *
      * @static
      * @private
-     * @param {string} txt Raw string data to be converted
+     * @param {string} txt - Raw string data to be converted
      * @return {PIXI.BitmapFontData} Parsed font data
      */
     static parse(txt: string): BitmapFontData
     {
         // Retrieve data item
         const items = txt.match(/^[a-z]+\s+.+$/gm);
-        const data = new BitmapFontData();
+        const rawData: IBitmapFontRawData = {
+            info: [],
+            common: [],
+            page: [],
+            char: [],
+            chars: [],
+            kerning: [],
+        };
 
         for (const i in items)
         {
@@ -65,68 +107,43 @@ export class TextFormat
             }
 
             // Push current item to the resulting data
-            if (!data[name])
-            {
-                data[name] = [];
-            }
-
-            data[name].push(itemData);
+            rawData[name].push(itemData);
         }
 
-        /* eslint-disable @typescript-eslint/ban-ts-ignore */
+        const font = new BitmapFontData();
 
-        data.info.forEach((info) =>
-        {
-            // @ts-ignore
-            info.size = parseInt(info.size, 10);
-        });
+        rawData.info.forEach((info) => font.info.push({
+            face: info.face,
+            size: parseInt(info.size, 10),
+        }));
 
-        data.common.forEach((common) =>
-        {
-            // @ts-ignore
-            common.lineHeight = parseInt(common.lineHeight, 10);
-        });
+        rawData.common.forEach((common) => font.common.push({
+            lineHeight: parseInt(common.lineHeight, 10),
+        }));
 
-        data.page.forEach((page) =>
-        {
-            // @ts-ignore
-            page.id = parseInt(page.id, 10);
-        });
+        rawData.page.forEach((page) => font.page.push({
+            id: parseInt(page.id, 10),
+            file: page.file,
+        }));
 
-        data.char.forEach((char) =>
-        {
-            // @ts-ignore
-            char.id = parseInt(char.id, 10);
-            // @ts-ignore
-            char.page = parseInt(char.page, 10);
-            // @ts-ignore
-            char.x = parseInt(char.x, 10);
-            // @ts-ignore
-            char.y = parseInt(char.y, 10);
-            // @ts-ignore
-            char.width = parseInt(char.width, 10);
-            // @ts-ignore
-            char.height = parseInt(char.height, 10);
-            // @ts-ignore
-            char.xoffset = parseInt(char.xoffset, 10);
-            // @ts-ignore
-            char.yoffset = parseInt(char.yoffset, 10);
-            // @ts-ignore
-            char.xadvance = parseInt(char.xadvance, 10);
-        });
+        rawData.char.forEach((char) => font.char.push({
+            id: parseInt(char.id, 10),
+            page: parseInt(char.page, 10),
+            x: parseInt(char.x, 10),
+            y: parseInt(char.y, 10),
+            width: parseInt(char.width, 10),
+            height: parseInt(char.height, 10),
+            xoffset: parseInt(char.xoffset, 10),
+            yoffset: parseInt(char.yoffset, 10),
+            xadvance: parseInt(char.xadvance, 10),
+        }));
 
-        data.kerning.forEach((kerning) =>
-        {
-            // @ts-ignore
-            kerning.first = parseInt(kerning.first, 10);
-            // @ts-ignore
-            kerning.second = parseInt(kerning.second, 10);
-            // @ts-ignore
-            kerning.amount = parseInt(kerning.amount, 10);
-        });
+        rawData.kerning.forEach((kerning) => font.kerning.push({
+            first: parseInt(kerning.first, 10),
+            second: parseInt(kerning.second, 10),
+            amount: parseInt(kerning.amount, 10),
+        }));
 
-        /* eslint-enable @typescript-eslint/ban-ts-ignore */
-
-        return data;
+        return font;
     }
 }

@@ -65,8 +65,8 @@ export class BaseImageResource extends Resource
 
     /**
      * Upload the texture to the GPU.
-     * @param {PIXI.Renderer} renderer Upload to the renderer
-     * @param {PIXI.BaseTexture} baseTexture Reference to parent texture
+     * @param {PIXI.Renderer} renderer - Upload to the renderer
+     * @param {PIXI.BaseTexture} baseTexture - Reference to parent texture
      * @param {PIXI.GLTexture} glTexture
      * @param {HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|SVGElement} [source] (optional)
      * @returns {boolean} true is success
@@ -123,7 +123,6 @@ export class BaseImageResource extends Resource
     /**
      * Destroy this BaseImageResource
      * @override
-     * @param {PIXI.BaseTexture} [fromTexture] Optional base texture
      */
     dispose(): void
     {

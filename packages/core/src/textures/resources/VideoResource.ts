@@ -1,6 +1,8 @@
 import { BaseImageResource } from './BaseImageResource';
 import { Ticker } from '@pixi/ticker';
 
+import type { Dict } from '@pixi/utils';
+
 export interface IVideoResourceOptions
 {
     autoLoad?: boolean;
@@ -72,7 +74,7 @@ export class VideoResource extends BaseImageResource
                 const baseSrc = src.split('?').shift().toLowerCase();
                 const ext = baseSrc.substr(baseSrc.lastIndexOf('.') + 1);
 
-                mime = mime || `video/${ext}`;
+                mime = mime || VideoResource.MIME_TYPES[ext] || `video/${ext}`;
 
                 sourceElement.src = src;
                 sourceElement.type = mime;
@@ -148,7 +150,6 @@ export class VideoResource extends BaseImageResource
      *
      * @param {number} [deltaTime=0] - time delta since last tick
      */
-    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     update(_deltaTime = 0): void
     {
         if (!this.destroyed)
@@ -222,7 +223,7 @@ export class VideoResource extends BaseImageResource
      *
      * @private
      */
-    private _onError(): void
+    private _onError(event: ErrorEvent): void
     {
         (this.source as HTMLVideoElement).removeEventListener('error', this._onError, true);
         this.onError.emit(event);
@@ -354,7 +355,7 @@ export class VideoResource extends BaseImageResource
         return this._autoUpdate;
     }
 
-    set autoUpdate(value) // eslint-disable-line require-jsdoc
+    set autoUpdate(value: boolean)
     {
         if (value !== this._autoUpdate)
         {
@@ -384,7 +385,7 @@ export class VideoResource extends BaseImageResource
         return this._updateFPS;
     }
 
-    set updateFPS(value) // eslint-disable-line require-jsdoc
+    set updateFPS(value: number)
     {
         if (value !== this._updateFPS)
         {
@@ -400,7 +401,7 @@ export class VideoResource extends BaseImageResource
      * @param {string} extension - The extension of source, if set
      * @return {boolean} `true` if video source
      */
-    static test(source: any, extension?: string): boolean
+    static test(source: unknown, extension?: string): source is HTMLVideoElement
     {
         return (source instanceof HTMLVideoElement)
             || VideoResource.TYPES.indexOf(extension) > -1;
@@ -414,4 +415,17 @@ export class VideoResource extends BaseImageResource
      * @readonly
      */
     static TYPES = ['mp4', 'm4v', 'webm', 'ogg', 'ogv', 'h264', 'avi', 'mov'];
+
+    /**
+     * Map of video MIME types that can't be directly derived from file extensions.
+     * @constant
+     * @member {object}
+     * @static
+     * @readonly
+     */
+    static MIME_TYPES: Dict<string> = {
+        ogv: 'video/ogg',
+        mov: 'video/quicktime',
+        m4v: 'video/mp4',
+    };
 }

@@ -50,11 +50,11 @@ export class Text extends Sprite
     public localStyleID: number;
     public dirty: boolean;
 
+    _resolution: number;
+    _autoResolution: boolean;
     protected _text: string;
     protected _font: string;
     protected _style: TextStyle;
-    protected _resolution: number;
-    protected _autoResolution: boolean;
     protected _styleListener: () => void;
     private _ownCanvas: boolean;
 
@@ -394,6 +394,9 @@ export class Text extends Sprite
 
         baseTexture.setRealSize(canvas.width, canvas.height, this._resolution);
 
+        // Recursively updates transform of all objects from the root to this one
+        this._recursivePostUpdateTransform();
+
         this.dirty = false;
     }
 
@@ -630,7 +633,7 @@ export class Text extends Sprite
         return Math.abs(this.scale.x) * this._texture.orig.width;
     }
 
-    set width(value) // eslint-disable-line require-jsdoc
+    set width(value: number)
     {
         this.updateText(true);
 
@@ -652,7 +655,7 @@ export class Text extends Sprite
         return Math.abs(this.scale.y) * this._texture.orig.height;
     }
 
-    set height(value) // eslint-disable-line require-jsdoc
+    set height(value: number)
     {
         this.updateText(true);
 
@@ -676,7 +679,7 @@ export class Text extends Sprite
         return this._style;
     }
 
-    set style(style) // eslint-disable-line require-jsdoc
+    set style(style: TextStyle|Partial<ITextStyle>)
     {
         style = style || {};
 
@@ -703,7 +706,7 @@ export class Text extends Sprite
         return this._text;
     }
 
-    set text(text) // eslint-disable-line require-jsdoc
+    set text(text: string)
     {
         text = String(text === null || text === undefined ? '' : text);
 
@@ -726,7 +729,7 @@ export class Text extends Sprite
         return this._resolution;
     }
 
-    set resolution(value) // eslint-disable-line require-jsdoc
+    set resolution(value: number)
     {
         this._autoResolution = false;
 

@@ -21,7 +21,7 @@ import fragment from './alpha.frag';
 export class AlphaFilter extends Filter
 {
     /**
-     * @param {number} [alpha=1] Amount of alpha from 0 to 1, where 0 is transparent
+     * @param {number} [alpha=1] - Amount of alpha from 0 to 1, where 0 is transparent
      */
     constructor(alpha = 1.0)
     {
@@ -41,7 +41,7 @@ export class AlphaFilter extends Filter
         return this.uniforms.uAlpha;
     }
 
-    set alpha(value) // eslint-disable-line require-jsdoc
+    set alpha(value: number)
     {
         this.uniforms.uAlpha = value;
     }

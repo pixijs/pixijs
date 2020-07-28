@@ -1,9 +1,13 @@
-export type BitmapTextAlign = 'left' | 'center' | 'right';
+import type { TextStyleAlign } from '@pixi/text';
 
 export interface IBitmapTextStyle {
-    font: string | IBitmapTextFontDescriptor;
+    font: string | IBitmapTextFontDescriptor;// @deprecated
+    fontName: string;
+    fontSize: number;
     tint: number;
-    align: BitmapTextAlign;
+    align: TextStyleAlign;
+    letterSpacing: number;
+    maxWidth: number;
 }
 
 export interface IBitmapTextFontDescriptor {

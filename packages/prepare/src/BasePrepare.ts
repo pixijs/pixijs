@@ -116,9 +116,7 @@ function findTexture(item: IDisplayObjectExtended, queue: Array<any>): boolean
  * @param {PIXI.DisplayObject} item - Item to check
  * @return {boolean} If item was uploaded.
  */
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
-function drawText(helper: AbstractRenderer | BasePrepare, item: IDisplayObjectExtended): boolean
+function drawText(_helper: AbstractRenderer | BasePrepare, item: IDisplayObjectExtended): boolean
 {
     if (item instanceof Text)
     {
@@ -139,9 +137,7 @@ function drawText(helper: AbstractRenderer | BasePrepare, item: IDisplayObjectEx
  * @param {PIXI.DisplayObject} item - Item to check
  * @return {boolean} If item was uploaded.
  */
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
-function calculateTextStyle(helper: AbstractRenderer | BasePrepare, item: IDisplayObjectExtended): boolean
+function calculateTextStyle(_helper: AbstractRenderer | BasePrepare, item: IDisplayObjectExtended): boolean
 {
     if (item instanceof TextStyle)
     {
@@ -344,11 +340,11 @@ export class BasePrepare
      *        or the callback function, if items have been added using `prepare.add`.
      * @param {Function} [done] - Optional callback when all queued uploads have completed
      */
-    upload(item: IDisplayObjectExtended | IUploadHook | IFindHook, done: any): void
+    upload(item: IDisplayObjectExtended | IUploadHook | IFindHook | (() => void), done: () => void): void
     {
         if (typeof item === 'function')
         {
-            done = item;
+            done = item as () => void;
             item = null;
         }
 
@@ -356,7 +352,7 @@ export class BasePrepare
         // that we could upload
         if (item)
         {
-            this.add(item);
+            this.add(item as IDisplayObjectExtended | IUploadHook | IFindHook);
         }
 
         // Get the items for upload from the display

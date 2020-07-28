@@ -20,7 +20,7 @@ export const buildCircle: IShapeBuildCommand = {
     build(graphicsData)
     {
         // need to convert points to a nice regular data
-        const circleData = graphicsData.shape as Circle & Ellipse;
+        const circleData = graphicsData.shape as Circle;
         const points = graphicsData.points;
         const x = circleData.x;
         const y = circleData.y;
@@ -37,8 +37,10 @@ export const buildCircle: IShapeBuildCommand = {
         }
         else
         {
-            width = circleData.width;
-            height = circleData.height;
+            const ellipseData = graphicsData.shape as Ellipse;
+
+            width = ellipseData.width;
+            height = ellipseData.height;
         }
 
         if (width === 0 || height === 0)
@@ -47,7 +49,7 @@ export const buildCircle: IShapeBuildCommand = {
         }
 
         let totalSegs = Math.floor(30 * Math.sqrt(circleData.radius))
-            || Math.floor(15 * Math.sqrt(circleData.width + circleData.height));
+            || Math.floor(15 * Math.sqrt(width + height));
 
         totalSegs /= 2.3;
 
@@ -61,15 +63,11 @@ export const buildCircle: IShapeBuildCommand = {
             );
         }
 
-        points.push(
-            points[0],
-            points[1]
-        );
+        points.push(points[0], points[1]);
     },
 
     triangulate(graphicsData, graphicsGeometry)
     {
-        const shape = graphicsData.shape as Circle;
         const points = graphicsData.points;
         const verts = graphicsGeometry.points;
         const indices = graphicsGeometry.indices;
@@ -77,7 +75,15 @@ export const buildCircle: IShapeBuildCommand = {
         let vertPos = verts.length / 2;
         const center = vertPos;
 
-        verts.push(shape.x, shape.y);
+        const circle = (graphicsData.shape) as Circle;
+        const matrix = graphicsData.matrix;
+        const x = circle.x;
+        const y = circle.y;
+
+        // Push center (special point)
+        verts.push(
+            graphicsData.matrix ? (matrix.a * x) + (matrix.c * y) + matrix.tx : x,
+            graphicsData.matrix ? (matrix.b * x) + (matrix.d * y) + matrix.ty : y);
 
         for (let i = 0; i < points.length; i += 2)
         {

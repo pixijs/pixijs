@@ -1,7 +1,6 @@
-import { Resource } from './Resource';
+import { AbstractMultiResource } from './AbstractMultiResource';
 import { TARGETS } from '@pixi/constants';
 import { BaseTexture } from '../BaseTexture';
-import { autoDetectResource } from './autoDetectResource';
 
 import type { BaseImageResource } from './BaseImageResource';
 import type { Renderer } from '../../Renderer';
@@ -16,17 +15,12 @@ import type { ISize } from '@pixi/math';
  * @memberof PIXI.resources
  * @param {number|Array<*>} source - Number of items in array or the collection
  *        of image URLs to use. Can also be resources, image elements, canvas, etc.
- * @param {object} [options] Options to apply to {@link PIXI.resources.autoDetectResource}
+ * @param {object} [options] - Options to apply to {@link PIXI.resources.autoDetectResource}
  * @param {number} [options.width] - Width of the resource
  * @param {number} [options.height] - Height of the resource
  */
-export class ArrayResource extends Resource
+export class ArrayResource extends AbstractMultiResource
 {
-    readonly length: number;
-    items: Array<BaseTexture>;
-    itemDirtyIds: Array<number>;
-    private _load: Promise<ArrayResource>;
-
     constructor(source: number|Array<any>, options?: ISize)
     {
         const { width, height } = options || {};
@@ -44,99 +38,37 @@ export class ArrayResource extends Resource
             length = source;
         }
 
-        super(width, height);
-
-        /**
-         * Collection of resources.
-         * @member {Array<PIXI.BaseTexture>}
-         * @readonly
-         */
-        this.items = [];
-
-        /**
-         * Dirty IDs for each part
-         * @member {Array<number>}
-         * @readonly
-         */
-        this.itemDirtyIds = [];
-
-        for (let i = 0; i < length; i++)
-        {
-            const partTexture = new BaseTexture();
-
-            this.items.push(partTexture);
-            this.itemDirtyIds.push(-1);
-        }
-
-        /**
-         * Number of elements in array
-         *
-         * @member {number}
-         * @readonly
-         */
-        this.length = length;
-
-        /**
-         * Promise when loading
-         * @member {Promise}
-         * @private
-         * @default null
-         */
-        this._load = null;
+        super(length, { width, height });
 
         if (urls)
         {
-            for (let i = 0; i < length; i++)
-            {
-                this.addResourceAt(autoDetectResource(urls[i], options), i);
-            }
+            this.initFromArray(urls, options);
         }
     }
-
     /**
-     * Destroy this BaseImageResource
-     * @override
-     */
-    dispose(): void
-    {
-        for (let i = 0, len = this.length; i < len; i++)
-        {
-            this.items[i].destroy();
-        }
-        this.items = null;
-        this.itemDirtyIds = null;
-        this._load = null;
-    }
-
-    /**
-     * Set a resource by ID
+     * Set a baseTexture by ID,
+     * ArrayResource just takes resource from it, nothing more
      *
-     * @param {PIXI.resources.Resource} resource
+     * @param {PIXI.BaseTexture} baseTexture
      * @param {number} index - Zero-based index of resource to set
      * @return {PIXI.resources.ArrayResource} Instance for chaining
      */
-    addResourceAt(resource: Resource, index: number): this
+    addBaseTextureAt(baseTexture: BaseTexture, index: number): this
     {
-        const baseTexture = this.items[index];
-
-        if (!baseTexture)
+        if (baseTexture.resource)
         {
-            throw new Error(`Index ${index} is out of bounds`);
+            this.addResourceAt(baseTexture.resource, index);
         }
-
-        // Inherit the first resource dimensions
-        if (resource.valid && !this.valid)
+        else
         {
-            this.resize(resource.width, resource.height);
+            throw new Error('ArrayResource does not support RenderTexture');
         }
-
-        this.items[index].setResource(resource);
 
         return this;
     }
 
     /**
-     * Set the parent base texture
+     * Add binding
      * @member {PIXI.BaseTexture}
      * @override
      */
@@ -145,57 +77,6 @@ export class ArrayResource extends Resource
         super.bind(baseTexture);
 
         baseTexture.target = TARGETS.TEXTURE_2D_ARRAY;
-
-        for (let i = 0; i < this.length; i++)
-        {
-            this.items[i].on('update', baseTexture.update, baseTexture);
-        }
-    }
-
-    /**
-     * Unset the parent base texture
-     * @member {PIXI.BaseTexture}
-     * @override
-     */
-    unbind(baseTexture: BaseTexture): void
-    {
-        super.unbind(baseTexture);
-
-        for (let i = 0; i < this.length; i++)
-        {
-            this.items[i].off('update', baseTexture.update, baseTexture);
-        }
-    }
-
-    /**
-     * Load all the resources simultaneously
-     * @override
-     * @return {Promise<void>} When load is resolved
-     */
-    load(): Promise<ArrayResource>
-    {
-        if (this._load)
-        {
-            return this._load;
-        }
-
-        const resources = this.items.map((item) => item.resource);
-
-        // TODO: also implement load part-by-part strategy
-        const promises = resources.map((item) => item.load());
-
-        this._load = Promise.all(promises)
-            .then(() =>
-            {
-                const { width, height } = resources[0];
-
-                this.resize(width, height);
-
-                return Promise.resolve(this);
-            }
-            );
-
-        return this._load;
     }
 
     /**

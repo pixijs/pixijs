@@ -2,7 +2,7 @@ const { DisplayObject } = require('@pixi/display');
 
 require('../');
 
-describe('PIXI.accessibility.accessibleTarget', function ()
+describe('PIXI.accessibleTarget', function ()
 {
     it('should have target public properties', function ()
     {

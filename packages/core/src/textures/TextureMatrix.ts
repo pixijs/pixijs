@@ -28,13 +28,14 @@ export class TextureMatrix
     public clampMargin: number;
     readonly uClampFrame: Float32Array;
     readonly uClampOffset: Float32Array;
+    _textureID: number;
     _updateID: number;
     _texture: Texture;
     isSimple: boolean;
     /**
      *
-     * @param {PIXI.Texture} texture observed texture
-     * @param {number} [clampMargin] Changes frame clamping, 0.5 by default. Use -0.5 for extra border.
+     * @param {PIXI.Texture} texture - observed texture
+     * @param {number} [clampMargin] - Changes frame clamping, 0.5 by default. Use -0.5 for extra border.
      * @constructor
      */
     constructor(texture: Texture, clampMargin?: number)
@@ -69,7 +70,14 @@ export class TextureMatrix
          * @member {number}
          * @protected
          */
-        this._updateID = -1;
+        this._textureID = -1;
+
+        /**
+         * Tracks Texture frame changes
+         * @member {number}
+         * @protected
+         */
+        this._updateID = 0;
 
         /**
          * Changes frame clamping
@@ -109,15 +117,15 @@ export class TextureMatrix
         return this._texture;
     }
 
-    set texture(value: Texture) // eslint-disable-line require-jsdoc
+    set texture(value: Texture)
     {
         this._texture = value;
-        this._updateID = -1;
+        this._textureID = -1;
     }
 
     /**
      * Multiplies uvs array to transform
-     * @param {Float32Array} uvs mesh uvs
+     * @param {Float32Array} uvs - mesh uvs
      * @param {Float32Array} [out=uvs] output
      * @returns {Float32Array} output
      */
@@ -144,7 +152,7 @@ export class TextureMatrix
 
     /**
      * updates matrices if texture was changed
-     * @param {boolean} [forceUpdate=false] if true, matrices will be updated any case
+     * @param {boolean} [forceUpdate=false] - if true, matrices will be updated any case
      * @returns {boolean} whether or not it was updated
      */
     update(forceUpdate?: boolean): boolean
@@ -157,12 +165,13 @@ export class TextureMatrix
         }
 
         if (!forceUpdate
-            && this._updateID === tex._updateID)
+            && this._textureID === tex._updateID)
         {
             return false;
         }
 
-        this._updateID = tex._updateID;
+        this._textureID = tex._updateID;
+        this._updateID++;
 
         const uvs = tex._uvs;
 

@@ -24,7 +24,7 @@ export class ContextSystem extends System
 
     protected CONTEXT_UID: number;
     protected gl: IRenderingContext;
-    /* eslint-disable @typescript-eslint/camelcase */
+    /* eslint-disable camelcase */
     extensions:
     {
         drawBuffers?: WEBGL_draw_buffers;
@@ -39,7 +39,7 @@ export class ContextSystem extends System
         textureHalfFloatLinear?: OES_texture_half_float_linear;
         colorBufferFloat?: WEBGL_color_buffer_float;
     };
-    /* eslint-enable @typescript-eslint/camelcase */
+    /* eslint-enable camelcase */
 
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
@@ -99,7 +99,7 @@ export class ContextSystem extends System
 
     /**
      * Handle the context change event
-     * @param {WebGLRenderingContext} gl new webgl context
+     * @param {WebGLRenderingContext} gl - new webgl context
      */
     protected contextChange(gl: IRenderingContext): void
     {

@@ -2,7 +2,7 @@ import { hex2string, hex2rgb, deprecation, EventEmitter } from '@pixi/utils';
 import { Matrix, Rectangle } from '@pixi/math';
 import { RENDERER_TYPE } from '@pixi/constants';
 import { settings } from '@pixi/settings';
-import { DisplayObject, TemporaryDisplayObject } from '@pixi/display';
+import { DisplayObject } from '@pixi/display';
 import { RenderTexture } from './renderTexture/RenderTexture';
 
 import type { SCALE_MODES } from '@pixi/constants';
@@ -60,7 +60,6 @@ export abstract class AbstractRenderer extends EventEmitter
     public readonly autoDensity: boolean;
     public readonly preserveDrawingBuffer: boolean;
 
-    protected readonly _tempDisplayObjectParent: DisplayObject;
     protected _backgroundColor: number;
     protected _backgroundColorString: string;
     _backgroundColorRgba: number[];
@@ -202,20 +201,12 @@ export abstract class AbstractRenderer extends EventEmitter
         this.backgroundColor = options.backgroundColor || this._backgroundColor; // run bg color setter
 
         /**
-         * This temporary display object used as the parent of the currently being rendered item.
-         *
-         * @member {PIXI.DisplayObject}
-         * @protected
-         */
-        this._tempDisplayObjectParent = new TemporaryDisplayObject();
-
-        /**
          * The last root object that the renderer tried to render.
          *
          * @member {PIXI.DisplayObject}
          * @protected
          */
-        this._lastObjectRendered = this._tempDisplayObjectParent;
+        this._lastObjectRendered = null;
 
         /**
          * Collection of plugins.
@@ -376,7 +367,7 @@ export abstract class AbstractRenderer extends EventEmitter
         return this._backgroundColor;
     }
 
-    set backgroundColor(value) // eslint-disable-line require-jsdoc
+    set backgroundColor(value: number)
     {
         this._backgroundColor = value;
         this._backgroundColorString = hex2string(value);

@@ -8,10 +8,13 @@ import { MeshMaterial } from './MeshMaterial';
 
 import type { IDestroyOptions } from '@pixi/display';
 import type { Texture, Renderer, Geometry, Buffer } from '@pixi/core';
-import type { IPoint } from '@pixi/math';
+import type { IPointData } from '@pixi/math';
 
 const tempPoint = new Point();
 const tempPolygon = new Polygon();
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface Mesh extends GlobalMixins.Mesh {}
 
 /**
  * Base mesh class.
@@ -45,23 +48,19 @@ export class Mesh extends Container
     private _transformID: number;
     private _roundPixels: boolean;
     private batchUvs: MeshBatchUvs;
-    /* eslint-disable @typescript-eslint/ban-ts-ignore */
-    // @ts-ignore
-    private uvs: Float32Array;
-    // @ts-ignore
-    private indices: Uint16Array;
-    // @ts-ignore
-    private _tintRGB: number;
-    // @ts-ignore
-    private _texture: Texture;
-    /* eslint-enable @typescript-eslint/ban-ts-ignore */
+
+    // Internal-only properties
+    uvs: Float32Array;
+    indices: Uint16Array;
+    _tintRGB: number;
+    _texture: Texture;
 
     /**
-     * @param {PIXI.Geometry} geometry  the geometry the mesh will use
-     * @param {PIXI.MeshMaterial} shader  the shader the mesh will use
-     * @param {PIXI.State} [state] the state that the WebGL context is required to be in to render the mesh
+     * @param {PIXI.Geometry} geometry - the geometry the mesh will use
+     * @param {PIXI.MeshMaterial} shader - the shader the mesh will use
+     * @param {PIXI.State} [state] - the state that the WebGL context is required to be in to render the mesh
      *        if no state is provided, uses {@link PIXI.State.for2d} to create a 2D state for PixiJS.
-     * @param {number} [drawMode=PIXI.DRAW_MODES.TRIANGLES] the drawMode, can be any of the PIXI.DRAW_MODES consts
+     * @param {number} [drawMode=PIXI.DRAW_MODES.TRIANGLES] - the drawMode, can be any of the PIXI.DRAW_MODES consts
      */
     constructor(geometry: Geometry, shader: MeshMaterial, state?: State, drawMode = DRAW_MODES.TRIANGLES)
     {
@@ -190,7 +189,7 @@ export class Mesh extends Container
      * Alias for {@link PIXI.Mesh#shader}.
      * @member {PIXI.MeshMaterial}
      */
-    set material(value)
+    set material(value: MeshMaterial)
     {
         this.shader = value;
     }
@@ -208,7 +207,7 @@ export class Mesh extends Container
      * @default PIXI.BLEND_MODES.NORMAL;
      * @see PIXI.BLEND_MODES
      */
-    set blendMode(value)
+    set blendMode(value: BLEND_MODES)
     {
         this.state.blendMode = value;
     }
@@ -227,7 +226,7 @@ export class Mesh extends Container
      * @member {boolean}
      * @default false
      */
-    set roundPixels(value)
+    set roundPixels(value: boolean)
     {
         if (this._roundPixels !== value)
         {
@@ -253,7 +252,7 @@ export class Mesh extends Container
         return this.shader.tint;
     }
 
-    set tint(value)
+    set tint(value: number)
     {
         this.shader.tint = value;
     }
@@ -268,7 +267,7 @@ export class Mesh extends Container
         return this.shader.texture;
     }
 
-    set texture(value)
+    set texture(value: Texture)
     {
         this.shader.texture = value;
     }
@@ -451,10 +450,10 @@ export class Mesh extends Container
     /**
      * Tests if a point is inside this mesh. Works only for PIXI.DRAW_MODES.TRIANGLES.
      *
-     * @param {PIXI.IPoint} point the point to test
+     * @param {PIXI.IPointData} point - the point to test
      * @return {boolean} the result of the test
      */
-    public containsPoint(point: IPoint): boolean
+    public containsPoint(point: IPointData): boolean
     {
         if (!this.getBounds().contains(point.x, point.y))
         {

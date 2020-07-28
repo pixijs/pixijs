@@ -2,7 +2,7 @@ import { Point } from './Point';
 import { PI_2 } from './const';
 
 import type { Transform } from './Transform';
-import type { IPoint } from './IPoint';
+import type { IPointData } from './IPointData';
 
 /**
  * The PixiJS Matrix as a class makes it a lot faster.
@@ -168,13 +168,13 @@ export class Matrix
      * Get a new position with the current transformation applied.
      * Can be used to go from a child's coordinate space to the world coordinate space. (e.g. rendering)
      *
-     * @param {PIXI.Point} pos - The origin
+     * @param {PIXI.IPointData} pos - The origin
      * @param {PIXI.Point} [newPos] - The point that the new position is assigned to (allowed to be same as input)
      * @return {PIXI.Point} The new point, transformed through this matrix
      */
-    apply(pos: IPoint, newPos?: Point): Point
+    apply<P extends IPointData = Point>(pos: IPointData, newPos?: P): P
     {
-        newPos = newPos || new Point();
+        newPos = (newPos || new Point()) as P;
 
         const x = pos.x;
         const y = pos.y;
@@ -189,13 +189,13 @@ export class Matrix
      * Get a new position with the inverse of the current transformation applied.
      * Can be used to go from the world coordinate space to a child's coordinate space. (e.g. input)
      *
-     * @param {PIXI.Point} pos - The origin
+     * @param {PIXI.IPointData} pos - The origin
      * @param {PIXI.Point} [newPos] - The point that the new position is assigned to (allowed to be same as input)
      * @return {PIXI.Point} The new point, inverse-transformed through this matrix
      */
-    applyInverse(pos: IPoint, newPos?: Point): Point
+    applyInverse<P extends IPointData = Point>(pos: IPointData, newPos?: P): P
     {
-        newPos = newPos || new Point();
+        newPos = (newPos || new Point()) as P;
 
         const id = 1 / ((this.a * this.d) + (this.c * -this.b));
 
@@ -211,8 +211,8 @@ export class Matrix
     /**
      * Translates the matrix on the x and y.
      *
-     * @param {number} x How much to translate x by
-     * @param {number} y How much to translate y by
+     * @param {number} x - How much to translate x by
+     * @param {number} y - How much to translate y by
      * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
      */
     translate(x: number, y: number): this
@@ -226,8 +226,8 @@ export class Matrix
     /**
      * Applies a scale transformation to the matrix.
      *
-     * @param {number} x The amount to scale horizontally
-     * @param {number} y The amount to scale vertically
+     * @param {number} x - The amount to scale horizontally
+     * @param {number} y - The amount to scale vertically
      * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
      */
     scale(x: number, y: number): this
