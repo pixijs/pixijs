@@ -13,16 +13,6 @@ import type { Mesh } from '@pixi/mesh';
  */
 export class CanvasMeshRenderer
 {
-    /**
-     * Cached tint value so we can tell when the tint is changed.
-     */
-    protected _cachedTint = 0xFFFFFF;
-
-    /**
-     * Cached tinted texture.
-     */
-    protected _tintedCanvas: HTMLCanvasElement = null;
-
     public renderer: CanvasRenderer;
 
     /**
@@ -126,14 +116,14 @@ export class CanvasMeshRenderer
 
         if (isTinted)
         {
-            if (this._cachedTint !== mesh.tint)
+            if (mesh._cachedTint !== mesh.tint)
             {
-                this._cachedTint = mesh.tint;
-                this._tintedCanvas = canvasUtils.getTintedCanvas(mesh, mesh.tint) as HTMLCanvasElement;
+                mesh._cachedTint = mesh.tint;
+                mesh._tintedCanvas = canvasUtils.getTintedCanvas(mesh, mesh.tint) as HTMLCanvasElement;
             }
         }
 
-        const textureSource = !isTinted ? base.getDrawableSource() : this._tintedCanvas;
+        const textureSource = isTinted ? mesh._tintedCanvas : base.getDrawableSource();
 
         const u0 = uvs[index0] * base.width;
         const u1 = uvs[index1] * base.width;
