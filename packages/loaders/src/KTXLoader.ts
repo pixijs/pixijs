@@ -2,7 +2,8 @@ import { resources, BaseTexture, Texture } from '@pixi/core';
 import { Resource } from 'resource-loader';
 import type { ILoaderResource } from './LoaderResource';
 
-import { TYPES, INTERNAL_FORMAT_TO_BYTES_PER_PIXEL, FORMATS } from '@pixi/constants';
+import { TYPES, INTERNAL_FORMAT_TO_BYTES_PER_PIXEL, FORMATS, MIPMAP_MODES, ALPHA_MODES } from '@pixi/constants';
+import { CompressedLevelBuffer } from 'packages/core/src/textures/resources';
 
 Resource.setExtensionXhrType('ktx', Resource.XHR_RESPONSE_TYPE.BUFFER);
 
@@ -80,6 +81,17 @@ export const TYPES_TO_BYTES_PER_PIXEL: { [id: number]: number } = {
 /**
  * Loader plugin for handling KTX texture container files.
  *
+ * This KTX loader does not currently support the following features:
+ * * cube textures
+ * * 3D textures
+ * * vendor-specific key/value data parsing
+ * * endianness conversion for big-endian machines
+ * * embedded *.basis files
+ *
+ * It does supports the following features:
+ * * multiple textures per file
+ * * mipmapping
+ *
  * @class
  * @memberof PIXI
  * @implements PIXI.ILoaderPlugin
@@ -145,19 +157,19 @@ export class KTXLoader
         {
             throw new Error('CubeTextures are not supported by KTXLoader yet!');
         }
-        if (numberOfMipmapLevels !== 1)
-        {
-            throw new Error('Mipmaps not supported yet');
-        }
         if (numberOfArrayElements !== 1)
         {
             // TODO: Support splitting array-textures into multiple BaseTextures
             throw new Error('WebGL does not support array textures');
         }
 
+        // TODO: 8x4 blocks for 2bpp pvrtc
+        const blockWidth = 4;
+        const blockHeight = 4;
+
         const alignedWidth = (pixelWidth + 3) & ~3;
         const alignedHeight = (pixelHeight + 3) & ~3;
-        const imageBuffers = new Array(numberOfArrayElements);
+        const imageBuffers = new Array<CompressedLevelBuffer[]>(numberOfArrayElements);
         let imagePixels = pixelWidth * pixelHeight;
 
         if (glType === 0)
@@ -192,6 +204,10 @@ export class KTXLoader
 
         const imageByteSize = imagePixels * imagePixelByteSize;
         let mipByteSize = imageByteSize;
+        let mipWidth = pixelWidth;
+        let mipHeight = pixelHeight;
+        let alignedMipWidth = alignedWidth;
+        let alignedMipHeight = alignedHeight;
         let imageOffset = FILE_HEADER_SIZE + bytesOfKeyValueData;
 
         for (let mipmapLevel = 0; mipmapLevel < numberOfMipmapLevels; mipmapLevel++)
@@ -204,7 +220,18 @@ export class KTXLoader
                 // TODO: Maybe support 3D textures? :-)
                 // for (let zSlice = 0; zSlice < pixelDepth; zSlice)
 
-                imageBuffers[arrayElement] = new Uint8Array(arrayBuffer, elementOffset, mipByteSize);
+                let mips = imageBuffers[arrayElement];
+
+                if (!mips)
+                {
+                    mips = imageBuffers[arrayElement] = new Array(numberOfMipmapLevels);
+                }
+
+                mips[mipmapLevel] = {
+                    levelWidth: alignedMipWidth,
+                    levelHeight: alignedMipHeight,
+                    levelBuffer: new Uint8Array(arrayBuffer, elementOffset, mipByteSize)
+                };
                 elementOffset += mipByteSize;
             }
 
@@ -212,29 +239,41 @@ export class KTXLoader
             imageOffset += imageSize + 4;// (+4 to jump the imageSize field itself)
             imageOffset = imageOffset % 4 !== 0 ? imageOffset + 4 - (imageOffset % 4) : imageOffset;
 
+            // Calculate mipWidth, mipHeight for _next_ iteration
+            mipWidth = (mipWidth >> 1) || 1;
+            mipHeight = (mipHeight >> 1) || 1;
+            alignedMipWidth = (mipWidth + blockWidth - 1) & ~(blockWidth - 1);
+            alignedMipHeight = (mipHeight + blockHeight - 1) & ~(blockHeight - 1);
+
             // Each mipmap level is 4-times smaller?
-            mipByteSize /= 4;
+            mipByteSize = alignedMipWidth * alignedMipHeight * imagePixelByteSize;
         }
 
         let imageResources: resources.Resource[];
 
+        // We use the levelBuffers feature of CompressedTextureResource b/c texture data is image-major, not level-major.
         if (glType !== 0)
         {
             throw new Error('TODO: Uncompressed');
         }
         else
         {
-            imageResources = imageBuffers.map((buffer) => new resources.CompressedTextureResource(buffer, {
+            imageResources = imageBuffers.map((levelBuffers) => new resources.CompressedTextureResource(null, {
                 format: glInternalFormat,
-                width: alignedWidth,
-                height: alignedHeight
+                width: pixelWidth,
+                height: pixelHeight,
+                levels: numberOfMipmapLevels,
+                levelBuffers,
             }));
         }
 
         // Map each Resource to a BaseTexture & a Texture, and add them into the texture cache
         imageResources.forEach((resource, i) =>
         {
-            const baseTexture = new BaseTexture(resource);
+            const baseTexture = new BaseTexture(resource, {
+                mipmap: MIPMAP_MODES.OFF,
+                alphaMode: ALPHA_MODES.NO_PREMULTIPLIED_ALPHA
+            });
             const cacheID = `${url}-${i + 1}`;
 
             BaseTexture.addToCache(baseTexture, cacheID);

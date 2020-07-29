@@ -1,55 +1,133 @@
 import { BlobResource } from './BlobResource';
-import { INTERNAL_FORMATS } from '@pixi/constants';
+import { INTERNAL_FORMATS, INTERNAL_FORMAT_TO_BYTES_PER_PIXEL, SCALE_MODES } from '@pixi/constants';
 import { Renderer } from '../../Renderer';
 import { BaseTexture } from '../BaseTexture';
 import { GLTexture } from '../GLTexture';
 
-interface ICompressedTextureResourceOptions
+/**
+ * @internal
+ */
+// Used in PIXI.KTXLoader
+export type CompressedLevelBuffer = {
+    levelWidth: number,
+    levelHeight: number,
+    levelBuffer: Uint8Array
+};
+
+/**
+ * @internal
+ */
+export interface ICompressedTextureResourceOptions
 {
     format: INTERNAL_FORMATS;
     width: number;
     height: number;
+    levels?: number;
+    levelBuffers?: CompressedLevelBuffer[];
 }
 
+/**
+ * Resource for compressed texture formats, as follows: S3TC/DXTn (& their sRGB formats), ATC, ASTC, ETC 1/2, PVRTC.
+ *
+ * Compressed textures improve performance when rendering is texture-bound. The texture data stays compressed in
+ * graphics memory, increasing memory locality and speeding up texture fetches. These formats can also be used to store
+ * more detail in the same amount of memory.
+ *
+ * For most developers, container file formats are a better abstraction instead of directly handling raw texture
+ * data. PixiJS provides native support for the following texture file formats (via {@link PIXI.Loader}):
+ *
+ * * **.dds** - the DirectDraw Surface file format stores DXTn (DXT-1,3,5) data. See {@link PIXI.DDSLoader}
+ * * **.ktx** - the Khronos Texture Container file format supports storing all the supported WebGL compression formats.
+ *  See {@link PIXI.KTXLoader}.
+ * * **.basis** - the BASIS supercompressed file format stores texture data in an internal format that is transcoded
+ *  to the compression format supported on the device at _runtime_. It also supports transcoding into a uncompressed
+ *  format as a fallback; you must install the `@pixi/basis-loader`, `@pixi/basis-transcoder` packages separately to
+ *  use these files. See {@link PIXI.BasisLoader}.
+ *
+ * The loaders for the aforementioned formats use `CompressedTextureResource` internally. It is strongly suggested that
+ * they be used instead.
+ *
+ * ## Working directly with CompressedTextureResource
+ *
+ * Since `CompressedTextureResource` inherits `BlobResource`, you can provide it a URL pointing to a file containing
+ * the raw texture data (with no file headers!):
+ *
+ * ```js
+ * // The resource backing the texture data for your textures.
+ * // NOTE: You can also provide a ArrayBufferView instead of a URL. This is used when loading data from a container file
+ * //   format such as KTX, DDS, or BASIS.
+ * const compressedResource = new PIXI.resources.CompressedTextureResource("bunny.dxt5", {
+ *   format: PIXI.INTERNAL_FORMATS.COMPRESSED_RGBA_S3TC_DXT5_EXT,
+ *   width: 256,
+ *   height: 256
+ * });
+ *
+ * // You can create a base-texture to the cache, so that future `Texture`s can be created using the `Texture.from` API.
+ * const baseTexture = new BaseTexture(compressedResource, { premultiplyAlpha: false });
+ *
+ * // Create a Texture to add to the TextureCache
+ * const texture = new Texture(baseTexture);
+ *
+ * // Add baseTexture & texture to the global texture cache
+ * PIXI.BaseTexture.addToCache(baseTexture, "bunny.dxt5");
+ * PIXI.Texture.addToCache(texture, "bunny.dxt5");
+ * ```
+ *
+ * @memberof PIXI
+ */
 export class CompressedTextureResource extends BlobResource
 {
     format: INTERNAL_FORMATS;
     width: number;
     height: number;
+    levels: number;
 
+    // Easy access to the WebGL extension providing support for the compression format via ContextSystem
     private _extension: 's3tc' | 's3tc_sRGB' | 'atc' | 'astc' | 'etc' | 'etc1' | 'pvrtc';
+    // Buffer views for each mipmap level in the main buffer
+    private _levelBuffers: CompressedLevelBuffer[];
 
+    /**
+     * @param source - the buffer/URL holding the compressed texture data
+     * @param options
+     * @param {PIXI.INTERNAL_FORMATS} options.format - the compression format
+     * @param {number} options.width - the image width in pixels.
+     * @param {number} options.height - the image height in pixels.
+     * @param {number}[options.level=1] - the mipmap levels stored in the compressed texture, including level 0.
+     * @param {number}[options.levelBuffers] - the buffers for each mipmap level. `CompressedTextureResource` can allows you
+     *      to pass `null` for `source`, for cases where each level is stored in non-contiguous memory.
+     */
     constructor(source: string | Uint8Array | Uint32Array, options: ICompressedTextureResourceOptions)
     {
         super(source, options);
 
+        /**
+         * The compression format
+         */
         this.format = options.format;
+
+        /**
+         * The number of mipmap levels stored in the resource buffer.
+         *
+         * @default 1
+         */
+        this.levels = options.levels || 1;
+
         this._width = options.width;
         this._height = options.height;
 
-        if (this.format >= 0x83F0 && this.format <= 0x83F3)
+        this._extension = CompressedTextureResource._formatToExtension(this.format);
+
+        if (options.levelBuffers || this.buffer)
         {
-            this._extension = 's3tc';
-        }
-        else if (this.format >= 0x9270 && this.format <= 0x9279)
-        {
-            this._extension = 'etc';
-        }
-        else if (this.format >= 0x8C00 && this.format <= 0x8C03)
-        {
-            this._extension = 'pvrtc';
-        }
-        else if (this.format >= 0x8D64)
-        {
-            this._extension = 'etc1';
-        }
-        else if (this.format >= 0x8C92 && this.format <= 0x87EE)
-        {
-            this._extension = 'atc';
-        }
-        else
-        {
-            throw new Error('Invalid (compressed) texture format given!');
+            this._levelBuffers = options.levelBuffers
+                || CompressedTextureResource._createLevelBuffers(
+                    this.buffer.uint8View,
+                    this.format,
+                    this.levels,
+                    4, 4, // PVRTC has 8x4 blocks in 2bpp mode
+                    this.width,
+                    this.height);
         }
     }
 
@@ -62,13 +140,103 @@ export class CompressedTextureResource extends BlobResource
         {
             throw new Error(`${this._extension} textures are not supported on the current machine`);
         }
-        if (!this.loaded)
+        if (!this._levelBuffers)
         {
+            // Do not try to upload data before BlobResource loads, unless the levelBuffers were provided directly!
             return false;
         }
 
-        gl.compressedTexImage2D(gl.TEXTURE_2D, 0, this.format, this._width, this._height, 0, this.data);
+        for (let i = 0, j = this.levels; i < j; i++)
+        {
+            const { levelWidth, levelHeight, levelBuffer } = this._levelBuffers[i];
+
+            gl.compressedTexImage2D(gl.TEXTURE_2D, 0, this.format, levelWidth, levelHeight, 0, levelBuffer);
+        }
 
         return true;
+    }
+
+    protected onBlobLoaded(): void
+    {
+        this._levelBuffers = CompressedTextureResource._createLevelBuffers(
+            this.buffer.uint8View,
+            this.format,
+            this.levels,
+            4, 4, // PVRTC has 8x4 blocks in 2bpp mode
+            this.width,
+            this.height);
+    }
+
+    // Returns the key (to ContextSystem#extensions) for the WebGL extension supporting the compression format
+    private static _formatToExtension(format: INTERNAL_FORMATS):
+        's3tc' | 's3tc_sRGB' | 'atc' |
+        'astc' | 'etc' | 'etc1' | 'pvrtc'
+    {
+        if (format >= 0x83F0 && format <= 0x83F3)
+        {
+            return 's3tc';
+        }
+        else if (format >= 0x9270 && format <= 0x9279)
+        {
+            return 'etc';
+        }
+        else if (format >= 0x8C00 && format <= 0x8C03)
+        {
+            return 'pvrtc';
+        }
+        else if (format >= 0x8D64)
+        {
+            return 'etc1';
+        }
+        else if (format >= 0x8C92 && format <= 0x87EE)
+        {
+            return 'atc';
+        }
+
+        throw new Error('Invalid (compressed) texture format given!');
+    }
+
+    // Pre-creates buffer views for each mipmap level
+    private static _createLevelBuffers(
+        buffer: Uint8Array,
+        format: INTERNAL_FORMATS,
+        levels: number,
+        blockWidth: number,
+        blockHeight: number,
+        imageWidth: number,
+        imageHeight: number
+    ): CompressedLevelBuffer[]
+    {
+        // The byte-size of the first level buffer
+        const imageSize = imageWidth * imageHeight * INTERNAL_FORMAT_TO_BYTES_PER_PIXEL[format];
+        const buffers = new Array<CompressedLevelBuffer>(levels);
+
+        let offset = buffer.byteOffset;
+        let levelSize = imageSize;
+
+        let levelWidth = imageWidth;
+        let levelHeight = imageHeight;
+        let alignedLevelWidth = (levelWidth + blockWidth - 1) & ~(blockWidth - 1);
+        let alignedLevelHeight = (levelHeight + blockHeight - 1) & ~(blockHeight - 1);
+
+        for (let i = 0; i < levels; i++)
+        {
+            buffers[i] = {
+                levelWidth: alignedLevelWidth,
+                levelHeight: alignedLevelHeight,
+                levelBuffer: new Uint8Array(buffer.buffer, offset, levelSize)
+            };
+
+            offset += levelSize;
+
+            // Calculate levelBuffer dimensions for next iteration
+            levelWidth = (levelWidth >> 1) || 1;
+            levelHeight = (levelHeight >> 1) || 1;
+            alignedLevelWidth = (levelWidth + blockWidth - 1) & ~(blockWidth - 1);
+            alignedLevelHeight = (levelHeight + blockHeight - 1) & ~(blockHeight - 1);
+            levelSize = alignedLevelWidth * alignedLevelHeight * INTERNAL_FORMAT_TO_BYTES_PER_PIXEL[format];
+        }
+
+        return buffers;
     }
 }

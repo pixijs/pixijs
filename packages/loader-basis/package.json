@@ -1,0 +1,32 @@
+{
+  "name": "@pixi/loader-basis",
+  "version": "5.3.0",
+  "description": "Loader for the *.basis supercompressed texture file format",
+  "keywords": [
+    "basisu",
+    "pixi",
+    "compressed-textures",
+    "loaders"
+  ],
+  "author": "Shukant Pal <shukantpal@outlook.com>",
+  "homepage": "https://github.com/pixijs/pixi.js#readme",
+  "license": "MIT",
+  "main": "lib/loader-basis.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pixijs/pixi.js.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/pixijs/pixi.js/issues"
+  }
+}

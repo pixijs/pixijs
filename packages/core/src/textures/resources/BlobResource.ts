@@ -55,14 +55,15 @@ export abstract class BlobResource extends BufferResource
          * The viewable buffer on the data
          * @member {ViewableBuffer}
          */
-        this.buffer = new ViewableBuffer(data);
+        // HINT: BlobResource allows "null" sources, assuming the child class provides an alternative
+        this.buffer = data ? new ViewableBuffer(data) : null;
 
         // Allow autoLoad = "undefined" still load the resource by default
         if (this.origin && options.autoLoad !== false)
         {
             this.load();
         }
-        if (data.length)
+        if (data && data.length)
         {
             this.loaded = true;
             this.onBlobLoaded(this.buffer.rawBinaryData);
