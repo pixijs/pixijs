@@ -1,6 +1,6 @@
 {
   "name": "@pixi/canvas-extract",
-  "version": "5.3.0",
+  "version": "5.3.2",
   "main": "lib/canvas-extract.js",
   "module": "lib/canvas-extract.es.js",
   "bundle": "dist/canvas-extract.js",
@@ -24,10 +24,10 @@
     "dist"
   ],
   "dependencies": {
-    "@pixi/canvas-renderer": "5.3.0",
-    "@pixi/core": "5.3.0",
-    "@pixi/display": "5.3.0",
-    "@pixi/math": "5.3.0",
-    "@pixi/utils": "5.3.0"
+    "@pixi/canvas-renderer": "5.3.2",
+    "@pixi/core": "5.3.2",
+    "@pixi/display": "5.3.2",
+    "@pixi/math": "5.3.2",
+    "@pixi/utils": "5.3.2"
   }
 }
