@@ -49,7 +49,7 @@ if (bundle === 'pixi.js') {
 
 // tsd-jsdoc doesn't currently support indexed generics (TChildren[0])
 buffer = buffer.replace(
-    /(addChild|removeChild)\(\.\.\.children: PIXI.DisplayObject\[\]\): PIXI\.DisplayObject;/g,
+    /(addChild|removeChild)\(\.\.\.children: PIXI\.DisplayObject\[\]\): PIXI\.DisplayObject;/g,
     '$1<TChildren extends PIXI.DisplayObject[]>(...children: TChildren): TChildren[0];'
 );
 
