@@ -1,10 +1,11 @@
-import { resources, BaseTexture, Texture } from '@pixi/core';
+import { TYPES, INTERNAL_FORMAT_TO_BYTES_PER_PIXEL, FORMATS } from '@pixi/constants';
+import { resources } from '@pixi/core';
 import { Resource } from 'resource-loader';
+import { registerCompressedTextures } from './registerTextures';
+
 import type { ILoaderResource } from './LoaderResource';
 
-import { TYPES, INTERNAL_FORMAT_TO_BYTES_PER_PIXEL, FORMATS, MIPMAP_MODES, ALPHA_MODES } from '@pixi/constants';
-import { CompressedLevelBuffer } from 'packages/core/src/textures/resources';
-
+// Set KTX files to be loaded as an ArrayBuffer
 Resource.setExtensionXhrType('ktx', Resource.XHR_RESPONSE_TYPE.BUFFER);
 
 /**
@@ -169,7 +170,7 @@ export class KTXLoader
 
         const alignedWidth = (pixelWidth + 3) & ~3;
         const alignedHeight = (pixelHeight + 3) & ~3;
-        const imageBuffers = new Array<CompressedLevelBuffer[]>(numberOfArrayElements);
+        const imageBuffers = new Array<resources.CompressedLevelBuffer[]>(numberOfArrayElements);
         let imagePixels = pixelWidth * pixelHeight;
 
         if (glType === 0)
@@ -228,8 +229,8 @@ export class KTXLoader
                 }
 
                 mips[mipmapLevel] = {
-                    levelWidth: alignedMipWidth,
-                    levelHeight: alignedMipHeight,
+                    levelWidth: numberOfMipmapLevels > 1 ? mipWidth : alignedMipWidth,
+                    levelHeight: numberOfMipmapLevels > 1 ? mipHeight : alignedMipHeight,
                     levelBuffer: new Uint8Array(arrayBuffer, elementOffset, mipByteSize)
                 };
                 elementOffset += mipByteSize;
@@ -249,8 +250,6 @@ export class KTXLoader
             mipByteSize = alignedMipWidth * alignedMipHeight * imagePixelByteSize;
         }
 
-        let imageResources: resources.Resource[];
-
         // We use the levelBuffers feature of CompressedTextureResource b/c texture data is image-major, not level-major.
         if (glType !== 0)
         {
@@ -258,33 +257,16 @@ export class KTXLoader
         }
         else
         {
-            imageResources = imageBuffers.map((levelBuffers) => new resources.CompressedTextureResource(null, {
+            const imageResources = imageBuffers.map((levelBuffers) => new resources.CompressedTextureResource(null, {
                 format: glInternalFormat,
                 width: pixelWidth,
                 height: pixelHeight,
                 levels: numberOfMipmapLevels,
                 levelBuffers,
             }));
+
+            registerCompressedTextures(url, imageResources);
         }
-
-        // Map each Resource to a BaseTexture & a Texture, and add them into the texture cache
-        imageResources.forEach((resource, i) =>
-        {
-            const baseTexture = new BaseTexture(resource, {
-                mipmap: MIPMAP_MODES.OFF,
-                alphaMode: ALPHA_MODES.NO_PREMULTIPLIED_ALPHA
-            });
-            const cacheID = `${url}-${i + 1}`;
-
-            BaseTexture.addToCache(baseTexture, cacheID);
-            Texture.addToCache(new Texture(baseTexture), cacheID);
-
-            if (i === 0)
-            {
-                BaseTexture.addToCache(baseTexture, url);
-                Texture.addToCache(new Texture(baseTexture), url);
-            }
-        });
     }
 
     /**

@@ -1,5 +1,5 @@
 import { BlobResource } from './BlobResource';
-import { INTERNAL_FORMATS, INTERNAL_FORMAT_TO_BYTES_PER_PIXEL, SCALE_MODES } from '@pixi/constants';
+import { INTERNAL_FORMATS, INTERNAL_FORMAT_TO_BYTES_PER_PIXEL } from '@pixi/constants';
 import { Renderer } from '../../Renderer';
 import { BaseTexture } from '../BaseTexture';
 import { GLTexture } from '../GLTexture';
@@ -120,9 +120,10 @@ export class CompressedTextureResource extends BlobResource
 
         if (options.levelBuffers || this.buffer)
         {
+            // ViewableBuffer doesn't support byteOffset :-( so allow source to be Uint8Array
             this._levelBuffers = options.levelBuffers
                 || CompressedTextureResource._createLevelBuffers(
-                    this.buffer.uint8View,
+                    source instanceof Uint8Array ? source : this.buffer.uint8View,
                     this.format,
                     this.levels,
                     4, 4, // PVRTC has 8x4 blocks in 2bpp mode
@@ -208,22 +209,22 @@ export class CompressedTextureResource extends BlobResource
     ): CompressedLevelBuffer[]
     {
         // The byte-size of the first level buffer
-        const imageSize = imageWidth * imageHeight * INTERNAL_FORMAT_TO_BYTES_PER_PIXEL[format];
         const buffers = new Array<CompressedLevelBuffer>(levels);
 
         let offset = buffer.byteOffset;
-        let levelSize = imageSize;
 
         let levelWidth = imageWidth;
         let levelHeight = imageHeight;
         let alignedLevelWidth = (levelWidth + blockWidth - 1) & ~(blockWidth - 1);
         let alignedLevelHeight = (levelHeight + blockHeight - 1) & ~(blockHeight - 1);
 
+        let levelSize = alignedLevelWidth * alignedLevelHeight * INTERNAL_FORMAT_TO_BYTES_PER_PIXEL[format];
+
         for (let i = 0; i < levels; i++)
         {
             buffers[i] = {
-                levelWidth: alignedLevelWidth,
-                levelHeight: alignedLevelHeight,
+                levelWidth: levels > 1 ? levelWidth : alignedLevelWidth,
+                levelHeight: levels > 1 ? levelHeight : alignedLevelHeight,
                 levelBuffer: new Uint8Array(buffer.buffer, offset, levelSize)
             };
 

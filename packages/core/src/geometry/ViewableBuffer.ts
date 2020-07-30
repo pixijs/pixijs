@@ -32,13 +32,18 @@ export class ViewableBuffer
 
     constructor(sizeOrBuffer: number | ArrayBuffer | Uint8Array)
     {
+        if (typeof sizeOrBuffer === 'number')
+        {
+            sizeOrBuffer = new ArrayBuffer(sizeOrBuffer);
+        }
+
         /**
          * Underlying `ArrayBuffer` that holds all the data
          * and is of capacity `size`.
          *
          * @member {ArrayBuffer}
          */
-        this.rawBinaryData = typeof sizeOrBuffer === 'number' ? new ArrayBuffer(sizeOrBuffer) : (sizeOrBuffer instanceof ArrayBuffer ? sizeOrBuffer : sizeOrBuffer.buffer);
+        this.rawBinaryData = (sizeOrBuffer instanceof ArrayBuffer ? sizeOrBuffer : sizeOrBuffer.buffer);
 
         /**
          * View on the raw binary data as a `Uint32Array`.

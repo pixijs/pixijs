@@ -27,7 +27,8 @@ export abstract class BlobResource extends BufferResource
      * @param {boolean}[autoLoad] - whether to fetch the data immediately;
      *  you can fetch it later via {@link BlobResource#load}
      */
-    constructor(source: string | Uint8Array | Uint32Array | Float32Array, options: IBlobOptions = { width: 1, height: 1, autoLoad: true })
+    constructor(source: string | Uint8Array | Uint32Array | Float32Array,
+        options: IBlobOptions = { width: 1, height: 1, autoLoad: true })
     {
         let origin: string;
         let data: Uint8Array | Uint32Array | Float32Array;

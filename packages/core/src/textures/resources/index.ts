@@ -36,13 +36,11 @@ INSTALLED.push(
 export * from './autoDetectResource';
 export * from './AbstractMultiResource';
 export * from './ArrayResource';
-export * from './BasisResource';
 export * from './BlobResource';
 export * from './BufferResource';
 export * from './CanvasResource';
 export * from './CompressedTextureResource';
 export * from './CubeResource';
-export * from './DDSResource';
 export * from './ImageResource';
 export * from './SVGResource';
 export * from './VideoResource';

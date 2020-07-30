@@ -1,4 +1,5 @@
 import { Loader as ResourceLoader, middleware } from 'resource-loader';
+import { DDSLoader } from './DDSLoader';
 import { KTXLoader } from './KTXLoader';
 import { TextureLoader } from './TextureLoader';
 
@@ -161,6 +162,9 @@ Loader.registerPlugin({ use: middleware.parsing });
 
 // parse any Image objects into textures
 Loader.registerPlugin(TextureLoader);
+
+// parse any DDS container files into textures
+Loader.registerPlugin(DDSLoader);
 
 // parse any KTX container files into textures
 Loader.registerPlugin(KTXLoader);
