@@ -5,7 +5,7 @@ import type { BASIS } from './Basis';
 /**
  * Initialization message sent by the main thread.
  *
- * @internal
+ * @ignore
  */
 export interface IInitializeTranscoderMessage {
     wasmSource: ArrayBuffer;
@@ -15,7 +15,7 @@ export interface IInitializeTranscoderMessage {
 /**
  * Request parameters for transcoding basis files. It only supports transcoding all of the basis file at once.
  *
- * @internal
+ * @ignore
  */
 export interface ITranscodeMessage
 {
@@ -27,7 +27,7 @@ export interface ITranscodeMessage
 }
 
 /**
- * @internal
+ * @ignore
  */
 export interface ITranscodedImage {
     imageID: number;
@@ -44,7 +44,7 @@ export interface ITranscodedImage {
 /**
  * Response format for {@link TranscoderWorker}.
  *
- * @internal
+ * @ignore
  */
 export interface ITranscodeResponse {
     type: 'init' | 'transcode';
@@ -78,7 +78,7 @@ declare global {
  * {@link IInitializeTranscoderMessage} message with the WebAssembly binary; if the transcoder is successfully initialized,
  * the web-worker will respond by sending anothor {@link ITranscodeResponse} message with `success: true`.
  *
- * @internal
+ * @ignore
  */
 export function TranscoderWorkerWrapper(): void
 {

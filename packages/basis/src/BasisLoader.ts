@@ -273,7 +273,6 @@ export class BasisLoader
      *
      * @param extensions - extensions provided by a WebGL context
      * @ignore
-     * @internal
      */
     static autoDetectFormats(extensions?: Partial<BasisTextureExtensions>): void
     {

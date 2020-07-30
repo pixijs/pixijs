@@ -12,7 +12,7 @@ Resource.setExtensionXhrType('ktx', Resource.XHR_RESPONSE_TYPE.BUFFER);
  * The 12-byte KTX file identifier
  *
  * @see https://www.khronos.org/opengles/sdk/tools/KTX/file_format_spec/#2.1
- * @internal
+ * @ignore
  */
 const FILE_IDENTIFIER = [0xAB, 0x4B, 0x54, 0x58, 0x20, 0x31, 0x31, 0xBB, 0x0D, 0x0A, 0x1A, 0x0A];
 
@@ -20,7 +20,7 @@ const FILE_IDENTIFIER = [0xAB, 0x4B, 0x54, 0x58, 0x20, 0x31, 0x31, 0xBB, 0x0D, 0
  * The value stored in the "endiannness" field.
  *
  * @see https://www.khronos.org/opengles/sdk/tools/KTX/file_format_spec/#2.2
- * @internal
+ * @ignore
  */
 const ENDIANNESS = 0x04030201;
 

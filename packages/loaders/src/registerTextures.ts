@@ -12,7 +12,6 @@ import type { resources } from '@pixi/core';
  *
  * @param url - the original address of the resources
  * @param resources - the resources backing texture data
- * @internal
  * @ignore
  */
 export function registerCompressedTextures(url: string, resources: resources.CompressedTextureResource[]): void
