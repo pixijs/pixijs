@@ -113,7 +113,7 @@ export class KTXLoader
     {
         if (resource.extension === 'ktx' && resource.data)
         {
-            KTXLoader.parse(resource.url, resource.data);
+            KTXLoader.parse(resource.name || resource.url, resource.data);
         }
 
         next();

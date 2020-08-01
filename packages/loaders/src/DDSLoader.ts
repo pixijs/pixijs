@@ -257,7 +257,7 @@ export class DDSLoader
     {
         if (resource.extension === 'dds' && resource.data)
         {
-            registerCompressedTextures(resource.url, DDSLoader.parse(resource.data));
+            registerCompressedTextures(resource.name || resource.url, DDSLoader.parse(resource.data));
         }
 
         next();
