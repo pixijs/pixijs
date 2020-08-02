@@ -411,6 +411,8 @@ export class BitmapFont
                         + `too small for ${style.fontSize}px fonts`);
                 }
 
+                --i;
+
                 // Create new atlas once current has filled up
                 canvas = null;
                 context = null;
