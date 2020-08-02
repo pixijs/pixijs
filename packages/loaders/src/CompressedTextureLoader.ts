@@ -170,9 +170,16 @@ export class CompressedTextureLoader
         // Assign all available compressed-texture formats
         for (const extensionName in extensions)
         {
+            const extension = extensions[extensionName as CompressedTextureExtensionRef];
+
+            if (!extension)
+            {
+                continue;
+            }
+
             Object.assign(
                 CompressedTextureLoader.textureFormats,
-                extensions[extensionName as CompressedTextureExtensionRef]);
+                Object.getPrototypeOf(extension));
         }
     }
 }
