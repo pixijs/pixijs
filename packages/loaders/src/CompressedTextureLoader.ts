@@ -9,10 +9,8 @@ import { INTERNAL_FORMATS } from '@pixi/constants';
  * @see PIXI.CompressedTextureLoader
  */
 export type CompressedTextureManifest = {
-    [P in keyof (INTERNAL_FORMATS)]: string;
-} & {
-    textureID?: string;
-    fallback: string;
+    textures: Array<{ src: string, format?: keyof INTERNAL_FORMATS}>,
+    cacheID: string;
 };
 
 // Missing typings? - https://github.com/microsoft/TypeScript/issues/39655
@@ -29,6 +27,7 @@ export type CompressedTextureExtensions = {
     atc: any,
     astc: WEBGL_compressed_texture_astc
 };
+export type CompressedTextureExtensionRef = keyof CompressedTextureExtensions;
 /* eslint-enable camelcase */
 
 /**
@@ -41,6 +40,7 @@ export type CompressedTextureExtensions = {
 export class CompressedTextureLoader
 {
     static textureExtensions: Partial<CompressedTextureExtensions>;
+    static textureFormats: { [P in keyof INTERNAL_FORMATS]?: number };
 
     /**
      * Called after a compressed-textures manifest is loaded.
@@ -66,7 +66,7 @@ export class CompressedTextureLoader
      */
     static use(resource: ILoaderResource, next: (...args: any[]) => void): void
     {
-        const data = resource.data;
+        const data: CompressedTextureManifest = resource.data;
         const loader = (this as any) as Loader;
 
         if (!CompressedTextureLoader.textureExtensions)
@@ -75,49 +75,40 @@ export class CompressedTextureLoader
         }
         if (resource.type === LoaderResource.TYPE.JSON
             && data
-            && data.textureID)
+            && data.cacheID
+            && data.textures)
         {
-            const manifest = resource.data as CompressedTextureManifest;
-            const formats = Object.keys(manifest)
-                .filter((key) => key !== 'textureID' && key !== 'fallback');
+            const textures = data.textures;
 
-            let validFormat;
+            let textureURL: string;
+            let fallbackURL: string;
 
             // Search for an extension that holds one the formats
-            for (const extensionName in CompressedTextureLoader.textureExtensions)
+            for (let i = 0, j = textures.length; i < j; i++)
             {
-                const extension = (CompressedTextureLoader.textureExtensions as any)[extensionName];
+                const texture = textures[i];
+                const url = texture.src;
+                const format = texture.format;
 
-                if (!extension)
+                if (!format)
                 {
-                    continue;
+                    fallbackURL = url;
                 }
-
-                for (let i = 0, j = formats.length; i < j; i++)
+                if (CompressedTextureLoader.textureFormats[format])
                 {
-                    const format = formats[i];
-
-                    if (extension[format])
-                    {
-                        validFormat = format;
-                        break;
-                    }
+                    textureURL = url;
+                    break;
                 }
             }
 
-            const url: string = validFormat ? (manifest as any)[validFormat] : manifest.fallback;
+            textureURL = textureURL || fallbackURL;
 
             // Make sure we have a URL
-            if (!url)
+            if (!textureURL)
             {
                 throw new Error(`Cannot load compressed-textures in ${resource.url}, make sure you provide a fallback`);
             }
-            else if (!manifest.fallback)
-            {
-                console.warn(`Compressed texture manifest without a fallback found (${resource.url})`);
-            }
-
-            if (url === resource.url)
+            if (textureURL === resource.url)
             {
                 // Prevent infinite loops
                 throw new Error('URL of compressed texture cannot be the same as the manifest\'s URL');
@@ -130,18 +121,13 @@ export class CompressedTextureLoader
             };
 
             // The appropriate loader should register the texture
-            loader.add(manifest.textureID, url, loadOptions, function onCompressedTextureLoaded()
+            loader.add(data.cacheID, textureURL, loadOptions, function onCompressedTextureLoaded()
             {
                 next();
             });
         }
         else
         {
-            if (resource.url.toLowerCase().endsWith('.compressed-textures.json'))
-            {
-                // Give a warning if the URL suggests this should be a compressed-textures manifest
-                console.warn(`${resource.url} is not a valid compressed-textures manifest. It is being skipped!`);
-            }
             next();
         }
     }
@@ -179,5 +165,14 @@ export class CompressedTextureLoader
         }
 
         CompressedTextureLoader.textureExtensions = extensions;
+        CompressedTextureLoader.textureFormats = {};
+
+        // Assign all available compressed-texture formats
+        for (const extensionName in extensions)
+        {
+            Object.assign(
+                CompressedTextureLoader.textureFormats,
+                extensions[extensionName as CompressedTextureExtensionRef]);
+        }
     }
 }
