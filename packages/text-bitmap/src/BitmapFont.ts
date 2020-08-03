@@ -163,7 +163,7 @@ export class BitmapFont
 
         // Convert the input Texture, Textures or object
         // into a page Texture lookup by "id"
-        for (const i in data.page)
+        for (let i = 0; i < data.page.length; i++)
         {
             const { id, file } = data.page[i];
 
@@ -172,7 +172,7 @@ export class BitmapFont
         }
 
         // parse letters
-        for (const i in data.char)
+        for (let i = 0; i < data.char.length; i++)
         {
             const { id, page } = data.char[i];
             let { x, y, width, height, xoffset, yoffset, xadvance } = data.char[i];
@@ -206,7 +206,7 @@ export class BitmapFont
         }
 
         // parse kernings
-        for (const i in data.kerning)
+        for (let i = 0; i < data.kerning.length; i++)
         {
             let { first, second, amount } = data.kerning[i];
 
@@ -444,7 +444,7 @@ export class BitmapFont
             const id = metrics.text.charCodeAt(0);
 
             // Create a texture holding just the glyph
-            fontData.char[id] = {
+            fontData.char.push({
                 id,
                 page: textures.length - 1,
                 x: positionX / resolution,
@@ -456,7 +456,7 @@ export class BitmapFont
                 xadvance: Math.ceil(width
                         - (style.dropShadow ? style.dropShadowDistance : 0)
                         - (style.stroke ? style.strokeThickness : 0)),
-            };
+            });
 
             positionX += (textureGlyphWidth + (2 * padding)) * resolution;
             positionX = Math.ceil(positionX);
