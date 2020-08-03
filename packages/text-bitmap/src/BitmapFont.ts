@@ -311,7 +311,25 @@ export class BitmapFont
 
     /**
      * Generates a bitmap-font for the given style and character set. This does not support
-     * kernings yet.
+     * kernings yet. With `style` properties, only the following non-layout properties are used:
+     *
+     * - {@link PIXI.TextStyle#dropShadow|dropShadow}
+     * - {@link PIXI.TextStyle#dropShadowDistance|dropShadowDistance}
+     * - {@link PIXI.TextStyle#dropShadowColor|dropShadowColor}
+     * - {@link PIXI.TextStyle#dropShadowBlur|dropShadowBlur}
+     * - {@link PIXI.TextStyle#dropShadowAngle|dropShadowAngle}
+     * - {@link PIXI.TextStyle#fill|fill}
+     * - {@link PIXI.TextStyle#fillGradientStops|fillGradientStops}
+     * - {@link PIXI.TextStyle#fillGradientType|fillGradientType}
+     * - {@link PIXI.TextStyle#fontFamily|fontFamily}
+     * - {@link PIXI.TextStyle#fontSize|fontSize}
+     * - {@link PIXI.TextStyle#fontVariant|fontVariant}
+     * - {@link PIXI.TextStyle#fontWeight|fontWeight}
+     * - {@link PIXI.TextStyle#lineJoin|lineJoin}
+     * - {@link PIXI.TextStyle#miterLimit|miterLimit}
+     * - {@link PIXI.TextStyle#stroke|stroke}
+     * - {@link PIXI.TextStyle#strokeThickness|strokeThickness}
+     * - {@link PIXI.TextStyle#textBaseline|textBaseline}
      *
      * @param {string} name - The name of the custom font to use with BitmapText.
      * @param {object|PIXI.TextStyle} [style] - Style options to render with BitmapFont.
