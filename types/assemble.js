@@ -49,8 +49,8 @@ if (bundle === 'pixi.js') {
 
 // tsd-jsdoc doesn't currently support indexed generics (TChildren[0])
 buffer = buffer.replace(
-    /(addChild|removeChild)\(\.\.\.child: PIXI.DisplayObject\[\]\): PIXI\.DisplayObject;/g,
-    '$1<TChildren extends PIXI.DisplayObject[]>(...child: TChildren): TChildren[0];'
+    /(addChild|removeChild)\(\.\.\.children: PIXI\.DisplayObject\[\]\): PIXI\.DisplayObject;/g,
+    '$1<TChildren extends PIXI.DisplayObject[]>(...children: TChildren): TChildren[0];'
 );
 
 // tsd-jsdoc supports this case using the @template tag, but using said tag breaks documentation generation
