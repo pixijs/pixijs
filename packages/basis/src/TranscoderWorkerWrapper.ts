@@ -1,6 +1,4 @@
-import { BasisBinding, BASIS_FORMATS } from './Basis';
-
-import type { BASIS } from './Basis';
+import type { BASIS, BASIS_FORMATS, BasisBinding } from './Basis';
 
 /**
  * Initialization message sent by the main thread.
@@ -123,7 +121,10 @@ export function TranscoderWorkerWrapper(): void
             const basisFormat = hasAlpha
                 ? message.rgbaFormat
                 : message.rgbFormat;
+            const basisFallbackFormat = 14;// BASIS_FORMATS.cTFRGB565 (cannot import values into web-worker!)
             const imageArray = new Array(imageCount);
+
+            let fallbackMode = false;
 
             if (!basisFile.startTranscoding())
             {
@@ -140,10 +141,6 @@ export function TranscoderWorkerWrapper(): void
 
             for (let i = 0; i < imageCount; i++)
             {
-                // TODO: Support mipmap levels
-                // TODO: Handle RGB565 case
-                // We do assume there is at least one level per image :confused:
-
                 const levels = basisFile.getNumLevels(i);
                 const imageResource: ITranscodedImage = {
                     imageID: i,
@@ -159,9 +156,11 @@ export function TranscoderWorkerWrapper(): void
 
                 for (let j = 0; j < levels; j++)
                 {
+                    const format = !fallbackMode ? basisFormat : basisFallbackFormat;
+
                     const width = basisFile.getImageWidth(i, j);
                     const height = basisFile.getImageHeight(i, j);
-                    const byteSize = basisFile.getImageTranscodedSizeInBytes(i, j, basisFormat);
+                    const byteSize = basisFile.getImageTranscodedSizeInBytes(i, j, format);
 
                     const alignedWidth = (width + 3) & ~3;
                     const alignedHeight = (height + 3) & ~3;
@@ -175,11 +174,22 @@ export function TranscoderWorkerWrapper(): void
 
                     const imageBuffer = new Uint8Array(byteSize);
 
-                    if (!basisFile.transcodeImage(imageBuffer, i, 0, basisFormat, false, false))
+                    if (!basisFile.transcodeImage(imageBuffer, i, 0, format, false, false))
                     {
-                        console.error(`Basis failed to transcode image ${i}, level ${0}!`);
+                        if (fallbackMode)
+                        {
+                            // We failed in fallback mode as well!
+                            console.error(`Basis failed to transcode image ${i}, level ${0}!`);
 
-                        return { type: 'transcode', requestID: message.requestID, success: false };
+                            return { type: 'transcode', requestID: message.requestID, success: false };
+                        }
+
+                        /* eslint-disable-next-line max-len */
+                        console.warn(`Basis failed to transcode image ${i}, level ${0}! Retrying to an uncompressed texture format!`);
+                        i = -1;
+                        fallbackMode = true;
+
+                        break;
                     }
 
                     imageResource.levelArray.push({
@@ -188,9 +198,9 @@ export function TranscoderWorkerWrapper(): void
                         levelHeight: height,
                         levelBuffer: imageBuffer
                     });
-
-                    imageArray[i] = imageResource;
                 }
+
+                imageArray[i] = imageResource;
             }
 
             basisFile.close();
@@ -200,7 +210,7 @@ export function TranscoderWorkerWrapper(): void
                 type: 'transcode',
                 requestID: message.requestID,
                 success: true,
-                basisFormat,
+                basisFormat: !fallbackMode ? basisFormat : basisFallbackFormat,
                 imageArray
             };
         }

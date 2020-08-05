@@ -1,7 +1,7 @@
 {
   "name": "@pixi/basis",
   "version": "5.3.2",
-  "description": "Loader for the *.basis supercompressed texture file format",
+  "description": "Loader for the *.basis supercompressed texture file format. This package also ships with the transcoder!",
   "keywords": [
     "basisu",
     "pixi",
@@ -14,13 +14,14 @@
   "main": "lib/basis.js",
   "module": "lib/basis.es.js",
   "bundle": "dist/basis.js",
-  "bundleNoExports": true,
   "directories": {
     "lib": "lib",
-    "test": "__tests__"
+    "test": "test"
   },
   "files": [
-    "lib"
+    "dist",
+    "lib",
+    "assets"
   ],
   "repository": {
     "type": "git",

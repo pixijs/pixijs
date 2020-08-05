@@ -1,4 +1,4 @@
-import { INTERNAL_FORMATS, TYPES, MIPMAP_MODES, ALPHA_MODES } from '@pixi/constants';
+import { INTERNAL_FORMATS, TYPES, MIPMAP_MODES, ALPHA_MODES, FORMATS } from '@pixi/constants';
 import { resources, BaseTexture, Texture } from '@pixi/core';
 import { Runner } from '@pixi/runner';
 import {
@@ -7,13 +7,18 @@ import {
     INTERNAL_FORMAT_TO_BASIS_FORMAT,
     BASIS_FORMATS_ALPHA,
     BasisTextureExtensions,
-    BasisBinding
+    BasisBinding,
+    BASIS_FORMAT_TO_TYPE
 } from './Basis';
 import { ITranscodeResponse } from './TranscoderWorkerWrapper';
 import { TranscoderWorker } from './TranscoderWorker';
 import { ILoaderResource, LoaderResource } from '@pixi/loaders';
 
 const { CompressedTextureResource } = resources;
+
+type TranscodedResourcesArray = (Array<resources.CompressedTextureResource> | Array<resources.BufferResource>) & {
+    basisFormat: BASIS_FORMATS
+};
 
 LoaderResource.setExtensionXhrType('basis', LoaderResource.XHR_RESPONSE_TYPE.BUFFER);
 
@@ -50,14 +55,11 @@ LoaderResource.setExtensionXhrType('basis', LoaderResource.XHR_RESPONSE_TYPE.BUF
  */
 export class BasisLoader
 {
-    /**
-     * The maximum number of workers to be created for transcoding. By default, this is 1.
-     */
-    static WORKER_POOL_LIMIT = 1;
-
     static basisBinding: BasisBinding;
+    static webGLVersion = 1;
     static defaultRGBFormat: { basisFormat: BASIS_FORMATS, textureFormat: INTERNAL_FORMATS | TYPES };
     static defaultRGBAFormat: { basisFormat: BASIS_FORMATS, textureFormat: INTERNAL_FORMATS | TYPES };
+    static fallbackMode = false;
     static onTranscoderInitializedRunner = new Runner('onTranscoderInitialized');
 
     static workerPool: TranscoderWorker[] = [];
@@ -120,18 +122,24 @@ export class BasisLoader
         next();
     }
 
-    private static registerTextures(url: string, resources: resources.CompressedTextureResource[]): void
+    private static registerTextures(url: string, resources: TranscodedResourcesArray): void
     {
         if (!resources)
         {
             return;
         }
 
+        // Should be a valid TYPES, FORMATS for uncompressed basis formats
+        const type: TYPES = BASIS_FORMAT_TO_TYPE[resources.basisFormat];
+        const format: FORMATS = resources.basisFormat !== BASIS_FORMATS.cTFRGBA32 ? FORMATS.RGB : FORMATS.RGBA;
+
         resources.forEach((resource, i) =>
         {
             const baseTexture = new BaseTexture(resource, {
                 mipmap: MIPMAP_MODES.OFF,
-                alphaMode: ALPHA_MODES.NO_PREMULTIPLIED_ALPHA
+                alphaMode: ALPHA_MODES.NO_PREMULTIPLIED_ALPHA,
+                type,
+                format
             });
             const cacheID = `${url}-${i + 1}`;
 
@@ -149,7 +157,7 @@ export class BasisLoader
     /**
      * Finds a suitable worker for transcoding and sends a transcoding request
      */
-    private static async transcodeAsync(arrayBuffer: ArrayBuffer): Promise<resources.CompressedTextureResource[]>
+    private static async transcodeAsync(arrayBuffer: ArrayBuffer): Promise<TranscodedResourcesArray>
     {
         const workerPool = BasisLoader.workerPool;
 
@@ -169,34 +177,58 @@ export class BasisLoader
         {
             /* eslint-disable-next-line no-use-before-define */
             worker = new TranscoderWorker();
-            await worker.initAsync();
 
             workerPool.push(worker);
         }
+
+        // Wait until worker is ready
+        await worker.initAsync();
 
         return worker.transcodeAsync(
             new Uint8Array(arrayBuffer),
             BasisLoader.defaultRGBAFormat.basisFormat,
             BasisLoader.defaultRGBFormat.basisFormat
         ).then(
-            (response: ITranscodeResponse): resources.CompressedTextureResource[] =>
+            (response: ITranscodeResponse): TranscodedResourcesArray =>
             {
+                const basisFormat = response.basisFormat;
                 const imageArray = response.imageArray;
-                const format = BASIS_FORMAT_TO_INTERNAL_FORMAT[response.basisFormat];
 
-                // HINT: this.imageArray is CompressedTextureResource[]
-                const imageResources = new Array<resources.CompressedTextureResource>(imageArray.length);
+                // whether it is an uncompressed format
+                const fallbackMode = basisFormat > 12;
+                let imageResources: TranscodedResourcesArray;
 
-                for (let i = 0, j = imageArray.length; i < j; i++)
+                if (!fallbackMode)
                 {
-                    imageResources[i] = new CompressedTextureResource(null, {
-                        format,
-                        width: imageArray[i].width,
-                        height: imageArray[i].height,
-                        levelBuffers: imageArray[i].levelArray,
-                        levels: imageArray[i].levelArray.length
-                    });
+                    const format = BASIS_FORMAT_TO_INTERNAL_FORMAT[response.basisFormat];
+
+                    // HINT: this.imageArray is CompressedTextureResource[]
+                    imageResources
+                    = new Array<resources.CompressedTextureResource>(imageArray.length) as TranscodedResourcesArray;
+
+                    for (let i = 0, j = imageArray.length; i < j; i++)
+                    {
+                        imageResources[i] = new CompressedTextureResource(null, {
+                            format,
+                            width: imageArray[i].width,
+                            height: imageArray[i].height,
+                            levelBuffers: imageArray[i].levelArray,
+                            levels: imageArray[i].levelArray.length
+                        });
+                    }
                 }
+                else
+                {
+                    // TODO: BufferResource does not support manual mipmapping.
+                    imageResources = imageArray.map((image) => new resources.BufferResource(
+                        new Uint16Array(image.levelArray[0].levelBuffer.buffer), {
+                            width: image.width,
+                            height: image.height
+                        })
+                    ) as TranscodedResourcesArray;
+                }
+
+                imageResources.basisFormat = basisFormat;
 
                 return imageResources;
             }, () =>
@@ -208,7 +240,7 @@ export class BasisLoader
     /**
      * Runs transcoding on the main thread.
      */
-    private static transcodeSync(arrayBuffer: ArrayBuffer): resources.CompressedTextureResource[]
+    private static transcodeSync(arrayBuffer: ArrayBuffer): TranscodedResourcesArray
     {
         const BASIS = BasisLoader.basisBinding;
 
@@ -220,8 +252,10 @@ export class BasisLoader
         const basisFormat = hasAlpha
             ? BasisLoader.defaultRGBAFormat.basisFormat
             : BasisLoader.defaultRGBFormat.basisFormat;
+        const basisFallbackFormat = BASIS_FORMATS.cTFRGB565;
+        const imageResources = new Array<resources.CompressedTextureResource | resources.BufferResource>(imageCount);
 
-        const imageResources = new Array<resources.CompressedTextureResource>(imageCount);
+        let fallbackMode = BasisLoader.fallbackMode;
 
         if (!basisFile.startTranscoding())
         {
@@ -235,28 +269,68 @@ export class BasisLoader
 
         for (let i = 0; i < imageCount; i++)
         {
-            // TODO: Support mipmap levels
-            // TODO: Handle RGB565 case
-            // We do assume there is at least one level per image :confused:
-
+            // Don't transcode all mipmap levels in fallback mode!
+            const levels = !fallbackMode ? basisFile.getNumLevels(i) : 1;
             const width = basisFile.getImageWidth(i, 0);
             const height = basisFile.getImageHeight(i, 0);
-            const byteSize = basisFile.getImageTranscodedSizeInBytes(i, 0, basisFormat);
-
             const alignedWidth = (width + 3) & ~3;
             const alignedHeight = (height + 3) & ~3;
 
-            const imageBuffer = new Uint8Array(byteSize);
-            const imageResource = new CompressedTextureResource(imageBuffer, {
-                format: BASIS_FORMAT_TO_INTERNAL_FORMAT[basisFormat],
-                width: alignedWidth,
-                height: alignedHeight
-            });
+            const imageLevels = new Array<{ levelBuffer: Uint8Array, levelWidth: number, levelHeight: number}>(levels);
 
-            if (!basisFile.transcodeImage(imageBuffer, i, 0, basisFormat, false, false))
+            // Transcode mipmap levels into "imageLevels"
+            for (let j = 0; j < levels; j++)
             {
-                console.error(`Basis failed to transcode image ${i}, level ${0}!`);
-                break;
+                const levelWidth = basisFile.getImageWidth(i, j);
+                const levelHeight = basisFile.getImageHeight(i, j);
+                const byteSize = basisFile.getImageTranscodedSizeInBytes(
+                    i, 0, !fallbackMode ? basisFormat : basisFallbackFormat);
+
+                imageLevels[j] = {
+                    levelBuffer: new Uint8Array(byteSize),
+                    levelWidth,
+                    levelHeight,
+                };
+
+                if (!basisFile.transcodeImage(
+                    imageLevels[j].levelBuffer, i, 0, !fallbackMode ? basisFormat : basisFallbackFormat, false, false))
+                {
+                    if (fallbackMode)
+                    {
+                        console.error(`Basis failed to transcode image ${i}, level ${0}!`);
+                        break;
+                    }
+                    else
+                    {
+                        // Try transcoding to an uncompressed format before giving up!
+                        // NOTE: We must start all over again as all Resources must be in compressed OR uncompressed.
+                        i = -1;
+                        fallbackMode = true;
+
+                        /* eslint-disable-next-line max-len */
+                        console.warn(`Basis failed to transcode image ${i}, level ${0} to a compressed texture format. Retrying to an uncompressed fallback format!`);
+                        continue;
+                    }
+                }
+            }
+
+            let imageResource;
+
+            if (!fallbackMode)
+            {
+                imageResource = new CompressedTextureResource(null, {
+                    format: BASIS_FORMAT_TO_INTERNAL_FORMAT[basisFormat],
+                    width: alignedWidth,
+                    height: alignedHeight,
+                    levelBuffers: imageLevels,
+                    levels
+                });
+            }
+            else
+            {
+                // TODO: BufferResource doesn't support manual mipmap levels
+                imageResource = new resources.BufferResource(
+                    new Uint16Array(imageLevels[0].levelBuffer.buffer), { width, height });
             }
 
             imageResources[i] = imageResource;
@@ -265,7 +339,18 @@ export class BasisLoader
         basisFile.close();
         basisFile.delete();
 
-        return imageResources;
+        const transcodedResources = imageResources as TranscodedResourcesArray;
+
+        if (!fallbackMode)
+        {
+            transcodedResources.basisFormat = basisFormat;
+        }
+        else
+        {
+            transcodedResources.basisFormat = basisFallbackFormat;
+        }
+
+        return transcodedResources;
     }
 
     /**
@@ -351,6 +436,8 @@ export class BasisLoader
                     textureFormat: TYPES.UNSIGNED_SHORT_5_6_5,
                     basisFormat: BASIS_FORMATS.cTFRGB565
                 };
+
+                BasisLoader.fallbackMode = true;
             }
         }
     }
@@ -403,6 +490,21 @@ export class BasisLoader
     }
 
     static TranscoderWorker: typeof TranscoderWorker = TranscoderWorker;
+
+    static get TRANSCODER_WORKER_POOL_LIMIT(): number
+    {
+        return this.workerPool.length || 1;
+    }
+
+    static set TRANSCODER_WORKER_POOL_LIMIT(limit: number)
+    {
+        // TODO: Destroy workers?
+        for (let i = this.workerPool.length; i < limit; i++)
+        {
+            this.workerPool[i] = new TranscoderWorker();
+            this.workerPool[i].initAsync();
+        }
+    }
 }
 
 // Auto-detect compressed texture formats once @pixi/basis is imported!
