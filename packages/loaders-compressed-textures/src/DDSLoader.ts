@@ -249,6 +249,9 @@ const DXGI_TO_FORMAT: { [id: number]: number } = {
 };
 
 /**
+ * @class
+ * @memberof PIXI
+ * @implements PIXI.ILoaderPlugin
  * @see https://docs.microsoft.com/en-us/windows/win32/direct3ddds/dx-graphics-dds-pguide
  */
 export class DDSLoader
