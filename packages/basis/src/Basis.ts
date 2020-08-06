@@ -48,7 +48,7 @@ export const BASIS_FORMAT_TO_INTERNAL_FORMAT: { [id: number]: INTERNAL_FORMATS }
  * to a valid compressed texture format.
  *
  * NOTE: {@link BASIS_FORMATS.cTFBGR565} is not supported, while {@link BASIS_FORMATS.cTFRGBA4444} is not implemented by
- *  @pixi/basis.
+ *  [at]pixi/basis.
  *
  * @ignore
  */
@@ -75,6 +75,8 @@ export const INTERNAL_FORMAT_TO_BASIS_FORMAT: { [id: number]: number }
 
 /**
  * Enumerates the basis formats with alpha components
+ *
+ * @ignore
  */
 export const BASIS_FORMATS_ALPHA: { [id: number]: boolean } = {
     [BASIS_FORMATS.cTFBC3]: true,
