@@ -52,17 +52,24 @@ LoaderResource.setExtensionXhrType('basis', LoaderResource.XHR_RESPONSE_TYPE.BUF
  * ```
  *
  * NOTE: This can only be used with web-workers.
+ *
+ * @class
+ * @memberof PIXI
+ * @implements PIXI.ILoaderPlugin
  */
 export class BasisLoader
 {
-    static basisBinding: BasisBinding;
-    static webGLVersion = 1;
-    static defaultRGBFormat: { basisFormat: BASIS_FORMATS, textureFormat: INTERNAL_FORMATS | TYPES };
-    static defaultRGBAFormat: { basisFormat: BASIS_FORMATS, textureFormat: INTERNAL_FORMATS | TYPES };
-    static fallbackMode = false;
-    static onTranscoderInitializedRunner = new Runner('onTranscoderInitialized');
+    /**
+     * @ignore
+     */
+    // Used by BasisLoader.TranscoderWorker
+    public static onTranscoderInitializedRunner = new Runner('onTranscoderInitialized');
 
-    static workerPool: TranscoderWorker[] = [];
+    private static basisBinding: BasisBinding;
+    private static defaultRGBFormat: { basisFormat: BASIS_FORMATS, textureFormat: INTERNAL_FORMATS | TYPES };
+    private static defaultRGBAFormat: { basisFormat: BASIS_FORMATS, textureFormat: INTERNAL_FORMATS | TYPES };
+    private static fallbackMode = false;
+    private static workerPool: TranscoderWorker[] = [];
 
     /**
      * Transcodes the *.basis data when the data is loaded. If the transcoder is not bound yet, it
@@ -75,7 +82,7 @@ export class BasisLoader
     {
         if (resource.extension === 'basis' && resource.data)
         {
-            if (BasisLoader.isTranscoderAvailable())
+            if (!!BasisLoader.basisBinding || (!!BasisLoader.TranscoderWorker.wasmSource))
             {
                 BasisLoader.transcode(resource, next);
             }
@@ -94,16 +101,10 @@ export class BasisLoader
     }
 
     /**
-     * Whether a transcoder is bound, either worker-based or main-thread based.
-     */
-    private static isTranscoderAvailable(): boolean
-    {
-        return !!BasisLoader.basisBinding || (!!BasisLoader.TranscoderWorker.wasmSource);
-    }
-
-    /**
      * Runs transcoding and populates {@link imageArray}. It will run the transcoding in a web worker
      * if they are available.
+     *
+     * @private
      */
     private static transcode(resource: ILoaderResource, next: (...args: any[]) => void): void
     {
@@ -122,6 +123,11 @@ export class BasisLoader
         next();
     }
 
+    /**
+     * @param {string} url
+     * @param {TranscodedResourcesArray} resources
+     * @private
+     */
     private static registerTextures(url: string, resources: TranscodedResourcesArray): void
     {
         if (!resources)
@@ -156,6 +162,9 @@ export class BasisLoader
 
     /**
      * Finds a suitable worker for transcoding and sends a transcoding request
+     *
+     * @private
+     * @async
      */
     private static async transcodeAsync(arrayBuffer: ArrayBuffer): Promise<TranscodedResourcesArray>
     {
@@ -239,6 +248,8 @@ export class BasisLoader
 
     /**
      * Runs transcoding on the main thread.
+     *
+     * @private
      */
     private static transcodeSync(arrayBuffer: ArrayBuffer): TranscodedResourcesArray
     {
@@ -461,6 +472,7 @@ export class BasisLoader
      * ```
      *
      * @param basisu - the initialized transcoder library
+     * @private
      */
     static bindTranscoder(basisLibrary: BasisBinding): void
     {
@@ -472,6 +484,7 @@ export class BasisLoader
      *
      * @param jsURL
      * @param wasmURL
+     * @private
      */
     static loadTranscoder(jsURL: string, wasmURL: string): Promise<[void, void]>
     {
@@ -483,6 +496,7 @@ export class BasisLoader
      *
      * @param jsSource
      * @param wasmSource
+     * @private
      */
     static setTranscoder(jsSource: string, wasmSource: ArrayBuffer): void
     {

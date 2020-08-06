@@ -1,10 +1,7 @@
 import { Loader as ResourceLoader, middleware } from 'resource-loader';
-import { DDSLoader } from './DDSLoader';
-import { KTXLoader } from './KTXLoader';
 import { TextureLoader } from './TextureLoader';
 
 import type { Resource } from 'resource-loader';
-import { CompressedTextureLoader } from './CompressedTextureLoader';
 
 /**
  * The new loader, extends Resource Loader by Chad Engler: https://github.com/englercj/resource-loader
@@ -163,15 +160,6 @@ Loader.registerPlugin({ use: middleware.parsing });
 
 // parse any Image objects into textures
 Loader.registerPlugin(TextureLoader);
-
-// parse any *.json compressed-textures manifest
-Loader.registerPlugin(CompressedTextureLoader);
-
-// parse any DDS container files into textures
-Loader.registerPlugin(DDSLoader);
-
-// parse any KTX container files into textures
-Loader.registerPlugin(KTXLoader);
 
 export interface ILoaderPlugin {
     add?(): void;

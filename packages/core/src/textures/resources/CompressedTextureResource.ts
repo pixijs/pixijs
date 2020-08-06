@@ -1,11 +1,13 @@
 import { BlobResource } from './BlobResource';
-import { INTERNAL_FORMATS, INTERNAL_FORMAT_TO_BYTES_PER_PIXEL } from '@pixi/constants';
+import { INTERNAL_FORMAT_TO_BYTES_PER_PIXEL } from '@pixi/constants';
 import { Renderer } from '../../Renderer';
 import { BaseTexture } from '../BaseTexture';
 import { GLTexture } from '../GLTexture';
 
+import type { INTERNAL_FORMATS } from '@pixi/constants';
+
 /**
- * @internal
+ * @ignore
  */
 // Used in PIXI.KTXLoader
 export type CompressedLevelBuffer = {
@@ -15,7 +17,7 @@ export type CompressedLevelBuffer = {
 };
 
 /**
- * @internal
+ * @ignore
  */
 export interface ICompressedTextureResourceOptions
 {
@@ -77,10 +79,10 @@ export interface ICompressedTextureResourceOptions
  */
 export class CompressedTextureResource extends BlobResource
 {
-    format: INTERNAL_FORMATS;
-    width: number;
-    height: number;
-    levels: number;
+    public format: INTERNAL_FORMATS;
+    public width: number;
+    public height: number;
+    public levels: number;
 
     // Easy access to the WebGL extension providing support for the compression format via ContextSystem
     private _extension: 's3tc' | 's3tc_sRGB' | 'atc' | 'astc' | 'etc' | 'etc1' | 'pvrtc';
@@ -132,6 +134,12 @@ export class CompressedTextureResource extends BlobResource
         }
     }
 
+    /**
+     * @override
+     * @param renderer
+     * @param _texture
+     * @param _glTexture
+     */
     upload(renderer: Renderer, _texture: BaseTexture, _glTexture: GLTexture): boolean
     {
         const gl = renderer.gl;
@@ -157,6 +165,9 @@ export class CompressedTextureResource extends BlobResource
         return true;
     }
 
+    /**
+     * @protected
+     */
     protected onBlobLoaded(): void
     {
         this._levelBuffers = CompressedTextureResource._createLevelBuffers(
@@ -168,7 +179,13 @@ export class CompressedTextureResource extends BlobResource
             this.height);
     }
 
-    // Returns the key (to ContextSystem#extensions) for the WebGL extension supporting the compression format
+    /**
+     * Returns the key (to ContextSystem#extensions) for the WebGL extension supporting the compression format
+     *
+     * @private
+     * @param {PIXI.INTERNAL_FORMATS} format
+     * @return {string}
+     */
     private static _formatToExtension(format: INTERNAL_FORMATS):
         's3tc' | 's3tc_sRGB' | 'atc' |
         'astc' | 'etc' | 'etc1' | 'pvrtc'
@@ -197,7 +214,18 @@ export class CompressedTextureResource extends BlobResource
         throw new Error('Invalid (compressed) texture format given!');
     }
 
-    // Pre-creates buffer views for each mipmap level
+    /**
+     * Pre-creates buffer views for each mipmap level
+     *
+     * @private
+     * @param {Uint8Array} buffer
+     * @param {PIXI.INTERNAL_FORMATS} format
+     * @param {number} levels
+     * @param {number} blockWidth
+     * @param {number} blockHeight
+     * @param {number} imageWidth
+     * @param {number} imageHeight
+     */
     private static _createLevelBuffers(
         buffer: Uint8Array,
         format: INTERNAL_FORMATS,

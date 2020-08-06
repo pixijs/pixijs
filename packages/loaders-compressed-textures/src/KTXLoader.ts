@@ -1,12 +1,12 @@
 import { TYPES, INTERNAL_FORMAT_TO_BYTES_PER_PIXEL, FORMATS } from '@pixi/constants';
 import { resources } from '@pixi/core';
-import { Resource } from 'resource-loader';
+import { LoaderResource } from '@pixi/loaders';
 import { registerCompressedTextures } from './registerTextures';
 
-import type { ILoaderResource } from './LoaderResource';
+import type { ILoaderResource } from '@pixi/loaders';
 
 // Set KTX files to be loaded as an ArrayBuffer
-Resource.setExtensionXhrType('ktx', Resource.XHR_RESPONSE_TYPE.BUFFER);
+LoaderResource.setExtensionXhrType('ktx', LoaderResource.XHR_RESPONSE_TYPE.BUFFER);
 
 /**
  * The 12-byte KTX file identifier
@@ -26,6 +26,8 @@ const ENDIANNESS = 0x04030201;
 
 /**
  * Byte offsets of the KTX file header fields
+ *
+ * @ignore
  */
 const KTX_FIELDS = {
     FILE_IDENTIFIER: 0,
@@ -46,11 +48,15 @@ const KTX_FIELDS = {
 
 /**
  * Byte size of the file header fields in {@code KTX_FIELDS}
+ *
+ * @ignore
  */
 const FILE_HEADER_SIZE = 64;
 
 /**
  * Maps {@link PIXI.TYPES} to the bytes taken per component, excluding those ones that are bit-fields.
+ *
+ * @ignore
  */
 export const TYPES_TO_BYTES_PER_COMPONENT: { [id: number]: number } = {
     [TYPES.UNSIGNED_BYTE]: 1,
@@ -61,6 +67,8 @@ export const TYPES_TO_BYTES_PER_COMPONENT: { [id: number]: number } = {
 
 /**
  * Number of components in each {@link PIXI.FORMATS}
+ *
+ * @ignore
  */
 export const FORMATS_TO_COMPONENTS: { [id: number]: number } = {
     [FORMATS.RGBA]: 4,
@@ -72,6 +80,8 @@ export const FORMATS_TO_COMPONENTS: { [id: number]: number } = {
 
 /**
  * Number of bytes per pixel in bit-field types in {@link PIXI.TYPES}
+ *
+ * @ignore
  */
 export const TYPES_TO_BYTES_PER_PIXEL: { [id: number]: number } = {
     [TYPES.UNSIGNED_SHORT_4_4_4_4]: 2,

@@ -1,11 +1,15 @@
-# `loader-basis`
+# @pixi/basis
 
-> TODO: description
+This package contains the loader for *.basis files, and it also ships with the transcoder.
+
+## Installation
+
+```bash
+npm install @pixi/core
+```
 
 ## Usage
 
-```
-const loaderBasis = require('loader-basis');
-
-// TODO: DEMONSTRATE API
+```js
+import { BasisLoader } from '@pixi/basis';
 ```

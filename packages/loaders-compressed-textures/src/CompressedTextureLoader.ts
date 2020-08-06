@@ -1,6 +1,7 @@
-import { Loader } from './Loader';
-import { ILoaderResource, LoaderResource } from './LoaderResource';
-import { INTERNAL_FORMATS } from '@pixi/constants';
+import { Loader, LoaderResource } from '@pixi/loaders';
+
+import type { INTERNAL_FORMATS } from '@pixi/constants';
+import type { ILoaderResource } from '@pixi/loaders';
 
 /**
  * Schema for compressed-texture manifests

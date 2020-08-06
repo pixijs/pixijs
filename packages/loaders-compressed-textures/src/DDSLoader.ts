@@ -1,12 +1,12 @@
 import { resources } from '@pixi/core';
 import { INTERNAL_FORMATS, INTERNAL_FORMAT_TO_BYTES_PER_PIXEL } from '@pixi/constants';
-import { Resource } from 'resource-loader';
+import { LoaderResource } from '@pixi/loaders';
 import { registerCompressedTextures } from './registerTextures';
 
-import type { ILoaderResource } from './LoaderResource';
+import type { ILoaderResource } from '@pixi/loaders';
 
 // Set DDS files to be loaded as an ArrayBuffer
-Resource.setExtensionXhrType('dds', Resource.XHR_RESPONSE_TYPE.BUFFER);
+LoaderResource.setExtensionXhrType('dds', LoaderResource.XHR_RESPONSE_TYPE.BUFFER);
 
 const DDS_MAGIC_SIZE = 4;
 const DDS_HEADER_SIZE = 124;
