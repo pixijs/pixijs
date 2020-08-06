@@ -1,5 +1,6 @@
-import { Loader, LoaderResource } from '@pixi/loaders';
+import { LoaderResource } from '@pixi/loaders';
 
+import type { Loader } from '@pixi/loaders';
 import type { INTERNAL_FORMATS } from '@pixi/constants';
 import type { ILoaderResource } from '@pixi/loaders';
 
