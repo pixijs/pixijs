@@ -257,6 +257,7 @@ export enum INTERNAL_FORMATS {
  *
  * @memberof PIXI
  * @static
+ * @ignore
  */
 export const INTERNAL_FORMAT_TO_BYTES_PER_PIXEL: { [id: number]: number } = {
     // WEBGL_compressed_texture_s3tc
