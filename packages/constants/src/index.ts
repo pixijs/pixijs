@@ -184,6 +184,8 @@ export enum FORMATS {
  *
  * @memberof PIXI
  * @static
+ * @name INTERNAL_FORMATS
+ * @enum {number}
  * @property {number} COMPRESSED_RGB_S3TC_DXT1_EXT=0x83F0
  * @property {number} COMPRESSED_RGBA_S3TC_DXT1_EXT=0x83F1
  * @property {number} COMPRESSED_RGBA_S3TC_DXT3_EXT=0x83F2
