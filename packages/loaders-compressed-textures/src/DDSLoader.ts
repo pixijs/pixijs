@@ -232,6 +232,8 @@ const FOURCC_TO_FORMAT: { [id: number]: number } = {
 
 /**
  * Maps {@link DXGI_FORMAT} to types/internal-formats (see {@link PIXI.TYPES}, {@link PIXI.INTERNAL_FORMATS})
+ *
+ * @ignore
  */
 const DXGI_TO_FORMAT: { [id: number]: number } = {
     // WEBGL_compressed_texture_s3tc

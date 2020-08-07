@@ -7,6 +7,7 @@ import { Application } from '@pixi/app';
 import { Renderer, BatchRenderer } from '@pixi/core';
 import { Extract } from '@pixi/extract';
 import { Loader, AppLoaderPlugin } from '@pixi/loaders';
+import { CompressedTextureLoader, DDSLoader, KTXLoader } from '@pixi/loaders-compressed-textures';
 import { ParticleRenderer } from '@pixi/particles';
 import { Prepare } from '@pixi/prepare';
 import { SpritesheetLoader } from '@pixi/spritesheet';
@@ -19,7 +20,6 @@ import { ColorMatrixFilter } from '@pixi/filter-color-matrix';
 import { DisplacementFilter } from '@pixi/filter-displacement';
 import { FXAAFilter } from '@pixi/filter-fxaa';
 import { NoiseFilter } from '@pixi/filter-noise';
-import '@pixi/loaders-compressed-textures';
 import '@pixi/mixin-cache-as-bitmap';
 import '@pixi/mixin-get-child-by-name';
 import '@pixi/mixin-get-global-position';
@@ -38,9 +38,14 @@ Renderer.registerPlugin('prepare', Prepare);
 Renderer.registerPlugin('batch', BatchRenderer);
 Renderer.registerPlugin('tilingSprite', TilingSpriteRenderer);
 
+// Install loader plugins
 Loader.registerPlugin(BitmapFontLoader);
+Loader.registerPlugin(CompressedTextureLoader);
+Loader.registerPlugin(DDSLoader);
+Loader.registerPlugin(KTXLoader);
 Loader.registerPlugin(SpritesheetLoader);
 
+// Install application plugins
 Application.registerPlugin(TickerPlugin);
 Application.registerPlugin(AppLoaderPlugin);
 
