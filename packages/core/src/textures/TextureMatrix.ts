@@ -28,6 +28,7 @@ export class TextureMatrix
     public clampMargin: number;
     readonly uClampFrame: Float32Array;
     readonly uClampOffset: Float32Array;
+    _textureID: number;
     _updateID: number;
     _texture: Texture;
     isSimple: boolean;
@@ -69,7 +70,14 @@ export class TextureMatrix
          * @member {number}
          * @protected
          */
-        this._updateID = -1;
+        this._textureID = -1;
+
+        /**
+         * Tracks Texture frame changes
+         * @member {number}
+         * @protected
+         */
+        this._updateID = 0;
 
         /**
          * Changes frame clamping
@@ -112,7 +120,7 @@ export class TextureMatrix
     set texture(value: Texture)
     {
         this._texture = value;
-        this._updateID = -1;
+        this._textureID = -1;
     }
 
     /**
@@ -157,12 +165,13 @@ export class TextureMatrix
         }
 
         if (!forceUpdate
-            && this._updateID === tex._updateID)
+            && this._textureID === tex._updateID)
         {
             return false;
         }
 
-        this._updateID = tex._updateID;
+        this._textureID = tex._updateID;
+        this._updateID++;
 
         const uvs = tex._uvs;
 
