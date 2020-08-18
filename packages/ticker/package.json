@@ -1,6 +1,6 @@
 {
   "name": "@pixi/ticker",
-  "version": "5.3.0",
+  "version": "5.3.2",
   "main": "lib/ticker.js",
   "module": "lib/ticker.es.js",
   "bundle": "dist/ticker.js",
@@ -24,6 +24,6 @@
     "dist"
   ],
   "dependencies": {
-    "@pixi/settings": "5.3.0"
+    "@pixi/settings": "5.3.2"
   }
 }
