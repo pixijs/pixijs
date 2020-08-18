@@ -123,22 +123,35 @@ export class AnimatedSprite extends Sprite
         this.updateAnchor = false;
 
         /**
-         * Function to call when an AnimatedSprite finishes playing.
+         * User-assigned function to call when an AnimatedSprite finishes playing.
          *
+         * @example
+         * animation.onComplete = function () {
+         *   // finished!
+         * };
          * @member {Function}
          */
         this.onComplete = null;
 
         /**
-         * Function to call when an AnimatedSprite changes which texture is being rendered.
+         * User-assigned function to call when an AnimatedSprite changes which texture is being rendered.
          *
+         * @example
+         * animation.onFrameChange = function () {
+         *   // updated!
+         * };
          * @member {Function}
          */
         this.onFrameChange = null;
 
         /**
-         * Function to call when `loop` is true, and an AnimatedSprite is played and loops around to start again.
+         * User-assigned function to call when `loop` is true, and an AnimatedSprite is played and
+         * loops around to start again.
          *
+         * @example
+         * animation.onLoop = function () {
+         *   // looped!
+         * };
          * @member {Function}
          */
         this.onLoop = null;

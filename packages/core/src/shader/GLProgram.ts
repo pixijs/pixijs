@@ -3,7 +3,7 @@ import type { Dict } from '@pixi/utils';
 export class IGLUniformData
 {
     location: WebGLUniformLocation;
-    value: number | boolean | Float32Array | Int32Array | boolean[];
+    value: number | boolean | Float32Array | Int32Array | Uint32Array | boolean[];
 }
 
 /**

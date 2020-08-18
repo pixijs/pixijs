@@ -11,6 +11,7 @@ const OFFSET = 1;
 const CULLING = 2;
 const DEPTH_TEST = 3;
 const WINDING = 4;
+const DEPTH_MASK = 5;
 
 /**
  * System plugin to the renderer to manage WebGL state machines.
@@ -86,6 +87,7 @@ export class StateSystem extends System
         this.map[CULLING] = this.setCullFace;
         this.map[DEPTH_TEST] = this.setDepthTest;
         this.map[WINDING] = this.setFrontFace;
+        this.map[DEPTH_MASK] = this.setDepthMask;
 
         /**
          * Collection of check calls
@@ -206,6 +208,16 @@ export class StateSystem extends System
     setDepthTest(value: boolean): void
     {
         this.gl[value ? 'enable' : 'disable'](this.gl.DEPTH_TEST);
+    }
+
+    /**
+     * Sets whether to enable or disable depth mask.
+     *
+     * @param {boolean} value - Turn on or off webgl depth mask.
+     */
+    setDepthMask(value: boolean): void
+    {
+        this.gl.depthMask(value);
     }
 
     /**
