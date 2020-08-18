@@ -25,6 +25,7 @@
   ],
   "dependencies": {
     "@pixi/canvas-renderer": "5.3.2",
+    "@pixi/canvas-display": "5.3.2",
     "@pixi/constants": "5.3.2",
     "@pixi/mesh": "5.3.2",
     "@pixi/mesh-extras": "5.3.2",
