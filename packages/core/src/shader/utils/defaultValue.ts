@@ -17,7 +17,7 @@ function booleanArray(size: number): Array<boolean>
  * @param {number} size
  * @private
  */
-export function defaultValue(type: string, size: number): number|Float32Array|Int32Array|boolean|boolean[]
+export function defaultValue(type: string, size: number): number|Float32Array|Int32Array|Uint32Array|boolean|boolean[]
 {
     switch (type)
     {
@@ -34,6 +34,7 @@ export function defaultValue(type: string, size: number): number|Float32Array|In
             return new Float32Array(4 * size);
 
         case 'int':
+        case 'uint':
         case 'sampler2D':
         case 'sampler2DArray':
             return 0;
@@ -46,6 +47,15 @@ export function defaultValue(type: string, size: number): number|Float32Array|In
 
         case 'ivec4':
             return new Int32Array(4 * size);
+
+        case 'uvec2':
+            return new Uint32Array(2 * size);
+
+        case 'uvec3':
+            return new Uint32Array(3 * size);
+
+        case 'uvec4':
+            return new Uint32Array(4 * size);
 
         case 'bool':
             return false;

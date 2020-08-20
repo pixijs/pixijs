@@ -102,7 +102,7 @@ export class ProjectionSystem extends System
     /**
      * Updates the projection matrix based on a projection frame (which is a rectangle)
      *
-     * @param {PIXI.Rectangle}[destinationFrame] - The destination frame.
+     * @param {PIXI.Rectangle} destinationFrame - The destination frame.
      * @param {PIXI.Rectangle} sourceFrame - The source frame.
      * @param {Number} resolution - Resolution
      * @param {boolean} root - If is root

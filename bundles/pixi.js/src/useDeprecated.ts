@@ -255,7 +255,7 @@ export function useDeprecated(this: any): void
         InteractionManager: {
             get(): typeof InteractionManager
             {
-                deprecation('5.3.0', 'PIXI.accessibility.InteractionManager moved to PIXI.InteractionManager');
+                deprecation('5.3.0', 'PIXI.interaction.InteractionManager moved to PIXI.InteractionManager');
 
                 return PIXI.InteractionManager;
             },
@@ -269,7 +269,7 @@ export function useDeprecated(this: any): void
         InteractionData: {
             get(): typeof InteractionData
             {
-                deprecation('5.3.0', 'PIXI.accessibility.InteractionData moved to PIXI.InteractionData');
+                deprecation('5.3.0', 'PIXI.interaction.InteractionData moved to PIXI.InteractionData');
 
                 return PIXI.InteractionData;
             },
@@ -283,7 +283,7 @@ export function useDeprecated(this: any): void
         InteractionEvent: {
             get(): typeof InteractionEvent
             {
-                deprecation('5.3.0', 'PIXI.accessibility.InteractionEvent moved to PIXI.InteractionEvent');
+                deprecation('5.3.0', 'PIXI.interaction.InteractionEvent moved to PIXI.InteractionEvent');
 
                 return PIXI.InteractionEvent;
             },

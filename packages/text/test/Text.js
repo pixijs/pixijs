@@ -210,7 +210,7 @@ describe('PIXI.Text', function ()
 
             text.text = '\n';
 
-            expect(text.canvas.width).to.be.above(1);
+            expect(text.canvas.width).to.be.above(0);
         });
     });
 });
