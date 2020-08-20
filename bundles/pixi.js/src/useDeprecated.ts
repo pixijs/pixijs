@@ -215,7 +215,8 @@ export function useDeprecated(this: any): void
     });
 
     /**
-     * @namespace PIXI.accessibility
+     * @memberof PIXI
+     * @namespace accessibility
      * @see PIXI
      * @deprecated since 5.3.0
      */
@@ -223,7 +224,8 @@ export function useDeprecated(this: any): void
 
     Object.defineProperties(PIXI.accessibility, {
         /**
-         * @class PIXI.accessibility.AccessibilityManager
+         * @memberof PIXI.accessibility
+         * @class AccessibilityManager
          * @deprecated since 5.3.0
          * @see PIXI.AccessibilityManager
          */
