@@ -12,6 +12,7 @@
         "strictNullChecks": false,
         "esModuleInterop": true,
         "moduleResolution": "node",
+        "resolveJsonModule": true,
         "baseUrl": "./",
         "paths": {
             "@pixi/*": ["packages/*/src", "packages/filters/*/src", "packages/canvas/*/src"],

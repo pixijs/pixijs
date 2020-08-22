@@ -58,7 +58,7 @@ export function string2hex(string: string): number
 {
     if (typeof string === 'string')
     {
-        string = cssColorNames[string.toLowerCase()] || string;
+        string = (cssColorNames as {[key: string]: string})[string.toLowerCase()] || string;
 
         if (string[0] === '#')
         {
