@@ -222,8 +222,9 @@ export class Text extends Sprite
         for (let i = 0; i < passesCount; ++i)
         {
             const isShadowPass = style.dropShadow && i === 0;
-            const dsOffsetText = isShadowPass ? height * 2 : 0; // we only want the drop shadow, so put text way off-screen
-            const dsOffsetShadow = dsOffsetText * this.resolution;
+            // we only want the drop shadow, so put text way off-screen
+            const dsOffsetText = isShadowPass ? Math.ceil(Math.max(1, height) + (style.padding * 2)) : 0;
+            const dsOffsetShadow = dsOffsetText * this._resolution;
 
             if (isShadowPass)
             {
