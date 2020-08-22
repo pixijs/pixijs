@@ -6,6 +6,7 @@ import sourcemaps from 'rollup-plugin-sourcemaps';
 import typescript from 'rollup-plugin-typescript';
 import minimist from 'minimist';
 import commonjs from 'rollup-plugin-commonjs';
+import json from 'rollup-plugin-json';
 import replace from 'rollup-plugin-replace';
 import { terser } from 'rollup-plugin-terser';
 import batchPackages from '@lerna/batch-packages';
@@ -47,6 +48,7 @@ async function main()
                 'resource-loader': ['Resource'],
             },
         }),
+        json(),
         typescript(),
         string({
             include: [
