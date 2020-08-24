@@ -144,7 +144,7 @@ async function main()
             }
 
             const file = path.join(basePath, bundle);
-            const moduleFile = file.replace(/\.js$/, '.mjs');
+            const moduleFile = bundleModule ? path.join(basePath, bundleModule) : '';
             const external = standalone ? null : Object.keys(namespaces);
             const globals = standalone ? null : namespaces;
             const ns = namespaces[pkg.name];
@@ -185,13 +185,13 @@ async function main()
                         footer,
                         sourcemap,
                     }, bundleOutput),
-                    {
+                    ...moduleFile ? [{
                         banner,
                         file: moduleFile,
                         format: 'esm',
                         freeze,
                         sourcemap,
-                    }
+                    }] : []
                 ],
                 treeshake: false,
                 plugins,
@@ -213,13 +213,13 @@ async function main()
                             footer,
                             sourcemap,
                         }, bundleOutput),
-                        {
+                        ...moduleFile ? [{
                             banner,
                             file: moduleFile.replace(/\.mjs$/, '.min.mjs'),
                             format: 'esm',
                             freeze,
                             sourcemap,
-                        }
+                        }] : []
                     ],
                     treeshake: false,
                     plugins: [...plugins, terser({
