@@ -3,6 +3,7 @@ import { Mesh, MeshMaterial } from '@pixi/mesh';
 import { PlaneGeometry } from './geometry/PlaneGeometry';
 
 import type{ Renderer } from '@pixi/core';
+import type { IDestroyOptions } from '@pixi/display';
 
 /**
  * The SimplePlane allows you to draw a texture across several points and then manipulate these points
@@ -92,5 +93,11 @@ export class SimplePlane extends Mesh
         }
 
         super._render(renderer);
+    }
+
+    public destroy(options: IDestroyOptions|boolean): void
+    {
+        this.shader.texture.off('update', this.textureUpdated, this);
+        super.destroy(options);
     }
 }
