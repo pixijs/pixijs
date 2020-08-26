@@ -418,7 +418,7 @@ export class TextMetrics
     {
         let width = cache[key];
 
-        if (width === undefined)
+        if (typeof width !== 'number')
         {
             const spacing = ((key.length) * letterSpacing);
 
