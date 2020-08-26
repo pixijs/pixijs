@@ -206,7 +206,7 @@ export class TextMetrics
         let line = '';
         let lines = '';
 
-        const cache: CharacterWidthCache = {};
+        const cache: CharacterWidthCache = Object.create(null);
         const { letterSpacing, whiteSpace } = style;
 
         // How to handle whitespaces
