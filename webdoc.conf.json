@@ -3,15 +3,21 @@
         "allowUnknownTags": false
     },
     "source": {
-        "include": [
-            "dist/compiled"
-        ],
+        "includePattern": [
+            "packages/*/src/**/*.ts",
+            "bundles/pixi.js/src/*.ts",
+            "packages/filters/*/src/**/*.(ts)",
+            "packages/canvas/*/src/**/*.(ts)"],
         "excludePattern": "(node_modules|lib|test)"
     },
     "plugins": [
-        "plugins/markdown",
-        "@pixi/jsdoc-template/plugins/es6-fix"
+        "plugins/markdown"
     ],
+    "template": {
+        "outputSourceFiles": true,
+        "readme": "./README.md",
+        "repository": "https://github.com/pixijs/pixi.js/"
+    },
     "templates": {
         "cleverLinks"   : false,
         "monospaceLinks": false,
@@ -37,7 +43,7 @@
         },
         "linenums"      : true
     },
-    "markdown"  : {
+    "plugin/markdown"  : {
         "parser"        : "gfm",
         "hardwrap"      : false
     },
@@ -46,6 +52,7 @@
         "recurse"       : true,
         "lenient"       : true,
         "destination"   : "./dist/docs",
-        "template"      : "./node_modules/@pixi/jsdoc-template"
+        "template"      : "pixi-webdoc-template",
+        "export"        : "./dist/docs/pixi.api.json"
     }
 }
