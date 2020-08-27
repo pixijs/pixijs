@@ -1,6 +1,6 @@
 {
   "name": "@pixi/sprite-animated",
-  "version": "5.3.0",
+  "version": "5.3.2",
   "main": "lib/sprite-animated.js",
   "module": "lib/sprite-animated.es.js",
   "bundle": "dist/sprite-animated.js",
@@ -24,8 +24,8 @@
     "dist"
   ],
   "dependencies": {
-    "@pixi/core": "5.3.0",
-    "@pixi/sprite": "5.3.0",
-    "@pixi/ticker": "5.3.0"
+    "@pixi/core": "5.3.2",
+    "@pixi/sprite": "5.3.2",
+    "@pixi/ticker": "5.3.2"
   }
 }

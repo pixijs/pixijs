@@ -1,4 +1,5 @@
 import { DRAW_MODES } from '@pixi/constants';
+import { canvasUtils } from '@pixi/canvas-renderer';
 
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
 import type { Mesh } from '@pixi/mesh';
@@ -108,11 +109,21 @@ export class CanvasMeshRenderer
         {
             return;
         }
-
+        const isTinted = mesh.tint !== 0xFFFFFF;
         const base = texture.baseTexture;
-        const textureSource = base.getDrawableSource();
         const textureWidth = base.width;
         const textureHeight = base.height;
+
+        if (isTinted)
+        {
+            if (mesh._cachedTint !== mesh.tint)
+            {
+                mesh._cachedTint = mesh.tint;
+                mesh._tintedCanvas = canvasUtils.getTintedCanvas(mesh, mesh.tint) as HTMLCanvasElement;
+            }
+        }
+
+        const textureSource = isTinted ? mesh._tintedCanvas : base.getDrawableSource();
 
         const u0 = uvs[index0] * base.width;
         const u1 = uvs[index1] * base.width;

@@ -230,8 +230,8 @@ export class Rectangle
     /**
      * Enlarges rectangle that way its corners lie on grid
      *
-     * @param {number} [resolution=1] resolution
-     * @param {number} [eps=0.001] precision
+     * @param {number} [resolution=1] - resolution
+     * @param {number} [eps=0.001] - precision
      * @return {PIXI.Rectangle} Returns itself.
      */
     ceil(resolution = 1, eps = 0.001): this

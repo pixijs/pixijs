@@ -215,7 +215,8 @@ export function useDeprecated(this: any): void
     });
 
     /**
-     * @namespace PIXI.accessibility
+     * @memberof PIXI
+     * @namespace accessibility
      * @see PIXI
      * @deprecated since 5.3.0
      */
@@ -223,7 +224,8 @@ export function useDeprecated(this: any): void
 
     Object.defineProperties(PIXI.accessibility, {
         /**
-         * @class PIXI.accessibility.AccessibilityManager
+         * @memberof PIXI.accessibility
+         * @class AccessibilityManager
          * @deprecated since 5.3.0
          * @see PIXI.AccessibilityManager
          */
@@ -253,7 +255,7 @@ export function useDeprecated(this: any): void
         InteractionManager: {
             get(): typeof InteractionManager
             {
-                deprecation('5.3.0', 'PIXI.accessibility.InteractionManager moved to PIXI.InteractionManager');
+                deprecation('5.3.0', 'PIXI.interaction.InteractionManager moved to PIXI.InteractionManager');
 
                 return PIXI.InteractionManager;
             },
@@ -267,7 +269,7 @@ export function useDeprecated(this: any): void
         InteractionData: {
             get(): typeof InteractionData
             {
-                deprecation('5.3.0', 'PIXI.accessibility.InteractionData moved to PIXI.InteractionData');
+                deprecation('5.3.0', 'PIXI.interaction.InteractionData moved to PIXI.InteractionData');
 
                 return PIXI.InteractionData;
             },
@@ -281,7 +283,7 @@ export function useDeprecated(this: any): void
         InteractionEvent: {
             get(): typeof InteractionEvent
             {
-                deprecation('5.3.0', 'PIXI.accessibility.InteractionEvent moved to PIXI.InteractionEvent');
+                deprecation('5.3.0', 'PIXI.interaction.InteractionEvent moved to PIXI.InteractionEvent');
 
                 return PIXI.InteractionEvent;
             },
@@ -659,7 +661,8 @@ export function useDeprecated(this: any): void
             },
         },
         /**
-         * @name PIXI.ticker.shared
+         * @name shared
+         * @memberof PIXI.ticker
          * @type {PIXI.Ticker}
          * @deprecated since 5.0.0
          * @see PIXI.Ticker.shared
@@ -848,7 +851,7 @@ export function useDeprecated(this: any): void
      * @private
      * @deprecated since 5.0.0
      * @see PIXI.Container#render
-     * @param {PIXI.Renderer} renderer Instance of renderer
+     * @param {PIXI.Renderer} renderer - Instance of renderer
      */
     PIXI.Container.prototype._renderWebGL = function _renderWebGL(this: Container, renderer: Renderer): void
     {
@@ -858,10 +861,11 @@ export function useDeprecated(this: any): void
     };
 
     /**
-     * @method PIXI.Container#renderWebGL
+     * @memberof PIXI.Container#
+     * @method renderWebGL
      * @deprecated since 5.0.0
      * @see PIXI.Container#render
-     * @param {PIXI.Renderer} renderer Instance of renderer
+     * @param {PIXI.Renderer} renderer - Instance of renderer
      */
     PIXI.Container.prototype.renderWebGL = function renderWebGL(this: Container, renderer: Renderer): void
     {
@@ -871,10 +875,11 @@ export function useDeprecated(this: any): void
     };
 
     /**
-     * @method PIXI.DisplayObject#renderWebGL
+     * @memberof PIXI.DisplayObject#
+     * @method renderWebGL
      * @deprecated since 5.0.0
      * @see PIXI.DisplayObject#render
-     * @param {PIXI.Renderer} renderer Instance of renderer
+     * @param {PIXI.Renderer} renderer - Instance of renderer
      */
     PIXI.DisplayObject.prototype.renderWebGL = function renderWebGL(this: DisplayObject, renderer: Renderer): void
     {
@@ -887,7 +892,7 @@ export function useDeprecated(this: any): void
      * @method PIXI.Container#renderAdvancedWebGL
      * @deprecated since 5.0.0
      * @see PIXI.Container#renderAdvanced
-     * @param {PIXI.Renderer} renderer Instance of renderer
+     * @param {PIXI.Renderer} renderer - Instance of renderer
      */
     PIXI.Container.prototype.renderAdvancedWebGL = function renderAdvancedWebGL(this: Container, renderer: Renderer): void
     {
@@ -903,7 +908,7 @@ export function useDeprecated(this: any): void
          * @static
          * @deprecated since 5.0.0
          * @memberof PIXI.settings
-         * @type {PIXI.TRANSFORM_MODE}
+         * @member {PIXI.TRANSFORM_MODE}
          * @default PIXI.TRANSFORM_MODE.STATIC
          */
         TRANSFORM_MODE: {
@@ -943,7 +948,8 @@ export function useDeprecated(this: any): void
 
     Object.defineProperties(BaseTextureAny.prototype, {
         /**
-         * @name PIXI.BaseTexture#hasLoaded
+         * @name hasLoaded
+         * @memberof PIXI.BaseTexture#
          * @type {boolean}
          * @deprecated since 5.0.0
          * @readonly
@@ -958,7 +964,8 @@ export function useDeprecated(this: any): void
             },
         },
         /**
-         * @name PIXI.BaseTexture#imageUrl
+         * @name imageUrl
+         * @memberof PIXI.BaseTexture#
          * @type {string}
          * @deprecated since 5.0.0
          * @see PIXI.resources.ImageResource#url
@@ -982,7 +989,8 @@ export function useDeprecated(this: any): void
             },
         },
         /**
-         * @name PIXI.BaseTexture#source
+         * @name source
+         * @memberof PIXI.BaseTexture#
          * @type {HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|SVGElement}
          * @deprecated since 5.0.0
          * @readonly
@@ -1008,7 +1016,8 @@ export function useDeprecated(this: any): void
         },
 
         /**
-         * @name PIXI.BaseTexture#premultiplyAlpha
+         * @name premultiplyAlpha
+         * @memberof PIXI.BaseTexture#
          * @type {boolean}
          * @deprecated since 5.2.0
          * @readonly
@@ -1033,7 +1042,8 @@ export function useDeprecated(this: any): void
         /**
          * Batch local field, stores current texture location
          *
-         * @name PIXI.BaseTexture#_id
+         * @name _id
+         * @memberof PIXI.BaseTexture#
          * @deprecated since 5.2.0
          * @type {number}
          * @see PIXI.BaseTexture#_batchLocation
@@ -1113,7 +1123,8 @@ export function useDeprecated(this: any): void
 
     Object.defineProperties(PIXI.resources.ImageResource.prototype, {
         /**
-         * @name PIXI.resources.ImageResource#premultiplyAlpha
+         * @name premultiplyAlpha
+         * @memberof PIXI.resources.ImageResource#
          * @type {boolean}
          * @deprecated since 5.2.0
          * @readonly
@@ -1273,7 +1284,8 @@ export function useDeprecated(this: any): void
 
     Object.defineProperties(PIXI.RenderTexture.prototype, {
         /**
-         * @name PIXI.RenderTexture#sourceFrame
+         * @name sourceFrame
+         * @memberof PIXI.RenderTexture#
          * @type {PIXI.Rectangle}
          * @deprecated since 5.0.0
          * @readonly
@@ -1287,7 +1299,8 @@ export function useDeprecated(this: any): void
             },
         },
         /**
-         * @name PIXI.RenderTexture#size
+         * @name size
+         * @memberof PIXI.RenderTexture#
          * @type {PIXI.Rectangle}
          * @deprecated since 5.0.0
          * @readonly
