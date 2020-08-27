@@ -40,7 +40,7 @@ export interface BaseTexture extends GlobalMixins.BaseTexture, EventEmitter {}
  * @class
  * @extends PIXI.utils.EventEmitter
  * @memberof PIXI
- * @param {PIXI.resources.Resource|string|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement} [resource=null]
+ * @param {PIXI.resources.Resource|string|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement} [resource=null] -
  *        The current resource to use, for things that aren't Resource objects, will be converted
  *        into a Resource.
  * @param {Object} [options] - Collection of options
@@ -607,7 +607,7 @@ export class BaseTexture extends EventEmitter
      * @static
      * @param {string|HTMLImageElement|HTMLCanvasElement|SVGElement|HTMLVideoElement} source - The
      *        source to create base texture from.
-     * @param {object} [options] See {@link PIXI.BaseTexture}'s constructor for options.
+     * @param {object} [options] - See {@link PIXI.BaseTexture}'s constructor for options.
      * @param {boolean} [strict] - Enforce strict-mode, see {@link PIXI.settings.STRICT_TEXTURE_CACHE}.
      * @returns {PIXI.BaseTexture} The new base texture.
      */
@@ -657,7 +657,7 @@ export class BaseTexture extends EventEmitter
      *        is provided, a new Float32Array is created.
      * @param {number} width - Width of the resource
      * @param {number} height - Height of the resource
-     * @param {object} [options] See {@link PIXI.BaseTexture}'s constructor for options.
+     * @param {object} [options] - See {@link PIXI.BaseTexture}'s constructor for options.
      * @return {PIXI.BaseTexture} The resulting new BaseTexture
      */
     static fromBuffer(buffer: Float32Array|Uint8Array,

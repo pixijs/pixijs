@@ -20,8 +20,8 @@ export class GLProgram
     /**
      * Makes a new Pixi program
      *
-     * @param program {WebGLProgram} webgl program
-     * @param uniformData {Object} uniforms
+     * @param {WebGLProgram} program - webgl program
+     * @param {Object} uniformData - uniforms
      */
     constructor(program: WebGLProgram, uniformData: {[key: string]: IGLUniformData})
     {
