@@ -126,7 +126,7 @@ export class TextureMatrix
     /**
      * Multiplies uvs array to transform
      * @param {Float32Array} uvs - mesh uvs
-     * @param {Float32Array} [out=uvs] output
+     * @param {Float32Array} [out=uvs] - output
      * @returns {Float32Array} output
      */
     multiplyUvs(uvs: Float32Array, out?: Float32Array): Float32Array

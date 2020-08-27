@@ -12,8 +12,9 @@ export class System
     // public because of Filter usage,
     // protected because usually renderer it already known by those who use the system
     renderer: Renderer;
+
     /**
-     * @param {PIXI.Renderer} renderer - The renderer this manager works for.
+     * @param {Renderer} renderer - The renderer this manager works for.
      */
     constructor(renderer: Renderer)
     {
