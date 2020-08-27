@@ -39,3 +39,6 @@ bundles/*/*.d.ts
 # VSCode ignores
 .vscode
 pixi.code-workspace
+
+# webdoc api
+dist/docs/pixi.api.json

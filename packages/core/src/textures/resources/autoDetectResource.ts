@@ -6,12 +6,12 @@ import type{ ICubeResourceOptions } from './CubeResource';
 import type{ ISVGResourceOptions } from './SVGResource';
 import type{ IVideoResourceOptions } from './VideoResource';
 
-/**
+/*
  * Allow flexible options for resource plugins
  */
 export type IResourcePluginOptions = { [key: string]: any };
 
-/**
+/*
  * All allowable options for autoDetectResource
  */
 export type IAutoDetectOptions = ISize
@@ -23,6 +23,8 @@ export type IAutoDetectOptions = ISize
 
 /**
  * Shape of supported resource plugins
+ *
+ * @memberof PIXI.resources
  */
 export interface IResourcePlugin
 {
@@ -51,8 +53,8 @@ export interface IResourcePlugin
  * // Install the new resource type
  * PIXI.resources.INSTALLED.push(CustomResource);
  *
- * @name PIXI.resources.INSTALLED
- * @type {Array<*>}
+ * @memberof PIXI.resources
+ * @type {Array<PIXI.IResourcePlugin>}
  * @static
  * @readonly
  */
@@ -70,7 +72,8 @@ export const INSTALLED: Array<IResourcePlugin> = [];
  *  - {@link PIXI.resources.SVGResource}
  *  - {@link PIXI.resources.BufferResource}
  * @static
- * @function PIXI.resources.autoDetectResource
+ * @memberof PIXI.resources
+ * @function autoDetectResource
  * @param {string|*} source - Resource source, this can be the URL to the resource,
  *        a typed-array (for BufferResource), HTMLVideoElement, SVG data-uri
  *        or any other resource that can be auto-detected. If not resource is

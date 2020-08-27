@@ -146,8 +146,9 @@ export class ContextSystem extends System
     /**
      * Helper class to create a WebGL Context
      *
-     * @param canvas {HTMLCanvasElement} the canvas element that we will get the context from
-     * @param options {object} An options object that gets passed in to the canvas element containing the context attributes
+     * @param {HTMLCanvasElement} canvas - the canvas element that we will get the context from
+     * @param {object} options - An options object that gets passed in to the canvas element containing the
+     *    context attributes
      * @see https://developer.mozilla.org/en/docs/Web/API/HTMLCanvasElement/getContext
      * @return {WebGLRenderingContext} the WebGL context
      */

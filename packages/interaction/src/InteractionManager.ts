@@ -875,7 +875,7 @@ export class InteractionManager extends EventEmitter
             style.touchAction = 'none';
         }
 
-        /**
+        /*
          * These events are added first, so that if pointer events are normalized, they are fired
          * in the same order as non-normalized events. ie. pointer event 1st, mouse / touch 2nd
          */
@@ -1219,7 +1219,7 @@ export class InteractionManager extends EventEmitter
 
         const events = this.normalizeToPointerData(originalEvent);
 
-        /**
+        /*
          * No need to prevent default on natural pointer events, as there are no side effects
          * Normalized events, however, may have the double mousedown/touchstart issue on the native android browser,
          * so still need to be prevented.

@@ -68,7 +68,7 @@ export class BaseImageResource extends Resource
      * @param {PIXI.Renderer} renderer - Upload to the renderer
      * @param {PIXI.BaseTexture} baseTexture - Reference to parent texture
      * @param {PIXI.GLTexture} glTexture
-     * @param {HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|SVGElement} [source] (optional)
+     * @param {HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|SVGElement} [source] - (optional)
      * @returns {boolean} true is success
      */
     upload(renderer: Renderer, baseTexture: BaseTexture, glTexture: GLTexture, source?: ImageSource): boolean

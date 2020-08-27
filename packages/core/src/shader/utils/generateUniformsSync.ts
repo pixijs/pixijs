@@ -148,7 +148,7 @@ export function generateUniformsSync(group: UniformGroup, uniformData: Dict<any>
         }
     }
 
-    /**
+    /*
      * the introduction of syncData is to solve an issue where textures in uniform groups are not set correctly
      * the texture count was always starting from 0 in each group. This needs to increment each time a texture is used
      * no matter which group is being used
@@ -157,4 +157,3 @@ export function generateUniformsSync(group: UniformGroup, uniformData: Dict<any>
     // eslint-disable-next-line no-new-func
     return new Function('ud', 'uv', 'renderer', 'syncData', funcFragments.join('\n')) as UniformsSyncCallback;
 }
-
