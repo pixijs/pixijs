@@ -146,7 +146,7 @@ export class TickerListener<T = any>
     /**
      * Destroy and don't use after this.
      * @private
-     * @param {boolean} [hard = false] `true` to remove the `next` reference, this
+     * @param {boolean} [hard = false] - `true` to remove the `next` reference, this
      *        is considered a hard destroy. Soft destroy maintains the next reference.
      * @return {TickerListener} The listener to redirect while emitting or removing.
      */

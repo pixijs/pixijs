@@ -84,7 +84,7 @@ export class BitmapFont
      * @property {number} textureWidth=512
      * @property {number} textureHeight=512
      * @property {number} padding=4
-     * @property {string|string[]|string[][]} chars=PIXI.BitmapFont.ALPHANUMERIC
+     * @property {string|string[]|string[][]} chars = PIXI.BitmapFont.ALPHANUMERIC
      */
     public static readonly defaultOptions: IBitmapFontOptions = {
         resolution: 1,
@@ -503,4 +503,3 @@ export class BitmapFont
  * @property {number} [textureWidth=512] - the width of the texture atlas
  * @property {number} [textureHeight=512] - the height of the texture atlas
  */
-

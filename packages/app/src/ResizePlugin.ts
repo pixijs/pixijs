@@ -25,14 +25,14 @@ export class ResizePlugin
      */
     static init(options?: IApplicationOptions): void
     {
-        /**
-         * The HTML element or window to automatically resize the
-         * renderer's view element to match width and height.
-         * @type {Window|HTMLElement}
-         * @name resizeTo
-         * @memberof PIXI.Application#
-         */
         Object.defineProperty(this, 'resizeTo',
+            /**
+             * The HTML element or window to automatically resize the
+             * renderer's view element to match width and height.
+             * @member {Window|HTMLElement}
+             * @name resizeTo
+             * @memberof PIXI.Application#
+             */
             {
                 set(dom: Window|HTMLElement)
                 {
@@ -51,10 +51,12 @@ export class ResizePlugin
             });
 
         /**
-         * Resize is throttled, so it's
-         * safe to call this multiple times per frame and it'll
+         * Resize is throttled, so it's safe to call this multiple times per frame and it'll
          * only be called once.
-         * @method PIXI.Application#queueResize
+         *
+         * @memberof PIXI.Application#
+         * @method queueResize
+         * @private
          */
         this.queueResize = (): void =>
         {
@@ -71,7 +73,9 @@ export class ResizePlugin
 
         /**
          * Cancel the resize queue.
-         * @method PIXI.Application#cancelResize
+         *
+         * @memberof PIXI.Application#
+         * @method cancelResize
          * @private
          */
         this.cancelResize = (): void =>
@@ -87,7 +91,9 @@ export class ResizePlugin
          * Execute an immediate resize on the renderer, this is not
          * throttled and can be expensive to call many times in a row.
          * Will resize only if `resizeTo` property is set.
-         * @method PIXI.Application#resize
+         *
+         * @memberof PIXI.Application#
+         * @method resize
          */
         this.resize = (): void =>
         {
@@ -128,6 +134,7 @@ export class ResizePlugin
 
     /**
      * Clean up the ticker, scoped to application
+     *
      * @static
      * @private
      */
