@@ -28,6 +28,9 @@ interface IBitmapFontRawData {
         yoffset: string;
         xadvance: string;
     }[];
+    kernings?: {
+        count: number;
+    }[];
     kerning?: {
         first: string;
         second: string;
@@ -75,6 +78,7 @@ export class TextFormat
             char: [],
             chars: [],
             kerning: [],
+            kernings: [],
         };
 
         for (const i in items)
