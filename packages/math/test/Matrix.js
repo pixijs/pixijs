@@ -216,4 +216,27 @@ describe('PIXI.Matrix', function ()
         expect(result.c).to.closeTo(matrix.c, 0.001);
         expect(result.d).to.closeTo(matrix.d, 0.001);
     });
+
+    describe('decompose', function ()
+    {
+        it('should be the inverse of updateLocalTransform even when pivot is set', function ()
+        {
+            const matrix = new Matrix(0.01, 0.04, 0.04, 0.1, 2, 2);
+            const transform = new Transform();
+
+            transform.pivot.set(40, 40);
+
+            matrix.decompose(transform);
+            transform.updateLocalTransform();
+
+            const localTransform = transform.localTransform;
+
+            expect(localTransform.a).to.closeTo(matrix.a, 0.001);
+            expect(localTransform.b).to.closeTo(matrix.b, 0.001);
+            expect(localTransform.c).to.closeTo(matrix.c, 0.001);
+            expect(localTransform.d).to.closeTo(matrix.d, 0.001);
+            expect(localTransform.tx).to.closeTo(matrix.tx, 0.001);
+            expect(localTransform.ty).to.closeTo(matrix.ty, 0.001);
+        });
+    });
 });
