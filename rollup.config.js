@@ -6,6 +6,7 @@ import sourcemaps from 'rollup-plugin-sourcemaps';
 import typescript from 'rollup-plugin-typescript';
 import minimist from 'minimist';
 import commonjs from 'rollup-plugin-commonjs';
+import json from 'rollup-plugin-json';
 import replace from 'rollup-plugin-replace';
 import { terser } from 'rollup-plugin-terser';
 import batchPackages from '@lerna/batch-packages';
@@ -47,6 +48,7 @@ async function main()
                 'resource-loader': ['Resource'],
             },
         }),
+        json(),
         typescript(),
         string({
             include: [
@@ -101,6 +103,7 @@ async function main()
             main,
             module,
             bundle,
+            bundleModule,
             bundleInput,
             bundleOutput,
             bundleNoExports,
@@ -143,11 +146,13 @@ async function main()
             }
 
             const file = path.join(basePath, bundle);
+            const moduleFile = bundleModule ? path.join(basePath, bundleModule) : '';
             const external = standalone ? null : Object.keys(namespaces);
             const globals = standalone ? null : namespaces;
             const ns = namespaces[pkg.name];
             const name = pkg.name.replace(/[^a-z]+/g, '_');
             let footer;
+            let nsBanner = banner;
 
             // Ignore self-contained packages like polyfills and unsafe-eval
             // as well as the bundles pixi.js and pixi.js-legacy
@@ -162,25 +167,34 @@ async function main()
                 {
                     const base = ns.split('.')[0];
 
-                    banner += `\nthis.${base} = this.${base} || {};`;
+                    nsBanner += `\nthis.${base} = this.${base} || {};`;
                 }
 
-                banner += `\nthis.${ns} = this.${ns} || {};`;
+                nsBanner += `\nthis.${ns} = this.${ns} || {};`;
             }
 
             results.push({
                 input,
                 external,
-                output: Object.assign({
-                    banner,
-                    file,
-                    format: 'iife',
-                    freeze,
-                    globals,
-                    name,
-                    footer,
-                    sourcemap,
-                }, bundleOutput),
+                output: [
+                    Object.assign({
+                        banner: nsBanner,
+                        file,
+                        format: 'iife',
+                        freeze,
+                        globals,
+                        name,
+                        footer,
+                        sourcemap,
+                    }, bundleOutput),
+                    ...moduleFile ? [{
+                        banner,
+                        file: moduleFile,
+                        format: 'esm',
+                        freeze,
+                        sourcemap,
+                    }] : []
+                ],
                 treeshake: false,
                 plugins,
             });
@@ -190,16 +204,25 @@ async function main()
                 results.push({
                     input,
                     external,
-                    output: Object.assign({
-                        banner,
-                        file: file.replace(/\.js$/, '.min.js'),
-                        format: 'iife',
-                        freeze,
-                        globals,
-                        name,
-                        footer,
-                        sourcemap,
-                    }, bundleOutput),
+                    output: [
+                        Object.assign({
+                            banner: nsBanner,
+                            file: file.replace(/\.js$/, '.min.js'),
+                            format: 'iife',
+                            freeze,
+                            globals,
+                            name,
+                            footer,
+                            sourcemap,
+                        }, bundleOutput),
+                        ...moduleFile ? [{
+                            banner,
+                            file: moduleFile.replace(/\.mjs$/, '.min.mjs'),
+                            format: 'esm',
+                            freeze,
+                            sourcemap,
+                        }] : []
+                    ],
                     treeshake: false,
                     plugins: [...plugins, terser({
                         output: {
