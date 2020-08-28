@@ -13,6 +13,7 @@
   "main": "lib/pixi.js",
   "module": "lib/pixi.es.js",
   "bundle": "dist/pixi.js",
+  "bundleModule": "dist/pixi.mjs",
   "bundleOutput": {
     "footer": "PIXI.useDeprecated();",
     "name": "PIXI"
