@@ -98,8 +98,8 @@ describe('PIXI.Sprite', function ()
     {
         it('must have correct value according to texture size, width, height and anchor', function ()
         {
-            const texture = new PIXI.RenderTexture.create(20, 30);
-            const sprite = new PIXI.Sprite(texture);
+            const texture = new RenderTexture.create(20, 30);
+            const sprite = new Sprite(texture);
 
             sprite.anchor.set(0.5, 0.5);
 
