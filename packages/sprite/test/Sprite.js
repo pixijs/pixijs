@@ -94,6 +94,24 @@ describe('PIXI.Sprite', function ()
         });
     });
 
+    describe('getLocalBounds', function ()
+    {
+        it('must have correct value according to texture size, width, height and anchor', function ()
+        {
+            const texture = new PIXI.RenderTexture.create(20, 30);
+            const sprite = new PIXI.Sprite(texture);
+
+            sprite.anchor.set(0.5, 0.5);
+
+            const bounds = sprite.getLocalBounds();
+
+            expect(bounds.x).to.equal(-10);
+            expect(bounds.y).to.equal(-15);
+            expect(bounds.width).to.equal(20);
+            expect(bounds.height).to.equal(30);
+        });
+    });
+
     describe('containsPoint', function ()
     {
         const texture = new RenderTexture.create(20, 30);
