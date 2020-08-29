@@ -186,16 +186,6 @@ export class TilingSprite extends Sprite
      */
     public getLocalBounds(rect?: Rectangle): Rectangle
     {
-        if (!rect)
-        {
-            if (!this._localBoundsRect)
-            {
-                this._localBoundsRect = new Rectangle();
-            }
-
-            rect = this._localBoundsRect;
-        }
-
         // we can do a fast local bounds if the sprite has no children!
         if (this.children.length === 0)
         {
@@ -203,6 +193,16 @@ export class TilingSprite extends Sprite
             this._bounds.minY = this._height * -this._anchor._y;
             this._bounds.maxX = this._width * (1 - this._anchor._x);
             this._bounds.maxY = this._height * (1 - this._anchor._y);
+
+            if (!rect)
+            {
+                if (!this._localBoundsRect)
+                {
+                    this._localBoundsRect = new Rectangle();
+                }
+
+                rect = this._localBoundsRect;
+            }
 
             return this._bounds.getRectangle(rect);
         }

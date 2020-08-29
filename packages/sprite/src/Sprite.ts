@@ -446,18 +446,8 @@ export class Sprite extends Container
      * @param {PIXI.Rectangle} [rect] - Optional output rectangle.
      * @return {PIXI.Rectangle} The bounds.
      */
-    public getLocalBounds(rect: Rectangle): Rectangle
+    public getLocalBounds(rect?: Rectangle): Rectangle
     {
-        if (!rect)
-        {
-            if (!this._localBoundsRect)
-            {
-                this._localBoundsRect = new Rectangle();
-            }
-
-            rect = this._localBoundsRect;
-        }
-
         // we can do a fast local bounds if the sprite has no children!
         if (this.children.length === 0)
         {
@@ -465,6 +455,16 @@ export class Sprite extends Container
             this._bounds.minY = this._texture.orig.height * -this._anchor._y;
             this._bounds.maxX = this._texture.orig.width * (1 - this._anchor._x);
             this._bounds.maxY = this._texture.orig.height * (1 - this._anchor._y);
+
+            if (!rect)
+            {
+                if (!this._localBoundsRect)
+                {
+                    this._localBoundsRect = new Rectangle();
+                }
+
+                rect = this._localBoundsRect;
+            }
 
             return this._bounds.getRectangle(rect);
         }
