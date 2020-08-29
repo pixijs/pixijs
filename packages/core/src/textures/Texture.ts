@@ -346,6 +346,7 @@ export class Texture extends EventEmitter
      * @param {string|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|PIXI.BaseTexture} source -
      *        Source to create texture from
      * @param {object} [options] - See {@link PIXI.BaseTexture}'s constructor for options.
+     * @param {string} [options.pixiIdPrefix=pixiid] - If a source has no id, this is the prefix of the generated id
      * @param {boolean} [strict] - Enforce strict-mode, see {@link PIXI.settings.STRICT_TEXTURE_CACHE}.
      * @return {PIXI.Texture} The newly created texture
      */
@@ -363,7 +364,9 @@ export class Texture extends EventEmitter
         {
             if (!(source as any)._pixiId)
             {
-                (source as any)._pixiId = `pixiid_${uid()}`;
+                const prefix = (options && options.pixiIdPrefix) || 'pixiid';
+
+                (source as any)._pixiId = `${prefix}_${uid()}`;
             }
 
             cacheId = (source as any)._pixiId;
