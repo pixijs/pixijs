@@ -27,8 +27,7 @@ import { Texture } from '@pixi/core';
  * @class
  * @memberof PIXI
  */
-export declare class BasePrepare
-{
+export declare class BasePrepare {
     private limiter;
     protected renderer: AbstractRenderer;
     protected uploadHookHelper: any;
@@ -102,8 +101,7 @@ export declare class BasePrepare
  * @class
  * @memberof PIXI
  */
-export declare class CountLimiter
-{
+export declare class CountLimiter {
     maxItemsPerFrame: number;
     itemsLeft: number;
     /**
@@ -166,8 +164,7 @@ declare interface IUploadHook {
  * @extends PIXI.BasePrepare
  * @memberof PIXI
  */
-export declare class Prepare extends BasePrepare
-{
+export declare class Prepare extends BasePrepare {
     /**
      * @param {PIXI.Renderer} renderer - A reference to the current renderer
      */
@@ -181,8 +178,7 @@ export declare class Prepare extends BasePrepare
  * @class
  * @memberof PIXI
  */
-export declare class TimeLimiter
-{
+export declare class TimeLimiter {
     maxMilliseconds: number;
     frameStart: number;
     /**
@@ -200,4 +196,4 @@ export declare class TimeLimiter
     allowedToUpload(): boolean;
 }
 
-export { };
+export { }

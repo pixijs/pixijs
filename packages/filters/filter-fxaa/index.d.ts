@@ -11,9 +11,8 @@ import { Filter } from '@pixi/core';
  * @memberof PIXI.filters
  *
  */
-export declare class FXAAFilter extends Filter
-{
+export declare class FXAAFilter extends Filter {
     constructor();
 }
 
-export { };
+export { }

@@ -12,8 +12,7 @@ import { Sprite } from '@pixi/sprite';
  * @ignore
  * @private
  */
-export declare class CacheData
-{
+export declare class CacheData {
     textureCacheId: string;
     originalRender: (renderer: Renderer) => void;
     originalRenderCanvas: (renderer: CanvasRenderer) => void;
@@ -28,4 +27,4 @@ export declare class CacheData
     constructor();
 }
 
-export { };
+export { }

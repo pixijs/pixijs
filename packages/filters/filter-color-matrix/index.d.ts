@@ -18,8 +18,7 @@ export declare type ColorMatrix = ArrayFixed<number, 20>;
  * @extends PIXI.Filter
  * @memberof PIXI.filters
  */
-export declare class ColorMatrixFilter extends Filter
-{
+export declare class ColorMatrixFilter extends Filter {
     grayscale: (scale: number, multiply: boolean) => void;
     constructor();
     /**
@@ -226,4 +225,4 @@ export declare class ColorMatrixFilter extends Filter
     set alpha(value: number);
 }
 
-export { };
+export { }

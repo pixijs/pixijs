@@ -17,8 +17,7 @@ import { Filter } from '@pixi/core';
  * @extends PIXI.Filter
  * @memberof PIXI.filters
  */
-export declare class AlphaFilter extends Filter
-{
+export declare class AlphaFilter extends Filter {
     /**
      * @param {number} [alpha=1] - Amount of alpha from 0 to 1, where 0 is transparent
      */
@@ -33,4 +32,4 @@ export declare class AlphaFilter extends Filter
     set alpha(value: number);
 }
 
-export { };
+export { }

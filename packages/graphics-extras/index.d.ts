@@ -67,4 +67,4 @@ export declare interface IGraphicsExtras {
     drawRegularPolygon: typeof drawRegularPolygon;
 }
 
-export { };
+export { }

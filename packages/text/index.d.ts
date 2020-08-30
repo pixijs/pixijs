@@ -66,8 +66,7 @@ export declare interface ITextStyle {
  * @extends PIXI.Sprite
  * @memberof PIXI
  */
-declare class Text_2 extends Sprite
-{
+declare class Text_2 extends Sprite {
     canvas: HTMLCanvasElement;
     context: CanvasRenderingContext2D;
     localStyleID: number;
@@ -189,7 +188,7 @@ declare class Text_2 extends Sprite
     get resolution(): number;
     set resolution(value: number);
 }
-export { Text_2 as Text };
+export { Text_2 as Text }
 
 /**
  * Constants that define the type of gradient on text.
@@ -218,8 +217,7 @@ export declare enum TEXT_GRADIENT {
  * @class
  * @memberof PIXI
  */
-declare class TextMetrics_2
-{
+declare class TextMetrics_2 {
     text: string;
     style: TextStyle;
     width: number;
@@ -400,7 +398,7 @@ declare class TextMetrics_2
      */
     static clearMetrics(font?: string): void;
 }
-export { TextMetrics_2 as TextMetrics };
+export { TextMetrics_2 as TextMetrics }
 
 /**
  * A TextStyle Object contains information to decorate a Text objects.
@@ -412,8 +410,7 @@ export { TextMetrics_2 as TextMetrics };
  * @class
  * @memberof PIXI
  */
-export declare class TextStyle implements ITextStyle
-{
+export declare class TextStyle implements ITextStyle {
     styleID: number;
     protected _align: TextStyleAlign;
     protected _breakWords: boolean;
@@ -751,4 +748,4 @@ export declare type TextStyleTextBaseline = 'alphabetic' | 'top' | 'hanging' | '
 
 export declare type TextStyleWhiteSpace = 'normal' | 'pre' | 'pre-line';
 
-export { };
+export { }

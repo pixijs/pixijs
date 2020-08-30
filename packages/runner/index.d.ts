@@ -1,3 +1,4 @@
+
 /**
  * A Runner is a highly performant and simple alternative to signals. Best used in situations
  * where events are dispatched to many objects at high frequency (say every frame!)
@@ -43,8 +44,7 @@
  * @class
  * @memberof PIXI
  */
-export declare class Runner
-{
+export declare class Runner {
     items: any[];
     private _name;
     private _aliasCount;
@@ -116,4 +116,4 @@ export declare class Runner
     get name(): string;
 }
 
-export { };
+export { }

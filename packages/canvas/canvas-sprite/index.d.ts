@@ -13,8 +13,7 @@ import type { Sprite } from '@pixi/sprite';
  * @protected
  * @memberof PIXI
  */
-export declare class CanvasSpriteRenderer
-{
+export declare class CanvasSpriteRenderer {
     protected renderer: CanvasRenderer;
     /**
      * @param {PIXI.Renderer} renderer -The renderer sprite this batch works for.
@@ -33,4 +32,4 @@ export declare class CanvasSpriteRenderer
     destroy(): void;
 }
 
-export { };
+export { }

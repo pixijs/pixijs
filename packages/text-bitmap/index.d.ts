@@ -17,8 +17,7 @@ import { Texture } from '@pixi/core';
  * @class
  * @memberof PIXI
  */
-export declare class BitmapFont
-{
+export declare class BitmapFont {
     /**
      * This character set includes all the letters in the alphabet (both lower- and upper- case).
      * @readonly
@@ -159,8 +158,7 @@ export declare class BitmapFont
  * @class
  * @memberof PIXI
  */
-export declare class BitmapFontData
-{
+export declare class BitmapFontData {
     info: IBitmapFontDataInfo[];
     common: IBitmapFontDataCommon[];
     page: IBitmapFontDataPage[];
@@ -176,8 +174,7 @@ export declare class BitmapFontData
  * @memberof PIXI
  * @implements PIXI.ILoaderPlugin
  */
-export declare class BitmapFontLoader
-{
+export declare class BitmapFontLoader {
     /**
      * Called when the plugin is installed.
      *
@@ -232,8 +229,7 @@ export declare class BitmapFontLoader
  * @extends PIXI.Container
  * @memberof PIXI
  */
-export declare class BitmapText extends Container
-{
+export declare class BitmapText extends Container {
     static styleDefaults: Partial<IBitmapTextStyle>;
     roundPixels: boolean;
     dirty: boolean;
@@ -478,4 +474,4 @@ declare interface PageMeshData {
     indices?: Uint16Array;
 }
 
-export { };
+export { }

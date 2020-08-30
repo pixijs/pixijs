@@ -15,8 +15,7 @@ import type { Texture } from '@pixi/core';
  * @class
  * @memberof PIXI
  */
-export declare class AppLoaderPlugin
-{
+export declare class AppLoaderPlugin {
     static loader: Loader;
     /**
      * Called on application constructor
@@ -100,8 +99,7 @@ export declare interface IResourceMetadata extends GlobalMixins.IResourceMetadat
  * @param {string} [baseUrl=''] - The base url for all resources loaded by this loader.
  * @param {number} [concurrency=10] - The number of resources to load concurrently.
  */
-export declare class Loader extends Loader_2
-{
+export declare class Loader extends Loader_2 {
     /**
      * Collection of all installed `use` middleware for Loader.
      *
@@ -157,8 +155,7 @@ export declare const LoaderResource: TLoaderResource;
  * @memberof PIXI
  * @implements PIXI.ILoaderPlugin
  */
-export declare class TextureLoader
-{
+export declare class TextureLoader {
     /**
      * Called after a resource is loaded.
      * @see PIXI.Loader.loaderMiddleware
@@ -172,4 +169,4 @@ declare type TLoaderResource = {
     new (...args: any[]): ILoaderResource;
 } & typeof Resource;
 
-export { };
+export { }

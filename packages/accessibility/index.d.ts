@@ -15,8 +15,7 @@ import type { Renderer } from '@pixi/core';
  * @class
  * @memberof PIXI
  */
-export declare class AccessibilityManager
-{
+export declare class AccessibilityManager {
     debug: boolean;
     renderer: AbstractRenderer | Renderer;
     private _isActive;
@@ -183,4 +182,4 @@ export declare interface IAccessibleTarget {
 
 export declare type PointerEvents = 'auto' | 'none' | 'visiblePainted' | 'visibleFill' | 'visibleStroke' | 'visible' | 'painted' | 'fill' | 'stroke' | 'all' | 'inherit';
 
-export { };
+export { }

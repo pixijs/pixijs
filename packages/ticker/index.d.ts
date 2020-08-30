@@ -9,8 +9,7 @@ import type { IApplicationOptions } from '@pixi/app';
  * @class
  * @memberof PIXI
  */
-export declare class Ticker
-{
+export declare class Ticker {
     static _shared: Ticker;
     static _system: Ticker;
     autoStart: boolean;
@@ -233,8 +232,7 @@ export declare type TickerCallback<T> = (this: T, dt: number) => any;
  * @class
  * @memberof PIXI
  */
-export declare class TickerPlugin
-{
+export declare class TickerPlugin {
     static start: () => void;
     static stop: () => void;
     static _ticker: Ticker;
@@ -280,4 +278,4 @@ export declare enum UPDATE_PRIORITY {
     UTILITY = -50
 }
 
-export { };
+export { }

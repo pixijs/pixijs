@@ -28,8 +28,7 @@ export declare function canUseNewCanvasBlendModes(): boolean;
  * @class
  * @memberof PIXI
  */
-declare class CanvasMaskManager
-{
+declare class CanvasMaskManager {
     private renderer;
     private _foundShapes;
     /**
@@ -78,8 +77,7 @@ declare class CanvasMaskManager
  * @memberof PIXI
  * @extends PIXI.AbstractRenderer
  */
-export declare class CanvasRenderer extends AbstractRenderer
-{
+export declare class CanvasRenderer extends AbstractRenderer {
     readonly rootContext: CrossPlatformCanvasRenderingContext2D;
     context: CrossPlatformCanvasRenderingContext2D;
     refresh: boolean;
@@ -301,4 +299,4 @@ export declare interface ICanvasRendererPlugins {
 
 declare type SmoothingEnabledProperties = 'imageSmoothingEnabled' | 'webkitImageSmoothingEnabled' | 'mozImageSmoothingEnabled' | 'oImageSmoothingEnabled' | 'msImageSmoothingEnabled';
 
-export { };
+export { }

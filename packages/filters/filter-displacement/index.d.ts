@@ -25,8 +25,7 @@ import type { Texture } from '@pixi/core';
  * @extends PIXI.Filter
  * @memberof PIXI.filters
  */
-export declare class DisplacementFilter extends Filter
-{
+export declare class DisplacementFilter extends Filter {
     maskSprite: ISpriteMaskTarget;
     maskMatrix: Matrix;
     scale: Point;
@@ -53,4 +52,4 @@ export declare class DisplacementFilter extends Filter
     set map(value: Texture);
 }
 
-export { };
+export { }

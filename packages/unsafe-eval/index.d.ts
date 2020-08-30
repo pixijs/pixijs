@@ -6,4 +6,4 @@ declare interface PIXICore {
     systems?: typeof systems;
 }
 
-export { };
+export { }

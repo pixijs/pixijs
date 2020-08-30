@@ -37,8 +37,7 @@ export declare interface IParticleRendererProperty {
  * @private
  * @memberof PIXI
  */
-declare class ParticleBuffer
-{
+declare class ParticleBuffer {
     geometry: Geometry;
     staticStride: number;
     staticBuffer: Buffer_2;
@@ -119,8 +118,7 @@ declare class ParticleBuffer
  * @extends PIXI.Container
  * @memberof PIXI
  */
-export declare class ParticleContainer extends Container
-{
+export declare class ParticleContainer extends Container {
     readonly blendMode: BLEND_MODES;
     autoResize: boolean;
     roundPixels: boolean;
@@ -205,8 +203,7 @@ export declare class ParticleContainer extends Container
  * @class
  * @memberof PIXI
  */
-export declare class ParticleRenderer extends ObjectRenderer
-{
+export declare class ParticleRenderer extends ObjectRenderer {
     readonly state: State;
     shader: Shader;
     tempMatrix: Matrix;
@@ -298,4 +295,4 @@ export declare class ParticleRenderer extends ObjectRenderer
     destroy(): void;
 }
 
-export { };
+export { }

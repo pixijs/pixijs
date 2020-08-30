@@ -1,11 +1,11 @@
+
 /**
  * The Circle object is used to help draw graphics and can also be used to specify a hit area for displayObjects.
  *
  * @class
  * @memberof PIXI
  */
-export declare class Circle
-{
+export declare class Circle {
     x: number;
     y: number;
     radius: number;
@@ -53,8 +53,7 @@ export declare const DEG_TO_RAD: number;
  * @class
  * @memberof PIXI
  */
-export declare class Ellipse
-{
+export declare class Ellipse {
     x: number;
     y: number;
     width: number;
@@ -359,8 +358,7 @@ export declare interface ISize {
  * @class
  * @memberof PIXI
  */
-export declare class Matrix
-{
+export declare class Matrix {
     a: number;
     b: number;
     c: number;
@@ -548,8 +546,7 @@ export declare class Matrix
  * @memberof PIXI
  * @implements IPoint
  */
-export declare class ObservablePoint<T = any> implements IPoint
-{
+export declare class ObservablePoint<T = any> implements IPoint {
     cb: (this: T) => any;
     scope: any;
     _x: number;
@@ -635,8 +632,7 @@ export declare const PI_2: number;
  * @memberof PIXI
  * @implements IPoint
  */
-export declare class Point implements IPoint
-{
+export declare class Point implements IPoint {
     x: number;
     y: number;
     /**
@@ -688,8 +684,7 @@ export declare class Point implements IPoint
  * @class
  * @memberof PIXI
  */
-export declare class Polygon
-{
+export declare class Polygon {
     points: number[];
     closeStroke: boolean;
     readonly type: SHAPES.POLY;
@@ -735,8 +730,7 @@ export declare const RAD_TO_DEG: number;
  * @class
  * @memberof PIXI
  */
-export declare class Rectangle
-{
+export declare class Rectangle {
     x: number;
     y: number;
     width: number;
@@ -850,8 +844,7 @@ export declare class Rectangle
  * @class
  * @memberof PIXI
  */
-export declare class RoundedRectangle
-{
+export declare class RoundedRectangle {
     x: number;
     y: number;
     width: number;
@@ -908,8 +901,7 @@ export declare enum SHAPES {
  * @class
  * @memberof PIXI
  */
-export declare class Transform
-{
+export declare class Transform {
     /**
      * A default (identity) transform
      *
@@ -971,4 +963,4 @@ export declare class Transform
     set rotation(value: number);
 }
 
-export { };
+export { }
