@@ -81,18 +81,17 @@ export abstract class BlobResource extends BufferResource
      */
     async load(): Promise<Resource>
     {
-        return fetch(this.origin)
-            .then((res) => res.blob())
-            .then((blob) => blob.arrayBuffer())
-            .then((arrayBuffer) =>
-            {
-                this.data = new Uint32Array(arrayBuffer);
-                this.buffer = new ViewableBuffer(arrayBuffer);
-                this.loaded = true;
+        const response = await fetch(this.origin);
+        const blob = await response.blob();
+        const arrayBuffer = await blob.arrayBuffer();
 
-                this.onBlobLoaded(arrayBuffer);
-                this.update();
-            })
-            .then(() => this);
+        this.data = new Uint32Array(arrayBuffer);
+        this.buffer = new ViewableBuffer(arrayBuffer);
+        this.loaded = true;
+
+        this.onBlobLoaded(arrayBuffer);
+        this.update();
+
+        return this;
     }
 }

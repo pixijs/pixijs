@@ -106,20 +106,23 @@ export class BasisLoader
      *
      * @private
      */
-    private static transcode(resource: ILoaderResource, next: (...args: any[]) => void): void
+    private static async transcode(resource: ILoaderResource, next: (...args: any[]) => void): Promise<void>
     {
         const data = resource.data;
 
+        let resources: TranscodedResourcesArray;
+
         if (typeof Worker !== 'undefined' && BasisLoader.TranscoderWorker.wasmSource)
         {
-            BasisLoader.transcodeAsync(data as ArrayBuffer)
-                .then((resources) => { BasisLoader.registerTextures(resource.url, resources); })
-                .then(() => { next(); });
-
-            return;
+            resources = await BasisLoader.transcodeAsync(data as ArrayBuffer);
+        }
+        else
+        {
+            resources = BasisLoader.transcodeSync(data as ArrayBuffer);
         }
 
-        BasisLoader.registerTextures(resource.url, BasisLoader.transcodeSync(data as ArrayBuffer));
+        BasisLoader.registerTextures(resource.url, resources);
+
         next();
     }
 
@@ -193,57 +196,51 @@ export class BasisLoader
         // Wait until worker is ready
         await worker.initAsync();
 
-        return worker.transcodeAsync(
+        const response = await worker.transcodeAsync(
             new Uint8Array(arrayBuffer),
             BasisLoader.defaultRGBAFormat.basisFormat,
             BasisLoader.defaultRGBFormat.basisFormat
-        ).then(
-            (response: ITranscodeResponse): TranscodedResourcesArray =>
+        );
+
+        const basisFormat = response.basisFormat;
+        const imageArray = response.imageArray;
+
+        // whether it is an uncompressed format
+        const fallbackMode = basisFormat > 12;
+        let imageResources: TranscodedResourcesArray;
+
+        if (!fallbackMode)
+        {
+            const format = BASIS_FORMAT_TO_INTERNAL_FORMAT[response.basisFormat];
+
+            // HINT: this.imageArray is CompressedTextureResource[]
+            imageResources = new Array<resources.CompressedTextureResource>(imageArray.length) as TranscodedResourcesArray;
+
+            for (let i = 0, j = imageArray.length; i < j; i++)
             {
-                const basisFormat = response.basisFormat;
-                const imageArray = response.imageArray;
+                imageResources[i] = new CompressedTextureResource(null, {
+                    format,
+                    width: imageArray[i].width,
+                    height: imageArray[i].height,
+                    levelBuffers: imageArray[i].levelArray,
+                    levels: imageArray[i].levelArray.length
+                });
+            }
+        }
+        else
+        {
+            // TODO: BufferResource does not support manual mipmapping.
+            imageResources = imageArray.map((image) => new resources.BufferResource(
+                new Uint16Array(image.levelArray[0].levelBuffer.buffer), {
+                    width: image.width,
+                    height: image.height
+                })
+            ) as TranscodedResourcesArray;
+        }
 
-                // whether it is an uncompressed format
-                const fallbackMode = basisFormat > 12;
-                let imageResources: TranscodedResourcesArray;
+        imageResources.basisFormat = basisFormat;
 
-                if (!fallbackMode)
-                {
-                    const format = BASIS_FORMAT_TO_INTERNAL_FORMAT[response.basisFormat];
-
-                    // HINT: this.imageArray is CompressedTextureResource[]
-                    imageResources
-                    = new Array<resources.CompressedTextureResource>(imageArray.length) as TranscodedResourcesArray;
-
-                    for (let i = 0, j = imageArray.length; i < j; i++)
-                    {
-                        imageResources[i] = new CompressedTextureResource(null, {
-                            format,
-                            width: imageArray[i].width,
-                            height: imageArray[i].height,
-                            levelBuffers: imageArray[i].levelArray,
-                            levels: imageArray[i].levelArray.length
-                        });
-                    }
-                }
-                else
-                {
-                    // TODO: BufferResource does not support manual mipmapping.
-                    imageResources = imageArray.map((image) => new resources.BufferResource(
-                        new Uint16Array(image.levelArray[0].levelBuffer.buffer), {
-                            width: image.width,
-                            height: image.height
-                        })
-                    ) as TranscodedResourcesArray;
-                }
-
-                imageResources.basisFormat = basisFormat;
-
-                return imageResources;
-            }, () =>
-            {
-                throw new Error('Basis worker failed to transcode data');
-            });
+        return imageResources;
     }
 
     /**
@@ -352,14 +349,7 @@ export class BasisLoader
 
         const transcodedResources = imageResources as TranscodedResourcesArray;
 
-        if (!fallbackMode)
-        {
-            transcodedResources.basisFormat = basisFormat;
-        }
-        else
-        {
-            transcodedResources.basisFormat = basisFallbackFormat;
-        }
+        transcodedResources.basisFormat = !fallbackMode ? basisFormat : basisFallbackFormat;
 
         return transcodedResources;
     }

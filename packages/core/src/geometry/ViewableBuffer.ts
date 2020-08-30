@@ -1,8 +1,7 @@
 import type { ITypedArray } from './Buffer';
 
 /**
- * Flexible wrapper around `ArrayBuffer` that also provides
- * typed array views on demand.
+ * Flexible wrapper around `ArrayBuffer` that also provides typed array views on demand.
  *
  * @class
  * @memberof PIXI
@@ -34,16 +33,21 @@ export class ViewableBuffer
     {
         if (typeof sizeOrBuffer === 'number')
         {
-            sizeOrBuffer = new ArrayBuffer(sizeOrBuffer);
+            /**
+             * Underlying `ArrayBuffer` that holds all the data and is of capacity `this.size`.
+             *
+             * @member {ArrayBuffer}
+             */
+            this.rawBinaryData = new ArrayBuffer(sizeOrBuffer);
         }
-
-        /**
-         * Underlying `ArrayBuffer` that holds all the data
-         * and is of capacity `size`.
-         *
-         * @member {ArrayBuffer}
-         */
-        this.rawBinaryData = (sizeOrBuffer instanceof ArrayBuffer ? sizeOrBuffer : sizeOrBuffer.buffer);
+        else if (sizeOrBuffer instanceof Uint8Array)
+        {
+            this.rawBinaryData = sizeOrBuffer.buffer;
+        }
+        else
+        {
+            this.rawBinaryData = sizeOrBuffer;
+        }
 
         /**
          * View on the raw binary data as a `Uint32Array`.
