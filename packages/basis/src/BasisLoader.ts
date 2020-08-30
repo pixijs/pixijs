@@ -10,7 +10,6 @@ import {
     BasisBinding,
     BASIS_FORMAT_TO_TYPE
 } from './Basis';
-import { ITranscodeResponse } from './TranscoderWorkerWrapper';
 import { TranscoderWorker } from './TranscoderWorker';
 import { ILoaderResource, LoaderResource } from '@pixi/loaders';
 
