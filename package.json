@@ -20,7 +20,7 @@
     "build": "npm run build:dev",
     "build:prod": "cross-env NODE_ENV=production rollup -c",
     "build:dev": "rollup -c",
-    "build:types": "rm -r out && tsc; api-extractor-lerna-monorepo && rm -r out",
+    "build:types": "rm -r out; tsc; api-extractor-lerna-monorepo; rm -r out",
     "watch": "rollup -cw",
     "lerna": "lerna",
     "predist": "rimraf dist/*",
