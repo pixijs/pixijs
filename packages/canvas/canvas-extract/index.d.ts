@@ -10,7 +10,8 @@ import { RenderTexture } from '@pixi/core';
  * @class
  * @memberof PIXI
  */
-export declare class CanvasExtract {
+export declare class CanvasExtract
+{
     renderer: CanvasRenderer;
     /**
      * @param {PIXI.CanvasRenderer} renderer - A reference to the current renderer
@@ -61,4 +62,4 @@ export declare class CanvasExtract {
     destroy(): void;
 }
 
-export { }
+export { };

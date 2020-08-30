@@ -13,7 +13,8 @@ import type { CanvasRenderer } from '@pixi/canvas-renderer';
  * @extends PIXI.BasePrepare
  * @memberof PIXI
  */
-export declare class CanvasPrepare extends BasePrepare {
+export declare class CanvasPrepare extends BasePrepare
+{
     /** @internal */
     canvas: HTMLCanvasElement;
     /** @internal */
@@ -29,4 +30,4 @@ export declare class CanvasPrepare extends BasePrepare {
     destroy(): void;
 }
 
-export { }
+export { };

@@ -1,4 +1,3 @@
-
 /**
  * How to treat textures with premultiplied alpha
  *
@@ -313,9 +312,9 @@ export declare enum MSAA_QUALITY {
  * @property {string} HIGH='highp'
  */
 export declare enum PRECISION {
-    LOW = "lowp",
-    MEDIUM = "mediump",
-    HIGH = "highp"
+    LOW = 'lowp',
+    MEDIUM = 'mediump',
+    HIGH = 'highp'
 }
 
 /**
@@ -431,4 +430,4 @@ export declare enum WRAP_MODES {
     MIRRORED_REPEAT = 33648
 }
 
-export { }
+export { };

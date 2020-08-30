@@ -38,7 +38,8 @@ export declare interface Sprite extends GlobalMixins.Sprite, Container {
  * @extends PIXI.Container
  * @memberof PIXI
  */
-export declare class Sprite extends Container {
+export declare class Sprite extends Container
+{
     blendMode: BLEND_MODES;
     indices: Uint16Array;
     pluginName: string;
@@ -196,4 +197,4 @@ export declare class Sprite extends Container {
 
 export declare type SpriteSource = TextureSource | Texture;
 
-export { }
+export { };

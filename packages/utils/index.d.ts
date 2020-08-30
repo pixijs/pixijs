@@ -29,7 +29,8 @@ export declare const BaseTextureCache: {
  * @class
  * @memberof PIXI.utils
  */
-export declare class CanvasRenderTarget {
+export declare class CanvasRenderTarget
+{
     canvas: HTMLCanvasElement;
     context: CanvasRenderingContext2D;
     resolution: number;
@@ -199,8 +200,8 @@ export declare function determineCrossOrigin(url: string, loc?: Location): strin
 export declare type Dict<T> = {
     [key: string]: T;
 };
-export { earcut }
-export { EventEmitter }
+export { earcut };
+export { EventEmitter };
 
 export declare function getBufferType(array: ITypedArray): 'Float32Array' | 'Uint32Array' | 'Int32Array' | 'Uint16Array' | 'Uint8Array' | null;
 
@@ -242,7 +243,7 @@ export declare function hex2rgb(hex: number, out?: Array<number> | Float32Array)
 export declare function hex2string(hex: number): string;
 
 export declare function interleaveTypedArrays(arrays: PackedArray[], sizes: number[]): Float32Array;
-export { isMobile }
+export { isMobile };
 
 /**
  * Checks if a number is a power of two.
@@ -446,6 +447,6 @@ export declare function trimCanvas(canvas: HTMLCanvasElement): {
  * @return {number} The next unique identifier to use.
  */
 export declare function uid(): number;
-export { url }
+export { url };
 
-export { }
+export { };

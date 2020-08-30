@@ -22,8 +22,7 @@ export declare interface IMeshMaterialOptions {
     uniforms?: Dict<unknown>;
 }
 
-export declare interface Mesh extends GlobalMixins.Mesh {
-}
+export type Mesh = GlobalMixins.Mesh;
 
 /**
  * Base mesh class.
@@ -43,7 +42,8 @@ export declare interface Mesh extends GlobalMixins.Mesh {
  * @extends PIXI.Container
  * @memberof PIXI
  */
-export declare class Mesh extends Container {
+export declare class Mesh extends Container
+{
     readonly geometry: Geometry;
     shader: MeshMaterial;
     state: State;
@@ -188,7 +188,8 @@ export declare class Mesh extends Container {
  * @class
  * @memberof PIXI
  */
-export declare class MeshBatchUvs {
+export declare class MeshBatchUvs
+{
     readonly data: Float32Array;
     uvBuffer: Buffer_2;
     uvMatrix: TextureMatrix;
@@ -225,7 +226,8 @@ export declare class MeshBatchUvs {
  * @memberof PIXI
  * @extends PIXI.Geometry
  */
-export declare class MeshGeometry extends Geometry {
+export declare class MeshGeometry extends Geometry
+{
     _updateId: number;
     /**
      * @param {Float32Array|number[]} [vertices] - Positional data on geometry.
@@ -242,8 +244,7 @@ export declare class MeshGeometry extends Geometry {
     get vertexDirtyId(): number;
 }
 
-export declare interface MeshMaterial extends GlobalMixins.MeshMaterial {
-}
+export type MeshMaterial = GlobalMixins.MeshMaterial;
 
 /**
  * Slightly opinionated default shader for PixiJS 2D objects.
@@ -251,7 +252,8 @@ export declare interface MeshMaterial extends GlobalMixins.MeshMaterial {
  * @memberof PIXI
  * @extends PIXI.Shader
  */
-export declare class MeshMaterial extends Shader {
+export declare class MeshMaterial extends Shader
+{
     readonly uvMatrix: TextureMatrix;
     batchable: boolean;
     pluginName: string;
@@ -297,4 +299,4 @@ export declare class MeshMaterial extends Shader {
     update(): void;
 }
 
-export { }
+export { };

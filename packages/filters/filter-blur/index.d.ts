@@ -13,7 +13,8 @@ import type { systems } from '@pixi/core';
  * @extends PIXI.Filter
  * @memberof PIXI.filters
  */
-export declare class BlurFilter extends Filter {
+export declare class BlurFilter extends Filter
+{
     blurXFilter: BlurFilterPass;
     blurYFilter: BlurFilterPass;
     private _repeatEdgePixels;
@@ -91,7 +92,8 @@ export declare class BlurFilter extends Filter {
  * @extends PIXI.Filter
  * @memberof PIXI.filters
  */
-export declare class BlurFilterPass extends Filter {
+export declare class BlurFilterPass extends Filter
+{
     horizontal: boolean;
     strength: number;
     passes: number;
@@ -132,4 +134,4 @@ export declare class BlurFilterPass extends Filter {
     set quality(value: number);
 }
 
-export { }
+export { };

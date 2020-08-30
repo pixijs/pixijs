@@ -19,7 +19,8 @@ import { Transform } from '@pixi/math';
  * @class
  * @memberof PIXI
  */
-export declare class Bounds {
+export declare class Bounds
+{
     minX: number;
     minY: number;
     maxX: number;
@@ -171,7 +172,8 @@ export declare interface Container extends GlobalMixins.Container, DisplayObject
  * @extends PIXI.DisplayObject
  * @memberof PIXI
  */
-export declare class Container extends DisplayObject {
+export declare class Container extends DisplayObject
+{
     readonly children: DisplayObject[];
     sortableChildren: boolean;
     sortDirty: boolean;
@@ -343,7 +345,8 @@ export declare interface DisplayObject extends GlobalMixins.DisplayObject, Event
  * @extends PIXI.utils.EventEmitter
  * @memberof PIXI
  */
-export declare abstract class DisplayObject extends EventEmitter {
+export declare abstract class DisplayObject extends EventEmitter
+{
     abstract sortDirty: boolean;
     parent: DisplayObject;
     worldAlpha: number;
@@ -624,11 +627,12 @@ export declare interface IDestroyOptions {
     baseTexture?: boolean;
 }
 
-export declare class TemporaryDisplayObject extends DisplayObject {
+export declare class TemporaryDisplayObject extends DisplayObject
+{
     calculateBounds: () => null;
     removeChild: (child: DisplayObject) => null;
     render: (renderer: Renderer) => null;
     sortDirty: boolean;
 }
 
-export { }
+export { };

@@ -15,8 +15,7 @@ import { TextureMatrix } from '@pixi/core';
 import type { TextureSource } from '@pixi/core';
 import { Transform } from '@pixi/math';
 
-export declare interface TilingSprite extends GlobalMixins.TilingSprite {
-}
+export type TilingSprite = GlobalMixins.TilingSprite;
 
 /**
  * A tiling sprite is a fast way of rendering a tiling image
@@ -25,7 +24,8 @@ export declare interface TilingSprite extends GlobalMixins.TilingSprite {
  * @extends PIXI.Sprite
  * @memberof PIXI
  */
-export declare class TilingSprite extends Sprite {
+export declare class TilingSprite extends Sprite
+{
     tileTransform: Transform;
     uvMatrix: TextureMatrix;
     uvRespectAnchor: boolean;
@@ -135,7 +135,8 @@ export declare class TilingSprite extends Sprite {
  * @memberof PIXI
  * @extends PIXI.ObjectRenderer
  */
-export declare class TilingSpriteRenderer extends ObjectRenderer {
+export declare class TilingSpriteRenderer extends ObjectRenderer
+{
     shader: Shader;
     simpleShader: Shader;
     quad: QuadUv;
@@ -153,4 +154,4 @@ export declare class TilingSpriteRenderer extends ObjectRenderer {
     render(ts: TilingSprite): void;
 }
 
-export { }
+export { };

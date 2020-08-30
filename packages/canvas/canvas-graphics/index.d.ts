@@ -9,7 +9,8 @@ import { Matrix } from '@pixi/math';
  * @protected
  * @memberof PIXI
  */
-export declare class CanvasGraphicsRenderer {
+export declare class CanvasGraphicsRenderer
+{
     renderer: CanvasRenderer;
     private _svgMatrix;
     private _tempMatrix;
@@ -40,4 +41,4 @@ export declare class CanvasGraphicsRenderer {
     destroy(): void;
 }
 
-export { }
+export { };

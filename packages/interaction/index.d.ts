@@ -25,7 +25,8 @@ export declare type InteractionCallback = (interactionEvent: InteractionEvent, d
  * @class
  * @memberof PIXI
  */
-export declare class InteractionData {
+export declare class InteractionData
+{
     global: Point;
     target: DisplayObject;
     originalEvent: InteractivePointerEvent;
@@ -81,7 +82,8 @@ export declare class InteractionData {
  * @class
  * @memberof PIXI
  */
-export declare class InteractionEvent {
+export declare class InteractionEvent
+{
     stopped: boolean;
     stopsPropagatingAt: DisplayObject;
     stopPropagationHint: boolean;
@@ -114,7 +116,8 @@ export declare class InteractionEvent {
  * @extends PIXI.utils.EventEmitter
  * @memberof PIXI
  */
-export declare class InteractionManager extends EventEmitter {
+export declare class InteractionManager extends EventEmitter
+{
     readonly activeInteractionData: {
         [key: number]: InteractionData;
     };
@@ -420,7 +423,8 @@ export declare interface InteractionManagerOptions {
  * @private
  * @memberof PIXI
  */
-export declare class InteractionTrackingData {
+export declare class InteractionTrackingData
+{
     static FLAGS: Readonly<InteractionTrackingFlags>;
     private readonly _pointerId;
     private _flags;
@@ -533,7 +537,8 @@ export declare const interactiveTarget: InteractiveTarget;
  * @class
  * @memberof PIXI
  */
-declare class TreeSearch {
+declare class TreeSearch
+{
     private readonly _tempPoint;
     constructor();
     /**
@@ -569,4 +574,4 @@ declare class TreeSearch {
     findHit(interactionEvent: InteractionEvent, displayObject: DisplayObject, func?: InteractionCallback, hitTest?: boolean): void;
 }
 
-export { }
+export { };

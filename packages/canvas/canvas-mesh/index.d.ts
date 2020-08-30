@@ -8,7 +8,8 @@ import type { Mesh } from '@pixi/mesh';
  * @protected
  * @memberof PIXI
  */
-export declare class CanvasMeshRenderer {
+export declare class CanvasMeshRenderer
+{
     renderer: CanvasRenderer;
     /**
      * @param {PIXI.CanvasRenderer} renderer - The renderer this downport works for
@@ -58,4 +59,4 @@ export declare class CanvasMeshRenderer {
     destroy(): void;
 }
 
-export { }
+export { };

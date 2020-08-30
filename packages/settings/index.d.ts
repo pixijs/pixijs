@@ -1,4 +1,3 @@
-
 export declare interface IRenderOptions {
     view: HTMLCanvasElement;
     antialias: boolean;
@@ -56,4 +55,4 @@ export declare const isMobile: any;
  */
 export declare const settings: ISettings;
 
-export { }
+export { };
