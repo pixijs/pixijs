@@ -15,11 +15,20 @@
         "resolveJsonModule": true,
         "baseUrl": "./",
         "paths": {
-            "@pixi/*": ["packages/*/src", "packages/filters/*/src", "packages/canvas/*/src"],
-            "pixi.js": ["bundles/pixi.js/src"],
-            "pixi.js-legacy": ["bundles/pixi.js-legacy/src"]
+            "@pixi/*": [
+                "packages/*/src",
+                "packages/filters/*/src",
+                "packages/canvas/*/src"
+            ],
+            "pixi.js": [
+                "bundles/pixi.js/src"
+            ],
+            "pixi.js-legacy": [
+                "bundles/pixi.js-legacy/src"
+            ]
         },
-        "outDir": "./out"
+        "outDir": "./out",
+        "declaration": true
     },
     "exclude": [
         "node_modules",

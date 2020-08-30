@@ -20,10 +20,11 @@
     "build": "npm run build:dev",
     "build:prod": "cross-env NODE_ENV=production rollup -c",
     "build:dev": "rollup -c",
+    "build:types": "rm -r out && tsc; api-extractor-lerna-monorepo && rm -r out",
     "watch": "rollup -cw",
     "lerna": "lerna",
     "predist": "rimraf dist/*",
-    "dist": "npm run docs",
+    "dist": "npm run build:types && npm run docs",
     "postdist": "copyfiles -f bundles/*/dist/* dist && copyfiles -f \"packages/**/dist/*\" dist/packages",
     "prerelease": "npm run clean:build && npm test",
     "postversion": "npm run build:prod",
@@ -66,5 +67,9 @@
     "sinon": "^7.3.2",
     "sinon-chai": "^3.3.0",
     "typescript": "^3.9.5"
+  },
+  "dependencies": {
+    "@microsoft/api-extractor": "^7.9.11",
+    "@pixi-build-tools/api-extractor-lerna-monorepo": "^1.0.1"
   }
 }
