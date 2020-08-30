@@ -443,10 +443,10 @@ export class Sprite extends Container
     /**
      * Gets the local bounds of the sprite object.
      *
-     * @param {PIXI.Rectangle} [rect] - The output rectangle.
+     * @param {PIXI.Rectangle} [rect] - Optional output rectangle.
      * @return {PIXI.Rectangle} The bounds.
      */
-    public getLocalBounds(rect: Rectangle): Rectangle
+    public getLocalBounds(rect?: Rectangle): Rectangle
     {
         // we can do a fast local bounds if the sprite has no children!
         if (this.children.length === 0)
