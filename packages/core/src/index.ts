@@ -1,10 +1,68 @@
 import './settings';
 
-import * as resources from './textures/resources';
-import * as systems from './systems';
+import {
+    autoDetectResource,
+    Resource,
+    AbstractMultiResource,
+    ArrayResource,
+    BaseImageResource,
+    BufferResource,
+    CanvasResource,
+    CubeResource,
+    ImageResource,
+    SVGResource,
+    VideoResource,
+    ImageBitmapResource
+} from './textures/resources';
 
-export { systems };
-export { resources };
+import {
+    FilterSystem,
+    BatchSystem,
+    ContextSystem,
+    FramebufferSystem,
+    GeometrySystem,
+    MaskSystem,
+    ScissorSystem,
+    StencilSystem,
+    ProjectionSystem,
+    RenderTextureSystem,
+    ShaderSystem,
+    StateSystem,
+    TextureGCSystem,
+    TextureSystem
+} from './systems';
+
+export const resources = {
+    autoDetectResource,
+    Resource,
+    AbstractMultiResource,
+    ArrayResource,
+    BaseImageResource,
+    BufferResource,
+    CanvasResource,
+    CubeResource,
+    ImageResource,
+    SVGResource,
+    VideoResource,
+    ImageBitmapResource
+};
+
+export const systems = {
+    FilterSystem,
+    BatchSystem,
+    ContextSystem,
+    FramebufferSystem,
+    GeometrySystem,
+    MaskSystem,
+    ScissorSystem,
+    StencilSystem,
+    ProjectionSystem,
+    RenderTextureSystem,
+    ShaderSystem,
+    StateSystem,
+    TextureGCSystem,
+    TextureSystem
+};
 
 export * from './IRenderingContext';
 export * from './autoDetectRenderer';

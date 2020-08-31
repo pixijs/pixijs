@@ -5,5 +5,34 @@ export * from './GraphicsData';
 export * from './GraphicsGeometry';
 export * from './styles/LineStyle';
 
-import * as graphicsUtils from './utils';
-export { graphicsUtils };
+import {
+    buildPoly,
+    buildCircle,
+    buildRectangle,
+    buildRoundedRectangle,
+    buildLine,
+    Star,
+    ArcUtils,
+    BezierUtils,
+    QuadraticUtils,
+    BatchPart,
+    FILL_COMMANDS,
+    BATCH_POOL,
+    DRAW_CALL_POOL
+} from './utils';
+
+export const graphicsUtils = {
+    buildPoly,
+    buildCircle,
+    buildRectangle,
+    buildRoundedRectangle,
+    buildLine,
+    Star,
+    ArcUtils,
+    BezierUtils,
+    QuadraticUtils,
+    BatchPart,
+    FILL_COMMANDS,
+    BATCH_POOL,
+    DRAW_CALL_POOL
+};
