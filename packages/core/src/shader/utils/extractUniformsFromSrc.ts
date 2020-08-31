@@ -5,7 +5,7 @@ export interface IExtractedUniformData
     type: string;
     dirtyId: number;
     name: string;
-    value: number|Float32Array|Int32Array|boolean|boolean[];
+    value: number|Float32Array|Int32Array|Uint32Array|boolean|boolean[];
 }
 
 function extractUniformsFromString(string: string): {[key: string]: IExtractedUniformData}

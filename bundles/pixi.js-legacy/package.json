@@ -13,6 +13,7 @@
   "main": "lib/pixi-legacy.js",
   "module": "lib/pixi-legacy.es.js",
   "bundle": "dist/pixi-legacy.js",
+  "bundleModule": "dist/pixi-legacy.mjs",
   "bundleOutput": {
     "footer": "PIXI.useDeprecated();",
     "name": "PIXI"

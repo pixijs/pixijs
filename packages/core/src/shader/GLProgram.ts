@@ -3,7 +3,7 @@ import type { Dict } from '@pixi/utils';
 export class IGLUniformData
 {
     location: WebGLUniformLocation;
-    value: number | boolean | Float32Array | Int32Array | boolean[];
+    value: number | boolean | Float32Array | Int32Array | Uint32Array | boolean[];
 }
 
 /**
@@ -20,8 +20,8 @@ export class GLProgram
     /**
      * Makes a new Pixi program
      *
-     * @param program {WebGLProgram} webgl program
-     * @param uniformData {Object} uniforms
+     * @param {WebGLProgram} program - webgl program
+     * @param {Object} uniformData - uniforms
      */
     constructor(program: WebGLProgram, uniformData: {[key: string]: IGLUniformData})
     {
