@@ -50,7 +50,7 @@ export class BlurFilter extends Filter
      * @param {PIXI.RenderTexture} output - The output target.
      * @param {PIXI.CLEAR_MODES} clearMode - How to clear
      */
-    apply(filterManager: systems.FilterSystem, input: RenderTexture, output: RenderTexture, clearMode: CLEAR_MODES): void
+    apply(filterManager: systems['FilterSystem'], input: RenderTexture, output: RenderTexture, clearMode: CLEAR_MODES): void
     {
         const xStrength = Math.abs(this.blurXFilter.strength);
         const yStrength = Math.abs(this.blurYFilter.strength);

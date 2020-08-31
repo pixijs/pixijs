@@ -32,7 +32,7 @@ export declare class BlurFilter extends Filter {
      * @param {PIXI.RenderTexture} output - The output target.
      * @param {PIXI.CLEAR_MODES} clearMode - How to clear
      */
-    apply(filterManager: systems.FilterSystem, input: RenderTexture, output: RenderTexture, clearMode: CLEAR_MODES): void;
+    apply(filterManager: systems['FilterSystem'], input: RenderTexture, output: RenderTexture, clearMode: CLEAR_MODES): void;
     protected updatePadding(): void;
     /**
      * Sets the strength of both the blurX and blurY properties simultaneously
@@ -112,7 +112,7 @@ export declare class BlurFilterPass extends Filter {
      * @param {PIXI.RenderTexture} output - The output target.
      * @param {PIXI.CLEAR_MODES} clearMode - How to clear
      */
-    apply(filterManager: systems.FilterSystem, input: RenderTexture, output: RenderTexture, clearMode: CLEAR_MODES): void;
+    apply(filterManager: systems['FilterSystem'], input: RenderTexture, output: RenderTexture, clearMode: CLEAR_MODES): void;
     /**
      * Sets the strength of both the blur.
      *

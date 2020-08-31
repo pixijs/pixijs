@@ -42,7 +42,7 @@ export declare class DisplacementFilter extends Filter {
      * @param {PIXI.RenderTexture} output - The output target.
      * @param {PIXI.CLEAR_MODES} clearMode - clearMode.
      */
-    apply(filterManager: systems.FilterSystem, input: RenderTexture, output: RenderTexture, clearMode: CLEAR_MODES): void;
+    apply(filterManager: systems['FilterSystem'], input: RenderTexture, output: RenderTexture, clearMode: CLEAR_MODES): void;
     /**
      * The texture used for the displacement map. Must be power of 2 sized texture.
      *

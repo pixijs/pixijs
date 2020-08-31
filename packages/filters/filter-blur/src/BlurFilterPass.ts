@@ -60,7 +60,7 @@ export class BlurFilterPass extends Filter
      * @param {PIXI.CLEAR_MODES} clearMode - How to clear
      */
     public apply(
-        filterManager: systems.FilterSystem, input: RenderTexture, output: RenderTexture, clearMode: CLEAR_MODES
+        filterManager: systems['FilterSystem'], input: RenderTexture, output: RenderTexture, clearMode: CLEAR_MODES
     ): void
     {
         if (output)

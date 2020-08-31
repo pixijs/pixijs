@@ -177,7 +177,7 @@ export function useDeprecated(this: any): void
          * @deprecated since 5.0.0
          */
         FilterManager: {
-            get(): systems.FilterSystem
+            get(): systems['FilterSystem']
             {
                 deprecation(v5, 'PIXI.FilterManager class has moved to PIXI.systems.FilterSystem');
 
@@ -1200,7 +1200,7 @@ export function useDeprecated(this: any): void
      * @deprecated since 5.1.0
      * @see PIXI.systems.StateSystem#set
      */
-    PIXI.systems.StateSystem.prototype.setState = function setState(this: systems.StateSystem, s: State): void
+    PIXI.systems.StateSystem.prototype.setState = function setState(this: systems['StateSystem'], s: State): void
     {
         deprecation('v5.1.0', 'StateSystem.setState has been renamed to StateSystem.set');
 
@@ -1213,7 +1213,7 @@ export function useDeprecated(this: any): void
          * @deprecated since 5.0.0
          * @see PIXI.systems.FilterSystem#getFilterTexture
          */
-        getRenderTarget(this: systems.FilterSystem, _clear: boolean, resolution: number)
+        getRenderTarget(this: systems['FilterSystem'], _clear: boolean, resolution: number)
         {
             deprecation(v5,
                 'PIXI.FilterManager.getRenderTarget method has been replaced with PIXI.systems.FilterSystem#getFilterTexture'
@@ -1227,7 +1227,7 @@ export function useDeprecated(this: any): void
          * @deprecated since 5.0.0
          * @see PIXI.systems.FilterSystem#returnFilterTexture
          */
-        returnRenderTarget(this: systems.FilterSystem, renderTexture: any)
+        returnRenderTarget(this: systems['FilterSystem'], renderTexture: any)
         {
             deprecation(v5,
                 'PIXI.FilterManager.returnRenderTarget method has been replaced with '
@@ -1243,7 +1243,7 @@ export function useDeprecated(this: any): void
          * @param {PIXI.Matrix} outputMatrix - the matrix to output to.
          * @return {PIXI.Matrix} The mapped matrix.
          */
-        calculateScreenSpaceMatrix(this: systems.FilterSystem, outputMatrix: any)
+        calculateScreenSpaceMatrix(this: systems['FilterSystem'], outputMatrix: any)
         {
             deprecation(v5, 'PIXI.systems.FilterSystem.calculateScreenSpaceMatrix method is removed, '
                 + 'use `(vTextureCoord * inputSize.xy) + outputFrame.xy` instead');
@@ -1263,7 +1263,7 @@ export function useDeprecated(this: any): void
          * @param {PIXI.Matrix} outputMatrix - The matrix to output to.
          * @return {PIXI.Matrix} The mapped matrix.
          */
-        calculateNormalizedScreenSpaceMatrix(this: systems.FilterSystem, outputMatrix: Matrix): Matrix
+        calculateNormalizedScreenSpaceMatrix(this: systems['FilterSystem'], outputMatrix: Matrix): Matrix
         {
             deprecation(v5, 'PIXI.systems.FilterManager.calculateNormalizedScreenSpaceMatrix method is removed, '
                 + 'use `((vTextureCoord * inputSize.xy) + outputFrame.xy) / outputFrame.zw` instead.');

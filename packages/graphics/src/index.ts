@@ -15,24 +15,19 @@ import {
     ArcUtils,
     BezierUtils,
     QuadraticUtils,
-    BatchPart,
-    FILL_COMMANDS,
-    BATCH_POOL,
-    DRAW_CALL_POOL
+    BatchPart
 } from './utils';
+import type { IShapeBuildCommand } from './utils/IShapeBuildCommand';
 
 export const graphicsUtils = {
-    buildPoly,
-    buildCircle,
-    buildRectangle,
-    buildRoundedRectangle,
+    buildPoly: buildPoly as IShapeBuildCommand,
+    buildCircle: buildCircle as IShapeBuildCommand,
+    buildRectangle: buildRectangle as IShapeBuildCommand,
+    buildRoundedRectangle: buildRoundedRectangle as IShapeBuildCommand,
     buildLine,
     Star,
     ArcUtils,
     BezierUtils,
     QuadraticUtils,
-    BatchPart,
-    FILL_COMMANDS,
-    BATCH_POOL,
-    DRAW_CALL_POOL
+    BatchPart
 };

@@ -1,5 +1,5 @@
 import type { BaseTexture } from '@pixi/core';
-import { default as earcut } from 'earcut';
+import { default as earcut_2 } from 'earcut';
 import EventEmitter from 'eventemitter3';
 import { isMobile } from '@pixi/settings';
 import type { ITypedArray } from '@pixi/core';
@@ -199,7 +199,7 @@ export declare function determineCrossOrigin(url: string, loc?: Location): strin
 export declare type Dict<T> = {
     [key: string]: T;
 };
-export { earcut }
+export { earcut_2 as earcut }
 export { EventEmitter }
 
 export declare function getBufferType(array: ITypedArray): 'Float32Array' | 'Uint32Array' | 'Int32Array' | 'Uint16Array' | 'Uint8Array' | null;

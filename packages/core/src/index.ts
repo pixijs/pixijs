@@ -64,6 +64,23 @@ export const systems = {
     TextureSystem
 };
 
+export interface systems {
+    FilterSystem: FilterSystem;
+    BatchSystem: BatchSystem;
+    ContextSystem: ContextSystem;
+    FramebufferSystem: FramebufferSystem;
+    GeometrySystem: GeometrySystem;
+    MaskSystem: MaskSystem;
+    ScissorSystem: ScissorSystem;
+    StencilSystem: StencilSystem;
+    ProjectionSystem: ProjectionSystem;
+    RenderTextureSystem: RenderTextureSystem;
+    ShaderSystem: ShaderSystem;
+    StateSystem: StateSystem;
+    TextureGCSystem: TextureGCSystem;
+    TextureSystem: TextureSystem;
+}
+
 export * from './IRenderingContext';
 export * from './autoDetectRenderer';
 export * from './fragments';
