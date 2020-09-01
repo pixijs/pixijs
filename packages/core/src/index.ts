@@ -1,6 +1,7 @@
 import './settings';
 
 import {
+    INSTALLED,
     autoDetectResource,
     Resource,
     AbstractMultiResource,
@@ -14,6 +15,8 @@ import {
     VideoResource,
     ImageBitmapResource
 } from './textures/resources';
+
+import type { IResourcePlugin } from './textures/resources';
 
 import {
     FilterSystem,
@@ -33,6 +36,7 @@ import {
 } from './systems';
 
 export const resources = {
+    INSTALLED: INSTALLED as IResourcePlugin[],
     autoDetectResource,
     Resource,
     AbstractMultiResource,
@@ -46,6 +50,22 @@ export const resources = {
     VideoResource,
     ImageBitmapResource
 };
+
+export interface resources {
+    INSTALLED: IResourcePlugin[];
+    autoDetectResource: typeof autoDetectResource;
+    Resource: Resource;
+    AbstractMultiResource: AbstractMultiResource;
+    ArrayResource: ArrayResource;
+    BaseImageResource: BaseImageResource;
+    BufferResource: BufferResource;
+    CanvasResource: CanvasResource;
+    CubeResource: CubeResource;
+    ImageResource: ImageResource;
+    SVGResource: SVGResource;
+    VideoResource: VideoResource;
+    ImageBitmapResource: ImageBitmapResource;
+}
 
 export const systems = {
     FilterSystem,

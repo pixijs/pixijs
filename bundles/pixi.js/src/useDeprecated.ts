@@ -975,7 +975,7 @@ export function useDeprecated(this: any): void
             {
                 deprecation(v5, 'PIXI.BaseTexture.imageUrl property has been removed, use PIXI.BaseTexture.resource.url');
 
-                return (this.resource as resources.ImageResource)?.url;
+                return (this.resource as resources['ImageResource'])?.url;
             },
 
             set(this: BaseTexture, imageUrl: string): void
@@ -984,7 +984,7 @@ export function useDeprecated(this: any): void
 
                 if (this.resource)
                 {
-                    (this.resource as resources.ImageResource).url = imageUrl;
+                    (this.resource as resources['ImageResource']).url = imageUrl;
                 }
             },
         },
@@ -1001,7 +1001,7 @@ export function useDeprecated(this: any): void
             {
                 deprecation(v5, 'PIXI.BaseTexture.source property has been moved, use `PIXI.BaseTexture.resource.source`');
 
-                return (this.resource as resources.BaseImageResource).source;
+                return (this.resource as resources['BaseImageResource']).source;
             },
             set(this: BaseTexture, source: ImageSource): void
             {
@@ -1010,7 +1010,7 @@ export function useDeprecated(this: any): void
 
                 if (this.resource)
                 {
-                    (this.resource as resources.BaseImageResource).source = source;
+                    (this.resource as resources['BaseImageResource']).source = source;
                 }
             },
         },
@@ -1131,14 +1131,14 @@ export function useDeprecated(this: any): void
          * @see PIXI.resources.ImageResource#alphaMode
          */
         premultiplyAlpha: {
-            get(this: resources.ImageResource): boolean
+            get(this: resources['ImageResource']): boolean
             {
                 deprecation('5.2.0', 'PIXI.resources.ImageResource.premultiplyAlpha property '
                     + 'has been changed to `alphaMode`, see `PIXI.ALPHA_MODES`');
 
                 return this.alphaMode !== 0;
             },
-            set(this: resources.ImageResource, value: boolean): void
+            set(this: resources['ImageResource'], value: boolean): void
             {
                 deprecation('5.2.0', 'PIXI.resources.ImageResource.premultiplyAlpha property '
                     + 'has been changed to `alphaMode`, see `PIXI.ALPHA_MODES`');

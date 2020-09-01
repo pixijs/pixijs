@@ -2334,6 +2334,16 @@ export declare interface IRendererPlugins {
 export declare interface IRenderingContext extends WebGL2RenderingContext {
 }
 
+/**
+ * Shape of supported resource plugins
+ *
+ * @memberof PIXI.resources
+ */
+declare interface IResourcePlugin {
+    test(source: unknown, extension: string): boolean;
+    new (source: any, options?: any): Resource;
+}
+
 declare type IResourcePluginOptions = {
     [key: string]: any;
 };
@@ -3166,6 +3176,7 @@ declare abstract class Resource {
 }
 
 export declare const resources: {
+    INSTALLED: IResourcePlugin[];
     autoDetectResource: typeof autoDetectResource;
     Resource: typeof Resource;
     AbstractMultiResource: typeof AbstractMultiResource;
@@ -3179,6 +3190,22 @@ export declare const resources: {
     VideoResource: typeof VideoResource;
     ImageBitmapResource: typeof ImageBitmapResource;
 };
+
+export declare interface resources {
+    INSTALLED: IResourcePlugin[];
+    autoDetectResource: typeof autoDetectResource;
+    Resource: Resource;
+    AbstractMultiResource: AbstractMultiResource;
+    ArrayResource: ArrayResource;
+    BaseImageResource: BaseImageResource;
+    BufferResource: BufferResource;
+    CanvasResource: CanvasResource;
+    CubeResource: CubeResource;
+    ImageResource: ImageResource;
+    SVGResource: SVGResource;
+    VideoResource: VideoResource;
+    ImageBitmapResource: ImageBitmapResource;
+}
 
 /**
  * System plugin to the renderer to manage scissor rects (used for masks).

@@ -1,4 +1,5 @@
 import { BatchDrawCall } from '@pixi/core';
+import type { BatchDrawCall as BatchDrawCall_2 } from '@pixi/core/';
 import { BatchGeometry } from '@pixi/core';
 import { BLEND_MODES } from '@pixi/constants';
 import { Bounds } from '@pixi/display';
@@ -909,6 +910,9 @@ export declare const graphicsUtils: {
     BezierUtils: typeof BezierUtils;
     QuadraticUtils: typeof QuadraticUtils;
     BatchPart: typeof BatchPart;
+    FILL_COMMANDS: Record<SHAPES, IShapeBuildCommand>;
+    BATCH_POOL: BatchPart[];
+    DRAW_CALL_POOL: BatchDrawCall_2[];
 };
 
 declare interface IArcLikeShape {

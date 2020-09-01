@@ -134,7 +134,7 @@ export class Spritesheet
          */
         this.data = data;
 
-        const resource = this.baseTexture.resource as resources.ImageResource;
+        const resource = this.baseTexture.resource as resources['ImageResource'];
 
         /**
          * The resolution of the spritesheet.
