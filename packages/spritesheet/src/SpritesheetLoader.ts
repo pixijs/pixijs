@@ -4,13 +4,13 @@ import { LoaderResource } from '@pixi/loaders';
 import type { Loader, ILoaderResource } from '@pixi/loaders';
 
 /**
- * {@link PIXI.Loader Loader} middleware for loading texture atlases that have been created with
+ * {@link PIXI.Loader} middleware for loading texture atlases that have been created with
  * TexturePacker or similar JSON-based spritesheet.
  *
  * This middleware automatically generates Texture resources.
  *
  * If you're using Webpack or other bundlers and plan on bundling the atlas' JSON,
- * use the {@link PIXI.Spritesheet Spritesheet} class to directly parse the JSON.
+ * use the {@link PIXI.Spritesheet} class to directly parse the JSON.
  *
  * The Loader's image Resource name is automatically appending with `"_image"`.
  * If the Loader resource with this name is already loaded, the Loader will skip parsing the
