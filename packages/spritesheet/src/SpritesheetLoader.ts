@@ -12,9 +12,9 @@ import type { Loader, ILoaderResource } from '@pixi/loaders';
  * If you're using Webpack or other bundlers and plan on bundling the atlas' JSON,
  * use the {@link PIXI.Spritesheet} class to directly parse the JSON.
  *
- * The Loader's image Resource name is automatically appending with `"_image"`.
- * If the Loader resource with this name is already loaded, the Loader will skip parsing the
- * Spritesheet. The code below will generate an internal LoaderResource called `"myatlas_image"`.
+ * The Loader's image Resource name is automatically appended with `"_image"`.
+ * If a Resource with this name is already loaded, the Loader will skip parsing the
+ * Spritesheet. The code below will generate an internal Loader Resource called `"myatlas_image"`.
  *
  * @example
  * loader.add('myatlas', 'path/to/myatlas.json');
