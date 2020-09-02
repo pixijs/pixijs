@@ -22,7 +22,7 @@ import type { Loader, ILoaderResource } from '@pixi/loaders';
  *   loader.resources.myatlas; // atlas JSON resource
  *   loader.resources.myatlas_image; // atlas Image resource
  * });
- * 
+ *
  * @class
  * @memberof PIXI
  * @implements PIXI.ILoaderPlugin
