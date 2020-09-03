@@ -285,6 +285,13 @@ export class ContextSystem extends System
     {
         const attributes = gl.getContextAttributes();
 
+        const isWebGl2 = gl instanceof window.WebGL2RenderingContext;
+
+        if (isWebGl2)
+        {
+            this.webGLVersion = 2;
+        }
+
         // this is going to be fairly simple for now.. but at least we have room to grow!
         if (!attributes.stencil)
         {
@@ -294,7 +301,7 @@ export class ContextSystem extends System
         }
 
         const hasuint32
-            = ('WebGL2RenderingContext' in window && gl instanceof window.WebGL2RenderingContext)
+            = ('WebGL2RenderingContext' in window && isWebGl2)
             || !!(gl as WebGLRenderingContext).getExtension('OES_element_index_uint');
 
         this.supports.uint32Indices = hasuint32;
