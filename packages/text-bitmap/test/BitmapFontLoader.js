@@ -28,8 +28,6 @@ describe('PIXI.BitmapFontLoader', function ()
     {
         const resolveURL = (url) => path.resolve(this.resources, url);
 
-        BitmapFontLoader.add();
-
         this.resources = path.join(__dirname, 'resources');
         this.fontXML = null;
         this.fontTXT = null;

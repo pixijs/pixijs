@@ -17,16 +17,6 @@ import type { Texture } from '@pixi/core';
 export class BitmapFontLoader
 {
     /**
-     * Called when the plugin is installed.
-     *
-     * @see PIXI.Loader.registerPlugin
-     */
-    public static add(): void
-    {
-        LoaderResource.setExtensionXhrType('fnt', LoaderResource.XHR_RESPONSE_TYPE.DOCUMENT);
-    }
-
-    /**
      * Called after a resource is loaded.
      * @see PIXI.Loader.loaderMiddleware
      * @param {PIXI.LoaderResource} resource
