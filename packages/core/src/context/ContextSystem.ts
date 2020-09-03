@@ -285,7 +285,7 @@ export class ContextSystem extends System
     {
         const attributes = gl.getContextAttributes();
 
-        const isWebGl2 = gl instanceof window.WebGL2RenderingContext;
+        const isWebGl2 = 'WebGL2RenderingContext' in window && gl instanceof window.WebGL2RenderingContext;
 
         if (isWebGl2)
         {
@@ -300,9 +300,7 @@ export class ContextSystem extends System
             /* eslint-enable max-len, no-console */
         }
 
-        const hasuint32
-            = ('WebGL2RenderingContext' in window && isWebGl2)
-            || !!(gl as WebGLRenderingContext).getExtension('OES_element_index_uint');
+        const hasuint32 = isWebGl2 || !!(gl as WebGLRenderingContext).getExtension('OES_element_index_uint');
 
         this.supports.uint32Indices = hasuint32;
 
