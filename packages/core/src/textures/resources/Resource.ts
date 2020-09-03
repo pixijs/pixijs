@@ -10,7 +10,7 @@ import type { GLTexture } from '../GLTexture';
  * Uploading of a base texture to the GPU is required.
  *
  * @class
- * @memberof PIXI.resources
+ * @memberof PIXI
  */
 export abstract class Resource
 {

@@ -1,10 +1,9 @@
-const { Renderer, Shader, resources, Geometry, UniformGroup, BaseTexture } = require('../');
-const { CanvasResource } = resources;
+const { Renderer, Shader, CanvasResource, Geometry, UniformGroup, BaseTexture } = require('../');
 const { skipHello } = require('@pixi/utils');
 
 skipHello();
 
-describe('PIXI.systems.ShaderSystem', function ()
+describe('PIXI.ShaderSystem', function ()
 {
     const vertexSrc = `
 attribute vec2 aVertexPosition;
@@ -31,7 +30,7 @@ uniform sampler2D uSampler1;
 void main() {
 
     gl_FragColor = mix( texture2D(uSampler1, vUvs), texture2D(uSampler2, vUvs), 0.5) ;
- 
+
 }`;
 
     function createTexture(w, h)

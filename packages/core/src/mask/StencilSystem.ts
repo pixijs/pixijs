@@ -8,7 +8,7 @@ import type { IMaskTarget, MaskData } from './MaskData';
  *
  * @class
  * @extends PIXI.System
- * @memberof PIXI.systems
+ * @memberof PIXI
  */
 export class StencilSystem extends AbstractMaskSystem
 {

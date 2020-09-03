@@ -1,8 +1,7 @@
-const { resources } = require('../');
-const { ArrayResource, ImageResource } = resources;
+const { ArrayResource, ImageResource } = require('../');
 const { join } = require('path');
 
-describe('PIXI.resources.ArrayResource', function ()
+describe('PIXI.ArrayResource', function ()
 {
     before(function ()
     {

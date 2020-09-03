@@ -7,8 +7,8 @@ import { BaseImageResource } from './BaseImageResource';
 /**
  * Resource type for HTMLCanvasElement.
  * @class
- * @extends PIXI.resources.BaseImageResource
- * @memberof PIXI.resources
+ * @extends PIXI.BaseImageResource
+ * @memberof PIXI
  * @param {HTMLCanvasElement} source - Canvas element to use
  */
 export class CanvasResource extends BaseImageResource

@@ -41,7 +41,7 @@ export interface BaseTexture extends GlobalMixins.BaseTexture, EventEmitter {}
  * @class
  * @extends PIXI.utils.EventEmitter
  * @memberof PIXI
- * @param {PIXI.resources.Resource|string|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement} [resource=null] -
+ * @param {PIXI.Resource|string|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement} [resource=null] -
  *        The current resource to use, for things that aren't Resource objects, will be converted
  *        into a Resource.
  * @param {Object} [options] - Collection of options
@@ -57,7 +57,7 @@ export interface BaseTexture extends GlobalMixins.BaseTexture, EventEmitter {}
  * @param {number} [options.height=0] - Height of the texture
  * @param {number} [options.resolution] - Resolution of the base texture
  * @param {object} [options.resourceOptions] - Optional resource options,
- *        see {@link PIXI.resources.autoDetectResource autoDetectResource}
+ *        see {@link PIXI.autoDetectResource autoDetectResource}
  */
 export class BaseTexture extends EventEmitter
 {
@@ -285,7 +285,7 @@ export class BaseTexture extends EventEmitter
          * be one resource per BaseTexture, but textures can share
          * resources.
          *
-         * @member {PIXI.resources.Resource}
+         * @member {PIXI.Resource}
          * @readonly
          */
         this.resource = null;
@@ -489,7 +489,7 @@ export class BaseTexture extends EventEmitter
     /**
      * Sets the resource if it wasn't set. Throws error if resource already present
      *
-     * @param {PIXI.resources.Resource} resource - that is managing this BaseTexture
+     * @param {PIXI.Resource} resource - that is managing this BaseTexture
      * @returns {PIXI.BaseTexture} this
      */
     setResource(resource: Resource): this

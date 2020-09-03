@@ -12,7 +12,7 @@ import type { Renderer } from '../Renderer';
  *
  * @class
  * @extends PIXI.System
- * @memberof PIXI.systems
+ * @memberof PIXI
  */
 export class TextureSystem extends System
 {
