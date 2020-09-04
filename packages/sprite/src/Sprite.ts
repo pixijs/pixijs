@@ -443,10 +443,10 @@ export class Sprite extends Container
     /**
      * Gets the local bounds of the sprite object.
      *
-     * @param {PIXI.Rectangle} [rect] - The output rectangle.
+     * @param {PIXI.Rectangle} [rect] - Optional output rectangle.
      * @return {PIXI.Rectangle} The bounds.
      */
-    public getLocalBounds(rect: Rectangle): Rectangle
+    public getLocalBounds(rect?: Rectangle): Rectangle
     {
         // we can do a fast local bounds if the sprite has no children!
         if (this.children.length === 0)
@@ -610,14 +610,14 @@ export class Sprite extends Container
     }
 
     /**
-     * The anchor sets the origin point of the text. The default value is taken from the {@link PIXI.Texture|Texture}
+     * The anchor sets the origin point of the sprite. The default value is taken from the {@link PIXI.Texture|Texture}
      * and passed to the constructor.
      *
-     * The default is `(0,0)`, this means the text's origin is the top left.
+     * The default is `(0,0)`, this means the sprite's origin is the top left.
      *
-     * Setting the anchor to `(0.5,0.5)` means the text's origin is centered.
+     * Setting the anchor to `(0.5,0.5)` means the sprite's origin is centered.
      *
-     * Setting the anchor to `(1,1)` would mean the text's origin point will be the bottom right corner.
+     * Setting the anchor to `(1,1)` would mean the sprite's origin point will be the bottom right corner.
      *
      * If you pass only single parameter, it will set both x and y to the same value as shown in the example below.
      *

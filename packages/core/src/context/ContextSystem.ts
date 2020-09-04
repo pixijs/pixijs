@@ -15,7 +15,7 @@ export interface ISupportDict {
  *
  * @class
  * @extends PIXI.System
- * @memberof PIXI.systems
+ * @memberof PIXI
  */
 export class ContextSystem extends System
 {
@@ -146,8 +146,9 @@ export class ContextSystem extends System
     /**
      * Helper class to create a WebGL Context
      *
-     * @param canvas {HTMLCanvasElement} the canvas element that we will get the context from
-     * @param options {object} An options object that gets passed in to the canvas element containing the context attributes
+     * @param {HTMLCanvasElement} canvas - the canvas element that we will get the context from
+     * @param {object} options - An options object that gets passed in to the canvas element containing the
+     *    context attributes
      * @see https://developer.mozilla.org/en/docs/Web/API/HTMLCanvasElement/getContext
      * @return {WebGLRenderingContext} the WebGL context
      */
@@ -284,6 +285,13 @@ export class ContextSystem extends System
     {
         const attributes = gl.getContextAttributes();
 
+        const isWebGl2 = 'WebGL2RenderingContext' in window && gl instanceof window.WebGL2RenderingContext;
+
+        if (isWebGl2)
+        {
+            this.webGLVersion = 2;
+        }
+
         // this is going to be fairly simple for now.. but at least we have room to grow!
         if (!attributes.stencil)
         {
@@ -292,9 +300,7 @@ export class ContextSystem extends System
             /* eslint-enable max-len, no-console */
         }
 
-        const hasuint32
-            = ('WebGL2RenderingContext' in window && gl instanceof window.WebGL2RenderingContext)
-            || !!(gl as WebGLRenderingContext).getExtension('OES_element_index_uint');
+        const hasuint32 = isWebGl2 || !!(gl as WebGLRenderingContext).getExtension('OES_element_index_uint');
 
         this.supports.uint32Indices = hasuint32;
 

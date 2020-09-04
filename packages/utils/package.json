@@ -1,6 +1,6 @@
 {
   "name": "@pixi/utils",
-  "version": "5.3.0",
+  "version": "5.3.2",
   "main": "lib/utils.js",
   "module": "lib/utils.es.js",
   "bundle": "dist/utils.js",
@@ -25,9 +25,10 @@
     "dist"
   ],
   "dependencies": {
-    "@pixi/constants": "5.3.0",
-    "@pixi/settings": "5.3.0",
-    "earcut": "^2.1.5",
+    "@pixi/constants": "5.3.2",
+    "@pixi/settings": "5.3.2",
+    "css-color-names": "^1.0.1",
+    "earcut": "^2.2.2",
     "eventemitter3": "^3.1.0",
     "url": "^0.11.0"
   },

@@ -8,7 +8,7 @@ import type { MaskData } from './MaskData';
  *
  * @class
  * @extends PIXI.System
- * @memberof PIXI.systems
+ * @memberof PIXI
  */
 export class ScissorSystem extends AbstractMaskSystem
 {

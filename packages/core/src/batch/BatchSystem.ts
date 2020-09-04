@@ -9,7 +9,7 @@ import type { BatchTextureArray } from './BatchTextureArray';
  *
  * @class
  * @extends PIXI.System
- * @memberof PIXI.systems
+ * @memberof PIXI
  */
 export class BatchSystem extends System
 {
@@ -77,7 +77,7 @@ export class BatchSystem extends System
      * Handy function for batch renderers: copies bound textures in first maxTextures locations to array
      * sets actual _batchLocation for them
      *
-     * @param {PIXI.BaseTexture[]} - arr copy destination
+     * @param {PIXI.BaseTexture[]} arr - arr copy destination
      * @param {number} maxTextures - number of copied elements
      */
     copyBoundTextures(arr: BaseTexture[], maxTextures: number): void

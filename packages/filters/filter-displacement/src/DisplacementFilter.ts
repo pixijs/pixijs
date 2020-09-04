@@ -65,7 +65,7 @@ export class DisplacementFilter extends Filter
     /**
      * Applies the filter.
      *
-     * @param {PIXI.systems.FilterSystem} filterManager - The manager.
+     * @param {PIXI.FilterSystem} filterManager - The manager.
      * @param {PIXI.RenderTexture} input - The input target.
      * @param {PIXI.RenderTexture} output - The output target.
      * @param {PIXI.CLEAR_MODES} clearMode - clearMode.

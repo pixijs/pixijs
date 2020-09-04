@@ -84,7 +84,7 @@ export class BitmapFont
      * @property {number} textureWidth=512
      * @property {number} textureHeight=512
      * @property {number} padding=4
-     * @property {string|string[]|string[][]} chars=PIXI.BitmapFont.ALPHANUMERIC
+     * @property {string|string[]|string[][]} chars = PIXI.BitmapFont.ALPHANUMERIC
      */
     public static readonly defaultOptions: IBitmapFontOptions = {
         resolution: 1,
@@ -163,7 +163,7 @@ export class BitmapFont
 
         // Convert the input Texture, Textures or object
         // into a page Texture lookup by "id"
-        for (const i in data.page)
+        for (let i = 0; i < data.page.length; i++)
         {
             const { id, file } = data.page[i];
 
@@ -172,7 +172,7 @@ export class BitmapFont
         }
 
         // parse letters
-        for (const i in data.char)
+        for (let i = 0; i < data.char.length; i++)
         {
             const { id, page } = data.char[i];
             let { x, y, width, height, xoffset, yoffset, xadvance } = data.char[i];
@@ -206,7 +206,7 @@ export class BitmapFont
         }
 
         // parse kernings
-        for (const i in data.kerning)
+        for (let i = 0; i < data.kerning.length; i++)
         {
             let { first, second, amount } = data.kerning[i];
 
@@ -311,7 +311,25 @@ export class BitmapFont
 
     /**
      * Generates a bitmap-font for the given style and character set. This does not support
-     * kernings yet.
+     * kernings yet. With `style` properties, only the following non-layout properties are used:
+     *
+     * - {@link PIXI.TextStyle#dropShadow|dropShadow}
+     * - {@link PIXI.TextStyle#dropShadowDistance|dropShadowDistance}
+     * - {@link PIXI.TextStyle#dropShadowColor|dropShadowColor}
+     * - {@link PIXI.TextStyle#dropShadowBlur|dropShadowBlur}
+     * - {@link PIXI.TextStyle#dropShadowAngle|dropShadowAngle}
+     * - {@link PIXI.TextStyle#fill|fill}
+     * - {@link PIXI.TextStyle#fillGradientStops|fillGradientStops}
+     * - {@link PIXI.TextStyle#fillGradientType|fillGradientType}
+     * - {@link PIXI.TextStyle#fontFamily|fontFamily}
+     * - {@link PIXI.TextStyle#fontSize|fontSize}
+     * - {@link PIXI.TextStyle#fontVariant|fontVariant}
+     * - {@link PIXI.TextStyle#fontWeight|fontWeight}
+     * - {@link PIXI.TextStyle#lineJoin|lineJoin}
+     * - {@link PIXI.TextStyle#miterLimit|miterLimit}
+     * - {@link PIXI.TextStyle#stroke|stroke}
+     * - {@link PIXI.TextStyle#strokeThickness|strokeThickness}
+     * - {@link PIXI.TextStyle#textBaseline|textBaseline}
      *
      * @param {string} name - The name of the custom font to use with BitmapText.
      * @param {object|PIXI.TextStyle} [style] - Style options to render with BitmapFont.
@@ -411,6 +429,8 @@ export class BitmapFont
                         + `too small for ${style.fontSize}px fonts`);
                 }
 
+                --i;
+
                 // Create new atlas once current has filled up
                 canvas = null;
                 context = null;
@@ -442,7 +462,7 @@ export class BitmapFont
             const id = metrics.text.charCodeAt(0);
 
             // Create a texture holding just the glyph
-            fontData.char[id] = {
+            fontData.char.push({
                 id,
                 page: textures.length - 1,
                 x: positionX / resolution,
@@ -454,7 +474,7 @@ export class BitmapFont
                 xadvance: Math.ceil(width
                         - (style.dropShadow ? style.dropShadowDistance : 0)
                         - (style.stroke ? style.strokeThickness : 0)),
-            };
+            });
 
             positionX += (textureGlyphWidth + (2 * padding)) * resolution;
             positionX = Math.ceil(positionX);
@@ -483,4 +503,3 @@ export class BitmapFont
  * @property {number} [textureWidth=512] - the width of the texture atlas
  * @property {number} [textureHeight=512] - the height of the texture atlas
  */
-

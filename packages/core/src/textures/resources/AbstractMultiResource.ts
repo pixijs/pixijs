@@ -9,8 +9,8 @@ import { autoDetectResource, IAutoDetectOptions } from './autoDetectResource';
  * Parent class for CubeResource and ArrayResource
  *
  * @class
- * @extends PIXI.resources.Resource
- * @memberof PIXI.resources
+ * @extends PIXI.Resource
+ * @memberof PIXI
  * @param {object} [options] Options to for Resource constructor
  * @param {number} [options.width] - Width of the resource
  * @param {number} [options.height] - Height of the resource
@@ -127,16 +127,16 @@ export abstract class AbstractMultiResource extends Resource
      *
      * @param {PIXI.BaseTexture} baseTexture
      * @param {number} index - Zero-based index of resource to set
-     * @return {PIXI.resources.AbstractMultiResource} Instance for chaining
+     * @return {PIXI.AbstractMultiResource} Instance for chaining
      */
     abstract addBaseTextureAt(baseTexture: BaseTexture, index: number): this;
 
     /**
      * Set a resource by ID
      *
-     * @param {PIXI.resources.Resource} resource
+     * @param {PIXI.Resource} resource
      * @param {number} index - Zero-based index of resource to set
-     * @return {PIXI.resources.ArrayResource} Instance for chaining
+     * @return {PIXI.ArrayResource} Instance for chaining
      */
     addResourceAt(resource: Resource, index: number): this
     {

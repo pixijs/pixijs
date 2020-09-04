@@ -80,11 +80,6 @@ export class RenderTexture extends Texture
             });
         }
 
-        /**
-         * The base texture object that this texture uses
-         *
-         * @member {PIXI.BaseTexture}
-         */
         super(baseRenderTexture, frame);
 
         this.legacyRenderer = _legacyRenderer;

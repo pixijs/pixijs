@@ -271,8 +271,8 @@ export class Extract implements IRendererPlugin
      * Takes premultiplied pixel data and produces regular pixel data
      *
      * @private
-     * @param pixels {number[] | Uint8Array | Uint8ClampedArray} array of pixel data
-     * @param out {number[] | Uint8Array | Uint8ClampedArray} output array
+     * @param {number[] | Uint8Array | Uint8ClampedArray} pixels - array of pixel data
+     * @param {number[] | Uint8Array | Uint8ClampedArray} out - output array
      */
     static arrayPostDivide(
         pixels: number[] | Uint8Array | Uint8ClampedArray, out: number[] | Uint8Array | Uint8ClampedArray

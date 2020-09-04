@@ -13,7 +13,7 @@ export function install(PIXI: PIXICore): void
         throw new Error('Unable to patch ShaderSystem, class not found.');
     }
 
-    const { ShaderSystem } = PIXI.systems;
+    const { ShaderSystem } = PIXI;
     let proceed = false;
 
     // Do a quick check to see if the patch is needed

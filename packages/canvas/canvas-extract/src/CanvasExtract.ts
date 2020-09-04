@@ -172,7 +172,7 @@ export class CanvasExtract
 }
 
 /**
- * @name PIXI.CanvasRenderer#extract
+ * @method PIXI.CanvasRenderer#extract
  * @type {PIXI.CanvasExtract}
  * @see PIXI.CanvasRenderer#plugins
  * @deprecated since 5.3.0
@@ -187,4 +187,3 @@ Object.defineProperty(CanvasRenderer.prototype, 'extract',
         },
     }
 );
-

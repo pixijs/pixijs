@@ -28,6 +28,7 @@ export interface IBaseTextureOptions {
     target?: TARGETS;
     resolution?: number;
     resourceOptions?: any;
+    pixiIdPrefix?: string;
 }
 
 export interface BaseTexture extends GlobalMixins.BaseTexture, EventEmitter {}
@@ -40,7 +41,7 @@ export interface BaseTexture extends GlobalMixins.BaseTexture, EventEmitter {}
  * @class
  * @extends PIXI.utils.EventEmitter
  * @memberof PIXI
- * @param {PIXI.resources.Resource|string|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement} [resource=null]
+ * @param {PIXI.Resource|string|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement} [resource=null] -
  *        The current resource to use, for things that aren't Resource objects, will be converted
  *        into a Resource.
  * @param {Object} [options] - Collection of options
@@ -56,7 +57,7 @@ export interface BaseTexture extends GlobalMixins.BaseTexture, EventEmitter {}
  * @param {number} [options.height=0] - Height of the texture
  * @param {number} [options.resolution] - Resolution of the base texture
  * @param {object} [options.resourceOptions] - Optional resource options,
- *        see {@link PIXI.resources.autoDetectResource autoDetectResource}
+ *        see {@link PIXI.autoDetectResource autoDetectResource}
  */
 export class BaseTexture extends EventEmitter
 {
@@ -284,7 +285,7 @@ export class BaseTexture extends EventEmitter
          * be one resource per BaseTexture, but textures can share
          * resources.
          *
-         * @member {PIXI.resources.Resource}
+         * @member {PIXI.Resource}
          * @readonly
          */
         this.resource = null;
@@ -488,7 +489,7 @@ export class BaseTexture extends EventEmitter
     /**
      * Sets the resource if it wasn't set. Throws error if resource already present
      *
-     * @param {PIXI.resources.Resource} resource - that is managing this BaseTexture
+     * @param {PIXI.Resource} resource - that is managing this BaseTexture
      * @returns {PIXI.BaseTexture} this
      */
     setResource(resource: Resource): this
@@ -607,7 +608,8 @@ export class BaseTexture extends EventEmitter
      * @static
      * @param {string|HTMLImageElement|HTMLCanvasElement|SVGElement|HTMLVideoElement} source - The
      *        source to create base texture from.
-     * @param {object} [options] See {@link PIXI.BaseTexture}'s constructor for options.
+     * @param {object} [options] - See {@link PIXI.BaseTexture}'s constructor for options.
+     * @param {string} [options.pixiIdPrefix=pixiid] - If a source has no id, this is the prefix of the generated id
      * @param {boolean} [strict] - Enforce strict-mode, see {@link PIXI.settings.STRICT_TEXTURE_CACHE}.
      * @returns {PIXI.BaseTexture} The new base texture.
      */
@@ -625,7 +627,9 @@ export class BaseTexture extends EventEmitter
         {
             if (!(source as any)._pixiId)
             {
-                (source as any)._pixiId = `pixiid_${uid()}`;
+                const prefix = (options && options.pixiIdPrefix) || 'pixiid';
+
+                (source as any)._pixiId = `${prefix}_${uid()}`;
             }
 
             cacheId = (source as any)._pixiId;
@@ -657,7 +661,7 @@ export class BaseTexture extends EventEmitter
      *        is provided, a new Float32Array is created.
      * @param {number} width - Width of the resource
      * @param {number} height - Height of the resource
-     * @param {object} [options] See {@link PIXI.BaseTexture}'s constructor for options.
+     * @param {object} [options] - See {@link PIXI.BaseTexture}'s constructor for options.
      * @return {PIXI.BaseTexture} The resulting new BaseTexture
      */
     static fromBuffer(buffer: Float32Array|Uint8Array,

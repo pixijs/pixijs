@@ -6,6 +6,22 @@ import type { CanvasRenderer } from '@pixi/canvas-renderer';
 let warned = false;
 
 /**
+ * Cached tint value so we can tell when the tint is changed.
+ * @memberof PIXI.Mesh#
+ * @member {number} _cachedTint
+ * @protected
+ */
+Mesh.prototype._cachedTint = 0xFFFFFF;
+
+/**
+ * Cached tinted texture.
+ * @memberof PIXI.Mesh#
+ * @member {HTMLCanvasElement} _tintedCanvas
+ * @protected
+ */
+Mesh.prototype._tintedCanvas = null;
+
+/**
  * Renders the object using the Canvas renderer
  *
  * @private
