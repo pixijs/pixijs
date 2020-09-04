@@ -167,91 +167,91 @@ export class Renderer extends AbstractRenderer
 
         /**
          * Mask system instance
-         * @member {PIXI.systems.MaskSystem} mask
+         * @member {PIXI.MaskSystem} mask
          * @memberof PIXI.Renderer#
          * @readonly
          */
         this.addSystem(MaskSystem, 'mask')
             /**
              * Context system instance
-             * @member {PIXI.systems.ContextSystem} context
+             * @member {PIXI.ContextSystem} context
              * @memberof PIXI.Renderer#
              * @readonly
              */
             .addSystem(ContextSystem, 'context')
             /**
              * State system instance
-             * @member {PIXI.systems.StateSystem} state
+             * @member {PIXI.StateSystem} state
              * @memberof PIXI.Renderer#
              * @readonly
              */
             .addSystem(StateSystem, 'state')
             /**
              * Shader system instance
-             * @member {PIXI.systems.ShaderSystem} shader
+             * @member {PIXI.ShaderSystem} shader
              * @memberof PIXI.Renderer#
              * @readonly
              */
             .addSystem(ShaderSystem, 'shader')
             /**
              * Texture system instance
-             * @member {PIXI.systems.TextureSystem} texture
+             * @member {PIXI.TextureSystem} texture
              * @memberof PIXI.Renderer#
              * @readonly
              */
             .addSystem(TextureSystem, 'texture')
             /**
              * Geometry system instance
-             * @member {PIXI.systems.GeometrySystem} geometry
+             * @member {PIXI.GeometrySystem} geometry
              * @memberof PIXI.Renderer#
              * @readonly
              */
             .addSystem(GeometrySystem, 'geometry')
             /**
              * Framebuffer system instance
-             * @member {PIXI.systems.FramebufferSystem} framebuffer
+             * @member {PIXI.FramebufferSystem} framebuffer
              * @memberof PIXI.Renderer#
              * @readonly
              */
             .addSystem(FramebufferSystem, 'framebuffer')
             /**
              * Scissor system instance
-             * @member {PIXI.systems.ScissorSystem} scissor
+             * @member {PIXI.ScissorSystem} scissor
              * @memberof PIXI.Renderer#
              * @readonly
              */
             .addSystem(ScissorSystem, 'scissor')
             /**
              * Stencil system instance
-             * @member {PIXI.systems.StencilSystem} stencil
+             * @member {PIXI.StencilSystem} stencil
              * @memberof PIXI.Renderer#
              * @readonly
              */
             .addSystem(StencilSystem, 'stencil')
             /**
              * Projection system instance
-             * @member {PIXI.systems.ProjectionSystem} projection
+             * @member {PIXI.ProjectionSystem} projection
              * @memberof PIXI.Renderer#
              * @readonly
              */
             .addSystem(ProjectionSystem, 'projection')
             /**
              * Texture garbage collector system instance
-             * @member {PIXI.systems.TextureGCSystem} textureGC
+             * @member {PIXI.TextureGCSystem} textureGC
              * @memberof PIXI.Renderer#
              * @readonly
              */
             .addSystem(TextureGCSystem, 'textureGC')
             /**
              * Filter system instance
-             * @member {PIXI.systems.FilterSystem} filter
+             * @member {PIXI.FilterSystem} filter
              * @memberof PIXI.Renderer#
              * @readonly
              */
             .addSystem(FilterSystem, 'filter')
             /**
              * RenderTexture system instance
-             * @member {PIXI.systems.RenderTextureSystem} renderTexture
+             * @member {PIXI.RenderTextureSystem} renderTexture
              * @memberof PIXI.Renderer#
              * @readonly
              */
@@ -259,7 +259,7 @@ export class Renderer extends AbstractRenderer
 
             /**
              * Batch system instance
-             * @member {PIXI.systems.BatchSystem} batch
+             * @member {PIXI.BatchSystem} batch
              * @memberof PIXI.Renderer#
              * @readonly
              */

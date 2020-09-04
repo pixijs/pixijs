@@ -1,7 +1,6 @@
 const { BaseTextureCache, TextureCache } = require('@pixi/utils');
-const { BaseTexture, Texture, RenderTexture, resources } = require('../');
+const { BaseTexture, Texture, RenderTexture, ImageResource, SVGResource, VideoResource } = require('../');
 const { settings } = require('@pixi/settings');
-const { ImageResource, SVGResource, VideoResource } = resources;
 
 const URL = 'foo.png';
 const NAME = 'foo';

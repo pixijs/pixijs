@@ -1,6 +1,6 @@
 const { Renderer } = require('../');
 
-describe('PIXI.systems.FramebufferSystem', function ()
+describe('PIXI.FramebufferSystem', function ()
 {
     before(function ()
     {

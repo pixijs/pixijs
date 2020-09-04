@@ -24,7 +24,7 @@ export type IAutoDetectOptions = ISize
 /**
  * Shape of supported resource plugins
  *
- * @memberof PIXI.resources
+ * @memberof PIXI
  */
 export interface IResourcePlugin
 {
@@ -33,9 +33,9 @@ export interface IResourcePlugin
 }
 
 /**
- * Collection of installed resource types, class must extend {@link PIXI.resources.Resource}.
+ * Collection of installed resource types, class must extend {@link PIXI.Resource}.
  * @example
- * class CustomResource extends PIXI.resources.Resource {
+ * class CustomResource extends PIXI.Resource {
  *   // MUST have source, options constructor signature
  *   // for auto-detected resources to be created.
  *   constructor(source, options) {
@@ -51,9 +51,9 @@ export interface IResourcePlugin
  *   }
  * }
  * // Install the new resource type
- * PIXI.resources.INSTALLED.push(CustomResource);
+ * PIXI.INSTALLED.push(CustomResource);
  *
- * @memberof PIXI.resources
+ * @memberof PIXI
  * @type {Array<PIXI.IResourcePlugin>}
  * @static
  * @readonly
@@ -66,13 +66,13 @@ export const INSTALLED: Array<IResourcePlugin> = [];
  * are auto-detectable must have a static `test` method and a constructor
  * with the arguments `(source, options?)`. Currently, the supported
  * resources for auto-detection include:
- *  - {@link PIXI.resources.ImageResource}
- *  - {@link PIXI.resources.CanvasResource}
- *  - {@link PIXI.resources.VideoResource}
- *  - {@link PIXI.resources.SVGResource}
- *  - {@link PIXI.resources.BufferResource}
+ *  - {@link PIXI.ImageResource}
+ *  - {@link PIXI.CanvasResource}
+ *  - {@link PIXI.VideoResource}
+ *  - {@link PIXI.SVGResource}
+ *  - {@link PIXI.BufferResource}
  * @static
- * @memberof PIXI.resources
+ * @memberof PIXI
  * @function autoDetectResource
  * @param {string|*} source - Resource source, this can be the URL to the resource,
  *        a typed-array (for BufferResource), HTMLVideoElement, SVG data-uri
@@ -88,7 +88,7 @@ export const INSTALLED: Array<IResourcePlugin> = [];
  * @param {boolean} [options.autoPlay=true] - Video option to start playing video immediately
  * @param {number} [options.updateFPS=0] - Video option to update how many times a second the
  *        texture should be updated from the video. Leave at 0 to update at every render
- * @return {PIXI.resources.Resource} The created resource.
+ * @return {PIXI.Resource} The created resource.
  */
 export function autoDetectResource(source: unknown, options?: IAutoDetectOptions): Resource
 {

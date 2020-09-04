@@ -1,7 +1,6 @@
-const { resources } = require('../');
-const { ImageBitmapResource } = resources;
+const { ImageBitmapResource } = require('../');
 
-describe('PIXI.resources.ImageBitmapResource', function ()
+describe('PIXI.ImageBitmapResource', function ()
 {
     it('should create new dimension-less resource', async function ()
     {

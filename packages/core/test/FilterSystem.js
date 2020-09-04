@@ -2,7 +2,7 @@ const { CLEAR_MODES } = require('@pixi/constants');
 const { Rectangle, Matrix } = require('@pixi/math');
 const { Renderer, Filter } = require('../');
 
-describe('PIXI.systems.FilterSystem', function ()
+describe('PIXI.FilterSystem', function ()
 {
     function onePixelObject(worldTransform)
     {

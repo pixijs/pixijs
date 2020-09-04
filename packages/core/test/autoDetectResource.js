@@ -1,13 +1,11 @@
-const { resources } = require('../');
-const {
-    autoDetectResource,
+const { autoDetectResource,
     INSTALLED,
     CanvasResource,
     ImageResource,
     VideoResource,
-    SVGResource } = resources;
+    SVGResource } = require('../');
 
-describe('PIXI.resources.autoDetectResource', function ()
+describe('PIXI.autoDetectResource', function ()
 {
     it('should have api', function ()
     {

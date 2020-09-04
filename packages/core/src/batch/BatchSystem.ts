@@ -9,7 +9,7 @@ import type { BatchTextureArray } from './BatchTextureArray';
  *
  * @class
  * @extends PIXI.System
- * @memberof PIXI.systems
+ * @memberof PIXI
  */
 export class BatchSystem extends System
 {

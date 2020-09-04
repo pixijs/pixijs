@@ -12,8 +12,8 @@ import type { GLTexture } from '../GLTexture';
 /**
  * Buffer resource with data of typed array.
  * @class
- * @extends PIXI.resources.Resource
- * @memberof PIXI.resources
+ * @extends PIXI.Resource
+ * @memberof PIXI
  */
 export class BufferResource extends Resource
 {

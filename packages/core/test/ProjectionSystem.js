@@ -1,7 +1,7 @@
 const { Renderer } = require('../');
 const { Point, Rectangle } = require('@pixi/math');
 
-describe('PIXI.systems.ProjectionSystem', function ()
+describe('PIXI.ProjectionSystem', function ()
 {
     before(function ()
     {
