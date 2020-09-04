@@ -11,11 +11,11 @@ import type { ISize } from '@pixi/math';
  * A resource that contains a number of sources.
  *
  * @class
- * @extends PIXI.resources.Resource
- * @memberof PIXI.resources
+ * @extends PIXI.Resource
+ * @memberof PIXI
  * @param {number|Array<*>} source - Number of items in array or the collection
  *        of image URLs to use. Can also be resources, image elements, canvas, etc.
- * @param {object} [options] - Options to apply to {@link PIXI.resources.autoDetectResource}
+ * @param {object} [options] - Options to apply to {@link PIXI.autoDetectResource}
  * @param {number} [options.width] - Width of the resource
  * @param {number} [options.height] - Height of the resource
  */
@@ -51,7 +51,7 @@ export class ArrayResource extends AbstractMultiResource
      *
      * @param {PIXI.BaseTexture} baseTexture
      * @param {number} index - Zero-based index of resource to set
-     * @return {PIXI.resources.ArrayResource} Instance for chaining
+     * @return {PIXI.ArrayResource} Instance for chaining
      */
     addBaseTextureAt(baseTexture: BaseTexture, index: number): this
     {

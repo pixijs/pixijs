@@ -19,7 +19,7 @@ const defaultSyncData = { textureCount: 0 };
  * System plugin to the renderer to manage shaders.
  *
  * @class
- * @memberof PIXI.systems
+ * @memberof PIXI
  * @extends PIXI.System
  */
 export class ShaderSystem extends System

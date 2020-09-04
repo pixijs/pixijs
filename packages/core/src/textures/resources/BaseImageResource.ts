@@ -8,8 +8,8 @@ import type { GLTexture } from '../GLTexture';
 /**
  * Base for all the image/canvas resources
  * @class
- * @extends PIXI.resources.Resource
- * @memberof PIXI.resources
+ * @extends PIXI.Resource
+ * @memberof PIXI
  */
 export class BaseImageResource extends Resource
 {

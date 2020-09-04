@@ -18,7 +18,7 @@ const DEPTH_MASK = 5;
  *
  * @class
  * @extends PIXI.System
- * @memberof PIXI.systems
+ * @memberof PIXI
  */
 export class StateSystem extends System
 {

@@ -1,4 +1,4 @@
-import { AbstractRenderer, resources } from '@pixi/core';
+import { AbstractRenderer, CanvasResource } from '@pixi/core';
 import { CanvasRenderTarget, sayHello, rgb2hex, hex2string } from '@pixi/utils';
 import { CanvasMaskManager } from './utils/CanvasMaskManager';
 import { mapCanvasBlendModesToPixi } from './utils/mapCanvasBlendModesToPixi';
@@ -227,7 +227,7 @@ export class CanvasRenderer extends AbstractRenderer
                     renderTexture.height,
                     renderTexture.resolution
                 );
-                renderTexture.resource = new resources.CanvasResource(renderTexture._canvasRenderTarget.canvas);
+                renderTexture.resource = new CanvasResource(renderTexture._canvasRenderTarget.canvas);
                 renderTexture.valid = true;
             }
 

@@ -1,7 +1,7 @@
 const { WRAP_MODES } = require('@pixi/constants');
 const { Renderer, BaseTexture } = require('../');
 
-describe('PIXI.systems.TextureSystem', function ()
+describe('PIXI.TextureSystem', function ()
 {
     function createTempTexture()
     {
