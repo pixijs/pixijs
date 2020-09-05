@@ -191,7 +191,7 @@ export declare class AbstractBatchRenderer extends ObjectRenderer {
  *
  * @class
  * @extends PIXI.System
- * @memberof PIXI.systems
+ * @memberof PIXI
  */
 declare class AbstractMaskSystem extends System {
     protected maskStack: Array<MaskData>;
@@ -229,13 +229,13 @@ declare class AbstractMaskSystem extends System {
  * Parent class for CubeResource and ArrayResource
  *
  * @class
- * @extends PIXI.resources.Resource
- * @memberof PIXI.resources
+ * @extends PIXI.Resource
+ * @memberof PIXI
  * @param {object} [options] Options to for Resource constructor
  * @param {number} [options.width] - Width of the resource
  * @param {number} [options.height] - Height of the resource
  */
-declare abstract class AbstractMultiResource extends Resource {
+export declare abstract class AbstractMultiResource extends Resource {
     readonly length: number;
     items: Array<BaseTexture>;
     itemDirtyIds: Array<number>;
@@ -260,15 +260,15 @@ declare abstract class AbstractMultiResource extends Resource {
      *
      * @param {PIXI.BaseTexture} baseTexture
      * @param {number} index - Zero-based index of resource to set
-     * @return {PIXI.resources.AbstractMultiResource} Instance for chaining
+     * @return {PIXI.AbstractMultiResource} Instance for chaining
      */
     abstract addBaseTextureAt(baseTexture: BaseTexture, index: number): this;
     /**
      * Set a resource by ID
      *
-     * @param {PIXI.resources.Resource} resource
+     * @param {PIXI.Resource} resource
      * @param {number} index - Zero-based index of resource to set
-     * @return {PIXI.resources.ArrayResource} Instance for chaining
+     * @return {PIXI.ArrayResource} Instance for chaining
      */
     addResourceAt(resource: Resource, index: number): this;
     /**
@@ -398,15 +398,15 @@ export declare abstract class AbstractRenderer extends EventEmitter {
  * A resource that contains a number of sources.
  *
  * @class
- * @extends PIXI.resources.Resource
- * @memberof PIXI.resources
+ * @extends PIXI.Resource
+ * @memberof PIXI
  * @param {number|Array<*>} source - Number of items in array or the collection
  *        of image URLs to use. Can also be resources, image elements, canvas, etc.
- * @param {object} [options] - Options to apply to {@link PIXI.resources.autoDetectResource}
+ * @param {object} [options] - Options to apply to {@link PIXI.autoDetectResource}
  * @param {number} [options.width] - Width of the resource
  * @param {number} [options.height] - Height of the resource
  */
-declare class ArrayResource extends AbstractMultiResource {
+export declare class ArrayResource extends AbstractMultiResource {
     constructor(source: number | Array<any>, options?: ISize);
     /**
      * Set a baseTexture by ID,
@@ -414,7 +414,7 @@ declare class ArrayResource extends AbstractMultiResource {
      *
      * @param {PIXI.BaseTexture} baseTexture
      * @param {number} index - Zero-based index of resource to set
-     * @return {PIXI.resources.ArrayResource} Instance for chaining
+     * @return {PIXI.ArrayResource} Instance for chaining
      */
     addBaseTextureAt(baseTexture: BaseTexture, index: number): this;
     /**
@@ -515,13 +515,13 @@ export declare function autoDetectRenderer(options: IRendererOptionsAuto): Abstr
  * are auto-detectable must have a static `test` method and a constructor
  * with the arguments `(source, options?)`. Currently, the supported
  * resources for auto-detection include:
- *  - {@link PIXI.resources.ImageResource}
- *  - {@link PIXI.resources.CanvasResource}
- *  - {@link PIXI.resources.VideoResource}
- *  - {@link PIXI.resources.SVGResource}
- *  - {@link PIXI.resources.BufferResource}
+ *  - {@link PIXI.ImageResource}
+ *  - {@link PIXI.CanvasResource}
+ *  - {@link PIXI.VideoResource}
+ *  - {@link PIXI.SVGResource}
+ *  - {@link PIXI.BufferResource}
  * @static
- * @memberof PIXI.resources
+ * @memberof PIXI
  * @function autoDetectResource
  * @param {string|*} source - Resource source, this can be the URL to the resource,
  *        a typed-array (for BufferResource), HTMLVideoElement, SVG data-uri
@@ -537,17 +537,17 @@ export declare function autoDetectRenderer(options: IRendererOptionsAuto): Abstr
  * @param {boolean} [options.autoPlay=true] - Video option to start playing video immediately
  * @param {number} [options.updateFPS=0] - Video option to update how many times a second the
  *        texture should be updated from the video. Leave at 0 to update at every render
- * @return {PIXI.resources.Resource} The created resource.
+ * @return {PIXI.Resource} The created resource.
  */
-declare function autoDetectResource(source: unknown, options?: IAutoDetectOptions): Resource;
+export declare function autoDetectResource(source: unknown, options?: IAutoDetectOptions): Resource;
 
 /**
  * Base for all the image/canvas resources
  * @class
- * @extends PIXI.resources.Resource
- * @memberof PIXI.resources
+ * @extends PIXI.Resource
+ * @memberof PIXI
  */
-declare class BaseImageResource extends Resource {
+export declare class BaseImageResource extends Resource {
     source: ImageSource;
     noSubImage: boolean;
     /**
@@ -671,7 +671,7 @@ export declare interface BaseTexture extends GlobalMixins.BaseTexture, EventEmit
  * @class
  * @extends PIXI.utils.EventEmitter
  * @memberof PIXI
- * @param {PIXI.resources.Resource|string|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement} [resource=null] -
+ * @param {PIXI.Resource|string|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement} [resource=null] -
  *        The current resource to use, for things that aren't Resource objects, will be converted
  *        into a Resource.
  * @param {Object} [options] - Collection of options
@@ -687,7 +687,7 @@ export declare interface BaseTexture extends GlobalMixins.BaseTexture, EventEmit
  * @param {number} [options.height=0] - Height of the texture
  * @param {number} [options.resolution] - Resolution of the base texture
  * @param {object} [options.resourceOptions] - Optional resource options,
- *        see {@link PIXI.resources.autoDetectResource autoDetectResource}
+ *        see {@link PIXI.autoDetectResource autoDetectResource}
  */
 export declare class BaseTexture extends EventEmitter {
     width: number;
@@ -774,7 +774,7 @@ export declare class BaseTexture extends EventEmitter {
     /**
      * Sets the resource if it wasn't set. Throws error if resource already present
      *
-     * @param {PIXI.resources.Resource} resource - that is managing this BaseTexture
+     * @param {PIXI.Resource} resource - that is managing this BaseTexture
      * @returns {PIXI.BaseTexture} this
      */
     setResource(resource: Resource): this;
@@ -976,9 +976,9 @@ export declare class BatchShaderGenerator {
  *
  * @class
  * @extends PIXI.System
- * @memberof PIXI.systems
+ * @memberof PIXI
  */
-declare class BatchSystem extends System {
+export declare class BatchSystem extends System {
     readonly emptyRenderer: ObjectRenderer;
     currentRenderer: ObjectRenderer;
     /**
@@ -1088,10 +1088,10 @@ export { Buffer_2 as Buffer }
 /**
  * Buffer resource with data of typed array.
  * @class
- * @extends PIXI.resources.Resource
- * @memberof PIXI.resources
+ * @extends PIXI.Resource
+ * @memberof PIXI
  */
-declare class BufferResource extends Resource {
+export declare class BufferResource extends Resource {
     data: Float32Array | Uint8Array | Uint32Array;
     /**
      * @param {Float32Array|Uint8Array|Uint32Array} source - Source buffer
@@ -1129,11 +1129,11 @@ declare class BufferResource extends Resource {
 /**
  * Resource type for HTMLCanvasElement.
  * @class
- * @extends PIXI.resources.BaseImageResource
- * @memberof PIXI.resources
+ * @extends PIXI.BaseImageResource
+ * @memberof PIXI
  * @param {HTMLCanvasElement} source - Canvas element to use
  */
-declare class CanvasResource extends BaseImageResource {
+export declare class CanvasResource extends BaseImageResource {
     /**
      * Used to auto-detect the type of resource.
      *
@@ -1151,9 +1151,9 @@ export declare function checkMaxIfStatementsInShader(maxIfs: number, gl: IRender
  *
  * @class
  * @extends PIXI.System
- * @memberof PIXI.systems
+ * @memberof PIXI
  */
-declare class ContextSystem extends System {
+export declare class ContextSystem extends System {
     webGLVersion: number;
     readonly supports: ISupportDict;
     protected CONTEXT_UID: number;
@@ -1250,9 +1250,9 @@ declare class ContextSystem extends System {
  * Resource for a CubeTexture which contains six resources.
  *
  * @class
- * @extends PIXI.resources.ArrayResource
- * @memberof PIXI.resources
- * @param {Array<string|PIXI.resources.Resource>} [source] - Collection of URLs or resources
+ * @extends PIXI.ArrayResource
+ * @memberof PIXI
+ * @param {Array<string|PIXI.Resource>} [source] - Collection of URLs or resources
  *        to use as the sides of the cube.
  * @param {object} [options] - ImageResource options
  * @param {number} [options.width] - Width of resource
@@ -1261,7 +1261,7 @@ declare class ContextSystem extends System {
  * @param {number} [options.linkBaseTexture=true] - In case BaseTextures are supplied,
  *   whether to copy them or use
  */
-declare class CubeResource extends AbstractMultiResource {
+export declare class CubeResource extends AbstractMultiResource {
     items: ArrayFixed<BaseTexture, 6>;
     linkBaseTexture: boolean;
     constructor(source?: ArrayFixed<string | Resource, 6>, options?: ICubeResourceOptions);
@@ -1282,7 +1282,7 @@ declare class CubeResource extends AbstractMultiResource {
     /**
      * Number of texture sides to store for CubeResources
      *
-     * @name PIXI.resources.CubeResource.SIDES
+     * @name PIXI.CubeResource.SIDES
      * @static
      * @member {number}
      * @default 6
@@ -1459,7 +1459,7 @@ export declare class Filter extends Shader {
     /**
      * Applies the filter
      *
-     * @param {PIXI.systems.FilterSystem} filterManager - The renderer to retrieve the filter from
+     * @param {PIXI.FilterSystem} filterManager - The renderer to retrieve the filter from
      * @param {PIXI.RenderTexture} input - The input render target.
      * @param {PIXI.RenderTexture} output - The target to output to.
      * @param {PIXI.CLEAR_MODES} clearMode - Should the output be cleared before rendering to it.
@@ -1528,10 +1528,10 @@ export declare class FilterState {
  * System plugin to the renderer to manage the filters.
  *
  * @class
- * @memberof PIXI.systems
+ * @memberof PIXI
  * @extends PIXI.System
  */
-declare class FilterSystem extends System {
+export declare class FilterSystem extends System {
     readonly defaultFilterStack: Array<FilterState>;
     statePool: Array<FilterState>;
     texturePool: RenderTexturePool;
@@ -1698,9 +1698,9 @@ export declare class Framebuffer {
  *
  * @class
  * @extends PIXI.System
- * @memberof PIXI.systems
+ * @memberof PIXI
  */
-declare class FramebufferSystem extends System {
+export declare class FramebufferSystem extends System {
     readonly managedFramebuffers: Array<Framebuffer>;
     current: Framebuffer;
     viewport: Rectangle;
@@ -1952,9 +1952,9 @@ export declare class Geometry {
  *
  * @class
  * @extends PIXI.System
- * @memberof PIXI.systems
+ * @memberof PIXI
  */
-declare class GeometrySystem extends System {
+export declare class GeometrySystem extends System {
     hasVao: boolean;
     hasInstance: boolean;
     canUseUInt32ElementIndex: boolean;
@@ -2142,7 +2142,7 @@ export declare interface IAttributeData {
     name: string;
 }
 
-declare type IAutoDetectOptions = ISize | ICubeResourceOptions | IImageResourceOptions | ISVGResourceOptions | IVideoResourceOptions | IResourcePluginOptions;
+export declare type IAutoDetectOptions = ISize | ICubeResourceOptions | IImageResourceOptions | ISVGResourceOptions | IVideoResourceOptions | IResourcePluginOptions;
 
 export declare interface IBaseTextureOptions {
     alphaMode?: ALPHA_MODES;
@@ -2183,7 +2183,7 @@ export declare interface IBatchFactoryOptions {
 /**
  * Constructor options for CubeResource
  */
-declare interface ICubeResourceOptions extends ISize {
+export declare interface ICubeResourceOptions extends ISize {
     autoLoad?: boolean;
     linkBaseTexture?: boolean;
 }
@@ -2198,7 +2198,7 @@ export declare class IGLUniformData {
     value: number | boolean | Float32Array | Int32Array | Uint32Array | boolean[];
 }
 
-declare interface IImageResourceOptions {
+export declare interface IImageResourceOptions {
     autoLoad?: boolean;
     createBitmap?: boolean;
     crossorigin?: boolean | string;
@@ -2208,11 +2208,11 @@ declare interface IImageResourceOptions {
 /**
  * Resource type for ImageBitmap.
  * @class
- * @extends PIXI.resources.BaseImageResource
- * @memberof PIXI.resources
+ * @extends PIXI.BaseImageResource
+ * @memberof PIXI
  * @param {ImageBitmap} source - Image element to use
  */
-declare class ImageBitmapResource extends BaseImageResource {
+export declare class ImageBitmapResource extends BaseImageResource {
     /**
      * Used to auto-detect the type of resource.
      *
@@ -2226,10 +2226,10 @@ declare class ImageBitmapResource extends BaseImageResource {
 /**
  * Resource type for HTMLImageElement.
  * @class
- * @extends PIXI.resources.BaseImageResource
- * @memberof PIXI.resources
+ * @extends PIXI.BaseImageResource
+ * @memberof PIXI
  */
-declare class ImageResource extends BaseImageResource {
+export declare class ImageResource extends BaseImageResource {
     url: string;
     private _load;
     private _process;
@@ -2296,6 +2296,34 @@ export declare interface IMaskTarget extends IFilterTarget {
     render(renderer: Renderer): void;
 }
 
+/**
+ * Collection of installed resource types, class must extend {@link PIXI.Resource}.
+ * @example
+ * class CustomResource extends PIXI.Resource {
+ *   // MUST have source, options constructor signature
+ *   // for auto-detected resources to be created.
+ *   constructor(source, options) {
+ *     super();
+ *   }
+ *   upload(renderer, baseTexture, glTexture) {
+ *     // upload with GL
+ *     return true;
+ *   }
+ *   // used to auto-detect resource
+ *   static test(source, extension) {
+ *     return extension === 'xyz'|| source instanceof SomeClass;
+ *   }
+ * }
+ * // Install the new resource type
+ * PIXI.INSTALLED.push(CustomResource);
+ *
+ * @memberof PIXI
+ * @type {Array<PIXI.IResourcePlugin>}
+ * @static
+ * @readonly
+ */
+export declare const INSTALLED: Array<IResourcePlugin>;
+
 export declare interface IRendererOptions extends GlobalMixins.IRendererOptions {
     width?: number;
     height?: number;
@@ -2337,14 +2365,14 @@ export declare interface IRenderingContext extends WebGL2RenderingContext {
 /**
  * Shape of supported resource plugins
  *
- * @memberof PIXI.resources
+ * @memberof PIXI
  */
-declare interface IResourcePlugin {
+export declare interface IResourcePlugin {
     test(source: unknown, extension: string): boolean;
     new (source: any, options?: any): Resource;
 }
 
-declare type IResourcePluginOptions = {
+export declare type IResourcePluginOptions = {
     [key: string]: any;
 };
 
@@ -2354,11 +2382,11 @@ export declare interface ISpriteMaskTarget extends IMaskTarget {
     anchor: Point;
 }
 
-declare interface ISupportDict {
+export declare interface ISupportDict {
     uint32Indices: boolean;
 }
 
-declare interface ISVGResourceOptions {
+export declare interface ISVGResourceOptions {
     source?: string;
     scale?: number;
     width?: number;
@@ -2393,19 +2421,19 @@ export declare interface IUniformParser {
     code(name: string, uniform: any): string;
 }
 
-declare interface IUnloadableTexture {
+export declare interface IUnloadableTexture {
     _texture: Texture | RenderTexture;
     children: IUnloadableTexture[];
 }
 
-declare interface IVideoResourceOptions {
+export declare interface IVideoResourceOptions {
     autoLoad?: boolean;
     autoPlay?: boolean;
     updateFPS?: number;
     crossorigin?: boolean | string;
 }
 
-declare interface IVideoResourceOptionsElement {
+export declare interface IVideoResourceOptionsElement {
     src: string;
     mime: string;
 }
@@ -2450,9 +2478,9 @@ export declare class MaskData {
  *
  * @class
  * @extends PIXI.System
- * @memberof PIXI.systems
+ * @memberof PIXI
  */
-declare class MaskSystem extends System {
+export declare class MaskSystem extends System {
     enableScissor: boolean;
     protected readonly alphaMaskPool: Array<SpriteMaskFilter[]>;
     protected alphaMaskIndex: number;
@@ -2637,9 +2665,9 @@ export declare class Program {
  *
  * @class
  * @extends PIXI.System
- * @memberof PIXI.systems
+ * @memberof PIXI
  */
-declare class ProjectionSystem extends System {
+export declare class ProjectionSystem extends System {
     destinationFrame: Rectangle;
     sourceFrame: Rectangle;
     defaultFrame: Rectangle;
@@ -3029,9 +3057,9 @@ export declare class RenderTexturePool {
  *
  * @class
  * @extends PIXI.System
- * @memberof PIXI.systems
+ * @memberof PIXI
  */
-declare class RenderTextureSystem extends System {
+export declare class RenderTextureSystem extends System {
     clearColor: number[];
     defaultMaskStack: Array<MaskData>;
     current: RenderTexture;
@@ -3071,9 +3099,9 @@ declare class RenderTextureSystem extends System {
  * Uploading of a base texture to the GPU is required.
  *
  * @class
- * @memberof PIXI.resources
+ * @memberof PIXI
  */
-declare abstract class Resource {
+export declare abstract class Resource {
     destroyed: boolean;
     internal: boolean;
     protected _width: number;
@@ -3175,46 +3203,14 @@ declare abstract class Resource {
     static test(_source: unknown, _extension?: string): boolean;
 }
 
-export declare const resources: {
-    INSTALLED: IResourcePlugin[];
-    autoDetectResource: typeof autoDetectResource;
-    Resource: typeof Resource;
-    AbstractMultiResource: typeof AbstractMultiResource;
-    ArrayResource: typeof ArrayResource;
-    BaseImageResource: typeof BaseImageResource;
-    BufferResource: typeof BufferResource;
-    CanvasResource: typeof CanvasResource;
-    CubeResource: typeof CubeResource;
-    ImageResource: typeof ImageResource;
-    SVGResource: typeof SVGResource;
-    VideoResource: typeof VideoResource;
-    ImageBitmapResource: typeof ImageBitmapResource;
-};
-
-export declare interface resources {
-    INSTALLED: IResourcePlugin[];
-    autoDetectResource: typeof autoDetectResource;
-    Resource: Resource;
-    AbstractMultiResource: AbstractMultiResource;
-    ArrayResource: ArrayResource;
-    BaseImageResource: BaseImageResource;
-    BufferResource: BufferResource;
-    CanvasResource: CanvasResource;
-    CubeResource: CubeResource;
-    ImageResource: ImageResource;
-    SVGResource: SVGResource;
-    VideoResource: VideoResource;
-    ImageBitmapResource: ImageBitmapResource;
-}
-
 /**
  * System plugin to the renderer to manage scissor rects (used for masks).
  *
  * @class
  * @extends PIXI.System
- * @memberof PIXI.systems
+ * @memberof PIXI
  */
-declare class ScissorSystem extends AbstractMaskSystem {
+export declare class ScissorSystem extends AbstractMaskSystem {
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
@@ -3275,10 +3271,10 @@ export declare class Shader {
  * System plugin to the renderer to manage shaders.
  *
  * @class
- * @memberof PIXI.systems
+ * @memberof PIXI
  * @extends PIXI.System
  */
-declare class ShaderSystem extends System {
+export declare class ShaderSystem extends System {
     protected gl: IRenderingContext;
     shader: Shader;
     program: Program;
@@ -3379,7 +3375,7 @@ export declare class SpriteMaskFilter extends Filter {
     /**
      * Applies the filter
      *
-     * @param {PIXI.systems.FilterSystem} filterManager - The renderer to retrieve the filter from
+     * @param {PIXI.FilterSystem} filterManager - The renderer to retrieve the filter from
      * @param {PIXI.RenderTexture} input - The input render target.
      * @param {PIXI.RenderTexture} output - The target to output to.
      * @param {PIXI.CLEAR_MODES} clearMode - Should the output be cleared before rendering to it.
@@ -3473,9 +3469,9 @@ export declare class State {
  *
  * @class
  * @extends PIXI.System
- * @memberof PIXI.systems
+ * @memberof PIXI
  */
-declare class StateSystem extends System {
+export declare class StateSystem extends System {
     stateId: number;
     polygonOffset: number;
     blendMode: BLEND_MODES;
@@ -3590,9 +3586,9 @@ declare class StateSystem extends System {
  *
  * @class
  * @extends PIXI.System
- * @memberof PIXI.systems
+ * @memberof PIXI
  */
-declare class StencilSystem extends AbstractMaskSystem {
+export declare class StencilSystem extends AbstractMaskSystem {
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
@@ -3626,8 +3622,8 @@ declare class StencilSystem extends AbstractMaskSystem {
 /**
  * Resource type for SVG elements and graphics.
  * @class
- * @extends PIXI.resources.BaseImageResource
- * @memberof PIXI.resources
+ * @extends PIXI.BaseImageResource
+ * @memberof PIXI
  * @param {string} source - Base64 encoded SVG element or URL for SVG file.
  * @param {object} [options] - Options to use
  * @param {number} [options.scale=1] - Scale to apply to SVG. Overridden by...
@@ -3635,7 +3631,7 @@ declare class StencilSystem extends AbstractMaskSystem {
  * @param {number} [options.height] - Rasterize SVG this high. Aspect ratio preserved if width not specified.
  * @param {boolean} [options.autoLoad=true] - Start loading right away.
  */
-declare class SVGResource extends BaseImageResource {
+export declare class SVGResource extends BaseImageResource {
     readonly svg: string;
     readonly scale: number;
     readonly _overrideWidth: number;
@@ -3677,7 +3673,7 @@ declare class SVGResource extends BaseImageResource {
      *
      * @static
      * @constant {RegExp|string} SVG_SIZE
-     * @memberof PIXI.resources.SVGResource
+     * @memberof PIXI.SVGResource
      * @example &lt;svg width="100" height="100"&gt;&lt;/svg&gt;
      */
     static SVG_SIZE: RegExp;
@@ -3700,40 +3696,6 @@ export declare class System {
      * Generic destroy methods to be overridden by the subclass
      */
     destroy(): void;
-}
-
-export declare const systems: {
-    FilterSystem: typeof FilterSystem;
-    BatchSystem: typeof BatchSystem;
-    ContextSystem: typeof ContextSystem;
-    FramebufferSystem: typeof FramebufferSystem;
-    GeometrySystem: typeof GeometrySystem;
-    MaskSystem: typeof MaskSystem;
-    ScissorSystem: typeof ScissorSystem;
-    StencilSystem: typeof StencilSystem;
-    ProjectionSystem: typeof ProjectionSystem;
-    RenderTextureSystem: typeof RenderTextureSystem;
-    ShaderSystem: typeof ShaderSystem;
-    StateSystem: typeof StateSystem;
-    TextureGCSystem: typeof TextureGCSystem;
-    TextureSystem: typeof TextureSystem;
-};
-
-export declare interface systems {
-    FilterSystem: FilterSystem;
-    BatchSystem: BatchSystem;
-    ContextSystem: ContextSystem;
-    FramebufferSystem: FramebufferSystem;
-    GeometrySystem: GeometrySystem;
-    MaskSystem: MaskSystem;
-    ScissorSystem: ScissorSystem;
-    StencilSystem: StencilSystem;
-    ProjectionSystem: ProjectionSystem;
-    RenderTextureSystem: RenderTextureSystem;
-    ShaderSystem: ShaderSystem;
-    StateSystem: StateSystem;
-    TextureGCSystem: TextureGCSystem;
-    TextureSystem: TextureSystem;
 }
 
 export declare interface Texture extends GlobalMixins.Texture, EventEmitter {
@@ -3936,10 +3898,10 @@ export declare class Texture extends EventEmitter {
  * ensuring that it does not get clogged up with textures that are no longer being used.
  *
  * @class
- * @memberof PIXI.systems
+ * @memberof PIXI
  * @extends PIXI.System
  */
-declare class TextureGCSystem extends System {
+export declare class TextureGCSystem extends System {
     count: number;
     checkCount: number;
     maxIdle: number;
@@ -4029,9 +3991,9 @@ export declare type TextureSource = string | BaseTexture | ImageSource;
  *
  * @class
  * @extends PIXI.System
- * @memberof PIXI.systems
+ * @memberof PIXI
  */
-declare class TextureSystem extends System {
+export declare class TextureSystem extends System {
     boundTextures: BaseTexture[];
     managedTextures: Array<BaseTexture>;
     protected CONTEXT_UID: number;
@@ -4179,8 +4141,8 @@ declare type UniformsSyncCallback = (...args: any[]) => void;
 /**
  * Resource type for HTMLVideoElement.
  * @class
- * @extends PIXI.resources.BaseImageResource
- * @memberof PIXI.resources
+ * @extends PIXI.BaseImageResource
+ * @memberof PIXI
  * @param {HTMLVideoElement|object|string|Array<string|object>} source - Video element to use.
  * @param {object} [options] - Options to use
  * @param {boolean} [options.autoLoad=true] - Start loading the video immediately
@@ -4189,7 +4151,7 @@ declare type UniformsSyncCallback = (...args: any[]) => void;
  * Leave at 0 to update at every render.
  * @param {boolean} [options.crossorigin=true] - Load image using cross origin
  */
-declare class VideoResource extends BaseImageResource {
+export declare class VideoResource extends BaseImageResource {
     protected _autoUpdate: boolean;
     protected _isConnectedToTicker: boolean;
     protected _updateFPS: number;

@@ -1,8 +1,8 @@
 import type { BLEND_MODES } from '@pixi/constants';
 import { CLEAR_MODES } from '@pixi/constants';
 import { Filter } from '@pixi/core';
+import type { FilterSystem } from '@pixi/core';
 import type { RenderTexture } from '@pixi/core';
-import type { systems } from '@pixi/core';
 
 /**
  * The BlurFilter applies a Gaussian blur to an object.
@@ -27,12 +27,12 @@ export declare class BlurFilter extends Filter {
     /**
      * Applies the filter.
      *
-     * @param {PIXI.systems.FilterSystem} filterManager - The manager.
+     * @param {PIXI.FilterSystem} filterManager - The manager.
      * @param {PIXI.RenderTexture} input - The input target.
      * @param {PIXI.RenderTexture} output - The output target.
      * @param {PIXI.CLEAR_MODES} clearMode - How to clear
      */
-    apply(filterManager: systems['FilterSystem'], input: RenderTexture, output: RenderTexture, clearMode: CLEAR_MODES): void;
+    apply(filterManager: FilterSystem, input: RenderTexture, output: RenderTexture, clearMode: CLEAR_MODES): void;
     protected updatePadding(): void;
     /**
      * Sets the strength of both the blurX and blurY properties simultaneously
@@ -107,12 +107,12 @@ export declare class BlurFilterPass extends Filter {
     /**
      * Applies the filter.
      *
-     * @param {PIXI.systems.FilterSystem} filterManager - The manager.
+     * @param {PIXI.FilterSystem} filterManager - The manager.
      * @param {PIXI.RenderTexture} input - The input target.
      * @param {PIXI.RenderTexture} output - The output target.
      * @param {PIXI.CLEAR_MODES} clearMode - How to clear
      */
-    apply(filterManager: systems['FilterSystem'], input: RenderTexture, output: RenderTexture, clearMode: CLEAR_MODES): void;
+    apply(filterManager: FilterSystem, input: RenderTexture, output: RenderTexture, clearMode: CLEAR_MODES): void;
     /**
      * Sets the strength of both the blur.
      *

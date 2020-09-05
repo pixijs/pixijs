@@ -1,10 +1,10 @@
 import type { CLEAR_MODES } from '@pixi/constants';
 import { Filter } from '@pixi/core';
+import type { FilterSystem } from '@pixi/core';
 import type { ISpriteMaskTarget } from '@pixi/core';
 import { Matrix } from '@pixi/math';
 import { Point } from '@pixi/math';
 import type { RenderTexture } from '@pixi/core';
-import type { systems } from '@pixi/core';
 import type { Texture } from '@pixi/core';
 
 /**
@@ -37,12 +37,12 @@ export declare class DisplacementFilter extends Filter {
     /**
      * Applies the filter.
      *
-     * @param {PIXI.systems.FilterSystem} filterManager - The manager.
+     * @param {PIXI.FilterSystem} filterManager - The manager.
      * @param {PIXI.RenderTexture} input - The input target.
      * @param {PIXI.RenderTexture} output - The output target.
      * @param {PIXI.CLEAR_MODES} clearMode - clearMode.
      */
-    apply(filterManager: systems['FilterSystem'], input: RenderTexture, output: RenderTexture, clearMode: CLEAR_MODES): void;
+    apply(filterManager: FilterSystem, input: RenderTexture, output: RenderTexture, clearMode: CLEAR_MODES): void;
     /**
      * The texture used for the displacement map. Must be power of 2 sized texture.
      *
