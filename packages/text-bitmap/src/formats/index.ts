@@ -1,12 +1,12 @@
 import { TextFormat } from './TextFormat';
 import { XMLFormat } from './XMLFormat';
-import { XMLTextFormat } from './XMLTextFormat';
+import { XMLStringFormat } from './XMLStringFormat';
 
 // Registered formats, maybe make this extensible in the future?
 const formats = [
     TextFormat,
     XMLFormat,
-    XMLTextFormat,
+    XMLStringFormat,
 ] as const;
 
 /**

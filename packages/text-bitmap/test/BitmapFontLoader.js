@@ -28,6 +28,8 @@ describe('PIXI.BitmapFontLoader', function ()
     {
         const resolveURL = (url) => path.resolve(this.resources, url);
 
+        BitmapFontLoader.add();
+
         this.resources = path.join(__dirname, 'resources');
         this.fontXML = null;
         this.fontTXT = null;
@@ -64,6 +66,7 @@ describe('PIXI.BitmapFontLoader', function ()
         Promise.all([
             loadTxt('bmtxt-test.txt'),
             loadXML('font.fnt'),
+            loadTxt('font-text.fnt'),
             loadXML('font@0.5x.fnt'),
             loadImage('bmtxt-test.png'),
             loadImage('font.png'),
@@ -73,6 +76,7 @@ describe('PIXI.BitmapFontLoader', function ()
         ]).then(([
             fontTXT,
             fontXML,
+            fontText,
             fontScaledXML,
             fontTXTImage,
             fontImage,
@@ -83,6 +87,7 @@ describe('PIXI.BitmapFontLoader', function ()
         {
             this.fontTXT = fontTXT;
             this.fontXML = fontXML;
+            this.fontText = fontText;
             this.fontScaledXML = fontScaledXML;
             this.fontTXTImage = fontTXTImage;
             this.fontImage = fontImage;
@@ -506,5 +511,51 @@ describe('PIXI.BitmapFontLoader', function ()
 
             done();
         });
+    });
+
+    it('should properly register bitmap font based on text format', function (done)
+    {
+        const texture = Texture.from(this.fontImage);
+        const font = BitmapFont.install(this.fontText, texture);
+
+        expect(font).to.be.an.object;
+        expect(BitmapFont.available.fontText).to.equal(font);
+        expect(font).to.have.property('chars');
+        const charA = font.chars['A'.charCodeAt(0)];
+
+        expect(charA).to.exist;
+        expect(charA.texture.baseTexture.resource.source).to.equal(this.fontImage);
+        expect(charA.texture.frame.x).to.equal(2);
+        expect(charA.texture.frame.y).to.equal(2);
+        expect(charA.texture.frame.width).to.equal(19);
+        expect(charA.texture.frame.height).to.equal(20);
+        const charB = font.chars['B'.charCodeAt(0)];
+
+        expect(charB).to.exist;
+        expect(charB.texture.baseTexture.resource.source).to.equal(this.fontImage);
+        expect(charB.texture.frame.x).to.equal(2);
+        expect(charB.texture.frame.y).to.equal(24);
+        expect(charB.texture.frame.width).to.equal(15);
+        expect(charB.texture.frame.height).to.equal(20);
+        const charC = font.chars['C'.charCodeAt(0)];
+
+        expect(charC).to.exist;
+        expect(charC.texture.baseTexture.resource.source).to.equal(this.fontImage);
+        expect(charC.texture.frame.x).to.equal(23);
+        expect(charC.texture.frame.y).to.equal(2);
+        expect(charC.texture.frame.width).to.equal(18);
+        expect(charC.texture.frame.height).to.equal(20);
+        const charD = font.chars['D'.charCodeAt(0)];
+
+        expect(charD).to.exist;
+        expect(charD.texture.baseTexture.resource.source).to.equal(this.fontImage);
+        expect(charD.texture.frame.x).to.equal(19);
+        expect(charD.texture.frame.y).to.equal(24);
+        expect(charD.texture.frame.width).to.equal(17);
+        expect(charD.texture.frame.height).to.equal(20);
+        const charE = font.chars['E'.charCodeAt(0)];
+
+        expect(charE).to.be.undefined;
+        done();
     });
 });

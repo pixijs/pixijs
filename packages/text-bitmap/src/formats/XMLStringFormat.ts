@@ -7,7 +7,7 @@ import { XMLFormat } from './XMLFormat';
  * @class
  * @private
  */
-export class XMLTextFormat
+export class XMLStringFormat
 {
     /**
      * Check if resource refers to text xml font data.
@@ -19,7 +19,9 @@ export class XMLTextFormat
      */
     static test(data: unknown): boolean
     {
-        return typeof data === 'string' && data.indexOf('<font>\n  <info face=') === 0;
+        const xmlStringRegExp = new RegExp(/<font>(\s+)?<info\s+face=/);
+
+        return typeof data === 'string' && xmlStringRegExp.test(data);
     }
 
     /**
