@@ -3,8 +3,8 @@ import { BaseImageResource } from './BaseImageResource';
 /**
  * Resource type for ImageBitmap.
  * @class
- * @extends PIXI.resources.BaseImageResource
- * @memberof PIXI.resources
+ * @extends PIXI.BaseImageResource
+ * @memberof PIXI
  * @param {ImageBitmap} source - Image element to use
  */
 export class ImageBitmapResource extends BaseImageResource

@@ -57,7 +57,7 @@ export class SpriteMaskFilter extends Filter
     /**
      * Applies the filter
      *
-     * @param {PIXI.systems.FilterSystem} filterManager - The renderer to retrieve the filter from
+     * @param {PIXI.FilterSystem} filterManager - The renderer to retrieve the filter from
      * @param {PIXI.RenderTexture} input - The input render target.
      * @param {PIXI.RenderTexture} output - The target to output to.
      * @param {PIXI.CLEAR_MODES} clearMode - Should the output be cleared before rendering to it.

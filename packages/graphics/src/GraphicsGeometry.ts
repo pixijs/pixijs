@@ -25,8 +25,8 @@ import type { Circle, Ellipse, Polygon, Rectangle, RoundedRectangle, IPointData 
 import type { FillStyle } from './styles/FillStyle';
 import type { LineStyle } from './styles/LineStyle';
 
-/**
- * @description Complex shape type
+/*
+ * Complex shape type
  * @todo Move to Math shapes
  */
 type IShape = Circle | Ellipse | Polygon | Rectangle | RoundedRectangle;

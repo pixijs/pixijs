@@ -130,7 +130,7 @@ export function premultiplyTint(tint: number, alpha: number): number
  * @function premultiplyTintToRgba
  * @param {number} tint - input tint
  * @param {number} alpha - alpha param
- * @param {Float32Array} [out] output
+ * @param {Float32Array} [out] - output
  * @param {boolean} [premultiply=true] - do premultiply it
  * @returns {Float32Array} vec4 rgba
  */

@@ -207,38 +207,44 @@ export interface ILoaderPlugin {
  */
 
 /**
+ * Callback
  * @memberof PIXI.Loader
- * @callback loaderMiddleware
+ * @typedef {function} loaderMiddleware
  * @param {PIXI.LoaderResource} resource
  * @param {function} next
  */
 
 /**
+ * Dispatched when the loader begins to loading process.
+ * @name onStart
  * @memberof PIXI.Loader#
- * @description Dispatched when the loader begins to loading process.
- * @member {PIXI.Loader.ILoaderSignal} onStart
+ * @member {PIXI.Loader.ILoaderSignal}
  */
 
 /**
+ * Dispatched once per loaded or errored resource.
+ * @name onProgress
  * @memberof PIXI.Loader#
- * @description Dispatched once per loaded or errored resource.
  * @member {PIXI.Loader.ILoaderSignal} onProgress
  */
 
 /**
+ * Dispatched once per errored resource.
+ * @name onError
  * @memberof PIXI.Loader#
- * @description Dispatched once per errored resource.
- * @member {PIXI.Loader.ILoaderSignal} onError
+ * @member {PIXI.Loader.ILoaderSignal}
  */
 
 /**
+ * Dispatched once per loaded resource.
+ * @name onLoad
  * @memberof PIXI.Loader#
- * @description Dispatched once per loaded resource.
- * @member {PIXI.Loader.ILoaderSignal} onLoad
+ * @member {PIXI.Loader.ILoaderSignal}
  */
 
 /**
+ * Dispatched when completely loaded all resources.
+ * @name onComplete
  * @memberof PIXI.Loader#
- * @description Dispatched when completely loaded all resources.
- * @member {PIXI.Loader.ILoaderSignal} onComplete
+ * @member {PIXI.Loader.ILoaderSignal}
  */

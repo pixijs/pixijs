@@ -66,8 +66,8 @@ export abstract class AbstractRenderer extends EventEmitter
     _lastObjectRendered: DisplayObject;
 
     /**
-     * @param {string} system - The name of the system this renderer is for.
-     * @param {object} [options] - The optional renderer parameters.
+     * @param system - The name of the system this renderer is for.
+     * @param [options] - The optional renderer parameters.
      * @param {number} [options.width=800] - The width of the screen.
      * @param {number} [options.height=600] - The height of the screen.
      * @param {HTMLCanvasElement} [options.view] - The canvas to use as a view, optional.
@@ -258,8 +258,8 @@ export abstract class AbstractRenderer extends EventEmitter
      * Resizes the screen and canvas to the specified width and height.
      * Canvas dimensions are multiplied by resolution.
      *
-     * @param {number} screenWidth - The new width of the screen.
-     * @param {number} screenHeight - The new height of the screen.
+     * @param screenWidth - The new width of the screen.
+     * @param screenHeight - The new height of the screen.
      */
     resize(screenWidth: number, screenHeight: number): void
     {
@@ -289,12 +289,12 @@ export abstract class AbstractRenderer extends EventEmitter
      * Useful function that returns a texture of the display object that can then be used to create sprites
      * This can be quite useful if your displayObject is complicated and needs to be reused multiple times.
      *
-     * @param {PIXI.DisplayObject} displayObject - The displayObject the object will be generated from.
-     * @param {PIXI.SCALE_MODES} scaleMode - The scale mode of the texture.
-     * @param {number} resolution - The resolution / device pixel ratio of the texture being generated.
-     * @param {PIXI.Rectangle} [region] - The region of the displayObject, that shall be rendered,
+     * @param displayObject - The displayObject the object will be generated from.
+     * @param scaleMode - The scale mode of the texture.
+     * @param resolution - The resolution / device pixel ratio of the texture being generated.
+     * @param [region] - The region of the displayObject, that shall be rendered,
      *        if no region is specified, defaults to the local bounds of the displayObject.
-     * @return {PIXI.RenderTexture} A texture of the graphics object.
+     * @return A texture of the graphics object.
      */
     generateTexture(displayObject: DisplayObject,
         scaleMode?: SCALE_MODES, resolution?: number, region?: Rectangle): RenderTexture
@@ -327,7 +327,7 @@ export abstract class AbstractRenderer extends EventEmitter
     /**
      * Removes everything from the renderer and optionally removes the Canvas DOM element.
      *
-     * @param {boolean} [removeView=false] - Removes the Canvas element from the DOM.
+     * @param [removeView=false] - Removes the Canvas element from the DOM.
      */
     destroy(removeView?: boolean): void
     {

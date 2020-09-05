@@ -1,8 +1,7 @@
-const { resources, BaseTexture } = require('../');
-const { CubeResource } = resources;
+const { CubeResource, BaseTexture } = require('../');
 const path = require('path');
 
-describe('PIXI.resources.CubeResource', function ()
+describe('PIXI.CubeResource', function ()
 {
     before(function ()
     {

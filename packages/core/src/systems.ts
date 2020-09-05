@@ -1,7 +1,3 @@
-/**
- * Systems are individual components to the Renderer pipeline.
- * @namespace PIXI.systems
- */
 export * from './filters/FilterSystem';
 export * from './batch/BatchSystem';
 export * from './context/ContextSystem';

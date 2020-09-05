@@ -16,7 +16,7 @@ export interface IUnloadableTexture {
  * ensuring that it does not get clogged up with textures that are no longer being used.
  *
  * @class
- * @memberof PIXI.systems
+ * @memberof PIXI
  * @extends PIXI.System
  */
 export class TextureGCSystem extends System

@@ -5,7 +5,7 @@ import { TYPES } from '@pixi/constants';
 import type { DisplayObject } from '@pixi/display';
 import type { IParticleRendererProperty } from './ParticleRenderer';
 
-/**
+/*
  * @author Mat Groves
  *
  * Big thanks to the very clever Matt DesLauriers <mattdesl> https://github.com/mattdesl/

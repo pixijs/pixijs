@@ -5,9 +5,8 @@ import { settings } from '@pixi/settings';
  *
  * @see PIXI.Mesh2d#canvasPadding
  * @static
- * @name MESH_CANVAS_PADDING
  * @memberof PIXI.settings
- * @type {number}
+ * @member {number}
  * @default 0
  */
 settings.MESH_CANVAS_PADDING = 0;

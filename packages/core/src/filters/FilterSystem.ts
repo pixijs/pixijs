@@ -17,7 +17,7 @@ import type { Renderer } from '../Renderer';
  * System plugin to the renderer to manage the filters.
  *
  * @class
- * @memberof PIXI.systems
+ * @memberof PIXI
  * @extends PIXI.System
  */
 export class FilterSystem extends System
