@@ -1,4 +1,4 @@
-import { resources } from '@pixi/core';
+import { CompressedTextureResource } from '@pixi/core';
 import { INTERNAL_FORMATS, INTERNAL_FORMAT_TO_BYTES_PER_PIXEL } from '@pixi/constants';
 import { LoaderResource } from '@pixi/loaders';
 import { registerCompressedTextures } from './registerTextures';
@@ -272,7 +272,7 @@ export class DDSLoader
      * Parses the DDS file header, generates base-textures, and puts them into the texture
      * cache.
      */
-    private static parse(arrayBuffer: ArrayBuffer): resources.CompressedTextureResource[]
+    private static parse(arrayBuffer: ArrayBuffer): CompressedTextureResource[]
     {
         const data = new Uint32Array(arrayBuffer);
         const magicWord = data[0];
@@ -309,7 +309,7 @@ export class DDSLoader
                 const dataOffset = DDS_MAGIC_SIZE + DDS_HEADER_SIZE;
                 const texData = new Uint8Array(arrayBuffer, dataOffset);
 
-                const resource = new resources.CompressedTextureResource(texData, {
+                const resource = new CompressedTextureResource(texData, {
                     format: internalFormat,
                     width,
                     height,
@@ -392,7 +392,7 @@ export class DDSLoader
             }
 
             // Uint8Array -> CompressedTextureResource, and we're done!
-            return imageBuffers.map((buffer) => new resources.CompressedTextureResource(buffer, {
+            return imageBuffers.map((buffer) => new CompressedTextureResource(buffer, {
                 format: internalFormat,
                 width,
                 height,

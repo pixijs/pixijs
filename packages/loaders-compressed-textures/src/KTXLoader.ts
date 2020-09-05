@@ -1,5 +1,5 @@
 import { TYPES, INTERNAL_FORMAT_TO_BYTES_PER_PIXEL, FORMATS } from '@pixi/constants';
-import { resources } from '@pixi/core';
+import { CompressedTextureResource, CompressedLevelBuffer } from '@pixi/core';
 import { LoaderResource } from '@pixi/loaders';
 import { registerCompressedTextures } from './registerTextures';
 
@@ -180,7 +180,7 @@ export class KTXLoader
 
         const alignedWidth = (pixelWidth + 3) & ~3;
         const alignedHeight = (pixelHeight + 3) & ~3;
-        const imageBuffers = new Array<resources.CompressedLevelBuffer[]>(numberOfArrayElements);
+        const imageBuffers = new Array<CompressedLevelBuffer[]>(numberOfArrayElements);
         let imagePixels = pixelWidth * pixelHeight;
 
         if (glType === 0)
@@ -267,7 +267,7 @@ export class KTXLoader
         }
         else
         {
-            const imageResources = imageBuffers.map((levelBuffers) => new resources.CompressedTextureResource(null, {
+            const imageResources = imageBuffers.map((levelBuffers) => new CompressedTextureResource(null, {
                 format: glInternalFormat,
                 width: pixelWidth,
                 height: pixelHeight,

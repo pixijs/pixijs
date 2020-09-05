@@ -1,5 +1,5 @@
 import { INTERNAL_FORMATS, TYPES, MIPMAP_MODES, ALPHA_MODES, FORMATS } from '@pixi/constants';
-import { resources, BaseTexture, Texture } from '@pixi/core';
+import { BaseTexture, BufferResource, CompressedTextureResource, Texture } from '@pixi/core';
 import { Runner } from '@pixi/runner';
 import {
     BASIS_FORMATS,
@@ -13,9 +13,7 @@ import {
 import { TranscoderWorker } from './TranscoderWorker';
 import { ILoaderResource, LoaderResource } from '@pixi/loaders';
 
-const { CompressedTextureResource } = resources;
-
-type TranscodedResourcesArray = (Array<resources.CompressedTextureResource> | Array<resources.BufferResource>) & {
+type TranscodedResourcesArray = (Array<CompressedTextureResource> | Array<BufferResource>) & {
     basisFormat: BASIS_FORMATS
 };
 
@@ -213,7 +211,7 @@ export class BasisLoader
             const format = BASIS_FORMAT_TO_INTERNAL_FORMAT[response.basisFormat];
 
             // HINT: this.imageArray is CompressedTextureResource[]
-            imageResources = new Array<resources.CompressedTextureResource>(imageArray.length) as TranscodedResourcesArray;
+            imageResources = new Array<CompressedTextureResource>(imageArray.length) as TranscodedResourcesArray;
 
             for (let i = 0, j = imageArray.length; i < j; i++)
             {
@@ -229,7 +227,7 @@ export class BasisLoader
         else
         {
             // TODO: BufferResource does not support manual mipmapping.
-            imageResources = imageArray.map((image) => new resources.BufferResource(
+            imageResources = imageArray.map((image) => new BufferResource(
                 new Uint16Array(image.levelArray[0].levelBuffer.buffer), {
                     width: image.width,
                     height: image.height
@@ -260,7 +258,7 @@ export class BasisLoader
             ? BasisLoader.defaultRGBAFormat.basisFormat
             : BasisLoader.defaultRGBFormat.basisFormat;
         const basisFallbackFormat = BASIS_FORMATS.cTFRGB565;
-        const imageResources = new Array<resources.CompressedTextureResource | resources.BufferResource>(imageCount);
+        const imageResources = new Array<CompressedTextureResource | BufferResource>(imageCount);
 
         let fallbackMode = BasisLoader.fallbackMode;
 
@@ -336,7 +334,7 @@ export class BasisLoader
             else
             {
                 // TODO: BufferResource doesn't support manual mipmap levels
-                imageResource = new resources.BufferResource(
+                imageResource = new BufferResource(
                     new Uint16Array(imageLevels[0].levelBuffer.buffer), { width, height });
             }
 

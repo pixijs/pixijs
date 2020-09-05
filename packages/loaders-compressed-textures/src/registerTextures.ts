@@ -2,7 +2,7 @@ import { MIPMAP_MODES, ALPHA_MODES } from '@pixi/constants';
 import { BaseTexture, Texture } from '@pixi/core';
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import type { resources } from '@pixi/core';
+import type { CompressedTextureResource } from '@pixi/core';
 /* eslint-enable @typescript-eslint/no-unused-vars */
 
 /**
@@ -14,7 +14,7 @@ import type { resources } from '@pixi/core';
  * @param resources - the resources backing texture data
  * @ignore
  */
-export function registerCompressedTextures(url: string, resources: resources.CompressedTextureResource[]): void
+export function registerCompressedTextures(url: string, resources: CompressedTextureResource[]): void
 {
     if (!resources)
     {
