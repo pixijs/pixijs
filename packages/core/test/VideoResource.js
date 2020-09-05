@@ -1,8 +1,7 @@
-const { resources } = require('../');
-const { VideoResource } = resources;
+const { VideoResource } = require('../');
 const path = require('path');
 
-describe('PIXI.resources.VideoResource', function ()
+describe('PIXI.VideoResource', function ()
 {
     before(function ()
     {

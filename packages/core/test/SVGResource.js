@@ -1,9 +1,8 @@
-const { resources } = require('../');
-const { SVGResource } = resources;
+const { SVGResource } = require('../');
 const fs = require('fs');
 const path = require('path');
 
-describe('PIXI.resources.SVGResource', function ()
+describe('PIXI.SVGResource', function ()
 {
     before(function ()
     {

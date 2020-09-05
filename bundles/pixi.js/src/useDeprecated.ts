@@ -1,14 +1,18 @@
 import { deprecation } from '@pixi/utils';
 import type {
-    systems,
-    resources,
+    FilterSystem,
     Renderer,
     ImageSource,
     BaseTexture,
     RenderTexture,
     Texture,
     State,
-    AbstractRenderer } from '@pixi/core';
+    AbstractRenderer,
+    StateSystem,
+    SVGResource,
+    ImageResource,
+    BaseImageResource
+} from '@pixi/core';
 import type { DisplayObject, Container } from '@pixi/display';
 import type { TilingSprite } from '@pixi/sprite-tiling';
 import type {
@@ -66,13 +70,13 @@ export function useDeprecated(this: any): void
         /**
          * @constant {RegExp|string} SVG_SIZE
          * @memberof PIXI
-         * @see PIXI.resources.SVGResource.SVG_SIZE
+         * @see PIXI.SVGResource.SVG_SIZE
          * @deprecated since 5.0.0
          */
         SVG_SIZE: {
             get(): RegExp
             {
-                deprecation(v5, 'PIXI.utils.SVG_SIZE property has moved to PIXI.resources.SVGResource.SVG_SIZE');
+                deprecation(v5, 'PIXI.utils.SVG_SIZE property has moved to PIXI.SVGResource.SVG_SIZE');
 
                 return PIXI.SVGResource.SVG_SIZE;
             },
@@ -173,15 +177,15 @@ export function useDeprecated(this: any): void
 
         /**
          * @class PIXI.FilterManager
-         * @see PIXI.systems.FilterSystem
+         * @see PIXI.FilterSystem
          * @deprecated since 5.0.0
          */
         FilterManager: {
-            get(): systems['FilterSystem']
+            get(): FilterSystem
             {
-                deprecation(v5, 'PIXI.FilterManager class has moved to PIXI.systems.FilterSystem');
+                deprecation(v5, 'PIXI.FilterManager class has moved to PIXI.FilterSystem');
 
-                return PIXI.systems.FilterSystem;
+                return PIXI.FilterSystem;
             },
         },
 
@@ -236,6 +240,36 @@ export function useDeprecated(this: any): void
 
                 return PIXI.AccessibilityManager;
             },
+        },
+    });
+
+    /**
+     * @memberof PIXI
+     * @namespace resources
+     * @see PIXI
+     * @deprecated since 5.4.0
+     */
+    Object.defineProperty(PIXI, 'resources', {
+        get(): typeof PIXI
+        {
+            deprecation('5.4.0', 'PIXI.resources.* has moved to PIXI.*');
+
+            return PIXI;
+        },
+    });
+
+    /**
+     * @memberof PIXI
+     * @namespace systems
+     * @see PIXI
+     * @deprecated since 5.4.0
+     */
+    Object.defineProperty(PIXI, 'systems', {
+        get(): typeof PIXI
+        {
+            deprecation('5.4.0', 'PIXI.systems.* has moved to PIXI.*');
+
+            return PIXI;
         },
     });
 
@@ -487,15 +521,15 @@ export function useDeprecated(this: any): void
     Object.defineProperties(PIXI.utils, {
         /**
          * @function PIXI.utils.getSvgSize
-         * @see PIXI.resources.SVGResource.getSize
+         * @see PIXI.SVGResource.getSize
          * @deprecated since 5.0.0
          */
         getSvgSize: {
-            get(): typeof resources.SVGResource.getSize
+            get(): typeof SVGResource.getSize
             {
-                deprecation(v5, 'PIXI.utils.getSvgSize function has moved to PIXI.resources.SVGResource.getSize');
+                deprecation(v5, 'PIXI.utils.getSvgSize function has moved to PIXI.SVGResource.getSize');
 
-                return PIXI.resources.SVGResource.getSize;
+                return PIXI.SVGResource.getSize;
             },
         },
     });
@@ -936,7 +970,7 @@ export function useDeprecated(this: any): void
     {
         deprecation(v5, 'PIXI.BaseTexture.loadSource method has been deprecated');
 
-        const resource = PIXI.resources.autoDetectResource(image);
+        const resource = PIXI.autoDetectResource(image);
 
         resource.internal = true;
 
@@ -968,14 +1002,14 @@ export function useDeprecated(this: any): void
          * @memberof PIXI.BaseTexture#
          * @type {string}
          * @deprecated since 5.0.0
-         * @see PIXI.resources.ImageResource#url
+         * @see PIXI.ImageResource#url
          */
         imageUrl: {
             get(this: BaseTexture): string
             {
                 deprecation(v5, 'PIXI.BaseTexture.imageUrl property has been removed, use PIXI.BaseTexture.resource.url');
 
-                return (this.resource as resources['ImageResource'])?.url;
+                return (this.resource as ImageResource)?.url;
             },
 
             set(this: BaseTexture, imageUrl: string): void
@@ -984,7 +1018,7 @@ export function useDeprecated(this: any): void
 
                 if (this.resource)
                 {
-                    (this.resource as resources['ImageResource']).url = imageUrl;
+                    (this.resource as ImageResource).url = imageUrl;
                 }
             },
         },
@@ -994,14 +1028,14 @@ export function useDeprecated(this: any): void
          * @type {HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|SVGElement}
          * @deprecated since 5.0.0
          * @readonly
-         * @see PIXI.resources.BaseImageResource#source
+         * @see PIXI.BaseImageResource#source
          */
         source: {
             get(this: BaseTexture): ImageSource
             {
                 deprecation(v5, 'PIXI.BaseTexture.source property has been moved, use `PIXI.BaseTexture.resource.source`');
 
-                return (this.resource as resources['BaseImageResource']).source;
+                return (this.resource as BaseImageResource).source;
             },
             set(this: BaseTexture, source: ImageSource): void
             {
@@ -1010,7 +1044,7 @@ export function useDeprecated(this: any): void
 
                 if (this.resource)
                 {
-                    (this.resource as resources['BaseImageResource']).source = source;
+                    (this.resource as BaseImageResource).source = source;
                 }
             },
         },
@@ -1121,26 +1155,26 @@ export function useDeprecated(this: any): void
         return BaseTextureAny.from(canvas, { scaleMode, resourceOptions });
     };
 
-    Object.defineProperties(PIXI.resources.ImageResource.prototype, {
+    Object.defineProperties(PIXI.ImageResource.prototype, {
         /**
          * @name premultiplyAlpha
-         * @memberof PIXI.resources.ImageResource#
+         * @memberof PIXI.ImageResource#
          * @type {boolean}
          * @deprecated since 5.2.0
          * @readonly
-         * @see PIXI.resources.ImageResource#alphaMode
+         * @see PIXI.ImageResource#alphaMode
          */
         premultiplyAlpha: {
-            get(this: resources['ImageResource']): boolean
+            get(this: ImageResource): boolean
             {
-                deprecation('5.2.0', 'PIXI.resources.ImageResource.premultiplyAlpha property '
+                deprecation('5.2.0', 'PIXI.ImageResource.premultiplyAlpha property '
                     + 'has been changed to `alphaMode`, see `PIXI.ALPHA_MODES`');
 
                 return this.alphaMode !== 0;
             },
-            set(this: resources['ImageResource'], value: boolean): void
+            set(this: ImageResource, value: boolean): void
             {
-                deprecation('5.2.0', 'PIXI.resources.ImageResource.premultiplyAlpha property '
+                deprecation('5.2.0', 'PIXI.ImageResource.premultiplyAlpha property '
                     + 'has been changed to `alphaMode`, see `PIXI.ALPHA_MODES`');
                 this.alphaMode = Number(value);
             },
@@ -1196,27 +1230,27 @@ export function useDeprecated(this: any): void
     };
 
     /**
-     * @method PIXI.systems.StateSystem#setState
+     * @method PIXI.StateSystem#setState
      * @deprecated since 5.1.0
-     * @see PIXI.systems.StateSystem#set
+     * @see PIXI.StateSystem#set
      */
-    PIXI.systems.StateSystem.prototype.setState = function setState(this: systems['StateSystem'], s: State): void
+    PIXI.StateSystem.prototype.setState = function setState(this: StateSystem, s: State): void
     {
         deprecation('v5.1.0', 'StateSystem.setState has been renamed to StateSystem.set');
 
         return this.set(s);
     };
 
-    Object.assign(PIXI.systems.FilterSystem.prototype, {
+    Object.assign(PIXI.FilterSystem.prototype, {
         /**
          * @method PIXI.FilterManager#getRenderTarget
          * @deprecated since 5.0.0
-         * @see PIXI.systems.FilterSystem#getFilterTexture
+         * @see PIXI.FilterSystem#getFilterTexture
          */
-        getRenderTarget(this: systems['FilterSystem'], _clear: boolean, resolution: number)
+        getRenderTarget(this: FilterSystem, _clear: boolean, resolution: number)
         {
             deprecation(v5,
-                'PIXI.FilterManager.getRenderTarget method has been replaced with PIXI.systems.FilterSystem#getFilterTexture'
+                'PIXI.FilterManager.getRenderTarget method has been replaced with PIXI.FilterSystem#getFilterTexture'
             );
 
             return this.getFilterTexture(null, resolution);
@@ -1225,27 +1259,27 @@ export function useDeprecated(this: any): void
         /**
          * @method PIXI.FilterManager#returnRenderTarget
          * @deprecated since 5.0.0
-         * @see PIXI.systems.FilterSystem#returnFilterTexture
+         * @see PIXI.FilterSystem#returnFilterTexture
          */
-        returnRenderTarget(this: systems['FilterSystem'], renderTexture: any)
+        returnRenderTarget(this: FilterSystem, renderTexture: any)
         {
             deprecation(v5,
                 'PIXI.FilterManager.returnRenderTarget method has been replaced with '
-                + 'PIXI.systems.FilterSystem.returnFilterTexture'
+                + 'PIXI.FilterSystem.returnFilterTexture'
             );
 
             this.returnFilterTexture(renderTexture);
         },
 
         /**
-         * @method PIXI.systems.FilterSystem#calculateScreenSpaceMatrix
+         * @method PIXI.FilterSystem#calculateScreenSpaceMatrix
          * @deprecated since 5.0.0
          * @param {PIXI.Matrix} outputMatrix - the matrix to output to.
          * @return {PIXI.Matrix} The mapped matrix.
          */
-        calculateScreenSpaceMatrix(this: systems['FilterSystem'], outputMatrix: any)
+        calculateScreenSpaceMatrix(this: FilterSystem, outputMatrix: any)
         {
-            deprecation(v5, 'PIXI.systems.FilterSystem.calculateScreenSpaceMatrix method is removed, '
+            deprecation(v5, 'PIXI.FilterSystem.calculateScreenSpaceMatrix method is removed, '
                 + 'use `(vTextureCoord * inputSize.xy) + outputFrame.xy` instead');
 
             const mappedMatrix = outputMatrix.identity();
@@ -1258,14 +1292,14 @@ export function useDeprecated(this: any): void
         },
 
         /**
-         * @method PIXI.systems.FilterSystem#calculateNormalizedScreenSpaceMatrix
+         * @method PIXI.FilterSystem#calculateNormalizedScreenSpaceMatrix
          * @deprecated since 5.0.0
          * @param {PIXI.Matrix} outputMatrix - The matrix to output to.
          * @return {PIXI.Matrix} The mapped matrix.
          */
-        calculateNormalizedScreenSpaceMatrix(this: systems['FilterSystem'], outputMatrix: Matrix): Matrix
+        calculateNormalizedScreenSpaceMatrix(this: FilterSystem, outputMatrix: Matrix): Matrix
         {
-            deprecation(v5, 'PIXI.systems.FilterManager.calculateNormalizedScreenSpaceMatrix method is removed, '
+            deprecation(v5, 'PIXI.FilterManager.calculateNormalizedScreenSpaceMatrix method is removed, '
                 + 'use `((vTextureCoord * inputSize.xy) + outputFrame.xy) / outputFrame.zw` instead.');
 
             const { sourceFrame, destinationFrame } = this.activeState;
@@ -1512,7 +1546,7 @@ export function useDeprecated(this: any): void
 
     /**
      * @deprecated since 5.0.0
-     * @member {PIXI.systems.TextureSystem} PIXI.Renderer#textureManager
+     * @member {PIXI.TextureSystem} PIXI.Renderer#textureManager
      * @see PIXI.Renderer#texture
      */
     Object.defineProperty(PIXI.Renderer.prototype, 'textureManager', {

@@ -17,8 +17,8 @@ export interface IImageResourceOptions
 /**
  * Resource type for HTMLImageElement.
  * @class
- * @extends PIXI.resources.BaseImageResource
- * @memberof PIXI.resources
+ * @extends PIXI.BaseImageResource
+ * @memberof PIXI
  */
 export class ImageResource extends BaseImageResource
 {

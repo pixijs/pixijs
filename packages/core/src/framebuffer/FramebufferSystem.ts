@@ -15,7 +15,7 @@ const tempRectangle = new Rectangle();
  *
  * @class
  * @extends PIXI.System
- * @memberof PIXI.systems
+ * @memberof PIXI
  */
 export class FramebufferSystem extends System
 {
