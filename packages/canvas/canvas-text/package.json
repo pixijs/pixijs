@@ -19,7 +19,8 @@
   },
   "files": [
     "lib",
-    "dist"
+    "dist",
+    "index.d.ts"
   ],
   "dependencies": {
     "@pixi/canvas-sprite": "5.3.2",
