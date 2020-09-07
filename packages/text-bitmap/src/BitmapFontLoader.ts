@@ -23,7 +23,7 @@ export class BitmapFontLoader
      */
     public static add(): void
     {
-        LoaderResource.setExtensionXhrType('fnt', LoaderResource.XHR_RESPONSE_TYPE.DOCUMENT);
+        LoaderResource.setExtensionXhrType('fnt', LoaderResource.XHR_RESPONSE_TYPE.TEXT);
     }
 
     /**
