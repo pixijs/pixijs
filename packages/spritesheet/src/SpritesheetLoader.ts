@@ -56,19 +56,23 @@ export class SpritesheetLoader
         // Check and add the multi atlas
         // Heavily influenced and based on https://github.com/rocket-ua/pixi-tps-loader/blob/master/src/ResourceLoader.js
         // eslint-disable-next-line camelcase
-        if (resource.data?.meta?.related_multi_packs)
+        if (resource.data?.meta?.related_multi_packs && Array.isArray(resource.data?.meta?.related_multi_packs))
         {
-            resource.data.meta.related_multi_packs.forEach((item: string) =>
+            for (const item of resource.data.meta.related_multi_packs)
             {
-                // Should we use a random name to ensure there will be no collisions?
+                if (typeof item !== 'string')
+                {
+                    continue;
+                }
+
                 const itemName = item.replace('.json', '');
                 const itemUrl = url.resolve(resource.url.replace(loader.baseUrl, ''), item);
 
                 // Check if the file wasn't already added as multipacks are redundant
-                if (loader.resources[itemName] || loader.resources[itemUrl])
+                if (loader.resources[itemName]
+                    || Object.values(loader.resources).some((r) => url.format(url.parse(r.url)) === itemUrl))
                 {
-                    // this is a .forEach() so this is a continue.
-                    return;
+                    continue;
                 }
 
                 const options: any = {
@@ -79,7 +83,7 @@ export class SpritesheetLoader
                 };
 
                 loader.add(itemName, itemUrl, options);
-            });
+            }
         }
 
         const loadOptions = {
