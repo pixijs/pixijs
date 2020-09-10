@@ -56,9 +56,11 @@ export class SpritesheetLoader
         // Check and add the multi atlas
         // Heavily influenced and based on https://github.com/rocket-ua/pixi-tps-loader/blob/master/src/ResourceLoader.js
         // eslint-disable-next-line camelcase
-        if (resource.data?.meta?.related_multi_packs && Array.isArray(resource.data?.meta?.related_multi_packs))
+        const multiPacks = resource.data?.meta?.related_multi_packs;
+
+        if (Array.isArray(multiPacks))
         {
-            for (const item of resource.data.meta.related_multi_packs)
+            for (const item of multiPacks)
             {
                 if (typeof item !== 'string')
                 {
