@@ -77,9 +77,9 @@ export class SpritesheetLoader
                     continue;
                 }
 
-                const options: any = {
+                const options = {
                     crossOrigin: resource.crossOrigin,
-                    loadType: LoaderResource.TYPE.JSON,
+                    loadType: LoaderResource.LOAD_TYPE.XHR,
                     xhrType: LoaderResource.XHR_RESPONSE_TYPE.JSON,
                     parentResource: resource,
                 };
