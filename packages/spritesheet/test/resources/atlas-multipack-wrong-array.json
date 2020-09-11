@@ -1,0 +1,14 @@
+{"frames": {
+
+},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "building1-0.png",
+	"format": "RGBA8888",
+	"size": {"w":256,"h":64},
+	"scale": "1",
+	"related_multi_packs": [1,2,3,4,5,6],
+	"smartupdate": "$TexturePacker:SmartUpdate:5f1e3e3af16b7f3e5f4097ccfd45634f:8acde9d234ecca966a410602c71bffad:e9ee6f100f514069f43ab3a680b02726$"
+}
+}
