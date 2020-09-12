@@ -94,8 +94,8 @@ export class ScissorSystem extends AbstractMaskSystem
         const resolution = rt ? rt.resolution : this.renderer.resolution;
         let x = ((rect.x - sourceFrame.x) * resolution) + destinationFrame.x;
         let y = ((rect.y - sourceFrame.y) * resolution) + destinationFrame.y;
-        const width = rect.width * resolution;
-        const height = rect.height * resolution;
+        const width = rect.width * resolution * (destinationFrame.width / sourceFrame.width);
+        const height = rect.height * resolution * (destinationFrame.height / sourceFrame.height);
 
         if (transform)
         {
