@@ -30,8 +30,6 @@ TilingSprite.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRe
     const baseTexture = texture.baseTexture;
     const source = baseTexture.getDrawableSource();
     const baseTextureResolution = baseTexture.resolution;
-    const modX = ((this.tilePosition.x / this.tileScale.x) % texture._frame.width) * baseTextureResolution;
-    const modY = ((this.tilePosition.y / this.tileScale.y) % texture._frame.height) * baseTextureResolution;
 
     // create a nice shiny pattern!
     if (this._textureID !== this._texture._updateID || this._cachedTint !== this.tint)
@@ -63,20 +61,11 @@ TilingSprite.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRe
 
     this.tileTransform.updateLocalTransform();
     const lt = this.tileTransform.localTransform;
-    const w = texture.width;
-    const h = texture.height;
     const W = this._width;
     const H = this._height;
 
     tempMatrix.identity();
-    tempMatrix.set(
-        lt.a * w / W,
-        lt.b * w / H,
-        lt.c * h / W,
-        lt.d * h / H,
-        lt.tx / W,
-        lt.ty / H
-    );
+    tempMatrix.copyFrom(lt);
     tempMatrix.prepend(transform);
 
     renderer.setContextTransform(tempMatrix);
@@ -84,35 +73,17 @@ TilingSprite.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRe
     // fill the pattern!
     context.fillStyle = this._canvasPattern;
 
-    const anchorX = this.anchor.x * -this._width;
-    const anchorY = this.anchor.y * -this._height;
+    const anchorX = this.uvRespectAnchor ? this.anchor.x * -W : 0;
+    const anchorY = this.uvRespectAnchor ? this.anchor.y * -H : 0;
 
-    if (this.uvRespectAnchor)
-    {
-        tempPoints[0].set(-modX + anchorX, -modY + anchorY);
-        tempPoints[1].set(this._width, -modY + anchorY);
-        tempPoints[2].set(this._width, this._height);
-        tempPoints[3].set(-modX + anchorX, this._height);
-        tempPoints.forEach((pt) => tempMatrix.applyInverse(pt, pt));
+    tempPoints[0].set(anchorX, anchorY);
+    tempPoints[1].set(anchorX + W, anchorY);
+    tempPoints[2].set(anchorX + W, anchorY + H);
+    tempPoints[3].set(anchorX, anchorY + H);
+    tempPoints.forEach((pt) => lt.applyInverse(pt, pt));
 
-        context.translate(modX, modY);
-        context.moveTo(tempPoints[0].x, tempPoints[0].y);
-        tempPoints.forEach((pt, i) => i && context.lineTo(pt.x, pt.y));
-        context.closePath();
-        context.fill();
-    }
-    else
-    {
-        tempPoints[0].set(-modX, -modY);
-        tempPoints[1].set(this._width, -modY);
-        tempPoints[2].set(this._width, this._height);
-        tempPoints[3].set(-modX, this._height);
-        tempPoints.forEach((pt) => tempMatrix.applyInverse(pt, pt));
-
-        context.translate(modX + anchorX, modY + anchorY);
-        context.moveTo(tempPoints[0].x, tempPoints[0].y);
-        tempPoints.forEach((pt, i) => i && context.lineTo(pt.x, pt.y));
-        context.closePath();
-        context.fill();
-    }
+    context.moveTo(tempPoints[0].x, tempPoints[0].y);
+    tempPoints.forEach((pt, i) => i && context.lineTo(pt.x, pt.y));
+    context.closePath();
+    context.fill();
 };
