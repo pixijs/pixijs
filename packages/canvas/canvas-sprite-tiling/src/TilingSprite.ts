@@ -80,10 +80,17 @@ TilingSprite.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRe
     tempPoints[1].set(anchorX + W, anchorY);
     tempPoints[2].set(anchorX + W, anchorY + H);
     tempPoints[3].set(anchorX, anchorY + H);
-    tempPoints.forEach((pt) => lt.applyInverse(pt, pt));
+    for (let i = 0; i < 4; i++)
+    {
+        lt.applyInverse(tempPoints[i], tempPoints[i]);
+    }
 
+    context.beginPath();
     context.moveTo(tempPoints[0].x, tempPoints[0].y);
-    tempPoints.forEach((pt, i) => i && context.lineTo(pt.x, pt.y));
+    for (let i = 1; i < 4; i++)
+    {
+        context.lineTo(tempPoints[i].x, tempPoints[i].y);
+    }
     context.closePath();
     context.fill();
 };
