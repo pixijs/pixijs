@@ -160,6 +160,11 @@ export class RenderTextureSystem extends System
         viewportFrame.width = destinationFrame.width * resolution;
         viewportFrame.height = destinationFrame.height * resolution;
 
+        if (!renderTexture)
+        {
+            viewportFrame.y = renderer.screen.height - (viewportFrame.y + viewportFrame.height);
+        }
+
         this.renderer.framebuffer.bind(framebuffer, viewportFrame);
         this.renderer.projection.update(destinationFrame, sourceFrame, resolution, !framebuffer);
 
