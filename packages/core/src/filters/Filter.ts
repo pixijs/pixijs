@@ -12,7 +12,8 @@ import type { BLEND_MODES, CLEAR_MODES } from '@pixi/constants';
 import type { Dict } from '@pixi/utils';
 
 /**
- * Filter is a special type of WebGL shader that is applied to the screen.
+ * A filter is a special shader that applies post-processing effects to an input texture and writes into an output
+ * render-target.
  *
  * {@link http://pixijs.io/examples/#/filters/blur-filter.js Example} of the
  * {@link PIXI.filters.BlurFilter BlurFilter}.
@@ -42,6 +43,41 @@ import type { Dict } from '@pixi/utils';
  *
  * Also be aware that we have changed default vertex shader, please consult
  * {@link https://github.com/pixijs/pixi.js/wiki/v5-Creating-filters Wiki}.
+ *
+ * ### Frames
+ *
+ * The following table summarizes the coordinate spaces used in the filtering pipeline:
+ *
+ * <table>
+ * <thead>
+ *   <tr>
+ *     <th>Coordinate Space</th>
+ *     <th>Description</th>
+ *   </tr>
+ * </thead>
+ * <tbody>
+ *   <tr>
+ *     <td>Texture Coordinates</td>
+ *     <td>
+ *         The texture (or UV) coordinates in the input base-texture's space. These are normalized into the (0,1) range along
+ *         both axes.
+ *     </td>
+ *   </tr>
+ *   <tr>
+ *     <td>World Space</td>
+ *     <td>
+ *         A point in the same space as the world bounds of any display-object (i.e. in the scene graph's space).
+ *     </td>
+ *   </tr>
+ *   <tr>
+ *     <td>Physical Pixels</td>
+ *     <td>
+ *         This is base-texture's space with the origin on the top-left. You can calculate these by multiplying the texture
+ *         coordinates by the dimensions of the texture.
+ *     </td>
+ *   </tr>
+ * </tbody>
+ * </table>
  *
  * ### Built-in Uniforms
  *

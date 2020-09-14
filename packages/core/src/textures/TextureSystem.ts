@@ -7,6 +7,7 @@ import { MIPMAP_MODES, WRAP_MODES, SCALE_MODES, TYPES } from '@pixi/constants';
 import type { Texture } from './Texture';
 import type { IRenderingContext } from '../IRenderingContext';
 import type { Renderer } from '../Renderer';
+
 /**
  * System plugin to the renderer to manage textures.
  *
@@ -40,6 +41,7 @@ export class TextureSystem extends System
          * @readonly
          */
         this.boundTextures = [];
+
         /**
          * Current location
          * @member {number}

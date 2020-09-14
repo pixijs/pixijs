@@ -52,6 +52,7 @@ export class BaseRenderTexture extends BaseTexture
     public framebuffer: Framebuffer;
     maskStack: Array<MaskData>;
     filterStack: Array<any>;
+
     /**
      * @param {object} [options]
      * @param {number} [options.width=100] - The width of the base render texture.
