@@ -1153,15 +1153,17 @@ export class Graphics extends Container
             {
                 const batchRenderer = renderer.plugins[this.pluginName];
                 let MAX_TEXTURES = 16;
-                
-                if (batchRenderer && typeof(batchRenderer.MAX_TEXTURES) === 'number'
-                        && batchRenderer.MAX_TEXTURES > 0) {
+
+                if (batchRenderer && typeof batchRenderer.MAX_TEXTURES === 'number'
+                        && batchRenderer.MAX_TEXTURES > 0)
+                {
                     MAX_TEXTURES = batchRenderer.MAX_TEXTURES;
                 }
 
                 const sampleValues = new Int32Array(MAX_TEXTURES);
 
-                for (let i = 0; i < MAX_TEXTURES; i++) {
+                for (let i = 0; i < MAX_TEXTURES; i++)
+                {
                     sampleValues[i] = i;
                 }
 
