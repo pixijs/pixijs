@@ -42,6 +42,26 @@ export interface IRendererPlugin {
  * This renderer works by automatically managing WebGLBatchesm, so no need for Sprite Batches or Sprite Clouds.
  * Don't forget to add the view to your DOM or you will not see anything!
  *
+ * Renderer is composed of systems that manage specific tasks. The following systems are added by default
+ * whenever you create a renderer:
+ *
+ * | System                               | Description                                                                   |
+ * | ------------------------------------ | ----------------------------------------------------------------------------- |
+ * | {@link PIXI.BatchSystem}             | This manages object renderers that defer rendering until a flush.             |
+ * | {@link PIXI.ContextSystem}           | This manages the WebGL context and extensions.                                |
+ * | {@link PIXI.FilterSystem}            | This manages the filtering pipeline for post-processing effects.              |
+ * | {@link PIXI.FramebufferSystem}       | This manages framebuffers, which are used for offscreen rendering.            |
+ * | {@link PIXI.GeometrySystem}          | This manages geometries & buffers, which are used to draw object meshes.      |
+ * | {@link PIXI.MaskSystem}              | This manages masking operations.                                              |
+ * | {@link PIXI.ProjectionSystem}        | This manages the `projectionMatrix`, used by shaders to get NDC coordinates.  |
+ * | {@link PIXI.RenderTextureSystem}     | This manages render-textures, which are an abstraction over framebuffers.     |
+ * | {@link PIXI.ScissorSystem}           | This handles scissor masking, and is used internally by {@link MaskSystem}    |
+ * | {@link PIXI.ShaderSystem}            | This manages shaders, programs that run on the GPU to calculate 'em pixels.   |
+ * | {@link PIXI.StateSystem}             | This manages the WebGL state variables like blend mode, depth testing, etc.   |
+ * | {@link PIXI.StencilSystem}           | This handles stencil masking, and is used internally by {@link MaskSystem}    |
+ * | {@link PIXI.TextureSystem}           | This manages textures and their resources on the GPU.                         |
+ * | {@link PIXI.TextureGCSystem}         | This will automatically remove textures from the GPU if they are not used.    |
+ *
  * @class
  * @memberof PIXI
  * @extends PIXI.AbstractRenderer
