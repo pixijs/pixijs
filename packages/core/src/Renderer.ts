@@ -62,6 +62,8 @@ export interface IRendererPlugin {
  * | {@link PIXI.TextureSystem}           | This manages textures and their resources on the GPU.                         |
  * | {@link PIXI.TextureGCSystem}         | This will automatically remove textures from the GPU if they are not used.    |
  *
+ * The breadth of the API surface provided by the renderer is contained within these systems.
+ *
  * @class
  * @memberof PIXI
  * @extends PIXI.AbstractRenderer
