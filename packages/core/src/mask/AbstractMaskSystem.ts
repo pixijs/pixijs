@@ -4,7 +4,7 @@ import type { MaskData } from './MaskData';
 import type { Renderer } from '../Renderer';
 
 /**
- * System plugin to the renderer to manage masks of certain type
+ * System plugin to the renderer to manage specific types of masking operations.
  *
  * @class
  * @extends PIXI.System

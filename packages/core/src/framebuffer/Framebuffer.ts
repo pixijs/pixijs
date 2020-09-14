@@ -6,7 +6,10 @@ import { FORMATS, MIPMAP_MODES, SCALE_MODES, TYPES, MSAA_QUALITY } from '@pixi/c
 import type { GLFramebuffer } from './GLFramebuffer';
 
 /**
- * Frame buffer used by the BaseRenderTexture
+ * A framebuffer can be used to render contents off of the screen. {@link PIXI.BaseRenderTexture} uses
+ * one internally to render into itself. You can attach a depth or stencil buffer to a framebuffer.
+ *
+ * On WebGL 2 machines, shaders can output to multiple textures simultaneously with GLSL 300 ES.
  *
  * @class
  * @memberof PIXI
@@ -16,6 +19,7 @@ export class Framebuffer
     public width: number;
     public height: number;
     public multisample: MSAA_QUALITY;
+
     stencil: boolean;
     depth: boolean;
     dirtyId: number;
@@ -25,6 +29,7 @@ export class Framebuffer
     colorTextures: Array<BaseTexture>;
     glFramebuffers: {[key: string]: GLFramebuffer};
     disposeRunner: Runner;
+
     /**
      * @param {number} width - Width of the frame buffer
      * @param {number} height - Height of the frame buffer
@@ -36,6 +41,7 @@ export class Framebuffer
          * @member {number}
          */
         this.width = Math.ceil(width || 100);
+
         /**
          * Height of framebuffer in pixels
          * @member {number}
