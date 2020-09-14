@@ -4,7 +4,11 @@ import type { Renderer } from '../Renderer';
 import type { MaskData } from './MaskData';
 
 /**
- * System plugin to the renderer to manage scissor rects (used for masks).
+ * System plugin to the renderer to manage scissor masking.
+ *
+ * Scissor masking discards pixels outside of a rectangle called the scissor box. The scissor box is in the framebuffer
+ * viewport's space; however, the mask's rectangle is projected from world-space to viewport space automatically
+ * by this system.
  *
  * @class
  * @extends PIXI.System
@@ -35,8 +39,9 @@ export class ScissorSystem extends AbstractMaskSystem
     }
 
     /**
-     * Applies the Mask and adds it to the current stencil stack. @alvin
+     * Applies the Mask and adds it to the current stencil stack.
      *
+     * @author alvin
      * @param {PIXI.MaskData} maskData - The mask data
      */
     push(maskData: MaskData): void
