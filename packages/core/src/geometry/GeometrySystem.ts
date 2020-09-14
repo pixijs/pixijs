@@ -93,7 +93,7 @@ export class GeometrySystem extends System
         this.CONTEXT_UID = this.renderer.CONTEXT_UID;
 
         // webgl2
-        if (!gl.createVertexArray)
+        if (context.webGLVersion !== 2)
         {
             // webgl 1!
             let nativeVaoExtension = this.renderer.context.extensions.vertexArrayObject;
@@ -128,7 +128,7 @@ export class GeometrySystem extends System
             }
         }
 
-        if (!gl.vertexAttribDivisor)
+        if (context.webGLVersion !== 2)
         {
             const instanceExt = gl.getExtension('ANGLE_instanced_arrays');
 
