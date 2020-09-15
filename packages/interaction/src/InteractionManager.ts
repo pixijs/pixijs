@@ -1050,7 +1050,8 @@ export class InteractionManager extends EventEmitter
     public setCursorMode(mode: string): void
     {
         mode = mode || 'default';
-        if (!this.interactionDOMElement.style)
+        // offscreen canvas does not support setting styles
+        if (this.interactionDOMElement instanceof OffscreenCanvas)
         {
             return;
         }
