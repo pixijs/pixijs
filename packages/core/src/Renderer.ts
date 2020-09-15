@@ -508,6 +508,8 @@ export class Renderer extends AbstractRenderer
      * @property {PIXI.Extract} extract Extract image data from renderer.
      * @property {PIXI.InteractionManager} interaction Handles mouse, touch and pointer events.
      * @property {PIXI.Prepare} prepare Pre-render display objects.
+     * @property {PIXI.BatchRenderer} batch Drawing and batching sprites.
+     * @property {PIXI.TilingSpriteRenderer} sprite-tiling Renderer for tile sprites.
      */
     static __plugins: IRendererPlugins;
 
