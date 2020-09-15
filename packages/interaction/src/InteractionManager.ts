@@ -210,7 +210,7 @@ export class InteractionManager extends EventEmitter
          * @protected
          * @member {boolean}
          */
-        this.mouseOverRenderer = !('PointerEvent' in globalThis);
+        this.mouseOverRenderer = !('PointerEvent' in self);
 
         /**
          * Does the device support touch events
@@ -219,7 +219,7 @@ export class InteractionManager extends EventEmitter
          * @readonly
          * @member {boolean}
          */
-        this.supportsTouchEvents = 'ontouchstart' in globalThis;
+        this.supportsTouchEvents = 'ontouchstart' in self;
 
         /**
          * Does the device support pointer events
@@ -228,7 +228,7 @@ export class InteractionManager extends EventEmitter
          * @readonly
          * @member {boolean}
          */
-        this.supportsPointerEvents = !!globalThis.PointerEvent;
+        this.supportsPointerEvents = !!self.PointerEvent;
 
         // this will make it so that you don't have to call bind all the time
 
@@ -865,7 +865,7 @@ export class InteractionManager extends EventEmitter
 
         const style = this.interactionDOMElement.style as CrossCSSStyleDeclaration;
 
-        if (globalThis.navigator.msPointerEnabled)
+        if (self.navigator.msPointerEnabled)
         {
             style.msContentZooming = 'none';
             style.msTouchAction = 'none';
@@ -928,7 +928,7 @@ export class InteractionManager extends EventEmitter
 
         const style = this.interactionDOMElement.style as CrossCSSStyleDeclaration;
 
-        if (globalThis.navigator.msPointerEnabled)
+        if (self.navigator.msPointerEnabled)
         {
             style.msContentZooming = '';
             style.msTouchAction = '';
@@ -1858,8 +1858,8 @@ export class InteractionManager extends EventEmitter
             }
         }
         // apparently PointerEvent subclasses MouseEvent, so yay
-        else if (!globalThis.MouseEvent
-            || (event instanceof MouseEvent && (!this.supportsPointerEvents || !(event instanceof globalThis.PointerEvent))))
+        else if (!self.MouseEvent
+            || (event instanceof MouseEvent && (!this.supportsPointerEvents || !(event instanceof self.PointerEvent))))
         {
             const tempEvent = event as PixiPointerEvent;
 
