@@ -27,6 +27,7 @@
   "dependencies": {
     "@pixi/canvas-renderer": "5.3.2",
     "@pixi/canvas-sprite": "5.3.2",
+    "@pixi/math": "^5.3.2",
     "@pixi/sprite-tiling": "5.3.2",
     "@pixi/utils": "5.3.2"
   }
