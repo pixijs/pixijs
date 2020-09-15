@@ -205,7 +205,7 @@ export class InteractionManager extends EventEmitter
         this.tickerAdded = false;
 
         /**
-         * Is the mouse hovering over the renderer?
+         * Is the mouse hovering over the renderer? If working in worker mouse considered to be over renderer by default.
          *
          * @protected
          * @member {boolean}
