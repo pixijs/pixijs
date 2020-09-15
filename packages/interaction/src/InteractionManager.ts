@@ -881,23 +881,23 @@ export class InteractionManager extends EventEmitter
          */
         if (this.supportsPointerEvents)
         {
-            window.document.addEventListener('pointermove', this.onPointerMove, true);
+            self.document.addEventListener('pointermove', this.onPointerMove, true);
             this.interactionDOMElement.addEventListener('pointerdown', this.onPointerDown, true);
             // pointerout is fired in addition to pointerup (for touch events) and pointercancel
             // we already handle those, so for the purposes of what we do in onPointerOut, we only
             // care about the pointerleave event
             this.interactionDOMElement.addEventListener('pointerleave', this.onPointerOut, true);
             this.interactionDOMElement.addEventListener('pointerover', this.onPointerOver, true);
-            window.addEventListener('pointercancel', this.onPointerCancel, true);
-            window.addEventListener('pointerup', this.onPointerUp, true);
+            self.addEventListener('pointercancel', this.onPointerCancel, true);
+            self.addEventListener('pointerup', this.onPointerUp, true);
         }
         else
         {
-            window.document.addEventListener('mousemove', this.onPointerMove, true);
+            self.document.addEventListener('mousemove', this.onPointerMove, true);
             this.interactionDOMElement.addEventListener('mousedown', this.onPointerDown, true);
             this.interactionDOMElement.addEventListener('mouseout', this.onPointerOut, true);
             this.interactionDOMElement.addEventListener('mouseover', this.onPointerOver, true);
-            window.addEventListener('mouseup', this.onPointerUp, true);
+            self.addEventListener('mouseup', this.onPointerUp, true);
         }
 
         // always look directly for touch events so that we can provide original data
@@ -940,20 +940,20 @@ export class InteractionManager extends EventEmitter
 
         if (this.supportsPointerEvents)
         {
-            window.document.removeEventListener('pointermove', this.onPointerMove, true);
+            self.document.removeEventListener('pointermove', this.onPointerMove, true);
             this.interactionDOMElement.removeEventListener('pointerdown', this.onPointerDown, true);
             this.interactionDOMElement.removeEventListener('pointerleave', this.onPointerOut, true);
             this.interactionDOMElement.removeEventListener('pointerover', this.onPointerOver, true);
-            window.removeEventListener('pointercancel', this.onPointerCancel, true);
-            window.removeEventListener('pointerup', this.onPointerUp, true);
+            self.removeEventListener('pointercancel', this.onPointerCancel, true);
+            self.removeEventListener('pointerup', this.onPointerUp, true);
         }
         else
         {
-            window.document.removeEventListener('mousemove', this.onPointerMove, true);
+            self.document.removeEventListener('mousemove', this.onPointerMove, true);
             this.interactionDOMElement.removeEventListener('mousedown', this.onPointerDown, true);
             this.interactionDOMElement.removeEventListener('mouseout', this.onPointerOut, true);
             this.interactionDOMElement.removeEventListener('mouseover', this.onPointerOver, true);
-            window.removeEventListener('mouseup', this.onPointerUp, true);
+            self.removeEventListener('mouseup', this.onPointerUp, true);
         }
 
         if (this.supportsTouchEvents)
