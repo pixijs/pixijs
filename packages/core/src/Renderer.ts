@@ -507,10 +507,10 @@ export class Renderer extends AbstractRenderer
      * @property {PIXI.AccessibilityManager} accessibility Support tabbing interactive elements.
      * @property {PIXI.Extract} extract Extract image data from renderer.
      * @property {PIXI.InteractionManager} interaction Handles mouse, touch and pointer events.
-     * @property {PIXI.ParticleRenderer} Particle Renderer for Particles.
+     * @property {PIXI.ParticleRenderer} particle Renderer for ParticleContainer objects.
      * @property {PIXI.Prepare} prepare Pre-render display objects.
-     * @property {PIXI.BatchRenderer} batch Drawing and batching sprites.
-     * @property {PIXI.TilingSpriteRenderer} sprite-tiling Renderer for tile sprites.
+     * @property {PIXI.BatchRenderer} batch Batching of Sprite, Graphics and Mesh objects.
+     * @property {PIXI.TilingSpriteRenderer} tilingSprite Renderer for TilingSprite objects.
      */
     static __plugins: IRendererPlugins;
 
