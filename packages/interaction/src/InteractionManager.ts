@@ -210,7 +210,7 @@ export class InteractionManager extends EventEmitter
          * @protected
          * @member {boolean}
          */
-        this.mouseOverRenderer = false;
+        this.mouseOverRenderer = !('PointerEvent' in globalThis);
 
         /**
          * Does the device support touch events
@@ -219,7 +219,7 @@ export class InteractionManager extends EventEmitter
          * @readonly
          * @member {boolean}
          */
-        this.supportsTouchEvents = 'ontouchstart' in window;
+        this.supportsTouchEvents = 'ontouchstart' in globalThis;
 
         /**
          * Does the device support pointer events
@@ -228,7 +228,7 @@ export class InteractionManager extends EventEmitter
          * @readonly
          * @member {boolean}
          */
-        this.supportsPointerEvents = !!window.PointerEvent;
+        this.supportsPointerEvents = !!globalThis.PointerEvent;
 
         // this will make it so that you don't have to call bind all the time
 
@@ -865,7 +865,7 @@ export class InteractionManager extends EventEmitter
 
         const style = this.interactionDOMElement.style as CrossCSSStyleDeclaration;
 
-        if (window.navigator.msPointerEnabled)
+        if (globalThis.navigator.msPointerEnabled)
         {
             style.msContentZooming = 'none';
             style.msTouchAction = 'none';
@@ -928,7 +928,7 @@ export class InteractionManager extends EventEmitter
 
         const style = this.interactionDOMElement.style as CrossCSSStyleDeclaration;
 
-        if (window.navigator.msPointerEnabled)
+        if (globalThis.navigator.msPointerEnabled)
         {
             style.msContentZooming = '';
             style.msTouchAction = '';
@@ -1050,6 +1050,10 @@ export class InteractionManager extends EventEmitter
     public setCursorMode(mode: string): void
     {
         mode = mode || 'default';
+        if (!this.interactionDOMElement.style)
+        {
+            return;
+        }
         // if the mode didn't actually change, bail early
         if (this.currentCursorMode === mode)
         {
@@ -1142,7 +1146,14 @@ export class InteractionManager extends EventEmitter
         // IE 11 fix
         if (!this.interactionDOMElement.parentElement)
         {
-            rect = { x: 0, y: 0, width: 0, height: 0 };
+            rect = {
+                x: 0,
+                y: 0,
+                width: (this.interactionDOMElement as any).width,
+                height: (this.interactionDOMElement as any).height,
+                left: 0,
+                top: 0
+            };
         }
         else
         {
@@ -1847,7 +1858,8 @@ export class InteractionManager extends EventEmitter
             }
         }
         // apparently PointerEvent subclasses MouseEvent, so yay
-        else if (event instanceof MouseEvent && (!this.supportsPointerEvents || !(event instanceof window.PointerEvent)))
+        else if (!globalThis.MouseEvent
+            || (event instanceof MouseEvent && (!this.supportsPointerEvents || !(event instanceof globalThis.PointerEvent))))
         {
             const tempEvent = event as PixiPointerEvent;
 
