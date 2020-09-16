@@ -35,5 +35,6 @@ export function drawTorus(this: Graphics,
         .arc(x, y, innerRadius, endArc, startArc, true)
         .arc(x, y, outerRadius, startArc, endArc, false)
         .finishPoly();
+
     return this;
 }
