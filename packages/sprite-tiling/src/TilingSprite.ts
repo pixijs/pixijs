@@ -61,7 +61,7 @@ export class TilingSprite extends Sprite
          *
          * @member {PIXI.TextureMatrix}
          */
-        this.uvMatrix = texture.uvMatrix || new TextureMatrix(texture);
+        this.uvMatrix = this.texture.uvMatrix || new TextureMatrix(texture);
 
         /**
          * Plugin that is responsible for rendering this element.
