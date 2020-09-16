@@ -1,8 +1,12 @@
 import { TilingSprite } from '@pixi/sprite-tiling';
 import { canvasUtils } from '@pixi/canvas-renderer';
 import { CanvasRenderTarget } from '@pixi/utils';
+import { Matrix, Point } from '@pixi/math';
 
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
+
+const tempMatrix = new Matrix();
+const tempPoints = [new Point(), new Point(), new Point(), new Point()];
 
 /**
  * Renders the object using the Canvas renderer
@@ -26,8 +30,6 @@ TilingSprite.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRe
     const baseTexture = texture.baseTexture;
     const source = baseTexture.getDrawableSource();
     const baseTextureResolution = baseTexture.resolution;
-    const modX = ((this.tilePosition.x / this.tileScale.x) % texture._frame.width) * baseTextureResolution;
-    const modY = ((this.tilePosition.y / this.tileScale.y) % texture._frame.height) * baseTextureResolution;
 
     // create a nice shiny pattern!
     if (this._textureID !== this._texture._updateID || this._cachedTint !== this.tint)
@@ -56,31 +58,39 @@ TilingSprite.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRe
     // set context state..
     context.globalAlpha = this.worldAlpha;
     renderer.setBlendMode(this.blendMode);
-    renderer.setContextTransform(transform);
+
+    this.tileTransform.updateLocalTransform();
+    const lt = this.tileTransform.localTransform;
+    const W = this._width;
+    const H = this._height;
+
+    tempMatrix.identity();
+    tempMatrix.copyFrom(lt);
+    tempMatrix.prepend(transform);
+
+    renderer.setContextTransform(tempMatrix);
 
     // fill the pattern!
     context.fillStyle = this._canvasPattern;
 
-    // TODO - this should be rolled into the setTransform above..
-    context.scale(this.tileScale.x / baseTextureResolution, this.tileScale.y / baseTextureResolution);
+    const anchorX = this.uvRespectAnchor ? this.anchor.x * -W : 0;
+    const anchorY = this.uvRespectAnchor ? this.anchor.y * -H : 0;
 
-    const anchorX = this.anchor.x * -this._width;
-    const anchorY = this.anchor.y * -this._height;
-
-    if (this.uvRespectAnchor)
+    tempPoints[0].set(anchorX, anchorY);
+    tempPoints[1].set(anchorX + W, anchorY);
+    tempPoints[2].set(anchorX + W, anchorY + H);
+    tempPoints[3].set(anchorX, anchorY + H);
+    for (let i = 0; i < 4; i++)
     {
-        context.translate(modX, modY);
-
-        context.fillRect(-modX + anchorX, -modY + anchorY,
-            this._width / this.tileScale.x * baseTextureResolution,
-            this._height / this.tileScale.y * baseTextureResolution);
+        lt.applyInverse(tempPoints[i], tempPoints[i]);
     }
-    else
+
+    context.beginPath();
+    context.moveTo(tempPoints[0].x, tempPoints[0].y);
+    for (let i = 1; i < 4; i++)
     {
-        context.translate(modX + anchorX, modY + anchorY);
-
-        context.fillRect(-modX, -modY,
-            this._width / this.tileScale.x * baseTextureResolution,
-            this._height / this.tileScale.y * baseTextureResolution);
+        context.lineTo(tempPoints[i].x, tempPoints[i].y);
     }
+    context.closePath();
+    context.fill();
 };

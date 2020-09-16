@@ -1151,9 +1151,10 @@ export class Graphics extends Container
             // but may be more than one plugins for graphics
             if (!DEFAULT_SHADERS[pluginName])
             {
-                const sampleValues = new Int32Array(16);
+                const MAX_TEXTURES = renderer.plugins.batch.MAX_TEXTURES;
+                const sampleValues = new Int32Array(MAX_TEXTURES);
 
-                for (let i = 0; i < 16; i++)
+                for (let i = 0; i < MAX_TEXTURES; i++)
                 {
                     sampleValues[i] = i;
                 }

@@ -16,10 +16,22 @@ const tempRect2 = new Rectangle();
 // Temporary rectangle for passing the framebuffer viewport
 const viewportFrame = new Rectangle();
 
+/* eslint-disable max-len */
 /**
  * System plugin to the renderer to manage render textures.
  *
  * Should be added after FramebufferSystem
+ *
+ * ### Frames
+ *
+ * The `RenderTextureSystem` holds a sourceFrame → destinationFrame projection. The following table explains the different
+ * coordinate spaces used:
+ *
+ * | Frame                  | Description                                                      | Coordinate System                                       |
+ * | ---------------------- | ---------------------------------------------------------------- | ------------------------------------------------------- |
+ * | sourceFrame            | The rectangle inside of which display-objects are being rendered | **World Space**: The origin on the top-left             |
+ * | destinationFrame       | The rectangle in the render-target (canvas or texture) into which contents should be rendered | If rendering to the canvas, this is in screen space and the origin is on the top-left. If rendering to a render-texture, this is in its base-texture's space with the origin on the bottom-left.  |
+ * | viewportFrame          | The framebuffer viewport corresponding to the destination-frame  | **Window Coordinates**: The origin is always on the bottom-left. |
  *
  * @class
  * @extends PIXI.System
@@ -27,6 +39,8 @@ const viewportFrame = new Rectangle();
  */
 export class RenderTextureSystem extends System
 {
+/* eslint-enable max-len */
+
     public clearColor: number[];
     public defaultMaskStack: Array<MaskData>;
     public current: RenderTexture;
@@ -145,6 +159,11 @@ export class RenderTextureSystem extends System
         viewportFrame.y = destinationFrame.y * resolution;
         viewportFrame.width = destinationFrame.width * resolution;
         viewportFrame.height = destinationFrame.height * resolution;
+
+        if (!renderTexture)
+        {
+            viewportFrame.y = renderer.screen.height - (viewportFrame.y + viewportFrame.height);
+        }
 
         this.renderer.framebuffer.bind(framebuffer, viewportFrame);
         this.renderer.projection.update(destinationFrame, sourceFrame, resolution, !framebuffer);
