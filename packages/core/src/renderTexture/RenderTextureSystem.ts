@@ -76,7 +76,7 @@ export class RenderTextureSystem extends System
         this.current = null;
 
         /**
-         * The source frame for the render-target's projection mapping. 
+         * The source frame for the render-target's projection mapping.
          *
          * See {@link PIXI.ProjectionSystem#sourceFrame} for more details.
          *
