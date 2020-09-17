@@ -6,15 +6,13 @@ import type { Renderer } from '../Renderer';
 import type { RenderTexture } from './RenderTexture';
 import type { BaseRenderTexture } from './BaseRenderTexture';
 import type { MaskData } from '../mask/MaskData';
+import type { ISize } from '@pixi/math';
 
 // Temporary rectangle for assigned sourceFrame or destinationFrame
 const tempRect = new Rectangle();
 
 // Temporary rectangle for renderTexture destinationFrame
 const tempRect2 = new Rectangle();
-
-// Temporary rectangle for passing the framebuffer viewport
-const viewportFrame = new Rectangle();
 
 /* eslint-disable max-len */
 /**
@@ -46,6 +44,7 @@ export class RenderTextureSystem extends System
     public current: RenderTexture;
     public readonly sourceFrame: Rectangle;
     public readonly destinationFrame: Rectangle;
+    public readonly viewportFrame: Rectangle;
 
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
@@ -77,18 +76,34 @@ export class RenderTextureSystem extends System
         this.current = null;
 
         /**
-         * Source frame
+         * The source frame for the render-target's projection mapping. 
+         *
+         * See {@link PIXI.ProjectionSystem#sourceFrame} for more details.
+         *
          * @member {PIXI.Rectangle}
          * @readonly
          */
         this.sourceFrame = new Rectangle();
 
         /**
-         * Destination frame
+         * The destination frame for the render-target's projection mapping.
+         *
+         * See {@link PIXI.Projection#destinationFrame} for more details.
+         *
          * @member {PIXI.Rectangle}
          * @readonly
          */
         this.destinationFrame = new Rectangle();
+
+        /**
+         * The viewport frame for the render-target's viewport binding. This is equal to the destination-frame
+         * for render-textures, while it is y-flipped when rendering to the screen (i.e. its origin is always on
+         * the bottom-left).
+         *
+         * @member {PIXI.Rectangle}
+         * @readonly
+         */
+        this.viewportFrame = new Rectangle();
     }
 
     /**
@@ -155,17 +170,17 @@ export class RenderTextureSystem extends System
             }
         }
 
-        viewportFrame.x = destinationFrame.x * resolution;
-        viewportFrame.y = destinationFrame.y * resolution;
-        viewportFrame.width = destinationFrame.width * resolution;
-        viewportFrame.height = destinationFrame.height * resolution;
+        this.viewportFrame.x = destinationFrame.x * resolution;
+        this.viewportFrame.y = destinationFrame.y * resolution;
+        this.viewportFrame.width = destinationFrame.width * resolution;
+        this.viewportFrame.height = destinationFrame.height * resolution;
 
         if (!renderTexture)
         {
-            viewportFrame.y = renderer.screen.height - (viewportFrame.y + viewportFrame.height);
+            this.viewportFrame.y = renderer.screen.height - (this.viewportFrame.y + this.viewportFrame.height);
         }
 
-        this.renderer.framebuffer.bind(framebuffer, viewportFrame);
+        this.renderer.framebuffer.bind(framebuffer, this.viewportFrame);
         this.renderer.projection.update(destinationFrame, sourceFrame, resolution, !framebuffer);
 
         if (renderTexture)
@@ -200,7 +215,26 @@ export class RenderTextureSystem extends System
             clearColor = clearColor || this.clearColor;
         }
 
+        const destinationFrame = this.destinationFrame;
+        const baseFrame: ISize = this.current ? this.current.baseTexture : this.renderer.screen;
+        const clearMask = destinationFrame.width !== baseFrame.width || destinationFrame.height !== baseFrame.height;
+
+        if (clearMask)
+        {
+            const { x, y, width, height } = this.viewportFrame;
+
+            // TODO: ScissorSystem should cache whether the scissor test is enabled or not.
+            this.renderer.gl.enable(this.renderer.gl.SCISSOR_TEST);
+            this.renderer.gl.scissor(x, y, width, height);
+        }
+
         this.renderer.framebuffer.clear(clearColor[0], clearColor[1], clearColor[2], clearColor[3], mask);
+
+        if (clearMask)
+        {
+            // Restore the scissor box
+            this.renderer.scissor.pop();
+        }
     }
 
     resize(): void // screenWidth, screenHeight)
