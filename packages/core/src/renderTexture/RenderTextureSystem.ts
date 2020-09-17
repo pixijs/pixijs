@@ -170,17 +170,19 @@ export class RenderTextureSystem extends System
             }
         }
 
-        this.viewportFrame.x = destinationFrame.x * resolution;
-        this.viewportFrame.y = destinationFrame.y * resolution;
-        this.viewportFrame.width = destinationFrame.width * resolution;
-        this.viewportFrame.height = destinationFrame.height * resolution;
+        const viewportFrame = this.viewportFrame;
+
+        viewportFrame.x = destinationFrame.x * resolution;
+        viewportFrame.y = destinationFrame.y * resolution;
+        viewportFrame.width = destinationFrame.width * resolution;
+        viewportFrame.height = destinationFrame.height * resolution;
 
         if (!renderTexture)
         {
-            this.viewportFrame.y = (renderer.screen.height * resolution) - (this.viewportFrame.y + this.viewportFrame.height);
+            viewportFrame.y = (renderer.screen.height * resolution) - (viewportFrame.y + viewportFrame.height);
         }
 
-        this.renderer.framebuffer.bind(framebuffer, this.viewportFrame);
+        this.renderer.framebuffer.bind(framebuffer, viewportFrame);
         this.renderer.projection.update(destinationFrame, sourceFrame, resolution, !framebuffer);
 
         if (renderTexture)
