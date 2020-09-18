@@ -18,7 +18,194 @@ export interface DisplayObject extends GlobalMixins.DisplayObject, EventEmitter 
 /**
  * The base class for all objects that are rendered on the screen.
  *
- * This is an abstract class and should not be used on its own; rather it should b e extended.
+ * This is an abstract class and can not be used on its own; rather it should be extended.
+ *
+ * ## Display objects implemented in PixiJS
+ *
+ * | Display Object                  | Description                                                           |
+ * | ------------------------------- | --------------------------------------------------------------------- |
+ * | {@link PIXI.Container}          | Adds support for `children` to DisplayObject                          |
+ * | {@link PIXI.Graphics}           | Shape-drawing display object similar to the Canvas API                |
+ * | {@link PIXI.Sprite}             | Draws textures (i.e. images)                                          |
+ * | {@link PIXI.Text}               | Draws text using the Canvas API internally                            |
+ * | {@link PIXI.BitmapText}         | More scaleable solution for text rendering, reusing glyph textures    |
+ * | {@link PIXI.TilingSprite}       | Draws textures/images in a tiled fashion                              |
+ * | {@link PIXI.AnimatedSprite}     | Draws an animation of multiple images                                 |
+ * | {@link PIXI.Mesh}               | Provides a lower-level API for drawing meshes with custom data        |
+ * | {@link PIXI.NineSlicePlane}     | Mesh-related                                                          |
+ * | {@link PIXI.SimpleMesh}         | v4-compatibile mesh                                                   |
+ * | {@link PIXI.SimplePlane}        | Mesh-related                                                          |
+ * | {@link PIXI.SimpleRope}         | Mesh-related                                                          |
+ *
+ * ## External libraries that export or service display objects
+ *
+ * | Package                         | Description                                                          |
+ * | ------------------------------- | -------------------------------------------------------------------- |
+ * | pixi-layers                     | Faster layering of display objects than z-indexing                   |
+ * | pixi-sdf-text                   | Signed distance field text implementation                            |
+ * | @pixi-essentials/transformer    | Interactive interface for dragging, scaling, rotating display objects|
+ *
+ * ## Transforms
+ *
+ * The [transform]{@link DisplayObject#transform} of a display object describes the projection from its
+ * local coordinate space to its parent's local coordinate space. The following properties are derived
+ * from the transform:
+ *
+ * <table>
+ *   <thead>
+ *     <tr>
+ *       <th>Property</th>
+ *       <th>Description</th>
+ *     </tr>
+ *   </thead>
+ *   <tbody>
+ *     <tr>
+ *       <td>[pivot]{@link PIXI.DisplayObject#pivot}</td>
+ *       <td>
+ *         Invariant under rotation, scaling, and skewing. The projection of into the parent's space of the pivot
+ *         is equal to position, regardless of the other three transformations. In other words, It is the center of
+ *         rotation, scaling, and skewing.
+ *       </td>
+ *     </tr>
+ *     <tr>
+ *       <td>[position]{@link PIXI.DisplayObject#position}</td>
+ *       <td>
+ *         Translation. This is the position of the [pivot]{@link PIXI.DisplayObject#pivot} in the parent's local
+ *         space. The default value of the pivot is the origin (0,0). If the top-left corner of your display object
+ *         is (0,0) in its local space, then the position will be its top-left corner in the parent's local space.
+ *       </td>
+ *     </tr>
+ *     <tr>
+ *       <td>[scale]{@link PIXI.DisplayObject#scale}</td>
+ *       <td>
+ *         Scaling. This will stretch (or compress) the display object's projection. The scale factors are along the
+ *         local coordinate axes. In other words, the display object is scaled before rotated or skewed. The center
+ *         of scaling is the [pivot]{@link PIXI.DisplayObject#pivot}.
+ *       </td>
+ *     </tr>
+ *     <tr>
+ *       <td>[rotation]{@link PIXI.DisplayObject#rotation}</td>
+ *       <td>
+ *          Rotation. This will rotate the display object's projection by this angle (in radians).
+ *       </td>
+ *     </tr>
+ *     <tr>
+ *       <td>[skew]{@link PIXI.DisplayObject#skew}</td>
+ *       <td>
+ *         <p>Skewing. This can be used to deform a rectangular display object into a parallelogram.</p>
+ *         <p>
+ *         In PixiJS, skew has a slightly different behaviour than the conventional meaning. It can be
+ *         thought of the net rotation applied to the coordinate axes (separately). For example, if skew.x is
+ *         ⍺ and skew.y is β, then the line x = 0 will be rotated by ⍺ (y = -x*cot⍺) and the line y = 0 will be
+ *         rotated by β (y = x*tanβ). A line y = x*tanϴ (i.e. a line at angle ϴ to the x-axis in local-space) will
+ *         be rotated by an angle between ⍺ and β.
+ *         </p>
+ *         <p>
+ *         It can be observed that if skew is applied equally to both axes, then it will be equivalent to applying
+ *         one rotation. Indeed, if skew.x = -𝜽 and skew.y = 𝛳, it will produce an equivalent of rotation = 𝛳.
+ *         </p>
+ *         <p>
+ *         Another quite interesting observation is that skew.x, skew.y, rotation are communtative operations. Indeed,
+ *         because rotation is essentially a careful combination of the two.
+ *         </p>
+ *       </td>
+ *     </tr>
+ *     <tr>
+ *       <td>angle</td>
+ *       <td>Rotation. This is an alias for [rotation]{@link PIXI.DisplayObject#rotation}, but in degrees.</td>
+ *     </tr>
+ *     <tr>
+ *       <td>x</td>
+ *       <td>Translation. This is an alias for position.x!</td>
+ *     </tr>
+ *     <tr>
+ *       <td>y</td>
+ *       <td>Translation. This is an alias for position.y!</td>
+ *     </tr>
+ *     <tr>
+ *       <td>width</td>
+ *       <td>
+ *         Scaling. The width property calculates scale.x by dividing the "requested" width by the
+ *         local bounding box width. It is indirectly an abstraction over scale.x, and there is no
+ *         concept of user-defined width.
+ *       </td>
+ *     </tr>
+ *     <tr>
+ *       <td>height</td>
+ *       <td>
+ *         Scaling. The height property calculates scale.y by dividing the "requested" height by the
+ *         local bounding box height. It is indirectly an abstraction over scale.y, and there is no
+ *         concept of user-defined height.
+ *       </td>
+ *     </tr>
+ *   </tbody>
+ * </table>
+ *
+ * ## Bounds
+ *
+ * The bounds of a display object is defined by the minimum axis-aligned rectangle in world space that can fit
+ * around it. The abstract `calculateBounds` method is responsible for providing it (and it should use the
+ * `worldTransform` to calculate in world space).
+ *
+ * There are a few additional types of bounding boxes:
+ *
+ * | Bounds                | Description                                                                              |
+ * | --------------------- | ---------------------------------------------------------------------------------------- |
+ * | World Bounds          | This is synonymous is the regular bounds described above. See `getBounds()`.             |
+ * | Local Bounds          | This the axis-aligned bounding box in the parent's local space. See `getLocalBounds()`.  |
+ * | Render Bounds         | The bounds, but including extra rendering effects like filter padding.                   |
+ * | Projected Bounds      | The bounds of the projected display object onto the screen. Usually equals world bounds. |
+ * | Relative Bounds       | The bounds of a display object when projected onto a ancestor's (or parent's) space.     |
+ * | Natural Bounds        | The bounds of an object in its own local space (not parent's space, like in local bounds)|
+ * | Content Bounds        | The natural bounds when excluding all children of a `Container`.                         |
+ *
+ * ### calculateBounds
+ *
+ * [Container]{@link Container} already implements `calculateBounds` in a manner that includes children.
+ *
+ * But for a non-Container display object, the `calculateBounds` method must be overriden in order for `getBounds` and
+ * `getLocalBounds` to work. This method must write the bounds into `this._bounds`.
+ *
+ * Generally, the following technique works for most simple cases: take the list of points
+ * forming the "hull" of the object (i.e. outline of the object's shape), and then add them
+ * using {@link PIXI.Bounds#addPointMatrix}.
+ *
+ * ```ts
+ * calculateBounds(): void
+ * {
+ *     const points = [...];
+ *
+ *     for (let i = 0, j = points.length; i < j; i++)
+ *     {
+ *         this._bounds.addPointMatrix(this.worldTransform, points[i]);
+ *     }
+ * }
+ * ```
+ *
+ * You can optimize this for a large number of points by using {@link PIXI.Bounds#addVerticesMatrix} to pass them
+ * in one array together.
+ *
+ * ## Alpha
+ *
+ * This alpha sets a display object's **relative opacity** w.r.t its parent. For example, if the alpha of a display
+ * object is 0.5 and its parent's alpha is 0.5, then it will be rendered with 25% opacity (assuming alpha is not
+ * applied on any ancestor further up the chain).
+ *
+ * The alpha with which the display object will be rendered is called the [worldAlpha]{@link PIXI.DisplayObject#worldAlpha}.
+ *
+ * ## Renderable vs Visible
+ *
+ * The `renderable` and `visible` properties can be used to prevent a display object from being rendered to the
+ * screen. However, there is a subtle difference between the two. When using `renderable`, the transforms  of the display
+ * object (and its children subtree) will continue to be calculated. When using `visible`, the transforms will not
+ * be calculated.
+ *
+ * It is recommended that applications use the `renderable` property for culling. See
+ * [@pixi-essentials/cull]{@link https://www.npmjs.com/package/@pixi-essentials/cull} or
+ * [pixi-cull]{@link https://www.npmjs.com/package/pixi-cull} for more details.
+ *
+ * Otherwise, to prevent an object from rendering in the general-purpose sense - `visible` is the property to use. This
+ * one is also better in terms of performance.
  *
  * @class
  * @extends PIXI.utils.EventEmitter
@@ -796,6 +983,7 @@ export abstract class DisplayObject extends EventEmitter
      * utilities shape clipping. To remove a mask, set this property to `null`.
      *
      * For sprite mask both alpha and red channel are used. Black mask is the same as transparent mask.
+     *
      * @example
      * const graphics = new PIXI.Graphics();
      * graphics.beginFill(0xFF3300);
@@ -804,8 +992,8 @@ export abstract class DisplayObject extends EventEmitter
      *
      * const sprite = new PIXI.Sprite(texture);
      * sprite.mask = graphics;
-     * @todo At the moment, PIXI.CanvasRenderer doesn't support PIXI.Sprite as mask.
      *
+     * @todo At the moment, PIXI.CanvasRenderer doesn't support PIXI.Sprite as mask.
      * @member {PIXI.Container|PIXI.MaskData|null}
      */
     get mask(): Container|MaskData|null
