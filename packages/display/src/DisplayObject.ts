@@ -125,17 +125,17 @@ export interface DisplayObject extends GlobalMixins.DisplayObject, EventEmitter 
  *     <tr>
  *       <td>width</td>
  *       <td>
- *         Scaling. The width property calculates scale.x by dividing the "requested" width by the
- *         local bounding box width. It is indirectly an abstraction over scale.x, and there is no
- *         concept of user-defined width.
+ *         Implemented in [Container]{@link PIXI.Container}. Scaling. The width property calculates scale.x by dividing
+ *         the "requested" width by the local bounding box width. It is indirectly an abstraction over scale.x, and there
+ *         is no concept of user-defined width.
  *       </td>
  *     </tr>
  *     <tr>
  *       <td>height</td>
  *       <td>
- *         Scaling. The height property calculates scale.y by dividing the "requested" height by the
- *         local bounding box height. It is indirectly an abstraction over scale.y, and there is no
- *         concept of user-defined height.
+ *         Implemented in [Container]{@link PIXI.Container}. Scaling. The height property calculates scale.y by dividing
+ *         the "requested" height by the local bounding box height. It is indirectly an abstraction over scale.y, and there
+ *         is no concept of user-defined height.
  *       </td>
  *     </tr>
  *   </tbody>
@@ -170,7 +170,7 @@ export interface DisplayObject extends GlobalMixins.DisplayObject, EventEmitter 
  * forming the "hull" of the object (i.e. outline of the object's shape), and then add them
  * using {@link PIXI.Bounds#addPointMatrix}.
  *
- * ```ts
+ * ```js
  * calculateBounds(): void
  * {
  *     const points = [...];
@@ -497,13 +497,39 @@ export abstract class DisplayObject extends EventEmitter
     }
 
     /**
-     * Retrieves the bounds of the displayObject as a rectangle object.
+     * Calculates and returns the (world) bounds of the display object as a [Rectangle]{@link PIXI.Rectangle}.
+     *
+     * This method is expensive on containers with a large subtree (like the stage). This is because the bounds
+     * of a container depend on its children's bounds, which recursively causes all bounds in the subtree to
+     * be recalculated. The upside, however, is that calling `getBounds` once on a container will indeed update
+     * the bounds of all children (the whole subtree, in fact). This side effect should be exploited by using
+     * `displayObject._bounds.getRectangle()` when traversing through all the bounds in a scene graph. Otherwise,
+     * calling `getBounds` on each object in a subtree will cause the total cost to increase quadratically as
+     * its height increases.
+     *
+     * * The transforms of all objects in a container's **subtree** and of all **ancestors** are updated.
+     * * The world bounds of all display objects in a container's **subtree** will also be recalculated.
+     *
+     * The `_bounds` object stores the last calculation of the bounds. You can use to entirely skip bounds
+     * calculation if needed.
+     *
+     * ```js
+     * const lastCalculatedBounds = displayObject._bounds.getRectangle(optionalRect);
+     * ```
+     *
+     * Do know that usage of `getLocalBounds` can corrupt the `_bounds` of children (the whole subtree, actually). This
+     * is a known issue that has not been solved. See [getLocalBounds]{@link PIXI.DisplayObject#getLocalBounds} for more
+     * details.
+     *
+     * `getBounds` should be called with `skipUpdate` equal to `true` in a render() call. This is because the transforms
+     * are guaranteed to be update-to-date. In fact, recalculating inside a render() call may cause corruption in certain
+     * cases.
      *
      * @param {boolean} [skipUpdate] - Setting to `true` will stop the transforms of the scene graph from
      *  being updated. This means the calculation returned MAY be out of date BUT will give you a
      *  nice performance boost.
      * @param {PIXI.Rectangle} [rect] - Optional rectangle to store the result of the bounds calculation.
-     * @return {PIXI.Rectangle} The rectangular bounding area.
+     * @return {PIXI.Rectangle} The minimum axis-aligned rectangle in world space that fits around this object.
      */
     getBounds(skipUpdate?: boolean, rect?: Rectangle): Rectangle
     {
@@ -852,8 +878,11 @@ export abstract class DisplayObject extends EventEmitter
     }
 
     /**
-     * The scale factor of the object.
-     * Assignment by value since pixi-v4.
+     * The scale factors of this object along the local coordinate axes.
+     *
+     * The default scale is (1, 1).
+     *
+     * NOTE: Assignment by value since pixi-v4.
      *
      * @member {PIXI.ObservablePoint}
      */
@@ -868,8 +897,12 @@ export abstract class DisplayObject extends EventEmitter
     }
 
     /**
-     * The pivot point of the displayObject that it rotates around.
-     * Assignment by value since pixi-v4.
+     * The center of rotation, scaling, and skewing for this display object in its local space. The `position`
+     * is the projection of `pivot` in the parent's local space.
+     *
+     * By default, the pivot is the origin (0, 0).
+     *
+     * NOTE: Assignment by value since pixi-v4.
      *
      * @member {PIXI.ObservablePoint}
      */
@@ -933,11 +966,13 @@ export abstract class DisplayObject extends EventEmitter
 
     /**
      * The zIndex of the displayObject.
+     *
      * If a container has the sortableChildren property set to true, children will be automatically
      * sorted by zIndex value; a higher value will mean it will be moved towards the end of the array,
-     * and thus rendered on top of other displayObjects within the same container.
+     * and thus rendered on top of other display objects within the same container.
      *
      * @member {number}
+     * @see PIXI.Container#sortableChildren
      */
     get zIndex(): number
     {
@@ -1036,6 +1071,6 @@ export class TemporaryDisplayObject extends DisplayObject
  * Will crash if there's no parent element.
  *
  * @memberof PIXI.DisplayObject#
- * @function displayObjectUpdateTransform
+ * @method displayObjectUpdateTransform
  */
 DisplayObject.prototype.displayObjectUpdateTransform = DisplayObject.prototype.updateTransform;
