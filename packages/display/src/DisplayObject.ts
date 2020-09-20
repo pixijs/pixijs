@@ -37,14 +37,6 @@ export interface DisplayObject extends GlobalMixins.DisplayObject, EventEmitter 
  * | {@link PIXI.SimplePlane}        | Mesh-related                                                          |
  * | {@link PIXI.SimpleRope}         | Mesh-related                                                          |
  *
- * ## External libraries that export or service display objects
- *
- * | Package                         | Description                                                          |
- * | ------------------------------- | -------------------------------------------------------------------- |
- * | pixi-layers                     | Faster layering of display objects than z-indexing                   |
- * | pixi-sdf-text                   | Signed distance field text implementation                            |
- * | @pixi-essentials/transformer    | Interactive interface for dragging, scaling, rotating display objects|
- *
  * ## Transforms
  *
  * The [transform]{@link DisplayObject#transform} of a display object describes the projection from its
@@ -95,17 +87,17 @@ export interface DisplayObject extends GlobalMixins.DisplayObject, EventEmitter 
  *         <p>Skewing. This can be used to deform a rectangular display object into a parallelogram.</p>
  *         <p>
  *         In PixiJS, skew has a slightly different behaviour than the conventional meaning. It can be
- *         thought of the net rotation applied to the coordinate axes (separately). For example, if skew.x is
- *         ⍺ and skew.y is β, then the line x = 0 will be rotated by ⍺ (y = -x*cot⍺) and the line y = 0 will be
+ *         thought of the net rotation applied to the coordinate axes (separately). For example, if "skew.x" is
+ *         ⍺ and "skew.y" is β, then the line x = 0 will be rotated by ⍺ (y = -x*cot⍺) and the line y = 0 will be
  *         rotated by β (y = x*tanβ). A line y = x*tanϴ (i.e. a line at angle ϴ to the x-axis in local-space) will
  *         be rotated by an angle between ⍺ and β.
  *         </p>
  *         <p>
  *         It can be observed that if skew is applied equally to both axes, then it will be equivalent to applying
- *         one rotation. Indeed, if skew.x = -𝜽 and skew.y = 𝛳, it will produce an equivalent of rotation = 𝛳.
+ *         a rotation. Indeed, if "skew.x" = -ϴ and "skew.y" = ϴ, it will produce an equivalent of "rotation" = ϴ.
  *         </p>
  *         <p>
- *         Another quite interesting observation is that skew.x, skew.y, rotation are communtative operations. Indeed,
+ *         Another quite interesting observation is that "skew.x", "skew.y", rotation are communtative operations. Indeed,
  *         because rotation is essentially a careful combination of the two.
  *         </p>
  *       </td>
@@ -863,8 +855,8 @@ export abstract class DisplayObject extends EventEmitter
 
     /**
      * The coordinate of the object relative to the local coordinates of the parent.
-     * Assignment by value since pixi-v4.
      *
+     * @since PixiJS 4
      * @member {PIXI.ObservablePoint}
      */
     get position(): ObservablePoint
@@ -882,8 +874,7 @@ export abstract class DisplayObject extends EventEmitter
      *
      * The default scale is (1, 1).
      *
-     * NOTE: Assignment by value since pixi-v4.
-     *
+     * @since PixiJS 4
      * @member {PIXI.ObservablePoint}
      */
     get scale(): ObservablePoint
@@ -902,8 +893,7 @@ export abstract class DisplayObject extends EventEmitter
      *
      * By default, the pivot is the origin (0, 0).
      *
-     * NOTE: Assignment by value since pixi-v4.
-     *
+     * @since PixiJS 4
      * @member {PIXI.ObservablePoint}
      */
     get pivot(): ObservablePoint
@@ -918,8 +908,8 @@ export abstract class DisplayObject extends EventEmitter
 
     /**
      * The skew factor for the object in radians.
-     * Assignment by value since pixi-v4.
      *
+     * @since PixiJS 4
      * @member {PIXI.ObservablePoint}
      */
     get skew(): ObservablePoint
