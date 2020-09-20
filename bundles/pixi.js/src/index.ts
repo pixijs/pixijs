@@ -7,7 +7,7 @@ import { Application } from '@pixi/app';
 import { Renderer, BatchRenderer } from '@pixi/core';
 import { Extract } from '@pixi/extract';
 import { Loader, AppLoaderPlugin } from '@pixi/loaders';
-import { CompressedTextureLoader, DDSLoader, KTXLoader } from '@pixi/loaders-compressed-textures';
+import { CompressedTextureLoader, DDSLoader, KTXLoader } from '@pixi/compressed-textures';
 import { ParticleRenderer } from '@pixi/particles';
 import { Prepare } from '@pixi/prepare';
 import { SpritesheetLoader } from '@pixi/spritesheet';
@@ -105,6 +105,7 @@ export const filters = {
 export * from '@pixi/accessibility';
 export * from '@pixi/app';
 export * from '@pixi/constants';
+export * from '@pixi/compressed-textures';
 export * from '@pixi/core';
 export * from '@pixi/display';
 export * from '@pixi/extract';

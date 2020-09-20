@@ -1,4 +1,4 @@
-# @pixi/loaders-compressed-textures
+# @pixi/compressed-textures
 
 This packages contains the loaders for compressed texture file formats, namely:
 
@@ -11,11 +11,16 @@ This packages contains the loaders for compressed texture file formats, namely:
 ## Installation
 
 ```bash
-npm install @pixi/loaders-compressed-textures
+npm install @pixi/compressed-textures
 ```
 
 ## Usage
 
-```
-import '@pixi/loaders-compressed-textures';
+```js
+import { CompressedTextureLoader, DDSLoader, KTXLoader } from '@pixi/compressed-textures';
+import { Loader } from '@pixi/loaders';
+
+Loader.registerPlugin(CompressedTextureLoader);
+Loader.registerPlugin(DDSLoader);
+Loader.registerPlugin(KTXLoader);
 ```

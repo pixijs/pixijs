@@ -1,5 +1,5 @@
 {
-  "name": "@pixi/loaders-compressed-textures",
+  "name": "@pixi/compressed-textures",
   "version": "5.3.2",
   "description": "Loaders for compressed texture file formats",
   "keywords": [
