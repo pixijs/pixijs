@@ -1,6 +1,6 @@
+import { Runner } from '@pixi/runner';
 import { BASIS_FORMATS } from './Basis';
 import { ITranscodeResponse, TranscoderWorkerWrapper } from './TranscoderWorkerWrapper';
-import { BasisLoader } from './BasisLoader';
 
 /**
  * Worker class for transcoding *.basis files in background threads.
@@ -23,6 +23,8 @@ export class TranscoderWorker
     static bindingURL: string;
     static jsSource: string;
     static wasmSource: ArrayBuffer;
+
+    public static onTranscoderInitialized = new Runner('onTranscoderInitialized');
 
     isInit: boolean;
     load: number;
@@ -180,7 +182,7 @@ export class TranscoderWorker
 
         return Promise.all([jsPromise, wasmPromise]).then((data) =>
         {
-            BasisLoader.onTranscoderInitializedRunner.emit();
+            TranscoderWorker.onTranscoderInitialized.emit();
 
             return data;
         });

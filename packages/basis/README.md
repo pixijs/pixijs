@@ -12,4 +12,7 @@ npm install @pixi/core
 
 ```js
 import { BasisLoader } from '@pixi/basis';
+import { Loader } from '@pixi/loaders';
+
+Loader.registerPlugin(BasisLoader);
 ```

@@ -1,6 +1,5 @@
 import { INTERNAL_FORMATS, TYPES, MIPMAP_MODES, ALPHA_MODES, FORMATS } from '@pixi/constants';
 import { BaseTexture, BufferResource, CompressedTextureResource, Texture } from '@pixi/core';
-import { Runner } from '@pixi/runner';
 import {
     BASIS_FORMATS,
     BASIS_FORMAT_TO_INTERNAL_FORMAT,
@@ -56,12 +55,6 @@ LoaderResource.setExtensionXhrType('basis', LoaderResource.XHR_RESPONSE_TYPE.BUF
  */
 export class BasisLoader
 {
-    /**
-     * @ignore
-     */
-    // Used by BasisLoader.TranscoderWorker
-    public static onTranscoderInitializedRunner = new Runner('onTranscoderInitialized');
-
     private static basisBinding: BasisBinding;
     private static defaultRGBFormat: { basisFormat: BASIS_FORMATS, textureFormat: INTERNAL_FORMATS | TYPES };
     private static defaultRGBAFormat: { basisFormat: BASIS_FORMATS, textureFormat: INTERNAL_FORMATS | TYPES };
@@ -85,7 +78,7 @@ export class BasisLoader
             }
             else
             {
-                BasisLoader.onTranscoderInitializedRunner.add(() =>
+                TranscoderWorker.onTranscoderInitialized.add(() =>
                 {
                     BasisLoader.transcode(resource, next);
                 });
