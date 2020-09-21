@@ -64,18 +64,18 @@ export interface Graphics extends GlobalMixins.Graphics, Container {}
 
 /**
  * The Graphics class is primarily used to render primitive shapes such as lines, circles and
- * rectangles to the display, and to color and fill them.  However, you can also use a Graphics 
+ * rectangles to the display, and to color and fill them.  However, you can also use a Graphics
  * object to build a list of primitives to use as a mask, or as a complex hitArea.
  *
  * Please note that due to legacy naming conventions, the behavior of some functions in this class
  * can be confusing.  Each call to `drawRect()`, `drawPolygon()`, etc. actually stores that primitive
- * in the Geometry class's GraphicsGeometry object for later use in rendering or hit testing - the 
+ * in the Geometry class's GraphicsGeometry object for later use in rendering or hit testing - the
  * functions do not directly draw anything to the screen.  Similarly, the `clear()` function doesn't
- * change the screen, it simply resets the list of primitives, which can be useful if you want to 
+ * change the screen, it simply resets the list of primitives, which can be useful if you want to
  * rebuild the contents of an existing Graphics object.
  *
  * Once a GraphicsGeometry list is built, you can re-use it in other Geometry objects as
- * an optimization, by passing it into a new Geometry object's constructor.  Because of this 
+ * an optimization, by passing it into a new Geometry object's constructor.  Because of this
  * ability, it's important to call `destroy()` on Geometry objects once you are done with them, to
  * properly dereference each GraphicsGeometry and prevent memory leaks.
  *
