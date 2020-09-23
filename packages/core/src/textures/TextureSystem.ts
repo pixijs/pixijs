@@ -432,7 +432,7 @@ export class TextureSystem extends System
     {
         const gl = this.gl;
 
-        if (glTexture.mipmap)
+        if (glTexture.mipmap && texture.mipmap !== MIPMAP_MODES.ON_MANUAL)
         {
             gl.generateMipmap(texture.target);
         }
