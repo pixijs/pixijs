@@ -21,7 +21,8 @@
   "files": [
     "dist",
     "lib",
-    "assets"
+    "assets",
+    "index.d.ts"
   ],
   "repository": {
     "type": "git",

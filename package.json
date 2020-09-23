@@ -38,6 +38,8 @@
     "@lerna/batch-packages": "^3.13.0",
     "@lerna/filter-packages": "^3.13.0",
     "@lerna/project": "^3.13.1",
+    "@microsoft/api-extractor": "^7.9.11",
+    "@pixi-build-tools/api-extractor-lerna-monorepo": "^1.0.1",
     "@typescript-eslint/eslint-plugin": "^3.2.0",
     "@typescript-eslint/parser": "^3.2.0",
     "@webdoc/cli": "^1.0.0",
@@ -67,9 +69,5 @@
     "sinon": "^7.3.2",
     "sinon-chai": "^3.3.0",
     "typescript": "^3.9.5"
-  },
-  "dependencies": {
-    "@microsoft/api-extractor": "^7.9.11",
-    "@pixi-build-tools/api-extractor-lerna-monorepo": "^1.0.1"
   }
 }
