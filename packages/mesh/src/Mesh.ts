@@ -144,10 +144,6 @@ export class Mesh extends Container
 
         this._transformID = -1;
 
-        // Inherited from DisplayMode, set defaults
-        this.tint = 0xFFFFFF;
-        this.blendMode = BLEND_MODES.NORMAL;
-
         /**
          * Internal roundPixels field
          *
