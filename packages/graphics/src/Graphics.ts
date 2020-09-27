@@ -969,11 +969,11 @@ export class Graphics extends Container
         this.finishPoly();
 
         const geometry = this._geometry;
-        const hasuit32 = renderer.context.supports.uint32Indices;
+        const hasuint32 = renderer.context.supports.uint32Indices;
         // batch part..
         // batch it!
 
-        geometry.updateBatches(hasuit32);
+        geometry.updateBatches(hasuint32);
 
         if (geometry.batchable)
         {
