@@ -231,7 +231,7 @@ export class TextureSystem extends System
                     this.currentLocation = i;
                 }
 
-                gl.bindTexture(gl.TEXTURE_2D, this.emptyTextures[texture.target].texture);
+                gl.bindTexture(texture.target, this.emptyTextures[texture.target].texture);
                 boundTextures[i] = null;
             }
         }
