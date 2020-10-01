@@ -28,7 +28,7 @@ import type { IBaseTextureOptions } from '../textures/BaseTexture';
  *
  * renderer.render(sprite, renderTexture);
  * ```
- * Note that you shouldn not create a new renderer, but reuse the same as the rest of the application.
+ * Note that you should not create a new renderer, but reuse the same one as the rest of the application.
  *
  * The Sprite in this case will be rendered using its local transform. To render this sprite at 0,0
  * you can clear the transform
