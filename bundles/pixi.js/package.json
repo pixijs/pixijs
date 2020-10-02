@@ -13,6 +13,7 @@
   "main": "lib/pixi.js",
   "module": "lib/pixi.es.js",
   "bundle": "dist/pixi.js",
+  "bundleModule": "dist/pixi.mjs",
   "bundleOutput": {
     "footer": "PIXI.useDeprecated();",
     "name": "PIXI"
@@ -53,6 +54,7 @@
     "@pixi/graphics": "5.3.2",
     "@pixi/interaction": "5.3.2",
     "@pixi/loaders": "5.3.2",
+    "@pixi/compressed-textures": "5.3.2",
     "@pixi/math": "5.3.2",
     "@pixi/mesh": "5.3.2",
     "@pixi/mesh-extras": "5.3.2",

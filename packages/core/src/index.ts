@@ -1,11 +1,7 @@
 import './settings';
 
-import * as resources from './textures/resources';
-import * as systems from './systems';
-
-export { systems };
-export { resources };
-
+export * from './textures/resources';
+export * from './systems';
 export * from './IRenderingContext';
 export * from './autoDetectRenderer';
 export * from './fragments';

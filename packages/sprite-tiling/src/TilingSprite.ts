@@ -61,7 +61,7 @@ export class TilingSprite extends Sprite
          *
          * @member {PIXI.TextureMatrix}
          */
-        this.uvMatrix = texture.uvMatrix || new TextureMatrix(texture);
+        this.uvMatrix = this.texture.uvMatrix || new TextureMatrix(texture);
 
         /**
          * Plugin that is responsible for rendering this element.
@@ -181,10 +181,10 @@ export class TilingSprite extends Sprite
     /**
      * Gets the local bounds of the sprite object.
      *
-     * @param {PIXI.Rectangle} rect - The output rectangle.
+     * @param {PIXI.Rectangle} [rect] - Optional output rectangle.
      * @return {PIXI.Rectangle} The bounds.
      */
-    public getLocalBounds(rect: Rectangle): Rectangle
+    public getLocalBounds(rect?: Rectangle): Rectangle
     {
         // we can do a fast local bounds if the sprite has no children!
         if (this.children.length === 0)

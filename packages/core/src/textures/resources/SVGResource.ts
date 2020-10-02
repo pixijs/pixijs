@@ -15,8 +15,8 @@ export interface ISVGResourceOptions
 /**
  * Resource type for SVG elements and graphics.
  * @class
- * @extends PIXI.resources.BaseImageResource
- * @memberof PIXI.resources
+ * @extends PIXI.BaseImageResource
+ * @memberof PIXI
  * @param {string} source - Base64 encoded SVG element or URL for SVG file.
  * @param {object} [options] - Options to use
  * @param {number} [options.scale=1] - Scale to apply to SVG. Overridden by...
@@ -241,7 +241,7 @@ export class SVGResource extends BaseImageResource
         // url file extension is SVG
         return extension === 'svg'
             // source is SVG data-uri
-            || (typeof source === 'string' && source.indexOf('data:image/svg+xml;base64') === 0)
+            || (typeof source === 'string' && (/^data:image\/svg\+xml(;(charset=utf8|utf8))?;base64/).test(source))
             // source is SVG inline
             || (typeof source === 'string' && source.indexOf('<svg') === 0);
     }
@@ -251,7 +251,7 @@ export class SVGResource extends BaseImageResource
      *
      * @static
      * @constant {RegExp|string} SVG_SIZE
-     * @memberof PIXI.resources.SVGResource
+     * @memberof PIXI.SVGResource
      * @example &lt;svg width="100" height="100"&gt;&lt;/svg&gt;
      */
     static SVG_SIZE = /<svg[^>]*(?:\s(width|height)=('|")(\d*(?:\.\d+)?)(?:px)?('|"))[^>]*(?:\s(width|height)=('|")(\d*(?:\.\d+)?)(?:px)?('|"))[^>]*>/i; // eslint-disable-line max-len

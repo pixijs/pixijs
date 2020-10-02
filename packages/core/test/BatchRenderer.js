@@ -1,5 +1,4 @@
-const { Renderer, BatchRenderer, resources, Texture, BaseTexture } = require('../');
-const { CanvasResource } = resources;
+const { Renderer, BatchRenderer, CanvasResource, Texture, BaseTexture } = require('../');
 const { skipHello } = require('@pixi/utils');
 const { BLEND_MODES } = require('@pixi/constants');
 

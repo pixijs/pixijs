@@ -63,13 +63,21 @@ const DEFAULT_SHADERS: {[key: string]: Shader} = {};
 export interface Graphics extends GlobalMixins.Graphics, Container {}
 
 /**
- * The Graphics class contains methods used to draw primitive shapes such as lines, circles and
- * rectangles to the display, and to color and fill them.
+ * The Graphics class is primarily used to render primitive shapes such as lines, circles and
+ * rectangles to the display, and to color and fill them.  However, you can also use a Graphics
+ * object to build a list of primitives to use as a mask, or as a complex hitArea.
  *
- * Note that because Graphics can share a GraphicsGeometry with other instances,
- * it is necessary to call `destroy()` to properly dereference the underlying
- * GraphicsGeometry and avoid a memory leak. Alternatively, keep using the same
- * Graphics instance and call `clear()` between redraws.
+ * Please note that due to legacy naming conventions, the behavior of some functions in this class
+ * can be confusing.  Each call to `drawRect()`, `drawPolygon()`, etc. actually stores that primitive
+ * in the Geometry class's GraphicsGeometry object for later use in rendering or hit testing - the
+ * functions do not directly draw anything to the screen.  Similarly, the `clear()` function doesn't
+ * change the screen, it simply resets the list of primitives, which can be useful if you want to
+ * rebuild the contents of an existing Graphics object.
+ *
+ * Once a GraphicsGeometry list is built, you can re-use it in other Geometry objects as
+ * an optimization, by passing it into a new Geometry object's constructor.  Because of this
+ * ability, it's important to call `destroy()` on Geometry objects once you are done with them, to
+ * properly dereference each GraphicsGeometry and prevent memory leaks.
  *
  * @class
  * @extends PIXI.Container
@@ -264,7 +272,10 @@ export class Graphics extends Container
 
     /**
      * The blend mode to be applied to the graphic shape. Apply a value of
-     * `PIXI.BLEND_MODES.NORMAL` to reset the blend mode.
+     * `PIXI.BLEND_MODES.NORMAL` to reset the blend mode.  Note that, since each
+     * primitive in the GraphicsGeometry list is rendered sequentially, modes
+     * such as `PIXI.BLEND_MODES.ADD` and `PIXI.BLEND_MODES.MULTIPLY` will
+     * be applied per-primitive.
      *
      * @member {number}
      * @default PIXI.BLEND_MODES.NORMAL;
@@ -281,7 +292,7 @@ export class Graphics extends Container
     }
 
     /**
-     * The tint applied to the graphic shape. This is a hex value. A value of
+     * The tint applied to each graphic shape. This is a hex value. A value of
      * 0xFFFFFF will remove any tint effect.
      *
      * @member {number}
@@ -725,7 +736,7 @@ export class Graphics extends Container
      */
     beginTextureFill(options: IFillStyleOptions): this
     {
-        // backward compatibility with params: (texture, color, alpha, matrix)
+        // Backward compatibility with params: (texture, color, alpha, matrix)
         if (options instanceof Texture)
         {
             deprecation('v5.2.0', 'Please use object-based options for Graphics#beginTextureFill');
@@ -969,11 +980,11 @@ export class Graphics extends Container
         this.finishPoly();
 
         const geometry = this._geometry;
-        const hasuit32 = renderer.context.supports.uint32Indices;
+        const hasuint32 = renderer.context.supports.uint32Indices;
         // batch part..
         // batch it!
 
-        geometry.updateBatches(hasuit32);
+        geometry.updateBatches(hasuint32);
 
         if (geometry.batchable)
         {
@@ -1151,9 +1162,10 @@ export class Graphics extends Container
             // but may be more than one plugins for graphics
             if (!DEFAULT_SHADERS[pluginName])
             {
-                const sampleValues = new Int32Array(16);
+                const MAX_TEXTURES = renderer.plugins.batch.MAX_TEXTURES;
+                const sampleValues = new Int32Array(MAX_TEXTURES);
 
-                for (let i = 0; i < 16; i++)
+                for (let i = 0; i < MAX_TEXTURES; i++)
                 {
                     sampleValues[i] = i;
                 }

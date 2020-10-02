@@ -18,7 +18,7 @@ export interface IParticleRendererProperty {
     offset: number;
 }
 
-/**
+/*
  * @author Mat Groves
  *
  * Big thanks to the very clever Matt DesLauriers <mattdesl> https://github.com/mattdesl/

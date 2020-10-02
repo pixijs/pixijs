@@ -21,9 +21,9 @@ export interface ICubeResourceOptions extends ISize
  * Resource for a CubeTexture which contains six resources.
  *
  * @class
- * @extends PIXI.resources.ArrayResource
- * @memberof PIXI.resources
- * @param {Array<string|PIXI.resources.Resource>} [source] - Collection of URLs or resources
+ * @extends PIXI.ArrayResource
+ * @memberof PIXI
+ * @param {Array<string|PIXI.Resource>} [source] - Collection of URLs or resources
  *        to use as the sides of the cube.
  * @param {object} [options] - ImageResource options
  * @param {number} [options.width] - Width of resource
@@ -173,7 +173,7 @@ export class CubeResource extends AbstractMultiResource
     /**
      * Number of texture sides to store for CubeResources
      *
-     * @name PIXI.resources.CubeResource.SIDES
+     * @name PIXI.CubeResource.SIDES
      * @static
      * @member {number}
      * @default 6

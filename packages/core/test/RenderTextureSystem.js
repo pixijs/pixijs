@@ -1,7 +1,7 @@
 const { Renderer } = require('./..');
 const { Rectangle } = require('@pixi/math');
 
-describe('PIXI.systems.RenderTextureSystem', function ()
+describe('PIXI.RenderTextureSystem', function ()
 {
     before(function ()
     {

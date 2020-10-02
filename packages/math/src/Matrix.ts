@@ -359,6 +359,7 @@ export class Matrix
         const b = this.b;
         const c = this.c;
         const d = this.d;
+        const pivot = transform.pivot;
 
         const skewX = -Math.atan2(-c, d);
         const skewY = Math.atan2(b, a);
@@ -382,8 +383,8 @@ export class Matrix
         transform.scale.y = Math.sqrt((c * c) + (d * d));
 
         // next set position
-        transform.position.x = this.tx;
-        transform.position.y = this.ty;
+        transform.position.x = this.tx + ((pivot.x * a) + (pivot.y * c));
+        transform.position.y = this.ty + ((pivot.x * b) + (pivot.y * d));
 
         return transform;
     }

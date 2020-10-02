@@ -7,8 +7,8 @@ import type { GLTexture } from '../GLTexture';
 /**
  * Resource type for DepthTexture.
  * @class
- * @extends PIXI.resources.BufferResource
- * @memberof PIXI.resources
+ * @extends PIXI.BufferResource
+ * @memberof PIXI
  */
 export class DepthResource extends BufferResource
 {

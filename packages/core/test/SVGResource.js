@@ -1,9 +1,8 @@
-const { resources } = require('../');
-const { SVGResource } = resources;
+const { SVGResource } = require('../');
 const fs = require('fs');
 const path = require('path');
 
-describe('PIXI.resources.SVGResource', function ()
+describe('PIXI.SVGResource', function ()
 {
     before(function ()
     {
@@ -15,6 +14,23 @@ describe('PIXI.resources.SVGResource', function ()
         it('should create new resource from data-uri', function (done)
         {
             const url = path.join(this.resources, 'svg-base64.txt');
+            const buffer = fs.readFileSync(url, 'utf8');
+            const resource = new SVGResource(buffer, { autoLoad: false });
+
+            expect(resource.valid).to.equal(false);
+            resource.load().then(function ()
+            {
+                expect(resource.valid).to.equal(true);
+                expect(resource.width).to.equal(100);
+                expect(resource.height).to.equal(100);
+
+                done();
+            });
+        });
+
+        it('should create new resource from data-uri with charset=utf8', function (done)
+        {
+            const url = path.join(this.resources, 'svg-base64-utf8.txt');
             const buffer = fs.readFileSync(url, 'utf8');
             const resource = new SVGResource(buffer, { autoLoad: false });
 
