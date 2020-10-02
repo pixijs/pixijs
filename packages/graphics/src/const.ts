@@ -58,7 +58,7 @@ export interface IGraphicsCurvesSettings {
  * @memberof PIXI
  * @name GRAPHICS_CURVES
  * @type {object}
- * @property {boolean} adaptive=false - flag indicating if the resolution should be adaptive
+ * @property {boolean} adaptive=true - flag indicating if the resolution should be adaptive
  * @property {number} maxLength=10 - maximal length of a single segment of the curve (if adaptive = false, ignored)
  * @property {number} minSegments=8 - minimal number of segments in the curve (if adaptive = false, ignored)
  * @property {number} maxSegments=2048 - maximal number of segments in the curve (if adaptive = false, ignored)
