@@ -22,7 +22,8 @@
   },
   "files": [
     "lib",
-    "dist"
+    "dist",
+    "index.d.ts"
   ],
   "dependencies": {
     "@pixi/canvas-renderer": "5.3.2",
