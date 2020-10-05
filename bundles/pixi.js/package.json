@@ -18,7 +18,6 @@
     "footer": "PIXI.useDeprecated();",
     "name": "PIXI"
   },
-  "types": "pixi.js.d.ts",
   "homepage": "http://www.pixijs.com/",
   "bugs": "https://github.com/pixijs/pixi.js/issues",
   "license": "MIT",
@@ -32,7 +31,7 @@
   "files": [
     "lib/",
     "dist/",
-    "pixi.js.d.ts"
+    "index.d.ts"
   ],
   "funding": {
     "type": "opencollective",
@@ -54,6 +53,7 @@
     "@pixi/graphics": "5.3.2",
     "@pixi/interaction": "5.3.2",
     "@pixi/loaders": "5.3.2",
+    "@pixi/compressed-textures": "5.3.2",
     "@pixi/math": "5.3.2",
     "@pixi/mesh": "5.3.2",
     "@pixi/mesh-extras": "5.3.2",

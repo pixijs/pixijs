@@ -2,7 +2,7 @@ import { Rectangle } from '@pixi/math';
 import { Texture, BaseTexture } from '@pixi/core';
 import { getResolutionOfUrl } from '@pixi/utils';
 import type { Dict } from '@pixi/utils';
-import type { resources } from '@pixi/core';
+import type { ImageResource } from '@pixi/core';
 import type { IPointData } from '@pixi/math';
 
 /**
@@ -134,7 +134,7 @@ export class Spritesheet
          */
         this.data = data;
 
-        const resource = this.baseTexture.resource as resources.ImageResource;
+        const resource = this.baseTexture.resource as ImageResource;
 
         /**
          * The resolution of the spritesheet.

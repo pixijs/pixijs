@@ -5,6 +5,7 @@
         "node": true,
         "mocha": true
     },
+    "ignorePatterns": ["*.d.ts"],
     "globals": {
         "global": false
     },

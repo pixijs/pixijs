@@ -4,12 +4,14 @@ import { settings } from '../settings';
 
 import type { IRenderingContext } from '../IRenderingContext';
 import type { Renderer } from '../Renderer';
+import type { WebGLExtensions } from './WebGLExtensions';
 
 let CONTEXT_UID_COUNTER = 0;
 
 export interface ISupportDict {
     uint32Indices: boolean;
 }
+
 /**
  * System plugin to the renderer to manage the context.
  *
@@ -24,22 +26,8 @@ export class ContextSystem extends System
 
     protected CONTEXT_UID: number;
     protected gl: IRenderingContext;
-    /* eslint-disable camelcase */
-    extensions:
-    {
-        drawBuffers?: WEBGL_draw_buffers;
-        depthTexture?: OES_texture_float;
-        loseContext?: WEBGL_lose_context;
-        vertexArrayObject?: OES_vertex_array_object;
-        anisotropicFiltering?: EXT_texture_filter_anisotropic;
-        uint32ElementIndex?: OES_element_index_uint;
-        floatTexture?: OES_texture_float;
-        floatTextureLinear?: OES_texture_float_linear;
-        textureHalfFloat?: OES_texture_half_float;
-        textureHalfFloatLinear?: OES_texture_half_float_linear;
-        colorBufferFloat?: WEBGL_color_buffer_float;
-    };
-    /* eslint-enable camelcase */
+
+    public extensions: WebGLExtensions;
 
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
@@ -196,16 +184,29 @@ export class ContextSystem extends System
         // time to set up default extensions that Pixi uses.
         const { gl } = this;
 
+        const common = {
+            anisotropicFiltering: gl.getExtension('EXT_texture_filter_anisotropic'),
+            floatTextureLinear: gl.getExtension('OES_texture_float_linear'),
+
+            s3tc: gl.getExtension('WEBGL_compressed_texture_s3tc'),
+            s3tc_sRGB: gl.getExtension('WEBGL_compressed_texture_s3tc_srgb'), // eslint-disable-line camelcase
+            etc: gl.getExtension('WEBGL_compressed_texture_etc'),
+            etc1: gl.getExtension('WEBGL_compressed_texture_etc1'),
+            pvrtc: gl.getExtension('WEBGL_compressed_texture_pvrtc')
+                || gl.getExtension('WEBKIT_WEBGL_compressed_texture_pvrtc'),
+            atc: gl.getExtension('WEBGL_compressed_texture_atc'),
+            astc: gl.getExtension('WEBGL_compressed_texture_astc')
+        };
+
         if (this.webGLVersion === 1)
         {
-            Object.assign(this.extensions, {
+            Object.assign(this.extensions, common, {
                 drawBuffers: gl.getExtension('WEBGL_draw_buffers'),
                 depthTexture: gl.getExtension('WEBGL_depth_texture'),
                 loseContext: gl.getExtension('WEBGL_lose_context'),
                 vertexArrayObject: gl.getExtension('OES_vertex_array_object')
                     || gl.getExtension('MOZ_OES_vertex_array_object')
                     || gl.getExtension('WEBKIT_OES_vertex_array_object'),
-                anisotropicFiltering: gl.getExtension('EXT_texture_filter_anisotropic'),
                 uint32ElementIndex: gl.getExtension('OES_element_index_uint'),
                 // Floats and half-floats
                 floatTexture: gl.getExtension('OES_texture_float'),
@@ -216,11 +217,9 @@ export class ContextSystem extends System
         }
         else if (this.webGLVersion === 2)
         {
-            Object.assign(this.extensions, {
-                anisotropicFiltering: gl.getExtension('EXT_texture_filter_anisotropic'),
+            Object.assign(this.extensions, common, {
                 // Floats and half-floats
-                colorBufferFloat: gl.getExtension('EXT_color_buffer_float'),
-                floatTextureLinear: gl.getExtension('OES_texture_float_linear'),
+                colorBufferFloat: gl.getExtension('EXT_color_buffer_float')
             });
         }
     }
