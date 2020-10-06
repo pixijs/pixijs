@@ -1,3 +1,4 @@
+import { Texture } from '@pixi/core/src';
 import { DRAW_MODES } from '@pixi/constants';
 import { canvasUtils } from '@pixi/canvas-renderer';
 
@@ -119,7 +120,10 @@ export class CanvasMeshRenderer
             if (mesh._cachedTint !== mesh.tint)
             {
                 mesh._cachedTint = mesh.tint;
-                mesh._tintedCanvas = canvasUtils.getTintedCanvas(mesh, mesh.tint) as HTMLCanvasElement;
+                mesh._tintedCanvas = canvasUtils.getTintedCanvas(
+                    { texture: new Texture(base) },
+                    mesh.tint
+                ) as HTMLCanvasElement;
             }
         }
 
