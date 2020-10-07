@@ -241,7 +241,7 @@ export class SVGResource extends BaseImageResource
         // url file extension is SVG
         return extension === 'svg'
             // source is SVG data-uri
-            || (typeof source === 'string' && source.indexOf('data:image/svg+xml;base64') === 0)
+            || (typeof source === 'string' && (/^data:image\/svg\+xml(;(charset=utf8|utf8))?;base64/).test(source))
             // source is SVG inline
             || (typeof source === 'string' && source.indexOf('<svg') === 0);
     }

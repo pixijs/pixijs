@@ -7,6 +7,7 @@ import { Application } from '@pixi/app';
 import { Renderer, BatchRenderer } from '@pixi/core';
 import { Extract } from '@pixi/extract';
 import { Loader, AppLoaderPlugin } from '@pixi/loaders';
+import { CompressedTextureLoader, DDSLoader, KTXLoader } from '@pixi/compressed-textures';
 import { ParticleRenderer } from '@pixi/particles';
 import { Prepare } from '@pixi/prepare';
 import { SpritesheetLoader } from '@pixi/spritesheet';
@@ -37,9 +38,14 @@ Renderer.registerPlugin('prepare', Prepare);
 Renderer.registerPlugin('batch', BatchRenderer);
 Renderer.registerPlugin('tilingSprite', TilingSpriteRenderer);
 
+// Install loader plugins
 Loader.registerPlugin(BitmapFontLoader);
+Loader.registerPlugin(CompressedTextureLoader);
+Loader.registerPlugin(DDSLoader);
+Loader.registerPlugin(KTXLoader);
 Loader.registerPlugin(SpritesheetLoader);
 
+// Install application plugins
 Application.registerPlugin(TickerPlugin);
 Application.registerPlugin(AppLoaderPlugin);
 
@@ -99,6 +105,7 @@ export const filters = {
 export * from '@pixi/accessibility';
 export * from '@pixi/app';
 export * from '@pixi/constants';
+export * from '@pixi/compressed-textures';
 export * from '@pixi/core';
 export * from '@pixi/display';
 export * from '@pixi/extract';

@@ -18,7 +18,6 @@
     "footer": "PIXI.useDeprecated();",
     "name": "PIXI"
   },
-  "types": "pixi.js-legacy.d.ts",
   "homepage": "http://www.pixijs.com/",
   "bugs": "https://github.com/pixijs/pixi.js/issues",
   "license": "MIT",
@@ -29,7 +28,7 @@
   "files": [
     "lib/",
     "dist/",
-    "pixi.js-legacy.d.ts"
+    "index.d.ts"
   ],
   "funding": {
     "type": "opencollective",

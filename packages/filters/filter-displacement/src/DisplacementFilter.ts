@@ -4,7 +4,7 @@ import fragment from './displacement.frag';
 import vertex from './displacement.vert';
 
 import type { CLEAR_MODES } from '@pixi/constants';
-import type { RenderTexture, systems, Texture, ISpriteMaskTarget } from '@pixi/core';
+import type { FilterSystem, RenderTexture, Texture, ISpriteMaskTarget } from '@pixi/core';
 
 /**
  * The DisplacementFilter class uses the pixel values from the specified texture
@@ -71,7 +71,7 @@ export class DisplacementFilter extends Filter
      * @param {PIXI.CLEAR_MODES} clearMode - clearMode.
      */
     public apply(
-        filterManager: systems.FilterSystem, input: RenderTexture, output: RenderTexture, clearMode: CLEAR_MODES
+        filterManager: FilterSystem, input: RenderTexture, output: RenderTexture, clearMode: CLEAR_MODES
     ): void
     {
         // fill maskMatrix with _normalized sprite texture coords_

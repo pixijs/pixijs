@@ -118,6 +118,25 @@ export class Bounds
     }
 
     /**
+     * Adds a point, after transformed. This should be inlined when its possible.
+     *
+     * @param matrix
+     * @param point
+     */
+    addPointMatrix(matrix: Matrix, point: IPointData): void
+    {
+        const { a, b, c, d, tx, ty } = matrix;
+
+        const x = (a * point.x) + (c * point.y) + tx;
+        const y = (b * point.x) + (d * point.y) + ty;
+
+        this.minX = Math.min(this.minX, x);
+        this.maxX = Math.max(this.maxX, x);
+        this.minY = Math.min(this.minY, y);
+        this.maxY = Math.max(this.maxY, y);
+    }
+
+    /**
      * Adds a quad, not transformed
      *
      * @param {Float32Array} vertices - The verts to add.

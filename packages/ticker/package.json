@@ -21,7 +21,8 @@
   },
   "files": [
     "lib",
-    "dist"
+    "dist",
+    "index.d.ts"
   ],
   "dependencies": {
     "@pixi/settings": "5.3.2"
