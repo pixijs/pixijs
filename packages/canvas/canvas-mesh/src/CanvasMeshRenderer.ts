@@ -120,8 +120,9 @@ export class CanvasMeshRenderer
             if (mesh._cachedTint !== mesh.tint)
             {
                 mesh._cachedTint = mesh.tint;
+                mesh._cachedTexture = mesh._cachedTexture || new Texture(base);
                 mesh._tintedCanvas = canvasUtils.getTintedCanvas(
-                    { texture: new Texture(base) },
+                    { texture: mesh._cachedTexture },
                     mesh.tint
                 ) as HTMLCanvasElement;
             }
