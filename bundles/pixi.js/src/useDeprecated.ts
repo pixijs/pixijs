@@ -11,7 +11,8 @@ import type {
     StateSystem,
     SVGResource,
     ImageResource,
-    BaseImageResource } from '@pixi/core';
+    BaseImageResource
+} from '@pixi/core';
 import type { DisplayObject, Container } from '@pixi/display';
 import type { TilingSprite } from '@pixi/sprite-tiling';
 import type {

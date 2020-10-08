@@ -19,7 +19,8 @@
   },
   "files": [
     "lib",
-    "dist"
+    "dist",
+    "index.d.ts"
   ],
   "dependencies": {
     "@pixi/graphics": "5.3.2"

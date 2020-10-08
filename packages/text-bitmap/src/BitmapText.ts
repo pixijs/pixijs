@@ -454,6 +454,17 @@ export class BitmapText extends Container
                 pageMeshData.uvs = new Float32Array(4 * 2 * total);
                 pageMeshData.indices = new Uint16Array(6 * total);
             }
+            else
+            {
+                const total = pageMeshData.total;
+                const vertices = pageMeshData.vertices;
+
+                // Clear the garbage at the end of the vertices buffer. This will prevent the bounds miscalculation.
+                for (let i = total * 4 * 2; i < vertices.length; i++)
+                {
+                    vertices[i] = 0;
+                }
+            }
 
             // as a buffer maybe bigger than the current word, we set the size of the meshMaterial
             // to match the number of letters needed

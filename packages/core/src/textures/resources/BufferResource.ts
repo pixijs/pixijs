@@ -17,7 +17,7 @@ import type { GLTexture } from '../GLTexture';
  */
 export class BufferResource extends Resource
 {
-    data: Float32Array|Uint8Array|Uint32Array;
+    data: Float32Array|Uint8Array|Uint16Array|Uint32Array;
 
     /**
      * @param {Float32Array|Uint8Array|Uint32Array} source - Source buffer
@@ -25,7 +25,7 @@ export class BufferResource extends Resource
      * @param {number} options.width - Width of the texture
      * @param {number} options.height - Height of the texture
      */
-    constructor(source: Float32Array|Uint8Array|Uint32Array, options: ISize)
+    constructor(source: Float32Array|Uint8Array|Uint16Array|Uint32Array, options: ISize)
     {
         const { width, height } = options || {};
 

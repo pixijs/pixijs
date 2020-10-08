@@ -32,6 +32,8 @@ coverage
 lib
 dist
 bundles/*/*.d.ts
+out
+packages/**/index.d.ts
 
 # jetBrains IDE ignores
 .idea

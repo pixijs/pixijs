@@ -22,7 +22,8 @@
   },
   "files": [
     "lib",
-    "dist"
+    "dist",
+    "index.d.ts"
   ],
   "dependencies": {
     "es6-promise-polyfill": "^1.2.0",
