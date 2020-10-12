@@ -61,6 +61,10 @@ You can test your change by using the automated tests packaged with PixiJS. You 
 by running `npm test` from the command line. If you fix a bug please add a test that will catch that
 bug if it ever happens again. This prevents regressions from sneaking in.
 
+For a speedy workflow:
+1. Run `npm start` in one terminal. This watches the source tree and compiles it incrementally.
+2. When desired, run `npm run unit-test` in another terminal. This runs tests using the compilation output from `npm start`.
+
 ### Submitting Your Change
 
 After you have made and tested your change, commit and push it to your fork. Then, open a Pull Request
