@@ -62,8 +62,8 @@ by running `npm test` from the command line. If you fix a bug please add a test 
 bug if it ever happens again. This prevents regressions from sneaking in.
 
 For a speedy workflow:
-1. Run `npm run start` in one terminal. This watches the source tree and compiles it incrementally.
-2. When desired, run `npm run unit-test` in another terminal. This runs tests using the compilation output from `npm run start`.
+1. Run `npm start` in one terminal. This watches the source tree and compiles it incrementally.
+2. When desired, run `npm run unit-test` in another terminal. This runs tests using the compilation output from `npm start`.
 
 ### Submitting Your Change
 
