@@ -23,7 +23,7 @@ const defaultDestroyOptions: IDestroyOptions = {
  *
  * The text is created using the [Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API).
  *
- * The primary advantage of this class over BitmapText is that you have great control over the style of the next,
+ * The primary advantage of this class over BitmapText is that you have great control over the style of the text,
  * which you can change at runtime.
  *
  * The primary disadvantages is that each piece of text has it's own texture, which can use more memory.
