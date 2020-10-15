@@ -10,10 +10,10 @@
     "Richard Davey <rdavey@gmail.com>"
   ],
   "standalone": true,
-  "main": "lib/pixi.js",
-  "module": "lib/pixi.es.js",
-  "bundle": "dist/pixi.js",
-  "bundleModule": "dist/pixi.mjs",
+  "main": "dist/cjs/pixi.js",
+  "module": "dist/esm/pixi.js",
+  "bundle": "dist/browser/pixi.js",
+  "bundleModule": "dist/browser/pixi.mjs",
   "bundleOutput": {
     "footer": "PIXI.useDeprecated();",
     "name": "PIXI"

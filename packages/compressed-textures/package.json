@@ -13,9 +13,9 @@
   "author": "Shukant Pal <shukantpal@outlook.com>",
   "homepage": "https://github.com/pixijs/pixi.js#readme",
   "license": "MIT",
-  "main": "lib/loaders-compressed-textures.js",
-  "module": "lib/loaders-compressed-textures.es.js",
-  "bundle": "dist/loaders-compressed-textures.js",
+  "main": "dist/cjs/loaders-compressed-textures.js",
+  "module": "dist/esm/loaders-compressed-textures.js",
+  "bundle": "dist/browser/loaders-compressed-textures.js",
   "directories": {
     "lib": "lib",
     "test": "test"

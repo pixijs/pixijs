@@ -1,5 +1,5 @@
 let saidHello = false;
-const VERSION = '__VERSION__';
+const VERSION = '$_VERSION';
 
 /**
  * Skips the hello message of renderers that are created after this is run.
@@ -32,7 +32,7 @@ export function sayHello(type: string): void
     if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1)
     {
         const args = [
-            `\n %c %c %c PixiJS ${VERSION} - ✰ ${type} ✰  %c  %c  http://www.pixijs.com/  %c %c ♥%c♥%c♥ \n\n`,
+            `\n %c %c %c PixiJS ${VERSION} - ✰ ${type} ✰  %c  %c  https://pixijs.com/  %c %c ♥%c♥%c♥ \n\n`,
             'background: #ff66a5; padding:5px 0;',
             'background: #ff66a5; padding:5px 0;',
             'color: #ff66a5; background: #030307; padding:5px 0;',
@@ -48,7 +48,7 @@ export function sayHello(type: string): void
     }
     else if (window.console)
     {
-        window.console.log(`PixiJS ${VERSION} - ${type} - http://www.pixijs.com/`);
+        window.console.log(`PixiJS ${VERSION} - ${type} - https://pixijs.com/`);
     }
 
     saidHello = true;

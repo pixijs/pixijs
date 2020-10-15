@@ -1,9 +1,9 @@
 {
   "name": "@pixi/constants",
   "version": "5.3.2",
-  "main": "lib/constants.js",
-  "module": "lib/constants.es.js",
-  "bundle": "dist/constants.js",
+  "main": "dist/cjs/constants.js",
+  "module": "dist/esm/constants.js",
+  "bundle": "dist/browser/constants.js",
   "description": "Constants used across PixiJS",
   "author": "Mat Groves",
   "contributors": [

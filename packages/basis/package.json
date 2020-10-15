@@ -11,9 +11,9 @@
   "author": "Shukant Pal <shukantpal@outlook.com>",
   "homepage": "https://github.com/pixijs/pixi.js#readme",
   "license": "MIT",
-  "main": "lib/basis.js",
-  "module": "lib/basis.es.js",
-  "bundle": "dist/basis.js",
+  "main": "dist/cjs/basis.js",
+  "module": "dist/esm/basis.js",
+  "bundle": "dist/browser/basis.js",
   "directories": {
     "lib": "lib",
     "test": "test"

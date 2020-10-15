@@ -1,9 +1,9 @@
 {
   "name": "@pixi/app",
   "version": "5.3.2",
-  "main": "lib/app.js",
-  "module": "lib/app.es.js",
-  "bundle": "dist/app.js",
+  "main": "dist/cjs/app.js",
+  "module": "dist/esm/app.js",
+  "bundle": "dist/browser/app.js",
   "description": "Convenience class to create a new PixiJS application",
   "author": "Mat Groves",
   "contributors": [
