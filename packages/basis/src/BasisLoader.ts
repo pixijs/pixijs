@@ -1,5 +1,6 @@
-import { INTERNAL_FORMATS, TYPES, MIPMAP_MODES, ALPHA_MODES, FORMATS } from '@pixi/constants';
-import { BaseTexture, BufferResource, CompressedTextureResource, Texture } from '@pixi/core';
+import { TYPES, MIPMAP_MODES, ALPHA_MODES, FORMATS } from '@pixi/constants';
+import { BaseTexture, BufferResource, Texture } from '@pixi/core';
+import { CompressedTextureResource, INTERNAL_FORMATS } from '@pixi/compressed-textures';
 import {
     BASIS_FORMATS,
     BASIS_FORMAT_TO_INTERNAL_FORMAT,
