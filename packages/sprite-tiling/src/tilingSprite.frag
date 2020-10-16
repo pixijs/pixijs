@@ -8,7 +8,7 @@ uniform vec2 uClampOffset;
 
 void main(void)
 {
-    vec2 coord = vTextureCoord - floor(vTextureCoord - uClampOffset);
+    vec2 coord = vTextureCoord + ceil(uClampOffset - vTextureCoord);
     coord = (uMapCoord * vec3(coord, 1.0)).xy;
     coord = clamp(coord, uClampFrame.xy, uClampFrame.zw);
 
