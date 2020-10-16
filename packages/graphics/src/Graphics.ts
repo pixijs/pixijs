@@ -1366,8 +1366,6 @@ export class Graphics extends Container
      */
     public destroy(options: IDestroyOptions|boolean): void
     {
-        super.destroy(options);
-
         this._geometry.refCount--;
         if (this._geometry.refCount === 0)
         {
