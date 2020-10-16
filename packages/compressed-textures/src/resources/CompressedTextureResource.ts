@@ -1,10 +1,8 @@
 import { BlobResource } from './BlobResource';
-import { INTERNAL_FORMAT_TO_BYTES_PER_PIXEL } from '@pixi/constants';
-import { Renderer } from '../../Renderer';
-import { BaseTexture } from '../BaseTexture';
-import { GLTexture } from '../GLTexture';
+import { INTERNAL_FORMAT_TO_BYTES_PER_PIXEL } from '../const';
+import { Renderer, BaseTexture, GLTexture } from '@pixi/core';
 
-import type { INTERNAL_FORMATS } from '@pixi/constants';
+import type { INTERNAL_FORMATS } from '../const';
 
 /**
  * @ignore
@@ -80,8 +78,6 @@ export interface ICompressedTextureResourceOptions
 export class CompressedTextureResource extends BlobResource
 {
     public format: INTERNAL_FORMATS;
-    public width: number;
-    public height: number;
     public levels: number;
 
     // Easy access to the WebGL extension providing support for the compression format via ContextSystem
