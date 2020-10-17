@@ -36,6 +36,7 @@
   },
   "dependencies": {
     "@pixi/core": "5.3.2",
+    "@pixi/compressed-textures": "5.3.2",
     "@pixi/constants": "5.3.2",
     "@pixi/runner": "5.3.2",
     "@pixi/loaders": "5.3.2"

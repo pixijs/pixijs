@@ -1,7 +1,8 @@
-import { TYPES, INTERNAL_FORMAT_TO_BYTES_PER_PIXEL, FORMATS } from '@pixi/constants';
-import { CompressedTextureResource, CompressedLevelBuffer } from '@pixi/core';
+import { TYPES, FORMATS } from '@pixi/constants';
+import { INTERNAL_FORMAT_TO_BYTES_PER_PIXEL } from '../const';
+import { CompressedTextureResource, CompressedLevelBuffer } from '../resources/CompressedTextureResource';
 import { LoaderResource } from '@pixi/loaders';
-import { registerCompressedTextures } from './registerTextures';
+import { registerCompressedTextures } from './registerCompressedTextures';
 
 import type { ILoaderResource } from '@pixi/loaders';
 
