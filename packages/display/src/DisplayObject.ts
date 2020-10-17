@@ -792,7 +792,8 @@ export abstract class DisplayObject extends EventEmitter
 
     /**
      * Pair method for `enableTempParent`
-     * @param {PIXI.DisplayObject} cacheParent actual parent of element
+     *
+     * @param {PIXI.DisplayObject} cacheParent - Actual parent of element
      */
     disableTempParent(cacheParent: DisplayObject): void
     {
