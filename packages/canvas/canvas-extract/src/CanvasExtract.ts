@@ -158,7 +158,12 @@ export class CanvasExtract
             frame.height = renderer.height;
         }
 
-        return context.getImageData(0, 0, frame.width * resolution, frame.height * resolution).data;
+        const x = frame.x * resolution;
+        const y = frame.y * resolution;
+        const width = frame.width * resolution;
+        const height = frame.height * resolution;
+
+        return context.getImageData(x, y, width, height).data;
     }
 
     /**
