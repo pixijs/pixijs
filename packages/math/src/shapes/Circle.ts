@@ -93,4 +93,11 @@ export class Circle
     {
         return new Rectangle(this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2);
     }
+
+    // #if _DEBUG
+    toString(): string
+    {
+        return `[@pixi/math:Circle x=${this.x} y=${this.y} radius=${this.radius}]`;
+    }
+    // #endif
 }

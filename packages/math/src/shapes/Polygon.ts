@@ -110,4 +110,13 @@ export class Polygon
 
         return inside;
     }
+
+    // #if _DEBUG
+    toString(): string
+    {
+        return `[@pixi/math:Polygon`
+            + `closeStroke=${this.closeStroke}`
+            + `points=${this.points.reduce((pointsDesc, currentPoint) => `${pointsDesc}, ${currentPoint}`, '')}]`;
+    }
+    // #endif
 }
