@@ -11,9 +11,6 @@ import { autoDetectResource, IAutoDetectOptions } from './autoDetectResource';
  * @class
  * @extends PIXI.Resource
  * @memberof PIXI
- * @param {object} [options] Options to for Resource constructor
- * @param {number} [options.width] - Width of the resource
- * @param {number} [options.height] - Height of the resource
  */
 export abstract class AbstractMultiResource extends Resource
 {
@@ -24,6 +21,12 @@ export abstract class AbstractMultiResource extends Resource
 
     baseTexture: BaseTexture;
 
+    /**
+     * @param {number} length
+     * @param {object} [options] Options to for Resource constructor
+     * @param {number} [options.width] - Width of the resource
+     * @param {number} [options.height] - Height of the resource
+     */
     constructor(length: number, options?: ISize)
     {
         const { width, height } = options || {};
