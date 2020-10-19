@@ -6,7 +6,7 @@ describe('PIXI', function ()
         this.head = document.querySelector('head');
         this.script = document.createElement('script');
         this.script.onload = () => done();
-        this.script.src = require.resolve('../dist/pixi');
+        this.script.src = require.resolve('../dist/browser/pixi');
         this.head.appendChild(this.script);
     });
 

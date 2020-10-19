@@ -1,9 +1,9 @@
 {
   "name": "@pixi/canvas-sprite",
   "version": "5.3.2",
-  "main": "lib/canvas-sprite.js",
-  "module": "lib/canvas-sprite.es.js",
-  "bundle": "dist/canvas-sprite.js",
+  "main": "dist/cjs/canvas-sprite.js",
+  "module": "dist/esm/canvas-sprite.js",
+  "bundle": "dist/browser/canvas-sprite.js",
   "description": "Canvas mixin for the sprite package",
   "author": "Mat Groves",
   "contributors": [
