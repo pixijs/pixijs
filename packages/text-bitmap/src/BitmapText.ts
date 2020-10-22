@@ -28,6 +28,7 @@ interface CharRenderData {
     line: number;
     charCode: number;
     position: Point;
+    prevSpaces: number;
 }
 
 const pageMeshDataPool: PageMeshData[] = [];
@@ -87,7 +88,7 @@ export class BitmapText extends Container
      * @param {string} style.fontName - The installed BitmapFont name.
      * @param {number} [style.fontSize] - The size of the font in pixels, e.g. 24. If undefined,
      *.     this will default to the BitmapFont size.
-     * @param {string} [style.align='left'] - Alignment for multiline text ('left', 'center' or 'right'),
+     * @param {string} [style.align='left'] - Alignment for multiline text ('left', 'center', 'right' or 'justify'),
      *      does not affect single line text.
      * @param {number} [style.tint=0xFFFFFF] - The tint color.
      * @param {number} [style.letterSpacing=0] - The amount of spacing between letters.
@@ -241,6 +242,7 @@ export class BitmapText extends Container
         const pos = new Point();
         const chars: CharRenderData[] = [];
         const lineWidths = [];
+        const lineSpaces = [];
         const text = this._text.replace(/(?:\r\n|\r)/g, '\n') || ' ';
         const textLength = text.length;
         const maxWidth = this._maxWidth * data.size / this._fontSize;
@@ -253,6 +255,7 @@ export class BitmapText extends Container
         let lastBreakWidth = 0;
         let spacesRemoved = 0;
         let maxLineHeight = 0;
+        let spaceCount = 0;
 
         for (let i = 0; i < textLength; i++)
         {
@@ -263,11 +266,13 @@ export class BitmapText extends Container
             {
                 lastBreakPos = i;
                 lastBreakWidth = lastLineWidth;
+                spaceCount++;
             }
 
             if (char === '\r' || char === '\n')
             {
                 lineWidths.push(lastLineWidth);
+                lineSpaces.push(-1);
                 maxLineWidth = Math.max(maxLineWidth, lastLineWidth);
                 ++line;
                 ++spacesRemoved;
@@ -275,6 +280,7 @@ export class BitmapText extends Container
                 pos.x = 0;
                 pos.y += data.lineHeight;
                 prevCharCode = null;
+                spaceCount = 0;
                 continue;
             }
 
@@ -294,6 +300,7 @@ export class BitmapText extends Container
                 texture: Texture.EMPTY,
                 line: 0,
                 charCode: 0,
+                prevSpaces: 0,
                 position: new Point(),
             };
 
@@ -302,6 +309,7 @@ export class BitmapText extends Container
             charRenderData.charCode = charCode;
             charRenderData.position.x = pos.x + charData.xOffset + (this._letterSpacing / 2);
             charRenderData.position.y = pos.y + charData.yOffset;
+            charRenderData.prevSpaces = this._align === 'justify' ? spaceCount : 1;
 
             chars.push(charRenderData);
 
@@ -318,12 +326,14 @@ export class BitmapText extends Container
                 lastBreakPos = -1;
 
                 lineWidths.push(lastBreakWidth);
+                lineSpaces.push(chars.length > 0 ? chars[chars.length - 1].prevSpaces : 0);
                 maxLineWidth = Math.max(maxLineWidth, lastBreakWidth);
                 line++;
 
                 pos.x = 0;
                 pos.y += data.lineHeight;
                 prevCharCode = null;
+                spaceCount = 0;
             }
         }
 
@@ -338,6 +348,7 @@ export class BitmapText extends Container
 
             lineWidths.push(lastLineWidth);
             maxLineWidth = Math.max(maxLineWidth, lastLineWidth);
+            lineSpaces.push(-1);
         }
 
         const lineAlignOffsets = [];
@@ -353,6 +364,10 @@ export class BitmapText extends Container
             else if (this._align === 'center')
             {
                 alignOffset = (maxLineWidth - lineWidths[i]) / 2;
+            }
+            else if (this._align === 'justify')
+            {
+                alignOffset = lineSpaces[i] < 0 ? 0 : (maxLineWidth - lineWidths[i]) / lineSpaces[i];
             }
 
             lineAlignOffsets.push(alignOffset);
@@ -474,7 +489,13 @@ export class BitmapText extends Container
         for (let i = 0; i < lenChars; i++)
         {
             const char = chars[i];
-            const xPos = (char.position.x + lineAlignOffsets[char.line]) * scale;
+            let offset = char.position.x + (lineAlignOffsets[char.line] * char.prevSpaces);
+
+            if (this.roundPixels)
+            {
+                offset = Math.floor(offset);
+            }
+            const xPos = offset * scale;
             const yPos = char.position.y * scale;
             const texture = char.texture;
 
