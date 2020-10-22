@@ -4,7 +4,7 @@
 import { TEXT_GRADIENT } from './const';
 import { hex2string } from '@pixi/utils';
 
-export type TextStyleAlign = 'left'|'center'|'right';
+export type TextStyleAlign = 'left'|'center'|'right'|'justify';
 export type TextStyleFill = string|string[]|number|number[]|CanvasGradient|CanvasPattern;
 export type TextStyleFontStyle = 'normal'|'italic'|'oblique';
 export type TextStyleFontVariant = 'normal'|'small-caps';
