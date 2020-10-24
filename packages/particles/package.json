@@ -1,9 +1,9 @@
 {
   "name": "@pixi/particles",
   "version": "5.3.2",
-  "main": "lib/particles.js",
-  "module": "lib/particles.es.js",
-  "bundle": "dist/particles.js",
+  "main": "dist/cjs/particles.js",
+  "module": "dist/esm/particles.js",
+  "bundle": "dist/browser/particles.js",
   "description": "Render many sprite particles as efficiently as possible",
   "author": "Mat Groves",
   "contributors": [

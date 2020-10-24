@@ -1,9 +1,9 @@
 {
   "name": "@pixi/polyfill",
   "version": "5.3.2",
-  "main": "lib/polyfill.js",
-  "module": "lib/polyfill.es.js",
-  "bundle": "dist/polyfill.js",
+  "main": "dist/cjs/polyfill.js",
+  "module": "dist/esm/polyfill.js",
+  "bundle": "dist/browser/polyfill.js",
   "standalone": true,
   "description": "Support for legacy browser JavaScript environments",
   "author": "Mat Groves",

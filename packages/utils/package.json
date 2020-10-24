@@ -1,9 +1,9 @@
 {
   "name": "@pixi/utils",
   "version": "5.3.2",
-  "main": "lib/utils.js",
-  "module": "lib/utils.es.js",
-  "bundle": "dist/utils.js",
+  "main": "dist/cjs/utils.js",
+  "module": "dist/esm/utils.js",
+  "bundle": "dist/browser/utils.js",
   "namespace": "PIXI.utils",
   "description": "Collection of utilities used by PixiJS",
   "author": "Mat Groves",

@@ -1,9 +1,9 @@
 {
   "name": "@pixi/text",
   "version": "5.3.2",
-  "main": "lib/text.js",
-  "module": "lib/text.es.js",
-  "bundle": "dist/text.js",
+  "main": "dist/cjs/text.js",
+  "module": "dist/esm/text.js",
+  "bundle": "dist/browser/text.js",
   "description": "Text via the Canvas API",
   "author": "Mat Groves",
   "contributors": [
