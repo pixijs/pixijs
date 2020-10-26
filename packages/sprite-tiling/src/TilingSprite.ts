@@ -271,7 +271,9 @@ export class TilingSprite extends Sprite
         // Deprecated
         if (typeof options === 'number')
         {
+            // #if _DEBUG
             deprecation('5.3.0', 'TilingSprite.from use options instead of width and height args');
+            // #endif
             // eslint-disable-next-line prefer-rest-params
             options = { width: options, height: arguments[2] } as ISize;
         }
