@@ -474,7 +474,14 @@ export class BitmapText extends Container
         for (let i = 0; i < lenChars; i++)
         {
             const char = chars[i];
-            const xPos = (char.position.x + lineAlignOffsets[char.line]) * scale;
+            let offset = char.position.x + lineAlignOffsets[char.line];
+
+            if (this.roundPixels)
+            {
+                offset = Math.floor(offset);
+            }
+
+            const xPos = offset * scale;
             const yPos = char.position.y * scale;
             const texture = char.texture;
 
