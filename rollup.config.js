@@ -11,6 +11,7 @@ import { terser } from 'rollup-plugin-terser';
 import batchPackages from '@lerna/batch-packages';
 import filterPackages from '@lerna/filter-packages';
 import jscc from 'rollup-plugin-jscc';
+import alias from '@rollup/plugin-alias';
 import { getPackages } from '@lerna/project';
 import repo from './lerna.json';
 import fs from 'fs';
@@ -92,6 +93,16 @@ async function main()
                 comments: (node, comment) => comment.line === 1,
             },
         })
+    ];
+
+    const prodBundlePlugins = [
+        alias({
+            entries: [{
+                find: /^(@pixi\/([^\/]+))$/,
+                replacement: '$1/dist/esm/$2.min.js',
+            }]
+        }),
+        ...prodPlugins
     ];
 
     const compiled = (new Date()).toUTCString().replace(/GMT/g, 'UTC');
@@ -280,7 +291,7 @@ async function main()
                         }] : []
                     ],
                     treeshake: false,
-                    plugins: prodPlugins,
+                    plugins: prodBundlePlugins,
                 });
             }
         }

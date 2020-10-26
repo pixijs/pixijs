@@ -400,7 +400,9 @@ export class Graphics extends Container
         // color, alpha, matrix, alignment, native)
         if (typeof options === 'number')
         {
+            // #if _DEBUG
             deprecation('v5.2.0', 'Please use object-based options for Graphics#lineTextureStyle');
+            // #endif
 
             // eslint-disable-next-line
             const [width, texture, color, alpha, matrix, alignment, native] = arguments as any;
@@ -739,7 +741,9 @@ export class Graphics extends Container
         // Backward compatibility with params: (texture, color, alpha, matrix)
         if (options instanceof Texture)
         {
+            // #if _DEBUG
             deprecation('v5.2.0', 'Please use object-based options for Graphics#beginTextureFill');
+            // #endif
 
             // eslint-disable-next-line
             const [texture, color, alpha, matrix] = arguments as any;

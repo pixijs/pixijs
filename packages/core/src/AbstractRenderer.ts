@@ -95,7 +95,9 @@ export abstract class AbstractRenderer extends EventEmitter
         if ((options as IRendererOptionsLegacy).roundPixels)
         {
             settings.ROUND_PIXELS = (options as IRendererOptionsLegacy).roundPixels;
+            // #if _DEBUG
             deprecation('5.0.0', 'Renderer roundPixels option is deprecated, please use PIXI.settings.ROUND_PIXELS', 2);
+            // #endif
         }
 
         /**
