@@ -99,7 +99,9 @@ export class BitmapText extends Container
 
         if (style.font)
         {
+            // #if _DEBUG
             deprecation('5.3.0', 'PIXI.BitmapText constructor style.font property is deprecated.');
+            // #endif
 
             this._upgradeStyle(style);
         }
@@ -871,7 +873,9 @@ export class BitmapText extends Container
      */
     static registerFont(data: string|XMLDocument|BitmapFontData, textures: Texture|Texture[]|Dict<Texture>): BitmapFont
     {
+        // #if _DEBUG
         deprecation('5.3.0', 'PIXI.BitmapText.registerFont is deprecated, use PIXI.BitmapFont.install');
+        // #endif
 
         return BitmapFont.install(data, textures);
     }
@@ -887,7 +891,9 @@ export class BitmapText extends Container
      */
     static get fonts(): Dict<BitmapFont>
     {
+        // #if _DEBUG
         deprecation('5.3.0', 'PIXI.BitmapText.fonts is deprecated, use PIXI.BitmapFont.available');
+        // #endif
 
         return BitmapFont.available;
     }

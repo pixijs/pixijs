@@ -1,16 +1,17 @@
 import path from 'path';
-import transpile from 'rollup-plugin-buble';
-import resolve from 'rollup-plugin-node-resolve';
+import transpile from '@rollup/plugin-buble';
+import resolve from '@rollup/plugin-node-resolve';
 import { string } from 'rollup-plugin-string';
 import sourcemaps from 'rollup-plugin-sourcemaps';
 import typescript from 'rollup-plugin-typescript';
 import minimist from 'minimist';
-import commonjs from 'rollup-plugin-commonjs';
-import json from 'rollup-plugin-json';
+import commonjs from '@rollup/plugin-commonjs';
+import json from '@rollup/plugin-json';
 import { terser } from 'rollup-plugin-terser';
 import batchPackages from '@lerna/batch-packages';
 import filterPackages from '@lerna/filter-packages';
 import jscc from 'rollup-plugin-jscc';
+import alias from '@rollup/plugin-alias';
 import { getPackages } from '@lerna/project';
 import repo from './lerna.json';
 import fs from 'fs';
@@ -67,11 +68,7 @@ async function main()
             browser: true,
             preferBuiltins: false,
         }),
-        commonjs({
-            namedExports: {
-                'resource-loader': ['Resource'],
-            },
-        }),
+        commonjs(),
         json(),
         typescript(),
         string({
@@ -96,6 +93,16 @@ async function main()
                 comments: (node, comment) => comment.line === 1,
             },
         })
+    ];
+
+    const prodBundlePlugins = [
+        alias({
+            entries: [{
+                find: /^(@pixi\/([^\/]+))$/,
+                replacement: '$1/dist/esm/$2.min.js',
+            }]
+        }),
+        ...prodPlugins
     ];
 
     const compiled = (new Date()).toUTCString().replace(/GMT/g, 'UTC');
@@ -284,7 +291,7 @@ async function main()
                         }] : []
                     ],
                     treeshake: false,
-                    plugins: prodPlugins,
+                    plugins: prodBundlePlugins,
                 });
             }
         }

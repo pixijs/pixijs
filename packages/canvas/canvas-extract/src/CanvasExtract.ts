@@ -181,7 +181,9 @@ Object.defineProperty(CanvasRenderer.prototype, 'extract',
     {
         get()
         {
+            // #if _DEBUG
             deprecation('v5.3.0', 'CanvasRenderer#extract is deprecated, use CanvasRenderer#plugins.extract');
+            // #endif
 
             return this.plugins.extract;
         },
