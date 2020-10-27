@@ -478,7 +478,7 @@ export class BitmapText extends Container
 
             if (this.roundPixels)
             {
-                offset = Math.floor(offset);
+                offset = Math.round(offset);
             }
 
             const xPos = offset * scale;
