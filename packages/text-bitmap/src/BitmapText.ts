@@ -308,7 +308,7 @@ export class BitmapText extends Container
             charRenderData.charCode = charCode;
             charRenderData.position.x = pos.x + charData.xOffset + (this._letterSpacing / 2);
             charRenderData.position.y = pos.y + charData.yOffset;
-            charRenderData.prevSpaces = this._align === 'justify' ? spaceCount : 1;
+            charRenderData.prevSpaces = spaceCount;
 
             chars.push(charRenderData);
 
@@ -488,7 +488,7 @@ export class BitmapText extends Container
         for (let i = 0; i < lenChars; i++)
         {
             const char = chars[i];
-            let offset = char.position.x + (lineAlignOffsets[char.line] * char.prevSpaces);
+            let offset = char.position.x + (lineAlignOffsets[char.line] * (this._align === 'justify' ? char.prevSpaces : 1));
 
             if (this._roundPixels)
             {
