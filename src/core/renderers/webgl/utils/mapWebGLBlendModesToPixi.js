@@ -15,7 +15,7 @@ export default function mapWebGLBlendModesToPixi(gl, array = [])
     // TODO - premultiply alpha would be different.
     // add a boolean for that!
     array[BLEND_MODES.NORMAL] = [gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
-    array[BLEND_MODES.ADD] = [gl.ONE, gl.DST_ALPHA];
+    array[BLEND_MODES.ADD] = [gl.ONE, gl.ONE];
     array[BLEND_MODES.MULTIPLY] = [gl.DST_COLOR, gl.ONE_MINUS_SRC_ALPHA];
     array[BLEND_MODES.SCREEN] = [gl.ONE, gl.ONE_MINUS_SRC_COLOR];
     array[BLEND_MODES.OVERLAY] = [gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
