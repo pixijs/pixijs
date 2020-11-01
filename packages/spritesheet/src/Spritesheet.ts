@@ -55,8 +55,8 @@ export interface ISpritesheetData {
  * ```
  * With the `sheet.textures` you can create Sprite objects,`sheet.animations` can be used to create an AnimatedSprite.
  *
- * Sprite sheets can be packed using tools like {@link https://codeandweb.com/texturepacker|TexturePacker},
- * {@link https://renderhjs.net/shoebox/|Shoebox} or {@link https://github.com/krzysztof-o/spritesheet.js|Spritesheet.js}.
+ * Sprite sheets can be packed using tools like {@link https://codeandweb.com/texturepacker},
+ * {@link https://renderhjs.net/shoebox/} or {@link https://github.com/krzysztof-o/spritesheet.js}.
  * Default anchor points (see {@link PIXI.Texture#defaultAnchor}) and grouping of animation sprites are currently only
  * supported by TexturePacker.
  *
