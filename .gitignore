@@ -28,6 +28,7 @@ node_modules
 /coverage
 /lib
 /dist
+scripts/renders/package-lock.json
 
 # jetBrains IDE ignores
 .idea

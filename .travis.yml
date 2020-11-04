@@ -1,31 +1,28 @@
 language: node_js
-node_js:
-    - "4"
 
-env:
-  - CXX=g++-4.8
+services:
+  - xvfb
+
+node_js:
+  - "10"
 
 addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
-    packages:
-      - g++-4.8
+
+env:
+  - CXX=g++-4.8
 
 install:
-    - npm install xvfb-maybe
-    - npm install
+  - npm install
 
 cache:
   directories:
     - node_modules
 
-before_script:
-  - export DISPLAY=':99.0'
-  - Xvfb :99 -screen 0 1024x768x24 -extension RANDR &
-
 script:
-  - xvfb-maybe npm test
+  - npm run coverage
   - npm run docs
 
 deploy:
@@ -41,8 +38,8 @@ deploy:
     local_dir: dist
     upload-dir: "$TRAVIS_BRANCH"
     on:
-        all_branches: true
-        condition: -z $TRAVIS_TAG
+      all_branches: true
+      condition: -z $TRAVIS_TAG
   - provider: s3
     access_key_id: $S3_ACCESS_KEY_ID
     secret_access_key: $S3_SECRET_ACCESS_KEY
@@ -54,8 +51,8 @@ deploy:
     local_dir: docs
     upload-dir: "$TRAVIS_BRANCH/docs"
     on:
-        all_branches: true
-        condition: -z $TRAVIS_TAG
+      all_branches: true
+      condition: -z $TRAVIS_TAG
   - provider: s3
     access_key_id: $S3_ACCESS_KEY_ID
     secret_access_key: $S3_SECRET_ACCESS_KEY
@@ -67,8 +64,8 @@ deploy:
     local_dir: coverage
     upload-dir: "$TRAVIS_BRANCH/coverage"
     on:
-        all_branches: true
-        condition: -z $TRAVIS_TAG
+      all_branches: true
+      condition: -z $TRAVIS_TAG
   # Deploy config for tagged releases
   - provider: s3
     access_key_id: $S3_ACCESS_KEY_ID
@@ -81,8 +78,8 @@ deploy:
     local_dir: dist
     upload-dir: "$TRAVIS_BRANCH"
     on:
-        all_branches: true
-        condition: $TRAVIS_TAG
+      all_branches: true
+      condition: $TRAVIS_TAG
   - provider: s3
     access_key_id: $S3_ACCESS_KEY_ID
     secret_access_key: $S3_SECRET_ACCESS_KEY
@@ -94,8 +91,8 @@ deploy:
     local_dir: docs
     upload-dir: "$TRAVIS_BRANCH/docs"
     on:
-        all_branches: true
-        condition: $TRAVIS_TAG
+      all_branches: true
+      condition: $TRAVIS_TAG
   - provider: s3
     access_key_id: $S3_ACCESS_KEY_ID
     secret_access_key: $S3_SECRET_ACCESS_KEY
@@ -107,8 +104,8 @@ deploy:
     local_dir: coverage
     upload-dir: "$TRAVIS_BRANCH/coverage"
     on:
-        all_branches: true
-        condition: $TRAVIS_TAG
+      all_branches: true
+      condition: $TRAVIS_TAG
   # Deploy config for latest release
   - provider: s3
     access_key_id: $S3_ACCESS_KEY_ID
@@ -121,8 +118,8 @@ deploy:
     local_dir: dist
     upload-dir: "release"
     on:
-        all_branches: true
-        condition: $TRAVIS_TAG
+      all_branches: true
+      condition: $TRAVIS_TAG
   - provider: s3
     access_key_id: $S3_ACCESS_KEY_ID
     secret_access_key: $S3_SECRET_ACCESS_KEY
@@ -134,8 +131,8 @@ deploy:
     local_dir: docs
     upload-dir: "release/docs"
     on:
-        all_branches: true
-        condition: $TRAVIS_TAG
+      all_branches: true
+      condition: $TRAVIS_TAG
   - provider: s3
     access_key_id: $S3_ACCESS_KEY_ID
     secret_access_key: $S3_SECRET_ACCESS_KEY
@@ -147,5 +144,8 @@ deploy:
     local_dir: coverage
     upload-dir: "release/coverage"
     on:
-        all_branches: true
-        condition: $TRAVIS_TAG
+      all_branches: true
+      condition: $TRAVIS_TAG
+
+  - npm run build
+  - npm run coverage
