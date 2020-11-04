@@ -40,11 +40,11 @@
     "lib": "babel src --out-dir lib -s",
     "predocs": "rimraf docs/**",
     "docs": "jsdoc -c scripts/jsdoc.conf.json -R README.md",
-    "publish:patch": "npm version patch --no-git-tag-version && npm publish",
-    "publish:minor": "npm version minor --no-git-tag-version && npm publish",
-    "publish:major": "npm version major --no-git-tag-version && npm publish",
+    "publish:patch": "npm version patch --no-git-tag-version && npm publish --tag latest-4.4.x",
+    "publish:minor": "npm version minor --no-git-tag-version && npm publish --tag latest-4.4.x",
+    "publish:major": "npm version major --no-git-tag-version && npm publish --tag latest-4.4.x",
     "postversion": "npm run clean && npm run build && npm run lib && npm test",
-    "postpublish": "node scripts/release.js"
+    "postpublish": "git push && git push --tags"
   },
   "files": [
     "dist/",
@@ -70,9 +70,9 @@
     "babel-preset-es2015": "^6.14.0",
     "babelify": "^7.3.0",
     "del": "^2.2.0",
-    "electron": "^1.4.15",
+    "electron": "^5.0.9",
     "eslint": "^3.5.0",
-    "floss": "^2.0.1",
+    "floss": "^2.2.1",
     "gh-pages": "^0.11.0",
     "jaguarjs-jsdoc": "^1.0.1",
     "js-md5": "^0.4.1",
