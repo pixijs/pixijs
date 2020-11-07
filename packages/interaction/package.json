@@ -1,9 +1,9 @@
 {
   "name": "@pixi/interaction",
   "version": "5.3.2",
-  "main": "lib/interaction.js",
-  "module": "lib/interaction.es.js",
-  "bundle": "dist/interaction.js",
+  "main": "dist/cjs/interaction.js",
+  "module": "dist/esm/interaction.js",
+  "bundle": "dist/browser/interaction.js",
   "description": "Plugin for handling mouse, touch and pointer events",
   "author": "Mat Groves",
   "contributors": [
@@ -21,7 +21,8 @@
   },
   "files": [
     "lib",
-    "dist"
+    "dist",
+    "index.d.ts"
   ],
   "dependencies": {
     "@pixi/core": "5.3.2",

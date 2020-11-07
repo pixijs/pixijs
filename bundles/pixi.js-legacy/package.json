@@ -10,15 +10,14 @@
     "Richard Davey <rdavey@gmail.com>"
   ],
   "standalone": true,
-  "main": "lib/pixi-legacy.js",
-  "module": "lib/pixi-legacy.es.js",
-  "bundle": "dist/pixi-legacy.js",
-  "bundleModule": "dist/pixi-legacy.mjs",
+  "main": "dist/cjs/pixi-legacy.js",
+  "module": "dist/esm/pixi-legacy.js",
+  "bundle": "dist/browser/pixi-legacy.js",
+  "bundleModule": "dist/browser/pixi-legacy.mjs",
   "bundleOutput": {
     "footer": "PIXI.useDeprecated();",
     "name": "PIXI"
   },
-  "types": "pixi.js-legacy.d.ts",
   "homepage": "http://www.pixijs.com/",
   "bugs": "https://github.com/pixijs/pixi.js/issues",
   "license": "MIT",
@@ -29,7 +28,7 @@
   "files": [
     "lib/",
     "dist/",
-    "pixi.js-legacy.d.ts"
+    "index.d.ts"
   ],
   "funding": {
     "type": "opencollective",

@@ -1,9 +1,9 @@
 {
   "name": "@pixi/filter-alpha",
   "version": "5.3.2",
-  "main": "lib/filter-alpha.js",
-  "module": "lib/filter-alpha.es.js",
-  "bundle": "dist/filter-alpha.js",
+  "main": "dist/cjs/filter-alpha.js",
+  "module": "dist/esm/filter-alpha.js",
+  "bundle": "dist/browser/filter-alpha.js",
   "namespace": "PIXI.filters",
   "description": "Filter that applies alpha evenly across the entire display object and any opaque elements it contains",
   "author": "Mat Groves",
@@ -22,7 +22,8 @@
   },
   "files": [
     "lib",
-    "dist"
+    "dist",
+    "index.d.ts"
   ],
   "dependencies": {
     "@pixi/core": "5.3.2"

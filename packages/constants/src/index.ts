@@ -292,11 +292,14 @@ export enum WRAP_MODES {
  * @property {number} OFF - No mipmaps
  * @property {number} POW2 - Generate mipmaps if texture dimensions are pow2
  * @property {number} ON - Always generate mipmaps
+ * @property {number} ON_MANUAL - Use mipmaps, but do not auto-generate them; this is used with a resource
+ *   that supports buffering each level-of-detail.
  */
 export enum MIPMAP_MODES {
     OFF,
     POW2,
     ON,
+    ON_MANUAL
 }
 
 /**

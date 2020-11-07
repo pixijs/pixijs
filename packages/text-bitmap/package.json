@@ -1,9 +1,9 @@
 {
   "name": "@pixi/text-bitmap",
   "version": "5.3.2",
-  "main": "lib/text-bitmap.js",
-  "module": "lib/text-bitmap.es.js",
-  "bundle": "dist/text-bitmap.js",
+  "main": "dist/cjs/text-bitmap.js",
+  "module": "dist/esm/text-bitmap.js",
+  "bundle": "dist/browser/text-bitmap.js",
   "description": "Text via bitmap fonts",
   "author": "Mat Groves",
   "contributors": [
@@ -21,7 +21,8 @@
   },
   "files": [
     "lib",
-    "dist"
+    "dist",
+    "index.d.ts"
   ],
   "dependencies": {
     "@pixi/core": "5.3.2",

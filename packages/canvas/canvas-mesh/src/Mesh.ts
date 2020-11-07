@@ -22,6 +22,14 @@ Mesh.prototype._cachedTint = 0xFFFFFF;
 Mesh.prototype._tintedCanvas = null;
 
 /**
+ * The cache texture is used to generate `_tintedCanvas`.
+ * @memberof PIXI.Mesh#
+ * @member {PIXI.Texture} _cachedTexture
+ * @protected
+ */
+Mesh.prototype._cachedTexture = null;
+
+/**
  * Renders the object using the Canvas renderer
  *
  * @private

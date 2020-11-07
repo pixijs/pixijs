@@ -1,0 +1,44 @@
+{
+  "name": "@pixi/basis",
+  "version": "5.3.2",
+  "description": "Loader for the *.basis supercompressed texture file format. This package also ships with the transcoder!",
+  "keywords": [
+    "basisu",
+    "pixi",
+    "compressed-textures",
+    "loaders"
+  ],
+  "author": "Shukant Pal <shukantpal@outlook.com>",
+  "homepage": "https://github.com/pixijs/pixi.js#readme",
+  "license": "MIT",
+  "main": "dist/cjs/basis.js",
+  "module": "dist/esm/basis.js",
+  "bundle": "dist/browser/basis.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "files": [
+    "dist",
+    "lib",
+    "assets",
+    "index.d.ts"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pixijs/pixi.js.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/pixijs/pixi.js/issues"
+  },
+  "dependencies": {
+    "@pixi/core": "5.3.2",
+    "@pixi/compressed-textures": "5.3.2",
+    "@pixi/constants": "5.3.2",
+    "@pixi/runner": "5.3.2",
+    "@pixi/loaders": "5.3.2"
+  }
+}

@@ -1,5 +1,5 @@
 let saidHello = false;
-const VERSION = '__VERSION__';
+const VERSION = '$_VERSION';
 
 /**
  * Skips the hello message of renderers that are created after this is run.

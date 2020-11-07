@@ -6,7 +6,7 @@ describe('PIXI', function ()
         this.head = document.querySelector('head');
         this.script = document.createElement('script');
         this.script.onload = () => done();
-        this.script.src = require.resolve('../dist/pixi-legacy');
+        this.script.src = require.resolve('../dist/browser/pixi-legacy');
         this.head.appendChild(this.script);
     });
 

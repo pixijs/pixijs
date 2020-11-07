@@ -1,9 +1,9 @@
 {
   "name": "@pixi/canvas-renderer",
   "version": "5.3.2",
-  "main": "lib/canvas-renderer.js",
-  "module": "lib/canvas-renderer.es.js",
-  "bundle": "dist/canvas-renderer.js",
+  "main": "dist/cjs/canvas-renderer.js",
+  "module": "dist/esm/canvas-renderer.js",
+  "bundle": "dist/browser/canvas-renderer.js",
   "description": "Rendering using the Canvas API",
   "author": "Mat Groves",
   "contributors": [
@@ -21,7 +21,8 @@
   },
   "files": [
     "lib",
-    "dist"
+    "dist",
+    "index.d.ts"
   ],
   "dependencies": {
     "@pixi/constants": "5.3.2",
