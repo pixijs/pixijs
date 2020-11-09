@@ -90,7 +90,7 @@ export class ImageResource extends BaseImageResource
          * @default PIXI.settings.CREATE_IMAGE_BITMAP
          */
         this.createBitmap = (options.createBitmap !== undefined
-            ? options.createBitmap : settings.CREATE_IMAGE_BITMAP) && !!window.createImageBitmap;
+            ? options.createBitmap : settings.CREATE_IMAGE_BITMAP) && !!self.createImageBitmap;
 
         /**
          * Controls texture alphaMode field
@@ -208,12 +208,12 @@ export class ImageResource extends BaseImageResource
         {
             return this._process;
         }
-        if (this.bitmap !== null || !window.createImageBitmap)
+        if (this.bitmap !== null || !self.createImageBitmap)
         {
             return Promise.resolve(this);
         }
 
-        this._process = (window.createImageBitmap as any)(source,
+        this._process = (self.createImageBitmap as any)(source,
             0, 0, source.width, source.height,
             {
                 premultiplyAlpha: this.alphaMode === ALPHA_MODES.UNPACK ? 'premultiply' : 'none',

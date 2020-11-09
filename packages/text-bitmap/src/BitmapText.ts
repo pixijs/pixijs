@@ -66,7 +66,6 @@ export class BitmapText extends Container
         maxWidth: 0,
         letterSpacing: 0,
     };
-    public roundPixels: boolean;
     public dirty: boolean;
     protected _textWidth: number;
     protected _textHeight: number;
@@ -80,6 +79,7 @@ export class BitmapText extends Container
     protected _align: TextStyleAlign;
     protected _activePagesMeshData: PageMeshData[];
     protected _tint = 0xFFFFFF;
+    protected _roundPixels: boolean;
 
     /**
      * @param {string} text - A string that you would like the text to display.
@@ -99,7 +99,9 @@ export class BitmapText extends Container
 
         if (style.font)
         {
+            // #if _DEBUG
             deprecation('5.3.0', 'PIXI.BitmapText constructor style.font property is deprecated.');
+            // #endif
 
             this._upgradeStyle(style);
         }
@@ -212,15 +214,12 @@ export class BitmapText extends Container
         this._anchor = new ObservablePoint((): void => { this.dirty = true; }, this, 0, 0);
 
         /**
-         * If true PixiJS will Math.floor() x/y values when rendering, stopping pixel interpolation.
-         * Advantages can include sharper image quality (like text) and faster rendering on canvas.
-         * The main disadvantage is movement of objects may appear less smooth.
-         * To set the global default, change {@link PIXI.settings.ROUND_PIXELS}
+         * If true PixiJS will Math.floor() x/y values when rendering
          *
          * @member {boolean}
          * @default PIXI.settings.ROUND_PIXELS
          */
-        this.roundPixels = settings.ROUND_PIXELS;
+        this._roundPixels = settings.ROUND_PIXELS;
 
         /**
          * Set to `true` if the BitmapText needs to be redrawn.
@@ -474,7 +473,14 @@ export class BitmapText extends Container
         for (let i = 0; i < lenChars; i++)
         {
             const char = chars[i];
-            const xPos = (char.position.x + lineAlignOffsets[char.line]) * scale;
+            let offset = char.position.x + lineAlignOffsets[char.line];
+
+            if (this._roundPixels)
+            {
+                offset = Math.round(offset);
+            }
+
+            const xPos = offset * scale;
             const yPos = char.position.y * scale;
             const texture = char.texture;
 
@@ -812,6 +818,29 @@ export class BitmapText extends Container
     }
 
     /**
+     * If true PixiJS will Math.floor() x/y values when rendering, stopping pixel interpolation.
+     * Advantages can include sharper image quality (like text) and faster rendering on canvas.
+     * The main disadvantage is movement of objects may appear less smooth.
+     * To set the global default, change {@link PIXI.settings.ROUND_PIXELS}
+     *
+     * @member {boolean}
+     * @default PIXI.settings.ROUND_PIXELS
+     */
+    public get roundPixels(): boolean
+    {
+        return this._roundPixels;
+    }
+
+    public set roundPixels(value: boolean)
+    {
+        if (value !== this._roundPixels)
+        {
+            this._roundPixels = value;
+            this.dirty = true;
+        }
+    }
+
+    /**
      * The height of the overall text, different from fontSize,
      * which is defined in the style object.
      *
@@ -864,7 +893,9 @@ export class BitmapText extends Container
      */
     static registerFont(data: string|XMLDocument|BitmapFontData, textures: Texture|Texture[]|Dict<Texture>): BitmapFont
     {
+        // #if _DEBUG
         deprecation('5.3.0', 'PIXI.BitmapText.registerFont is deprecated, use PIXI.BitmapFont.install');
+        // #endif
 
         return BitmapFont.install(data, textures);
     }
@@ -880,7 +911,9 @@ export class BitmapText extends Container
      */
     static get fonts(): Dict<BitmapFont>
     {
+        // #if _DEBUG
         deprecation('5.3.0', 'PIXI.BitmapText.fonts is deprecated, use PIXI.BitmapFont.available');
+        // #endif
 
         return BitmapFont.available;
     }

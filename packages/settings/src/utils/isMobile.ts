@@ -4,6 +4,6 @@
 import isMobileCall from 'ismobilejs';
 import type { isMobileResult } from 'ismobilejs';
 
-const isMobile: isMobileResult = isMobileCall(window.navigator);
+const isMobile: isMobileResult = isMobileCall(self.navigator);
 
 export { isMobile };
