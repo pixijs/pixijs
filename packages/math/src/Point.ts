@@ -95,4 +95,11 @@ export class Point implements IPoint
 
         return this;
     }
+
+    // #if _DEBUG
+    toString(): string
+    {
+        return `[@pixi/math:Point x=${this.x} y=${this.y}]`;
+    }
+    // #endif
 }
