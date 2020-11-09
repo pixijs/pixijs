@@ -34,7 +34,7 @@ export class XMLStringFormat
      */
     static parse(xmlTxt: string): BitmapFontData
     {
-        const xml = new window.DOMParser().parseFromString(xmlTxt, 'text/xml');
+        const xml = new self.DOMParser().parseFromString(xmlTxt, 'text/xml');
 
         return XMLFormat.parse(xml);
     }

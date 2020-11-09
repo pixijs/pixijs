@@ -184,6 +184,19 @@ export class State
         this._polygonOffset = value;
     }
 
+    // #if _DEBUG
+    toString(): string
+    {
+        return `[@pixi/core:State `
+            + `blendMode=${this.blendMode} `
+            + `clockwiseFrontFace=${this.clockwiseFrontFace} `
+            + `culling=${this.culling} `
+            + `depthMask=${this.depthMask} `
+            + `polygonOffset=${this.polygonOffset}`
+            + `]`;
+    }
+    // #endif
+
     static for2d(): State
     {
         const state = new State();
