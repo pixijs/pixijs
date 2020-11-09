@@ -18,6 +18,6 @@ export class ImageBitmapResource extends BaseImageResource
      */
     static test(source: unknown): source is ImageBitmap
     {
-        return !!window.createImageBitmap && source instanceof ImageBitmap;
+        return !!self.createImageBitmap && source instanceof ImageBitmap;
     }
 }
