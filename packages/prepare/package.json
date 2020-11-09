@@ -22,7 +22,7 @@
   "files": [
     "lib",
     "dist",
-    "index.d.ts"
+    "*.d.ts"
   ],
   "dependencies": {
     "@pixi/core": "5.3.2",

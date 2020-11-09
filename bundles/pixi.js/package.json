@@ -31,7 +31,7 @@
   "files": [
     "lib/",
     "dist/",
-    "index.d.ts"
+    "*.d.ts"
   ],
   "funding": {
     "type": "opencollective",
