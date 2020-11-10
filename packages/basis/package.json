@@ -22,7 +22,7 @@
     "dist",
     "lib",
     "assets",
-    "index.d.ts"
+    "*.d.ts"
   ],
   "repository": {
     "type": "git",
