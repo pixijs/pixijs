@@ -10,15 +10,14 @@
     "Richard Davey <rdavey@gmail.com>"
   ],
   "standalone": true,
-  "main": "lib/pixi.js",
-  "module": "lib/pixi.es.js",
-  "bundle": "dist/pixi.js",
-  "bundleModule": "dist/pixi.mjs",
+  "main": "dist/cjs/pixi.js",
+  "module": "dist/esm/pixi.js",
+  "bundle": "dist/browser/pixi.js",
+  "bundleModule": "dist/browser/pixi.mjs",
   "bundleOutput": {
     "footer": "PIXI.useDeprecated();",
     "name": "PIXI"
   },
-  "types": "pixi.js.d.ts",
   "homepage": "http://www.pixijs.com/",
   "bugs": "https://github.com/pixijs/pixi.js/issues",
   "license": "MIT",
@@ -32,7 +31,7 @@
   "files": [
     "lib/",
     "dist/",
-    "pixi.js.d.ts"
+    "*.d.ts"
   ],
   "funding": {
     "type": "opencollective",
@@ -41,6 +40,7 @@
   "dependencies": {
     "@pixi/accessibility": "5.3.2",
     "@pixi/app": "5.3.2",
+    "@pixi/compressed-textures": "5.3.2",
     "@pixi/constants": "5.3.2",
     "@pixi/core": "5.3.2",
     "@pixi/display": "5.3.2",

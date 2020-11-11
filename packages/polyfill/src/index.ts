@@ -4,32 +4,32 @@ import './requestAnimationFrame';
 import './Math.sign';
 import './Number.isInteger';
 
-if (!window.ArrayBuffer)
+if (!self.ArrayBuffer)
 {
-    (window as any).ArrayBuffer = Array;
+    (self as any).ArrayBuffer = Array;
 }
 
-if (!window.Float32Array)
+if (!self.Float32Array)
 {
-    (window as any).Float32Array = Array;
+    (self as any).Float32Array = Array;
 }
 
-if (!window.Uint32Array)
+if (!self.Uint32Array)
 {
-    (window as any).Uint32Array = Array;
+    (self as any).Uint32Array = Array;
 }
 
-if (!window.Uint16Array)
+if (!self.Uint16Array)
 {
-    (window as any).Uint16Array = Array;
+    (self as any).Uint16Array = Array;
 }
 
-if (!window.Uint8Array)
+if (!self.Uint8Array)
 {
-    (window as any).Uint8Array = Array;
+    (self as any).Uint8Array = Array;
 }
 
-if (!window.Int32Array)
+if (!self.Int32Array)
 {
-    (window as any).Int32Array = Array;
+    (self as any).Int32Array = Array;
 }

@@ -132,4 +132,11 @@ describe('PIXI.TilingSprite', function ()
         expect(tilingSprite.width).to.equal(400);
         expect(tilingSprite.height).to.equal(600);
     });
+
+    it('should create TilingSprite with nullable texture', function ()
+    {
+        const tilingSprite = new TilingSprite(null, 1, 1);
+
+        expect(tilingSprite.texture).to.equal(Texture.EMPTY);
+    });
 });

@@ -5,6 +5,7 @@ declare namespace GlobalMixins {
         canvasPadding: number;
         _cachedTint: number;
         _tintedCanvas: HTMLCanvasElement;
+        _cachedTexture: import('@pixi/core').Texture;
     }
 
     interface MeshMaterial {

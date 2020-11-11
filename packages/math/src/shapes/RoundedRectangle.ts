@@ -126,4 +126,12 @@ export class RoundedRectangle
 
         return false;
     }
+
+    // #if _DEBUG
+    toString(): string
+    {
+        return `[@pixi/math:RoundedRectangle x=${this.x} y=${this.y}`
+            + `width=${this.width} height=${this.height} radius=${this.radius}]`;
+    }
+    // #endif
 }

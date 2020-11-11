@@ -11,7 +11,8 @@ import type {
     StateSystem,
     SVGResource,
     ImageResource,
-    BaseImageResource } from '@pixi/core';
+    BaseImageResource
+} from '@pixi/core';
 import type { DisplayObject, Container } from '@pixi/display';
 import type { TilingSprite } from '@pixi/sprite-tiling';
 import type {
@@ -75,7 +76,9 @@ export function useDeprecated(this: any): void
         SVG_SIZE: {
             get(): RegExp
             {
+                // #if _DEBUG
                 deprecation(v5, 'PIXI.utils.SVG_SIZE property has moved to PIXI.SVGResource.SVG_SIZE');
+                // #endif
 
                 return PIXI.SVGResource.SVG_SIZE;
             },
@@ -89,7 +92,9 @@ export function useDeprecated(this: any): void
         TransformStatic: {
             get(): Transform
             {
+                // #if _DEBUG
                 deprecation(v5, 'PIXI.TransformStatic class has been removed, use PIXI.Transform');
+                // #endif
 
                 return PIXI.Transform;
             },
@@ -103,7 +108,9 @@ export function useDeprecated(this: any): void
         TransformBase: {
             get(): Transform
             {
+                // #if _DEBUG
                 deprecation(v5, 'PIXI.TransformBase class has been removed, use PIXI.Transform');
+                // #endif
 
                 return PIXI.Transform;
             },
@@ -124,7 +131,9 @@ export function useDeprecated(this: any): void
         TRANSFORM_MODE: {
             get(): {[name: string]: number}
             {
+                // #if _DEBUG
                 deprecation(v5, 'PIXI.TRANSFORM_MODE property has been removed');
+                // #endif
 
                 return { STATIC: 0, DYNAMIC: 1 };
             },
@@ -138,7 +147,9 @@ export function useDeprecated(this: any): void
         WebGLRenderer: {
             get(): typeof Renderer
             {
+                // #if _DEBUG
                 deprecation(v5, 'PIXI.WebGLRenderer class has moved to PIXI.Renderer');
+                // #endif
 
                 return PIXI.Renderer;
             },
@@ -152,7 +163,9 @@ export function useDeprecated(this: any): void
         CanvasRenderTarget: {
             get(): CanvasRenderTarget
             {
+                // #if _DEBUG
                 deprecation(v5, 'PIXI.CanvasRenderTarget class has moved to PIXI.utils.CanvasRenderTarget');
+                // #endif
 
                 return PIXI.utils.CanvasRenderTarget;
             },
@@ -168,7 +181,9 @@ export function useDeprecated(this: any): void
         loader: {
             get(): Loader
             {
+                // #if _DEBUG
                 deprecation(v5, 'PIXI.loader instance has moved to PIXI.Loader.shared');
+                // #endif
 
                 return PIXI.Loader.shared;
             },
@@ -182,7 +197,9 @@ export function useDeprecated(this: any): void
         FilterManager: {
             get(): FilterSystem
             {
+                // #if _DEBUG
                 deprecation(v5, 'PIXI.FilterManager class has moved to PIXI.FilterSystem');
+                // #endif
 
                 return PIXI.FilterSystem;
             },
@@ -196,7 +213,9 @@ export function useDeprecated(this: any): void
         CanvasTinter: {
             get(): $FixLegacy
             {
+                // #if _DEBUG
                 deprecation('5.2.0', 'PIXI.CanvasTinter namespace has moved to PIXI.canvasUtils');
+                // #endif
 
                 return PIXI.canvasUtils;
             },
@@ -210,7 +229,9 @@ export function useDeprecated(this: any): void
         GroupD8: {
             get(): typeof groupD8
             {
+                // #if _DEBUG
                 deprecation('5.2.0', 'PIXI.GroupD8 namespace has moved to PIXI.groupD8');
+                // #endif
 
                 return PIXI.groupD8;
             },
@@ -235,7 +256,9 @@ export function useDeprecated(this: any): void
         AccessibilityManager: {
             get(): typeof AccessibilityManager
             {
+                // #if _DEBUG
                 deprecation('5.3.0', 'PIXI.accessibility.AccessibilityManager moved to PIXI.AccessibilityManager');
+                // #endif
 
                 return PIXI.AccessibilityManager;
             },
@@ -251,7 +274,9 @@ export function useDeprecated(this: any): void
     Object.defineProperty(PIXI, 'resources', {
         get(): typeof PIXI
         {
+            // #if _DEBUG
             deprecation('5.4.0', 'PIXI.resources.* has moved to PIXI.*');
+            // #endif
 
             return PIXI;
         },
@@ -266,7 +291,9 @@ export function useDeprecated(this: any): void
     Object.defineProperty(PIXI, 'systems', {
         get(): typeof PIXI
         {
+            // #if _DEBUG
             deprecation('5.4.0', 'PIXI.systems.* has moved to PIXI.*');
+            // #endif
 
             return PIXI;
         },
@@ -288,7 +315,9 @@ export function useDeprecated(this: any): void
         InteractionManager: {
             get(): typeof InteractionManager
             {
+                // #if _DEBUG
                 deprecation('5.3.0', 'PIXI.interaction.InteractionManager moved to PIXI.InteractionManager');
+                // #endif
 
                 return PIXI.InteractionManager;
             },
@@ -302,7 +331,9 @@ export function useDeprecated(this: any): void
         InteractionData: {
             get(): typeof InteractionData
             {
+                // #if _DEBUG
                 deprecation('5.3.0', 'PIXI.interaction.InteractionData moved to PIXI.InteractionData');
+                // #endif
 
                 return PIXI.InteractionData;
             },
@@ -316,7 +347,9 @@ export function useDeprecated(this: any): void
         InteractionEvent: {
             get(): typeof InteractionEvent
             {
+                // #if _DEBUG
                 deprecation('5.3.0', 'PIXI.interaction.InteractionEvent moved to PIXI.InteractionEvent');
+                // #endif
 
                 return PIXI.InteractionEvent;
             },
@@ -339,7 +372,9 @@ export function useDeprecated(this: any): void
         BasePrepare: {
             get(): typeof BasePrepare
             {
+                // #if _DEBUG
                 deprecation('5.2.1', 'PIXI.prepare.BasePrepare moved to PIXI.BasePrepare');
+                // #endif
 
                 return PIXI.BasePrepare;
             },
@@ -352,7 +387,9 @@ export function useDeprecated(this: any): void
         Prepare: {
             get(): typeof Prepare
             {
+                // #if _DEBUG
                 deprecation('5.2.1', 'PIXI.prepare.Prepare moved to PIXI.Prepare');
+                // #endif
 
                 return PIXI.Prepare;
             },
@@ -365,7 +402,9 @@ export function useDeprecated(this: any): void
         CanvasPrepare: {
             get(): $FixLegacy
             {
+                // #if _DEBUG
                 deprecation('5.2.1', 'PIXI.prepare.CanvasPrepare moved to PIXI.CanvasPrepare');
+                // #endif
 
                 return PIXI.CanvasPrepare;
             },
@@ -388,7 +427,9 @@ export function useDeprecated(this: any): void
         Extract: {
             get(): typeof Extract
             {
+                // #if _DEBUG
                 deprecation('5.2.1', 'PIXI.extract.Extract moved to PIXI.Extract');
+                // #endif
 
                 return PIXI.Extract;
             },
@@ -401,7 +442,9 @@ export function useDeprecated(this: any): void
         CanvasExtract: {
             get(): $FixLegacy
             {
+                // #if _DEBUG
                 deprecation('5.2.1', 'PIXI.extract.CanvasExtract moved to PIXI.CanvasExtract');
+                // #endif
 
                 return PIXI.CanvasExtract;
             },
@@ -425,7 +468,9 @@ export function useDeprecated(this: any): void
         TilingSprite: {
             get(): typeof TilingSprite
             {
+                // #if _DEBUG
                 deprecation(v5, 'PIXI.extras.TilingSprite class has moved to PIXI.TilingSprite');
+                // #endif
 
                 return PIXI.TilingSprite;
             },
@@ -438,7 +483,9 @@ export function useDeprecated(this: any): void
         TilingSpriteRenderer: {
             get(): $FixLegacy
             {
+                // #if _DEBUG
                 deprecation(v5, 'PIXI.extras.TilingSpriteRenderer class has moved to PIXI.TilingSpriteRenderer');
+                // #endif
 
                 return PIXI.TilingSpriteRenderer;
             },
@@ -451,7 +498,9 @@ export function useDeprecated(this: any): void
         AnimatedSprite: {
             get(): typeof AnimatedSprite
             {
+                // #if _DEBUG
                 deprecation(v5, 'PIXI.extras.AnimatedSprite class has moved to PIXI.AnimatedSprite');
+                // #endif
 
                 return PIXI.AnimatedSprite;
             },
@@ -464,7 +513,9 @@ export function useDeprecated(this: any): void
         BitmapText: {
             get(): typeof BitmapText
             {
+                // #if _DEBUG
                 deprecation(v5, 'PIXI.extras.BitmapText class has moved to PIXI.BitmapText');
+                // #endif
 
                 return PIXI.BitmapText;
             },
@@ -479,7 +530,9 @@ export function useDeprecated(this: any): void
      */
     PIXI.TilingSprite.fromFrame = function fromFrame(frameId: string, width: number, height: number): TilingSprite
     {
+        // #if _DEBUG
         deprecation('5.3.0', 'TilingSprite.fromFrame is deprecated, use TilingSprite.from');
+        // #endif
 
         return PIXI.TilingSprite.from(frameId, { width, height });
     };
@@ -496,7 +549,9 @@ export function useDeprecated(this: any): void
         height: number,
         options: any = {}): TilingSprite
     {
+        // #if _DEBUG
         deprecation('5.3.0', 'TilingSprite.fromImage is deprecated, use TilingSprite.from');
+        // #endif
 
         // Fallback support for crossorigin, scaleMode parameters
         if (options && typeof options !== 'object')
@@ -526,7 +581,9 @@ export function useDeprecated(this: any): void
         getSvgSize: {
             get(): typeof SVGResource.getSize
             {
+                // #if _DEBUG
                 deprecation(v5, 'PIXI.utils.getSvgSize function has moved to PIXI.SVGResource.getSize');
+                // #endif
 
                 return PIXI.SVGResource.getSize;
             },
@@ -549,7 +606,9 @@ export function useDeprecated(this: any): void
         Mesh: {
             get(): typeof SimpleMesh
             {
+                // #if _DEBUG
                 deprecation(v5, 'PIXI.mesh.Mesh class has moved to PIXI.SimpleMesh');
+                // #endif
 
                 return PIXI.SimpleMesh;
             },
@@ -562,7 +621,9 @@ export function useDeprecated(this: any): void
         NineSlicePlane: {
             get(): typeof NineSlicePlane
             {
+                // #if _DEBUG
                 deprecation(v5, 'PIXI.mesh.NineSlicePlane class has moved to PIXI.NineSlicePlane');
+                // #endif
 
                 return PIXI.NineSlicePlane;
             },
@@ -575,7 +636,9 @@ export function useDeprecated(this: any): void
         Plane: {
             get(): typeof SimplePlane
             {
+                // #if _DEBUG
                 deprecation(v5, 'PIXI.mesh.Plane class has moved to PIXI.SimplePlane');
+                // #endif
 
                 return PIXI.SimplePlane;
             },
@@ -588,7 +651,9 @@ export function useDeprecated(this: any): void
         Rope: {
             get(): typeof SimpleRope
             {
+                // #if _DEBUG
                 deprecation(v5, 'PIXI.mesh.Rope class has moved to PIXI.SimpleRope');
+                // #endif
 
                 return PIXI.SimpleRope;
             },
@@ -601,7 +666,9 @@ export function useDeprecated(this: any): void
         RawMesh: {
             get(): typeof Mesh
             {
+                // #if _DEBUG
                 deprecation(v5, 'PIXI.mesh.RawMesh class has moved to PIXI.Mesh');
+                // #endif
 
                 return PIXI.Mesh;
             },
@@ -614,7 +681,9 @@ export function useDeprecated(this: any): void
         CanvasMeshRenderer: {
             get(): $FixLegacy
             {
+                // #if _DEBUG
                 deprecation(v5, 'PIXI.mesh.CanvasMeshRenderer class has moved to PIXI.CanvasMeshRenderer');
+                // #endif
 
                 return PIXI.CanvasMeshRenderer;
             },
@@ -627,7 +696,9 @@ export function useDeprecated(this: any): void
         MeshRenderer: {
             get(): $FixLegacy
             {
+                // #if _DEBUG
                 deprecation(v5, 'PIXI.mesh.MeshRenderer class has moved to PIXI.MeshRenderer');
+                // #endif
 
                 return PIXI.MeshRenderer;
             },
@@ -651,7 +722,9 @@ export function useDeprecated(this: any): void
         ParticleContainer: {
             get(): typeof ParticleContainer
             {
+                // #if _DEBUG
                 deprecation(v5, 'PIXI.particles.ParticleContainer class has moved to PIXI.ParticleContainer');
+                // #endif
 
                 return PIXI.ParticleContainer;
             },
@@ -664,7 +737,9 @@ export function useDeprecated(this: any): void
         ParticleRenderer: {
             get(): $FixLegacy
             {
+                // #if _DEBUG
                 deprecation(v5, 'PIXI.particles.ParticleRenderer class has moved to PIXI.ParticleRenderer');
+                // #endif
 
                 return PIXI.ParticleRenderer;
             },
@@ -688,7 +763,9 @@ export function useDeprecated(this: any): void
         Ticker: {
             get(): typeof Ticker
             {
+                // #if _DEBUG
                 deprecation(v5, 'PIXI.ticker.Ticker class has moved to PIXI.Ticker');
+                // #endif
 
                 return PIXI.Ticker;
             },
@@ -703,7 +780,9 @@ export function useDeprecated(this: any): void
         shared: {
             get(): Ticker
             {
+                // #if _DEBUG
                 deprecation(v5, 'PIXI.ticker.shared instance has moved to PIXI.Ticker.shared');
+                // #endif
 
                 return PIXI.Ticker.shared;
             },
@@ -726,7 +805,9 @@ export function useDeprecated(this: any): void
         Loader: {
             get(): typeof Loader
             {
+                // #if _DEBUG
                 deprecation(v5, 'PIXI.loaders.Loader class has moved to PIXI.Loader');
+                // #endif
 
                 return PIXI.Loader;
             },
@@ -739,7 +820,9 @@ export function useDeprecated(this: any): void
         Resource: {
             get(): typeof LoaderResource
             {
+                // #if _DEBUG
                 deprecation(v5, 'PIXI.loaders.Resource class has moved to PIXI.LoaderResource');
+                // #endif
 
                 return PIXI.LoaderResource;
             },
@@ -752,7 +835,9 @@ export function useDeprecated(this: any): void
         bitmapFontParser: {
             get(): typeof BitmapFontLoader.use
             {
+                // #if _DEBUG
                 deprecation(v5, 'PIXI.loaders.bitmapFontParser function has moved to PIXI.BitmapFontLoader.use');
+                // #endif
 
                 return PIXI.BitmapFontLoader.use;
             },
@@ -764,7 +849,9 @@ export function useDeprecated(this: any): void
         parseBitmapFontData: {
             get(): void
             {
+                // #if _DEBUG
                 deprecation(v5, 'PIXI.loaders.parseBitmapFontData function has removed');
+                // #endif
             },
         },
         /**
@@ -775,7 +862,9 @@ export function useDeprecated(this: any): void
         spritesheetParser: {
             get(): typeof SpritesheetLoader.use
             {
+                // #if _DEBUG
                 deprecation(v5, 'PIXI.loaders.spritesheetParser function has moved to PIXI.SpritesheetLoader.use');
+                // #endif
 
                 return PIXI.SpritesheetLoader.use;
             },
@@ -788,7 +877,9 @@ export function useDeprecated(this: any): void
         getResourcePath: {
             get(): typeof SpritesheetLoader.getResourcePath
             {
+                // #if _DEBUG
                 deprecation(v5, 'PIXI.loaders.getResourcePath property has moved to PIXI.SpritesheetLoader.getResourcePath');
+                // #endif
 
                 return PIXI.SpritesheetLoader.getResourcePath;
             },
@@ -803,9 +894,11 @@ export function useDeprecated(this: any): void
      */
     PIXI.Loader.addPixiMiddleware = function addPixiMiddleware(middleware: any): typeof Loader
     {
+        // #if _DEBUG
         deprecation(v5,
             'PIXI.loaders.Loader.addPixiMiddleware function is deprecated, use PIXI.loaders.Loader.registerPlugin'
         );
+        // #endif
 
         return PIXI.loaders.Loader.registerPlugin({ use: middleware() });
     };
@@ -825,7 +918,9 @@ export function useDeprecated(this: any): void
             {
                 const signal = eventToSignal(event);
 
+                // #if _DEBUG
                 deprecation(v5, `PIXI.Loader#on is completely deprecated, use PIXI.Loader#${signal}.add`);
+                // #endif
             },
             /**
              * Use the corresponding signal, e.g., event `start`` is signal `onStart`.
@@ -836,7 +931,9 @@ export function useDeprecated(this: any): void
             {
                 const signal = eventToSignal(event);
 
+                // #if _DEBUG
                 deprecation(v5, `PIXI.Loader#once is completely deprecated, use PIXI.Loader#${signal}.once`);
+                // #endif
             },
             /**
              * Use the corresponding signal, e.g., event `start`` is signal `onStart`.
@@ -847,7 +944,9 @@ export function useDeprecated(this: any): void
             {
                 const signal = eventToSignal(event);
 
+                // #if _DEBUG
                 deprecation(v5, `PIXI.Loader#off is completely deprecated, use PIXI.Loader#${signal}.detach`);
+                // #endif
             },
         });
 
@@ -859,7 +958,9 @@ export function useDeprecated(this: any): void
     Object.defineProperty(PIXI.extract, 'WebGLExtract', {
         get(): typeof Extract
         {
+            // #if _DEBUG
             deprecation(v5, 'PIXI.extract.WebGLExtract method has moved to PIXI.Extract');
+            // #endif
 
             return PIXI.Extract;
         },
@@ -873,7 +974,9 @@ export function useDeprecated(this: any): void
     Object.defineProperty(PIXI.prepare, 'WebGLPrepare', {
         get(): typeof Prepare
         {
+            // #if _DEBUG
             deprecation(v5, 'PIXI.prepare.WebGLPrepare class has moved to PIXI.Prepare');
+            // #endif
 
             return PIXI.Prepare;
         },
@@ -888,7 +991,9 @@ export function useDeprecated(this: any): void
      */
     PIXI.Container.prototype._renderWebGL = function _renderWebGL(this: Container, renderer: Renderer): void
     {
+        // #if _DEBUG
         deprecation(v5, 'PIXI.Container._renderWebGL method has moved to PIXI.Container._render');
+        // #endif
 
         this._render(renderer);
     };
@@ -902,7 +1007,9 @@ export function useDeprecated(this: any): void
      */
     PIXI.Container.prototype.renderWebGL = function renderWebGL(this: Container, renderer: Renderer): void
     {
+        // #if _DEBUG
         deprecation(v5, 'PIXI.Container.renderWebGL method has moved to PIXI.Container.render');
+        // #endif
 
         this.render(renderer);
     };
@@ -916,7 +1023,9 @@ export function useDeprecated(this: any): void
      */
     PIXI.DisplayObject.prototype.renderWebGL = function renderWebGL(this: DisplayObject, renderer: Renderer): void
     {
+        // #if _DEBUG
         deprecation(v5, 'PIXI.DisplayObject.renderWebGL method has moved to PIXI.DisplayObject.render');
+        // #endif
 
         this.render(renderer);
     };
@@ -929,7 +1038,9 @@ export function useDeprecated(this: any): void
      */
     PIXI.Container.prototype.renderAdvancedWebGL = function renderAdvancedWebGL(this: Container, renderer: Renderer): void
     {
+        // #if _DEBUG
         deprecation(v5, 'PIXI.Container.renderAdvancedWebGL method has moved to PIXI.Container.renderAdvanced');
+        // #endif
 
         this.renderAdvanced(renderer);
     };
@@ -947,13 +1058,17 @@ export function useDeprecated(this: any): void
         TRANSFORM_MODE: {
             get(): number
             {
+                // #if _DEBUG
                 deprecation(v5, 'PIXI.settings.TRANSFORM_MODE property has been removed');
+                // #endif
 
                 return 0;
             },
             set(): void
             {
+                // #if _DEBUG
                 deprecation(v5, 'PIXI.settings.TRANSFORM_MODE property has been removed');
+                // #endif
             },
         },
     });
@@ -967,7 +1082,9 @@ export function useDeprecated(this: any): void
      */
     BaseTextureAny.prototype.loadSource = function loadSource(image: string | HTMLImageElement): void
     {
+        // #if _DEBUG
         deprecation(v5, 'PIXI.BaseTexture.loadSource method has been deprecated');
+        // #endif
 
         const resource = PIXI.autoDetectResource(image);
 
@@ -991,7 +1108,9 @@ export function useDeprecated(this: any): void
         hasLoaded: {
             get(): boolean
             {
+                // #if _DEBUG
                 deprecation(v5, 'PIXI.BaseTexture.hasLoaded property has been removed, use PIXI.BaseTexture.valid');
+                // #endif
 
                 return this.valid;
             },
@@ -1006,14 +1125,18 @@ export function useDeprecated(this: any): void
         imageUrl: {
             get(this: BaseTexture): string
             {
+                // #if _DEBUG
                 deprecation(v5, 'PIXI.BaseTexture.imageUrl property has been removed, use PIXI.BaseTexture.resource.url');
+                // #endif
 
                 return (this.resource as ImageResource)?.url;
             },
 
             set(this: BaseTexture, imageUrl: string): void
             {
+                // #if _DEBUG
                 deprecation(v5, 'PIXI.BaseTexture.imageUrl property has been removed, use PIXI.BaseTexture.resource.url');
+                // #endif
 
                 if (this.resource)
                 {
@@ -1032,14 +1155,18 @@ export function useDeprecated(this: any): void
         source: {
             get(this: BaseTexture): ImageSource
             {
+                // #if _DEBUG
                 deprecation(v5, 'PIXI.BaseTexture.source property has been moved, use `PIXI.BaseTexture.resource.source`');
+                // #endif
 
                 return (this.resource as BaseImageResource).source;
             },
             set(this: BaseTexture, source: ImageSource): void
             {
+                // #if _DEBUG
                 deprecation(v5, 'PIXI.BaseTexture.source property has been moved, use `PIXI.BaseTexture.resource.source` '
                     + 'if you want to set HTMLCanvasElement. Otherwise, create new BaseTexture.');
+                // #endif
 
                 if (this.resource)
                 {
@@ -1059,15 +1186,19 @@ export function useDeprecated(this: any): void
         premultiplyAlpha: {
             get(this: BaseTexture): boolean
             {
+                // #if _DEBUG
                 deprecation('5.2.0', 'PIXI.BaseTexture.premultiplyAlpha property has been changed to `alphaMode`'
                     + ', see `PIXI.ALPHA_MODES`');
+                // #endif
 
                 return this.alphaMode !== 0;
             },
             set(this: BaseTexture, value: boolean): void
             {
+                // #if _DEBUG
                 deprecation('5.2.0', 'PIXI.BaseTexture.premultiplyAlpha property has been changed to `alphaMode`'
                     + ', see `PIXI.ALPHA_MODES`');
+                // #endif
 
                 this.alphaMode = Number(value);
             },
@@ -1087,7 +1218,9 @@ export function useDeprecated(this: any): void
                 if (!baseTextureIdDeprecation)
                 {
                     // #popelyshev: That property was a hot place, I don't want to call deprecation method on it if possible
+                    // #if _DEBUG
                     deprecation('5.2.0', 'PIXI.BaseTexture._id batch local field has been changed to `_batchLocation`');
+                    // #endif
                     baseTextureIdDeprecation = true;
                 }
 
@@ -1113,7 +1246,9 @@ export function useDeprecated(this: any): void
         scaleMode: number,
         scale: number): BaseTexture
     {
+        // #if _DEBUG
         deprecation(v5, 'PIXI.BaseTexture.fromImage method has been replaced with PIXI.BaseTexture.from');
+        // #endif
 
         const resourceOptions = { scale, crossorigin };
 
@@ -1129,7 +1264,9 @@ export function useDeprecated(this: any): void
      */
     BaseTextureAny.fromCanvas = function fromCanvas(canvas: HTMLCanvasElement, scaleMode: number): BaseTexture
     {
+        // #if _DEBUG
         deprecation(v5, 'PIXI.BaseTexture.fromCanvas method has been replaced with PIXI.BaseTexture.from');
+        // #endif
 
         return BaseTextureAny.from(canvas, { scaleMode });
     };
@@ -1147,7 +1284,9 @@ export function useDeprecated(this: any): void
         scaleMode: number,
         scale: number): BaseTexture
     {
+        // #if _DEBUG
         deprecation(v5, 'PIXI.BaseTexture.fromSVG method has been replaced with PIXI.BaseTexture.from');
+        // #endif
 
         const resourceOptions = { scale, crossorigin };
 
@@ -1166,15 +1305,19 @@ export function useDeprecated(this: any): void
         premultiplyAlpha: {
             get(this: ImageResource): boolean
             {
+                // #if _DEBUG
                 deprecation('5.2.0', 'PIXI.ImageResource.premultiplyAlpha property '
                     + 'has been changed to `alphaMode`, see `PIXI.ALPHA_MODES`');
+                // #endif
 
                 return this.alphaMode !== 0;
             },
             set(this: ImageResource, value: boolean): void
             {
+                // #if _DEBUG
                 deprecation('5.2.0', 'PIXI.ImageResource.premultiplyAlpha property '
                     + 'has been changed to `alphaMode`, see `PIXI.ALPHA_MODES`');
+                // #endif
                 this.alphaMode = Number(value);
             },
         },
@@ -1187,7 +1330,9 @@ export function useDeprecated(this: any): void
      */
     PIXI.Point.prototype.copy = function copy(this: Point, p: IPoint): Point
     {
+        // #if _DEBUG
         deprecation(v5, 'PIXI.Point.copy method has been replaced with PIXI.Point.copyFrom');
+        // #endif
 
         return this.copyFrom(p);
     };
@@ -1199,7 +1344,9 @@ export function useDeprecated(this: any): void
      */
     PIXI.ObservablePoint.prototype.copy = function copy(this: ObservablePoint, p: IPoint): ObservablePoint
     {
+        // #if _DEBUG
         deprecation(v5, 'PIXI.ObservablePoint.copy method has been replaced with PIXI.ObservablePoint.copyFrom');
+        // #endif
 
         return this.copyFrom(p);
     };
@@ -1211,7 +1358,9 @@ export function useDeprecated(this: any): void
      */
     PIXI.Rectangle.prototype.copy = function copy(this: Rectangle, p: Rectangle): Rectangle
     {
+        // #if _DEBUG
         deprecation(v5, 'PIXI.Rectangle.copy method has been replaced with PIXI.Rectangle.copyFrom');
+        // #endif
 
         return this.copyFrom(p);
     };
@@ -1223,7 +1372,9 @@ export function useDeprecated(this: any): void
      */
     PIXI.Matrix.prototype.copy = function copy(this: Matrix, p: Matrix): Matrix
     {
+        // #if _DEBUG
         deprecation(v5, 'PIXI.Matrix.copy method has been replaced with PIXI.Matrix.copyTo');
+        // #endif
 
         return this.copyTo(p);
     };
@@ -1235,7 +1386,9 @@ export function useDeprecated(this: any): void
      */
     PIXI.StateSystem.prototype.setState = function setState(this: StateSystem, s: State): void
     {
+        // #if _DEBUG
         deprecation('v5.1.0', 'StateSystem.setState has been renamed to StateSystem.set');
+        // #endif
 
         return this.set(s);
     };
@@ -1248,9 +1401,11 @@ export function useDeprecated(this: any): void
          */
         getRenderTarget(this: FilterSystem, _clear: boolean, resolution: number)
         {
+            // #if _DEBUG
             deprecation(v5,
                 'PIXI.FilterManager.getRenderTarget method has been replaced with PIXI.FilterSystem#getFilterTexture'
             );
+            // #endif
 
             return this.getFilterTexture(null, resolution);
         },
@@ -1262,10 +1417,12 @@ export function useDeprecated(this: any): void
          */
         returnRenderTarget(this: FilterSystem, renderTexture: any)
         {
+            // #if _DEBUG
             deprecation(v5,
                 'PIXI.FilterManager.returnRenderTarget method has been replaced with '
                 + 'PIXI.FilterSystem.returnFilterTexture'
             );
+            // #endif
 
             this.returnFilterTexture(renderTexture);
         },
@@ -1278,8 +1435,10 @@ export function useDeprecated(this: any): void
          */
         calculateScreenSpaceMatrix(this: FilterSystem, outputMatrix: any)
         {
+            // #if _DEBUG
             deprecation(v5, 'PIXI.FilterSystem.calculateScreenSpaceMatrix method is removed, '
                 + 'use `(vTextureCoord * inputSize.xy) + outputFrame.xy` instead');
+            // #endif
 
             const mappedMatrix = outputMatrix.identity();
             const { sourceFrame, destinationFrame } = this.activeState;
@@ -1298,8 +1457,10 @@ export function useDeprecated(this: any): void
          */
         calculateNormalizedScreenSpaceMatrix(this: FilterSystem, outputMatrix: Matrix): Matrix
         {
+            // #if _DEBUG
             deprecation(v5, 'PIXI.FilterManager.calculateNormalizedScreenSpaceMatrix method is removed, '
                 + 'use `((vTextureCoord * inputSize.xy) + outputFrame.xy) / outputFrame.zw` instead.');
+            // #endif
 
             const { sourceFrame, destinationFrame } = this.activeState;
             const mappedMatrix = outputMatrix.identity();
@@ -1326,7 +1487,9 @@ export function useDeprecated(this: any): void
         sourceFrame: {
             get(this: RenderTexture): Rectangle
             {
+                // #if _DEBUG
                 deprecation(v5, 'PIXI.RenderTexture.sourceFrame property has been removed');
+                // #endif
 
                 return this.filterFrame;
             },
@@ -1341,7 +1504,9 @@ export function useDeprecated(this: any): void
         size: {
             get(this: RenderTexture): Rectangle
             {
+                // #if _DEBUG
                 deprecation(v5, 'PIXI.RenderTexture.size property has been removed');
+                // #endif
 
                 return this._frame;
             },
@@ -1358,7 +1523,9 @@ export function useDeprecated(this: any): void
     {
         constructor(strength: number, quality: number, resolution: number, kernelSize: number)
         {
+            // #if _DEBUG
             deprecation(v5, 'PIXI.filters.BlurXFilter class is deprecated, use PIXI.filters.BlurFilterPass');
+            // #endif
 
             super(true, strength, quality, resolution, kernelSize);
         }
@@ -1374,7 +1541,9 @@ export function useDeprecated(this: any): void
     {
         constructor(strength: number, quality: number, resolution: number, kernelSize: number)
         {
+            // #if _DEBUG
             deprecation(v5, 'PIXI.filters.BlurYFilter class is deprecated, use PIXI.filters.BlurFilterPass');
+            // #endif
 
             super(false, strength, quality, resolution, kernelSize);
         }
@@ -1396,7 +1565,9 @@ export function useDeprecated(this: any): void
     {
         GraphicsAny.prototype.generateCanvasTexture = function generateCanvasTexture(): void
         {
+            // #if _DEBUG
             deprecation(v5, 'PIXI.Graphics.generateCanvasTexture method is only available in "pixi.js-legacy"');
+            // #endif
         };
     }
 
@@ -1409,7 +1580,9 @@ export function useDeprecated(this: any): void
     Object.defineProperty(GraphicsAny.prototype, 'graphicsData', {
         get(this: Graphics): GraphicsData[]
         {
+            // #if _DEBUG
             deprecation(v5, 'PIXI.Graphics.graphicsData property is deprecated, use PIXI.Graphics.geometry.graphicsData');
+            // #endif
 
             return this.geometry.graphicsData;
         },
@@ -1418,7 +1591,9 @@ export function useDeprecated(this: any): void
     // Use these to deprecate all the Sprite from* methods
     function spriteFrom(name: string, source: string, crossorigin: string | boolean, scaleMode: number): Sprite
     {
+        // #if _DEBUG
         deprecation(v5, `PIXI.Sprite.${name} method is deprecated, use PIXI.Sprite.from`);
+        // #endif
 
         return SpriteAny.from(source, {
             resourceOptions: {
@@ -1471,7 +1646,9 @@ export function useDeprecated(this: any): void
     // Use these to deprecate all the Texture from* methods
     function textureFrom(name: string, source: string, crossorigin: string | boolean, scaleMode: number): Texture
     {
+        // #if _DEBUG
         deprecation(v5, `PIXI.Texture.${name} method is deprecated, use PIXI.Texture.from`);
+        // #endif
 
         return TextureAny.from(source, {
             resourceOptions: {
@@ -1529,15 +1706,19 @@ export function useDeprecated(this: any): void
     Object.defineProperty(PIXI.AbstractRenderer.prototype, 'autoResize', {
         get(this: AbstractRenderer): boolean
         {
+            // #if _DEBUG
             deprecation(v5, 'PIXI.AbstractRenderer.autoResize property is deprecated, '
                 + 'use PIXI.AbstractRenderer.autoDensity');
+            // #endif
 
             return this.autoDensity;
         },
         set(this: any, value: boolean): void
         {
+            // #if _DEBUG
             deprecation(v5, 'PIXI.AbstractRenderer.autoResize property is deprecated, '
                 + 'use PIXI.AbstractRenderer.autoDensity');
+            // #endif
 
             this.autoDensity = value;
         },
@@ -1551,7 +1732,9 @@ export function useDeprecated(this: any): void
     Object.defineProperty(PIXI.Renderer.prototype, 'textureManager', {
         get(this: Renderer)
         {
+            // #if _DEBUG
             deprecation(v5, 'PIXI.Renderer.textureManager property is deprecated, use PIXI.Renderer.texture');
+            // #endif
 
             return this.texture;
         },
@@ -1569,7 +1752,9 @@ export function useDeprecated(this: any): void
          */
         mixin(): void
         {
+            // #if _DEBUG
             deprecation(v5, 'PIXI.utils.mixins.mixin function is no longer available');
+            // #endif
         },
         /**
          * @memberof PIXI.utils.mixins
@@ -1578,7 +1763,9 @@ export function useDeprecated(this: any): void
          */
         delayMixin(): void
         {
+            // #if _DEBUG
             deprecation(v5, 'PIXI.utils.mixins.delayMixin function is no longer available');
+            // #endif
         },
         /**
          * @memberof PIXI.utils.mixins
@@ -1587,7 +1774,9 @@ export function useDeprecated(this: any): void
          */
         performMixins(): void
         {
+            // #if _DEBUG
             deprecation(v5, 'PIXI.utils.mixins.performMixins function is no longer available');
+            // #endif
         },
     };
 
@@ -1599,8 +1788,10 @@ export function useDeprecated(this: any): void
     Object.defineProperty(PIXI.BitmapText.prototype, 'font', {
         get(this: BitmapText): any
         {
+            // #if _DEBUG
             deprecation('5.3.0', 'PIXI.BitmapText.font property is deprecated, '
                 + 'use fontName, fontSize, tint or align properties');
+            // #endif
 
             return {
                 name: this._fontName,
@@ -1611,8 +1802,10 @@ export function useDeprecated(this: any): void
         },
         set(this: BitmapText, value: any)
         {
+            // #if _DEBUG
             deprecation('5.3.0', 'PIXI.BitmapText.font property is deprecated, '
                 + 'use fontName, fontSize, tint or align properties');
+            // #endif
 
             if (!value)
             {

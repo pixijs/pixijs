@@ -3,7 +3,7 @@ import { settings } from '@pixi/settings';
 import { BlurFilterPass } from './BlurFilterPass';
 import { CLEAR_MODES } from '@pixi/constants';
 
-import type { RenderTexture, systems } from '@pixi/core';
+import type { FilterSystem, RenderTexture } from '@pixi/core';
 import type { BLEND_MODES } from '@pixi/constants';
 
 /**
@@ -50,7 +50,7 @@ export class BlurFilter extends Filter
      * @param {PIXI.RenderTexture} output - The output target.
      * @param {PIXI.CLEAR_MODES} clearMode - How to clear
      */
-    apply(filterManager: systems.FilterSystem, input: RenderTexture, output: RenderTexture, clearMode: CLEAR_MODES): void
+    apply(filterManager: FilterSystem, input: RenderTexture, output: RenderTexture, clearMode: CLEAR_MODES): void
     {
         const xStrength = Math.abs(this.blurXFilter.strength);
         const yStrength = Math.abs(this.blurYFilter.strength);

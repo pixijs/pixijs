@@ -4,6 +4,7 @@ import { Texture } from '../textures/Texture';
 import type { Rectangle } from '@pixi/math';
 import type { Framebuffer } from '../framebuffer/Framebuffer';
 import type { IBaseTextureOptions } from '../textures/BaseTexture';
+
 /**
  * A RenderTexture is a special texture that allows any PixiJS display object to be rendered to it.
  *
@@ -27,6 +28,7 @@ import type { IBaseTextureOptions } from '../textures/BaseTexture';
  *
  * renderer.render(sprite, renderTexture);
  * ```
+ * Note that you should not create a new renderer, but reuse the same one as the rest of the application.
  *
  * The Sprite in this case will be rendered using its local transform. To render this sprite at 0,0
  * you can clear the transform
