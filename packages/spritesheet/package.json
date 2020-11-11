@@ -1,6 +1,6 @@
 {
   "name": "@pixi/spritesheet",
-  "version": "5.4.0-rc",
+  "version": "5.4.0-rc.1",
   "main": "dist/cjs/spritesheet.js",
   "module": "dist/esm/spritesheet.js",
   "bundle": "dist/browser/spritesheet.js",
@@ -25,9 +25,9 @@
     "*.d.ts"
   ],
   "dependencies": {
-    "@pixi/core": "5.4.0-rc",
-    "@pixi/loaders": "5.4.0-rc",
-    "@pixi/math": "5.4.0-rc",
-    "@pixi/utils": "5.4.0-rc"
+    "@pixi/core": "5.4.0-rc.1",
+    "@pixi/loaders": "5.4.0-rc.1",
+    "@pixi/math": "5.4.0-rc.1",
+    "@pixi/utils": "5.4.0-rc.1"
   }
 }

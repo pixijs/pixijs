@@ -1,6 +1,6 @@
 {
   "name": "@pixi/canvas-display",
-  "version": "5.4.0-rc",
+  "version": "5.4.0-rc.1",
   "main": "dist/cjs/canvas-display.js",
   "module": "dist/esm/canvas-display.js",
   "bundle": "dist/browser/canvas-display.js",
@@ -26,6 +26,6 @@
     "*.d.ts"
   ],
   "dependencies": {
-    "@pixi/display": "5.4.0-rc"
+    "@pixi/display": "5.4.0-rc.1"
   }
 }

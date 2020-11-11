@@ -1,6 +1,6 @@
 {
   "name": "@pixi/canvas-particles",
-  "version": "5.4.0-rc",
+  "version": "5.4.0-rc.1",
   "main": "dist/cjs/canvas-particles.js",
   "module": "dist/esm/canvas-particles.js",
   "bundle": "dist/browser/canvas-particles.js",
@@ -26,6 +26,6 @@
     "*.d.ts"
   ],
   "dependencies": {
-    "@pixi/particles": "5.4.0-rc"
+    "@pixi/particles": "5.4.0-rc.1"
   }
 }
