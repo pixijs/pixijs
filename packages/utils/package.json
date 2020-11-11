@@ -1,6 +1,6 @@
 {
   "name": "@pixi/utils",
-  "version": "5.3.2",
+  "version": "5.4.0-rc",
   "main": "dist/cjs/utils.js",
   "module": "dist/esm/utils.js",
   "bundle": "dist/browser/utils.js",
@@ -26,8 +26,8 @@
     "*.d.ts"
   ],
   "dependencies": {
-    "@pixi/constants": "5.3.2",
-    "@pixi/settings": "5.3.2",
+    "@pixi/constants": "5.4.0-rc",
+    "@pixi/settings": "5.4.0-rc",
     "css-color-names": "^1.0.1",
     "earcut": "^2.2.2",
     "eventemitter3": "^3.1.0",
