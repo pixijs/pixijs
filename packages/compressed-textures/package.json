@@ -16,12 +16,10 @@
   "main": "dist/cjs/compressed-textures.js",
   "module": "dist/esm/compressed-textures.js",
   "bundle": "dist/browser/compressed-textures.js",
-  "directories": {
-    "lib": "lib",
-    "test": "test"
+  "publishConfig": {
+    "access": "public"
   },
   "files": [
-    "lib",
     "dist",
     "*.d.ts"
   ],

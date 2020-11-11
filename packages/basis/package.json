@@ -14,13 +14,11 @@
   "main": "dist/cjs/basis.js",
   "module": "dist/esm/basis.js",
   "bundle": "dist/browser/basis.js",
-  "directories": {
-    "lib": "lib",
-    "test": "test"
+  "publishConfig": {
+    "access": "public"
   },
   "files": [
     "dist",
-    "lib",
     "assets",
     "*.d.ts"
   ],
