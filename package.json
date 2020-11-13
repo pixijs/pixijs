@@ -14,13 +14,13 @@
     "coverage": "npm run pretest && nyc floss --path=test && nyc report --reporter=html",
     "coverage:ci": "npm run pretest && nyc floss --path=test && nyc report --reporter=text-lcov > coverage.lcov",
     "docs": "mkdirp dist && webdoc -R README.md",
-    "lint": "eslint --ext .js --ext .ts test bundles packages tools --ignore-path .gitignore --max-warnings 0",
+    "lint": "eslint --ext .js --ext .ts test bundles packages tools scripts --ignore-path .gitignore --max-warnings 0",
     "lintfix": "npm run lint -- --fix",
     "prebuild": "npm run clean:build",
     "build": "npm run build:dev",
     "build:prod": "cross-env NODE_ENV=production rollup -c",
     "build:dev": "rollup -c",
-    "build:types": "rimraf out && tsc && api-extractor-lerna-monorepo && rimraf out && node ./tools/injectGlobalMixins.js",
+    "build:types": "rimraf out && tsc && api-extractor-lerna-monorepo && rimraf out && ts-node-script ./scripts/injectGlobalMixins.ts",
     "watch": "rollup -cw",
     "lerna": "lerna",
     "predist": "rimraf dist/*",
@@ -70,6 +70,7 @@
     "rollup-plugin-typescript": "^1.0.1",
     "sinon": "^7.3.2",
     "sinon-chai": "^3.3.0",
+    "ts-node": "^9.0.0",
     "typescript": "^3.9.5"
   }
 }
