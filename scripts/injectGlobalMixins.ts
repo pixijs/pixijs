@@ -4,19 +4,6 @@ import filterPackages from '@lerna/filter-packages';
 import path from 'path';
 import fs from 'fs';
 
-const legacyPackages = [
-    '@pixi/canvas-display',
-    '@pixi/canvas-extract',
-    '@pixi/canvas-graphics',
-    '@pixi/canvas-mesh',
-    '@pixi/canvas-particles',
-    '@pixi/canvas-prepare',
-    '@pixi/canvas-renderer',
-    '@pixi/canvas-sprite',
-    '@pixi/canvas-sprite-tiling',
-    '@pixi/canvas-text',
-];
-
 /**
  * simplified interface for a package.json
  */
@@ -24,6 +11,7 @@ interface SimplePackageJson
 {
     location: string
     name: string
+    dependencies: Record<string, string>
 }
 
 /**
@@ -65,6 +53,7 @@ async function start(): Promise<void>
     let pixiLegacyGlobalMixins = '';
 
     const packages = await getSortedPackages();
+    const legacyPackages = Object.keys(packages.find((pkg) => pkg.name === 'pixi.js-legacy').dependencies);
 
     packages.forEach((pkg) =>
     {
