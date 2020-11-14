@@ -54,13 +54,8 @@ function writeToIndex(basePath: string, dataToWrite: string): void
 /**
  * This is a workaround for https://github.com/pixijs/pixi.js/issues/6993
  *
- * Loops through each package and checks if `global.d.ts` exists.
- * If it does then it appends the contents into `index.d.ts`
- *
- * Before appending it will replace `declare namespace GlobalMixin` with `declare global { namespace GlobalMixin`
- *
- * It also bundles each individual packages `global.d.ts` file and writes them to the main pixi.js
- * and pixi.js-legacy packages
+ * All this script does is inject a path reference into a packages `index.d.ts` if a `global.d.ts`
+ * exists.
  */
 async function start(): Promise<void>
 {
