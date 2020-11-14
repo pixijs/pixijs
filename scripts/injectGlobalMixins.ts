@@ -19,7 +19,6 @@ const legacyPackages = [
 
 /**
  * simplified interface for a package.json
- * we only care about `location` here
  */
 interface SimplePackageJson
 {
@@ -41,13 +40,15 @@ async function getSortedPackages(): Promise<SimplePackageJson[]>
 }
 
 /**
- * Appends some data to a packages `index.d.ts` file
+ * Adds global reference to the start of a packages `index.d.ts` file
  */
 function writeToIndex(basePath: string, dataToWrite: string): void
 {
     const indexDtsPath = path.resolve(basePath, './index.d.ts');
+    const file = fs.readFileSync(indexDtsPath, { encoding: 'utf8' }).toString().split('\n');
 
-    fs.appendFileSync(indexDtsPath, dataToWrite);
+    file.unshift(dataToWrite);
+    fs.writeFileSync(indexDtsPath, file.join('\n'));
 }
 
 /**
@@ -91,25 +92,8 @@ async function start(): Promise<void>
 
         if (fs.existsSync(globalDtsPath))
         {
-            const globalDtsFile = fs.readFileSync(globalDtsPath, {
-                encoding: 'utf8'
-            });
-
-            let pixiTypeData = `${globalDtsFile.replace('declare', '')}\n`;
-            let packageTypeData = `${globalDtsFile.replace('declare', 'declare global {')}}`;
-
-            // special case for canvas-renderer as it has `declare interface` inside the `global.d.ts`
-            if (pkg.name === '@pixi/canvas-renderer')
-            {
-                packageTypeData = `${globalDtsFile.replace('declare', 'declare global {')}}`
-                    .replace('declare interface', '} declare interface').slice(0, -1);
-
-                const split =  `${globalDtsFile.replace('declare', '')}}`.split('declare interface');
-
-                pixiTypeData = split.shift();
-                pixiLegacyGlobalMixins
-                    = `declare interface ${split.join('declare interface ').slice(0, -1)}${pixiLegacyGlobalMixins}`;
-            }
+            const pixiTypeData = `/// <reference path="../${pkg.name}/global.d.ts" />\n`;
+            const packageTypeData = `/// <reference path="./global.d.ts" />\n`;
 
             if (!legacyPackages.includes(pkg.name))
             {
@@ -127,9 +111,9 @@ async function start(): Promise<void>
     // write the total types to the main packages
     let basePath = path.relative(process.cwd(), pixiLocation);
 
-    writeToIndex(basePath, `${pixiGlobalMixins.replace('namespace', 'declare global {\n namespace')}}`);
+    writeToIndex(basePath, pixiGlobalMixins);
     basePath = path.relative(process.cwd(), pixiLegacyLocation);
-    writeToIndex(basePath, `${pixiLegacyGlobalMixins.replace('namespace', 'declare global {\n namespace')}}`);
+    writeToIndex(basePath, pixiLegacyGlobalMixins);
 }
 
 start();
