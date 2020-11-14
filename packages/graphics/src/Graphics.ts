@@ -334,6 +334,7 @@ export class Graphics extends Container
      * Specifies the line style used for subsequent calls to Graphics methods such as the lineTo()
      * method or the drawCircle() method.
      *
+     * @instance
      * @method PIXI.Graphics#lineStyle
      * @param {number} [width=0] - width of the line to draw, will update the objects stored style
      * @param {number} [color=0x0] - color of the line to draw, will update the objects stored style
