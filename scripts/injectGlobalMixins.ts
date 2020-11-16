@@ -76,7 +76,7 @@ async function start(): Promise<void>
 
         if (fs.existsSync(globalDtsPath))
         {
-            const pixiTypeData = `/// <reference path="../${pkg.name}/global.d.ts" />\n`;
+            const pixiTypeData = `/// <reference types="${pkg.name}" />\n`;
             const packageTypeData = `/// <reference path="./global.d.ts" />\n`;
 
             if (!legacyPackages.includes(pkg.name))
