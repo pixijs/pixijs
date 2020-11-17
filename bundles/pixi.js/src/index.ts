@@ -58,7 +58,7 @@ Application.registerPlugin(AppLoaderPlugin);
  * @name VERSION
  * @type {string}
  */
-export const VERSION = '__VERSION__';
+export const VERSION = '$_VERSION';
 
 /**
  * @namespace PIXI
