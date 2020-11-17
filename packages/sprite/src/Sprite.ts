@@ -541,7 +541,7 @@ export class Sprite extends Container
      * @param {object} [options] - See {@link PIXI.BaseTexture}'s constructor for options.
      * @return {PIXI.Sprite} The newly created sprite
      */
-    static from(source: SpriteSource, options: IBaseTextureOptions): Sprite
+    static from(source: SpriteSource, options?: IBaseTextureOptions): Sprite
     {
         const texture = (source instanceof Texture)
             ? source
