@@ -178,7 +178,7 @@ export class RenderTexture extends Texture
      * @param {number} [options.resolution=1] - The resolution / device pixel ratio of the texture being generated
      * @return {PIXI.RenderTexture} The new render texture
      */
-    static create(options: IBaseTextureOptions): RenderTexture
+    static create(options?: IBaseTextureOptions): RenderTexture
     {
         // fallback, old-style: create(width, height, scaleMode, resolution)
         if (typeof options === 'number')

@@ -63,7 +63,7 @@ export class Text extends Sprite
      * @param {object|PIXI.TextStyle} [style] - The style parameters
      * @param {HTMLCanvasElement} [canvas] - The canvas element for drawing text
      */
-    constructor(text: string, style: Partial<ITextStyle>|TextStyle, canvas: HTMLCanvasElement)
+    constructor(text: string, style?: Partial<ITextStyle>|TextStyle, canvas?: HTMLCanvasElement)
     {
         let ownCanvas = false;
 

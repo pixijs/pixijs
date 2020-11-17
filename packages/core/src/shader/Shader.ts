@@ -17,7 +17,7 @@ export class Shader
      * @param {PIXI.Program} [program] - The program the shader will use.
      * @param {object} [uniforms] - Custom uniforms to use to augment the built-in ones.
      */
-    constructor(program: Program, uniforms: Dict<any>)
+    constructor(program: Program, uniforms?: Dict<any>)
     {
         /**
          * Program that the shader uses

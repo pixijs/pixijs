@@ -34,7 +34,7 @@ export class DisplacementFilter extends Filter
      * @param {PIXI.Sprite} sprite - The sprite used for the displacement map. (make sure its added to the scene!)
      * @param {number} [scale] - The scale of the displacement
      */
-    constructor(sprite: ISpriteMaskTarget, scale: number)
+    constructor(sprite: ISpriteMaskTarget, scale?: number)
     {
         const maskMatrix = new Matrix();
 

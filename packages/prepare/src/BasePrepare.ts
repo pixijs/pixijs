@@ -340,7 +340,7 @@ export class BasePrepare
      *        or the callback function, if items have been added using `prepare.add`.
      * @param {Function} [done] - Optional callback when all queued uploads have completed
      */
-    upload(item: IDisplayObjectExtended | IUploadHook | IFindHook | (() => void), done: () => void): void
+    upload(item: IDisplayObjectExtended | IUploadHook | IFindHook | (() => void), done?: () => void): void
     {
         if (typeof item === 'function')
         {

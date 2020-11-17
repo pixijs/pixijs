@@ -433,7 +433,7 @@ DisplayObject.prototype._destroyCachedDisplayObject = function _destroyCachedDis
  *  have been set to that value.
  *  Used when destroying containers, see the Container.destroy method.
  */
-DisplayObject.prototype._cacheAsBitmapDestroy = function _cacheAsBitmapDestroy(options: IDestroyOptions|boolean): void
+DisplayObject.prototype._cacheAsBitmapDestroy = function _cacheAsBitmapDestroy(options?: IDestroyOptions|boolean): void
 {
     this.cacheAsBitmap = false;
     this.destroy(options);

@@ -70,7 +70,7 @@ export class Sprite extends Container
     /**
      * @param {PIXI.Texture} [texture] - The texture for this sprite.
      */
-    constructor(texture: Texture)
+    constructor(texture?: Texture)
     {
         super();
 

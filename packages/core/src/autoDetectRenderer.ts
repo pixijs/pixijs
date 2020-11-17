@@ -34,7 +34,7 @@ export interface IRendererOptionsAuto extends IRendererOptions
  *  for devices with dual graphics card **webgl only**
  * @return {PIXI.Renderer|PIXI.CanvasRenderer} Returns WebGL renderer if available, otherwise CanvasRenderer
  */
-export function autoDetectRenderer(options: IRendererOptionsAuto): AbstractRenderer
+export function autoDetectRenderer(options?: IRendererOptionsAuto): AbstractRenderer
 {
     return Renderer.create(options);
 }
