@@ -21,7 +21,7 @@ interface IFindHook {
 export interface IDisplayObjectExtended extends DisplayObject {
     _textures?: Array<Texture>;
     _texture?: Texture;
-    style?: TextStyle;
+    style?: TextStyle|Partial<TextStyle>;
 }
 
 /**
