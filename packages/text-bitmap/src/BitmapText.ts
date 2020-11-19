@@ -420,9 +420,14 @@ export class BitmapText extends Container
                 pageMeshData.vertexCount = 0;
                 pageMeshData.uvsCount = 0;
                 pageMeshData.total = 0;
-                pageMeshData.mesh.texture?.destroy();
+
                 // TODO need to get page texture here somehow..
-                pageMeshData.mesh.texture = new Texture(texture.baseTexture);
+                if (pageMeshData.mesh.texture.baseTexture !== texture.baseTexture)
+                {
+                    pageMeshData.mesh.texture.destroy();
+                    pageMeshData.mesh.texture = new Texture(texture.baseTexture);
+                }
+
                 pageMeshData.mesh.tint = this._tint;
 
                 newPagesMeshData.push(pageMeshData);
