@@ -33,6 +33,7 @@ interface CharRenderData {
 
 const pageMeshDataPool: PageMeshData[] = [];
 const charRenderDataPool: CharRenderData[] = [];
+const textureCache: Record<number, Texture> = {};
 
 /**
  * A BitmapText object will create a line or multiple lines of text using bitmap font.
@@ -422,11 +423,8 @@ export class BitmapText extends Container
                 pageMeshData.total = 0;
 
                 // TODO need to get page texture here somehow..
-                if (pageMeshData.mesh.texture.baseTexture !== texture.baseTexture)
-                {
-                    pageMeshData.mesh.texture.destroy();
-                    pageMeshData.mesh.texture = new Texture(texture.baseTexture);
-                }
+                textureCache[baseTextureUid] = textureCache[baseTextureUid] || new Texture(texture.baseTexture);
+                pageMeshData.mesh.texture = textureCache[baseTextureUid];
 
                 pageMeshData.mesh.tint = this._tint;
 
