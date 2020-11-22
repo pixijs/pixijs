@@ -1,6 +1,6 @@
 import { TYPES, MIPMAP_MODES, ALPHA_MODES, FORMATS } from '@pixi/constants';
 import { BaseTexture, BufferResource, Texture } from '@pixi/core';
-import { CompressedTextureResource, INTERNAL_FORMATS } from '@pixi/compressed-textures';
+import { CompressedTextureResource, INTERNAL_FORMATS, CompressedLevelBuffer } from '@pixi/compressed-textures';
 import {
     BASIS_FORMATS,
     BASIS_FORMAT_TO_INTERNAL_FORMAT,
@@ -277,7 +277,7 @@ export class BasisLoader
             const alignedWidth = (width + 3) & ~3;
             const alignedHeight = (height + 3) & ~3;
 
-            const imageLevels = new Array<{ levelBuffer: Uint8Array, levelWidth: number, levelHeight: number}>(levels);
+            const imageLevels = new Array<CompressedLevelBuffer>(levels);
 
             // Transcode mipmap levels into "imageLevels"
             for (let j = 0; j < levels; j++)
@@ -288,6 +288,7 @@ export class BasisLoader
                     i, 0, !fallbackMode ? basisFormat : basisFallbackFormat);
 
                 imageLevels[j] = {
+                    levelID: j,
                     levelBuffer: new Uint8Array(byteSize),
                     levelWidth,
                     levelHeight,
