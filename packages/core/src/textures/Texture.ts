@@ -434,7 +434,7 @@ export class Texture extends EventEmitter
      * @return {PIXI.Texture} The resulting new BaseTexture
      */
     static fromBuffer(buffer: Float32Array|Uint8Array,
-        width: number, height: number, options: IBaseTextureOptions): Texture
+        width: number, height: number, options?: IBaseTextureOptions): Texture
     {
         return new Texture(BaseTexture.fromBuffer(buffer, width, height, options));
     }
@@ -449,7 +449,7 @@ export class Texture extends EventEmitter
      *        specified, only `imageUrl` will be used as the cache ID.
      * @return {PIXI.Texture} Output texture
      */
-    static fromLoader(source: HTMLImageElement|HTMLCanvasElement, imageUrl: string, name: string): Texture
+    static fromLoader(source: HTMLImageElement|HTMLCanvasElement, imageUrl: string, name?: string): Texture
     {
         const resource = new ImageResource(source as any);
 

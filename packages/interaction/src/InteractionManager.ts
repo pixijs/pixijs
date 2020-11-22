@@ -99,7 +99,7 @@ export class InteractionManager extends EventEmitter
      * @param {number} [options.interactionFrequency=10] - Maximum requency (ms) at pointer over/out states will be checked.
      * @param {number} [options.useSystemTicker=true] - Whether to add {@link tickerUpdate} to {@link PIXI.Ticker.system}.
      */
-    constructor(renderer: AbstractRenderer, options: InteractionManagerOptions)
+    constructor(renderer: AbstractRenderer, options?: InteractionManagerOptions)
     {
         super();
 
@@ -1050,10 +1050,13 @@ export class InteractionManager extends EventEmitter
     public setCursorMode(mode: string): void
     {
         mode = mode || 'default';
-        // offscreen canvas does not support setting styles
-        if (this.interactionDOMElement instanceof OffscreenCanvas)
+        let applyStyles = true;
+
+        // offscreen canvas does not support setting styles, but cursor modes can be functions,
+        // in order to handle pixi rendered cursors, so we can't bail
+        if (self.OffscreenCanvas && this.interactionDOMElement instanceof OffscreenCanvas)
         {
-            return;
+            applyStyles = false;
         }
         // if the mode didn't actually change, bail early
         if (this.currentCursorMode === mode)
@@ -1070,7 +1073,10 @@ export class InteractionManager extends EventEmitter
             {
                 case 'string':
                     // string styles are handled as cursor CSS
-                    this.interactionDOMElement.style.cursor = style;
+                    if (applyStyles)
+                    {
+                        this.interactionDOMElement.style.cursor = style;
+                    }
                     break;
                 case 'function':
                     // functions are just called, and passed the cursor mode
@@ -1079,11 +1085,14 @@ export class InteractionManager extends EventEmitter
                 case 'object':
                     // if it is an object, assume that it is a dictionary of CSS styles,
                     // apply it to the interactionDOMElement
-                    Object.assign(this.interactionDOMElement.style, style);
+                    if (applyStyles)
+                    {
+                        Object.assign(this.interactionDOMElement.style, style);
+                    }
                     break;
             }
         }
-        else if (typeof mode === 'string' && !Object.prototype.hasOwnProperty.call(this.cursorStyles, mode))
+        else if (applyStyles && typeof mode === 'string' && !Object.prototype.hasOwnProperty.call(this.cursorStyles, mode))
         {
             // if it mode is a string (not a Symbol) and cursorStyles doesn't have any entry
             // for the mode, then assume that the dev wants it to be CSS for the cursor.
