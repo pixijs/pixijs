@@ -85,7 +85,7 @@ export function TranscoderWorkerWrapper(): void
     const messageHandlers = {
         init: (message: IInitializeTranscoderMessage): ITranscodeResponse =>
         {
-            if (!self.BASIS)
+            if (!BASIS)
             {
                 console.warn('jsSource was not prepended?');
 
@@ -95,7 +95,7 @@ export function TranscoderWorkerWrapper(): void
                 };
             }
 
-            self.BASIS({ wasmBinary: message.wasmSource }).then((basisLibrary) =>
+            BASIS({ wasmBinary: message.wasmSource }).then((basisLibrary) =>
             {
                 basisLibrary.initializeBasis();
                 basisBinding = basisLibrary;
