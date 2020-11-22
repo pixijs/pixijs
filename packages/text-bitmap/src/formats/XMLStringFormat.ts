@@ -19,7 +19,7 @@ export class XMLStringFormat
      */
     static test(data: unknown): boolean
     {
-        if (typeof data === 'string' && data.includes('<font>'))
+        if (typeof data === 'string' && data.indexOf('<font>') > -1)
         {
             const xml = new self.DOMParser().parseFromString(data, 'text/xml');
 
