@@ -1,6 +1,6 @@
 {
   "name": "@pixi/interaction",
-  "version": "5.3.2",
+  "version": "5.4.0-rc.2",
   "main": "dist/cjs/interaction.js",
   "module": "dist/esm/interaction.js",
   "bundle": "dist/browser/interaction.js",
@@ -22,21 +22,21 @@
   "files": [
     "lib",
     "dist",
-    "index.d.ts"
+    "*.d.ts"
   ],
   "dependencies": {
-    "@pixi/core": "5.3.2",
-    "@pixi/display": "5.3.2",
-    "@pixi/math": "5.3.2",
-    "@pixi/ticker": "5.3.2",
-    "@pixi/utils": "5.3.2"
+    "@pixi/core": "5.4.0-rc.2",
+    "@pixi/display": "5.4.0-rc.2",
+    "@pixi/math": "5.4.0-rc.2",
+    "@pixi/ticker": "5.4.0-rc.2",
+    "@pixi/utils": "5.4.0-rc.2"
   },
   "devDependencies": {
-    "@pixi/canvas-display": "5.3.2",
-    "@pixi/canvas-graphics": "5.3.2",
-    "@pixi/canvas-renderer": "5.3.2",
-    "@pixi/canvas-sprite": "5.3.2",
-    "@pixi/graphics": "5.3.2",
-    "@pixi/sprite": "5.3.2"
+    "@pixi/canvas-display": "5.4.0-rc.2",
+    "@pixi/canvas-graphics": "5.4.0-rc.2",
+    "@pixi/canvas-renderer": "5.4.0-rc.2",
+    "@pixi/canvas-sprite": "5.4.0-rc.2",
+    "@pixi/graphics": "5.4.0-rc.2",
+    "@pixi/sprite": "5.4.0-rc.2"
   }
 }

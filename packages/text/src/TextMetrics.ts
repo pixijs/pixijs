@@ -129,7 +129,7 @@ export class TextMetrics
      * @param {HTMLCanvasElement} [canvas] - optional specification of the canvas to use for measuring.
      * @return {PIXI.TextMetrics} measured width and height of the text.
      */
-    public static measureText(text: string, style: TextStyle, wordWrap: boolean, canvas = TextMetrics._canvas): TextMetrics
+    public static measureText(text: string, style: TextStyle, wordWrap?: boolean, canvas = TextMetrics._canvas): TextMetrics
     {
         wordWrap = (wordWrap === undefined || wordWrap === null) ? style.wordWrap : wordWrap;
         const font = style.toFontString();

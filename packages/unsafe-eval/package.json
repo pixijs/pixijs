@@ -1,6 +1,6 @@
 {
   "name": "@pixi/unsafe-eval",
-  "version": "5.3.2",
+  "version": "5.4.0-rc.2",
   "main": "dist/cjs/unsafe-eval.js",
   "module": "dist/esm/unsafe-eval.js",
   "bundle": "dist/browser/unsafe-eval.js",
@@ -21,9 +21,9 @@
   "files": [
     "lib/",
     "dist/",
-    "index.d.ts"
+    "*.d.ts"
   ],
   "dependencies": {
-    "@pixi/core": "5.3.2"
+    "@pixi/core": "5.4.0-rc.2"
   }
 }

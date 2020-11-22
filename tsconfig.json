@@ -40,5 +40,8 @@
         "**/types/**",
         "bundles/**/*.d.ts",
         "rollup.config.js"
-    ]
+    ],
+    "ts-node": {
+        "files": true
+    }
 }

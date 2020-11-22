@@ -60,7 +60,7 @@ export class BaseRenderTexture extends BaseTexture
      * @param {PIXI.SCALE_MODES} [options.scaleMode] - See {@link PIXI.SCALE_MODES} for possible values.
      * @param {number} [options.resolution=1] - The resolution / device pixel ratio of the texture being generated.
      */
-    constructor(options: IBaseTextureOptions)
+    constructor(options?: IBaseTextureOptions)
     {
         if (typeof options === 'number')
         {

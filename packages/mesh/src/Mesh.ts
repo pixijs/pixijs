@@ -498,7 +498,7 @@ export class Mesh extends Container
      * @param {boolean} [options.children=false] - if set to true, all the children will have
      *  their destroy method called as well. 'options' will be passed on to those calls.
      */
-    public destroy(options: IDestroyOptions|boolean): void
+    public destroy(options?: IDestroyOptions|boolean): void
     {
         super.destroy(options);
 
