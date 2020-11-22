@@ -136,7 +136,7 @@ export class BasisLoader
         resources.forEach((resource, i) =>
         {
             const baseTexture = new BaseTexture(resource, {
-                mipmap: MIPMAP_MODES.OFF,
+                mipmap: resource.levels > 1 ? MIPMAP_MODES.ON_MANUAL : MIPMAP_MODES.OFF,
                 alphaMode: ALPHA_MODES.NO_PREMULTIPLIED_ALPHA,
                 type,
                 format
