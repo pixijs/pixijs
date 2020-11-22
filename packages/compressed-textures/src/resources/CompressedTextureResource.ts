@@ -153,9 +153,9 @@ export class CompressedTextureResource extends BlobResource
 
         for (let i = 0, j = this.levels; i < j; i++)
         {
-            const { levelWidth, levelHeight, levelBuffer } = this._levelBuffers[i];
+            const { levelID, levelWidth, levelHeight, levelBuffer } = this._levelBuffers[i];
 
-            gl.compressedTexImage2D(gl.TEXTURE_2D, 0, this.format, levelWidth, levelHeight, 0, levelBuffer);
+            gl.compressedTexImage2D(gl.TEXTURE_2D, levelID, this.format, levelWidth, levelHeight, 0, levelBuffer);
         }
 
         return true;
