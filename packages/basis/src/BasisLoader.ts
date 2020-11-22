@@ -1,6 +1,6 @@
 import { TYPES, MIPMAP_MODES, ALPHA_MODES, FORMATS } from '@pixi/constants';
 import { BaseTexture, BufferResource, Texture } from '@pixi/core';
-import { CompressedTextureResource, INTERNAL_FORMATS, CompressedLevelBuffer } from '@pixi/compressed-textures';
+import { CompressedTextureResource, INTERNAL_FORMATS } from '@pixi/compressed-textures';
 import {
     BASIS_FORMATS,
     BASIS_FORMAT_TO_INTERNAL_FORMAT,
@@ -12,6 +12,7 @@ import {
 } from './Basis';
 import { TranscoderWorker } from './TranscoderWorker';
 import { ILoaderResource, LoaderResource } from '@pixi/loaders';
+import type { CompressedLevelBuffer } from '@pixi/compressed-textures';
 
 type TranscodedResourcesArray = (Array<CompressedTextureResource> | Array<BufferResource>) & {
     basisFormat: BASIS_FORMATS
