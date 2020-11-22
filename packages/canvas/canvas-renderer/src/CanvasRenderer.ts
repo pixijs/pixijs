@@ -360,7 +360,7 @@ export class CanvasRenderer extends AbstractRenderer
      *
      * @param {string} [clearColor] - Clear the canvas with this color, except the canvas is transparent.
      */
-    public clear(clearColor: string): void
+    public clear(clearColor?: string): void
     {
         const context = this.context;
 

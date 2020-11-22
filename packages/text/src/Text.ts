@@ -63,7 +63,7 @@ export class Text extends Sprite
      * @param {object|PIXI.TextStyle} [style] - The style parameters
      * @param {HTMLCanvasElement} [canvas] - The canvas element for drawing text
      */
-    constructor(text: string, style: Partial<ITextStyle>|TextStyle, canvas: HTMLCanvasElement)
+    constructor(text: string, style?: Partial<ITextStyle>|TextStyle, canvas?: HTMLCanvasElement)
     {
         let ownCanvas = false;
 
@@ -597,7 +597,7 @@ export class Text extends Sprite
      * @param {boolean} [options.texture=true] - Should it destroy the current texture of the sprite as well
      * @param {boolean} [options.baseTexture=true] - Should it destroy the base texture of the sprite as well
      */
-    public destroy(options: IDestroyOptions|boolean): void
+    public destroy(options?: IDestroyOptions|boolean): void
     {
         if (typeof options === 'boolean')
         {

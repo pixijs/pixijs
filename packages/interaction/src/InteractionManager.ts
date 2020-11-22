@@ -99,7 +99,7 @@ export class InteractionManager extends EventEmitter
      * @param {number} [options.interactionFrequency=10] - Maximum requency (ms) at pointer over/out states will be checked.
      * @param {number} [options.useSystemTicker=true] - Whether to add {@link tickerUpdate} to {@link PIXI.Ticker.system}.
      */
-    constructor(renderer: AbstractRenderer, options: InteractionManagerOptions)
+    constructor(renderer: AbstractRenderer, options?: InteractionManagerOptions)
     {
         super();
 

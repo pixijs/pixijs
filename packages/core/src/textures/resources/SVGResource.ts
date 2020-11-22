@@ -34,7 +34,7 @@ export class SVGResource extends BaseImageResource
     private _load: Promise<SVGResource>;
     private _crossorigin?: boolean|string;
 
-    constructor(sourceBase64: string, options: ISVGResourceOptions)
+    constructor(sourceBase64: string, options?: ISVGResourceOptions)
     {
         options = options || {};
 
