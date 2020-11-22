@@ -11,6 +11,7 @@ import type { IBitmapTextStyle } from './BitmapTextStyle';
 import type { TextStyleAlign } from '@pixi/text';
 import type { BitmapFontData } from './BitmapFontData';
 import { Container } from '@pixi/display';
+import type { IDestroyOptions } from '@pixi/display';
 
 interface PageMeshData {
     index: number;
@@ -80,6 +81,7 @@ export class BitmapText extends Container
     protected _activePagesMeshData: PageMeshData[];
     protected _tint = 0xFFFFFF;
     protected _roundPixels: boolean;
+    private _textureCache: Record<number, Texture>;
 
     /**
      * @param {string} text - A string that you would like the text to display.
@@ -225,6 +227,13 @@ export class BitmapText extends Container
          * @member {boolean}
          */
         this.dirty = true;
+
+        /**
+         * Cached char texture is destroyed when BitmapText is destroyed
+         * @member {Record<number, Texture>}
+         * @private
+         */
+        this._textureCache = {};
     }
 
     /**
@@ -403,8 +412,13 @@ export class BitmapText extends Container
                 pageMeshData.vertexCount = 0;
                 pageMeshData.uvsCount = 0;
                 pageMeshData.total = 0;
+
                 // TODO need to get page texture here somehow..
-                pageMeshData.mesh.texture = new Texture(texture.baseTexture);
+                const { _textureCache } = this;
+
+                _textureCache[baseTextureUid] = _textureCache[baseTextureUid] || new Texture(texture.baseTexture);
+                pageMeshData.mesh.texture = _textureCache[baseTextureUid];
+
                 pageMeshData.mesh.tint = this._tint;
 
                 newPagesMeshData.push(pageMeshData);
@@ -869,6 +883,23 @@ export class BitmapText extends Container
                 ? style.font.size
                 : parseInt(style.font.size, 10);
         }
+    }
+
+    destroy(options?: boolean | IDestroyOptions): void
+    {
+        const { _textureCache } = this;
+
+        for (const id in _textureCache)
+        {
+            const texture = _textureCache[id];
+
+            texture.destroy();
+            delete _textureCache[id];
+        }
+
+        this._textureCache = null;
+
+        super.destroy(options);
     }
 
     /**
