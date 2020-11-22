@@ -240,6 +240,7 @@ export class KTXLoader
                 }
 
                 mips[mipmapLevel] = {
+                    levelID: mipmapLevel,
                     levelWidth: numberOfMipmapLevels > 1 ? mipWidth : alignedMipWidth,
                     levelHeight: numberOfMipmapLevels > 1 ? mipHeight : alignedMipHeight,
                     levelBuffer: new Uint8Array(arrayBuffer, elementOffset, mipByteSize)
