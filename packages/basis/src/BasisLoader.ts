@@ -133,10 +133,12 @@ export class BasisLoader
         const type: TYPES = BASIS_FORMAT_TO_TYPE[resources.basisFormat];
         const format: FORMATS = resources.basisFormat !== BASIS_FORMATS.cTFRGBA32 ? FORMATS.RGB : FORMATS.RGBA;
 
-        resources.forEach((resource, i) =>
+        resources.forEach((resource: CompressedTextureResource | BufferResource, i) =>
         {
             const baseTexture = new BaseTexture(resource, {
-                mipmap: resource.levels > 1 ? MIPMAP_MODES.ON_MANUAL : MIPMAP_MODES.OFF,
+                mipmap: resource instanceof CompressedTextureResource && resource.levels > 1
+                    ? MIPMAP_MODES.ON_MANUAL
+                    : MIPMAP_MODES.OFF,
                 alphaMode: ALPHA_MODES.NO_PREMULTIPLIED_ALPHA,
                 type,
                 format
