@@ -913,7 +913,7 @@ export class BitmapText extends Container
         }
     }
 
-    destroy(options: boolean | IDestroyOptions): void
+    destroy(options?: boolean | IDestroyOptions): void
     {
         const { _textureCache } = this;
 
