@@ -16,7 +16,7 @@
 
 // https://github.com/BinomialLLC/basis_universal/blob/master/webgl/transcoder/build/basis_transcoder.js
 
-const BASIS = (function ()
+var BASIS = (function ()
 {
     let _scriptDir = typeof document !== 'undefined' && document.currentScript ? document.currentScript.src : undefined;
 
