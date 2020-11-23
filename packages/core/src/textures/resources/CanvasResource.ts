@@ -9,10 +9,18 @@ import { BaseImageResource } from './BaseImageResource';
  * @class
  * @extends PIXI.BaseImageResource
  * @memberof PIXI
- * @param {HTMLCanvasElement} source - Canvas element to use
  */
 export class CanvasResource extends BaseImageResource
 {
+    /**
+     * @param {HTMLCanvasElement} source - Canvas element to use
+     */
+    // eslint-disable-next-line @typescript-eslint/no-useless-constructor
+    constructor(source: HTMLCanvasElement)
+    {
+        super(source);
+    }
+
     /**
      * Used to auto-detect the type of resource.
      *

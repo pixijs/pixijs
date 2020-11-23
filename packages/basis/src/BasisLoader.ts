@@ -12,6 +12,7 @@ import {
 } from './Basis';
 import { TranscoderWorker } from './TranscoderWorker';
 import { ILoaderResource, LoaderResource } from '@pixi/loaders';
+import type { CompressedLevelBuffer } from '@pixi/compressed-textures';
 
 type TranscodedResourcesArray = (Array<CompressedTextureResource> | Array<BufferResource>) & {
     basisFormat: BASIS_FORMATS
@@ -133,10 +134,12 @@ export class BasisLoader
         const type: TYPES = BASIS_FORMAT_TO_TYPE[resources.basisFormat];
         const format: FORMATS = resources.basisFormat !== BASIS_FORMATS.cTFRGBA32 ? FORMATS.RGB : FORMATS.RGBA;
 
-        resources.forEach((resource, i) =>
+        resources.forEach((resource: CompressedTextureResource | BufferResource, i) =>
         {
             const baseTexture = new BaseTexture(resource, {
-                mipmap: MIPMAP_MODES.OFF,
+                mipmap: resource instanceof CompressedTextureResource && resource.levels > 1
+                    ? MIPMAP_MODES.ON_MANUAL
+                    : MIPMAP_MODES.OFF,
                 alphaMode: ALPHA_MODES.NO_PREMULTIPLIED_ALPHA,
                 type,
                 format
@@ -275,7 +278,7 @@ export class BasisLoader
             const alignedWidth = (width + 3) & ~3;
             const alignedHeight = (height + 3) & ~3;
 
-            const imageLevels = new Array<{ levelBuffer: Uint8Array, levelWidth: number, levelHeight: number}>(levels);
+            const imageLevels = new Array<CompressedLevelBuffer>(levels);
 
             // Transcode mipmap levels into "imageLevels"
             for (let j = 0; j < levels; j++)
@@ -286,6 +289,7 @@ export class BasisLoader
                     i, 0, !fallbackMode ? basisFormat : basisFallbackFormat);
 
                 imageLevels[j] = {
+                    levelID: j,
                     levelBuffer: new Uint8Array(byteSize),
                     levelWidth,
                     levelHeight,

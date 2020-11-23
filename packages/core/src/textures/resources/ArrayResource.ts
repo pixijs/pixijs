@@ -13,14 +13,16 @@ import type { ISize } from '@pixi/math';
  * @class
  * @extends PIXI.Resource
  * @memberof PIXI
- * @param {number|Array<*>} source - Number of items in array or the collection
- *        of image URLs to use. Can also be resources, image elements, canvas, etc.
- * @param {object} [options] - Options to apply to {@link PIXI.autoDetectResource}
- * @param {number} [options.width] - Width of the resource
- * @param {number} [options.height] - Height of the resource
  */
 export class ArrayResource extends AbstractMultiResource
 {
+    /**
+     * @param {number|Array<*>} source - Number of items in array or the collection
+     *        of image URLs to use. Can also be resources, image elements, canvas, etc.
+     * @param {object} [options] - Options to apply to {@link PIXI.autoDetectResource}
+     * @param {number} [options.width] - Width of the resource
+     * @param {number} [options.height] - Height of the resource
+     */
     constructor(source: number|Array<any>, options?: ISize)
     {
         const { width, height } = options || {};
