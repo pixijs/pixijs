@@ -511,7 +511,7 @@ export class TextMetrics
      * @param  {string}  [nextChar] - The next character
      * @return {boolean}  True if whitespace, False otherwise.
      */
-    private static isBreakingSpace(char: string, _nextChar?: string): boolean
+    static isBreakingSpace(char: string, _nextChar?: string): boolean
     {
         if (typeof char !== 'string')
         {
