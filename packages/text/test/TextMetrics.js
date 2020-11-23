@@ -485,6 +485,31 @@ describe('PIXI.TextMetrics', function ()
 
             expect(bool).to.equal(false);
         });
+
+        it('overridable breaking spaces', function ()
+        {
+            const reg = /[あいうえお]/;
+
+            // override breakingSpace
+            TextMetrics.isBreakingSpace = function (char, nextChar)
+            {
+                const isBreakingSpace = breakingSpaces.includes(char);
+
+                if (isBreakingSpace && nextChar)
+                {
+                    return !nextChar.match(reg);
+                }
+
+                return isBreakingSpace;
+            };
+
+            breakingSpaces.forEach((char) =>
+            {
+                const bool = TextMetrics.isBreakingSpace(char, 'あ');
+
+                expect(bool).to.equal(false);
+            });
+        });
     });
 
     describe('tokenize', function ()
