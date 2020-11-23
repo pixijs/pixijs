@@ -506,7 +506,6 @@ export class TextMetrics
      * For example certain characters in CJK langs or numbers.
      * It must return a boolean.
      *
-     * @private
      * @param  {string}  char     - The character
      * @param  {string}  [nextChar] - The next character
      * @return {boolean}  True if whitespace, False otherwise.
