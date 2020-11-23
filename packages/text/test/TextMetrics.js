@@ -490,6 +490,8 @@ describe('PIXI.TextMetrics', function ()
         {
             const reg = /[あいうえお]/;
 
+            const original = TextMetrics.isBreakingSpace;
+
             // override breakingSpace
             TextMetrics.isBreakingSpace = function (char, nextChar)
             {
@@ -509,6 +511,9 @@ describe('PIXI.TextMetrics', function ()
 
                 expect(bool).to.equal(false);
             });
+
+            // reset the override breakingSpace
+            TextMetrics.isBreakingSpace = original;
         });
     });
 
