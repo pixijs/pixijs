@@ -22,13 +22,6 @@ export interface IVideoResourceOptionsElement
  * @class
  * @extends PIXI.BaseImageResource
  * @memberof PIXI
- * @param {HTMLVideoElement|object|string|Array<string|object>} source - Video element to use.
- * @param {object} [options] - Options to use
- * @param {boolean} [options.autoLoad=true] - Start loading the video immediately
- * @param {boolean} [options.autoPlay=true] - Start playing video immediately
- * @param {number} [options.updateFPS=0] - How many times a second to update the texture from the video.
- * Leave at 0 to update at every render.
- * @param {boolean} [options.crossorigin=true] - Load image using cross origin
  */
 export class VideoResource extends BaseImageResource
 {
@@ -40,6 +33,15 @@ export class VideoResource extends BaseImageResource
     private _load: Promise<VideoResource>;
     private _resolve: (value?: VideoResource | PromiseLike<VideoResource>) => void;
 
+    /**
+     * @param {HTMLVideoElement|object|string|Array<string|object>} source - Video element to use.
+     * @param {object} [options] - Options to use
+     * @param {boolean} [options.autoLoad=true] - Start loading the video immediately
+     * @param {boolean} [options.autoPlay=true] - Start playing video immediately
+     * @param {number} [options.updateFPS=0] - How many times a second to update the texture from the video.
+     * Leave at 0 to update at every render.
+     * @param {boolean} [options.crossorigin=true] - Load image using cross origin
+     */
     constructor(source?: HTMLVideoElement|Array<string|IVideoResourceOptionsElement>|string, options?: IVideoResourceOptions)
     {
         options = options || {};
