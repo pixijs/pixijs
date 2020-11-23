@@ -541,8 +541,9 @@ export class TextMetrics
         for (let i = 0; i < text.length; i++)
         {
             const char = text[i];
+            const nextChar = text[i + 1];
 
-            if (TextMetrics.isBreakingSpace(char) || TextMetrics.isNewline(char))
+            if (TextMetrics.isBreakingSpace(char, nextChar) || TextMetrics.isNewline(char))
             {
                 if (token !== '')
                 {
