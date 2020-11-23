@@ -502,11 +502,16 @@ export class TextMetrics
     /**
      * Determines if char is a breaking whitespace.
      *
+     * It allows one to determine whether char should be a breaking whitespace
+     * For example certain characters in CJK langs or numbers.
+     * It must return a boolean.
+     *
      * @private
-     * @param  {string}  char - The character
+     * @param  {string}  char     - The character
+     * @param  {string}  [nextChar] - The next character
      * @return {boolean}  True if whitespace, False otherwise.
      */
-    private static isBreakingSpace(char: string): boolean
+    private static isBreakingSpace(char: string, _nextChar?: string): boolean
     {
         if (typeof char !== 'string')
         {
