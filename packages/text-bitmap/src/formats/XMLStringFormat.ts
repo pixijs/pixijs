@@ -19,9 +19,14 @@ export class XMLStringFormat
      */
     static test(data: unknown): boolean
     {
-        const xmlStringRegExp = new RegExp(/<font>(\s+)?<info\s+face=/);
+        if (typeof data === 'string' && data.indexOf('<font>') > -1)
+        {
+            const xml = new self.DOMParser().parseFromString(data, 'text/xml');
 
-        return typeof data === 'string' && xmlStringRegExp.test(data);
+            return XMLFormat.test(xml);
+        }
+
+        return false;
     }
 
     /**
