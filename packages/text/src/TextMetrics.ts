@@ -643,15 +643,24 @@ export class TextMetrics
             fontSize: 0,
         };
 
-        const canvas = TextMetrics._canvas;
         const context = TextMetrics._context;
 
         context.font = font;
-
         const metricsString = TextMetrics.METRICS_STRING + TextMetrics.BASELINE_SYMBOL;
-        const width = Math.ceil(context.measureText(metricsString).width);
+
+        const textMetrics = context.measureText(metricsString);
+        if (textMetrics.actualBoundingBoxAscent) {
+            properties.ascent = Math.ceil(textMetrics.actualBoundingBoxAscent);
+            properties.descent = Math.ceil(textMetrics.actualBoundingBoxDescent);
+            properties.fontSize = properties.ascent + properties.descent;
+            TextMetrics._fonts[font] = properties;
+            return properties;
+        }
+
+        const canvas = TextMetrics._canvas;
+        const width = Math.ceil(textMetrics.width);
         let baseline = Math.ceil(context.measureText(TextMetrics.BASELINE_SYMBOL).width);
-        const height = 2 * baseline;
+        const height = 2.25 * baseline;
 
         baseline = baseline * TextMetrics.BASELINE_MULTIPLIER | 0;
 
@@ -841,9 +850,9 @@ TextMetrics.BASELINE_SYMBOL = 'M';
  * @memberof PIXI.TextMetrics
  * @name BASELINE_MULTIPLIER
  * @type {number}
- * @default 1.4
+ * @default 1.75
  */
-TextMetrics.BASELINE_MULTIPLIER = 1.4;
+TextMetrics.BASELINE_MULTIPLIER = 1.75;
 
 /**
  * Cache of new line chars.
