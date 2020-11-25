@@ -20,7 +20,7 @@ describe('PIXI.CanvasGraphicsRenderer', function ()
         try
         {
             renderer.render(graphics);
-            expect(Texture.WHITE.patternCache).to.be.null;
+            expect(Texture.WHITE.patternCache).to.be.undefined;
         }
         finally
         {
