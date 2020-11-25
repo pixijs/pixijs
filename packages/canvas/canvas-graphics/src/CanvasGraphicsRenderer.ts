@@ -1,3 +1,4 @@
+import { Texture } from '@pixi/core';
 import { SHAPES, Matrix } from '@pixi/math';
 import { canvasUtils } from '@pixi/canvas-renderer';
 
@@ -52,7 +53,7 @@ export class CanvasGraphicsRenderer
     {
         let res;
 
-        if (style.texture)
+        if (style.texture && style.texture.baseTexture !== Texture.WHITE.baseTexture)
         {
             if (style.texture.valid)
             {
