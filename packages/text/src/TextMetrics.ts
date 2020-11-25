@@ -649,11 +649,14 @@ export class TextMetrics
         const metricsString = TextMetrics.METRICS_STRING + TextMetrics.BASELINE_SYMBOL;
 
         const textMetrics = context.measureText(metricsString);
-        if (textMetrics.actualBoundingBoxAscent) {
+
+        if (textMetrics.actualBoundingBoxAscent)
+        {
             properties.ascent = Math.ceil(textMetrics.actualBoundingBoxAscent);
             properties.descent = Math.ceil(textMetrics.actualBoundingBoxDescent);
             properties.fontSize = properties.ascent + properties.descent;
             TextMetrics._fonts[font] = properties;
+
             return properties;
         }
 
