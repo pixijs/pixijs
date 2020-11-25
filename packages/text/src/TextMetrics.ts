@@ -649,17 +649,6 @@ export class TextMetrics
         const metricsString = TextMetrics.METRICS_STRING + TextMetrics.BASELINE_SYMBOL;
 
         const textMetrics = context.measureText(metricsString);
-
-        if (textMetrics.actualBoundingBoxAscent)
-        {
-            properties.ascent = Math.ceil(textMetrics.actualBoundingBoxAscent);
-            properties.descent = Math.ceil(textMetrics.actualBoundingBoxDescent);
-            properties.fontSize = properties.ascent + properties.descent;
-            TextMetrics._fonts[font] = properties;
-
-            return properties;
-        }
-
         const canvas = TextMetrics._canvas;
         const width = Math.ceil(textMetrics.width);
         let baseline = Math.ceil(context.measureText(TextMetrics.BASELINE_SYMBOL).width);
