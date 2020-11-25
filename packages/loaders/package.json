@@ -1,9 +1,9 @@
 {
   "name": "@pixi/loaders",
-  "version": "5.3.2",
-  "main": "lib/loaders.js",
-  "module": "lib/loaders.es.js",
-  "bundle": "dist/loaders.js",
+  "version": "5.4.0-rc.2",
+  "main": "dist/cjs/loaders.js",
+  "module": "dist/esm/loaders.js",
+  "bundle": "dist/browser/loaders.js",
   "description": "Load assets and resources",
   "author": "Mat Groves",
   "contributors": [
@@ -21,12 +21,13 @@
   },
   "files": [
     "lib",
-    "dist"
+    "dist",
+    "*.d.ts"
   ],
   "dependencies": {
-    "@pixi/core": "5.3.2",
-    "@pixi/utils": "5.3.2",
-    "@pixi/constants": "5.3.2",
+    "@pixi/constants": "5.4.0-rc.2",
+    "@pixi/core": "5.4.0-rc.2",
+    "@pixi/utils": "5.4.0-rc.2",
     "resource-loader": "^3.0.1"
   },
   "devDependencies": {

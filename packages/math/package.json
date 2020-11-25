@@ -1,9 +1,9 @@
 {
   "name": "@pixi/math",
-  "version": "5.3.2",
-  "main": "lib/math.js",
-  "module": "lib/math.es.js",
-  "bundle": "dist/math.js",
+  "version": "5.4.0-rc.2",
+  "main": "dist/cjs/math.js",
+  "module": "dist/esm/math.js",
+  "bundle": "dist/browser/math.js",
   "description": "Collection of math utilities",
   "author": "Mat Groves",
   "contributors": [
@@ -21,6 +21,7 @@
   },
   "files": [
     "lib",
-    "dist"
+    "dist",
+    "*.d.ts"
   ]
 }

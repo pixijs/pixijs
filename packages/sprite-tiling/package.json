@@ -1,9 +1,9 @@
 {
   "name": "@pixi/sprite-tiling",
-  "version": "5.3.2",
-  "main": "lib/sprite-tiling.js",
-  "module": "lib/sprite-tiling.es.js",
-  "bundle": "dist/sprite-tiling.js",
+  "version": "5.4.0-rc.2",
+  "main": "dist/cjs/sprite-tiling.js",
+  "module": "dist/esm/sprite-tiling.js",
+  "bundle": "dist/browser/sprite-tiling.js",
   "description": "Tiling Sprites for faster rendering a tiling image",
   "author": "Mat Groves",
   "contributors": [
@@ -21,14 +21,15 @@
   },
   "files": [
     "lib",
-    "dist"
+    "dist",
+    "*.d.ts"
   ],
   "dependencies": {
-    "@pixi/constants": "5.3.2",
-    "@pixi/core": "5.3.2",
-    "@pixi/display": "5.3.2",
-    "@pixi/math": "5.3.2",
-    "@pixi/sprite": "5.3.2",
-    "@pixi/utils": "5.3.2"
+    "@pixi/constants": "5.4.0-rc.2",
+    "@pixi/core": "5.4.0-rc.2",
+    "@pixi/display": "5.4.0-rc.2",
+    "@pixi/math": "5.4.0-rc.2",
+    "@pixi/sprite": "5.4.0-rc.2",
+    "@pixi/utils": "5.4.0-rc.2"
   }
 }

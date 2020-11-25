@@ -268,4 +268,11 @@ export class Rectangle
 
         return this;
     }
+
+    // #if _DEBUG
+    toString(): string
+    {
+        return `[@pixi/math:Rectangle x=${this.x} y=${this.y} width=${this.width} height=${this.height}]`;
+    }
+    // #endif
 }

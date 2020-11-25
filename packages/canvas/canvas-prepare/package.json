@@ -1,9 +1,9 @@
 {
   "name": "@pixi/canvas-prepare",
-  "version": "5.3.2",
-  "main": "lib/canvas-prepare.js",
-  "module": "lib/canvas-prepare.es.js",
-  "bundle": "dist/canvas-prepare.js",
+  "version": "5.4.0-rc.2",
+  "main": "dist/cjs/canvas-prepare.js",
+  "module": "dist/esm/canvas-prepare.js",
+  "bundle": "dist/browser/canvas-prepare.js",
   "description": "Canvas mixin for the prepare package",
   "author": "Mat Groves",
   "contributors": [
@@ -21,11 +21,12 @@
   },
   "files": [
     "lib",
-    "dist"
+    "dist",
+    "*.d.ts"
   ],
   "dependencies": {
-    "@pixi/canvas-renderer": "5.3.2",
-    "@pixi/core": "5.3.2",
-    "@pixi/prepare": "5.3.2"
+    "@pixi/canvas-renderer": "5.4.0-rc.2",
+    "@pixi/core": "5.4.0-rc.2",
+    "@pixi/prepare": "5.4.0-rc.2"
   }
 }

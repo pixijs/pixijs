@@ -21,34 +21,34 @@ if (!(Date.now && Date.prototype.getTime))
 }
 
 // performance.now
-if (!(window.performance && window.performance.now))
+if (!(self.performance && self.performance.now))
 {
     const startTime = Date.now();
 
-    if (!window.performance)
+    if (!self.performance)
     {
-        (window as any).performance = {};
+        (self as any).performance = {};
     }
 
-    window.performance.now = (): number => Date.now() - startTime;
+    self.performance.now = (): number => Date.now() - startTime;
 }
 
 // requestAnimationFrame
 let lastTime = Date.now();
 const vendors = ['ms', 'moz', 'webkit', 'o'];
 
-for (let x = 0; x < vendors.length && !window.requestAnimationFrame; ++x)
+for (let x = 0; x < vendors.length && !self.requestAnimationFrame; ++x)
 {
     const p = vendors[x];
 
-    window.requestAnimationFrame = (window as any)[`${p}RequestAnimationFrame`];
-    window.cancelAnimationFrame = (window as any)[`${p}CancelAnimationFrame`]
-        || (window as any)[`${p}CancelRequestAnimationFrame`];
+    self.requestAnimationFrame = (self as any)[`${p}RequestAnimationFrame`];
+    self.cancelAnimationFrame = (self as any)[`${p}CancelAnimationFrame`]
+        || (self as any)[`${p}CancelRequestAnimationFrame`];
 }
 
-if (!window.requestAnimationFrame)
+if (!self.requestAnimationFrame)
 {
-    window.requestAnimationFrame = (callback: (...parms: any[]) => void): number =>
+    self.requestAnimationFrame = (callback: (...parms: any[]) => void): number =>
     {
         if (typeof callback !== 'function')
         {
@@ -65,7 +65,7 @@ if (!window.requestAnimationFrame)
 
         lastTime = currentTime;
 
-        return window.setTimeout(() =>
+        return self.setTimeout(() =>
         {
             lastTime = Date.now();
             callback(performance.now());
@@ -73,7 +73,7 @@ if (!window.requestAnimationFrame)
     };
 }
 
-if (!window.cancelAnimationFrame)
+if (!self.cancelAnimationFrame)
 {
-    window.cancelAnimationFrame = (id: number): void => clearTimeout(id);
+    self.cancelAnimationFrame = (id: number): void => clearTimeout(id);
 }

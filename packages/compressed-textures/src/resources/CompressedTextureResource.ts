@@ -1,16 +1,15 @@
 import { BlobResource } from './BlobResource';
-import { INTERNAL_FORMAT_TO_BYTES_PER_PIXEL } from '@pixi/constants';
-import { Renderer } from '../../Renderer';
-import { BaseTexture } from '../BaseTexture';
-import { GLTexture } from '../GLTexture';
+import { INTERNAL_FORMAT_TO_BYTES_PER_PIXEL } from '../const';
+import { Renderer, BaseTexture, GLTexture } from '@pixi/core';
 
-import type { INTERNAL_FORMATS } from '@pixi/constants';
+import type { INTERNAL_FORMATS } from '../const';
 
 /**
  * @ignore
  */
 // Used in PIXI.KTXLoader
 export type CompressedLevelBuffer = {
+    levelID: number,
     levelWidth: number,
     levelHeight: number,
     levelBuffer: Uint8Array
@@ -58,17 +57,17 @@ export interface ICompressedTextureResourceOptions
  * // The resource backing the texture data for your textures.
  * // NOTE: You can also provide a ArrayBufferView instead of a URL. This is used when loading data from a container file
  * //   format such as KTX, DDS, or BASIS.
- * const compressedResource = new PIXI.resources.CompressedTextureResource("bunny.dxt5", {
+ * const compressedResource = new PIXI.CompressedTextureResource("bunny.dxt5", {
  *   format: PIXI.INTERNAL_FORMATS.COMPRESSED_RGBA_S3TC_DXT5_EXT,
  *   width: 256,
  *   height: 256
  * });
  *
  * // You can create a base-texture to the cache, so that future `Texture`s can be created using the `Texture.from` API.
- * const baseTexture = new BaseTexture(compressedResource, { premultiplyAlpha: false });
+ * const baseTexture = new PIXI.BaseTexture(compressedResource, { pmaMode: PIXI.ALPHA_MODES.NPM });
  *
  * // Create a Texture to add to the TextureCache
- * const texture = new Texture(baseTexture);
+ * const texture = new PIXI.Texture(baseTexture);
  *
  * // Add baseTexture & texture to the global texture cache
  * PIXI.BaseTexture.addToCache(baseTexture, "bunny.dxt5");
@@ -80,8 +79,6 @@ export interface ICompressedTextureResourceOptions
 export class CompressedTextureResource extends BlobResource
 {
     public format: INTERNAL_FORMATS;
-    public width: number;
-    public height: number;
     public levels: number;
 
     // Easy access to the WebGL extension providing support for the compression format via ContextSystem
@@ -157,9 +154,9 @@ export class CompressedTextureResource extends BlobResource
 
         for (let i = 0, j = this.levels; i < j; i++)
         {
-            const { levelWidth, levelHeight, levelBuffer } = this._levelBuffers[i];
+            const { levelID, levelWidth, levelHeight, levelBuffer } = this._levelBuffers[i];
 
-            gl.compressedTexImage2D(gl.TEXTURE_2D, 0, this.format, levelWidth, levelHeight, 0, levelBuffer);
+            gl.compressedTexImage2D(gl.TEXTURE_2D, levelID, this.format, levelWidth, levelHeight, 0, levelBuffer);
         }
 
         return true;
@@ -251,6 +248,7 @@ export class CompressedTextureResource extends BlobResource
         for (let i = 0; i < levels; i++)
         {
             buffers[i] = {
+                levelID: i,
                 levelWidth: levels > 1 ? levelWidth : alignedLevelWidth,
                 levelHeight: levels > 1 ? levelHeight : alignedLevelHeight,
                 levelBuffer: new Uint8Array(buffer.buffer, offset, levelSize)

@@ -67,6 +67,7 @@ describe('PIXI.BitmapFontLoader', function ()
             loadTxt('bmtxt-test.txt'),
             loadXML('font.fnt'),
             loadTxt('font-text.fnt'),
+            loadTxt('font-random-args.fnt'),
             loadXML('font@0.5x.fnt'),
             loadImage('bmtxt-test.png'),
             loadImage('font.png'),
@@ -77,6 +78,7 @@ describe('PIXI.BitmapFontLoader', function ()
             fontTXT,
             fontXML,
             fontText,
+            fontRandomArgs,
             fontScaledXML,
             fontTXTImage,
             fontImage,
@@ -88,6 +90,7 @@ describe('PIXI.BitmapFontLoader', function ()
             this.fontTXT = fontTXT;
             this.fontXML = fontXML;
             this.fontText = fontText;
+            this.fontRandomArgs = fontRandomArgs;
             this.fontScaledXML = fontScaledXML;
             this.fontTXTImage = fontTXTImage;
             this.fontImage = fontImage;
@@ -556,6 +559,26 @@ describe('PIXI.BitmapFontLoader', function ()
         const charE = font.chars['E'.charCodeAt(0)];
 
         expect(charE).to.be.undefined;
+        done();
+    });
+
+    it('should properly register bitmap font with random placed arguments into info tag', function (done)
+    {
+        const texture = Texture.from(this.fontImage);
+        const font = BitmapFont.install(this.fontRandomArgs, texture);
+
+        expect(font).to.be.an.object;
+        expect(BitmapFont.available.font).to.equal(font);
+        expect(font).to.have.property('chars');
+        const charA = font.chars['A'.charCodeAt(0)];
+
+        expect(charA).to.exist;
+        expect(charA.texture.baseTexture.resource.source).to.equal(this.fontImage);
+        expect(charA.texture.frame.x).to.equal(2);
+        expect(charA.texture.frame.y).to.equal(2);
+        expect(charA.texture.frame.width).to.equal(19);
+        expect(charA.texture.frame.height).to.equal(20);
+
         done();
     });
 });

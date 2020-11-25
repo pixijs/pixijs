@@ -138,7 +138,7 @@ Object.defineProperties(DisplayObject.prototype, {
  * Renders a cached version of the sprite with WebGL
  *
  * @private
- * @function _renderCached
+ * @method _renderCached
  * @memberof PIXI.DisplayObject#
  * @param {PIXI.Renderer} renderer - the WebGL renderer
  */
@@ -160,7 +160,7 @@ DisplayObject.prototype._renderCached = function _renderCached(renderer: Rendere
  * Prepares the WebGL renderer to cache the sprite
  *
  * @private
- * @function _initCachedDisplayObject
+ * @method _initCachedDisplayObject
  * @memberof PIXI.DisplayObject#
  * @param {PIXI.Renderer} renderer - the WebGL renderer
  */
@@ -270,7 +270,7 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
  * Renders a cached version of the sprite with canvas
  *
  * @private
- * @function _renderCachedCanvas
+ * @method _renderCachedCanvas
  * @memberof PIXI.DisplayObject#
  * @param {PIXI.CanvasRenderer} renderer - The canvas renderer
  */
@@ -292,7 +292,7 @@ DisplayObject.prototype._renderCachedCanvas = function _renderCachedCanvas(rende
  * Prepares the Canvas renderer to cache the sprite
  *
  * @private
- * @function _initCachedDisplayObjectCanvas
+ * @method _initCachedDisplayObjectCanvas
  * @memberof PIXI.DisplayObject#
  * @param {PIXI.CanvasRenderer} renderer - The canvas renderer
  */
@@ -385,6 +385,7 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
  * Calculates the bounds of the cached sprite
  *
  * @private
+ * @method
  */
 DisplayObject.prototype._calculateCachedBounds = function _calculateCachedBounds(): void
 {
@@ -398,6 +399,7 @@ DisplayObject.prototype._calculateCachedBounds = function _calculateCachedBounds
  * Gets the bounds of the cached sprite.
  *
  * @private
+ * @method
  * @return {Rectangle} The local bounds.
  */
 DisplayObject.prototype._getCachedLocalBounds = function _getCachedLocalBounds(): Rectangle
@@ -409,6 +411,7 @@ DisplayObject.prototype._getCachedLocalBounds = function _getCachedLocalBounds()
  * Destroys the cached sprite.
  *
  * @private
+ * @method
  */
 DisplayObject.prototype._destroyCachedDisplayObject = function _destroyCachedDisplayObject(): void
 {
@@ -425,11 +428,12 @@ DisplayObject.prototype._destroyCachedDisplayObject = function _destroyCachedDis
  * Destroys the cached object.
  *
  * @private
+ * @method
  * @param {object|boolean} [options] - Options parameter. A boolean will act as if all options
  *  have been set to that value.
  *  Used when destroying containers, see the Container.destroy method.
  */
-DisplayObject.prototype._cacheAsBitmapDestroy = function _cacheAsBitmapDestroy(options: IDestroyOptions|boolean): void
+DisplayObject.prototype._cacheAsBitmapDestroy = function _cacheAsBitmapDestroy(options?: IDestroyOptions|boolean): void
 {
     this.cacheAsBitmap = false;
     this.destroy(options);

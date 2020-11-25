@@ -71,7 +71,10 @@ export class ScissorSystem extends AbstractMaskSystem
     }
 
     /**
-     * Pops scissor mask. MaskData is already removed from stack
+     * This should be called after a mask is popped off the mask stack. It will rebind the scissor box to be latest with the
+     * last mask in the stack.
+     *
+     * This can also be called when you directly modify the scissor box and want to restore PixiJS state.
      */
     pop(): void
     {

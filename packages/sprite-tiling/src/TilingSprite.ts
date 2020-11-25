@@ -247,7 +247,7 @@ export class TilingSprite extends Sprite
      * @param {boolean} [options.texture=false] - Should it destroy the current texture of the sprite as well
      * @param {boolean} [options.baseTexture=false] - Should it destroy the base texture of the sprite as well
      */
-    public destroy(options: IDestroyOptions|boolean): void
+    public destroy(options?: IDestroyOptions|boolean): void
     {
         super.destroy(options);
 
@@ -271,7 +271,9 @@ export class TilingSprite extends Sprite
         // Deprecated
         if (typeof options === 'number')
         {
+            // #if _DEBUG
             deprecation('5.3.0', 'TilingSprite.from use options instead of width and height args');
+            // #endif
             // eslint-disable-next-line prefer-rest-params
             options = { width: options, height: arguments[2] } as ISize;
         }

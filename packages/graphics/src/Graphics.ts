@@ -400,7 +400,9 @@ export class Graphics extends Container
         // color, alpha, matrix, alignment, native)
         if (typeof options === 'number')
         {
+            // #if _DEBUG
             deprecation('v5.2.0', 'Please use object-based options for Graphics#lineTextureStyle');
+            // #endif
 
             // eslint-disable-next-line
             const [width, texture, color, alpha, matrix, alignment, native] = arguments as any;
@@ -734,12 +736,14 @@ export class Graphics extends Container
      * @param {PIXI.Matrix} [options.matrix=null] - Transform matrix
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    beginTextureFill(options: IFillStyleOptions): this
+    beginTextureFill(options?: IFillStyleOptions): this
     {
         // Backward compatibility with params: (texture, color, alpha, matrix)
         if (options instanceof Texture)
         {
+            // #if _DEBUG
             deprecation('v5.2.0', 'Please use object-based options for Graphics#beginTextureFill');
+            // #endif
 
             // eslint-disable-next-line
             const [texture, color, alpha, matrix] = arguments as any;
@@ -980,11 +984,11 @@ export class Graphics extends Container
         this.finishPoly();
 
         const geometry = this._geometry;
-        const hasuit32 = renderer.context.supports.uint32Indices;
+        const hasuint32 = renderer.context.supports.uint32Indices;
         // batch part..
         // batch it!
 
-        geometry.updateBatches(hasuit32);
+        geometry.updateBatches(hasuint32);
 
         if (geometry.batchable)
         {
@@ -1364,10 +1368,8 @@ export class Graphics extends Container
      * @param {boolean} [options.baseTexture=false] - Only used for child Sprites if options.children is set to true
      *  Should it destroy the base texture of the child sprite
      */
-    public destroy(options: IDestroyOptions|boolean): void
+    public destroy(options?: IDestroyOptions|boolean): void
     {
-        super.destroy(options);
-
         this._geometry.refCount--;
         if (this._geometry.refCount === 0)
         {

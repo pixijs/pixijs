@@ -115,7 +115,7 @@ export class RenderTexturePool
      *  It overrides, it does not multiply
      * @returns {PIXI.RenderTexture}
      */
-    getFilterTexture(input: RenderTexture, resolution: number): RenderTexture
+    getFilterTexture(input: RenderTexture, resolution?: number): RenderTexture
     {
         const filterTexture = this.getOptimalTexture(input.width, input.height, resolution || input.resolution);
 
@@ -150,7 +150,7 @@ export class RenderTexturePool
      *
      * @param {boolean} [destroyTextures=true] - destroy all stored textures
      */
-    clear(destroyTextures: boolean): void
+    clear(destroyTextures?: boolean): void
     {
         destroyTextures = destroyTextures !== false;
         if (destroyTextures)

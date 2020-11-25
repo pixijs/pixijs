@@ -343,8 +343,9 @@ export class FilterSystem extends System
         if (typeof clearMode === 'boolean')
         {
             clearMode = clearMode ? CLEAR_MODES.CLEAR : CLEAR_MODES.BLEND;
-            // get deprecation function from utils
+            // #if _DEBUG
             deprecation('5.2.1', 'Use CLEAR_MODES when using clear applyFilter option');
+            // #endif
         }
         if (clearMode === CLEAR_MODES.CLEAR
             || (clearMode === CLEAR_MODES.BLIT && this.forceClear))
@@ -361,7 +362,7 @@ export class FilterSystem extends System
      * @param {PIXI.RenderTexture} output - The target to output to.
      * @param {PIXI.CLEAR_MODES} [clearMode] - Should the output be cleared before rendering to it
      */
-    applyFilter(filter: Filter, input: RenderTexture, output: RenderTexture, clearMode: CLEAR_MODES): void
+    applyFilter(filter: Filter, input: RenderTexture, output: RenderTexture, clearMode?: CLEAR_MODES): void
     {
         const renderer = this.renderer;
 

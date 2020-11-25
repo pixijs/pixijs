@@ -1,6 +1,6 @@
 {
   "name": "pixi.js-legacy",
-  "version": "5.3.2",
+  "version": "5.4.0-rc.2",
   "description": "The HTML5 Creation Engine: Create beautiful digital content with the fastest, most flexible 2D WebGL renderer.",
   "author": "Mat Groves",
   "contributors": [
@@ -10,15 +10,14 @@
     "Richard Davey <rdavey@gmail.com>"
   ],
   "standalone": true,
-  "main": "lib/pixi-legacy.js",
-  "module": "lib/pixi-legacy.es.js",
-  "bundle": "dist/pixi-legacy.js",
-  "bundleModule": "dist/pixi-legacy.mjs",
+  "main": "dist/cjs/pixi-legacy.js",
+  "module": "dist/esm/pixi-legacy.js",
+  "bundle": "dist/browser/pixi-legacy.js",
+  "bundleModule": "dist/browser/pixi-legacy.mjs",
   "bundleOutput": {
     "footer": "PIXI.useDeprecated();",
     "name": "PIXI"
   },
-  "types": "pixi.js-legacy.d.ts",
   "homepage": "http://www.pixijs.com/",
   "bugs": "https://github.com/pixijs/pixi.js/issues",
   "license": "MIT",
@@ -29,23 +28,23 @@
   "files": [
     "lib/",
     "dist/",
-    "pixi.js-legacy.d.ts"
+    "*.d.ts"
   ],
   "funding": {
     "type": "opencollective",
     "url": "https://opencollective.com/pixijs"
   },
   "dependencies": {
-    "@pixi/canvas-display": "5.3.2",
-    "@pixi/canvas-extract": "5.3.2",
-    "@pixi/canvas-graphics": "5.3.2",
-    "@pixi/canvas-mesh": "5.3.2",
-    "@pixi/canvas-particles": "5.3.2",
-    "@pixi/canvas-prepare": "5.3.2",
-    "@pixi/canvas-renderer": "5.3.2",
-    "@pixi/canvas-sprite": "5.3.2",
-    "@pixi/canvas-sprite-tiling": "5.3.2",
-    "@pixi/canvas-text": "5.3.2",
-    "pixi.js": "5.3.2"
+    "@pixi/canvas-display": "5.4.0-rc.2",
+    "@pixi/canvas-extract": "5.4.0-rc.2",
+    "@pixi/canvas-graphics": "5.4.0-rc.2",
+    "@pixi/canvas-mesh": "5.4.0-rc.2",
+    "@pixi/canvas-particles": "5.4.0-rc.2",
+    "@pixi/canvas-prepare": "5.4.0-rc.2",
+    "@pixi/canvas-renderer": "5.4.0-rc.2",
+    "@pixi/canvas-sprite": "5.4.0-rc.2",
+    "@pixi/canvas-sprite-tiling": "5.4.0-rc.2",
+    "@pixi/canvas-text": "5.4.0-rc.2",
+    "pixi.js": "5.4.0-rc.2"
   }
 }

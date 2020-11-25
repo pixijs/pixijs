@@ -1,9 +1,9 @@
 {
   "name": "@pixi/filter-blur",
-  "version": "5.3.2",
-  "main": "lib/filter-blur.js",
-  "module": "lib/filter-blur.es.js",
-  "bundle": "dist/filter-blur.js",
+  "version": "5.4.0-rc.2",
+  "main": "dist/cjs/filter-blur.js",
+  "module": "dist/esm/filter-blur.js",
+  "bundle": "dist/browser/filter-blur.js",
   "namespace": "PIXI.filters",
   "description": "Filter that blurs the display object",
   "author": "Mat Groves",
@@ -22,10 +22,11 @@
   },
   "files": [
     "lib",
-    "dist"
+    "dist",
+    "*.d.ts"
   ],
   "dependencies": {
-    "@pixi/core": "5.3.2",
-    "@pixi/settings": "5.3.2"
+    "@pixi/core": "5.4.0-rc.2",
+    "@pixi/settings": "5.4.0-rc.2"
   }
 }

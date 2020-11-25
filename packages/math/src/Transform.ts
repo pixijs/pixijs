@@ -183,6 +183,18 @@ export class Transform
         this._localID++;
     }
 
+    // #if _DEBUG
+    toString(): string
+    {
+        return `[@pixi/math:Transform `
+            + `position=(${this.position.x}, ${this.position.y}) `
+            + `rotation=${this.rotation} `
+            + `scale=(${this.scale.x}, ${this.scale.y}) `
+            + `skew=(${this.skew.x}, ${this.skew.y}) `
+            + `]`;
+    }
+    // #endif
+
     /**
      * Updates the local transformation matrix.
      */

@@ -129,7 +129,7 @@ export class TextMetrics
      * @param {HTMLCanvasElement} [canvas] - optional specification of the canvas to use for measuring.
      * @return {PIXI.TextMetrics} measured width and height of the text.
      */
-    public static measureText(text: string, style: TextStyle, wordWrap: boolean, canvas = TextMetrics._canvas): TextMetrics
+    public static measureText(text: string, style: TextStyle, wordWrap?: boolean, canvas = TextMetrics._canvas): TextMetrics
     {
         wordWrap = (wordWrap === undefined || wordWrap === null) ? style.wordWrap : wordWrap;
         const font = style.toFontString();
@@ -502,11 +502,15 @@ export class TextMetrics
     /**
      * Determines if char is a breaking whitespace.
      *
-     * @private
-     * @param  {string}  char - The character
+     * It allows one to determine whether char should be a breaking whitespace
+     * For example certain characters in CJK langs or numbers.
+     * It must return a boolean.
+     *
+     * @param  {string}  char     - The character
+     * @param  {string}  [nextChar] - The next character
      * @return {boolean}  True if whitespace, False otherwise.
      */
-    private static isBreakingSpace(char: string): boolean
+    static isBreakingSpace(char: string, _nextChar?: string): boolean
     {
         if (typeof char !== 'string')
         {
@@ -536,8 +540,9 @@ export class TextMetrics
         for (let i = 0; i < text.length; i++)
         {
             const char = text[i];
+            const nextChar = text[i + 1];
 
-            if (TextMetrics.isBreakingSpace(char) || TextMetrics.isNewline(char))
+            if (TextMetrics.isBreakingSpace(char, nextChar) || TextMetrics.isNewline(char))
             {
                 if (token !== '')
                 {

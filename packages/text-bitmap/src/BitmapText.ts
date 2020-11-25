@@ -11,6 +11,7 @@ import type { IBitmapTextStyle } from './BitmapTextStyle';
 import type { TextStyleAlign } from '@pixi/text';
 import type { BitmapFontData } from './BitmapFontData';
 import { Container } from '@pixi/display';
+import type { IDestroyOptions } from '@pixi/display';
 
 interface PageMeshData {
     index: number;
@@ -28,6 +29,7 @@ interface CharRenderData {
     line: number;
     charCode: number;
     position: Point;
+    prevSpaces: number;
 }
 
 const pageMeshDataPool: PageMeshData[] = [];
@@ -66,7 +68,6 @@ export class BitmapText extends Container
         maxWidth: 0,
         letterSpacing: 0,
     };
-    public roundPixels: boolean;
     public dirty: boolean;
     protected _textWidth: number;
     protected _textHeight: number;
@@ -80,6 +81,8 @@ export class BitmapText extends Container
     protected _align: TextStyleAlign;
     protected _activePagesMeshData: PageMeshData[];
     protected _tint = 0xFFFFFF;
+    protected _roundPixels: boolean;
+    private _textureCache: Record<number, Texture>;
 
     /**
      * @param {string} text - A string that you would like the text to display.
@@ -87,7 +90,7 @@ export class BitmapText extends Container
      * @param {string} style.fontName - The installed BitmapFont name.
      * @param {number} [style.fontSize] - The size of the font in pixels, e.g. 24. If undefined,
      *.     this will default to the BitmapFont size.
-     * @param {string} [style.align='left'] - Alignment for multiline text ('left', 'center' or 'right'),
+     * @param {string} [style.align='left'] - Alignment for multiline text ('left', 'center', 'right' or 'justify'),
      *      does not affect single line text.
      * @param {number} [style.tint=0xFFFFFF] - The tint color.
      * @param {number} [style.letterSpacing=0] - The amount of spacing between letters.
@@ -99,7 +102,9 @@ export class BitmapText extends Container
 
         if (style.font)
         {
+            // #if _DEBUG
             deprecation('5.3.0', 'PIXI.BitmapText constructor style.font property is deprecated.');
+            // #endif
 
             this._upgradeStyle(style);
         }
@@ -212,15 +217,12 @@ export class BitmapText extends Container
         this._anchor = new ObservablePoint((): void => { this.dirty = true; }, this, 0, 0);
 
         /**
-         * If true PixiJS will Math.floor() x/y values when rendering, stopping pixel interpolation.
-         * Advantages can include sharper image quality (like text) and faster rendering on canvas.
-         * The main disadvantage is movement of objects may appear less smooth.
-         * To set the global default, change {@link PIXI.settings.ROUND_PIXELS}
+         * If true PixiJS will Math.floor() x/y values when rendering
          *
          * @member {boolean}
          * @default PIXI.settings.ROUND_PIXELS
          */
-        this.roundPixels = settings.ROUND_PIXELS;
+        this._roundPixels = settings.ROUND_PIXELS;
 
         /**
          * Set to `true` if the BitmapText needs to be redrawn.
@@ -228,6 +230,13 @@ export class BitmapText extends Container
          * @member {boolean}
          */
         this.dirty = true;
+
+        /**
+         * Cached char texture is destroyed when BitmapText is destroyed
+         * @member {Record<number, Texture>}
+         * @private
+         */
+        this._textureCache = {};
     }
 
     /**
@@ -241,6 +250,7 @@ export class BitmapText extends Container
         const pos = new Point();
         const chars: CharRenderData[] = [];
         const lineWidths = [];
+        const lineSpaces = [];
         const text = this._text.replace(/(?:\r\n|\r)/g, '\n') || ' ';
         const textLength = text.length;
         const maxWidth = this._maxWidth * data.size / this._fontSize;
@@ -253,6 +263,7 @@ export class BitmapText extends Container
         let lastBreakWidth = 0;
         let spacesRemoved = 0;
         let maxLineHeight = 0;
+        let spaceCount = 0;
 
         for (let i = 0; i < textLength; i++)
         {
@@ -263,11 +274,13 @@ export class BitmapText extends Container
             {
                 lastBreakPos = i;
                 lastBreakWidth = lastLineWidth;
+                spaceCount++;
             }
 
             if (char === '\r' || char === '\n')
             {
                 lineWidths.push(lastLineWidth);
+                lineSpaces.push(-1);
                 maxLineWidth = Math.max(maxLineWidth, lastLineWidth);
                 ++line;
                 ++spacesRemoved;
@@ -275,6 +288,7 @@ export class BitmapText extends Container
                 pos.x = 0;
                 pos.y += data.lineHeight;
                 prevCharCode = null;
+                spaceCount = 0;
                 continue;
             }
 
@@ -294,6 +308,7 @@ export class BitmapText extends Container
                 texture: Texture.EMPTY,
                 line: 0,
                 charCode: 0,
+                prevSpaces: 0,
                 position: new Point(),
             };
 
@@ -302,6 +317,7 @@ export class BitmapText extends Container
             charRenderData.charCode = charCode;
             charRenderData.position.x = pos.x + charData.xOffset + (this._letterSpacing / 2);
             charRenderData.position.y = pos.y + charData.yOffset;
+            charRenderData.prevSpaces = spaceCount;
 
             chars.push(charRenderData);
 
@@ -318,12 +334,14 @@ export class BitmapText extends Container
                 lastBreakPos = -1;
 
                 lineWidths.push(lastBreakWidth);
+                lineSpaces.push(chars.length > 0 ? chars[chars.length - 1].prevSpaces : 0);
                 maxLineWidth = Math.max(maxLineWidth, lastBreakWidth);
                 line++;
 
                 pos.x = 0;
                 pos.y += data.lineHeight;
                 prevCharCode = null;
+                spaceCount = 0;
             }
         }
 
@@ -338,6 +356,7 @@ export class BitmapText extends Container
 
             lineWidths.push(lastLineWidth);
             maxLineWidth = Math.max(maxLineWidth, lastLineWidth);
+            lineSpaces.push(-1);
         }
 
         const lineAlignOffsets = [];
@@ -353,6 +372,10 @@ export class BitmapText extends Container
             else if (this._align === 'center')
             {
                 alignOffset = (maxLineWidth - lineWidths[i]) / 2;
+            }
+            else if (this._align === 'justify')
+            {
+                alignOffset = lineSpaces[i] < 0 ? 0 : (maxLineWidth - lineWidths[i]) / lineSpaces[i];
             }
 
             lineAlignOffsets.push(alignOffset);
@@ -406,8 +429,13 @@ export class BitmapText extends Container
                 pageMeshData.vertexCount = 0;
                 pageMeshData.uvsCount = 0;
                 pageMeshData.total = 0;
+
                 // TODO need to get page texture here somehow..
-                pageMeshData.mesh.texture = new Texture(texture.baseTexture);
+                const { _textureCache } = this;
+
+                _textureCache[baseTextureUid] = _textureCache[baseTextureUid] || new Texture(texture.baseTexture);
+                pageMeshData.mesh.texture = _textureCache[baseTextureUid];
+
                 pageMeshData.mesh.tint = this._tint;
 
                 newPagesMeshData.push(pageMeshData);
@@ -474,7 +502,14 @@ export class BitmapText extends Container
         for (let i = 0; i < lenChars; i++)
         {
             const char = chars[i];
-            const xPos = (char.position.x + lineAlignOffsets[char.line]) * scale;
+            let offset = char.position.x + (lineAlignOffsets[char.line] * (this._align === 'justify' ? char.prevSpaces : 1));
+
+            if (this._roundPixels)
+            {
+                offset = Math.round(offset);
+            }
+
+            const xPos = offset * scale;
             const yPos = char.position.y * scale;
             const texture = char.texture;
 
@@ -812,6 +847,29 @@ export class BitmapText extends Container
     }
 
     /**
+     * If true PixiJS will Math.floor() x/y values when rendering, stopping pixel interpolation.
+     * Advantages can include sharper image quality (like text) and faster rendering on canvas.
+     * The main disadvantage is movement of objects may appear less smooth.
+     * To set the global default, change {@link PIXI.settings.ROUND_PIXELS}
+     *
+     * @member {boolean}
+     * @default PIXI.settings.ROUND_PIXELS
+     */
+    public get roundPixels(): boolean
+    {
+        return this._roundPixels;
+    }
+
+    public set roundPixels(value: boolean)
+    {
+        if (value !== this._roundPixels)
+        {
+            this._roundPixels = value;
+            this.dirty = true;
+        }
+    }
+
+    /**
      * The height of the overall text, different from fontSize,
      * which is defined in the style object.
      *
@@ -855,6 +913,23 @@ export class BitmapText extends Container
         }
     }
 
+    destroy(options?: boolean | IDestroyOptions): void
+    {
+        const { _textureCache } = this;
+
+        for (const id in _textureCache)
+        {
+            const texture = _textureCache[id];
+
+            texture.destroy();
+            delete _textureCache[id];
+        }
+
+        this._textureCache = null;
+
+        super.destroy(options);
+    }
+
     /**
      * Register a bitmap font with data and a texture.
      *
@@ -864,7 +939,9 @@ export class BitmapText extends Container
      */
     static registerFont(data: string|XMLDocument|BitmapFontData, textures: Texture|Texture[]|Dict<Texture>): BitmapFont
     {
+        // #if _DEBUG
         deprecation('5.3.0', 'PIXI.BitmapText.registerFont is deprecated, use PIXI.BitmapFont.install');
+        // #endif
 
         return BitmapFont.install(data, textures);
     }
@@ -880,7 +957,9 @@ export class BitmapText extends Container
      */
     static get fonts(): Dict<BitmapFont>
     {
+        // #if _DEBUG
         deprecation('5.3.0', 'PIXI.BitmapText.fonts is deprecated, use PIXI.BitmapFont.available');
+        // #endif
 
         return BitmapFont.available;
     }

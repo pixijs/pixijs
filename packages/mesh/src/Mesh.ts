@@ -494,7 +494,7 @@ export class Mesh extends Container
      * @param {boolean} [options.children=false] - if set to true, all the children will have
      *  their destroy method called as well. 'options' will be passed on to those calls.
      */
-    public destroy(options: IDestroyOptions|boolean): void
+    public destroy(options?: IDestroyOptions|boolean): void
     {
         super.destroy(options);
 
@@ -502,6 +502,12 @@ export class Mesh extends Container
         if (this.geometry.refCount === 0)
         {
             this.geometry.dispose();
+        }
+
+        if (this._cachedTexture)
+        {
+            this._cachedTexture.destroy();
+            this._cachedTexture = null;
         }
 
         (this as any).geometry = null;
@@ -521,4 +527,3 @@ export class Mesh extends Container
      */
     public static BATCHABLE_SIZE = 100;
 }
-

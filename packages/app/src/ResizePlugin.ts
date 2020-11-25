@@ -36,11 +36,11 @@ export class ResizePlugin
             {
                 set(dom: Window|HTMLElement)
                 {
-                    window.removeEventListener('resize', this.queueResize);
+                    self.removeEventListener('resize', this.queueResize);
                     this._resizeTo = dom;
                     if (dom)
                     {
-                        window.addEventListener('resize', this.queueResize);
+                        self.addEventListener('resize', this.queueResize);
                         this.resize();
                     }
                 },
@@ -109,10 +109,10 @@ export class ResizePlugin
             let height: number;
 
             // Resize to the window
-            if (this._resizeTo === window)
+            if (this._resizeTo === self)
             {
-                width = window.innerWidth;
-                height = window.innerHeight;
+                width = self.innerWidth;
+                height = self.innerHeight;
             }
             // Resize to other HTML entities
             else

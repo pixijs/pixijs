@@ -23,7 +23,7 @@ const defaultDestroyOptions: IDestroyOptions = {
  *
  * The text is created using the [Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API).
  *
- * The primary advantage of this class over BitmapText is that you have great control over the style of the next,
+ * The primary advantage of this class over BitmapText is that you have great control over the style of the text,
  * which you can change at runtime.
  *
  * The primary disadvantages is that each piece of text has it's own texture, which can use more memory.
@@ -63,7 +63,7 @@ export class Text extends Sprite
      * @param {object|PIXI.TextStyle} [style] - The style parameters
      * @param {HTMLCanvasElement} [canvas] - The canvas element for drawing text
      */
-    constructor(text: string, style: Partial<ITextStyle>|TextStyle, canvas: HTMLCanvasElement)
+    constructor(text: string, style?: Partial<ITextStyle>|TextStyle, canvas?: HTMLCanvasElement)
     {
         let ownCanvas = false;
 
@@ -597,7 +597,7 @@ export class Text extends Sprite
      * @param {boolean} [options.texture=true] - Should it destroy the current texture of the sprite as well
      * @param {boolean} [options.baseTexture=true] - Should it destroy the base texture of the sprite as well
      */
-    public destroy(options: IDestroyOptions|boolean): void
+    public destroy(options?: IDestroyOptions|boolean): void
     {
         if (typeof options === 'boolean')
         {

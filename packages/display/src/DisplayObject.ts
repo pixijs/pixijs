@@ -648,7 +648,7 @@ export abstract class DisplayObject extends EventEmitter
      * @param {boolean} [skipUpdate=false] - Should we skip the update transform
      * @return {PIXI.Point} A point object representing the position of this object
      */
-    toLocal<P extends IPointData = Point>(position: IPointData, from: DisplayObject, point?: P, skipUpdate?: boolean): P
+    toLocal<P extends IPointData = Point>(position: IPointData, from?: DisplayObject, point?: P, skipUpdate?: boolean): P
     {
         if (from)
         {
@@ -792,7 +792,8 @@ export abstract class DisplayObject extends EventEmitter
 
     /**
      * Pair method for `enableTempParent`
-     * @param {PIXI.DisplayObject} cacheParent actual parent of element
+     *
+     * @param {PIXI.DisplayObject} cacheParent - Actual parent of element
      */
     disableTempParent(cacheParent: DisplayObject): void
     {

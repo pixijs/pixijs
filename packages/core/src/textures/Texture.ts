@@ -402,8 +402,8 @@ export class Texture extends EventEmitter
      * Useful for loading textures via URLs. Use instead of `Texture.from` because
      * it does a better job of handling failed URLs more effectively. This also ignores
      * `PIXI.settings.STRICT_TEXTURE_CACHE`. Works for Videos, SVGs, Images.
-     * @param {string} url The remote URL to load.
-     * @param {object} [options] Optional options to include
+     * @param {string} url - The remote URL to load.
+     * @param {object} [options] - Optional options to include
      * @return {Promise<PIXI.Texture>} A Promise that resolves to a Texture.
      */
     static fromURL(url: string, options?: IBaseTextureOptions): Promise<Texture>
@@ -434,7 +434,7 @@ export class Texture extends EventEmitter
      * @return {PIXI.Texture} The resulting new BaseTexture
      */
     static fromBuffer(buffer: Float32Array|Uint8Array,
-        width: number, height: number, options: IBaseTextureOptions): Texture
+        width: number, height: number, options?: IBaseTextureOptions): Texture
     {
         return new Texture(BaseTexture.fromBuffer(buffer, width, height, options));
     }
@@ -449,7 +449,7 @@ export class Texture extends EventEmitter
      *        specified, only `imageUrl` will be used as the cache ID.
      * @return {PIXI.Texture} Output texture
      */
-    static fromLoader(source: HTMLImageElement|HTMLCanvasElement, imageUrl: string, name: string): Texture
+    static fromLoader(source: HTMLImageElement|HTMLCanvasElement, imageUrl: string, name?: string): Texture
     {
         const resource = new ImageResource(source as any);
 
