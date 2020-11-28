@@ -259,7 +259,7 @@ export class Ticker
      * @param {number} [priority=PIXI.UPDATE_PRIORITY.NORMAL] - The priority for emitting
      * @returns {PIXI.Ticker} This instance of a ticker
      */
-    add<T = any>(fn: TickerCallback<T>, context: T, priority = UPDATE_PRIORITY.NORMAL): this
+    add<T = any>(fn: TickerCallback<T>, context?: T, priority = UPDATE_PRIORITY.NORMAL): this
     {
         return this._addListener(new TickerListener(fn, context, priority));
     }
@@ -272,7 +272,7 @@ export class Ticker
      * @param {number} [priority=PIXI.UPDATE_PRIORITY.NORMAL] - The priority for emitting
      * @returns {PIXI.Ticker} This instance of a ticker
      */
-    addOnce<T = any>(fn: TickerCallback<T>, context: T, priority = UPDATE_PRIORITY.NORMAL): this
+    addOnce<T = any>(fn: TickerCallback<T>, context?: T, priority = UPDATE_PRIORITY.NORMAL): this
     {
         return this._addListener(new TickerListener(fn, context, priority, true));
     }
@@ -331,7 +331,7 @@ export class Ticker
      * @param {*} [context] - The listener context to be removed
      * @returns {PIXI.Ticker} This instance of a ticker
      */
-    remove<T = any>(fn: TickerCallback<T>, context: T): this
+    remove<T = any>(fn: TickerCallback<T>, context?: T): this
     {
         let listener = this._head.next;
 

@@ -1,6 +1,6 @@
 {
   "name": "@pixi/constants",
-  "version": "5.3.2",
+  "version": "5.4.0-rc.2",
   "main": "dist/cjs/constants.js",
   "module": "dist/esm/constants.js",
   "bundle": "dist/browser/constants.js",
@@ -22,6 +22,6 @@
   "files": [
     "lib",
     "dist",
-    "index.d.ts"
+    "*.d.ts"
   ]
 }

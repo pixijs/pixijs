@@ -70,7 +70,7 @@ export class Sprite extends Container
     /**
      * @param {PIXI.Texture} [texture] - The texture for this sprite.
      */
-    constructor(texture: Texture)
+    constructor(texture?: Texture)
     {
         super();
 
@@ -510,7 +510,7 @@ export class Sprite extends Container
      * @param {boolean} [options.texture=false] - Should it destroy the current texture of the sprite as well
      * @param {boolean} [options.baseTexture=false] - Should it destroy the base texture of the sprite as well
      */
-    public destroy(options: IDestroyOptions|boolean): void
+    public destroy(options?: IDestroyOptions|boolean): void
     {
         super.destroy(options);
 
@@ -541,7 +541,7 @@ export class Sprite extends Container
      * @param {object} [options] - See {@link PIXI.BaseTexture}'s constructor for options.
      * @return {PIXI.Sprite} The newly created sprite
      */
-    static from(source: SpriteSource, options: IBaseTextureOptions): Sprite
+    static from(source: SpriteSource, options?: IBaseTextureOptions): Sprite
     {
         const texture = (source instanceof Texture)
             ? source

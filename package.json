@@ -5,7 +5,7 @@
     "start": "npm run watch",
     "postinstall": "npm run bootstrap",
     "bootstrap": "lerna bootstrap --hoist --no-ci",
-    "clean:build": "rimraf \"{bundles,packages,packages/canvas,packages/filters}/*/dist\"",
+    "clean:build": "rimraf \"{bundles,packages,packages/canvas,packages/filters,out}/*/dist\"",
     "preclean": "npm run clean:build",
     "clean": "lerna clean",
     "pretest": "npm run lint && npm run build",
@@ -14,21 +14,21 @@
     "coverage": "npm run pretest && nyc floss --path=test && nyc report --reporter=html",
     "coverage:ci": "npm run pretest && nyc floss --path=test && nyc report --reporter=text-lcov > coverage.lcov",
     "docs": "mkdirp dist && webdoc -R README.md",
-    "lint": "eslint --ext .js --ext .ts test bundles packages tools --ignore-path .gitignore --max-warnings 0",
+    "lint": "eslint --ext .js --ext .ts test bundles packages tools scripts --ignore-path .gitignore --max-warnings 0",
     "lintfix": "npm run lint -- --fix",
     "prebuild": "npm run clean:build",
     "build": "npm run build:dev",
     "build:prod": "cross-env NODE_ENV=production rollup -c",
     "build:dev": "rollup -c",
-    "build:types": "rimraf out && tsc && api-extractor-lerna-monorepo && rimraf out",
+    "build:types": "rimraf out && tsc && api-extractor-lerna-monorepo && rimraf out && ts-node-script ./scripts/injectGlobalMixins.ts",
     "watch": "rollup -cw",
     "lerna": "lerna",
     "predist": "rimraf dist/*",
     "dist": "npm run build:types && npm run docs",
     "postdist": "copyfiles -f bundles/*/dist/browser/* dist && copyfiles -f \"packages/**/dist/browser/*\" dist/packages",
     "prerelease": "npm run clean:build && npm test",
-    "postversion": "npm run build:prod",
-    "release": "lerna publish --exact",
+    "postversion": "npm run build:prod && npm run build:types",
+    "release": "lerna publish --exact --force-publish",
     "webdoc": "webdoc"
   },
   "pre-commit": [
@@ -70,6 +70,7 @@
     "rollup-plugin-typescript": "^1.0.1",
     "sinon": "^7.3.2",
     "sinon-chai": "^3.3.0",
+    "ts-node": "^9.0.0",
     "typescript": "^3.9.5"
   }
 }
