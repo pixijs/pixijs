@@ -2,7 +2,7 @@ import { System } from '../System';
 import { RenderTexturePool } from '../renderTexture/RenderTexturePool';
 import { Quad } from '../utils/Quad';
 import { QuadUv } from '../utils/QuadUv';
-import { Rectangle, Matrix } from '@pixi/math';
+import { Rectangle, Matrix, Point } from '@pixi/math';
 import { UniformGroup } from '../shader/UniformGroup';
 import { DRAW_MODES, CLEAR_MODES } from '@pixi/constants';
 import { deprecation } from '@pixi/utils';
@@ -13,6 +13,8 @@ import type { IFilterTarget } from './IFilterTarget';
 import type { ISpriteMaskTarget } from './spriteMask/SpriteMaskFilter';
 import type { RenderTexture } from '../renderTexture/RenderTexture';
 import type { Renderer } from '../Renderer';
+
+const tempPoints = [new Point(), new Point(), new Point(), new Point()];
 
 /**
  * System plugin to the renderer to manage filters.
@@ -194,7 +196,44 @@ export class FilterSystem extends System
 
         state.target = target;
 
-        state.sourceFrame.copyFrom(target.filterArea || target.getBounds(true));
+        if (target.filterArea)
+        {
+            state.sourceFrame.copyFrom(target.filterArea);
+        }
+        else
+        {
+            state.sourceFrame.copyFrom(target.getBounds(true));
+
+            const transform = renderer.projection.transform;
+
+            if (transform)
+            {
+                const lt = tempPoints[0];
+                const lb = tempPoints[1];
+                const rt = tempPoints[2];
+                const rb = tempPoints[3];
+
+                lt.set(state.sourceFrame.left, state.sourceFrame.top);
+                lb.set(state.sourceFrame.left, state.sourceFrame.bottom);
+                rt.set(state.sourceFrame.right, state.sourceFrame.top);
+                rb.set(state.sourceFrame.right, state.sourceFrame.bottom);
+
+                transform.apply(lt, lt);
+                transform.apply(lb, lb);
+                transform.apply(rt, rt);
+                transform.apply(rb, rb);
+
+                const x0 = Math.min(lt.x, lb.x, rt.x, rb.x);
+                const y0 = Math.min(lt.y, lb.y, rt.y, rb.y);
+                const x1 = Math.max(lt.x, lb.x, rt.x, rb.x);
+                const y1 = Math.max(lt.y, lb.y, rt.y, rb.y);
+
+                state.sourceFrame.x = x0;
+                state.sourceFrame.y = y0;
+                state.sourceFrame.width = x1 - x0;
+                state.sourceFrame.height = y1 - y0;
+            }
+        }
 
         state.sourceFrame.pad(padding);
         if (autoFit)
@@ -232,6 +271,10 @@ export class FilterSystem extends System
         const filters = state.filters;
 
         this.activeState = state;
+
+        const transform = this.renderer.projection.transform;
+
+        this.renderer.projection.transform = null;
 
         const globalUniforms = this.globalUniforms.uniforms;
 
@@ -313,6 +356,8 @@ export class FilterSystem extends System
             this.returnFilterTexture(flip);
             this.returnFilterTexture(flop);
         }
+
+        this.renderer.projection.transform = transform;
 
         state.clear();
         this.statePool.push(state);

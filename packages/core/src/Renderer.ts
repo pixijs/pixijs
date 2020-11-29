@@ -379,7 +379,7 @@ export class Renderer extends AbstractRenderer
      * @param displayObject - The object to be rendered.
      * @param [renderTexture] - The render texture to render to.
      * @param [clear=true] - Should the canvas be cleared before the new render.
-     * @param [transform] - A transform to apply to the render texture before rendering.
+     * @param [transform] - A transform to apply to the object before rendering.
      * @param [skipUpdateTransform=false] - Should we skip the update transform pass?
      */
     render(displayObject: DisplayObject, renderTexture?: RenderTexture,
