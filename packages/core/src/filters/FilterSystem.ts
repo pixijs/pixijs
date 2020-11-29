@@ -12,6 +12,7 @@ import type { Filter } from './Filter';
 import type { IFilterTarget } from './IFilterTarget';
 import type { ISpriteMaskTarget } from './spriteMask/SpriteMaskFilter';
 import type { RenderTexture } from '../renderTexture/RenderTexture';
+import type { BaseRenderTexture } from '../renderTexture/BaseRenderTexture';
 import type { Renderer } from '../Renderer';
 
 /**
@@ -179,6 +180,15 @@ export class FilterSystem extends System
             autoFit = autoFit || filter.autoFit;
 
             legacy = legacy || filter.legacy;
+        }
+
+        if (renderer.renderTexture.current)
+        {
+            resolution *= (renderer.renderTexture.current.baseTexture as BaseRenderTexture).resolution;
+        }
+        else
+        {
+            resolution *= renderer.resolution;
         }
 
         if (filterStack.length === 1)
