@@ -11,7 +11,8 @@
         "noImplicitReturns": true,
         "strictNullChecks": false,
         "skipLibCheck": true,
-        "esModuleInterop": true,
+        "esModuleInterop": false,
+        "allowSyntheticDefaultImports": true,
         "moduleResolution": "node",
         "resolveJsonModule": true,
         "baseUrl": "./",
@@ -42,6 +43,9 @@
         "rollup.config.js"
     ],
     "ts-node": {
-        "files": true
+        "files": true,
+        "compilerOptions": {
+            "esModuleInterop": true
+        }
     }
 }
