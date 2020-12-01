@@ -2,7 +2,7 @@ import { System } from '../System';
 import { RenderTexturePool } from '../renderTexture/RenderTexturePool';
 import { Quad } from '../utils/Quad';
 import { QuadUv } from '../utils/QuadUv';
-import { Rectangle, Matrix } from '@pixi/math';
+import { Rectangle, Matrix, Point } from '@pixi/math';
 import { UniformGroup } from '../shader/UniformGroup';
 import { DRAW_MODES, CLEAR_MODES } from '@pixi/constants';
 import { deprecation } from '@pixi/utils';
@@ -13,6 +13,9 @@ import type { IFilterTarget } from './IFilterTarget';
 import type { ISpriteMaskTarget } from './spriteMask/SpriteMaskFilter';
 import type { RenderTexture } from '../renderTexture/RenderTexture';
 import type { Renderer } from '../Renderer';
+
+const tempPoints = [new Point(), new Point(), new Point(), new Point()];
+
 /**
  * System plugin to the renderer to manage the filters.
  *
@@ -142,7 +145,7 @@ export class FilterSystem extends System
 
         for (let i = 1; i < filters.length; i++)
         {
-            const filter =  filters[i];
+            const filter = filters[i];
 
             // lets use the lowest resolution..
             resolution = Math.min(resolution, filter.resolution);
@@ -172,6 +175,14 @@ export class FilterSystem extends System
         state.target = target;
 
         state.sourceFrame.copyFrom(target.filterArea || target.getBounds(true));
+
+        const transform = renderer.projection.transform;
+
+        if (transform)
+        {
+            // TODO: use Bounds.addFrameMatrix instead
+            this.transformAABB(transform, state.sourceFrame);
+        }
 
         state.sourceFrame.pad(padding);
         if (autoFit)
@@ -208,7 +219,9 @@ export class FilterSystem extends System
         const filterStack = this.defaultFilterStack;
         const state = filterStack.pop();
         const filters = state.filters;
+        const savedTransform = this.renderer.projection.transform;
 
+        this.renderer.projection.transform = null;
         this.activeState = state;
 
         const globalUniforms = this.globalUniforms.uniforms;
@@ -294,6 +307,7 @@ export class FilterSystem extends System
 
         state.clear();
         this.statePool.push(state);
+        this.renderer.projection.transform = savedTransform;
     }
 
     /**
@@ -469,5 +483,37 @@ export class FilterSystem extends System
     resize(): void
     {
         this.texturePool.setScreenSize(this.renderer.view);
+    }
+
+    /**
+     * @param {PIXI.Matrix} matrix - first param
+     * @param {PIXI.Rectangle} rect - second param
+     */
+    private transformAABB(matrix: Matrix, rect: Rectangle): void
+    {
+        const lt = tempPoints[0];
+        const lb = tempPoints[1];
+        const rt = tempPoints[2];
+        const rb = tempPoints[3];
+
+        lt.set(rect.left, rect.top);
+        lb.set(rect.left, rect.bottom);
+        rt.set(rect.right, rect.top);
+        rb.set(rect.right, rect.bottom);
+
+        matrix.apply(lt, lt);
+        matrix.apply(lb, lb);
+        matrix.apply(rt, rt);
+        matrix.apply(rb, rb);
+
+        const x0 = Math.min(lt.x, lb.x, rt.x, rb.x);
+        const y0 = Math.min(lt.y, lb.y, rt.y, rb.y);
+        const x1 = Math.max(lt.x, lb.x, rt.x, rb.x);
+        const y1 = Math.max(lt.y, lb.y, rt.y, rb.y);
+
+        rect.x = x0;
+        rect.y = y0;
+        rect.width = x1 - x0;
+        rect.height = y1 - y0;
     }
 }
