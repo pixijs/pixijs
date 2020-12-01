@@ -153,7 +153,7 @@ export class FilterSystem extends System
                 // new behavior: sum the padding
                 : padding + filter.padding;
             // only auto fit if all filters are autofit
-            autoFit = autoFit || filter.autoFit;
+            autoFit = autoFit && filter.autoFit;
 
             legacy = legacy || filter.legacy;
         }
