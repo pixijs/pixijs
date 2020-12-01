@@ -174,14 +174,21 @@ export class FilterSystem extends System
 
         state.target = target;
 
-        state.sourceFrame.copyFrom(target.filterArea || target.getBounds(true));
-
-        const transform = renderer.projection.transform;
-
-        if (transform)
+        if (target.filterArea)
         {
-            // TODO: use Bounds.addFrameMatrix instead
-            this.transformAABB(transform, state.sourceFrame);
+            state.sourceFrame.copyFrom(target.filterArea);
+        }
+        else
+        {
+            state.sourceFrame.copyFrom(target.getBounds(true));
+
+            const transform = renderer.projection.transform;
+
+            if (transform)
+            {
+                // TODO: use Bounds.addFrameMatrix instead
+                this.transformAABB(transform, state.sourceFrame);
+            }
         }
 
         state.sourceFrame.pad(padding);
