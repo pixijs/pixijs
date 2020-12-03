@@ -251,7 +251,7 @@ export class Text extends Sprite
                 //       https://github.com/microsoft/TypeScript/issues/2521
                 context.strokeStyle = style.stroke as string;
 
-                context.shadowColor = '0';
+                context.shadowColor = 'black';
                 context.shadowBlur = 0;
                 context.shadowOffsetX = 0;
                 context.shadowOffsetY = 0;
