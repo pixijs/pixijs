@@ -5,6 +5,7 @@ import type { Graphics } from '@pixi/graphics';
  *
  * _Note: Only available with **@pixi/graphics-extras**._
  *
+ * @instance
  * @method PIXI.Graphics#drawRegularPolygon
  * @param {number} x - X position
  * @param {number} y - Y position
