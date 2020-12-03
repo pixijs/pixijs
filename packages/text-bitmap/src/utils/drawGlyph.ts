@@ -69,7 +69,7 @@ export function drawGlyph(
     }
     else
     {
-        context.shadowColor = '0';
+        context.shadowColor = 'black';
         context.shadowBlur = 0;
         context.shadowOffsetX = 0;
         context.shadowOffsetY = 0;
