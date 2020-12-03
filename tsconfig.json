@@ -10,8 +10,6 @@
         "noUnusedParameters": true,
         "noImplicitReturns": true,
         "strictNullChecks": false,
-        "skipLibCheck": true,
-        "esModuleInterop": false,
         "allowSyntheticDefaultImports": true,
         "moduleResolution": "node",
         "resolveJsonModule": true,
@@ -27,6 +25,9 @@
             ],
             "pixi.js-legacy": [
                 "bundles/pixi.js-legacy/src"
+            ],
+            "mini-signals": [
+                "node_modules/resource-loader/typings/mini-signals.d.ts"
             ]
         },
         "outDir": "./out",
