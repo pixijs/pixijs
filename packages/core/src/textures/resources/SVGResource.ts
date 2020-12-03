@@ -17,12 +17,6 @@ export interface ISVGResourceOptions
  * @class
  * @extends PIXI.BaseImageResource
  * @memberof PIXI
- * @param {string} source - Base64 encoded SVG element or URL for SVG file.
- * @param {object} [options] - Options to use
- * @param {number} [options.scale=1] - Scale to apply to SVG. Overridden by...
- * @param {number} [options.width] - Rasterize SVG this wide. Aspect ratio preserved if height not specified.
- * @param {number} [options.height] - Rasterize SVG this high. Aspect ratio preserved if width not specified.
- * @param {boolean} [options.autoLoad=true] - Start loading right away.
  */
 export class SVGResource extends BaseImageResource
 {
@@ -34,6 +28,14 @@ export class SVGResource extends BaseImageResource
     private _load: Promise<SVGResource>;
     private _crossorigin?: boolean|string;
 
+    /**
+     * @param {string} source - Base64 encoded SVG element or URL for SVG file.
+     * @param {object} [options] - Options to use
+     * @param {number} [options.scale=1] - Scale to apply to SVG. Overridden by...
+     * @param {number} [options.width] - Rasterize SVG this wide. Aspect ratio preserved if height not specified.
+     * @param {number} [options.height] - Rasterize SVG this high. Aspect ratio preserved if width not specified.
+     * @param {boolean} [options.autoLoad=true] - Start loading right away.
+     */
     constructor(sourceBase64: string, options?: ISVGResourceOptions)
     {
         options = options || {};

@@ -51,8 +51,6 @@ import type { Resource } from 'resource-loader';
  *
  * @class Loader
  * @memberof PIXI
- * @param {string} [baseUrl=''] - The base url for all resources loaded by this loader.
- * @param {number} [concurrency=10] - The number of resources to load concurrently.
  */
 export class Loader extends ResourceLoader
 {
@@ -68,6 +66,10 @@ export class Loader extends ResourceLoader
     private static _shared: Loader;
     private _protected: boolean;
 
+    /**
+     * @param {string} [baseUrl=''] - The base url for all resources loaded by this loader.
+     * @param {number} [concurrency=10] - The number of resources to load concurrently.
+     */
     constructor(baseUrl?: string, concurrency?: number)
     {
         super(baseUrl, concurrency);

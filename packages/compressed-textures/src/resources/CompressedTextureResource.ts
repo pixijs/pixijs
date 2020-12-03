@@ -9,6 +9,7 @@ import type { INTERNAL_FORMATS } from '../const';
  */
 // Used in PIXI.KTXLoader
 export type CompressedLevelBuffer = {
+    levelID: number,
     levelWidth: number,
     levelHeight: number,
     levelBuffer: Uint8Array
@@ -153,9 +154,9 @@ export class CompressedTextureResource extends BlobResource
 
         for (let i = 0, j = this.levels; i < j; i++)
         {
-            const { levelWidth, levelHeight, levelBuffer } = this._levelBuffers[i];
+            const { levelID, levelWidth, levelHeight, levelBuffer } = this._levelBuffers[i];
 
-            gl.compressedTexImage2D(gl.TEXTURE_2D, 0, this.format, levelWidth, levelHeight, 0, levelBuffer);
+            gl.compressedTexImage2D(gl.TEXTURE_2D, levelID, this.format, levelWidth, levelHeight, 0, levelBuffer);
         }
 
         return true;
@@ -247,6 +248,7 @@ export class CompressedTextureResource extends BlobResource
         for (let i = 0; i < levels; i++)
         {
             buffers[i] = {
+                levelID: i,
                 levelWidth: levels > 1 ? levelWidth : alignedLevelWidth,
                 levelHeight: levels > 1 ? levelHeight : alignedLevelHeight,
                 levelBuffer: new Uint8Array(buffer.buffer, offset, levelSize)
