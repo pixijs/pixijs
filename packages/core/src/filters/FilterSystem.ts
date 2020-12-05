@@ -181,20 +181,18 @@ export class FilterSystem extends System
         else
         {
             state.sourceFrame.copyFrom(target.getBounds(true));
-
-            const transform = renderer.projection.transform;
-
-            if (transform)
-            {
-                // TODO: use Bounds.addFrameMatrix instead
-                this.transformAABB(transform, state.sourceFrame);
-            }
         }
 
         state.sourceFrame.pad(padding);
+
         if (autoFit)
         {
-            state.sourceFrame.fit(this.renderer.renderTexture.sourceFrame);
+            const sourceFrameProjected = this.renderer.renderTexture.sourceFrame.clone();
+
+            // Project source frame into world space (if projection is applied)
+            this.transformAABB(renderer.projection?.transform?.clone().invert() || Matrix.IDENTITY, sourceFrameProjected);
+
+            state.sourceFrame.fit(sourceFrameProjected);
         }
 
         // round to whole number based on resolution
@@ -213,6 +211,8 @@ export class FilterSystem extends System
 
         state.renderTexture.filterFrame = state.sourceFrame;
 
+        state.transform.copyFrom(renderer.projection.transform || Matrix.IDENTITY);
+        renderer.projection.transform = null;
         renderer.renderTexture.bind(state.renderTexture, state.sourceFrame, destinationFrame);
         renderer.renderTexture.clear();
     }
@@ -226,9 +226,7 @@ export class FilterSystem extends System
         const filterStack = this.defaultFilterStack;
         const state = filterStack.pop();
         const filters = state.filters;
-        const savedTransform = this.renderer.projection.transform;
 
-        this.renderer.projection.transform = null;
         this.activeState = state;
 
         const globalUniforms = this.globalUniforms.uniforms;
@@ -314,7 +312,6 @@ export class FilterSystem extends System
 
         state.clear();
         this.statePool.push(state);
-        this.renderer.projection.transform = savedTransform;
     }
 
     /**
@@ -324,6 +321,17 @@ export class FilterSystem extends System
      */
     bindAndClear(filterTexture: RenderTexture, clearMode = CLEAR_MODES.CLEAR): void
     {
+        if (filterTexture === this.defaultFilterStack[this.defaultFilterStack.length - 1].renderTexture)
+        {
+            // Restore projection transform if rendering into the output texture.
+            this.renderer.projection.transform = this.activeState.transform;
+        }
+        else
+        {
+            // Prevent projection within filtering pipeline.
+            this.renderer.projection.transform = null;
+        }
+
         if (filterTexture && filterTexture.filterFrame)
         {
             const destinationFrame = this.tempRect;
@@ -412,6 +420,8 @@ export class FilterSystem extends System
         mappedMatrix.prepend(worldTransform);
         mappedMatrix.scale(1.0 / orig.width, 1.0 / orig.height);
         mappedMatrix.translate(sprite.anchor.x, sprite.anchor.y);
+
+        (window as any).mappedMatrix = mappedMatrix;
 
         return mappedMatrix;
     }

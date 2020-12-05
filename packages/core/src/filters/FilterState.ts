@@ -1,4 +1,4 @@
-import { Rectangle } from '@pixi/math';
+import { Matrix, Rectangle } from '@pixi/math';
 
 import type { Filter } from './Filter';
 import type { IFilterTarget } from './IFilterTarget';
@@ -19,6 +19,7 @@ export class FilterState
     sourceFrame: Rectangle;
     destinationFrame: Rectangle;
     filters: Array<Filter>;
+    transform: Matrix;
 
     constructor()
     {
@@ -71,6 +72,12 @@ export class FilterState
          * @private
          */
         this.filters = [];
+
+        /**
+         * Projection system transform saved.
+         * @private
+         */
+        this.transform = new Matrix();
     }
 
     /**
