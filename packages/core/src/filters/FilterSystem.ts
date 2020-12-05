@@ -173,15 +173,7 @@ export class FilterSystem extends System
         state.legacy = legacy;
 
         state.target = target;
-
-        if (target.filterArea)
-        {
-            state.sourceFrame.copyFrom(target.filterArea);
-        }
-        else
-        {
-            state.sourceFrame.copyFrom(target.getBounds(true));
-        }
+        state.sourceFrame.copyFrom(target.filterArea || target.getBounds(true));
 
         state.sourceFrame.pad(padding);
 
@@ -420,8 +412,6 @@ export class FilterSystem extends System
         mappedMatrix.prepend(worldTransform);
         mappedMatrix.scale(1.0 / orig.width, 1.0 / orig.height);
         mappedMatrix.translate(sprite.anchor.x, sprite.anchor.y);
-
-        (window as any).mappedMatrix = mappedMatrix;
 
         return mappedMatrix;
     }
