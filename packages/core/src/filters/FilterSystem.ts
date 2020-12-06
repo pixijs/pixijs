@@ -187,8 +187,14 @@ export class FilterSystem extends System
             state.sourceFrame.fit(sourceFrameProjected);
         }
 
-        // round to whole number based on resolution
-        state.sourceFrame.ceil(resolution);
+        // Round sourceFrame in screen space based on render-texture.
+        this.roundFrame(
+            state.sourceFrame,
+            renderer.renderTexture.current ? renderer.renderTexture.current.resolution : renderer.resolution,
+            renderer.renderTexture.sourceFrame,
+            renderer.renderTexture.destinationFrame,
+            renderer.projection.transform,
+        );
 
         state.renderTexture = this.getOptimalFilterTexture(state.sourceFrame.width, state.sourceFrame.height, resolution);
         state.filters = filters;
@@ -202,6 +208,8 @@ export class FilterSystem extends System
         destinationFrame.height = state.sourceFrame.height;
 
         state.renderTexture.filterFrame = state.sourceFrame;
+        state.bindingSourceFrame.copyFrom(renderer.renderTexture.sourceFrame);
+        state.bindingDestinationFrame.copyFrom(renderer.renderTexture.destinationFrame);
 
         state.transform.copyFrom(renderer.projection.transform || Matrix.IDENTITY);
         renderer.projection.transform = null;
@@ -211,7 +219,6 @@ export class FilterSystem extends System
 
     /**
      * Pops off the filter and applies it.
-     *
      */
     pop(): void
     {
@@ -315,7 +322,7 @@ export class FilterSystem extends System
     {
         if (filterTexture === this.defaultFilterStack[this.defaultFilterStack.length - 1].renderTexture)
         {
-            // Restore projection transform if rendering into the output texture.
+            // Restore projection transform if rendering into the output render-target.
             this.renderer.projection.transform = this.activeState.transform;
         }
         else
@@ -333,9 +340,18 @@ export class FilterSystem extends System
 
             this.renderer.renderTexture.bind(filterTexture, filterTexture.filterFrame, destinationFrame);
         }
-        else
+        else if (filterTexture !== this.defaultFilterStack[this.defaultFilterStack.length - 1].renderTexture)
         {
             this.renderer.renderTexture.bind(filterTexture);
+        }
+        else
+        {
+            // Restore binding for output render-target.
+            this.renderer.renderTexture.bind(
+                filterTexture,
+                this.activeState.bindingSourceFrame,
+                this.activeState.bindingDestinationFrame
+            );
         }
 
         // TODO: remove in next major version
@@ -522,5 +538,45 @@ export class FilterSystem extends System
         rect.y = y0;
         rect.width = x1 - x0;
         rect.height = y1 - y0;
+    }
+
+    private roundFrame(
+        frame: Rectangle,
+        resolution: number,
+        bindingSourceFrame: Rectangle,
+        bindingDestinationFrame: Rectangle,
+        transform?: Matrix
+    )
+    {
+        if (transform)
+        {
+            const { a, b, c, d } = transform;
+
+            // Skip if skew/rotation present in matrix, except for multiple of 90° rotation. If rotation
+            // is a multiple of 90°, then either pair of (b,c) or (a,d) will be (0,0).
+            if ((b !== 0 || c !== 0) && (a !== 0 || d !== 0))
+            {
+                return;
+            }
+        }
+
+        transform = transform ? transform.clone() : new Matrix();
+
+        // Get forward transform from world space to screen space
+        transform
+            .translate(-bindingSourceFrame.x, -bindingSourceFrame.y)
+            .scale(
+                bindingDestinationFrame.width / bindingSourceFrame.width,
+                bindingDestinationFrame.height / bindingSourceFrame.height)
+            .translate(bindingDestinationFrame.x, bindingDestinationFrame.y);
+
+        // Convert frame to screen space
+        this.transformAABB(transform, frame);
+
+        // Round frame in screen space
+        frame.ceil(resolution);
+
+        // Project back into world space.
+        this.transformAABB(transform.invert(), frame);
     }
 }

@@ -18,6 +18,8 @@ export class FilterState
     resolution: number;
     sourceFrame: Rectangle;
     destinationFrame: Rectangle;
+    bindingSourceFrame: Rectangle;
+    bindingDestinationFrame: Rectangle;
     filters: Array<Filter>;
     transform: Matrix;
 
@@ -65,6 +67,18 @@ export class FilterState
          * @private
          */
         this.destinationFrame = new Rectangle();
+
+        /**
+         * Original render-target source frame
+         * @private
+         */
+        this.bindingSourceFrame = new Rectangle();
+
+        /**
+         * Original render-target destination frame
+         * @private
+         */
+        this.bindingDestinationFrame = new Rectangle();
 
         /**
          * Collection of filters
