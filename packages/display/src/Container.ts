@@ -127,7 +127,7 @@ export class Container extends DisplayObject
      *
      * @protected
      */
-    protected onChildrenChange(_length: number): void
+    protected onChildrenChange(_length?: number): void
     {
         /* empty */
     }

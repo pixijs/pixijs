@@ -54,6 +54,7 @@ async function start(): Promise<void>
 
     const packages = await getSortedPackages();
     const legacyPackages = Object.keys(packages.find((pkg) => pkg.name === 'pixi.js-legacy').dependencies);
+    const pixiPackages = Object.keys(packages.find((pkg) => pkg.name === 'pixi.js').dependencies);
 
     packages.forEach((pkg) =>
     {
@@ -79,11 +80,11 @@ async function start(): Promise<void>
             const pixiTypeData = `/// <reference types="${pkg.name}" />\n`;
             const packageTypeData = `/// <reference path="./global.d.ts" />\n`;
 
-            if (!legacyPackages.includes(pkg.name))
+            if (pixiPackages.includes(pkg.name))
             {
                 pixiGlobalMixins += pixiTypeData;
             }
-            else
+            else if (legacyPackages.includes(pkg.name))
             {
                 pixiLegacyGlobalMixins += pixiTypeData;
             }

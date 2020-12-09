@@ -10,8 +10,7 @@
         "noUnusedParameters": true,
         "noImplicitReturns": true,
         "strictNullChecks": false,
-        "skipLibCheck": true,
-        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
         "moduleResolution": "node",
         "resolveJsonModule": true,
         "baseUrl": "./",
@@ -26,6 +25,9 @@
             ],
             "pixi.js-legacy": [
                 "bundles/pixi.js-legacy/src"
+            ],
+            "mini-signals": [
+                "node_modules/resource-loader/typings/mini-signals.d.ts"
             ]
         },
         "outDir": "./out",
@@ -42,6 +44,9 @@
         "rollup.config.js"
     ],
     "ts-node": {
-        "files": true
+        "files": true,
+        "compilerOptions": {
+            "esModuleInterop": true
+        }
     }
 }
