@@ -26,14 +26,12 @@
     "*.d.ts"
   ],
   "dependencies": {
+    "@types/earcut": "^2.1.0",
     "@pixi/constants": "5.4.0-rc.2",
     "@pixi/settings": "5.4.0-rc.2",
     "css-color-names": "^1.0.1",
     "earcut": "^2.2.2",
     "eventemitter3": "^3.1.0",
     "url": "^0.11.0"
-  },
-  "devDependencies": {
-    "@types/earcut": "^2.1.0"
   }
 }
