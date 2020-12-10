@@ -83,7 +83,8 @@ export { default as earcut } from 'earcut';
  * @name url
  * @member {object}
  */
-export { default as url } from 'url';
+import * as url from 'url';
+export { url };
 
 import './settings';
 
