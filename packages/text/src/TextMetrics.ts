@@ -644,14 +644,13 @@ export class TextMetrics
             fontSize: 0,
         };
 
+        const canvas = TextMetrics._canvas;
         const context = TextMetrics._context;
 
         context.font = font;
-        const metricsString = TextMetrics.METRICS_STRING + TextMetrics.BASELINE_SYMBOL;
 
-        const textMetrics = context.measureText(metricsString);
-        const canvas = TextMetrics._canvas;
-        const width = Math.ceil(textMetrics.width);
+        const metricsString = TextMetrics.METRICS_STRING + TextMetrics.BASELINE_SYMBOL;
+        const width = Math.ceil(context.measureText(metricsString).width);
         let baseline = Math.ceil(context.measureText(TextMetrics.BASELINE_SYMBOL).width);
         const height = TextMetrics.HEIGHT_MULTIPLIER * baseline;
 
