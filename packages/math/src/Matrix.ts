@@ -29,8 +29,8 @@ export class Matrix
 
     /**
      * @param {number} [a=1] - x scale
-     * @param {number} [b=0] - x skew
-     * @param {number} [c=0] - y skew
+     * @param {number} [b=0] - y skew
+     * @param {number} [c=0] - x skew
      * @param {number} [d=1] - y scale
      * @param {number} [tx=0] - x translation
      * @param {number} [ty=0] - y translation
