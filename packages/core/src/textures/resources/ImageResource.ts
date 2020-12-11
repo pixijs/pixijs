@@ -102,12 +102,6 @@ export class ImageResource extends BaseImageResource
          */
         this.alphaMode = typeof options.alphaMode === 'number' ? options.alphaMode : null;
 
-        if ((options as any).premultiplyAlpha !== undefined)
-        {
-            // triggers deprecation
-            (this as any).premultiplyAlpha = (options as any).premultiplyAlpha;
-        }
-
         /**
          * The ImageBitmap element created for HTMLImageElement
          * @member {ImageBitmap}

@@ -1,15 +1,13 @@
 import { ObservablePoint, Point } from '@pixi/math';
 import { settings } from '@pixi/settings';
 import { Mesh, MeshGeometry, MeshMaterial } from '@pixi/mesh';
-import { removeItems, deprecation } from '@pixi/utils';
+import { removeItems } from '@pixi/utils';
 import { BitmapFont } from './BitmapFont';
 
-import type { Dict } from '@pixi/utils';
 import type { Rectangle } from '@pixi/math';
 import { Texture } from '@pixi/core';
 import type { IBitmapTextStyle } from './BitmapTextStyle';
 import type { TextStyleAlign } from '@pixi/text';
-import type { BitmapFontData } from './BitmapFontData';
 import { Container } from '@pixi/display';
 import type { IDestroyOptions } from '@pixi/display';
 
@@ -99,15 +97,6 @@ export class BitmapText extends Container
     constructor(text: string, style: Partial<IBitmapTextStyle> = {})
     {
         super();
-
-        if (style.font)
-        {
-            // #if _DEBUG
-            deprecation('5.3.0', 'PIXI.BitmapText constructor style.font property is deprecated.');
-            // #endif
-
-            this._upgradeStyle(style);
-        }
 
         // Apply the defaults
         const { align, tint, maxWidth, letterSpacing, fontName, fontSize } = Object.assign(
@@ -883,36 +872,6 @@ export class BitmapText extends Container
         return this._textHeight;
     }
 
-    /**
-     * For backward compatibility, convert old style.font constructor param to fontName & fontSize properties.
-     *
-     * @private
-     * @deprecated since 5.3.0
-     */
-    _upgradeStyle(style: Partial<IBitmapTextStyle>): void
-    {
-        if (typeof style.font === 'string')
-        {
-            const valueSplit = style.font.split(' ');
-
-            style.fontName = valueSplit.length === 1
-                ? valueSplit[0]
-                : valueSplit.slice(1).join(' ');
-
-            if (valueSplit.length >= 2)
-            {
-                style.fontSize = parseInt(valueSplit[0], 10);
-            }
-        }
-        else
-        {
-            style.fontName = style.font.name;
-            style.fontSize = typeof style.font.size === 'number'
-                ? style.font.size
-                : parseInt(style.font.size, 10);
-        }
-    }
-
     destroy(options?: boolean | IDestroyOptions): void
     {
         const { _textureCache } = this;
@@ -928,39 +887,5 @@ export class BitmapText extends Container
         this._textureCache = null;
 
         super.destroy(options);
-    }
-
-    /**
-     * Register a bitmap font with data and a texture.
-     *
-     * @deprecated since 5.3.0
-     * @see PIXI.BitmapFont.install
-     * @static
-     */
-    static registerFont(data: string|XMLDocument|BitmapFontData, textures: Texture|Texture[]|Dict<Texture>): BitmapFont
-    {
-        // #if _DEBUG
-        deprecation('5.3.0', 'PIXI.BitmapText.registerFont is deprecated, use PIXI.BitmapFont.install');
-        // #endif
-
-        return BitmapFont.install(data, textures);
-    }
-
-    /**
-     * Get the list of installed fonts.
-     *
-     * @see PIXI.BitmapFont.available
-     * @deprecated since 5.3.0
-     * @static
-     * @readonly
-     * @member {Object.<string, PIXI.BitmapFont>}
-     */
-    static get fonts(): Dict<BitmapFont>
-    {
-        // #if _DEBUG
-        deprecation('5.3.0', 'PIXI.BitmapText.fonts is deprecated, use PIXI.BitmapFont.available');
-        // #endif
-
-        return BitmapFont.available;
     }
 }
