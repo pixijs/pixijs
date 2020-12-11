@@ -1,6 +1,6 @@
 {
   "name": "@pixi/app",
-  "version": "5.4.0-rc.2",
+  "version": "5.4.0-rc.3",
   "main": "dist/cjs/app.js",
   "module": "dist/esm/app.js",
   "bundle": "dist/browser/app.js",
@@ -25,11 +25,11 @@
     "*.d.ts"
   ],
   "dependencies": {
-    "@pixi/core": "5.4.0-rc.2",
-    "@pixi/display": "5.4.0-rc.2"
+    "@pixi/core": "5.4.0-rc.3",
+    "@pixi/display": "5.4.0-rc.3"
   },
   "devDependencies": {
-    "@pixi/canvas-renderer": "5.4.0-rc.2",
-    "@pixi/utils": "5.4.0-rc.2"
+    "@pixi/canvas-renderer": "5.4.0-rc.3",
+    "@pixi/utils": "5.4.0-rc.3"
   }
 }
