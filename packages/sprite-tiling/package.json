@@ -1,6 +1,6 @@
 {
   "name": "@pixi/sprite-tiling",
-  "version": "5.2.4",
+  "version": "5.2.5",
   "main": "lib/sprite-tiling.js",
   "module": "lib/sprite-tiling.es.js",
   "bundle": "dist/sprite-tiling.js",
@@ -24,11 +24,11 @@
     "dist"
   ],
   "dependencies": {
-    "@pixi/constants": "5.2.4",
-    "@pixi/core": "5.2.4",
-    "@pixi/display": "5.2.4",
-    "@pixi/math": "5.2.4",
-    "@pixi/sprite": "5.2.4",
-    "@pixi/utils": "5.2.4"
+    "@pixi/constants": "5.2.5",
+    "@pixi/core": "5.2.5",
+    "@pixi/display": "5.2.5",
+    "@pixi/math": "5.2.5",
+    "@pixi/sprite": "5.2.5",
+    "@pixi/utils": "5.2.5"
   }
 }

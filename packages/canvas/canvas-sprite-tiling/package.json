@@ -1,6 +1,6 @@
 {
   "name": "@pixi/canvas-sprite-tiling",
-  "version": "5.2.4",
+  "version": "5.2.5",
   "main": "lib/canvas-sprite-tiling.js",
   "module": "lib/canvas-sprite-tiling.es.js",
   "bundle": "dist/canvas-sprite-tiling.js",
@@ -25,9 +25,9 @@
     "dist"
   ],
   "dependencies": {
-    "@pixi/canvas-renderer": "5.2.4",
-    "@pixi/canvas-sprite": "5.2.4",
-    "@pixi/sprite-tiling": "5.2.4",
-    "@pixi/utils": "5.2.4"
+    "@pixi/canvas-renderer": "5.2.5",
+    "@pixi/canvas-sprite": "5.2.5",
+    "@pixi/sprite-tiling": "5.2.5",
+    "@pixi/utils": "5.2.5"
   }
 }
