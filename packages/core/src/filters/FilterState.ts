@@ -88,10 +88,11 @@ export class FilterState
         this.filters = [];
 
         /**
-         * Projection system transform saved.
+         * Projection system transform saved by link.
+         * @member {PIXI.Matrix}
          * @private
          */
-        this.transform = new Matrix();
+        this.transform = null;
     }
 
     /**

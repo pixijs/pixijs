@@ -211,7 +211,7 @@ export class FilterSystem extends System
         state.bindingSourceFrame.copyFrom(renderer.renderTexture.sourceFrame);
         state.bindingDestinationFrame.copyFrom(renderer.renderTexture.destinationFrame);
 
-        state.transform.copyFrom(renderer.projection.transform || Matrix.IDENTITY);
+        state.transform = renderer.projection.transform;
         renderer.projection.transform = null;
         renderer.renderTexture.bind(state.renderTexture, state.sourceFrame, destinationFrame);
         renderer.renderTexture.clear();
