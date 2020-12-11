@@ -1,6 +1,6 @@
 {
   "name": "@pixi/filter-color-matrix",
-  "version": "5.4.0-rc.2",
+  "version": "5.4.0-rc.3",
   "main": "dist/cjs/filter-color-matrix.js",
   "module": "dist/esm/filter-color-matrix.js",
   "bundle": "dist/browser/filter-color-matrix.js",
@@ -26,6 +26,6 @@
     "*.d.ts"
   ],
   "dependencies": {
-    "@pixi/core": "5.4.0-rc.2"
+    "@pixi/core": "5.4.0-rc.3"
   }
 }

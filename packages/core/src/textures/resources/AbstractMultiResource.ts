@@ -23,7 +23,7 @@ export abstract class AbstractMultiResource extends Resource
 
     /**
      * @param {number} length
-     * @param {object} [options] Options to for Resource constructor
+     * @param {object} [options] - Options to for Resource constructor
      * @param {number} [options.width] - Width of the resource
      * @param {number} [options.height] - Height of the resource
      */

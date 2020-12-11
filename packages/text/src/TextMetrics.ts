@@ -897,7 +897,7 @@ TextMetrics._breakingSpaces = [
  * A number, or a string containing a number.
  *
  * @memberof PIXI
- * @typedef IFontMetrics
+ * @typedef {object} IFontMetrics
  * @property {number} ascent - Font ascent
  * @property {number} descent - Font descent
  * @property {number} fontSize - Font size

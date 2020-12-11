@@ -202,7 +202,7 @@ export interface ILoaderPlugin {
 
 /**
  * @memberof PIXI.Loader
- * @typedef ILoaderSignal
+ * @typedef {object} ILoaderSignal
  * @property {ISignalCallback} add - Register callback
  * @property {ISignalCallback} once - Register oneshot callback
  * @property {ISignalDetach} detach - Detach specific callback by ID

@@ -25,10 +25,10 @@ export class BlurFilterPass extends Filter
      * @param {boolean} horizontal - Do pass along the x-axis (`true`) or y-axis (`false`).
      * @param {number} [strength=8] - The strength of the blur filter.
      * @param {number} [quality=4] - The quality of the blur filter.
-     * @param {number} [resolution=1] - The resolution of the blur filter.
+     * @param {number} [resolution=PIXI.settings.FILTER_RESOLUTION] - The resolution of the blur filter.
      * @param {number} [kernelSize=5] - The kernelSize of the blur filter.Options: 5, 7, 9, 11, 13, 15.
      */
-    constructor(horizontal: boolean, strength = 8, quality = 4, resolution = settings.RESOLUTION, kernelSize = 5)
+    constructor(horizontal: boolean, strength = 8, quality = 4, resolution = settings.FILTER_RESOLUTION, kernelSize = 5)
     {
         const vertSrc = generateBlurVertSource(kernelSize, horizontal);
         const fragSrc = generateBlurFragSource(kernelSize);
