@@ -34,6 +34,7 @@ export class TextMetrics
     public static METRICS_STRING: string;
     public static BASELINE_SYMBOL: string;
     public static BASELINE_MULTIPLIER: number;
+    public static HEIGHT_MULTIPLIER: number;
 
     // TODO: These should be protected but they're initialized outside of the class.
     public static _canvas: HTMLCanvasElement|OffscreenCanvas;
@@ -651,7 +652,7 @@ export class TextMetrics
         const metricsString = TextMetrics.METRICS_STRING + TextMetrics.BASELINE_SYMBOL;
         const width = Math.ceil(context.measureText(metricsString).width);
         let baseline = Math.ceil(context.measureText(TextMetrics.BASELINE_SYMBOL).width);
-        const height = 2 * baseline;
+        const height = TextMetrics.HEIGHT_MULTIPLIER * baseline;
 
         baseline = baseline * TextMetrics.BASELINE_MULTIPLIER | 0;
 
@@ -844,6 +845,17 @@ TextMetrics.BASELINE_SYMBOL = 'M';
  * @default 1.4
  */
 TextMetrics.BASELINE_MULTIPLIER = 1.4;
+
+/**
+ * Height multiplier for setting height of canvas to calculate font metrics.
+ *
+ * @static
+ * @memberof PIXI.TextMetrics
+ * @name HEIGHT_MULTIPLIER
+ * @type {number}
+ * @default 2.00
+ */
+TextMetrics.HEIGHT_MULTIPLIER = 2.0;
 
 /**
  * Cache of new line chars.
