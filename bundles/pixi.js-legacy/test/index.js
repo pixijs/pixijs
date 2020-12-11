@@ -22,13 +22,7 @@ describe('PIXI', function ()
     {
         expect(window.PIXI).to.not.be.undefined;
         expect(PIXI).to.not.be.undefined;
-        expect(PIXI.interaction).to.not.be.undefined;
         expect(PIXI.settings).to.not.be.undefined;
         expect(PIXI.utils).to.not.be.undefined;
-    });
-
-    it('should contain deprecations on window, not import', function ()
-    {
-        expect(PIXI.extras).to.not.be.undefined;
     });
 });
