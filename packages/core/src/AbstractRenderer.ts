@@ -185,12 +185,12 @@ export abstract class AbstractRenderer extends EventEmitter
         this._backgroundColor = 0x000000;
 
         /**
-         * The background color as an [R, G, B] array.
+         * The background color as an [R, G, B, A] array.
          *
          * @member {number[]}
          * @protected
          */
-        this._backgroundColorRgba = [0, 0, 0, 0];
+        this._backgroundColorRgba = [0, 0, 0, 1];
 
         /**
          * The background color as a string.

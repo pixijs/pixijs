@@ -154,7 +154,7 @@ export const settings: ISettings = {
         view: null,
         antialias: false,
         autoDensity: false,
-        transparent: false,
+        transparent: true,
         backgroundColor: 0x000000,
         clearBeforeRender: true,
         preserveDrawingBuffer: false,
