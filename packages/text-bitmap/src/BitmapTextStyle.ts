@@ -1,7 +1,6 @@
 import type { TextStyleAlign } from '@pixi/text';
 
 export interface IBitmapTextStyle {
-    font: string | IBitmapTextFontDescriptor;// @deprecated
     fontName: string;
     fontSize: number;
     tint: number;

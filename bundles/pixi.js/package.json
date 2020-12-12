@@ -15,7 +15,6 @@
   "bundle": "dist/browser/pixi.js",
   "bundleModule": "dist/browser/pixi.mjs",
   "bundleOutput": {
-    "footer": "PIXI.useDeprecated();",
     "name": "PIXI"
   },
   "homepage": "http://www.pixijs.com/",

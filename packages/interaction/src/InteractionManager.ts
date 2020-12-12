@@ -11,8 +11,7 @@ import type { AbstractRenderer } from '@pixi/core';
 import type { Point, IPointData } from '@pixi/math';
 import type { Dict } from '@pixi/utils';
 
-// Mix interactiveTarget into DisplayObject.prototype,
-// after deprecation has been handled
+// Mix interactiveTarget into DisplayObject.prototype
 DisplayObject.mixin(interactiveTarget);
 
 const MOUSE_POINTER_ID = 1;

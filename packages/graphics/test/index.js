@@ -148,7 +148,7 @@ describe('PIXI.Graphics', function ()
 
             graphics.beginTextureFill({ texture: validTex1 });
             graphics.drawRect(0, 0, 10, 10);
-            graphics.beginTextureFill(validTex2); // old 5.0-5.1 style
+            graphics.beginTextureFill({ texture: validTex2 });
             graphics.drawRect(20, 20, 10, 10);
 
             graphics.geometry.updateBatches();

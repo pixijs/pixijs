@@ -1,7 +1,6 @@
 import { Texture, TextureMatrix } from '@pixi/core';
 import { Point, Rectangle, Transform  } from '@pixi/math';
 import { Sprite } from '@pixi/sprite';
-import { deprecation } from '@pixi/utils';
 import type { Renderer, IBaseTextureOptions, TextureSource } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
 import type { IPoint, IPointData, ISize, ObservablePoint } from '@pixi/math';
@@ -268,16 +267,6 @@ export class TilingSprite extends Sprite
      */
     static from(source: TextureSource, options: ISize & IBaseTextureOptions): TilingSprite
     {
-        // Deprecated
-        if (typeof options === 'number')
-        {
-            // #if _DEBUG
-            deprecation('5.3.0', 'TilingSprite.from use options instead of width and height args');
-            // #endif
-            // eslint-disable-next-line prefer-rest-params
-            options = { width: options, height: arguments[2] } as ISize;
-        }
-
         return new TilingSprite(
             Texture.from(source, options),
             options.width,
