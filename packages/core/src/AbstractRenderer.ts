@@ -1,4 +1,4 @@
-import { hex2string, hex2rgb, deprecation, EventEmitter } from '@pixi/utils';
+import { hex2string, hex2rgb, EventEmitter } from '@pixi/utils';
 import { Matrix, Rectangle } from '@pixi/math';
 import { RENDERER_TYPE } from '@pixi/constants';
 import { settings } from '@pixi/settings';
@@ -25,12 +25,6 @@ export interface IRendererOptions extends GlobalMixins.IRendererOptions
     backgroundColor?: number;
     powerPreference?: WebGLPowerPreference;
     context?: IRenderingContext;
-}
-
-interface IRendererOptionsLegacy extends IRendererOptions
-{
-    autoResize?: boolean;
-    roundPixels?: boolean;
 }
 
 export interface IRendererPlugins
@@ -91,15 +85,6 @@ export abstract class AbstractRenderer extends EventEmitter
         // Add the default render options
         options = Object.assign({}, settings.RENDER_OPTIONS, options);
 
-        // Deprecation notice for renderer roundPixels option
-        if ((options as IRendererOptionsLegacy).roundPixels)
-        {
-            settings.ROUND_PIXELS = (options as IRendererOptionsLegacy).roundPixels;
-            // #if _DEBUG
-            deprecation('5.0.0', 'Renderer roundPixels option is deprecated, please use PIXI.settings.ROUND_PIXELS', 2);
-            // #endif
-        }
-
         /**
          * The supplied constructor options.
          *
@@ -153,8 +138,7 @@ export abstract class AbstractRenderer extends EventEmitter
          *
          * @member {boolean}
          */
-        this.autoDensity = options.autoDensity || (options as IRendererOptionsLegacy).autoResize || false;
-        // autoResize is deprecated, provides fallback support
+        this.autoDensity = !!options.autoDensity;
 
         /**
          * The value of the preserveDrawingBuffer flag affects whether or not the contents of

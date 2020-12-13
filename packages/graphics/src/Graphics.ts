@@ -12,7 +12,7 @@ import {
 
 import { Texture, UniformGroup, State, Renderer, BatchDrawCall } from '@pixi/core';
 import { BezierUtils, QuadraticUtils, ArcUtils, Star } from './utils';
-import { hex2rgb, deprecation } from '@pixi/utils';
+import { hex2rgb } from '@pixi/utils';
 import { GraphicsGeometry } from './GraphicsGeometry';
 import { FillStyle } from './styles/FillStyle';
 import { LineStyle } from './styles/LineStyle';
@@ -397,23 +397,6 @@ export class Graphics extends Container
      */
     public lineTextureStyle(options: ILineStyleOptions): this
     {
-        // backward compatibility with params: (width, texture,
-        // color, alpha, matrix, alignment, native)
-        if (typeof options === 'number')
-        {
-            // #if _DEBUG
-            deprecation('v5.2.0', 'Please use object-based options for Graphics#lineTextureStyle');
-            // #endif
-
-            // eslint-disable-next-line
-            const [width, texture, color, alpha, matrix, alignment, native] = arguments as any;
-
-            options = { width, texture, color, alpha, matrix, alignment, native };
-
-            // Remove undefined keys
-            Object.keys(options).forEach((key) => (options as any)[key] === undefined && delete (options as any)[key]);
-        }
-
         // Apply defaults
         options = Object.assign({
             width: 0,
@@ -739,22 +722,6 @@ export class Graphics extends Container
      */
     beginTextureFill(options?: IFillStyleOptions): this
     {
-        // Backward compatibility with params: (texture, color, alpha, matrix)
-        if (options instanceof Texture)
-        {
-            // #if _DEBUG
-            deprecation('v5.2.0', 'Please use object-based options for Graphics#beginTextureFill');
-            // #endif
-
-            // eslint-disable-next-line
-            const [texture, color, alpha, matrix] = arguments as any;
-
-            options = { texture, color, alpha, matrix };
-
-            // Remove undefined keys
-            Object.keys(options).forEach((key) => (options as any)[key] === undefined && delete (options as any)[key]);
-        }
-
         // Apply defaults
         options = Object.assign({
             texture: Texture.WHITE,

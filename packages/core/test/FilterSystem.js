@@ -67,10 +67,6 @@ describe('PIXI.FilterSystem', function ()
         expect(render(CLEAR_MODES.CLEAR, true)).to.equal(1);
         expect(render(CLEAR_MODES.AUTO, false)).to.equal(0);
         expect(render(CLEAR_MODES.AUTO, true)).to.equal(1);
-        expect(render(false, false)).to.equal(0);
-        expect(render(false, true)).to.equal(0);
-        expect(render(true, false)).to.equal(1);
-        expect(render(true, true)).to.equal(1);
 
         // check that there are two temp textures of same size
         const keys = Object.keys(filterSystem.texturePool.texturePool);

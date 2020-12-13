@@ -193,12 +193,6 @@ export class BaseTexture extends EventEmitter
          */
         this.alphaMode = alphaMode !== undefined ? alphaMode : ALPHA_MODES.UNPACK;
 
-        if ((options as any).premultiplyAlpha !== undefined)
-        {
-            // triggers deprecation
-            (this as any).premultiplyAlpha = (options as any).premultiplyAlpha;
-        }
-
         /**
          * Global unique identifier for this BaseTexture
          *

@@ -151,8 +151,6 @@ export class Renderer extends AbstractRenderer
 
         this.CONTEXT_UID = 0;
 
-        // TODO legacy!
-
         /**
          * Internal signal instances of **runner**, these
          * are assigned to each system created.
