@@ -65,7 +65,7 @@ export abstract class AbstractRenderer extends EventEmitter
      * @param {number} [options.width=800] - The width of the screen.
      * @param {number} [options.height=600] - The height of the screen.
      * @param {HTMLCanvasElement} [options.view] - The canvas to use as a view, optional.
-     * @param {boolean} [options.transparent=false] - If the render view is transparent.
+     * @param {boolean} [options.transparent=true] - If the render has alpha enabled on the canvas.
      * @param {boolean} [options.autoDensity=false] - Resizes renderer view in CSS pixels to allow for
      *   resolutions other than 1.
      * @param {boolean} [options.antialias=false] - Sets antialias
@@ -169,12 +169,12 @@ export abstract class AbstractRenderer extends EventEmitter
         this._backgroundColor = 0x000000;
 
         /**
-         * The background color as an [R, G, B] array.
+         * The background color as an [R, G, B, A] array.
          *
          * @member {number[]}
          * @protected
          */
-        this._backgroundColorRgba = [0, 0, 0, 0];
+        this._backgroundColorRgba = [0, 0, 0, 1];
 
         /**
          * The background color as a string.
@@ -358,5 +358,19 @@ export abstract class AbstractRenderer extends EventEmitter
         this._backgroundColor = value;
         this._backgroundColorString = hex2string(value);
         hex2rgb(value, this._backgroundColorRgba);
+    }
+
+    /**
+     * The background color alpha. Setting this to 0 will make the canvas transparent.
+     *
+     * @member {number}
+     */
+    get backgroundAlpha(): number
+    {
+        return this._backgroundColorRgba[3];
+    }
+    set backgroundAlpha(value: number)
+    {
+        this._backgroundColorRgba[3] = value;
     }
 }

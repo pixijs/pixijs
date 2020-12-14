@@ -16,7 +16,7 @@ export interface IRendererOptionsAuto extends IRendererOptions
  * @param {number} [options.width=800] - the width of the renderers view
  * @param {number} [options.height=600] - the height of the renderers view
  * @param {HTMLCanvasElement} [options.view] - the canvas to use as a view, optional
- * @param {boolean} [options.transparent=false] - If the render view is transparent, default false
+ * @param {boolean} [options.transparent=true] - If the render has alpha enabled on the canvas.
  * @param {boolean} [options.autoDensity=false] - Resizes renderer view in CSS pixels to allow for
  *   resolutions other than 1
  * @param {boolean} [options.antialias=false] - sets antialias
