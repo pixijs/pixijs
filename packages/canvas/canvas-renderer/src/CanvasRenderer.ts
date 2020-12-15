@@ -79,7 +79,7 @@ export class CanvasRenderer extends AbstractRenderer
      * @param {number} [options.width=800] - the width of the screen
      * @param {number} [options.height=600] - the height of the screen
      * @param {HTMLCanvasElement} [options.view] - the canvas to use as a view, optional
-     * @param {boolean} [options.transparent=false] - If the render view is transparent, default false
+     * @param {boolean} [options.contextAlpha=true] - Pass-through value for canvas' context `alpha` property.
      * @param {boolean} [options.autoDensity=false] - Resizes renderer view in CSS pixels to allow for
      *   resolutions other than 1
      * @param {boolean} [options.antialias=false] - sets antialias
@@ -91,6 +91,7 @@ export class CanvasRenderer extends AbstractRenderer
      *      not before the new render pass.
      * @param {number} [options.backgroundColor=0x000000] - The background color of the rendered area
      *  (shown if not transparent).
+     * @param {number} [options.backgroundAlpha=1] - Value from 0 (fully transparent) to 1 (fully opaque).
      */
     constructor(options?: IRendererOptions)
     {
@@ -101,7 +102,7 @@ export class CanvasRenderer extends AbstractRenderer
          *
          * @member {CanvasRenderingContext2D}
          */
-        this.rootContext = this.view.getContext('2d', { alpha: this.transparent }) as
+        this.rootContext = this.view.getContext('2d', { alpha: this.contextAlpha }) as
             CrossPlatformCanvasRenderingContext2D;
 
         /**
@@ -268,7 +269,7 @@ export class CanvasRenderer extends AbstractRenderer
         {
             if (this.renderingToScreen)
             {
-                if (this.transparent)
+                if (this.contextAlpha)
                 {
                     context.clearRect(0, 0, this.width, this.height);
                 }
@@ -366,7 +367,7 @@ export class CanvasRenderer extends AbstractRenderer
 
         clearColor = clearColor || this._backgroundColorString;
 
-        if (!this.transparent && clearColor)
+        if (!this.contextAlpha && clearColor)
         {
             context.fillStyle = clearColor;
             context.fillRect(0, 0, this.width, this.height);
