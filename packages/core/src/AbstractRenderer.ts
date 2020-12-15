@@ -1,4 +1,4 @@
-import { hex2string, hex2rgb, EventEmitter } from '@pixi/utils';
+import { hex2string, hex2rgb, EventEmitter, deprecation } from '@pixi/utils';
 import { Matrix, Rectangle } from '@pixi/math';
 import { RENDERER_TYPE } from '@pixi/constants';
 import { settings } from '@pixi/settings';
@@ -16,13 +16,19 @@ export interface IRendererOptions extends GlobalMixins.IRendererOptions
     width?: number;
     height?: number;
     view?: HTMLCanvasElement;
-    transparent?: boolean | 'notMultiplied';
+    contextAlpha?: boolean | 'notMultiplied';
+    /**
+     * Use `contextAlpha` and `backgroundAlpha` instead.
+     * @deprecated
+     */
+    transparent?: boolean;
     autoDensity?: boolean;
     antialias?: boolean;
     resolution?: number;
     preserveDrawingBuffer?: boolean;
     clearBeforeRender?: boolean;
     backgroundColor?: number;
+    backgroundAlpha?: number;
     powerPreference?: WebGLPowerPreference;
     context?: IRenderingContext;
 }
@@ -50,7 +56,7 @@ export abstract class AbstractRenderer extends EventEmitter
     public readonly screen: Rectangle;
     public readonly view: HTMLCanvasElement;
     public readonly plugins: IRendererPlugins;
-    public readonly transparent: boolean | 'notMultiplied';
+    public readonly contextAlpha: boolean | 'notMultiplied';
     public readonly autoDensity: boolean;
     public readonly preserveDrawingBuffer: boolean;
 
@@ -65,7 +71,7 @@ export abstract class AbstractRenderer extends EventEmitter
      * @param {number} [options.width=800] - The width of the screen.
      * @param {number} [options.height=600] - The height of the screen.
      * @param {HTMLCanvasElement} [options.view] - The canvas to use as a view, optional.
-     * @param {boolean} [options.transparent=true] - If the render has alpha enabled on the canvas.
+     * @param {boolean} [options.contextAlpha=true] - Pass-through value for canvas' context `alpha` property.
      * @param {boolean} [options.autoDensity=false] - Resizes renderer view in CSS pixels to allow for
      *   resolutions other than 1.
      * @param {boolean} [options.antialias=false] - Sets antialias
@@ -77,6 +83,7 @@ export abstract class AbstractRenderer extends EventEmitter
      *      not before the new render pass.
      * @param {number} [options.backgroundColor=0x000000] - The background color of the rendered area
      *  (shown if not transparent).
+     * @param {number} [options.backgroundAlpha=1] - Value from 0 (fully transparent) to 1 (fully opaque).
      */
     constructor(type: RENDERER_TYPE = RENDERER_TYPE.UNKNOWN, options?: IRendererOptions)
     {
@@ -131,7 +138,7 @@ export abstract class AbstractRenderer extends EventEmitter
          *
          * @member {boolean}
          */
-        this.transparent = options.transparent;
+        this.contextAlpha = options.contextAlpha;
 
         /**
          * Whether CSS dimensions of canvas view should be resized to screen dimensions automatically.
@@ -185,6 +192,17 @@ export abstract class AbstractRenderer extends EventEmitter
         this._backgroundColorString = '#000000';
 
         this.backgroundColor = options.backgroundColor || this._backgroundColor; // run bg color setter
+        this.backgroundAlpha = options.backgroundAlpha;
+
+        // @deprecated
+        if (options.transparent !== undefined)
+        {
+            // #if _DEBUG
+            deprecation('6.0.0', 'Option transparent is deprecated, please use contextAlpha or backgroundAlpha instead.');
+            // #endif
+            this.contextAlpha = options.transparent;
+            this.backgroundAlpha = options.transparent ? 0 : 1;
+        }
 
         /**
          * The last root object that the renderer tried to render.
