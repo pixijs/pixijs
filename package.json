@@ -34,6 +34,11 @@
   "pre-commit": [
     "lintfix"
   ],
+  "engines": {
+    "node": ">=12",
+    "yarn": "please-use-npm",
+    "npm": ">=6"
+  },
   "devDependencies": {
     "@lerna/batch-packages": "^3.13.0",
     "@lerna/filter-packages": "^3.13.0",
