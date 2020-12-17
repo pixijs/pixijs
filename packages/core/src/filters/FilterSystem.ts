@@ -218,7 +218,7 @@ export class FilterSystem extends System
         state.renderTexture.filterFrame = state.sourceFrame;
 
         renderer.renderTexture.bind(state.renderTexture, state.sourceFrame, destinationFrame);
-        renderer.renderTexture.clear();
+        renderer.framebuffer.clear(0, 0, 0, 0);
     }
 
     /**
@@ -341,7 +341,7 @@ export class FilterSystem extends System
         if (clearMode === CLEAR_MODES.CLEAR
             || (clearMode === CLEAR_MODES.BLIT && this.forceClear))
         {
-            this.renderer.renderTexture.clear();
+            this.renderer.framebuffer.clear(0, 0, 0, 0);
         }
     }
 
