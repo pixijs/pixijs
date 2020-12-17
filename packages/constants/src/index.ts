@@ -329,7 +329,12 @@ export enum ALPHA_MODES {
 }
 
 /**
- * How to clear renderTextures in filter
+ * How to clear renderTextures in filter.
+ * If your filter takes samples only from used part of temporary RT,
+ * 1. it guarantees clamping of texture sampling coordinates,
+ * 2. it sets blendMode of filter to NONE
+ * then you can use AUTO mode.
+ * Otherwise, good old YES will work for you, it ensures clearing of whole temporary RT.
  *
  * @name CLEAR_MODES
  * @memberof PIXI
