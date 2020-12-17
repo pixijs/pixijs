@@ -15,6 +15,7 @@ import type { RenderTexture } from '../renderTexture/RenderTexture';
 import type { Renderer } from '../Renderer';
 
 const tempPoints = [new Point(), new Point(), new Point(), new Point()];
+const tempMatrix = new Matrix();
 
 /**
  * System plugin to the renderer to manage the filters.
@@ -100,7 +101,7 @@ export class FilterSystem extends System
          * @property {Fload32Array} filterClamp
          */
         this.globalUniforms = new UniformGroup({
-            outputFrame: this.tempRect,
+            outputFrame: new Rectangle(),
             inputSize: new Float32Array(4),
             inputPixel: new Float32Array(4),
             inputClamp: new Float32Array(4),
@@ -137,6 +138,7 @@ export class FilterSystem extends System
         const renderer = this.renderer;
         const filterStack = this.defaultFilterStack;
         const state = this.statePool.pop() || new FilterState();
+        const renderTextureSystem = this.renderer.renderTexture;
 
         let resolution = filters[0].resolution;
         let padding = filters[0].padding;
@@ -163,7 +165,7 @@ export class FilterSystem extends System
 
         if (filterStack.length === 1)
         {
-            this.defaultFilterStack[0].renderTexture = renderer.renderTexture.current;
+            this.defaultFilterStack[0].renderTexture = renderTextureSystem.current;
         }
 
         filterStack.push(state);
@@ -179,10 +181,16 @@ export class FilterSystem extends System
 
         if (autoFit)
         {
-            const sourceFrameProjected = this.renderer.renderTexture.sourceFrame.clone();
+            const sourceFrameProjected = this.tempRect.copyFrom(renderTextureSystem.sourceFrame);
 
             // Project source frame into world space (if projection is applied)
-            this.transformAABB(renderer.projection?.transform?.clone().invert() || Matrix.IDENTITY, sourceFrameProjected);
+            if (renderer.projection.transform)
+            {
+                this.transformAABB(
+                    tempMatrix.copyFrom(renderer.projection.transform).invert(),
+                    sourceFrameProjected
+                );
+            }
 
             state.sourceFrame.fit(sourceFrameProjected);
         }
@@ -190,9 +198,9 @@ export class FilterSystem extends System
         // Round sourceFrame in screen space based on render-texture.
         this.roundFrame(
             state.sourceFrame,
-            renderer.renderTexture.current ? renderer.renderTexture.current.resolution : renderer.resolution,
-            renderer.renderTexture.sourceFrame,
-            renderer.renderTexture.destinationFrame,
+            renderTextureSystem.current ? renderTextureSystem.current.resolution : renderer.resolution,
+            renderTextureSystem.sourceFrame,
+            renderTextureSystem.destinationFrame,
             renderer.projection.transform,
         );
 
@@ -208,13 +216,13 @@ export class FilterSystem extends System
         destinationFrame.height = state.sourceFrame.height;
 
         state.renderTexture.filterFrame = state.sourceFrame;
-        state.bindingSourceFrame.copyFrom(renderer.renderTexture.sourceFrame);
-        state.bindingDestinationFrame.copyFrom(renderer.renderTexture.destinationFrame);
+        state.bindingSourceFrame.copyFrom(renderTextureSystem.sourceFrame);
+        state.bindingDestinationFrame.copyFrom(renderTextureSystem.destinationFrame);
 
         state.transform = renderer.projection.transform;
         renderer.projection.transform = null;
-        renderer.renderTexture.bind(state.renderTexture, state.sourceFrame, destinationFrame);
-        renderer.renderTexture.clear();
+        renderTextureSystem.bind(state.renderTexture, state.sourceFrame, destinationFrame);
+        renderTextureSystem.clear();
     }
 
     /**
@@ -560,7 +568,7 @@ export class FilterSystem extends System
             }
         }
 
-        transform = transform ? transform.clone() : new Matrix();
+        transform = transform ? tempMatrix.copyFrom(transform) : tempMatrix.identity();
 
         // Get forward transform from world space to screen space
         transform
