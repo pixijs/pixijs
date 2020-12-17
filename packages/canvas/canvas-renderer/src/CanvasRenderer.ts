@@ -269,14 +269,14 @@ export class CanvasRenderer extends AbstractRenderer
         {
             if (this.renderingToScreen)
             {
-                if (this.contextAlpha)
+                context.clearRect(0, 0, this.width, this.height);
+
+                if (this.backgroundAlpha > 0)
                 {
-                    context.clearRect(0, 0, this.width, this.height);
-                }
-                else
-                {
+                    context.globalAlpha = this.contextAlpha ? this.backgroundAlpha : 1;
                     context.fillStyle = this._backgroundColorString;
                     context.fillRect(0, 0, this.width, this.height);
+                    context.globalAlpha = 1;
                 }
             }
             else
@@ -288,8 +288,10 @@ export class CanvasRenderer extends AbstractRenderer
 
                 if (clearColor[3] > 0)
                 {
+                    context.globalAlpha = this.contextAlpha ? clearColor[3] : 1;
                     context.fillStyle = hex2string(rgb2hex(clearColor));
                     context.fillRect(0, 0, renderTexture.realWidth, renderTexture.realHeight);
+                    context.globalAlpha = 1;
                 }
             }
         }
@@ -360,21 +362,20 @@ export class CanvasRenderer extends AbstractRenderer
      * Clear the canvas of renderer.
      *
      * @param {string} [clearColor] - Clear the canvas with this color, except the canvas is transparent.
+     * @param {number} [alpha] - Alpha to apply to the background fill color.
      */
-    public clear(clearColor?: string): void
+    public clear(clearColor: string = this._backgroundColorString, alpha: number = this.backgroundAlpha): void
     {
-        const context = this.context;
+        const { context } = this;
 
-        clearColor = clearColor || this._backgroundColorString;
+        context.clearRect(0, 0, this.width, this.height);
 
-        if (!this.contextAlpha && clearColor)
+        if (clearColor)
         {
+            context.globalAlpha = this.contextAlpha ? alpha : 1;
             context.fillStyle = clearColor;
             context.fillRect(0, 0, this.width, this.height);
-        }
-        else
-        {
-            context.clearRect(0, 0, this.width, this.height);
+            context.globalAlpha = 1;
         }
     }
 
