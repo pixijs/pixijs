@@ -9,7 +9,7 @@ that process silky smooth for all involved.
 To report a bug, request a feature, or even ask a question, make use of the GitHub Issues
 section for [PixiJS][issues]. When submitting an issue please take the following steps:
 
-1. **Seach for existing issues.** Your question or bug may have already been answered or fixed,
+1. **Search for existing issues.** Your question or bug may have already been answered or fixed,
 be sure to search the issues first before putting in a duplicate issue.
 
 2. **Create an isolated and reproducible test case.** If you are reporting a bug, make sure you
