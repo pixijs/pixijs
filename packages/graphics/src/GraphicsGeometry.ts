@@ -447,7 +447,7 @@ export class GraphicsGeometry extends BatchGeometry
      * Generates intermediate batch data. Either gets converted to drawCalls
      * or used to convert to batch objects directly by the Graphics object.
      *
-     * @param {boolean} [aloow32Indices] - Allow using 32-bit indices for preventings artefacts when more that 65535 vertices
+     * @param {boolean} [allow32Indices] - Allow using 32-bit indices for preventing artifacts when more that 65535 vertices
      */
     updateBatches(allow32Indices?: boolean): void
     {
