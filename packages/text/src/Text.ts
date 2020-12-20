@@ -538,7 +538,7 @@ export class Text extends Sprite
                         lineStop = j / fill.length;
                     }
 
-                    let globalStop = Math.min(Math.max(0, (thisLineTop / height) + (lineStop * gradStopLineHeight)));
+                    let globalStop = Math.min(1, Math.max(0, (thisLineTop / height) + (lineStop * gradStopLineHeight)));
 
                     // There's potential for floating point precision issues at the seams between gradient repeats.
                     globalStop = Number(globalStop.toFixed(5));
