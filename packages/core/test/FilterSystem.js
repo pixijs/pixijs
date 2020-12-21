@@ -33,7 +33,7 @@ describe('PIXI.FilterSystem', function ()
         const obj = onePixelObject();
         const filterSystem = this.renderer.filter;
 
-        filter.blendMode = BLEND_MODES.NONE;
+        innerFilter.state.blend = false;
 
         let clearModeValue = CLEAR_MODES.BLEND;
 

@@ -4,7 +4,7 @@ import { Quad } from '../utils/Quad';
 import { QuadUv } from '../utils/QuadUv';
 import { Rectangle, Matrix } from '@pixi/math';
 import { UniformGroup } from '../shader/UniformGroup';
-import { DRAW_MODES, CLEAR_MODES, BLEND_MODES } from '@pixi/constants';
+import { DRAW_MODES, CLEAR_MODES } from '@pixi/constants';
 import { FilterState } from './FilterState';
 
 import type { Filter } from './Filter';
@@ -344,7 +344,7 @@ export class FilterSystem extends System
             renderTextureSystem.bind(filterTexture);
         }
 
-        const autoClear = stateSystem.blendMode !== BLEND_MODES.NONE || this.forceClear;
+        const autoClear = (stateSystem.stateId & 1) || this.forceClear;
 
         if (clearMode === CLEAR_MODES.CLEAR
             || (clearMode === CLEAR_MODES.BLIT && autoClear))
@@ -365,6 +365,7 @@ export class FilterSystem extends System
     {
         const renderer = this.renderer;
 
+        renderer.state.set(filter.state);
         this.bindAndClear(output, clearMode);
 
         // set the uniforms..
@@ -374,8 +375,6 @@ export class FilterSystem extends System
         // TODO make it so that the order of this does not matter..
         // because it does at the moment cos of global uniforms.
         // they need to get resynced
-
-        renderer.state.set(filter.state);
         renderer.shader.bind(filter);
 
         if (filter.legacy)
