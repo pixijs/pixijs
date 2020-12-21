@@ -4,7 +4,7 @@ import { Quad } from '../utils/Quad';
 import { QuadUv } from '../utils/QuadUv';
 import { Rectangle, Matrix } from '@pixi/math';
 import { UniformGroup } from '../shader/UniformGroup';
-import { DRAW_MODES, CLEAR_MODES } from '@pixi/constants';
+import { DRAW_MODES, CLEAR_MODES, BLEND_MODES } from '@pixi/constants';
 import { FilterState } from './FilterState';
 
 import type { Filter } from './Filter';
@@ -319,11 +319,17 @@ export class FilterSystem extends System
 
     /**
      * Binds a renderTexture with corresponding `filterFrame`, clears it if mode corresponds.
+     *
      * @param {PIXI.RenderTexture} filterTexture - renderTexture to bind, should belong to filter pool or filter stack
      * @param {PIXI.CLEAR_MODES} [clearMode] - clearMode, by default its CLEAR/YES. See {@link PIXI.CLEAR_MODES}
      */
     bindAndClear(filterTexture: RenderTexture, clearMode = CLEAR_MODES.CLEAR): void
     {
+        const {
+            renderTexture: renderTextureSystem,
+            state: stateSystem,
+        } = this.renderer;
+
         if (filterTexture && filterTexture.filterFrame)
         {
             const destinationFrame = this.tempRect;
@@ -331,15 +337,17 @@ export class FilterSystem extends System
             destinationFrame.width = filterTexture.filterFrame.width;
             destinationFrame.height = filterTexture.filterFrame.height;
 
-            this.renderer.renderTexture.bind(filterTexture, filterTexture.filterFrame, destinationFrame);
+            renderTextureSystem.bind(filterTexture, filterTexture.filterFrame, destinationFrame);
         }
         else
         {
-            this.renderer.renderTexture.bind(filterTexture);
+            renderTextureSystem.bind(filterTexture);
         }
 
+        const autoClear = stateSystem.blendMode !== BLEND_MODES.NONE || this.forceClear;
+
         if (clearMode === CLEAR_MODES.CLEAR
-            || (clearMode === CLEAR_MODES.BLIT && this.forceClear))
+            || (clearMode === CLEAR_MODES.BLIT && autoClear))
         {
             this.renderer.framebuffer.clear(0, 0, 0, 0);
         }
