@@ -411,7 +411,7 @@ export class Container extends DisplayObject
     }
 
     /**
-     * Sorts children by zIndex. Previous order is mantained for 2 children with the same zIndex.
+     * Sorts children by zIndex. Previous order is maintained for 2 children with the same zIndex.
      */
     sortChildren(): void
     {
