@@ -4,7 +4,7 @@
   "main": "dist/cjs/accessibility.js",
   "module": "dist/esm/accessibility.js",
   "bundle": "dist/browser/accessibility.js",
-  "description": "Accessibility Plugin for visually impared users",
+  "description": "Accessibility Plugin for visually impaired users",
   "author": "Mat Groves",
   "contributors": [
     "Matt Karl <matt@mattkarl.com>"
