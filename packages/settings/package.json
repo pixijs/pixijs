@@ -1,6 +1,6 @@
 {
   "name": "@pixi/settings",
-  "version": "5.3.5",
+  "version": "5.3.6",
   "main": "lib/settings.js",
   "module": "lib/settings.es.js",
   "bundle": "dist/settings.js",
