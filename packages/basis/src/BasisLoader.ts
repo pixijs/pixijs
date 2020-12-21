@@ -456,7 +456,7 @@ export class BasisLoader
      * });
      * ```
      *
-     * @param basisu - the initialized transcoder library
+     * @param {BasisBinding} basisLibrary - the initialized transcoder library
      * @private
      */
     static bindTranscoder(basisLibrary: BasisBinding): void
