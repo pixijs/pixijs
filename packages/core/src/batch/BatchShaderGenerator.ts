@@ -29,7 +29,7 @@ export class BatchShaderGenerator
         this.vertexSrc = vertexSrc;
 
         /**
-         * Reference to the fragement shader template. Must contain "%count%" and "%forloop%".
+         * Reference to the fragment shader template. Must contain "%count%" and "%forloop%".
          *
          * @member {string}
          */

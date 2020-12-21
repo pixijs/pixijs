@@ -258,7 +258,7 @@ export class GeometrySystem extends System
     }
 
     /**
-     * Check compability between a geometry and a program
+     * Check compatibility between a geometry and a program
      * @protected
      * @param {PIXI.Geometry} geometry - Geometry instance
      * @param {PIXI.Program} program - Program instance
