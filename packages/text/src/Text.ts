@@ -514,12 +514,6 @@ export class Text extends Sprite
             // we need to repeat the gradient so that each individual line of text has the same vertical gradient effect
             // ['#FF0000', '#00FF00', '#0000FF'] over 2 lines would create stops at 0.125, 0.25, 0.375, 0.625, 0.75, 0.875
 
-            // There's potential for floating point precision issues at the seams between gradient repeats.
-            // The loop below generates the stops in order, so track the last generated one to prevent
-            // floating point precision from making us go the teeniest bit backwards, resulting in
-            // the first and last colors getting swapped.
-            let lastIterationStop = 0;
-
             // Actual height of the text itself, not counting spacing for lineHeight/leading/dropShadow etc
             const textHeight = metrics.fontProperties.fontSize + style.strokeThickness;
 
@@ -544,14 +538,11 @@ export class Text extends Sprite
                         lineStop = j / fill.length;
                     }
 
-                    const globalStop = (thisLineTop / height) + (lineStop * gradStopLineHeight);
+                    let globalStop = Math.min(1, Math.max(0, (thisLineTop / height) + (lineStop * gradStopLineHeight)));
 
-                    // Prevent color stop generation going backwards from floating point imprecision
-                    let clampedStop = Math.max(lastIterationStop, globalStop);
-
-                    clampedStop = Math.min(clampedStop, 1); // Cap at 1 as well for safety's sake to avoid a possible throw.
-                    gradient.addColorStop(clampedStop, fill[j]);
-                    lastIterationStop = clampedStop;
+                    // There's potential for floating point precision issues at the seams between gradient repeats.
+                    globalStop = Number(globalStop.toFixed(5));
+                    gradient.addColorStop(globalStop, fill[j]);
                 }
             }
         }
