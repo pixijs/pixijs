@@ -115,7 +115,7 @@ export class FilterSystem extends System
          * @property {Float32Array} inputClamp
          * @property {Number} resolution
          * @property {Float32Array} filterArea
-         * @property {Fload32Array} filterClamp
+         * @property {Float32Array} filterClamp
          */
         this.globalUniforms = new UniformGroup({
             outputFrame: this.tempRect,
