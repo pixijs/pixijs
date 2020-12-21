@@ -95,7 +95,7 @@ export class InteractionManager extends EventEmitter
      * @param {PIXI.CanvasRenderer|PIXI.Renderer} renderer - A reference to the current renderer
      * @param {object} [options] - The options for the manager.
      * @param {boolean} [options.autoPreventDefault=true] - Should the manager automatically prevent default browser actions.
-     * @param {number} [options.interactionFrequency=10] - Maximum requency (ms) at pointer over/out states will be checked.
+     * @param {number} [options.interactionFrequency=10] - Maximum frequency (ms) at pointer over/out states will be checked.
      * @param {number} [options.useSystemTicker=true] - Whether to add {@link tickerUpdate} to {@link PIXI.Ticker.system}.
      */
     constructor(renderer: AbstractRenderer, options?: InteractionManagerOptions)
@@ -123,7 +123,7 @@ export class InteractionManager extends EventEmitter
         this.autoPreventDefault = options.autoPreventDefault !== undefined ? options.autoPreventDefault : true;
 
         /**
-         * Maximum requency in milliseconds at which pointer over/out states will be checked by {@link tickerUpdate}.
+         * Maximum frequency in milliseconds at which pointer over/out states will be checked by {@link tickerUpdate}.
          *
          * @member {number}
          * @default 10
