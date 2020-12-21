@@ -1,4 +1,4 @@
-const { CLEAR_MODES } = require('@pixi/constants');
+const { CLEAR_MODES, BLEND_MODES } = require('@pixi/constants');
 const { Rectangle, Matrix } = require('@pixi/math');
 const { Renderer, Filter } = require('../');
 
@@ -32,6 +32,8 @@ describe('PIXI.FilterSystem', function ()
         const clearSpy = sinon.spy(this.renderer.framebuffer, 'clear');
         const obj = onePixelObject();
         const filterSystem = this.renderer.filter;
+
+        this.renderer.state.setBlendMode(BLEND_MODES.NONE);
 
         let clearModeValue = CLEAR_MODES.BLEND;
 
