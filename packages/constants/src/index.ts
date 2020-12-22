@@ -433,3 +433,10 @@ export enum MSAA_QUALITY {
     MEDIUM = 4,
     HIGH = 8
 }
+
+export enum BUFFER_TYPE {
+    ELEMENT_ARRAY_BUFFER = 34963,
+    ARRAY_BUFFER = 34962,
+    // NOT YET SUPPORTED
+    UNIFORM_BUFFER = 35345,
+}

@@ -4,7 +4,7 @@ import { interleaveTypedArrays } from './utils/interleaveTypedArrays';
 import { getBufferType } from './utils/getBufferType';
 import { Runner } from '@pixi/runner';
 
-import type { TYPES } from '@pixi/constants';
+import { BUFFER_TYPE, TYPES } from '@pixi/constants';
 import type { IArrayBuffer } from './Buffer';
 import type { Dict } from '@pixi/utils';
 
@@ -199,7 +199,8 @@ export class Geometry
             buffer = new Buffer(buffer);
         }
 
-        buffer.index = true;
+        buffer.type = BUFFER_TYPE.ELEMENT_ARRAY_BUFFER;
+
         this.indexBuffer = buffer;
 
         if (this.buffers.indexOf(buffer) === -1)
@@ -335,7 +336,7 @@ export class Geometry
         if (this.indexBuffer)
         {
             geometry.indexBuffer = geometry.buffers[this.buffers.indexOf(this.indexBuffer)];
-            geometry.indexBuffer.index = true;
+            geometry.indexBuffer.type = BUFFER_TYPE.ELEMENT_ARRAY_BUFFER;
         }
 
         return geometry;
@@ -399,7 +400,7 @@ export class Geometry
         if (geometry.indexBuffer)
         {
             geometryOut.indexBuffer = geometryOut.buffers[geometry.buffers.indexOf(geometry.indexBuffer)];
-            geometryOut.indexBuffer.index = true;
+            geometryOut.indexBuffer.type = BUFFER_TYPE.ELEMENT_ARRAY_BUFFER;
 
             let offset = 0;
             let stride = 0;
