@@ -131,10 +131,10 @@ export class BufferSystem extends System
     }
 
     /**
-     * Update buffers
+     * creates and attaches a GLBuffer object tied to the current context.
      * @protected
      */
-    createGLBuffer(buffer:Buffer): GLBuffer
+    protected createGLBuffer(buffer:Buffer): GLBuffer
     {
         const { CONTEXT_UID, gl } = this;
 
