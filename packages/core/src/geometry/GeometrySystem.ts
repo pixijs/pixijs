@@ -11,6 +11,7 @@ import type { Shader } from '../shader/Shader';
 import type { Program } from '../shader/Program';
 import type { Buffer } from './Buffer';
 import type { Dict } from '@pixi/utils';
+import { BufferSystem } from './BufferSystem';
 
 const byteSizeMap: {[key: number]: number} = { 5126: 4, 5123: 2, 5121: 1 };
 
@@ -33,6 +34,7 @@ export class GeometrySystem extends System
     protected _boundBuffer: GLBuffer;
     readonly managedGeometries: {[key: number]: Geometry};
     readonly managedBuffers: {[key: number]: Buffer};
+    private _buffer:BufferSystem;
 
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
@@ -78,6 +80,11 @@ export class GeometrySystem extends System
          * @readonly
          */
         this.managedBuffers = {};
+
+        /**
+         * shortcut for the buffer system..
+         */
+        this._buffer = this.renderer.buffer;
     }
 
     /**
@@ -216,44 +223,12 @@ export class GeometrySystem extends System
     updateBuffers(): void
     {
         const geometry = this._activeGeometry;
-        const { gl } = this;
 
         for (let i = 0; i < geometry.buffers.length; i++)
         {
             const buffer = geometry.buffers[i];
 
-            const glBuffer = buffer._glBuffers[this.CONTEXT_UID];
-
-            if (buffer._updateID !== glBuffer.updateID)
-            {
-                glBuffer.updateID = buffer._updateID;
-
-                // TODO can cache this on buffer! maybe added a getter / setter?
-                const type = buffer.index ? gl.ELEMENT_ARRAY_BUFFER : gl.ARRAY_BUFFER;
-
-                // TODO this could change if the VAO changes...
-                // need to come up with a better way to cache..
-                // if (this.boundBuffers[type] !== glBuffer)
-                // {
-                // this.boundBuffers[type] = glBuffer;
-                gl.bindBuffer(type, glBuffer.buffer);
-                // }
-
-                this._boundBuffer = glBuffer;
-
-                if (glBuffer.byteLength >= buffer.data.byteLength)
-                {
-                    // offset is always zero for now!
-                    gl.bufferSubData(type, 0, buffer.data);
-                }
-                else
-                {
-                    const drawType = buffer.static ? gl.STATIC_DRAW : gl.DYNAMIC_DRAW;
-
-                    glBuffer.byteLength = buffer.data.byteLength;
-                    gl.bufferData(type, buffer.data, drawType);
-                }
-            }
+            this._buffer.update(buffer);
         }
     }
 
@@ -393,12 +368,7 @@ export class GeometrySystem extends System
         {
             const buffer = buffers[i];
 
-            if (!buffer._glBuffers[CONTEXT_UID])
-            {
-                buffer._glBuffers[CONTEXT_UID] = new GLBuffer(gl.createBuffer());
-                this.managedBuffers[buffer.id] = buffer;
-                buffer.disposeRunner.add(this);
-            }
+            this._buffer.bind(buffer);
 
             buffer._glBuffers[CONTEXT_UID].refCount++;
         }
@@ -415,38 +385,6 @@ export class GeometrySystem extends System
         vaoObjectHash[signature] = vao;
 
         return vao;
-    }
-
-    /**
-     * Disposes buffer
-     * @param {PIXI.Buffer} buffer - buffer with data
-     * @param {boolean} [contextLost=false] - If context was lost, we suppress deleteVertexArray
-     */
-    disposeBuffer(buffer: Buffer, contextLost?: boolean): void
-    {
-        if (!this.managedBuffers[buffer.id])
-        {
-            return;
-        }
-
-        delete this.managedBuffers[buffer.id];
-
-        const glBuffer = buffer._glBuffers[this.CONTEXT_UID];
-        const gl = this.gl;
-
-        buffer.disposeRunner.remove(this);
-
-        if (!glBuffer)
-        {
-            return;
-        }
-
-        if (!contextLost)
-        {
-            gl.deleteBuffer(glBuffer.buffer);
-        }
-
-        delete buffer._glBuffers[this.CONTEXT_UID];
     }
 
     /**
@@ -481,7 +419,7 @@ export class GeometrySystem extends System
             buf.refCount--;
             if (buf.refCount === 0 && !contextLost)
             {
-                this.disposeBuffer(buffers[i], contextLost);
+                this._buffer.dispose(buffers[i], contextLost);
             }
         }
 
@@ -521,7 +459,7 @@ export class GeometrySystem extends System
         all = Object.keys(this.managedBuffers);
         for (let i = 0; i < all.length; i++)
         {
-            this.disposeBuffer(this.managedBuffers[all[i]], contextLost);
+            this._buffer.dispose(this.managedBuffers[all[i]], contextLost);
         }
     }
 
@@ -542,7 +480,7 @@ export class GeometrySystem extends System
         if (geometry.indexBuffer)
         {
             // first update the index buffer if we have one..
-            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, geometry.indexBuffer._glBuffers[CONTEXT_UID].buffer);
+            this._buffer.bind(geometry.indexBuffer);
         }
 
         let lastBuffer = null;
@@ -558,7 +496,7 @@ export class GeometrySystem extends System
             {
                 if (lastBuffer !== glBuffer)
                 {
-                    gl.bindBuffer(gl.ARRAY_BUFFER, glBuffer.buffer);
+                    this._buffer.bind(buffer);
 
                     lastBuffer = glBuffer;
                 }

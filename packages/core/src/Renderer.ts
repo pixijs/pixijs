@@ -25,6 +25,7 @@ import type { DisplayObject } from '@pixi/display';
 import type { System } from './System';
 import type { IRenderingContext } from './IRenderingContext';
 import type { Extract } from '@pixi/extract';
+import { BufferSystem } from './geometry/BufferSystem';
 
 export interface IRendererPluginConstructor {
     new (renderer: Renderer, options?: any): IRendererPlugin;
@@ -81,6 +82,7 @@ export class Renderer extends AbstractRenderer
     public state: StateSystem;
     public shader: ShaderSystem;
     public texture: TextureSystem;
+    public buffer: BufferSystem;
     public geometry: GeometrySystem;
     public framebuffer: FramebufferSystem;
     public scissor: ScissorSystem;
@@ -223,7 +225,14 @@ export class Renderer extends AbstractRenderer
             .addSystem(TextureSystem, 'texture')
             /**
              * Geometry system instance
-             * @member {PIXI.GeometrySystem} geometry
+             * @member {PIXI.systems.BufferSystem} buffer
+             * @memberof PIXI.Renderer#
+             * @readonly
+             */
+            .addSystem(BufferSystem, 'buffer')
+            /**
+             * Geometry system instance
+             * @member {PIXI.systems.GeometrySystem} geometry
              * @memberof PIXI.Renderer#
              * @readonly
              */
