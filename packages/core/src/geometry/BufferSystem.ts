@@ -10,7 +10,7 @@ import type { Buffer } from './Buffer';
  *
  * @class
  * @extends PIXI.System
- * @memberof PIXI.systems
+ * @memberof PIXI
  */
 export class BufferSystem extends System
 {
