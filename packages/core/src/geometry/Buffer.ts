@@ -1,3 +1,4 @@
+import { BUFFER_TYPE } from '@pixi/constants/src';
 import { Runner } from '@pixi/runner';
 
 import type { GLBuffer } from './GLBuffer';
@@ -39,7 +40,14 @@ export interface ITypedArray extends IArrayBuffer
 export class Buffer
 {
     public data: ITypedArray;
-    public index: boolean;
+
+    /**
+     * the type of buffer this is
+     * ELEMENT_ARRAY_BUFFER - used as an index buffer
+     * ARRAY_BUFFER - used as an attribute buffer
+     * UNIFORM_BUFFER - used as a uniform buffer (if available)
+     */
+    public type: BUFFER_TYPE;
     public static: boolean;
     public id: number;
      disposeRunner: Runner;
@@ -107,6 +115,20 @@ export class Buffer
         this.data = null;
     }
 
+    /**
+     * setting index to true, will set the buffer type to be an ELEMENT_ARRAY_BUFFER
+     * false will set its type to ARRAY_BUFFER
+     * for backwards compatibility
+     */
+    set index(value:boolean)
+    {
+        this.type = value ? BUFFER_TYPE.ELEMENT_ARRAY_BUFFER : BUFFER_TYPE.ARRAY_BUFFER;
+    }
+
+    get index():boolean
+    {
+        return this.type === BUFFER_TYPE.ELEMENT_ARRAY_BUFFER;
+    }
     /**
      * Helper function that creates a buffer based on an array or TypedArray
      *

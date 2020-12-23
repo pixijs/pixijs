@@ -56,10 +56,7 @@ export class BufferSystem extends System
 
         const glBuffer = buffer._glBuffers[CONTEXT_UID] || this.createGLBuffer(buffer);
 
-        // TODO can cache this on buffer! maybe added a getter / setter?
-        const type = buffer.index ? gl.ELEMENT_ARRAY_BUFFER : gl.ARRAY_BUFFER;
-
-        gl.bindBuffer(type, glBuffer.buffer);
+        gl.bindBuffer(buffer.type, glBuffer.buffer);
     }
 
     /**
@@ -77,23 +74,19 @@ export class BufferSystem extends System
         {
             glBuffer.updateID = buffer._updateID;
 
-            // TODO can cache this on buffer! maybe added a getter / setter?
-            const type = buffer.index ? gl.ELEMENT_ARRAY_BUFFER : gl.ARRAY_BUFFER;
-
-            // TODO this could change if the VAO changes...
-            gl.bindBuffer(type, glBuffer.buffer);
+            gl.bindBuffer(buffer.type, glBuffer.buffer);
 
             if (glBuffer.byteLength >= buffer.data.byteLength)
             {
                 // offset is always zero for now!
-                gl.bufferSubData(type, 0, buffer.data);
+                gl.bufferSubData(buffer.type, 0, buffer.data);
             }
             else
             {
                 const drawType = buffer.static ? gl.STATIC_DRAW : gl.DYNAMIC_DRAW;
 
                 glBuffer.byteLength = buffer.data.byteLength;
-                gl.bufferData(type, buffer.data, drawType);
+                gl.bufferData(buffer.type, buffer.data, drawType);
             }
         }
     }
