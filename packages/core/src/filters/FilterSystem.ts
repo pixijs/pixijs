@@ -233,6 +233,8 @@ export class FilterSystem extends System
 
         const destinationFrame = this.tempRect;
 
+        destinationFrame.x = 0;
+        destinationFrame.y = 0;
         destinationFrame.width = state.sourceFrame.width;
         destinationFrame.height = state.sourceFrame.height;
 
