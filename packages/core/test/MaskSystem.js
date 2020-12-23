@@ -132,6 +132,8 @@ describe('PIXI.MaskSystem', function ()
         expect(scissor.args[1]).to.eql([7.5, 12, 18, 15]);
 
         rt.destroy(true);
+        this.renderer.projection.transform = null;
+        this.renderer.resolution = 1;
     });
 
     it('should correctly calculate alpha mask area if filter is present', function ()
@@ -167,7 +169,7 @@ describe('PIXI.MaskSystem', function ()
             expect(this.renderer.renderTexture.current).to.be.notnull;
 
             const filterArea = this.renderer.renderTexture.current.filterFrame;
-            const expected = maskBounds.clone();
+            const expected = maskBounds.clone().ceil();
 
             expected.fit(filteredObject.getBounds());
             expect(filterArea).to.be.notnull;
