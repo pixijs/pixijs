@@ -346,11 +346,17 @@ export class FilterSystem extends System
 
     /**
      * Binds a renderTexture with corresponding `filterFrame`, clears it if mode corresponds.
+     *
      * @param {PIXI.RenderTexture} filterTexture - renderTexture to bind, should belong to filter pool or filter stack
      * @param {PIXI.CLEAR_MODES} [clearMode] - clearMode, by default its CLEAR/YES. See {@link PIXI.CLEAR_MODES}
      */
     bindAndClear(filterTexture: RenderTexture, clearMode = CLEAR_MODES.CLEAR): void
     {
+        const {
+            renderTexture: renderTextureSystem,
+            state: stateSystem,
+        } = this.renderer;
+
         if (filterTexture === this.defaultFilterStack[this.defaultFilterStack.length - 1].renderTexture)
         {
             // Restore projection transform if rendering into the output render-target.
@@ -366,14 +372,16 @@ export class FilterSystem extends System
         {
             const destinationFrame = this.tempRect;
 
+            destinationFrame.x = 0;
+            destinationFrame.y = 0;
             destinationFrame.width = filterTexture.filterFrame.width;
             destinationFrame.height = filterTexture.filterFrame.height;
 
-            this.renderer.renderTexture.bind(filterTexture, filterTexture.filterFrame, destinationFrame);
+            renderTextureSystem.bind(filterTexture, filterTexture.filterFrame, destinationFrame);
         }
         else if (filterTexture !== this.defaultFilterStack[this.defaultFilterStack.length - 1].renderTexture)
         {
-            this.renderer.renderTexture.bind(filterTexture);
+            renderTextureSystem.bind(filterTexture);
         }
         else
         {
@@ -385,9 +393,16 @@ export class FilterSystem extends System
             );
         }
 
+        // Clear the texture in BLIT mode if blending is disabled or the forceClear flag is set. The blending
+        // is stored in the 0th bit of the state.
+        const autoClear = (stateSystem.stateId & 1) || this.forceClear;
+
         if (clearMode === CLEAR_MODES.CLEAR
-            || (clearMode === CLEAR_MODES.BLIT && this.forceClear))
+            || (clearMode === CLEAR_MODES.BLIT && autoClear))
         {
+            // Use framebuffer.clear because we want to clear the whole filter texture, not just the filtering
+            // area over which the shaders are run. This is because filters may sampling outside of it (e.g. blur)
+            // instead of clamping their arithmetic.
             this.renderer.framebuffer.clear(0, 0, 0, 0);
         }
     }
@@ -404,6 +419,8 @@ export class FilterSystem extends System
     {
         const renderer = this.renderer;
 
+        // Set state before binding, so bindAndClear gets the blend mode.
+        renderer.state.set(filter.state);
         this.bindAndClear(output, clearMode);
 
         // set the uniforms..
@@ -413,8 +430,6 @@ export class FilterSystem extends System
         // TODO make it so that the order of this does not matter..
         // because it does at the moment cos of global uniforms.
         // they need to get resynced
-
-        renderer.state.set(filter.state);
         renderer.shader.bind(filter);
 
         if (filter.legacy)
