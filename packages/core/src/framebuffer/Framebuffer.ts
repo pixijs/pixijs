@@ -190,7 +190,7 @@ export class Framebuffer
             const texture = this.colorTextures[i];
             const resolution = texture.resolution;
 
-            // take into acount the fact the texture may have a different resolution..
+            // take into account the fact the texture may have a different resolution..
             texture.setSize(width / resolution, height / resolution);
         }
 

@@ -155,7 +155,7 @@ export interface DisplayObject extends GlobalMixins.DisplayObject, EventEmitter 
  *
  * [Container]{@link Container} already implements `calculateBounds` in a manner that includes children.
  *
- * But for a non-Container display object, the `calculateBounds` method must be overriden in order for `getBounds` and
+ * But for a non-Container display object, the `calculateBounds` method must be overridden in order for `getBounds` and
  * `getLocalBounds` to work. This method must write the bounds into `this._bounds`.
  *
  * Generally, the following technique works for most simple cases: take the list of points

@@ -62,7 +62,7 @@ export class TextureGCSystem extends System
         this.checkCountMax = settings.GC_MAX_CHECK_COUNT;
 
         /**
-         * Current garabage collection mode
+         * Current garbage collection mode
          * @member {PIXI.GC_MODES}
          * @see PIXI.settings.GC_MODE
          */

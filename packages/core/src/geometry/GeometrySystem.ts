@@ -169,15 +169,17 @@ export class GeometrySystem extends System
         // Still mulling over the best way to solve this one..
         // will likely need to modify the shader attribute locations at run time!
         let vaos = geometry.glVertexArrayObjects[this.CONTEXT_UID];
+        let incRefCount = false;
 
         if (!vaos)
         {
             this.managedGeometries[geometry.id] = geometry;
             geometry.disposeRunner.add(this);
             geometry.glVertexArrayObjects[this.CONTEXT_UID] = vaos = {};
+            incRefCount = true;
         }
 
-        const vao = vaos[shader.program.id] || this.initGeometryVao(geometry, shader.program);
+        const vao = vaos[shader.program.id] || this.initGeometryVao(geometry, shader.program, incRefCount);
 
         this._activeGeometry = geometry;
 
@@ -258,7 +260,7 @@ export class GeometrySystem extends System
     }
 
     /**
-     * Check compability between a geometry and a program
+     * Check compatibility between a geometry and a program
      * @protected
      * @param {PIXI.Geometry} geometry - Geometry instance
      * @param {PIXI.Program} program - Program instance
@@ -311,8 +313,9 @@ export class GeometrySystem extends System
      * @protected
      * @param {PIXI.Geometry} geometry - Instance of geometry to to generate Vao for
      * @param {PIXI.Program} program - Instance of program
+     * @param {boolean} [incRefCount=false] - Increment refCount of all geometry buffers
      */
-    protected initGeometryVao(geometry: Geometry, program: Program): WebGLVertexArrayObject
+    protected initGeometryVao(geometry: Geometry, program: Program, incRefCount = true): WebGLVertexArrayObject
     {
         this.checkCompatibility(geometry, program);
 
@@ -400,7 +403,10 @@ export class GeometrySystem extends System
                 buffer.disposeRunner.add(this);
             }
 
-            buffer._glBuffers[CONTEXT_UID].refCount++;
+            if (incRefCount)
+            {
+                buffer._glBuffers[CONTEXT_UID].refCount++;
+            }
         }
 
         // TODO - maybe make this a data object?

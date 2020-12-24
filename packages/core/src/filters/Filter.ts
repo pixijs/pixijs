@@ -164,7 +164,7 @@ import type { Dict } from '@pixi/utils';
  * `inputClamp.zw` is bottom-right pixel center.
  *
  * ```
- * vec4 color = texture2D(uSampler, clamp(modifigedTextureCoord, inputClamp.xy, inputClamp.zw))
+ * vec4 color = texture2D(uSampler, clamp(modifiedTextureCoord, inputClamp.xy, inputClamp.zw))
  * ```
  * OR
  * ```

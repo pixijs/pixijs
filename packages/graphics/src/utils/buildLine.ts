@@ -321,7 +321,7 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
         perp1x *= width;
         perp1y *= width;
 
-        /* d[x|y](0|1) = the component displacment between points p(0,1|1,2) */
+        /* d[x|y](0|1) = the component displacement between points p(0,1|1,2) */
         const dx0 = x1 - x0;
         const dy0 = y0 - y1;
         const dx1 = x1 - x2;

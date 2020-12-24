@@ -74,7 +74,7 @@ declare global {
  *
  * The transcoder worker responds to two types of messages: "init" and "transcode". You must always send the first "init"
  * {@link IInitializeTranscoderMessage} message with the WebAssembly binary; if the transcoder is successfully initialized,
- * the web-worker will respond by sending anothor {@link ITranscodeResponse} message with `success: true`.
+ * the web-worker will respond by sending another {@link ITranscodeResponse} message with `success: true`.
  *
  * @ignore
  */

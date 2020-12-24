@@ -194,7 +194,7 @@ export class AccessibilityManager
         hookDiv.style.left = `${DIV_HOOK_POS_Y}px`;
         hookDiv.style.zIndex = DIV_HOOK_ZINDEX.toString();
         hookDiv.style.backgroundColor = '#FF0000';
-        hookDiv.title = 'select to enable accessability for this content';
+        hookDiv.title = 'select to enable accessibility for this content';
 
         hookDiv.addEventListener('focus', () =>
         {

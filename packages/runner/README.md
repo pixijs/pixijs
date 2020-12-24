@@ -24,7 +24,7 @@ onComplete.add(listenerObject);
 onComplete.emit(data);
 ```
 
-Can be used to execute a funcition on many objects. Handy for games. If you need to update you game elements each frame:
+Can be used to execute a function on many objects. Handy for games. If you need to update you game elements each frame:
 
 ```js
 import { Runner } from '@pixi/runner';
@@ -65,11 +65,11 @@ Cons:
 
 ## When to Use
 
-In practice I have found the Runner increadibly useful and so thought it would be nice to share with the world. It currently forms the backbone of the messaging system in our game engine. Its working out great for things like update events, collison events etc. 
+In practice I have found the Runner incredibly useful and so thought it would be nice to share with the world. It currently forms the backbone of the messaging system in our game engine. Its working out great for things like update events, collision events etc.
 
 Great to use if you are say looping through and array and calling the same function on each object. The resulting code is cleaner than a loop whilst still keeping the performance as fast as possible.
 
-So yeah, if you are dispatching signals/events to a lot of listeners often (like everyframe often), then I would considor using this alternative. For most cases, this performace boost is not really important enough to switch from your current fave. 
+So yeah, if you are dispatching signals/events to a lot of listeners often (like everyframe often), then I would consider using this alternative. For most cases, this performance boost is not really important enough to switch from your current fave.
 
 Think of this as a nice alternative for when speed really counts!
 

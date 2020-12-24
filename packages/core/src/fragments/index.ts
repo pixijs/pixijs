@@ -13,7 +13,7 @@ import $defaultFilterVertex from './defaultFilter.vert';
  * @member {string} defaultFilterVertex
  */
 
-// NOTE: This black magic is so that @microsoft/api-extractor does not complain! This explicity specifies the types
+// NOTE: This black magic is so that @microsoft/api-extractor does not complain! This explicitly specifies the types
 // of defaultVertex, defaultFilterVertex.
 const defaultVertex: string = $defaultVertex;
 const defaultFilterVertex: string = $defaultFilterVertex;

@@ -12,7 +12,7 @@ import type { Dict } from '@pixi/utils';
 import type { UniformsSyncCallback } from './utils';
 
 let UID = 0;
-// defualt sync data so we don't create a new one each time!
+// default sync data so we don't create a new one each time!
 const defaultSyncData = { textureCount: 0 };
 
 /**
