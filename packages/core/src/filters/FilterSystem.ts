@@ -334,6 +334,8 @@ export class FilterSystem extends System
         {
             const destinationFrame = this.tempRect;
 
+            destinationFrame.x = 0;
+            destinationFrame.y = 0;
             destinationFrame.width = filterTexture.filterFrame.width;
             destinationFrame.height = filterTexture.filterFrame.height;
 
@@ -344,11 +346,16 @@ export class FilterSystem extends System
             renderTextureSystem.bind(filterTexture);
         }
 
+        // Clear the texture in BLIT mode if blending is disabled or the forceClear flag is set. The blending
+        // is stored in the 0th bit of the state.
         const autoClear = (stateSystem.stateId & 1) || this.forceClear;
 
         if (clearMode === CLEAR_MODES.CLEAR
             || (clearMode === CLEAR_MODES.BLIT && autoClear))
         {
+            // Use framebuffer.clear because we want to clear the whole filter texture, not just the filtering
+            // area over which the shaders are run. This is because filters may sampling outside of it (e.g. blur)
+            // instead of clamping their arithmetic.
             this.renderer.framebuffer.clear(0, 0, 0, 0);
         }
     }
@@ -365,6 +372,7 @@ export class FilterSystem extends System
     {
         const renderer = this.renderer;
 
+        // Set state before binding, so bindAndClear gets the blend mode.
         renderer.state.set(filter.state);
         this.bindAndClear(output, clearMode);
 
