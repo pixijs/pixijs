@@ -18,6 +18,7 @@ export class BufferSystem extends System
     gl: IRenderingContext;
 
     readonly managedBuffers: {[key: number]: Buffer};
+    readonly boundBufferBases: {[key: number]: Buffer};
 
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
@@ -32,6 +33,11 @@ export class BufferSystem extends System
          * @readonly
          */
         this.managedBuffers = {};
+
+        /**
+         * a cache keeping track of the base bound buffer bases
+         */
+        this.boundBufferBases = {};
     }
 
     /**
@@ -57,6 +63,24 @@ export class BufferSystem extends System
         const glBuffer = buffer._glBuffers[CONTEXT_UID] || this.createGLBuffer(buffer);
 
         gl.bindBuffer(buffer.type, glBuffer.buffer);
+    }
+
+    /**
+     * binds a buffer to a base. A cache is used so a buffer will not be bound again if already bound.
+     * Only used by the uniform buffers
+     *
+     * @param buffer the buffer to bind
+     * @param index the base index to bind it to.
+     */
+    bindBufferBase(buffer:Buffer, index:number):void
+    {
+        const { gl, CONTEXT_UID } = this;
+
+        if (this.boundBufferBases[index] !== buffer)
+        {
+            this.boundBufferBases[index] = buffer;
+            gl.bindBufferBase(gl.UNIFORM_BUFFER, index, buffer._glBuffers[CONTEXT_UID].buffer);
+        }
     }
 
     /**

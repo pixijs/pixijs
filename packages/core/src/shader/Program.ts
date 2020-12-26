@@ -27,10 +27,12 @@ export interface IAttributeData
 
 export interface IUniformData
 {
+    index: number;
     type: string;
     size: number;
     isArray: RegExpMatchArray;
     value: any;
+    name: string;
 }
 
 /**
@@ -206,6 +208,8 @@ export class Program
 
             /*eslint-disable */
             uniforms[name] = {
+                name,
+                index: i,
                 type: type,
                 size: uniformData.size,
                 isArray:isArray,

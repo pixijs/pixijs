@@ -112,9 +112,18 @@ export function generateUniformsSync(group: UniformGroup, uniformData: Dict<any>
         {
             if (group.uniforms[i].group)
             {
-                funcFragments.push(`
-                    renderer.shader.syncUniformGroup(uv["${i}"], syncData);
-                `);
+                if (group.uniforms[i].ubo)
+                {
+                    funcFragments.push(`
+                        renderer.shader.syncUniformBufferGroup(uv.${i}, '${i}', syncData);
+                    `);
+                }
+                else
+                {
+                    funcFragments.push(`
+                        renderer.shader.syncUniformGroup(uv.${i}, syncData);
+                    `);
+                }
             }
 
             continue;

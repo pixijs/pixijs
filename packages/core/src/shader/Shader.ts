@@ -13,6 +13,12 @@ export class Shader
 {
     public program: Program;
     public uniformGroup: UniformGroup;
+
+    /**
+     * used internally to bind uniform buffer objects
+     */
+    uniformBindCount = 0;
+
     /**
      * @param {PIXI.Program} [program] - The program the shader will use.
      * @param {object} [uniforms] - Custom uniforms to use to augment the built-in ones.
