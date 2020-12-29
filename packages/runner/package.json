@@ -1,6 +1,6 @@
 {
   "name": "@pixi/runner",
-  "version": "5.3.6",
+  "version": "5.3.7",
   "main": "lib/runner.js",
   "module": "lib/runner.es.js",
   "bundle": "dist/runner.js",

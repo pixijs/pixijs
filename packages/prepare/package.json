@@ -1,6 +1,6 @@
 {
   "name": "@pixi/prepare",
-  "version": "5.3.6",
+  "version": "5.3.7",
   "main": "lib/prepare.js",
   "module": "lib/prepare.es.js",
   "bundle": "dist/prepare.js",
@@ -24,11 +24,11 @@
     "dist"
   ],
   "dependencies": {
-    "@pixi/core": "5.3.6",
-    "@pixi/display": "5.3.6",
-    "@pixi/graphics": "5.3.6",
-    "@pixi/settings": "5.3.6",
-    "@pixi/text": "5.3.6",
-    "@pixi/ticker": "5.3.6"
+    "@pixi/core": "5.3.7",
+    "@pixi/display": "5.3.7",
+    "@pixi/graphics": "5.3.7",
+    "@pixi/settings": "5.3.7",
+    "@pixi/text": "5.3.7",
+    "@pixi/ticker": "5.3.7"
   }
 }

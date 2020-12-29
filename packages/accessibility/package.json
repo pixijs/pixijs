@@ -1,6 +1,6 @@
 {
   "name": "@pixi/accessibility",
-  "version": "5.3.6",
+  "version": "5.3.7",
   "main": "lib/accessibility.js",
   "module": "lib/accessibility.es.js",
   "bundle": "dist/accessibility.js",
@@ -24,11 +24,11 @@
     "dist"
   ],
   "dependencies": {
-    "@pixi/core": "5.3.6",
-    "@pixi/display": "5.3.6",
-    "@pixi/utils": "5.3.6"
+    "@pixi/core": "5.3.7",
+    "@pixi/display": "5.3.7",
+    "@pixi/utils": "5.3.7"
   },
   "devDependencies": {
-    "@pixi/canvas-renderer": "5.3.6"
+    "@pixi/canvas-renderer": "5.3.7"
   }
 }
