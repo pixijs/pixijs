@@ -7,12 +7,13 @@ import { MIPMAP_MODES, WRAP_MODES, SCALE_MODES, TYPES } from '@pixi/constants';
 import type { Texture } from './Texture';
 import type { IRenderingContext } from '../IRenderingContext';
 import type { Renderer } from '../Renderer';
+
 /**
  * System plugin to the renderer to manage textures.
  *
  * @class
  * @extends PIXI.System
- * @memberof PIXI.systems
+ * @memberof PIXI
  */
 export class TextureSystem extends System
 {
@@ -40,6 +41,7 @@ export class TextureSystem extends System
          * @readonly
          */
         this.boundTextures = [];
+
         /**
          * Current location
          * @member {number}
@@ -229,7 +231,7 @@ export class TextureSystem extends System
                     this.currentLocation = i;
                 }
 
-                gl.bindTexture(gl.TEXTURE_2D, this.emptyTextures[texture.target].texture);
+                gl.bindTexture(texture.target, this.emptyTextures[texture.target].texture);
                 boundTextures[i] = null;
             }
         }
@@ -430,7 +432,7 @@ export class TextureSystem extends System
     {
         const gl = this.gl;
 
-        if (glTexture.mipmap)
+        if (glTexture.mipmap && texture.mipmap !== MIPMAP_MODES.ON_MANUAL)
         {
             gl.generateMipmap(texture.target);
         }

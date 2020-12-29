@@ -69,7 +69,7 @@ export function drawGlyph(
     }
     else
     {
-        context.shadowColor = '0';
+        context.shadowColor = 'black';
         context.shadowBlur = 0;
         context.shadowOffsetX = 0;
         context.shadowOffsetY = 0;
@@ -84,7 +84,7 @@ export function drawGlyph(
         context.fillText(char, tx, ty + metrics.lineHeight - fontProperties.descent);
     }
 
-    context.setTransform();
+    context.setTransform(1, 0, 0, 1, 0, 0); // defaults needed for older browsers (e.g. Opera 29)
 
     context.fillStyle = 'rgba(0, 0, 0, 0)';
 }

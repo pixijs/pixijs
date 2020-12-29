@@ -2,9 +2,9 @@ import type { Dict } from '@pixi/utils';
 
 /**
  * @private
- * @param gl {WebGLRenderingContext} The current WebGL context {WebGLProgram}
- * @param type {Number} the type, can be either VERTEX_SHADER or FRAGMENT_SHADER
- * @param src {string} The vertex shader source as an array of strings.
+ * @param {WebGLRenderingContext} gl - The current WebGL context {WebGLProgram}
+ * @param {Number} type - the type, can be either VERTEX_SHADER or FRAGMENT_SHADER
+ * @param {string} src - The vertex shader source as an array of strings.
  * @return {WebGLShader} the shader
  */
 function compileShader(gl: WebGLRenderingContextBase, type: number, src: string): WebGLShader
@@ -18,13 +18,13 @@ function compileShader(gl: WebGLRenderingContextBase, type: number, src: string)
 }
 
 /**
- * @method compileProgram
+ * @function compileProgram
  * @private
  * @memberof PIXI.glCore.shader
- * @param gl {WebGLRenderingContext} The current WebGL context {WebGLProgram}
- * @param vertexSrc {string|string[]} The vertex shader source as an array of strings.
- * @param fragmentSrc {string|string[]} The fragment shader source as an array of strings.
- * @param attributeLocations {Object} An attribute location map that lets you manually set the attribute locations
+ * @param {WebGLRenderingContext} gl - The current WebGL context {WebGLProgram}
+ * @param {string|string[]} vertexSrc - The vertex shader source as an array of strings.
+ * @param {string|string[]} fragmentSrc - fragment shader source as an array of strings.
+ * @param {Object} attributeLocations - An attribute location map that lets you manually set the attribute locations
  * @return {WebGLProgram} the shader program
  */
 export function compileProgram(gl: WebGLRenderingContextBase, vertexSrc: string, fragmentSrc: string,

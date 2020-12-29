@@ -6,7 +6,7 @@ describe('PIXI', function ()
         this.head = document.querySelector('head');
         this.script = document.createElement('script');
         this.script.onload = () => done();
-        this.script.src = require.resolve('../dist/pixi');
+        this.script.src = require.resolve('../dist/browser/pixi');
         this.head.appendChild(this.script);
     });
 
@@ -24,10 +24,5 @@ describe('PIXI', function ()
         expect(PIXI).to.not.be.undefined;
         expect(PIXI.settings).to.not.be.undefined;
         expect(PIXI.utils).to.not.be.undefined;
-    });
-
-    it('should contain deprecations on window, not import', function ()
-    {
-        expect(PIXI.extras).to.not.be.undefined;
     });
 });

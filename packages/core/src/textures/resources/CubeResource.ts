@@ -21,16 +21,8 @@ export interface ICubeResourceOptions extends ISize
  * Resource for a CubeTexture which contains six resources.
  *
  * @class
- * @extends PIXI.resources.ArrayResource
- * @memberof PIXI.resources
- * @param {Array<string|PIXI.resources.Resource>} [source] - Collection of URLs or resources
- *        to use as the sides of the cube.
- * @param {object} [options] - ImageResource options
- * @param {number} [options.width] - Width of resource
- * @param {number} [options.height] - Height of resource
- * @param {number} [options.autoLoad=true] - Whether to auto-load resources
- * @param {number} [options.linkBaseTexture=true] - In case BaseTextures are supplied,
- *   whether to copy them or use
+ * @extends PIXI.ArrayResource
+ * @memberof PIXI
  */
 export class CubeResource extends AbstractMultiResource
 {
@@ -38,6 +30,16 @@ export class CubeResource extends AbstractMultiResource
 
     linkBaseTexture: boolean;
 
+    /**
+     * @param {Array<string|PIXI.Resource>} [source] - Collection of URLs or resources
+     *        to use as the sides of the cube.
+     * @param {object} [options] - ImageResource options
+     * @param {number} [options.width] - Width of resource
+     * @param {number} [options.height] - Height of resource
+     * @param {number} [options.autoLoad=true] - Whether to auto-load resources
+     * @param {number} [options.linkBaseTexture=true] - In case BaseTextures are supplied,
+     *   whether to copy them or use
+     */
     constructor(source?: ArrayFixed<string|Resource, 6>, options?: ICubeResourceOptions)
     {
         const { width, height, autoLoad, linkBaseTexture } = options || {};
@@ -173,7 +175,7 @@ export class CubeResource extends AbstractMultiResource
     /**
      * Number of texture sides to store for CubeResources
      *
-     * @name PIXI.resources.CubeResource.SIDES
+     * @name PIXI.CubeResource.SIDES
      * @static
      * @member {number}
      * @default 6

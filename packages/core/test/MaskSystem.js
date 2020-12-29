@@ -2,7 +2,7 @@ const { MASK_TYPES } = require('@pixi/constants');
 const { Rectangle, Matrix } = require('@pixi/math');
 const { Renderer, MaskData, RenderTexture, Filter, Texture } = require('../');
 
-describe('PIXI.systems.MaskSystem', function ()
+describe('PIXI.MaskSystem', function ()
 {
     function onePixelMask(worldTransform)
     {

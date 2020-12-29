@@ -1,7 +1,7 @@
 const path = require('path');
 const { Loader, LoaderResource } = require('@pixi/loaders');
 const { Texture, BaseTexture } = require('@pixi/core');
-const { BaseTextureCache, TextureCache } = require('@pixi/utils');
+const { BaseTextureCache, TextureCache, url, clearTextureCache } = require('@pixi/utils');
 const { SpritesheetLoader, Spritesheet } = require('../');
 
 describe('PIXI.SpritesheetLoader', function ()
@@ -125,17 +125,17 @@ describe('PIXI.SpritesheetLoader', function ()
     {
         const spy = sinon.spy((error, ldr, res) =>
         {
-            expect(res.name).to.equal('atlas_image');
+            expect(res.name).to.equal('atlas_error_image');
             expect(res.error).to.equal(error);
             expect(error.toString()).to.have.string('Failed to load element using: IMG');
         });
         const loader = new Loader();
 
-        loader.add('atlas', path.join(__dirname, 'resources', 'atlas_error.json'));
+        loader.add('atlas_error', path.join(__dirname, 'resources', 'atlas_error.json'));
         loader.onError.add(spy);
         loader.load((loader, resources) =>
         {
-            expect(resources.atlas_image.error).to.be.instanceof(Error);
+            expect(resources.atlas_error_image.error).to.be.instanceof(Error);
             expect(spy.calledOnce).to.be.true;
             loader.reset();
             done();
@@ -182,6 +182,86 @@ describe('PIXI.SpritesheetLoader', function ()
     // TODO: Test that bathc processing works correctly.
     // TODO: Test that resolution processing works correctly.
     // TODO: Test that metadata is honored.
+
+    it('should not add itself via multipack', function (done)
+    {
+        // clear the caches only to avoid cluttering the output
+        clearTextureCache();
+
+        const loader = new Loader();
+
+        loader.add('atlas_multi_self', path.join(__dirname, 'resources', 'building1-0.json'));
+        loader.load((loader, resources) =>
+        {
+            expect(Object.values(resources).filter((r) => r.url.includes('building1-0.json')).length).to.be.equals(1);
+            loader.reset();
+            done();
+        });
+    });
+
+    it('should create multipack resources when related_multi_packs field is an array of strings', function (done)
+    {
+        // clear the caches only to avoid cluttering the output
+        clearTextureCache();
+
+        const loader = new Loader();
+
+        loader.add('atlas_multi_child_check', path.join(__dirname, 'resources', 'building1-0.json'));
+        loader.load((loader, resources) =>
+        {
+            expect(resources.atlas_multi_child_check.children.some((r) => r.url.includes('building1-1.json'))).to.be.true;
+            loader.reset();
+            done();
+        });
+    });
+
+    it('should not create multipack resources when related_multi_packs field is missing or the wrong type', function (done)
+    {
+        // clear the caches only to avoid cluttering the output
+        clearTextureCache();
+
+        const loader = new Loader();
+
+        loader.add('atlas_no_multipack', path.join(__dirname, 'resources', 'building1.json'));
+        loader.add('atlas_multipack_wrong_type', path.join(__dirname, 'resources', 'atlas-multipack-wrong-type.json'));
+        loader.add('atlas_multipack_wrong_array', path.join(__dirname, 'resources', 'atlas-multipack-wrong-array.json'));
+        loader.load((loader, resources) =>
+        {
+            expect(resources.atlas_no_multipack.children.length).to.be.equals(1);
+            expect(resources.atlas_multipack_wrong_type.children.length).to.be.equals(1);
+            expect(resources.atlas_multipack_wrong_array.children.length).to.be.equals(1);
+            loader.reset();
+            done();
+        });
+    });
+
+    it('should build the multipack url', function ()
+    {
+        let result = url.resolve('http://some.com/spritesheet.json', 'spritesheet-1.json');
+
+        expect(result).to.be.equals('http://some.com/spritesheet-1.json');
+
+        result = url.resolve('http://some.com/some/dir/spritesheet.json', 'spritesheet-1.json');
+        expect(result).to.be.equals('http://some.com/some/dir/spritesheet-1.json');
+
+        result = url.resolve('http://some.com/some/dir/spritesheet.json', './spritesheet-1.json');
+        expect(result).to.be.equals('http://some.com/some/dir/spritesheet-1.json');
+
+        result = url.resolve('http://some.com/some/dir/spritesheet.json', '../spritesheet-1.json');
+        expect(result).to.be.equals('http://some.com/some/spritesheet-1.json');
+
+        result = url.resolve('/spritesheet.json', 'spritesheet-1.json');
+        expect(result).to.be.equals('/spritesheet-1.json');
+
+        result = url.resolve('/some/dir/spritesheet.json', 'spritesheet-1.json');
+        expect(result).to.be.equals('/some/dir/spritesheet-1.json');
+
+        result = url.resolve('/some/dir/spritesheet.json', './spritesheet-1.json');
+        expect(result).to.be.equals('/some/dir/spritesheet-1.json');
+
+        result = url.resolve('/some/dir/spritesheet.json', '../spritesheet-1.json');
+        expect(result).to.be.equals('/some/spritesheet-1.json');
+    });
 });
 
 function createMockResource(type, data)
@@ -201,99 +281,99 @@ function getJsonSpritesheet()
 {
     /* eslint-disable */
     return {"frames": {
-    "0.png":
-    {
-        "frame": {"x":14,"y":28,"w":14,"h":14},
-        "rotated": false,
-        "trimmed": false,
-        "spriteSourceSize": {"x":0,"y":0,"w":14,"h":14},
-        "sourceSize": {"w":14,"h":14},
-        "anchor": {"x":0.3,"y":0.4}
-    },
-    "1.png":
-    {
-        "frame": {"x":14,"y":42,"w":12,"h":14},
-        "rotated": false,
-        "trimmed": false,
-        "spriteSourceSize": {"x":0,"y":0,"w":12,"h":14},
-        "sourceSize": {"w":12,"h":14}
-    },
-    "2.png":
-    {
-        "frame": {"x":14,"y":14,"w":14,"h":14},
-        "rotated": false,
-        "trimmed": false,
-        "spriteSourceSize": {"x":0,"y":0,"w":14,"h":14},
-        "sourceSize": {"w":14,"h":14}
-    },
-    "3.png":
-    {
-        "frame": {"x":42,"y":0,"w":14,"h":14},
-        "rotated": false,
-        "trimmed": false,
-        "spriteSourceSize": {"x":0,"y":0,"w":14,"h":14},
-        "sourceSize": {"w":14,"h":14}
-    },
-    "4.png":
-    {
-        "frame": {"x":28,"y":0,"w":14,"h":14},
-        "rotated": false,
-        "trimmed": false,
-        "spriteSourceSize": {"x":0,"y":0,"w":14,"h":14},
-        "sourceSize": {"w":14,"h":14}
-    },
-    "5.png":
-    {
-        "frame": {"x":14,"y":0,"w":14,"h":14},
-        "rotated": false,
-        "trimmed": false,
-        "spriteSourceSize": {"x":0,"y":0,"w":14,"h":14},
-        "sourceSize": {"w":14,"h":14}
-    },
-    "6.png":
-    {
-        "frame": {"x":0,"y":42,"w":14,"h":14},
-        "rotated": false,
-        "trimmed": false,
-        "spriteSourceSize": {"x":0,"y":0,"w":14,"h":14},
-        "sourceSize": {"w":14,"h":14}
-    },
-    "7.png":
-    {
-        "frame": {"x":0,"y":28,"w":14,"h":14},
-        "rotated": false,
-        "trimmed": false,
-        "spriteSourceSize": {"x":0,"y":0,"w":14,"h":14},
-        "sourceSize": {"w":14,"h":14}
-    },
-    "8.png":
-    {
-        "frame": {"x":0,"y":14,"w":14,"h":14},
-        "rotated": false,
-        "trimmed": false,
-        "spriteSourceSize": {"x":0,"y":0,"w":14,"h":14},
-        "sourceSize": {"w":14,"h":14}
-    },
-    "9.png":
-    {
-        "frame": {"x":0,"y":0,"w":14,"h":14},
-        "rotated": false,
-        "trimmed": false,
-        "spriteSourceSize": {"x":0,"y":0,"w":14,"h":14},
-        "sourceSize": {"w":14,"h":14}
-    }},
-    "animations": {
-        "png123": [ "1.png", "2.png", "3.png" ]
-    },
-    "meta": {
-        "app": "http://www.texturepacker.com",
-        "version": "1.0",
-        "image": "hud.png",
-        "format": "RGBA8888",
-        "size": {"w":64,"h":64},
-        "scale": "1",
-        "smartupdate": "$TexturePacker:SmartUpdate:47025c98c8b10634b75172d4ed7e7edc$"
-    }
-    };
-    /* eslint-enable */
+        "0.png":
+        {
+            "frame": {"x":14,"y":28,"w":14,"h":14},
+            "rotated": false,
+            "trimmed": false,
+            "spriteSourceSize": {"x":0,"y":0,"w":14,"h":14},
+            "sourceSize": {"w":14,"h":14},
+            "anchor": {"x":0.3,"y":0.4}
+        },
+        "1.png":
+        {
+            "frame": {"x":14,"y":42,"w":12,"h":14},
+            "rotated": false,
+            "trimmed": false,
+            "spriteSourceSize": {"x":0,"y":0,"w":12,"h":14},
+            "sourceSize": {"w":12,"h":14}
+        },
+        "2.png":
+        {
+            "frame": {"x":14,"y":14,"w":14,"h":14},
+            "rotated": false,
+            "trimmed": false,
+            "spriteSourceSize": {"x":0,"y":0,"w":14,"h":14},
+            "sourceSize": {"w":14,"h":14}
+        },
+        "3.png":
+        {
+            "frame": {"x":42,"y":0,"w":14,"h":14},
+            "rotated": false,
+            "trimmed": false,
+            "spriteSourceSize": {"x":0,"y":0,"w":14,"h":14},
+            "sourceSize": {"w":14,"h":14}
+        },
+        "4.png":
+        {
+            "frame": {"x":28,"y":0,"w":14,"h":14},
+            "rotated": false,
+            "trimmed": false,
+            "spriteSourceSize": {"x":0,"y":0,"w":14,"h":14},
+            "sourceSize": {"w":14,"h":14}
+        },
+        "5.png":
+        {
+            "frame": {"x":14,"y":0,"w":14,"h":14},
+            "rotated": false,
+            "trimmed": false,
+            "spriteSourceSize": {"x":0,"y":0,"w":14,"h":14},
+            "sourceSize": {"w":14,"h":14}
+        },
+        "6.png":
+        {
+            "frame": {"x":0,"y":42,"w":14,"h":14},
+            "rotated": false,
+            "trimmed": false,
+            "spriteSourceSize": {"x":0,"y":0,"w":14,"h":14},
+            "sourceSize": {"w":14,"h":14}
+        },
+        "7.png":
+        {
+            "frame": {"x":0,"y":28,"w":14,"h":14},
+            "rotated": false,
+            "trimmed": false,
+            "spriteSourceSize": {"x":0,"y":0,"w":14,"h":14},
+            "sourceSize": {"w":14,"h":14}
+        },
+        "8.png":
+        {
+            "frame": {"x":0,"y":14,"w":14,"h":14},
+            "rotated": false,
+            "trimmed": false,
+            "spriteSourceSize": {"x":0,"y":0,"w":14,"h":14},
+            "sourceSize": {"w":14,"h":14}
+        },
+        "9.png":
+        {
+            "frame": {"x":0,"y":0,"w":14,"h":14},
+            "rotated": false,
+            "trimmed": false,
+            "spriteSourceSize": {"x":0,"y":0,"w":14,"h":14},
+            "sourceSize": {"w":14,"h":14}
+        }},
+        "animations": {
+            "png123": [ "1.png", "2.png", "3.png" ]
+        },
+        "meta": {
+            "app": "http://www.texturepacker.com",
+            "version": "1.0",
+            "image": "hud.png",
+            "format": "RGBA8888",
+            "size": {"w":64,"h":64},
+            "scale": "1",
+            "smartupdate": "$TexturePacker:SmartUpdate:47025c98c8b10634b75172d4ed7e7edc$"
+        }
+        };
+        /* eslint-enable */
 }

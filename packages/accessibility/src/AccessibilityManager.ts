@@ -155,7 +155,7 @@ export class AccessibilityManager
         this.androidUpdateFrequency = 500; // 2fps
 
         // let listen for tab.. once pressed we can fire up and show the accessibility layer
-        window.addEventListener('keydown', this._onKeyDown, false);
+        self.addEventListener('keydown', this._onKeyDown, false);
     }
 
     /**
@@ -194,7 +194,7 @@ export class AccessibilityManager
         hookDiv.style.left = `${DIV_HOOK_POS_Y}px`;
         hookDiv.style.zIndex = DIV_HOOK_ZINDEX.toString();
         hookDiv.style.backgroundColor = '#FF0000';
-        hookDiv.title = 'select to enable accessability for this content';
+        hookDiv.title = 'select to enable accessibility for this content';
 
         hookDiv.addEventListener('focus', () =>
         {
@@ -237,8 +237,8 @@ export class AccessibilityManager
 
         this._isActive = true;
 
-        window.document.addEventListener('mousemove', this._onMouseMove, true);
-        window.removeEventListener('keydown', this._onKeyDown, false);
+        self.document.addEventListener('mousemove', this._onMouseMove, true);
+        self.removeEventListener('keydown', this._onKeyDown, false);
 
         // TODO: Remove casting when CanvasRenderer is converted
         (this.renderer as AbstractRenderer).on('postrender', this.update, this);
@@ -264,8 +264,8 @@ export class AccessibilityManager
 
         this._isActive = false;
 
-        window.document.removeEventListener('mousemove', this._onMouseMove, true);
-        window.addEventListener('keydown', this._onKeyDown, false);
+        self.document.removeEventListener('mousemove', this._onMouseMove, true);
+        self.addEventListener('keydown', this._onKeyDown, false);
 
         // TODO: Remove casting when CanvasRenderer is converted
         (this.renderer as AbstractRenderer).off('postrender', this.update);
@@ -648,8 +648,8 @@ export class AccessibilityManager
         this.destroyTouchHook();
         this.div = null;
 
-        window.document.removeEventListener('mousemove', this._onMouseMove, true);
-        window.removeEventListener('keydown', this._onKeyDown);
+        self.document.removeEventListener('mousemove', this._onMouseMove, true);
+        self.removeEventListener('keydown', this._onKeyDown);
 
         this.pool = null;
         this.children = null;

@@ -1,11 +1,7 @@
 import './settings';
 
-import * as resources from './textures/resources';
-import * as systems from './systems';
-
-export { systems };
-export { resources };
-
+export * from './textures/resources';
+export * from './systems';
 export * from './IRenderingContext';
 export * from './autoDetectRenderer';
 export * from './fragments';
@@ -47,3 +43,7 @@ export * from './geometry/Attribute';
 export * from './geometry/Buffer';
 export * from './geometry/Geometry';
 export * from './geometry/ViewableBuffer';
+
+// #if _DEBUG
+export * from './deprecations';
+// #endif

@@ -1,9 +1,9 @@
 {
   "name": "@pixi/display",
-  "version": "5.3.4",
-  "main": "lib/display.js",
-  "module": "lib/display.es.js",
-  "bundle": "dist/display.js",
+  "version": "5.4.0-rc.3",
+  "main": "dist/cjs/display.js",
+  "module": "dist/esm/display.js",
+  "bundle": "dist/browser/display.js",
   "description": "Core display functionality",
   "author": "Mat Groves",
   "contributors": [
@@ -21,11 +21,12 @@
   },
   "files": [
     "lib",
-    "dist"
+    "dist",
+    "*.d.ts"
   ],
   "dependencies": {
-    "@pixi/math": "5.3.4",
-    "@pixi/settings": "5.3.4",
-    "@pixi/utils": "5.3.4"
+    "@pixi/math": "5.4.0-rc.3",
+    "@pixi/settings": "5.4.0-rc.3",
+    "@pixi/utils": "5.4.0-rc.3"
   }
 }

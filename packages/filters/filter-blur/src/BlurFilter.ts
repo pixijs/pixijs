@@ -3,7 +3,7 @@ import { settings } from '@pixi/settings';
 import { BlurFilterPass } from './BlurFilterPass';
 import { CLEAR_MODES } from '@pixi/constants';
 
-import type { RenderTexture, systems } from '@pixi/core';
+import type { FilterSystem, RenderTexture } from '@pixi/core';
 import type { BLEND_MODES } from '@pixi/constants';
 
 /**
@@ -25,10 +25,10 @@ export class BlurFilter extends Filter
     /**
      * @param {number} [strength=8] - The strength of the blur filter.
      * @param {number} [quality=4] - The quality of the blur filter.
-     * @param {number} [resolution=1] - The resolution of the blur filter.
+     * @param {number} [resolution=PIXI.settings.FILTER_RESOLUTION] - The resolution of the blur filter.
      * @param {number} [kernelSize=5] - The kernelSize of the blur filter.Options: 5, 7, 9, 11, 13, 15.
      */
-    constructor(strength = 8, quality = 4, resolution = settings.RESOLUTION, kernelSize = 5)
+    constructor(strength = 8, quality = 4, resolution = settings.FILTER_RESOLUTION, kernelSize = 5)
     {
         super();
 
@@ -45,12 +45,12 @@ export class BlurFilter extends Filter
     /**
      * Applies the filter.
      *
-     * @param {PIXI.systems.FilterSystem} filterManager - The manager.
+     * @param {PIXI.FilterSystem} filterManager - The manager.
      * @param {PIXI.RenderTexture} input - The input target.
      * @param {PIXI.RenderTexture} output - The output target.
      * @param {PIXI.CLEAR_MODES} clearMode - How to clear
      */
-    apply(filterManager: systems.FilterSystem, input: RenderTexture, output: RenderTexture, clearMode: CLEAR_MODES): void
+    apply(filterManager: FilterSystem, input: RenderTexture, output: RenderTexture, clearMode: CLEAR_MODES): void
     {
         const xStrength = Math.abs(this.blurXFilter.strength);
         const yStrength = Math.abs(this.blurYFilter.strength);
@@ -104,7 +104,7 @@ export class BlurFilter extends Filter
     }
 
     /**
-     * Sets the number of passes for blur. More passes means higher quaility bluring.
+     * Sets the number of passes for blur. More passes means higher quality bluring.
      *
      * @member {number}
      * @default 1

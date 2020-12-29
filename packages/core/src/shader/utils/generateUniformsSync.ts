@@ -44,6 +44,11 @@ const GLSL_TO_SINGLE_SETTERS_CACHED: Dict<string> = {
     ivec3:    'gl.uniform3i(location, v[0], v[1], v[2])',
     ivec4:    'gl.uniform4i(location, v[0], v[1], v[2], v[3])',
 
+    uint:     'gl.uniform1ui(location, v)',
+    uvec2:    'gl.uniform2ui(location, v[0], v[1])',
+    uvec3:    'gl.uniform3ui(location, v[0], v[1], v[2])',
+    uvec4:    'gl.uniform4ui(location, v[0], v[1], v[2], v[3])',
+
     bool:     'gl.uniform1i(location, v)',
     bvec2:    'gl.uniform2i(location, v[0], v[1])',
     bvec3:    'gl.uniform3i(location, v[0], v[1], v[2])',
@@ -74,6 +79,11 @@ const GLSL_TO_ARRAY_SETTERS: Dict<string> = {
     ivec2:    'gl.uniform2iv(location, v)',
     ivec3:    'gl.uniform3iv(location, v)',
     ivec4:    'gl.uniform4iv(location, v)',
+
+    uint:     'gl.uniform1uiv(location, v)',
+    uvec2:    'gl.uniform2uiv(location, v)',
+    uvec3:    'gl.uniform3uiv(location, v)',
+    uvec4:    'gl.uniform4uiv(location, v)',
 
     bool:     'gl.uniform1iv(location, v)',
     bvec2:    'gl.uniform2iv(location, v)',
@@ -138,7 +148,7 @@ export function generateUniformsSync(group: UniformGroup, uniformData: Dict<any>
         }
     }
 
-    /**
+    /*
      * the introduction of syncData is to solve an issue where textures in uniform groups are not set correctly
      * the texture count was always starting from 0 in each group. This needs to increment each time a texture is used
      * no matter which group is being used
@@ -147,4 +157,3 @@ export function generateUniformsSync(group: UniformGroup, uniformData: Dict<any>
     // eslint-disable-next-line no-new-func
     return new Function('ud', 'uv', 'renderer', 'syncData', funcFragments.join('\n')) as UniformsSyncCallback;
 }
-

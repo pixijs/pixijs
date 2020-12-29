@@ -1,4 +1,4 @@
-import { AbstractRenderer, resources } from '@pixi/core';
+import { AbstractRenderer, CanvasResource } from '@pixi/core';
 import { CanvasRenderTarget, sayHello, rgb2hex, hex2string } from '@pixi/utils';
 import { CanvasMaskManager } from './utils/CanvasMaskManager';
 import { mapCanvasBlendModesToPixi } from './utils/mapCanvasBlendModesToPixi';
@@ -25,7 +25,7 @@ export interface ICanvasRendererPlugins
     [key: string]: any;
 }
 
-/**
+/*
  * Different browsers support different smoothing property names
  * this is the list of all platform props.
  */
@@ -39,6 +39,7 @@ type SmoothingEnabledProperties =
 /**
  * Renderering context for all browsers. This includes platform-specific
  * properties that are not included in the spec for CanvasRenderingContext2D
+ * @private
  */
 export interface CrossPlatformCanvasRenderingContext2D extends CanvasRenderingContext2D
 {
@@ -78,7 +79,7 @@ export class CanvasRenderer extends AbstractRenderer
      * @param {number} [options.width=800] - the width of the screen
      * @param {number} [options.height=600] - the height of the screen
      * @param {HTMLCanvasElement} [options.view] - the canvas to use as a view, optional
-     * @param {boolean} [options.transparent=false] - If the render view is transparent, default false
+     * @param {boolean} [options.contextAlpha=true] - Pass-through value for canvas' context `alpha` property.
      * @param {boolean} [options.autoDensity=false] - Resizes renderer view in CSS pixels to allow for
      *   resolutions other than 1
      * @param {boolean} [options.antialias=false] - sets antialias
@@ -90,6 +91,7 @@ export class CanvasRenderer extends AbstractRenderer
      *      not before the new render pass.
      * @param {number} [options.backgroundColor=0x000000] - The background color of the rendered area
      *  (shown if not transparent).
+     * @param {number} [options.backgroundAlpha=1] - Value from 0 (fully transparent) to 1 (fully opaque).
      */
     constructor(options?: IRendererOptions)
     {
@@ -100,7 +102,7 @@ export class CanvasRenderer extends AbstractRenderer
          *
          * @member {CanvasRenderingContext2D}
          */
-        this.rootContext = this.view.getContext('2d', { alpha: this.transparent }) as
+        this.rootContext = this.view.getContext('2d', { alpha: this.contextAlpha }) as
             CrossPlatformCanvasRenderingContext2D;
 
         /**
@@ -226,7 +228,7 @@ export class CanvasRenderer extends AbstractRenderer
                     renderTexture.height,
                     renderTexture.resolution
                 );
-                renderTexture.resource = new resources.CanvasResource(renderTexture._canvasRenderTarget.canvas);
+                renderTexture.resource = new CanvasResource(renderTexture._canvasRenderTarget.canvas);
                 renderTexture.valid = true;
             }
 
@@ -267,14 +269,14 @@ export class CanvasRenderer extends AbstractRenderer
         {
             if (this.renderingToScreen)
             {
-                if (this.transparent)
+                context.clearRect(0, 0, this.width, this.height);
+
+                if (this.backgroundAlpha > 0)
                 {
-                    context.clearRect(0, 0, this.width, this.height);
-                }
-                else
-                {
+                    context.globalAlpha = this.contextAlpha ? this.backgroundAlpha : 1;
                     context.fillStyle = this._backgroundColorString;
                     context.fillRect(0, 0, this.width, this.height);
+                    context.globalAlpha = 1;
                 }
             }
             else
@@ -286,8 +288,10 @@ export class CanvasRenderer extends AbstractRenderer
 
                 if (clearColor[3] > 0)
                 {
+                    context.globalAlpha = this.contextAlpha ? clearColor[3] : 1;
                     context.fillStyle = hex2string(rgb2hex(clearColor));
                     context.fillRect(0, 0, renderTexture.realWidth, renderTexture.realHeight);
+                    context.globalAlpha = 1;
                 }
             }
         }
@@ -358,21 +362,20 @@ export class CanvasRenderer extends AbstractRenderer
      * Clear the canvas of renderer.
      *
      * @param {string} [clearColor] - Clear the canvas with this color, except the canvas is transparent.
+     * @param {number} [alpha] - Alpha to apply to the background fill color.
      */
-    public clear(clearColor: string): void
+    public clear(clearColor: string = this._backgroundColorString, alpha: number = this.backgroundAlpha): void
     {
-        const context = this.context;
+        const { context } = this;
 
-        clearColor = clearColor || this._backgroundColorString;
+        context.clearRect(0, 0, this.width, this.height);
 
-        if (!this.transparent && clearColor)
+        if (clearColor)
         {
+            context.globalAlpha = this.contextAlpha ? alpha : 1;
             context.fillStyle = clearColor;
             context.fillRect(0, 0, this.width, this.height);
-        }
-        else
-        {
-            context.clearRect(0, 0, this.width, this.height);
+            context.globalAlpha = 1;
         }
     }
 
@@ -459,8 +462,7 @@ export class CanvasRenderer extends AbstractRenderer
      * Collection of installed plugins. These are included by default in PIXI, but can be excluded
      * by creating a custom build. Consult the README for more information about creating custom
      * builds and excluding plugins.
-     * @name PIXI.CanvasRenderer#plugins
-     * @type {object}
+     * @member {object} plugins
      * @readonly
      * @property {PIXI.AccessibilityManager} accessibility Support tabbing interactive elements.
      * @property {PIXI.CanvasExtract} extract Extract image data from renderer.
@@ -471,7 +473,6 @@ export class CanvasRenderer extends AbstractRenderer
     /**
      * Adds a plugin to the renderer.
      *
-     * @method
      * @param {string} pluginName - The name of the plugin.
      * @param {Function} ctor - The constructor function or class for the plugin.
      */

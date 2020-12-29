@@ -8,7 +8,7 @@ import type { IMaskTarget, MaskData } from './MaskData';
  *
  * @class
  * @extends PIXI.System
- * @memberof PIXI.systems
+ * @memberof PIXI
  */
 export class StencilSystem extends AbstractMaskSystem
 {
@@ -62,6 +62,7 @@ export class StencilSystem extends AbstractMaskSystem
         maskObject.renderable = true;
         maskObject.render(this.renderer);
         this.renderer.batch.flush();
+        this.renderer.framebuffer.blit();
         maskObject.renderable = false;
 
         this._useCurrent();

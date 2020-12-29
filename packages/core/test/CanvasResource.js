@@ -1,7 +1,6 @@
-const { resources, BaseTexture } = require('../');
-const { CanvasResource } = resources;
+const { CanvasResource, BaseTexture } = require('../');
 
-describe('PIXI.resources.CanvasResource', function ()
+describe('PIXI.CanvasResource', function ()
 {
     it('should create new dimension-less resource', function ()
     {

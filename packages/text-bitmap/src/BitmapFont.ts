@@ -84,7 +84,7 @@ export class BitmapFont
      * @property {number} textureWidth=512
      * @property {number} textureHeight=512
      * @property {number} padding=4
-     * @property {string|string[]|string[][]} chars=PIXI.BitmapFont.ALPHANUMERIC
+     * @property {string|string[]|string[][]} chars = PIXI.BitmapFont.ALPHANUMERIC
      */
     public static readonly defaultOptions: IBitmapFontOptions = {
         resolution: 1,
@@ -384,11 +384,11 @@ export class BitmapFont
         let positionX = 0;
         let positionY = 0;
 
-        let canvas;
-        let context;
-        let baseTexture;
+        let canvas: HTMLCanvasElement;
+        let context: CanvasRenderingContext2D;
+        let baseTexture: BaseTexture;
         let maxCharHeight = 0;
-        const baseTextures = [];
+        const baseTextures: BaseTexture[] = [];
         const textures: Texture[] = [];
 
         for (let i = 0; i < charsList.length; i++)
@@ -480,6 +480,31 @@ export class BitmapFont
             positionX = Math.ceil(positionX);
         }
 
+        // Brute-force kerning info, this can be expensive b/c it's an O(n²),
+        // but we're using measureText which is native and fast.
+        for (let i = 0, len = charsList.length; i < len; i++)
+        {
+            const first = charsList[i];
+
+            for (let j = 0; j < len; j++)
+            {
+                const second = charsList[j];
+                const c1 = context.measureText(first).width;
+                const c2 = context.measureText(second).width;
+                const total = context.measureText(first + second).width;
+                const amount = total - (c1 + c2);
+
+                if (amount)
+                {
+                    fontData.kerning.push({
+                        first: first.charCodeAt(0),
+                        second: second.charCodeAt(0),
+                        amount,
+                    });
+                }
+            }
+        }
+
         const font = new BitmapFont(fontData, textures);
 
         // Make it easier to replace a font
@@ -503,4 +528,3 @@ export class BitmapFont
  * @property {number} [textureWidth=512] - the width of the texture atlas
  * @property {number} [textureHeight=512] - the height of the texture atlas
  */
-

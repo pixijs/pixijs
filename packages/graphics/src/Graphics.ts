@@ -12,7 +12,7 @@ import {
 
 import { Texture, UniformGroup, State, Renderer, BatchDrawCall } from '@pixi/core';
 import { BezierUtils, QuadraticUtils, ArcUtils, Star } from './utils';
-import { hex2rgb, deprecation } from '@pixi/utils';
+import { hex2rgb } from '@pixi/utils';
 import { GraphicsGeometry } from './GraphicsGeometry';
 import { FillStyle } from './styles/FillStyle';
 import { LineStyle } from './styles/LineStyle';
@@ -63,13 +63,21 @@ const DEFAULT_SHADERS: {[key: string]: Shader} = {};
 export interface Graphics extends GlobalMixins.Graphics, Container {}
 
 /**
- * The Graphics class contains methods used to draw primitive shapes such as lines, circles and
- * rectangles to the display, and to color and fill them.
+ * The Graphics class is primarily used to render primitive shapes such as lines, circles and
+ * rectangles to the display, and to color and fill them.  However, you can also use a Graphics
+ * object to build a list of primitives to use as a mask, or as a complex hitArea.
  *
- * Note that because Graphics can share a GraphicsGeometry with other instances,
- * it is necessary to call `destroy()` to properly dereference the underlying
- * GraphicsGeometry and avoid a memory leak. Alternatively, keep using the same
- * Graphics instance and call `clear()` between redraws.
+ * Please note that due to legacy naming conventions, the behavior of some functions in this class
+ * can be confusing.  Each call to `drawRect()`, `drawPolygon()`, etc. actually stores that primitive
+ * in the Geometry class's GraphicsGeometry object for later use in rendering or hit testing - the
+ * functions do not directly draw anything to the screen.  Similarly, the `clear()` function doesn't
+ * change the screen, it simply resets the list of primitives, which can be useful if you want to
+ * rebuild the contents of an existing Graphics object.
+ *
+ * Once a GraphicsGeometry list is built, you can re-use it in other Geometry objects as
+ * an optimization, by passing it into a new Geometry object's constructor.  Because of this
+ * ability, it's important to call `destroy()` on Geometry objects once you are done with them, to
+ * properly dereference each GraphicsGeometry and prevent memory leaks.
  *
  * @class
  * @extends PIXI.Container
@@ -264,7 +272,10 @@ export class Graphics extends Container
 
     /**
      * The blend mode to be applied to the graphic shape. Apply a value of
-     * `PIXI.BLEND_MODES.NORMAL` to reset the blend mode.
+     * `PIXI.BLEND_MODES.NORMAL` to reset the blend mode.  Note that, since each
+     * primitive in the GraphicsGeometry list is rendered sequentially, modes
+     * such as `PIXI.BLEND_MODES.ADD` and `PIXI.BLEND_MODES.MULTIPLY` will
+     * be applied per-primitive.
      *
      * @member {number}
      * @default PIXI.BLEND_MODES.NORMAL;
@@ -281,7 +292,7 @@ export class Graphics extends Container
     }
 
     /**
-     * The tint applied to the graphic shape. This is a hex value. A value of
+     * The tint applied to each graphic shape. This is a hex value. A value of
      * 0xFFFFFF will remove any tint effect.
      *
      * @member {number}
@@ -323,11 +334,12 @@ export class Graphics extends Container
      * Specifies the line style used for subsequent calls to Graphics methods such as the lineTo()
      * method or the drawCircle() method.
      *
+     * @instance
      * @method PIXI.Graphics#lineStyle
      * @param {number} [width=0] - width of the line to draw, will update the objects stored style
      * @param {number} [color=0x0] - color of the line to draw, will update the objects stored style
      * @param {number} [alpha=1] - alpha of the line to draw, will update the objects stored style
-     * @param {number} [alignment=0.5] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outter)
+     * @param {number} [alignment=0.5] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outer)
      * @param {boolean} [native=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
@@ -339,7 +351,7 @@ export class Graphics extends Container
      * @param {number} [options.width=0] - width of the line to draw, will update the objects stored style
      * @param {number} [options.color=0x0] - color of the line to draw, will update the objects stored style
      * @param {number} [options.alpha=1] - alpha of the line to draw, will update the objects stored style
-     * @param {number} [options.alignment=0.5] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outter)
+     * @param {number} [options.alignment=0.5] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outer)
      * @param {boolean} [options.native=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
      * @param {PIXI.LINE_CAP}[options.cap=PIXI.LINE_CAP.BUTT] - line cap style
      * @param {PIXI.LINE_JOIN}[options.join=PIXI.LINE_JOIN.MITER] - line join style
@@ -376,7 +388,7 @@ export class Graphics extends Container
      *  Default 0xFFFFFF if texture present.
      * @param {number} [options.alpha=1] - alpha of the line to draw, will update the objects stored style
      * @param {PIXI.Matrix} [options.matrix=null] - Texture matrix to transform texture
-     * @param {number} [options.alignment=0.5] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outter)
+     * @param {number} [options.alignment=0.5] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outer)
      * @param {boolean} [options.native=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
      * @param {PIXI.LINE_CAP}[options.cap=PIXI.LINE_CAP.BUTT] - line cap style
      * @param {PIXI.LINE_JOIN}[options.join=PIXI.LINE_JOIN.MITER] - line join style
@@ -385,21 +397,6 @@ export class Graphics extends Container
      */
     public lineTextureStyle(options: ILineStyleOptions): this
     {
-        // backward compatibility with params: (width, texture,
-        // color, alpha, matrix, alignment, native)
-        if (typeof options === 'number')
-        {
-            deprecation('v5.2.0', 'Please use object-based options for Graphics#lineTextureStyle');
-
-            // eslint-disable-next-line
-            const [width, texture, color, alpha, matrix, alignment, native] = arguments as any;
-
-            options = { width, texture, color, alpha, matrix, alignment, native };
-
-            // Remove undefined keys
-            Object.keys(options).forEach((key) => (options as any)[key] === undefined && delete (options as any)[key]);
-        }
-
         // Apply defaults
         options = Object.assign({
             width: 0,
@@ -723,22 +720,8 @@ export class Graphics extends Container
      * @param {PIXI.Matrix} [options.matrix=null] - Transform matrix
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    beginTextureFill(options: IFillStyleOptions): this
+    beginTextureFill(options?: IFillStyleOptions): this
     {
-        // backward compatibility with params: (texture, color, alpha, matrix)
-        if (options instanceof Texture)
-        {
-            deprecation('v5.2.0', 'Please use object-based options for Graphics#beginTextureFill');
-
-            // eslint-disable-next-line
-            const [texture, color, alpha, matrix] = arguments as any;
-
-            options = { texture, color, alpha, matrix };
-
-            // Remove undefined keys
-            Object.keys(options).forEach((key) => (options as any)[key] === undefined && delete (options as any)[key]);
-        }
-
         // Apply defaults
         options = Object.assign({
             texture: Texture.WHITE,
@@ -969,11 +952,11 @@ export class Graphics extends Container
         this.finishPoly();
 
         const geometry = this._geometry;
-        const hasuit32 = renderer.context.supports.uint32Indices;
+        const hasuint32 = renderer.context.supports.uint32Indices;
         // batch part..
         // batch it!
 
-        geometry.updateBatches(hasuit32);
+        geometry.updateBatches(hasuint32);
 
         if (geometry.batchable)
         {
@@ -1151,9 +1134,10 @@ export class Graphics extends Container
             // but may be more than one plugins for graphics
             if (!DEFAULT_SHADERS[pluginName])
             {
-                const sampleValues = new Int32Array(16);
+                const MAX_TEXTURES = renderer.plugins.batch.MAX_TEXTURES;
+                const sampleValues = new Int32Array(MAX_TEXTURES);
 
-                for (let i = 0; i < 16; i++)
+                for (let i = 0; i < MAX_TEXTURES; i++)
                 {
                     sampleValues[i] = i;
                 }
@@ -1211,7 +1195,7 @@ export class Graphics extends Container
     }
 
     /**
-     * Recalcuate the tint by applying tin to batches using Graphics tint.
+     * Recalculate the tint by applying tint to batches using Graphics tint.
      * @protected
      */
     protected calculateTints(): void
@@ -1244,7 +1228,7 @@ export class Graphics extends Container
 
     /**
      * If there's a transform update or a change to the shape of the
-     * geometry, recaculate the vertices.
+     * geometry, recalculate the vertices.
      * @protected
      */
     protected calculateVertices(): void
@@ -1352,10 +1336,8 @@ export class Graphics extends Container
      * @param {boolean} [options.baseTexture=false] - Only used for child Sprites if options.children is set to true
      *  Should it destroy the base texture of the child sprite
      */
-    public destroy(options: IDestroyOptions|boolean): void
+    public destroy(options?: IDestroyOptions|boolean): void
     {
-        super.destroy(options);
-
         this._geometry.refCount--;
         if (this._geometry.refCount === 0)
         {

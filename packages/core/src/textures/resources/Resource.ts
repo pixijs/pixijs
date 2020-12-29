@@ -10,7 +10,7 @@ import type { GLTexture } from '../GLTexture';
  * Uploading of a base texture to the GPU is required.
  *
  * @class
- * @memberof PIXI.resources
+ * @memberof PIXI
  */
 export abstract class Resource
 {
@@ -21,6 +21,7 @@ export abstract class Resource
     protected onResize: Runner;
     protected onUpdate: Runner;
     protected onError: Runner;
+
     /**
      * @param {number} [width=0] - Width of the resource
      * @param {number} [height=0] - Height of the resource

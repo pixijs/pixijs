@@ -6,6 +6,7 @@ import type { Renderer } from '../Renderer';
 import type { RenderTexture } from './RenderTexture';
 import type { BaseRenderTexture } from './BaseRenderTexture';
 import type { MaskData } from '../mask/MaskData';
+import type { ISize } from '@pixi/math';
 
 // Temporary rectangle for assigned sourceFrame or destinationFrame
 const tempRect = new Rectangle();
@@ -13,25 +14,37 @@ const tempRect = new Rectangle();
 // Temporary rectangle for renderTexture destinationFrame
 const tempRect2 = new Rectangle();
 
-// Temporary rectangle for passing the framebuffer viewport
-const viewportFrame = new Rectangle();
-
+/* eslint-disable max-len */
 /**
  * System plugin to the renderer to manage render textures.
  *
  * Should be added after FramebufferSystem
  *
+ * ### Frames
+ *
+ * The `RenderTextureSystem` holds a sourceFrame → destinationFrame projection. The following table explains the different
+ * coordinate spaces used:
+ *
+ * | Frame                  | Description                                                      | Coordinate System                                       |
+ * | ---------------------- | ---------------------------------------------------------------- | ------------------------------------------------------- |
+ * | sourceFrame            | The rectangle inside of which display-objects are being rendered | **World Space**: The origin on the top-left             |
+ * | destinationFrame       | The rectangle in the render-target (canvas or texture) into which contents should be rendered | If rendering to the canvas, this is in screen space and the origin is on the top-left. If rendering to a render-texture, this is in its base-texture's space with the origin on the bottom-left.  |
+ * | viewportFrame          | The framebuffer viewport corresponding to the destination-frame  | **Window Coordinates**: The origin is always on the bottom-left. |
+ *
  * @class
  * @extends PIXI.System
- * @memberof PIXI.systems
+ * @memberof PIXI
  */
 export class RenderTextureSystem extends System
 {
+/* eslint-enable max-len */
+
     public clearColor: number[];
     public defaultMaskStack: Array<MaskData>;
     public current: RenderTexture;
     public readonly sourceFrame: Rectangle;
     public readonly destinationFrame: Rectangle;
+    public readonly viewportFrame: Rectangle;
 
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
@@ -63,18 +76,34 @@ export class RenderTextureSystem extends System
         this.current = null;
 
         /**
-         * Source frame
+         * The source frame for the render-target's projection mapping.
+         *
+         * See {@link PIXI.ProjectionSystem#sourceFrame} for more details.
+         *
          * @member {PIXI.Rectangle}
          * @readonly
          */
         this.sourceFrame = new Rectangle();
 
         /**
-         * Destination frame
+         * The destination frame for the render-target's projection mapping.
+         *
+         * See {@link PIXI.Projection#destinationFrame} for more details.
+         *
          * @member {PIXI.Rectangle}
          * @readonly
          */
         this.destinationFrame = new Rectangle();
+
+        /**
+         * The viewport frame for the render-target's viewport binding. This is equal to the destination-frame
+         * for render-textures, while it is y-flipped when rendering to the screen (i.e. its origin is always on
+         * the bottom-left).
+         *
+         * @member {PIXI.Rectangle}
+         * @readonly
+         */
+        this.viewportFrame = new Rectangle();
     }
 
     /**
@@ -141,6 +170,8 @@ export class RenderTextureSystem extends System
             }
         }
 
+        const viewportFrame = this.viewportFrame;
+
         viewportFrame.x = destinationFrame.x * resolution;
         viewportFrame.y = destinationFrame.y * resolution;
         viewportFrame.width = destinationFrame.width * resolution;
@@ -186,7 +217,26 @@ export class RenderTextureSystem extends System
             clearColor = clearColor || this.clearColor;
         }
 
+        const destinationFrame = this.destinationFrame;
+        const baseFrame: ISize = this.current ? this.current.baseTexture : this.renderer.screen;
+        const clearMask = destinationFrame.width !== baseFrame.width || destinationFrame.height !== baseFrame.height;
+
+        if (clearMask)
+        {
+            const { x, y, width, height } = this.viewportFrame;
+
+            // TODO: ScissorSystem should cache whether the scissor test is enabled or not.
+            this.renderer.gl.enable(this.renderer.gl.SCISSOR_TEST);
+            this.renderer.gl.scissor(x, y, width, height);
+        }
+
         this.renderer.framebuffer.clear(clearColor[0], clearColor[1], clearColor[2], clearColor[3], mask);
+
+        if (clearMask)
+        {
+            // Restore the scissor box
+            this.renderer.scissor.pop();
+        }
     }
 
     resize(): void // screenWidth, screenHeight)

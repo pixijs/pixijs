@@ -4,6 +4,7 @@ import { Texture } from '../textures/Texture';
 import type { Rectangle } from '@pixi/math';
 import type { Framebuffer } from '../framebuffer/Framebuffer';
 import type { IBaseTextureOptions } from '../textures/BaseTexture';
+
 /**
  * A RenderTexture is a special texture that allows any PixiJS display object to be rendered to it.
  *
@@ -27,6 +28,7 @@ import type { IBaseTextureOptions } from '../textures/BaseTexture';
  *
  * renderer.render(sprite, renderTexture);
  * ```
+ * Note that you should not create a new renderer, but reuse the same one as the rest of the application.
  *
  * The Sprite in this case will be rendered using its local transform. To render this sprite at 0,0
  * you can clear the transform
@@ -46,9 +48,11 @@ import type { IBaseTextureOptions } from '../textures/BaseTexture';
  */
 export class RenderTexture extends Texture
 {
+    public baseTexture: BaseRenderTexture;
     public filterFrame: Rectangle|null;
     public filterPoolKey: string|number|null;
     legacyRenderer: any;
+
     /**
      * @param {PIXI.BaseRenderTexture} baseRenderTexture - The base texture object that this texture uses
      * @param {PIXI.Rectangle} [frame] - The rectangle frame of the texture to show
@@ -80,11 +84,6 @@ export class RenderTexture extends Texture
             });
         }
 
-        /**
-         * The base texture object that this texture uses
-         *
-         * @member {PIXI.BaseTexture}
-         */
         super(baseRenderTexture, frame);
 
         this.legacyRenderer = _legacyRenderer;
@@ -122,7 +121,7 @@ export class RenderTexture extends Texture
      */
     get framebuffer(): Framebuffer
     {
-        return (this.baseTexture as BaseRenderTexture).framebuffer;
+        return this.baseTexture.framebuffer;
     }
 
     /**
@@ -145,7 +144,7 @@ export class RenderTexture extends Texture
 
         if (resizeBaseTexture)
         {
-            (this.baseTexture as BaseRenderTexture).resize(width, height);
+            this.baseTexture.resize(width, height);
         }
 
         this.updateUvs();
@@ -179,7 +178,7 @@ export class RenderTexture extends Texture
      * @param {number} [options.resolution=1] - The resolution / device pixel ratio of the texture being generated
      * @return {PIXI.RenderTexture} The new render texture
      */
-    static create(options: IBaseTextureOptions): RenderTexture
+    static create(options?: IBaseTextureOptions): RenderTexture
     {
         // fallback, old-style: create(width, height, scaleMode, resolution)
         if (typeof options === 'number')

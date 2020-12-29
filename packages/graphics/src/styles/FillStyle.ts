@@ -34,7 +34,7 @@ export class FillStyle
     public texture: Texture = Texture.WHITE;
 
     /**
-     * The transform aplpied to the texture.
+     * The transform applied to the texture.
      *
      * @member {PIXI.Matrix}
      * @default null

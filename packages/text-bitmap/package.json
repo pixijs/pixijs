@@ -1,9 +1,9 @@
 {
   "name": "@pixi/text-bitmap",
-  "version": "5.3.4",
-  "main": "lib/text-bitmap.js",
-  "module": "lib/text-bitmap.es.js",
-  "bundle": "dist/text-bitmap.js",
+  "version": "5.4.0-rc.3",
+  "main": "dist/cjs/text-bitmap.js",
+  "module": "dist/esm/text-bitmap.js",
+  "bundle": "dist/browser/text-bitmap.js",
   "description": "Text via bitmap fonts",
   "author": "Mat Groves",
   "contributors": [
@@ -21,19 +21,20 @@
   },
   "files": [
     "lib",
-    "dist"
+    "dist",
+    "*.d.ts"
   ],
   "dependencies": {
-    "@pixi/core": "5.3.4",
-    "@pixi/display": "5.3.4",
-    "@pixi/loaders": "5.3.4",
-    "@pixi/math": "5.3.4",
-    "@pixi/mesh": "5.3.4",
-    "@pixi/settings": "5.3.4",
-    "@pixi/text": "5.3.4",
-    "@pixi/utils": "5.3.4"
+    "@pixi/core": "5.4.0-rc.3",
+    "@pixi/display": "5.4.0-rc.3",
+    "@pixi/loaders": "5.4.0-rc.3",
+    "@pixi/math": "5.4.0-rc.3",
+    "@pixi/mesh": "5.4.0-rc.3",
+    "@pixi/settings": "5.4.0-rc.3",
+    "@pixi/text": "5.4.0-rc.3",
+    "@pixi/utils": "5.4.0-rc.3"
   },
   "devDependencies": {
-    "@pixi/spritesheet": "5.3.4"
+    "@pixi/spritesheet": "5.4.0-rc.3"
   }
 }

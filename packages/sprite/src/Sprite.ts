@@ -70,7 +70,7 @@ export class Sprite extends Container
     /**
      * @param {PIXI.Texture} [texture] - The texture for this sprite.
      */
-    constructor(texture: Texture)
+    constructor(texture?: Texture)
     {
         super();
 
@@ -443,10 +443,10 @@ export class Sprite extends Container
     /**
      * Gets the local bounds of the sprite object.
      *
-     * @param {PIXI.Rectangle} [rect] - The output rectangle.
+     * @param {PIXI.Rectangle} [rect] - Optional output rectangle.
      * @return {PIXI.Rectangle} The bounds.
      */
-    public getLocalBounds(rect: Rectangle): Rectangle
+    public getLocalBounds(rect?: Rectangle): Rectangle
     {
         // we can do a fast local bounds if the sprite has no children!
         if (this.children.length === 0)
@@ -510,7 +510,7 @@ export class Sprite extends Container
      * @param {boolean} [options.texture=false] - Should it destroy the current texture of the sprite as well
      * @param {boolean} [options.baseTexture=false] - Should it destroy the base texture of the sprite as well
      */
-    public destroy(options: IDestroyOptions|boolean): void
+    public destroy(options?: IDestroyOptions|boolean): void
     {
         super.destroy(options);
 
@@ -541,7 +541,7 @@ export class Sprite extends Container
      * @param {object} [options] - See {@link PIXI.BaseTexture}'s constructor for options.
      * @return {PIXI.Sprite} The newly created sprite
      */
-    static from(source: SpriteSource, options: IBaseTextureOptions): Sprite
+    static from(source: SpriteSource, options?: IBaseTextureOptions): Sprite
     {
         const texture = (source instanceof Texture)
             ? source

@@ -2,7 +2,8 @@
 // exports the function for executing
 // designed for Node-only environments
 import isMobileCall from 'ismobilejs';
+import type { isMobileResult } from 'ismobilejs';
 
-const isMobile = isMobileCall(window.navigator);
+const isMobile: isMobileResult = isMobileCall(self.navigator);
 
 export { isMobile };

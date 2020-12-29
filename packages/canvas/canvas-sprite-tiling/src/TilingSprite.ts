@@ -1,8 +1,13 @@
 import { TilingSprite } from '@pixi/sprite-tiling';
 import { canvasUtils } from '@pixi/canvas-renderer';
 import { CanvasRenderTarget } from '@pixi/utils';
+import { Matrix, Point } from '@pixi/math';
 
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
+
+const worldMatrix = new Matrix();
+const patternMatrix = new Matrix();
+const patternRect = [new Point(), new Point(), new Point(), new Point()];
 
 /**
  * Renders the object using the Canvas renderer
@@ -26,8 +31,6 @@ TilingSprite.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRe
     const baseTexture = texture.baseTexture;
     const source = baseTexture.getDrawableSource();
     const baseTextureResolution = baseTexture.resolution;
-    const modX = ((this.tilePosition.x / this.tileScale.x) % texture._frame.width) * baseTextureResolution;
-    const modY = ((this.tilePosition.y / this.tileScale.y) % texture._frame.height) * baseTextureResolution;
 
     // create a nice shiny pattern!
     if (this._textureID !== this._texture._updateID || this._cachedTint !== this.tint)
@@ -56,31 +59,114 @@ TilingSprite.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRe
     // set context state..
     context.globalAlpha = this.worldAlpha;
     renderer.setBlendMode(this.blendMode);
-    renderer.setContextTransform(transform);
 
-    // fill the pattern!
+    this.tileTransform.updateLocalTransform();
+    const lt = this.tileTransform.localTransform;
+    const W = this._width;
+    const H = this._height;
+
+    /*
+     * # Implementation Notes
+     *
+     * The tiling transform is not simply a transform on the tiling sprite's local space. If that
+     * were, the bounds of the tiling sprite would change. Rather the tile transform is a transform
+     * on the "pattern" coordinates each vertex is assigned.
+     *
+     * To implement the `tileTransform`, we issue drawing commands in the pattern's own space, which
+     * is defined as:
+     *
+     * Pattern_Space = Local_Space x inverse(tileTransform)
+     *
+     * In other words,
+     * Local_Space = Pattern_Space x tileTransform
+     *
+     * We draw the pattern in pattern space, because the space we draw in defines the pattern's coordinates.
+     * In other words, the pattern will always "originate" from (0, 0) in the space we draw in.
+     *
+     * This technique is equivalent to drawing a pattern texture, and then finding a quadrilateral that becomes
+     * the tiling sprite's local bounds under the tileTransform and mapping that onto the screen.
+     *
+     * ## uvRespectAnchor
+     *
+     * The preceding paragraph discusses the case without considering `uvRespectAnchor`. The `uvRespectAnchor` flags
+     * where the origin of the pattern space is. Assuming the tileTransform includes no translation, without
+     * loss of generality: If uvRespectAnchor = true, then
+     *
+     * Local Space (0, 0) <--> Pattern Space (0, 0) (where <--> means "maps to")
+     *
+     * Here the mapping is provided by trivially by the tileTransform (note tileTransform includes no translation. That
+     * means the invariant under all other transforms are the origins)
+     *
+     * Otherwise,
+     *
+     * Local Space (-localBounds.x, -localBounds.y) <--> Pattern Space (0, 0)
+     *
+     * Here the mapping is provided by the tileTransfrom PLUS some "shift". This shift is done POST-tileTransform. The shift
+     * is equal to the position of the top-left corner of the tiling sprite in its local space.
+     *
+     * Hence,
+     *
+     * Local_Space = Pattern_Space x tileTransform x shiftTransform
+     */
+
+    // worldMatrix is used to convert from pattern space to world space.
+    //
+    // worldMatrix = tileTransform x shiftTransform x worldTransfrom
+    //             = patternMatrix x worldTransform
+    worldMatrix.identity();
+
+    // patternMatrix is used to convert from pattern space to local space. The drawing commands are issued in pattern space
+    // and this matrix is used to inverse-map the local space vertices into it.
+    //
+    // patternMatrix = tileTransfrom x shiftTransform
+    patternMatrix.copyFrom(lt);
+
+    // Apply shiftTransform into patternMatrix. See $1.1
+    if (!this.uvRespectAnchor)
+    {
+        patternMatrix.translate(-this.anchor.x * W, -this.anchor.y * H);
+    }
+
+    worldMatrix.prepend(patternMatrix);
+    worldMatrix.prepend(transform);
+
+    renderer.setContextTransform(worldMatrix);
+
+    // Fill the pattern!
     context.fillStyle = this._canvasPattern;
 
-    // TODO - this should be rolled into the setTransform above..
-    context.scale(this.tileScale.x / baseTextureResolution, this.tileScale.y / baseTextureResolution);
+    // The position in local space we are drawing the rectangle: (lx, ly, lx + W, ly + H)
+    const lx = this.anchor.x * -W;
+    const ly = this.anchor.y * -H;
 
-    const anchorX = this.anchor.x * -this._width;
-    const anchorY = this.anchor.y * -this._height;
+    // Set pattern rect in local space first.
+    patternRect[0].set(lx, ly);
+    patternRect[1].set(lx + W, ly);
+    patternRect[2].set(lx + W, ly + H);
+    patternRect[3].set(lx, ly + H);
 
-    if (this.uvRespectAnchor)
+    // Map patternRect into pattern space.
+    for (let i = 0; i < 4; i++)
     {
-        context.translate(modX, modY);
-
-        context.fillRect(-modX + anchorX, -modY + anchorY,
-            this._width / this.tileScale.x * baseTextureResolution,
-            this._height / this.tileScale.y * baseTextureResolution);
+        patternMatrix.applyInverse(patternRect[i], patternRect[i]);
     }
-    else
+
+    /*
+     * # Note about verification of theory
+     *
+     * As discussed in the implementation notes, you can verify that `patternRect[0]` will always be (0, 0) in case of
+     * `uvRespectAnchor` false and tileTransform having no translation. Indeed, because the pattern origin should map
+     * to the top-left corner of the tiling sprite in its local space.
+     */
+
+    context.beginPath();
+    context.moveTo(patternRect[0].x, patternRect[0].y);
+
+    for (let i = 1; i < 4; i++)
     {
-        context.translate(modX + anchorX, modY + anchorY);
-
-        context.fillRect(-modX, -modY,
-            this._width / this.tileScale.x * baseTextureResolution,
-            this._height / this.tileScale.y * baseTextureResolution);
+        context.lineTo(patternRect[i].x, patternRect[i].y);
     }
+
+    context.closePath();
+    context.fill();
 };

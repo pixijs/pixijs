@@ -6,8 +6,9 @@ export interface IRenderOptions {
     view: HTMLCanvasElement;
     antialias: boolean;
     autoDensity: boolean;
-    transparent: boolean;
     backgroundColor: number;
+    backgroundAlpha: number;
+    contextAlpha: boolean | 'notMultiplied';
     clearBeforeRender: boolean;
     preserveDrawingBuffer: boolean;
     width: number;
@@ -142,8 +143,9 @@ export const settings: ISettings = {
      * @property {number} resolution=1
      * @property {boolean} antialias=false
      * @property {boolean} autoDensity=false
-     * @property {boolean} transparent=false
+     * @property {boolean} contextAlpha=true
      * @property {number} backgroundColor=0x000000
+     * @property {number} backgroundAlpha=1
      * @property {boolean} clearBeforeRender=true
      * @property {boolean} preserveDrawingBuffer=false
      * @property {number} width=800
@@ -154,8 +156,9 @@ export const settings: ISettings = {
         view: null,
         antialias: false,
         autoDensity: false,
-        transparent: false,
         backgroundColor: 0x000000,
+        backgroundAlpha: 1,
+        contextAlpha: true,
         clearBeforeRender: true,
         preserveDrawingBuffer: false,
         width: 800,

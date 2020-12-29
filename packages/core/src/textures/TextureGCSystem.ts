@@ -16,7 +16,7 @@ export interface IUnloadableTexture {
  * ensuring that it does not get clogged up with textures that are no longer being used.
  *
  * @class
- * @memberof PIXI.systems
+ * @memberof PIXI
  * @extends PIXI.System
  */
 export class TextureGCSystem extends System
@@ -62,7 +62,7 @@ export class TextureGCSystem extends System
         this.checkCountMax = settings.GC_MAX_CHECK_COUNT;
 
         /**
-         * Current garabage collection mode
+         * Current garbage collection mode
          * @member {PIXI.GC_MODES}
          * @see PIXI.settings.GC_MODE
          */

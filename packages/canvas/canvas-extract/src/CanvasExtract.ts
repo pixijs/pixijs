@@ -2,7 +2,6 @@ import { RenderTexture } from '@pixi/core';
 import { CanvasRenderTarget } from '@pixi/utils';
 import { Rectangle } from '@pixi/math';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
-import { deprecation } from '@pixi/utils';
 import type { DisplayObject } from '@pixi/display';
 import type { BaseRenderTexture } from '@pixi/core';
 
@@ -158,7 +157,12 @@ export class CanvasExtract
             frame.height = renderer.height;
         }
 
-        return context.getImageData(0, 0, frame.width * resolution, frame.height * resolution).data;
+        const x = frame.x * resolution;
+        const y = frame.y * resolution;
+        const width = frame.width * resolution;
+        const height = frame.height * resolution;
+
+        return context.getImageData(x, y, width, height).data;
     }
 
     /**
@@ -170,21 +174,3 @@ export class CanvasExtract
         this.renderer = null;
     }
 }
-
-/**
- * @name PIXI.CanvasRenderer#extract
- * @type {PIXI.CanvasExtract}
- * @see PIXI.CanvasRenderer#plugins
- * @deprecated since 5.3.0
- */
-Object.defineProperty(CanvasRenderer.prototype, 'extract',
-    {
-        get()
-        {
-            deprecation('v5.3.0', 'CanvasRenderer#extract is deprecated, use CanvasRenderer#plugins.extract');
-
-            return this.plugins.extract;
-        },
-    }
-);
-

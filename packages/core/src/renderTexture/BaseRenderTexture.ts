@@ -52,6 +52,7 @@ export class BaseRenderTexture extends BaseTexture
     public framebuffer: Framebuffer;
     maskStack: Array<MaskData>;
     filterStack: Array<any>;
+
     /**
      * @param {object} [options]
      * @param {number} [options.width=100] - The width of the base render texture.
@@ -59,7 +60,7 @@ export class BaseRenderTexture extends BaseTexture
      * @param {PIXI.SCALE_MODES} [options.scaleMode] - See {@link PIXI.SCALE_MODES} for possible values.
      * @param {number} [options.resolution=1] - The resolution / device pixel ratio of the texture being generated.
      */
-    constructor(options: IBaseTextureOptions)
+    constructor(options?: IBaseTextureOptions)
     {
         if (typeof options === 'number')
         {

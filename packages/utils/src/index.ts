@@ -24,7 +24,7 @@
  *
  * @memberof PIXI.utils
  * @name isMobile
- * @type {Object}
+ * @member {Object}
  * @property {boolean} any - `true` if current platform is tablet or phone device
  * @property {boolean} tablet - `true` if current platform large-screen tablet device
  * @property {boolean} phone - `true` if current platform small-screen phone device
@@ -57,7 +57,6 @@ import EventEmitter from 'eventemitter3';
  *
  * @memberof PIXI.utils
  * @class EventEmitter
- * @type {EventEmitter}
  */
 export { EventEmitter };
 
@@ -67,13 +66,15 @@ export { EventEmitter };
  * @see {@link https://github.com/mapbox/earcut}
  *
  * @memberof PIXI.utils
- * @function earcut
+ * @method earcut
  * @param {number[]} vertices - A flat array of vertex coordinates
  * @param {number[]} [holes] - An array of hole indices
  * @param {number} [dimensions=2] - The number of coordinates per vertex in the input array
  * @return {number[]} Triangulated polygon
  */
 export { default as earcut } from 'earcut';
+
+import { parse, format, resolve } from 'url';
 
 /**
  * Node.js compatible URL utilities.
@@ -82,9 +83,9 @@ export { default as earcut } from 'earcut';
  *
  * @memberof PIXI.utils
  * @name url
- * @type {object}
+ * @member {object}
  */
-export { default as url } from 'url';
+export const url = { parse, format, resolve };
 
 import './settings';
 

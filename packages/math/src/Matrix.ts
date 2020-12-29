@@ -29,8 +29,8 @@ export class Matrix
 
     /**
      * @param {number} [a=1] - x scale
-     * @param {number} [b=0] - x skew
-     * @param {number} [c=0] - y skew
+     * @param {number} [b=0] - y skew
+     * @param {number} [c=0] - x skew
      * @param {number} [d=1] - y scale
      * @param {number} [tx=0] - x translation
      * @param {number} [ty=0] - y translation
@@ -359,6 +359,7 @@ export class Matrix
         const b = this.b;
         const c = this.c;
         const d = this.d;
+        const pivot = transform.pivot;
 
         const skewX = -Math.atan2(-c, d);
         const skewY = Math.atan2(b, a);
@@ -382,8 +383,8 @@ export class Matrix
         transform.scale.y = Math.sqrt((c * c) + (d * d));
 
         // next set position
-        transform.position.x = this.tx;
-        transform.position.y = this.ty;
+        transform.position.x = this.tx + ((pivot.x * a) + (pivot.y * c));
+        transform.position.y = this.ty + ((pivot.x * b) + (pivot.y * d));
 
         return transform;
     }
@@ -483,6 +484,13 @@ export class Matrix
 
         return this;
     }
+
+    // #if _DEBUG
+    toString(): string
+    {
+        return `[@pixi/math:Matrix a=${this.a} b=${this.b} c=${this.c} d=${this.d} tx=${this.tx} ty=${this.ty}]`;
+    }
+    // #endif
 
     /**
      * A default (identity) matrix

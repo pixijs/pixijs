@@ -1,7 +1,6 @@
 const { BaseTextureCache, TextureCache } = require('@pixi/utils');
-const { BaseTexture, Texture, RenderTexture, resources } = require('../');
+const { BaseTexture, Texture, RenderTexture, ImageResource, SVGResource, VideoResource } = require('../');
 const { settings } = require('@pixi/settings');
-const { ImageResource, SVGResource, VideoResource } = resources;
 
 const URL = 'foo.png';
 const NAME = 'foo';
@@ -18,7 +17,7 @@ function cleanCache()
     delete TextureCache[NAME2];
 }
 
-describe('BaseTexture', function ()
+describe('PIXI.BaseTexture', function ()
 {
     /*
     describe('updateImageType', function ()
@@ -86,6 +85,19 @@ describe('BaseTexture', function ()
             baseTexture.destroy();
             done();
         });
+    });
+
+    it('should use pixiIdPrefix correctly', function ()
+    {
+        cleanCache();
+
+        const canvas = document.createElement('canvas');
+        const baseTexture = BaseTexture.from(canvas, { pixiIdPrefix: 'unittest' });
+        const _pixiId = canvas._pixiId;
+
+        expect(_pixiId.indexOf('unittest_')).to.equal(0);
+        expect(baseTexture.textureCacheIds.indexOf(_pixiId)).to.equal(0);
+        expect(BaseTextureCache[_pixiId]).to.equal(baseTexture);
     });
 
     it('should remove Canvas BaseTexture from cache on destroy', function ()

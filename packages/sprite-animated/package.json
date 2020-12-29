@@ -1,9 +1,9 @@
 {
   "name": "@pixi/sprite-animated",
-  "version": "5.3.4",
-  "main": "lib/sprite-animated.js",
-  "module": "lib/sprite-animated.es.js",
-  "bundle": "dist/sprite-animated.js",
+  "version": "5.4.0-rc.3",
+  "main": "dist/cjs/sprite-animated.js",
+  "module": "dist/esm/sprite-animated.js",
+  "bundle": "dist/browser/sprite-animated.js",
   "description": "Sprite Animations as depicted by playing a series of Textures",
   "author": "Mat Groves",
   "contributors": [
@@ -21,11 +21,12 @@
   },
   "files": [
     "lib",
-    "dist"
+    "dist",
+    "*.d.ts"
   ],
   "dependencies": {
-    "@pixi/core": "5.3.4",
-    "@pixi/sprite": "5.3.4",
-    "@pixi/ticker": "5.3.4"
+    "@pixi/core": "5.4.0-rc.3",
+    "@pixi/sprite": "5.4.0-rc.3",
+    "@pixi/ticker": "5.4.0-rc.3"
   }
 }

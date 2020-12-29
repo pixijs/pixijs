@@ -1,9 +1,9 @@
 {
   "name": "@pixi/canvas-text",
-  "version": "5.3.4",
-  "main": "lib/canvas-text.js",
-  "module": "lib/canvas-text.es.js",
-  "bundle": "dist/canvas-text.js",
+  "version": "5.4.0-rc.3",
+  "main": "dist/cjs/canvas-text.js",
+  "module": "dist/esm/canvas-text.js",
+  "bundle": "dist/browser/canvas-text.js",
   "bundleNoExports": true,
   "description": "Canvas mixin for the text package",
   "author": "Dave Moore",
@@ -19,10 +19,12 @@
   },
   "files": [
     "lib",
-    "dist"
+    "dist",
+    "*.d.ts"
   ],
   "dependencies": {
-    "@pixi/sprite": "5.3.4",
-    "@pixi/text": "5.3.4"
+    "@pixi/canvas-sprite": "5.4.0-rc.3",
+    "@pixi/sprite": "5.4.0-rc.3",
+    "@pixi/text": "5.4.0-rc.3"
   }
 }

@@ -321,7 +321,7 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
         perp1x *= width;
         perp1y *= width;
 
-        /* d[x|y](0|1) = the component displacment between points p(0,1|1,2) */
+        /* d[x|y](0|1) = the component displacement between points p(0,1|1,2) */
         const dx0 = x1 - x0;
         const dy0 = y0 - y1;
         const dx1 = x1 - x2;
@@ -358,62 +358,118 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
         const omx = x1 - ((px - x1) * outerWeight);
         const omy = y1 - ((py - y1) * outerWeight);
 
-        if (style.join === LINE_JOIN.BEVEL || pdist / widthSquared > miterLimitSquared)
-        {
-            if (clockwise) /* rotating at inner angle */
-            {
-                verts.push(imx, imy);// inner miter point
-                verts.push(x1 + (perpx * outerWeight), y1 + (perpy * outerWeight));// first segment's outer vertex
-                verts.push(imx, imy);// inner miter point
-                verts.push(x1 + (perp1x * outerWeight), y1 + (perp1y * outerWeight));// second segment's outer vertex
-            }
-            else /* rotating at outer angle */
-            {
-                verts.push(x1 - (perpx * innerWeight), y1 - (perpy * innerWeight));// first segment's inner vertex
-                verts.push(omx, omy);// outer miter point
-                verts.push(x1 - (perp1x * innerWeight), y1 - (perp1y * innerWeight));// second segment's outer vertex
-                verts.push(omx, omy);// outer miter point
-            }
+        /* Is the inside miter point too far away, creating a spike? */
+        const smallerInsideSegmentSq = Math.min((dx0 * dx0) + (dy0 * dy0), (dx1 * dx1) + (dy1 * dy1));
+        const insideWeight = clockwise ? innerWeight : outerWeight;
+        const smallerInsideDiagonalSq = smallerInsideSegmentSq + (insideWeight * insideWeight * widthSquared);
+        const insideMiterOk = pdist <= smallerInsideDiagonalSq;
 
+        if (insideMiterOk)
+        {
+            if (style.join === LINE_JOIN.BEVEL || pdist / widthSquared > miterLimitSquared)
+            {
+                if (clockwise) /* rotating at inner angle */
+                {
+                    verts.push(imx, imy);// inner miter point
+                    verts.push(x1 + (perpx * outerWeight), y1 + (perpy * outerWeight));// first segment's outer vertex
+                    verts.push(imx, imy);// inner miter point
+                    verts.push(x1 + (perp1x * outerWeight), y1 + (perp1y * outerWeight));// second segment's outer vertex
+                }
+                else /* rotating at outer angle */
+                {
+                    verts.push(x1 - (perpx * innerWeight), y1 - (perpy * innerWeight));// first segment's inner vertex
+                    verts.push(omx, omy);// outer miter point
+                    verts.push(x1 - (perp1x * innerWeight), y1 - (perp1y * innerWeight));// second segment's outer vertex
+                    verts.push(omx, omy);// outer miter point
+                }
+
+                indexCount += 2;
+            }
+            else if (style.join === LINE_JOIN.ROUND)
+            {
+                if (clockwise) /* arc is outside */
+                {
+                    verts.push(imx, imy);
+                    verts.push(x1 + (perpx * outerWeight), y1 + (perpy * outerWeight));
+
+                    indexCount += round(
+                        x1, y1,
+                        x1 + (perpx * outerWeight), y1 + (perpy * outerWeight),
+                        x1 + (perp1x * outerWeight), y1 + (perp1y * outerWeight),
+                        verts, true
+                    ) + 4;
+
+                    verts.push(imx, imy);
+                    verts.push(x1 + (perp1x * outerWeight), y1 + (perp1y * outerWeight));
+                }
+                else /* arc is inside */
+                {
+                    verts.push(x1 - (perpx * innerWeight), y1 - (perpy * innerWeight));
+                    verts.push(omx, omy);
+
+                    indexCount += round(
+                        x1, y1,
+                        x1 - (perpx * innerWeight), y1 - (perpy * innerWeight),
+                        x1 - (perp1x * innerWeight), y1 - (perp1y * innerWeight),
+                        verts, false
+                    ) + 4;
+
+                    verts.push(x1 - (perp1x * innerWeight), y1 - (perp1y * innerWeight));
+                    verts.push(omx, omy);
+                }
+            }
+            else
+            {
+                verts.push(imx, imy);
+                verts.push(omx, omy);
+            }
+        }
+        else // inside miter is NOT ok
+        {
+            verts.push(x1 - (perpx * innerWeight), y1 - (perpy * innerWeight)); // first segment's inner vertex
+            verts.push(x1 + (perpx * outerWeight), y1 + (perpy * outerWeight)); // first segment's outer vertex
+            if (style.join === LINE_JOIN.BEVEL || pdist / widthSquared > miterLimitSquared)
+            {
+                // Nothing needed
+            }
+            else if (style.join === LINE_JOIN.ROUND)
+            {
+                if (clockwise) /* arc is outside */
+                {
+                    indexCount += round(
+                        x1, y1,
+                        x1 + (perpx * outerWeight), y1 + (perpy * outerWeight),
+                        x1 + (perp1x * outerWeight), y1 + (perp1y * outerWeight),
+                        verts, true
+                    ) + 2;
+                }
+                else /* arc is inside */
+                {
+                    indexCount += round(
+                        x1, y1,
+                        x1 - (perpx * innerWeight), y1 - (perpy * innerWeight),
+                        x1 - (perp1x * innerWeight), y1 - (perp1y * innerWeight),
+                        verts, false
+                    ) + 2;
+                }
+            }
+            else
+            {
+                if (clockwise)
+                {
+                    verts.push(omx, omy); // inner miter point
+                    verts.push(omx, omy); // inner miter point
+                }
+                else
+                {
+                    verts.push(imx, imy); // outer miter point
+                    verts.push(imx, imy); // outer miter point
+                }
+                indexCount += 2;
+            }
+            verts.push(x1 - (perp1x * innerWeight), y1 - (perp1y * innerWeight)); // second segment's inner vertex
+            verts.push(x1 + (perp1x * outerWeight), y1 + (perp1y * outerWeight)); // second segment's outer vertex
             indexCount += 2;
-        }
-        else if (style.join === LINE_JOIN.ROUND)
-        {
-            if (clockwise) /* arc is outside */
-            {
-                verts.push(imx, imy);
-                verts.push(x1 + (perpx * outerWeight), y1 + (perpy * outerWeight));
-
-                indexCount += round(
-                    x1, y1,
-                    x1 + (perpx * outerWeight), y1 + (perpy * outerWeight),
-                    x1 + (perp1x * outerWeight), y1 + (perp1y * outerWeight),
-                    verts, true
-                ) + 4;
-
-                verts.push(imx, imy);
-                verts.push(x1 + (perp1x * outerWeight), y1 + (perp1y * outerWeight));
-            }
-            else /* arc is inside */
-            {
-                verts.push(x1 - (perpx * innerWeight), y1 - (perpy * innerWeight));
-                verts.push(omx, omy);
-
-                indexCount += round(
-                    x1, y1,
-                    x1 - (perpx * innerWeight), y1 - (perpy * innerWeight),
-                    x1 - (perp1x * innerWeight), y1 - (perp1y * innerWeight),
-                    verts, false
-                ) + 4;
-
-                verts.push(x1 - (perp1x * innerWeight), y1 - (perp1y * innerWeight));
-                verts.push(omx, omy);
-            }
-        }
-        else
-        {
-            verts.push(imx, imy);
-            verts.push(omx, omy);
         }
     }
 

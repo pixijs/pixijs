@@ -71,8 +71,8 @@ export function correctBlendMode(blendMode: number, premultiplied: boolean): num
 export function premultiplyRgba(
     rgb: Float32Array|number[],
     alpha: number,
-    out: Float32Array,
-    premultiply: boolean
+    out?: Float32Array,
+    premultiply?: boolean
 ): Float32Array
 {
     out = out || new Float32Array(4);
@@ -130,11 +130,11 @@ export function premultiplyTint(tint: number, alpha: number): number
  * @function premultiplyTintToRgba
  * @param {number} tint - input tint
  * @param {number} alpha - alpha param
- * @param {Float32Array} [out] output
+ * @param {Float32Array} [out] - output
  * @param {boolean} [premultiply=true] - do premultiply it
  * @returns {Float32Array} vec4 rgba
  */
-export function premultiplyTintToRgba(tint: number, alpha: number, out: Float32Array, premultiply: boolean): Float32Array
+export function premultiplyTintToRgba(tint: number, alpha: number, out: Float32Array, premultiply?: boolean): Float32Array
 {
     out = out || new Float32Array(4);
     out[0] = ((tint >> 16) & 0xFF) / 255.0;

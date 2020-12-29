@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [ 10.x ]
+        node-version: [ 12.x ]
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -58,7 +58,7 @@ jobs:
     # 3) branch A pushed directly to git
     - name: Deploy Non-Tag Branches
       uses: jakejarvis/s3-sync-action@master
-      if: github.event_name == 'push' && matrix.node-version == '10.x' && !contains(github.ref, 'refs/tags')
+      if: github.event_name == 'push' && matrix.node-version == '12.x' && !contains(github.ref, 'refs/tags')
       with:
         args: --acl public-read --follow-symlinks --delete --cache-control "max-age=60"
       env:
@@ -72,7 +72,7 @@ jobs:
     # Release is published and deployed into s3://bucket-name/v5.22/
     - name: Deploy Released Branches
       uses: jakejarvis/s3-sync-action@master
-      if: (github.event_name == 'release' || contains(github.ref, 'refs/tags')) && matrix.node-version == '10.x'
+      if: (github.event_name == 'release' || contains(github.ref, 'refs/tags')) && matrix.node-version == '12.x'
       with:
         args: --acl public-read --follow-symlinks --delete --cache-control "max-age=2592000"
       env:
@@ -86,7 +86,7 @@ jobs:
     # Same release from previous deployed into s3://bucket-name/release/
     - name: Deploy Latest Release
       uses: jakejarvis/s3-sync-action@master
-      if: (github.event_name == 'release' || contains(github.ref, 'refs/tags')) && matrix.node-version == '10.x'
+      if: (github.event_name == 'release' || contains(github.ref, 'refs/tags')) && matrix.node-version == '12.x'
       with:
         args: --acl public-read --follow-symlinks --delete --cache-control "max-age=1209600"
       env:

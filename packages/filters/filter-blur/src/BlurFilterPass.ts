@@ -4,7 +4,7 @@ import { generateBlurVertSource } from './generateBlurVertSource';
 import { generateBlurFragSource } from './generateBlurFragSource';
 import { CLEAR_MODES } from '@pixi/constants';
 
-import type { RenderTexture, systems } from '@pixi/core';
+import type { FilterSystem, RenderTexture } from '@pixi/core';
 
 /**
  * The BlurFilterPass applies a horizontal or vertical Gaussian blur to an object.
@@ -25,10 +25,10 @@ export class BlurFilterPass extends Filter
      * @param {boolean} horizontal - Do pass along the x-axis (`true`) or y-axis (`false`).
      * @param {number} [strength=8] - The strength of the blur filter.
      * @param {number} [quality=4] - The quality of the blur filter.
-     * @param {number} [resolution=1] - The resolution of the blur filter.
+     * @param {number} [resolution=PIXI.settings.FILTER_RESOLUTION] - The resolution of the blur filter.
      * @param {number} [kernelSize=5] - The kernelSize of the blur filter.Options: 5, 7, 9, 11, 13, 15.
      */
-    constructor(horizontal: boolean, strength = 8, quality = 4, resolution = settings.RESOLUTION, kernelSize = 5)
+    constructor(horizontal: boolean, strength = 8, quality = 4, resolution = settings.FILTER_RESOLUTION, kernelSize = 5)
     {
         const vertSrc = generateBlurVertSource(kernelSize, horizontal);
         const fragSrc = generateBlurFragSource(kernelSize);
@@ -54,13 +54,13 @@ export class BlurFilterPass extends Filter
     /**
      * Applies the filter.
      *
-     * @param {PIXI.systems.FilterSystem} filterManager - The manager.
+     * @param {PIXI.FilterSystem} filterManager - The manager.
      * @param {PIXI.RenderTexture} input - The input target.
      * @param {PIXI.RenderTexture} output - The output target.
      * @param {PIXI.CLEAR_MODES} clearMode - How to clear
      */
     public apply(
-        filterManager: systems.FilterSystem, input: RenderTexture, output: RenderTexture, clearMode: CLEAR_MODES
+        filterManager: FilterSystem, input: RenderTexture, output: RenderTexture, clearMode: CLEAR_MODES
     ): void
     {
         if (output)
@@ -144,7 +144,7 @@ export class BlurFilterPass extends Filter
 
     /**
      * Sets the quality of the blur by modifying the number of passes. More passes means higher
-     * quaility bluring but the lower the performance.
+     * quality bluring but the lower the performance.
      *
      * @member {number}
      * @default 4

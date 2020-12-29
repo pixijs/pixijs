@@ -10,15 +10,28 @@
         "noUnusedParameters": true,
         "noImplicitReturns": true,
         "strictNullChecks": false,
-        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
         "moduleResolution": "node",
+        "resolveJsonModule": true,
         "baseUrl": "./",
         "paths": {
-            "@pixi/*": ["packages/*/src", "packages/filters/*/src", "packages/canvas/*/src"],
-            "pixi.js": ["bundles/pixi.js/src"],
-            "pixi.js-legacy": ["bundles/pixi.js-legacy/src"]
+            "@pixi/*": [
+                "packages/*/src",
+                "packages/filters/*/src",
+                "packages/canvas/*/src"
+            ],
+            "pixi.js": [
+                "bundles/pixi.js/src"
+            ],
+            "pixi.js-legacy": [
+                "bundles/pixi.js-legacy/src"
+            ],
+            "mini-signals": [
+                "node_modules/resource-loader/typings/mini-signals.d.ts"
+            ]
         },
-        "outDir": "./out"
+        "outDir": "./out",
+        "declaration": true
     },
     "exclude": [
         "node_modules",
@@ -29,5 +42,11 @@
         "**/types/**",
         "bundles/**/*.d.ts",
         "rollup.config.js"
-    ]
+    ],
+    "ts-node": {
+        "files": true,
+        "compilerOptions": {
+            "esModuleInterop": true
+        }
+    }
 }

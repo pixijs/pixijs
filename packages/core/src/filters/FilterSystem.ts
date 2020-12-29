@@ -5,7 +5,6 @@ import { QuadUv } from '../utils/QuadUv';
 import { Rectangle, Matrix, Point } from '@pixi/math';
 import { UniformGroup } from '../shader/UniformGroup';
 import { DRAW_MODES, CLEAR_MODES } from '@pixi/constants';
-import { deprecation } from '@pixi/utils';
 import { FilterState } from './FilterState';
 
 import type { Filter } from './Filter';
@@ -18,10 +17,31 @@ const tempPoints = [new Point(), new Point(), new Point(), new Point()];
 const tempMatrix = new Matrix();
 
 /**
- * System plugin to the renderer to manage the filters.
+ * System plugin to the renderer to manage filters.
+ *
+ * ## Pipeline
+ *
+ * The FilterSystem executes the filtering pipeline by rendering the display-object into a texture, applying its
+ * [filters]{@link PIXI.Filter} in series, and the last filter outputs into the final render-target.
+ *
+ * The filter-frame is the rectangle in world space being filtered, and those contents are mapped into
+ * `(0, 0, filterFrame.width, filterFrame.height)` into the filter render-texture. The filter-frame is also called
+ * the source-frame, as it is used to bind the filter render-textures. The last filter outputs to the `filterFrame`
+ * in the final render-target.
+ *
+ * ## Usage
+ *
+ * {@link PIXI.Container#renderAdvanced} is an example of how to use the filter system. It is a 3 step process:
+ *
+ * * **push**: Use {@link PIXI.FilterSystem#push} to push the set of filters to be applied on a filter-target.
+ * * **render**: Render the contents to be filtered using the renderer. The filter-system will only capture the contents
+ *      inside the bounds of the filter-target. NOTE: Using {@link PIXI.Renderer#render} is
+ *      illegal during an existing render cycle, and it may reset the filter system.
+ * * **pop**: Use {@link PIXI.FilterSystem#pop} to pop & execute the filters you initially pushed. It will apply them
+ *      serially and output to the bounds of the filter-target.
  *
  * @class
- * @memberof PIXI.systems
+ * @memberof PIXI
  * @extends PIXI.System
  */
 export class FilterSystem extends System
@@ -98,7 +118,7 @@ export class FilterSystem extends System
          * @property {Float32Array} inputClamp
          * @property {Number} resolution
          * @property {Float32Array} filterArea
-         * @property {Fload32Array} filterClamp
+         * @property {Float32Array} filterClamp
          */
         this.globalUniforms = new UniformGroup({
             outputFrame: new Rectangle(),
@@ -128,7 +148,8 @@ export class FilterSystem extends System
     }
 
     /**
-     * Adds a new filter to the System.
+     * Pushes a set of filters to be applied later to the system. This will redirect further rendering into an
+     * input render-texture for the rest of the filtering pipeline.
      *
      * @param {PIXI.DisplayObject} target - The target of the filter to render.
      * @param {PIXI.Filter[]} filters - The filters to apply.
@@ -158,7 +179,7 @@ export class FilterSystem extends System
                 // new behavior: sum the padding
                 : padding + filter.padding;
             // only auto fit if all filters are autofit
-            autoFit = autoFit || filter.autoFit;
+            autoFit = autoFit && filter.autoFit;
 
             legacy = legacy || filter.legacy;
         }
@@ -212,6 +233,8 @@ export class FilterSystem extends System
 
         const destinationFrame = this.tempRect;
 
+        destinationFrame.x = 0;
+        destinationFrame.y = 0;
         destinationFrame.width = state.sourceFrame.width;
         destinationFrame.height = state.sourceFrame.height;
 
@@ -222,7 +245,7 @@ export class FilterSystem extends System
         state.transform = renderer.projection.transform;
         renderer.projection.transform = null;
         renderTextureSystem.bind(state.renderTexture, state.sourceFrame, destinationFrame);
-        renderTextureSystem.clear();
+        renderer.framebuffer.clear(0, 0, 0, 0);
     }
 
     /**
@@ -323,11 +346,17 @@ export class FilterSystem extends System
 
     /**
      * Binds a renderTexture with corresponding `filterFrame`, clears it if mode corresponds.
+     *
      * @param {PIXI.RenderTexture} filterTexture - renderTexture to bind, should belong to filter pool or filter stack
      * @param {PIXI.CLEAR_MODES} [clearMode] - clearMode, by default its CLEAR/YES. See {@link PIXI.CLEAR_MODES}
      */
     bindAndClear(filterTexture: RenderTexture, clearMode = CLEAR_MODES.CLEAR): void
     {
+        const {
+            renderTexture: renderTextureSystem,
+            state: stateSystem,
+        } = this.renderer;
+
         if (filterTexture === this.defaultFilterStack[this.defaultFilterStack.length - 1].renderTexture)
         {
             // Restore projection transform if rendering into the output render-target.
@@ -343,14 +372,16 @@ export class FilterSystem extends System
         {
             const destinationFrame = this.tempRect;
 
+            destinationFrame.x = 0;
+            destinationFrame.y = 0;
             destinationFrame.width = filterTexture.filterFrame.width;
             destinationFrame.height = filterTexture.filterFrame.height;
 
-            this.renderer.renderTexture.bind(filterTexture, filterTexture.filterFrame, destinationFrame);
+            renderTextureSystem.bind(filterTexture, filterTexture.filterFrame, destinationFrame);
         }
         else if (filterTexture !== this.defaultFilterStack[this.defaultFilterStack.length - 1].renderTexture)
         {
-            this.renderer.renderTexture.bind(filterTexture);
+            renderTextureSystem.bind(filterTexture);
         }
         else
         {
@@ -362,17 +393,17 @@ export class FilterSystem extends System
             );
         }
 
-        // TODO: remove in next major version
-        if (typeof clearMode === 'boolean')
-        {
-            clearMode = clearMode ? CLEAR_MODES.CLEAR : CLEAR_MODES.BLEND;
-            // get deprecation function from utils
-            deprecation('5.2.1', 'Use CLEAR_MODES when using clear applyFilter option');
-        }
+        // Clear the texture in BLIT mode if blending is disabled or the forceClear flag is set. The blending
+        // is stored in the 0th bit of the state.
+        const autoClear = (stateSystem.stateId & 1) || this.forceClear;
+
         if (clearMode === CLEAR_MODES.CLEAR
-            || (clearMode === CLEAR_MODES.BLIT && this.forceClear))
+            || (clearMode === CLEAR_MODES.BLIT && autoClear))
         {
-            this.renderer.renderTexture.clear();
+            // Use framebuffer.clear because we want to clear the whole filter texture, not just the filtering
+            // area over which the shaders are run. This is because filters may sampling outside of it (e.g. blur)
+            // instead of clamping their arithmetic.
+            this.renderer.framebuffer.clear(0, 0, 0, 0);
         }
     }
 
@@ -384,10 +415,12 @@ export class FilterSystem extends System
      * @param {PIXI.RenderTexture} output - The target to output to.
      * @param {PIXI.CLEAR_MODES} [clearMode] - Should the output be cleared before rendering to it
      */
-    applyFilter(filter: Filter, input: RenderTexture, output: RenderTexture, clearMode: CLEAR_MODES): void
+    applyFilter(filter: Filter, input: RenderTexture, output: RenderTexture, clearMode?: CLEAR_MODES): void
     {
         const renderer = this.renderer;
 
+        // Set state before binding, so bindAndClear gets the blend mode.
+        renderer.state.set(filter.state);
         this.bindAndClear(output, clearMode);
 
         // set the uniforms..
@@ -397,8 +430,6 @@ export class FilterSystem extends System
         // TODO make it so that the order of this does not matter..
         // because it does at the moment cos of global uniforms.
         // they need to get resynced
-
-        renderer.state.set(filter.state);
         renderer.shader.bind(filter);
 
         if (filter.legacy)

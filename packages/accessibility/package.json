@@ -1,10 +1,10 @@
 {
   "name": "@pixi/accessibility",
-  "version": "5.3.4",
-  "main": "lib/accessibility.js",
-  "module": "lib/accessibility.es.js",
-  "bundle": "dist/accessibility.js",
-  "description": "Accessibility Plugin for visually impared users",
+  "version": "5.4.0-rc.3",
+  "main": "dist/cjs/accessibility.js",
+  "module": "dist/esm/accessibility.js",
+  "bundle": "dist/browser/accessibility.js",
+  "description": "Accessibility Plugin for visually impaired users",
   "author": "Mat Groves",
   "contributors": [
     "Matt Karl <matt@mattkarl.com>"
@@ -21,14 +21,15 @@
   },
   "files": [
     "lib",
-    "dist"
+    "dist",
+    "*.d.ts"
   ],
   "dependencies": {
-    "@pixi/core": "5.3.4",
-    "@pixi/display": "5.3.4",
-    "@pixi/utils": "5.3.4"
+    "@pixi/core": "5.4.0-rc.3",
+    "@pixi/display": "5.4.0-rc.3",
+    "@pixi/utils": "5.4.0-rc.3"
   },
   "devDependencies": {
-    "@pixi/canvas-renderer": "5.3.4"
+    "@pixi/canvas-renderer": "5.4.0-rc.3"
   }
 }

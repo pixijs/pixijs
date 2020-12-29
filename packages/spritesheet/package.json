@@ -1,9 +1,9 @@
 {
   "name": "@pixi/spritesheet",
-  "version": "5.3.4",
-  "main": "lib/spritesheet.js",
-  "module": "lib/spritesheet.es.js",
-  "bundle": "dist/spritesheet.js",
+  "version": "5.4.0-rc.3",
+  "main": "dist/cjs/spritesheet.js",
+  "module": "dist/esm/spritesheet.js",
+  "bundle": "dist/browser/spritesheet.js",
   "description": "Spritesheets maintain a collection of Textures on a single image",
   "author": "Mat Groves",
   "contributors": [
@@ -21,12 +21,13 @@
   },
   "files": [
     "lib",
-    "dist"
+    "dist",
+    "*.d.ts"
   ],
   "dependencies": {
-    "@pixi/core": "5.3.4",
-    "@pixi/loaders": "5.3.4",
-    "@pixi/math": "5.3.4",
-    "@pixi/utils": "5.3.4"
+    "@pixi/core": "5.4.0-rc.3",
+    "@pixi/loaders": "5.4.0-rc.3",
+    "@pixi/math": "5.4.0-rc.3",
+    "@pixi/utils": "5.4.0-rc.3"
   }
 }

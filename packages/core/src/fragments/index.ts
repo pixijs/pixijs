@@ -1,5 +1,5 @@
-import defaultVertex from './default.vert';
-import defaultFilterVertex from './defaultFilter.vert';
+import $defaultVertex from './default.vert';
+import $defaultFilterVertex from './defaultFilter.vert';
 
 /**
  * Default vertex shader
@@ -12,5 +12,10 @@ import defaultFilterVertex from './defaultFilter.vert';
  * @memberof PIXI
  * @member {string} defaultFilterVertex
  */
+
+// NOTE: This black magic is so that @microsoft/api-extractor does not complain! This explicitly specifies the types
+// of defaultVertex, defaultFilterVertex.
+const defaultVertex: string = $defaultVertex;
+const defaultFilterVertex: string = $defaultFilterVertex;
 
 export { defaultVertex, defaultFilterVertex };

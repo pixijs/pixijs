@@ -19,7 +19,7 @@ export class CanvasRenderTarget
      * @param {number} height - the height for the newly created canvas
      * @param {number} [resolution=1] - The resolution / device pixel ratio of the canvas
      */
-    constructor(width: number, height: number, resolution: number)
+    constructor(width: number, height: number, resolution?: number)
     {
         /**
          * The Canvas object that belongs to this CanvasRenderTarget.

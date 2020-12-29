@@ -1,8 +1,8 @@
-const { CLEAR_MODES } = require('@pixi/constants');
+const { CLEAR_MODES, BLEND_MODES } = require('@pixi/constants');
 const { Rectangle, Matrix } = require('@pixi/math');
 const { Renderer, Filter } = require('../');
 
-describe('PIXI.systems.FilterSystem', function ()
+describe('PIXI.FilterSystem', function ()
 {
     function onePixelObject(worldTransform, size = 1)
     {
@@ -34,6 +34,8 @@ describe('PIXI.systems.FilterSystem', function ()
         const clearSpy = sinon.spy(this.renderer.framebuffer, 'clear');
         const obj = onePixelObject();
         const filterSystem = this.renderer.filter;
+
+        innerFilter.state.blend = false;
 
         let clearModeValue = CLEAR_MODES.BLEND;
 
@@ -69,10 +71,6 @@ describe('PIXI.systems.FilterSystem', function ()
         expect(render(CLEAR_MODES.CLEAR, true)).to.equal(1);
         expect(render(CLEAR_MODES.AUTO, false)).to.equal(0);
         expect(render(CLEAR_MODES.AUTO, true)).to.equal(1);
-        expect(render(false, false)).to.equal(0);
-        expect(render(false, true)).to.equal(0);
-        expect(render(true, false)).to.equal(1);
-        expect(render(true, true)).to.equal(1);
 
         // check that there are two temp textures of same size
         const keys = Object.keys(filterSystem.texturePool.texturePool);

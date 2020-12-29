@@ -1,9 +1,9 @@
 {
   "name": "@pixi/utils",
-  "version": "5.3.4",
-  "main": "lib/utils.js",
-  "module": "lib/utils.es.js",
-  "bundle": "dist/utils.js",
+  "version": "5.4.0-rc.3",
+  "main": "dist/cjs/utils.js",
+  "module": "dist/esm/utils.js",
+  "bundle": "dist/browser/utils.js",
   "namespace": "PIXI.utils",
   "description": "Collection of utilities used by PixiJS",
   "author": "Mat Groves",
@@ -22,16 +22,19 @@
   },
   "files": [
     "lib",
-    "dist"
+    "dist",
+    "*.d.ts"
   ],
   "dependencies": {
-    "@pixi/constants": "5.3.4",
-    "@pixi/settings": "5.3.4",
-    "earcut": "^2.1.5",
+    "@pixi/constants": "5.4.0-rc.3",
+    "@pixi/settings": "5.4.0-rc.3",
+    "@types/earcut": "^2.1.0",
+    "@types/node": "^12.0.0",
+    "earcut": "^2.2.2",
     "eventemitter3": "^3.1.0",
     "url": "^0.11.0"
   },
   "devDependencies": {
-    "@types/earcut": "^2.1.0"
+    "css-color-names": "^1.0.1"
   }
 }

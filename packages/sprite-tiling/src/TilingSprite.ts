@@ -1,7 +1,6 @@
 import { Texture, TextureMatrix } from '@pixi/core';
 import { Point, Rectangle, Transform  } from '@pixi/math';
 import { Sprite } from '@pixi/sprite';
-import { deprecation } from '@pixi/utils';
 import type { Renderer, IBaseTextureOptions, TextureSource } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
 import type { IPoint, IPointData, ISize, ObservablePoint } from '@pixi/math';
@@ -12,7 +11,7 @@ const tempPoint = new Point();
 export interface TilingSprite extends GlobalMixins.TilingSprite {}
 
 /**
- * A tiling sprite is a fast way of rendering a tiling image
+ * A tiling sprite is a fast way of rendering a tiling image.
  *
  * @class
  * @extends PIXI.Sprite
@@ -61,7 +60,7 @@ export class TilingSprite extends Sprite
          *
          * @member {PIXI.TextureMatrix}
          */
-        this.uvMatrix = texture.uvMatrix || new TextureMatrix(texture);
+        this.uvMatrix = this.texture.uvMatrix || new TextureMatrix(texture);
 
         /**
          * Plugin that is responsible for rendering this element.
@@ -73,7 +72,11 @@ export class TilingSprite extends Sprite
         this.pluginName = 'tilingSprite';
 
         /**
-         * Whether or not anchor affects uvs
+         * Flags whether the tiling pattern should originate from the origin instead of the top-left corner in
+         * local space.
+         *
+         * This will make the texture coordinates assigned to each vertex dependent on the value of the anchor. Without
+         * this, the top-left corner always gets the (0, 0) texture coordinate.
          *
          * @member {boolean}
          * @default false
@@ -181,10 +184,10 @@ export class TilingSprite extends Sprite
     /**
      * Gets the local bounds of the sprite object.
      *
-     * @param {PIXI.Rectangle} rect - The output rectangle.
+     * @param {PIXI.Rectangle} [rect] - Optional output rectangle.
      * @return {PIXI.Rectangle} The bounds.
      */
-    public getLocalBounds(rect: Rectangle): Rectangle
+    public getLocalBounds(rect?: Rectangle): Rectangle
     {
         // we can do a fast local bounds if the sprite has no children!
         if (this.children.length === 0)
@@ -247,7 +250,7 @@ export class TilingSprite extends Sprite
      * @param {boolean} [options.texture=false] - Should it destroy the current texture of the sprite as well
      * @param {boolean} [options.baseTexture=false] - Should it destroy the base texture of the sprite as well
      */
-    public destroy(options: IDestroyOptions|boolean): void
+    public destroy(options?: IDestroyOptions|boolean): void
     {
         super.destroy(options);
 
@@ -268,14 +271,6 @@ export class TilingSprite extends Sprite
      */
     static from(source: TextureSource, options: ISize & IBaseTextureOptions): TilingSprite
     {
-        // Deprecated
-        if (typeof options === 'number')
-        {
-            deprecation('5.3.0', 'TilingSprite.from use options instead of width and height args');
-            // eslint-disable-next-line prefer-rest-params
-            options = { width: options, height: arguments[2] } as ISize;
-        }
-
         return new TilingSprite(
             Texture.from(source, options),
             options.width,

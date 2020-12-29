@@ -23,7 +23,7 @@ const defaultDestroyOptions: IDestroyOptions = {
  *
  * The text is created using the [Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API).
  *
- * The primary advantage of this class over BitmapText is that you have great control over the style of the next,
+ * The primary advantage of this class over BitmapText is that you have great control over the style of the text,
  * which you can change at runtime.
  *
  * The primary disadvantages is that each piece of text has it's own texture, which can use more memory.
@@ -63,7 +63,7 @@ export class Text extends Sprite
      * @param {object|PIXI.TextStyle} [style] - The style parameters
      * @param {HTMLCanvasElement} [canvas] - The canvas element for drawing text
      */
-    constructor(text: string, style: Partial<ITextStyle>|TextStyle, canvas: HTMLCanvasElement)
+    constructor(text: string, style?: Partial<ITextStyle>|TextStyle, canvas?: HTMLCanvasElement)
     {
         let ownCanvas = false;
 
@@ -222,8 +222,9 @@ export class Text extends Sprite
         for (let i = 0; i < passesCount; ++i)
         {
             const isShadowPass = style.dropShadow && i === 0;
-            const dsOffsetText = isShadowPass ? height * 2 : 0; // we only want the drop shadow, so put text way off-screen
-            const dsOffsetShadow = dsOffsetText * this.resolution;
+            // we only want the drop shadow, so put text way off-screen
+            const dsOffsetText = isShadowPass ? Math.ceil(Math.max(1, height) + (style.padding * 2)) : 0;
+            const dsOffsetShadow = dsOffsetText * this._resolution;
 
             if (isShadowPass)
             {
@@ -250,7 +251,7 @@ export class Text extends Sprite
                 //       https://github.com/microsoft/TypeScript/issues/2521
                 context.strokeStyle = style.stroke as string;
 
-                context.shadowColor = '0';
+                context.shadowColor = 'black';
                 context.shadowBlur = 0;
                 context.shadowOffsetX = 0;
                 context.shadowOffsetY = 0;
@@ -513,12 +514,6 @@ export class Text extends Sprite
             // we need to repeat the gradient so that each individual line of text has the same vertical gradient effect
             // ['#FF0000', '#00FF00', '#0000FF'] over 2 lines would create stops at 0.125, 0.25, 0.375, 0.625, 0.75, 0.875
 
-            // There's potential for floating point precision issues at the seams between gradient repeats.
-            // The loop below generates the stops in order, so track the last generated one to prevent
-            // floating point precision from making us go the teeniest bit backwards, resulting in
-            // the first and last colors getting swapped.
-            let lastIterationStop = 0;
-
             // Actual height of the text itself, not counting spacing for lineHeight/leading/dropShadow etc
             const textHeight = metrics.fontProperties.fontSize + style.strokeThickness;
 
@@ -543,14 +538,11 @@ export class Text extends Sprite
                         lineStop = j / fill.length;
                     }
 
-                    const globalStop = (thisLineTop / height) + (lineStop * gradStopLineHeight);
+                    let globalStop = Math.min(1, Math.max(0, (thisLineTop / height) + (lineStop * gradStopLineHeight)));
 
-                    // Prevent color stop generation going backwards from floating point imprecision
-                    let clampedStop = Math.max(lastIterationStop, globalStop);
-
-                    clampedStop = Math.min(clampedStop, 1); // Cap at 1 as well for safety's sake to avoid a possible throw.
-                    gradient.addColorStop(clampedStop, fill[j]);
-                    lastIterationStop = clampedStop;
+                    // There's potential for floating point precision issues at the seams between gradient repeats.
+                    globalStop = Number(globalStop.toFixed(5));
+                    gradient.addColorStop(globalStop, fill[j]);
                 }
             }
         }
@@ -596,7 +588,7 @@ export class Text extends Sprite
      * @param {boolean} [options.texture=true] - Should it destroy the current texture of the sprite as well
      * @param {boolean} [options.baseTexture=true] - Should it destroy the base texture of the sprite as well
      */
-    public destroy(options: IDestroyOptions|boolean): void
+    public destroy(options?: IDestroyOptions|boolean): void
     {
         if (typeof options === 'boolean')
         {

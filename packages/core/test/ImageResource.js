@@ -1,9 +1,8 @@
-const { resources, BaseTexture, Renderer } = require('../');
+const { ImageResource, BaseTexture, Renderer } = require('../');
 const { settings } = require('@pixi/settings');
-const { ImageResource } = resources;
 const path = require('path');
 
-describe('PIXI.resources.ImageResource', function ()
+describe('PIXI.ImageResource', function ()
 {
     before(function ()
     {

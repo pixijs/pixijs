@@ -8,8 +8,8 @@ import type { GLTexture } from '../GLTexture';
 /**
  * Base for all the image/canvas resources
  * @class
- * @extends PIXI.resources.Resource
- * @memberof PIXI.resources
+ * @extends PIXI.Resource
+ * @memberof PIXI
  */
 export class BaseImageResource extends Resource
 {
@@ -51,7 +51,7 @@ export class BaseImageResource extends Resource
      * @param {string} url - URL to check
      * @param {boolean|string} [crossorigin=true] - Cross origin value to use
      */
-    static crossOrigin(element: HTMLImageElement|HTMLVideoElement, url: string, crossorigin: boolean|string): void
+    static crossOrigin(element: HTMLImageElement|HTMLVideoElement, url: string, crossorigin?: boolean|string): void
     {
         if (crossorigin === undefined && url.indexOf('data:') !== 0)
         {
@@ -68,7 +68,7 @@ export class BaseImageResource extends Resource
      * @param {PIXI.Renderer} renderer - Upload to the renderer
      * @param {PIXI.BaseTexture} baseTexture - Reference to parent texture
      * @param {PIXI.GLTexture} glTexture
-     * @param {HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|SVGElement} [source] (optional)
+     * @param {HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|SVGElement} [source] - (optional)
      * @returns {boolean} true is success
      */
     upload(renderer: Renderer, baseTexture: BaseTexture, glTexture: GLTexture, source?: ImageSource): boolean
