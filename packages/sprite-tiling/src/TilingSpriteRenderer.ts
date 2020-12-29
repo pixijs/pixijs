@@ -69,7 +69,8 @@ export class TilingSpriteRenderer extends ObjectRenderer
         vertices[2] = vertices[4] = (ts._width) * (1.0 - ts.anchor.x);
         vertices[5] = vertices[7] = ts._height * (1.0 - ts.anchor.y);
 
-        const { x: anchorX = 0, y: anchorY = 0 } = ts.uvRespectAnchor ? ts.anchor : {};
+        const anchorX = ts.uvRespectAnchor ? ts.anchor.x : 0;
+        const anchorY = ts.uvRespectAnchor ? ts.anchor.y : 0;
 
         vertices = quad.uvs;
 
