@@ -1,6 +1,6 @@
 {
   "name": "@pixi/filter-fxaa",
-  "version": "5.4.0-rc.3",
+  "version": "6.0.0-rc",
   "main": "dist/cjs/filter-fxaa.js",
   "module": "dist/esm/filter-fxaa.js",
   "bundle": "dist/browser/filter-fxaa.js",
@@ -26,6 +26,6 @@
     "*.d.ts"
   ],
   "dependencies": {
-    "@pixi/core": "5.4.0-rc.3"
+    "@pixi/core": "6.0.0-rc"
   }
 }
