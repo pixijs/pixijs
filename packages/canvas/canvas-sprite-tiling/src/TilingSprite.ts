@@ -119,8 +119,7 @@ TilingSprite.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRe
     // and this matrix is used to inverse-map the local space vertices into it.
     //
     // patternMatrix = tileTransfrom x shiftTransform
-    patternMatrix.identity();
-    patternMatrix.prepend(lt);
+    patternMatrix.copyFrom(lt);
 
     // Apply shiftTransform into patternMatrix. See $1.1
     if (!this.uvRespectAnchor)
