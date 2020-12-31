@@ -330,17 +330,17 @@ export class AccessibilityManager
         }
 
         const { left, top, width, height } = this.renderer.view.getBoundingClientRect();
-        const { width: stageWidth, height: stageHeight, resolution } = this.renderer;
+        const { width: viewWidth, height: viewHeight, resolution } = this.renderer;
 
-        const sx = (width / stageWidth) * resolution;
-        const sy = (height / stageHeight) * resolution;
+        const sx = (width / viewWidth) * resolution;
+        const sy = (height / viewHeight) * resolution;
 
         let div = this.div;
 
         div.style.left = `${left}px`;
         div.style.top = `${top}px`;
-        div.style.width = `${stageWidth}px`;
-        div.style.height = `${stageHeight}px`;
+        div.style.width = `${viewWidth}px`;
+        div.style.height = `${viewHeight}px`;
 
         for (let i = 0; i < this.children.length; i++)
         {
@@ -440,16 +440,16 @@ export class AccessibilityManager
             hitArea.y = 0;
         }
 
-        const { width: stageWidth, height: stageHeight } = this.renderer;
+        const { width: viewWidth, height: viewHeight } = this.renderer;
 
-        if (hitArea.x + hitArea.width > stageWidth)
+        if (hitArea.x + hitArea.width > viewWidth)
         {
-            hitArea.width = stageWidth - hitArea.x;
+            hitArea.width = viewWidth - hitArea.x;
         }
 
-        if (hitArea.y + hitArea.height > stageHeight)
+        if (hitArea.y + hitArea.height > viewHeight)
         {
-            hitArea.height = stageHeight - hitArea.y;
+            hitArea.height = viewHeight - hitArea.y;
         }
     }
 
