@@ -189,6 +189,14 @@ export function getUBOData(uniforms: Dict<any>, uniformData: Dict<any>):any[]
 
 export function generateUniformBufferSync(group: UniformBufferGroup, uniformData: Dict<any>): UniformsSyncCallback
 {
+    if (!group.autoManage)
+    {
+        return (_ud, _uv, _renderer, _syncData, buffer) =>
+        {
+            buffer.update();
+        };
+    }
+
     const usedUniformDatas = getUBOData(group.uniforms, uniformData);
 
     const { uboElements, size } = createUBOElements(usedUniformDatas);

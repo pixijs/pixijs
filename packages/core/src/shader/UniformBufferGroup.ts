@@ -42,6 +42,8 @@ export class UniformBufferGroup
     static: boolean;
     buffer: Buffer;
     ubo = true;
+    autoManage:boolean;
+
     bufferView: ViewableBuffer;
 
     /**
@@ -60,12 +62,14 @@ export class UniformBufferGroup
         {
             this.buffer = uniforms;
             this.buffer.type = BUFFER_TYPE.UNIFORM_BUFFER;
+            this.autoManage = false;
         }
         else
         {
             this.uniforms = uniforms;
             this.buffer = new Buffer(new Float32Array(1));
             this.buffer.type = BUFFER_TYPE.UNIFORM_BUFFER;
+            this.autoManage = true;
         }
 
         /**

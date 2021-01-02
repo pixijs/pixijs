@@ -5,6 +5,7 @@ const {
     createUBOElements,
     generateUniformBufferSync,
     getUBOData,
+    Buffer,
     UniformBufferGroup,
 } = require('../../');
 const chai = require('chai');
@@ -379,6 +380,18 @@ describe('generateUniformBufferSync', function ()
                     6, 6, 6, 6,
                     7, 7, 7, 7,
                     8, 8, 8, 8,
+                ])
+
+            },
+            {
+                uboSrc: ` uniform uboTest {
+                    float uFirst[3]; 
+                    vec3 uVec3[3]; 
+                    mat4 uMat4[2];
+                };`,
+                groupData: new Buffer(new Float32Array([1, 0, 0, 0, 2, 0, 0, 0])),
+                expectedBuffer: new Float32Array([
+                    1, 0, 0, 0, 2, 0, 0, 0
                 ])
 
             },
