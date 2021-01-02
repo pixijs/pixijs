@@ -1,7 +1,8 @@
 import type { Dict } from '@pixi/utils';
-
+import { mapSize } from '../utils';
 import { IUniformData } from '../Program';
 import { UniformBufferGroup } from '../UniformBufferGroup';
+import { uniformParsers } from './uniformParsers';
 
 export type UniformsSyncCallback = (...args: any[]) => void;
 
@@ -10,7 +11,7 @@ export type UniformsSyncCallback = (...args: any[]) => void;
 // ud = uniformData
 // uv = uniformValue
 // l = location
-const UBO_TO_SINGLE_SETTERS_CACHED: Dict<string> = {
+const UBO_TO_SINGLE_SETTERS: Dict<string> = {
     float: `
         data[offset] = v;
     `,
@@ -31,16 +32,24 @@ const UBO_TO_SINGLE_SETTERS_CACHED: Dict<string> = {
         data[offset+3] = v[3];
     `,
     mat2: `
-        for(var i = 0; i < 4; i++)
-        {
-            data[offset + i] = v[i];
-        }
+        data[offset] = v[0];
+        data[offset+1] = v[1];
+
+        data[offset+4] = v[2];
+        data[offset+5] = v[3];
     `,
     mat3: `
-        for(var i = 0; i < 9; i++)
-        {
-            data[offset + i] = v[i];
-        }
+        data[offset] = v[0];
+        data[offset+1] = v[1];
+        data[offset+2] = v[2];
+
+        data[offset + 4] = v[3];
+        data[offset + 5] = v[4];
+        data[offset + 6] = v[5];
+
+        data[offset + 8] = v[6];
+        data[offset + 9] = v[7];
+        data[offset + 10] = v[8];
     `,
     mat4: `
         for(var i = 0; i < 16; i++)
@@ -74,8 +83,6 @@ const GLSL_TO_STD40_SIZE: Dict<number> = {
     mat2:     16 * 2,
     mat3:     16 * 3,
     mat4:     16 * 4,
-
-    sampler2D:  4,
 };
 
 interface UBOElement {
@@ -92,7 +99,7 @@ interface UBOElement {
  *
  * @param uniformData
  */
-function createUBOElements(uniformData:IUniformData[]):{uboElements:UBOElement[], size:number}
+export function createUBOElements(uniformData:IUniformData[]):{uboElements:UBOElement[], size:number}
 {
     const uboElements:UBOElement[] = uniformData.map((data:IUniformData) =>
         ({
@@ -110,7 +117,14 @@ function createUBOElements(uniformData:IUniformData[]):{uboElements:UBOElement[]
 
     for (let i = 0; i < uboElements.length; i++)
     {
-        size = GLSL_TO_STD40_SIZE[uboElements[i].data.type];
+        const uboElement = uboElements[i];
+
+        size = GLSL_TO_STD40_SIZE[uboElement.data.type];
+
+        if (uboElement.data.size > 1)
+        {
+            size = Math.max(size, 16) * uboElement.data.size;
+        }
 
         remainingChunk = chunk - size;	// How much of the chunk exists after taking the size of the data.
 
@@ -137,9 +151,9 @@ function createUBOElements(uniformData:IUniformData[]):{uboElements:UBOElement[]
 
         // Add some data of how the chunk will exist in the buffer.
 
-        uboElements[i].offset = offset;
-        uboElements[i].chunkLen = size;
-        uboElements[i].dataLen = size;
+        uboElement.offset = offset;
+        uboElement.chunkLen = size;
+        uboElement.dataLen = size;
 
         offset += size;
     }
@@ -154,12 +168,12 @@ function createUBOElements(uniformData:IUniformData[]):{uboElements:UBOElement[]
     return { uboElements, size: offset };
 }
 
-export function generateUniformBufferSync(group: UniformBufferGroup, uniformData: Dict<any>): UniformsSyncCallback
+export function getUBOData(uniforms: Dict<any>, uniformData: Dict<any>):any[]
 {
     const usedUniformDatas = [];
 
     // build..
-    for (const i in group.uniforms)
+    for (const i in uniforms)
     {
         if (uniformData[i])
         {
@@ -167,7 +181,15 @@ export function generateUniformBufferSync(group: UniformBufferGroup, uniformData
         }
     }
 
+    // sort them out by index!
     usedUniformDatas.sort((a, b) => a.index - b.index);
+
+    return usedUniformDatas;
+}
+
+export function generateUniformBufferSync(group: UniformBufferGroup, uniformData: Dict<any>): UniformsSyncCallback
+{
+    const usedUniformDatas = getUBOData(group.uniforms, uniformData);
 
     const { uboElements, size } = createUBOElements(usedUniformDatas);
 
@@ -177,7 +199,8 @@ export function generateUniformBufferSync(group: UniformBufferGroup, uniformData
 
     const funcFragments = [`
     var v = null;
-    var cv = null
+    var v2 = null;
+    var cv = null;
     var t = 0;
     var gl = renderer.gl
     var index = 0;
@@ -187,21 +210,66 @@ export function generateUniformBufferSync(group: UniformBufferGroup, uniformData
     for (let i = 0; i < uboElements.length; i++)
     {
         const uboElement = uboElements[i];
+        const uniform = group.uniforms[uboElement.data.name];
+
         const name = uboElement.data.name;
 
-        if (uboElement.data.size !== 1)
+        let parsed = false;
+
+        for (let j = 0; j < uniformParsers.length; j++)
         {
-            throw new Error('UBO arrays not supported yet');
+            const uniformParser = uniformParsers[j];
+
+            if (uniformParser.codeUbo && uniformParser.test(uboElement.data, uniform))
+            {
+                funcFragments.push(
+                    `offset = ${uboElement.offset / 4};`,
+                    uniformParsers[j].codeUbo(uboElement.data.name, uniform));
+                parsed = true;
+
+                break;
+            }
         }
 
-        const template = UBO_TO_SINGLE_SETTERS_CACHED[uboElement.data.type];
+        if (!parsed)
+        {
+            if (uboElement.data.size > 1)
+            {
+                const size =  mapSize(uboElement.data.type);
+                const rowSize = Math.max(GLSL_TO_STD40_SIZE[uboElement.data.type] / 16, 1);
+                const elementSize = size / rowSize;
+                const remainder = (4 - (elementSize % 4)) % 4;
 
-        funcFragments.push(`
-            cv = ud.${name}.value;
-            v = uv.${name};
-            offset = ${uboElement.offset / 4};
-            ${template};
-        `);
+                funcFragments.push(`
+                cv = ud.${name}.value;
+                v = uv.${name};
+                offset = ${uboElement.offset / 4};
+
+                t = 0;
+
+                for(var i=0; i < ${uboElement.data.size * rowSize}; i++)
+                {
+                    for(var j = 0; j < ${elementSize}; j++)
+                    {
+                        data[offset++] = v[t++];
+                    }
+                    offset += ${remainder};
+                }
+
+                `);
+            }
+            else
+            {
+                const template = UBO_TO_SINGLE_SETTERS[uboElement.data.type];
+
+                funcFragments.push(`
+                cv = ud.${name}.value;
+                v = uv.${name};
+                offset = ${uboElement.offset / 4};
+                ${template};
+                `);
+            }
+        }
     }
 
     funcFragments.push(`

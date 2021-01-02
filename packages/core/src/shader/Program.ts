@@ -30,7 +30,7 @@ export interface IUniformData
     index: number;
     type: string;
     size: number;
-    isArray: RegExpMatchArray;
+    isArray: boolean;
     value: any;
     name: string;
 }
@@ -203,16 +203,17 @@ export class Program
             const uniformData = gl.getActiveUniform(program, i);
             const name = uniformData.name.replace(/\[.*?\]$/, '');
 
-            const isArray = uniformData.name.match(/\[.*?\]$/);
+            const isArray = !!(uniformData.name.match(/\[.*?\]$/));
+
             const type = mapType(gl, uniformData.type);
 
             /*eslint-disable */
             uniforms[name] = {
                 name,
                 index: i,
-                type: type,
+                type,
                 size: uniformData.size,
-                isArray:isArray,
+                isArray,
                 value: defaultValue(type, uniformData.size),
             };
             /* eslint-enable */

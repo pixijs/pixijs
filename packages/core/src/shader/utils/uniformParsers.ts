@@ -11,12 +11,15 @@
 // {
 //     test: (data, uniform) => {} <--- test is this code should be used for this uniform
 //     code: (name, uniform) => {} <--- returns the string of the piece of code that uploads the uniform
+//     codeUbo: (name, uniform) => {} <--- returns the string of the piece of code that uploads the
+//                                         uniform to a uniform buffer
 // }
 
 export interface IUniformParser
 {
     test(data: unknown, uniform: any): boolean;
     code(name: string, uniform: any): string;
+    codeUbo?(name: string, uniform: any): string;
 }
 
 export const uniformParsers: IUniformParser[] = [
@@ -58,6 +61,15 @@ export const uniformParsers: IUniformParser[] = [
             // TODO and some smart caching dirty ids here!
             `
             gl.uniformMatrix3fv(ud["${name}"].location, false, uv["${name}"].toArray(true));
+            `,
+        codeUbo: (name: string): string =>
+            `
+                var ${name}_matrix = uv.${name}.toArray(true);
+
+                for(var i = 0; i < 9; i++)
+                {
+                    data[offset + i] = ${name}_matrix[i];
+                }
             `
         ,
 
@@ -77,6 +89,13 @@ export const uniformParsers: IUniformParser[] = [
                     cv[1] = v.y;
                     gl.uniform2f(ud["${name}"].location, v.x, v.y);
                 }`,
+        codeUbo: (name:string): string =>
+            `
+                v = uv.${name};
+    
+                data[offset] = v.x;
+                data[offset+1] = v.y;
+            `
     },
     // caching layer for a vec2
     {
@@ -113,6 +132,15 @@ export const uniformParsers: IUniformParser[] = [
                     cv[3] = v.height;
                     gl.uniform4f(ud["${name}"].location, v.x, v.y, v.width, v.height)
                 }`,
+        codeUbo: (name:string): string =>
+            `
+                    v = uv.${name};
+        
+                    data[offset] = v.x;
+                    data[offset+1] = v.y;
+                    data[offset+2] = v.width;
+                    data[offset+3] = v.height;
+                `
     },
     // a caching layer for vec4 uploading
     {
