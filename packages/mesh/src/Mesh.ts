@@ -114,14 +114,14 @@ export class Mesh extends Container
         this.size = 0;
 
         /**
-         * thease are used as easy access for batching
+         * these are used as easy access for batching
          * @member {Float32Array}
          * @private
          */
         this.uvs = null;
 
         /**
-         * thease are used as easy access for batching
+         * these are used as easy access for batching
          * @member {Uint16Array}
          * @private
          */

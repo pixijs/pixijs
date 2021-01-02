@@ -35,7 +35,7 @@ export class ObservablePoint<T = any> implements IPoint
 
     /**
      * Creates a clone of this point.
-     * The callback and scope params can be overidden otherwise they will default
+     * The callback and scope params can be overridden otherwise they will default
      * to the clone object's values.
      *
      * @override

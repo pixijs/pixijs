@@ -222,7 +222,7 @@ class MockPointer
     /**
      * @param {number} x - pointer x position
      * @param {number} y - pointer y position
-     * @param {boolean} [onCanvas=true] - if the event happend on the Canvas element or not
+     * @param {boolean} [onCanvas=true] - if the event happened on the Canvas element or not
      * @param {boolean} [asPointer] - if it should be a PointerEvent from a mouse
      */
     mouseup(x, y, onCanvas = true, asPointer = false)
