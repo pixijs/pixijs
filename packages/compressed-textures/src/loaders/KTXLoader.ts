@@ -18,7 +18,7 @@ LoaderResource.setExtensionXhrType('ktx', LoaderResource.XHR_RESPONSE_TYPE.BUFFE
 const FILE_IDENTIFIER = [0xAB, 0x4B, 0x54, 0x58, 0x20, 0x31, 0x31, 0xBB, 0x0D, 0x0A, 0x1A, 0x0A];
 
 /**
- * The value stored in the "endiannness" field.
+ * The value stored in the "endianness" field.
  *
  * @see https://www.khronos.org/opengles/sdk/tools/KTX/file_format_spec/#2.2
  * @ignore
@@ -286,7 +286,7 @@ export class KTXLoader
      */
     private static validate(url: string, dataView: DataView): boolean
     {
-        // NOTE: Do not optimize this into 3 32-bit integer comparision because the endianness
+        // NOTE: Do not optimize this into 3 32-bit integer comparison because the endianness
         // of the data is not specified.
         for (let i = 0; i < FILE_IDENTIFIER.length; i++)
         {

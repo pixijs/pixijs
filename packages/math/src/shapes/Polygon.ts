@@ -2,7 +2,7 @@ import { SHAPES } from '../const';
 import type { IPoint } from '../IPoint';
 
 /**
- * A class to define a shape via user defined co-orinates.
+ * A class to define a shape via user defined coordinates.
  *
  * @class
  * @memberof PIXI
