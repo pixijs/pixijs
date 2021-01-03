@@ -9,9 +9,8 @@ import type { IRenderingContext } from '../IRenderingContext';
 import type { Geometry } from './Geometry';
 import type { Shader } from '../shader/Shader';
 import type { Program } from '../shader/Program';
-import type { Buffer } from './Buffer';
 import type { Dict } from '@pixi/utils';
-import { BufferSystem } from './BufferSystem';
+import type { BufferSystem } from './BufferSystem';
 
 const byteSizeMap: {[key: number]: number} = { 5126: 4, 5123: 2, 5121: 1 };
 
@@ -33,7 +32,6 @@ export class GeometrySystem extends System
     protected _activeVao: WebGLVertexArrayObject;
     protected _boundBuffer: GLBuffer;
     readonly managedGeometries: {[key: number]: Geometry};
-    readonly managedBuffers: {[key: number]: Buffer};
     private _buffer:BufferSystem;
 
     /**
@@ -73,13 +71,6 @@ export class GeometrySystem extends System
          * @readonly
          */
         this.managedGeometries = {};
-
-        /**
-         * Cache for all buffers by id, used in case renderer gets destroyed or for profiling
-         * @member {object}
-         * @readonly
-         */
-        this.managedBuffers = {};
 
         /**
          * shortcut for the buffer system..
@@ -445,21 +436,16 @@ export class GeometrySystem extends System
     }
 
     /**
-     * dispose all WebGL resources of all managed geometries and buffers
+     * dispose all WebGL resources of all managed geometries
      * @param {boolean} [contextLost=false] - If context was lost, we suppress `gl.delete` calls
      */
     disposeAll(contextLost?: boolean): void
     {
-        let all: Array<any> = Object.keys(this.managedGeometries);
+        const all: Array<any> = Object.keys(this.managedGeometries);
 
         for (let i = 0; i < all.length; i++)
         {
             this.disposeGeometry(this.managedGeometries[all[i]], contextLost);
-        }
-        all = Object.keys(this.managedBuffers);
-        for (let i = 0; i < all.length; i++)
-        {
-            this._buffer.dispose(this.managedBuffers[all[i]], contextLost);
         }
     }
 

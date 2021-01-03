@@ -8,6 +8,19 @@ import type { Buffer } from './Buffer';
 /**
  * System plugin to the renderer to manage buffers.
  *
+ * WebGL uses Buffers as a way to store objects to the GPU.
+ * This system makes working with them a lot easier.
+ *
+ * Buffers are used in two main places in WebGL
+ * - geometry information
+ * - Uniform information (via uniform buffer objects - a webGL 2 only feature)
+ * - Transform feedback information.
+ *
+ * This system will handle the binding of buffers to the GPU as well as uploading
+ * them. With this system, you never need to work directly with GPU buffers, but instead work with
+ * the PIXI.Buffer class.
+ *
+ *
  * @class
  * @extends PIXI.System
  * @memberof PIXI
@@ -39,6 +52,8 @@ export class BufferSystem extends System
      */
     protected contextChange(): void
     {
+        this.disposeAll(true);
+
         this.gl = this.renderer.gl;
 
         // TODO fill out...
@@ -70,24 +85,26 @@ export class BufferSystem extends System
 
         const glBuffer = buffer._glBuffers[CONTEXT_UID];
 
-        if (buffer._updateID !== glBuffer.updateID)
+        if (buffer._updateID === glBuffer.updateID)
         {
-            glBuffer.updateID = buffer._updateID;
+            return;
+        }
 
-            gl.bindBuffer(buffer.type, glBuffer.buffer);
+        glBuffer.updateID = buffer._updateID;
 
-            if (glBuffer.byteLength >= buffer.data.byteLength)
-            {
-                // offset is always zero for now!
-                gl.bufferSubData(buffer.type, 0, buffer.data);
-            }
-            else
-            {
-                const drawType = buffer.static ? gl.STATIC_DRAW : gl.DYNAMIC_DRAW;
+        gl.bindBuffer(buffer.type, glBuffer.buffer);
 
-                glBuffer.byteLength = buffer.data.byteLength;
-                gl.bufferData(buffer.type, buffer.data, drawType);
-            }
+        if (glBuffer.byteLength >= buffer.data.byteLength)
+        {
+            // offset is always zero for now!
+            gl.bufferSubData(buffer.type, 0, buffer.data);
+        }
+        else
+        {
+            const drawType = buffer.static ? gl.STATIC_DRAW : gl.DYNAMIC_DRAW;
+
+            glBuffer.byteLength = buffer.data.byteLength;
+            gl.bufferData(buffer.type, buffer.data, drawType);
         }
     }
 
@@ -121,6 +138,20 @@ export class BufferSystem extends System
         }
 
         delete buffer._glBuffers[this.CONTEXT_UID];
+    }
+
+    /**
+     * dispose all WebGL resources of all managed buffers
+     * @param {boolean} [contextLost=false] - If context was lost, we suppress `gl.delete` calls
+     */
+    disposeAll(contextLost?: boolean): void
+    {
+        const all: Array<any> = Object.keys(this.managedBuffers);
+
+        for (let i = 0; i < all.length; i++)
+        {
+            this.dispose(this.managedBuffers[all[i]], contextLost);
+        }
     }
 
     /**
