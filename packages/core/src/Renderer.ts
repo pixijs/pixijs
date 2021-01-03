@@ -25,8 +25,6 @@ import type { IRenderableObject } from './IRenderableObject';
 import type { RenderTexture } from './renderTexture/RenderTexture';
 import type { System } from './System';
 import type { IRenderingContext } from './IRenderingContext';
-import type { Extract } from '@pixi/extract';
-
 
 export interface IRendererPluginConstructor {
     new (renderer: Renderer, options?: any): IRendererPlugin;
