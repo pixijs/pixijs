@@ -2,12 +2,11 @@ import { hex2string, hex2rgb, EventEmitter, deprecation } from '@pixi/utils';
 import { Matrix, Rectangle } from '@pixi/math';
 import { RENDERER_TYPE } from '@pixi/constants';
 import { settings } from '@pixi/settings';
-import { DisplayObject } from '@pixi/display';
 import { RenderTexture } from './renderTexture/RenderTexture';
 
 import type { SCALE_MODES } from '@pixi/constants';
 import type { IRenderingContext } from './IRenderingContext';
-import type { Container } from '@pixi/display';
+import type { IRenderableContainer, IRenderableObject } from './IRenderableObject';
 
 const tempMatrix = new Matrix();
 
@@ -63,7 +62,7 @@ export abstract class AbstractRenderer extends EventEmitter
     protected _backgroundColor: number;
     protected _backgroundColorString: string;
     _backgroundColorRgba: number[];
-    _lastObjectRendered: DisplayObject;
+    _lastObjectRendered: IRenderableObject;
 
     /**
      * @param system - The name of the system this renderer is for.
@@ -300,10 +299,10 @@ export abstract class AbstractRenderer extends EventEmitter
      *        if no region is specified, defaults to the local bounds of the displayObject.
      * @return A texture of the graphics object.
      */
-    generateTexture(displayObject: DisplayObject,
+    generateTexture(displayObject: IRenderableObject,
         scaleMode?: SCALE_MODES, resolution?: number, region?: Rectangle): RenderTexture
     {
-        region = region || (displayObject as Container).getLocalBounds(null, true);
+        region = region || (displayObject as IRenderableContainer).getLocalBounds(null, true);
 
         // minimum texture size is 1x1, 0x0 will throw an error
         if (region.width === 0) region.width = 1;
@@ -325,7 +324,7 @@ export abstract class AbstractRenderer extends EventEmitter
         return renderTexture;
     }
 
-    abstract render(displayObject: DisplayObject, renderTexture?: RenderTexture,
+    abstract render(displayObject: IRenderableObject, renderTexture?: RenderTexture,
                     clear?: boolean, transform?: Matrix, skipUpdateTransform?: boolean): void;
 
     /**
