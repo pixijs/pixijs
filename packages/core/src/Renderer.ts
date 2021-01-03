@@ -20,11 +20,10 @@ import { Matrix } from '@pixi/math';
 import { Runner } from '@pixi/runner';
 
 import type { IRendererOptions, IRendererPlugins } from './AbstractRenderer';
+import type { IRenderableObject } from './IRenderableObject';
 import type { RenderTexture } from './renderTexture/RenderTexture';
-import type { DisplayObject } from '@pixi/display';
 import type { System } from './System';
 import type { IRenderingContext } from './IRenderingContext';
-import type { Extract } from '@pixi/extract';
 
 export interface IRendererPluginConstructor {
     new (renderer: Renderer, options?: any): IRendererPlugin;
@@ -74,7 +73,6 @@ export class Renderer extends AbstractRenderer
     public globalUniforms: UniformGroup;
     public CONTEXT_UID: number;
     public renderingToScreen: boolean;
-    public extract: Extract;
     // systems
     public mask: MaskSystem;
     public context: ContextSystem;
@@ -381,7 +379,7 @@ export class Renderer extends AbstractRenderer
      * @param [transform] - A transform to apply to the render texture before rendering.
      * @param [skipUpdateTransform=false] - Should we skip the update transform pass?
      */
-    render(displayObject: DisplayObject, renderTexture?: RenderTexture,
+    render(displayObject: IRenderableObject, renderTexture?: RenderTexture,
         clear?: boolean, transform?: Matrix, skipUpdateTransform?: boolean): void
     {
         // can be handy to know!

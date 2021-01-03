@@ -39,14 +39,6 @@ export class Extract implements IRendererPlugin
     constructor(renderer: Renderer)
     {
         this.renderer = renderer;
-        /**
-         * Collection of methods for extracting data (image, pixels, etc.) from a display object or render texture
-         *
-         * @member {PIXI.Extract} extract
-         * @memberof PIXI.Renderer#
-         * @see PIXI.Extract
-         */
-        renderer.extract = this;
     }
 
     /**
@@ -263,7 +255,6 @@ export class Extract implements IRendererPlugin
      */
     public destroy(): void
     {
-        this.renderer.extract = null;
         this.renderer = null;
     }
 
