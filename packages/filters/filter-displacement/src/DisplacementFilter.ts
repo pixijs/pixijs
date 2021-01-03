@@ -68,10 +68,10 @@ export class DisplacementFilter extends Filter
      * @param {PIXI.FilterSystem} filterManager - The manager.
      * @param {PIXI.RenderTexture} input - The input target.
      * @param {PIXI.RenderTexture} output - The output target.
-     * @param {PIXI.CLEAR_MODES} clearMode - clearMode.
+     * @param {PIXI.CLEAR_MODES} [clearMode] - clearMode.
      */
     public apply(
-        filterManager: FilterSystem, input: RenderTexture, output: RenderTexture, clearMode: CLEAR_MODES
+        filterManager: FilterSystem, input: RenderTexture, output: RenderTexture, clearMode?: CLEAR_MODES
     ): void
     {
         // fill maskMatrix with _normalized sprite texture coords_

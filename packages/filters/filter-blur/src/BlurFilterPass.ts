@@ -57,10 +57,10 @@ export class BlurFilterPass extends Filter
      * @param {PIXI.FilterSystem} filterManager - The manager.
      * @param {PIXI.RenderTexture} input - The input target.
      * @param {PIXI.RenderTexture} output - The output target.
-     * @param {PIXI.CLEAR_MODES} clearMode - How to clear
+     * @param {PIXI.CLEAR_MODES} [clearMode] - How to clear
      */
     public apply(
-        filterManager: FilterSystem, input: RenderTexture, output: RenderTexture, clearMode: CLEAR_MODES
+        filterManager: FilterSystem, input: RenderTexture, output: RenderTexture, clearMode?: CLEAR_MODES
     ): void
     {
         if (output)
