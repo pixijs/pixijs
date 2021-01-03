@@ -1,7 +1,7 @@
 import type { Dict } from '@pixi/utils';
 import { mapSize } from '../utils';
 import { IUniformData } from '../Program';
-import { UniformBufferGroup } from '../UniformBufferGroup';
+import { UniformGroup } from '../UniformGroup';
 import { uniformParsers } from './uniformParsers';
 
 export type UniformsSyncCallback = (...args: any[]) => void;
@@ -187,7 +187,7 @@ export function getUBOData(uniforms: Dict<any>, uniformData: Dict<any>):any[]
     return usedUniformDatas;
 }
 
-export function generateUniformBufferSync(group: UniformBufferGroup, uniformData: Dict<any>): UniformsSyncCallback
+export function generateUniformBufferSync(group: UniformGroup, uniformData: Dict<any>): UniformsSyncCallback
 {
     if (!group.autoManage)
     {
