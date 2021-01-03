@@ -25,11 +25,9 @@
     "*.d.ts"
   ],
   "dependencies": {
+    "@pixi/canvas-renderer": "6.0.0-rc",
     "@pixi/core": "6.0.0-rc",
     "@pixi/display": "6.0.0-rc",
     "@pixi/utils": "6.0.0-rc"
-  },
-  "devDependencies": {
-    "@pixi/canvas-renderer": "6.0.0-rc"
   }
 }
