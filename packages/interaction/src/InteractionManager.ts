@@ -764,7 +764,7 @@ export class InteractionManager extends EventEmitter
      */
     get lastObjectRendered(): DisplayObject
     {
-        return this.renderer._lastObjectRendered || this._tempDisplayObject;
+        return (this.renderer._lastObjectRendered as DisplayObject) || this._tempDisplayObject;
     }
 
     /**
