@@ -11,7 +11,7 @@ const tempPoint = new Point();
 export interface TilingSprite extends GlobalMixins.TilingSprite {}
 
 /**
- * A tiling sprite is a fast way of rendering a tiling image
+ * A tiling sprite is a fast way of rendering a tiling image.
  *
  * @class
  * @extends PIXI.Sprite
@@ -72,7 +72,11 @@ export class TilingSprite extends Sprite
         this.pluginName = 'tilingSprite';
 
         /**
-         * Whether or not anchor affects uvs
+         * Flags whether the tiling pattern should originate from the origin instead of the top-left corner in
+         * local space.
+         *
+         * This will make the texture coordinates assigned to each vertex dependent on the value of the anchor. Without
+         * this, the top-left corner always gets the (0, 0) texture coordinate.
          *
          * @member {boolean}
          * @default false

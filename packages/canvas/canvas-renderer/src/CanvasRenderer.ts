@@ -37,7 +37,7 @@ type SmoothingEnabledProperties =
     'msImageSmoothingEnabled';
 
 /**
- * Renderering context for all browsers. This includes platform-specific
+ * Rendering context for all browsers. This includes platform-specific
  * properties that are not included in the spec for CanvasRenderingContext2D
  * @private
  */
