@@ -24,7 +24,6 @@ import type { IRenderableObject } from './IRenderableObject';
 import type { RenderTexture } from './renderTexture/RenderTexture';
 import type { System } from './System';
 import type { IRenderingContext } from './IRenderingContext';
-import type { Extract } from '@pixi/extract';
 
 export interface IRendererPluginConstructor {
     new (renderer: Renderer, options?: any): IRendererPlugin;
@@ -74,7 +73,6 @@ export class Renderer extends AbstractRenderer
     public globalUniforms: UniformGroup;
     public CONTEXT_UID: number;
     public renderingToScreen: boolean;
-    public extract: Extract;
     // systems
     public mask: MaskSystem;
     public context: ContextSystem;
