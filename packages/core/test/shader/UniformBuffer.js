@@ -6,7 +6,7 @@ const {
     generateUniformBufferSync,
     getUBOData,
     Buffer,
-    UniformBufferGroup,
+    UniformGroup,
 } = require('../../');
 const chai = require('chai');
 
@@ -61,10 +61,10 @@ describe('generateUniformBufferSync', function ()
             },
         };
 
-        const group = new UniformBufferGroup({
+        const group = new UniformGroup({
             uOtherParam: 23,
             uAlpha: 1,
-        });
+        }, false, true);
 
         const usedUniformData = getUBOData(group.uniforms, uniformData);
 
@@ -87,7 +87,7 @@ describe('generateUniformBufferSync', function ()
 
         chai.expect(usedUniformData).to.deep.equal(expectedResult);
 
-        const group2 = new UniformBufferGroup({
+        const group2 = UniformGroup.uboFrom({
             uAlpha: 1,
             uOtherParam: 23,
         });
@@ -96,7 +96,7 @@ describe('generateUniformBufferSync', function ()
 
         chai.expect(usedUniformData2).to.deep.equal(expectedResult);
 
-        const group3 = new UniformBufferGroup({
+        const group3 = UniformGroup.uboFrom({
             uAlpha: 1,
             uOtherParam: 23,
             uNonExistant: 2
@@ -176,7 +176,7 @@ describe('generateUniformBufferSync', function ()
 
         const shader = Shader.from(vertexSrc, fragmentSrc);
 
-        const group = new UniformBufferGroup({
+        const group = UniformGroup.uboFrom({
             uFloat: 23,
             uMat3: new Matrix(10, 20, 30, 40, 50, 60),
             uPoint: new Point(23, 11),
@@ -413,7 +413,7 @@ describe('generateUniformBufferSync', function ()
 
             const shader = Shader.from(vertexSrc, fragmentSrc);
 
-            const group = new UniformBufferGroup(toTest.groupData);
+            const group =  UniformGroup.uboFrom(toTest.groupData);
 
             const f = generateUniformBufferSync(group, shader.program.uniformData);
 

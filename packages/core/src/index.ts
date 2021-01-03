@@ -35,7 +35,6 @@ export * from './shader/Shader';
 export * from './shader/Program';
 export * from './shader/GLProgram';
 export * from './shader/UniformGroup';
-export * from './shader/UniformBufferGroup';
 export * from './mask/MaskData';
 export * from './filters/spriteMask/SpriteMaskFilter';
 export * from './filters/Filter';
