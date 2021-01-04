@@ -120,12 +120,12 @@ export class Buffer
      * false will set its type to ARRAY_BUFFER
      * for backwards compatibility
      */
-    set index(value:boolean)
+    set index(value: boolean)
     {
         this.type = value ? BUFFER_TYPE.ELEMENT_ARRAY_BUFFER : BUFFER_TYPE.ARRAY_BUFFER;
     }
 
-    get index():boolean
+    get index(): boolean
     {
         return this.type === BUFFER_TYPE.ELEMENT_ARRAY_BUFFER;
     }

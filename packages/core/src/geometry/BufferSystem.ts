@@ -11,10 +11,10 @@ import type { Buffer } from './Buffer';
  * WebGL uses Buffers as a way to store objects to the GPU.
  * This system makes working with them a lot easier.
  *
- * Buffers are used in two main places in WebGL
+ * Buffers are used in three main places in WebGL
  * - geometry information
- * - Uniform information (via uniform buffer objects - a webGL 2 only feature)
- * - Transform feedback information.
+ * - Uniform information (via uniform buffer objects - a WebGL 2 only feature)
+ * - Transform feedback information. (WebGL 2 only feature)
  *
  * This system will handle the binding of buffers to the GPU as well as uploading
  * them. With this system, you never need to work directly with GPU buffers, but instead work with
@@ -65,7 +65,7 @@ export class BufferSystem extends System
      *
      * @param {PIXI.Buffer} buffer the buffer to bind to the renderer
      */
-    bind(buffer:Buffer):void
+    bind(buffer: Buffer): void
     {
         const { gl, CONTEXT_UID } = this;
 
@@ -79,7 +79,7 @@ export class BufferSystem extends System
      *
      * @param {PIXI.Buffer} buffer the buffer to update
      */
-    update(buffer:Buffer): void
+    update(buffer: Buffer): void
     {
         const { gl, CONTEXT_UID } = this;
 
@@ -158,7 +158,7 @@ export class BufferSystem extends System
      * creates and attaches a GLBuffer object tied to the current context.
      * @protected
      */
-    protected createGLBuffer(buffer:Buffer): GLBuffer
+    protected createGLBuffer(buffer: Buffer): GLBuffer
     {
         const { CONTEXT_UID, gl } = this;
 

@@ -10,7 +10,6 @@ import type { Geometry } from './Geometry';
 import type { Shader } from '../shader/Shader';
 import type { Program } from '../shader/Program';
 import type { Dict } from '@pixi/utils';
-import type { BufferSystem } from './BufferSystem';
 
 const byteSizeMap: {[key: number]: number} = { 5126: 4, 5123: 2, 5121: 1 };
 
@@ -32,7 +31,6 @@ export class GeometrySystem extends System
     protected _activeVao: WebGLVertexArrayObject;
     protected _boundBuffer: GLBuffer;
     readonly managedGeometries: {[key: number]: Geometry};
-    private _buffer:BufferSystem;
 
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
@@ -71,11 +69,6 @@ export class GeometrySystem extends System
          * @readonly
          */
         this.managedGeometries = {};
-
-        /**
-         * shortcut for the buffer system..
-         */
-        this._buffer = this.renderer.buffer;
     }
 
     /**
@@ -217,11 +210,13 @@ export class GeometrySystem extends System
     {
         const geometry = this._activeGeometry;
 
+        const bufferSystem = this.renderer.buffer;
+
         for (let i = 0; i < geometry.buffers.length; i++)
         {
             const buffer = geometry.buffers[i];
 
-            this._buffer.update(buffer);
+            bufferSystem.update(buffer);
         }
     }
 
@@ -287,6 +282,7 @@ export class GeometrySystem extends System
 
         const gl = this.gl;
         const CONTEXT_UID = this.CONTEXT_UID;
+        const bufferSystem = this.renderer.buffer;
 
         const signature = this.getSignature(geometry, program);
 
@@ -362,7 +358,7 @@ export class GeometrySystem extends System
         {
             const buffer = buffers[i];
 
-            this._buffer.bind(buffer);
+            bufferSystem.bind(buffer);
 
             if (incRefCount)
             {
@@ -401,6 +397,7 @@ export class GeometrySystem extends System
         const vaos = geometry.glVertexArrayObjects[this.CONTEXT_UID];
         const gl = this.gl;
         const buffers = geometry.buffers;
+        const bufferSystem = this.renderer.buffer;
 
         geometry.disposeRunner.remove(this);
 
@@ -416,7 +413,7 @@ export class GeometrySystem extends System
             buf.refCount--;
             if (buf.refCount === 0 && !contextLost)
             {
-                this._buffer.dispose(buffers[i], contextLost);
+                bufferSystem.dispose(buffers[i], contextLost);
             }
         }
 
@@ -466,13 +463,14 @@ export class GeometrySystem extends System
     {
         const gl = this.gl;
         const CONTEXT_UID = this.CONTEXT_UID;
+        const bufferSystem = this.renderer.buffer;
         const buffers = geometry.buffers;
         const attributes = geometry.attributes;
 
         if (geometry.indexBuffer)
         {
             // first update the index buffer if we have one..
-            this._buffer.bind(geometry.indexBuffer);
+            bufferSystem.bind(geometry.indexBuffer);
         }
 
         let lastBuffer = null;
@@ -488,7 +486,7 @@ export class GeometrySystem extends System
             {
                 if (lastBuffer !== glBuffer)
                 {
-                    this._buffer.bind(buffer);
+                    bufferSystem.bind(buffer);
 
                     lastBuffer = glBuffer;
                 }
