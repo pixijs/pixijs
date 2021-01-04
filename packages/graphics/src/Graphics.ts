@@ -10,7 +10,7 @@ import {
     SHAPES,
 } from '@pixi/math';
 
-import { Texture, UniformGroup, State, Renderer, BatchDrawCall } from '@pixi/core';
+import { Texture, UniformGroup, State, Renderer, BatchDrawCall, Shader } from '@pixi/core';
 import { BezierUtils, QuadraticUtils, ArcUtils, Star } from './utils';
 import { hex2rgb } from '@pixi/utils';
 import { GraphicsGeometry } from './GraphicsGeometry';
@@ -18,7 +18,6 @@ import { FillStyle } from './styles/FillStyle';
 import { LineStyle } from './styles/LineStyle';
 import { BLEND_MODES } from '@pixi/constants';
 import { Container } from '@pixi/display';
-import { Shader } from '@pixi/core';
 
 import type { IShape, IPointData } from '@pixi/math';
 import type { IDestroyOptions } from '@pixi/display';
