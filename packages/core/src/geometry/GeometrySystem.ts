@@ -397,7 +397,7 @@ export class GeometrySystem extends System
         const vaos = geometry.glVertexArrayObjects[this.CONTEXT_UID];
         const gl = this.gl;
         const buffers = geometry.buffers;
-        const bufferSystem = this.renderer.buffer;
+        const bufferSystem = this.renderer?.buffer;
 
         geometry.disposeRunner.remove(this);
 
@@ -406,14 +406,20 @@ export class GeometrySystem extends System
             return;
         }
 
-        for (let i = 0; i < buffers.length; i++)
+        // bufferSystem may have already been destroyed..
+        // if this is the case, there is no need to destroy the geometry buffers...
+        // they already have been!
+        if (bufferSystem)
         {
-            const buf = buffers[i]._glBuffers[this.CONTEXT_UID];
-
-            buf.refCount--;
-            if (buf.refCount === 0 && !contextLost)
+            for (let i = 0; i < buffers.length; i++)
             {
-                bufferSystem.dispose(buffers[i], contextLost);
+                const buf = buffers[i]._glBuffers[this.CONTEXT_UID];
+
+                buf.refCount--;
+                if (buf.refCount === 0 && !contextLost)
+                {
+                    bufferSystem.dispose(buffers[i], contextLost);
+                }
             }
         }
 
