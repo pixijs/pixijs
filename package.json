@@ -11,7 +11,6 @@
     "pretest": "npm run lint && npm run build",
     "test": "floss --path test",
     "unit-test": "floss --path test",
-    "unit-test:debug": "floss --path test '--debug'",
     "coverage": "npm run pretest && nyc floss --path=test && nyc report --reporter=html",
     "coverage:ci": "npm run pretest && nyc floss --path=test && nyc report --reporter=text-lcov > coverage.lcov",
     "docs": "mkdirp dist && webdoc -R README.md",
