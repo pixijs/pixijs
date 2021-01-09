@@ -1,5 +1,5 @@
 import { AbstractRenderer } from './AbstractRenderer';
-import { sayHello, isWebGLSupported } from '@pixi/utils';
+import { sayHello, isWebGLSupported, deprecation } from '@pixi/utils';
 import { MaskSystem } from './mask/MaskSystem';
 import { StencilSystem } from './mask/StencilSystem';
 import { ScissorSystem } from './mask/ScissorSystem';
@@ -492,6 +492,21 @@ export class Renderer extends AbstractRenderer
 
         // TODO nullify all the managers..
         this.gl = null;
+    }
+
+    /**
+     * Please use `plugins.extract` instead.
+     * @member {PIXI.Extract} extract
+     * @deprecated since 6.0.0
+     * @readonly
+     */
+    public get extract(): any
+    {
+        // #if _DEBUG
+        deprecation('6.0.0', 'Renderer#extract has been deprecated, please use Renderer#plugins.extract instead.');
+        // #endif
+
+        return this.plugins.extract;
     }
 
     /**
