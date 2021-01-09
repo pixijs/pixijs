@@ -338,7 +338,8 @@ export class Graphics extends Container
      * @param {number} [width=0] - width of the line to draw, will update the objects stored style
      * @param {number} [color=0x0] - color of the line to draw, will update the objects stored style
      * @param {number} [alpha=1] - alpha of the line to draw, will update the objects stored style
-     * @param {number} [alignment=0.5] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outer)
+     * @param {number} [alignment=0.5] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outer).
+     *        WebGL only.
      * @param {boolean} [native=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
@@ -350,7 +351,8 @@ export class Graphics extends Container
      * @param {number} [options.width=0] - width of the line to draw, will update the objects stored style
      * @param {number} [options.color=0x0] - color of the line to draw, will update the objects stored style
      * @param {number} [options.alpha=1] - alpha of the line to draw, will update the objects stored style
-     * @param {number} [options.alignment=0.5] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outer)
+     * @param {number} [options.alignment=0.5] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outer).
+     *        WebGL only.
      * @param {boolean} [options.native=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
      * @param {PIXI.LINE_CAP}[options.cap=PIXI.LINE_CAP.BUTT] - line cap style
      * @param {PIXI.LINE_JOIN}[options.join=PIXI.LINE_JOIN.MITER] - line join style
@@ -387,7 +389,8 @@ export class Graphics extends Container
      *  Default 0xFFFFFF if texture present.
      * @param {number} [options.alpha=1] - alpha of the line to draw, will update the objects stored style
      * @param {PIXI.Matrix} [options.matrix=null] - Texture matrix to transform texture
-     * @param {number} [options.alignment=0.5] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outer)
+     * @param {number} [options.alignment=0.5] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outer).
+     *        WebGL only.
      * @param {boolean} [options.native=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
      * @param {PIXI.LINE_CAP}[options.cap=PIXI.LINE_CAP.BUTT] - line cap style
      * @param {PIXI.LINE_JOIN}[options.join=PIXI.LINE_JOIN.MITER] - line join style
