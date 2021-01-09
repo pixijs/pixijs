@@ -79,7 +79,9 @@ export class CanvasRenderer extends AbstractRenderer
      * @param {number} [options.width=800] - the width of the screen
      * @param {number} [options.height=600] - the height of the screen
      * @param {HTMLCanvasElement} [options.view] - the canvas to use as a view, optional
-     * @param {boolean} [options.contextAlpha=true] - Pass-through value for canvas' context `alpha` property.
+     * @param {boolean} [options.useContextAlpha=true] - Pass-through value for canvas' context `alpha` property.
+     *   If you want to set transparency, please use `backgroundAlpha`. This option is for cases where the
+     *   canvas needs to be opaque, possibly for performance reasons on some older devices.
      * @param {boolean} [options.autoDensity=false] - Resizes renderer view in CSS pixels to allow for
      *   resolutions other than 1
      * @param {boolean} [options.antialias=false] - sets antialias
@@ -102,7 +104,7 @@ export class CanvasRenderer extends AbstractRenderer
          *
          * @member {CanvasRenderingContext2D}
          */
-        this.rootContext = this.view.getContext('2d', { alpha: this.contextAlpha }) as
+        this.rootContext = this.view.getContext('2d', { alpha: this.useContextAlpha }) as
             CrossPlatformCanvasRenderingContext2D;
 
         /**
@@ -273,7 +275,7 @@ export class CanvasRenderer extends AbstractRenderer
 
                 if (this.backgroundAlpha > 0)
                 {
-                    context.globalAlpha = this.contextAlpha ? this.backgroundAlpha : 1;
+                    context.globalAlpha = this.useContextAlpha ? this.backgroundAlpha : 1;
                     context.fillStyle = this._backgroundColorString;
                     context.fillRect(0, 0, this.width, this.height);
                     context.globalAlpha = 1;
@@ -288,7 +290,7 @@ export class CanvasRenderer extends AbstractRenderer
 
                 if (clearColor[3] > 0)
                 {
-                    context.globalAlpha = this.contextAlpha ? clearColor[3] : 1;
+                    context.globalAlpha = this.useContextAlpha ? clearColor[3] : 1;
                     context.fillStyle = hex2string(rgb2hex(clearColor));
                     context.fillRect(0, 0, renderTexture.realWidth, renderTexture.realHeight);
                     context.globalAlpha = 1;
@@ -372,7 +374,7 @@ export class CanvasRenderer extends AbstractRenderer
 
         if (clearColor)
         {
-            context.globalAlpha = this.contextAlpha ? alpha : 1;
+            context.globalAlpha = this.useContextAlpha ? alpha : 1;
             context.fillStyle = clearColor;
             context.fillRect(0, 0, this.width, this.height);
             context.globalAlpha = 1;

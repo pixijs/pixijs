@@ -113,7 +113,9 @@ export class Renderer extends AbstractRenderer
      * @param {number} [options.width=800] - The width of the screen.
      * @param {number} [options.height=600] - The height of the screen.
      * @param {HTMLCanvasElement} [options.view] - The canvas to use as a view, optional.
-     * @param {boolean} [options.contextAlpha=true] - Pass-through value for canvas' context `alpha` property.
+     * @param {boolean} [options.useContextAlpha=true] - Pass-through value for canvas' context `alpha` property.
+     *   If you want to set transparency, please use `backgroundAlpha`. This option is for cases where the
+     *   canvas needs to be opaque, possibly for performance reasons on some older devices.
      * @param {boolean} [options.autoDensity=false] - Resizes renderer view in CSS pixels to allow for
      *   resolutions other than 1.
      * @param {boolean} [options.antialias=false] - Sets antialias. If not available natively then FXAA
@@ -296,9 +298,9 @@ export class Renderer extends AbstractRenderer
         else
         {
             this.context.initFromOptions({
-                alpha: !!this.contextAlpha,
+                alpha: !!this.useContextAlpha,
                 antialias: options.antialias,
-                premultipliedAlpha: this.contextAlpha && this.contextAlpha !== 'notMultiplied',
+                premultipliedAlpha: this.useContextAlpha && this.useContextAlpha !== 'notMultiplied',
                 stencil: true,
                 preserveDrawingBuffer: options.preserveDrawingBuffer,
                 powerPreference: this.options.powerPreference,
