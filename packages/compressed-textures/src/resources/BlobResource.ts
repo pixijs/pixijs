@@ -11,8 +11,8 @@ interface IBlobOptions
  * Resource that fetches texture data over the network and stores it in a buffer.
  *
  * @class
- * @extends PIXI.resources.Resource
- * @memberof PIXI.resources
+ * @extends PIXI.Resource
+ * @memberof PIXI
  */
 export abstract class BlobResource extends BufferResource
 {
