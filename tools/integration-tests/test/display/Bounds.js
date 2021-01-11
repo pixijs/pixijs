@@ -57,7 +57,7 @@ describe('getBounds', function ()
         expect(bounds.width).to.equal(0);
         expect(bounds.height).to.equal(0);
 
-        graphics.beginFill(0xFF0000).drawCircle(0, 0, 10, 10);
+        graphics.beginFill(0xFF0000).drawCircle(0, 0, 10);
 
         parent.addChild(graphics);
 
@@ -124,7 +124,7 @@ describe('getBounds', function ()
 
         const container = new Container();
 
-        const graphics = new Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);
+        const graphics = new Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10);
 
         const texture = RenderTexture.create(10, 10);
         const sprite = new Sprite(texture);
@@ -231,7 +231,7 @@ describe('getBounds', function ()
 
         const container = new Container();
 
-        const graphics = new Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);
+        const graphics = new Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10);
 
         const texture = RenderTexture.create(10, 10);
         const sprite = new Sprite(texture);

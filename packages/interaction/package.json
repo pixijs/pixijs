@@ -1,6 +1,6 @@
 {
   "name": "@pixi/interaction",
-  "version": "5.4.0-rc.3",
+  "version": "6.0.0-rc",
   "main": "dist/cjs/interaction.js",
   "module": "dist/esm/interaction.js",
   "bundle": "dist/browser/interaction.js",
@@ -25,18 +25,18 @@
     "*.d.ts"
   ],
   "dependencies": {
-    "@pixi/core": "5.4.0-rc.3",
-    "@pixi/display": "5.4.0-rc.3",
-    "@pixi/math": "5.4.0-rc.3",
-    "@pixi/ticker": "5.4.0-rc.3",
-    "@pixi/utils": "5.4.0-rc.3"
+    "@pixi/core": "6.0.0-rc",
+    "@pixi/display": "6.0.0-rc",
+    "@pixi/math": "6.0.0-rc",
+    "@pixi/ticker": "6.0.0-rc",
+    "@pixi/utils": "6.0.0-rc"
   },
   "devDependencies": {
-    "@pixi/canvas-display": "5.4.0-rc.3",
-    "@pixi/canvas-graphics": "5.4.0-rc.3",
-    "@pixi/canvas-renderer": "5.4.0-rc.3",
-    "@pixi/canvas-sprite": "5.4.0-rc.3",
-    "@pixi/graphics": "5.4.0-rc.3",
-    "@pixi/sprite": "5.4.0-rc.3"
+    "@pixi/canvas-display": "6.0.0-rc",
+    "@pixi/canvas-graphics": "6.0.0-rc",
+    "@pixi/canvas-renderer": "6.0.0-rc",
+    "@pixi/canvas-sprite": "6.0.0-rc",
+    "@pixi/graphics": "6.0.0-rc",
+    "@pixi/sprite": "6.0.0-rc"
   }
 }
