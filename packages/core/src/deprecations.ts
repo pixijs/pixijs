@@ -16,7 +16,7 @@ for (const name in _resources)
         {
             get()
             {
-                deprecation('6.0.0', `@pixi/core.systems.${name} has moved to @pixi/core.${name}`);
+                deprecation('6.0.0', `PIXI.systems.${name} has moved to PIXI.${name}`);
 
                 return (_resources as any)[name];
             },
@@ -37,7 +37,7 @@ for (const name in _systems)
         {
             get()
             {
-                deprecation('6.0.0', `@pixi/core.resources.${name} has moved to $pixi/core.${name}`);
+                deprecation('6.0.0', `PIXI.resources.${name} has moved to PIXI.${name}`);
 
                 return (_systems as any)[name];
             },
