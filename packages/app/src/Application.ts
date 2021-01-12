@@ -14,7 +14,7 @@ export interface IApplicationPlugin {
 export interface IApplicationOptions extends IRendererOptionsAuto, GlobalMixins.IApplicationOptions {}
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface Application extends GlobalMixins.DisplayObject {}
+export interface Application extends GlobalMixins.Application {}
 
 /**
  * Convenience class to create a new PIXI application.
