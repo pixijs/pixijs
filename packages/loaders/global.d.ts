@@ -10,4 +10,14 @@ declare namespace GlobalMixins
     {
 
     }
+
+    interface Application
+    {
+        loader: import('@pixi/loaders').Loader;
+    }
+
+    interface IApplicationOptions
+    {
+        sharedLoader: boolean;
+    }
 }
