@@ -10,12 +10,11 @@ export interface IApplicationPlugin {
     destroy: (...params: any[]) => any;
 }
 
-export interface IApplicationOptions extends IRendererOptionsAuto {
-    autoStart?: boolean;
-    sharedTicker?: boolean;
-    sharedLoader?: boolean;
-    resizeTo?: Window | HTMLElement;
-}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface IApplicationOptions extends IRendererOptionsAuto, GlobalMixins.IApplicationOptions {}
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface Application extends GlobalMixins.Application {}
 
 /**
  * Convenience class to create a new PIXI application.
