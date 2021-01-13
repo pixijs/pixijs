@@ -333,8 +333,6 @@ export class Graphics extends Container
      * Specifies the line style used for subsequent calls to Graphics methods such as the lineTo()
      * method or the drawCircle() method.
      *
-     * @instance
-     * @method PIXI.Graphics#lineStyle
      * @param {number} [width=0] - width of the line to draw, will update the objects stored style
      * @param {number} [color=0x0] - color of the line to draw, will update the objects stored style
      * @param {number} [alpha=1] - alpha of the line to draw, will update the objects stored style
@@ -343,6 +341,8 @@ export class Graphics extends Container
      * @param {boolean} [native=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
+    public lineStyle(width: number, color?: number, alpha?: number, alignment?: number, native?: boolean): this;
+
     /**
      * Specifies the line style used for subsequent calls to Graphics methods such as the lineTo()
      * method or the drawCircle() method.
@@ -359,21 +359,15 @@ export class Graphics extends Container
      * @param {number}[options.miterLimit=10] - miter limit ratio
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    public lineStyle(options: ILineStyleOptions = null): this
+    public lineStyle(options?: ILineStyleOptions): this;
+
+    public lineStyle(options: ILineStyleOptions | number = null,
+        color = 0x0, alpha = 1, alignment = 0.5, native = false): this
     {
         // Support non-object params: (width, color, alpha, alignment, native)
         if (typeof options === 'number')
         {
-            // eslint-disable-next-line
-            const args = arguments;
-
-            options = {
-                width: args[0] || 0,
-                color: args[1] || 0x0,
-                alpha: args[2] !== undefined ? args[2] : 1,
-                alignment: args[3] !== undefined ? args[3] : 0.5,
-                native: !!args[4],
-            };
+            options = { width: options, color, alpha, alignment, native } as ILineStyleOptions;
         }
 
         return this.lineTextureStyle(options);
