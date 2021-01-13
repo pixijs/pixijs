@@ -435,7 +435,7 @@ export class AnimatedSprite extends Sprite
     /**
      * The array of textures used for this AnimatedSprite.
      *
-     * @member {PIXI.Texture[]}
+     * @member {PIXI.Texture[]|PIXI.AnimatedSprite.FrameObject[]}
      */
     get textures(): Texture[]|FrameObject[]
     {
