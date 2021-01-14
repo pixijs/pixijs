@@ -9,7 +9,7 @@ declare namespace GlobalMixins
 
     interface IApplicationOptions
     {
-        autoStart: boolean;
-        sharedTicker: boolean;
+        autoStart?: boolean;
+        sharedTicker?: boolean;
     }
 }
