@@ -18,6 +18,6 @@ declare namespace GlobalMixins
 
     interface IApplicationOptions
     {
-        sharedLoader: boolean;
+        sharedLoader?: boolean;
     }
 }
