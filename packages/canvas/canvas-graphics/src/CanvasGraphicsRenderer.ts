@@ -1,6 +1,7 @@
 import { Texture } from '@pixi/core';
 import { SHAPES, Matrix } from '@pixi/math';
 import { canvasUtils } from '@pixi/canvas-renderer';
+import { BLEND_MODES } from '@pixi/constants';
 
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
 import type { FillStyle, Graphics } from '@pixi/graphics';
@@ -81,17 +82,14 @@ export class CanvasGraphicsRenderer
     public render(graphics: Graphics): void
     {
         const renderer = this.renderer;
-        const context = renderer.context;
+        const { blendModes } = renderer;
         const worldAlpha = graphics.worldAlpha;
-        const transform = graphics.transform.worldTransform;
+        const { worldTransform } = graphics.transform;
 
-        renderer.setContextTransform(transform);
+        const transform = renderer.newContextTransform(worldTransform);
         renderer.setBlendMode(graphics.blendMode);
 
         const graphicsData = graphics.geometry.graphicsData;
-
-        let contextFillStyle;
-        let contextStrokeStyle;
 
         const tintR = ((graphics.tint >> 16) & 0xFF) / 255;
         const tintG = ((graphics.tint >> 8) & 0xFF) / 255;
@@ -104,16 +102,12 @@ export class CanvasGraphicsRenderer
             const fillStyle = data.fillStyle;
             const lineStyle = data.lineStyle;
 
-            const fillColor = data.fillStyle.color | 0;
-            const lineColor = data.lineStyle.color | 0;
-
-            if (data.matrix)
-            {
-                renderer.setContextTransform(transform.copyTo(this._tempMatrix).append(data.matrix));
-            }
+            let contextFillStyle;
+            let contextStrokeStyle;
 
             if (fillStyle.visible)
             {
+                const fillColor = fillStyle.color | 0;
                 const fillTint = (
                     (((fillColor >> 16) & 0xFF) / 255 * tintR * 255 << 16)
                     + (((fillColor >> 8) & 0xFF) / 255 * tintG * 255 << 8)
@@ -124,6 +118,7 @@ export class CanvasGraphicsRenderer
             }
             if (lineStyle.visible)
             {
+                const lineColor = lineStyle.color | 0;
                 const lineTint = (
                     (((lineColor >> 16) & 0xFF) / 255 * tintR * 255 << 16)
                     + (((lineColor >> 8) & 0xFF) / 255 * tintG * 255 << 8)
@@ -133,10 +128,78 @@ export class CanvasGraphicsRenderer
                 contextStrokeStyle = this._calcCanvasStyle(lineStyle, lineTint);
             }
 
-            context.lineWidth = lineStyle.width;
-            context.lineCap = lineStyle.cap;
-            context.lineJoin = lineStyle.join;
-            context.miterLimit = lineStyle.miterLimit;
+            const { width: lineWidth, alignment } = lineStyle;
+
+            const strokeVisible = contextStrokeStyle != null && lineWidth > 0;
+            const fillVisible = contextFillStyle != null;
+            const visible = fillVisible || strokeVisible;
+
+            if (!visible) continue; // nothing needs drawing
+
+            let context: CanvasRenderingContext2D, finalize: Function, erase: Function;
+
+            if (strokeVisible)
+            {
+                // Obtain the secondary RenderingContext, along with the functions for the final
+                //   drawing and erasing, respectively
+                [context, finalize, erase] = renderer.forgeContext();
+            }
+
+            if (!context) {
+                // No secondary RenderingContext, so the stroke cannot be drawn - disable it
+                strokeVisible = false;
+
+                // Revert to main RenderingContext
+                context = renderer.context;
+
+                // If no fill is to be drawn, simply move on
+                if (!fillVisible) continue;
+            }
+
+            if (data.matrix)
+            {
+                transform = renderer.newContextTransform(worldTransform.copyTo(this._tempMatrix).append(data.matrix));
+            }
+            renderer.applyTransform(transform, context);
+
+            const paint = (rect?: Rectangle) =>
+            {
+                if (rect)
+                {
+                    context.rect(rect.x, rect.y, rect.width, rect.height);
+                }
+
+                if (strokeVisible)
+                {
+                    context.lineWidth = lineWidth;
+                    context.lineCap = lineStyle.cap;
+                    context.lineJoin = lineStyle.join;
+                    context.miterLimit = lineStyle.miterLimit;
+
+                    context.globalAlpha = lineStyle.alpha * worldAlpha;
+                    context.strokeStyle = contextStrokeStyle;
+                    context.stroke();
+
+                    if (fillVisible) {
+                        // The fill shall be drawn last, beneath the stroke
+                        context.globalCompositeOperation = blendModes[BLEND_MODES.DST_OVER];
+                    }
+                }
+                if (fillVisible)
+                {
+                    context.globalAlpha = fillStyle.alpha * worldAlpha;
+                    context.fillStyle = contextFillStyle;
+
+                    // The actual fill is drawn
+                    context.fill();
+                }
+
+                if (finalize)
+                {
+                    finalize();
+                    erase();
+                }
+            }
 
             if (data.type === SHAPES.POLY)
             {
@@ -217,36 +280,11 @@ export class CanvasGraphicsRenderer
                     }
                 }
 
-                if (fillStyle.visible)
-                {
-                    context.globalAlpha = fillStyle.alpha * worldAlpha;
-                    context.fillStyle = contextFillStyle;
-                    context.fill();
-                }
-
-                if (lineStyle.visible)
-                {
-                    context.globalAlpha = lineStyle.alpha * worldAlpha;
-                    context.strokeStyle = contextStrokeStyle;
-                    context.stroke();
-                }
+                paint();
             }
             else if (data.type === SHAPES.RECT)
             {
-                const tempShape = shape as Rectangle;
-
-                if (fillStyle.visible)
-                {
-                    context.globalAlpha = fillStyle.alpha * worldAlpha;
-                    context.fillStyle = contextFillStyle;
-                    context.fillRect(tempShape.x, tempShape.y, tempShape.width, tempShape.height);
-                }
-                if (lineStyle.visible)
-                {
-                    context.globalAlpha = lineStyle.alpha * worldAlpha;
-                    context.strokeStyle = contextStrokeStyle;
-                    context.strokeRect(tempShape.x, tempShape.y, tempShape.width, tempShape.height);
-                }
+                paint(shape as Rectangle);
             }
             else if (data.type === SHAPES.CIRC)
             {
@@ -257,23 +295,11 @@ export class CanvasGraphicsRenderer
                 context.arc(tempShape.x, tempShape.y, tempShape.radius, 0, 2 * Math.PI);
                 context.closePath();
 
-                if (fillStyle.visible)
-                {
-                    context.globalAlpha = fillStyle.alpha * worldAlpha;
-                    context.fillStyle = contextFillStyle;
-                    context.fill();
-                }
-
-                if (lineStyle.visible)
-                {
-                    context.globalAlpha = lineStyle.alpha * worldAlpha;
-                    context.strokeStyle = contextStrokeStyle;
-                    context.stroke();
-                }
+                paint();
             }
             else if (data.type === SHAPES.ELIP)
             {
-                // ellipse code taken from: http://stackoverflow.com/questions/2172798/how-to-draw-an-oval-in-html5-canvas
+                // ellipse code taken from: http://stackoverflow.com/questions/2172798/how-to-paint-an-oval-in-html5-canvas
 
                 const tempShape = shape as Ellipse;
 
@@ -301,18 +327,7 @@ export class CanvasGraphicsRenderer
 
                 context.closePath();
 
-                if (fillStyle.visible)
-                {
-                    context.globalAlpha = fillStyle.alpha * worldAlpha;
-                    context.fillStyle = contextFillStyle;
-                    context.fill();
-                }
-                if (lineStyle.visible)
-                {
-                    context.globalAlpha = lineStyle.alpha * worldAlpha;
-                    context.strokeStyle = contextStrokeStyle;
-                    context.stroke();
-                }
+                paint();
             }
             else if (data.type === SHAPES.RREC)
             {
@@ -340,18 +355,7 @@ export class CanvasGraphicsRenderer
                 context.quadraticCurveTo(rx, ry, rx, ry + radius);
                 context.closePath();
 
-                if (fillStyle.visible)
-                {
-                    context.globalAlpha = fillStyle.alpha * worldAlpha;
-                    context.fillStyle = contextFillStyle;
-                    context.fill();
-                }
-                if (lineStyle.visible)
-                {
-                    context.globalAlpha = lineStyle.alpha * worldAlpha;
-                    context.strokeStyle = contextStrokeStyle;
-                    context.stroke();
-                }
+                paint();
             }
         }
     }
