@@ -1,4 +1,4 @@
-import { AbstractRenderer, CanvasResource } from '@pixi/core';
+import { AbstractRenderer, CanvasResource, OffscreenContext } from '@pixi/core';
 import { CanvasRenderTarget, sayHello, rgb2hex, hex2string } from '@pixi/utils';
 import { CanvasMaskManager } from './utils/CanvasMaskManager';
 import { mapCanvasBlendModesToPixi } from './utils/mapCanvasBlendModesToPixi';
@@ -16,7 +16,40 @@ import type {
 
 const tempMatrix = new Matrix();
 
-export interface ICanvasRendererPluginConstructor {
+/**
+ * Performs final drawing onto main RenderingContext with contents from secondary RenderingContext.
+ */
+const DRAW = function(): void
+{
+    this.context.drawImage(this.$canvas, 0, 0);
+
+    if (this._willDispose)
+    {
+        this._willDispose = false;
+        this.$context = null;
+    }
+    else
+    {
+        this.applyTransform(Matrix.IDENTITY, this.$context);
+        this._resetContext(this.$context);
+    }
+};
+
+/**
+ * Clears the secondary RenderingContext, (optionally) according to given coordinates.
+ *
+ * @param {number} [x]
+ * @param {number} [y]
+ * @param {number} [w]
+ * @param {number} [h]
+ */
+const ERASE = function(x = 0, y = 0, w = Infinity, h = Infinity): void
+{
+    this.$context.clearRect(x, y, Math.min(w, this.width), Math.min(h, this.height));
+};
+
+export interface ICanvasRendererPluginConstructor
+{
     new (renderer: CanvasRenderer, options?: any): IRendererPlugin;
 }
 
@@ -69,8 +102,13 @@ export class CanvasRenderer extends AbstractRenderer
     public readonly blendModes: string[];
     public renderingToScreen: boolean;
 
+    private $context: CanvasRenderingContext2D;
+    private _finalize: Function;
+    private _erase: Function;
+
     private _activeBlendMode: BLEND_MODES;
     private _projTransform: Matrix;
+    private _willDispose: boolean;
 
     _outerBlend: boolean;
 
@@ -194,6 +232,106 @@ export class CanvasRenderer extends AbstractRenderer
         this.resize(this.options.width, this.options.height);
     }
 
+    getPlugin(name: string): IRendererPlugin {
+        const plugin = this.plugins[name];
+
+        if (!plugin) return plugin;
+        if (!this.$context) return plugin;
+
+        return Object.create(
+            plugin,
+            {
+                renderer:
+                {
+                    value: this,
+                    enumerable: true,
+                    writable: false,
+                    configurable: true,
+                }
+            }
+        );
+    }
+
+    /**
+     * Creates an enhanced CanvasRenderer based on this instance.
+     * Facilitates further off-screen operations via new secondary RenderingContext.
+     *
+     * @return {PIXI.CanvasRenderer} The newly enhanced CanvasRenderer
+     */
+    public forge(): CanvasRenderer {
+        if (!this.view || this.$context) return this;
+
+        try
+        {
+            return Object.create(
+                this,
+                {
+                    $context:
+                    {
+                        value: this._forgeContext(),
+                        enumerable: false,
+                        writable: false,
+                        configurable: true,
+                    }
+                }
+            ) as CanvasRenderer;
+        }
+        catch (err)
+        {
+            console.warn('No OffscreenContext() was created:', err.message || err);
+            return this;
+        }
+    }
+
+    /**
+     * Returns (or creates) the secondary RenderingContext, based on the main RenderingContext.
+     *
+     * @return {[CanvasRenderingContext2D, Function, Function]} The (newly created) secondary RenderingContext; the final drawing function; the erasing function
+     */
+    forgeContext(): [CanvasRenderingContext2D, Function, Function]
+    {
+        if (!this.$context) {
+            try
+            {
+                this.$context = this._forgeContext();
+                this._willDispose = true;
+            }
+            catch (err)
+            {
+                console.warn('No OffscreenContext() was created:', err.message || err);
+                return [];
+            }
+        }
+
+        this._resetContext(this.$context);
+
+        // Create the functions bound to this CanvasRenderer instance, which has the
+        //  `$context` (possibly from a previous `forge()` call)
+        const draw = DRAW.bind(this);
+        const erase = ERASE.bind(this);
+
+        return [this.$context, draw, erase];
+    }
+
+    private _forgeContext(): CanvasRenderingContext2D
+    {
+        return OffscreenContext(this.context) as CanvasRenderingContext2D;
+    }
+
+    private _resetContext(context: CanvasRenderingContext2D, blendMode = BLEND_MODES.NORMAL): void
+    {
+        context.globalCompositeOperation = this.blendModes[blendMode];
+    }
+
+    /**
+     * Returns the Canvas instance associated with the current $context instance.
+     *
+     * @return {HTMLCanvasElement}
+     */
+    private get $canvas(): HTMLCanvasElement {
+        return this.$context && this.$context.canvas;
+    }
+
     /**
      * Renders the object to this canvas view
      *
@@ -302,7 +440,7 @@ export class CanvasRenderer extends AbstractRenderer
         const tempContext = this.context;
 
         this.context = context;
-        displayObject.renderCanvas(this);
+        displayObject.renderCanvas(this.forge());
         this.context = tempContext;
 
         context.restore();
@@ -314,15 +452,14 @@ export class CanvasRenderer extends AbstractRenderer
     }
 
     /**
-     * sets matrix of context
-     * called only from render() methods
-     * takes care about resolution
+     * Creates new Matrix for context transform.
+     * Resolution is handled appropriately.
+     *
      * @param {PIXI.Matrix} transform - world matrix of current element
      * @param {boolean} [roundPixels] - whether to round (tx,ty) coords
      * @param {number} [localResolution] - If specified, used instead of `renderer.resolution` for local scaling
      */
-    setContextTransform(transform: Matrix, roundPixels?: boolean, localResolution?: number): void
-    {
+    newContextTransform(transform: Matrix, roundPixels?: boolean, localResolution?: number): Matrix {
         let mat = transform;
         const proj = this._projTransform;
         const resolution = this.resolution;
@@ -338,30 +475,60 @@ export class CanvasRenderer extends AbstractRenderer
 
         if (roundPixels)
         {
-            this.context.setTransform(
+            return new Matrix(
                 mat.a * localResolution,
                 mat.b * localResolution,
                 mat.c * localResolution,
                 mat.d * localResolution,
                 (mat.tx * resolution) | 0,
-                (mat.ty * resolution) | 0
+                (mat.ty * resolution) | 0,
             );
         }
-        else
-        {
-            this.context.setTransform(
-                mat.a * localResolution,
-                mat.b * localResolution,
-                mat.c * localResolution,
-                mat.d * localResolution,
-                mat.tx * resolution,
-                mat.ty * resolution
-            );
-        }
+
+        return new Matrix(
+            mat.a * localResolution,
+            mat.b * localResolution,
+            mat.c * localResolution,
+            mat.d * localResolution,
+            mat.tx * resolution,
+            mat.ty * resolution,
+        );
     }
 
     /**
-     * Clear the canvas of renderer.
+     * Updates current context with given transform Matrix.
+     * Resolution is handled appropriately.
+     * Only called only from render() methods.
+     *
+     * @param {PIXI.Matrix} transform - world matrix of current element
+     * @param {boolean} [roundPixels] - whether to round (tx,ty) coords
+     * @param {number} [localResolution] - If specified, used instead of `renderer.resolution` for local scaling
+     */
+    setContextTransform(transform: Matrix, roundPixels?: boolean, localResolution?: number): void
+    {
+        const mat = this.newContextTransform(transform, roundPixels, localResolution);
+
+        this.applyTransform(mat);
+    }
+
+    /**
+     * Applies given transform upon the main RenderingContext - or the given context, if specified.
+     *
+     * @param {PIXI.Matrix} transform - The transformation to apply
+     * @param {CanvasRenderingContext2D} [context] - The context to apply transformation to
+     */
+    applyTransform(transform: Matrix, context?: CanvasRenderingContext2D): void
+    {
+        if (context == null)
+        {
+            context = this.context;
+        }
+
+        context.setTransform(...transform.raw);
+    }
+
+    /**
+     * Clears current canvas.
      *
      * @param {string} [clearColor] - Clear the canvas with this color, except the canvas is transparent.
      * @param {number} [alpha] - Alpha to apply to the background fill color.

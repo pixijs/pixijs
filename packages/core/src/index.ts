@@ -45,6 +45,9 @@ export * from './geometry/Buffer';
 export * from './geometry/Geometry';
 export * from './geometry/ViewableBuffer';
 
+export * from './canvas';
+export * from './context';
+
 // #if _DEBUG
 export * from './deprecations';
 // #endif
