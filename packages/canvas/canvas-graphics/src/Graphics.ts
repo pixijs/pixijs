@@ -71,5 +71,6 @@ Graphics.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRender
     }
 
     this.finishPoly();
-    renderer.plugins.graphics.render(this);
+
+    renderer.getPlugin('graphics').render(this);
 };
