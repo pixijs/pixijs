@@ -28,15 +28,22 @@ Container.prototype.renderCanvas = function renderCanvas(renderer: CanvasRendere
         return;
     }
 
+    // This newly forged CanvasRenderer will provide a secondary RenderingContext for
+    //   certain drawing operations (i.e. strokes); this temporary RenderingContext is
+    //   off-screen and _only_ used for rendering strokes with certain alignments
+    //   (i.e. other than 0.5) - otherwise drawing is done directly onto the main
+    //   RenderingContext, thus ensuring optimal performance.
+    const _renderer = renderer.forge();
+
     if (this._mask)
     {
         renderer.maskManager.pushMask(this._mask as MaskData);
     }
 
-    this._renderCanvas(renderer);
+    this._renderCanvas(_renderer);
     for (let i = 0, j = this.children.length; i < j; ++i)
     {
-        this.children[i].renderCanvas(renderer);
+        this.children[i].renderCanvas(_renderer);
     }
 
     if (this._mask)
