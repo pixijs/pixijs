@@ -436,3 +436,18 @@ export enum MSAA_QUALITY {
     MEDIUM = 4,
     HIGH = 8
 }
+
+/**
+ * Constants for stroke alignments.
+ *
+ * @see PIXI.StrokeStyle#aslignment
+ *
+ * @name ALIGNMENT
+ * @memberof PIXI
+ * @static
+ * @enum {number}
+ * @property {number} MIDDLE=0.5
+ */
+export enum ALIGNMENT {
+    MIDDLE = 0.5,
+}

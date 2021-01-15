@@ -1,7 +1,7 @@
 import { Texture } from '@pixi/core';
 import { SHAPES, Matrix } from '@pixi/math';
 import { canvasUtils } from '@pixi/canvas-renderer';
-import { BLEND_MODES } from '@pixi/constants';
+import { BLEND_MODES, ALIGNMENT } from '@pixi/constants';
 
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
 import type { FillStyle, Graphics } from '@pixi/graphics';
@@ -138,7 +138,7 @@ export class CanvasGraphicsRenderer
 
             let context: CanvasRenderingContext2D, finalize: Function, erase: Function;
 
-            if (strokeVisible)
+            if (strokeVisible && (alignment != ALIGNMENT.MIDDLE || fillVisible))
             {
                 // Obtain the secondary RenderingContext, along with the functions for the final
                 //   drawing and erasing, respectively
@@ -171,16 +171,55 @@ export class CanvasGraphicsRenderer
 
                 if (strokeVisible)
                 {
-                    context.lineWidth = lineWidth;
+                    const middle = alignment == ALIGNMENT.MIDDLE;
+
                     context.lineCap = lineStyle.cap;
                     context.lineJoin = lineStyle.join;
                     context.miterLimit = lineStyle.miterLimit;
 
                     context.globalAlpha = lineStyle.alpha * worldAlpha;
                     context.strokeStyle = contextStrokeStyle;
-                    context.stroke();
 
-                    if (fillVisible) {
+                    if (middle)
+                    {
+                        context.lineWidth = lineWidth;
+                        context.stroke();
+                    }
+                    else
+                    {
+                        const exteriorWidth = lineWidth * alignment * 2;
+
+                        // Draw exterior stroke
+                        if (exteriorWidth)
+                        {
+                            // Draw stroke normally
+                            context.lineWidth = exteriorWidth;
+                            context.stroke();
+
+                            // Erase area described by current path (fill region)
+                            context.save();
+                            context.globalAlpha = 1;
+                            context.globalCompositeOperation = blendModes[BLEND_MODES.DST_OUT];
+                            context.fill();
+                            context.restore();
+                        }
+
+                        const interiorWidth = lineWidth * (1 - alignment) * 2;
+
+                        // Draw interior stroke
+                        if (interiorWidth) {
+                            context.lineWidth = interiorWidth;
+
+                            // Draw stroke clipped by current path (fill region)
+                            context.save();
+                            context.clip();
+                            context.stroke();
+                            context.restore();
+                        }
+                    }
+
+                    if (fillVisible)
+                    {
                         // The fill shall be drawn last, beneath the stroke
                         context.globalCompositeOperation = blendModes[BLEND_MODES.DST_OVER];
                     }
