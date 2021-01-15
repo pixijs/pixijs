@@ -436,3 +436,23 @@ export enum MSAA_QUALITY {
     MEDIUM = 4,
     HIGH = 8
 }
+
+/**
+ * Constants that specify blend modes associated to specific stroke alignment values.
+ *
+ * @name ALIGNMENT
+ * @memberof PIXI
+ * @constant
+ * @static
+ * @enum {number}
+ * @property {number} 0=BLEND_MODES.DST_IN
+ * @property {number} 1=BLEND_MODES.DST_OUT
+ * @property {number} MIDDLE=0.5
+ */
+export const ALIGNMENT =
+[
+    BLEND_MODES.DST_IN,
+    BLEND_MODES.DST_OUT,
+];
+
+ALIGNMENT.MIDDLE = 0.5;

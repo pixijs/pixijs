@@ -1,7 +1,7 @@
 import { Texture } from '@pixi/core';
 import { SHAPES, Matrix } from '@pixi/math';
 import { canvasUtils } from '@pixi/canvas-renderer';
-import { BLEND_MODES } from '@pixi/constants';
+import { ALIGNMENT, BLEND_MODES } from '@pixi/constants';
 
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
 import type { FillStyle, Graphics } from '@pixi/graphics';
@@ -140,7 +140,7 @@ export class CanvasGraphicsRenderer
 
             // If the stroke has to be drawn and its either not in the middle or the fill must
             //   also be drawn, then rendering shall be performed a secondary RenderingContext
-            if (strokeVisible)
+            if (strokeVisible && (alignment != ALIGNMENT.MIDDLE || fillVisible))
             {
                 // Obtain the secondary RenderingContext, along with the functions for the final
                 //   drawing and erasing, respectively
@@ -173,7 +173,9 @@ export class CanvasGraphicsRenderer
 
                 if (strokeVisible)
                 {
-                    context.lineWidth = lineWidth;
+                    const middle = alignment == ALIGNMENT.MIDDLE;
+
+                    context.lineWidth = middle ? lineWidth : lineWidth * 2;
                     context.lineCap = lineStyle.cap;
                     context.lineJoin = lineStyle.join;
                     context.miterLimit = lineStyle.miterLimit;
@@ -181,6 +183,12 @@ export class CanvasGraphicsRenderer
                     context.globalAlpha = lineStyle.alpha * worldAlpha;
                     context.strokeStyle = contextStrokeStyle;
                     context.stroke();
+
+                    if (!middle) {
+                        context.globalAlpha = 1;
+                        context.globalCompositeOperation = blendModes[ALIGNMENT[alignment]];
+                        context.fill();
+                    }
 
                     if (fillVisible) {
                         // The fill shall be drawn last, beneath the stroke
