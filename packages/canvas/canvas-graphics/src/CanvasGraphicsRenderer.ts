@@ -3,7 +3,7 @@ import { SHAPES, Matrix } from '@pixi/math';
 import { canvasUtils } from '@pixi/canvas-renderer';
 import { BLEND_MODES, ALIGNMENT } from '@pixi/constants';
 
-import type { CanvasRenderer } from '@pixi/canvas-renderer';
+import type { CanvasRenderer, DrawFn, EraseFn } from '@pixi/canvas-renderer';
 import type { FillStyle, Graphics } from '@pixi/graphics';
 import type { Polygon, Rectangle, Circle, Ellipse, RoundedRectangle } from '@pixi/math';
 
@@ -73,7 +73,8 @@ export class CanvasGraphicsRenderer
 
         return res;
     }
-
+    /* eslint-disable no-eq-null */
+    /* eslint-disable eqeqeq */
     /**
      * Renders a Graphics object to a canvas.
      *
@@ -87,13 +88,13 @@ export class CanvasGraphicsRenderer
         const { worldTransform } = graphics.transform;
 
         const transform = renderer.newContextTransform(worldTransform);
-        renderer.setBlendMode(graphics.blendMode);
-
         const graphicsData = graphics.geometry.graphicsData;
 
         const tintR = ((graphics.tint >> 16) & 0xFF) / 255;
         const tintG = ((graphics.tint >> 8) & 0xFF) / 255;
         const tintB = (graphics.tint & 0xFF) / 255;
+
+        renderer.setBlendMode(graphics.blendMode);
 
         for (let i = 0; i < graphicsData.length; i++)
         {
@@ -102,8 +103,8 @@ export class CanvasGraphicsRenderer
             const fillStyle = data.fillStyle;
             const lineStyle = data.lineStyle;
 
-            let contextFillStyle;
-            let contextStrokeStyle;
+            let contextFillStyle: string|CanvasPattern;
+            let contextStrokeStyle: string|CanvasPattern;
 
             if (fillStyle.visible)
             {
@@ -130,22 +131,25 @@ export class CanvasGraphicsRenderer
 
             const { width: lineWidth, alignment } = lineStyle;
 
-            const strokeVisible = contextStrokeStyle != null && lineWidth > 0;
+            let strokeVisible = contextStrokeStyle != null && lineWidth > 0;
             const fillVisible = contextFillStyle != null;
             const visible = fillVisible || strokeVisible;
 
             if (!visible) continue; // nothing needs drawing
 
-            let context: CanvasRenderingContext2D, finalize: Function, erase: Function;
+            let context: CanvasRenderingContext2D;
+            let finalize: DrawFn;
+            let erase: EraseFn;
 
-            if (strokeVisible && (alignment != ALIGNMENT.MIDDLE || fillVisible))
+            if (strokeVisible && (alignment !== ALIGNMENT.MIDDLE || fillVisible))
             {
                 // Obtain the secondary RenderingContext, along with the functions for the final
                 //   drawing and erasing, respectively
                 [context, finalize, erase] = renderer.forgeContext();
             }
 
-            if (!context) {
+            if (!context)
+            {
                 // No secondary RenderingContext, so the stroke cannot be drawn - disable it
                 strokeVisible = false;
 
@@ -156,11 +160,13 @@ export class CanvasGraphicsRenderer
                 if (!fillVisible) continue;
             }
 
+            let newTransform = transform;
+
             if (data.matrix)
             {
-                transform = renderer.newContextTransform(worldTransform.copyTo(this._tempMatrix).append(data.matrix));
+                newTransform = renderer.newContextTransform(worldTransform.copyTo(this._tempMatrix).append(data.matrix));
             }
-            renderer.applyTransform(transform, context);
+            renderer.applyTransform(newTransform, context);
 
             const paint = (rect?: Rectangle) =>
             {
@@ -171,7 +177,7 @@ export class CanvasGraphicsRenderer
 
                 if (strokeVisible)
                 {
-                    const middle = alignment == ALIGNMENT.MIDDLE;
+                    const middle = alignment === ALIGNMENT.MIDDLE;
 
                     context.lineCap = lineStyle.cap;
                     context.lineJoin = lineStyle.join;
@@ -207,7 +213,8 @@ export class CanvasGraphicsRenderer
                         const interiorWidth = lineWidth * (1 - alignment) * 2;
 
                         // Draw interior stroke
-                        if (interiorWidth) {
+                        if (interiorWidth)
+                        {
                             context.lineWidth = interiorWidth;
 
                             // Draw stroke clipped by current path (fill region)
@@ -238,7 +245,7 @@ export class CanvasGraphicsRenderer
                     finalize();
                     erase();
                 }
-            }
+            };
 
             if (data.type === SHAPES.POLY)
             {
@@ -398,7 +405,8 @@ export class CanvasGraphicsRenderer
             }
         }
     }
-
+    /* eslint-enable eqeqeq */
+    /* eslint-enable no-eq-null */
     public setPatternTransform(pattern: CanvasPattern, matrix: Matrix): void
     {
         if (this._svgMatrix === false)

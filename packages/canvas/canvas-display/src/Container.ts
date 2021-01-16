@@ -28,12 +28,13 @@ Container.prototype.renderCanvas = function renderCanvas(renderer: CanvasRendere
         return;
     }
 
-    // This newly forged CanvasRenderer will provide a secondary RenderingContext for
-    //   certain drawing operations (i.e. strokes); this temporary RenderingContext is
-    //   off-screen and _only_ used for rendering strokes with certain alignments
-    //   (i.e. other than 0.5) - otherwise drawing is done directly onto the main
-    //   RenderingContext, thus ensuring optimal performance.
-    const _renderer = renderer.forge();
+    let _renderer = renderer;
+
+    if (renderer)
+    {
+        // The forged CanvasRenderer performs accurate rendering via (shared) secondary off-screen RenderingContext
+        _renderer = renderer.forge();
+    }
 
     if (this._mask)
     {

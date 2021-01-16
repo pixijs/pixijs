@@ -14,39 +14,10 @@ import type {
     BaseRenderTexture,
 } from '@pixi/core';
 
+export type DrawFn = () => void;
+export type EraseFn = (x?: number, y?: number, w?: number, h?: number) => void;
+
 const tempMatrix = new Matrix();
-
-/**
- * Performs final drawing onto main RenderingContext with contents from secondary RenderingContext.
- */
-const DRAW = function(): void
-{
-    this.context.drawImage(this.$canvas, 0, 0);
-
-    if (this._willDispose)
-    {
-        this._willDispose = false;
-        this.$context = null;
-    }
-    else
-    {
-        this.applyTransform(Matrix.IDENTITY, this.$context);
-        this._resetContext(this.$context);
-    }
-};
-
-/**
- * Clears the secondary RenderingContext, (optionally) according to given coordinates.
- *
- * @param {number} [x]
- * @param {number} [y]
- * @param {number} [w]
- * @param {number} [h]
- */
-const ERASE = function(x = 0, y = 0, w = Infinity, h = Infinity): void
-{
-    this.$context.clearRect(x, y, Math.min(w, this.width), Math.min(h, this.height));
-};
 
 export interface ICanvasRendererPluginConstructor
 {
@@ -103,12 +74,9 @@ export class CanvasRenderer extends AbstractRenderer
     public renderingToScreen: boolean;
 
     private $context: CanvasRenderingContext2D;
-    private _finalize: Function;
-    private _erase: Function;
 
     private _activeBlendMode: BLEND_MODES;
     private _projTransform: Matrix;
-    private _willDispose: boolean;
 
     _outerBlend: boolean;
 
@@ -232,7 +200,8 @@ export class CanvasRenderer extends AbstractRenderer
         this.resize(this.options.width, this.options.height);
     }
 
-    getPlugin(name: string): IRendererPlugin {
+    getPlugin(name: string): IRendererPlugin
+    {
         const plugin = this.plugins[name];
 
         if (!plugin) return plugin;
@@ -258,7 +227,8 @@ export class CanvasRenderer extends AbstractRenderer
      *
      * @return {PIXI.CanvasRenderer} The newly enhanced CanvasRenderer
      */
-    public forge(): CanvasRenderer {
+    public forge(): CanvasRenderer
+    {
         if (!this.view || this.$context) return this;
 
         try
@@ -279,6 +249,7 @@ export class CanvasRenderer extends AbstractRenderer
         catch (err)
         {
             console.warn('No OffscreenContext() was created:', err.message || err);
+
             return this;
         }
     }
@@ -286,31 +257,54 @@ export class CanvasRenderer extends AbstractRenderer
     /**
      * Returns (or creates) the secondary RenderingContext, based on the main RenderingContext.
      *
-     * @return {[CanvasRenderingContext2D, Function, Function]} The (newly created) secondary RenderingContext; the final drawing function; the erasing function
+     * @return {[CanvasRenderingContext2D, Function, Function]}
+     *   The (newly created) secondary RenderingContext; the final drawing function; the erasing function
      */
-    forgeContext(): [CanvasRenderingContext2D, Function, Function]
+    forgeContext(): [CanvasRenderingContext2D, DrawFn, EraseFn]
     {
-        if (!this.$context) {
+        let context = this.$context;
+
+        if (!context)
+        {
             try
             {
-                this.$context = this._forgeContext();
-                this._willDispose = true;
+                context = this._forgeContext();
             }
             catch (err)
             {
                 console.warn('No OffscreenContext() was created:', err.message || err);
-                return [];
+
+                return [null, undefined, undefined];
             }
         }
 
-        this._resetContext(this.$context);
+        this._resetContext(context);
 
-        // Create the functions bound to this CanvasRenderer instance, which has the
-        //  `$context` (possibly from a previous `forge()` call)
-        const draw = DRAW.bind(this);
-        const erase = ERASE.bind(this);
+        /**
+         * Performs final drawing onto main RenderingContext with contents from secondary RenderingContext.
+         */
+        const draw = () =>
+        {
+            this.context.drawImage(context.canvas, 0, 0);
 
-        return [this.$context, draw, erase];
+            this.applyTransform(Matrix.IDENTITY, context);
+            this._resetContext(context);
+        };
+
+        /**
+         * Clears the secondary RenderingContext, (optionally) according to given coordinates.
+         *
+         * @param {number} [x]
+         * @param {number} [y]
+         * @param {number} [w]
+         * @param {number} [h]
+         */
+        const erase = (x = 0, y = 0, w = Infinity, h = Infinity) =>
+        {
+            context.clearRect(x, y, Math.min(w, this.width), Math.min(h, this.height));
+        };
+
+        return [context, draw, erase];
     }
 
     private _forgeContext(): CanvasRenderingContext2D
@@ -321,15 +315,6 @@ export class CanvasRenderer extends AbstractRenderer
     private _resetContext(context: CanvasRenderingContext2D, blendMode = BLEND_MODES.NORMAL): void
     {
         context.globalCompositeOperation = this.blendModes[blendMode];
-    }
-
-    /**
-     * Returns the Canvas instance associated with the current $context instance.
-     *
-     * @return {HTMLCanvasElement}
-     */
-    private get $canvas(): HTMLCanvasElement {
-        return this.$context && this.$context.canvas;
     }
 
     /**
@@ -459,7 +444,8 @@ export class CanvasRenderer extends AbstractRenderer
      * @param {boolean} [roundPixels] - whether to round (tx,ty) coords
      * @param {number} [localResolution] - If specified, used instead of `renderer.resolution` for local scaling
      */
-    newContextTransform(transform: Matrix, roundPixels?: boolean, localResolution?: number): Matrix {
+    newContextTransform(transform: Matrix, roundPixels?: boolean, localResolution?: number): Matrix
+    {
         let mat = transform;
         const proj = this._projTransform;
         const resolution = this.resolution;
@@ -519,7 +505,7 @@ export class CanvasRenderer extends AbstractRenderer
      */
     applyTransform(transform: Matrix, context?: CanvasRenderingContext2D): void
     {
-        if (context == null)
+        if (!context)
         {
             context = this.context;
         }

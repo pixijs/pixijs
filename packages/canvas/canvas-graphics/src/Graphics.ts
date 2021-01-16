@@ -3,6 +3,7 @@ import { CanvasRenderer } from '@pixi/canvas-renderer';
 import { RenderTexture, Texture } from '@pixi/core';
 import { Matrix } from '@pixi/math';
 
+import type { CanvasGraphicsRenderer } from '@pixi/canvas-graphics';
 import type { SCALE_MODES } from '@pixi/constants';
 import type { BaseRenderTexture } from '@pixi/core';
 
@@ -72,5 +73,7 @@ Graphics.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRender
 
     this.finishPoly();
 
-    renderer.getPlugin('graphics').render(this);
+    const graphics = renderer.getPlugin('graphics') as CanvasGraphicsRenderer;
+
+    graphics.render(this);
 };

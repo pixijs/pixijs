@@ -1,6 +1,30 @@
 import { setWidth, setHeight } from './canvas';
 
 /**
+ * Determines whether given context is a CanvasRenderingContext2D instance.context
+ *
+ * @param {object} context - The object to inspect
+ * @return {boolean}
+ */
+export function isContext2D(context: unknown): boolean
+{
+    return context instanceof CanvasRenderingContext2D;
+}
+
+/**
+ * Returns the context type of given context (e.g. '2d').
+ *
+ * @param {RenderingContext} context - The context to inspect
+ * @return {string} The type of given context
+ */
+export function getContextType(context: RenderingContext): string
+{
+    if (isContext2D(context)) return '2d';
+
+    return undefined;
+}
+
+/**
  * Creates a new RenderingContext instance based on given src.
  * Facilitates off-screen rendering for e.g. double-buffering.
  *
@@ -9,14 +33,14 @@ import { setWidth, setHeight } from './canvas';
  */
 export function OffscreenContext(src?: RenderingContext|string): RenderingContext
 {
-    if (src == null) return src as RenderingContext;
+    if (!src) return src as RenderingContext;
 
     const canvas = document.createElement('canvas') as HTMLCanvasElement;
     let type: string;
 
     if (typeof src === 'object')
     {
-        const srcCanvas = src.canvas;
+        const srcCanvas = (src as RenderingContext).canvas;
 
         setWidth(canvas, srcCanvas);
         setHeight(canvas, srcCanvas);
@@ -28,31 +52,7 @@ export function OffscreenContext(src?: RenderingContext|string): RenderingContex
         type = src;
     }
 
-    if (type)
-    {
-        return canvas.getContext(type) as RenderingContext;
-    }
-}
+    if (type) return canvas.getContext(type) as RenderingContext;
 
-/**
- * Returns the context type of given context (e.g. '2d').
- *
- * @param {RenderingContext} context - The context to inspect
- * @return {string} The type of given context
- */
-export function getContextType(context: RenderingContext): string
-{
-    if (context == null) return context as string;
-    if (isContext2D(context)) return '2d';
-}
-
-/**
- * Determines whether given context is a CanvasRenderingContext2D instance.context
- *
- * @param {object} context - The object to inspect
- * @return {boolean}
- */
-export function isContext2D(context: object): boolean
-{
-    return context instanceof CanvasRenderingContext2D;
+    return undefined;
 }

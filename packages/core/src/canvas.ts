@@ -1,14 +1,16 @@
+export type Canvas = HTMLCanvasElement | OffscreenCanvas;
+
 /**
- * Assigns the width property to given target canvas from given srcCanvas.AAGUID
+ * Assigns the width property to given target canvas from given srcCanvas.
  *
- * @param {HTMLCanvasElement} canvas - The target Canvas instance
- * @param {HTMLCanvasElement} srcCanvas - The source Canvas instance
- * @return {HTMLCanvasElement} The given target canvas
+ * @param {Canvas} canvas - The target Canvas instance
+ * @param {Canvas} srcCanvas - The source Canvas instance
+ * @return {Canvas} The given target canvas
  */
-export function setWidth(canvas: HTMLCanvasElement, srcCanvas: HTMLCanvasElement): HTMLCanvasElement
+export function setWidth(canvas: Canvas, srcCanvas: Canvas): Canvas
 {
-    if (canvas == null) return canvas;
-    if (srcCanvas == null) return canvas;
+    if (!canvas) return canvas;
+    if (!srcCanvas) return canvas;
 
     canvas.width = srcCanvas.width;
 
@@ -16,16 +18,16 @@ export function setWidth(canvas: HTMLCanvasElement, srcCanvas: HTMLCanvasElement
 }
 
 /**
- * Assigns the height property to given target canvas from given srcCanvas.AAGUID
+ * Assigns the height property to given target canvas from given srcCanvas.
  *
- * @param {HTMLCanvasElement} canvas - The target Canvas instance
- * @param {HTMLCanvasElement} srcCanvas - The source Canvas instance
- * @return {HTMLCanvasElement} The given target canvas
+ * @param {Canvas} canvas - The target Canvas instance
+ * @param {Canvas} srcCanvas - The source Canvas instance
+ * @return {Canvas} The given target canvas
  */
-export function setHeight(canvas: HTMLCanvasElement, srcCanvas: HTMLCanvasElement): HTMLCanvasElement
+export function setHeight(canvas: Canvas, srcCanvas: Canvas): Canvas
 {
-    if (canvas == null) return canvas;
-    if (srcCanvas == null) return canvas;
+    if (!canvas) return canvas;
+    if (!srcCanvas) return canvas;
 
     canvas.height = srcCanvas.height;
 
