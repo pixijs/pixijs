@@ -10,12 +10,11 @@ export interface IApplicationPlugin {
     destroy: (...params: any[]) => any;
 }
 
-export interface IApplicationOptions extends IRendererOptionsAuto {
-    autoStart?: boolean;
-    sharedTicker?: boolean;
-    sharedLoader?: boolean;
-    resizeTo?: Window | HTMLElement;
-}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface IApplicationOptions extends IRendererOptionsAuto, GlobalMixins.IApplicationOptions {}
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface Application extends GlobalMixins.Application {}
 
 /**
  * Convenience class to create a new PIXI application.
@@ -50,7 +49,9 @@ export class Application
      * @param {number} [options.width=800] - The width of the renderers view.
      * @param {number} [options.height=600] - The height of the renderers view.
      * @param {HTMLCanvasElement} [options.view] - The canvas to use as a view, optional.
-     * @param {boolean} [options.contextAlpha=true] - Pass-through value for canvas' context `alpha` property.
+     * @param {boolean} [options.useContextAlpha=true] - Pass-through value for canvas' context `alpha` property.
+     *   If you want to set transparency, please use `backgroundAlpha`. This option is for cases where the
+     *   canvas needs to be opaque, possibly for performance reasons on some older devices.
      * @param {boolean} [options.autoDensity=false] - Resizes renderer view in CSS pixels to allow for
      *   resolutions other than 1.
      * @param {boolean} [options.antialias=false] - Sets antialias
