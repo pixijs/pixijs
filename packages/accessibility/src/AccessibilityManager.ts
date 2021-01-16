@@ -39,9 +39,6 @@ export class AccessibilityManager
 {
     /**
      * Setting this to true will visually show the divs.
-     *
-     * @type {boolean}
-     * @default false
      */
     public debug = false;
 
