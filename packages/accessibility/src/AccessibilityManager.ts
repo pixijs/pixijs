@@ -37,9 +37,7 @@ const DIV_HOOK_ZINDEX = 2;
  */
 export class AccessibilityManager
 {
-    /**
-     * Setting this to true will visually show the divs.
-     */
+    /** Setting this to true will visually show the divs. */
     public debug = false;
 
     /**
