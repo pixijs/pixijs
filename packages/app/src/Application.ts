@@ -5,6 +5,13 @@ import type { Rectangle } from '@pixi/math';
 import type { Renderer, IRendererOptionsAuto, AbstractRenderer } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
 
+/**
+ * @memberof PIXI
+ * @typedef {object} IApplicationPlugin
+ * @property {function} init - Called when Application is constructed, scoped to Application instance.
+ *  Passes in `options` as the only argument, which are Application constructor options.
+ * @property {function} destroy - Called when destroying Application, scoped to Application instance
+ */
 export interface IApplicationPlugin {
     init(options: IApplicationOptions): void;
     destroy(): void;
@@ -169,11 +176,3 @@ export class Application
         this.renderer = null;
     }
 }
-
-/**
- * @memberof PIXI
- * @typedef {object} IApplicationPlugin
- * @property {function} init - Called when Application is constructed, scoped to Application instance.
- *  Passes in `options` as the only argument, which are Application constructor options.
- * @property {function} destroy - Called when destroying Application, scoped to Application instance
- */
