@@ -6,8 +6,8 @@ import type { Renderer, IRendererOptionsAuto, AbstractRenderer } from '@pixi/cor
 import type { IDestroyOptions } from '@pixi/display';
 
 export interface IApplicationPlugin {
-    init: (...params: any[]) => any;
-    destroy: (...params: any[]) => any;
+    init(options: IApplicationOptions): void;
+    destroy(): void;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -115,9 +115,7 @@ export class Application
      */
     public render(): void
     {
-        // TODO: Since CanvasRenderer has not been converted this function thinks it takes DisplayObject & PIXI.DisplayObject
-        // This can be fixed when CanvasRenderer is converted.
-        this.renderer.render(this.stage as any);
+        this.renderer.render(this.stage);
     }
 
     /**
