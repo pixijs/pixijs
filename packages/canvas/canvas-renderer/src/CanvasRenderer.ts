@@ -2,6 +2,7 @@ import { AbstractRenderer, CanvasResource } from '@pixi/core';
 import { CanvasRenderTarget, sayHello, rgb2hex, hex2string } from '@pixi/utils';
 import { CanvasMaskManager } from './utils/CanvasMaskManager';
 import { mapCanvasBlendModesToPixi } from './utils/mapCanvasBlendModesToPixi';
+import { applyTransform } from './utils/applyTransform';
 import { RENDERER_TYPE, SCALE_MODES, BLEND_MODES } from '@pixi/constants';
 import { settings } from '@pixi/settings';
 import { Matrix } from '@pixi/math';
@@ -16,7 +17,8 @@ import type {
 
 const tempMatrix = new Matrix();
 
-export interface ICanvasRendererPluginConstructor {
+export interface ICanvasRendererPluginConstructor
+{
     new (renderer: CanvasRenderer, options?: any): IRendererPlugin;
 }
 
@@ -314,14 +316,14 @@ export class CanvasRenderer extends AbstractRenderer
     }
 
     /**
-     * sets matrix of context
-     * called only from render() methods
-     * takes care about resolution
-     * @param {PIXI.Matrix} transform - world matrix of current element
-     * @param {boolean} [roundPixels] - whether to round (tx,ty) coords
+     * Creates new transformation Matrix based on given properties.
+     * Resolution is handled appropriately.
+     *
+     * @param {PIXI.Matrix} transform - World Matrix of current element
+     * @param {boolean} [roundPixels] - Whether to round (tx,ty) coords
      * @param {number} [localResolution] - If specified, used instead of `renderer.resolution` for local scaling
      */
-    setContextTransform(transform: Matrix, roundPixels?: boolean, localResolution?: number): void
+    newContextTransform(transform: Matrix, roundPixels?: boolean, localResolution?: number): Matrix
     {
         let mat = transform;
         const proj = this._projTransform;
@@ -338,30 +340,44 @@ export class CanvasRenderer extends AbstractRenderer
 
         if (roundPixels)
         {
-            this.context.setTransform(
+            return new Matrix(
                 mat.a * localResolution,
                 mat.b * localResolution,
                 mat.c * localResolution,
                 mat.d * localResolution,
                 (mat.tx * resolution) | 0,
-                (mat.ty * resolution) | 0
+                (mat.ty * resolution) | 0,
             );
         }
-        else
-        {
-            this.context.setTransform(
-                mat.a * localResolution,
-                mat.b * localResolution,
-                mat.c * localResolution,
-                mat.d * localResolution,
-                mat.tx * resolution,
-                mat.ty * resolution
-            );
-        }
+
+        return new Matrix(
+            mat.a * localResolution,
+            mat.b * localResolution,
+            mat.c * localResolution,
+            mat.d * localResolution,
+            mat.tx * resolution,
+            mat.ty * resolution,
+        );
     }
 
     /**
-     * Clear the canvas of renderer.
+     * Applies given transform to the current contex.
+     * Resolution is handled appropriately.
+     * Only called from render() methods.
+     *
+     * @param {PIXI.Matrix} transform - world matrix of current element
+     * @param {boolean} [roundPixels] - whether to round (tx,ty) coords
+     * @param {number} [localResolution] - If specified, used instead of `renderer.resolution` for local scaling
+     */
+    setContextTransform(transform: Matrix, roundPixels?: boolean, localResolution?: number): void
+    {
+        const mat = this.newContextTransform(transform, roundPixels, localResolution);
+
+        applyTransform(this.context, mat);
+    }
+
+    /**
+     * Clears current canvas.
      *
      * @param {string} [clearColor] - Clear the canvas with this color, except the canvas is transparent.
      * @param {number} [alpha] - Alpha to apply to the background fill color.
