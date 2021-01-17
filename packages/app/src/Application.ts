@@ -6,14 +6,20 @@ import type { Renderer, IRendererOptionsAuto, AbstractRenderer } from '@pixi/cor
 import type { IDestroyOptions } from '@pixi/display';
 
 /**
+ * Any plugin that's usable for Application should contain these methods.
  * @memberof PIXI
- * @typedef {object} IApplicationPlugin
- * @property {function} init - Called when Application is constructed, scoped to Application instance.
- *  Passes in `options` as the only argument, which are Application constructor options.
- * @property {function} destroy - Called when destroying Application, scoped to Application instance
+ * @see {@link PIXI.Application.registerPlugin}
  */
 export interface IApplicationPlugin {
+    /**
+     * Called when Application is constructed, scoped to Application instance.
+     * Passes in `options` as the only argument, which are Application constructor options.
+     * @param {object} options - Application options.
+     */
     init(options: IApplicationOptions): void;
+    /**
+     * Called when destroying Application, scoped to Application instance.
+     */
     destroy(): void;
 }
 
