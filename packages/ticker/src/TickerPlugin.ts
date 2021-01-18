@@ -60,7 +60,9 @@ export class TickerPlugin
         /**
          * Convenience method for stopping the render.
          *
-         * @method PIXI.Application#stop
+         * @method
+         * @memberof PIXI.Application
+         * @instance
          */
         this.stop = (): void =>
         {
@@ -70,7 +72,9 @@ export class TickerPlugin
         /**
          * Convenience method for starting the render.
          *
-         * @method PIXI.Application#start
+         * @method
+         * @memberof PIXI.Application
+         * @instance
          */
         this.start = (): void =>
         {
