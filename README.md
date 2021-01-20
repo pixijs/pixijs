@@ -183,7 +183,7 @@ The docs can be generated using npm:
 npm run docs
 ```
 
-The documentation uses JSDocs in combination with this template [pixi-jsdoc-template](https://github.com/pixijs/pixi-jsdoc-template). The configuration file can be found at [jsdoc.conf.json](jsdoc.conf.json)
+The documentation uses [webdoc](https://github.com/webdoc-labs/webdoc) in combination with this template [pixi-webdoc-template](https://github.com/pixijs/pixi-webdoc-template). The configuration file can be found at [webdoc.conf.json](webdoc.conf.json)
 
 ### License ###
 
