@@ -25,7 +25,8 @@ export class TextureLoader
             resource.texture = Texture.fromLoader(
                 resource.data,
                 resource.url,
-                resource.name
+                resource.name,
+                resource.metadata
             );
         }
         next();

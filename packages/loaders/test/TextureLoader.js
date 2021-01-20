@@ -48,5 +48,6 @@ function createMockResource(type, data)
         name,
         type,
         data,
+        metadata: {},
     };
 }

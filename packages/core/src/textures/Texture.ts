@@ -443,22 +443,23 @@ export class Texture extends EventEmitter
      * Create a texture from a source and add to the cache.
      *
      * @static
-     * @param {HTMLImageElement|HTMLCanvasElement} source - The input source.
+     * @param {HTMLImageElement} source - The input source.
      * @param {String} imageUrl - File name of texture, for cache and resolving resolution.
      * @param {String} [name] - Human readable name for the texture cache. If no name is
      *        specified, only `imageUrl` will be used as the cache ID.
      * @return {PIXI.Texture} Output texture
      */
-    static fromLoader(source: HTMLImageElement|HTMLCanvasElement, imageUrl: string, name?: string): Texture
+    static fromLoader(source: HTMLImageElement, imageUrl: string, name?: string,
+        options?: IBaseTextureOptions): Texture
     {
-        const resource = new ImageResource(source as any);
+        const resource = new ImageResource(source);
 
         resource.url = imageUrl;
 
-        const baseTexture = new BaseTexture(resource, {
+        const baseTexture = new BaseTexture(resource, Object.assign({
             scaleMode: settings.SCALE_MODE,
             resolution: getResolutionOfUrl(imageUrl),
-        });
+        }, options));
 
         const texture = new Texture(baseTexture);
 
