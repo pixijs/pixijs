@@ -16,7 +16,9 @@ for (const name in _resources)
         {
             get()
             {
+                // #if _DEBUG
                 deprecation('6.0.0', `PIXI.systems.${name} has moved to PIXI.${name}`);
+                // #endif
 
                 return (_resources as any)[name];
             },
@@ -37,7 +39,9 @@ for (const name in _systems)
         {
             get()
             {
+                // #if _DEBUG
                 deprecation('6.0.0', `PIXI.resources.${name} has moved to PIXI.${name}`);
+                // #endif
 
                 return (_systems as any)[name];
             },
