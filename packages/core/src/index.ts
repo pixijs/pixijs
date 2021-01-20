@@ -44,7 +44,4 @@ export * from './geometry/Attribute';
 export * from './geometry/Buffer';
 export * from './geometry/Geometry';
 export * from './geometry/ViewableBuffer';
-
-// #if _DEBUG
 export * from './deprecations';
-// #endif
