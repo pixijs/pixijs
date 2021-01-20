@@ -12,6 +12,15 @@ import type { ILoaderResource } from './LoaderResource';
 export class TextureLoader
 {
     /**
+     * Handle SVG elements a text, render with SVGResource.
+     */
+    public static add(): void
+    {
+        Resource.setExtensionLoadType('svg', Resource.LOAD_TYPE.XHR);
+        Resource.setExtensionXhrType('svg', Resource.XHR_RESPONSE_TYPE.TEXT);
+    }
+
+    /**
      * Called after a resource is loaded.
      * @see PIXI.Loader.loaderMiddleware
      * @param {PIXI.LoaderResource} resource
@@ -20,7 +29,7 @@ export class TextureLoader
     public static use(resource: ILoaderResource, next: (...args: any[]) => void): void
     {
         // create a new texture if the data is an Image object
-        if (resource.data && resource.type === Resource.TYPE.IMAGE)
+        if (resource.data && (resource.type === Resource.TYPE.IMAGE || resource.extension === 'svg'))
         {
             resource.texture = Texture.fromLoader(
                 resource.data,
