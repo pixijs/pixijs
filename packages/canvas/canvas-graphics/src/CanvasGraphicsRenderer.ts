@@ -3,7 +3,7 @@ import { SHAPES, Matrix } from '@pixi/math';
 import { canvasUtils } from '@pixi/canvas-renderer';
 
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
-import type { FillStyle, Graphics, LineStyle } from '@pixi/graphics';
+import type { FillStyle, Graphics } from '@pixi/graphics';
 import type { Polygon, Rectangle, Circle, Ellipse, RoundedRectangle } from '@pixi/math';
 
 /*
@@ -74,118 +74,6 @@ export class CanvasGraphicsRenderer
     }
 
     /**
-     * draw shape on canvas
-     *
-     * @private
-     * @param {PIXI.FillStyle} fillStyle
-     * @param {PIXI.LineStyle} lineStyle
-     * @param {string|CanvasPattern} contextFillStyle
-     * @param {string|CanvasPattern} contextStrokeStyle
-     * @param {number} worldAlpha
-     */
-    private draw(
-        fillStyle: FillStyle,
-        lineStyle: LineStyle,
-        contextFillStyle: string|CanvasPattern,
-        contextStrokeStyle: string|CanvasPattern,
-        worldAlpha: number
-    ): void
-    {
-        const context = this.renderer.context;
-        const innerStrokeAlignment = lineStyle.visible && lineStyle.alignment === 0;
-        const outerStrokeAlignment = lineStyle.visible && lineStyle.alignment === 1;
-
-        if (fillStyle.visible && !outerStrokeAlignment)
-        {
-            context.globalAlpha = fillStyle.alpha * worldAlpha;
-            context.fillStyle = contextFillStyle;
-            context.fill();
-        }
-
-        if (lineStyle.visible)
-        {
-            if (innerStrokeAlignment)
-            {
-                context.save();
-                context.clip();
-            }
-
-            context.globalAlpha = lineStyle.alpha * worldAlpha;
-            context.strokeStyle = contextStrokeStyle;
-            context.stroke();
-
-            if (innerStrokeAlignment)
-            {
-                context.restore();
-            }
-
-            if (outerStrokeAlignment)
-            {
-                context.globalAlpha = fillStyle.alpha * worldAlpha;
-                context.fillStyle = contextFillStyle;
-                context.fill();
-            }
-        }
-    }
-
-    /**
-     * draw rectangle on canvas
-     *
-     * @private
-     * @param {PIXI.Rectangle} rectangle
-     * @param {PIXI.FillStyle} fillStyle
-     * @param {PIXI.LineStyle} lineStyle
-     * @param {string|CanvasPattern} contextFillStyle
-     * @param {string|CanvasPattern} contextStrokeStyle
-     * @param {number} worldAlpha
-     */
-    private drawRect(
-        rectangle: Rectangle,
-        fillStyle: FillStyle,
-        lineStyle: LineStyle,
-        contextFillStyle: string|CanvasPattern,
-        contextStrokeStyle: string|CanvasPattern,
-        worldAlpha: number
-    ): void
-    {
-        const context = this.renderer.context;
-        const innerStrokeAlignment = lineStyle.visible && lineStyle.alignment === 0;
-        const outerStrokeAlignment = lineStyle.visible && lineStyle.alignment === 1;
-
-        if (fillStyle.visible && !outerStrokeAlignment)
-        {
-            context.globalAlpha = fillStyle.alpha * worldAlpha;
-            context.fillStyle = contextFillStyle;
-            context.fillRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
-        }
-
-        if (lineStyle.visible)
-        {
-            if (innerStrokeAlignment)
-            {
-                context.save();
-                context.rect(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
-                context.clip();
-            }
-
-            context.globalAlpha = lineStyle.alpha * worldAlpha;
-            context.strokeStyle = contextStrokeStyle;
-            context.strokeRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
-
-            if (innerStrokeAlignment)
-            {
-                context.restore();
-            }
-
-            if (outerStrokeAlignment)
-            {
-                context.globalAlpha = fillStyle.alpha * worldAlpha;
-                context.fillStyle = contextFillStyle;
-                context.fillRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
-            }
-        }
-    }
-    /**
      * Renders a Graphics object to a canvas.
      *
      * @param {PIXI.Graphics} graphics - the actual graphics object to render
@@ -245,7 +133,7 @@ export class CanvasGraphicsRenderer
                 contextStrokeStyle = this._calcCanvasStyle(lineStyle, lineTint);
             }
 
-            context.lineWidth = lineStyle.alignment !== 0.5 ? 2 * lineStyle.width : lineStyle.width;
+            context.lineWidth = lineStyle.width;
             context.lineCap = lineStyle.cap;
             context.lineJoin = lineStyle.join;
             context.miterLimit = lineStyle.miterLimit;
@@ -329,13 +217,41 @@ export class CanvasGraphicsRenderer
                     }
                 }
 
-                this.draw(fillStyle, lineStyle, contextFillStyle, contextStrokeStyle, worldAlpha);
+                if (fillStyle.visible)
+                {
+                    context.globalAlpha = fillStyle.alpha * worldAlpha;
+                    context.fillStyle = contextFillStyle;
+                    context.fill();
+                }
+
+                if (lineStyle.visible)
+                {
+                    context.globalAlpha = lineStyle.alpha * worldAlpha;
+                    context.strokeStyle = contextStrokeStyle;
+                    context.stroke();
+                }
             }
             else if (data.type === SHAPES.RECT)
             {
                 const tempShape = shape as Rectangle;
 
-                this.drawRect(tempShape, fillStyle, lineStyle, contextFillStyle, contextStrokeStyle, worldAlpha);
+                if (fillStyle.visible)
+                {
+                    context.globalAlpha = fillStyle.alpha * worldAlpha;
+                    context.fillStyle = contextFillStyle;
+                    context.fillRect(tempShape.x, tempShape.y, tempShape.width, tempShape.height);
+                }
+
+                if (lineStyle.visible)
+                {
+                    const alignmentOffset = lineStyle.width * (0.5 - (1 - lineStyle.alignment));
+                    const width = tempShape.width + (2 * alignmentOffset);
+                    const height = tempShape.height + (2 * alignmentOffset);
+
+                    context.globalAlpha = lineStyle.alpha * worldAlpha;
+                    context.strokeStyle = contextStrokeStyle;
+                    context.strokeRect(tempShape.x - alignmentOffset, tempShape.y - alignmentOffset, width, height);
+                }
             }
             else if (data.type === SHAPES.CIRC)
             {
@@ -346,7 +262,28 @@ export class CanvasGraphicsRenderer
                 context.arc(tempShape.x, tempShape.y, tempShape.radius, 0, 2 * Math.PI);
                 context.closePath();
 
-                this.draw(fillStyle, lineStyle, contextFillStyle, contextStrokeStyle, worldAlpha);
+                if (fillStyle.visible)
+                {
+                    context.globalAlpha = fillStyle.alpha * worldAlpha;
+                    context.fillStyle = contextFillStyle;
+                    context.fill();
+                }
+
+                if (lineStyle.visible)
+                {
+                    if (lineStyle.alignment !== 0.5)
+                    {
+                        const alignmentOffset = lineStyle.width * (0.5 - (1 - lineStyle.alignment));
+
+                        context.beginPath();
+                        context.arc(tempShape.x, tempShape.y, tempShape.radius + alignmentOffset, 0, 2 * Math.PI);
+                        context.closePath();
+                    }
+
+                    context.globalAlpha = lineStyle.alpha * worldAlpha;
+                    context.strokeStyle = contextStrokeStyle;
+                    context.stroke();
+                }
             }
             else if (data.type === SHAPES.ELIP)
             {
@@ -378,7 +315,42 @@ export class CanvasGraphicsRenderer
 
                 context.closePath();
 
-                this.draw(fillStyle, lineStyle, contextFillStyle, contextStrokeStyle, worldAlpha);
+                if (fillStyle.visible)
+                {
+                    context.globalAlpha = fillStyle.alpha * worldAlpha;
+                    context.fillStyle = contextFillStyle;
+                    context.fill();
+                }
+
+                if (lineStyle.visible)
+                {
+                    if (lineStyle.alignment !== 0.5)
+                    {
+                        const alignmentOffset = lineStyle.width * (0.5 - (1 - lineStyle.alignment));
+                        const sW = (tempShape.width + alignmentOffset) * 2;
+                        const sH = (tempShape.height + alignmentOffset) * 2;
+                        const sX = tempShape.x - (sW / 2);
+                        const sY = tempShape.y - (sH / 2);
+                        const sOx = (sW / 2) * kappa;
+                        const sOy = (sH / 2) * kappa;
+                        const sXe = sX + sW;
+                        const sYe = sY + sH;
+                        const sXm = sX + (sW / 2);
+                        const sYm = sY + (sH / 2);
+
+                        context.beginPath();
+                        context.moveTo(sX, sYm);
+                        context.bezierCurveTo(sX, sYm - sOy, sXm - sOx, sY, sXm, sY);
+                        context.bezierCurveTo(sXm + sOx, sY, sXe, sYm - sOy, sXe, sYm);
+                        context.bezierCurveTo(sXe, sYm + sOy, sXm + sOx, sYe, sXm, sYe);
+                        context.bezierCurveTo(sXm - sOx, sYe, sX, sYm + sOy, sX, sYm);
+                        context.closePath();
+                    }
+
+                    context.globalAlpha = lineStyle.alpha * worldAlpha;
+                    context.strokeStyle = contextStrokeStyle;
+                    context.stroke();
+                }
             }
             else if (data.type === SHAPES.RREC)
             {
@@ -406,7 +378,46 @@ export class CanvasGraphicsRenderer
                 context.quadraticCurveTo(rx, ry, rx, ry + radius);
                 context.closePath();
 
-                this.draw(fillStyle, lineStyle, contextFillStyle, contextStrokeStyle, worldAlpha);
+                if (fillStyle.visible)
+                {
+                    context.globalAlpha = fillStyle.alpha * worldAlpha;
+                    context.fillStyle = contextFillStyle;
+                    context.fill();
+                }
+
+                if (lineStyle.visible)
+                {
+                    if (lineStyle.alignment !== 0.5)
+                    {
+                        const alignmentOffset = lineStyle.width * (0.5 - (1 - lineStyle.alignment));
+                        const sRx = tempShape.x - alignmentOffset;
+                        const sRy = tempShape.y - alignmentOffset;
+                        const sWidth = tempShape.width + (2 * alignmentOffset);
+                        const sHeight = tempShape.height + (2 * alignmentOffset);
+                        const radiusOffset = alignmentOffset * (lineStyle.alignment >= 1
+                            ? Math.min(sWidth / width, sHeight / height) : Math.min(width / sWidth, height / sHeight));
+                        let sRadius = tempShape.radius + radiusOffset;
+                        const sMaxRadius = Math.min(sWidth, sHeight) / 2 | 0;
+
+                        sRadius = sRadius > sMaxRadius ? sMaxRadius : sRadius;
+
+                        context.beginPath();
+                        context.moveTo(sRx, sRy + sRadius);
+                        context.lineTo(sRx, sRy + sHeight - sRadius);
+                        context.quadraticCurveTo(sRx, sRy + sHeight, sRx + sRadius, sRy + sHeight);
+                        context.lineTo(sRx + sWidth - sRadius, sRy + sHeight);
+                        context.quadraticCurveTo(sRx + sWidth, sRy + sHeight, sRx + sWidth, sRy + sHeight - sRadius);
+                        context.lineTo(sRx + sWidth, sRy + sRadius);
+                        context.quadraticCurveTo(sRx + sWidth, sRy, sRx + sWidth - sRadius, sRy);
+                        context.lineTo(sRx + sRadius, sRy);
+                        context.quadraticCurveTo(sRx, sRy, sRx, sRy + sRadius);
+                        context.closePath();
+                    }
+
+                    context.globalAlpha = lineStyle.alpha * worldAlpha;
+                    context.strokeStyle = contextStrokeStyle;
+                    context.stroke();
+                }
             }
         }
     }
