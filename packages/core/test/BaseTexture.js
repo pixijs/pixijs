@@ -115,21 +115,27 @@ describe('PIXI.BaseTexture', function ()
         expect(BaseTextureCache[_pixiId]).to.equal(undefined);
     });
 
-    it('should remove Image BaseTexture from cache on destroy', function ()
+    it('should remove Image BaseTexture from cache on destroy', function (done)
     {
         cleanCache();
 
         const image = new Image();
 
-        const texture = Texture.fromLoader(image, URL, NAME);
+        image.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJ'
+            + 'AAAADUlEQVQYV2P4GvD7PwAHvgNAdItKlAAAAABJRU5ErkJggg==';
 
-        expect(texture.baseTexture.textureCacheIds.indexOf(NAME)).to.equal(0);
-        expect(texture.baseTexture.textureCacheIds.indexOf(URL)).to.equal(1);
-        expect(BaseTextureCache[NAME]).to.equal(texture.baseTexture);
-        texture.destroy(true);
-        expect(texture.baseTexture).to.equal(null);
-        expect(BaseTextureCache[NAME]).to.equal(undefined);
-        expect(BaseTextureCache[URL]).to.equal(undefined);
+        Texture.fromLoader(image, URL, NAME).then((texture) =>
+        {
+            expect(texture.baseTexture.textureCacheIds.indexOf(NAME)).to.equal(0);
+            expect(texture.baseTexture.textureCacheIds.indexOf(URL)).to.equal(1);
+            expect(BaseTextureCache[NAME]).to.equal(texture.baseTexture);
+            texture.destroy(true);
+            expect(texture.baseTexture).to.equal(null);
+            expect(BaseTextureCache[NAME]).to.equal(undefined);
+            expect(BaseTextureCache[URL]).to.equal(undefined);
+
+            done();
+        });
     });
 
     it('should remove BaseTexture from entire cache using removeFromCache (by BaseTexture instance)', function ()

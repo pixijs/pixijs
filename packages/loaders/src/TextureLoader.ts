@@ -31,13 +31,20 @@ export class TextureLoader
         // create a new texture if the data is an Image object
         if (resource.data && (resource.type === Resource.TYPE.IMAGE || resource.extension === 'svg'))
         {
-            resource.texture = Texture.fromLoader(
-                resource.data,
-                resource.url,
-                resource.name,
-                resource.metadata
-            );
+            const { data, url, name, metadata } = resource;
+
+            Texture.fromLoader(data, url, name, metadata).then((texture) =>
+            {
+                resource.texture = texture;
+                next();
+            })
+            // TODO: handle errors in Texture.fromLoader
+            // so we can pass them to the Loader
+                .catch(next);
         }
-        next();
+        else
+        {
+            next();
+        }
     }
 }

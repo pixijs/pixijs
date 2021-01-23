@@ -450,7 +450,7 @@ export class Texture extends EventEmitter
      * @return {PIXI.Texture} Output texture
      */
     static fromLoader(source: HTMLImageElement|HTMLCanvasElement|string, imageUrl: string, name?: string,
-        options?: IBaseTextureOptions): Texture
+        options?: IBaseTextureOptions): Promise<Texture>
     {
         const baseTexture = new BaseTexture(source, Object.assign({
             scaleMode: settings.SCALE_MODE,
@@ -483,7 +483,17 @@ export class Texture extends EventEmitter
             Texture.addToCache(texture, imageUrl);
         }
 
-        return texture;
+        // Generally images are valid right away
+        if (texture.baseTexture.valid)
+        {
+            return Promise.resolve(texture);
+        }
+
+        // SVG assets need to be parsed async, let's wait
+        return new Promise((resolve) =>
+        {
+            texture.baseTexture.once('loaded', () => resolve(texture));
+        });
     }
 
     /**
