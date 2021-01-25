@@ -20,19 +20,25 @@ function cleanCache()
 
 describe('PIXI.Texture', function ()
 {
-    it('should register Texture from Loader', function ()
+    it('should register Texture from Loader', function (done)
     {
         cleanCache();
 
         const image = new Image();
 
-        const texture = Texture.fromLoader(image, URL, NAME);
+        image.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJ'
+            + 'AAAADUlEQVQYV2P4GvD7PwAHvgNAdItKlAAAAABJRU5ErkJggg==';
 
-        expect(texture.baseTexture.resource.url).to.equal('foo.png');
-        expect(TextureCache[NAME]).to.equal(texture);
-        expect(BaseTextureCache[NAME]).to.equal(texture.baseTexture);
-        expect(TextureCache[URL]).to.equal(texture);
-        expect(BaseTextureCache[URL]).to.equal(texture.baseTexture);
+        Texture.fromLoader(image, URL, NAME).then((texture) =>
+        {
+            expect(texture.baseTexture.resource.url).to.equal('foo.png');
+            expect(TextureCache[NAME]).to.equal(texture);
+            expect(BaseTextureCache[NAME]).to.equal(texture.baseTexture);
+            expect(TextureCache[URL]).to.equal(texture);
+            expect(BaseTextureCache[URL]).to.equal(texture.baseTexture);
+
+            done();
+        });
     });
 
     it('should remove Texture from cache on destroy', function ()
