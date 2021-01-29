@@ -260,6 +260,11 @@ export class AnimatedSprite extends Sprite
      */
     update(deltaTime: number): void
     {
+		if (!this._playing)
+        {
+            return;
+        }
+		
         const elapsed = this.animationSpeed * deltaTime;
         const previousFrame = this.currentFrame;
 
