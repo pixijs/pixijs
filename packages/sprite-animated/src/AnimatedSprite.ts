@@ -260,7 +260,7 @@ export class AnimatedSprite extends Sprite
      */
     update(deltaTime: number): void
     {
-		if (!this._playing)
+        if (!this._playing)
         {
             return;
         }
