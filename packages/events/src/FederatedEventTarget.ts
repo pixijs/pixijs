@@ -10,10 +10,12 @@ export interface FederatedEventTarget extends EventEmitter, EventTarget {
 
 export const FederatedDisplayObject: Omit<FederatedEventTarget, 'parent' | 'children' | keyof EventEmitter>
 = {
-    addEventListener: () => {
+    addEventListener: () =>
+    {
         // TODO
     },
-    removeEventListener: () => {
+    removeEventListener: () =>
+    {
         // TODO
     },
 
