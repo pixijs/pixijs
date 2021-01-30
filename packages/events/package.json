@@ -1,0 +1,44 @@
+{
+  "name": "@pixi/events",
+  "version": "6.0.0-rc.2",
+  "main": "dist/cjs/events.js",
+  "module": "dist/esm/events.js",
+  "bundle": "dist/browser/events.js",
+  "description": "UI events for scene graphs",
+  "keywords": [
+    "interaction",
+    "UI",
+    "events",
+    "pointer",
+    "mouse",
+    "touch"
+  ],
+  "author": "Shukant Pal <shukant@pixijs.io>",
+  "homepage": "https://github.com/pixijs/pixi.js#readme",
+  "license": "MIT",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pixijs/pixi.js.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/pixijs/pixi.js/issues"
+  },
+  "dependencies": {
+    "@pixi/display": "^6.0.0-rc.2",
+    "@pixi/math": "^6.0.0-rc.2",
+    "@pixi/utils": "^6.0.0-rc.2"
+  }
+}

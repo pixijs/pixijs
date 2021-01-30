@@ -43,6 +43,7 @@
     "@pixi/constants": "6.0.0-rc.2",
     "@pixi/core": "6.0.0-rc.2",
     "@pixi/display": "6.0.0-rc.2",
+    "@pixi/events": "^6.0.0-rc.2",
     "@pixi/extract": "6.0.0-rc.2",
     "@pixi/filter-alpha": "6.0.0-rc.2",
     "@pixi/filter-blur": "6.0.0-rc.2",

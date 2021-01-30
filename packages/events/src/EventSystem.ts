@@ -1,0 +1,457 @@
+import { Renderer, System } from '@pixi/core';
+import { DisplayObject } from '@pixi/display';
+import { IPointData } from '@pixi/math';
+import { EventBoundary } from './EventBoundary';
+import { FederatedPointerEvent } from './FederatedPointerEvent';
+
+const MOUSE_POINTER_ID = 1;
+
+export class EventSystem extends System
+{
+    public rootBoundary: EventBoundary;
+
+    /**
+     * Does the device support touch events
+     * https://www.w3.org/TR/touch-events/
+     */
+    public readonly supportsTouchEvents = 'ontouchstart' in self;
+
+    /**
+     * Does the device support pointer events
+     * https://www.w3.org/Submission/pointer-events/
+     */
+    public readonly supportsPointerEvents = !!self.PointerEvent;
+
+    /**
+     * Should default browser actions automatically be prevented.
+     * Does not apply to pointer events for backwards compatibility
+     * preventDefault on pointer events stops mouse events from firing
+     * Thus, for every pointer event, there will always be either a mouse of touch event alongside it.
+     *
+     * @default true
+     */
+    public autoPreventDefault: boolean;
+
+    public domElement: HTMLElement;
+    public resolution = 1;
+
+    private rootPointerEvent: FederatedPointerEvent;
+    private eventsAdded: boolean;
+
+    constructor(renderer: Renderer)
+    {
+        super(renderer);
+
+        this.rootBoundary = new EventBoundary(null);
+
+        this.autoPreventDefault = true;
+        this.eventsAdded = false;
+
+        this.rootPointerEvent = new FederatedPointerEvent(null);
+
+        this.domElement = renderer.view;
+
+        this.onPointerDown = this.onPointerDown.bind(this);
+        this.onPointerMove = this.onPointerMove.bind(this);
+        this.onPointerUp = this.onPointerUp.bind(this);
+        this.onPointerOverOut = this.onPointerOverOut.bind(this);
+
+        this.setTargetElement(this.domElement);
+        this.resolution = this.renderer.resolution;
+    }
+
+    private onPointerDown(nativeEvent: MouseEvent | PointerEvent | TouchEvent): void
+    {
+        this.rootBoundary.rootTarget = this.renderer._lastObjectRendered as DisplayObject;
+
+        // if we support touch events, then only use those for touch events, not pointer events
+        if (this.supportsTouchEvents && (nativeEvent as PointerEvent).pointerType === 'touch') return;
+
+        const events = this.normalizeToPointerData(nativeEvent);
+
+        /*
+         * No need to prevent default on natural pointer events, as there are no side effects
+         * Normalized events, however, may have the double mousedown/touchstart issue on the native android browser,
+         * so still need to be prevented.
+         */
+
+        // Guaranteed that there will be at least one event in events, and all events must have the same pointer type
+
+        if (this.autoPreventDefault && (events[0] as any).isNormalized)
+        {
+            const cancelable = nativeEvent.cancelable || !('cancelable' in nativeEvent);
+
+            if (cancelable)
+            {
+                nativeEvent.preventDefault();
+            }
+        }
+
+        for (let i = 0, j = events.length; i < j; i++)
+        {
+            const nativeEvent = events[i];
+            const federatedEvent = this.bootstrapEvent(this.rootPointerEvent, nativeEvent);
+
+            this.rootBoundary.mapEvent(federatedEvent);
+        }
+    }
+
+    private onPointerMove(nativeEvent: MouseEvent | PointerEvent | TouchEvent): void
+    {
+        this.rootBoundary.rootTarget = this.renderer._lastObjectRendered as DisplayObject;
+
+        // if we support touch events, then only use those for touch events, not pointer events
+        if (this.supportsTouchEvents && (nativeEvent as PointerEvent).pointerType === 'touch') return;
+
+        const normalizedEvents = this.normalizeToPointerData(nativeEvent);
+
+        for (let i = 0, j = normalizedEvents.length; i < j; i++)
+        {
+            const event = this.bootstrapEvent(this.rootPointerEvent, normalizedEvents[i]);
+
+            this.rootBoundary.mapEvent(event);
+        }
+    }
+
+    private onPointerUp(nativeEvent: MouseEvent | PointerEvent | TouchEvent): void
+    {
+        this.rootBoundary.rootTarget = this.renderer._lastObjectRendered as DisplayObject;
+
+        // if we support touch events, then only use those for touch events, not pointer events
+        if (this.supportsTouchEvents && (nativeEvent as PointerEvent).pointerType === 'touch') return;
+
+        const outside = nativeEvent.target !== this.domElement ? 'outside' : '';
+        const normalizedEvents = this.normalizeToPointerData(nativeEvent);
+
+        for (let i = 0, j = normalizedEvents.length; i < j; i++)
+        {
+            const event = this.bootstrapEvent(this.rootPointerEvent, normalizedEvents[i]);
+
+            event.type += outside;
+
+            this.rootBoundary.mapEvent(event);
+        }
+    }
+
+    private onPointerOverOut(nativeEvent: MouseEvent | PointerEvent | TouchEvent): void
+    {
+        this.rootBoundary.rootTarget = this.renderer._lastObjectRendered as DisplayObject;
+
+        // if we support touch events, then only use those for touch events, not pointer events
+        if (this.supportsTouchEvents && (nativeEvent as PointerEvent).pointerType === 'touch') return;
+
+        const normalizedEvents = this.normalizeToPointerData(nativeEvent);
+
+        for (let i = 0, j = normalizedEvents.length; i < j; i++)
+        {
+            const event = this.bootstrapEvent(this.rootPointerEvent, normalizedEvents[i]);
+
+            this.rootBoundary.mapEvent(event);
+        }
+    }
+
+    public setTargetElement(element: HTMLElement): void
+    {
+        this.removeEvents();
+
+        this.domElement = element;
+
+        this.addEvents();
+    }
+
+    private addEvents(): void
+    {
+        if (this.eventsAdded || !this.domElement)
+        {
+            return;
+        }
+
+        const style = this.domElement.style as CrossCSSStyleDeclaration;
+
+        if (self.navigator.msPointerEnabled)
+        {
+            style.msContentZooming = 'none';
+            style.msTouchAction = 'none';
+        }
+        else if (this.supportsPointerEvents)
+        {
+            style.touchAction = 'none';
+        }
+
+        /*
+         * These events are added first, so that if pointer events are normalized, they are fired
+         * in the same order as non-normalized events. ie. pointer event 1st, mouse / touch 2nd
+         */
+        if (this.supportsPointerEvents)
+        {
+            self.document.addEventListener('pointermove', this.onPointerMove, true);
+            this.domElement.addEventListener('pointerdown', this.onPointerDown, true);
+            // pointerout is fired in addition to pointerup (for touch events) and pointercancel
+            // we already handle those, so for the purposes of what we do in onPointerOut, we only
+            // care about the pointerleave event
+            this.domElement.addEventListener('pointerleave', this.onPointerOverOut, true);
+            this.domElement.addEventListener('pointerover', this.onPointerOverOut, true);
+            // self.addEventListener('pointercancel', this.onPointerCancel, true);
+            self.addEventListener('pointerup', this.onPointerUp, true);
+        }
+        else
+        {
+            self.document.addEventListener('mousemove', this.onPointerMove, true);
+            this.domElement.addEventListener('mousedown', this.onPointerDown, true);
+            this.domElement.addEventListener('mouseout', this.onPointerOverOut, true);
+            this.domElement.addEventListener('mouseover', this.onPointerOverOut, true);
+            self.addEventListener('mouseup', this.onPointerUp, true);
+        }
+
+        this.eventsAdded = true;
+    }
+
+    private removeEvents(): void
+    {
+        if (!this.eventsAdded || !this.domElement)
+        {
+            return;
+        }
+
+        const style = this.domElement.style as CrossCSSStyleDeclaration;
+
+        if (self.navigator.msPointerEnabled)
+        {
+            style.msContentZooming = '';
+            style.msTouchAction = '';
+        }
+        else if (this.supportsPointerEvents)
+        {
+            style.touchAction = '';
+        }
+
+        if (this.supportsPointerEvents)
+        {
+            self.document.removeEventListener('pointermove', this.onPointerMove, true);
+            this.domElement.removeEventListener('pointerdown', this.onPointerDown, true);
+            this.domElement.removeEventListener('pointerleave', this.onPointerOverOut, true);
+            this.domElement.removeEventListener('pointerover', this.onPointerOverOut, true);
+            // self.removeEventListener('pointercancel', this.onPointerCancel, true);
+            self.removeEventListener('pointerup', this.onPointerUp, true);
+        }
+        else
+        {
+            self.document.removeEventListener('mousemove', this.onPointerMove, true);
+            this.domElement.removeEventListener('mousedown', this.onPointerDown, true);
+            this.domElement.removeEventListener('mouseout', this.onPointerOverOut, true);
+            this.domElement.removeEventListener('mouseover', this.onPointerOverOut, true);
+            self.removeEventListener('mouseup', this.onPointerUp, true);
+        }
+
+        if (this.supportsTouchEvents)
+        {
+            this.domElement.removeEventListener('touchstart', this.onPointerDown, true);
+            // this.domElement.removeEventListener('touchcancel', this.onPointerCancel, true);
+            this.domElement.removeEventListener('touchend', this.onPointerUp, true);
+            this.domElement.removeEventListener('touchmove', this.onPointerMove, true);
+        }
+
+        this.domElement = null;
+    }
+
+    /**
+     * Maps x and y coords from a DOM object and maps them correctly to the PixiJS view. The
+     * resulting value is stored in the point. This takes into account the fact that the DOM
+     * element could be scaled and positioned anywhere on the screen.
+     *
+     * @param  {PIXI.IPointData} point - the point that the result will be stored in
+     * @param  {number} x - the x coord of the position to map
+     * @param  {number} y - the y coord of the position to map
+     */
+    public mapPositionToPoint(point: IPointData, x: number, y: number): void
+    {
+        let rect;
+
+        // IE 11 fix
+        if (!this.domElement.parentElement)
+        {
+            rect = {
+                x: 0,
+                y: 0,
+                width: (this.domElement as any).width,
+                height: (this.domElement as any).height,
+                left: 0,
+                top: 0
+            };
+        }
+        else
+        {
+            rect = this.domElement.getBoundingClientRect();
+        }
+
+        const resolutionMultiplier = 1.0 / this.resolution;
+
+        point.x = ((x - rect.left) * ((this.domElement as any).width / rect.width)) * resolutionMultiplier;
+        point.y = ((y - rect.top) * ((this.domElement as any).height / rect.height)) * resolutionMultiplier;
+    }
+
+    /**
+     * Ensures that the original event object contains all data that a regular pointer event would have
+     *
+     * @param event - The original event data from a touch or mouse event
+     * @return An array containing a single normalized pointer event, in the case of a pointer
+     *  or mouse event, or a multiple normalized pointer events if there are multiple changed touches
+     */
+    private normalizeToPointerData(event: TouchEvent|MouseEvent|PointerEvent): PointerEvent[]
+    {
+        const normalizedEvents = [];
+
+        if (this.supportsTouchEvents && event instanceof TouchEvent)
+        {
+            for (let i = 0, li = event.changedTouches.length; i < li; i++)
+            {
+                const touch = event.changedTouches[i] as PixiTouch;
+
+                if (typeof touch.button === 'undefined') touch.button = event.touches.length ? 1 : 0;
+                if (typeof touch.buttons === 'undefined') touch.buttons = event.touches.length ? 1 : 0;
+                if (typeof touch.isPrimary === 'undefined')
+                {
+                    touch.isPrimary = event.touches.length === 1 && event.type === 'touchstart';
+                }
+                if (typeof touch.width === 'undefined') touch.width = touch.radiusX || 1;
+                if (typeof touch.height === 'undefined') touch.height = touch.radiusY || 1;
+                if (typeof touch.tiltX === 'undefined') touch.tiltX = 0;
+                if (typeof touch.tiltY === 'undefined') touch.tiltY = 0;
+                if (typeof touch.pointerType === 'undefined') touch.pointerType = 'touch';
+                if (typeof touch.pointerId === 'undefined') touch.pointerId = touch.identifier || 0;
+                if (typeof touch.pressure === 'undefined') touch.pressure = touch.force || 0.5;
+                if (typeof touch.twist === 'undefined') touch.twist = 0;
+                if (typeof touch.tangentialPressure === 'undefined') touch.tangentialPressure = 0;
+                // TODO: Remove these, as layerX/Y is not a standard, is deprecated, has uneven
+                // support, and the fill ins are not quite the same
+                // offsetX/Y might be okay, but is not the same as clientX/Y when the canvas's top
+                // left is not 0,0 on the page
+                if (typeof touch.layerX === 'undefined') touch.layerX = touch.offsetX = touch.clientX;
+                if (typeof touch.layerY === 'undefined') touch.layerY = touch.offsetY = touch.clientY;
+
+                // mark the touch as normalized, just so that we know we did it
+                touch.isNormalized = true;
+
+                normalizedEvents.push(touch);
+            }
+        }
+        // apparently PointerEvent subclasses MouseEvent, so yay
+        else if (!self.MouseEvent
+            || (event instanceof MouseEvent && (!this.supportsPointerEvents || !(event instanceof self.PointerEvent))))
+        {
+            const tempEvent = event as PixiPointerEvent;
+
+            if (typeof tempEvent.isPrimary === 'undefined') tempEvent.isPrimary = true;
+            if (typeof tempEvent.width === 'undefined') tempEvent.width = 1;
+            if (typeof tempEvent.height === 'undefined') tempEvent.height = 1;
+            if (typeof tempEvent.tiltX === 'undefined') tempEvent.tiltX = 0;
+            if (typeof tempEvent.tiltY === 'undefined') tempEvent.tiltY = 0;
+            if (typeof tempEvent.pointerType === 'undefined') tempEvent.pointerType = 'mouse';
+            if (typeof tempEvent.pointerId === 'undefined') tempEvent.pointerId = MOUSE_POINTER_ID;
+            if (typeof tempEvent.pressure === 'undefined') tempEvent.pressure = 0.5;
+            if (typeof tempEvent.twist === 'undefined') tempEvent.twist = 0;
+            if (typeof tempEvent.tangentialPressure === 'undefined') tempEvent.tangentialPressure = 0;
+
+            // mark the mouse event as normalized, just so that we know we did it
+            tempEvent.isNormalized = true;
+
+            normalizedEvents.push(tempEvent);
+        }
+        else
+        {
+            normalizedEvents.push(event);
+        }
+
+        return normalizedEvents as PointerEvent[];
+    }
+
+    private bootstrapEvent(event: FederatedPointerEvent, nativeEvent: PointerEvent): FederatedPointerEvent
+    {
+        event.originalEvent = null;
+        event.nativeEvent = nativeEvent;
+
+        event.pointerId = nativeEvent.pointerId;
+        event.width = nativeEvent.width;
+        event.height = nativeEvent.height;
+        event.isPrimary = nativeEvent.isPrimary;
+        event.pointerType = nativeEvent.pointerType;
+        event.pressure = nativeEvent.pressure;
+        event.tangentialPressure = nativeEvent.tangentialPressure;
+        event.tiltX = nativeEvent.tiltX;
+        event.tiltY = nativeEvent.tiltY;
+        event.twist = nativeEvent.twist;
+        event.altKey = nativeEvent.altKey;
+        event.button = nativeEvent.button;
+        event.buttons = nativeEvent.buttons;
+        event.clientX = nativeEvent.clientX;
+        event.clientY = nativeEvent.clientY;
+        event.ctrlKey = nativeEvent.ctrlKey;
+        event.metaKey = nativeEvent.metaKey;
+        event.movementX = nativeEvent.movementX;
+        event.movementY = nativeEvent.movementY;
+        event.pageX = nativeEvent.pageX;
+        event.pageY = nativeEvent.pageY;
+        event.x = nativeEvent.x;
+        event.y = nativeEvent.y;
+
+        event.relatedTarget = null;
+
+        this.mapPositionToPoint(event.screen, nativeEvent.clientX, nativeEvent.clientY);
+        event.global.copyFrom(event.screen);// global = screen for top-level
+        event.offset.copyFrom(event.screen);// EventBoundary recalculates using its rootTarget
+
+        event.isTrusted = nativeEvent.isTrusted;
+        event.srcElement = nativeEvent.srcElement;
+        event.timeStamp = performance.now();
+        event.type = nativeEvent.type;
+
+        if (nativeEvent.type === 'pointerleave')
+        {
+            event.type = 'pointerout';
+        }
+
+        return event;
+    }
+}
+
+interface CrossCSSStyleDeclaration extends CSSStyleDeclaration
+{
+    msContentZooming: string;
+    msTouchAction: string;
+}
+
+interface PixiPointerEvent extends PointerEvent
+{
+    isPrimary: boolean;
+    width: number;
+    height: number;
+    tiltX: number;
+    tiltY: number;
+    pointerType: string;
+    pointerId: number;
+    pressure: number;
+    twist: number;
+    tangentialPressure: number;
+    isNormalized: boolean;
+}
+
+interface PixiTouch extends Touch
+{
+    button: number;
+    buttons: number;
+    isPrimary: boolean;
+    width: number;
+    height: number;
+    tiltX: number;
+    tiltY: number;
+    pointerType: string;
+    pointerId: number;
+    pressure: number;
+    twist: number;
+    tangentialPressure: number;
+    layerX: number;
+    layerY: number;
+    offsetX: number;
+    offsetY: number;
+    isNormalized: boolean;
+}
