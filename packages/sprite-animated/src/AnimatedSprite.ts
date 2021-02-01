@@ -264,7 +264,7 @@ export class AnimatedSprite extends Sprite
         {
             return;
         }
-		
+
         const elapsed = this.animationSpeed * deltaTime;
         const previousFrame = this.currentFrame;
 
