@@ -52,7 +52,7 @@
         "recurse"       : true,
         "lenient"       : true,
         "destination"   : "./dist/docs",
-        "template"      : "pixi-webdoc-template",
+        "template"      : "@pixi/webdoc-template",
         "export"        : "./dist/docs/pixi.api.json"
     }
 }
