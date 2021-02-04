@@ -53,6 +53,18 @@ describe('PIXI.TextureSystem', function ()
         expect(glTex.wrapMode).to.equal(WRAP_MODES.CLAMP);
     });
 
+    it('should set internalFormat correctly for RGBA float textures', function ()
+    {
+        const baseTex = createTempTexture({ type: TYPES.FLOAT, format: FORMATS.RGBA });
+
+        this.renderer.texture.bind(baseTex);
+
+        const glTex = baseTex._glTextures[this.renderer.CONTEXT_UID];
+
+        expect(glTex).to.be.notnull;
+        expect(glTex.internalFormat).to.equal(this.renderer.gl.RGBA32F);
+    });
+
     it('should set internalFormat correctly for red-channel float textures', function ()
     {
         const baseTex = createTempTexture({ type: TYPES.FLOAT, format: FORMATS.RED });
