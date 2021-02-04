@@ -1,25 +1,25 @@
-const { WRAP_MODES } = require('@pixi/constants');
+const { WRAP_MODES, TYPES, FORMATS } = require('@pixi/constants');
 const { Renderer, BaseTexture } = require('../');
 
 describe('PIXI.TextureSystem', function ()
 {
-    function createTempTexture()
+    function createTempTexture(options)
     {
         const canvas = document.createElement('canvas');
 
         canvas.width = 10;
         canvas.height = 10;
 
-        return BaseTexture.from(canvas);
+        return BaseTexture.from(canvas, options);
     }
 
-    before(function ()
+    beforeEach(function ()
     {
         this.renderer = new Renderer();
         this.renderer.mask.enableScissor = true;
     });
 
-    after(function ()
+    afterEach(function ()
     {
         this.renderer.destroy();
         this.renderer = null;
@@ -51,5 +51,17 @@ describe('PIXI.TextureSystem', function ()
 
         expect(glTex).to.be.notnull;
         expect(glTex.wrapMode).to.equal(WRAP_MODES.CLAMP);
+    });
+
+    it('should set internalFormat correctly for red-channel float textures', function ()
+    {
+        const baseTex = createTempTexture({ type: TYPES.FLOAT, format: FORMATS.RED });
+
+        this.renderer.texture.bind(baseTex);
+
+        const glTex = baseTex._glTextures[this.renderer.CONTEXT_UID];
+
+        expect(glTex).to.be.notnull;
+        expect(glTex.internalFormat).to.equal(this.renderer.gl.R32F);
     });
 });

@@ -273,6 +273,12 @@ export class TextureSystem extends System
         {
             glTexture.internalFormat = gl.RGBA32F;
         }
+        if (texture.type === gl.FLOAT
+            && texture.format === gl.RED)
+        {
+            glTexture.internalFormat = gl.R32F;
+        }
+
         // that's WebGL1 HALF_FLOAT_OES
         // we have to convert it to WebGL HALF_FLOAT
         if (texture.type === TYPES.HALF_FLOAT)
