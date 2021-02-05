@@ -149,7 +149,7 @@ export class TextureGCSystem extends System
         // only destroy non generated textures
         if (texture && !texture.framebuffer)
         {
-            tm.destroyTexture(displayObject._texture);
+            tm.destroyTexture(texture);
         }
 
         for (let i = displayObject.children.length - 1; i >= 0; i--)
