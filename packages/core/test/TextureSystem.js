@@ -35,7 +35,7 @@ describe('PIXI.TextureSystem', function ()
 
         const glTex = baseTex._glTextures[this.renderer.CONTEXT_UID];
 
-        expect(glTex).to.be.notnull;
+        expect(glTex).to.exist;
         expect(glTex.wrapMode).to.equal(WRAP_MODES.REPEAT);
     });
 
@@ -49,7 +49,7 @@ describe('PIXI.TextureSystem', function ()
 
         const glTex = baseTex._glTextures[this.renderer.CONTEXT_UID];
 
-        expect(glTex).to.be.notnull;
+        expect(glTex).to.exist;
         expect(glTex.wrapMode).to.equal(WRAP_MODES.CLAMP);
     });
 });
