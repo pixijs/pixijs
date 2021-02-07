@@ -54,7 +54,7 @@
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^9.0.0",
     "@rollup/plugin-typescript": "^6.0.0",
-    "@webdoc/cli": "^1.1.5",
+    "@webdoc/cli": "^1.1.6",
     "chai": "~3.5.0",
     "copyfiles": "^2.1.0",
     "cross-env": "^5.2.0",

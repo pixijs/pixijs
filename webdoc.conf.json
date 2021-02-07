@@ -3,7 +3,7 @@
         "allowUnknownTags": false
     },
     "source": {
-        "includePattern": [
+        "include": [
             "packages/*/src/**/*.ts",
             "bundles/pixi.js/src/*.ts",
             "packages/filters/*/src/**/*.(ts)",
