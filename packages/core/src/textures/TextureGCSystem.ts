@@ -144,11 +144,12 @@ export class TextureGCSystem extends System
     unload(displayObject: IUnloadableTexture): void
     {
         const tm = this.renderer.texture;
+        const texture = displayObject._texture as RenderTexture;
 
         // only destroy non generated textures
-        if ((displayObject._texture as RenderTexture)?.framebuffer)
+        if (texture && !texture.framebuffer)
         {
-            tm.destroyTexture(displayObject._texture);
+            tm.destroyTexture(texture);
         }
 
         for (let i = displayObject.children.length - 1; i >= 0; i--)
