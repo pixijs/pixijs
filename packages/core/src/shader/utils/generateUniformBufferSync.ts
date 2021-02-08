@@ -3,8 +3,15 @@ import { mapSize } from '../utils';
 import { IUniformData } from '../Program';
 import { UniformGroup } from '../UniformGroup';
 import { uniformParsers } from './uniformParsers';
+import type { Renderer } from '../../Renderer';
+import type { Buffer } from '../../geometry/Buffer';
 
 export type UniformsSyncCallback = (...args: any[]) => void;
+
+const uboUpdate =  (_ud:any, _uv:any, _renderer:Renderer, _syncData:any, buffer: Buffer) =>
+{
+    _renderer.buffer.update(buffer);
+};
 
 // cv = CachedValue
 // v = value
@@ -187,23 +194,20 @@ export function getUBOData(uniforms: Dict<any>, uniformData: Dict<any>):any[]
     return usedUniformDatas;
 }
 
-export function generateUniformBufferSync(group: UniformGroup, uniformData: Dict<any>): UniformsSyncCallback
+export function generateUniformBufferSync(
+    group: UniformGroup,
+    uniformData: Dict<any>
+): {size:number, syncFunc:UniformsSyncCallback}
 {
     if (!group.autoManage)
     {
-        return (_ud, _uv, _renderer, _syncData, buffer) =>
-        {
-            buffer.update();
-        };
+        // if the group is nott automatically managed, we don't need to generate a special function for it...
+        return { size: 0, syncFunc: uboUpdate };
     }
 
     const usedUniformDatas = getUBOData(group.uniforms, uniformData);
 
     const { uboElements, size } = createUBOElements(usedUniformDatas);
-
-    const data = new Float32Array(size / 4);
-
-    group.buffer.update(data);
 
     const funcFragments = [`
     var v = null;
@@ -284,7 +288,17 @@ export function generateUniformBufferSync(group: UniformGroup, uniformData: Dict
        renderer.buffer.update(buffer);
     `);
 
-    // eslint-disable-next-line no-new-func
-    return new Function('ud', 'uv', 'renderer', 'syncData', 'buffer', funcFragments.join('\n')) as UniformsSyncCallback;
+    return {
+        size,
+        // eslint-disable-next-line no-new-func
+        syncFunc: new Function(
+            'ud',
+            'uv',
+            'renderer',
+            'syncData',
+            'buffer',
+            funcFragments.join('\n')
+        ) as UniformsSyncCallback
+    };
 }
 

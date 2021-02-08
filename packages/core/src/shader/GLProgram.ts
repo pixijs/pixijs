@@ -18,6 +18,19 @@ export class GLProgram
     public uniformData: Dict<any>;
     public uniformGroups: Dict<any>;
     /**
+     * a hash that stores where ubs are bound to on the program
+     */
+    public uniformBufferBindings: Dict<any>;
+    /**
+     * a hash for upload functions, we only generates new ones if they don't already exist
+     */
+    public uniformSync: Dict<any>;
+    /**
+     * a place where dirty ticks are stored for groups
+     */
+    public uniformDirtyGroups: Dict<any>;
+
+    /**
      * Makes a new Pixi program
      *
      * @param {WebGLProgram} program - webgl program
@@ -45,6 +58,10 @@ export class GLProgram
          * @member {Object}
          */
         this.uniformGroups = {};
+
+        this.uniformDirtyGroups = {};
+
+        this.uniformBufferBindings = {};
     }
 
     /**
@@ -54,6 +71,7 @@ export class GLProgram
     {
         this.uniformData = null;
         this.uniformGroups = null;
+        this.uniformBufferBindings = null;
         this.program = null;
     }
 }

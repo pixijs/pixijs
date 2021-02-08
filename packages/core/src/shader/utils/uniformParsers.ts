@@ -30,10 +30,10 @@ export const uniformParsers: IUniformParser[] = [
             data.type === 'float' && data.size === 1,
         code: (name: string): string =>
             `
-            if(uv["${name}"] !== ud["${name}"].value)
+            if(uv.${name} !== ud.${name}.value)
             {
-                ud["${name}"].value = uv["${name}"]
-                gl.uniform1f(ud["${name}"].location, uv["${name}"])
+                ud.${name}.value = uv.${name}
+                gl.uniform1f(ud.${name}.location, uv.${name})
             }
             `,
     },
@@ -44,12 +44,12 @@ export const uniformParsers: IUniformParser[] = [
             (data.type === 'sampler2D' || data.type === 'samplerCube' || data.type === 'sampler2DArray') && data.size === 1 && !data.isArray,
         code: (name: string): string => `t = syncData.textureCount++;
 
-            renderer.texture.bind(uv["${name}"], t);
+            renderer.texture.bind(uv.${name}, t);
 
-            if(ud["${name}"].value !== t)
+            if(ud.${name}.value !== t)
             {
-                ud["${name}"].value = t;
-                gl.uniform1i(ud["${name}"].location, t);\n; // eslint-disable-line max-len
+                ud.${name}.value = t;
+                gl.uniform1i(ud.${name}.location, t);\n; // eslint-disable-line max-len
             }`,
     },
     // uploading pixi matrix object to mat3
@@ -60,7 +60,7 @@ export const uniformParsers: IUniformParser[] = [
 
             // TODO and some smart caching dirty ids here!
             `
-            gl.uniformMatrix3fv(ud["${name}"].location, false, uv["${name}"].toArray(true));
+            gl.uniformMatrix3fv(ud.${name}.location, false, uv.${name}.toArray(true));
             `,
         codeUbo: (name: string): string =>
             `
@@ -80,14 +80,14 @@ export const uniformParsers: IUniformParser[] = [
             data.type === 'vec2' && data.size === 1 && uniform.x !== undefined,
         code: (name: string): string =>
             `
-                cv = ud["${name}"].value;
-                v = uv["${name}"];
+                cv = ud.${name}.value;
+                v = uv.${name};
 
                 if(cv[0] !== v.x || cv[1] !== v.y)
                 {
                     cv[0] = v.x;
                     cv[1] = v.y;
-                    gl.uniform2f(ud["${name}"].location, v.x, v.y);
+                    gl.uniform2f(ud.${name}.location, v.x, v.y);
                 }`,
         codeUbo: (name:string): string =>
             `
@@ -103,14 +103,14 @@ export const uniformParsers: IUniformParser[] = [
             data.type === 'vec2' && data.size === 1,
         code: (name: string): string =>
             `
-                cv = ud["${name}"].value;
-                v = uv["${name}"];
+                cv = ud.${name}.value;
+                v = uv.${name};
 
                 if(cv[0] !== v[0] || cv[1] !== v[1])
                 {
                     cv[0] = v[0];
                     cv[1] = v[1];
-                    gl.uniform2f(ud["${name}"].location, v[0], v[1]);
+                    gl.uniform2f(ud.${name}.location, v[0], v[1]);
                 }
             `,
     },
@@ -121,8 +121,8 @@ export const uniformParsers: IUniformParser[] = [
 
         code: (name: string): string =>
             `
-                cv = ud["${name}"].value;
-                v = uv["${name}"];
+                cv = ud.${name}.value;
+                v = uv.${name};
 
                 if(cv[0] !== v.x || cv[1] !== v.y || cv[2] !== v.width || cv[3] !== v.height)
                 {
@@ -130,7 +130,7 @@ export const uniformParsers: IUniformParser[] = [
                     cv[1] = v.y;
                     cv[2] = v.width;
                     cv[3] = v.height;
-                    gl.uniform4f(ud["${name}"].location, v.x, v.y, v.width, v.height)
+                    gl.uniform4f(ud.${name}.location, v.x, v.y, v.width, v.height)
                 }`,
         codeUbo: (name:string): string =>
             `
@@ -148,8 +148,8 @@ export const uniformParsers: IUniformParser[] = [
             data.type === 'vec4' && data.size === 1,
         code: (name: string): string =>
             `
-                cv = ud["${name}"].value;
-                v = uv["${name}"];
+                cv = ud.${name}.value;
+                v = uv.${name};
 
                 if(cv[0] !== v[0] || cv[1] !== v[1] || cv[2] !== v[2] || cv[3] !== v[3])
                 {
@@ -158,7 +158,7 @@ export const uniformParsers: IUniformParser[] = [
                     cv[2] = v[2];
                     cv[3] = v[3];
 
-                    gl.uniform4f(ud["${name}"].location, v[0], v[1], v[2], v[3])
+                    gl.uniform4f(ud.${name}.location, v[0], v[1], v[2], v[3])
                 }`,
     },
 ];

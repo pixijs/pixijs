@@ -49,9 +49,9 @@ let UID = 0;
  * @class
  * @memberof PIXI
  */
-export class UniformGroup
+export class UniformGroup<LAYOUT = Dict<any>>
 {
-    public readonly uniforms: Dict<any>;
+    public readonly uniforms: LAYOUT;
     public readonly group: boolean;
     public id: number;
     syncUniforms: Dict<UniformsSyncCallback>;
@@ -66,7 +66,7 @@ export class UniformGroup
      * @param {boolean} [_static] - Uniforms wont be changed after creation
      * @param {boolean} [_ubo] - if true, will treat this uniform group as a uniform buffer object
      */
-    constructor(uniforms: Dict<any> | Buffer, _static?: boolean, _ubo?:boolean)
+    constructor(uniforms: LAYOUT | Buffer, _static?: boolean, _ubo?:boolean)
     {
         /**
          * Its a group and not a single uniforms
@@ -133,6 +133,11 @@ export class UniformGroup
     update(): void
     {
         this.dirtyId++;
+
+        if (!this.autoManage && this.buffer)
+        {
+            this.buffer.update();
+        }
     }
 
     add(name: string, uniforms: Dict<any>, _static?: boolean): void

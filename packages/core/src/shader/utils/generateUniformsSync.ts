@@ -115,7 +115,7 @@ export function generateUniformsSync(group: UniformGroup, uniformData: Dict<any>
                 if (group.uniforms[i].ubo)
                 {
                     funcFragments.push(`
-                        renderer.shader.syncUniformBufferGroup(uv.${i}, '${i}', syncData);
+                        renderer.shader.syncUniformBufferGroup(uv.${i}, '${i}');
                     `);
                 }
                 else
