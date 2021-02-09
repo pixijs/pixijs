@@ -1,4 +1,4 @@
-import { State } from '@pixi/core';
+import { Shader, State } from '@pixi/core';
 import { Point, Polygon } from '@pixi/math';
 import { BLEND_MODES, DRAW_MODES } from '@pixi/constants';
 import { Container } from '@pixi/display';
@@ -62,7 +62,7 @@ export class Mesh extends Container
      *        if no state is provided, uses {@link PIXI.State.for2d} to create a 2D state for PixiJS.
      * @param {number} [drawMode=PIXI.DRAW_MODES.TRIANGLES] - the drawMode, can be any of the PIXI.DRAW_MODES consts
      */
-    constructor(geometry: Geometry, shader: MeshMaterial, state?: State, drawMode = DRAW_MODES.TRIANGLES)
+    constructor(geometry: Geometry, shader: Shader|MeshMaterial, state?: State, drawMode = DRAW_MODES.TRIANGLES)
     {
         super();
 
@@ -82,7 +82,7 @@ export class Mesh extends Container
          * Can be shared between multiple Mesh objects.
          * @member {PIXI.Shader|PIXI.MeshMaterial}
          */
-        this.shader = shader;
+        this.shader = shader as MeshMaterial;
 
         /**
          * Represents the WebGL state the Mesh required to render, excludes shader and geometry. E.g.,
