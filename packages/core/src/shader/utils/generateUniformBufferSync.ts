@@ -19,7 +19,7 @@ const uboUpdate =  (_ud:any, _uv:any, _renderer:Renderer, _syncData:any, buffer:
 // uv = uniformValue
 // l = location
 const UBO_TO_SINGLE_SETTERS: Dict<string> = {
-    float: `
+    float: `     
         data[offset] = v;
     `,
     vec2: `
@@ -69,22 +69,22 @@ const UBO_TO_SINGLE_SETTERS: Dict<string> = {
 const GLSL_TO_STD40_SIZE: Dict<number> = {
     float:  4,
     vec2:   8,
-    vec3:   16,
+    vec3:   12,
     vec4:   16,
 
     int:      4,
     ivec2:    8,
-    ivec3:    16,
+    ivec3:    12,
     ivec4:    16,
 
     uint:     4,
     uvec2:    8,
-    uvec3:    16,
+    uvec3:    12,
     uvec4:    16,
 
     bool:     4,
     bvec2:    8,
-    bvec3:    16,
+    bvec3:    12,
     bvec4:    16,
 
     mat2:     16 * 2,
@@ -96,7 +96,6 @@ interface UBOElement {
     data:IUniformData
     offset:number,
     dataLen:number,
-    chunkLen:number
     dirty:number
 }
 
@@ -113,14 +112,12 @@ export function createUBOElements(uniformData:IUniformData[]):{uboElements:UBOEl
             data,
             offset: 0,
             dataLen: 0,
-            chunkLen: 0,
             dirty: 0
         }));
 
-    let chunk = 16;	// Data size in Bytes, UBO using layout std140 needs to build out the struct in chunks of 16 bytes.
-    let remainingChunk = 0;	// Temp Size, How much of the chunk is available after removing the data size from it
-    let offset = 0;	// Offset in the buffer allocation
-    let size = 0;	// Data Size of the current type
+    let size = 0;
+    let chunkSize = 0;
+    let offset = 0;
 
     for (let i = 0; i < uboElements.length; i++)
     {
@@ -133,44 +130,24 @@ export function createUBOElements(uniformData:IUniformData[]):{uboElements:UBOEl
             size = Math.max(size, 16) * uboElement.data.size;
         }
 
-        remainingChunk = chunk - size;	// How much of the chunk exists after taking the size of the data.
+        uboElement.dataLen = size;
 
-        // Chunk has been overdrawn when it already has some data reserved for it.
-        if (remainingChunk < 0 && chunk < 16)
+        if ((chunkSize + size) > 16)
         {
-            offset += chunk;						// Add Remaining Chunk to offset...
-            if (i > 0) uboElements[i - 1].chunkLen += chunk;	// So the remaining chunk can be used by the last variable
-            chunk = 16;								// Reset Chunk
-        }
-        else if (remainingChunk < 0 && chunk === 16)
-        {
-            // Do nothing in case data length is >= to unused chunk size.
-            // Do not want to change the chunk size at all when this happens.
-        }
-        else if (remainingChunk === 0)
-        {
-            chunk = 16;				// If evenly closes out the chunk, reset
+            offset = Math.ceil(offset / 16) * 16;
+            uboElement.offset = offset;
+            offset += size;
+            chunkSize = size;
         }
         else
         {
-            chunk -= size;	// Chunk isn't filled, just remove a piece
+            uboElement.offset = offset;
+            chunkSize += size;
+            offset += size;
         }
-
-        // Add some data of how the chunk will exist in the buffer.
-
-        uboElement.offset = offset;
-        uboElement.chunkLen = size;
-        uboElement.dataLen = size;
-
-        offset += size;
     }
 
-    // Check if the final offset is divisible by 16, if not add remaining chunk space to last element.
-    if (offset % 16 !== 0)
-    {
-        uboElements[uboElements.length - 1].chunkLen += chunk;
-        offset += chunk;
-    }
+    offset = Math.ceil(offset / 16) * 16;
 
     return { uboElements, size: offset };
 }
