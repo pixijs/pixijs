@@ -144,7 +144,7 @@ export class UniformGroup<LAYOUT = Dict<any>>
     {
         if (!this.ubo)
         {
-            this.uniforms[name] = new UniformGroup(uniforms, _static);
+            (this.uniforms as any)[name] = new UniformGroup(uniforms, _static);
         }
         else
         {
