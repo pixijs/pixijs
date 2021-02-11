@@ -3,7 +3,7 @@ import { SHAPES, Matrix } from '@pixi/math';
 import { canvasUtils, applyTransform } from '@pixi/canvas-renderer';
 import { BLEND_MODES } from '@pixi/constants';
 import { Offscreen } from './Offscreen';
-import { Tinted, Paint } from './graphics';
+import { Style, Tinted, Paint } from './graphics';
 
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
 import type { FillStyle, Graphics } from '@pixi/graphics';
@@ -20,6 +20,24 @@ import type { Polygon, Rectangle, Circle, Ellipse, RoundedRectangle } from '@pix
  * Heavily inspired by LibGDX's CanvasGraphicsRenderer:
  * https://github.com/libgdx/libgdx/blob/1.0.0/gdx/src/com/badlogic/gdx/graphics/glutils/ShapeRenderer.java
  */
+
+const ALIGNMENT = {
+    MIN: 0,
+    MAX: 1,
+    MID: NaN,
+};
+
+ALIGNMENT.MID = ALIGNMENT.MIN + ((ALIGNMENT.MAX - ALIGNMENT.MIN) / 2);
+
+const FILL = Style({
+    alpha: 1,
+    paint: '#000',
+});
+
+const STROKE = FILL({
+    cap: 'square',
+    join: 'miter',
+});
 
 /**
  * Renderer dedicated to drawing and batching graphics objects.
@@ -164,7 +182,7 @@ export class CanvasGraphicsRenderer
 
             if (strokeVisible)
             {
-                useOffscreen = fillVisible;
+                useOffscreen = fillVisible || alignment !== ALIGNMENT.MID;
             }
 
             let context = renderer.context as CanvasRenderingContext2D;
@@ -200,13 +218,56 @@ export class CanvasGraphicsRenderer
                 {
                     if (strokeVisible)
                     {
-                        stroke({
+                        const details = Style({
                             ...lineStyle,
                             alpha: lineStyle.alpha * worldAlpha,
                             paint: contextStrokeStyle,
                             width: lineWidth,
-                        }));
+                        });
+
+                        if (alignment === ALIGNMENT.MID)
+                        {
+                            stroke(details);
+                        }
+                        else
+                        {
+                            const miterLimit = (lineStyle.miterLimit || 1) * 5;
+                            const interior = STROKE({
+                                miterLimit,
+                                width: lineWidth * alignment * 2,
+                            });
+                            const exterior = STROKE({
+                                miterLimit,
+                                width: lineWidth * (ALIGNMENT.MAX - alignment) * 2,
+                            });
+
+                            fill(FILL);
+
+                            if (alignment < ALIGNMENT.MID)
+                            {
+                                stroke(interior);
+
+                                stroke(details({
+                                    blendMode: blendModes[BLEND_MODES.SRC_IN],
+                                    width: exterior('width'),
+                                }));
+                            }
+                            else
+                            {
+                                stroke(interior({
+                                    blendMode: blendModes[BLEND_MODES.SRC_OUT],
+                                }));
+
+                                stroke(exterior);
+
+                                stroke(details({
+                                    blendMode: blendModes[BLEND_MODES.SRC_IN],
+                                    width: interior('width'),
+                                }));
+                            }
+                        }
                     }
+
                     if (fillVisible)
                     {
                         fill({
