@@ -1,3 +1,3 @@
 export * from './CanvasGraphicsRenderer';
 
-import './Graphics';
+import './graphics';
