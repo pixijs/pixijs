@@ -1,6 +1,9 @@
 import { Texture } from '@pixi/core';
 import { SHAPES, Matrix } from '@pixi/math';
-import { canvasUtils } from '@pixi/canvas-renderer';
+import { canvasUtils, applyTransform } from '@pixi/canvas-renderer';
+import { BLEND_MODES } from '@pixi/constants';
+import { Offscreen } from './Offscreen';
+import { Tinted, Paint } from './graphics';
 
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
 import type { FillStyle, Graphics } from '@pixi/graphics';
@@ -32,6 +35,11 @@ export class CanvasGraphicsRenderer
     private _tempMatrix: Matrix;
 
     /**
+     * Off-screen rendering via secondary CanvasRenderingContext2D.
+     */
+    private _offscreen: Offscreen;
+
+    /**
      * @param {PIXI.CanvasRenderer} renderer - The current PIXI renderer.
      */
     constructor(renderer: CanvasRenderer)
@@ -39,6 +47,16 @@ export class CanvasGraphicsRenderer
         this.renderer = renderer;
         this._svgMatrix = null;
         this._tempMatrix = new Matrix();
+
+        this.renderer.on('prerender', () =>
+        {
+            this._offscreen = Offscreen.forge(this.renderer.view);
+        });
+
+        this.renderer.on('postrender', () =>
+        {
+            this._offscreen = null;
+        });
     }
 
     /**
@@ -74,6 +92,25 @@ export class CanvasGraphicsRenderer
     }
 
     /**
+     * Performs final drawing; the off-screen RenderingContext is drawn onto the main RenderingContext.
+     */
+    private _finalize(): void
+    {
+        const target = this.renderer.context;
+        const source = this._offscreen.canvas;
+
+        target.drawImage(source, 0, 0);
+    }
+
+    /**
+     * Clears the off-screen RenderingContext;
+     */
+    private _erase(): void
+    {
+        this._offscreen.clear();
+    }
+
+    /**
      * Renders a Graphics object to a canvas.
      *
      * @param {PIXI.Graphics} graphics - the actual graphics object to render
@@ -81,62 +118,120 @@ export class CanvasGraphicsRenderer
     public render(graphics: Graphics): void
     {
         const renderer = this.renderer;
-        const context = renderer.context;
+        const { blendModes } = renderer;
         const worldAlpha = graphics.worldAlpha;
-        const transform = graphics.transform.worldTransform;
+        const { worldTransform } = graphics.transform;
 
-        renderer.setContextTransform(transform);
-        renderer.setBlendMode(graphics.blendMode);
-
+        const transform = renderer.newContextTransform(worldTransform);
         const graphicsData = graphics.geometry.graphicsData;
+        const asTinted = Tinted(graphics.tint);
 
-        let contextFillStyle;
-        let contextStrokeStyle;
-
-        const tintR = ((graphics.tint >> 16) & 0xFF) / 255;
-        const tintG = ((graphics.tint >> 8) & 0xFF) / 255;
-        const tintB = (graphics.tint & 0xFF) / 255;
+        renderer.setBlendMode(graphics.blendMode);
 
         for (let i = 0; i < graphicsData.length; i++)
         {
             const data = graphicsData[i];
-            const shape = data.shape;
-            const fillStyle = data.fillStyle;
-            const lineStyle = data.lineStyle;
 
-            const fillColor = data.fillStyle.color | 0;
-            const lineColor = data.lineStyle.color | 0;
+            const fillStyle = data.fillStyle;
+            const fillVisible = fillStyle.visible;
+            let contextFillStyle: string|CanvasPattern;
+
+            if (fillVisible)
+            {
+                const tint = asTinted(fillStyle.color);
+
+                contextFillStyle = this._calcCanvasStyle(fillStyle, tint);
+            }
+
+            const lineStyle = data.lineStyle;
+            const { width: lineWidth } = lineStyle;
+            let strokeVisible = lineStyle.visible && lineWidth > 0;
+            let contextStrokeStyle: string|CanvasPattern;
+
+            if (strokeVisible)
+            {
+                const tint = asTinted(lineStyle.color);
+
+                contextStrokeStyle = this._calcCanvasStyle(lineStyle, tint);
+            }
+
+            const visible = fillVisible || strokeVisible;
+
+            if (!visible) continue; // nothing needs drawing
+
+            const { alignment } = lineStyle;
+            let useOffscreen = false;
+
+            if (strokeVisible)
+            {
+                useOffscreen = fillVisible;
+            }
+
+            let context = renderer.context as CanvasRenderingContext2D;
+
+            if (useOffscreen)
+            {
+                // Rendering will rely upon the off-screen context
+                if (this._offscreen)
+                {
+                    context = this._offscreen.context;
+                }
+                else
+                {
+                    // If no fill shall be drawn, then...
+                    if (!fillVisible) continue;
+
+                    // Otherwise disable the stroke (off-screen context allows blending correctly)...
+                    strokeVisible = false;
+
+                    // ...so no more off-screen rendering
+                    useOffscreen = false;
+                }
+            }
+
+            const paint = (rect?: Rectangle) =>
+            {
+                if (rect)
+                {
+                    context.rect(rect.x, rect.y, rect.width, rect.height);
+                }
+
+                Paint(context, (fill, stroke) =>
+                {
+                    if (strokeVisible)
+                    {
+                        stroke({
+                            ...lineStyle,
+                            alpha: lineStyle.alpha * worldAlpha,
+                            paint: contextStrokeStyle,
+                            width: lineWidth,
+                        }));
+                    }
+                    if (fillVisible)
+                    {
+                        fill({
+                            alpha: fillStyle.alpha * worldAlpha,
+                            paint: contextFillStyle,
+                            blendMode: blendModes[useOffscreen ? BLEND_MODES.DST_OVER : BLEND_MODES.SRC_OVER],
+                        });
+                    }
+                });
+
+                if (useOffscreen)
+                {
+                    this._finalize();
+                    this._erase();
+                }
+            };
+
+            const shape = data.shape;
+            let newTransform = transform;
 
             if (data.matrix)
             {
-                renderer.setContextTransform(transform.copyTo(this._tempMatrix).append(data.matrix));
+                newTransform = renderer.newContextTransform(worldTransform.copyTo(this._tempMatrix).append(data.matrix));
             }
-
-            if (fillStyle.visible)
-            {
-                const fillTint = (
-                    (((fillColor >> 16) & 0xFF) / 255 * tintR * 255 << 16)
-                    + (((fillColor >> 8) & 0xFF) / 255 * tintG * 255 << 8)
-                    + (((fillColor & 0xFF) / 255) * tintB * 255)
-                );
-
-                contextFillStyle = this._calcCanvasStyle(fillStyle, fillTint);
-            }
-            if (lineStyle.visible)
-            {
-                const lineTint = (
-                    (((lineColor >> 16) & 0xFF) / 255 * tintR * 255 << 16)
-                    + (((lineColor >> 8) & 0xFF) / 255 * tintG * 255 << 8)
-                    + (((lineColor & 0xFF) / 255) * tintB * 255)
-                );
-
-                contextStrokeStyle = this._calcCanvasStyle(lineStyle, lineTint);
-            }
-
-            context.lineWidth = lineStyle.width;
-            context.lineCap = lineStyle.cap;
-            context.lineJoin = lineStyle.join;
-            context.miterLimit = lineStyle.miterLimit;
+            applyTransform(context, newTransform);
 
             if (data.type === SHAPES.POLY)
             {
@@ -217,36 +312,11 @@ export class CanvasGraphicsRenderer
                     }
                 }
 
-                if (fillStyle.visible)
-                {
-                    context.globalAlpha = fillStyle.alpha * worldAlpha;
-                    context.fillStyle = contextFillStyle;
-                    context.fill();
-                }
-
-                if (lineStyle.visible)
-                {
-                    context.globalAlpha = lineStyle.alpha * worldAlpha;
-                    context.strokeStyle = contextStrokeStyle;
-                    context.stroke();
-                }
+                paint();
             }
             else if (data.type === SHAPES.RECT)
             {
-                const tempShape = shape as Rectangle;
-
-                if (fillStyle.visible)
-                {
-                    context.globalAlpha = fillStyle.alpha * worldAlpha;
-                    context.fillStyle = contextFillStyle;
-                    context.fillRect(tempShape.x, tempShape.y, tempShape.width, tempShape.height);
-                }
-                if (lineStyle.visible)
-                {
-                    context.globalAlpha = lineStyle.alpha * worldAlpha;
-                    context.strokeStyle = contextStrokeStyle;
-                    context.strokeRect(tempShape.x, tempShape.y, tempShape.width, tempShape.height);
-                }
+                paint(shape as Rectangle);
             }
             else if (data.type === SHAPES.CIRC)
             {
@@ -257,23 +327,11 @@ export class CanvasGraphicsRenderer
                 context.arc(tempShape.x, tempShape.y, tempShape.radius, 0, 2 * Math.PI);
                 context.closePath();
 
-                if (fillStyle.visible)
-                {
-                    context.globalAlpha = fillStyle.alpha * worldAlpha;
-                    context.fillStyle = contextFillStyle;
-                    context.fill();
-                }
-
-                if (lineStyle.visible)
-                {
-                    context.globalAlpha = lineStyle.alpha * worldAlpha;
-                    context.strokeStyle = contextStrokeStyle;
-                    context.stroke();
-                }
+                paint();
             }
             else if (data.type === SHAPES.ELIP)
             {
-                // ellipse code taken from: http://stackoverflow.com/questions/2172798/how-to-draw-an-oval-in-html5-canvas
+                // ellipse code taken from: http://stackoverflow.com/questions/2172798/how-to-paint-an-oval-in-html5-canvas
 
                 const tempShape = shape as Ellipse;
 
@@ -301,18 +359,7 @@ export class CanvasGraphicsRenderer
 
                 context.closePath();
 
-                if (fillStyle.visible)
-                {
-                    context.globalAlpha = fillStyle.alpha * worldAlpha;
-                    context.fillStyle = contextFillStyle;
-                    context.fill();
-                }
-                if (lineStyle.visible)
-                {
-                    context.globalAlpha = lineStyle.alpha * worldAlpha;
-                    context.strokeStyle = contextStrokeStyle;
-                    context.stroke();
-                }
+                paint();
             }
             else if (data.type === SHAPES.RREC)
             {
@@ -340,18 +387,7 @@ export class CanvasGraphicsRenderer
                 context.quadraticCurveTo(rx, ry, rx, ry + radius);
                 context.closePath();
 
-                if (fillStyle.visible)
-                {
-                    context.globalAlpha = fillStyle.alpha * worldAlpha;
-                    context.fillStyle = contextFillStyle;
-                    context.fill();
-                }
-                if (lineStyle.visible)
-                {
-                    context.globalAlpha = lineStyle.alpha * worldAlpha;
-                    context.strokeStyle = contextStrokeStyle;
-                    context.stroke();
-                }
+                paint();
             }
         }
     }
