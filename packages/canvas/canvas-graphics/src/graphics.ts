@@ -11,21 +11,14 @@ export type IPaint = string|CanvasPattern;
 let canvasRenderer: CanvasRenderer;
 const tempMatrix = new Matrix();
 
-export interface _IStyle {
+export interface IFill {
     alpha?: number;
     paint?: IPaint;
     blendMode?: string;
 }
 
-export interface IFill extends _IStyle
+export interface IStroke extends IFill
 {
-    use?: IFill[];
-}
-
-export interface IStroke extends _IStyle
-{
-    use?: IStroke[];
-
     width?: number;
     cap?: string|CanvasLineCap;
     join?: string|CanvasLineJoin;
@@ -34,7 +27,7 @@ export interface IStroke extends _IStyle
     clip?: boolean;
 }
 
-export type IStyle = IFill|IStroke;
+export type IStyle = IStroke;
 
 export type StylePicker = <T = unknown>(key: string) => T;
 
@@ -69,9 +62,9 @@ export function Tinted(tint: number): (color: number) => number
     };
 }
 
-export function Style<S = IStyle>(style: S): StyleResolver<S>
+export function Style(style: IStyle): StyleResolver
 {
-    return <T = unknown>(key: string|S): T|StyleResolver<S> =>
+    return <T = unknown>(key: string|IStyle): T|StyleResolver =>
         (typeof key === 'string'
             ? (style as any)[key as string] as T
             : Style({ ...style, ...(key as any) }));
