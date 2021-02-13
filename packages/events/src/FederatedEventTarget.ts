@@ -3,20 +3,82 @@ import { FederatedEvent } from './FederatedEvent';
 
 import type { EventEmitter } from '@pixi/utils';
 
+export type Cursor = 'auto'
+    | 'default'
+    | 'none'
+    | 'context-menu'
+    | 'help'
+    | 'pointer'
+    | 'progress'
+    | 'wait'
+    | 'cell'
+    | 'crosshair'
+    | 'text'
+    | 'vertical-text'
+    | 'alias'
+    | 'copy'
+    | 'move'
+    | 'no-drop'
+    | 'not-allowed'
+    | 'e-resize'
+    | 'n-resize'
+    | 'ne-resize'
+    | 'nw-resize'
+    | 's-resize'
+    | 'se-resize'
+    | 'sw-resize'
+    | 'w-resize'
+    | 'ns-resize'
+    | 'ew-resize'
+    | 'nesw-resize'
+    | 'col-resize'
+    | 'nwse-resize'
+    | 'row-resize'
+    | 'all-scroll'
+    | 'zoom-in'
+    | 'zoom-out'
+    | 'grab'
+    | 'grabbing';
+
 export interface FederatedEventTarget extends EventEmitter, EventTarget {
+    readonly cursor?: Cursor;
     readonly parent?: FederatedEventTarget;
     readonly children?: ReadonlyArray<FederatedEventTarget>;
 }
 
-export const FederatedDisplayObject: Omit<FederatedEventTarget, 'parent' | 'children' | keyof EventEmitter>
-= {
-    addEventListener: () =>
+export const FederatedDisplayObject: Omit<
+    FederatedEventTarget,
+    'parent' | 'children' | keyof EventEmitter
+> = {
+    addEventListener(
+        type: string,
+        listener: EventListenerOrEventListenerObject,
+        options?: boolean | AddEventListenerOptions,
+    )
     {
-        // TODO
+        const capture = (typeof options === 'boolean' && options)
+            || (typeof options === 'object' && options.capture);
+        const context = typeof listener === 'function' ? undefined : listener;
+
+        type = capture ? `${type}capture` : type;
+        listener = typeof listener === 'function' ? listener : listener.handleEvent;
+
+        (this as unknown as EventEmitter).on(type, listener, context);
     },
-    removeEventListener: () =>
+    removeEventListener(
+        type: string,
+        listener: EventListenerOrEventListenerObject,
+        options?: boolean | AddEventListenerOptions,
+    )
     {
-        // TODO
+        const capture = (typeof options === 'boolean' && options)
+            || (typeof options === 'object' && options.capture);
+        const context = typeof listener === 'function' ? undefined : listener;
+
+        type = capture ? `${type}capture` : type;
+        listener = typeof listener === 'function' ? listener : listener.handleEvent;
+
+        (this as unknown as EventEmitter).off(type, listener, context);
     },
 
     dispatchEvent(e: Event): boolean
@@ -26,7 +88,9 @@ export const FederatedDisplayObject: Omit<FederatedEventTarget, 'parent' | 'chil
             throw new Error('DisplayObject cannot propagate events outside of the Federated Events API');
         }
 
-        return false;
+        e.manager.dispatchEvent(e);
+
+        return e.defaultPrevented;
     }
 };
 

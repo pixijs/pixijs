@@ -21,7 +21,23 @@ function createRenderer(view, supportsPointerEvents)
         renderer.events.setTargetElement(renderer.view);
     }
 
+    renderer.events.supportsTouchEvents = true;
+
     return renderer;
+}
+
+function createScene()
+{
+    const stage = new Container();
+    const graphics = stage.addChild(
+        new Graphics()
+            .beginFill(0xFFFFFF)
+            .drawRect(0, 0, 50, 50)
+    );
+
+    graphics.interactive = true;
+
+    return [stage, graphics];
 }
 
 describe.only('PIXI.EventSystem', function ()
@@ -57,7 +73,12 @@ describe.only('PIXI.EventSystem', function ()
             { type: 'mouseover' },
             { type: 'mouseout', clientX: 150, clientY: 150 },
         ],
-        /* touch-even */
+        { type: 'touchstart' },
+        { type: 'touchmove' },
+        [
+            { type: 'touchstart' },
+            { type: 'touchendoutside', native: 'touchend' },
+        ]
     ];
 
     // Maps native event types to their listeners on EventSystem.
@@ -72,6 +93,9 @@ describe.only('PIXI.EventSystem', function ()
         mouseup: 'onPointerUp',
         mouseover: 'onPointerOverOut',
         mouseout: 'onPointerOverOut',
+        touchstart: 'onPointerDown',
+        touchmove: 'onPointerMove',
+        touchend: 'onPointerUp',
     };
 
     staticPointerEventTests.forEach((event) =>
@@ -138,5 +162,200 @@ describe.only('PIXI.EventSystem', function ()
                 expect(eventSpy).to.have.been.calledOnce;
             });
         });
+    });
+
+    it('should manage the CSS cursor', function ()
+    {
+        const renderer = createRenderer();
+        const [stage, graphics] = createScene();
+
+        renderer.render(stage);
+        graphics.cursor = 'copy';
+
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', {
+                clientX: 40,
+                clientY: 40,
+                pointerType: 'mouse',
+            })
+        );
+
+        expect(renderer.view.style.cursor).to.equal('copy');
+
+        const eventSpy = sinon.spy();
+
+        graphics.on('mousemove', eventSpy);
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', {
+                clientX: 60,
+                clientY: 60,
+                pointerType: 'mouse',
+            })
+        );
+
+        expect(eventSpy).to.not.have.been.called;
+        expect(renderer.view.style.cursor).to.equal('inherit');
+    });
+
+    it('should dispatch synthetic over/out events on pointermove', function ()
+    {
+        const renderer = createRenderer();
+        const [stage, graphics] = createScene();
+        const second = stage.addChild(
+            new Graphics()
+                .beginFill(0xFFFFFF)
+                .drawRect(100, 0, 50, 50)
+        );
+
+        renderer.render(stage);
+        second.interactive = true;
+
+        const primaryOverSpy = sinon.spy();
+        const primaryOutSpy = sinon.spy();
+        const primaryMoveSpy = sinon.spy();
+
+        let callCount = 0;
+
+        graphics.on('pointerover', function ()
+        {
+            expect(callCount).to.equal(0);
+            primaryOverSpy();
+            ++callCount;
+        });
+        graphics.on('pointermove', function ()
+        {
+            expect(callCount).to.equal(1);
+            primaryMoveSpy();
+            ++callCount;
+        });
+        graphics.on('pointerout', function ()
+        {
+            expect(callCount).to.equal(2);
+            primaryOutSpy();
+            ++callCount;
+        });
+
+        const secondaryOverSpy = sinon.spy();
+        const secondaryOutSpy = sinon.spy();
+        const secondaryMoveSpy = sinon.spy();
+
+        second.on('pointerover', function ()
+        {
+            expect(callCount).to.equal(3);
+            secondaryOverSpy();
+            ++callCount;
+        });
+        second.on('pointerout', secondaryOutSpy);
+        second.on('pointermove', function ()
+        {
+            expect(callCount).to.equal(4);
+            secondaryMoveSpy();
+            ++callCount;
+        });
+
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', { clientX: 25, clientY: 25 })
+        );
+        expect(primaryOverSpy).to.have.been.calledOnce;
+        expect(primaryMoveSpy).to.have.been.calledOnce;
+
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', { clientX: 125, clientY: 25 })
+        );
+        expect(primaryOutSpy).to.have.been.calledOnce;
+        expect(secondaryOverSpy).to.have.been.calledOnce;
+        expect(secondaryMoveSpy).to.have.been.calledOnce;
+        expect(secondaryOutSpy).to.not.have.been.calledOnce;
+    });
+
+    it('should dispatch click events', function ()
+    {
+        const renderer = createRenderer();
+        const [stage, graphics] = createScene();
+        const eventSpy = sinon.spy();
+
+        renderer.render(stage);
+
+        graphics.addEventListener('pointertap', function (e)
+        {
+            expect(e.type).to.equal('click');
+            eventSpy();
+        });
+
+        renderer.events.onPointerDown(
+            new PointerEvent('pointerdown', { clientX: 25, clientY: 25 })
+        );
+        const e = new PointerEvent('pointerup', { clientX: 30, clientY: 20 });
+
+        // so it isn't a pointerupoutside
+        Object.defineProperty(e, 'target', {
+            writable: false,
+            value: renderer.view
+        });
+        renderer.events.onPointerUp(e);
+
+        expect(eventSpy).to.have.been.calledOnce;
+    });
+
+    it('should set the detail of click events to the click count', function (done)
+    {
+        const renderer = createRenderer();
+        const [stage, graphics] = createScene();
+        const eventSpy = sinon.spy();
+        let clickCount = 0;
+
+        renderer.render(stage);
+
+        graphics.addEventListener('pointertap', function (e)
+        {
+            ++clickCount;
+            expect(e.detail).to.equal(clickCount);
+            eventSpy();
+        });
+
+        for (let i = 0; i < 3; i++)
+        {
+            renderer.events.onPointerDown(
+                new PointerEvent('pointerdown', { clientX: 25, clientY: 25 })
+            );
+            const e = new PointerEvent('pointerup', { clientX: 30, clientY: 20 });
+
+            // so it isn't a pointerupoutside
+            Object.defineProperty(e, 'target', {
+                writable: false,
+                value: renderer.view
+            });
+            renderer.events.onPointerUp(e);
+        }
+
+        expect(eventSpy).to.have.been.calledThrice;
+
+        graphics.removeAllListeners();
+
+        const newSpy = sinon.spy();
+
+        graphics.addEventListener('pointertap', function (e)
+        {
+            expect(e.detail).to.equal(1);
+            newSpy();
+        });
+
+        setTimeout(function ()
+        {
+            renderer.events.onPointerDown(
+                new PointerEvent('pointerdown', { clientX: 25, clientY: 25 })
+            );
+            const e = new PointerEvent('pointerup', { clientX: 30, clientY: 20 });
+
+            // so it isn't a pointerupoutside
+            Object.defineProperty(e, 'target', {
+                writable: false,
+                value: renderer.view
+            });
+            renderer.events.onPointerUp(e);
+
+            expect(newSpy).to.have.been.calledOnce;
+            done();
+        }, 800);
     });
 });

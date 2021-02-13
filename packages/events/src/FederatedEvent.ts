@@ -76,7 +76,7 @@ export class FederatedEvent<N extends UIEvent = UIEvent> implements Event
     public path: FederatedEventTarget[];
 
     /** The {@link EventBoundary} that manages this event. Null for root events. */
-    protected readonly manager: EventBoundary;
+    public readonly manager: EventBoundary;
 
     /**
      * @param manager - The event boundary which manages this event. Propagation can only occur

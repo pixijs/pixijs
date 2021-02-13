@@ -39,9 +39,18 @@ export class EventSystem extends System
      */
     public autoPreventDefault: boolean;
 
+    /**
+     * Dictionary of how different cursor modes are handled. Strings are handled as CSS cursor
+     * values, objects are handled as dictionaries of CSS values for {@code domElement},
+     * and functions are called instead of changing the CSS.
+     * Default CSS cursor values are provided for 'default' and 'pointer' modes.
+     * @member {Object.<string, string | ((mode: string) => void) | CSSStyleDeclaration>}
+     */
+    public cursorStyles: Record<string, string | ((mode: string) => void) | CSSStyleDeclaration>;
     public domElement: HTMLElement;
     public resolution = 1;
 
+    private currentCursor: string;
     private rootPointerEvent: FederatedPointerEvent;
     private eventsAdded: boolean;
 
@@ -56,6 +65,10 @@ export class EventSystem extends System
 
         this.rootPointerEvent = new FederatedPointerEvent(null);
 
+        this.cursorStyles = {
+            default: 'inherit',
+            pointer: 'pointer',
+        };
         this.domElement = renderer.view;
 
         this.onPointerDown = this.onPointerDown.bind(this);
@@ -65,6 +78,64 @@ export class EventSystem extends System
 
         this.setTargetElement(this.domElement);
         this.resolution = this.renderer.resolution;
+    }
+
+    /**
+     * Sets the current cursor mode, handling any callbacks or CSS style changes.
+     *
+     * @param mode - cursor mode, a key from the cursorStyles dictionary
+     */
+    public setCursor(mode: string): void
+    {
+        mode = mode || 'default';
+        let applyStyles = true;
+
+        // offscreen canvas does not support setting styles, but cursor modes can be functions,
+        // in order to handle pixi rendered cursors, so we can't bail
+        if (self.OffscreenCanvas && this.domElement instanceof OffscreenCanvas)
+        {
+            applyStyles = false;
+        }
+        // if the mode didn't actually change, bail early
+        if (this.currentCursor === mode)
+        {
+            return;
+        }
+        this.currentCursor = mode;
+        const style = this.cursorStyles[mode];
+
+        // only do things if there is a cursor style for it
+        if (style)
+        {
+            switch (typeof style)
+            {
+                case 'string':
+                    // string styles are handled as cursor CSS
+                    if (applyStyles)
+                    {
+                        this.domElement.style.cursor = style;
+                    }
+                    break;
+                case 'function':
+                    // functions are just called, and passed the cursor mode
+                    style(mode);
+                    break;
+                case 'object':
+                    // if it is an object, assume that it is a dictionary of CSS styles,
+                    // apply it to the interactionDOMElement
+                    if (applyStyles)
+                    {
+                        Object.assign(this.domElement.style, style);
+                    }
+                    break;
+            }
+        }
+        else if (applyStyles && typeof mode === 'string' && !Object.prototype.hasOwnProperty.call(this.cursorStyles, mode))
+        {
+            // if it mode is a string (not a Symbol) and cursorStyles doesn't have any entry
+            // for the mode, then assume that the dev wants it to be CSS for the cursor.
+            this.domElement.style.cursor = mode;
+        }
     }
 
     private onPointerDown(nativeEvent: MouseEvent | PointerEvent | TouchEvent): void
@@ -101,6 +172,8 @@ export class EventSystem extends System
 
             this.rootBoundary.mapEvent(federatedEvent);
         }
+
+        this.setCursor(this.rootBoundary.cursor);
     }
 
     private onPointerMove(nativeEvent: MouseEvent | PointerEvent | TouchEvent): void
@@ -118,6 +191,8 @@ export class EventSystem extends System
 
             this.rootBoundary.mapEvent(event);
         }
+
+        this.setCursor(this.rootBoundary.cursor);
     }
 
     private onPointerUp(nativeEvent: MouseEvent | PointerEvent | TouchEvent): void
@@ -138,6 +213,8 @@ export class EventSystem extends System
 
             this.rootBoundary.mapEvent(event);
         }
+
+        this.setCursor(this.rootBoundary.cursor);
     }
 
     private onPointerOverOut(nativeEvent: MouseEvent | PointerEvent | TouchEvent): void
@@ -155,6 +232,8 @@ export class EventSystem extends System
 
             this.rootBoundary.mapEvent(event);
         }
+
+        this.setCursor(this.rootBoundary.cursor);
     }
 
     public setTargetElement(element: HTMLElement): void
@@ -208,6 +287,17 @@ export class EventSystem extends System
             this.domElement.addEventListener('mouseout', this.onPointerOverOut, true);
             this.domElement.addEventListener('mouseover', this.onPointerOverOut, true);
             self.addEventListener('mouseup', this.onPointerUp, true);
+        }
+
+        // Always look directly for touch events so that we can provide original data
+        // In a future version we should change this to being just a fallback and rely solely on
+        // PointerEvents whenever available
+        if (this.supportsTouchEvents)
+        {
+            this.domElement.addEventListener('touchstart', this.onPointerDown, true);
+            // this.domElement.addEventListener('touchcancel', this.onPointerCancel, true);
+            this.domElement.addEventListener('touchend', this.onPointerUp, true);
+            this.domElement.addEventListener('touchmove', this.onPointerMove, true);
         }
 
         this.eventsAdded = true;
@@ -338,6 +428,7 @@ export class EventSystem extends System
 
                 // mark the touch as normalized, just so that we know we did it
                 touch.isNormalized = true;
+                touch.type = event.type;
 
                 normalizedEvents.push(touch);
             }
@@ -448,6 +539,7 @@ interface PixiPointerEvent extends PointerEvent
     twist: number;
     tangentialPressure: number;
     isNormalized: boolean;
+    type: string;
 }
 
 interface PixiTouch extends Touch
@@ -469,4 +561,5 @@ interface PixiTouch extends Touch
     offsetX: number;
     offsetY: number;
     isNormalized: boolean;
+    type: string;
 }

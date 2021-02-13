@@ -1,9 +1,9 @@
+import { FederatedPointerEvent } from './FederatedPointerEvent';
 import { Point } from '@pixi/math';
 
+import type { Cursor, FederatedEventTarget } from './FederatedEventTarget';
 import type { DisplayObject } from '@pixi/display';
 import type { FederatedEvent } from './FederatedEvent';
-import type { FederatedEventTarget } from './FederatedEventTarget';
-import { FederatedPointerEvent } from './FederatedPointerEvent';
 
 // The maximum iterations used in propagation. This prevent infinite loops.
 const PROPAGATION_LIMIT = 2048;
@@ -35,6 +35,11 @@ export class EventBoundary
      * trickling down and bubbling up to this.
      */
     public rootTarget: DisplayObject;
+
+    /**
+     * The cursor preferred by the event targets underneath this boundary.
+     */
+    public cursor: Cursor;
 
     /**
      * Maps event types to forwarding handles for them.
@@ -451,7 +456,11 @@ export class EventBoundary
         this.dispatchEvent(e, 'pointermove');
 
         if (e.pointerType === 'touch') this.dispatchEvent(e, 'touchmove');
-        if (isMouse) this.dispatchEvent(e, 'mousemove');
+        if (isMouse)
+        {
+            this.dispatchEvent(e, 'mousemove');
+            this.cursor = e.target?.cursor;
+        }
 
         trackingData.overTarget = e.target;
     }
@@ -470,7 +479,10 @@ export class EventBoundary
 
         this.dispatchEvent(e, 'pointerover');
 
-        if (e.pointerType === 'mouse') this.dispatchEvent(e, 'mouseover');
+        if (e.pointerType === 'mouse') {
+            this.dispatchEvent(e, 'mouseover');
+            this.cursor = e.target?.cursor;
+        }
 
         trackingData.overTarget = e.target;
     }
@@ -496,6 +508,8 @@ export class EventBoundary
 
             trackingData.overTarget = null;
         }
+
+        this.cursor = null;
     }
 
     /**
@@ -535,6 +549,8 @@ export class EventBoundary
         const trackingData = this.trackingData(from.pointerId);
         const pressTarget = trackingData.pressTargetsByButton[from.button];
 
+        let clickTarget = pressTarget;
+
         // pointerupoutside only bubbles. It only bubbles upto the parent that doesn't contain
         // the pointerup location.
         if (pressTarget && !e.composedPath().includes(pressTarget))
@@ -565,9 +581,15 @@ export class EventBoundary
 
             // currentTarget is the most specific ancestor holding both the pointerdown and pointerup
             // targets. That is - it's our click target!
+            clickTarget = pressTarget;
+        }
+
+        // click!
+        if (clickTarget)
+        {
             const clickEvent = this.cloneEvent(e, 'click');
 
-            clickEvent.target = currentTarget;
+            clickEvent.target = clickTarget;
             clickEvent.path = null;
 
             if (!trackingData.clicksByButton[from.button])
@@ -596,7 +618,18 @@ export class EventBoundary
 
             clickEvent.detail = clickHistory.clickCount;
 
-            this.dispatchEvent(clickEvent, 'click');
+            if (clickEvent.pointerType === 'mouse')
+            {
+                this.dispatchEvent(clickEvent, 'click');
+            }
+            else if (clickEvent.pointerType === 'touch')
+            {
+                this.dispatchEvent(clickEvent, 'tap');
+            }
+            else
+            {
+                this.dispatchEvent(clickEvent, 'pointertap');
+            }
         }
     }
 
