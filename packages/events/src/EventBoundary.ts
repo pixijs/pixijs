@@ -31,6 +31,9 @@ export class EventBoundary
 
     /**
      * Maps event types to forwarding handles for them.
+     *
+     * {@link PIXI.EventBoundary EventBoundary} provides mapping for "pointerdown", "pointermove",
+     * "pointerout", "pointerleave", "pointerover", "pointerup", and "pointerupoutside" by default.
      */
     protected mappingTable: Record<string, Array<{
         fn: (e: FederatedEvent) => void,
@@ -52,16 +55,19 @@ export class EventBoundary
         this.hitTestFn = this.hitTestFn.bind(this);
         this.mapPointerDown = this.mapPointerDown.bind(this);
         this.mapPointerMove = this.mapPointerMove.bind(this);
-        this.mapPointerOut = this.mapPointerOut.bind(this);
+        this.mapPointerLeave = this.mapPointerLeave.bind(this);
         this.mapPointerOver = this.mapPointerOver.bind(this);
         this.mapPointerUp = this.mapPointerUp.bind(this);
+        this.mapPointerUpOutside = this.mapPointerUpOutside.bind(this);
 
         this.mappingTable = {};
         this.addEventMapping('pointerdown', this.mapPointerDown);
         this.addEventMapping('pointermove', this.mapPointerMove);
-        this.addEventMapping('pointerout', this.mapPointerOut);
+        this.addEventMapping('pointerout', this.mapPointerLeave);
+        this.addEventMapping('pointerleave', this.mapPointerLeave);
         this.addEventMapping('pointerover', this.mapPointerOver);
         this.addEventMapping('pointerup', this.mapPointerUp);
+        this.addEventMapping('pointerupoutside', this.mapPointerUpOutside);
     }
 
     public addEventMapping(type: string, fn: (e: FederatedEvent) => void): void
@@ -103,6 +109,10 @@ export class EventBoundary
             {
                 mappers[i].fn(e);
             }
+        }
+        else
+        {
+            console.warn(`[EventBoundary]: Event mapping not defined for ${e.type}`);
         }
     }
 
@@ -458,7 +468,7 @@ export class EventBoundary
         trackingData.overTarget = e.target;
     }
 
-    protected mapPointerOut(from: FederatedEvent): void
+    protected mapPointerLeave(from: FederatedEvent): void
     {
         if (!(from instanceof FederatedPointerEvent))
         {
@@ -471,11 +481,11 @@ export class EventBoundary
 
         if (trackingData.overTarget)
         {
-            const e = this.createEvent(from);
+            const e = this.createEvent(from, 'pointerleave', trackingData.overTarget);
 
             this.dispatchEvent(e);
 
-            if (e.pointerType === 'mouse') this.dispatchEvent(e, 'mouseout');
+            if (e.pointerType === 'mouse' || e.pointerType === 'pen') this.dispatchEvent(e, 'mouseleave');
 
             trackingData.overTarget = null;
         }
@@ -538,6 +548,45 @@ export class EventBoundary
                     const isRightButton = e.button === 2;
 
                     this.notifyTarget(e, isRightButton ? 'rightupoutside' : 'mouseupoutside');
+                }
+
+                currentTarget = currentTarget.parent;
+            }
+
+            delete trackingData.pressTargetsByButton[from.button];
+        }
+    }
+
+    protected mapPointerUpOutside(from: FederatedEvent): void
+    {
+        if (!(from instanceof FederatedPointerEvent))
+        {
+            console.warn('EventBoundary cannot map a non-pointer event as a pointer event');
+
+            return;
+        }
+
+        const trackingData = this.trackingData(from.pointerId);
+        const pressTarget = trackingData.pressTargetsByButton[from.button];
+        const e = this.createEvent(from);
+
+        if (pressTarget)
+        {
+            let currentTarget = pressTarget;
+
+            while (currentTarget)
+            {
+                e.currentTarget = currentTarget;
+
+                this.notifyTarget(e, 'pointerupoutside');
+
+                if (e.pointerType === 'touch')
+                {
+                    this.notifyTarget(e, 'touchendoutside');
+                }
+                else if (e.pointerType === 'mouse' || e.pointerType === 'pen')
+                {
+                    this.notifyTarget(e, e.button === 2 ? 'rightupoutside' : 'mouseupoutside');
                 }
 
                 currentTarget = currentTarget.parent;

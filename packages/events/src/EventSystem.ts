@@ -405,11 +405,6 @@ export class EventSystem extends System
         event.timeStamp = performance.now();
         event.type = nativeEvent.type;
 
-        if (nativeEvent.type === 'pointerleave')
-        {
-            event.type = 'pointerout';
-        }
-
         return event;
     }
 }
