@@ -13,9 +13,16 @@ const tempLocalMapping = new Point();
 
 type TrackingData = {
     pressTargetsByButton: {
-        [id: number]: FederatedEventTarget
-    }
-    overTarget: FederatedEventTarget
+        [id: number]: FederatedEventTarget;
+    };
+    clicksByButton: {
+        [id: number]: {
+            clickCount: number;
+            target: FederatedEventTarget;
+            timeStamp: number;
+        }
+    };
+    overTarget: FederatedEventTarget;
 };
 
 /**
@@ -55,7 +62,7 @@ export class EventBoundary
         this.hitTestFn = this.hitTestFn.bind(this);
         this.mapPointerDown = this.mapPointerDown.bind(this);
         this.mapPointerMove = this.mapPointerMove.bind(this);
-        this.mapPointerLeave = this.mapPointerLeave.bind(this);
+        this.mapPointerOut = this.mapPointerOut.bind(this);
         this.mapPointerOver = this.mapPointerOver.bind(this);
         this.mapPointerUp = this.mapPointerUp.bind(this);
         this.mapPointerUpOutside = this.mapPointerUpOutside.bind(this);
@@ -63,18 +70,11 @@ export class EventBoundary
         this.mappingTable = {};
         this.addEventMapping('pointerdown', this.mapPointerDown);
         this.addEventMapping('pointermove', this.mapPointerMove);
-        this.addEventMapping('pointerout', this.mapPointerLeave);
-        this.addEventMapping('pointerleave', this.mapPointerLeave);
+        this.addEventMapping('pointerout', this.mapPointerOut);
+        this.addEventMapping('pointerleave', this.mapPointerOut);
         this.addEventMapping('pointerover', this.mapPointerOver);
         this.addEventMapping('pointerup', this.mapPointerUp);
         this.addEventMapping('pointerupoutside', this.mapPointerUpOutside);
-        this.addEventMapping('mousedown', this.mapPointerDown);
-        this.addEventMapping('mousemove', this.mapPointerMove);
-        this.addEventMapping('mouseout', this.mapPointerLeave);
-        this.addEventMapping('mouseleave', this.mapPointerLeave);
-        this.addEventMapping('mouseover', this.mapPointerOver);
-        this.addEventMapping('mouseup', this.mapPointerUp);
-        this.addEventMapping('mouseupoutside', this.mapPointerUpOutside);
     }
 
     public addEventMapping(type: string, fn: (e: FederatedEvent) => void): void
@@ -475,7 +475,7 @@ export class EventBoundary
         trackingData.overTarget = e.target;
     }
 
-    protected mapPointerLeave(from: FederatedEvent): void
+    protected mapPointerOut(from: FederatedEvent): void
     {
         if (!(from instanceof FederatedPointerEvent))
         {
@@ -492,7 +492,7 @@ export class EventBoundary
 
             this.dispatchEvent(e);
 
-            if (e.pointerType === 'mouse' || e.pointerType === 'pen') this.dispatchEvent(e, 'mouseleave');
+            if (e.pointerType === 'mouse' || e.pointerType === 'pen') this.dispatchEvent(e, 'mouseout');
 
             trackingData.overTarget = null;
         }
@@ -516,6 +516,7 @@ export class EventBoundary
             return;
         }
 
+        const now = performance.now();
         const e = this.createEvent(from);
 
         this.dispatchEvent(e, 'pointerup');
@@ -561,6 +562,41 @@ export class EventBoundary
             }
 
             delete trackingData.pressTargetsByButton[from.button];
+
+            // currentTarget is the most specific ancestor holding both the pointerdown and pointerup
+            // targets. That is - it's our click target!
+            const clickEvent = this.cloneEvent(e, 'click');
+
+            clickEvent.target = currentTarget;
+            clickEvent.path = null;
+
+            if (!trackingData.clicksByButton[from.button])
+            {
+                trackingData.clicksByButton[from.button] = {
+                    clickCount: 0,
+                    target: clickEvent.target,
+                    timeStamp: now,
+                };
+            }
+
+            const clickHistory = trackingData.clicksByButton[from.button];
+
+            if (clickHistory.target === clickEvent.target
+                && now - clickHistory.timeStamp < 200)
+            {
+                ++clickHistory.clickCount;
+            }
+            else
+            {
+                clickHistory.clickCount = 1;
+            }
+
+            clickHistory.target = clickEvent.target;
+            clickHistory.timeStamp = now;
+
+            clickEvent.detail = clickHistory.clickCount;
+
+            this.dispatchEvent(clickEvent, 'click');
         }
     }
 
@@ -685,9 +721,8 @@ export class EventBoundary
         if (!this.mappingState.trackingData[id])
         {
             this.mappingState.trackingData[id] = {
-                pressTargetsByButton: {
-
-                },
+                pressTargetsByButton: {},
+                clicksByButton: {},
                 overTarget: null
             };
         }

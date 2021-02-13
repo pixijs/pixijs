@@ -5,6 +5,13 @@ import { EventBoundary } from './EventBoundary';
 import { FederatedPointerEvent } from './FederatedPointerEvent';
 
 const MOUSE_POINTER_ID = 1;
+const TOUCH_TO_POINTER: Record<string, string> = {
+    touchstart: 'pointerdown',
+    touchend: 'pointerup',
+    touchendoutside: 'pointerupoutside',
+    touchmove: 'pointermove',
+    touchcancel: 'pointercancel',
+};
 
 export class EventSystem extends System
 {
@@ -408,6 +415,14 @@ export class EventSystem extends System
         if (event.type === 'pointerleave')
         {
             event.type = 'pointerout';
+        }
+        if (event.type.startsWith('mouse'))
+        {
+            event.type = event.type.replace('mouse', 'pointer');
+        }
+        if (event.type.startsWith('touch'))
+        {
+            event.type = TOUCH_TO_POINTER[event.type] || event.type;
         }
 
         return event;

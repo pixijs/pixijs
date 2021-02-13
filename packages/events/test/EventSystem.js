@@ -33,10 +33,7 @@ describe.only('PIXI.EventSystem', function ()
     const staticPointerEventTests = [
         /* pointer- events */
         { type: 'pointerdown' },
-        [
-            { type: 'pointerdown' },
-            { type: 'pointermove' },
-        ],
+        { type: 'pointermove' },
         [
             { type: 'pointerdown' },
             // pointerupoutside b/c the canvas isn't the event target, regardless of the
@@ -50,15 +47,17 @@ describe.only('PIXI.EventSystem', function ()
         ],
         /* mouse- events */
         { type: 'mousedown' },
-        [
-            { type: 'mousedown' },
-            { type: 'mousemove' },
-        ],
+        { type: 'mousemove' },
         [
             { type: 'mousedown' },
             { type: 'mouseupoutside', native: 'mouseup' }
         ],
         { type: 'mouseover' },
+        [
+            { type: 'mouseover' },
+            { type: 'mouseout', clientX: 150, clientY: 150 },
+        ],
+        /* touch-even */
     ];
 
     // Maps native event types to their listeners on EventSystem.
@@ -78,11 +77,12 @@ describe.only('PIXI.EventSystem', function ()
     staticPointerEventTests.forEach((event) =>
     {
         const events = Array.isArray(event) ? event : [event];
-        const supportsPointerEvents = !events[0].type.startsWith('mouse');
+        const isMouseEvent = events[0].type.startsWith('mouse');
+        const isTouchEvent = events[0].type.startsWith('touch');
 
         it(`should fire ${events[events.length - 1].type}`, function ()
         {
-            const renderer = createRenderer(view, supportsPointerEvents);
+            const renderer = createRenderer(view, isMouseEvent);
             const stage = new Container();
             const graphics = new Graphics();
 
@@ -110,9 +110,23 @@ describe.only('PIXI.EventSystem', function ()
 
                 let event;
 
-                if (supportsPointerEvents)
+                if (!isMouseEvent && !isTouchEvent)
                 {
                     event = new PointerEvent(native || type, { clientX, clientY });
+                }
+                else if (isTouchEvent)
+                {
+                    event = new TouchEvent(native || type, {
+                        changedTouches: [
+                            new Touch({
+                                identifier: 0,
+                                target: renderer.view,
+                                isPrimary: true,
+                                clientX,
+                                clientY,
+                            }),
+                        ],
+                    });
                 }
                 else
                 {
