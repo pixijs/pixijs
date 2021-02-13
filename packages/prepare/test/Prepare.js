@@ -35,7 +35,7 @@ describe('PIXI.Prepare', function ()
 
             expect(Object.keys(texture.baseTexture._glTextures)).to.eql([`${CONTEXT_UID}`]);
             expect(graphics.geometry.batches.length).to.equal(2);
-            expect(vaos[CONTEXT_UID]).to.be.notnull;
+            expect(vaos[CONTEXT_UID]).to.exist;
             expect(Object.keys(vaos[CONTEXT_UID]).length).to.equal(2); // [shader_id] and [signature]
         }
         finally

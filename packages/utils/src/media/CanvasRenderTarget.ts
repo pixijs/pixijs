@@ -8,31 +8,27 @@ import { settings } from '@pixi/settings';
  */
 export class CanvasRenderTarget
 {
+    /** The Canvas object that belongs to this CanvasRenderTarget. */
     public canvas: HTMLCanvasElement;
 
+    /** A CanvasRenderingContext2D object representing a two-dimensional rendering context. */
     public context: CanvasRenderingContext2D;
 
+    /**
+     * The resolution / device pixel ratio of the canvas
+     * @default 1
+     */
     public resolution: number;
 
     /**
-     * @param {number} width - the width for the newly created canvas
-     * @param {number} height - the height for the newly created canvas
+     * @param width - the width for the newly created canvas
+     * @param height - the height for the newly created canvas
      * @param {number} [resolution=1] - The resolution / device pixel ratio of the canvas
      */
     constructor(width: number, height: number, resolution?: number)
     {
-        /**
-         * The Canvas object that belongs to this CanvasRenderTarget.
-         *
-         * @member {HTMLCanvasElement}
-         */
         this.canvas = document.createElement('canvas');
 
-        /**
-         * A CanvasRenderingContext2D object representing a two-dimensional rendering context.
-         *
-         * @member {CanvasRenderingContext2D}
-         */
         this.context = this.canvas.getContext('2d');
 
         this.resolution = resolution || settings.RESOLUTION;
@@ -54,8 +50,8 @@ export class CanvasRenderTarget
     /**
      * Resizes the canvas to the specified width and height.
      *
-     * @param {number} width - the new width of the canvas
-     * @param {number} height - the new height of the canvas
+     * @param width - the new width of the canvas
+     * @param height - the new height of the canvas
      */
     resize(width: number, height: number): void
     {
@@ -63,10 +59,7 @@ export class CanvasRenderTarget
         this.canvas.height = height * this.resolution;
     }
 
-    /**
-     * Destroys this canvas.
-     *
-     */
+    /** Destroys this canvas. */
     destroy(): void
     {
         this.context = null;
