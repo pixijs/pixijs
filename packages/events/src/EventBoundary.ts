@@ -479,7 +479,8 @@ export class EventBoundary
 
         this.dispatchEvent(e, 'pointerover');
 
-        if (e.pointerType === 'mouse') {
+        if (e.pointerType === 'mouse')
+        {
             this.dispatchEvent(e, 'mouseover');
             this.cursor = e.target?.cursor;
         }
