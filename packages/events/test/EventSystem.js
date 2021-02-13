@@ -40,7 +40,7 @@ function createScene()
     return [stage, graphics];
 }
 
-describe.only('PIXI.EventSystem', function ()
+describe('PIXI.EventSystem', function ()
 {
     // Share WebGL context for performance
     const view = document.createElement('canvas');
