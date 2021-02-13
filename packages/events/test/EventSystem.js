@@ -24,7 +24,7 @@ function createRenderer(view, supportsPointerEvents)
     return renderer;
 }
 
-describe('PIXI.EventSystem', function ()
+describe.only('PIXI.EventSystem', function ()
 {
     // Share WebGL context for performance
     const view = document.createElement('canvas');
@@ -46,8 +46,19 @@ describe('PIXI.EventSystem', function ()
         { type: 'pointerover' },
         [
             { type: 'pointerover' },
-            { type: 'pointerleave', clientX: 150, clientY: 150 },
-        ]
+            { type: 'pointerout', native: 'pointerleave', clientX: 150, clientY: 150 },
+        ],
+        /* mouse- events */
+        { type: 'mousedown' },
+        [
+            { type: 'mousedown' },
+            { type: 'mousemove' },
+        ],
+        [
+            { type: 'mousedown' },
+            { type: 'mouseupoutside', native: 'mouseup' }
+        ],
+        { type: 'mouseover' },
     ];
 
     // Maps native event types to their listeners on EventSystem.
@@ -57,15 +68,21 @@ describe('PIXI.EventSystem', function ()
         pointerup: 'onPointerUp',
         pointerover: 'onPointerOverOut',
         pointerleave: 'onPointerOverOut',
+        mousedown: 'onPointerDown',
+        mousemove: 'onPointerMove',
+        mouseup: 'onPointerUp',
+        mouseover: 'onPointerOverOut',
+        mouseout: 'onPointerOverOut',
     };
 
     staticPointerEventTests.forEach((event) =>
     {
         const events = Array.isArray(event) ? event : [event];
+        const supportsPointerEvents = !events[0].type.startsWith('mouse');
 
         it(`should fire ${events[events.length - 1].type}`, function ()
         {
-            const renderer = createRenderer(view);
+            const renderer = createRenderer(view, supportsPointerEvents);
             const stage = new Container();
             const graphics = new Graphics();
 
@@ -91,9 +108,18 @@ describe('PIXI.EventSystem', function ()
                     eventSpy();
                 });
 
-                renderer.events[handler](
-                    new PointerEvent(native || type, { clientX, clientY })
-                );
+                let event;
+
+                if (supportsPointerEvents)
+                {
+                    event = new PointerEvent(native || type, { clientX, clientY });
+                }
+                else
+                {
+                    event = new MouseEvent(native || type, { clientX, clientY });
+                }
+
+                renderer.events[handler](event);
 
                 expect(eventSpy).to.have.been.calledOnce;
             });

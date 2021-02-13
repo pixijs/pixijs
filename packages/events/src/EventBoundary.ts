@@ -68,6 +68,13 @@ export class EventBoundary
         this.addEventMapping('pointerover', this.mapPointerOver);
         this.addEventMapping('pointerup', this.mapPointerUp);
         this.addEventMapping('pointerupoutside', this.mapPointerUpOutside);
+        this.addEventMapping('mousedown', this.mapPointerDown);
+        this.addEventMapping('mousemove', this.mapPointerMove);
+        this.addEventMapping('mouseout', this.mapPointerLeave);
+        this.addEventMapping('mouseleave', this.mapPointerLeave);
+        this.addEventMapping('mouseover', this.mapPointerOver);
+        this.addEventMapping('mouseup', this.mapPointerUp);
+        this.addEventMapping('mouseupoutside', this.mapPointerUpOutside);
     }
 
     public addEventMapping(type: string, fn: (e: FederatedEvent) => void): void
@@ -461,7 +468,7 @@ export class EventBoundary
         const trackingData = this.trackingData(from.pointerId);
         const e = this.createEvent(from);
 
-        this.dispatchEvent(e);
+        this.dispatchEvent(e, 'pointerover');
 
         if (e.pointerType === 'mouse') this.dispatchEvent(e, 'mouseover');
 
@@ -481,7 +488,7 @@ export class EventBoundary
 
         if (trackingData.overTarget)
         {
-            const e = this.createEvent(from, 'pointerleave', trackingData.overTarget);
+            const e = this.createEvent(from, 'pointerout', trackingData.overTarget);
 
             this.dispatchEvent(e);
 
