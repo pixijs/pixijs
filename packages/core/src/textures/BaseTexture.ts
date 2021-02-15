@@ -5,6 +5,7 @@ import { BufferResource } from './resources/BufferResource';
 import { autoDetectResource } from './resources/autoDetectResource';
 import { settings } from '@pixi/settings';
 
+import type { IAutoDetectOptions } from './resources/autoDetectResource';
 import type { GLTexture } from './GLTexture';
 
 const defaultBufferOptions = {
@@ -15,7 +16,7 @@ const defaultBufferOptions = {
 
 export type ImageSource = HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|ImageBitmap;
 
-export interface IBaseTextureOptions {
+export interface IBaseTextureOptions<T = any> {
     alphaMode?: ALPHA_MODES;
     mipmap?: MIPMAP_MODES;
     anisotropicLevel?: number;
@@ -27,7 +28,7 @@ export interface IBaseTextureOptions {
     type?: TYPES;
     target?: TARGETS;
     resolution?: number;
-    resourceOptions?: any;
+    resourceOptions?: T;
     pixiIdPrefix?: string;
 }
 
@@ -42,7 +43,7 @@ export interface BaseTexture extends GlobalMixins.BaseTexture, EventEmitter {}
  * @extends PIXI.utils.EventEmitter
  * @memberof PIXI
  */
-export class BaseTexture extends EventEmitter
+export class BaseTexture<T extends Resource = Resource, U = IAutoDetectOptions> extends EventEmitter
 {
     public width: number;
     public height: number;
@@ -67,7 +68,7 @@ export class BaseTexture extends EventEmitter
     public valid: boolean;
     textureCacheIds: Array<string>;
     public destroyed: boolean;
-    public resource: Resource;
+    public resource: T;
     _batchEnabled: number;
     _batchLocation: number;
     parentTextureArray: BaseTexture;
@@ -91,7 +92,7 @@ export class BaseTexture extends EventEmitter
      * @param {object} [options.resourceOptions] - Optional resource options,
      *        see {@link PIXI.autoDetectResource autoDetectResource}
      */
-    constructor(resource: Resource | ImageSource | string | any = null, options: IBaseTextureOptions = null)
+    constructor(resource: T | ImageSource | string | any = null, options: IBaseTextureOptions<U> = null)
     {
         super();
 
@@ -103,7 +104,7 @@ export class BaseTexture extends EventEmitter
         // Convert the resource to a Resource object
         if (resource && !(resource instanceof Resource))
         {
-            resource = autoDetectResource(resource, resourceOptions);
+            resource = autoDetectResource<T, U>(resource, resourceOptions);
             resource.internal = true;
         }
 
@@ -488,7 +489,7 @@ export class BaseTexture extends EventEmitter
      * @param {PIXI.Resource} resource - that is managing this BaseTexture
      * @returns {PIXI.BaseTexture} this
      */
-    setResource(resource: Resource): this
+    setResource(resource: T): this
     {
         if (this.resource === resource)
         {
@@ -609,8 +610,8 @@ export class BaseTexture extends EventEmitter
      * @param {boolean} [strict] - Enforce strict-mode, see {@link PIXI.settings.STRICT_TEXTURE_CACHE}.
      * @returns {PIXI.BaseTexture} The new base texture.
      */
-    static from(source: ImageSource|string, options?: IBaseTextureOptions,
-        strict = settings.STRICT_TEXTURE_CACHE): BaseTexture
+    static from<T extends Resource = Resource, U = IAutoDetectOptions>(source: ImageSource|string,
+        options?: IBaseTextureOptions<U>, strict = settings.STRICT_TEXTURE_CACHE): BaseTexture<T>
     {
         const isFrame = typeof source === 'string';
         let cacheId = null;
@@ -631,7 +632,7 @@ export class BaseTexture extends EventEmitter
             cacheId = (source as any)._pixiId;
         }
 
-        let baseTexture = BaseTextureCache[cacheId];
+        let baseTexture = BaseTextureCache[cacheId] as BaseTexture<T>;
 
         // Strict-mode rejects invalid cacheIds
         if (isFrame && strict && !baseTexture)
@@ -641,7 +642,7 @@ export class BaseTexture extends EventEmitter
 
         if (!baseTexture)
         {
-            baseTexture = new BaseTexture(source, options);
+            baseTexture = new BaseTexture<T>(source, options);
             baseTexture.cacheId = cacheId;
             BaseTexture.addToCache(baseTexture, cacheId);
         }
@@ -661,7 +662,7 @@ export class BaseTexture extends EventEmitter
      * @return {PIXI.BaseTexture} The resulting new BaseTexture
      */
     static fromBuffer(buffer: Float32Array|Uint8Array,
-        width: number, height: number, options?: IBaseTextureOptions): BaseTexture
+        width: number, height: number, options?: IBaseTextureOptions): BaseTexture<BufferResource>
     {
         buffer = buffer || new Float32Array(width * height * 4);
 

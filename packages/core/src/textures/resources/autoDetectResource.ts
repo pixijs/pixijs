@@ -1,10 +1,10 @@
 import { Resource } from './Resource';
 
 import type { IImageResourceOptions } from './ImageResource';
-import type{ ISize } from '@pixi/math';
-import type{ ICubeResourceOptions } from './CubeResource';
-import type{ ISVGResourceOptions } from './SVGResource';
-import type{ IVideoResourceOptions } from './VideoResource';
+import type { ISize } from '@pixi/math';
+import type { ICubeResourceOptions } from './CubeResource';
+import type { ISVGResourceOptions } from './SVGResource';
+import type { IVideoResourceOptions } from './VideoResource';
 
 /*
  * Allow flexible options for resource plugins
@@ -26,10 +26,10 @@ export type IAutoDetectOptions = ISize
  *
  * @memberof PIXI
  */
-export interface IResourcePlugin
+export interface IResourcePlugin<T, U>
 {
     test(source: unknown, extension: string): boolean;
-    new (source: any, options?: any): Resource;
+    new (source: any, options?: U): T;
 }
 
 /**
@@ -58,7 +58,7 @@ export interface IResourcePlugin
  * @static
  * @readonly
  */
-export const INSTALLED: Array<IResourcePlugin> = [];
+export const INSTALLED: Array<IResourcePlugin<any, any>> = [];
 
 /**
  * Create a resource element from a single source element. This
@@ -90,7 +90,7 @@ export const INSTALLED: Array<IResourcePlugin> = [];
  *        texture should be updated from the video. Leave at 0 to update at every render
  * @return {PIXI.Resource} The created resource.
  */
-export function autoDetectResource(source: unknown, options?: IAutoDetectOptions): Resource
+export function autoDetectResource<T extends Resource, U>(source: unknown, options?: U): T
 {
     if (!source)
     {
@@ -112,7 +112,7 @@ export function autoDetectResource(source: unknown, options?: IAutoDetectOptions
 
     for (let i = INSTALLED.length - 1; i >= 0; --i)
     {
-        const ResourcePlugin = INSTALLED[i];
+        const ResourcePlugin = INSTALLED[i] as IResourcePlugin<T, U>;
 
         if (ResourcePlugin.test && ResourcePlugin.test(source, extension))
         {

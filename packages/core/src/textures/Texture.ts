@@ -6,6 +6,8 @@ import { settings } from '@pixi/settings';
 import { Rectangle, Point } from '@pixi/math';
 import { uid, TextureCache, getResolutionOfUrl, EventEmitter } from '@pixi/utils';
 
+import type { Resource } from './resources/Resource';
+import type { BufferResource } from './resources/BufferResource';
 import type { IPointData } from '@pixi/math';
 import type { IBaseTextureOptions, ImageSource } from './BaseTexture';
 import type { TextureMatrix } from './TextureMatrix';
@@ -46,9 +48,9 @@ export interface Texture extends GlobalMixins.Texture, EventEmitter {}
  * @extends PIXI.utils.EventEmitter
  * @memberof PIXI
  */
-export class Texture extends EventEmitter
+export class Texture<T extends Resource = Resource> extends EventEmitter
 {
-    public baseTexture: BaseTexture;
+    public baseTexture: BaseTexture<T>;
     public orig: Rectangle;
     public trim: Rectangle;
     public valid: boolean;
@@ -69,7 +71,7 @@ export class Texture extends EventEmitter
      * @param {number} [rotate] - indicates how the texture was rotated by texture packer. See {@link PIXI.groupD8}
      * @param {PIXI.IPointData} [anchor] - Default anchor point used for sprite placement / rotation
      */
-    constructor(baseTexture: BaseTexture, frame?: Rectangle,
+    constructor(baseTexture: BaseTexture<T>, frame?: Rectangle,
         orig?: Rectangle, trim?: Rectangle, rotate?: number, anchor?: IPointData)
     {
         super();
@@ -350,8 +352,8 @@ export class Texture extends EventEmitter
      * @param {boolean} [strict] - Enforce strict-mode, see {@link PIXI.settings.STRICT_TEXTURE_CACHE}.
      * @return {PIXI.Texture} The newly created texture
      */
-    static from(source: TextureSource, options: IBaseTextureOptions = {},
-        strict = settings.STRICT_TEXTURE_CACHE): Texture
+    static from<T extends Resource = Resource>(source: TextureSource, options: IBaseTextureOptions = {},
+        strict = settings.STRICT_TEXTURE_CACHE): Texture<T>
     {
         const isFrame = typeof source === 'string';
         let cacheId = null;
@@ -372,7 +374,7 @@ export class Texture extends EventEmitter
             cacheId = (source as any)._pixiId;
         }
 
-        let texture = TextureCache[cacheId];
+        let texture = TextureCache[cacheId] as Texture<T>;
 
         // Strict-mode rejects invalid cacheIds
         if (isFrame && strict && !texture)
@@ -387,7 +389,7 @@ export class Texture extends EventEmitter
                 options.resolution = getResolutionOfUrl(source as string);
             }
 
-            texture = new Texture(new BaseTexture(source, options));
+            texture = new Texture<T>(new BaseTexture<T>(source, options));
             texture.baseTexture.cacheId = cacheId;
 
             BaseTexture.addToCache(texture.baseTexture, cacheId);
@@ -406,11 +408,11 @@ export class Texture extends EventEmitter
      * @param {object} [options] - Optional options to include
      * @return {Promise<PIXI.Texture>} A Promise that resolves to a Texture.
      */
-    static fromURL(url: string, options?: IBaseTextureOptions): Promise<Texture>
+    static fromURL(url: string, options?: IBaseTextureOptions): Promise<Texture<ImageResource>>
     {
         const resourceOptions = Object.assign({ autoLoad: false }, options?.resourceOptions);
-        const texture = Texture.from(url, Object.assign({ resourceOptions }, options), false);
-        const resource = texture.baseTexture.resource as ImageResource;
+        const texture = Texture.from<ImageResource>(url, Object.assign({ resourceOptions }, options), false);
+        const resource = texture.baseTexture.resource;
 
         // The texture was already loaded
         if (texture.baseTexture.valid)
@@ -434,7 +436,7 @@ export class Texture extends EventEmitter
      * @return {PIXI.Texture} The resulting new BaseTexture
      */
     static fromBuffer(buffer: Float32Array|Uint8Array,
-        width: number, height: number, options?: IBaseTextureOptions): Texture
+        width: number, height: number, options?: IBaseTextureOptions): Texture<BufferResource>
     {
         return new Texture(BaseTexture.fromBuffer(buffer, width, height, options));
     }
@@ -449,10 +451,10 @@ export class Texture extends EventEmitter
      *        specified, only `imageUrl` will be used as the cache ID.
      * @return {PIXI.Texture} Output texture
      */
-    static fromLoader(source: HTMLImageElement|HTMLCanvasElement|string, imageUrl: string, name?: string,
-        options?: IBaseTextureOptions): Promise<Texture>
+    static fromLoader<T extends Resource = Resource>(source: HTMLImageElement|HTMLCanvasElement|string,
+        imageUrl: string, name?: string, options?: IBaseTextureOptions): Promise<Texture<T>>
     {
-        const baseTexture = new BaseTexture(source, Object.assign({
+        const baseTexture = new BaseTexture<T>(source, Object.assign({
             scaleMode: settings.SCALE_MODE,
             resolution: getResolutionOfUrl(imageUrl),
         }, options));
@@ -464,7 +466,7 @@ export class Texture extends EventEmitter
             resource.url = imageUrl;
         }
 
-        const texture = new Texture(baseTexture);
+        const texture = new Texture<T>(baseTexture);
 
         // No name, use imageUrl instead
         if (!name)
