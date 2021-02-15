@@ -8,7 +8,7 @@ import { uid, TextureCache, getResolutionOfUrl, EventEmitter } from '@pixi/utils
 
 import type { Resource } from './resources/Resource';
 import type { BufferResource } from './resources/BufferResource';
-import type { IPointData } from '@pixi/math';
+import type { IPointData, ISize } from '@pixi/math';
 import type { IBaseTextureOptions, ImageSource } from './BaseTexture';
 import type { TextureMatrix } from './TextureMatrix';
 
@@ -279,7 +279,7 @@ export class Texture<T extends Resource = Resource> extends EventEmitter
         {
             if (destroyBase)
             {
-                const resource = this.baseTexture as any;
+                const { resource } = this.baseTexture as unknown as BaseTexture<ImageResource>;
 
                 // delete the texture if it exists in the texture cache..
                 // this only needs to be removed if the base texture is actually destroyed too..
@@ -352,7 +352,7 @@ export class Texture<T extends Resource = Resource> extends EventEmitter
      * @param {boolean} [strict] - Enforce strict-mode, see {@link PIXI.settings.STRICT_TEXTURE_CACHE}.
      * @return {PIXI.Texture} The newly created texture
      */
-    static from<T extends Resource = Resource>(source: TextureSource, options: IBaseTextureOptions = {},
+    static from<T extends Resource = Resource, U = any>(source: TextureSource, options: IBaseTextureOptions<U> = {},
         strict = settings.STRICT_TEXTURE_CACHE): Texture<T>
     {
         const isFrame = typeof source === 'string';
@@ -408,10 +408,11 @@ export class Texture<T extends Resource = Resource> extends EventEmitter
      * @param {object} [options] - Optional options to include
      * @return {Promise<PIXI.Texture>} A Promise that resolves to a Texture.
      */
-    static fromURL(url: string, options?: IBaseTextureOptions): Promise<Texture<ImageResource>>
+    static fromURL<T extends Resource = Resource, U = any>(
+        url: string, options?: IBaseTextureOptions<U>): Promise<Texture<T>>
     {
         const resourceOptions = Object.assign({ autoLoad: false }, options?.resourceOptions);
-        const texture = Texture.from<ImageResource>(url, Object.assign({ resourceOptions }, options), false);
+        const texture = Texture.from<T>(url, Object.assign({ resourceOptions }, options), false);
         const resource = texture.baseTexture.resource;
 
         // The texture was already loaded
@@ -436,7 +437,7 @@ export class Texture<T extends Resource = Resource> extends EventEmitter
      * @return {PIXI.Texture} The resulting new BaseTexture
      */
     static fromBuffer(buffer: Float32Array|Uint8Array,
-        width: number, height: number, options?: IBaseTextureOptions): Texture<BufferResource>
+        width: number, height: number, options?: IBaseTextureOptions<ISize>): Texture<BufferResource>
     {
         return new Texture(BaseTexture.fromBuffer(buffer, width, height, options));
     }
