@@ -677,11 +677,11 @@ export class Texture<T extends Resource = Resource> extends EventEmitter
         return this.baseTexture;
     }
 
-    static readonly EMPTY: Texture;
-    static readonly WHITE: Texture;
+    static readonly EMPTY: Texture<CanvasResource>;
+    static readonly WHITE: Texture<CanvasResource>;
 }
 
-function createWhiteTexture(): Texture
+function createWhiteTexture(): Texture<CanvasResource>
 {
     const canvas = document.createElement('canvas');
 
