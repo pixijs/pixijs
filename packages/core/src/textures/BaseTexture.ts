@@ -16,7 +16,7 @@ const defaultBufferOptions = {
 
 export type ImageSource = HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|ImageBitmap;
 
-export interface IBaseTextureOptions<T = any> {
+export interface IBaseTextureOptions<RO = any> {
     alphaMode?: ALPHA_MODES;
     mipmap?: MIPMAP_MODES;
     anisotropicLevel?: number;
@@ -28,7 +28,7 @@ export interface IBaseTextureOptions<T = any> {
     type?: TYPES;
     target?: TARGETS;
     resolution?: number;
-    resourceOptions?: T;
+    resourceOptions?: RO;
     pixiIdPrefix?: string;
 }
 
@@ -42,8 +42,10 @@ export interface BaseTexture extends GlobalMixins.BaseTexture, EventEmitter {}
  * @class
  * @extends PIXI.utils.EventEmitter
  * @memberof PIXI
+ * @typeParam R - The BaseTexture's Resource type.
+ * @typeParam RO - The options for constructing resource.
  */
-export class BaseTexture<T extends Resource = Resource, U = IAutoDetectOptions> extends EventEmitter
+export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions> extends EventEmitter
 {
     public width: number;
     public height: number;
@@ -68,7 +70,7 @@ export class BaseTexture<T extends Resource = Resource, U = IAutoDetectOptions> 
     public valid: boolean;
     textureCacheIds: Array<string>;
     public destroyed: boolean;
-    public resource: T;
+    public resource: R;
     _batchEnabled: number;
     _batchLocation: number;
     parentTextureArray: BaseTexture;
@@ -92,7 +94,7 @@ export class BaseTexture<T extends Resource = Resource, U = IAutoDetectOptions> 
      * @param {object} [options.resourceOptions] - Optional resource options,
      *        see {@link PIXI.autoDetectResource autoDetectResource}
      */
-    constructor(resource: T | ImageSource | string | any = null, options: IBaseTextureOptions<U> = null)
+    constructor(resource: R | ImageSource | string | any = null, options: IBaseTextureOptions<RO> = null)
     {
         super();
 
@@ -104,7 +106,7 @@ export class BaseTexture<T extends Resource = Resource, U = IAutoDetectOptions> 
         // Convert the resource to a Resource object
         if (resource && !(resource instanceof Resource))
         {
-            resource = autoDetectResource<T, U>(resource, resourceOptions);
+            resource = autoDetectResource<R, RO>(resource, resourceOptions);
             resource.internal = true;
         }
 
@@ -489,7 +491,7 @@ export class BaseTexture<T extends Resource = Resource, U = IAutoDetectOptions> 
      * @param {PIXI.Resource} resource - that is managing this BaseTexture
      * @returns {PIXI.BaseTexture} this
      */
-    setResource(resource: T): this
+    setResource(resource: R): this
     {
         if (this.resource === resource)
         {
@@ -610,8 +612,8 @@ export class BaseTexture<T extends Resource = Resource, U = IAutoDetectOptions> 
      * @param {boolean} [strict] - Enforce strict-mode, see {@link PIXI.settings.STRICT_TEXTURE_CACHE}.
      * @returns {PIXI.BaseTexture} The new base texture.
      */
-    static from<T extends Resource = Resource, U = IAutoDetectOptions>(source: ImageSource|string,
-        options?: IBaseTextureOptions<U>, strict = settings.STRICT_TEXTURE_CACHE): BaseTexture<T>
+    static from<R extends Resource = Resource, RO = IAutoDetectOptions>(source: ImageSource|string,
+        options?: IBaseTextureOptions<RO>, strict = settings.STRICT_TEXTURE_CACHE): BaseTexture<R>
     {
         const isFrame = typeof source === 'string';
         let cacheId = null;
@@ -632,7 +634,7 @@ export class BaseTexture<T extends Resource = Resource, U = IAutoDetectOptions> 
             cacheId = (source as any)._pixiId;
         }
 
-        let baseTexture = BaseTextureCache[cacheId] as BaseTexture<T>;
+        let baseTexture = BaseTextureCache[cacheId] as BaseTexture<R>;
 
         // Strict-mode rejects invalid cacheIds
         if (isFrame && strict && !baseTexture)
@@ -642,7 +644,7 @@ export class BaseTexture<T extends Resource = Resource, U = IAutoDetectOptions> 
 
         if (!baseTexture)
         {
-            baseTexture = new BaseTexture<T>(source, options);
+            baseTexture = new BaseTexture<R>(source, options);
             baseTexture.cacheId = cacheId;
             BaseTexture.addToCache(baseTexture, cacheId);
         }

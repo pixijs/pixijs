@@ -26,10 +26,10 @@ export type IAutoDetectOptions = ISize
  *
  * @memberof PIXI
  */
-export interface IResourcePlugin<T, U>
+export interface IResourcePlugin<R, RO>
 {
     test(source: unknown, extension: string): boolean;
-    new (source: any, options?: U): T;
+    new (source: any, options?: RO): R;
 }
 
 /**
@@ -90,7 +90,7 @@ export const INSTALLED: Array<IResourcePlugin<any, any>> = [];
  *        texture should be updated from the video. Leave at 0 to update at every render
  * @return {PIXI.Resource} The created resource.
  */
-export function autoDetectResource<T extends Resource, U>(source: unknown, options?: U): T
+export function autoDetectResource<R extends Resource, RO>(source: unknown, options?: RO): R
 {
     if (!source)
     {
@@ -112,7 +112,7 @@ export function autoDetectResource<T extends Resource, U>(source: unknown, optio
 
     for (let i = INSTALLED.length - 1; i >= 0; --i)
     {
-        const ResourcePlugin = INSTALLED[i] as IResourcePlugin<T, U>;
+        const ResourcePlugin = INSTALLED[i] as IResourcePlugin<R, RO>;
 
         if (ResourcePlugin.test && ResourcePlugin.test(source, extension))
         {
