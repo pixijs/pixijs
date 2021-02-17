@@ -124,27 +124,23 @@ describe('generateUniformBufferSync', function ()
                     data: { name: 'uFloat', index: 1, type: 'float', size: 1, isArray: false, value: 0 },
                     offset: 0,
                     dataLen: 4,
-                    chunkLen: 4,
                     dirty: 0
                 },
                 {
                     data: { name: 'uBool', index: 2, type: 'bool', size: 1, isArray: false, value: false },
                     offset: 4,
                     dataLen: 4,
-                    chunkLen: 4,
                     dirty: 0
                 },
                 {
                     data: { name: 'uInt', index: 3, type: 'int', size: 1, isArray: false, value: 0 },
                     offset: 8,
                     dataLen: 4,
-                    chunkLen: 4,
                     dirty: 0 },
                 {
                     data: { name: 'uUInt', index: 4, type: 'uint', size: 1, isArray: false, value: 0 },
                     offset: 12,
                     dataLen: 4,
-                    chunkLen: 4,
                     dirty: 0
                 }
             ],
@@ -395,6 +391,44 @@ describe('generateUniformBufferSync', function ()
                 ])
 
             },
+            {
+                uboSrc: ` uniform uboTest {
+                    vec3 uLightColor;
+                    float uLightDistance;
+                };`,
+                groupData: {
+                    uLightColor: [1, 2, 3],
+                    uLightDistance: 4
+                },
+                expectedBuffer: new Float32Array([
+                    1, 2, 3, 4,
+                ])
+
+            },
+            {
+                debug: true,
+                uboSrc: ` uniform uboTest {
+                    vec3 uLightColor;
+                    vec3 uLightPosition;
+                    float uLightDistance;
+                    vec2 uLimit;
+                    vec3 uGlobalAmbient;
+                };`,
+                groupData: {
+                    uLightColor: [1, 1, 1],
+                    uLightPosition: [2, 2, 2],
+                    uLightDistance: 3,
+                    uLimit: [4, 4],
+                    uGlobalAmbient: [5, 5, 5],
+                },
+                expectedBuffer: new Float32Array([
+                    1, 1, 1, 0,
+                    2, 2, 2, 3,
+                    4, 4, 0, 0,
+                    5, 5, 5, 0,
+                ])
+
+            },
 
         ].forEach((toTest) =>
         {
@@ -419,7 +453,12 @@ describe('generateUniformBufferSync', function ()
 
             const buffer = group.buffer;
 
-            f(shader.program.uniformData, group.uniforms, stubRenderer, {}, buffer);
+            if (buffer.data.length === 1)
+            {
+                buffer.data = new Float32Array(f.size / 4);
+            }
+
+            f.syncFunc(shader.program.uniformData, group.uniforms, stubRenderer, {}, buffer);
 
             chai.expect(buffer.data).to.deep.equal(toTest.expectedBuffer);
         });

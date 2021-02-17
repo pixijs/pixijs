@@ -78,9 +78,31 @@ export class BufferSystem extends System
 
         if (this.boundBufferBases[index] !== buffer)
         {
+            const glBuffer = buffer._glBuffers[CONTEXT_UID] || this.createGLBuffer(buffer);
+
             this.boundBufferBases[index] = buffer;
-            gl.bindBufferBase(gl.UNIFORM_BUFFER, index, buffer._glBuffers[CONTEXT_UID].buffer);
+
+            gl.bindBufferBase(gl.UNIFORM_BUFFER, index, glBuffer.buffer);
         }
+    }
+
+    /**
+     * Binds a buffer whilst also binding its range.
+     * This will make the buffer start from the offset supplied rather than 0 when it is read.
+     *
+     * @param buffer - the buffer to bind
+     * @param offset - the offset to bind at (this is blocks of 256). 0 = 0, 1 = 256, 2 = 512 etc
+     * @param index - the base index to bind at, defaults to 0
+     */
+    bindBufferRange(buffer:Buffer, offset?:number, index?:number):void
+    {
+        const { gl, CONTEXT_UID } = this;
+
+        offset = offset || 0;
+
+        const glBuffer = buffer._glBuffers[CONTEXT_UID] || this.createGLBuffer(buffer);
+
+        gl.bindBufferRange(gl.UNIFORM_BUFFER, index || 0, glBuffer.buffer, offset * 256, 256);
     }
 
     /**

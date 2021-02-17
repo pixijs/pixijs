@@ -31,6 +31,7 @@ export class ShaderSystem extends System
     public id: number;
     public destroyed = false;
     private cache: Dict<UniformsSyncCallback>;
+    private _uboCache: Dict<{size:number, syncFunc:UniformsSyncCallback}>;
 
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
@@ -58,6 +59,7 @@ export class ShaderSystem extends System
          * @private
          */
         this.cache = {};
+        this._uboCache = {};
 
         this.id = UID++;
     }
@@ -141,9 +143,9 @@ export class ShaderSystem extends System
     {
         const glProgram = this.getGlProgram();
 
-        if (!group.static || group.dirtyId !== glProgram.uniformGroups[group.id])
+        if (!group.static || group.dirtyId !== glProgram.uniformDirtyGroups[group.id])
         {
-            glProgram.uniformGroups[group.id] = group.dirtyId;
+            glProgram.uniformDirtyGroups[group.id] = group.dirtyId;
 
             this.syncUniforms(group, glProgram, syncData);
         }
@@ -184,58 +186,65 @@ export class ShaderSystem extends System
      * @param name - the name of the uniform buffer
      * @param syncData - this is data that is passed to the sync function and any nested sync functions
      */
-    syncUniformBufferGroup(group:UniformGroup, name?: string, syncData?: any)
+    syncUniformBufferGroup(group:UniformGroup, name?: string)
     {
         const glProgram = this.getGlProgram();
 
-        if (!group.static || group.dirtyId !== glProgram.uniformGroups[group.id])
+        if (!group.static || group.dirtyId !== 0 || !glProgram.uniformGroups[group.id])
         {
-            glProgram.uniformGroups[group.id] = group.dirtyId;
+            group.dirtyId = 0;
 
-            this.syncUniformBuffer(group, glProgram, name, syncData);
+            const syncFunc = glProgram.uniformGroups[group.id]
+                || this.createSyncBufferGroup(group, glProgram, name);
+
+            // TODO wrap update in a cache??
+            group.buffer.update();
+
+            syncFunc(glProgram.uniformData,
+                group.uniforms,
+                this.renderer,
+                defaultSyncData,
+                group.buffer
+            );
         }
+
+        this.renderer.buffer.bindBufferBase(group.buffer, glProgram.uniformBufferBindings[name]);
     }
 
-    syncUniformBuffer(uniformGroup: UniformGroup, glProgram: GLProgram, name:string, syncData: any): void
-    {
-        const syncFunc = uniformGroup.syncUniforms[uniformGroup.id] || this.createSyncBufferGroup(uniformGroup, name);
-
-        this.renderer.buffer.bindBufferBase(uniformGroup.buffer, syncData.uboCount++);
-
-        // TODO wrap update in a cache??
-        uniformGroup.buffer.update();
-
-        syncFunc(glProgram.uniformData,
-            uniformGroup.uniforms,
-            this.renderer,
-            defaultSyncData,
-            uniformGroup.buffer
-        );
-    }
-
-    createSyncBufferGroup(uniformGroup: UniformGroup, name:string): UniformsSyncCallback
+    createSyncBufferGroup(group: UniformGroup, glProgram: GLProgram, name:string): UniformsSyncCallback
     {
         const { gl } = this.renderer;
 
-        const glProgram = this.getGlProgram();
+        this.renderer.buffer.bind(group.buffer);
 
         // bind them...
         const uniformBlockIndex = this.gl.getUniformBlockIndex(glProgram.program, name);
 
-        gl.uniformBlockBinding(glProgram.program, uniformBlockIndex, this.shader.uniformBindCount++);
+        glProgram.uniformBufferBindings[name] = this.shader.uniformBindCount;
 
-        this.renderer.buffer.bind(uniformGroup.buffer);
+        gl.uniformBlockBinding(glProgram.program, uniformBlockIndex, this.shader.uniformBindCount);
 
-        const id = this.getSignature(uniformGroup, this.shader.program.uniformData, 'ubo');
+        this.shader.uniformBindCount++;
 
-        if (!this.cache[id])
+        const id = this.getSignature(group, this.shader.program.uniformData, 'ubo');
+
+        let uboData = this._uboCache[id];
+
+        if (!uboData)
         {
-            this.cache[id] = generateUniformBufferSync(uniformGroup, this.shader.program.uniformData);
+            uboData = this._uboCache[id] = generateUniformBufferSync(group, this.shader.program.uniformData);
         }
 
-        uniformGroup.syncUniforms[uniformGroup.id] = this.cache[id];
+        if (group.autoManage)
+        {
+            const data = new Float32Array(uboData.size / 4);
 
-        return uniformGroup.syncUniforms[uniformGroup.id];
+            group.buffer.update(data);
+        }
+
+        glProgram.uniformGroups[group.id] = uboData.syncFunc;
+
+        return glProgram.uniformGroups[group.id];
     }
 
     /**
