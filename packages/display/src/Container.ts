@@ -60,6 +60,7 @@ export class Container extends DisplayObject
     public readonly children: DisplayObject[];
     public sortableChildren: boolean;
     public sortDirty: boolean;
+    public parent: Container;
     public containerUpdateTransform: () => void;
 
     protected _width: number;
