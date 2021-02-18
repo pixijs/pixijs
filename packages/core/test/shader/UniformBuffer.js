@@ -200,6 +200,33 @@ describe('generateUniformBufferSync', function ()
         [
             {
                 uboSrc: ` uniform uboTest {
+                    float uFirst;
+                    vec2 uSecond; 
+                };`,
+                debug: true,
+                groupData: {
+                    uFirst: 1,
+                    uSecond: [2, 2],
+                },
+                expectedBuffer: new Float32Array([
+                    1, 0, 2, 2,
+                ])
+            },
+            {
+                uboSrc: ` uniform uboTest {
+                    vec2 uSecond; 
+                    float uFirst;
+                };`,
+                groupData: {
+                    uSecond: [2, 2],
+                    uFirst: 1,
+                },
+                expectedBuffer: new Float32Array([
+                    2, 2, 1, 0,
+                ])
+            },
+            {
+                uboSrc: ` uniform uboTest {
                     mat3 uMatrixArray[2];
                     vec2 uSecond; 
                 };`,
@@ -429,7 +456,6 @@ describe('generateUniformBufferSync', function ()
                 ])
 
             },
-
         ].forEach((toTest) =>
         {
             const fragmentSrc = `

@@ -132,6 +132,16 @@ export function createUBOElements(uniformData:IUniformData[]):{uboElements:UBOEl
 
         uboElement.dataLen = size;
 
+        // add some size offset..
+        if (size === 8 && (chunkSize % size !== 0))
+        {
+            const nearest = Math.ceil(chunkSize / size) * size;
+            const diff = nearest - chunkSize;
+
+            chunkSize += diff;
+            offset += diff;
+        }
+
         if ((chunkSize + size) > 16)
         {
             offset = Math.ceil(offset / 16) * 16;
