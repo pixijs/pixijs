@@ -11,7 +11,7 @@ import {
 } from '@pixi/math';
 
 import { Texture, UniformGroup, State, Renderer, BatchDrawCall, Shader } from '@pixi/core';
-import { BezierUtils, QuadraticUtils, ArcUtils, Star } from './utils';
+import { BezierUtils, QuadraticUtils, ArcUtils } from './utils';
 import { hex2rgb } from '@pixi/utils';
 import { GraphicsGeometry } from './GraphicsGeometry';
 import { FillStyle } from './styles/FillStyle';
@@ -885,22 +885,6 @@ export class Graphics extends Container
         }
 
         return this;
-    }
-
-    /**
-     * Draw a star shape with an arbitrary number of points.
-     *
-     * @param {number} x - Center X position of the star
-     * @param {number} y - Center Y position of the star
-     * @param {number} points - The number of points of the star, must be > 1
-     * @param {number} radius - The outer radius of the star
-     * @param {number} [innerRadius] - The inner radius between points, default half `radius`
-     * @param {number} [rotation=0] - The rotation of the star in radians, where 0 is vertical
-     * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
-     */
-    public drawStar(x: number, y: number, points: number, radius: number, innerRadius: number, rotation = 0): this
-    {
-        return this.drawPolygon(new Star(x, y, points, radius, innerRadius, rotation) as Polygon);
     }
 
     /**
