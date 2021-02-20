@@ -9,81 +9,44 @@ import { TickerCallback } from './Ticker';
  */
 export class TickerListener<T = any>
 {
+    /** The current priority. */
     public priority: number;
-    public next: TickerListener;
-    public previous: TickerListener;
+    /** The next item in chain. */
+    public next: TickerListener = null;
+    /** The previous item in chain. */
+    public previous: TickerListener = null;
 
+    /** The handler function to execute. */
     private fn: TickerCallback<T>;
+    /** The calling to execute. */
     private context: T;
+    /** If this should only execute once. */
     private once: boolean;
-    private _destroyed: boolean;
+    /** `true` if this listener has been destroyed already. */
+    private _destroyed = false;
 
     /**
      * Constructor
      * @private
-     * @param {Function} fn - The listener function to be added for one update
-     * @param {*} [context=null] - The listener context
-     * @param {number} [priority=0] - The priority for emitting
-     * @param {boolean} [once=false] - If the handler should fire once
+     * @param fn - The listener function to be added for one update
+     * @param context - The listener context
+     * @param priority - The priority for emitting
+     * @param once - If the handler should fire once
      */
     constructor(fn: TickerCallback<T>, context: T = null, priority = 0, once = false)
     {
-        /**
-         * The handler function to execute.
-         * @private
-         * @member {Function}
-         */
         this.fn = fn;
-
-        /**
-         * The calling to execute.
-         * @private
-         * @member {*}
-         */
         this.context = context;
-
-        /**
-         * The current priority.
-         * @private
-         * @member {number}
-         */
         this.priority = priority;
-
-        /**
-         * If this should only execute once.
-         * @private
-         * @member {boolean}
-         */
         this.once = once;
-
-        /**
-         * The next item in chain.
-         * @private
-         * @member {TickerListener}
-         */
-        this.next = null;
-
-        /**
-         * The previous item in chain.
-         * @private
-         * @member {TickerListener}
-         */
-        this.previous = null;
-
-        /**
-         * `true` if this listener has been destroyed already.
-         * @member {boolean}
-         * @private
-         */
-        this._destroyed = false;
     }
 
     /**
      * Simple compare function to figure out if a function and context match.
      * @private
-     * @param {Function} fn - The listener function to be added for one update
-     * @param {any} [context] - The listener context
-     * @return {boolean} `true` if the listener match the arguments
+     * @param fn - The listener function to be added for one update
+     * @param context - The listener context
+     * @return `true` if the listener match the arguments
      */
     match(fn: TickerCallback<T>, context: any = null): boolean
     {
@@ -93,8 +56,8 @@ export class TickerListener<T = any>
     /**
      * Emit by calling the current function.
      * @private
-     * @param {number} deltaTime - time since the last emit.
-     * @return {TickerListener} Next ticker
+     * @param deltaTime - time since the last emit.
+     * @return Next ticker
      */
     emit(deltaTime: number): TickerListener
     {
@@ -130,7 +93,7 @@ export class TickerListener<T = any>
     /**
      * Connect to the list.
      * @private
-     * @param {TickerListener} previous - Input node, previous listener
+     * @param previous - Input node, previous listener
      */
     connect(previous: TickerListener): void
     {
@@ -146,9 +109,9 @@ export class TickerListener<T = any>
     /**
      * Destroy and don't use after this.
      * @private
-     * @param {boolean} [hard = false] - `true` to remove the `next` reference, this
+     * @param hard - `true` to remove the `next` reference, this
      *        is considered a hard destroy. Soft destroy maintains the next reference.
-     * @return {TickerListener} The listener to redirect while emitting or removing.
+     * @return The listener to redirect while emitting or removing.
      */
     destroy(hard = false): TickerListener
     {
