@@ -1,6 +1,6 @@
 {
   "name": "@pixi/filter-alpha",
-  "version": "5.3.7",
+  "version": "5.3.8",
   "main": "lib/filter-alpha.js",
   "module": "lib/filter-alpha.es.js",
   "bundle": "dist/filter-alpha.js",
@@ -25,6 +25,6 @@
     "dist"
   ],
   "dependencies": {
-    "@pixi/core": "5.3.7"
+    "@pixi/core": "5.3.8"
   }
 }
