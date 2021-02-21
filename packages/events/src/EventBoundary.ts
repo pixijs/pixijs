@@ -11,6 +11,9 @@ const PROPAGATION_LIMIT = 2048;
 const tempHitLocation = new Point();
 const tempLocalMapping = new Point();
 
+/**
+ * The tracking data for each display object.
+ */
 type TrackingData = {
     pressTargetsByButton: {
         [id: number]: FederatedEventTarget;
@@ -27,6 +30,8 @@ type TrackingData = {
 
 /**
  * EventBoundary
+ *
+ * @memberof PIXI
  */
 export class EventBoundary
 {
@@ -341,7 +346,7 @@ export class EventBoundary
      *
      * @param displayObject
      * @param location
-     * @returns Whether `displayObject` passes hit testing for `location`.
+     * @return - Whether `displayObject` passes hit testing for `location`.
      */
     protected hitTestFn(displayObject: DisplayObject, location: Point): boolean
     {
@@ -362,15 +367,16 @@ export class EventBoundary
     }
 
     /**
-     * Notify all the listeners to the event's {@code currentTarget}
+     * Notify all the listeners to the event's `currentTarget`.
      *
-     * @param e
+     * @param e - The event passed to the target.
      */
     protected notifyTarget(e: FederatedEvent, type?: string): void
     {
         type = type ?? e.type;
 
-        const key = e.eventPhase === e.CAPTURING_PHASE ? `capture${type}` : type;
+        let key = e.eventPhase === e.CAPTURING_PHASE || e.eventPhase === e.AT_TARGET ? `capture${type}` : type;
+
         const listeners = e.currentTarget.listeners(key);
 
         for (
@@ -379,6 +385,19 @@ export class EventBoundary
             i++)
         {
             listeners[i](e);
+        }
+
+        if (e.eventPhase === e.AT_TARGET)
+        {
+            key = type;
+
+            for (
+                let i = 0, j = listeners.length;
+                i < j && !e.propagationImmediatelyStopped;
+                i++)
+            {
+                listeners[i](e);
+            }
         }
     }
 
@@ -417,6 +436,13 @@ export class EventBoundary
         trackingData.pressTargetsByButton[from.button] = e.target;
     }
 
+    /**
+     * Maps the upstream `pointermove` to downstream `pointerout`, `pointerover`, and `pointermove` events, in
+     * that order. The tracking data for the specific pointer has an updated `overTarget`. `mouseout`, `mouseover`,
+     * `mousemove`, and `touchmove` events are fired as well for specific pointer types.
+     *
+     * @param from - The upstream `pointermove` event.
+     */
     protected mapPointerMove(from: FederatedEvent): void
     {
         if (!(from instanceof FederatedPointerEvent))
@@ -465,6 +491,12 @@ export class EventBoundary
         trackingData.overTarget = e.target;
     }
 
+    /**
+     * Maps the upstream `pointerover` to a downstream `pointerover` event. The tracking data for the specific
+     * pointer gets a new `overTarget`.
+     *
+     * @param from - The upstream `pointerover` event.
+     */
     protected mapPointerOver(from: FederatedEvent): void
     {
         if (!(from instanceof FederatedPointerEvent))
@@ -488,6 +520,12 @@ export class EventBoundary
         trackingData.overTarget = e.target;
     }
 
+    /**
+     * Maps the upstream `pointerout` to a downstream `pointerout` event. The tracking data for the specific pointer
+     * is cleared of a `overTarget`.
+     *
+     * @param from - The upstream `pointerout` event.
+     */
     protected mapPointerOut(from: FederatedEvent): void
     {
         if (!(from instanceof FederatedPointerEvent))
@@ -514,13 +552,13 @@ export class EventBoundary
     }
 
     /**
-     * Maps `pointerup` events downstream, and also emits `touchend`, `rightup`, `mouseup` for those
-     * pointer types.
+     * Maps the upstream `pointerup` event to downstream `pointerup`, `pointerupoutside`, and `click`/`pointertap` events, in
+     * that order. The `pointerupoutside` event bubbles from the original `pointerdown` target to the most specific
+     * ancestor of the `pointerdown` and `pointerup` targets, which is also the `click` event's target. `touchend`,
+     * `rightup`, `mouseup`, `touchendoutside`, `rightupoutside`, `mouseupoutside`, and `tap` are fired as well for
+     * specific pointer types.
      *
-     * It also bubbles `pointerupoutside` events from the target of the corresponding `pointerdown`
-     * event. Similarly, `touchendoutside`, rightupoutside`, and `mouseupoutside` events are fired.
-     *
-     * @param from
+     * @param from - The upstream `pointerup` event.
      */
     protected mapPointerUp(from: FederatedEvent): void
     {
@@ -634,6 +672,17 @@ export class EventBoundary
         }
     }
 
+    /**
+     * Maps the upstream `pointerupoutside` event to a downstream `pointerupoutside` event that bubbles
+     * from the original `pointerdown` target to the boundary's root. (The most specific ancestor of the `pointerdown`
+     * event and the `pointerup` event must the {@code EventBoundary}'s root because the `pointerup` event
+     * occurred outside of the boundary.) `touchendoutside`, `mouseupoutside`, and `rightupoutside` events
+     * are fired as well for specific pointer types.
+     *
+     * The tracking data for the specific pointer is cleared of a `pressTarget`.
+     *
+     * @param from - The upstream `pointerupoutside` event.
+     */
     protected mapPointerUpOutside(from: FederatedEvent): void
     {
         if (!(from instanceof FederatedPointerEvent))
@@ -673,6 +722,14 @@ export class EventBoundary
         }
     }
 
+    /**
+     * Creates an event whose {@code originalEvent} is {@code from}, with an optional {@code type} and
+     * {@code target} override.
+     *
+     * @param from - The {@code originalEvent} for the returned event.
+     * @param [type=from.type] - The type of the returned event.
+     * @param target - The target of the returned event.
+     */
     protected createEvent(from: FederatedPointerEvent, type?: string, target?: FederatedEventTarget): FederatedPointerEvent
     {
         target = target ?? this.hitTest(from.global.x, from.global.y) as FederatedEventTarget;
@@ -694,6 +751,12 @@ export class EventBoundary
         return event;
     }
 
+    /**
+     * Clones the event {@code from}, with an optional {@code type} override.
+     *
+     * @param from - The event to clone.
+     * @param [type=from.type] - The type of the returned event.
+     */
     protected cloneEvent(from: FederatedPointerEvent, type?: string): FederatedPointerEvent
     {
         const event = new FederatedPointerEvent(this);
@@ -712,6 +775,36 @@ export class EventBoundary
         return event;
     }
 
+    /**
+     * Copies pointer {@link FederatedEvent} data from {@code from} into {@code to}. This consists of
+     * the following properties:
+     * + pointerId
+     * + width
+     * + height
+     * + isPrimary
+     * + pointerType
+     * + pressure
+     * + tangentialPressure
+     * + tiltX
+     * + tiltY
+     * + altKey
+     * + button
+     * + buttons
+     * + clientX
+     * + clientY
+     * + metaKey
+     * + movementX
+     * + movementY
+     * + pageX
+     * + pageY
+     * + x
+     * + y
+     * + screen
+     * + global
+     *
+     * @param from
+     * @param to
+     */
     protected copyPointerData(from: FederatedPointerEvent, to: FederatedPointerEvent): void
     {
         to.pointerId = from.pointerId;
@@ -742,6 +835,17 @@ export class EventBoundary
         to.global.copyFrom(from.global);
     }
 
+    /**
+     * Copies base {@link FederatedEvent} data from {@code from} into {@code to}. This consists of
+     * the following properties:
+     * + isTrusted
+     * + srcElement
+     * + timeStamp
+     * + type
+     *
+     * @param from - The event to copy data from.
+     * @param to - The event to copy data into.
+     */
     protected copyData(from: FederatedEvent, to: FederatedEvent): void
     {
         to.isTrusted = from.isTrusted;
@@ -750,6 +854,11 @@ export class EventBoundary
         to.type = from.type;
     }
 
+    /**
+     * @param id - The pointer ID.
+     * @return The tracking data stored for the given pointer. If no data exists, a blank
+     *  state will be created.
+     */
     protected trackingData(id: number): TrackingData
     {
         if (!this.mappingState.trackingData[id])
@@ -764,3 +873,404 @@ export class EventBoundary
         return this.mappingState.trackingData[id];
     }
 }
+
+/**
+ * Fired when a mouse button (usually a mouse left-button) is pressed on the display.
+ * object. DisplayObject's `interactive` property must be set to `true` to fire event.
+ *
+ * @event PIXI.DisplayObject#mousedown
+ * @param {PIXI.FederatedPointerEvent} event - The mousedown event.
+ */
+
+/**
+ * Capture phase equivalent of {@code mousedown}.
+ *
+ * @event PIXI.DisplayObject#mousedowncapture - The capture phase mousedown.
+ * @param {PIXI.FederatedPointerEvent}
+ */
+
+/**
+ * Fired when a pointer device secondary button (usually a mouse right-button) is pressed
+ * on the display object. DisplayObject's `interactive` property must be set to `true` to fire event.
+ *
+ * @event PIXI.DisplayObject#rightdown
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Capture phase equivalent of {@code rightdown}.
+ *
+ * @event PIXI.DisplayObject#rightdowncapture
+ * @param {PIXI.FederatedPointerEvent} event - The rightdowncapture event.
+ */
+
+/**
+ * Fired when a pointer device button (usually a mouse left-button) is released over the display
+ * object. DisplayObject's `interactive` property must be set to `true` to fire event.
+ *
+ * @event PIXI.DisplayObject#mouseup
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Capture phase equivalent of {@code mouseup}.
+ *
+ * @event PIXI.DisplayObject#mouseupcature
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Fired when a pointer device secondary button (usually a mouse right-button) is released
+ * over the display object. DisplayObject's `interactive` property must be set to `true` to fire event.
+ *
+ * @event PIXI.DisplayObject#rightup
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Capture phase equivalent of {@code rightup}.
+ *
+ * @event PIXI.DisplayObject#rightupcapture
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Fired when a pointer device button (usually a mouse left-button) is pressed and released on
+ * the display object. DisplayObject's `interactive` property must be set to `true` to fire event.
+ *
+ * A {@code click} event fires after the {@code pointerdown} and {@code pointerup} events, in that
+ * order. If the mouse is moved over another DisplayObject after the {@code pointerdown} event, the
+ * {@code click} event is fired on the most specific common ancestor of the two target DisplayObjects.
+ *
+ * The {@code detail} property of the event is the number of clicks that occurred within a 200ms
+ * window of each other upto the current click. For example, it will be {@code 2} for a double click.
+ *
+ * @event PIXI.DisplayObject#click
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Capture phase equivalent of {@code click}.
+ *
+ * @event PIXI.DisplayObject#clickcapture
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Fired when a pointer device secondary button (usually a mouse right-button) is pressed
+ * and released on the display object. DisplayObject's `interactive` property must be set to `true` to fire event.
+ *
+ * This event follows the semantics of {@code click}.
+ *
+ * @event PIXI.DisplayObject#rightclick
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Capture phase equivalent of {@code rightclick}.
+ *
+ * @event PIXI.DisplayObject#rightclickcapture
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Fired when a pointer device button (usually a mouse left-button) is released outside the
+ * display object that initially registered a
+ * [mousedown]{@link PIXI.DisplayObject#event:mousedown}.
+ * DisplayObject's `interactive` property must be set to `true` to fire event.
+ *
+ * This event is specific to the Federated Events API. It does not have a capture phase, unlike most of the
+ * other events. It only bubbles to the most specific ancestor of the targets of the corresponding {@code pointerdown}
+ * and {@code pointerup} events, i.e. the target of the {@code click} event.
+ *
+ * @event PIXI.DisplayObject#mouseupoutside
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Capture phase equivalent of {@code mouseupoutside}.
+ *
+ * @event PIXI.DisplayObject#mouseupoutsdiecature
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Fired when a pointer device secondary button (usually a mouse right-button) is released
+ * outside the display object that initially registered a
+ * [rightdown]{@link PIXI.DisplayObject#event:rightdown}.
+ * DisplayObject's `interactive` property must be set to `true` to fire event.
+ *
+ * @event PIXI.DisplayObject#rightupoutside
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Capture phase equivalent of {@code rightupoutside}.
+ *
+ * @event PIXI.DisplayObject#rightupoutsidecapture
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Fired when a pointer device (usually a mouse) is moved while over the display object.
+ * DisplayObject's `interactive` property must be set to `true` to fire event.
+ *
+ * @event PIXI.DisplayObject#mousemove
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Capture phase equivalent of {@code mousemove}.
+ *
+ * @event PIXI.DisplayObject#mousemovecature
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Fired when a pointer device (usually a mouse) is moved onto the display object.
+ * DisplayObject's `interactive` property must be set to `true` to fire event.
+ *
+ * @event PIXI.DisplayObject#mouseover
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Capture phase equivalent of {@code mouseover}.
+ *
+ * @event PIXI.DisplayObject#mouseovercature
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Fired when a pointer device (usually a mouse) is moved off the display object.
+ * DisplayObject's `interactive` property must be set to `true` to fire event.
+ *
+ * This may be fired on a DisplayObject that was removed from the scene graph immediately after
+ * a {@code mouseover} event.
+ *
+ * @event PIXI.DisplayObject#mouseout
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Capture phase equivalent of {@code mouseout}.
+ *
+ * @event PIXI.DisplayObject#mouseoutcapture
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Fired when a pointer device button is pressed on the display object.
+ * DisplayObject's `interactive` property must be set to `true` to fire event.
+ *
+ * @event PIXI.DisplayObject#pointerdown
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Capture phase equivalent of {@code pointerdown}.
+ *
+ * @event PIXI.DisplayObject#pointerdowncapture
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Fired when a pointer device button is released over the display object.
+ * DisplayObject's `interactive` property must be set to `true` to fire event.
+ *
+ * @event PIXI.DisplayObject#pointerup
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Capture phase equivalent of {@code pointerup}.
+ *
+ * @event PIXI.DisplayObject#pointerupcapture
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Fired when the operating system cancels a pointer event.
+ * DisplayObject's `interactive` property must be set to `true` to fire event.
+ *
+ * @event PIXI.DisplayObject#pointercancel
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Capture phase equivalent of {@code pointercancel}.
+ *
+ * @event PIXI.DisplayObject#pointercancelcapture
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Fired when a pointer device button is pressed and released on the display object.
+ * DisplayObject's `interactive` property must be set to `true` to fire event.
+ *
+ * @event PIXI.DisplayObject#pointertap
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Capture phase equivalent of {@code pointertap}.
+ *
+ * @event PIXI.DisplayObject#pointertapcapture
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Fired when a pointer device button is released outside the display object that initially
+ * registered a [pointerdown]{@link PIXI.DisplayObject#event:pointerdown}.
+ * DisplayObject's `interactive` property must be set to `true` to fire event.
+ *
+ * This event is specific to the Federated Events API. It does not have a capture phase, unlike most of the
+ * other events. It only bubbles to the most specific ancestor of the targets of the corresponding {@code pointerdown}
+ * and {@code pointerup} events, i.e. the target of the {@code click} event.
+ *
+ * @event PIXI.DisplayObject#pointerupoutside
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Capture phase equivalent of {@code pointerupoutside}.
+ *
+ * @event PIXI.DisplayObject#pointerupoutsidecapture
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Fired when a pointer device is moved while over the display object.
+ * DisplayObject's `interactive` property must be set to `true` to fire event.
+ *
+ * @event PIXI.DisplayObject#pointermove
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Capture phase equivalent of {@code pointermove}.
+ *
+ * @event PIXi.DisplayObject#pointermovecapture
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Fired when a pointer device is moved onto the display object.
+ * DisplayObject's `interactive` property must be set to `true` to fire event.
+ *
+ * @event PIXI.DisplayObject#pointerover
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Capture phase equivalent of {@code pointerover}.
+ *
+ * @event PIXi.DisplayObject#pointerovercapture
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Fired when a pointer device is moved off the display object.
+ * DisplayObject's `interactive` property must be set to `true` to fire event.
+ *
+ * @event PIXI.DisplayObject#pointerout
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Capture phase equivalent of {@code pointerout}.
+ *
+ * @event PIXi.DisplayObject#pointeroutcapture
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Fired when a touch point is placed on the display object.
+ * DisplayObject's `interactive` property must be set to `true` to fire event.
+ *
+ * @event PIXI.DisplayObject#touchstart
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Capture phase equivalent of {@code touchstart}.
+ *
+ * @event PIXi.DisplayObject#touchstartcapture
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Fired when a touch point is removed from the display object.
+ * DisplayObject's `interactive` property must be set to `true` to fire event.
+ *
+ * @event PIXI.DisplayObject#touchend
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Capture phase equivalent of {@code touchend}.
+ *
+ * @event PIXi.DisplayObject#touchendcapture
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Fired when the operating system cancels a touch.
+ * DisplayObject's `interactive` property must be set to `true` to fire event.
+ *
+ * @event PIXI.DisplayObject#touchcancel
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Capture phase equivalent of {@code touchcancel}.
+ *
+ * @event PIXi.DisplayObject#touchcancelcapture
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Fired when a touch point is placed and removed from the display object.
+ * DisplayObject's `interactive` property must be set to `true` to fire event.
+ *
+ * @event PIXI.DisplayObject#tap
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Capture phase equivalent of {@code tap}.
+ *
+ * @event PIXi.DisplayObject#tapcapture
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Fired when a touch point is removed outside of the display object that initially
+ * registered a [touchstart]{@link PIXI.DisplayObject#event:touchstart}.
+ * DisplayObject's `interactive` property must be set to `true` to fire event.
+ *
+ * @event PIXI.DisplayObject#touchendoutside
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Capture phase equivalent of {@code touchendoutside}.
+ *
+ * @event PIXi.DisplayObject#touchendoutsidecapture
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Fired when a touch point is moved along the display object.
+ * DisplayObject's `interactive` property must be set to `true` to fire event.
+ *
+ * @event PIXI.DisplayObject#touchmove
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Capture phase equivalent of {@code touchmove}.
+ *
+ * @event PIXi.DisplayObject#touchmovecapture
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */

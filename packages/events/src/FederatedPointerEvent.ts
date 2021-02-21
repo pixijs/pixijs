@@ -57,6 +57,11 @@ export class FederatedPointerEvent extends FederatedEvent<
     public y: number;
 
     /**
+     * This is the number of clicks that occurs in 200ms/click of each other.
+     */
+    public detail: number;
+
+    /**
      * The offset of the pointer coordinates w.r.t. target DisplayObject in world space.
      */
     public offset: Point = new Point();
