@@ -3,7 +3,7 @@ import { FederatedEvent } from './FederatedEvent';
 
 /**
  * A {@link FederatedEvent} for pointer events.
- * 
+ *
  * @memberof PIXI
  */
 export class FederatedPointerEvent extends FederatedEvent<
