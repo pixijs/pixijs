@@ -40,16 +40,28 @@ export type Cursor = 'auto'
     | 'grab'
     | 'grabbing';
 
+export interface IHitArea {
+    contains(x: number, y: number): boolean;
+}
+    
 export interface FederatedEventTarget extends EventEmitter, EventTarget {
     readonly cursor?: Cursor;
     readonly parent?: FederatedEventTarget;
     readonly children?: ReadonlyArray<FederatedEventTarget>;
+
+    interactive: boolean;
+    interactiveChildren: boolean;
+    hitArea: IHitArea;
 }
 
 export const FederatedDisplayObject: Omit<
     FederatedEventTarget,
     'parent' | 'children' | keyof EventEmitter
 > = {
+    interactive: false,
+    interactiveChildren: false,
+    hitArea: null,
+
     addEventListener(
         type: string,
         listener: EventListenerOrEventListenerObject,

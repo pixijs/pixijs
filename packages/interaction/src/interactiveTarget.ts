@@ -1,6 +1,6 @@
 import type { InteractionTrackingData } from './InteractionTrackingData';
 
-export type Cursor = 'auto'
+type Cursor = 'auto'
     | 'default'
     | 'none'
     | 'context-menu'
@@ -37,7 +37,7 @@ export type Cursor = 'auto'
     | 'grab'
     | 'grabbing';
 
-export interface IHitArea {
+interface IHitArea {
     contains(x: number, y: number): boolean;
 }
 
