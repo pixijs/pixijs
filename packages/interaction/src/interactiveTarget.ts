@@ -92,20 +92,6 @@ export interface InteractiveTarget {
  *      );
  */
 export const interactiveTarget: InteractiveTarget = {
-
-    /**
-     * Enable interaction events for the DisplayObject. Touch, pointer and mouse
-     * events will not be emitted unless `interactive` is set to `true`.
-     *
-     * @example
-     * const sprite = new PIXI.Sprite(texture);
-     * sprite.interactive = true;
-     * sprite.on('tap', (event) => {
-     *    //handle event
-     * });
-     * @member {boolean}
-     * @memberof PIXI.DisplayObject#
-     */
     interactive: false,
 
     /**

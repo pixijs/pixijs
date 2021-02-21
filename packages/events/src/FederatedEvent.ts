@@ -5,6 +5,7 @@ import type { FederatedEventTarget } from './FederatedEventTarget';
  * An DOM-compatible synthetic event implementation that is "forwarded" on behalf of an original
  * FederatedEvent or native {@link https://dom.spec.whatwg.org/#event Event}.
  *
+ * @memberof PIXI
  * @typeParam N - The type of native event held.
  */
 export class FederatedEvent<N extends UIEvent = UIEvent> implements Event

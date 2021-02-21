@@ -39,7 +39,59 @@ type EmitterListeners = Record<string,
 >;
 
 /**
- * EventBoundary
+ * Event boundaries are "barriers" where events coming from an upstream scene are modified before downstream propagation.
+ *
+ * ## Root event boundary
+ *
+ * The {@link PIXI.EventSystem#rootBoundary rootBoundary} handles events coming from the &lt;canvas /&gt;.
+ * {@link PIXI.EventSystem} handles the normalization from native {@link https://dom.spec.whatwg.org/#event Events}
+ * into {@link PIXI.FederatedEvent FederatedEvents}. The rootBoundary then does the hit-testing and event dispatch
+ * for the upstream normalized event.
+ *
+ * ## Additional event boundaries
+ *
+ * An additional event boundary may be desired within an application's scene graph. For example, if a portion of the scene is
+ * is flat with many children at one level - a spatial hash maybe needed to accelerate hit testing. In this scenario, the
+ * container can be detached from the scene and glued using a custom event boundary.
+ *
+ * ```ts
+ * import { Container } from '@pixi/display';
+ * import { EventBoundary } from '@pixi/events';
+ * import { SpatialHash } from 'pixi-spatial-hash';
+ *
+ * class HashedHitTestingEventBoundary
+ * {
+ *     private spatialHash: SpatialHash;
+ *
+ *     constructor(scene: Container, spatialHash: SpatialHash)
+ *     {
+ *         super(scene);
+ *         this.spatialHash = spatialHash;
+ *     }
+ *
+ *     hitTestRecursive(...)
+ *     {
+ *         // TODO: If target === this.rootTarget, then use spatial hash to get a
+ *         // list of possible children that match the given (x,y) coordinates.
+ *     }
+ * }
+ *
+ * class VastScene extends DisplayObject
+ * {
+ *     protected eventBoundary: EventBoundary;
+ *     protected scene: Container;
+ *     protected spatialHash: SpatialHash;
+ *
+ *     constructor()
+ *     {
+ *         this.scene = new Container();
+ *         this.spatialHash = new SpatialHash();
+ *         this.eventBoundary = new HashedHitTestingEventBoundary(this.scene, this.spatialHash);
+ *
+ *         // Populate this.scene with a ton of children, while updating this.spatialHash
+ *     }
+ * }
+ * ```
  *
  * @memberof PIXI
  */
@@ -70,12 +122,19 @@ export class EventBoundary
      *
      * {@link PIXI.EventBoundary EventBoundary} provides mapping for "pointerdown", "pointermove",
      * "pointerout", "pointerleave", "pointerover", "pointerup", and "pointerupoutside" by default.
+     *
+     * @see PIXI.EventBoundary#addEventMapping
      */
     protected mappingTable: Record<string, Array<{
         fn: (e: FederatedEvent) => void,
         priority: number
     }>>;
 
+    /**
+     * State object for mapping methods.
+     *
+     * @see PIXI.EventBoundary#trackingData
+     */
     protected mappingState: Record<string, any> = {
         trackingData: {}
     };
@@ -106,6 +165,19 @@ export class EventBoundary
         this.addEventMapping('pointerupoutside', this.mapPointerUpOutside);
     }
 
+    /**
+     * Adds an event mapping for the event `type` handled by `fn`.
+     *
+     * Event mappings can be used to implement additional or custom events. They take an event
+     * coming from the upstream scene (or directly from the {@link PIXI.EventSystem}) and dispatch new downstream events
+     * generally trickling down and bubbling up to {@link PIXI.EventBoundary.rootTarget this.rootTarget}.
+     *
+     * To modify the semantics of existing events, the built-in mapping methods of EventBoundary should be overridden
+     * instead.
+     *
+     * @param type - The type of upstream event to map.
+     * @param fn - The mapping method. The context of this function must be bound manually, if desired.
+     */
     public addEventMapping(type: string, fn: (e: FederatedEvent) => void): void
     {
         if (!this.mappingTable[type])
@@ -353,8 +425,7 @@ export class EventBoundary
     }
 
     /**
-     * Checks whether the display object or any of its children cannot pass the hit test
-     * at all.
+     * Checks whether the display object or any of its children cannot pass the hit test at all.
      *
      * {@link EventBoundary}'s implementation uses the {@link PIXI.DisplayObject.hitArea hitArea}
      * and {@link PIXI.DisplayObject._mask} for pruning.
@@ -433,8 +504,9 @@ export class EventBoundary
     }
 
     /**
-     * Maps `pointerdown` events downstream, and also emits `touchstart`, `rightdown`, `mousedown`
-     * events for those pointer types.
+     * Maps the upstream `pointerdown` events to a downstream `pointerdown` event.
+     *
+     * `touchstart`, `rightdown`, `mousedown` events are also dispatched for specific pointer types.
      *
      * @param from
      */
@@ -468,8 +540,9 @@ export class EventBoundary
     }
 
     /**
-     * Maps the upstream `pointermove` to downstream `pointerout`, `pointerover`, and `pointermove` events, in
-     * that order. The tracking data for the specific pointer has an updated `overTarget`. `mouseout`, `mouseover`,
+     * Maps the upstream `pointermove` to downstream `pointerout`, `pointerover`, and `pointermove` events, in that order.
+     *
+     * The tracking data for the specific pointer has an updated `overTarget`. `mouseout`, `mouseover`,
      * `mousemove`, and `touchmove` events are fired as well for specific pointer types.
      *
      * @param from - The upstream `pointermove` event.
@@ -526,8 +599,9 @@ export class EventBoundary
     }
 
     /**
-     * Maps the upstream `pointerover` to a downstream `pointerover` event. The tracking data for the specific
-     * pointer gets a new `overTarget`.
+     * Maps the upstream `pointerover` to a downstream `pointerover` event.
+     *
+     * The tracking data for the specific pointer gets a new `overTarget`.
      *
      * @param from - The upstream `pointerover` event.
      */
@@ -555,8 +629,9 @@ export class EventBoundary
     }
 
     /**
-     * Maps the upstream `pointerout` to a downstream `pointerout` event. The tracking data for the specific pointer
-     * is cleared of a `overTarget`.
+     * Maps the upstream `pointerout` to a downstream `pointerout` event.
+     *
+     * The tracking data for the specific pointer is cleared of a `overTarget`.
      *
      * @param from - The upstream `pointerout` event.
      */
@@ -586,8 +661,10 @@ export class EventBoundary
     }
 
     /**
-     * Maps the upstream `pointerup` event to downstream `pointerup`, `pointerupoutside`, and `click`/`pointertap` events, in
-     * that order. The `pointerupoutside` event bubbles from the original `pointerdown` target to the most specific
+     * Maps the upstream `pointerup` event to downstream `pointerup`, `pointerupoutside`, and `click`/`pointertap` events,
+     * in that order.
+     *
+     * The `pointerupoutside` event bubbles from the original `pointerdown` target to the most specific
      * ancestor of the `pointerdown` and `pointerup` targets, which is also the `click` event's target. `touchend`,
      * `rightup`, `mouseup`, `touchendoutside`, `rightupoutside`, `mouseupoutside`, and `tap` are fired as well for
      * specific pointer types.
@@ -707,13 +784,14 @@ export class EventBoundary
     }
 
     /**
-     * Maps the upstream `pointerupoutside` event to a downstream `pointerupoutside` event that bubbles
-     * from the original `pointerdown` target to the boundary's root. (The most specific ancestor of the `pointerdown`
-     * event and the `pointerup` event must the {@code EventBoundary}'s root because the `pointerup` event
-     * occurred outside of the boundary.) `touchendoutside`, `mouseupoutside`, and `rightupoutside` events
-     * are fired as well for specific pointer types.
+     * Maps the upstream `pointerupoutside` event to a downstream `pointerupoutside` event, bubbling from the original
+     * `pointerdown` target to `rootTarget`.
      *
-     * The tracking data for the specific pointer is cleared of a `pressTarget`.
+     * (The most specific ancestor of the `pointerdown` event and the `pointerup` event must the {@code EventBoundary}'s
+     * root because the `pointerup` event occurred outside of the boundary.)
+     *
+     * `touchendoutside`, `mouseupoutside`, and `rightupoutside` events are fired as well for specific pointer
+     * types. The tracking data for the specific pointer is cleared of a `pressTarget`.
      *
      * @param from - The upstream `pointerupoutside` event.
      */
@@ -757,8 +835,7 @@ export class EventBoundary
     }
 
     /**
-     * Creates an event whose {@code originalEvent} is {@code from}, with an optional {@code type} and
-     * {@code target} override.
+     * Creates an event whose {@code originalEvent} is {@code from}, with an optional `type` and `target` override.
      *
      * @param from - The {@code originalEvent} for the returned event.
      * @param [type=from.type] - The type of the returned event.
@@ -810,8 +887,9 @@ export class EventBoundary
     }
 
     /**
-     * Copies pointer {@link FederatedEvent} data from {@code from} into {@code to}. This consists of
-     * the following properties:
+     * Copies pointer {@link FederatedEvent} data from {@code from} into {@code to}.
+     *
+     * The following properties are copied:
      * + pointerId
      * + width
      * + height
@@ -870,8 +948,9 @@ export class EventBoundary
     }
 
     /**
-     * Copies base {@link FederatedEvent} data from {@code from} into {@code to}. This consists of
-     * the following properties:
+     * Copies base {@link FederatedEvent} data from {@code from} into {@code to}.
+     *
+     * The following properties are copied:
      * + isTrusted
      * + srcElement
      * + timeStamp
