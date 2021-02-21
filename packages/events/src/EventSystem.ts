@@ -1,8 +1,9 @@
-import { Renderer, System } from '@pixi/core';
-import { DisplayObject } from '@pixi/display';
-import { IPointData } from '@pixi/math';
 import { EventBoundary } from './EventBoundary';
 import { FederatedPointerEvent } from './FederatedPointerEvent';
+
+import type { DisplayObject } from '@pixi/display';
+import type { IPointData } from '@pixi/math';
+import type { Renderer } from '@pixi/core';
 
 const MOUSE_POINTER_ID = 1;
 const TOUCH_TO_POINTER: Record<string, string> = {
@@ -18,7 +19,7 @@ const TOUCH_TO_POINTER: Record<string, string> = {
  *
  * @memberof PIXI
  */
-export class EventSystem extends System
+export class EventSystem
 {
     /**
      * The {@link EventBoundary} for the stage.
@@ -58,14 +59,15 @@ export class EventSystem extends System
     public domElement: HTMLElement;
     public resolution = 1;
 
+    public renderer: Renderer;
+
     private currentCursor: string;
     private rootPointerEvent: FederatedPointerEvent;
     private eventsAdded: boolean;
 
     constructor(renderer: Renderer)
     {
-        super(renderer);
-
+        this.renderer = renderer;
         this.rootBoundary = new EventBoundary(null);
 
         this.autoPreventDefault = true;
@@ -86,6 +88,15 @@ export class EventSystem extends System
 
         this.setTargetElement(this.domElement);
         this.resolution = this.renderer.resolution;
+    }
+
+    /**
+     * Destroys all event listeners and detaches the renderer.
+     */
+    destroy(): void
+    {
+        this.setTargetElement(null);
+        this.renderer = null;
     }
 
     /**

@@ -29,6 +29,16 @@ type TrackingData = {
 };
 
 /**
+ * Internal storage of event listeners in EventEmitter.
+ *
+ * @ignore
+ */
+type EmitterListeners = Record<string,
+    | Array<{ fn(...args: any[]): any, context: any }>
+    | { fn(...args: any[]): any, context: any }
+>;
+
+/**
  * EventBoundary
  *
  * @memberof PIXI
@@ -36,8 +46,9 @@ type TrackingData = {
 export class EventBoundary
 {
     /**
-     * The root event-target residing below the event boundary. All events are dispatched
-     * trickling down and bubbling up to this.
+     * The root event-target residing below the event boundary.
+     *
+     * All events are dispatched trickling down and bubbling up to this `rootTarget`.
      */
     public rootTarget: DisplayObject;
 
@@ -45,6 +56,14 @@ export class EventBoundary
      * The cursor preferred by the event targets underneath this boundary.
      */
     public cursor: Cursor;
+
+    /**
+     * This flag would emit `pointermove`, `touchmove`, and `mousemove` events on all DisplayObjects.
+     *
+     * The `moveOnAll` semantics mirror those of earlier versions of PixiJS. This was disabled in favor of
+     * the Pointer Event API's approach.
+     */
+    public moveOnAll = false;
 
     /**
      * Maps event types to forwarding handles for them.
@@ -201,6 +220,33 @@ export class EventBoundary
 
             if (e.propagationStopped || e.propagationImmediatelyStopped) return;
         }
+    }
+
+    /**
+     * Emits the event {@link e} to all display objects. The event is propagated in the bubbling phase at all
+     * times.
+     *
+     * This is used in the `pointermove` legacy mode.
+     *
+     * @param e - The emitted event.
+     * @param type - The listeners to notify.
+     */
+    public all(e: FederatedEvent, type?: string, target: FederatedEventTarget = this.rootTarget): void
+    {
+        e.eventPhase = e.BUBBLING_PHASE;
+
+        const children = target.children;
+
+        if (children)
+        {
+            for (let i = 0; i < children.length; i++)
+            {
+                this.all(e, type, children[i]);
+            }
+        }
+
+        e.currentTarget = target;
+        this.notifyTarget(e, type);
     }
 
     /**
@@ -376,30 +422,13 @@ export class EventBoundary
         if (!e.currentTarget.interactive) return;
 
         type = type ?? e.type;
+        const key = e.eventPhase === e.CAPTURING_PHASE || e.eventPhase === e.AT_TARGET ? `${type}capture` : type;
 
-        let key = e.eventPhase === e.CAPTURING_PHASE || e.eventPhase === e.AT_TARGET ? `${type}capture` : type;
-        let listeners = e.currentTarget.listeners(key);
-
-        for (
-            let i = 0, j = listeners.length;
-            i < j && !e.propagationImmediatelyStopped;
-            i++)
-        {
-            listeners[i](e);
-        }
+        this.notifyListeners(e, key);
 
         if (e.eventPhase === e.AT_TARGET)
         {
-            key = type;
-            listeners = e.currentTarget.listeners(key);
-
-            for (
-                let i = 0, j = listeners.length;
-                i < j && !e.propagationImmediatelyStopped;
-                i++)
-            {
-                listeners[i](e);
-            }
+            this.notifyListeners(e, type);
         }
     }
 
@@ -480,13 +509,16 @@ export class EventBoundary
             if (isMouse) this.dispatchEvent(overEvent, 'mouseover');
         }
 
-        // Then pointermove
-        this.dispatchEvent(e, 'pointermove');
+        const propagationMethod = this.moveOnAll ? 'all' : 'dispatchEvent';
 
-        if (e.pointerType === 'touch') this.dispatchEvent(e, 'touchmove');
+        // Then pointermove
+        this[propagationMethod](e, 'pointermove');
+
+        if (e.pointerType === 'touch') this[propagationMethod](e, 'touchmove');
+
         if (isMouse)
         {
-            this.dispatchEvent(e, 'mousemove');
+            this[propagationMethod](e, 'mousemove');
             this.cursor = e.target?.cursor;
         }
 
@@ -873,6 +905,35 @@ export class EventBoundary
         }
 
         return this.mappingState.trackingData[id];
+    }
+
+    /**
+     * Similar to {@link EventEmitter.emit}, except it stops if the `propagationImmediatelyStopped` flag
+     * is set on the event.
+     *
+     * @param e - The event to call each listener with.
+     * @param type - The event key.
+     */
+    private notifyListeners(e: FederatedEvent, type: string): void
+    {
+        const listeners = ((e.currentTarget as any)._events as EmitterListeners)[type];
+
+        if (!listeners) return;
+
+        if ('fn' in listeners)
+        {
+            listeners.fn.call(listeners.context, e);
+        }
+        else
+        {
+            for (
+                let i = 0, j = listeners.length;
+                i < j && !e.propagationImmediatelyStopped;
+                i++)
+            {
+                listeners[i].fn.call(listeners[i].context, e);
+            }
+        }
     }
 }
 
