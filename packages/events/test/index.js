@@ -1,1 +1,2 @@
+require('./EventBoundary');
 require('./EventSystem');

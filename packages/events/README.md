@@ -13,7 +13,7 @@ npm install @pixi/events
 
 The `pixi.js` and `pixi.js-legacy` bundles add the `EventSystem` to renderers by default.
 
-```
+```ts
 import { EventSystem } from '@pixi/events';
 
 renderer.addSystem('events', EventSystem);

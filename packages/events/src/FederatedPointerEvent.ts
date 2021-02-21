@@ -1,6 +1,11 @@
 import { Point } from '@pixi/math';
 import { FederatedEvent } from './FederatedEvent';
 
+/**
+ * A {@link FederatedEvent} for pointer events.
+ * 
+ * @memberof PIXI
+ */
 export class FederatedPointerEvent extends FederatedEvent<
     MouseEvent | PointerEvent | TouchEvent
 > implements PointerEvent
@@ -158,7 +163,6 @@ export class FederatedPointerEvent extends FederatedEvent<
         throw new Error('Method not implemented.');
     }
 
-    detail: number;
     view: Window;
     which: number;
 }

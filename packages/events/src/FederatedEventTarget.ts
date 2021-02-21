@@ -40,17 +40,39 @@ export type Cursor = 'auto'
     | 'grab'
     | 'grabbing';
 
+/**
+ * @memberof PIXI
+ */
 export interface IHitArea {
+    /** Hit-tests whether (x,y) lies in this area. */
     contains(x: number, y: number): boolean;
 }
 
+/**
+ * Describes the shape for a {@link FederatedEvent}'s' `eventTarget`.
+ *
+ * @memberof PIXI
+ */
 export interface FederatedEventTarget extends EventEmitter, EventTarget {
+    /** The cursor preferred when the mouse pointer is hovering over. */
     readonly cursor?: Cursor;
+
+    /** The parent of this event target. */
     readonly parent?: FederatedEventTarget;
+
+    /** The children of this event target. */
     readonly children?: ReadonlyArray<FederatedEventTarget>;
 
+    /** Whether this event target should fire UI events. */
     interactive: boolean;
+
+    /**
+     * Whether this event target has any children that need UI events. This can be used optimize
+     * event propagation.
+     */
     interactiveChildren: boolean;
+
+    /** The hit-area specifies the area for which pointer events should be captured by this event target. */
     hitArea: IHitArea;
 }
 

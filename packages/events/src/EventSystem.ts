@@ -13,9 +13,17 @@ const TOUCH_TO_POINTER: Record<string, string> = {
     touchcancel: 'pointercancel',
 };
 
+/**
+ * The system for handling UI events.
+ *
+ * @memberof PIXI
+ */
 export class EventSystem extends System
 {
-    public rootBoundary: EventBoundary;
+    /**
+     * The {@link EventBoundary} for the stage.
+     */
+    public readonly rootBoundary: EventBoundary;
 
     /**
      * Does the device support touch events
