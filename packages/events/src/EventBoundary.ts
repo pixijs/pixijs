@@ -490,8 +490,6 @@ export class EventBoundary
      */
     protected notifyTarget(e: FederatedEvent, type?: string): void
     {
-        if (!e.currentTarget.interactive) return;
-
         type = type ?? e.type;
         const key = e.eventPhase === e.CAPTURING_PHASE || e.eventPhase === e.AT_TARGET ? `${type}capture` : type;
 
@@ -560,26 +558,78 @@ export class EventBoundary
         const isMouse = e.pointerType === 'mouse' || e.pointerType === 'pen';
         const trackingData = this.trackingData(from.pointerId);
 
-        // First pointerout
-        if (trackingData.overTarget && !e.composedPath().includes(trackingData.overTarget))
+        // First pointerout/pointerleave
+        if (trackingData.overTarget && trackingData.overTarget !== e.target)
         {
+            // pointerout always occurs on the overTarget when the pointer hovers over another element.
             const outType = from.type === 'mousemove' ? 'mouseout' : 'pointerout';
             const outEvent = this.createEvent(from, outType, trackingData.overTarget);
 
             this.dispatchEvent(outEvent, 'pointerout');
-
             if (isMouse) this.dispatchEvent(outEvent, 'mouseout');
+
+            // If the pointer exits overTarget and its descendants, then a pointerleave event is also fired. This event
+            // is dispatched to all ancestors that no longer capture the pointer.
+            if (!e.composedPath().includes(trackingData.overTarget))
+            {
+                const leaveEvent = this.createEvent(from, 'pointerleave', trackingData.overTarget);
+
+                leaveEvent.eventPhase = leaveEvent.AT_TARGET;
+
+                while (leaveEvent.target && !e.composedPath().includes(leaveEvent.target))
+                {
+                    leaveEvent.currentTarget = leaveEvent.target;
+
+                    this.notifyTarget(leaveEvent);
+                    if (isMouse) this.notifyTarget(leaveEvent, 'mouseleave');
+
+                    leaveEvent.target = leaveEvent.target.parent;
+                }
+            }
         }
 
         // Then pointerover
         if (trackingData.overTarget !== e.target)
         {
+            // pointerover always occurs on the new overTarget
             const overType = from.type === 'mousemove' ? 'mouseover' : 'pointerover';
             const overEvent = this.cloneEvent(e, overType);// clone faster
 
             this.dispatchEvent(overEvent, 'pointerover');
-
             if (isMouse) this.dispatchEvent(overEvent, 'mouseover');
+
+            // Probe whether the newly hovered DisplayObject is an ancestor of the original overTarget.
+            let overTargetAncestor = trackingData.overTarget?.parent;
+
+            while (overTargetAncestor && overTargetAncestor !== this.rootTarget.parent)
+            {
+                if (overTargetAncestor === e.target) break;
+
+                overTargetAncestor = overTargetAncestor.parent;
+            }
+
+            // The pointer has entered a non-ancestor of the original overTarget. This means we need a pointerentered
+            // event.
+            const didPointerEnter = !overTargetAncestor || overTargetAncestor === this.rootTarget.parent;
+
+            if (didPointerEnter)
+            {
+                const enterEvent = this.cloneEvent(e, 'pointerenter');
+
+                enterEvent.eventPhase = enterEvent.AT_TARGET;
+
+                while (enterEvent.target
+                        && enterEvent.target !== trackingData.overTarget
+                        && enterEvent.target !== this.rootTarget.parent)
+                {
+                    enterEvent.currentTarget = enterEvent.target;
+
+                    this.notifyTarget(enterEvent);
+                    if (isMouse) this.notifyTarget(enterEvent, 'mouseenter');
+
+                    enterEvent.target = enterEvent.target.parent;
+                }
+            }
         }
 
         const propagationMethod = this.moveOnAll ? 'all' : 'dispatchEvent';
@@ -616,13 +666,25 @@ export class EventBoundary
 
         const trackingData = this.trackingData(from.pointerId);
         const e = this.createEvent(from);
+        const isMouse = e.pointerType === 'mouse' || e.pointerType === 'pen';
 
         this.dispatchEvent(e, 'pointerover');
+        if (isMouse) this.dispatchEvent(e, 'mouseover');
+        if (e.pointerType === 'mouse') this.cursor = e.target?.cursor;
 
-        if (e.pointerType === 'mouse')
+        // pointerenter events must be fired since the pointer entered from upstream.
+        const enterEvent = this.cloneEvent(e, 'pointerenter');
+
+        enterEvent.eventPhase = enterEvent.AT_TARGET;
+
+        while (enterEvent.target && enterEvent.target !== this.rootTarget.parent)
         {
-            this.dispatchEvent(e, 'mouseover');
-            this.cursor = e.target?.cursor;
+            enterEvent.currentTarget = enterEvent.target;
+
+            this.notifyTarget(enterEvent);
+            if (isMouse) this.notifyTarget(enterEvent, 'mouseenter');
+
+            enterEvent.target = enterEvent.target.parent;
         }
 
         trackingData.overTarget = e.target;
@@ -648,11 +710,29 @@ export class EventBoundary
 
         if (trackingData.overTarget)
         {
-            const e = this.createEvent(from, 'pointerout', trackingData.overTarget);
+            const isMouse = from.pointerType === 'mouse' || from.pointerType === 'pen';
 
-            this.dispatchEvent(e);
+            // pointerout first
+            const outEvent = this.createEvent(from, 'pointerout', trackingData.overTarget);
 
-            if (e.pointerType === 'mouse' || e.pointerType === 'pen') this.dispatchEvent(e, 'mouseout');
+            this.dispatchEvent(outEvent);
+            if (isMouse) this.dispatchEvent(outEvent, 'mouseout');
+
+            // pointerleave(s) are also dispatched b/c the pointer must've left rootTarget and its descendants to
+            // get an upstream pointerout event (upstream events do not know rootTarget has descendants).
+            const leaveEvent = this.createEvent(from, 'pointerleave', trackingData.overTarget);
+
+            leaveEvent.eventPhase = leaveEvent.AT_TARGET;
+
+            while (leaveEvent.target && leaveEvent.target !== this.rootTarget.parent)
+            {
+                leaveEvent.currentTarget = leaveEvent.target;
+
+                this.notifyTarget(leaveEvent);
+                if (isMouse) this.notifyTarget(leaveEvent, 'mouseleave');
+
+                leaveEvent.target = leaveEvent.target.parent;
+            }
 
             trackingData.overTarget = null;
         }
@@ -1179,7 +1259,21 @@ export class EventBoundary
 /**
  * Capture phase equivalent of {@code mouseover}.
  *
- * @event PIXI.DisplayObject#mouseovercature
+ * @event PIXI.DisplayObject#mouseovercapture
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Fired when the mouse pointer is moved over a DisplayObject and its descendant's hit testing boundaries.
+ *
+ * @event PIXI.DisplayObject#mouseenter
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Capture phase equivalent of {@code mouseenter}
+ *
+ * @event PIXI.DisplayObject#mouseentercapture
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
 
@@ -1198,6 +1292,20 @@ export class EventBoundary
  * Capture phase equivalent of {@code mouseout}.
  *
  * @event PIXI.DisplayObject#mouseoutcapture
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Fired when the mouse pointer exits a DisplayObject and its descendants.
+ *
+ * @event PIXI.DisplayObject#mouseleave
+ * @param {PIXI.FederatedPointerEvent} event
+ */
+
+/**
+ * Capture phase equivalent of {@code mouseleave}.
+ *
+ * @event PIXI.DisplayObject#mouseleavecapture
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
 
@@ -1312,6 +1420,20 @@ export class EventBoundary
  */
 
 /**
+ * Fired when the pointer is moved over a DisplayObject and its descendant's hit testing boundaries.
+ *
+ * @event PIXI.DisplayObject#pointerenter
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Capture phase equivalent of {@code pointerenter}
+ *
+ * @event PIXI.DisplayObject#pointerentercapture
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
  * Fired when a pointer device is moved off the display object.
  * DisplayObject's `interactive` property must be set to `true` to fire event.
  *
@@ -1323,6 +1445,22 @@ export class EventBoundary
  * Capture phase equivalent of {@code pointerout}.
  *
  * @event PIXI.DisplayObject#pointeroutcapture
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Fired when the pointer leaves the hit testing boundaries of a DisplayObject and its descendants.
+ *
+ * This event notifies only the target and does not bubble.
+ *
+ * @event PIXI.DisplayObject#pointerleave
+ * @param {PIXI.FederatedPointerEvent} event - The `pointerleave` event.
+ */
+
+/**
+ * Capture phase equivalent of {@code pointerleave}.
+ *
+ * @event PIXI.DisplayObject#pointerleavecapture
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
 

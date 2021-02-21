@@ -46,6 +46,6 @@ describe('PIXI.EventBoundary', function ()
         expect(eventSpy).to.have.been.calledTwice;
         expect(captureSpy).to.have.been.calledOnce;
         expect(captureSpy).to.have.been.calledBefore(eventSpy);
-        expect(stageSpy).to.have.not.been.called;
+        expect(stageSpy).to.have.been.calledOnce;
     });
 });

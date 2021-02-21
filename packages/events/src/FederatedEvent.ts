@@ -93,7 +93,9 @@ export class FederatedEvent<N extends UIEvent = UIEvent> implements Event
      */
     composedPath(): FederatedEventTarget[]
     {
-        if (!this.path && this.manager)
+        // Find the propagation path if it isn't cached or if the target has changed since since
+        // the last evaluation.
+        if (this.manager && (!this.path || this.path[this.path.length - 1] !== this.target))
         {
             this.path = this.target ? this.manager.propagationPath(this.target) : [];
         }
