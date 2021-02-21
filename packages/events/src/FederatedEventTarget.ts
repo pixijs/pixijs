@@ -43,7 +43,7 @@ export type Cursor = 'auto'
 export interface IHitArea {
     contains(x: number, y: number): boolean;
 }
-    
+
 export interface FederatedEventTarget extends EventEmitter, EventTarget {
     readonly cursor?: Cursor;
     readonly parent?: FederatedEventTarget;
