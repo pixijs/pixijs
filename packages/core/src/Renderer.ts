@@ -294,7 +294,7 @@ export class Renderer extends AbstractRenderer
              * @memberof PIXI.Renderer#
              * @readonly
              */
-            .addSystem(EventSystem, 'events');
+            .addSystem(EventSystem as unknown as typeof System, 'events');
 
         this.initPlugins(Renderer.__plugins);
 

@@ -948,8 +948,8 @@ export class EventBoundary
 /**
  * Capture phase equivalent of {@code mousedown}.
  *
- * @event PIXI.DisplayObject#mousedowncapture - The capture phase mousedown.
- * @param {PIXI.FederatedPointerEvent}
+ * @event PIXI.DisplayObject#mousedowncapture
+ * @param {PIXI.FederatedPointerEvent} event - The capture phase mousedown.
  */
 
 /**
@@ -1053,7 +1053,7 @@ export class EventBoundary
 /**
  * Capture phase equivalent of {@code mouseupoutside}.
  *
- * @event PIXI.DisplayObject#mouseupoutsdiecature
+ * @event PIXI.DisplayObject#mouseupoutsidecapture
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
 
@@ -1213,7 +1213,7 @@ export class EventBoundary
 /**
  * Capture phase equivalent of {@code pointermove}.
  *
- * @event PIXi.DisplayObject#pointermovecapture
+ * @event PIXI.DisplayObject#pointermovecapture
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
 
@@ -1228,7 +1228,7 @@ export class EventBoundary
 /**
  * Capture phase equivalent of {@code pointerover}.
  *
- * @event PIXi.DisplayObject#pointerovercapture
+ * @event PIXI.DisplayObject#pointerovercapture
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
 
@@ -1243,7 +1243,7 @@ export class EventBoundary
 /**
  * Capture phase equivalent of {@code pointerout}.
  *
- * @event PIXi.DisplayObject#pointeroutcapture
+ * @event PIXI.DisplayObject#pointeroutcapture
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
 
@@ -1258,7 +1258,7 @@ export class EventBoundary
 /**
  * Capture phase equivalent of {@code touchstart}.
  *
- * @event PIXi.DisplayObject#touchstartcapture
+ * @event PIXI.DisplayObject#touchstartcapture
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
 
@@ -1273,7 +1273,7 @@ export class EventBoundary
 /**
  * Capture phase equivalent of {@code touchend}.
  *
- * @event PIXi.DisplayObject#touchendcapture
+ * @event PIXI.DisplayObject#touchendcapture
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
 
@@ -1288,7 +1288,7 @@ export class EventBoundary
 /**
  * Capture phase equivalent of {@code touchcancel}.
  *
- * @event PIXi.DisplayObject#touchcancelcapture
+ * @event PIXI.DisplayObject#touchcancelcapture
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
 
@@ -1303,7 +1303,7 @@ export class EventBoundary
 /**
  * Capture phase equivalent of {@code tap}.
  *
- * @event PIXi.DisplayObject#tapcapture
+ * @event PIXI.DisplayObject#tapcapture
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
 
@@ -1319,7 +1319,7 @@ export class EventBoundary
 /**
  * Capture phase equivalent of {@code touchendoutside}.
  *
- * @event PIXi.DisplayObject#touchendoutsidecapture
+ * @event PIXI.DisplayObject#touchendoutsidecapture
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
 
@@ -1334,6 +1334,6 @@ export class EventBoundary
 /**
  * Capture phase equivalent of {@code touchmove}.
  *
- * @event PIXi.DisplayObject#touchmovecapture
+ * @event PIXI.DisplayObject#touchmovecapture
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
