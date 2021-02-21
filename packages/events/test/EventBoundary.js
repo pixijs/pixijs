@@ -1,6 +1,6 @@
 const { Container } = require('@pixi/display');
 const { FederatedPointerEvent, EventBoundary } = require('../');
-const { Graphics } = require('@pixi/graphics');
+const { Graphics } = require('../../graphics');
 const { expect } = require('chai');
 
 describe('PIXI.EventBoundary', function ()

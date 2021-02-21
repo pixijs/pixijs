@@ -40,8 +40,5 @@
     "@pixi/display": "^6.0.0-rc.2",
     "@pixi/math": "^6.0.0-rc.2",
     "@pixi/utils": "^6.0.0-rc.2"
-  },
-  "devDependencies": {
-    "@pixi/graphics": "^6.0.0-rc.2"
   }
 }
