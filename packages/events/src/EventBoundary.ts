@@ -1638,14 +1638,14 @@ export class EventBoundary
 
 /**
  * Fired when a the user scrolls with the mouse cursor over a DisplayObject.
- * 
+ *
  * @event PIXI.DisplayObject#wheel
  * @type {PIXI.FederatedWheelEvent}
  */
 
 /**
  * Capture phase equivalent of {@code wheel}.
- * 
+ *
  * @event PIXI.DisplayObject#wheelcapture
  * @type {PIXI.FederatedWheelEvent}
  */
