@@ -1,10 +1,11 @@
+import { FederatedMouseEvent } from './FederatedMouseEvent';
 import { FederatedPointerEvent } from './FederatedPointerEvent';
+import { FederatedWheelEvent } from './FederatedWheelEvent';
 import { Point } from '@pixi/math';
 
 import type { Cursor, FederatedEventTarget } from './FederatedEventTarget';
 import type { DisplayObject } from '@pixi/display';
 import type { FederatedEvent } from './FederatedEvent';
-
 // The maximum iterations used in propagation. This prevent infinite loops.
 const PROPAGATION_LIMIT = 2048;
 
@@ -154,6 +155,7 @@ export class EventBoundary
         this.mapPointerOver = this.mapPointerOver.bind(this);
         this.mapPointerUp = this.mapPointerUp.bind(this);
         this.mapPointerUpOutside = this.mapPointerUpOutside.bind(this);
+        this.mapWheel = this.mapWheel.bind(this);
 
         this.mappingTable = {};
         this.addEventMapping('pointerdown', this.mapPointerDown);
@@ -163,6 +165,7 @@ export class EventBoundary
         this.addEventMapping('pointerover', this.mapPointerOver);
         this.addEventMapping('pointerup', this.mapPointerUp);
         this.addEventMapping('pointerupoutside', this.mapPointerUpOutside);
+        this.addEventMapping('wheel', this.mapWheel);
     }
 
     /**
@@ -517,7 +520,7 @@ export class EventBoundary
             return;
         }
 
-        const e = this.createEvent(from);
+        const e = this.createPointerEvent(from);
 
         this.dispatchEvent(e, 'pointerdown');
 
@@ -554,7 +557,7 @@ export class EventBoundary
             return;
         }
 
-        const e = this.createEvent(from);
+        const e = this.createPointerEvent(from);
         const isMouse = e.pointerType === 'mouse' || e.pointerType === 'pen';
         const trackingData = this.trackingData(from.pointerId);
 
@@ -563,7 +566,7 @@ export class EventBoundary
         {
             // pointerout always occurs on the overTarget when the pointer hovers over another element.
             const outType = from.type === 'mousemove' ? 'mouseout' : 'pointerout';
-            const outEvent = this.createEvent(from, outType, trackingData.overTarget);
+            const outEvent = this.createPointerEvent(from, outType, trackingData.overTarget);
 
             this.dispatchEvent(outEvent, 'pointerout');
             if (isMouse) this.dispatchEvent(outEvent, 'mouseout');
@@ -572,7 +575,7 @@ export class EventBoundary
             // is dispatched to all ancestors that no longer capture the pointer.
             if (!e.composedPath().includes(trackingData.overTarget))
             {
-                const leaveEvent = this.createEvent(from, 'pointerleave', trackingData.overTarget);
+                const leaveEvent = this.createPointerEvent(from, 'pointerleave', trackingData.overTarget);
 
                 leaveEvent.eventPhase = leaveEvent.AT_TARGET;
 
@@ -665,7 +668,7 @@ export class EventBoundary
         }
 
         const trackingData = this.trackingData(from.pointerId);
-        const e = this.createEvent(from);
+        const e = this.createPointerEvent(from);
         const isMouse = e.pointerType === 'mouse' || e.pointerType === 'pen';
 
         this.dispatchEvent(e, 'pointerover');
@@ -713,14 +716,14 @@ export class EventBoundary
             const isMouse = from.pointerType === 'mouse' || from.pointerType === 'pen';
 
             // pointerout first
-            const outEvent = this.createEvent(from, 'pointerout', trackingData.overTarget);
+            const outEvent = this.createPointerEvent(from, 'pointerout', trackingData.overTarget);
 
             this.dispatchEvent(outEvent);
             if (isMouse) this.dispatchEvent(outEvent, 'mouseout');
 
             // pointerleave(s) are also dispatched b/c the pointer must've left rootTarget and its descendants to
             // get an upstream pointerout event (upstream events do not know rootTarget has descendants).
-            const leaveEvent = this.createEvent(from, 'pointerleave', trackingData.overTarget);
+            const leaveEvent = this.createPointerEvent(from, 'pointerleave', trackingData.overTarget);
 
             leaveEvent.eventPhase = leaveEvent.AT_TARGET;
 
@@ -761,7 +764,7 @@ export class EventBoundary
         }
 
         const now = performance.now();
-        const e = this.createEvent(from);
+        const e = this.createPointerEvent(from);
 
         this.dispatchEvent(e, 'pointerup');
 
@@ -886,7 +889,7 @@ export class EventBoundary
 
         const trackingData = this.trackingData(from.pointerId);
         const pressTarget = trackingData.pressTargetsByButton[from.button];
-        const e = this.createEvent(from);
+        const e = this.createPointerEvent(from);
 
         if (pressTarget)
         {
@@ -915,13 +918,34 @@ export class EventBoundary
     }
 
     /**
+     * Maps the upstream `wheel` event to a downstream `wheel` event.
+     *
+     * @param from - The upstream `wheel` event.
+     */
+    protected mapWheel(from: FederatedEvent): void
+    {
+        if (!(from instanceof FederatedWheelEvent))
+        {
+            console.warn('EventBoundary cannot map a non-wheel event as a wheel event');
+
+            return;
+        }
+
+        this.dispatchEvent(this.createWheelEvent(from));
+    }
+
+    /**
      * Creates an event whose {@code originalEvent} is {@code from}, with an optional `type` and `target` override.
      *
      * @param from - The {@code originalEvent} for the returned event.
      * @param [type=from.type] - The type of the returned event.
      * @param target - The target of the returned event.
      */
-    protected createEvent(from: FederatedPointerEvent, type?: string, target?: FederatedEventTarget): FederatedPointerEvent
+    protected createPointerEvent(
+        from: FederatedPointerEvent,
+        type?: string,
+        target?: FederatedEventTarget
+    ): FederatedPointerEvent
     {
         target = target ?? this.hitTest(from.global.x, from.global.y) as FederatedEventTarget;
 
@@ -932,12 +956,33 @@ export class EventBoundary
         event.target = target;
 
         this.copyPointerData(from, event);
+        this.copyMouseData(from, event);
         this.copyData(from, event);
 
         if (typeof type === 'string')
         {
             event.type = type;
         }
+
+        return event;
+    }
+
+    /**
+     * Creates a wheel event whose {@code originalEvent} is {@code from}.
+     *
+     * @param from - The upstream wheel event.
+     */
+    protected createWheelEvent(from: FederatedWheelEvent): FederatedWheelEvent
+    {
+        const event = new FederatedWheelEvent(this);
+
+        event.nativeEvent = from.nativeEvent;
+        event.originalEvent = from;
+        event.target = this.hitTest(from.global.x, from.global.y);
+
+        this.copyWheelData(from, event);
+        this.copyMouseData(from, event);
+        this.copyData(from, event);
 
         return event;
     }
@@ -956,6 +1001,7 @@ export class EventBoundary
         event.originalEvent = from.originalEvent;
 
         this.copyPointerData(from, event);
+        this.copyMouseData(from, event);
         this.copyData(from, event);
 
         // copy propagation path for perf
@@ -967,7 +1013,27 @@ export class EventBoundary
     }
 
     /**
-     * Copies pointer {@link FederatedEvent} data from {@code from} into {@code to}.
+     * Copies wheel {@link PIXI.FederatedWheelEvent} data from {@code from} into {@code to}.
+     *
+     * The following properties are copied:
+     * + deltaMode
+     * + deltaX
+     * + deltaY
+     * + deltaZ
+     *
+     * @param from
+     * @param to
+     */
+    protected copyWheelData(from: FederatedWheelEvent, to: FederatedWheelEvent): void
+    {
+        to.deltaMode = from.deltaMode;
+        to.deltaX = from.deltaX;
+        to.deltaY = from.deltaY;
+        to.deltaZ = from.deltaZ;
+    }
+
+    /**
+     * Copies pointer {@link PIXI.FederatedPointerEvent} data from {@code from} into {@code to}.
      *
      * The following properties are copied:
      * + pointerId
@@ -979,6 +1045,30 @@ export class EventBoundary
      * + tangentialPressure
      * + tiltX
      * + tiltY
+     *
+     * @param from
+     * @param to
+     */
+    protected copyPointerData(from: FederatedEvent, to: FederatedEvent): void
+    {
+        if (!(from instanceof FederatedPointerEvent && to instanceof FederatedPointerEvent)) return;
+
+        to.pointerId = from.pointerId;
+        to.width = from.width;
+        to.height = from.height;
+        to.isPrimary = from.isPrimary;
+        to.pointerType = from.pointerType;
+        to.pressure = from.pressure;
+        to.tangentialPressure = from.tangentialPressure;
+        to.tiltX = from.tiltX;
+        to.tiltY = from.tiltY;
+        to.twist = from.twist;
+    }
+
+    /**
+     * Copies mouse {@link PIXI.FederatedMouseEvent} data from {@code from} to {@code to}.
+     *
+     * The following properties are copied:
      * + altKey
      * + button
      * + buttons
@@ -997,38 +1087,24 @@ export class EventBoundary
      * @param from
      * @param to
      */
-    protected copyPointerData(from: FederatedPointerEvent, to: FederatedPointerEvent): void
+    protected copyMouseData(from: FederatedEvent, to: FederatedEvent): void
     {
-        to.pointerId = from.pointerId;
-        to.width = from.width;
-        to.height = from.height;
-        to.isPrimary = from.isPrimary;
-        to.pointerType = from.pointerType;
-        to.pressure = from.pressure;
-        to.tangentialPressure = from.tangentialPressure;
-        to.tiltX = from.tiltX;
-        to.tiltY = from.tiltY;
-        to.twist = from.twist;
+        if (!(from instanceof FederatedMouseEvent && to instanceof FederatedMouseEvent)) return;
+
         to.altKey = from.altKey;
         to.button = from.button;
         to.buttons = from.buttons;
-        to.clientX = from.clientX;
-        to.clientY = from.clientY;
+        to.client.copyFrom(from.client);
         to.ctrlKey = from.ctrlKey;
         to.metaKey = from.metaKey;
-        to.movementX = from.movementX;
-        to.movementY = from.movementY;
-        to.pageX = from.pageX;
-        to.pageY = from.pageY;
-        to.x = from.x;
-        to.y = from.y;
+        to.movement.copyFrom(from.movement);
 
         to.screen.copyFrom(from.screen);
         to.global.copyFrom(from.global);
     }
 
     /**
-     * Copies base {@link FederatedEvent} data from {@code from} into {@code to}.
+     * Copies base {@link PIXI.FederatedEvent} data from {@code from} into {@code to}.
      *
      * The following properties are copied:
      * + isTrusted
@@ -1045,6 +1121,11 @@ export class EventBoundary
         to.srcElement = from.srcElement;
         to.timeStamp = performance.now();
         to.type = from.type;
+        to.detail = from.detail;
+        to.view = from.view;
+        to.which = from.which;
+        to.layer.copyFrom(from.layer);
+        to.page.copyFrom(from.page);
     }
 
     /**
@@ -1553,4 +1634,18 @@ export class EventBoundary
  *
  * @event PIXI.DisplayObject#touchmovecapture
  * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Fired when a the user scrolls with the mouse cursor over a DisplayObject.
+ * 
+ * @event PIXI.DisplayObject#wheel
+ * @type {PIXI.FederatedWheelEvent}
+ */
+
+/**
+ * Capture phase equivalent of {@code wheel}.
+ * 
+ * @event PIXI.DisplayObject#wheelcapture
+ * @type {PIXI.FederatedWheelEvent}
  */

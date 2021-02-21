@@ -1,8 +1,10 @@
 import { EventBoundary } from './EventBoundary';
 import { FederatedPointerEvent } from './FederatedPointerEvent';
+import { FederatedWheelEvent } from './FederatedWheelEvent';
 
 import type { DisplayObject } from '@pixi/display';
 import type { IPointData } from '@pixi/math';
+import { FederatedMouseEvent } from './FederatedMouseEvent';
 
 const MOUSE_POINTER_ID = 1;
 const TOUCH_TO_POINTER: Record<string, string> = {
@@ -70,6 +72,7 @@ export class EventSystem
 
     private currentCursor: string;
     private rootPointerEvent: FederatedPointerEvent;
+    private rootWheelEvent: FederatedWheelEvent;
     private eventsAdded: boolean;
 
     /**
@@ -89,6 +92,7 @@ export class EventSystem
         this.eventsAdded = false;
 
         this.rootPointerEvent = new FederatedPointerEvent(null);
+        this.rootWheelEvent = new FederatedWheelEvent(null);
 
         this.cursorStyles = {
             default: 'inherit',
@@ -100,6 +104,7 @@ export class EventSystem
         this.onPointerMove = this.onPointerMove.bind(this);
         this.onPointerUp = this.onPointerUp.bind(this);
         this.onPointerOverOut = this.onPointerOverOut.bind(this);
+        this.onWheel = this.onWheel.bind(this);
 
         this.setTargetElement(this.domElement);
         this.resolution = this.renderer.resolution;
@@ -270,6 +275,19 @@ export class EventSystem
         this.setCursor(this.rootBoundary.cursor);
     }
 
+    /**
+     * Passive handler for `wheel` events on {@link EventSystem.domElement this.domElement}.
+     *
+     * @param nativeEvent - The native wheel event.
+     */
+    protected onWheel(nativeEvent: WheelEvent): void
+    {
+        const wheelEvent = this.normalizeWheelEvent(nativeEvent);
+
+        this.rootBoundary.rootTarget = this.renderer._lastObjectRendered as DisplayObject;
+        this.rootBoundary.mapEvent(wheelEvent);
+    }
+
     public setTargetElement(element: HTMLElement): void
     {
         this.removeEvents();
@@ -334,6 +352,11 @@ export class EventSystem
             this.domElement.addEventListener('touchmove', this.onPointerMove, true);
         }
 
+        this.domElement.addEventListener('wheel', this.onWheel, {
+            passive: true,
+            capture: true,
+        });
+
         this.eventsAdded = true;
     }
 
@@ -381,6 +404,8 @@ export class EventSystem
             this.domElement.removeEventListener('touchend', this.onPointerUp, true);
             this.domElement.removeEventListener('touchmove', this.onPointerMove, true);
         }
+
+        this.domElement.removeEventListener('wheel', this.onWheel, true);
 
         this.domElement = null;
     }
@@ -497,6 +522,35 @@ export class EventSystem
         return normalizedEvents as PointerEvent[];
     }
 
+    /**
+     * Normalizes the native {@link https://w3c.github.io/uievents/#interface-wheelevent WheelEvent}.
+     *
+     * The returned {@link PIXI.FederatedWheelEvent} is a shared instance. It will not persist across
+     * multiple native wheel events.
+     *
+     * @param nativeEvent - The native wheel event that occured on the canvas.
+     * @return A federated wheel event.
+     */
+    protected normalizeWheelEvent(nativeEvent: WheelEvent): FederatedWheelEvent
+    {
+        const event = this.rootWheelEvent;
+
+        this.transferMouseData(event, nativeEvent);
+
+        event.deltaMode = nativeEvent.deltaMode;
+        event.deltaX = nativeEvent.deltaX;
+        event.deltaY = nativeEvent.deltaY;
+        event.deltaZ = nativeEvent.deltaZ;
+
+        this.mapPositionToPoint(event.screen, nativeEvent.clientX, nativeEvent.clientY);
+        event.global.copyFrom(event.screen);
+        event.offset.copyFrom(event.screen);
+
+        event.type = nativeEvent.type;
+
+        return event;
+    }
+
     private bootstrapEvent(event: FederatedPointerEvent, nativeEvent: PointerEvent): FederatedPointerEvent
     {
         event.originalEvent = null;
@@ -512,31 +566,13 @@ export class EventSystem
         event.tiltX = nativeEvent.tiltX;
         event.tiltY = nativeEvent.tiltY;
         event.twist = nativeEvent.twist;
-        event.altKey = nativeEvent.altKey;
-        event.button = nativeEvent.button;
-        event.buttons = nativeEvent.buttons;
-        event.clientX = nativeEvent.clientX;
-        event.clientY = nativeEvent.clientY;
-        event.ctrlKey = nativeEvent.ctrlKey;
-        event.metaKey = nativeEvent.metaKey;
-        event.movementX = nativeEvent.movementX;
-        event.movementY = nativeEvent.movementY;
-        event.pageX = nativeEvent.pageX;
-        event.pageY = nativeEvent.pageY;
-        event.x = nativeEvent.x;
-        event.y = nativeEvent.y;
-
-        event.relatedTarget = null;
+        this.transferMouseData(event, nativeEvent);
 
         this.mapPositionToPoint(event.screen, nativeEvent.clientX, nativeEvent.clientY);
         event.global.copyFrom(event.screen);// global = screen for top-level
         event.offset.copyFrom(event.screen);// EventBoundary recalculates using its rootTarget
 
         event.isTrusted = nativeEvent.isTrusted;
-        event.srcElement = nativeEvent.srcElement;
-        event.timeStamp = performance.now();
-        event.type = nativeEvent.type;
-
         if (event.type === 'pointerleave')
         {
             event.type = 'pointerout';
@@ -551,6 +587,27 @@ export class EventSystem
         }
 
         return event;
+    }
+
+    private transferMouseData(event: FederatedMouseEvent, nativeEvent: MouseEvent): void
+    {
+        event.isTrusted = nativeEvent.isTrusted;
+        event.srcElement = nativeEvent.srcElement;
+        event.timeStamp = performance.now();
+        event.type = nativeEvent.type;
+
+        event.altKey = nativeEvent.altKey;
+        event.button = nativeEvent.button;
+        event.buttons = nativeEvent.buttons;
+        event.client.x = nativeEvent.clientX;
+        event.client.y = nativeEvent.clientY;
+        event.ctrlKey = nativeEvent.ctrlKey;
+        event.metaKey = nativeEvent.metaKey;
+        event.movement.x = nativeEvent.movementX;
+        event.movement.y = nativeEvent.movementY;
+        event.page.x = nativeEvent.pageX;
+        event.page.y = nativeEvent.pageY;
+        event.relatedTarget = null;
     }
 }
 
