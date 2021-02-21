@@ -376,8 +376,7 @@ export class EventBoundary
         type = type ?? e.type;
 
         let key = e.eventPhase === e.CAPTURING_PHASE || e.eventPhase === e.AT_TARGET ? `capture${type}` : type;
-
-        const listeners = e.currentTarget.listeners(key);
+        let listeners = e.currentTarget.listeners(key);
 
         for (
             let i = 0, j = listeners.length;
@@ -390,6 +389,7 @@ export class EventBoundary
         if (e.eventPhase === e.AT_TARGET)
         {
             key = type;
+            listeners = e.currentTarget.listeners(key);
 
             for (
                 let i = 0, j = listeners.length;
