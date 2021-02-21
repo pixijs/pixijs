@@ -3,7 +3,6 @@ import { FederatedPointerEvent } from './FederatedPointerEvent';
 
 import type { DisplayObject } from '@pixi/display';
 import type { IPointData } from '@pixi/math';
-import type { Renderer } from '@pixi/core';
 
 const MOUSE_POINTER_ID = 1;
 const TOUCH_TO_POINTER: Record<string, string> = {
@@ -13,6 +12,13 @@ const TOUCH_TO_POINTER: Record<string, string> = {
     touchmove: 'pointermove',
     touchcancel: 'pointercancel',
 };
+
+interface Renderer
+{
+    _lastObjectRendered: DisplayObject;
+    view: HTMLCanvasElement;
+    resolution: number;
+}
 
 /**
  * The system for handling UI events.
@@ -65,6 +71,9 @@ export class EventSystem
     private rootPointerEvent: FederatedPointerEvent;
     private eventsAdded: boolean;
 
+    /**
+     * @param {PIXI.Renderer} renderer
+     */
     constructor(renderer: Renderer)
     {
         this.renderer = renderer;
