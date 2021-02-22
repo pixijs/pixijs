@@ -19,9 +19,8 @@ import { UniformGroup } from './shader/UniformGroup';
 import { Matrix } from '@pixi/math';
 import { Runner } from '@pixi/runner';
 
-import type { IRendererOptions, IRendererPlugins } from './AbstractRenderer';
+import type { IRendererOptions, IRendererPlugins, IRendererRenderOptions } from './AbstractRenderer';
 import type { IRenderableObject } from './IRenderableObject';
-import type { RenderTexture } from './renderTexture/RenderTexture';
 import type { System } from './System';
 import type { IRenderingContext } from './IRenderingContext';
 
@@ -376,14 +375,30 @@ export class Renderer extends AbstractRenderer
      * Renders the object to its WebGL view
      *
      * @param displayObject - The object to be rendered.
-     * @param [renderTexture] - The render texture to render to.
-     * @param [clear=true] - Should the canvas be cleared before the new render.
-     * @param [transform] - A transform to apply to the render texture before rendering.
-     * @param [skipUpdateTransform=false] - Should we skip the update transform pass?
+     * @param {object} [options] - Object to use for render options.
+     * @param {PIXI.RenderTexture} [options.renderTexture] - The render texture to render to.
+     * @param {boolean} [options.clear=true] - Should the canvas be cleared before the new render.
+     * @param {PIXI.Matrix} [options.transform] - A transform to apply to the render texture before rendering.
+     * @param {boolean} [options.skipUpdateTransform=false] - Should we skip the update transform pass?
      */
-    render(displayObject: IRenderableObject, renderTexture?: RenderTexture,
-        clear?: boolean, transform?: Matrix, skipUpdateTransform?: boolean): void
+    render(displayObject: IRenderableObject, options: IRendererRenderOptions = {}, ...rest:any[]): void
     {
+        if (options && 'baseTexture' in options)
+        {
+            // #if _DEBUG
+            deprecation('6.0.0', 'Renderer#render arguments changed, use options instead.');
+            // #endif
+
+            options = {
+                renderTexture: options,
+                clear: rest[0],
+                transform: rest[1],
+                skipUpdateTransform: rest[2],
+            };
+        }
+
+        const { renderTexture, clear, transform, skipUpdateTransform } = options;
+
         // can be handy to know!
         this.renderingToScreen = !renderTexture;
 

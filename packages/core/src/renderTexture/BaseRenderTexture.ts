@@ -26,7 +26,7 @@ export interface BaseRenderTexture extends GlobalMixins.BaseRenderTexture, BaseT
  * sprite.anchor.x = 0.5;
  * sprite.anchor.y = 0.5;
  *
- * renderer.render(sprite, renderTexture);
+ * renderer.render(sprite, {renderTexture});
  * ```
  *
  * The Sprite in this case will be rendered using its local transform. To render this sprite at 0,0
@@ -39,7 +39,7 @@ export interface BaseRenderTexture extends GlobalMixins.BaseRenderTexture, BaseT
  * let baseRenderTexture = new PIXI.BaseRenderTexture({ width: 100, height: 100 });
  * let renderTexture = new PIXI.RenderTexture(baseRenderTexture);
  *
- * renderer.render(sprite, renderTexture);  // Renders to center of RenderTexture
+ * renderer.render(sprite, {renderTexture});  // Renders to center of RenderTexture
  * ```
  *
  * @class

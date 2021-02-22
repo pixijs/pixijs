@@ -1,5 +1,5 @@
 import { AbstractRenderer, CanvasResource } from '@pixi/core';
-import { CanvasRenderTarget, sayHello, rgb2hex, hex2string } from '@pixi/utils';
+import { CanvasRenderTarget, sayHello, rgb2hex, hex2string, deprecation } from '@pixi/utils';
 import { CanvasMaskManager } from './utils/CanvasMaskManager';
 import { mapCanvasBlendModesToPixi } from './utils/mapCanvasBlendModesToPixi';
 import { RENDERER_TYPE, SCALE_MODES, BLEND_MODES } from '@pixi/constants';
@@ -8,10 +8,12 @@ import { Matrix } from '@pixi/math';
 
 import type { DisplayObject } from '@pixi/display';
 import type {
-    IRendererOptions, IRendererPlugin,
+    IRendererOptions,
+    IRendererPlugin,
     IRendererPlugins,
-    RenderTexture,
     BaseRenderTexture,
+    RenderTexture,
+    IRendererRenderOptions
 } from '@pixi/core';
 
 const tempMatrix = new Matrix();
@@ -198,19 +200,36 @@ export class CanvasRenderer extends AbstractRenderer
      * Renders the object to this canvas view
      *
      * @param {PIXI.DisplayObject} displayObject - The object to be rendered
-     * @param {PIXI.RenderTexture} [renderTexture] - A render texture to be rendered to.
+     * @param {object} [options] - Options to use for rendering.
+     * @param {PIXI.RenderTexture} [options.renderTexture] - A render texture to be rendered to.
      *  If unset, it will render to the root context.
-     * @param {boolean} [clear=this.clearBeforeRender] - Whether to clear the canvas before drawing
-     * @param {PIXI.Matrix} [transform] - A transformation to be applied
-     * @param {boolean} [skipUpdateTransform=false] - Whether to skip the update transform
+     * @param {boolean} [options.clear=this.clearBeforeRender] - Whether to clear the canvas before drawing
+     * @param {PIXI.Matrix} [options.transform] - A transformation to be applied
+     * @param {boolean} [options.skipUpdateTransform=false] - Whether to skip the update transform
      */
-    public render(displayObject: DisplayObject, renderTexture?: RenderTexture | BaseRenderTexture,
-        clear?: boolean, transform?: Matrix, skipUpdateTransform?: boolean): void
+    public render(displayObject: DisplayObject, options: IRendererRenderOptions = {}, ...rest:any[]): void
     {
         if (!this.view)
         {
             return;
         }
+
+        if (options && 'baseTexture' in options)
+        {
+            // #if _DEBUG
+            deprecation('6.0.0', 'CanvasRenderer#render arguments changed, use options instead.');
+            // #endif
+
+            options = {
+                renderTexture: options,
+                clear: rest[0],
+                transform: rest[1],
+                skipUpdateTransform: rest[2],
+            };
+        }
+
+        let renderTexture: BaseRenderTexture | RenderTexture = options.renderTexture;
+        const { clear, transform, skipUpdateTransform } = options;
 
         // can be handy to know!
         this.renderingToScreen = !renderTexture;

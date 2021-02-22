@@ -221,7 +221,7 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
     // set all properties to there original so we can render to a texture
     this.render = this._cacheData.originalRender;
 
-    renderer.render(this, renderTexture, true, m, false);
+    renderer.render(this, { renderTexture, clear: true, transform: m, skipUpdateTransform: false });
 
     // now restore the state be setting the new properties
     renderer.projection.transform = cachedProjectionTransform;
@@ -339,7 +339,7 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
     // set all properties to there original so we can render to a texture
     this.renderCanvas = this._cacheData.originalRenderCanvas;
 
-    renderer.render(this, renderTexture, true, m, false);
+    renderer.render(this, { renderTexture, clear: true, transform: m, skipUpdateTransform: false });
     // now restore the state be setting the new properties
     renderer.context = cachedRenderTarget;
     (renderer as any)._projTransform = cachedProjectionTransform;
