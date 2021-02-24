@@ -11,6 +11,18 @@ const _tempMatrix = new Matrix();
 DisplayObject.prototype._cacheAsBitmap = false;
 DisplayObject.prototype._cacheData = null;
 
+/**
+ * The resolution to use for cacheAsBitmap. By default this will use the renderer's resolution
+ * but can be overriden for performance. Lower values will reduce memory usage at the expense
+ * of render quality. A falsey value of `null` or `0` will default to the renderer's resolution.
+ * This should be set _before_ setting `cacheAsBitmap`.
+ *
+ * @member {number} cacheAsBitmapResolution
+ * @memberof PIXI.DisplayObject#
+ * @default null
+ */
+DisplayObject.prototype.cacheAsBitmapResolution = null;
+
 // figured there's no point adding ALL the extra variables to prototype.
 // this model can hold the information needed. This can also be generated on demand as
 // most objects are not cached as bitmaps.
@@ -206,7 +218,11 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
     // const stack = renderer.filterManager.filterStack;
 
     // this renderTexture will be used to store the cached DisplayObject
-    const renderTexture = RenderTexture.create({ width: bounds.width, height: bounds.height });
+    const renderTexture = RenderTexture.create({
+        width: bounds.width,
+        height: bounds.height,
+        resolution: this.cacheAsBitmapResolution || renderer.resolution,
+    });
 
     const textureCacheId = `cacheAsBitmap_${uid()}`;
 
