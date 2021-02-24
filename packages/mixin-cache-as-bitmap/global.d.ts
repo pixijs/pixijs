@@ -3,6 +3,7 @@ declare namespace GlobalMixins
     interface DisplayObject {
         cacheAsBitmap?: boolean;
         cacheAsBitmapResolution?: number;
+        _cacheAsBitmapResolution?: number;
         _cacheAsBitmap?: boolean;
         _cacheData?: import('@pixi/mixin-cache-as-bitmap').CacheData;
         _renderCached?: (renderer: import('@pixi/core').Renderer) => void;
