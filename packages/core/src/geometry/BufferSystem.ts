@@ -56,7 +56,7 @@ export class BufferSystem extends System
      *
      * @param {PIXI.Buffer} buffer the buffer to bind to the renderer
      */
-    bind(buffer:Buffer):void
+    bind(buffer: Buffer): void
     {
         const { gl, CONTEXT_UID } = this;
 
@@ -72,7 +72,7 @@ export class BufferSystem extends System
      * @param buffer the buffer to bind
      * @param index the base index to bind it to.
      */
-    bindBufferBase(buffer:Buffer, index:number):void
+    bindBufferBase(buffer: Buffer, index: number): void
     {
         const { gl, CONTEXT_UID } = this;
 
@@ -94,7 +94,7 @@ export class BufferSystem extends System
      * @param offset - the offset to bind at (this is blocks of 256). 0 = 0, 1 = 256, 2 = 512 etc
      * @param index - the base index to bind at, defaults to 0
      */
-    bindBufferRange(buffer:Buffer, offset?:number, index?:number):void
+    bindBufferRange(buffer: Buffer, offset?: number, index?: number): void
     {
         const { gl, CONTEXT_UID } = this;
 
@@ -110,7 +110,7 @@ export class BufferSystem extends System
      *
      * @param {PIXI.Buffer} buffer the buffer to update
      */
-    update(buffer:Buffer): void
+    update(buffer: Buffer): void
     {
         const { gl, CONTEXT_UID } = this;
 
@@ -173,7 +173,7 @@ export class BufferSystem extends System
      * creates and attaches a GLBuffer object tied to the current context.
      * @protected
      */
-    protected createGLBuffer(buffer:Buffer): GLBuffer
+    protected createGLBuffer(buffer: Buffer): GLBuffer
     {
         const { CONTEXT_UID, gl } = this;
 
