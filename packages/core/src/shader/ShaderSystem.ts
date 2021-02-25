@@ -31,7 +31,7 @@ export class ShaderSystem extends System
     public id: number;
     public destroyed = false;
     private cache: Dict<UniformsSyncCallback>;
-    private _uboCache: Dict<{size:number, syncFunc:UniformsSyncCallback}>;
+    private _uboCache: Dict<{size: number, syncFunc: UniformsSyncCallback}>;
 
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
@@ -186,7 +186,7 @@ export class ShaderSystem extends System
      * @param name - the name of the uniform buffer
      * @param syncData - this is data that is passed to the sync function and any nested sync functions
      */
-    syncUniformBufferGroup(group:UniformGroup, name?: string)
+    syncUniformBufferGroup(group: UniformGroup, name?: string)
     {
         const glProgram = this.getGlProgram();
 
@@ -211,7 +211,7 @@ export class ShaderSystem extends System
         this.renderer.buffer.bindBufferBase(group.buffer, glProgram.uniformBufferBindings[name]);
     }
 
-    createSyncBufferGroup(group: UniformGroup, glProgram: GLProgram, name:string): UniformsSyncCallback
+    createSyncBufferGroup(group: UniformGroup, glProgram: GLProgram, name: string): UniformsSyncCallback
     {
         const { gl } = this.renderer;
 
@@ -255,7 +255,7 @@ export class ShaderSystem extends System
      * @returns {String} Unique signature of the uniform group
      * @private
      */
-    private getSignature(group: {uniforms:Dict<any>}, uniformData: Dict<any>, preFix:string): string
+    private getSignature(group: {uniforms: Dict<any>}, uniformData: Dict<any>, preFix: string): string
     {
         const uniforms = group.uniforms;
 

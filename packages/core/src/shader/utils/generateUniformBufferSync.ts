@@ -8,7 +8,7 @@ import type { Buffer } from '../../geometry/Buffer';
 
 export type UniformsSyncCallback = (...args: any[]) => void;
 
-const uboUpdate =  (_ud:any, _uv:any, _renderer:Renderer, _syncData:any, buffer: Buffer) =>
+const uboUpdate =  (_ud: any, _uv: any, _renderer: Renderer, _syncData: any, buffer: Buffer) =>
 {
     _renderer.buffer.update(buffer);
 };
@@ -19,7 +19,7 @@ const uboUpdate =  (_ud:any, _uv:any, _renderer:Renderer, _syncData:any, buffer:
 // uv = uniformValue
 // l = location
 const UBO_TO_SINGLE_SETTERS: Dict<string> = {
-    float: `     
+    float: `
         data[offset] = v;
     `,
     vec2: `
@@ -30,7 +30,7 @@ const UBO_TO_SINGLE_SETTERS: Dict<string> = {
         data[offset] = v[0];
         data[offset+1] = v[1];
         data[offset+2] = v[2];
-        
+
     `,
     vec4: `
         data[offset] = v[0];
@@ -93,10 +93,10 @@ const GLSL_TO_STD40_SIZE: Dict<number> = {
 };
 
 interface UBOElement {
-    data:IUniformData
-    offset:number,
-    dataLen:number,
-    dirty:number
+    data: IUniformData
+    offset: number,
+    dataLen: number,
+    dirty: number
 }
 
 /**
@@ -105,9 +105,9 @@ interface UBOElement {
  *
  * @param uniformData
  */
-export function createUBOElements(uniformData:IUniformData[]):{uboElements:UBOElement[], size:number}
+export function createUBOElements(uniformData: IUniformData[]): {uboElements: UBOElement[], size: number}
 {
-    const uboElements:UBOElement[] = uniformData.map((data:IUniformData) =>
+    const uboElements: UBOElement[] = uniformData.map((data: IUniformData) =>
         ({
             data,
             offset: 0,
@@ -164,7 +164,7 @@ export function createUBOElements(uniformData:IUniformData[]):{uboElements:UBOEl
     return { uboElements, size: offset };
 }
 
-export function getUBOData(uniforms: Dict<any>, uniformData: Dict<any>):any[]
+export function getUBOData(uniforms: Dict<any>, uniformData: Dict<any>): any[]
 {
     const usedUniformDatas = [];
 
@@ -186,7 +186,7 @@ export function getUBOData(uniforms: Dict<any>, uniformData: Dict<any>):any[]
 export function generateUniformBufferSync(
     group: UniformGroup,
     uniformData: Dict<any>
-): {size:number, syncFunc:UniformsSyncCallback}
+): {size: number, syncFunc: UniformsSyncCallback}
 {
     if (!group.autoManage)
     {
