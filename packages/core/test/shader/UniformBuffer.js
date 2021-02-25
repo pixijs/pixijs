@@ -200,6 +200,56 @@ describe('generateUniformBufferSync', function ()
         [
             {
                 uboSrc: ` uniform uboTest {
+                    vec3 uLightColor10;
+                    vec3 uLightDirection10;
+                    vec3 uLightPosition10;
+                    float uLightDistance10;
+                    vec3 uLightColor11;
+                    vec3 uLightDirection11;
+                    vec3 uLightPosition11;
+                    float uLightDistance11;
+                    vec3 uGlobalAmbient;
+                };`,
+                groupData: {
+                    uLightColor10: [1, 1, 1],
+                    uLightDirection10: [2, 2, 2],
+                    uLightPosition10: [3, 3, 3],
+                    uLightDistance10: 4,
+
+                    uLightColor11: [5, 5, 5],
+                    uLightDirection11: [6, 6, 6],
+                    uLightPosition11: [7, 7, 7],
+                    uLightDistance11: 8,
+                    uGlobalAmbient: [9, 9, 9],
+                },
+                expectedBuffer: new Float32Array([
+                    1, 1, 1, 0,
+                    2, 2, 2, 0,
+                    3, 3, 3, 4,
+                    5, 5, 5, 0,
+                    6, 6, 6, 0,
+                    7, 7, 7, 8,
+                    9, 9, 9, 0
+
+                ])
+            },
+
+            {
+                uboSrc: ` uniform uboTest {
+                    float uNormalScale;
+                    vec3 uEmissiveColor;
+                };`,
+                groupData: {
+                    uNormalScale: 1,
+                    uEmissiveColor: [2, 2, 2],
+                },
+                expectedBuffer: new Float32Array([
+                    1, 0, 0, 0,
+                    2, 2, 2, 0
+                ])
+            },
+            {
+                uboSrc: ` uniform uboTest {
                     float uFirst;
                     vec2 uSecond; 
                 };`,
@@ -433,7 +483,7 @@ describe('generateUniformBufferSync', function ()
 
             },
             {
-                debug: true,
+
                 uboSrc: ` uniform uboTest {
                     vec3 uLightColor;
                     vec3 uLightPosition;
@@ -485,6 +535,13 @@ describe('generateUniformBufferSync', function ()
             }
 
             f.syncFunc(shader.program.uniformData, group.uniforms, stubRenderer, {}, buffer);
+
+            // handy for testing
+            // if (toTest.debug)
+            // {
+            //     console.log('expected', toTest.expectedBuffer);
+            //     console.log('actual  ', buffer.data);
+            // }
 
             chai.expect(buffer.data).to.deep.equal(toTest.expectedBuffer);
         });
