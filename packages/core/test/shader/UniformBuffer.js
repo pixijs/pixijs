@@ -199,6 +199,33 @@ describe('generateUniformBufferSync', function ()
     {
         [
             {
+                debug: true,
+                uboSrc: ` uniform uboTest {
+                    mat4 uProjectionMatrix;
+                    mat4 uViewMatrix;
+                    vec3 uEyePosition;
+                    vec2 uResolution;
+                };`,
+                groupData: {
+                    uProjectionMatrix: new Float32Array(16),
+                    uViewMatrix: new Float32Array(16),
+                    uEyePosition: [3, 3, 3],
+                    uResolution: [4, 4],
+                },
+                expectedBuffer: new Float32Array([
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                    3, 3, 3, 0,
+                    4, 4, 0, 0,
+                ])
+            },
+            {
                 uboSrc: ` uniform uboTest {
                     vec3 uLightColor10;
                     vec3 uLightDirection10;

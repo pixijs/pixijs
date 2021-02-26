@@ -137,7 +137,7 @@ export function createUBOElements(uniformData: IUniformData[]): {uboElements: UB
         // add some size offset..
         // must align to the nearest 16 bytes or internally nearest round size
 
-        if (chunkSize % size !== 0 && chunkSize !== 16)
+        if (chunkSize % size !== 0 && chunkSize < 16)
         {
             // diff required to line up..
             const lineUpValue = (chunkSize % size) % 16;
