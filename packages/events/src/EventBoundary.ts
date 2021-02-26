@@ -13,7 +13,28 @@ const tempHitLocation = new Point();
 const tempLocalMapping = new Point();
 
 /**
- * The tracking data for each display object.
+ * The tracking data for each pointer held in the state of an {@link PIXI.EventBoundary}.
+ *
+ * ```ts
+ * pressTargetsByButton: {
+ *      [id: number]: FederatedEventTarget;
+ * };
+ * clicksByButton: {
+ *     [id: number]: {
+ *         clickCount: number;
+ *         target: FederatedEventTarget;
+ *         timeStamp: number;
+ *     }
+ * };
+ * overTarget: FederatedEventTarget;
+ * ```
+ *
+ * @typedef {object} TrackingData
+ * @property {Record.<number, PIXI.FederatedEventTarget>} pressTargetsByButton - The pressed display objects
+ *  by each button of the pointer.
+ * @property {Record.<number, Object>} clicksByButton - Holds clicking data for each button of the pointer.
+ * @property {PIXI.DisplayObject} overTarget - The DisplayObject over which the pointer is hovering.
+ * @memberof PIXI
  */
 type TrackingData = {
     pressTargetsByButton: {
