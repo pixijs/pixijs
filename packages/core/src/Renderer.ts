@@ -1,4 +1,5 @@
 import { AbstractRenderer } from './AbstractRenderer';
+import { EventSystem } from '@pixi/events';
 import { sayHello, isWebGLSupported, deprecation } from '@pixi/utils';
 import { MaskSystem } from './mask/MaskSystem';
 import { StencilSystem } from './mask/StencilSystem';
@@ -48,6 +49,7 @@ export interface IRendererPlugin {
  * | ------------------------------------ | ----------------------------------------------------------------------------- |
  * | {@link PIXI.BatchSystem}             | This manages object renderers that defer rendering until a flush.             |
  * | {@link PIXI.ContextSystem}           | This manages the WebGL context and extensions.                                |
+ * | {@link PIXI.EventSystem}             | This manages UI events.                                                       |
  * | {@link PIXI.FilterSystem}            | This manages the filtering pipeline for post-processing effects.              |
  * | {@link PIXI.FramebufferSystem}       | This manages framebuffers, which are used for offscreen rendering.            |
  * | {@link PIXI.GeometrySystem}          | This manages geometries & buffers, which are used to draw object meshes.      |
@@ -284,7 +286,15 @@ export class Renderer extends AbstractRenderer
              * @memberof PIXI.Renderer#
              * @readonly
              */
-            .addSystem(BatchSystem, 'batch');
+            .addSystem(BatchSystem, 'batch')
+
+            /**
+             * Event system instance
+             * @member {PIXI.EventSystem} events
+             * @memberof PIXI.Renderer#
+             * @readonly
+             */
+            .addSystem(EventSystem as unknown as typeof System, 'events');
 
         this.initPlugins(Renderer.__plugins);
 

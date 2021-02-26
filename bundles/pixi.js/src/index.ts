@@ -2,7 +2,7 @@ import '@pixi/polyfill';
 
 import * as utils from '@pixi/utils';
 import { AccessibilityManager } from '@pixi/accessibility';
-import { InteractionManager } from '@pixi/interaction';
+// import { InteractionManager } from '@pixi/interaction';
 import { Application } from '@pixi/app';
 import { Renderer, BatchRenderer } from '@pixi/core';
 import { Extract } from '@pixi/extract';
@@ -27,7 +27,7 @@ import '@pixi/mixin-get-global-position';
 // Install renderer plugins
 Renderer.registerPlugin('accessibility', AccessibilityManager);
 Renderer.registerPlugin('extract', Extract);
-Renderer.registerPlugin('interaction', InteractionManager);
+// Renderer.registerPlugin('interaction', InteractionManager);
 Renderer.registerPlugin('particle', ParticleRenderer);
 Renderer.registerPlugin('prepare', Prepare);
 Renderer.registerPlugin('batch', BatchRenderer);

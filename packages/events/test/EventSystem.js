@@ -1,7 +1,7 @@
-const { Renderer } = require('@pixi/core');
+const { Renderer } = require('../../core');
 const { Container } = require('@pixi/display');
 const { EventSystem } = require('../');
-const { Graphics } = require('@pixi/graphics');
+const { Graphics } = require('../../graphics');
 const { expect } = require('chai');
 
 function createRenderer(view, supportsPointerEvents)
@@ -11,8 +11,6 @@ function createRenderer(view, supportsPointerEvents)
         height: 100,
         view,
     });
-
-    renderer.addSystem(EventSystem, 'events');
 
     if (supportsPointerEvents === false)
     {

@@ -1,3 +1,4 @@
+import { Point } from '@pixi/math';
 import type { EventBoundary } from './EventBoundary';
 import type { FederatedEventTarget } from './FederatedEventTarget';
 
@@ -5,9 +6,10 @@ import type { FederatedEventTarget } from './FederatedEventTarget';
  * An DOM-compatible synthetic event implementation that is "forwarded" on behalf of an original
  * FederatedEvent or native {@link https://dom.spec.whatwg.org/#event Event}.
  *
+ * @memberof PIXI
  * @typeParam N - The type of native event held.
  */
-export class FederatedEvent<N extends UIEvent = UIEvent> implements Event
+export class FederatedEvent<N extends UIEvent = UIEvent> implements UIEvent
 {
     /** Flags whether this event bubbles. This will take effect only if it is set before propagation. */
     public bubbles = true;
@@ -78,6 +80,41 @@ export class FederatedEvent<N extends UIEvent = UIEvent> implements Event
     /** The {@link EventBoundary} that manages this event. Null for root events. */
     public readonly manager: EventBoundary;
 
+    /** Event-specific detail */
+    public detail: number;
+
+    /** The global Window object. */
+    public view: WindowProxy;
+
+    /**
+     * Not supported.
+     * @deprecated
+     */
+    public which: number;
+
+    /**
+     * The coordinates of the evnet relative to the nearest DOM layer. This is a non-standard
+     * property.
+     */
+    public layer: Point = new Point();
+
+    /** @readonly */
+    get layerX(): number { return this.layer.x; }
+
+    /** @readonly */
+    get layerY(): number { return this.layer.y; }
+
+    /**
+     * The coordinates of the event relative to the DOM document. This is a non-standard property.
+     */
+    public page: Point = new Point();
+
+    /** @readonly */
+    get pageX(): number { return this.page.x; }
+
+    /** @readonly */
+    get pageY(): number { return this.page.y; }
+
     /**
      * @param manager - The event boundary which manages this event. Propagation can only occur
      *  within the boundary's jurisdiction.
@@ -88,11 +125,23 @@ export class FederatedEvent<N extends UIEvent = UIEvent> implements Event
     }
 
     /**
+     * Fallback for the deprecated {@link PIXI.InteractionEvent.data}.
+     *
+     * @deprecated
+     */
+    get data(): this
+    {
+        return this;
+    }
+
+    /**
      * The propagation path for this event. Alias for {@link EventBoundary.propagationPath}.
      */
     composedPath(): FederatedEventTarget[]
     {
-        if (!this.path && this.manager)
+        // Find the propagation path if it isn't cached or if the target has changed since since
+        // the last evaluation.
+        if (this.manager && (!this.path || this.path[this.path.length - 1] !== this.target))
         {
             this.path = this.target ? this.manager.propagationPath(this.target) : [];
         }

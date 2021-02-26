@@ -1,9 +1,11 @@
-import { Point } from '@pixi/math';
-import { FederatedEvent } from './FederatedEvent';
+import { FederatedMouseEvent } from './FederatedMouseEvent';
 
-export class FederatedPointerEvent extends FederatedEvent<
-    MouseEvent | PointerEvent | TouchEvent
-> implements PointerEvent
+/**
+ * A {@link FederatedEvent} for pointer events.
+ *
+ * @memberof PIXI
+ */
+export class FederatedPointerEvent extends FederatedMouseEvent implements PointerEvent
 {
     /**
      * The unique identifier of the pointer.
@@ -40,120 +42,9 @@ export class FederatedPointerEvent extends FederatedEvent<
     public tiltX: number;
     public tiltY: number;
     public twist: number;
-    public altKey: boolean;
-    public button: number;
-    public buttons: number;
-    public clientX: number;
-    public clientY: number;
-    public ctrlKey: boolean;
-    public metaKey: boolean;
-    public movementX: number;
-    public movementY: number;
-    public pageX: number;
-    public pageY: number;
-    public relatedTarget: EventTarget = null;
-    public shiftKey: boolean;
-    public x: number;
-    public y: number;
 
     /**
-     * The offset of the pointer coordinates w.r.t. target DisplayObject in world space.
+     * This is the number of clicks that occurs in 200ms/click of each other.
      */
-    public offset: Point = new Point();
-
-    /**
-     * @readonly
-     */
-    get offsetX(): number
-    {
-        return this.offset.x;
-    }
-
-    /**
-     * @readonly
-     */
-    get offsetY(): number
-    {
-        return this.offset.y;
-    }
-
-    public global: Point = new Point();
-
-    get globalX(): number
-    {
-        return this.global.x;
-    }
-
-    get globalY(): number
-    {
-        return this.global.y;
-    }
-
-    /**
-     * The pointer coordinates in the renderer's {@link PIXI.Renderer.screen screen}. This has slightly
-     * different semantics than native PointerEvent screenX/screenY.
-     */
-    public screen: Point = new Point();
-
-    /**
-     * The pointer coordinates in the renderer's screen. Alias for {@code screen.x}.
-     *
-     * @readonly
-     */
-    get screenX(): number
-    {
-        return this.screen.x;
-    }
-
-    /**
-     * The pointer coordinates in the renderer's screen. Alias for {@code screen.y}.
-     *
-     * @readonly
-     */
-    get screenY(): number
-    {
-        return this.screen.y;
-    }
-
-    /**
-     * Fallback for the deprecated {@link InteractionEvent.data}.
-     *
-     * @deprecated
-     */
-    get data(): FederatedPointerEvent
-    {
-        return this;
-    }
-
-    getModifierState(keyArg: string): boolean
-    {
-        return 'getModifierState' in this.nativeEvent && this.nativeEvent.getModifierState(keyArg);
-    }
-
-    /** Not supported. */
-    // eslint-disable-next-line max-params
-    initMouseEvent(
-        _typeArg: string,
-        _canBubbleArg: boolean,
-        _cancelableArg: boolean,
-        _viewArg: Window,
-        _detailArg: number,
-        _screenXArg: number,
-        _screenYArg: number,
-        _clientXArg: number,
-        _clientYArg: number,
-        _ctrlKeyArg: boolean,
-        _altKeyArg: boolean,
-        _shiftKeyArg: boolean,
-        _metaKeyArg: boolean,
-        _buttonArg: number,
-        _relatedTargetArg: EventTarget
-    ): void
-    {
-        throw new Error('Method not implemented.');
-    }
-
-    detail: number;
-    view: Window;
-    which: number;
+    public detail: number;
 }

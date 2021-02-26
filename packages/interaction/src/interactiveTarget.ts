@@ -1,6 +1,6 @@
 import type { InteractionTrackingData } from './InteractionTrackingData';
 
-export type Cursor = 'auto'
+type Cursor = 'auto'
     | 'default'
     | 'none'
     | 'context-menu'
@@ -37,7 +37,7 @@ export type Cursor = 'auto'
     | 'grab'
     | 'grabbing';
 
-export interface IHitArea {
+interface IHitArea {
     contains(x: number, y: number): boolean;
 }
 
@@ -92,20 +92,6 @@ export interface InteractiveTarget {
  *      );
  */
 export const interactiveTarget: InteractiveTarget = {
-
-    /**
-     * Enable interaction events for the DisplayObject. Touch, pointer and mouse
-     * events will not be emitted unless `interactive` is set to `true`.
-     *
-     * @example
-     * const sprite = new PIXI.Sprite(texture);
-     * sprite.interactive = true;
-     * sprite.on('tap', (event) => {
-     *    //handle event
-     * });
-     * @member {boolean}
-     * @memberof PIXI.DisplayObject#
-     */
     interactive: false,
 
     /**

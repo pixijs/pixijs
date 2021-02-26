@@ -30,6 +30,7 @@
   },
   "dependencies": {
     "@pixi/constants": "6.0.0-rc.3",
+    "@pixi/events": "^6.0.0-rc.3",
     "@pixi/math": "6.0.0-rc.3",
     "@pixi/runner": "6.0.0-rc.3",
     "@pixi/settings": "6.0.0-rc.3",
