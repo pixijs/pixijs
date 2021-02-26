@@ -1296,12 +1296,16 @@ export class EventBoundary
  * Fired when a mouse button (usually a mouse left-button) is pressed on the display.
  * object. DisplayObject's `interactive` property must be set to `true` to fire event.
  *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
+ *
  * @event PIXI.DisplayObject#mousedown
  * @param {PIXI.FederatedPointerEvent} event - The mousedown event.
  */
 
 /**
  * Capture phase equivalent of {@code mousedown}.
+ *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  *
  * @event PIXI.DisplayObject#mousedowncapture
  * @param {PIXI.FederatedPointerEvent} event - The capture phase mousedown.
@@ -1311,12 +1315,16 @@ export class EventBoundary
  * Fired when a pointer device secondary button (usually a mouse right-button) is pressed
  * on the display object. DisplayObject's `interactive` property must be set to `true` to fire event.
  *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
+ *
  * @event PIXI.DisplayObject#rightdown
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
 
 /**
  * Capture phase equivalent of {@code rightdown}.
+ *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  *
  * @event PIXI.DisplayObject#rightdowncapture
  * @param {PIXI.FederatedPointerEvent} event - The rightdowncapture event.
@@ -1326,12 +1334,16 @@ export class EventBoundary
  * Fired when a pointer device button (usually a mouse left-button) is released over the display
  * object. DisplayObject's `interactive` property must be set to `true` to fire event.
  *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
+ *
  * @event PIXI.DisplayObject#mouseup
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
 
 /**
  * Capture phase equivalent of {@code mouseup}.
+ *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  *
  * @event PIXI.DisplayObject#mouseupcature
  * @param {PIXI.FederatedPointerEvent} event - Event
@@ -1341,12 +1353,16 @@ export class EventBoundary
  * Fired when a pointer device secondary button (usually a mouse right-button) is released
  * over the display object. DisplayObject's `interactive` property must be set to `true` to fire event.
  *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
+ *
  * @event PIXI.DisplayObject#rightup
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
 
 /**
  * Capture phase equivalent of {@code rightup}.
+ *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  *
  * @event PIXI.DisplayObject#rightupcapture
  * @param {PIXI.FederatedPointerEvent} event - Event
@@ -1363,12 +1379,16 @@ export class EventBoundary
  * The {@code detail} property of the event is the number of clicks that occurred within a 200ms
  * window of each other upto the current click. For example, it will be {@code 2} for a double click.
  *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
+ *
  * @event PIXI.DisplayObject#click
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
 
 /**
  * Capture phase equivalent of {@code click}.
+ *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  *
  * @event PIXI.DisplayObject#clickcapture
  * @param {PIXI.FederatedPointerEvent} event - Event
@@ -1380,12 +1400,16 @@ export class EventBoundary
  *
  * This event follows the semantics of {@code click}.
  *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
+ *
  * @event PIXI.DisplayObject#rightclick
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
 
 /**
  * Capture phase equivalent of {@code rightclick}.
+ *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  *
  * @event PIXI.DisplayObject#rightclickcapture
  * @param {PIXI.FederatedPointerEvent} event - Event
@@ -1401,12 +1425,16 @@ export class EventBoundary
  * other events. It only bubbles to the most specific ancestor of the targets of the corresponding {@code pointerdown}
  * and {@code pointerup} events, i.e. the target of the {@code click} event.
  *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
+ *
  * @event PIXI.DisplayObject#mouseupoutside
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
 
 /**
  * Capture phase equivalent of {@code mouseupoutside}.
+ *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  *
  * @event PIXI.DisplayObject#mouseupoutsidecapture
  * @param {PIXI.FederatedPointerEvent} event - Event
@@ -1418,12 +1446,16 @@ export class EventBoundary
  * [rightdown]{@link PIXI.DisplayObject#event:rightdown}.
  * DisplayObject's `interactive` property must be set to `true` to fire event.
  *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
+ *
  * @event PIXI.DisplayObject#rightupoutside
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
 
 /**
  * Capture phase equivalent of {@code rightupoutside}.
+ *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  *
  * @event PIXI.DisplayObject#rightupoutsidecapture
  * @param {PIXI.FederatedPointerEvent} event - Event
@@ -1433,12 +1465,16 @@ export class EventBoundary
  * Fired when a pointer device (usually a mouse) is moved while over the display object.
  * DisplayObject's `interactive` property must be set to `true` to fire event.
  *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
+ *
  * @event PIXI.DisplayObject#mousemove
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
 
 /**
  * Capture phase equivalent of {@code mousemove}.
+ *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  *
  * @event PIXI.DisplayObject#mousemovecature
  * @param {PIXI.FederatedPointerEvent} event - Event
@@ -1448,12 +1484,16 @@ export class EventBoundary
  * Fired when a pointer device (usually a mouse) is moved onto the display object.
  * DisplayObject's `interactive` property must be set to `true` to fire event.
  *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
+ *
  * @event PIXI.DisplayObject#mouseover
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
 
 /**
  * Capture phase equivalent of {@code mouseover}.
+ *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  *
  * @event PIXI.DisplayObject#mouseovercapture
  * @param {PIXI.FederatedPointerEvent} event - Event
@@ -1462,12 +1502,16 @@ export class EventBoundary
 /**
  * Fired when the mouse pointer is moved over a DisplayObject and its descendant's hit testing boundaries.
  *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
+ *
  * @event PIXI.DisplayObject#mouseenter
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
 
 /**
  * Capture phase equivalent of {@code mouseenter}
+ *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  *
  * @event PIXI.DisplayObject#mouseentercapture
  * @param {PIXI.FederatedPointerEvent} event - Event
@@ -1480,12 +1524,16 @@ export class EventBoundary
  * This may be fired on a DisplayObject that was removed from the scene graph immediately after
  * a {@code mouseover} event.
  *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
+ *
  * @event PIXI.DisplayObject#mouseout
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
 
 /**
  * Capture phase equivalent of {@code mouseout}.
+ *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  *
  * @event PIXI.DisplayObject#mouseoutcapture
  * @param {PIXI.FederatedPointerEvent} event - Event
@@ -1494,12 +1542,16 @@ export class EventBoundary
 /**
  * Fired when the mouse pointer exits a DisplayObject and its descendants.
  *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
+ *
  * @event PIXI.DisplayObject#mouseleave
  * @param {PIXI.FederatedPointerEvent} event
  */
 
 /**
  * Capture phase equivalent of {@code mouseleave}.
+ *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  *
  * @event PIXI.DisplayObject#mouseleavecapture
  * @param {PIXI.FederatedPointerEvent} event - Event
@@ -1509,12 +1561,16 @@ export class EventBoundary
  * Fired when a pointer device button is pressed on the display object.
  * DisplayObject's `interactive` property must be set to `true` to fire event.
  *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
+ *
  * @event PIXI.DisplayObject#pointerdown
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
 
 /**
  * Capture phase equivalent of {@code pointerdown}.
+ *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  *
  * @event PIXI.DisplayObject#pointerdowncapture
  * @param {PIXI.FederatedPointerEvent} event - Event
@@ -1524,12 +1580,16 @@ export class EventBoundary
  * Fired when a pointer device button is released over the display object.
  * DisplayObject's `interactive` property must be set to `true` to fire event.
  *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
+ *
  * @event PIXI.DisplayObject#pointerup
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
 
 /**
  * Capture phase equivalent of {@code pointerup}.
+ *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  *
  * @event PIXI.DisplayObject#pointerupcapture
  * @param {PIXI.FederatedPointerEvent} event - Event
@@ -1539,12 +1599,16 @@ export class EventBoundary
  * Fired when the operating system cancels a pointer event.
  * DisplayObject's `interactive` property must be set to `true` to fire event.
  *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
+ *
  * @event PIXI.DisplayObject#pointercancel
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
 
 /**
  * Capture phase equivalent of {@code pointercancel}.
+ *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  *
  * @event PIXI.DisplayObject#pointercancelcapture
  * @param {PIXI.FederatedPointerEvent} event - Event
@@ -1554,12 +1618,16 @@ export class EventBoundary
  * Fired when a pointer device button is pressed and released on the display object.
  * DisplayObject's `interactive` property must be set to `true` to fire event.
  *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
+ *
  * @event PIXI.DisplayObject#pointertap
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
 
 /**
  * Capture phase equivalent of {@code pointertap}.
+ *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  *
  * @event PIXI.DisplayObject#pointertapcapture
  * @param {PIXI.FederatedPointerEvent} event - Event
@@ -1574,12 +1642,16 @@ export class EventBoundary
  * other events. It only bubbles to the most specific ancestor of the targets of the corresponding {@code pointerdown}
  * and {@code pointerup} events, i.e. the target of the {@code click} event.
  *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
+ *
  * @event PIXI.DisplayObject#pointerupoutside
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
 
 /**
  * Capture phase equivalent of {@code pointerupoutside}.
+ *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  *
  * @event PIXI.DisplayObject#pointerupoutsidecapture
  * @param {PIXI.FederatedPointerEvent} event - Event
@@ -1589,12 +1661,16 @@ export class EventBoundary
  * Fired when a pointer device is moved while over the display object.
  * DisplayObject's `interactive` property must be set to `true` to fire event.
  *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
+ *
  * @event PIXI.DisplayObject#pointermove
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
 
 /**
  * Capture phase equivalent of {@code pointermove}.
+ *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  *
  * @event PIXI.DisplayObject#pointermovecapture
  * @param {PIXI.FederatedPointerEvent} event - Event
@@ -1604,12 +1680,16 @@ export class EventBoundary
  * Fired when a pointer device is moved onto the display object.
  * DisplayObject's `interactive` property must be set to `true` to fire event.
  *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
+ *
  * @event PIXI.DisplayObject#pointerover
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
 
 /**
  * Capture phase equivalent of {@code pointerover}.
+ *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  *
  * @event PIXI.DisplayObject#pointerovercapture
  * @param {PIXI.FederatedPointerEvent} event - Event
@@ -1618,12 +1698,16 @@ export class EventBoundary
 /**
  * Fired when the pointer is moved over a DisplayObject and its descendant's hit testing boundaries.
  *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
+ *
  * @event PIXI.DisplayObject#pointerenter
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
 
 /**
  * Capture phase equivalent of {@code pointerenter}
+ *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  *
  * @event PIXI.DisplayObject#pointerentercapture
  * @param {PIXI.FederatedPointerEvent} event - Event
@@ -1633,12 +1717,16 @@ export class EventBoundary
  * Fired when a pointer device is moved off the display object.
  * DisplayObject's `interactive` property must be set to `true` to fire event.
  *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
+ *
  * @event PIXI.DisplayObject#pointerout
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
 
 /**
  * Capture phase equivalent of {@code pointerout}.
+ *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  *
  * @event PIXI.DisplayObject#pointeroutcapture
  * @param {PIXI.FederatedPointerEvent} event - Event
@@ -1649,12 +1737,16 @@ export class EventBoundary
  *
  * This event notifies only the target and does not bubble.
  *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
+ *
  * @event PIXI.DisplayObject#pointerleave
  * @param {PIXI.FederatedPointerEvent} event - The `pointerleave` event.
  */
 
 /**
  * Capture phase equivalent of {@code pointerleave}.
+ *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  *
  * @event PIXI.DisplayObject#pointerleavecapture
  * @param {PIXI.FederatedPointerEvent} event - Event
@@ -1664,12 +1756,16 @@ export class EventBoundary
  * Fired when a touch point is placed on the display object.
  * DisplayObject's `interactive` property must be set to `true` to fire event.
  *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
+ *
  * @event PIXI.DisplayObject#touchstart
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
 
 /**
  * Capture phase equivalent of {@code touchstart}.
+ *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  *
  * @event PIXI.DisplayObject#touchstartcapture
  * @param {PIXI.FederatedPointerEvent} event - Event
@@ -1679,12 +1775,16 @@ export class EventBoundary
  * Fired when a touch point is removed from the display object.
  * DisplayObject's `interactive` property must be set to `true` to fire event.
  *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
+ *
  * @event PIXI.DisplayObject#touchend
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
 
 /**
  * Capture phase equivalent of {@code touchend}.
+ *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  *
  * @event PIXI.DisplayObject#touchendcapture
  * @param {PIXI.FederatedPointerEvent} event - Event
@@ -1694,12 +1794,16 @@ export class EventBoundary
  * Fired when the operating system cancels a touch.
  * DisplayObject's `interactive` property must be set to `true` to fire event.
  *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
+ *
  * @event PIXI.DisplayObject#touchcancel
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
 
 /**
  * Capture phase equivalent of {@code touchcancel}.
+ *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  *
  * @event PIXI.DisplayObject#touchcancelcapture
  * @param {PIXI.FederatedPointerEvent} event - Event
@@ -1709,12 +1813,16 @@ export class EventBoundary
  * Fired when a touch point is placed and removed from the display object.
  * DisplayObject's `interactive` property must be set to `true` to fire event.
  *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
+ *
  * @event PIXI.DisplayObject#tap
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
 
 /**
  * Capture phase equivalent of {@code tap}.
+ *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  *
  * @event PIXI.DisplayObject#tapcapture
  * @param {PIXI.FederatedPointerEvent} event - Event
@@ -1725,12 +1833,16 @@ export class EventBoundary
  * registered a [touchstart]{@link PIXI.DisplayObject#event:touchstart}.
  * DisplayObject's `interactive` property must be set to `true` to fire event.
  *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
+ *
  * @event PIXI.DisplayObject#touchendoutside
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
 
 /**
  * Capture phase equivalent of {@code touchendoutside}.
+ *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  *
  * @event PIXI.DisplayObject#touchendoutsidecapture
  * @param {PIXI.FederatedPointerEvent} event - Event
@@ -1740,12 +1852,16 @@ export class EventBoundary
  * Fired when a touch point is moved along the display object.
  * DisplayObject's `interactive` property must be set to `true` to fire event.
  *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
+ *
  * @event PIXI.DisplayObject#touchmove
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
 
 /**
  * Capture phase equivalent of {@code touchmove}.
+ *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  *
  * @event PIXI.DisplayObject#touchmovecapture
  * @param {PIXI.FederatedPointerEvent} event - Event
@@ -1754,12 +1870,16 @@ export class EventBoundary
 /**
  * Fired when a the user scrolls with the mouse cursor over a DisplayObject.
  *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
+ *
  * @event PIXI.DisplayObject#wheel
  * @type {PIXI.FederatedWheelEvent}
  */
 
 /**
  * Capture phase equivalent of {@code wheel}.
+ *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  *
  * @event PIXI.DisplayObject#wheelcapture
  * @type {PIXI.FederatedWheelEvent}
