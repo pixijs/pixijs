@@ -23,6 +23,7 @@
     "*.d.ts"
   ],
   "dependencies": {
-    "@pixi/graphics": "6.0.0-rc.3"
+    "@pixi/graphics": "6.0.0-rc.3",
+    "@pixi/math": "6.0.0-rc.3"
   }
 }

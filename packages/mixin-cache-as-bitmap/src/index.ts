@@ -10,6 +10,7 @@ const _tempMatrix = new Matrix();
 
 DisplayObject.prototype._cacheAsBitmap = false;
 DisplayObject.prototype._cacheData = null;
+DisplayObject.prototype._cacheAsBitmapResolution = null;
 
 // figured there's no point adding ALL the extra variables to prototype.
 // this model can hold the information needed. This can also be generated on demand as
@@ -52,6 +53,39 @@ export class CacheData
 }
 
 Object.defineProperties(DisplayObject.prototype, {
+    /**
+     * The resolution to use for cacheAsBitmap. By default this will use the renderer's resolution
+     * but can be overriden for performance. Lower values will reduce memory usage at the expense
+     * of render quality. A falsey value of `null` or `0` will default to the renderer's resolution.
+     * If `cacheAsBitmap` is set to `true`, this will re-render with the new resolution.
+     *
+     * @member {number} cacheAsBitmapResolution
+     * @memberof PIXI.DisplayObject#
+     * @default null
+     */
+    cacheAsBitmapResolution: {
+        get(): number
+        {
+            return this._cacheAsBitmapResolution;
+        },
+        set(resolution: number): void
+        {
+            if (resolution === this._cacheAsBitmapResolution)
+            {
+                return;
+            }
+
+            this._cacheAsBitmapResolution = resolution;
+
+            if (this.cacheAsBitmap)
+            {
+                // Toggle to re-render at the new resolution
+                this.cacheAsBitmap = false;
+                this.cacheAsBitmap = true;
+            }
+        },
+    },
+
     /**
      * Set this to true if you want this display object to be cached as a bitmap.
      * This basically takes a snap shot of the display object as it is at that moment. It can
@@ -206,7 +240,11 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
     // const stack = renderer.filterManager.filterStack;
 
     // this renderTexture will be used to store the cached DisplayObject
-    const renderTexture = RenderTexture.create({ width: bounds.width, height: bounds.height });
+    const renderTexture = RenderTexture.create({
+        width: bounds.width,
+        height: bounds.height,
+        resolution: this.cacheAsBitmapResolution || renderer.resolution,
+    });
 
     const textureCacheId = `cacheAsBitmap_${uid()}`;
 
