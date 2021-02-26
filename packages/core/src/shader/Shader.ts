@@ -16,6 +16,7 @@ export class Shader
 
     /**
      * used internally to bind uniform buffer objects
+     * @ignore
      */
     uniformBindCount = 0;
 
