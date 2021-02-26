@@ -28,7 +28,7 @@ import { deprecation } from '@pixi/utils';
  * sprite.anchor.x = 0.5;
  * sprite.anchor.y = 0.5;
  *
- * renderer.render(sprite, renderTexture);
+ * renderer.render(sprite, {renderTexture});
  * ```
  * Note that you should not create a new renderer, but reuse the same one as the rest of the application.
  *
@@ -41,7 +41,7 @@ import { deprecation } from '@pixi/utils';
  *
  * let renderTexture = new PIXI.RenderTexture.create({ width: 100, height: 100 });
  *
- * renderer.render(sprite, renderTexture);  // Renders to center of RenderTexture
+ * renderer.render(sprite, {renderTexture});  // Renders to center of RenderTexture
  * ```
  *
  * @class
