@@ -97,7 +97,7 @@ export const FederatedDisplayObject: Omit<
      *
      * @memberof PIXI.Container#
      */
-    interactiveChildren: false,
+    interactiveChildren: true,
 
     /**
      * Interaction shape. Children will be hit first, then this shape will be checked.

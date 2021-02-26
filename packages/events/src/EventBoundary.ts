@@ -162,6 +162,14 @@ export class EventBoundary
     };
 
     /**
+     * The event pool maps event constructors to an free pool of instances of those specific events.
+     *
+     * @see PIXI.EventBoundary#allocateEvent
+     * @see PIXI.EventBoundary#freeEvent
+     */
+    protected eventPool: Map<typeof FederatedEvent, FederatedEvent[]> = new Map();
+
+    /**
      * @param rootTarget - The holder of the event boundary.
      */
     constructor(rootTarget?: DisplayObject)
@@ -558,6 +566,8 @@ export class EventBoundary
         const trackingData = this.trackingData(from.pointerId);
 
         trackingData.pressTargetsByButton[from.button] = e.target;
+
+        this.freeEvent(e);
     }
 
     /**
@@ -608,7 +618,11 @@ export class EventBoundary
 
                     leaveEvent.target = leaveEvent.target.parent;
                 }
+
+                this.freeEvent(leaveEvent);
             }
+
+            this.freeEvent(outEvent);
         }
 
         // Then pointerover
@@ -616,7 +630,7 @@ export class EventBoundary
         {
             // pointerover always occurs on the new overTarget
             const overType = from.type === 'mousemove' ? 'mouseover' : 'pointerover';
-            const overEvent = this.cloneEvent(e, overType);// clone faster
+            const overEvent = this.clonePointerEvent(e, overType);// clone faster
 
             this.dispatchEvent(overEvent, 'pointerover');
             if (isMouse) this.dispatchEvent(overEvent, 'mouseover');
@@ -637,7 +651,7 @@ export class EventBoundary
 
             if (didPointerEnter)
             {
-                const enterEvent = this.cloneEvent(e, 'pointerenter');
+                const enterEvent = this.clonePointerEvent(e, 'pointerenter');
 
                 enterEvent.eventPhase = enterEvent.AT_TARGET;
 
@@ -652,7 +666,11 @@ export class EventBoundary
 
                     enterEvent.target = enterEvent.target.parent;
                 }
+
+                this.freeEvent(enterEvent);
             }
+
+            this.freeEvent(overEvent);
         }
 
         const propagationMethod = this.moveOnAll ? 'all' : 'dispatchEvent';
@@ -669,10 +687,12 @@ export class EventBoundary
         }
 
         trackingData.overTarget = e.target;
+
+        this.freeEvent(e);
     }
 
     /**
-     * Maps the upstream `pointerover` to a downstream `pointerover` event.
+     * Maps the upstream `pointerover` to downstream `pointerover` and `pointerenter` events, in that order.
      *
      * The tracking data for the specific pointer gets a new `overTarget`.
      *
@@ -696,7 +716,7 @@ export class EventBoundary
         if (e.pointerType === 'mouse') this.cursor = e.target?.cursor;
 
         // pointerenter events must be fired since the pointer entered from upstream.
-        const enterEvent = this.cloneEvent(e, 'pointerenter');
+        const enterEvent = this.clonePointerEvent(e, 'pointerenter');
 
         enterEvent.eventPhase = enterEvent.AT_TARGET;
 
@@ -711,10 +731,13 @@ export class EventBoundary
         }
 
         trackingData.overTarget = e.target;
+
+        this.freeEvent(e);
+        this.freeEvent(enterEvent);
     }
 
     /**
-     * Maps the upstream `pointerout` to a downstream `pointerout` event.
+     * Maps the upstream `pointerout` to downstream `pointerout`, `pointerleave` events, in that order.
      *
      * The tracking data for the specific pointer is cleared of a `overTarget`.
      *
@@ -758,6 +781,9 @@ export class EventBoundary
             }
 
             trackingData.overTarget = null;
+
+            this.freeEvent(outEvent);
+            this.freeEvent(leaveEvent);
         }
 
         this.cursor = null;
@@ -840,7 +866,7 @@ export class EventBoundary
         // click!
         if (clickTarget)
         {
-            const clickEvent = this.cloneEvent(e, 'click');
+            const clickEvent = this.clonePointerEvent(e, 'click');
 
             clickEvent.target = clickTarget;
             clickEvent.path = null;
@@ -883,7 +909,11 @@ export class EventBoundary
             {
                 this.dispatchEvent(clickEvent, 'pointertap');
             }
+
+            this.freeEvent(clickEvent);
         }
+
+        this.freeEvent(e);
     }
 
     /**
@@ -935,6 +965,8 @@ export class EventBoundary
 
             delete trackingData.pressTargetsByButton[from.button];
         }
+
+        this.freeEvent(e);
     }
 
     /**
@@ -951,11 +983,16 @@ export class EventBoundary
             return;
         }
 
-        this.dispatchEvent(this.createWheelEvent(from));
+        const wheelEvent = this.createWheelEvent(from);
+
+        this.dispatchEvent(wheelEvent);
+        this.freeEvent(wheelEvent);
     }
 
     /**
      * Creates an event whose {@code originalEvent} is {@code from}, with an optional `type` and `target` override.
+     *
+     * The event is allocated using {@link PIXI.EventBoundary#allocateEvent this.allocateEvent}.
      *
      * @param from - The {@code originalEvent} for the returned event.
      * @param [type=from.type] - The type of the returned event.
@@ -969,7 +1006,7 @@ export class EventBoundary
     {
         target = target ?? this.hitTest(from.global.x, from.global.y) as FederatedEventTarget;
 
-        const event = new FederatedPointerEvent(this);
+        const event = this.allocateEvent(FederatedPointerEvent);
 
         event.nativeEvent = from.nativeEvent;
         event.originalEvent = from;
@@ -990,11 +1027,13 @@ export class EventBoundary
     /**
      * Creates a wheel event whose {@code originalEvent} is {@code from}.
      *
+     * The event is allocated using {@link PIXI.EventBoundary#allocateEvent this.allocateEvent}.
+     *
      * @param from - The upstream wheel event.
      */
     protected createWheelEvent(from: FederatedWheelEvent): FederatedWheelEvent
     {
-        const event = new FederatedWheelEvent(this);
+        const event = this.allocateEvent(FederatedWheelEvent);
 
         event.nativeEvent = from.nativeEvent;
         event.originalEvent = from;
@@ -1010,12 +1049,14 @@ export class EventBoundary
     /**
      * Clones the event {@code from}, with an optional {@code type} override.
      *
+     * The event is allocated using {@link PIXI.EventBoundary#allocateEvent this.allocateEvent}.
+     *
      * @param from - The event to clone.
      * @param [type=from.type] - The type of the returned event.
      */
-    protected cloneEvent(from: FederatedPointerEvent, type?: string): FederatedPointerEvent
+    protected clonePointerEvent(from: FederatedPointerEvent, type?: string): FederatedPointerEvent
     {
-        const event = new FederatedPointerEvent(this);
+        const event = this.allocateEvent(FederatedPointerEvent);
 
         event.nativeEvent = from.nativeEvent;
         event.originalEvent = from.originalEvent;
@@ -1165,6 +1206,60 @@ export class EventBoundary
         }
 
         return this.mappingState.trackingData[id];
+    }
+
+    /**
+     * Allocate a specific type of event from {@link PIXI.EventBoundary#eventPool this.eventPool}.
+     *
+     * This allocation is constructor-agnostic, as long as it only takes one argument - this event
+     * boundary.
+     *
+     * @param constructor - The event's constructor.
+     */
+    protected allocateEvent<T extends FederatedEvent>(
+        constructor: { new(boundary: EventBoundary): T }
+    ): T
+    {
+        if (!this.eventPool.has(constructor as any))
+        {
+            this.eventPool.set(constructor as any, []);
+        }
+
+        const event = this.eventPool.get(constructor as any).pop() as T
+            || new constructor(this);
+
+        event.eventPhase = event.NONE;
+        event.currentTarget = null;
+        event.path = null;
+        event.target = null;
+
+        return event;
+    }
+
+    /**
+     * Frees the event and puts it back into the event pool.
+     *
+     * It is illegal to reuse the event until it is allocated again, using `this.allocateEvent`.
+     *
+     * It is also advised that events not allocated from {@link PIXI.EventBoundary#allocateEvent this.allocateEvent}
+     * not be freed. This is because of the possibility that the same event is freed twice, which can cause
+     * it to be allocated twice & result in overwriting.
+     *
+     * @param event - The event to be freed.
+     * @throws Error if the event is managed by another event boundary.
+     */
+    protected freeEvent<T extends FederatedEvent>(event: T): void
+    {
+        if (event.manager !== this) throw new Error('It is illegal to free an event not managed by this EventBoundary!');
+
+        const constructor = event.constructor;
+
+        if (!this.eventPool.has(constructor as any))
+        {
+            this.eventPool.set(constructor as any, []);
+        }
+
+        this.eventPool.get(constructor as any).push(event);
     }
 
     /**

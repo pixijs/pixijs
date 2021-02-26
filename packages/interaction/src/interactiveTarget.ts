@@ -93,27 +93,7 @@ export interface InteractiveTarget {
  */
 export const interactiveTarget: InteractiveTarget = {
     interactive: false,
-
-    /**
-     * Determines if the children to the displayObject can be clicked/touched
-     * Setting this to false allows PixiJS to bypass a recursive `hitTest` function
-     *
-     * @member {boolean}
-     * @memberof PIXI.Container#
-     */
     interactiveChildren: true,
-
-    /**
-     * Interaction shape. Children will be hit first, then this shape will be checked.
-     * Setting this will cause this shape to be checked in hit tests rather than the displayObject's bounds.
-     *
-     * @example
-     * const sprite = new PIXI.Sprite(texture);
-     * sprite.interactive = true;
-     * sprite.hitArea = new PIXI.Rectangle(0, 0, 100, 100);
-     * @member {PIXI.IHitArea}
-     * @memberof PIXI.DisplayObject#
-     */
     hitArea: null,
 
     /**
