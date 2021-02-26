@@ -1,6 +1,6 @@
 {
   "name": "@pixi/sprite",
-  "version": "6.0.0-rc.2",
+  "version": "6.0.0-rc.3",
   "main": "dist/cjs/sprite.js",
   "module": "dist/esm/sprite.js",
   "bundle": "dist/browser/sprite.js",
@@ -25,11 +25,11 @@
     "*.d.ts"
   ],
   "dependencies": {
-    "@pixi/constants": "6.0.0-rc.2",
-    "@pixi/core": "6.0.0-rc.2",
-    "@pixi/display": "6.0.0-rc.2",
-    "@pixi/math": "6.0.0-rc.2",
-    "@pixi/settings": "6.0.0-rc.2",
-    "@pixi/utils": "6.0.0-rc.2"
+    "@pixi/constants": "6.0.0-rc.3",
+    "@pixi/core": "6.0.0-rc.3",
+    "@pixi/display": "6.0.0-rc.3",
+    "@pixi/math": "6.0.0-rc.3",
+    "@pixi/settings": "6.0.0-rc.3",
+    "@pixi/utils": "6.0.0-rc.3"
   }
 }
