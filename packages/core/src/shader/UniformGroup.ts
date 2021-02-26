@@ -62,7 +62,7 @@ export class UniformGroup<LAYOUT = Dict<any>>
     autoManage: boolean;
 
     /**
-     * @param {object | buffer} [uniforms] - Custom uniforms to use to augment the built-in ones. Or a pixi buffer
+     * @param {object | Buffer} [uniforms] - Custom uniforms to use to augment the built-in ones. Or a pixi buffer
      * @param {boolean} [_static] - Uniforms wont be changed after creation
      * @param {boolean} [_ubo] - if true, will treat this uniform group as a uniform buffer object
      */
