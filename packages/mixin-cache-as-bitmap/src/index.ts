@@ -79,7 +79,7 @@ Object.defineProperties(DisplayObject.prototype, {
 
             if (this.cacheAsBitmap)
             {
-                // Toggle to re-renderer at the new resolution
+                // Toggle to re-render at the new resolution
                 this.cacheAsBitmap = false;
                 this.cacheAsBitmap = true;
             }
