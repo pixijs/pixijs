@@ -69,8 +69,8 @@ export class BufferSystem extends System
      * binds a buffer to a base. A cache is used so a buffer will not be bound again if already bound.
      * Only used by the uniform buffers
      *
-     * @param buffer the buffer to bind
-     * @param index the base index to bind it to.
+     * @param buffer - the buffer to bind
+     * @param index - the base index to bind it to.
      */
     bindBufferBase(buffer: Buffer, index: number): void
     {
