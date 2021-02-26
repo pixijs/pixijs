@@ -1,4 +1,4 @@
-import { State } from '@pixi/core';
+import { Shader, State } from '@pixi/core';
 import { Point, Polygon } from '@pixi/math';
 import { BLEND_MODES, DRAW_MODES } from '@pixi/constants';
 import { Container } from '@pixi/display';
@@ -34,10 +34,10 @@ export interface Mesh extends GlobalMixins.Mesh {}
  * @extends PIXI.Container
  * @memberof PIXI
  */
-export class Mesh extends Container
+export class Mesh<T extends Shader = MeshMaterial> extends Container
 {
     public readonly geometry: Geometry;
-    public shader: MeshMaterial;
+    public shader: T;
     public state: State;
     public drawMode: DRAW_MODES;
     public start: number;
@@ -62,7 +62,7 @@ export class Mesh extends Container
      *        if no state is provided, uses {@link PIXI.State.for2d} to create a 2D state for PixiJS.
      * @param {number} [drawMode=PIXI.DRAW_MODES.TRIANGLES] - the drawMode, can be any of the PIXI.DRAW_MODES consts
      */
-    constructor(geometry: Geometry, shader: MeshMaterial, state?: State, drawMode = DRAW_MODES.TRIANGLES)
+    constructor(geometry: Geometry, shader: T, state?: State, drawMode = DRAW_MODES.TRIANGLES)
     {
         super();
 
@@ -185,12 +185,12 @@ export class Mesh extends Container
      * Alias for {@link PIXI.Mesh#shader}.
      * @member {PIXI.MeshMaterial}
      */
-    set material(value: MeshMaterial)
+    set material(value: T)
     {
         this.shader = value;
     }
 
-    get material(): MeshMaterial
+    get material(): T
     {
         return this.shader;
     }
@@ -240,32 +240,34 @@ export class Mesh extends Container
      * The multiply tint applied to the Mesh. This is a hex value. A value of
      * `0xFFFFFF` will remove any tint effect.
      *
+     * Null for non-MeshMaterial shaders
      * @member {number}
      * @default 0xFFFFFF
      */
     get tint(): number
     {
-        return this.shader.tint;
+        return 'tint' in this.shader ? (this.shader as unknown as MeshMaterial).tint : null;
     }
 
     set tint(value: number)
     {
-        this.shader.tint = value;
+        (this.shader as unknown as MeshMaterial).tint = value;
     }
 
     /**
      * The texture that the Mesh uses.
      *
+     * Null for non-MeshMaterial shaders
      * @member {PIXI.Texture}
      */
     get texture(): Texture
     {
-        return this.shader.texture;
+        return 'texture' in this.shader ? (this.shader as unknown as MeshMaterial).texture : null;
     }
 
     set texture(value: Texture)
     {
-        this.shader.texture = value;
+        (this.shader as unknown as MeshMaterial).texture = value;
     }
 
     /**
@@ -278,10 +280,11 @@ export class Mesh extends Container
         // set properties for batching..
         // TODO could use a different way to grab verts?
         const vertices = this.geometry.buffers[0].data;
+        const shader = this.shader as unknown as MeshMaterial;
 
         // TODO benchmark check for attribute size..
         if (
-            this.shader.batchable
+            shader.batchable
             && this.drawMode === DRAW_MODES.TRIANGLES
             && vertices.length < Mesh.BATCHABLE_SIZE * 2
         )
@@ -301,7 +304,7 @@ export class Mesh extends Container
      */
     protected _renderDefault(renderer: Renderer): void
     {
-        const shader = this.shader;
+        const shader = this.shader as unknown as MeshMaterial;
 
         shader.alpha = this.worldAlpha;
         if (shader.update)
@@ -337,20 +340,21 @@ export class Mesh extends Container
     protected _renderToBatch(renderer: Renderer): void
     {
         const geometry = this.geometry;
+        const shader = this.shader as unknown as MeshMaterial;
 
-        if (this.shader.uvMatrix)
+        if (shader.uvMatrix)
         {
-            this.shader.uvMatrix.update();
+            shader.uvMatrix.update();
             this.calculateUvs();
         }
 
         // set properties for batching..
         this.calculateVertices();
         this.indices = geometry.indexBuffer.data as Uint16Array;
-        this._tintRGB = this.shader._tintRGB;
-        this._texture = this.shader.texture;
+        this._tintRGB = shader._tintRGB;
+        this._texture = shader.texture;
 
-        const pluginName = this.material.pluginName;
+        const pluginName = (this.material as unknown as MeshMaterial).pluginName;
 
         renderer.batch.setObjectRenderer(renderer.plugins[pluginName]);
         renderer.plugins[pluginName].render(this);
@@ -414,12 +418,13 @@ export class Mesh extends Container
     public calculateUvs(): void
     {
         const geomUvs = this.geometry.buffers[1];
+        const shader = this.shader as unknown as MeshMaterial;
 
-        if (!this.shader.uvMatrix.isSimple)
+        if (!shader.uvMatrix.isSimple)
         {
             if (!this.batchUvs)
             {
-                this.batchUvs = new MeshBatchUvs(geomUvs, this.shader.uvMatrix);
+                this.batchUvs = new MeshBatchUvs(geomUvs, shader.uvMatrix);
             }
             this.batchUvs.update();
             this.uvs = this.batchUvs.data;
