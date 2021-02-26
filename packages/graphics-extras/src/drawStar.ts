@@ -1,13 +1,12 @@
+import type { Graphics } from '@pixi/graphics';
 import { Polygon, PI_2 } from '@pixi/math';
 
 /**
  * Draw a star shape with an arbitrary number of points.
  *
- * @class
- * @extends PIXI.Polygon
- * @memberof PIXI.graphicsUtils
+ * @ignore
  */
-export class Star extends Polygon
+class Star extends Polygon
 {
     /**
      * @param {number} x - Center X position of the star
@@ -39,4 +38,31 @@ export class Star extends Polygon
 
         super(polygon);
     }
+}
+
+/**
+ * Draw a star shape with an arbitrary number of points.
+ *
+ * _Note: Only available with **@pixi/graphics-extras**._
+ *
+ * @instance
+ * @memberof PIXI.Graphics
+ * @method drawStar
+ * @param {number} x - Center X position of the star
+ * @param {number} y - Center Y position of the star
+ * @param {number} points - The number of points of the star, must be > 1
+ * @param {number} radius - The outer radius of the star
+ * @param {number} [innerRadius] - The inner radius between points, default half `radius`
+ * @param {number} [rotation=0] - The rotation of the star in radians, where 0 is vertical
+ * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
+ */
+export function drawStar(this: Graphics,
+    x: number,
+    y: number,
+    points: number,
+    radius: number,
+    innerRadius: number,
+    rotation = 0): Graphics
+{
+    return this.drawPolygon(new Star(x, y, points, radius, innerRadius, rotation) as Polygon);
 }
