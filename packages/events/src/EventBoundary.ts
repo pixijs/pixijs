@@ -298,8 +298,7 @@ export class EventBoundary
     }
 
     /**
-     * Emits the event {@link e} to all display objects. The event is propagated in the bubbling phase at all
-     * times.
+     * Emits the event {@link e} to all display objects. The event is propagated in the bubbling phase always.
      *
      * This is used in the `pointermove` legacy mode.
      *

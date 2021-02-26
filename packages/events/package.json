@@ -16,12 +16,10 @@
   "author": "Shukant Pal <shukant@pixijs.io>",
   "homepage": "https://github.com/pixijs/pixi.js#readme",
   "license": "MIT",
-  "directories": {
-    "lib": "lib",
-    "test": "__tests__"
-  },
   "files": [
-    "lib"
+    "lib",
+    "dist",
+    "*.d.ts"
   ],
   "publishConfig": {
     "access": "public"
@@ -29,9 +27,6 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/pixijs/pixi.js.git"
-  },
-  "scripts": {
-    "test": "echo \"Error: run tests from root\" && exit 1"
   },
   "bugs": {
     "url": "https://github.com/pixijs/pixi.js/issues"
