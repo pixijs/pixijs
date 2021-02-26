@@ -16,7 +16,7 @@ The `pixi.js` and `pixi.js-legacy` bundles add the `EventSystem` to renderers by
 ```ts
 import { EventSystem } from '@pixi/events';
 
-renderer.addSystem('events', EventSystem);
+renderer.addSystem(EventSystem, 'events');
 renderer.render(stage);// Render stage so that it becomes the root target for UI events
 
 stage.addEventListener('click', function handleClick()
