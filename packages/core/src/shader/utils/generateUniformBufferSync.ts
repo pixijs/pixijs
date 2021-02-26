@@ -100,8 +100,10 @@ interface UBOElement {
 }
 
 /**
+ * @ignore
  *
  * logic originally from here: https://github.com/sketchpunk/FunWithWebGL2/blob/master/lesson_022/Shaders.js
+ * rewrote it, but this was a great starting point to get a solid understanding of whats going on :)
  *
  * @param uniformData
  */

@@ -211,6 +211,15 @@ export class ShaderSystem extends System
         this.renderer.buffer.bindBufferBase(group.buffer, glProgram.uniformBufferBindings[name]);
     }
 
+    /**
+     * Will create a function that uploads a uniform buffer using the STD140 standard.
+     * The upload function will then be cached for future calls
+     * If a group is manually managed, then a simple upload function is generated
+     *
+     * @param group - the uniform buffer group to sync
+     * @param glProgram - the gl program to attach the uniform bindings to
+     * @param name - the name of the uniform buffer (must exist on the shader)
+     */
     createSyncBufferGroup(group: UniformGroup, glProgram: GLProgram, name:string): UniformsSyncCallback
     {
         const { gl } = this.renderer;
