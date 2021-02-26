@@ -31,7 +31,14 @@ interface Renderer
 export class EventSystem
 {
     /**
-     * The {@link EventBoundary} for the stage.
+     * The {@link PIXI.EventBoundary} for the stage.
+     *
+     * The {@link PIXI.EventBoundary#rootTarget rootTarget} of this root boundary is automatically set to
+     * the last rendered object before any event processing is initiated. This means the main scene
+     * needs to be rendered atleast once before UI events will start propagating.
+     *
+     * The root boundary should only be changed during initialization. Otherwise, any state held by the
+     * event boundary may be lost (like hovered & pressed DisplayObjects).
      */
     public readonly rootBoundary: EventBoundary;
 
@@ -62,12 +69,25 @@ export class EventSystem
      * values, objects are handled as dictionaries of CSS values for {@code domElement},
      * and functions are called instead of changing the CSS.
      * Default CSS cursor values are provided for 'default' and 'pointer' modes.
+     *
      * @member {Object.<string, string | ((mode: string) => void) | CSSStyleDeclaration>}
      */
     public cursorStyles: Record<string, string | ((mode: string) => void) | CSSStyleDeclaration>;
+
+    /**
+     * The DOM element to which the root event listeners are bound. This is automatically set to
+     * the renderer's {@link PIXI.Renderer#view view}.
+     */
     public domElement: HTMLElement;
+
+    /**
+     * The resolution used to convert between the DOM client space into world space.
+     */
     public resolution = 1;
 
+    /**
+     * The renderer managing this {@link EventSystem}.
+     */
     public renderer: Renderer;
 
     private currentCursor: string;
@@ -177,6 +197,11 @@ export class EventSystem
         }
     }
 
+    /**
+     * Event handler for pointer down events on {@link PIXI.EventSystem#domElement this.domElement}.
+     *
+     * @param nativeEvent - The native mouse/pointer/touch event.
+     */
     private onPointerDown(nativeEvent: MouseEvent | PointerEvent | TouchEvent): void
     {
         this.rootBoundary.rootTarget = this.renderer._lastObjectRendered as DisplayObject;
@@ -215,6 +240,11 @@ export class EventSystem
         this.setCursor(this.rootBoundary.cursor);
     }
 
+    /**
+     * Event handler for pointer move events on on {@link PIXI.EventSystem#domElement this.domElement}.
+     *
+     * @param nativeEvent - The native mouse/pointer/touch events.
+     */
     private onPointerMove(nativeEvent: MouseEvent | PointerEvent | TouchEvent): void
     {
         this.rootBoundary.rootTarget = this.renderer._lastObjectRendered as DisplayObject;
@@ -234,6 +264,11 @@ export class EventSystem
         this.setCursor(this.rootBoundary.cursor);
     }
 
+    /**
+     * Event handler for pointer up events on {@link PIXI.EventSystem#domElement this.domElement}.
+     *
+     * @param nativeEvent - The native mouse/pointer/touch event.
+     */
     private onPointerUp(nativeEvent: MouseEvent | PointerEvent | TouchEvent): void
     {
         this.rootBoundary.rootTarget = this.renderer._lastObjectRendered as DisplayObject;
@@ -256,6 +291,11 @@ export class EventSystem
         this.setCursor(this.rootBoundary.cursor);
     }
 
+    /**
+     * Event handler for pointer over & out events on {@link PIXI.EventSystem#domElement this.domElement}.
+     *
+     * @param nativeEvent - The native mouse/pointer/touch event.
+     */
     private onPointerOverOut(nativeEvent: MouseEvent | PointerEvent | TouchEvent): void
     {
         this.rootBoundary.rootTarget = this.renderer._lastObjectRendered as DisplayObject;
@@ -288,15 +328,23 @@ export class EventSystem
         this.rootBoundary.mapEvent(wheelEvent);
     }
 
+    /**
+     * Sets the {@link PIXI.EventSystem#domElement domElement} and binds event listeners.
+     *
+     * To deregister the current DOM element without setting a new one, pass {@code null}.
+     *
+     * @param element - The new DOM element.
+     */
     public setTargetElement(element: HTMLElement): void
     {
         this.removeEvents();
-
         this.domElement = element;
-
         this.addEvents();
     }
 
+    /**
+     * Register event listeners on {@link PIXI.Renderer#domElement this.domElement}.
+     */
     private addEvents(): void
     {
         if (this.eventsAdded || !this.domElement)
@@ -360,6 +408,9 @@ export class EventSystem
         this.eventsAdded = true;
     }
 
+    /**
+     * Unregister event listeners on {@link PIXI.EventSystem#domElement this.domElement}.
+     */
     private removeEvents(): void
     {
         if (!this.eventsAdded || !this.domElement)
@@ -551,6 +602,12 @@ export class EventSystem
         return event;
     }
 
+    /**
+     * Normalizes the {@code nativeEvent} into a federateed {@code FederatedPointerEvent}.
+     *
+     * @param event
+     * @param nativeEvent
+     */
     private bootstrapEvent(event: FederatedPointerEvent, nativeEvent: PointerEvent): FederatedPointerEvent
     {
         event.originalEvent = null;
@@ -589,6 +646,12 @@ export class EventSystem
         return event;
     }
 
+    /**
+     * Transfers base & mouse event data from the {@code nativeEvent} to the federated event.
+     *
+     * @param event
+     * @param nativeEvent
+     */
     private transferMouseData(event: FederatedMouseEvent, nativeEvent: MouseEvent): void
     {
         event.isTrusted = nativeEvent.isTrusted;

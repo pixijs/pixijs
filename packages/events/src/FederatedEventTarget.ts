@@ -40,11 +40,8 @@ export type Cursor = 'auto'
     | 'grab'
     | 'grabbing';
 
-/**
- * @memberof PIXI
- */
+// @ignore - This is documented elsewhere.
 export interface IHitArea {
-    /** Hit-tests whether (x,y) lies in this area. */
     contains(x: number, y: number): boolean;
 }
 

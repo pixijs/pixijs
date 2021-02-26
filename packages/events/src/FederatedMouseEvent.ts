@@ -1,16 +1,34 @@
 import { FederatedEvent } from './FederatedEvent';
 import { Point } from '@pixi/math';
 
+/**
+ * A {@link PIXI.FederatedEvent} for mouse events.
+ *
+ * @memberof PIXI
+ */
 export class FederatedMouseEvent extends FederatedEvent<
     MouseEvent | PointerEvent | TouchEvent
 > implements MouseEvent
 {
+    /** Whether the "alt" key was pressed when this mouse event occurred. */
     altKey: boolean;
+
+    /** The specific button that was pressed in this mouse event. */
     button: number;
+
+    /** The button depressed when this event occurred. */
     buttons: number;
+
+    /** Whether the "control" key was pressed when this mouse event occurred. */
     ctrlKey: boolean;
+
+    /** Whether the "meta" key was pressed when this mouse event occurred. */
     metaKey: boolean;
+
+    /** This is currently not implemented in the Federated Events API. */
     relatedTarget: EventTarget;
+
+    /** Whether the "shift" key was pressed when this mouse event occurred. */
     shiftKey: boolean;
 
     /**
