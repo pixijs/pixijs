@@ -19,9 +19,10 @@ import { UniformGroup } from './shader/UniformGroup';
 import { Matrix } from '@pixi/math';
 import { Runner } from '@pixi/runner';
 
+import { RenderTexture } from './renderTexture/RenderTexture';
+
 import type { IRendererOptions, IRendererPlugins, IRendererRenderOptions } from './AbstractRenderer';
 import type { IRenderableObject } from './IRenderableObject';
-import type { RenderTexture } from './renderTexture/RenderTexture';
 import type { System } from './System';
 import type { IRenderingContext } from './IRenderingContext';
 
@@ -409,7 +410,7 @@ export class Renderer extends AbstractRenderer
 
         if (options)
         {
-            if ('framebuffer' in options) // easiest test for RenderTexture
+            if (options instanceof RenderTexture)
             {
                 // #if _DEBUG
                 deprecation('6.0.0', 'Renderer#render arguments changed, use options instead.');

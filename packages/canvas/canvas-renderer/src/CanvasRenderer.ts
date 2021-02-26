@@ -1,4 +1,4 @@
-import { AbstractRenderer, CanvasResource } from '@pixi/core';
+import { AbstractRenderer, CanvasResource, RenderTexture, BaseRenderTexture } from '@pixi/core';
 import { CanvasRenderTarget, sayHello, rgb2hex, hex2string, deprecation } from '@pixi/utils';
 import { CanvasMaskManager } from './utils/CanvasMaskManager';
 import { mapCanvasBlendModesToPixi } from './utils/mapCanvasBlendModesToPixi';
@@ -11,8 +11,6 @@ import type {
     IRendererOptions,
     IRendererPlugin,
     IRendererPlugins,
-    BaseRenderTexture,
-    RenderTexture,
     IRendererRenderOptions
 } from '@pixi/core';
 
@@ -197,39 +195,68 @@ export class CanvasRenderer extends AbstractRenderer
     }
 
     /**
-     * Renders the object to this canvas view
+     * Renders the object to its WebGL view.
      *
-     * @param {PIXI.DisplayObject} displayObject - The object to be rendered
-     * @param {object} [options] - Options to use for rendering.
-     * @param {PIXI.RenderTexture} [options.renderTexture] - A render texture to be rendered to.
-     *  If unset, it will render to the root context.
-     * @param {boolean} [options.clear=this.clearBeforeRender] - Whether to clear the canvas before drawing
-     * @param {PIXI.Matrix} [options.transform] - A transformation to be applied
-     * @param {boolean} [options.skipUpdateTransform=false] - Whether to skip the update transform
+     * @param displayObject - The object to be rendered.
+     * @param {object} [options] - Object to use for render options.
+     * @param {PIXI.RenderTexture} [options.renderTexture] - The render texture to render to.
+     * @param {boolean} [options.clear=true] - Should the canvas be cleared before the new render.
+     * @param {PIXI.Matrix} [options.transform] - A transform to apply to the render texture before rendering.
+     * @param {boolean} [options.skipUpdateTransform=false] - Should we skip the update transform pass?
      */
-    public render(displayObject: DisplayObject, options: IRendererRenderOptions = {}, ...rest:any[]): void
+    render(displayObject: DisplayObject, options?: IRendererRenderOptions): void;
+
+    /**
+     * Please use the `option` render arguments instead.
+     *
+     * @deprecated Since 6.0.0
+     * @param displayObject
+     * @param renderTexture
+     * @param clear
+     * @param transform
+     * @param skipUpdateTransform
+     */
+    render(displayObject: DisplayObject, renderTexture?: RenderTexture | BaseRenderTexture,
+        clear?: boolean, transform?: Matrix, skipUpdateTransform?: boolean): void;
+
+    /**
+     * @ignore
+     */
+    public render(displayObject: DisplayObject, options?: IRendererRenderOptions | RenderTexture | BaseRenderTexture): void
     {
         if (!this.view)
         {
             return;
         }
 
-        if (options && 'baseTexture' in options)
+        let renderTexture: BaseRenderTexture | RenderTexture;
+        let clear: boolean;
+        let transform: Matrix;
+        let skipUpdateTransform: boolean;
+
+        if (options)
         {
-            // #if _DEBUG
-            deprecation('6.0.0', 'CanvasRenderer#render arguments changed, use options instead.');
-            // #endif
+            if (options instanceof RenderTexture || options instanceof BaseRenderTexture)
+            {
+                // #if _DEBUG
+                deprecation('6.0.0', 'CanvasRenderer#render arguments changed, use options instead.');
+                // #endif
 
-            options = {
-                renderTexture: options,
-                clear: rest[0],
-                transform: rest[1],
-                skipUpdateTransform: rest[2],
-            };
+                /* eslint-disable prefer-rest-params */
+                renderTexture = options;
+                clear = arguments[2];
+                transform = arguments[3];
+                skipUpdateTransform = arguments[4];
+                /* eslint-enable prefer-rest-params */
+            }
+            else
+            {
+                renderTexture = options.renderTexture;
+                clear = options.clear;
+                transform = options.transform;
+                skipUpdateTransform = options.skipUpdateTransform;
+            }
         }
-
-        let renderTexture: BaseRenderTexture | RenderTexture = options.renderTexture;
-        const { clear, transform, skipUpdateTransform } = options;
 
         // can be handy to know!
         this.renderingToScreen = !renderTexture;
