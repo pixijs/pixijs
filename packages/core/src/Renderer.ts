@@ -21,6 +21,7 @@ import { Runner } from '@pixi/runner';
 
 import type { IRendererOptions, IRendererPlugins, IRendererRenderOptions } from './AbstractRenderer';
 import type { IRenderableObject } from './IRenderableObject';
+import type { RenderTexture } from './renderTexture/RenderTexture';
 import type { System } from './System';
 import type { IRenderingContext } from './IRenderingContext';
 
@@ -372,7 +373,7 @@ export class Renderer extends AbstractRenderer
     }
 
     /**
-     * Renders the object to its WebGL view
+     * Renders the object to its WebGL view.
      *
      * @param displayObject - The object to be rendered.
      * @param {object} [options] - Object to use for render options.
@@ -381,23 +382,54 @@ export class Renderer extends AbstractRenderer
      * @param {PIXI.Matrix} [options.transform] - A transform to apply to the render texture before rendering.
      * @param {boolean} [options.skipUpdateTransform=false] - Should we skip the update transform pass?
      */
-    render(displayObject: IRenderableObject, options: IRendererRenderOptions = {}, ...rest:any[]): void
+    render(displayObject: IRenderableObject, options?: IRendererRenderOptions): void;
+
+    /**
+     * Please use the `option` render arguments instead.
+     *
+     * @deprecated Since 6.0.0
+     * @param displayObject
+     * @param renderTexture
+     * @param clear
+     * @param transform
+     * @param skipUpdateTransform
+     */
+    render(displayObject: IRenderableObject, renderTexture?: RenderTexture,
+        clear?: boolean, transform?: Matrix, skipUpdateTransform?: boolean): void;
+
+    /**
+     * @ignore
+     */
+    render(displayObject: IRenderableObject, options?: IRendererRenderOptions | RenderTexture): void
     {
-        if (options && 'baseTexture' in options)
+        let renderTexture: RenderTexture;
+        let clear: boolean;
+        let transform: Matrix;
+        let skipUpdateTransform: boolean;
+
+        if (options)
         {
-            // #if _DEBUG
-            deprecation('6.0.0', 'Renderer#render arguments changed, use options instead.');
-            // #endif
+            if ('framebuffer' in options) // easiest test for RenderTexture
+            {
+                // #if _DEBUG
+                deprecation('6.0.0', 'Renderer#render arguments changed, use options instead.');
+                // #endif
 
-            options = {
-                renderTexture: options,
-                clear: rest[0],
-                transform: rest[1],
-                skipUpdateTransform: rest[2],
-            };
+                /* eslint-disable prefer-rest-params */
+                renderTexture = options;
+                clear = arguments[2];
+                transform = arguments[3];
+                skipUpdateTransform = arguments[4];
+                /* eslint-enable prefer-rest-params */
+            }
+            else
+            {
+                renderTexture = options.renderTexture;
+                clear = options.clear;
+                transform = options.transform;
+                skipUpdateTransform = options.skipUpdateTransform;
+            }
         }
-
-        const { renderTexture, clear, transform, skipUpdateTransform } = options;
 
         // can be handy to know!
         this.renderingToScreen = !renderTexture;
