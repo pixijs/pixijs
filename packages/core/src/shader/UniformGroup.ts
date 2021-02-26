@@ -35,7 +35,7 @@ let UID = 0;
  *
  * // a new uniform buffer object..
  * const myCoolData = new UniformBufferGroup({
- *   uCoolMatrix:new Matrix(),
+ *   uCoolMatrix: new Matrix(),
  *   uFloatyMcFloatFace: 23,
  * }}
  *
@@ -57,16 +57,16 @@ export class UniformGroup<LAYOUT = Dict<any>>
     syncUniforms: Dict<UniformsSyncCallback>;
     dirtyId: number;
     static: boolean;
-    ubo:boolean;
-    buffer?:Buffer;
+    ubo: boolean;
+    buffer?: Buffer;
     autoManage: boolean;
 
     /**
-     * @param {object | buffer} [uniforms] - Custom uniforms to use to augment the built-in ones. Or a pixi buffer
+     * @param {object | Buffer} [uniforms] - Custom uniforms to use to augment the built-in ones. Or a pixi buffer
      * @param {boolean} [_static] - Uniforms wont be changed after creation
      * @param {boolean} [_ubo] - if true, will treat this uniform group as a uniform buffer object
      */
-    constructor(uniforms: LAYOUT | Buffer, _static?: boolean, _ubo?:boolean)
+    constructor(uniforms: LAYOUT | Buffer, _static?: boolean, _ubo?: boolean)
     {
         /**
          * Its a group and not a single uniforms
@@ -153,7 +153,7 @@ export class UniformGroup<LAYOUT = Dict<any>>
         }
     }
 
-    static from(uniforms: Dict<any> | Buffer, _static?: boolean, _ubo?:boolean): UniformGroup
+    static from(uniforms: Dict<any> | Buffer, _static?: boolean, _ubo?: boolean): UniformGroup
     {
         return new UniformGroup(uniforms, _static, _ubo);
     }

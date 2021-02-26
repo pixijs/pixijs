@@ -89,10 +89,10 @@ export const uniformParsers: IUniformParser[] = [
                     cv[1] = v.y;
                     gl.uniform2f(ud["${name}"].location, v.x, v.y);
                 }`,
-        codeUbo: (name:string): string =>
+        codeUbo: (name: string): string =>
             `
                 v = uv.${name};
-    
+
                 data[offset] = v.x;
                 data[offset+1] = v.y;
             `
@@ -132,10 +132,10 @@ export const uniformParsers: IUniformParser[] = [
                     cv[3] = v.height;
                     gl.uniform4f(ud["${name}"].location, v.x, v.y, v.width, v.height)
                 }`,
-        codeUbo: (name:string): string =>
+        codeUbo: (name: string): string =>
             `
                     v = uv.${name};
-        
+
                     data[offset] = v.x;
                     data[offset+1] = v.y;
                     data[offset+2] = v.width;
