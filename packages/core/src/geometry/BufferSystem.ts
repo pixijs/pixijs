@@ -108,7 +108,7 @@ export class BufferSystem extends System
     /**
      * Will ensure sure the the data in the buffer is uploaded to the GPU.
      *
-     * @param {PIXI.Buffer} buffer the buffer to update
+     * @param {PIXI.Buffer} buffer - the buffer to update
      */
     update(buffer: Buffer): void
     {
