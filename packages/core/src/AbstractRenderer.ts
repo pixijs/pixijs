@@ -37,6 +37,13 @@ export interface IRendererPlugins
     [key: string]: any;
 }
 
+export interface IRendererRenderOptions {
+    renderTexture?: RenderTexture;
+    clear?: boolean;
+    transform?: Matrix;
+    skipUpdateTransform?: boolean;
+}
+
 /**
  * The AbstractRenderer is the base for a PixiJS Renderer. It is extended by the {@link PIXI.CanvasRenderer}
  * and {@link PIXI.Renderer} which can be used for rendering a PixiJS scene.
@@ -322,13 +329,17 @@ export abstract class AbstractRenderer extends EventEmitter
         tempMatrix.tx = -region.x;
         tempMatrix.ty = -region.y;
 
-        this.render(displayObject, renderTexture, false, tempMatrix, !!displayObject.parent);
+        this.render(displayObject, {
+            renderTexture,
+            clear: false,
+            transform: tempMatrix,
+            skipUpdateTransform: !!displayObject.parent
+        });
 
         return renderTexture;
     }
 
-    abstract render(displayObject: IRenderableObject, renderTexture?: RenderTexture,
-                    clear?: boolean, transform?: Matrix, skipUpdateTransform?: boolean): void;
+    abstract render(displayObject: IRenderableObject, options?: IRendererRenderOptions): void;
 
     /**
      * Removes everything from the renderer and optionally removes the Canvas DOM element.
