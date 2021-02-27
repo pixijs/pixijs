@@ -1,3 +1,4 @@
+import { EventEmitter } from '@pixi/utils';
 import { FederatedMouseEvent } from './FederatedMouseEvent';
 import { FederatedPointerEvent } from './FederatedPointerEvent';
 import { FederatedWheelEvent } from './FederatedWheelEvent';
@@ -6,7 +7,7 @@ import { Point } from '@pixi/math';
 import type { Cursor, FederatedEventTarget } from './FederatedEventTarget';
 import type { DisplayObject } from '@pixi/display';
 import type { FederatedEvent } from './FederatedEvent';
-import { EventEmitter } from '@pixi/utils/src';
+
 // The maximum iterations used in propagation. This prevent infinite loops.
 const PROPAGATION_LIMIT = 2048;
 
