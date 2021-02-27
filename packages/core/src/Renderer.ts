@@ -1,5 +1,4 @@
 import { AbstractRenderer } from './AbstractRenderer';
-import { EventSystem } from '@pixi/events';
 import { sayHello, isWebGLSupported, deprecation } from '@pixi/utils';
 import { MaskSystem } from './mask/MaskSystem';
 import { StencilSystem } from './mask/StencilSystem';
@@ -286,15 +285,7 @@ export class Renderer extends AbstractRenderer
              * @memberof PIXI.Renderer#
              * @readonly
              */
-            .addSystem(BatchSystem, 'batch')
-
-            /**
-             * Event system instance
-             * @member {PIXI.EventSystem} events
-             * @memberof PIXI.Renderer#
-             * @readonly
-             */
-            .addSystem(EventSystem as unknown as typeof System, 'events');
+            .addSystem(BatchSystem, 'batch');
 
         this.initPlugins(Renderer.__plugins);
 

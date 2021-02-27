@@ -12,6 +12,11 @@ function createRenderer(view, supportsPointerEvents)
         view,
     });
 
+    if (!renderer.events)
+    {
+        renderer.addSystem(EventSystem, 'events');
+    }
+
     if (supportsPointerEvents === false)
     {
         renderer.events.removeEvents();

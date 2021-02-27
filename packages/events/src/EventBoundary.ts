@@ -6,6 +6,7 @@ import { Point } from '@pixi/math';
 import type { Cursor, FederatedEventTarget } from './FederatedEventTarget';
 import type { DisplayObject } from '@pixi/display';
 import type { FederatedEvent } from './FederatedEvent';
+import { EventEmitter } from '@pixi/utils/src';
 // The maximum iterations used in propagation. This prevent infinite loops.
 const PROPAGATION_LIMIT = 2048;
 
@@ -127,6 +128,17 @@ export class EventBoundary
     public rootTarget: DisplayObject;
 
     /**
+     * Emits events after they were dispatched into the scene graph.
+     *
+     * This can be used for global events listening, regardless of the scene graph being used. It should
+     * not be used by interactive libraries for normal use.
+     *
+     * Special events that do not bubble all the way to the root target are not emitted from here,
+     * e.g. pointerenter, pointerleave, click.
+     */
+    public dispatch: EventEmitter = new EventEmitter();
+
+    /**
      * The cursor preferred by the event targets underneath this boundary.
      */
     public cursor: Cursor;
@@ -231,6 +243,7 @@ export class EventBoundary
         e.propagationImmediatelyStopped = false;
 
         this.propagate(e, type);
+        this.dispatch.emit(type || e.type, e);
     }
 
     /** Maps the given upstream event through the event boundary and propagates it downstream. */
@@ -434,12 +447,18 @@ export class EventBoundary
                 {
                     // Its a good idea to check if a child has lost its parent.
                     // this means it has been removed whilst looping so its best
-                    if (!nestedHit[nestedHit.length - 1].parent)
+                    if (nestedHit.length > 0 && !nestedHit[nestedHit.length - 1].parent)
                     {
                         continue;
                     }
 
-                    nestedHit.push(currentTarget);
+                    // Only add the current hit-test target to the hit-test chain if the chain
+                    // has already started (i.e. the event target has been found) or if the current
+                    // target is interactive (i.e. it becomes the event target).
+                    if (nestedHit.length > 0 || currentTarget.interactive)
+                    {
+                        nestedHit.push(currentTarget);
+                    }
 
                     return nestedHit;
                 }
@@ -449,7 +468,9 @@ export class EventBoundary
         // Finally, hit test this DisplayObject itself.
         if (interactive && testFn(currentTarget, location))
         {
-            return [currentTarget];
+            // The current hit-test target is the event's target only if it is interactive. Otherwise,
+            // the first interactive ancestor will be the event's target.
+            return currentTarget.interactive ? [currentTarget] : [];
         }
 
         return null;
