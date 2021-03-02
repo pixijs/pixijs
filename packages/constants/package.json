@@ -1,6 +1,6 @@
 {
   "name": "@pixi/constants",
-  "version": "6.0.0-rc.3",
+  "version": "6.0.0",
   "main": "dist/cjs/constants.js",
   "module": "dist/esm/constants.js",
   "bundle": "dist/browser/constants.js",
