@@ -35,7 +35,7 @@
     "postdist": "copyfiles -f bundles/*/dist/* dist && copyfiles -f \"packages/**/dist/*\" dist/packages",
     "prerelease": "npm run clean:build && npm test",
     "postversion": "npm run build:prod",
-    "release": "lerna publish --exact --force-publish",
+    "release": "lerna publish --exact --force-publish --dist-tag=latest-5.3.x",
     "compile:docs": "tsc -p tsconfig.docs.json --skipLibCheck"
   },
   "pre-commit": [
