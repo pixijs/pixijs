@@ -179,7 +179,7 @@ export class GeometrySystem extends System
             incRefCount = true;
         }
 
-        const vao = vaos[shader.program.id] || this.initGeometryVao(geometry, shader.program, incRefCount);
+        const vao = vaos[shader.program.id] || this.initGeometryVao(geometry, shader, incRefCount);
 
         this._activeGeometry = geometry;
 
@@ -315,12 +315,18 @@ export class GeometrySystem extends System
      * @param {PIXI.Program} program - Instance of program
      * @param {boolean} [incRefCount=false] - Increment refCount of all geometry buffers
      */
-    protected initGeometryVao(geometry: Geometry, program: Program, incRefCount = true): WebGLVertexArrayObject
+    protected initGeometryVao(geometry: Geometry, shader: Shader, incRefCount = true): WebGLVertexArrayObject
     {
-        this.checkCompatibility(geometry, program);
-
         const gl = this.gl;
         const CONTEXT_UID = this.CONTEXT_UID;
+        const program = shader.program;
+
+        if (!program.glPrograms[CONTEXT_UID])
+        {
+            this.renderer.shader.generateShader(shader);
+        }
+
+        this.checkCompatibility(geometry, program);
 
         const signature = this.getSignature(geometry, program);
 

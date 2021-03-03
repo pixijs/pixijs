@@ -432,6 +432,9 @@ export class FilterSystem extends System
         // they need to get resynced
         renderer.shader.bind(filter);
 
+        // check to see if the filter is a legacy one..
+        filter.legacy = !!filter.program.attributeData.aTextureCoord;
+
         if (filter.legacy)
         {
             this.quadUv.map(input._frame, input.filterFrame);
