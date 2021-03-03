@@ -27,8 +27,6 @@ export function getUniformData(program: WebGLProgram, gl: WebGLRenderingContextB
         const type = mapType(gl, uniformData.type);
 
         uniforms[name] = {
-            name,
-            index: i,
             type,
             size: uniformData.size,
             isArray,

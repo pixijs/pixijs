@@ -24,7 +24,7 @@ export interface IUniformData
 {
     type: string;
     size: number;
-    isArray: RegExpMatchArray;
+    isArray: boolean;
     value: any;
 }
 
