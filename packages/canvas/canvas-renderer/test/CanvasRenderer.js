@@ -42,7 +42,7 @@ describe('PIXI.CanvasRenderer', function ()
         par.position.set(5, 10);
         par.addChild(cont);
 
-        renderer.render(cont, undefined, undefined, new Matrix().translate(10, 20));
+        renderer.render(cont, { transform: new Matrix().translate(10, 20) });
         expect(cont.worldTransform.tx).to.equal(0);
         expect(cont.worldTransform.ty).to.equal(0);
 
@@ -50,7 +50,7 @@ describe('PIXI.CanvasRenderer', function ()
         expect(cont.worldTransform.tx).to.equal(5);
         expect(cont.worldTransform.ty).to.equal(10);
 
-        renderer.render(cont, undefined, undefined, new Matrix().translate(-20, 30));
+        renderer.render(cont, { transform: new Matrix().translate(-20, 30) });
         expect(cont.worldTransform.tx).to.equal(0);
         expect(cont.worldTransform.ty).to.equal(0);
     });

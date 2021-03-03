@@ -42,7 +42,7 @@ Graphics.prototype.generateCanvasTexture = function generateCanvasTexture(scaleM
     tempMatrix.tx -= bounds.x;
     tempMatrix.ty -= bounds.y;
 
-    canvasRenderer.render(this, canvasBuffer, true, tempMatrix);
+    canvasRenderer.render(this, { renderTexture: canvasBuffer, clear: true, transform: tempMatrix });
 
     const texture = Texture.from((canvasBuffer.baseTexture as BaseRenderTexture)._canvasRenderTarget.canvas, {
         scaleMode,

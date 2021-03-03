@@ -72,7 +72,7 @@ export class Framebuffer
          *```js
          * renderTexture.framebuffer.multisample = PIXI.MSAA_QUALITY.HIGH;
          * //...
-         * renderer.render(renderTexture, myContainer);
+         * renderer.render(myContainer, {renderTexture});
          * renderer.framebuffer.blit(); // copies data from MSAA framebuffer to texture
          *  ```
          *
