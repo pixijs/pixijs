@@ -424,7 +424,6 @@ describe('PIXI.Graphics', function ()
                 .drawCircle(1, 1, 20)
                 .drawEllipse(1, 1, 1, 1)
                 .drawPolygon([1, 1, 1, 1, 1, 1])
-                .drawStar(1, 1, 1, 1, 1, 1)
                 .clear();
 
             expect(graphics).to.be.not.null;

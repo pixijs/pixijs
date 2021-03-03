@@ -22,7 +22,7 @@ describe('PIXI.NineSlicePlane', function ()
         const spr = new Sprite(Texture.WHITE);
         const renderer = new CanvasRenderer({ width: 12, height: 12 });
 
-        renderer.render(spr, rt);
+        renderer.render(spr, { renderTexture: rt });
 
         const nineSlicePlane = new NineSlicePlane(rt, 1, 1, 1, 1);
 

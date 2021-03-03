@@ -6,7 +6,8 @@ import type { Graphics } from '@pixi/graphics';
  * _Note: Only available with **@pixi/graphics-extras**._
  *
  * @instance
- * @method PIXI.Graphics#drawChamferRect
+ * @memberof PIXI.Graphics
+ * @method drawChamferRect
  * @param {number} x - Upper left corner of rect
  * @param {number} y - Upper right corner of rect
  * @param {number} width - Width of rect
