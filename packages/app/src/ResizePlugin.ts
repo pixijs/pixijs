@@ -133,6 +133,7 @@ export class ResizePlugin
      */
     static destroy(): void
     {
+        window.removeEventListener('resize', this.queueResize);
         this.cancelResize();
         this.cancelResize = null;
         this.queueResize = null;
