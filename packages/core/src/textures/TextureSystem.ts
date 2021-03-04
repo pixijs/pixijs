@@ -2,7 +2,7 @@ import { System } from '../System';
 import { BaseTexture } from './BaseTexture';
 import { GLTexture } from './GLTexture';
 import { removeItems } from '@pixi/utils';
-import { MIPMAP_MODES, WRAP_MODES, SCALE_MODES, TYPES } from '@pixi/constants';
+import { MIPMAP_MODES, WRAP_MODES, SCALE_MODES, TYPES, SAMPLER_TYPES } from '@pixi/constants';
 
 import type { Texture } from './Texture';
 import type { IRenderingContext } from '../IRenderingContext';
@@ -19,6 +19,7 @@ export class TextureSystem extends System
 {
     public boundTextures: BaseTexture[];
     public managedTextures: Array<BaseTexture>;
+    protected hasIntegerTextures: boolean;
     protected CONTEXT_UID: number;
     protected gl: IRenderingContext;
     protected webGLVersion: number;
@@ -69,6 +70,11 @@ export class TextureSystem extends System
          * @readonly
          */
         this.unknownTexture = new BaseTexture();
+
+        /**
+         * Whether glTexture with int/uint sampler type was uploaded
+         */
+        this.hasIntegerTextures = false;
     }
 
     /**
@@ -191,6 +197,7 @@ export class TextureSystem extends System
     reset(): void
     {
         this._unknownBoundTextures = true;
+        this.hasIntegerTextures = false;
         this.currentLocation = -1;
 
         for (let i = 0; i < this.boundTextures.length; i++)
@@ -233,6 +240,37 @@ export class TextureSystem extends System
 
                 gl.bindTexture(texture.target, this.emptyTextures[texture.target].texture);
                 boundTextures[i] = null;
+            }
+        }
+    }
+
+    /**
+     * Ensures that current boundTextures all have FLOAT sampler type,
+     * see {@link PIXI.SAMPLER_TYPES} for explanation.
+     *
+     * @param {number} maxTextures - number of locations to check
+     */
+    ensureSamplerType(maxTextures: number): void
+    {
+        const { boundTextures, hasIntegerTextures, CONTEXT_UID } = this;
+
+        if (!hasIntegerTextures)
+        {
+            return;
+        }
+
+        for (let i = maxTextures - 1; i >= 0; --i)
+        {
+            const tex = boundTextures[i];
+
+            if (tex)
+            {
+                const glTexture = tex._glTextures[CONTEXT_UID];
+
+                if (glTexture.samplerType !== SAMPLER_TYPES.FLOAT)
+                {
+                    this.renderer.texture.unbind(tex);
+                }
             }
         }
     }
@@ -308,6 +346,10 @@ export class TextureSystem extends System
         if (texture.resource && texture.resource.upload(renderer, texture, glTexture))
         {
             // texture is uploaded, dont do anything!
+            if (glTexture.samplerType !== SAMPLER_TYPES.FLOAT)
+            {
+                this.hasIntegerTextures = true;
+            }
         }
         else
         {
