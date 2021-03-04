@@ -1,10 +1,9 @@
 import { mapWebGLBlendModesToPixi } from './utils/mapWebGLBlendModesToPixi';
-import { System } from '../System';
 import { State } from './State';
 import { BLEND_MODES } from '@pixi/constants';
 
+import type { ISystem } from '../ISystem';
 import type { IRenderingContext } from '../IRenderingContext';
-import type { Renderer } from '../Renderer';
 
 const BLEND = 0;
 const OFFSET = 1;
@@ -20,7 +19,7 @@ const DEPTH_MASK = 5;
  * @extends PIXI.System
  * @memberof PIXI
  */
-export class StateSystem extends System
+export class StateSystem implements ISystem
 {
     public stateId: number;
     public polygonOffset: number;
@@ -34,10 +33,8 @@ export class StateSystem extends System
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
-    constructor(renderer: Renderer)
+    constructor()
     {
-        super(renderer);
-
         /**
          * GL context
          * @member {WebGLRenderingContext}
@@ -350,5 +347,13 @@ export class StateSystem extends System
     static checkPolygonOffset(system: StateSystem, state: State): void
     {
         system.setPolygonOffset(1, state.polygonOffset);
+    }
+
+    /**
+     * @ignore
+     */
+    destroy(): void
+    {
+        this.gl = null;
     }
 }

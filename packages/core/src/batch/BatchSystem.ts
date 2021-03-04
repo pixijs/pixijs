@@ -1,6 +1,6 @@
-import { System } from '../System';
 import { ObjectRenderer } from './ObjectRenderer';
 
+import type { ISystem } from '../ISystem';
 import type { Renderer } from '../Renderer';
 import type { BaseTexture } from '../textures/BaseTexture';
 import type { BatchTextureArray } from './BatchTextureArray';
@@ -11,7 +11,7 @@ import type { BatchTextureArray } from './BatchTextureArray';
  * @extends PIXI.System
  * @memberof PIXI
  */
-export class BatchSystem extends System
+export class BatchSystem implements ISystem
 {
     public readonly emptyRenderer: ObjectRenderer;
     public currentRenderer: ObjectRenderer;
@@ -19,10 +19,8 @@ export class BatchSystem extends System
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
-    constructor(renderer: Renderer)
+    constructor(private renderer: Renderer)
     {
-        super(renderer);
-
         /**
          * An empty renderer.
          *
@@ -139,5 +137,13 @@ export class BatchSystem extends System
                 break;
             }
         }
+    }
+
+    /**
+     * @ignore
+     */
+    destroy(): void
+    {
+        this.renderer = null;
     }
 }
