@@ -65,7 +65,7 @@ describe('PIXI.MaskSystem', function ()
 
         const maskData = this.renderer.mask.maskDataPool[0];
 
-        expect(maskData).to.be.notnull;
+        expect(maskData).to.exist;
         expect(maskData._scissorCounter).to.equal(1);
     });
 
@@ -132,6 +132,8 @@ describe('PIXI.MaskSystem', function ()
         expect(scissor.args[1]).to.eql([7.5, 12, 18, 15]);
 
         rt.destroy(true);
+        this.renderer.projection.transform = null;
+        this.renderer.resolution = 1;
     });
 
     it('should correctly calculate alpha mask area if filter is present', function ()
@@ -164,13 +166,13 @@ describe('PIXI.MaskSystem', function ()
             maskSystem.push(filteredObject, maskObject);
             expect(maskSystem.maskStack.length).to.equal(1);
             expect(maskSystem.maskStack[0].type).to.equal(MASK_TYPES.SPRITE);
-            expect(this.renderer.renderTexture.current).to.be.notnull;
+            expect(this.renderer.renderTexture.current).to.exist;
 
             const filterArea = this.renderer.renderTexture.current.filterFrame;
-            const expected = maskBounds.clone();
+            const expected = maskBounds.clone().ceil();
 
             expected.fit(filteredObject.getBounds());
-            expect(filterArea).to.be.notnull;
+            expect(filterArea).to.exist;
             expect(filterArea.x).to.equal(expected.x);
             expect(filterArea.y).to.equal(expected.y);
             expect(filterArea.width).to.equal(expected.width);

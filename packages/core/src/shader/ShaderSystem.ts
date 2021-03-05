@@ -12,6 +12,9 @@ import type { Dict } from '@pixi/utils';
 import type { UniformsSyncCallback } from './utils';
 import { generateUniformBufferSync } from './utils/generateUniformBufferSync';
 
+import { getAttributeData } from './utils/getAttributeData';
+import { getUniformData } from './utils/getUniformData';
+
 let UID = 0;
 // default sync data so we don't create a new one each time!
 const defaultSyncData = { textureCount: 0, uboCount: 0 };
@@ -312,14 +315,11 @@ export class ShaderSystem extends System
 
         const program = shader.program;
 
-        const attribMap: Dict<number> = {};
+        const shaderProgram = compileProgram(gl, program.vertexSrc, program.fragmentSrc);
 
-        for (const i in program.attributeData)
-        {
-            attribMap[i] = program.attributeData[i].location;
-        }
+        program.attributeData = getAttributeData(shaderProgram, gl);
+        program.uniformData = getUniformData(shaderProgram, gl);
 
-        const shaderProgram = compileProgram(gl, program.vertexSrc, program.fragmentSrc, attribMap);
         const uniformData: {[key: string]: IGLUniformData} = {};
 
         for (const i in program.uniformData)

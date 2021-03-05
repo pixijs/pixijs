@@ -21,32 +21,29 @@ describe('PIXI.TextureLoader', function ()
         expect(res.texture).to.be.undefined;
     });
 
-    it('should create a texture if resource is an image', function ()
+    it('should create a texture if resource is an image', function (done)
     {
-        const spy = sinon.spy();
-        const res = createMockResource(LoaderResource.TYPE.IMAGE, new Image());
+        const name = `${(Math.random() * 10000) | 0}`;
+        const url = `http://localhost/doesnt_exist/${name}`;
+        const data = new Image();
+        const type = LoaderResource.TYPE.IMAGE;
+        const res = { url, name, type, data, metadata: {} };
 
-        TextureLoader.use(res, spy);
+        // Transparent image
+        data.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJ'
+            + 'AAAADUlEQVQYV2P4GvD7PwAHvgNAdItKlAAAAABJRU5ErkJggg==';
 
-        expect(spy).to.have.been.calledOnce;
-        expect(res.texture).to.be.an.instanceof(Texture);
+        TextureLoader.use(res, () =>
+        {
+            expect(res.texture).to.be.an.instanceof(Texture);
 
-        expect(BaseTextureCache).to.have.property(res.name, res.texture.baseTexture);
-        expect(BaseTextureCache).to.have.property(res.url, res.texture.baseTexture);
+            expect(BaseTextureCache).to.have.property(res.name, res.texture.baseTexture);
+            expect(BaseTextureCache).to.have.property(res.url, res.texture.baseTexture);
 
-        expect(TextureCache).to.have.property(res.name, res.texture);
-        expect(TextureCache).to.have.property(res.url, res.texture);
+            expect(TextureCache).to.have.property(res.name, res.texture);
+            expect(TextureCache).to.have.property(res.url, res.texture);
+
+            done();
+        });
     });
 });
-
-function createMockResource(type, data)
-{
-    const name = `${Math.floor(Date.now() * Math.random())}`;
-
-    return {
-        url: `http://localhost/doesnt_exist/${name}`,
-        name,
-        type,
-        data,
-    };
-}

@@ -1,15 +1,17 @@
-const { CLEAR_MODES } = require('@pixi/constants');
+const { CLEAR_MODES, BLEND_MODES } = require('@pixi/constants');
 const { Rectangle, Matrix } = require('@pixi/math');
 const { Renderer, Filter } = require('../');
 
 describe('PIXI.FilterSystem', function ()
 {
-    function onePixelObject(worldTransform)
+    function onePixelObject(worldTransform, size = 1)
     {
+        const mat = worldTransform || Matrix.IDENTITY;
+
         return {
             isFastRect() { return true; },
-            worldTransform: worldTransform || Matrix.IDENTITY,
-            getBounds() { return new Rectangle(0, 0, 1, 1); },
+            worldTransform: mat,
+            getBounds() { return new Rectangle(mat.tx, mat.ty, size, size); },
             render() { /* nothing*/ },
         };
     }
@@ -32,6 +34,8 @@ describe('PIXI.FilterSystem', function ()
         const clearSpy = sinon.spy(this.renderer.framebuffer, 'clear');
         const obj = onePixelObject();
         const filterSystem = this.renderer.filter;
+
+        innerFilter.state.blend = false;
 
         let clearModeValue = CLEAR_MODES.BLEND;
 
@@ -73,5 +77,49 @@ describe('PIXI.FilterSystem', function ()
 
         expect(keys.sort()).to.deep.eql(['65537', 'screen']);
         expect(filterSystem.texturePool.texturePool[65537].length).to.equal(2);
+    });
+
+    function rectToString(rect)
+    {
+        return `(${rect.x}, ${rect.y}, ${rect.width}, ${rect.height})`;
+    }
+
+    it('should account autoFit for global projection transform and rounding', function ()
+    {
+        const obj = onePixelObject(new Matrix().translate(20, 10), 10);
+        const { renderer } = this;
+        const src = new Rectangle(9, 10, 100, 100);
+        const dst = new Rectangle(0, 0, 50, 50);
+        const trans = new Matrix().translate(-14, -5);
+
+        renderer.resize(50, 50);
+        renderer.projection.transform = trans;
+        renderer.renderTexture.bind(null, src, dst);
+
+        const filters = [new Filter()];
+
+        renderer.filter.push(obj, filters);
+
+        expect(renderer.projection.transform).to.be.null;
+
+        const newSrc = renderer.projection.sourceFrame;
+        const newDst = renderer.projection.destinationFrame;
+
+        // coords are cut to left-top corner of src, moved by inverse of transform
+        expect(newSrc.x).equal(23);
+        expect(newSrc.y).equal(15);
+        // 20-14 = 6, but left pixel start at 9, so we cut 3 pixels, making width=10-3=7,
+        //  but round it to 8 because we scale it down 2 times in src->dst
+        expect(newSrc.width).equal(8);
+        // cut 5 pixels from height, 10-5=5, rounded up to 6 to match resulting pixel grid
+        expect(newSrc.height).equal(6);
+        // destination has the same size
+        expect(newDst.width).equal(8);
+        expect(newDst.height).equal(6);
+        renderer.filter.pop();
+        expect(renderer.projection.transform).to.equal(trans);
+        expect(rectToString(renderer.projection.sourceFrame)).equal(rectToString(src));
+        expect(rectToString(renderer.projection.destinationFrame)).equal(rectToString(dst));
+        renderer.projection.transform = null;
     });
 });

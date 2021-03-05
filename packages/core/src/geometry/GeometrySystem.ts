@@ -176,15 +176,17 @@ export class GeometrySystem extends System
         // Still mulling over the best way to solve this one..
         // will likely need to modify the shader attribute locations at run time!
         let vaos = geometry.glVertexArrayObjects[this.CONTEXT_UID];
+        let incRefCount = false;
 
         if (!vaos)
         {
             this.managedGeometries[geometry.id] = geometry;
             geometry.disposeRunner.add(this);
             geometry.glVertexArrayObjects[this.CONTEXT_UID] = vaos = {};
+            incRefCount = true;
         }
 
-        const vao = vaos[shader.program.id] || this.initGeometryVao(geometry, shader.program);
+        const vao = vaos[shader.program.id] || this.initGeometryVao(geometry, shader, incRefCount);
 
         this._activeGeometry = geometry;
 
@@ -286,13 +288,20 @@ export class GeometrySystem extends System
      * @protected
      * @param {PIXI.Geometry} geometry - Instance of geometry to to generate Vao for
      * @param {PIXI.Program} program - Instance of program
+     * @param {boolean} [incRefCount=false] - Increment refCount of all geometry buffers
      */
-    protected initGeometryVao(geometry: Geometry, program: Program): WebGLVertexArrayObject
+    protected initGeometryVao(geometry: Geometry, shader: Shader, incRefCount = true): WebGLVertexArrayObject
     {
-        this.checkCompatibility(geometry, program);
-
         const gl = this.gl;
         const CONTEXT_UID = this.CONTEXT_UID;
+        const program = shader.program;
+
+        if (!program.glPrograms[CONTEXT_UID])
+        {
+            this.renderer.shader.generateShader(shader);
+        }
+
+        this.checkCompatibility(geometry, program);
 
         const signature = this.getSignature(geometry, program);
 
@@ -370,7 +379,10 @@ export class GeometrySystem extends System
 
             this._buffer.bind(buffer);
 
-            buffer._glBuffers[CONTEXT_UID].refCount++;
+            if (incRefCount)
+            {
+                buffer._glBuffers[CONTEXT_UID].refCount++;
+            }
         }
 
         // TODO - maybe make this a data object?

@@ -3,8 +3,7 @@ import { Point, SHAPES } from '@pixi/math';
 import type { Polygon } from '@pixi/math';
 import type { GraphicsData } from '../GraphicsData';
 import type { GraphicsGeometry } from '../GraphicsGeometry';
-import { LINE_JOIN, LINE_CAP } from '../const';
-import { GRAPHICS_CURVES } from '../const';
+import { LINE_JOIN, LINE_CAP, GRAPHICS_CURVES } from '../const';
 
 /**
  * Buffers vertices to draw a square cap.

@@ -4,7 +4,8 @@ import { accessibleTarget } from './accessibleTarget';
 
 import type { Rectangle } from '@pixi/math';
 import type { Container } from '@pixi/display';
-import type { Renderer, AbstractRenderer } from '@pixi/core';
+import type { Renderer } from '@pixi/core';
+import type { CanvasRenderer } from '@pixi/canvas-renderer';
 import type { IAccessibleHTMLElement } from './accessibleTarget';
 
 // add some extra variables to the container..
@@ -36,28 +37,48 @@ const DIV_HOOK_ZINDEX = 2;
  */
 export class AccessibilityManager
 {
-    public debug: boolean;
-    public renderer: AbstractRenderer|Renderer;
+    /** Setting this to true will visually show the divs. */
+    public debug = false;
 
-    private _isActive: boolean;
-    private _isMobileAccessibility: boolean;
+    /**
+     * The renderer this accessibility manager works for.
+     *
+     * @type {PIXI.CanvasRenderer|PIXI.Renderer}
+     */
+    public renderer: CanvasRenderer|Renderer;
+
+    /** Internal variable, see isActive getter. */
+    private _isActive = false;
+
+    /** Internal variable, see isMobileAccessibility getter. */
+    private _isMobileAccessibility = false;
+
+    /** Button element for handling touch hooks. */
     private _hookDiv: HTMLElement;
+
+    /** This is the dom element that will sit over the PixiJS element. This is where the div overlays will go. */
     private div: HTMLElement;
-    private pool: IAccessibleHTMLElement[];
-    private renderId: number;
-    private children: DisplayObject[];
-    private androidUpdateCount: number;
-    private androidUpdateFrequency: number;
+
+    /** A simple pool for storing divs. */
+    private pool: IAccessibleHTMLElement[] = [];
+
+    /** This is a tick used to check if an object is no longer being rendered. */
+    private renderId = 0;
+
+    /** The array of currently active accessible items. */
+    private children: DisplayObject[] = [];
+
+    /** Count to throttle div updates on android devices. */
+    private androidUpdateCount = 0;
+
+    /**  The frequency to update the div elements. */
+    private androidUpdateFrequency = 500; // 2fps
 
     /**
      * @param {PIXI.CanvasRenderer|PIXI.Renderer} renderer - A reference to the current renderer
      */
-    constructor(renderer: AbstractRenderer|Renderer)
+    constructor(renderer: CanvasRenderer|Renderer)
     {
-        /**
-         * @type {?HTMLElement}
-         * @private
-         */
         this._hookDiv = null;
 
         if (isMobile.tablet || isMobile.phone)
@@ -75,51 +96,8 @@ export class AccessibilityManager
         div.style.left = `${DIV_TOUCH_POS_Y}px`;
         div.style.zIndex = DIV_TOUCH_ZINDEX.toString();
 
-        /**
-         * This is the dom element that will sit over the PixiJS element. This is where the div overlays will go.
-         *
-         * @type {HTMLElement}
-         * @private
-         */
         this.div = div;
-
-        /**
-         * A simple pool for storing divs.
-         *
-         * @type {*}
-         * @private
-         */
-        this.pool = [];
-
-        /**
-         * This is a tick used to check if an object is no longer being rendered.
-         *
-         * @type {Number}
-         * @private
-         */
-        this.renderId = 0;
-
-        /**
-         * Setting this to true will visually show the divs.
-         *
-         * @type {boolean}
-         */
-        this.debug = false;
-
-        /**
-         * The renderer this accessibility manager works for.
-         *
-         * @member {PIXI.AbstractRenderer}
-         */
         this.renderer = renderer;
-
-        /**
-         * The array of currently active accessible items.
-         *
-         * @member {Array<*>}
-         * @private
-         */
-        this.children = [];
 
         /**
          * pre-bind the functions
@@ -137,29 +115,12 @@ export class AccessibilityManager
          */
         this._onMouseMove = this._onMouseMove.bind(this);
 
-        this._isActive = false;
-
-        this._isMobileAccessibility = false;
-
-        /**
-         * count to throttle div updates on android devices
-         * @type number
-         * @private
-         */
-        this.androidUpdateCount = 0;
-
-        /**
-         * the frequency to update the div elements ()
-         * @private
-         */
-        this.androidUpdateFrequency = 500; // 2fps
-
         // let listen for tab.. once pressed we can fire up and show the accessibility layer
         self.addEventListener('keydown', this._onKeyDown, false);
     }
 
     /**
-     * A flag
+     * Value of `true` if accessibility is currently active and accessibility layers are showing.
      * @member {boolean}
      * @readonly
      */
@@ -169,7 +130,7 @@ export class AccessibilityManager
     }
 
     /**
-     * A flag
+     * Value of `true` if accessibility is enabled for touch devices.
      * @member {boolean}
      * @readonly
      */
@@ -240,13 +201,8 @@ export class AccessibilityManager
         self.document.addEventListener('mousemove', this._onMouseMove, true);
         self.removeEventListener('keydown', this._onKeyDown, false);
 
-        // TODO: Remove casting when CanvasRenderer is converted
-        (this.renderer as AbstractRenderer).on('postrender', this.update, this);
-
-        if ((this.renderer as AbstractRenderer).view.parentNode)
-        {
-            (this.renderer as AbstractRenderer).view.parentNode.appendChild(this.div);
-        }
+        this.renderer.on('postrender', this.update, this);
+        this.renderer.view.parentNode?.appendChild(this.div);
     }
 
     /**
@@ -267,13 +223,8 @@ export class AccessibilityManager
         self.document.removeEventListener('mousemove', this._onMouseMove, true);
         self.addEventListener('keydown', this._onKeyDown, false);
 
-        // TODO: Remove casting when CanvasRenderer is converted
-        (this.renderer as AbstractRenderer).off('postrender', this.update);
-
-        if (this.div.parentNode)
-        {
-            this.div.parentNode.removeChild(this.div);
-        }
+        this.renderer.off('postrender', this.update);
+        this.div.parentNode?.removeChild(this.div);
     }
 
     /**
@@ -338,20 +289,18 @@ export class AccessibilityManager
             this.updateAccessibleObjects(this.renderer._lastObjectRendered as Container);
         }
 
-        // TODO: Remove casting when CanvasRenderer is converted
-        const rect = (this.renderer as AbstractRenderer).view.getBoundingClientRect();
+        const { left, top, width, height } = this.renderer.view.getBoundingClientRect();
+        const { width: viewWidth, height: viewHeight, resolution } = this.renderer;
 
-        const resolution = this.renderer.resolution;
-
-        const sx = (rect.width / (this.renderer as AbstractRenderer).width) * resolution;
-        const sy = (rect.height / (this.renderer as AbstractRenderer).height) * resolution;
+        const sx = (width / viewWidth) * resolution;
+        const sy = (height / viewHeight) * resolution;
 
         let div = this.div;
 
-        div.style.left = `${rect.left}px`;
-        div.style.top = `${rect.top}px`;
-        div.style.width = `${(this.renderer as AbstractRenderer).width}px`;
-        div.style.height = `${(this.renderer as AbstractRenderer).height}px`;
+        div.style.left = `${left}px`;
+        div.style.top = `${top}px`;
+        div.style.width = `${viewWidth}px`;
+        div.style.height = `${viewHeight}px`;
 
         for (let i = 0; i < this.children.length; i++)
         {
@@ -451,15 +400,16 @@ export class AccessibilityManager
             hitArea.y = 0;
         }
 
-        // TODO: Remove casting when CanvasRenderer is converted
-        if (hitArea.x + hitArea.width > (this.renderer as AbstractRenderer).width)
+        const { width: viewWidth, height: viewHeight } = this.renderer;
+
+        if (hitArea.x + hitArea.width > viewWidth)
         {
-            hitArea.width = (this.renderer as AbstractRenderer).width - hitArea.x;
+            hitArea.width = viewWidth - hitArea.x;
         }
 
-        if (hitArea.y + hitArea.height > (this.renderer as AbstractRenderer).height)
+        if (hitArea.y + hitArea.height > viewHeight)
         {
-            hitArea.height = (this.renderer as AbstractRenderer).height - hitArea.y;
+            hitArea.height = viewHeight - hitArea.y;
         }
     }
 
@@ -553,18 +503,13 @@ export class AccessibilityManager
      */
     private _onClick(e: MouseEvent): void
     {
-        // TODO: Remove casting when CanvasRenderer is converted
-        const interactionManager = (this.renderer as AbstractRenderer).plugins.interaction;
+        const interactionManager = this.renderer.plugins.interaction;
+        const { displayObject } = e.target as IAccessibleHTMLElement;
+        const { eventData } = interactionManager;
 
-        interactionManager.dispatchEvent(
-            (e.target as IAccessibleHTMLElement).displayObject, 'click', interactionManager.eventData
-        );
-        interactionManager.dispatchEvent(
-            (e.target as IAccessibleHTMLElement).displayObject, 'pointertap', interactionManager.eventData
-        );
-        interactionManager.dispatchEvent(
-            (e.target as IAccessibleHTMLElement).displayObject, 'tap', interactionManager.eventData
-        );
+        interactionManager.dispatchEvent(displayObject, 'click', eventData);
+        interactionManager.dispatchEvent(displayObject, 'pointertap', eventData);
+        interactionManager.dispatchEvent(displayObject, 'tap', eventData);
     }
 
     /**
@@ -580,12 +525,11 @@ export class AccessibilityManager
             (e.target as Element).setAttribute('aria-live', 'assertive');
         }
 
-        // TODO: Remove casting when CanvasRenderer is converted
-        const interactionManager = (this.renderer as AbstractRenderer).plugins.interaction;
+        const interactionManager = this.renderer.plugins.interaction;
+        const { displayObject } = e.target as IAccessibleHTMLElement;
+        const { eventData } = interactionManager;
 
-        interactionManager.dispatchEvent(
-            (e.target as IAccessibleHTMLElement).displayObject, 'mouseover', interactionManager.eventData
-        );
+        interactionManager.dispatchEvent(displayObject, 'mouseover', eventData);
     }
 
     /**
@@ -601,10 +545,11 @@ export class AccessibilityManager
             (e.target as Element).setAttribute('aria-live', 'polite');
         }
 
-        // TODO: Remove casting when CanvasRenderer is converted
-        const interactionManager = (this.renderer as AbstractRenderer).plugins.interaction;
+        const interactionManager = this.renderer.plugins.interaction;
+        const { displayObject } = e.target as IAccessibleHTMLElement;
+        const { eventData } = interactionManager;
 
-        interactionManager.dispatchEvent((e.target as any).displayObject, 'mouseout', interactionManager.eventData);
+        interactionManager.dispatchEvent(displayObject, 'mouseout', eventData);
     }
 
     /**

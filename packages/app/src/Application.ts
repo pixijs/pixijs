@@ -5,17 +5,29 @@ import type { Rectangle } from '@pixi/math';
 import type { Renderer, IRendererOptionsAuto, AbstractRenderer } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
 
+/**
+ * Any plugin that's usable for Application should contain these methods.
+ * @memberof PIXI
+ * @see {@link PIXI.Application.registerPlugin}
+ */
 export interface IApplicationPlugin {
-    init: (...params: any[]) => any;
-    destroy: (...params: any[]) => any;
+    /**
+     * Called when Application is constructed, scoped to Application instance.
+     * Passes in `options` as the only argument, which are Application constructor options.
+     * @param {object} options - Application options.
+     */
+    init(options: IApplicationOptions): void;
+    /**
+     * Called when destroying Application, scoped to Application instance.
+     */
+    destroy(): void;
 }
 
-export interface IApplicationOptions extends IRendererOptionsAuto {
-    autoStart?: boolean;
-    sharedTicker?: boolean;
-    sharedLoader?: boolean;
-    resizeTo?: Window | HTMLElement;
-}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface IApplicationOptions extends IRendererOptionsAuto, GlobalMixins.IApplicationOptions {}
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface Application extends GlobalMixins.Application {}
 
 /**
  * Convenience class to create a new PIXI application.
@@ -37,9 +49,19 @@ export interface IApplicationOptions extends IRendererOptionsAuto {
  */
 export class Application
 {
-    public static _plugins: IApplicationPlugin[];
+    /** Collection of installed plugins. */
+    private static _plugins: IApplicationPlugin[] = [];
 
-    public stage: Container;
+    /**
+     * The root display container that's rendered.
+     * @member {PIXI.Container}
+     */
+    public stage: Container = new Container();
+
+    /**
+     * WebGL renderer if available, otherwise CanvasRenderer.
+     * @member {PIXI.Renderer|PIXI.CanvasRenderer}
+     */
     public renderer: Renderer|AbstractRenderer;
 
     /**
@@ -50,7 +72,9 @@ export class Application
      * @param {number} [options.width=800] - The width of the renderers view.
      * @param {number} [options.height=600] - The height of the renderers view.
      * @param {HTMLCanvasElement} [options.view] - The canvas to use as a view, optional.
-     * @param {boolean} [options.contextAlpha=true] - Pass-through value for canvas' context `alpha` property.
+     * @param {boolean} [options.useContextAlpha=true] - Pass-through value for canvas' context `alpha` property.
+     *   If you want to set transparency, please use `backgroundAlpha`. This option is for cases where the
+     *   canvas needs to be opaque, possibly for performance reasons on some older devices.
      * @param {boolean} [options.autoDensity=false] - Resizes renderer view in CSS pixels to allow for
      *   resolutions other than 1.
      * @param {boolean} [options.antialias=false] - Sets antialias
@@ -80,17 +104,7 @@ export class Application
             forceCanvas: false,
         }, options);
 
-        /**
-         * WebGL renderer if available, otherwise CanvasRenderer.
-         * @member {PIXI.Renderer|PIXI.CanvasRenderer}
-         */
         this.renderer = autoDetectRenderer(options);
-
-        /**
-         * The root display container that's rendered.
-         * @member {PIXI.Container}
-         */
-        this.stage = new Container();
 
         // install plugins here
         Application._plugins.forEach((plugin) =>
@@ -102,7 +116,7 @@ export class Application
     /**
      * Register a middleware plugin for the application
      * @static
-     * @param {PIXI.Application.Plugin} plugin - Plugin being installed
+     * @param {PIXI.IApplicationPlugin} plugin - Plugin being installed
      */
     static registerPlugin(plugin: IApplicationPlugin): void
     {
@@ -114,9 +128,7 @@ export class Application
      */
     public render(): void
     {
-        // TODO: Since CanvasRenderer has not been converted this function thinks it takes DisplayObject & PIXI.DisplayObject
-        // This can be fixed when CanvasRenderer is converted.
-        this.renderer.render(this.stage as any);
+        this.renderer.render(this.stage);
     }
 
     /**
@@ -170,19 +182,3 @@ export class Application
         this.renderer = null;
     }
 }
-
-/**
- * @memberof PIXI.Application
- * @typedef {object} Plugin
- * @property {function} init - Called when Application is constructed, scoped to Application instance.
- *  Passes in `options` as the only argument, which are Application constructor options.
- * @property {function} destroy - Called when destroying Application, scoped to Application instance
- */
-
-/**
- * Collection of installed plugins.
- * @static
- * @private
- * @type {PIXI.Application.Plugin[]}
- */
-Application._plugins = [];

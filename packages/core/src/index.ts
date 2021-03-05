@@ -3,6 +3,7 @@ import './settings';
 export * from './textures/resources';
 export * from './systems';
 export * from './IRenderingContext';
+export * from './IRenderableObject';
 export * from './autoDetectRenderer';
 export * from './fragments';
 export * from './System';
@@ -44,7 +45,4 @@ export * from './geometry/Attribute';
 export * from './geometry/Buffer';
 export * from './geometry/Geometry';
 export * from './geometry/ViewableBuffer';
-
-// #if _DEBUG
 export * from './deprecations';
-// #endif

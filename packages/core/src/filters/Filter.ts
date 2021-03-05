@@ -189,6 +189,11 @@ export class Filter extends Shader
     public resolution: number;
     public enabled: boolean;
     public autoFit: boolean;
+    /**
+     * Legacy filters use position and uvs from attributes (set by filter system)
+     * @member {boolean}
+     * @readonly
+     */
     public legacy: boolean;
     state: State;
     /**
@@ -236,13 +241,6 @@ export class Filter extends Shader
         this.autoFit = true;
 
         /**
-         * Legacy filters use position and uvs from attributes
-         * @member {boolean}
-         * @readonly
-         */
-        this.legacy = !!this.program.attributeData.aTextureCoord;
-
-        /**
          * The WebGL state the filter requires to render
          * @member {PIXI.State}
          */
@@ -255,12 +253,12 @@ export class Filter extends Shader
      * @param {PIXI.FilterSystem} filterManager - The renderer to retrieve the filter from
      * @param {PIXI.RenderTexture} input - The input render target.
      * @param {PIXI.RenderTexture} output - The target to output to.
-     * @param {PIXI.CLEAR_MODES} clearMode - Should the output be cleared before rendering to it.
+     * @param {PIXI.CLEAR_MODES} [clearMode] - Should the output be cleared before rendering to it.
      * @param {object} [currentState] - It's current state of filter.
      *        There are some useful properties in the currentState :
      *        target, filters, sourceFrame, destinationFrame, renderTarget, resolution
      */
-    apply(filterManager: FilterSystem, input: RenderTexture, output: RenderTexture, clearMode: CLEAR_MODES,
+    apply(filterManager: FilterSystem, input: RenderTexture, output: RenderTexture, clearMode?: CLEAR_MODES,
         _currentState?: FilterState): void
     {
         // do as you please!

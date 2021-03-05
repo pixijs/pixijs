@@ -1,5 +1,5 @@
 import { AbstractRenderer } from './AbstractRenderer';
-import { sayHello, isWebGLSupported } from '@pixi/utils';
+import { sayHello, isWebGLSupported, deprecation } from '@pixi/utils';
 import { MaskSystem } from './mask/MaskSystem';
 import { StencilSystem } from './mask/StencilSystem';
 import { ScissorSystem } from './mask/ScissorSystem';
@@ -19,12 +19,12 @@ import { UniformGroup } from './shader/UniformGroup';
 import { Matrix } from '@pixi/math';
 import { Runner } from '@pixi/runner';
 
-import type { IRendererOptions, IRendererPlugins } from './AbstractRenderer';
-import type { RenderTexture } from './renderTexture/RenderTexture';
-import type { DisplayObject } from '@pixi/display';
+import { RenderTexture } from './renderTexture/RenderTexture';
+
+import type { IRendererOptions, IRendererPlugins, IRendererRenderOptions } from './AbstractRenderer';
+import type { IRenderableObject } from './IRenderableObject';
 import type { System } from './System';
 import type { IRenderingContext } from './IRenderingContext';
-import type { Extract } from '@pixi/extract';
 import { BufferSystem } from './geometry/BufferSystem';
 
 export interface IRendererPluginConstructor {
@@ -75,7 +75,6 @@ export class Renderer extends AbstractRenderer
     public globalUniforms: UniformGroup;
     public CONTEXT_UID: number;
     public renderingToScreen: boolean;
-    public extract: Extract;
     // systems
     public mask: MaskSystem;
     public context: ContextSystem;
@@ -117,7 +116,9 @@ export class Renderer extends AbstractRenderer
      * @param {number} [options.width=800] - The width of the screen.
      * @param {number} [options.height=600] - The height of the screen.
      * @param {HTMLCanvasElement} [options.view] - The canvas to use as a view, optional.
-     * @param {boolean} [options.contextAlpha=true] - Pass-through value for canvas' context `alpha` property.
+     * @param {boolean} [options.useContextAlpha=true] - Pass-through value for canvas' context `alpha` property.
+     *   If you want to set transparency, please use `backgroundAlpha`. This option is for cases where the
+     *   canvas needs to be opaque, possibly for performance reasons on some older devices.
      * @param {boolean} [options.autoDensity=false] - Resizes renderer view in CSS pixels to allow for
      *   resolutions other than 1.
      * @param {boolean} [options.antialias=false] - Sets antialias. If not available natively then FXAA
@@ -307,9 +308,9 @@ export class Renderer extends AbstractRenderer
         else
         {
             this.context.initFromOptions({
-                alpha: !!this.contextAlpha,
+                alpha: !!this.useContextAlpha,
                 antialias: options.antialias,
-                premultipliedAlpha: this.contextAlpha && this.contextAlpha !== 'notMultiplied',
+                premultipliedAlpha: this.useContextAlpha && this.useContextAlpha !== 'notMultiplied',
                 stencil: true,
                 preserveDrawingBuffer: options.preserveDrawingBuffer,
                 powerPreference: this.options.powerPreference,
@@ -382,17 +383,64 @@ export class Renderer extends AbstractRenderer
     }
 
     /**
-     * Renders the object to its WebGL view
+     * Renders the object to its WebGL view.
      *
      * @param displayObject - The object to be rendered.
-     * @param [renderTexture] - The render texture to render to.
-     * @param [clear=true] - Should the canvas be cleared before the new render.
-     * @param [transform] - A transform to apply to the render texture before rendering.
-     * @param [skipUpdateTransform=false] - Should we skip the update transform pass?
+     * @param {object} [options] - Object to use for render options.
+     * @param {PIXI.RenderTexture} [options.renderTexture] - The render texture to render to.
+     * @param {boolean} [options.clear=true] - Should the canvas be cleared before the new render.
+     * @param {PIXI.Matrix} [options.transform] - A transform to apply to the render texture before rendering.
+     * @param {boolean} [options.skipUpdateTransform=false] - Should we skip the update transform pass?
      */
-    render(displayObject: DisplayObject, renderTexture?: RenderTexture,
-        clear?: boolean, transform?: Matrix, skipUpdateTransform?: boolean): void
+    render(displayObject: IRenderableObject, options?: IRendererRenderOptions): void;
+
+    /**
+     * Please use the `option` render arguments instead.
+     *
+     * @deprecated Since 6.0.0
+     * @param displayObject
+     * @param renderTexture
+     * @param clear
+     * @param transform
+     * @param skipUpdateTransform
+     */
+    render(displayObject: IRenderableObject, renderTexture?: RenderTexture,
+        clear?: boolean, transform?: Matrix, skipUpdateTransform?: boolean): void;
+
+    /**
+     * @ignore
+     */
+    render(displayObject: IRenderableObject, options?: IRendererRenderOptions | RenderTexture): void
     {
+        let renderTexture: RenderTexture;
+        let clear: boolean;
+        let transform: Matrix;
+        let skipUpdateTransform: boolean;
+
+        if (options)
+        {
+            if (options instanceof RenderTexture)
+            {
+                // #if _DEBUG
+                deprecation('6.0.0', 'Renderer#render arguments changed, use options instead.');
+                // #endif
+
+                /* eslint-disable prefer-rest-params */
+                renderTexture = options;
+                clear = arguments[2];
+                transform = arguments[3];
+                skipUpdateTransform = arguments[4];
+                /* eslint-enable prefer-rest-params */
+            }
+            else
+            {
+                renderTexture = options.renderTexture;
+                clear = options.clear;
+                transform = options.transform;
+                skipUpdateTransform = options.skipUpdateTransform;
+            }
+        }
+
         // can be handy to know!
         this.renderingToScreen = !renderTexture;
 
@@ -503,6 +551,21 @@ export class Renderer extends AbstractRenderer
 
         // TODO nullify all the managers..
         this.gl = null;
+    }
+
+    /**
+     * Please use `plugins.extract` instead.
+     * @member {PIXI.Extract} extract
+     * @deprecated since 6.0.0
+     * @readonly
+     */
+    public get extract(): any
+    {
+        // #if _DEBUG
+        deprecation('6.0.0', 'Renderer#extract has been deprecated, please use Renderer#plugins.extract instead.');
+        // #endif
+
+        return this.plugins.extract;
     }
 
     /**
