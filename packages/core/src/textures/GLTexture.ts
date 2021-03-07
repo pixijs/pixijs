@@ -12,7 +12,12 @@ export class GLTexture
     public wrapMode: number;
     public type: number;
     public internalFormat: number;
+    /**
+     * Type of sampler corresponding to this texture. See {@link PIXI.SAMPLER_TYPES}
+     * @member {number}
+     */
     public samplerType: number;
+
     dirtyId: number;
     dirtyStyleId: number;
 
@@ -72,9 +77,6 @@ export class GLTexture
          */
         this.internalFormat = 5121;
 
-        /**
-         * @member {number}
-         */
         this.samplerType = 0;
     }
 }

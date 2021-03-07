@@ -19,6 +19,11 @@ export class TextureSystem extends System
 {
     public boundTextures: BaseTexture[];
     public managedTextures: Array<BaseTexture>;
+    /**
+     * Whether glTexture with int/uint sampler type was uploaded
+     * @member {boolean}
+     * @protected
+     */
     protected hasIntegerTextures: boolean;
     protected CONTEXT_UID: number;
     protected gl: IRenderingContext;
@@ -71,9 +76,6 @@ export class TextureSystem extends System
          */
         this.unknownTexture = new BaseTexture();
 
-        /**
-         * Whether glTexture with int/uint sampler type was uploaded
-         */
         this.hasIntegerTextures = false;
     }
 
