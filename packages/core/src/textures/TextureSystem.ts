@@ -21,8 +21,6 @@ export class TextureSystem extends System
     public managedTextures: Array<BaseTexture>;
     /**
      * Whether glTexture with int/uint sampler type was uploaded
-     * @member {boolean}
-     * @protected
      */
     protected hasIntegerTextures: boolean;
     protected CONTEXT_UID: number;
