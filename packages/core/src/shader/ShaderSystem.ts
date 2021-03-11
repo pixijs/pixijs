@@ -1,7 +1,7 @@
-import { System } from '../System';
 import { GLProgram } from './GLProgram';
-import { generateUniformsSync, unsafeEvalSupported, defaultValue, compileProgram } from './utils';
+import { generateUniformsSync, unsafeEvalSupported, defaultValue, logProgramError, compileShader } from './utils';
 
+import type { ISystem } from '../ISystem';
 import type { IGLUniformData } from './GLProgram';
 import type { Renderer } from '../Renderer';
 import type { IRenderingContext } from '../IRenderingContext';
@@ -26,7 +26,7 @@ const defaultSyncData = { textureCount: 0, uboCount: 0 };
  * @memberof PIXI
  * @extends PIXI.System
  */
-export class ShaderSystem extends System
+export class ShaderSystem implements ISystem
 {
     protected gl: IRenderingContext;
     public shader: Shader;
@@ -39,10 +39,8 @@ export class ShaderSystem extends System
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
-    constructor(renderer: Renderer)
+    constructor(private renderer: Renderer)
     {
-        super(renderer);
-
         // Validation check that this environment support `new Function`
         this.systemCheck();
 
@@ -315,10 +313,39 @@ export class ShaderSystem extends System
 
         const program = shader.program;
 
-        const shaderProgram = compileProgram(gl, program.vertexSrc, program.fragmentSrc);
+        const glVertShader = compileShader(gl, gl.VERTEX_SHADER, program.vertexSrc);
+        const glFragShader = compileShader(gl, gl.FRAGMENT_SHADER, program.fragmentSrc);
 
-        program.attributeData = getAttributeData(shaderProgram, gl);
-        program.uniformData = getUniformData(shaderProgram, gl);
+        const webGLProgram = gl.createProgram();
+
+        gl.attachShader(webGLProgram, glVertShader);
+        gl.attachShader(webGLProgram, glFragShader);
+
+        gl.linkProgram(webGLProgram);
+
+        if (!gl.getProgramParameter(webGLProgram, gl.LINK_STATUS))
+        {
+            logProgramError(gl, webGLProgram, glVertShader, glFragShader);
+        }
+
+        program.attributeData = getAttributeData(webGLProgram, gl);
+        program.uniformData = getUniformData(webGLProgram, gl);
+
+        const keys = Object.keys(program.attributeData);
+
+        keys.sort((a, b) => (a > b) ? 1 : -1); // eslint-disable-line no-confusing-arrow
+
+        for (let i = 0; i < keys.length; i++)
+        {
+            program.attributeData[keys[i]].location = i;
+
+            gl.bindAttribLocation(webGLProgram, i, keys[i]);
+        }
+
+        gl.linkProgram(webGLProgram);
+
+        gl.deleteShader(glVertShader);
+        gl.deleteShader(glFragShader);
 
         const uniformData: {[key: string]: IGLUniformData} = {};
 
@@ -327,12 +354,12 @@ export class ShaderSystem extends System
             const data = program.uniformData[i];
 
             uniformData[i] = {
-                location: gl.getUniformLocation(shaderProgram, i),
+                location: gl.getUniformLocation(webGLProgram, i),
                 value: defaultValue(data.type, data.size),
             };
         }
 
-        const glProgram = new GLProgram(shaderProgram, uniformData);
+        const glProgram = new GLProgram(webGLProgram, uniformData);
 
         program.glPrograms[this.renderer.CONTEXT_UID] = glProgram;
 
@@ -353,6 +380,7 @@ export class ShaderSystem extends System
      */
     destroy(): void
     {
+        this.renderer = null;
         // TODO implement destroy method for ShaderSystem
         this.destroyed = true;
     }

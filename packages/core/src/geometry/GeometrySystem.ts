@@ -1,8 +1,8 @@
-import { System } from '../System';
 import { GLBuffer } from './GLBuffer';
 import { ENV } from '@pixi/constants';
 import { settings } from '../settings';
 
+import type { ISystem } from '../ISystem';
 import type { DRAW_MODES } from '@pixi/constants';
 import type { Renderer } from '../Renderer';
 import type { IRenderingContext } from '../IRenderingContext';
@@ -22,7 +22,7 @@ const byteSizeMap: {[key: number]: number} = { 5126: 4, 5123: 2, 5121: 1 };
  * @extends PIXI.System
  * @memberof PIXI
  */
-export class GeometrySystem extends System
+export class GeometrySystem implements ISystem
 {
     public hasVao: boolean;
     public hasInstance: boolean;
@@ -39,10 +39,8 @@ export class GeometrySystem extends System
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
-    constructor(renderer: Renderer)
+    constructor(private renderer: Renderer)
     {
-        super(renderer);
-
         this._activeGeometry = null;
         this._activeVao = null;
 
@@ -604,5 +602,13 @@ export class GeometrySystem extends System
         this.gl.bindVertexArray(null);
         this._activeVao = null;
         this._activeGeometry = null;
+    }
+
+    /**
+     * @ignore
+     */
+    destroy(): void
+    {
+        this.renderer = null;
     }
 }

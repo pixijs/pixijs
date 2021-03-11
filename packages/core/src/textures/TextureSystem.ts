@@ -1,9 +1,9 @@
-import { System } from '../System';
 import { BaseTexture } from './BaseTexture';
 import { GLTexture } from './GLTexture';
 import { removeItems } from '@pixi/utils';
 import { MIPMAP_MODES, WRAP_MODES, SCALE_MODES, TYPES } from '@pixi/constants';
 
+import type { ISystem } from '../ISystem';
 import type { Texture } from './Texture';
 import type { IRenderingContext } from '../IRenderingContext';
 import type { Renderer } from '../Renderer';
@@ -15,7 +15,7 @@ import type { Renderer } from '../Renderer';
  * @extends PIXI.System
  * @memberof PIXI
  */
-export class TextureSystem extends System
+export class TextureSystem implements ISystem
 {
     public boundTextures: BaseTexture[];
     public managedTextures: Array<BaseTexture>;
@@ -30,10 +30,8 @@ export class TextureSystem extends System
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
-    constructor(renderer: Renderer)
+    constructor(private renderer: Renderer)
     {
-        super(renderer);
-
         // TODO set to max textures...
         /**
          * Bound textures
@@ -461,5 +459,13 @@ export class TextureSystem extends System
         }
 
         gl.texParameteri(texture.target, gl.TEXTURE_MAG_FILTER, texture.scaleMode === SCALE_MODES.LINEAR ? gl.LINEAR : gl.NEAREST);
+    }
+
+    /**
+     * @ignore
+     */
+    destroy(): void
+    {
+        this.renderer = null;
     }
 }

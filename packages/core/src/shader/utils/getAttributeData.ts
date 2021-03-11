@@ -14,7 +14,6 @@ import { mapType } from './mapType';
 export function getAttributeData(program: WebGLProgram, gl: WebGLRenderingContextBase): {[key: string]: IAttributeData}
 {
     const attributes: {[key: string]: IAttributeData} = {};
-    const attributesArray: Array<IAttributeData> = [];
 
     const totalAttributes = gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES);
 
@@ -33,7 +32,6 @@ export function getAttributeData(program: WebGLProgram, gl: WebGLRenderingContex
             /* eslint-enable */
 
         attributes[attribData.name] = data;
-        attributesArray.push(data);
     }
 
     return attributes;
