@@ -30,9 +30,6 @@ export class StateSystem implements ISystem
     protected readonly map: Array<(value: boolean) => void>;
     protected readonly checks: Array<(system: this, state: State) => void>;
     protected defaultState: State;
-    /**
-     * @param {PIXI.Renderer} renderer - The renderer this System works for.
-     */
     constructor()
     {
         /**

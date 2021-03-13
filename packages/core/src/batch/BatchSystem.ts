@@ -15,12 +15,15 @@ export class BatchSystem implements ISystem
 {
     public readonly emptyRenderer: ObjectRenderer;
     public currentRenderer: ObjectRenderer;
+    private renderer: Renderer;
 
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
-    constructor(private renderer: Renderer)
+    constructor(renderer: Renderer)
     {
+        this.renderer = renderer;
+
         /**
          * An empty renderer.
          *

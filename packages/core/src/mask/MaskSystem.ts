@@ -39,12 +39,15 @@ export class MaskSystem implements ISystem
     protected alphaMaskIndex: number;
     private readonly maskDataPool: Array<MaskData>;
     private maskStack: Array<MaskData>;
+    private renderer: Renderer;
 
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
-    constructor(private renderer: Renderer)
+    constructor(renderer: Renderer)
     {
+        this.renderer = renderer;
+
         /**
          * Enable scissor masking.
          *
