@@ -28,12 +28,15 @@ export class ContextSystem implements ISystem
     protected gl: IRenderingContext;
 
     public extensions: WebGLExtensions;
+    private renderer: Renderer;
 
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
-    constructor(private renderer: Renderer)
+    constructor(renderer: Renderer)
     {
+        this.renderer = renderer;
+
         /**
          * Either 1 or 2 to reflect the WebGL version being used
          * @member {number}

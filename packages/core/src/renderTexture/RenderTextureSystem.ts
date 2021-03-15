@@ -45,12 +45,15 @@ export class RenderTextureSystem implements ISystem
     public readonly sourceFrame: Rectangle;
     public readonly destinationFrame: Rectangle;
     public readonly viewportFrame: Rectangle;
+    private renderer: Renderer;
 
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
-    constructor(private renderer: Renderer)
+    constructor(renderer: Renderer)
     {
+        this.renderer = renderer;
+
         /**
          * The clear background color as rgba
          * @member {number[]}
