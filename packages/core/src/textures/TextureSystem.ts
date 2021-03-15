@@ -28,12 +28,15 @@ export class TextureSystem implements ISystem
     protected _unknownBoundTextures: boolean;
     currentLocation: number;
     emptyTextures: {[key: number]: GLTexture};
+    private renderer: Renderer;
 
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
-    constructor(private renderer: Renderer)
+    constructor(renderer: Renderer)
     {
+        this.renderer = renderer;
+
         // TODO set to max textures...
         /**
          * Bound textures

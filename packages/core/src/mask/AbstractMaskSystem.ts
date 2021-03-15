@@ -13,11 +13,15 @@ export class AbstractMaskSystem implements ISystem
 {
     protected maskStack: Array<MaskData>;
     protected glConst: number;
+    protected renderer: Renderer;
+
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
-    constructor(protected renderer: Renderer)
+    constructor(renderer: Renderer)
     {
+        this.renderer = renderer;
+
         /**
          * The mask stack
          * @member {PIXI.MaskData[]}

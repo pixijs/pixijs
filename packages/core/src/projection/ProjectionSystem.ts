@@ -21,12 +21,15 @@ export class ProjectionSystem implements ISystem
     public defaultFrame: Rectangle;
     public projectionMatrix: Matrix;
     public transform: Matrix;
+    private renderer: Renderer;
 
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
-    constructor(private renderer: Renderer)
+    constructor(renderer: Renderer)
     {
+        this.renderer = renderer;
+
         /**
          * The destination frame used to calculate the current projection matrix.
          *
