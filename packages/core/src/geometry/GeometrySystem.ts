@@ -33,12 +33,14 @@ export class GeometrySystem implements ISystem
     protected _boundBuffer: GLBuffer;
     readonly managedGeometries: {[key: number]: Geometry};
     readonly managedBuffers: {[key: number]: Buffer};
+    private renderer: Renderer;
 
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
-    constructor(private renderer: Renderer)
+    constructor(renderer: Renderer)
     {
+        this.renderer = renderer;
         this._activeGeometry = null;
         this._activeVao = null;
 

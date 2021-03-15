@@ -28,12 +28,15 @@ export class FramebufferSystem implements ISystem
     protected gl: IRenderingContext;
     protected unknownFramebuffer: Framebuffer;
     protected msaaSamples: Array<number>;
+    public renderer: Renderer;
 
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
-    constructor(public renderer: Renderer)
+    constructor(renderer: Renderer)
     {
+        this.renderer = renderer;
+
         /**
          * A list of managed framebuffers
          * @member {PIXI.Framebuffer[]}

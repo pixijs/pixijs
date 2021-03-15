@@ -234,6 +234,7 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
     // this could be more elegant..
     const cachedRenderTexture = renderer.renderTexture.current;
     const cachedSourceFrame = renderer.renderTexture.sourceFrame.clone();
+    const cachedDestinationFrame = renderer.renderTexture.destinationFrame.clone();
     const cachedProjectionTransform = renderer.projection.transform;
 
     // We also store the filter stack - I will definitely look to change how this works a little later down the line.
@@ -263,7 +264,7 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
 
     // now restore the state be setting the new properties
     renderer.projection.transform = cachedProjectionTransform;
-    renderer.renderTexture.bind(cachedRenderTexture, cachedSourceFrame);
+    renderer.renderTexture.bind(cachedRenderTexture, cachedSourceFrame, cachedDestinationFrame);
 
     // renderer.filterManager.filterStack = stack;
 
