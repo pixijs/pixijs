@@ -155,6 +155,16 @@ export class Loader extends ResourceLoader
 
         return Loader;
     }
+
+    /**
+     * All the resources for this loader keyed by name.
+     *
+     * @member {object<string, Resource>}
+     */
+    resources: {
+        [key: string]: import('@pixi/loaders').ILoaderResource;
+    };
+
 }
 
 // parse any blob into more usable objects (e.g. Image)
