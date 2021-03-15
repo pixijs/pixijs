@@ -1,10 +1,10 @@
-import { System } from '../System';
 import { Rectangle } from '@pixi/math';
 import { ENV, BUFFER_BITS, MSAA_QUALITY } from '@pixi/constants';
 import { settings } from '../settings';
 import { Framebuffer } from './Framebuffer';
 import { GLFramebuffer } from './GLFramebuffer';
 
+import type { ISystem } from '../ISystem';
 import type { Renderer } from '../Renderer';
 import type { IRenderingContext } from '../IRenderingContext';
 
@@ -17,7 +17,7 @@ const tempRectangle = new Rectangle();
  * @extends PIXI.System
  * @memberof PIXI
  */
-export class FramebufferSystem extends System
+export class FramebufferSystem implements ISystem
 {
     public readonly managedFramebuffers: Array<Framebuffer>;
     public current: Framebuffer;
@@ -32,10 +32,8 @@ export class FramebufferSystem extends System
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
-    constructor(renderer: Renderer)
+    constructor(public renderer: Renderer)
     {
-        super(renderer);
-
         /**
          * A list of managed framebuffers
          * @member {PIXI.Framebuffer[]}
@@ -590,5 +588,13 @@ export class FramebufferSystem extends System
     {
         this.current = this.unknownFramebuffer;
         this.viewport = new Rectangle();
+    }
+
+    /**
+     * @ignore
+     */
+    destroy(): void
+    {
+        this.renderer = null;
     }
 }
