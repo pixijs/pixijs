@@ -19,9 +19,7 @@ export class TextureSystem implements ISystem
 {
     public boundTextures: BaseTexture[];
     public managedTextures: Array<BaseTexture>;
-    /**
-     * Whether glTexture with int/uint sampler type was uploaded
-     */
+    /** Whether glTexture with int/uint sampler type was uploaded. */
     protected hasIntegerTextures: boolean;
     protected CONTEXT_UID: number;
     protected gl: IRenderingContext;
@@ -246,7 +244,7 @@ export class TextureSystem implements ISystem
      * Ensures that current boundTextures all have FLOAT sampler type,
      * see {@link PIXI.SAMPLER_TYPES} for explanation.
      *
-     * @param {number} maxTextures - number of locations to check
+     * @param maxTextures - number of locations to check
      */
     ensureSamplerType(maxTextures: number): void
     {
