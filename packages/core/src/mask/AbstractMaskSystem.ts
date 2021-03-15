@@ -1,5 +1,4 @@
-import { System } from '../System';
-
+import type { ISystem } from '../ISystem';
 import type { MaskData } from './MaskData';
 import type { Renderer } from '../Renderer';
 
@@ -10,17 +9,15 @@ import type { Renderer } from '../Renderer';
  * @extends PIXI.System
  * @memberof PIXI
  */
-export class AbstractMaskSystem extends System
+export class AbstractMaskSystem implements ISystem
 {
     protected maskStack: Array<MaskData>;
     protected glConst: number;
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
-    constructor(renderer: Renderer)
+    constructor(protected renderer: Renderer)
     {
-        super(renderer);
-
         /**
          * The mask stack
          * @member {PIXI.MaskData[]}
@@ -87,8 +84,7 @@ export class AbstractMaskSystem extends System
      */
     destroy(): void
     {
-        super.destroy();
-
+        this.renderer = null;
         this.maskStack = null;
     }
 }
