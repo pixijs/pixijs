@@ -137,8 +137,8 @@ export class ShaderSystem implements ISystem
     /**
      *
      * syncs uniforms on the group
-     * @param {*} group - the uniform group to sync
-     * @param {*} [syncData] - this is data that is passed to the sync function and any nested sync functions
+     * @param group - the uniform group to sync
+     * @param syncData - this is data that is passed to the sync function and any nested sync functions
      */
     syncUniformGroup(group: UniformGroup, syncData?: any): void
     {
@@ -180,12 +180,10 @@ export class ShaderSystem implements ISystem
     }
 
     /**
-     *
-     * syncs uniform buffers
+     * Syncs uniform buffers
      *
      * @param group - the uniform buffer group to sync
      * @param name - the name of the uniform buffer
-     * @param syncData - this is data that is passed to the sync function and any nested sync functions
      */
     syncUniformBufferGroup(group: UniformGroup, name?: string)
     {

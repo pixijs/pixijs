@@ -1,9 +1,9 @@
-import { System } from '../System';
 import { GLBuffer } from './GLBuffer';
 
 import type { Renderer } from '../Renderer';
 import type { IRenderingContext } from '../IRenderingContext';
 import type { Buffer } from './Buffer';
+import type { ISystem } from '../System';
 
 /**
  * System plugin to the renderer to manage buffers.
@@ -22,35 +22,37 @@ import type { Buffer } from './Buffer';
  *
  *
  * @class
- * @extends PIXI.System
  * @memberof PIXI
  */
-export class BufferSystem extends System
+export class BufferSystem implements ISystem
 {
     CONTEXT_UID: number;
     gl: IRenderingContext;
 
+    /** Cache for all buffers by id, used in case renderer gets destroyed or for profiling */
     readonly managedBuffers: {[key: number]: Buffer};
+
+    /** Cache keeping track of the base bound buffer bases */
     readonly boundBufferBases: {[key: number]: Buffer};
+
+    private renderer: Renderer;
 
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
     constructor(renderer: Renderer)
     {
-        super(renderer);
-
-        /**
-         * Cache for all buffers by id, used in case renderer gets destroyed or for profiling
-         * @member {object}
-         * @readonly
-         */
+        this.renderer = renderer;
         this.managedBuffers = {};
-
-        /**
-         * a cache keeping track of the base bound buffer bases
-         */
         this.boundBufferBases = {};
+    }
+
+    /**
+     * @ignore
+     */
+    destroy(): void
+    {
+        this.renderer = null;
     }
 
     /**
@@ -69,7 +71,7 @@ export class BufferSystem extends System
     /**
      * this binds specified buffer. OOn first run, it will create the webGL buffers for the context too
      *
-     * @param {PIXI.Buffer} buffer the buffer to bind to the renderer
+     * @param buffer - the buffer to bind to the renderer
      */
     bind(buffer: Buffer): void
     {

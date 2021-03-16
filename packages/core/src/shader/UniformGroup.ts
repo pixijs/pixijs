@@ -161,8 +161,8 @@ export class UniformGroup<LAYOUT = Dict<any>>
     /**
      * A short hand function for creating a static ubo UniformGroup,
      *
-     * @param uniforms the ubo item
-     * @param _static should this be updated each time it is used? defaults to true here!
+     * @param uniforms - the ubo item
+     * @param _static - should this be updated each time it is used? defaults to true here!
      */
     static uboFrom(uniforms: Dict<any> | Buffer, _static?: boolean): UniformGroup
     {
