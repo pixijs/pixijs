@@ -3,7 +3,7 @@ import { GLBuffer } from './GLBuffer';
 import type { Renderer } from '../Renderer';
 import type { IRenderingContext } from '../IRenderingContext';
 import type { Buffer } from './Buffer';
-import type { ISystem } from '../System';
+import type { ISystem } from '../ISystem';
 
 /**
  * System plugin to the renderer to manage buffers.
