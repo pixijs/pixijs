@@ -191,7 +191,6 @@ export class Filter extends Shader
     public autoFit: boolean;
     /**
      * Legacy filters use position and uvs from attributes (set by filter system)
-     * @member {boolean}
      * @readonly
      */
     public legacy: boolean;
