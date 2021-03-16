@@ -33,11 +33,15 @@ export class ShaderSystem implements ISystem
     public id: number;
     public destroyed = false;
     private cache: Dict<UniformsSyncCallback>;
+    private renderer: Renderer;
+
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
-    constructor(private renderer: Renderer)
+    constructor(renderer: Renderer)
     {
+        this.renderer = renderer;
+
         // Validation check that this environment support `new Function`
         this.systemCheck();
 

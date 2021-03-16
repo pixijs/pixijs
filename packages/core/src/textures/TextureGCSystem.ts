@@ -26,11 +26,15 @@ export class TextureGCSystem implements ISystem
     public maxIdle: number;
     public checkCountMax: number;
     public mode: number;
+    private renderer: Renderer;
+
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
-    constructor(private renderer: Renderer)
+    constructor(renderer: Renderer)
     {
+        this.renderer = renderer;
+
         /**
          * Count
          * @member {number}

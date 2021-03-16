@@ -56,12 +56,15 @@ export class FilterSystem implements ISystem
     protected activeState: FilterState;
     protected globalUniforms: UniformGroup;
     private tempRect: Rectangle;
+    public renderer: Renderer;
 
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
-    constructor(public renderer: Renderer)
+    constructor(renderer: Renderer)
     {
+        this.renderer = renderer;
+
         /**
          * List of filters for the FilterSystem
          * @member {Object[]}
