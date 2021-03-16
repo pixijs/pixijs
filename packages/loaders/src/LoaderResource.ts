@@ -1,21 +1,39 @@
 import { Resource } from 'resource-loader';
 
-import type { Spritesheet } from '@pixi/spritesheet';
 import type { IBaseTextureOptions, Texture } from '@pixi/core';
-import type { Dict } from '@pixi/utils';
 
+/**
+ * Resource metadata, can be used to pass BaseTexture options.
+ * @memberof PIXI
+ * @extends PIXI.IBaseTextureOptions
+ */
 export interface IResourceMetadata extends GlobalMixins.IResourceMetadata, Resource.IMetadata, IBaseTextureOptions {
-    imageMetadata?: any;
+    /**
+     * Used by BitmapFonts, Spritesheet and CompressedTextures as the options to used for
+     * metadata when loading the child image.
+     * @type {object}
+     */
+    imageMetadata?: IResourceMetadata;
 }
+
+/**
+ * PixiJS' base Loader resource type. This is a superset of the resource-loader's Resource class
+ * and contains any mixins for extending.
+ * @memberof PIXI
+ * @extends resource-loader.Resource
+ */
 export interface ILoaderResource extends GlobalMixins.ILoaderResource, Resource
 {
+    /**
+     * Texture reference for loading images and other textures.
+     * @type {PIXI.Texture}
+     */
     texture?: Texture;
-    spritesheet?: Spritesheet;
 
-    // required for Spritesheet
-    textures?: Dict<Texture>;
-
-    // required specific type for Spritesheet
+    /**
+     * Data that can be added for loading resources.
+     * @type {IResourceMetadata}
+     */
     metadata: IResourceMetadata;
 }
 
