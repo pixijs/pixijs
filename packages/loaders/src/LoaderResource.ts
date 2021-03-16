@@ -11,7 +11,7 @@ export interface IResourceMetadata extends GlobalMixins.IResourceMetadata, Resou
     /**
      * Used by BitmapFonts, Spritesheet and CompressedTextures as the options to used for
      * metadata when loading the child image.
-     * @type {object}
+     * @type {PIXI.IResourceMetadata}
      */
     imageMetadata?: IResourceMetadata;
 }
@@ -32,7 +32,7 @@ export interface ILoaderResource extends GlobalMixins.ILoaderResource, Resource
 
     /**
      * Data that can be added for loading resources.
-     * @type {IResourceMetadata}
+     * @type {PIXI.IResourceMetadata}
      */
     metadata: IResourceMetadata;
 }
