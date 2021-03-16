@@ -306,11 +306,12 @@ export class GeometrySystem implements ISystem
 
     /**
      * Creates or gets Vao with the same structure as the geometry and stores it on the geometry.
-     * If vao is created, it is bound automatically.
+     * If vao is created, it is bound automatically. We use a shader to infer what and how to set up the
+     * attribute locations.
      *
      * @protected
      * @param {PIXI.Geometry} geometry - Instance of geometry to to generate Vao for
-     * @param {PIXI.Program} program - Instance of program
+     * @param {PIXI.Shader} shader - Instance of the shader
      * @param {boolean} [incRefCount=false] - Increment refCount of all geometry buffers
      */
     protected initGeometryVao(geometry: Geometry, shader: Shader, incRefCount = true): WebGLVertexArrayObject

@@ -22,14 +22,12 @@ export function getAttributeData(program: WebGLProgram, gl: WebGLRenderingContex
         const attribData = gl.getActiveAttrib(program, i);
         const type = mapType(gl, attribData.type);
 
-        /*eslint-disable */
-            const data = {
-                type: type,
-                name: attribData.name,
-                size: mapSize(type),
-                location: i,
-            };
-            /* eslint-enable */
+        const data = {
+            type,
+            name: attribData.name,
+            size: mapSize(type),
+            location: i,
+        };
 
         attributes[attribData.name] = data;
     }
