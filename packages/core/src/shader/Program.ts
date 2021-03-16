@@ -44,9 +44,7 @@ export class Program
     syncUniforms: any;
     /** Assigned when a program is first bound to the shader system. */
     attributeData: { [key: string]: IAttributeData};
-    /**
-     * assigned when a program is first bound to the shader system
-     */
+    /** Assigned when a program is first bound to the shader system. */
     uniformData: {[key: string]: IUniformData};
 
     /**
