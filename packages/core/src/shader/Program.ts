@@ -42,9 +42,7 @@ export class Program
     nameCache: any;
     glPrograms: { [ key: number ]: GLProgram};
     syncUniforms: any;
-    /**
-     * assigned when a program is first bound to the shader system
-     */
+    /** Assigned when a program is first bound to the shader system. */
     attributeData: { [key: string]: IAttributeData};
     /**
      * assigned when a program is first bound to the shader system
