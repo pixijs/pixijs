@@ -85,7 +85,7 @@ export function logProgramError(
         // if there is a program info log, log it
         if (gl.getProgramInfoLog(program) !== '')
         {
-            console.warn('Pixi.js Warning: gl.getProgramInfoLog()', gl.getProgramInfoLog(program));
+            console.warn('PixiJS Warning: gl.getProgramInfoLog()', gl.getProgramInfoLog(program));
         }
     }
 }
