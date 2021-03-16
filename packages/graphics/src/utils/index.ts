@@ -18,7 +18,6 @@ import { buildRoundedRectangle } from './buildRoundedRectangle';
 export { buildRoundedRectangle };
 
 export * from './buildLine';
-export * from './Star';
 export * from './ArcUtils';
 export * from './BezierUtils';
 export * from './QuadraticUtils';

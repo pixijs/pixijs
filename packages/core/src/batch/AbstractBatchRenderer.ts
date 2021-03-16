@@ -619,6 +619,8 @@ export class AbstractBatchRenderer extends ObjectRenderer
     {
         this.renderer.state.set(this.state);
 
+        this.renderer.texture.ensureSamplerType(this.MAX_TEXTURES);
+
         this.renderer.shader.bind(this._shader);
 
         if (settings.CAN_UPLOAD_SAME_BUFFER)

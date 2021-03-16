@@ -48,9 +48,9 @@ make your change to (and send a PR to) depends on the type of change you are mak
 
 Here is our branch breakdown:
 
-- `master` - Make your change to the `master` branch if it is an *urgent* hotfix.
+- `main` - Make your change to the `main` branch if it is an *urgent* hotfix.
 - `dev` - Make your change to `dev` if it is a *non-urgent* bugfix or a backwards-compatible feature.
-- `next` - Make your change to `next` if it is a breaking change, or wild/crazy idea.
+- `v4.x`, `v5.3.x`, `v5.2.x`, etc - Make your change to legacy branches to patch old releases if your fix *only* applies to older versions.
 
 Your change should be made directly to the branch in your fork, or to a branch in your fork made off of
 one of the above branches.
@@ -61,9 +61,14 @@ You can test your change by using the automated tests packaged with PixiJS. You 
 by running `npm test` from the command line. If you fix a bug please add a test that will catch that
 bug if it ever happens again. This prevents regressions from sneaking in.
 
-For a speedy workflow:
-1. Run `npm start` in one terminal. This watches the source tree and compiles it incrementally.
-2. When desired, run `npm run unit-test` in another terminal. This runs tests using the compilation output from `npm start`.
+Tips for a faster workflow:
+
+- Run `npm start` in one terminal. This watches the source tree and compiles it incrementally.
+- When desired, run `npm run unit-test` in another terminal. This runs tests using the compilation output from `npm start`.
+- Run `npm run unit-test:debug` to use headful DevTools to debug or develop tests
+- For testing specific a package, use `--package` flag, e.g., `npm run unit-test -- --package=@pixi/math`
+- The `--package` flag supports multiple packages, e.g., `npm run unit-test -- --package=@pixi/math --package=@pixi/core`
+- The `--package` flag supports debug testing as well, e.g., `npm run unit-test:debug -- --package=@pixi/math`
 
 ### Submitting Your Change
 

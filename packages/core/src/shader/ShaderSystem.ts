@@ -1,7 +1,7 @@
-import { System } from '../System';
 import { GLProgram } from './GLProgram';
 import { generateUniformsSync, unsafeEvalSupported, defaultValue, compileProgram } from './utils';
 
+import type { ISystem } from '../ISystem';
 import type { IGLUniformData } from './GLProgram';
 import type { Renderer } from '../Renderer';
 import type { IRenderingContext } from '../IRenderingContext';
@@ -23,7 +23,7 @@ const defaultSyncData = { textureCount: 0, uboCount: 0 };
  * @memberof PIXI
  * @extends PIXI.System
  */
-export class ShaderSystem extends System
+export class ShaderSystem implements ISystem
 {
     protected gl: IRenderingContext;
     public shader: Shader;
@@ -32,13 +32,14 @@ export class ShaderSystem extends System
     public destroyed = false;
     private cache: Dict<UniformsSyncCallback>;
     private _uboCache: Dict<{size: number, syncFunc: UniformsSyncCallback}>;
+    private renderer: Renderer;
 
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
     constructor(renderer: Renderer)
     {
-        super(renderer);
+        this.renderer = renderer;
 
         // Validation check that this environment support `new Function`
         this.systemCheck();
@@ -353,6 +354,7 @@ export class ShaderSystem extends System
      */
     destroy(): void
     {
+        this.renderer = null;
         // TODO implement destroy method for ShaderSystem
         this.destroyed = true;
     }

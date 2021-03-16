@@ -37,28 +37,48 @@ const DIV_HOOK_ZINDEX = 2;
  */
 export class AccessibilityManager
 {
-    public debug: boolean;
+    /** Setting this to true will visually show the divs. */
+    public debug = false;
+
+    /**
+     * The renderer this accessibility manager works for.
+     *
+     * @type {PIXI.CanvasRenderer|PIXI.Renderer}
+     */
     public renderer: CanvasRenderer|Renderer;
 
-    private _isActive: boolean;
-    private _isMobileAccessibility: boolean;
+    /** Internal variable, see isActive getter. */
+    private _isActive = false;
+
+    /** Internal variable, see isMobileAccessibility getter. */
+    private _isMobileAccessibility = false;
+
+    /** Button element for handling touch hooks. */
     private _hookDiv: HTMLElement;
+
+    /** This is the dom element that will sit over the PixiJS element. This is where the div overlays will go. */
     private div: HTMLElement;
-    private pool: IAccessibleHTMLElement[];
-    private renderId: number;
-    private children: DisplayObject[];
-    private androidUpdateCount: number;
-    private androidUpdateFrequency: number;
+
+    /** A simple pool for storing divs. */
+    private pool: IAccessibleHTMLElement[] = [];
+
+    /** This is a tick used to check if an object is no longer being rendered. */
+    private renderId = 0;
+
+    /** The array of currently active accessible items. */
+    private children: DisplayObject[] = [];
+
+    /** Count to throttle div updates on android devices. */
+    private androidUpdateCount = 0;
+
+    /**  The frequency to update the div elements. */
+    private androidUpdateFrequency = 500; // 2fps
 
     /**
      * @param {PIXI.CanvasRenderer|PIXI.Renderer} renderer - A reference to the current renderer
      */
     constructor(renderer: CanvasRenderer|Renderer)
     {
-        /**
-         * @type {?HTMLElement}
-         * @private
-         */
         this._hookDiv = null;
 
         if (isMobile.tablet || isMobile.phone)
@@ -76,51 +96,8 @@ export class AccessibilityManager
         div.style.left = `${DIV_TOUCH_POS_Y}px`;
         div.style.zIndex = DIV_TOUCH_ZINDEX.toString();
 
-        /**
-         * This is the dom element that will sit over the PixiJS element. This is where the div overlays will go.
-         *
-         * @type {HTMLElement}
-         * @private
-         */
         this.div = div;
-
-        /**
-         * A simple pool for storing divs.
-         *
-         * @type {*}
-         * @private
-         */
-        this.pool = [];
-
-        /**
-         * This is a tick used to check if an object is no longer being rendered.
-         *
-         * @type {Number}
-         * @private
-         */
-        this.renderId = 0;
-
-        /**
-         * Setting this to true will visually show the divs.
-         *
-         * @type {boolean}
-         */
-        this.debug = false;
-
-        /**
-         * The renderer this accessibility manager works for.
-         *
-         * @member {PIXI.CanvasRenderer|PIXI.Renderer}
-         */
         this.renderer = renderer;
-
-        /**
-         * The array of currently active accessible items.
-         *
-         * @member {Array<*>}
-         * @private
-         */
-        this.children = [];
 
         /**
          * pre-bind the functions
@@ -138,29 +115,12 @@ export class AccessibilityManager
          */
         this._onMouseMove = this._onMouseMove.bind(this);
 
-        this._isActive = false;
-
-        this._isMobileAccessibility = false;
-
-        /**
-         * count to throttle div updates on android devices
-         * @type number
-         * @private
-         */
-        this.androidUpdateCount = 0;
-
-        /**
-         * the frequency to update the div elements ()
-         * @private
-         */
-        this.androidUpdateFrequency = 500; // 2fps
-
         // let listen for tab.. once pressed we can fire up and show the accessibility layer
         self.addEventListener('keydown', this._onKeyDown, false);
     }
 
     /**
-     * A flag
+     * Value of `true` if accessibility is currently active and accessibility layers are showing.
      * @member {boolean}
      * @readonly
      */
@@ -170,7 +130,7 @@ export class AccessibilityManager
     }
 
     /**
-     * A flag
+     * Value of `true` if accessibility is enabled for touch devices.
      * @member {boolean}
      * @readonly
      */

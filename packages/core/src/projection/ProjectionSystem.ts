@@ -1,6 +1,6 @@
-import { System } from '../System';
 import { Matrix } from '@pixi/math';
 
+import type { ISystem } from '../ISystem';
 import type { Rectangle } from '@pixi/math';
 import type { Renderer } from '../Renderer';
 
@@ -14,20 +14,21 @@ import type { Renderer } from '../Renderer';
  * @extends PIXI.System
  * @memberof PIXI
  */
-export class ProjectionSystem extends System
+export class ProjectionSystem implements ISystem
 {
     public destinationFrame: Rectangle;
     public sourceFrame: Rectangle;
     public defaultFrame: Rectangle;
     public projectionMatrix: Matrix;
     public transform: Matrix;
+    private renderer: Renderer;
 
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
     constructor(renderer: Renderer)
     {
-        super(renderer);
+        this.renderer = renderer;
 
         /**
          * The destination frame used to calculate the current projection matrix.
@@ -171,5 +172,13 @@ export class ProjectionSystem extends System
     setTransform(_matrix: Matrix): void
     {
         // this._activeRenderTarget.transform = matrix;
+    }
+
+    /**
+     * @ignore
+     */
+    destroy(): void
+    {
+        this.renderer = null;
     }
 }

@@ -1,5 +1,5 @@
-import { AbstractRenderer, CanvasResource } from '@pixi/core';
-import { CanvasRenderTarget, sayHello, rgb2hex, hex2string } from '@pixi/utils';
+import { AbstractRenderer, CanvasResource, RenderTexture, BaseRenderTexture } from '@pixi/core';
+import { CanvasRenderTarget, sayHello, rgb2hex, hex2string, deprecation } from '@pixi/utils';
 import { CanvasMaskManager } from './utils/CanvasMaskManager';
 import { mapCanvasBlendModesToPixi } from './utils/mapCanvasBlendModesToPixi';
 import { RENDERER_TYPE, SCALE_MODES, BLEND_MODES } from '@pixi/constants';
@@ -8,10 +8,10 @@ import { Matrix } from '@pixi/math';
 
 import type { DisplayObject } from '@pixi/display';
 import type {
-    IRendererOptions, IRendererPlugin,
+    IRendererOptions,
+    IRendererPlugin,
     IRendererPlugins,
-    RenderTexture,
-    BaseRenderTexture,
+    IRendererRenderOptions
 } from '@pixi/core';
 
 const tempMatrix = new Matrix();
@@ -79,7 +79,9 @@ export class CanvasRenderer extends AbstractRenderer
      * @param {number} [options.width=800] - the width of the screen
      * @param {number} [options.height=600] - the height of the screen
      * @param {HTMLCanvasElement} [options.view] - the canvas to use as a view, optional
-     * @param {boolean} [options.contextAlpha=true] - Pass-through value for canvas' context `alpha` property.
+     * @param {boolean} [options.useContextAlpha=true] - Pass-through value for canvas' context `alpha` property.
+     *   If you want to set transparency, please use `backgroundAlpha`. This option is for cases where the
+     *   canvas needs to be opaque, possibly for performance reasons on some older devices.
      * @param {boolean} [options.autoDensity=false] - Resizes renderer view in CSS pixels to allow for
      *   resolutions other than 1
      * @param {boolean} [options.antialias=false] - sets antialias
@@ -102,7 +104,7 @@ export class CanvasRenderer extends AbstractRenderer
          *
          * @member {CanvasRenderingContext2D}
          */
-        this.rootContext = this.view.getContext('2d', { alpha: this.contextAlpha }) as
+        this.rootContext = this.view.getContext('2d', { alpha: this.useContextAlpha }) as
             CrossPlatformCanvasRenderingContext2D;
 
         /**
@@ -193,21 +195,67 @@ export class CanvasRenderer extends AbstractRenderer
     }
 
     /**
-     * Renders the object to this canvas view
+     * Renders the object to its WebGL view.
      *
-     * @param {PIXI.DisplayObject} displayObject - The object to be rendered
-     * @param {PIXI.RenderTexture} [renderTexture] - A render texture to be rendered to.
-     *  If unset, it will render to the root context.
-     * @param {boolean} [clear=this.clearBeforeRender] - Whether to clear the canvas before drawing
-     * @param {PIXI.Matrix} [transform] - A transformation to be applied
-     * @param {boolean} [skipUpdateTransform=false] - Whether to skip the update transform
+     * @param displayObject - The object to be rendered.
+     * @param {object} [options] - Object to use for render options.
+     * @param {PIXI.RenderTexture} [options.renderTexture] - The render texture to render to.
+     * @param {boolean} [options.clear=true] - Should the canvas be cleared before the new render.
+     * @param {PIXI.Matrix} [options.transform] - A transform to apply to the render texture before rendering.
+     * @param {boolean} [options.skipUpdateTransform=false] - Should we skip the update transform pass?
      */
-    public render(displayObject: DisplayObject, renderTexture?: RenderTexture | BaseRenderTexture,
-        clear?: boolean, transform?: Matrix, skipUpdateTransform?: boolean): void
+    render(displayObject: DisplayObject, options?: IRendererRenderOptions): void;
+
+    /**
+     * Please use the `option` render arguments instead.
+     *
+     * @deprecated Since 6.0.0
+     * @param displayObject
+     * @param renderTexture
+     * @param clear
+     * @param transform
+     * @param skipUpdateTransform
+     */
+    render(displayObject: DisplayObject, renderTexture?: RenderTexture | BaseRenderTexture,
+        clear?: boolean, transform?: Matrix, skipUpdateTransform?: boolean): void;
+
+    /**
+     * @ignore
+     */
+    public render(displayObject: DisplayObject, options?: IRendererRenderOptions | RenderTexture | BaseRenderTexture): void
     {
         if (!this.view)
         {
             return;
+        }
+
+        let renderTexture: BaseRenderTexture | RenderTexture;
+        let clear: boolean;
+        let transform: Matrix;
+        let skipUpdateTransform: boolean;
+
+        if (options)
+        {
+            if (options instanceof RenderTexture || options instanceof BaseRenderTexture)
+            {
+                // #if _DEBUG
+                deprecation('6.0.0', 'CanvasRenderer#render arguments changed, use options instead.');
+                // #endif
+
+                /* eslint-disable prefer-rest-params */
+                renderTexture = options;
+                clear = arguments[2];
+                transform = arguments[3];
+                skipUpdateTransform = arguments[4];
+                /* eslint-enable prefer-rest-params */
+            }
+            else
+            {
+                renderTexture = options.renderTexture;
+                clear = options.clear;
+                transform = options.transform;
+                skipUpdateTransform = options.skipUpdateTransform;
+            }
         }
 
         // can be handy to know!
@@ -273,7 +321,7 @@ export class CanvasRenderer extends AbstractRenderer
 
                 if (this.backgroundAlpha > 0)
                 {
-                    context.globalAlpha = this.contextAlpha ? this.backgroundAlpha : 1;
+                    context.globalAlpha = this.useContextAlpha ? this.backgroundAlpha : 1;
                     context.fillStyle = this._backgroundColorString;
                     context.fillRect(0, 0, this.width, this.height);
                     context.globalAlpha = 1;
@@ -288,7 +336,7 @@ export class CanvasRenderer extends AbstractRenderer
 
                 if (clearColor[3] > 0)
                 {
-                    context.globalAlpha = this.contextAlpha ? clearColor[3] : 1;
+                    context.globalAlpha = this.useContextAlpha ? clearColor[3] : 1;
                     context.fillStyle = hex2string(rgb2hex(clearColor));
                     context.fillRect(0, 0, renderTexture.realWidth, renderTexture.realHeight);
                     context.globalAlpha = 1;
@@ -372,7 +420,7 @@ export class CanvasRenderer extends AbstractRenderer
 
         if (clearColor)
         {
-            context.globalAlpha = this.contextAlpha ? alpha : 1;
+            context.globalAlpha = this.useContextAlpha ? alpha : 1;
             context.fillStyle = clearColor;
             context.fillRect(0, 0, this.width, this.height);
             context.globalAlpha = 1;

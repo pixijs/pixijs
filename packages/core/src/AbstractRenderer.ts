@@ -15,9 +15,9 @@ export interface IRendererOptions extends GlobalMixins.IRendererOptions
     width?: number;
     height?: number;
     view?: HTMLCanvasElement;
-    contextAlpha?: boolean | 'notMultiplied';
+    useContextAlpha?: boolean | 'notMultiplied';
     /**
-     * Use `contextAlpha` and `backgroundAlpha` instead.
+     * Use `backgroundAlpha` instead.
      * @deprecated
      */
     transparent?: boolean;
@@ -35,6 +35,13 @@ export interface IRendererOptions extends GlobalMixins.IRendererOptions
 export interface IRendererPlugins
 {
     [key: string]: any;
+}
+
+export interface IRendererRenderOptions {
+    renderTexture?: RenderTexture;
+    clear?: boolean;
+    transform?: Matrix;
+    skipUpdateTransform?: boolean;
 }
 
 /**
@@ -55,7 +62,7 @@ export abstract class AbstractRenderer extends EventEmitter
     public readonly screen: Rectangle;
     public readonly view: HTMLCanvasElement;
     public readonly plugins: IRendererPlugins;
-    public readonly contextAlpha: boolean | 'notMultiplied';
+    public readonly useContextAlpha: boolean | 'notMultiplied';
     public readonly autoDensity: boolean;
     public readonly preserveDrawingBuffer: boolean;
 
@@ -70,7 +77,9 @@ export abstract class AbstractRenderer extends EventEmitter
      * @param {number} [options.width=800] - The width of the screen.
      * @param {number} [options.height=600] - The height of the screen.
      * @param {HTMLCanvasElement} [options.view] - The canvas to use as a view, optional.
-     * @param {boolean} [options.contextAlpha=true] - Pass-through value for canvas' context `alpha` property.
+     * @param {boolean} [options.useContextAlpha=true] - Pass-through value for canvas' context `alpha` property.
+     *   If you want to set transparency, please use `backgroundAlpha`. This option is for cases where the
+     *   canvas needs to be opaque, possibly for performance reasons on some older devices.
      * @param {boolean} [options.autoDensity=false] - Resizes renderer view in CSS pixels to allow for
      *   resolutions other than 1.
      * @param {boolean} [options.antialias=false] - Sets antialias
@@ -133,11 +142,12 @@ export abstract class AbstractRenderer extends EventEmitter
         this.resolution = options.resolution || settings.RESOLUTION;
 
         /**
-         * Whether the render view is transparent.
+         * Pass-thru setting for the the canvas' context `alpha` property. This is typically
+         * not something you need to fiddle with. If you want transparency, use `backgroundAlpha`.
          *
          * @member {boolean}
          */
-        this.contextAlpha = options.contextAlpha;
+        this.useContextAlpha = options.useContextAlpha;
 
         /**
          * Whether CSS dimensions of canvas view should be resized to screen dimensions automatically.
@@ -197,9 +207,9 @@ export abstract class AbstractRenderer extends EventEmitter
         if (options.transparent !== undefined)
         {
             // #if _DEBUG
-            deprecation('6.0.0', 'Option transparent is deprecated, please use contextAlpha or backgroundAlpha instead.');
+            deprecation('6.0.0', 'Option transparent is deprecated, please use backgroundAlpha instead.');
             // #endif
-            this.contextAlpha = options.transparent;
+            this.useContextAlpha = options.transparent;
             this.backgroundAlpha = options.transparent ? 0 : 1;
         }
 
@@ -319,13 +329,17 @@ export abstract class AbstractRenderer extends EventEmitter
         tempMatrix.tx = -region.x;
         tempMatrix.ty = -region.y;
 
-        this.render(displayObject, renderTexture, false, tempMatrix, !!displayObject.parent);
+        this.render(displayObject, {
+            renderTexture,
+            clear: false,
+            transform: tempMatrix,
+            skipUpdateTransform: !!displayObject.parent
+        });
 
         return renderTexture;
     }
 
-    abstract render(displayObject: IRenderableObject, renderTexture?: RenderTexture,
-                    clear?: boolean, transform?: Matrix, skipUpdateTransform?: boolean): void;
+    abstract render(displayObject: IRenderableObject, options?: IRendererRenderOptions): void;
 
     /**
      * Removes everything from the renderer and optionally removes the Canvas DOM element.

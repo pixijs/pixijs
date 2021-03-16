@@ -2,9 +2,8 @@ import { LoaderResource } from '@pixi/loaders';
 import { autoDetectFormat } from './formats';
 import { BitmapFont } from './BitmapFont';
 
-import type { ILoaderResource } from '@pixi/loaders';
+import type { ILoaderResource, Loader } from '@pixi/loaders';
 import type { Dict } from '@pixi/utils';
-import type { Loader } from '@pixi/loaders';
 import type { Texture } from '@pixi/core';
 
 /**

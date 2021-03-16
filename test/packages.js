@@ -20,13 +20,18 @@ async function getSortedPackages()
 async function main()
 {
     const buffer = [];
+    const locations = {};
 
     (await getSortedPackages()).forEach((pkg) =>
     {
+        locations[pkg.name] = pkg.location;
         buffer.push(`${pkg.location}/test`);
     });
     // eslint-disable-next-line no-console
-    console.log(JSON.stringify(buffer.filter(fs.existsSync)));
+    console.log(JSON.stringify({
+        availableSuites: buffer.filter(fs.existsSync),
+        locations,
+    }));
 }
 
 main();

@@ -1,8 +1,8 @@
-import { System } from '../System';
 import { MaskData } from './MaskData';
 import { SpriteMaskFilter } from '../filters/spriteMask/SpriteMaskFilter';
 import { MASK_TYPES } from '@pixi/constants';
 
+import type { ISystem } from '../ISystem';
 import type { IMaskTarget } from './MaskData';
 import type { Renderer } from '../Renderer';
 
@@ -32,20 +32,21 @@ import type { Renderer } from '../Renderer';
  * @extends PIXI.System
  * @memberof PIXI
  */
-export class MaskSystem extends System
+export class MaskSystem implements ISystem
 {
     public enableScissor: boolean;
     protected readonly alphaMaskPool: Array<SpriteMaskFilter[]>;
     protected alphaMaskIndex: number;
     private readonly maskDataPool: Array<MaskData>;
     private maskStack: Array<MaskData>;
+    private renderer: Renderer;
 
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
     constructor(renderer: Renderer)
     {
-        super(renderer);
+        this.renderer = renderer;
 
         /**
          * Enable scissor masking.
@@ -259,5 +260,13 @@ export class MaskSystem extends System
     {
         this.renderer.filter.pop();
         this.alphaMaskIndex--;
+    }
+
+    /**
+     * @ignore
+     */
+    destroy(): void
+    {
+        this.renderer = null;
     }
 }

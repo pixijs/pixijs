@@ -6,7 +6,7 @@ export * from './IRenderingContext';
 export * from './IRenderableObject';
 export * from './autoDetectRenderer';
 export * from './fragments';
-export * from './System';
+export * from './ISystem';
 export * from './Renderer';
 export * from './AbstractRenderer';
 export * from './framebuffer/Framebuffer';
@@ -45,7 +45,4 @@ export * from './geometry/Attribute';
 export * from './geometry/Buffer';
 export * from './geometry/Geometry';
 export * from './geometry/ViewableBuffer';
-
-// #if _DEBUG
 export * from './deprecations';
-// #endif

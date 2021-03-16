@@ -1,4 +1,3 @@
-import { System } from '../System';
 import { RenderTexturePool } from '../renderTexture/RenderTexturePool';
 import { Quad } from '../utils/Quad';
 import { QuadUv } from '../utils/QuadUv';
@@ -7,6 +6,7 @@ import { UniformGroup } from '../shader/UniformGroup';
 import { DRAW_MODES, CLEAR_MODES } from '@pixi/constants';
 import { FilterState } from './FilterState';
 
+import type { ISystem } from '../ISystem';
 import type { Filter } from './Filter';
 import type { IFilterTarget } from './IFilterTarget';
 import type { ISpriteMaskTarget } from './spriteMask/SpriteMaskFilter';
@@ -44,7 +44,7 @@ const tempMatrix = new Matrix();
  * @memberof PIXI
  * @extends PIXI.System
  */
-export class FilterSystem extends System
+export class FilterSystem implements ISystem
 {
     public readonly defaultFilterStack: Array<FilterState>;
     public statePool: Array<FilterState>;
@@ -56,13 +56,14 @@ export class FilterSystem extends System
     protected activeState: FilterState;
     protected globalUniforms: UniformGroup;
     private tempRect: Rectangle;
+    public renderer: Renderer;
 
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
     constructor(renderer: Renderer)
     {
-        super(renderer);
+        this.renderer = renderer;
 
         /**
          * List of filters for the FilterSystem
@@ -476,6 +477,8 @@ export class FilterSystem extends System
      */
     destroy(): void
     {
+        this.renderer = null;
+
         // Those textures has to be destroyed by RenderTextureSystem or FramebufferSystem
         this.texturePool.clear(false);
     }
