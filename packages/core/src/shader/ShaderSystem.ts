@@ -10,10 +10,11 @@ import type { Program } from './Program';
 import type { UniformGroup } from './UniformGroup';
 import type { Dict } from '@pixi/utils';
 import type { UniformsSyncCallback } from './utils';
+import { generateUniformBufferSync } from './utils/generateUniformBufferSync';
 
 let UID = 0;
 // default sync data so we don't create a new one each time!
-const defaultSyncData = { textureCount: 0 };
+const defaultSyncData = { textureCount: 0, uboCount: 0 };
 
 /**
  * System plugin to the renderer to manage shaders.
@@ -30,6 +31,8 @@ export class ShaderSystem extends System
     public id: number;
     public destroyed = false;
     private cache: Dict<UniformsSyncCallback>;
+    private _uboCache: Dict<{size: number, syncFunc: UniformsSyncCallback}>;
+
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
@@ -56,6 +59,7 @@ export class ShaderSystem extends System
          * @private
          */
         this.cache = {};
+        this._uboCache = {};
 
         this.id = UID++;
     }
@@ -107,6 +111,7 @@ export class ShaderSystem extends System
         if (!dontSync)
         {
             defaultSyncData.textureCount = 0;
+            defaultSyncData.uboCount = 0;
 
             this.syncUniformGroup(shader.uniformGroup, defaultSyncData);
         }
@@ -136,11 +141,11 @@ export class ShaderSystem extends System
      */
     syncUniformGroup(group: UniformGroup, syncData?: any): void
     {
-        const glProgram = this.getglProgram();
+        const glProgram = this.getGlProgram();
 
-        if (!group.static || group.dirtyId !== glProgram.uniformGroups[group.id])
+        if (!group.static || group.dirtyId !== glProgram.uniformDirtyGroups[group.id])
         {
-            glProgram.uniformGroups[group.id] = group.dirtyId;
+            glProgram.uniformDirtyGroups[group.id] = group.dirtyId;
 
             this.syncUniforms(group, glProgram, syncData);
         }
@@ -148,7 +153,7 @@ export class ShaderSystem extends System
 
     /**
      * Overrideable by the @pixi/unsafe-eval package to use static
-     * syncUnforms instead.
+     * syncUniforms instead.
      *
      * @private
      */
@@ -158,11 +163,10 @@ export class ShaderSystem extends System
 
         syncFunc(glProgram.uniformData, group.uniforms, this.renderer, syncData);
     }
-    /* eslint-enable @typescript-eslint/explicit-module-boundary-types */
 
     createSyncGroups(group: UniformGroup): UniformsSyncCallback
     {
-        const id = this.getSignature(group, this.shader.program.uniformData);
+        const id = this.getSignature(group, this.shader.program.uniformData, 'u');
 
         if (!this.cache[id])
         {
@@ -175,6 +179,84 @@ export class ShaderSystem extends System
     }
 
     /**
+     *
+     * syncs uniform buffers
+     *
+     * @param group - the uniform buffer group to sync
+     * @param name - the name of the uniform buffer
+     * @param syncData - this is data that is passed to the sync function and any nested sync functions
+     */
+    syncUniformBufferGroup(group: UniformGroup, name?: string)
+    {
+        const glProgram = this.getGlProgram();
+
+        if (!group.static || group.dirtyId !== 0 || !glProgram.uniformGroups[group.id])
+        {
+            group.dirtyId = 0;
+
+            const syncFunc = glProgram.uniformGroups[group.id]
+                || this.createSyncBufferGroup(group, glProgram, name);
+
+            // TODO wrap update in a cache??
+            group.buffer.update();
+
+            syncFunc(glProgram.uniformData,
+                group.uniforms,
+                this.renderer,
+                defaultSyncData,
+                group.buffer
+            );
+        }
+
+        this.renderer.buffer.bindBufferBase(group.buffer, glProgram.uniformBufferBindings[name]);
+    }
+
+    /**
+     * Will create a function that uploads a uniform buffer using the STD140 standard.
+     * The upload function will then be cached for future calls
+     * If a group is manually managed, then a simple upload function is generated
+     *
+     * @param group - the uniform buffer group to sync
+     * @param glProgram - the gl program to attach the uniform bindings to
+     * @param name - the name of the uniform buffer (must exist on the shader)
+     */
+    createSyncBufferGroup(group: UniformGroup, glProgram: GLProgram, name: string): UniformsSyncCallback
+    {
+        const { gl } = this.renderer;
+
+        this.renderer.buffer.bind(group.buffer);
+
+        // bind them...
+        const uniformBlockIndex = this.gl.getUniformBlockIndex(glProgram.program, name);
+
+        glProgram.uniformBufferBindings[name] = this.shader.uniformBindCount;
+
+        gl.uniformBlockBinding(glProgram.program, uniformBlockIndex, this.shader.uniformBindCount);
+
+        this.shader.uniformBindCount++;
+
+        const id = this.getSignature(group, this.shader.program.uniformData, 'ubo');
+
+        let uboData = this._uboCache[id];
+
+        if (!uboData)
+        {
+            uboData = this._uboCache[id] = generateUniformBufferSync(group, this.shader.program.uniformData);
+        }
+
+        if (group.autoManage)
+        {
+            const data = new Float32Array(uboData.size / 4);
+
+            group.buffer.update(data);
+        }
+
+        glProgram.uniformGroups[group.id] = uboData.syncFunc;
+
+        return glProgram.uniformGroups[group.id];
+    }
+
+    /**
      * Takes a uniform group and data and generates a unique signature for them.
      *
      * @param {PIXI.UniformGroup} group - the uniform group to get signature of
@@ -182,11 +264,11 @@ export class ShaderSystem extends System
      * @returns {String} Unique signature of the uniform group
      * @private
      */
-    private getSignature(group: UniformGroup, uniformData: Dict<any>): string
+    private getSignature(group: {uniforms: Dict<any>}, uniformData: Dict<any>, preFix: string): string
     {
         const uniforms = group.uniforms;
 
-        const strings = [];
+        const strings = [`${preFix}-`];
 
         for (const i in uniforms)
         {
@@ -207,7 +289,7 @@ export class ShaderSystem extends System
      *
      * @return {PIXI.GLProgram} the glProgram for the currently bound Shader for this context
      */
-    getglProgram(): GLProgram
+    getGlProgram(): GLProgram
     {
         if (this.shader)
         {

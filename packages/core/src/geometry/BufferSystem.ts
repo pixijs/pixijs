@@ -31,6 +31,7 @@ export class BufferSystem extends System
     gl: IRenderingContext;
 
     readonly managedBuffers: {[key: number]: Buffer};
+    readonly boundBufferBases: {[key: number]: Buffer};
 
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
@@ -45,6 +46,11 @@ export class BufferSystem extends System
          * @readonly
          */
         this.managedBuffers = {};
+
+        /**
+         * a cache keeping track of the base bound buffer bases
+         */
+        this.boundBufferBases = {};
     }
 
     /**
@@ -75,9 +81,49 @@ export class BufferSystem extends System
     }
 
     /**
+     * binds a buffer to a base. A cache is used so a buffer will not be bound again if already bound.
+     * Only used by the uniform buffers
+     *
+     * @param buffer - the buffer to bind
+     * @param index - the base index to bind it to.
+     */
+    bindBufferBase(buffer: Buffer, index: number): void
+    {
+        const { gl, CONTEXT_UID } = this;
+
+        if (this.boundBufferBases[index] !== buffer)
+        {
+            const glBuffer = buffer._glBuffers[CONTEXT_UID] || this.createGLBuffer(buffer);
+
+            this.boundBufferBases[index] = buffer;
+
+            gl.bindBufferBase(gl.UNIFORM_BUFFER, index, glBuffer.buffer);
+        }
+    }
+
+    /**
+     * Binds a buffer whilst also binding its range.
+     * This will make the buffer start from the offset supplied rather than 0 when it is read.
+     *
+     * @param buffer - the buffer to bind
+     * @param offset - the offset to bind at (this is blocks of 256). 0 = 0, 1 = 256, 2 = 512 etc
+     * @param index - the base index to bind at, defaults to 0
+     */
+    bindBufferRange(buffer: Buffer, offset?: number, index?: number): void
+    {
+        const { gl, CONTEXT_UID } = this;
+
+        offset = offset || 0;
+
+        const glBuffer = buffer._glBuffers[CONTEXT_UID] || this.createGLBuffer(buffer);
+
+        gl.bindBufferRange(gl.UNIFORM_BUFFER, index || 0, glBuffer.buffer, offset * 256, 256);
+    }
+
+    /**
      * Will ensure sure the the data in the buffer is uploaded to the GPU.
      *
-     * @param {PIXI.Buffer} buffer the buffer to update
+     * @param {PIXI.Buffer} buffer - the buffer to update
      */
     update(buffer: Buffer): void
     {
