@@ -80,7 +80,7 @@ export function logProgramError(
             logPrettyShaderError(gl, fragmentShader);
         }
 
-        console.error('Pixi.js Error: Could not initialize shader.');
+        console.error('PixiJS Error: Could not initialize shader.');
 
         // if there is a program info log, log it
         if (gl.getProgramInfoLog(program) !== '')
