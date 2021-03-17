@@ -387,3 +387,17 @@ export class Spritesheet
         this.baseTexture = null;
     }
 }
+
+/**
+ * Reference to Spritesheet object created.
+ * @member {PIXI.Spritesheet} spritesheet
+ * @memberof PIXI.ILoaderResource
+ * @instance
+ */
+
+/**
+ * Dictionary of textures from Spritesheet.
+ * @member {object<string, PIXI.Texture>} textures
+ * @memberof PIXI.ILoaderResource
+ * @instance
+ */
