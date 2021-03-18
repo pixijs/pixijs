@@ -179,7 +179,7 @@ export class GeometrySystem implements ISystem
             incRefCount = true;
         }
 
-        const vao = vaos[shader.program.id] || this.initGeometryVao(geometry, shader.program, incRefCount);
+        const vao = vaos[shader.program.id] || this.initGeometryVao(geometry, shader, incRefCount);
 
         this._activeGeometry = geometry;
 
@@ -308,19 +308,26 @@ export class GeometrySystem implements ISystem
 
     /**
      * Creates or gets Vao with the same structure as the geometry and stores it on the geometry.
-     * If vao is created, it is bound automatically.
+     * If vao is created, it is bound automatically. We use a shader to infer what and how to set up the
+     * attribute locations.
      *
      * @protected
      * @param {PIXI.Geometry} geometry - Instance of geometry to to generate Vao for
-     * @param {PIXI.Program} program - Instance of program
+     * @param {PIXI.Shader} shader - Instance of the shader
      * @param {boolean} [incRefCount=false] - Increment refCount of all geometry buffers
      */
-    protected initGeometryVao(geometry: Geometry, program: Program, incRefCount = true): WebGLVertexArrayObject
+    protected initGeometryVao(geometry: Geometry, shader: Shader, incRefCount = true): WebGLVertexArrayObject
     {
-        this.checkCompatibility(geometry, program);
-
         const gl = this.gl;
         const CONTEXT_UID = this.CONTEXT_UID;
+        const program = shader.program;
+
+        if (!program.glPrograms[CONTEXT_UID])
+        {
+            this.renderer.shader.generateShader(shader);
+        }
+
+        this.checkCompatibility(geometry, program);
 
         const signature = this.getSignature(geometry, program);
 
