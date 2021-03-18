@@ -1,5 +1,5 @@
 import { GLProgram } from './GLProgram';
-import { generateUniformsSync, unsafeEvalSupported, defaultValue, compileProgram } from './utils';
+import { generateUniformsSync, unsafeEvalSupported, defaultValue, logProgramError, compileShader } from './utils';
 
 import type { ISystem } from '../ISystem';
 import type { IGLUniformData } from './GLProgram';
@@ -11,6 +11,9 @@ import type { UniformGroup } from './UniformGroup';
 import type { Dict } from '@pixi/utils';
 import type { UniformsSyncCallback } from './utils';
 import { generateUniformBufferSync } from './utils/generateUniformBufferSync';
+
+import { getAttributeData } from './utils/getAttributeData';
+import { getUniformData } from './utils/getUniformData';
 
 let UID = 0;
 // default sync data so we don't create a new one each time!
@@ -311,14 +314,40 @@ export class ShaderSystem implements ISystem
 
         const program = shader.program;
 
-        const attribMap: Dict<number> = {};
+        const glVertShader = compileShader(gl, gl.VERTEX_SHADER, program.vertexSrc);
+        const glFragShader = compileShader(gl, gl.FRAGMENT_SHADER, program.fragmentSrc);
 
-        for (const i in program.attributeData)
+        const webGLProgram = gl.createProgram();
+
+        gl.attachShader(webGLProgram, glVertShader);
+        gl.attachShader(webGLProgram, glFragShader);
+
+        gl.linkProgram(webGLProgram);
+
+        if (!gl.getProgramParameter(webGLProgram, gl.LINK_STATUS))
         {
-            attribMap[i] = program.attributeData[i].location;
+            logProgramError(gl, webGLProgram, glVertShader, glFragShader);
         }
 
-        const shaderProgram = compileProgram(gl, program.vertexSrc, program.fragmentSrc, attribMap);
+        program.attributeData = getAttributeData(webGLProgram, gl);
+        program.uniformData = getUniformData(webGLProgram, gl);
+
+        const keys = Object.keys(program.attributeData);
+
+        keys.sort((a, b) => (a > b) ? 1 : -1); // eslint-disable-line no-confusing-arrow
+
+        for (let i = 0; i < keys.length; i++)
+        {
+            program.attributeData[keys[i]].location = i;
+
+            gl.bindAttribLocation(webGLProgram, i, keys[i]);
+        }
+
+        gl.linkProgram(webGLProgram);
+
+        gl.deleteShader(glVertShader);
+        gl.deleteShader(glFragShader);
+
         const uniformData: {[key: string]: IGLUniformData} = {};
 
         for (const i in program.uniformData)
@@ -326,12 +355,12 @@ export class ShaderSystem implements ISystem
             const data = program.uniformData[i];
 
             uniformData[i] = {
-                location: gl.getUniformLocation(shaderProgram, i),
+                location: gl.getUniformLocation(webGLProgram, i),
                 value: defaultValue(data.type, data.size),
             };
         }
 
-        const glProgram = new GLProgram(shaderProgram, uniformData);
+        const glProgram = new GLProgram(webGLProgram, uniformData);
 
         program.glPrograms[this.renderer.CONTEXT_UID] = glProgram;
 

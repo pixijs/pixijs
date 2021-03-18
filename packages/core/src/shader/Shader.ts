@@ -50,17 +50,6 @@ export class Shader
         {
             this.uniformGroup = new UniformGroup({});
         }
-
-        // time to build some getters and setters!
-        // I guess down the line this could sort of generate an instruction list rather than use dirty ids?
-        // does the trick for now though!
-        for (const i in program.uniformData)
-        {
-            if (this.uniformGroup.uniforms[i] instanceof Array)
-            {
-                this.uniformGroup.uniforms[i] = new Float32Array(this.uniformGroup.uniforms[i]);
-            }
-        }
     }
 
     // TODO move to shader system..
