@@ -1,7 +1,7 @@
 import { ENV } from '@pixi/constants';
-import { System } from '../System';
 import { settings } from '../settings';
 
+import type { ISystem } from '../ISystem';
 import type { IRenderingContext } from '../IRenderingContext';
 import type { Renderer } from '../Renderer';
 import type { WebGLExtensions } from './WebGLExtensions';
@@ -19,7 +19,7 @@ export interface ISupportDict {
  * @extends PIXI.System
  * @memberof PIXI
  */
-export class ContextSystem extends System
+export class ContextSystem implements ISystem
 {
     public webGLVersion: number;
     readonly supports: ISupportDict;
@@ -28,13 +28,14 @@ export class ContextSystem extends System
     protected gl: IRenderingContext;
 
     public extensions: WebGLExtensions;
+    private renderer: Renderer;
 
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
     constructor(renderer: Renderer)
     {
-        super(renderer);
+        this.renderer = renderer;
 
         /**
          * Either 1 or 2 to reflect the WebGL version being used
@@ -248,6 +249,8 @@ export class ContextSystem extends System
     destroy(): void
     {
         const view = this.renderer.view;
+
+        this.renderer = null;
 
         // remove listeners
         (view as any).removeEventListener('webglcontextlost', this.handleContextLost);

@@ -1,8 +1,8 @@
-import { System } from '../System';
 import { GLBuffer } from './GLBuffer';
 import { ENV } from '@pixi/constants';
 import { settings } from '../settings';
 
+import type { ISystem } from '../ISystem';
 import type { DRAW_MODES } from '@pixi/constants';
 import type { Renderer } from '../Renderer';
 import type { IRenderingContext } from '../IRenderingContext';
@@ -21,7 +21,7 @@ const byteSizeMap: {[key: number]: number} = { 5126: 4, 5123: 2, 5121: 1 };
  * @extends PIXI.System
  * @memberof PIXI
  */
-export class GeometrySystem extends System
+export class GeometrySystem implements ISystem
 {
     public hasVao: boolean;
     public hasInstance: boolean;
@@ -33,14 +33,14 @@ export class GeometrySystem extends System
     protected _boundBuffer: GLBuffer;
     readonly managedGeometries: {[key: number]: Geometry};
     readonly managedBuffers: {[key: number]: Buffer};
+    private renderer: Renderer;
 
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
     constructor(renderer: Renderer)
     {
-        super(renderer);
-
+        this.renderer = renderer;
         this._activeGeometry = null;
         this._activeVao = null;
 
@@ -179,7 +179,7 @@ export class GeometrySystem extends System
             incRefCount = true;
         }
 
-        const vao = vaos[shader.program.id] || this.initGeometryVao(geometry, shader.program, incRefCount);
+        const vao = vaos[shader.program.id] || this.initGeometryVao(geometry, shader, incRefCount);
 
         this._activeGeometry = geometry;
 
@@ -308,19 +308,26 @@ export class GeometrySystem extends System
 
     /**
      * Creates or gets Vao with the same structure as the geometry and stores it on the geometry.
-     * If vao is created, it is bound automatically.
+     * If vao is created, it is bound automatically. We use a shader to infer what and how to set up the
+     * attribute locations.
      *
      * @protected
      * @param {PIXI.Geometry} geometry - Instance of geometry to to generate Vao for
-     * @param {PIXI.Program} program - Instance of program
+     * @param {PIXI.Shader} shader - Instance of the shader
      * @param {boolean} [incRefCount=false] - Increment refCount of all geometry buffers
      */
-    protected initGeometryVao(geometry: Geometry, program: Program, incRefCount = true): WebGLVertexArrayObject
+    protected initGeometryVao(geometry: Geometry, shader: Shader, incRefCount = true): WebGLVertexArrayObject
     {
-        this.checkCompatibility(geometry, program);
-
         const gl = this.gl;
         const CONTEXT_UID = this.CONTEXT_UID;
+        const program = shader.program;
+
+        if (!program.glPrograms[CONTEXT_UID])
+        {
+            this.renderer.shader.generateShader(shader);
+        }
+
+        this.checkCompatibility(geometry, program);
 
         const signature = this.getSignature(geometry, program);
 
@@ -660,5 +667,13 @@ export class GeometrySystem extends System
         this.gl.bindVertexArray(null);
         this._activeVao = null;
         this._activeGeometry = null;
+    }
+
+    /**
+     * @ignore
+     */
+    destroy(): void
+    {
+        this.renderer = null;
     }
 }

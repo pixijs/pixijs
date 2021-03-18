@@ -1,7 +1,7 @@
-import { System } from '../System';
 import { Rectangle } from '@pixi/math';
 import { BUFFER_BITS } from '@pixi/constants';
 
+import type { ISystem } from '../ISystem';
 import type { Renderer } from '../Renderer';
 import type { RenderTexture } from './RenderTexture';
 import type { BaseRenderTexture } from './BaseRenderTexture';
@@ -35,7 +35,7 @@ const tempRect2 = new Rectangle();
  * @extends PIXI.System
  * @memberof PIXI
  */
-export class RenderTextureSystem extends System
+export class RenderTextureSystem implements ISystem
 {
 /* eslint-enable max-len */
 
@@ -45,13 +45,14 @@ export class RenderTextureSystem extends System
     public readonly sourceFrame: Rectangle;
     public readonly destinationFrame: Rectangle;
     public readonly viewportFrame: Rectangle;
+    private renderer: Renderer;
 
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
     constructor(renderer: Renderer)
     {
-        super(renderer);
+        this.renderer = renderer;
 
         /**
          * The clear background color as rgba
@@ -251,5 +252,13 @@ export class RenderTextureSystem extends System
     reset(): void
     {
         this.bind(null);
+    }
+
+    /**
+     * @ignore
+     */
+    destroy(): void
+    {
+        this.renderer = null;
     }
 }

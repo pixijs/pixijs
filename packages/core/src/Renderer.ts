@@ -18,12 +18,11 @@ import { RENDERER_TYPE } from '@pixi/constants';
 import { UniformGroup } from './shader/UniformGroup';
 import { Matrix } from '@pixi/math';
 import { Runner } from '@pixi/runner';
-
 import { RenderTexture } from './renderTexture/RenderTexture';
 
 import type { IRendererOptions, IRendererPlugins, IRendererRenderOptions } from './AbstractRenderer';
 import type { IRenderableObject } from './IRenderableObject';
-import type { System } from './System';
+import type { ISystemConstructor } from './ISystem';
 import type { IRenderingContext } from './IRenderingContext';
 
 export interface IRendererPluginConstructor {
@@ -331,13 +330,8 @@ export class Renderer extends AbstractRenderer
      *        sure it doesn't collide with properties on Renderer.
      * @return {PIXI.Renderer} Return instance of renderer
      */
-    addSystem<T extends System>(ClassRef: { new(renderer: Renderer): T}, name: string): this
+    addSystem(ClassRef: ISystemConstructor, name: string): this
     {
-        if (!name)
-        {
-            name = ClassRef.name;
-        }
-
         const system = new ClassRef(this);
 
         if ((this as any)[name])

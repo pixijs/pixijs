@@ -2,6 +2,7 @@ import { Loader as ResourceLoader, middleware } from 'resource-loader';
 import { TextureLoader } from './TextureLoader';
 
 import type { Resource } from 'resource-loader';
+import type { ILoaderResource } from './LoaderResource';
 
 /**
  * The new loader, extends Resource Loader by Chad Engler: https://github.com/englercj/resource-loader
@@ -65,6 +66,9 @@ export class Loader extends ResourceLoader
     private static _plugins: Array<ILoaderPlugin> = [];
     private static _shared: Loader;
     private _protected: boolean;
+
+    /** All the resources for this loader by name. */
+    public readonly resources: {[name: string]: ILoaderResource};
 
     /**
      * @param {string} [baseUrl=''] - The base url for all resources loaded by this loader.

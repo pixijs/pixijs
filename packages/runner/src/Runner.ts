@@ -17,7 +17,7 @@
  *     }
  * }
  *
- * myObject.update.add(listener);
+ * myObject.loaded.add(listener);
  *
  * myObject.loaded.emit();
  * ```
@@ -36,7 +36,7 @@
  *     }
  * }
  *
- * myGame.update.add(gameObject1);
+ * myGame.update.add(gameObject);
  *
  * myGame.update.emit(time);
  * ```
