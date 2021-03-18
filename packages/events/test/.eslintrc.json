@@ -1,0 +1,13 @@
+{
+	"globals": {
+		"expect": false,
+		"assert": false,
+		"sinon": false,
+		"PIXI": false,
+		"PointerEvent": false
+	},
+	"rules": {
+		"func-names": 0,
+        "no-unused-expressions": 0
+	}
+}

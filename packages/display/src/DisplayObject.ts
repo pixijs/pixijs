@@ -13,7 +13,7 @@ export interface IDestroyOptions {
     baseTexture?: boolean;
 }
 
-export interface DisplayObject extends GlobalMixins.DisplayObject, EventEmitter {}
+export interface DisplayObject extends Omit<GlobalMixins.DisplayObject, keyof EventEmitter>, EventEmitter {}
 
 /**
  * The base class for all objects that are rendered on the screen.

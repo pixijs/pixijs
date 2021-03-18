@@ -48,6 +48,7 @@ export interface IRendererPlugin {
  * | ------------------------------------ | ----------------------------------------------------------------------------- |
  * | {@link PIXI.BatchSystem}             | This manages object renderers that defer rendering until a flush.             |
  * | {@link PIXI.ContextSystem}           | This manages the WebGL context and extensions.                                |
+ * | {@link PIXI.EventSystem}             | This manages UI events.                                                       |
  * | {@link PIXI.FilterSystem}            | This manages the filtering pipeline for post-processing effects.              |
  * | {@link PIXI.FramebufferSystem}       | This manages framebuffers, which are used for offscreen rendering.            |
  * | {@link PIXI.GeometrySystem}          | This manages geometries & buffers, which are used to draw object meshes.      |
