@@ -315,13 +315,8 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
         renderer.batch.flush();
 
         // bind and sync uniforms..
+        shader.uniforms.translationMatrix = this.transform.worldTransform.toArray(true);
         renderer.shader.bind(shader);
-
-        // now we can use `uniformData`
-        if (shader.program.uniformData.translationMatrix)
-        {
-            shader.uniforms.translationMatrix = this.transform.worldTransform.toArray(true);
-        }
 
         // set state..
         renderer.state.set(this.state);
