@@ -16,9 +16,10 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+      AWS_REGION: 'eu-west-1'
+      SOURCE_DIR: 'dist'
     runs-on: ubuntu-latest
     steps:
-
     - name: Checkout
       uses: actions/checkout@v2
     - name: Use Node.js
@@ -65,8 +66,6 @@ jobs:
       with:
         args: --acl public-read --follow-symlinks --delete --cache-control "max-age=60"
       env:
-        AWS_REGION: 'eu-west-1'
-        SOURCE_DIR: 'dist'
         DEST_DIR: ${{ steps.branch_name.outputs.BRANCH_NAME }}
 
     # Release is published and deployed into s3://bucket-name/v5.22/
@@ -76,8 +75,6 @@ jobs:
       with:
         args: --acl public-read --follow-symlinks --delete --cache-control "max-age=2592000"
       env:
-        AWS_REGION: 'eu-west-1'
-        SOURCE_DIR: 'dist'
         DEST_DIR: ${{ steps.tag_name.outputs.TAG_NAME }}
 
     # Same release from previous deployed into s3://bucket-name/release/
@@ -87,6 +84,4 @@ jobs:
       with:
         args: --acl public-read --follow-symlinks --delete --cache-control "max-age=1209600"
       env:
-        AWS_REGION: 'eu-west-1'
-        SOURCE_DIR: 'dist'
         DEST_DIR: 'release'
