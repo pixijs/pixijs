@@ -444,6 +444,13 @@ export abstract class DisplayObject extends EventEmitter
      */
 
     /**
+     * Fired when this DisplayObject is destroyed.
+     *
+     * @instance
+     * @event destroyed
+     */
+
+    /**
      * Recalculates the bounds of the display object.
      */
     abstract calculateBounds(): void;
@@ -738,6 +745,7 @@ export abstract class DisplayObject extends EventEmitter
         {
             this.parent.removeChild(this);
         }
+        this.emit('destroyed');
         this.removeAllListeners();
         this.transform = null;
 

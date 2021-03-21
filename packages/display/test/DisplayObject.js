@@ -146,7 +146,7 @@ describe('PIXI.DisplayObject', function ()
 
     describe('destroy', function ()
     {
-        it('should trigger removed listeners', function ()
+        it('should trigger removed and destroyed listeners', function ()
         {
             const child = new DisplayObject();
             const container = new Container();
@@ -154,11 +154,22 @@ describe('PIXI.DisplayObject', function ()
             container.addChild(child);
 
             let removedListenerWasCalled = false;
+            let destroyedListenerWasCalled = false;
 
             child.on('removed', () => { removedListenerWasCalled = true; });
+            child.on('destroyed', () => { destroyedListenerWasCalled = true; });
+
+            container.removeChild(child);
+
+            expect(removedListenerWasCalled).to.be.true;
+            expect(destroyedListenerWasCalled).to.be.false;
+
+            removedListenerWasCalled = false;
+            container.addChild(child);
             child.destroy();
 
             expect(removedListenerWasCalled).to.be.true;
+            expect(destroyedListenerWasCalled).to.be.true;
         });
     });
 });
