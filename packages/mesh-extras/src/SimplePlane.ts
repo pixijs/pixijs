@@ -57,7 +57,7 @@ export class SimplePlane extends Mesh
         const geometry: PlaneGeometry = this.geometry as any;
         const { width, height } = this.shader.texture;
 
-        if ((geometry.width !== width || geometry.height !== height) && this.autoResize)
+        if (this.autoResize && (geometry.width !== width || geometry.height !== height))
         {
             geometry.width = this.shader.texture.width;
             geometry.height = this.shader.texture.height;
