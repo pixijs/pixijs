@@ -144,21 +144,47 @@ describe('PIXI.DisplayObject', function ()
         });
     });
 
-    describe('destroy', function ()
+    describe('remove', function ()
     {
         it('should trigger removed listeners', function ()
         {
+            const listener = sinon.spy();
             const child = new DisplayObject();
             const container = new Container();
 
+            child.on('removed', listener);
+
             container.addChild(child);
+            container.removeChild(child);
 
-            let removedListenerWasCalled = false;
+            expect(listener.calledOnce).to.be.true;
 
-            child.on('removed', () => { removedListenerWasCalled = true; });
+            container.addChild(child);
             child.destroy();
 
-            expect(removedListenerWasCalled).to.be.true;
+            expect(listener.calledTwice).to.be.true;
+        });
+    });
+
+    describe('destroy', function ()
+    {
+        it('should trigger destroyed listeners', function ()
+        {
+            const listener = sinon.spy();
+            const child = new DisplayObject();
+            const container = new Container();
+
+            child.on('destroyed', listener);
+
+            container.addChild(child);
+            container.removeChild(child);
+
+            expect(listener.notCalled).to.be.true;
+
+            container.addChild(child);
+            child.destroy();
+
+            expect(listener.calledOnce).to.be.true;
         });
     });
 });
