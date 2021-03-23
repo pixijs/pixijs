@@ -107,15 +107,15 @@ export class BitmapFont
     public readonly lineHeight: number;
     public readonly chars: Dict<IBitmapFontCharacter>;
     public readonly pageTextures: Dict<Texture>;
-    private _manageTextures: boolean;
+    private _ownsTextures: boolean;
 
     /**
      * @param {PIXI.BitmapFontData} data
      * @param {PIXI.Texture[]|Object.<string, PIXI.Texture>} textures
-     * @param {boolean} manageTextures - Setting to `true` will destroy page textures
+     * @param {boolean} ownsTextures - Setting to `true` will destroy page textures
      *        when the font is uninstalled.
      */
-    constructor(data: BitmapFontData, textures: Texture[]|Dict<Texture>, manageTextures?: boolean)
+    constructor(data: BitmapFontData, textures: Texture[]|Dict<Texture>, ownsTextures?: boolean)
     {
         const [info] = data.info;
         const [common] = data.common;
@@ -123,7 +123,7 @@ export class BitmapFont
         const res = getResolutionOfUrl(page.file);
         const pageTextures: Dict<Texture> = {};
 
-        this._manageTextures = manageTextures;
+        this._ownsTextures = ownsTextures;
 
         /**
          * The name of the font face.
@@ -239,7 +239,7 @@ export class BitmapFont
 
         for (const id in this.pageTextures)
         {
-            if (this._manageTextures)
+            if (this._ownsTextures)
             {
                 this.pageTextures[id].destroy(true);
             }
@@ -269,7 +269,7 @@ export class BitmapFont
     public static install(
         data: string|XMLDocument|BitmapFontData,
         textures: Texture|Texture[]|Dict<Texture>,
-        manageTextures?: boolean
+        ownsTextures?: boolean
     ): BitmapFont
     {
         let fontData;
@@ -296,7 +296,7 @@ export class BitmapFont
             textures = [textures];
         }
 
-        const font = new BitmapFont(fontData, textures, manageTextures);
+        const font = new BitmapFont(fontData, textures, ownsTextures);
 
         BitmapFont.available[font.font] = font;
 
