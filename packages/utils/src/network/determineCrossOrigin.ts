@@ -1,4 +1,4 @@
-import * as _url from '../url';
+import { url as _url } from '../url';
 
 let tempAnchor: HTMLAnchorElement|undefined;
 
