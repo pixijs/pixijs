@@ -1,10 +1,11 @@
 const path = require('path');
 const fs = require('fs');
 const { Loader } = require('@pixi/loaders');
-const { BaseTextureCache, TextureCache } = require('@pixi/utils');
+const { BaseTextureCache, TextureCache, destroyTextureCache } = require('@pixi/utils');
 const { Texture, BaseTexture } = require('@pixi/core');
 const { Spritesheet } = require('@pixi/spritesheet');
 const { BitmapFont, BitmapFontLoader } = require('../');
+const { expect } = require('chai');
 
 describe('PIXI.BitmapFontLoader', function ()
 {
@@ -512,6 +513,48 @@ describe('PIXI.BitmapFontLoader', function ()
             expect(loader.resources.image.url).to.equal(imagePath);
             expect(loader.resources.font.url).to.equal(fontPath);
 
+            done();
+        });
+    });
+
+    it('should load and uninstall font cleanly, remove all textures', function (done)
+    {
+        const loader = new Loader();
+        const fontPath = path.join(this.resources, 'font.fnt');
+        const textureCount = Object.keys(TextureCache).length;
+
+        expect(BitmapFont.available.font).to.be.undefined;
+
+        loader.use(BitmapFontLoader.use);
+        loader.add('font', fontPath);
+        loader.load(() =>
+        {
+            expect(BitmapFont.available.font).to.not.be.undefined;
+            BitmapFont.uninstall('font');
+            expect(BitmapFont.available.font).to.be.undefined;
+            expect(Object.keys(TextureCache).length - textureCount).equals(0);
+
+            done();
+        });
+    });
+
+    it('should load and uninstall font cleanly, preserve textures', function (done)
+    {
+        const loader = new Loader();
+        const fontPath = path.join(this.resources, 'font.fnt');
+        const textureCount = Object.keys(TextureCache).length;
+
+        expect(BitmapFont.available.font).to.be.undefined;
+
+        loader.use(BitmapFontLoader.use);
+        loader.add('font', fontPath);
+        loader.load(() =>
+        {
+            expect(BitmapFont.available.font).to.not.be.undefined;
+            BitmapFont.uninstall('font', true);
+            expect(BitmapFont.available.font).to.be.undefined;
+            expect(Object.keys(TextureCache).length - textureCount).equals(1);
+            destroyTextureCache();
             done();
         });
     });

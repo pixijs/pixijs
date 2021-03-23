@@ -107,6 +107,7 @@ export class BitmapFont
     public readonly lineHeight: number;
     public readonly chars: Dict<IBitmapFontCharacter>;
     public readonly pageTextures: Dict<Texture>;
+    private _generated = false;
 
     /**
      * @param {PIXI.BitmapFontData} data
@@ -223,8 +224,15 @@ export class BitmapFont
 
     /**
      * Remove references to created glyph textures.
+     * @param preservePages - Set to `true` to not destroy
+     *        the page Texture objects. This can be useful
+     *        if you do not want BitmapFont to destroy textures
+     *        that have been loaded from Loader or are being
+     *        externally managed. Note: fonts created with
+     *        `BitmapFont.from` always ignore this option and destroy
+     *        all page Texture objects.
      */
-    public destroy(): void
+    public destroy(preservePages?: boolean): void
     {
         for (const id in this.chars)
         {
@@ -234,7 +242,13 @@ export class BitmapFont
 
         for (const id in this.pageTextures)
         {
-            this.pageTextures[id].destroy(true);
+            // Always destroy textures for generated fonts, but
+            // allow opt-out for preserving textures loaded externally
+            if (this._generated || preservePages !== true)
+            {
+                this.pageTextures[id].destroy(true);
+            }
+
             this.pageTextures[id] = null;
         }
 
@@ -294,9 +308,16 @@ export class BitmapFont
      * Remove bitmap font by name.
      *
      * @static
-     * @param {string} name
+     * @param name - Name of the font to uninstall.
+     * @param preservePages - Set to `true` to not destroy
+     *        the page Texture objects. This can be useful
+     *        if you do not want BitmapFont to destroy textures
+     *        that have been loaded from Loader or are being
+     *        externally managed. Note: fonts created with
+     *        `BitmapFont.from` always ignore this option and destroy
+     *        all page Texture objects.
      */
-    public static uninstall(name: string): void
+    public static uninstall(name: string, preservePages?: boolean): void
     {
         const font = BitmapFont.available[name];
 
@@ -305,7 +326,7 @@ export class BitmapFont
             throw new Error(`No font found named '${name}'`);
         }
 
-        font.destroy();
+        font.destroy(preservePages);
         delete BitmapFont.available[name];
     }
 
@@ -506,6 +527,8 @@ export class BitmapFont
         }
 
         const font = new BitmapFont(fontData, textures);
+
+        font._generated = true;
 
         // Make it easier to replace a font
         if (BitmapFont.available[name] !== undefined)
