@@ -538,25 +538,20 @@ describe('PIXI.BitmapFontLoader', function ()
         });
     });
 
-    it('should load and uninstall font cleanly, preserve textures', function (done)
+    it('should load and uninstall font cleanly, preserve textures', function ()
     {
-        const loader = new Loader();
-        const fontPath = path.join(this.resources, 'font.fnt');
         const textureCount = Object.keys(TextureCache).length;
+        const texture = Texture.from(this.fontImage);
+        const fontText = BitmapFont.install(this.fontText, texture);
 
-        expect(BitmapFont.available.font).to.be.undefined;
+        expect(BitmapFont.available.fontText).equals(fontText);
 
-        loader.use(BitmapFontLoader.use);
-        loader.add('font', fontPath);
-        loader.load(() =>
-        {
-            expect(BitmapFont.available.font).to.not.be.undefined;
-            BitmapFont.uninstall('font', true);
-            expect(BitmapFont.available.font).to.be.undefined;
-            expect(Object.keys(TextureCache).length - textureCount).equals(1);
-            destroyTextureCache();
-            done();
-        });
+        BitmapFont.uninstall('fontText');
+
+        expect(BitmapFont.available.fontText).to.be.undefined;
+        expect(Object.keys(TextureCache).length - textureCount).equals(1);
+
+        texture.destroy(true);
     });
 
     it('should properly register bitmap font based on text format', function (done)
