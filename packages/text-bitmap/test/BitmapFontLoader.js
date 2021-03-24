@@ -1,10 +1,11 @@
 const path = require('path');
 const fs = require('fs');
 const { Loader } = require('@pixi/loaders');
-const { BaseTextureCache, TextureCache } = require('@pixi/utils');
+const { BaseTextureCache, TextureCache, destroyTextureCache } = require('@pixi/utils');
 const { Texture, BaseTexture } = require('@pixi/core');
 const { Spritesheet } = require('@pixi/spritesheet');
 const { BitmapFont, BitmapFontLoader } = require('../');
+const { expect } = require('chai');
 
 describe('PIXI.BitmapFontLoader', function ()
 {
@@ -514,6 +515,43 @@ describe('PIXI.BitmapFontLoader', function ()
 
             done();
         });
+    });
+
+    it('should load and uninstall font cleanly, remove all textures', function (done)
+    {
+        const loader = new Loader();
+        const fontPath = path.join(this.resources, 'font.fnt');
+        const textureCount = Object.keys(TextureCache).length;
+
+        expect(BitmapFont.available.font).to.be.undefined;
+
+        loader.use(BitmapFontLoader.use);
+        loader.add('font', fontPath);
+        loader.load(() =>
+        {
+            expect(BitmapFont.available.font).to.not.be.undefined;
+            BitmapFont.uninstall('font');
+            expect(BitmapFont.available.font).to.be.undefined;
+            expect(Object.keys(TextureCache).length - textureCount).equals(0);
+
+            done();
+        });
+    });
+
+    it('should load and uninstall font cleanly, preserve textures', function ()
+    {
+        const textureCount = Object.keys(TextureCache).length;
+        const texture = Texture.from(this.fontImage);
+        const fontText = BitmapFont.install(this.fontText, texture);
+
+        expect(BitmapFont.available.fontText).equals(fontText);
+
+        BitmapFont.uninstall('fontText');
+
+        expect(BitmapFont.available.fontText).to.be.undefined;
+        expect(Object.keys(TextureCache).length - textureCount).equals(1);
+
+        texture.destroy(true);
     });
 
     it('should properly register bitmap font based on text format', function (done)

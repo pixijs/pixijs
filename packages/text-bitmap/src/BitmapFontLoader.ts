@@ -56,7 +56,7 @@ export class BitmapFontLoader
 
             if (Object.keys(textures).length === data.page.length)
             {
-                resource.bitmapFont = BitmapFont.install(data, textures);
+                resource.bitmapFont = BitmapFont.install(data, textures, true);
                 next();
             }
         };

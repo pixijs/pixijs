@@ -107,18 +107,23 @@ export class BitmapFont
     public readonly lineHeight: number;
     public readonly chars: Dict<IBitmapFontCharacter>;
     public readonly pageTextures: Dict<Texture>;
+    private _ownsTextures: boolean;
 
     /**
      * @param {PIXI.BitmapFontData} data
      * @param {PIXI.Texture[]|Object.<string, PIXI.Texture>} textures
+     * @param {boolean} [ownsTextures] - Setting to `true` will destroy page textures
+     *        when the font is uninstalled.
      */
-    constructor(data: BitmapFontData, textures: Texture[]|Dict<Texture>)
+    constructor(data: BitmapFontData, textures: Texture[]|Dict<Texture>, ownsTextures?: boolean)
     {
         const [info] = data.info;
         const [common] = data.common;
         const [page] = data.page;
         const res = getResolutionOfUrl(page.file);
         const pageTextures: Dict<Texture> = {};
+
+        this._ownsTextures = ownsTextures;
 
         /**
          * The name of the font face.
@@ -234,7 +239,11 @@ export class BitmapFont
 
         for (const id in this.pageTextures)
         {
-            this.pageTextures[id].destroy(true);
+            if (this._ownsTextures)
+            {
+                this.pageTextures[id].destroy(true);
+            }
+
             this.pageTextures[id] = null;
         }
 
@@ -251,12 +260,16 @@ export class BitmapFont
      *        characters map that could be provided as xml or raw string.
      * @param {Object.<string, PIXI.Texture>|PIXI.Texture|PIXI.Texture[]}
      *        textures - List of textures for each page.
+     * @param {boolean} managedTexture - Set to `true` to destroy page textures
+     *        when the font is uninstalled. By default fonts created with
+     *        `BitmapFont.from` or from the `BitmapFontLoader` are `true`.
      * @return {PIXI.BitmapFont} Result font object with font, size, lineHeight
      *         and char fields.
      */
     public static install(
         data: string|XMLDocument|BitmapFontData,
-        textures: Texture|Texture[]|Dict<Texture>
+        textures: Texture|Texture[]|Dict<Texture>,
+        ownsTextures?: boolean
     ): BitmapFont
     {
         let fontData;
@@ -283,7 +296,7 @@ export class BitmapFont
             textures = [textures];
         }
 
-        const font = new BitmapFont(fontData, textures);
+        const font = new BitmapFont(fontData, textures, ownsTextures);
 
         BitmapFont.available[font.font] = font;
 
@@ -294,7 +307,7 @@ export class BitmapFont
      * Remove bitmap font by name.
      *
      * @static
-     * @param {string} name
+     * @param {string} name - Name of the font to uninstall.
      */
     public static uninstall(name: string): void
     {
@@ -480,7 +493,7 @@ export class BitmapFont
             positionX = Math.ceil(positionX);
         }
 
-        const font = new BitmapFont(fontData, textures);
+        const font = new BitmapFont(fontData, textures, true);
 
         // Make it easier to replace a font
         if (BitmapFont.available[name] !== undefined)
