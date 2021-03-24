@@ -45,7 +45,7 @@
     "@lerna/filter-packages": "^3.13.0",
     "@lerna/project": "^3.13.1",
     "@microsoft/api-extractor": "^7.9.11",
-    "@pixi-build-tools/api-extractor-lerna-monorepo": "^1.0.1",
+    "@pixi-build-tools/api-extractor-lerna-monorepo": "^1.0.3",
     "@pixi/eslint-config": "^2.0.1",
     "@pixi/webdoc-template": "^1.2.0",
     "@rollup/plugin-alias": "^3.1.1",
