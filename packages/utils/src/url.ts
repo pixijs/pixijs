@@ -7,15 +7,15 @@
 
 import { parse as _parse, format as _format, resolve as _resolve } from 'url';
 
-export interface ParsedUrlQuery {
+interface ParsedUrlQuery {
     [key: string]: string | string[];
 }
 
-export interface ParsedUrlQueryInput {
+interface ParsedUrlQueryInput {
     [key: string]: unknown;
 }
 
-export interface UrlObjectCommon {
+interface UrlObjectCommon {
     auth?: string;
     hash?: string;
     host?: string;
@@ -29,48 +29,50 @@ export interface UrlObjectCommon {
 }
 
 // Input to `url.format`
-export interface UrlObject extends UrlObjectCommon {
+interface UrlObject extends UrlObjectCommon {
     port?: string | number;
     query?: string | null | ParsedUrlQueryInput;
 }
 
 // Output of `url.parse`
-export interface Url extends UrlObjectCommon {
+interface Url extends UrlObjectCommon {
     port?: string;
     query?: string | null | ParsedUrlQuery;
 }
 
-export interface UrlWithParsedQuery extends Url {
+interface UrlWithParsedQuery extends Url {
     query: ParsedUrlQuery;
 }
 
-export interface UrlWithStringQuery extends Url {
+interface UrlWithStringQuery extends Url {
     query: string | null;
 }
 
-export interface URLFormatOptions {
+interface URLFormatOptions {
     auth?: boolean;
     fragment?: boolean;
     search?: boolean;
     unicode?: boolean;
 }
 
-export type ParseFunction = {
+type ParseFunction = {
     (urlStr: string): UrlWithStringQuery;
     (urlStr: string, parseQueryString: false | undefined, slashesDenoteHost?: boolean): UrlWithStringQuery;
     (urlStr: string, parseQueryString: true, slashesDenoteHost?: boolean): UrlWithParsedQuery;
     (urlStr: string, parseQueryString: boolean, slashesDenoteHost?: boolean): Url;
 };
 
-export type FormatFunction = {
+type FormatFunction = {
     (URL: URL, options?: URLFormatOptions): string;
     (urlObject: UrlObject | string): string;
 };
 
-export type ResolveFunction = {
+type ResolveFunction = {
     (from: string, to: string): string;
 };
 
-export const parse: ParseFunction = _parse;
-export const format: FormatFunction = _format;
-export const resolve: ResolveFunction = _resolve;
+export const url = {
+    parse: _parse as ParseFunction,
+    format: _format as FormatFunction,
+    resolve: _resolve as ResolveFunction,
+};
