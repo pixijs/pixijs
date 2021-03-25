@@ -18,11 +18,11 @@ import { RENDERER_TYPE } from '@pixi/constants';
 import { UniformGroup } from './shader/UniformGroup';
 import { Matrix } from '@pixi/math';
 import { Runner } from '@pixi/runner';
+import { RenderTexture } from './renderTexture/RenderTexture';
 
-import type { IRendererOptions, IRendererPlugins } from './AbstractRenderer';
+import type { IRendererOptions, IRendererPlugins, IRendererRenderOptions } from './AbstractRenderer';
 import type { IRenderableObject } from './IRenderableObject';
-import type { RenderTexture } from './renderTexture/RenderTexture';
-import type { System } from './System';
+import type { ISystemConstructor } from './ISystem';
 import type { IRenderingContext } from './IRenderingContext';
 
 export interface IRendererPluginConstructor {
@@ -48,6 +48,7 @@ export interface IRendererPlugin {
  * | ------------------------------------ | ----------------------------------------------------------------------------- |
  * | {@link PIXI.BatchSystem}             | This manages object renderers that defer rendering until a flush.             |
  * | {@link PIXI.ContextSystem}           | This manages the WebGL context and extensions.                                |
+ * | {@link PIXI.EventSystem}             | This manages UI events.                                                       |
  * | {@link PIXI.FilterSystem}            | This manages the filtering pipeline for post-processing effects.              |
  * | {@link PIXI.FramebufferSystem}       | This manages framebuffers, which are used for offscreen rendering.            |
  * | {@link PIXI.GeometrySystem}          | This manages geometries & buffers, which are used to draw object meshes.      |
@@ -329,13 +330,8 @@ export class Renderer extends AbstractRenderer
      *        sure it doesn't collide with properties on Renderer.
      * @return {PIXI.Renderer} Return instance of renderer
      */
-    addSystem<T extends System>(ClassRef: { new(renderer: Renderer): T}, name: string): this
+    addSystem(ClassRef: ISystemConstructor, name: string): this
     {
-        if (!name)
-        {
-            name = ClassRef.name;
-        }
-
         const system = new ClassRef(this);
 
         if ((this as any)[name])
@@ -373,17 +369,64 @@ export class Renderer extends AbstractRenderer
     }
 
     /**
-     * Renders the object to its WebGL view
+     * Renders the object to its WebGL view.
      *
      * @param displayObject - The object to be rendered.
-     * @param [renderTexture] - The render texture to render to.
-     * @param [clear=true] - Should the canvas be cleared before the new render.
-     * @param [transform] - A transform to apply to the render texture before rendering.
-     * @param [skipUpdateTransform=false] - Should we skip the update transform pass?
+     * @param {object} [options] - Object to use for render options.
+     * @param {PIXI.RenderTexture} [options.renderTexture] - The render texture to render to.
+     * @param {boolean} [options.clear=true] - Should the canvas be cleared before the new render.
+     * @param {PIXI.Matrix} [options.transform] - A transform to apply to the render texture before rendering.
+     * @param {boolean} [options.skipUpdateTransform=false] - Should we skip the update transform pass?
+     */
+    render(displayObject: IRenderableObject, options?: IRendererRenderOptions): void;
+
+    /**
+     * Please use the `option` render arguments instead.
+     *
+     * @deprecated Since 6.0.0
+     * @param displayObject
+     * @param renderTexture
+     * @param clear
+     * @param transform
+     * @param skipUpdateTransform
      */
     render(displayObject: IRenderableObject, renderTexture?: RenderTexture,
-        clear?: boolean, transform?: Matrix, skipUpdateTransform?: boolean): void
+        clear?: boolean, transform?: Matrix, skipUpdateTransform?: boolean): void;
+
+    /**
+     * @ignore
+     */
+    render(displayObject: IRenderableObject, options?: IRendererRenderOptions | RenderTexture): void
     {
+        let renderTexture: RenderTexture;
+        let clear: boolean;
+        let transform: Matrix;
+        let skipUpdateTransform: boolean;
+
+        if (options)
+        {
+            if (options instanceof RenderTexture)
+            {
+                // #if _DEBUG
+                deprecation('6.0.0', 'Renderer#render arguments changed, use options instead.');
+                // #endif
+
+                /* eslint-disable prefer-rest-params */
+                renderTexture = options;
+                clear = arguments[2];
+                transform = arguments[3];
+                skipUpdateTransform = arguments[4];
+                /* eslint-enable prefer-rest-params */
+            }
+            else
+            {
+                renderTexture = options.renderTexture;
+                clear = options.clear;
+                transform = options.transform;
+                skipUpdateTransform = options.skipUpdateTransform;
+            }
+        }
+
         // can be handy to know!
         this.renderingToScreen = !renderTexture;
 

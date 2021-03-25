@@ -1,4 +1,4 @@
-import { Texture } from '@pixi/core/src';
+import { Texture } from '@pixi/core';
 import { DRAW_MODES } from '@pixi/constants';
 import { canvasUtils } from '@pixi/canvas-renderer';
 

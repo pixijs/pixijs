@@ -1,5 +1,5 @@
-const { WRAP_MODES, TYPES, FORMATS } = require('@pixi/constants');
-const { Renderer, BaseTexture } = require('../');
+const { WRAP_MODES, TYPES, FORMATS, SAMPLER_TYPES } = require('@pixi/constants');
+const { Renderer, Texture, BaseTexture, BufferResource } = require('../');
 
 describe('PIXI.TextureSystem', function ()
 {
@@ -35,7 +35,7 @@ describe('PIXI.TextureSystem', function ()
 
         const glTex = baseTex._glTextures[this.renderer.CONTEXT_UID];
 
-        expect(glTex).to.be.notnull;
+        expect(glTex).to.exist;
         expect(glTex.wrapMode).to.equal(WRAP_MODES.REPEAT);
     });
 
@@ -49,9 +49,10 @@ describe('PIXI.TextureSystem', function ()
 
         const glTex = baseTex._glTextures[this.renderer.CONTEXT_UID];
 
-        expect(glTex).to.be.notnull;
+        expect(glTex).to.exist;
         expect(glTex.wrapMode).to.equal(WRAP_MODES.CLAMP);
     });
+
 
     it('should set internalFormat correctly for RGBA float textures', function ()
     {
@@ -75,5 +76,41 @@ describe('PIXI.TextureSystem', function ()
 
         expect(glTex).to.be.notnull;
         expect(glTex.internalFormat).to.equal(this.renderer.gl.R32F);
+    });
+
+    function createIntegerTexture()
+    {
+        const baseTexture = BaseTexture.fromBuffer(new Uint32Array([0, 0, 0, 0]), 1, 1);
+        const oldUpload = baseTexture.resource.upload.bind(baseTexture);
+
+        baseTexture.resource.upload = (renderer, baseTexture, glTexture) =>
+        {
+            glTexture.samplerType = SAMPLER_TYPES.INT;
+            if (renderer.context.webGLVersion === 2)
+            {
+                glTexture.internalFormat = renderer.context.gl.RGBA32I;
+            }
+
+            return oldUpload(renderer, baseTexture, glTexture);
+        };
+
+        return baseTexture;
+    }
+
+    it('should unbind textures with non-float samplerType for batching', function ()
+    {
+        const textureSystem = this.renderer.texture;
+        const { boundTextures } = textureSystem;
+        const sampleTex = createIntegerTexture();
+        const sampleTex2 = createIntegerTexture();
+
+        textureSystem.bind(Texture.WHITE.baseTexture, 0);
+        textureSystem.bind(sampleTex, 1);
+        textureSystem.bind(sampleTex2, 2);
+        expect(textureSystem.hasIntegerTextures).to.be.true;
+        textureSystem.ensureSamplerType(2);
+        expect(boundTextures[0]).to.equal(Texture.WHITE.baseTexture);
+        expect(boundTextures[1]).to.be.null;
+        expect(boundTextures[2]).to.equal(sampleTex2);
     });
 });

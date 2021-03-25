@@ -235,6 +235,24 @@ export enum TYPES {
 }
 
 /**
+ * Various sampler types. Correspond to `sampler`, `isampler`, `usampler` GLSL types respectively.
+ * WebGL1 works only with FLOAT.
+ *
+ * @memberof PIXI
+ * @static
+ * @name SAMPLER_TYPES
+ * @enum {number}
+ * @property {number} FLOAT=0
+ * @property {number} INT=1
+ * @property {number} UINT=2
+ */
+export enum SAMPLER_TYPES {
+    FLOAT = 0,
+    INT = 1,
+    UINT = 2,
+}
+
+/**
  * The scale modes that are supported by pixi.
  *
  * The {@link PIXI.settings.SCALE_MODE} scale mode affects the default scaling mode of future operations.

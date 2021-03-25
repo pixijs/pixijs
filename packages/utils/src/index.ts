@@ -74,8 +74,6 @@ export { EventEmitter };
  */
 export { default as earcut } from 'earcut';
 
-import { parse, format, resolve } from 'url';
-
 /**
  * Node.js compatible URL utilities.
  *
@@ -85,7 +83,7 @@ import { parse, format, resolve } from 'url';
  * @name url
  * @member {object}
  */
-export const url = { parse, format, resolve };
+export * from './url';
 
 import './settings';
 

@@ -13,7 +13,7 @@ export interface IDestroyOptions {
     baseTexture?: boolean;
 }
 
-export interface DisplayObject extends GlobalMixins.DisplayObject, EventEmitter {}
+export interface DisplayObject extends Omit<GlobalMixins.DisplayObject, keyof EventEmitter>, EventEmitter {}
 
 /**
  * The base class for all objects that are rendered on the screen.
@@ -444,6 +444,13 @@ export abstract class DisplayObject extends EventEmitter
      */
 
     /**
+     * Fired when this DisplayObject is destroyed.
+     *
+     * @instance
+     * @event destroyed
+     */
+
+    /**
      * Recalculates the bounds of the display object.
      */
     abstract calculateBounds(): void;
@@ -738,6 +745,7 @@ export abstract class DisplayObject extends EventEmitter
         {
             this.parent.removeChild(this);
         }
+        this.emit('destroyed');
         this.removeAllListeners();
         this.transform = null;
 
