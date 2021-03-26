@@ -8,23 +8,23 @@ let UID = 0;
 /**
  * Uniform group holds uniform map and some ID's for work
  *
- * The uniform group has two modes:
+ * `UniformGroup` has two modes:
  *
- * 1: normal mode
+ * 1: Normal mode
  * Normal mode will upload the uniforms with individual function calls as required
  *
- * 2: uniform buffer mode
+ * 2: Uniform buffer mode
  * This mode will treat the uniforms as a uniform buffer. You can pass in either a buffer that you manually handle, or
- * or a generic object that pixi will automatically map to a buffer for you.
- * For maximum benefits, its best to make Ubo UniformGroups static, and only update them each frame.
+ * or a generic object that PixiJS will automatically map to a buffer for you.
+ * For maximum benefits, make Ubo UniformGroups static, and only update them each frame.
  *
- * rules of UBO's:
- * - ubo's only work with WebGL2, so make sure you have a fallback!
- * - only floats are supported (including vec[2,3,4], mat[2,3,4])
- * - samplers cannot be used i ubo's (a GPU limitation)
- * - you must ensure that the object you pass in exactly matches in the shader ubo structure.
+ * Rules of UBOs:
+ * - UBOs only work with WebGL2, so make sure you have a fallback!
+ * - Only floats are supported (including vec[2,3,4], mat[2,3,4])
+ * - Samplers cannot be used in ubo's (a GPU limitation)
+ * - You must ensure that the object you pass in exactly matches in the shader ubo structure.
  * Otherwise, weirdness will ensue!
- * - the name of the ubo object added to the group must match exactly the name of the ubo in the shader.
+ * - The name of the ubo object added to the group must match exactly the name of the ubo in the shader.
  *
  * ```
  * // ubo in shader:
