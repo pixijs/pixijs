@@ -18,7 +18,7 @@ export class GLProgram
     public uniformData: Dict<any>;
     public uniformGroups: Dict<any>;
     /**
-     * a hash that stores where ubs are bound to on the program
+     * A hash that stores where UBOs are bound to on the program.
      */
     public uniformBufferBindings: Dict<any>;
     /**
