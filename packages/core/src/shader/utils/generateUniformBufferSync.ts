@@ -8,10 +8,10 @@ import type { Buffer } from '../../geometry/Buffer';
 
 export type UniformsSyncCallback = (...args: any[]) => void;
 
-function uboUpdate(_ud: any, _uv: any, _renderer: Renderer, _syncData: any, buffer: Buffer)
+function uboUpdate(_ud: any, _uv: any, _renderer: Renderer, _syncData: any, buffer: Buffer): void
 {
     _renderer.buffer.update(buffer);
-};
+}
 
 // cv = CachedValue
 // v = value

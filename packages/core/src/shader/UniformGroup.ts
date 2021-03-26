@@ -63,10 +63,10 @@ export class UniformGroup<LAYOUT = Dict<any>>
 
     /**
      * @param {object | Buffer} [uniforms] - Custom uniforms to use to augment the built-in ones. Or a pixi buffer
-     * @param {boolean} [_static] - Uniforms wont be changed after creation
-     * @param {boolean} [_ubo] - if true, will treat this uniform group as a uniform buffer object
+     * @param {boolean} [isStatic] - Uniforms wont be changed after creation
+     * @param {boolean} [isUbo] - if true, will treat this uniform group as a uniform buffer object
      */
-    constructor(uniforms: LAYOUT | Buffer, _static?: boolean, _ubo?: boolean)
+    constructor(uniforms: LAYOUT | Buffer, isStatic?: boolean, isUbo?: boolean)
     {
         /**
          * Its a group and not a single uniforms
@@ -97,13 +97,13 @@ export class UniformGroup<LAYOUT = Dict<any>>
          * Uniforms wont be changed after creation
          * @member {boolean}
          */
-        this.static = !!_static;
+        this.static = !!isStatic;
 
         /**
          * should this group be treated as a uniform buffer object
          * @member {boolean}
          */
-        this.ubo = !!_ubo;
+        this.ubo = !!isUbo;
 
         if (uniforms instanceof Buffer)
         {

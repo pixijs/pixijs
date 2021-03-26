@@ -83,8 +83,8 @@ export class BufferSystem implements ISystem
     }
 
     /**
-     * Binds an uniform buffer to at the given index. 
-     * 
+     * Binds an uniform buffer to at the given index.
+     *
      * A cache is used so a buffer will not be bound again if already bound.
      *
      * @param buffer - the buffer to bind
@@ -109,10 +109,10 @@ export class BufferSystem implements ISystem
      * This will make the buffer start from the offset supplied rather than 0 when it is read.
      *
      * @param buffer - the buffer to bind
-     * @param offset - the offset to bind at (this is blocks of 256). 0 = 0, 1 = 256, 2 = 512 etc
      * @param index - the base index to bind at, defaults to 0
+     * @param offset - the offset to bind at (this is blocks of 256). 0 = 0, 1 = 256, 2 = 512 etc
      */
-    bindBufferRange(buffer: Buffer, offset?: number, index?: number): void
+    bindBufferRange(buffer: Buffer, index?: number, offset?: number): void
     {
         const { gl, CONTEXT_UID } = this;
 

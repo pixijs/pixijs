@@ -27,6 +27,8 @@ export class GLProgram
     public uniformSync: Dict<any>;
     /**
      * a place where dirty ticks are stored for groups
+     * If a tick here does not match with the Higher level Programs tick, it means
+     * we should re upload the data.
      */
     public uniformDirtyGroups: Dict<any>;
 
