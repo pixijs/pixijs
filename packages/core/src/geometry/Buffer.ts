@@ -116,9 +116,12 @@ export class Buffer
     }
 
     /**
-     * setting index to true, will set the buffer type to be an ELEMENT_ARRAY_BUFFER
-     * false will set its type to ARRAY_BUFFER
-     * for backwards compatibility
+     * Flags whether this is an index buffer.
+     *
+     * Index buffers are of type `ELEMENT_ARRAY_BUFFER`. Note that setting this property to false will make
+     * the buffer of type `ARRAY_BUFFER`. 
+     * 
+     * For backwards compatibility.
      */
     set index(value: boolean)
     {
