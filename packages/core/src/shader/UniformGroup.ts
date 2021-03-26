@@ -100,7 +100,7 @@ export class UniformGroup<LAYOUT = Dict<any>>
         this.static = !!_static;
 
         /**
-         * should this group be treated as a uniform buffer object
+         * Flags whether this group is treated like a uniform buffer object.
          * @member {boolean}
          */
         this.ubo = !!_ubo;
