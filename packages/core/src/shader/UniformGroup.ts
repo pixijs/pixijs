@@ -159,7 +159,7 @@ export class UniformGroup<LAYOUT = Dict<any>>
     }
 
     /**
-     * A short hand function for creating a static ubo UniformGroup,
+     * A short hand function for creating a static UBO UniformGroup.
      *
      * @param uniforms - the ubo item
      * @param _static - should this be updated each time it is used? defaults to true here!
