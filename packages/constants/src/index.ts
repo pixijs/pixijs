@@ -469,7 +469,6 @@ export enum MSAA_QUALITY {
  * @property {number} UNIFORM_BUFFER - the buffer type is for uniform buffer objects
  */
 export enum BUFFER_TYPE {
-
     ELEMENT_ARRAY_BUFFER = 34963,
     ARRAY_BUFFER = 34962,
     // NOT YET SUPPORTED
