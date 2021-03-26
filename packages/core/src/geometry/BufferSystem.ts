@@ -69,7 +69,7 @@ export class BufferSystem implements ISystem
     }
 
     /**
-     * this binds specified buffer. OOn first run, it will create the webGL buffers for the context too
+     * This binds specified buffer. On first run, it will create the webGL buffers for the context too
      *
      * @param buffer - the buffer to bind to the renderer
      */
