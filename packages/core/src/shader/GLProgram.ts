@@ -71,6 +71,7 @@ export class GLProgram
     {
         this.uniformData = null;
         this.uniformGroups = null;
+        this.uniformDirtyGroups = null;
         this.uniformBufferBindings = null;
         this.program = null;
     }
