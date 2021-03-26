@@ -83,8 +83,9 @@ export class BufferSystem implements ISystem
     }
 
     /**
-     * binds a buffer to a base. A cache is used so a buffer will not be bound again if already bound.
-     * Only used by the uniform buffers
+     * Binds an uniform buffer to at the given index. 
+     * 
+     * A cache is used so a buffer will not be bound again if already bound.
      *
      * @param buffer - the buffer to bind
      * @param index - the base index to bind it to.
