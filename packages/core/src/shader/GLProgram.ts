@@ -22,7 +22,7 @@ export class GLProgram
      */
     public uniformBufferBindings: Dict<any>;
     /**
-     * a hash for upload functions, we only generates new ones if they don't already exist
+     * A hash for lazily-generated uniform uploading functions.
      */
     public uniformSync: Dict<any>;
     /**
