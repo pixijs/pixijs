@@ -8,7 +8,7 @@ import type { Buffer } from '../../geometry/Buffer';
 
 export type UniformsSyncCallback = (...args: any[]) => void;
 
-const uboUpdate =  (_ud: any, _uv: any, _renderer: Renderer, _syncData: any, buffer: Buffer) =>
+function uboUpdate(_ud: any, _uv: any, _renderer: Renderer, _syncData: any, buffer: Buffer)
 {
     _renderer.buffer.update(buffer);
 };
@@ -292,4 +292,3 @@ export function generateUniformBufferSync(
         ) as UniformsSyncCallback
     };
 }
-
