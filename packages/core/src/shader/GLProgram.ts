@@ -26,7 +26,7 @@ export class GLProgram
      */
     public uniformSync: Dict<any>;
     /**
-     * a place where dirty ticks are stored for groups
+     * A place where dirty ticks are stored for groups.
      */
     public uniformDirtyGroups: Dict<any>;
 
