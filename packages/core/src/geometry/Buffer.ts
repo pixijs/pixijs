@@ -42,10 +42,10 @@ export class Buffer
     public data: ITypedArray;
 
     /**
-     * the type of buffer this is
-     * ELEMENT_ARRAY_BUFFER - used as an index buffer
-     * ARRAY_BUFFER - used as an attribute buffer
-     * UNIFORM_BUFFER - used as a uniform buffer (if available)
+     * The type of buffer this is, one of:
+     * + ELEMENT_ARRAY_BUFFER - used as an index buffer
+     * + ARRAY_BUFFER - used as an attribute buffer
+     * + UNIFORM_BUFFER - used as a uniform buffer (if available)
      */
     public type: BUFFER_TYPE;
     public static: boolean;
