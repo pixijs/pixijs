@@ -222,7 +222,7 @@ export class ShaderSystem implements ISystem
      * @param glProgram - the gl program to attach the uniform bindings to
      * @param name - the name of the uniform buffer (must exist on the shader)
      */
-    createSyncBufferGroup(group: UniformGroup, glProgram: GLProgram, name: string): UniformsSyncCallback
+    protected createSyncBufferGroup(group: UniformGroup, glProgram: GLProgram, name: string): UniformsSyncCallback
     {
         const { gl } = this.renderer;
 
