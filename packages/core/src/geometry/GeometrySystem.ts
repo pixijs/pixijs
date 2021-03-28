@@ -423,10 +423,14 @@ export class GeometrySystem implements ISystem
             {
                 const buf = buffers[i]._glBuffers[this.CONTEXT_UID];
 
-                buf.refCount--;
-                if (buf.refCount === 0 && !contextLost)
+                // my be null as context may have changed right before the dispose is called
+                if (buf)
                 {
-                    bufferSystem.dispose(buffers[i], contextLost);
+                    buf.refCount--;
+                    if (buf.refCount === 0 && !contextLost)
+                    {
+                        bufferSystem.dispose(buffers[i], contextLost);
+                    }
                 }
             }
         }
