@@ -1,8 +1,6 @@
 import { UPDATE_PRIORITY } from './const';
 import { Ticker } from './Ticker';
 
-import type { IApplicationOptions } from '@pixi/app';
-
 /**
  * Middleware for for Application Ticker.
  *
@@ -28,7 +26,7 @@ export class TickerPlugin
      * @private
      * @param {object} [options] - See application options
      */
-    static init(options?: IApplicationOptions): void
+    static init(options?: GlobalMixins.IApplicationOptions): void
     {
         // Set default
         options = Object.assign({
