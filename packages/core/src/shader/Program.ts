@@ -22,10 +22,12 @@ export interface IAttributeData
 
 export interface IUniformData
 {
+    index: number;
     type: string;
     size: number;
     isArray: boolean;
     value: any;
+    name: string;
 }
 
 /**

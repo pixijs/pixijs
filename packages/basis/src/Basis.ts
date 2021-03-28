@@ -93,7 +93,7 @@ export const BASIS_FORMATS_ALPHA: { [id: number]: boolean } = {
  */
 export declare class BasisFile
 {
-    constructor(buffer : Uint8Array);
+    constructor(buffer: Uint8Array);
     getNumImages(): number;
     getNumLevels(imageId: number): number;
     getImageWidth(imageId: number, level: number): number;
@@ -101,7 +101,7 @@ export declare class BasisFile
     getHasAlpha(): boolean;
     startTranscoding(): boolean;
     getImageTranscodedSizeInBytes(
-        imageId : number,
+        imageId: number,
         level: number,
         basisFormat: number): number;
     transcodeImage(dstBuff: Uint8Array,

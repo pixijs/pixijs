@@ -18,6 +18,7 @@ import { RENDERER_TYPE } from '@pixi/constants';
 import { UniformGroup } from './shader/UniformGroup';
 import { Matrix } from '@pixi/math';
 import { Runner } from '@pixi/runner';
+import { BufferSystem } from './geometry/BufferSystem';
 import { RenderTexture } from './renderTexture/RenderTexture';
 
 import type { IRendererOptions, IRendererPlugins, IRendererRenderOptions } from './AbstractRenderer';
@@ -80,6 +81,7 @@ export class Renderer extends AbstractRenderer
     public state: StateSystem;
     public shader: ShaderSystem;
     public texture: TextureSystem;
+    public buffer: BufferSystem;
     public geometry: GeometrySystem;
     public framebuffer: FramebufferSystem;
     public scissor: ScissorSystem;
@@ -224,7 +226,14 @@ export class Renderer extends AbstractRenderer
             .addSystem(TextureSystem, 'texture')
             /**
              * Geometry system instance
-             * @member {PIXI.GeometrySystem} geometry
+             * @member {PIXI.systems.BufferSystem} buffer
+             * @memberof PIXI.Renderer#
+             * @readonly
+             */
+            .addSystem(BufferSystem, 'buffer')
+            /**
+             * Geometry system instance
+             * @member {PIXI.systems.GeometrySystem} geometry
              * @memberof PIXI.Renderer#
              * @readonly
              */
