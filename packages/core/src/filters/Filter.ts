@@ -189,6 +189,10 @@ export class Filter extends Shader
     public resolution: number;
     public enabled: boolean;
     public autoFit: boolean;
+    /**
+     * Legacy filters use position and uvs from attributes (set by filter system)
+     * @readonly
+     */
     public legacy: boolean;
     state: State;
     /**
@@ -234,13 +238,6 @@ export class Filter extends Shader
          * @member {boolean}
          */
         this.autoFit = true;
-
-        /**
-         * Legacy filters use position and uvs from attributes
-         * @member {boolean}
-         * @readonly
-         */
-        this.legacy = !!this.program.attributeData.aTextureCoord;
 
         /**
          * The WebGL state the filter requires to render

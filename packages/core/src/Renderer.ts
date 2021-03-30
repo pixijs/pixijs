@@ -18,6 +18,7 @@ import { RENDERER_TYPE } from '@pixi/constants';
 import { UniformGroup } from './shader/UniformGroup';
 import { Matrix } from '@pixi/math';
 import { Runner } from '@pixi/runner';
+import { BufferSystem } from './geometry/BufferSystem';
 import { RenderTexture } from './renderTexture/RenderTexture';
 
 import type { IRendererOptions, IRendererPlugins, IRendererRenderOptions } from './AbstractRenderer';
@@ -48,6 +49,7 @@ export interface IRendererPlugin {
  * | ------------------------------------ | ----------------------------------------------------------------------------- |
  * | {@link PIXI.BatchSystem}             | This manages object renderers that defer rendering until a flush.             |
  * | {@link PIXI.ContextSystem}           | This manages the WebGL context and extensions.                                |
+ * | {@link PIXI.EventSystem}             | This manages UI events.                                                       |
  * | {@link PIXI.FilterSystem}            | This manages the filtering pipeline for post-processing effects.              |
  * | {@link PIXI.FramebufferSystem}       | This manages framebuffers, which are used for offscreen rendering.            |
  * | {@link PIXI.GeometrySystem}          | This manages geometries & buffers, which are used to draw object meshes.      |
@@ -79,6 +81,7 @@ export class Renderer extends AbstractRenderer
     public state: StateSystem;
     public shader: ShaderSystem;
     public texture: TextureSystem;
+    public buffer: BufferSystem;
     public geometry: GeometrySystem;
     public framebuffer: FramebufferSystem;
     public scissor: ScissorSystem;
@@ -223,7 +226,14 @@ export class Renderer extends AbstractRenderer
             .addSystem(TextureSystem, 'texture')
             /**
              * Geometry system instance
-             * @member {PIXI.GeometrySystem} geometry
+             * @member {PIXI.systems.BufferSystem} buffer
+             * @memberof PIXI.Renderer#
+             * @readonly
+             */
+            .addSystem(BufferSystem, 'buffer')
+            /**
+             * Geometry system instance
+             * @member {PIXI.systems.GeometrySystem} geometry
              * @memberof PIXI.Renderer#
              * @readonly
              */

@@ -96,8 +96,8 @@ export class Graphics extends Container
 
     public shader: Shader;
     public pluginName: string;
+    public currentPath: Polygon;
 
-    protected currentPath: Polygon;
     protected batches: Array<IGraphicsBatchElement>;
     protected batchTint: number;
     protected batchDirty: number;
@@ -190,7 +190,7 @@ export class Graphics extends Container
          * Current path
          *
          * @member {PIXI.Polygon}
-         * @protected
+         * @readonly
          */
         this.currentPath = null;
 

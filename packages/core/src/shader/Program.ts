@@ -1,9 +1,4 @@
 import { setPrecision,
-    defaultValue,
-    compileProgram,
-    mapSize,
-    mapType,
-    getTestContext,
     getMaxFragmentPrecision } from './utils';
 import { ProgramCache } from '@pixi/utils';
 import defaultFragment from './defaultProgram.frag';
@@ -27,10 +22,12 @@ export interface IAttributeData
 
 export interface IUniformData
 {
+    index: number;
     type: string;
     size: number;
-    isArray: RegExpMatchArray;
+    isArray: boolean;
     value: any;
+    name: string;
 }
 
 /**
@@ -47,8 +44,11 @@ export class Program
     nameCache: any;
     glPrograms: { [ key: number ]: GLProgram};
     syncUniforms: any;
+    /** Assigned when a program is first bound to the shader system. */
     attributeData: { [key: string]: IAttributeData};
+    /** Assigned when a program is first bound to the shader system. */
     uniformData: {[key: string]: IUniformData};
+
     /**
      * @param {string} [vertexSrc] - The source of the vertex shader.
      * @param {string} [fragmentSrc] - The source of the fragment shader.
@@ -97,124 +97,10 @@ export class Program
         }
 
         // currently this does not extract structs only default types
-        this.extractData(this.vertexSrc, this.fragmentSrc);
-
         // this is where we store shader references..
         this.glPrograms = {};
 
         this.syncUniforms = null;
-    }
-
-    /**
-     * Extracts the data for a buy creating a small test program
-     * or reading the src directly.
-     * @protected
-     *
-     * @param {string} [vertexSrc] - The source of the vertex shader.
-     * @param {string} [fragmentSrc] - The source of the fragment shader.
-     */
-    protected extractData(vertexSrc: string, fragmentSrc: string): void
-    {
-        const gl = getTestContext();
-
-        if (gl)
-        {
-            const program = compileProgram(gl, vertexSrc, fragmentSrc);
-
-            this.attributeData = this.getAttributeData(program, gl);
-            this.uniformData = this.getUniformData(program, gl);
-
-            gl.deleteProgram(program);
-        }
-        else
-        {
-            this.uniformData = {};
-            this.attributeData = {};
-        }
-    }
-
-    /**
-     * returns the attribute data from the program
-     * @private
-     *
-     * @param {WebGLProgram} [program] - the WebGL program
-     * @param {WebGLRenderingContext} [gl] - the WebGL context
-     *
-     * @returns {object} the attribute data for this program
-     */
-    protected getAttributeData(program: WebGLProgram, gl: WebGLRenderingContextBase): {[key: string]: IAttributeData}
-    {
-        const attributes: {[key: string]: IAttributeData} = {};
-        const attributesArray: Array<IAttributeData> = [];
-
-        const totalAttributes = gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES);
-
-        for (let i = 0; i < totalAttributes; i++)
-        {
-            const attribData = gl.getActiveAttrib(program, i);
-            const type = mapType(gl, attribData.type);
-
-            /*eslint-disable */
-            const data = {
-                type: type,
-                name: attribData.name,
-                size: mapSize(type),
-                location: 0,
-            };
-            /* eslint-enable */
-
-            attributes[attribData.name] = data;
-            attributesArray.push(data);
-        }
-
-        attributesArray.sort((a, b) => (a.name > b.name) ? 1 : -1); // eslint-disable-line no-confusing-arrow
-
-        for (let i = 0; i < attributesArray.length; i++)
-        {
-            attributesArray[i].location = i;
-        }
-
-        return attributes;
-    }
-
-    /**
-     * returns the uniform data from the program
-     * @private
-     *
-     * @param {webGL-program} [program] - the webgl program
-     * @param {context} [gl] - the WebGL context
-     *
-     * @returns {object} the uniform data for this program
-     */
-    private getUniformData(program: WebGLProgram, gl: WebGLRenderingContextBase): {[key: string]: IUniformData}
-    {
-        const uniforms: {[key: string]: IUniformData} = {};
-
-        const totalUniforms = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
-
-        // TODO expose this as a prop?
-        // const maskRegex = new RegExp('^(projectionMatrix|uSampler|translationMatrix)$');
-        // const maskRegex = new RegExp('^(projectionMatrix|uSampler|translationMatrix)$');
-
-        for (let i = 0; i < totalUniforms; i++)
-        {
-            const uniformData = gl.getActiveUniform(program, i);
-            const name = uniformData.name.replace(/\[.*?\]$/, '');
-
-            const isArray = uniformData.name.match(/\[.*?\]$/);
-            const type = mapType(gl, uniformData.type);
-
-            /*eslint-disable */
-            uniforms[name] = {
-                type: type,
-                size: uniformData.size,
-                isArray:isArray,
-                value: defaultValue(type, uniformData.size),
-            };
-            /* eslint-enable */
-        }
-
-        return uniforms;
     }
 
     /**
