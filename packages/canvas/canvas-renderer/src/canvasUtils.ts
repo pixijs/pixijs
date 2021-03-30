@@ -120,13 +120,13 @@ export const canvasUtils = {
         const crop = texture._frame.clone();
         const resolution = texture.baseTexture.resolution;
 
-        crop.x *= resolution;
-        crop.y *= resolution;
-        crop.width *= resolution;
-        crop.height *= resolution;
+        crop.x = Math.round(crop.x * resolution);
+        crop.y = Math.round(crop.y * resolution);
+        crop.width = Math.round(crop.width * resolution);
+        crop.height = Math.round(crop.height * resolution);
 
-        canvas.width = Math.ceil(crop.width);
-        canvas.height = Math.ceil(crop.height);
+        canvas.width = crop.width;
+        canvas.height = crop.height;
 
         context.save();
         context.fillStyle = `#${(`00000${(color | 0).toString(16)}`).substr(-6)}`;
@@ -179,13 +179,13 @@ export const canvasUtils = {
         const crop = texture._frame.clone();
         const resolution = texture.baseTexture.resolution;
 
-        crop.x *= resolution;
-        crop.y *= resolution;
-        crop.width *= resolution;
-        crop.height *= resolution;
+        crop.x = Math.round(crop.x * resolution);
+        crop.y = Math.round(crop.y * resolution);
+        crop.width = Math.round(crop.width * resolution);
+        crop.height = Math.round(crop.height * resolution);
 
-        canvas.width = Math.ceil(crop.width);
-        canvas.height = Math.ceil(crop.height);
+        canvas.width = crop.width;
+        canvas.height = crop.height;
 
         context.save();
         context.globalCompositeOperation = 'copy';
@@ -223,13 +223,13 @@ export const canvasUtils = {
         const crop = texture._frame.clone();
         const resolution = texture.baseTexture.resolution;
 
-        crop.x *= resolution;
-        crop.y *= resolution;
-        crop.width *= resolution;
-        crop.height *= resolution;
+        crop.x = Math.round(crop.x * resolution);
+        crop.y = Math.round(crop.y * resolution);
+        crop.width = Math.round(crop.width * resolution);
+        crop.height = Math.round(crop.height * resolution);
 
-        canvas.width = Math.ceil(crop.width);
-        canvas.height = Math.ceil(crop.height);
+        canvas.width = crop.width;
+        canvas.height = crop.height;
 
         context.save();
         context.globalCompositeOperation = 'copy';

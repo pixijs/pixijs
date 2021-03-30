@@ -1,6 +1,10 @@
 import { ParticleContainer } from '@pixi/particles';
 import type { Sprite } from '@pixi/sprite';
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
+import { Rectangle } from '@pixi/math';
+
+const sourceFrame = new Rectangle();
+const destinationFrame = new Rectangle();
 
 /**
  * Renders the object using the Canvas renderer
@@ -41,12 +45,16 @@ ParticleContainer.prototype.renderCanvas = function renderCanvas(renderer: Canva
             continue;
         }
 
-        if (!child._texture.valid)
+        const texture = child.texture;
+        const source = texture.baseTexture.getDrawableSource();
+
+        if (texture.orig.width <= 0 || texture.orig.height <= 0 || !texture.valid || !source)
         {
             continue;
         }
 
-        const frame = child._texture.frame;
+        const width = texture._frame.width;
+        const height = texture._frame.height;
 
         context.globalAlpha = this.worldAlpha * child.alpha;
 
@@ -59,11 +67,11 @@ ParticleContainer.prototype.renderCanvas = function renderCanvas(renderer: Canva
                 isRotated = false;
             }
 
-            positionX = ((child.anchor.x) * (-frame.width * child.scale.x)) + child.position.x + 0.5;
-            positionY = ((child.anchor.y) * (-frame.height * child.scale.y)) + child.position.y + 0.5;
+            positionX = ((child.anchor.x) * (-width * child.scale.x)) + child.position.x + 0.5;
+            positionY = ((child.anchor.y) * (-height * child.scale.y)) + child.position.y + 0.5;
 
-            finalWidth = frame.width * child.scale.x;
-            finalHeight = frame.height * child.scale.y;
+            finalWidth = width * child.scale.x;
+            finalHeight = height * child.scale.y;
         }
         else
         {
@@ -78,25 +86,44 @@ ParticleContainer.prototype.renderCanvas = function renderCanvas(renderer: Canva
 
             renderer.setContextTransform(childTransform, this.roundPixels, 1);
 
-            positionX = ((child.anchor.x) * (-frame.width)) + 0.5;
-            positionY = ((child.anchor.y) * (-frame.height)) + 0.5;
+            positionX = ((child.anchor.x) * (-width)) + 0.5;
+            positionY = ((child.anchor.y) * (-height)) + 0.5;
 
-            finalWidth = frame.width;
-            finalHeight = frame.height;
+            finalWidth = width;
+            finalHeight = height;
         }
 
-        const resolution = child._texture.baseTexture.resolution;
+        destinationFrame.x = positionX * renderer.resolution;
+        destinationFrame.y = positionY * renderer.resolution;
+        destinationFrame.width = finalWidth * renderer.resolution;
+        destinationFrame.height = finalHeight * renderer.resolution;
+
+        if (this.roundPixels)
+        {
+            destinationFrame.x = Math.round(destinationFrame.x);
+            destinationFrame.y = Math.round(destinationFrame.y);
+            destinationFrame.width = Math.round(destinationFrame.width);
+            destinationFrame.height = Math.round(destinationFrame.height);
+        }
+
+        const resolution = texture.baseTexture.resolution;
+
+        sourceFrame.copyFrom(texture._frame);
+        sourceFrame.x = Math.round(sourceFrame.x * resolution);
+        sourceFrame.y = Math.round(sourceFrame.y * resolution);
+        sourceFrame.width = Math.round(sourceFrame.width * resolution);
+        sourceFrame.height = Math.round(sourceFrame.height * resolution);
 
         context.drawImage(
-            child._texture.baseTexture.getDrawableSource(),
-            frame.x * resolution,
-            frame.y * resolution,
-            frame.width * resolution,
-            frame.height * resolution,
-            positionX * renderer.resolution,
-            positionY * renderer.resolution,
-            finalWidth * renderer.resolution,
-            finalHeight * renderer.resolution
+            source,
+            sourceFrame.x,
+            sourceFrame.y,
+            sourceFrame.width,
+            sourceFrame.height,
+            destinationFrame.x,
+            destinationFrame.y,
+            destinationFrame.width,
+            destinationFrame.height
         );
     }
 };

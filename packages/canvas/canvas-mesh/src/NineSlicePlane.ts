@@ -85,7 +85,7 @@ NineSlicePlane.prototype._renderCanvas = function _renderCanvas(renderer: Canvas
 
     for (let i = 0; i < 8; i++)
     {
-        uvs[i] *= texture.baseTexture.resolution;
+        uvs[i] = Math.round(uvs[i] * texture.baseTexture.resolution);
     }
 
     context.globalAlpha = this.worldAlpha;

@@ -254,26 +254,26 @@ export class Spritesheet
                 const orig = new Rectangle(
                     0,
                     0,
-                    Math.floor(sourceSize.w) / this.resolution,
-                    Math.floor(sourceSize.h) / this.resolution
+                    Math.round(sourceSize.w) / this.resolution,
+                    Math.round(sourceSize.h) / this.resolution
                 );
 
                 if (data.rotated)
                 {
                     frame = new Rectangle(
-                        Math.floor(rect.x) / this.resolution,
-                        Math.floor(rect.y) / this.resolution,
-                        Math.floor(rect.h) / this.resolution,
-                        Math.floor(rect.w) / this.resolution
+                        Math.round(rect.x) / this.resolution,
+                        Math.round(rect.y) / this.resolution,
+                        Math.round(rect.h) / this.resolution,
+                        Math.round(rect.w) / this.resolution
                     );
                 }
                 else
                 {
                     frame = new Rectangle(
-                        Math.floor(rect.x) / this.resolution,
-                        Math.floor(rect.y) / this.resolution,
-                        Math.floor(rect.w) / this.resolution,
-                        Math.floor(rect.h) / this.resolution
+                        Math.round(rect.x) / this.resolution,
+                        Math.round(rect.y) / this.resolution,
+                        Math.round(rect.w) / this.resolution,
+                        Math.round(rect.h) / this.resolution
                     );
                 }
 
@@ -281,10 +281,10 @@ export class Spritesheet
                 if (data.trimmed !== false && data.spriteSourceSize)
                 {
                     trim = new Rectangle(
-                        Math.floor(data.spriteSourceSize.x) / this.resolution,
-                        Math.floor(data.spriteSourceSize.y) / this.resolution,
-                        Math.floor(rect.w) / this.resolution,
-                        Math.floor(rect.h) / this.resolution
+                        Math.round(data.spriteSourceSize.x) / this.resolution,
+                        Math.round(data.spriteSourceSize.y) / this.resolution,
+                        Math.round(rect.w) / this.resolution,
+                        Math.round(rect.h) / this.resolution
                     );
                 }
 

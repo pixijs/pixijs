@@ -77,17 +77,15 @@ export class BaseRenderTexture extends BaseTexture
 
         super(null, options);
 
-        const { width, height } = options || {};
+        const { width, height } = options || { width: 100, height: 100 };
 
         // Set defaults
         this.mipmap = 0;
-        this.width = Math.ceil(width) || 100;
-        this.height = Math.ceil(height) || 100;
         this.valid = true;
 
         this.clearColor = [0, 0, 0, 0];
 
-        this.framebuffer = new Framebuffer(this.width * this.resolution, this.height * this.resolution)
+        this.framebuffer = new Framebuffer(width * this.resolution, height * this.resolution)
             .addColorTexture(0, this);
 
         // TODO - could this be added the systems?
@@ -110,14 +108,13 @@ export class BaseRenderTexture extends BaseTexture
     /**
      * Resizes the BaseRenderTexture.
      *
-     * @param {number} width - The width to resize to.
-     * @param {number} height - The height to resize to.
+     * @param {number} desiredWidth - The desired width to resize to.
+     * @param {number} desiredHeight - The desired height to resize to.
      */
-    resize(width: number, height: number): void
+    resize(desiredWidth: number, desiredHeight: number): void
     {
-        width = Math.ceil(width);
-        height = Math.ceil(height);
-        this.framebuffer.resize(width * this.resolution, height * this.resolution);
+        this.framebuffer.resize(desiredWidth * this.resolution, desiredHeight * this.resolution);
+        this.setRealSize(this.framebuffer.width, this.framebuffer.height);
     }
 
     /**

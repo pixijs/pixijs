@@ -1,10 +1,12 @@
 import { SCALE_MODES, BLEND_MODES } from '@pixi/constants';
-import { Matrix, groupD8 } from '@pixi/math';
+import { Matrix, groupD8, Rectangle } from '@pixi/math';
 import { canvasUtils } from '@pixi/canvas-renderer';
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
 import type { Sprite } from '@pixi/sprite';
 
 const canvasRenderWorldTransform = new Matrix();
+const sourceFrame = new Rectangle();
+const destinationFrame = new Rectangle();
 
 /**
  * Types that can be passed to drawImage
@@ -68,11 +70,6 @@ export class CanvasSpriteRenderer
             return;
         }
 
-        if (!texture.valid)
-        {
-            return;
-        }
-
         renderer.setBlendMode(sprite.blendMode, true);
 
         renderer.context.globalAlpha = sprite.worldAlpha;
@@ -111,14 +108,20 @@ export class CanvasSpriteRenderer
         dy -= height / 2;
 
         renderer.setContextTransform(wt, sprite.roundPixels, 1);
-        // Allow for pixel rounding
+
+        destinationFrame.x = dx * renderer.resolution;
+        destinationFrame.y = dy * renderer.resolution;
+        destinationFrame.width = width * renderer.resolution;
+        destinationFrame.height = height * renderer.resolution;
+
         if (sprite.roundPixels)
         {
-            dx = dx | 0;
-            dy = dy | 0;
+            destinationFrame.x = Math.round(destinationFrame.x);
+            destinationFrame.y = Math.round(destinationFrame.y);
+            destinationFrame.width = Math.round(destinationFrame.width);
+            destinationFrame.height = Math.round(destinationFrame.height);
         }
 
-        const resolution = texture.baseTexture.resolution;
         const outerBlend = renderer._outerBlend;
 
         if (outerBlend)
@@ -126,13 +129,21 @@ export class CanvasSpriteRenderer
             context.save();
             context.beginPath();
             context.rect(
-                dx * renderer.resolution,
-                dy * renderer.resolution,
-                width * renderer.resolution,
-                height * renderer.resolution
+                destinationFrame.x,
+                destinationFrame.y,
+                destinationFrame.width,
+                destinationFrame.height
             );
             context.clip();
         }
+
+        const resolution = texture.baseTexture.resolution;
+
+        sourceFrame.copyFrom(texture._frame);
+        sourceFrame.x = Math.round(sourceFrame.x * resolution);
+        sourceFrame.y = Math.round(sourceFrame.y * resolution);
+        sourceFrame.width = Math.round(sourceFrame.width * resolution);
+        sourceFrame.height = Math.round(sourceFrame.height * resolution);
 
         if (sprite.tint !== 0xFFFFFF)
         {
@@ -148,26 +159,26 @@ export class CanvasSpriteRenderer
                 sprite._tintedCanvas,
                 0,
                 0,
-                Math.floor(width * resolution),
-                Math.floor(height * resolution),
-                Math.floor(dx * renderer.resolution),
-                Math.floor(dy * renderer.resolution),
-                Math.floor(width * renderer.resolution),
-                Math.floor(height * renderer.resolution)
+                sourceFrame.width,
+                sourceFrame.height,
+                destinationFrame.x,
+                destinationFrame.y,
+                destinationFrame.width,
+                destinationFrame.height
             );
         }
         else
         {
             context.drawImage(
                 source,
-                texture._frame.x * resolution,
-                texture._frame.y * resolution,
-                Math.floor(width * resolution),
-                Math.floor(height * resolution),
-                Math.floor(dx * renderer.resolution),
-                Math.floor(dy * renderer.resolution),
-                Math.floor(width * renderer.resolution),
-                Math.floor(height * renderer.resolution)
+                sourceFrame.x,
+                sourceFrame.y,
+                sourceFrame.width,
+                sourceFrame.height,
+                destinationFrame.x,
+                destinationFrame.y,
+                destinationFrame.width,
+                destinationFrame.height
             );
         }
 

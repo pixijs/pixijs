@@ -106,7 +106,7 @@ export class Extract implements IRendererPlugin
         if (renderTexture)
         {
             resolution = renderTexture.baseTexture.resolution;
-            frame = renderTexture.frame;
+            frame = TEMP_RECT.copyFrom(renderTexture.frame);
             flipY = false;
             renderer.renderTexture.bind(renderTexture);
         }
@@ -117,34 +117,38 @@ export class Extract implements IRendererPlugin
             flipY = true;
 
             frame = TEMP_RECT;
+            frame.x = 0;
+            frame.y = 0;
             frame.width = this.renderer.width;
             frame.height = this.renderer.height;
 
             renderer.renderTexture.bind(null);
         }
 
-        const width = Math.floor((frame.width * resolution) + 1e-4);
-        const height = Math.floor((frame.height * resolution) + 1e-4);
+        frame.x = Math.round(frame.x * resolution);
+        frame.y = Math.round(frame.y * resolution);
+        frame.width = Math.round(frame.width * resolution);
+        frame.height = Math.round(frame.height * resolution);
 
-        let canvasBuffer = new CanvasRenderTarget(width, height, 1);
+        let canvasBuffer = new CanvasRenderTarget(frame.width, frame.height, 1);
 
-        const webglPixels = new Uint8Array(BYTES_PER_PIXEL * width * height);
+        const webglPixels = new Uint8Array(BYTES_PER_PIXEL * frame.width * frame.height);
 
         // read pixels to the array
         const gl = renderer.gl;
 
         gl.readPixels(
-            frame.x * resolution,
-            frame.y * resolution,
-            width,
-            height,
+            frame.x,
+            frame.y,
+            frame.width,
+            frame.height,
             gl.RGBA,
             gl.UNSIGNED_BYTE,
             webglPixels
         );
 
         // add the pixels to the canvas
-        const canvasData = canvasBuffer.context.getImageData(0, 0, width, height);
+        const canvasData = canvasBuffer.context.getImageData(0, 0, frame.width, frame.height);
 
         Extract.arrayPostDivide(webglPixels, canvasData.data);
 
@@ -158,7 +162,7 @@ export class Extract implements IRendererPlugin
             target.context.scale(1, -1);
 
             // we can't render to itself because we should be empty before render.
-            target.context.drawImage(canvasBuffer.canvas, 0, -height);
+            target.context.drawImage(canvasBuffer.canvas, 0, -frame.height);
 
             canvasBuffer.destroy();
             canvasBuffer = target;
@@ -205,7 +209,7 @@ export class Extract implements IRendererPlugin
         if (renderTexture)
         {
             resolution = renderTexture.baseTexture.resolution;
-            frame = renderTexture.frame;
+            frame = TEMP_RECT.copyFrom(renderTexture.frame);
 
             // bind the buffer
             renderer.renderTexture.bind(renderTexture);
@@ -215,25 +219,29 @@ export class Extract implements IRendererPlugin
             resolution = renderer.resolution;
 
             frame = TEMP_RECT;
+            frame.x = 0;
+            frame.y = 0;
             frame.width = renderer.width;
             frame.height = renderer.height;
 
             renderer.renderTexture.bind(null);
         }
 
-        const width = frame.width * resolution;
-        const height = frame.height * resolution;
+        frame.x = Math.round(frame.x * resolution);
+        frame.y = Math.round(frame.y * resolution);
+        frame.width = Math.round(frame.width * resolution);
+        frame.height = Math.round(frame.height * resolution);
 
-        const webglPixels = new Uint8Array(BYTES_PER_PIXEL * width * height);
+        const webglPixels = new Uint8Array(BYTES_PER_PIXEL * frame.width * frame.height);
 
         // read pixels to the array
         const gl = renderer.gl;
 
         gl.readPixels(
-            frame.x * resolution,
-            frame.y * resolution,
-            width,
-            height,
+            frame.x,
+            frame.y,
+            frame.width,
+            frame.height,
             gl.RGBA,
             gl.UNSIGNED_BYTE,
             webglPixels

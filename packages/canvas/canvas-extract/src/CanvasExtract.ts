@@ -91,22 +91,26 @@ export class CanvasExtract
         {
             context = (renderTexture.baseTexture as BaseRenderTexture)._canvasRenderTarget.context;
             resolution = (renderTexture.baseTexture as BaseRenderTexture)._canvasRenderTarget.resolution;
-            frame = renderTexture.frame;
+            frame = TEMP_RECT.copyFrom(renderTexture.frame);
         }
         else
         {
             context = renderer.rootContext;
             resolution = renderer.resolution;
             frame = TEMP_RECT;
+            frame.x = 0;
+            frame.y = 0;
             frame.width = this.renderer.width;
             frame.height = this.renderer.height;
         }
 
-        const width = Math.floor((frame.width * resolution) + 1e-4);
-        const height = Math.floor((frame.height * resolution) + 1e-4);
+        frame.x = Math.round(frame.x * resolution);
+        frame.y = Math.round(frame.y * resolution);
+        frame.width = Math.round(frame.width * resolution);
+        frame.height = Math.round(frame.height * resolution);
 
-        const canvasBuffer = new CanvasRenderTarget(width, height, 1);
-        const canvasData = context.getImageData(frame.x * resolution, frame.y * resolution, width, height);
+        const canvasBuffer = new CanvasRenderTarget(frame.width, frame.height, 1);
+        const canvasData = context.getImageData(frame.x, frame.y, frame.width, frame.height);
 
         canvasBuffer.context.putImageData(canvasData, 0, 0);
 
@@ -146,23 +150,25 @@ export class CanvasExtract
         {
             context = (renderTexture.baseTexture as BaseRenderTexture)._canvasRenderTarget.context;
             resolution = (renderTexture.baseTexture as BaseRenderTexture)._canvasRenderTarget.resolution;
-            frame = renderTexture.frame;
+            frame = TEMP_RECT.copyFrom(renderTexture.frame);
         }
         else
         {
             context = renderer.rootContext;
 
             frame = TEMP_RECT;
+            frame.x = 0;
+            frame.y = 0;
             frame.width = renderer.width;
             frame.height = renderer.height;
         }
 
-        const x = frame.x * resolution;
-        const y = frame.y * resolution;
-        const width = frame.width * resolution;
-        const height = frame.height * resolution;
+        frame.x = Math.round(frame.x * resolution);
+        frame.y = Math.round(frame.y * resolution);
+        frame.width = Math.round(frame.width * resolution);
+        frame.height = Math.round(frame.height * resolution);
 
-        return context.getImageData(x, y, width, height).data;
+        return context.getImageData(frame.x, frame.y, frame.width, frame.height).data;
     }
 
     /**

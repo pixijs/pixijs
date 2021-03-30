@@ -201,6 +201,11 @@ export class FramebufferSystem implements ISystem
     {
         const v = this.viewport;
 
+        x = Math.round(x);
+        y = Math.round(y);
+        width = Math.round(width);
+        height = Math.round(height);
+
         if (v.width !== width || v.height !== height || v.x !== x || v.y !== y)
         {
             v.x = x;

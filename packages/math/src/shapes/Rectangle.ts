@@ -236,14 +236,16 @@ export class Rectangle
      */
     ceil(resolution = 1, eps = 0.001): this
     {
-        const x2 = Math.ceil((this.x + this.width - eps) * resolution) / resolution;
-        const y2 = Math.ceil((this.y + this.height - eps) * resolution) / resolution;
+        const x1 = Math.floor((this.x + eps) * resolution);
+        const y1 = Math.floor((this.y + eps) * resolution);
+        const x2 = Math.ceil((this.x + this.width - eps) * resolution);
+        const y2 = Math.ceil((this.y + this.height - eps) * resolution);
 
-        this.x = Math.floor((this.x + eps) * resolution) / resolution;
-        this.y = Math.floor((this.y + eps) * resolution) / resolution;
+        this.x = x1 / resolution;
+        this.y = y1 / resolution;
 
-        this.width = x2 - this.x;
-        this.height = y2 - this.y;
+        this.width = (x2 - x1) / resolution;
+        this.height = (y2 - y1) / resolution;
 
         return this;
     }
