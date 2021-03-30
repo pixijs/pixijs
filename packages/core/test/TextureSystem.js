@@ -53,7 +53,6 @@ describe('PIXI.TextureSystem', function ()
         expect(glTex.wrapMode).to.equal(WRAP_MODES.CLAMP);
     });
 
-
     it('should set internalFormat correctly for RGBA float textures', function ()
     {
         const baseTex = createTempTexture({ type: TYPES.FLOAT, format: FORMATS.RGBA });
