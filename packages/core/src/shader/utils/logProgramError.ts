@@ -5,7 +5,7 @@
  * @param gl - the WebGLContext
  * @param shader - the shader to log errors for
  */
-function logPrettyShaderError(gl:WebGLRenderingContext, shader:WebGLShader):void
+function logPrettyShaderError(gl: WebGLRenderingContext, shader: WebGLShader): void
 {
     const shaderSrc = gl.getShaderSource(shader)
         .split('\n')
@@ -14,7 +14,7 @@ function logPrettyShaderError(gl:WebGLRenderingContext, shader:WebGLShader):void
     const shaderLog = gl.getShaderInfoLog(shader);
     const splitShader = shaderLog.split('\n');
 
-    const dedupe:Record<number, boolean> = {};
+    const dedupe: Record<number, boolean> = {};
 
     const lineNumbers = splitShader.map((line) => parseFloat(line.replace(/^ERROR\: 0\:([\d]+)\:.*$/, '$1')))
         .filter((n) =>
@@ -61,10 +61,10 @@ function logPrettyShaderError(gl:WebGLRenderingContext, shader:WebGLShader):void
  * @param fragmentShader - the vertex WebGL shader program
  */
 export function logProgramError(
-    gl:WebGLRenderingContext,
+    gl: WebGLRenderingContext,
     program: WebGLProgram,
-    vertexShader:WebGLShader,
-    fragmentShader:WebGLShader
+    vertexShader: WebGLShader,
+    fragmentShader: WebGLShader
 ): void
 {
     // if linking fails, then log and cleanup
