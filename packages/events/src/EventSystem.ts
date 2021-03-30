@@ -597,6 +597,7 @@ export class EventSystem
         event.global.copyFrom(event.screen);
         event.offset.copyFrom(event.screen);
 
+        event.nativeEvent = nativeEvent;
         event.type = nativeEvent.type;
 
         return event;

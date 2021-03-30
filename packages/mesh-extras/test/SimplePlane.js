@@ -37,7 +37,7 @@ describe('PIXI.SimplePlane', function ()
         it('should return true when point inside', function ()
         {
             const point = new Point(10, 10);
-            const texture = new RenderTexture.create(20, 30);
+            const texture = new RenderTexture.create({ width: 20, height: 30 });
             const plane = new SimplePlane(texture, 100, 100);
 
             expect(plane.containsPoint(point)).to.be.true;
@@ -46,7 +46,7 @@ describe('PIXI.SimplePlane', function ()
         it('should return false when point outside', function ()
         {
             const point = new Point(100, 100);
-            const texture = new RenderTexture.create(20, 30);
+            const texture = new RenderTexture.create({ width: 20, height: 30 });
             const plane = new SimplePlane(texture, 100, 100);
 
             expect(plane.containsPoint(point)).to.be.false;

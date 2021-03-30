@@ -1,7 +1,7 @@
 import type { Graphics } from '@pixi/graphics';
 
 /**
- * Draw Rectangle with chamfer corners.
+ * Draw Rectangle with chamfer corners. These are angled corners.
  *
  * _Note: Only available with **@pixi/graphics-extras**._
  *
@@ -12,7 +12,7 @@ import type { Graphics } from '@pixi/graphics';
  * @param {number} y - Upper right corner of rect
  * @param {number} width - Width of rect
  * @param {number} height - Height of rect
- * @param {number} chamfer - accept negative or positive values
+ * @param {number} chamfer - non-zero real number, size of corner cutout
  * @return {PIXI.Graphics} Returns self.
  */
 export function drawChamferRect(this: Graphics,
@@ -22,26 +22,33 @@ export function drawChamferRect(this: Graphics,
     height: number,
     chamfer: number): Graphics
 {
-    if (chamfer === 0)
+    if (chamfer <= 0)
     {
         return this.drawRect(x, y, width, height);
     }
 
-    const maxChamfer = Math.min(width, height) / 2;
-    const inset = Math.min(maxChamfer, Math.max(-maxChamfer, chamfer));
+    const inset = Math.min(chamfer, Math.min(width, height) / 2);
     const right = x + width;
     const bottom = y + height;
-    const dir = inset < 0 ? -inset : 0;
-    const size = Math.abs(inset);
+    const points = [
+        x + inset, y,
+        right - inset, y,
+        right, y + inset,
+        right, bottom - inset,
+        right - inset, bottom,
+        x + inset, bottom,
+        x, bottom - inset,
+        x, y + inset,
+    ];
 
-    return this
-        .moveTo(x, y + size)
-        .arcTo(x + dir, y + dir, x + size, y, size)
-        .lineTo(right - size, y)
-        .arcTo(right - dir, y + dir, right, y + size, size)
-        .lineTo(right, bottom - size)
-        .arcTo(right - dir, bottom - dir, x + width - size, bottom, size)
-        .lineTo(x + size, bottom)
-        .arcTo(x + dir, bottom - dir, x, bottom - size, size)
-        .closePath();
+    // Remove overlapping points
+    for (let i = points.length - 1; i >= 2; i -= 2)
+    {
+        if (points[i] === points[i - 2] && points[i - 1] === points[i - 3])
+        {
+            points.splice(i - 1, 2);
+        }
+    }
+
+    return this.drawPolygon(points);
 }
