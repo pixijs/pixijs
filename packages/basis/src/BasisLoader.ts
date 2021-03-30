@@ -160,8 +160,9 @@ export class BasisLoader
         // Should be a valid TYPES, FORMATS for uncompressed basis formats
         const type: TYPES = BASIS_FORMAT_TO_TYPE[resources.basisFormat];
         const format: FORMATS = resources.basisFormat !== BASIS_FORMATS.cTFRGBA32 ? FORMATS.RGB : FORMATS.RGBA;
+        const resourceList = resources as Array<CompressedTextureResource | BufferResource>;
 
-        const textures = resources.map((resource: CompressedTextureResource | BufferResource) =>
+        const textures = resourceList.map((resource) =>
             (
                 new Texture(new BaseTexture(resource, Object.assign({
                     mipmap: resource instanceof CompressedTextureResource && resource.levels > 1
@@ -173,7 +174,7 @@ export class BasisLoader
                 }, metadata)))
             ));
 
-        textures.forEach((texture, i) =>
+        textures.forEach((texture: Texture, i: number) =>
         {
             const { baseTexture } = texture;
             const cacheID = `${url}-${i + 1}`;
