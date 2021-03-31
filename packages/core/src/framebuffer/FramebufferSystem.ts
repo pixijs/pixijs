@@ -136,6 +136,7 @@ export class FramebufferSystem implements ISystem
             if (fbo.mipLevel !== mipLevel)
             {
                 framebuffer.dirtyId++;
+                framebuffer.dirtyFormat++;
                 fbo.mipLevel = mipLevel;
             }
 
