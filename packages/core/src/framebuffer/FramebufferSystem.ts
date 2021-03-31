@@ -168,27 +168,23 @@ export class FramebufferSystem implements ISystem
                 this.renderer.texture.unbind(framebuffer.depthTexture);
             }
 
-            const mipScale = (framebuffer.width >> mipLevel) / framebuffer.width;
-
-            // frame size cant be smaller than one?
+            const mipWidth = (framebuffer.width >> mipLevel);
+            const mipHeight = (framebuffer.height >> mipLevel);
 
             if (frame)
             {
+                const scale = mipWidth / framebuffer.width;
+
                 this.setViewport(
-                    (frame.x * mipScale) | 0,
-                    (frame.y * mipScale) | 0,
-                    (frame.width * mipScale) | 0,
-                    (frame.height * mipScale) | 0
+                    (frame.x * scale) | 0,
+                    (frame.y * scale) | 0,
+                    mipWidth,
+                    mipHeight
                 );
             }
             else
             {
-                this.setViewport(
-                    0,
-                    0,
-                    (framebuffer.width * mipScale) | 0,
-                    (framebuffer.height * mipScale) | 0,
-                );
+                this.setViewport(0, 0, mipWidth, mipHeight);
             }
         }
         else
@@ -326,6 +322,7 @@ export class FramebufferSystem implements ISystem
      *
      * @protected
      * @param {PIXI.Framebuffer} framebuffer
+     * @param {number} mipLevel
      */
     updateFramebuffer(framebuffer: Framebuffer, mipLevel: number): void
     {
