@@ -214,7 +214,7 @@ export abstract class DisplayObject extends EventEmitter
     public visible: boolean;
     public renderable: boolean;
     public filterArea: Rectangle;
-    public filters: Filter[];
+    public filters: Filter[] | null;
     public isSprite: boolean;
     public isMask: boolean;
     public _lastSortedIndex: number;
