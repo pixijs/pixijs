@@ -1,4 +1,4 @@
-const { Renderer } = require('../');
+const { Renderer, Framebuffer } = require('../');
 
 describe('PIXI.FramebufferSystem', function ()
 {
@@ -31,5 +31,24 @@ describe('PIXI.FramebufferSystem', function ()
         // no MSAA
         framebuffer.msaaSamples = null;
         expect(framebuffer.detectSamples(8)).to.equal(0);
+    });
+
+    it('should render to mip levels', function ()
+    {
+        const { gl, CONTEXT_UID } = this.renderer;
+
+        const framebuffer = new Framebuffer(4, 4);
+
+        this.renderer.framebuffer.bind(framebuffer, null, 1);
+
+        expect(framebuffer.glFramebuffers[CONTEXT_UID].mipLevel).to.equal(1);
+
+        expect(Array.from(gl.getParameter(gl.VIEWPORT))).to.deep.equal([0, 0, 2, 2]);
+
+        this.renderer.framebuffer.bind(framebuffer, null, 0);
+
+        expect(framebuffer.glFramebuffers[CONTEXT_UID].mipLevel).to.equal(0);
+
+        expect(Array.from(gl.getParameter(gl.VIEWPORT))).to.deep.equal([0, 0, 4, 4]);
     });
 });
