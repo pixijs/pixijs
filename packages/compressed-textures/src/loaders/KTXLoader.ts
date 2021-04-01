@@ -124,7 +124,22 @@ export class KTXLoader
     {
         if (resource.extension === 'ktx' && resource.data)
         {
-            KTXLoader.parse(resource.name || resource.url, resource.data);
+            try
+            {
+                const url = resource.name || resource.url;
+
+                Object.assign(resource, registerCompressedTextures(
+                    url,
+                    KTXLoader.parse(url, resource.data),
+                    resource.metadata,
+                ));
+            }
+            catch (err)
+            {
+                next(err);
+
+                return;
+            }
         }
 
         next();
@@ -134,13 +149,13 @@ export class KTXLoader
      * Parses the KTX file header, generates base-textures, and puts them into the texture
      * cache.
      */
-    private static parse(url: string, arrayBuffer: ArrayBuffer): void
+    private static parse(url: string, arrayBuffer: ArrayBuffer): CompressedTextureResource[] | null
     {
         const dataView = new DataView(arrayBuffer);
 
         if (!KTXLoader.validate(url, dataView))
         {
-            return;
+            return null;
         }
 
         const littleEndian = dataView.getUint32(KTX_FIELDS.ENDIANNESS, true) === ENDIANNESS;
@@ -267,18 +282,14 @@ export class KTXLoader
         {
             throw new Error('TODO: Uncompressed');
         }
-        else
-        {
-            const imageResources = imageBuffers.map((levelBuffers) => new CompressedTextureResource(null, {
-                format: glInternalFormat,
-                width: pixelWidth,
-                height: pixelHeight,
-                levels: numberOfMipmapLevels,
-                levelBuffers,
-            }));
 
-            registerCompressedTextures(url, imageResources);
-        }
+        return imageBuffers.map((levelBuffers) => new CompressedTextureResource(null, {
+            format: glInternalFormat,
+            width: pixelWidth,
+            height: pixelHeight,
+            levels: numberOfMipmapLevels,
+            levelBuffers,
+        }));
     }
 
     /**
@@ -292,7 +303,9 @@ export class KTXLoader
         {
             if (dataView.getUint8(i) !== FILE_IDENTIFIER[i])
             {
+                // #if _DEBUG
                 console.error(`${url} is not a valid *.ktx file!`);
+                // #endif
 
                 return false;
             }
