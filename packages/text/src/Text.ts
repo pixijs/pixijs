@@ -263,6 +263,10 @@ export class Text extends Sprite
                 linePositionX = style.strokeThickness / 2;
                 linePositionY = ((style.strokeThickness / 2) + (i * lineHeight)) + fontProperties.ascent;
 
+                if (i === 0)
+                {
+                    linePositionY = linePositionY * 2;
+                }
                 if (style.align === 'right')
                 {
                     linePositionX += maxLineWidth - lineWidths[i];

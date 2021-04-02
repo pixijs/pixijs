@@ -167,13 +167,21 @@ export class TextMetrics
             width += style.dropShadowDistance;
         }
 
-        const lineHeight = style.lineHeight || fontProperties.fontSize + style.strokeThickness;
-        let height = Math.max(lineHeight, fontProperties.fontSize + style.strokeThickness)
+        let lineHeight = style.lineHeight || fontProperties.fontSize + style.strokeThickness;
+        let height = Math.max(lineHeight, (fontProperties.fontSize * 2) + style.strokeThickness)
             + ((lines.length - 1) * (lineHeight + style.leading));
 
         if (style.dropShadow)
         {
             height += style.dropShadowDistance;
+        }
+
+        for (let i = 0; i < lines.length; i++)
+        {
+            if (i !== 0)
+            {
+                lineHeight = (i * ((lineHeight / 2) + fontProperties.fontSize)) + fontProperties.fontSize;
+            }
         }
 
         return new TextMetrics(
