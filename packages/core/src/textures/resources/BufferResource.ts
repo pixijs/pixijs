@@ -58,15 +58,18 @@ export class BufferResource extends Resource
 
         gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, baseTexture.alphaMode === ALPHA_MODES.UNPACK);
 
-        if (glTexture.width === baseTexture.width && glTexture.height === baseTexture.height)
+        const width = baseTexture.realWidth;
+        const height = baseTexture.realHeight;
+
+        if (glTexture.width === width && glTexture.height === height)
         {
             gl.texSubImage2D(
                 baseTexture.target,
                 0,
                 0,
                 0,
-                baseTexture.width,
-                baseTexture.height,
+                width,
+                height,
                 baseTexture.format,
                 baseTexture.type,
                 this.data
@@ -74,15 +77,15 @@ export class BufferResource extends Resource
         }
         else
         {
-            glTexture.width = baseTexture.width;
-            glTexture.height = baseTexture.height;
+            glTexture.width = width;
+            glTexture.height = height;
 
             gl.texImage2D(
                 baseTexture.target,
                 0,
                 glTexture.internalFormat,
-                baseTexture.width,
-                baseTexture.height,
+                width,
+                height,
                 0,
                 baseTexture.format,
                 glTexture.type,

@@ -25,15 +25,18 @@ export class DepthResource extends BufferResource
 
         gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, baseTexture.alphaMode === ALPHA_MODES.UNPACK);
 
-        if (glTexture.width === baseTexture.width && glTexture.height === baseTexture.height)
+        const width = baseTexture.realWidth;
+        const height = baseTexture.realHeight;
+
+        if (glTexture.width === width && glTexture.height === height)
         {
             gl.texSubImage2D(
                 baseTexture.target,
                 0,
                 0,
                 0,
-                baseTexture.width,
-                baseTexture.height,
+                width,
+                height,
                 baseTexture.format,
                 baseTexture.type,
                 this.data,
@@ -41,16 +44,16 @@ export class DepthResource extends BufferResource
         }
         else
         {
-            glTexture.width = baseTexture.width;
-            glTexture.height = baseTexture.height;
+            glTexture.width = width;
+            glTexture.height = height;
 
             gl.texImage2D(
                 baseTexture.target,
                 0,
                 //  gl.DEPTH_COMPONENT16 Needed for depth to render properly in webgl2.0
                 renderer.context.webGLVersion === 1 ? gl.DEPTH_COMPONENT : gl.DEPTH_COMPONENT16,
-                baseTexture.width,
-                baseTexture.height,
+                width,
+                height,
                 0,
                 baseTexture.format,
                 baseTexture.type,
