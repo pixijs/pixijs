@@ -11,12 +11,20 @@ import {
     BASIS_FORMAT_TO_TYPE
 } from './Basis';
 import { TranscoderWorker } from './TranscoderWorker';
-import { ILoaderResource, LoaderResource } from '@pixi/loaders';
+import { LoaderResource } from '@pixi/loaders';
+
+import type { ILoaderResource, IResourceMetadata } from '@pixi/loaders';
 import type { CompressedLevelBuffer } from '@pixi/compressed-textures';
 
 type TranscodedResourcesArray = (Array<CompressedTextureResource> | Array<BufferResource>) & {
     basisFormat: BASIS_FORMATS
 };
+
+/**
+ * Result when calling registerCompressedTextures.
+ * @ignore
+ */
+ type BasisTexturesResult = Pick<ILoaderResource, 'textures' | 'texture'>;
 
 LoaderResource.setExtensionXhrType('basis', LoaderResource.XHR_RESPONSE_TYPE.BUFFER);
 
@@ -100,20 +108,32 @@ export class BasisLoader
      */
     private static async transcode(resource: ILoaderResource, next: (...args: any[]) => void): Promise<void>
     {
-        const data = resource.data;
-
-        let resources: TranscodedResourcesArray;
-
-        if (typeof Worker !== 'undefined' && BasisLoader.TranscoderWorker.wasmSource)
+        try
         {
-            resources = await BasisLoader.transcodeAsync(data as ArrayBuffer);
-        }
-        else
-        {
-            resources = BasisLoader.transcodeSync(data as ArrayBuffer);
-        }
+            const data: ArrayBuffer = resource.data;
+            let resources: TranscodedResourcesArray;
 
-        BasisLoader.registerTextures(resource.url, resources);
+            if (typeof Worker !== 'undefined' && BasisLoader.TranscoderWorker.wasmSource)
+            {
+                resources = await BasisLoader.transcodeAsync(data);
+            }
+            else
+            {
+                resources = BasisLoader.transcodeSync(data);
+            }
+
+            Object.assign(resource, BasisLoader.registerTextures(
+                resource.url,
+                resources,
+                resource.metadata
+            ));
+        }
+        catch (err)
+        {
+            next(err);
+
+            return;
+        }
 
         next();
     }
@@ -123,38 +143,56 @@ export class BasisLoader
      * @param {TranscodedResourcesArray} resources
      * @private
      */
-    private static registerTextures(url: string, resources: TranscodedResourcesArray): void
+    private static registerTextures(url: string,
+        resources: TranscodedResourcesArray,
+        metadata: IResourceMetadata): BasisTexturesResult
     {
+        const result: BasisTexturesResult = {
+            textures: {},
+            texture: null,
+        };
+
         if (!resources)
         {
-            return;
+            return result;
         }
 
         // Should be a valid TYPES, FORMATS for uncompressed basis formats
         const type: TYPES = BASIS_FORMAT_TO_TYPE[resources.basisFormat];
         const format: FORMATS = resources.basisFormat !== BASIS_FORMATS.cTFRGBA32 ? FORMATS.RGB : FORMATS.RGBA;
+        const resourceList = resources as Array<CompressedTextureResource | BufferResource>;
 
-        resources.forEach((resource: CompressedTextureResource | BufferResource, i) =>
+        const textures = resourceList.map((resource) =>
+            (
+                new Texture(new BaseTexture(resource, Object.assign({
+                    mipmap: resource instanceof CompressedTextureResource && resource.levels > 1
+                        ? MIPMAP_MODES.ON_MANUAL
+                        : MIPMAP_MODES.OFF,
+                    alphaMode: ALPHA_MODES.NO_PREMULTIPLIED_ALPHA,
+                    type,
+                    format
+                }, metadata)))
+            ));
+
+        textures.forEach((texture: Texture, i: number) =>
         {
-            const baseTexture = new BaseTexture(resource, {
-                mipmap: resource instanceof CompressedTextureResource && resource.levels > 1
-                    ? MIPMAP_MODES.ON_MANUAL
-                    : MIPMAP_MODES.OFF,
-                alphaMode: ALPHA_MODES.NO_PREMULTIPLIED_ALPHA,
-                type,
-                format
-            });
+            const { baseTexture } = texture;
             const cacheID = `${url}-${i + 1}`;
 
             BaseTexture.addToCache(baseTexture, cacheID);
-            Texture.addToCache(new Texture(baseTexture), cacheID);
+            Texture.addToCache(texture, cacheID);
 
             if (i === 0)
             {
                 BaseTexture.addToCache(baseTexture, url);
-                Texture.addToCache(new Texture(baseTexture), url);
+                Texture.addToCache(texture, url);
+                result.texture = texture;
             }
+
+            result.textures[cacheID] = texture;
         });
+
+        return result;
     }
 
     /**
@@ -261,7 +299,9 @@ export class BasisLoader
 
         if (!basisFile.startTranscoding())
         {
+            // #if _DEBUG
             console.error(`Basis failed to start transcoding!`);
+            // #endif
 
             basisFile.close();
             basisFile.delete();
@@ -300,7 +340,9 @@ export class BasisLoader
                 {
                     if (fallbackMode)
                     {
+                        // #if _DEBUG
                         console.error(`Basis failed to transcode image ${i}, level ${0}!`);
+                        // #endif
                         break;
                     }
                     else
@@ -310,8 +352,10 @@ export class BasisLoader
                         i = -1;
                         fallbackMode = true;
 
+                        // #if _DEBUG
                         /* eslint-disable-next-line max-len */
                         console.warn(`Basis failed to transcode image ${i}, level ${0} to a compressed texture format. Retrying to an uncompressed fallback format!`);
+                        // #endif
                         continue;
                     }
                 }

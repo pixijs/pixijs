@@ -114,8 +114,9 @@ export class FramebufferSystem implements ISystem
      *
      * @param {PIXI.Framebuffer} [framebuffer]
      * @param {PIXI.Rectangle} [frame] - frame, default is framebuffer size
+     * @param {number} [mipLevel] - optional mip level to set on the framebuffer - defaults to 0
      */
-    bind(framebuffer?: Framebuffer, frame?: Rectangle): void
+    bind(framebuffer?: Framebuffer, frame?: Rectangle, mipLevel = 0): void
     {
         const { gl } = this;
 
@@ -132,6 +133,13 @@ export class FramebufferSystem implements ISystem
             }
             // make sure all textures are unbound..
 
+            if (fbo.mipLevel !== mipLevel)
+            {
+                framebuffer.dirtyId++;
+                framebuffer.dirtyFormat++;
+                fbo.mipLevel = mipLevel;
+            }
+
             // now check for updates...
             if (fbo.dirtyId !== framebuffer.dirtyId)
             {
@@ -140,7 +148,7 @@ export class FramebufferSystem implements ISystem
                 if (fbo.dirtyFormat !== framebuffer.dirtyFormat)
                 {
                     fbo.dirtyFormat = framebuffer.dirtyFormat;
-                    this.updateFramebuffer(framebuffer);
+                    this.updateFramebuffer(framebuffer, mipLevel);
                 }
                 else if (fbo.dirtySize !== framebuffer.dirtySize)
                 {
@@ -161,13 +169,23 @@ export class FramebufferSystem implements ISystem
                 this.renderer.texture.unbind(framebuffer.depthTexture);
             }
 
+            const mipWidth = (framebuffer.width >> mipLevel);
+            const mipHeight = (framebuffer.height >> mipLevel);
+
             if (frame)
             {
-                this.setViewport(frame.x, frame.y, frame.width, frame.height);
+                const scale = mipWidth / framebuffer.width;
+
+                this.setViewport(
+                    (frame.x * scale) | 0,
+                    (frame.y * scale) | 0,
+                    mipWidth,
+                    mipHeight
+                );
             }
             else
             {
-                this.setViewport(0, 0, framebuffer.width, framebuffer.height);
+                this.setViewport(0, 0, mipWidth, mipHeight);
             }
         }
         else
@@ -305,8 +323,9 @@ export class FramebufferSystem implements ISystem
      *
      * @protected
      * @param {PIXI.Framebuffer} framebuffer
+     * @param {number} mipLevel
      */
-    updateFramebuffer(framebuffer: Framebuffer): void
+    updateFramebuffer(framebuffer: Framebuffer, mipLevel: number): void
     {
         const { gl } = this;
 
@@ -349,7 +368,7 @@ export class FramebufferSystem implements ISystem
                 gl.COLOR_ATTACHMENT0 + i,
                 texture.target,
                 parentTexture._glTextures[this.CONTEXT_UID].texture,
-                0);
+                mipLevel);
 
             activeTextures.push(gl.COLOR_ATTACHMENT0 + i);
         }
@@ -373,7 +392,7 @@ export class FramebufferSystem implements ISystem
                     gl.DEPTH_ATTACHMENT,
                     gl.TEXTURE_2D,
                     depthTexture._glTextures[this.CONTEXT_UID].texture,
-                    0);
+                    mipLevel);
             }
         }
 

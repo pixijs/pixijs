@@ -1,4 +1,5 @@
 import { LoaderResource } from '@pixi/loaders';
+import { url } from '@pixi/utils';
 
 import type { Loader, ILoaderResource } from '@pixi/loaders';
 import type { INTERNAL_FORMATS } from '../const';
@@ -40,7 +41,14 @@ export type CompressedTextureExtensionRef = keyof CompressedTextureExtensions;
  */
 export class CompressedTextureLoader
 {
+    /**
+     * Map of available texture extensions.
+     */
     static textureExtensions: Partial<CompressedTextureExtensions>;
+
+    /**
+     * Map of available texture formats.
+     */
     static textureFormats: { [P in keyof INTERNAL_FORMATS]?: number };
 
     /**
@@ -61,19 +69,12 @@ export class CompressedTextureLoader
      *   fallback: "asset.png"
      * });
      * ```
-     *
-     * @param resource
-     * @param next
      */
     static use(resource: ILoaderResource, next: (...args: any[]) => void): void
     {
         const data: CompressedTextureManifest = resource.data;
-        const loader = (this as any) as Loader;
+        const loader = this as unknown as Loader;
 
-        if (!CompressedTextureLoader.textureExtensions)
-        {
-            CompressedTextureLoader.autoDetectExtensions();
-        }
         if (resource.type === LoaderResource.TYPE.JSON
             && data
             && data.cacheID
@@ -107,12 +108,16 @@ export class CompressedTextureLoader
             // Make sure we have a URL
             if (!textureURL)
             {
-                throw new Error(`Cannot load compressed-textures in ${resource.url}, make sure you provide a fallback`);
+                next(new Error(`Cannot load compressed-textures in ${resource.url}, make sure you provide a fallback`));
+
+                return;
             }
             if (textureURL === resource.url)
             {
                 // Prevent infinite loops
-                throw new Error('URL of compressed texture cannot be the same as the manifest\'s URL');
+                next(new Error('URL of compressed texture cannot be the same as the manifest\'s URL'));
+
+                return;
             }
 
             const loadOptions = {
@@ -121,9 +126,25 @@ export class CompressedTextureLoader
                 parentResource: resource
             };
 
+            const resourcePath = url.resolve(resource.url.replace(loader.baseUrl, ''), textureURL);
+            const resourceName = data.cacheID;
+
             // The appropriate loader should register the texture
-            loader.add(data.cacheID, textureURL, loadOptions, function onCompressedTextureLoaded()
+            loader.add(resourceName, resourcePath, loadOptions, (res: ILoaderResource) =>
             {
+                if (res.error)
+                {
+                    next(res.error);
+
+                    return;
+                }
+
+                const { texture = null, textures = {} } = res;
+
+                // Make sure texture/textures is assigned to parent resource
+                Object.assign(resource, { texture, textures });
+
+                // Pass along any error
                 next();
             });
         }
@@ -136,35 +157,33 @@ export class CompressedTextureLoader
     /**
      * Detects the available compressed texture extensions on the device.
      *
-     * @param extensions - extensions provided by a WebGL context
      * @ignore
      */
-    static autoDetectExtensions(extensions?: Partial<CompressedTextureExtensions>): void
+    static add(): void
     {
         // Auto-detect WebGL compressed-texture extensions
-        if (!extensions)
+        const canvas = document.createElement('canvas');
+        const gl = canvas.getContext('webgl');
+
+        if (!gl)
         {
-            const canvas = document.createElement('canvas');
-            const gl = canvas.getContext('webgl');
+            // #if _DEBUG
+            console.error('WebGL not available for compressed textures. Silently failing.');
+            // #endif
 
-            if (!gl)
-            {
-                console.error('WebGL not available for compressed textures. Silently failing.');
-
-                return;
-            }
-
-            extensions = {
-                s3tc: gl.getExtension('WEBGL_compressed_texture_s3tc'),
-                s3tc_sRGB: gl.getExtension('WEBGL_compressed_texture_s3tc_srgb'), /* eslint-disable-line camelcase */
-                etc: gl.getExtension('WEBGL_compressed_texture_etc'),
-                etc1: gl.getExtension('WEBGL_compressed_texture_etc1'),
-                pvrtc: gl.getExtension('WEBGL_compressed_texture_pvrtc')
-                    || gl.getExtension('WEBKIT_WEBGL_compressed_texture_pvrtc'),
-                atc: gl.getExtension('WEBGL_compressed_texture_atc'),
-                astc: gl.getExtension('WEBGL_compressed_texture_astc')
-            };
+            return;
         }
+
+        const extensions = {
+            s3tc: gl.getExtension('WEBGL_compressed_texture_s3tc'),
+            s3tc_sRGB: gl.getExtension('WEBGL_compressed_texture_s3tc_srgb'), /* eslint-disable-line camelcase */
+            etc: gl.getExtension('WEBGL_compressed_texture_etc'),
+            etc1: gl.getExtension('WEBGL_compressed_texture_etc1'),
+            pvrtc: gl.getExtension('WEBGL_compressed_texture_pvrtc')
+                || gl.getExtension('WEBKIT_WEBGL_compressed_texture_pvrtc'),
+            atc: gl.getExtension('WEBGL_compressed_texture_atc'),
+            astc: gl.getExtension('WEBGL_compressed_texture_astc')
+        };
 
         CompressedTextureLoader.textureExtensions = extensions;
         CompressedTextureLoader.textureFormats = {};
