@@ -169,7 +169,7 @@ export class FramebufferSystem implements ISystem
                 this.renderer.texture.unbind(framebuffer.depthTexture);
             }
 
-            //TODO: might be different for non pow2
+            // TODO: might be different for non pow2
             const mipWidth = (framebuffer.width >> mipLevel);
             const mipHeight = (framebuffer.height >> mipLevel);
 
