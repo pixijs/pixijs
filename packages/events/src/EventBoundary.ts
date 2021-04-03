@@ -35,7 +35,7 @@ const tempLocalMapping = new Point();
  * @property {Record.<number, PIXI.FederatedEventTarget>} pressTargetsByButton - The pressed display objects'
  *  propagation paths by each button of the pointer.
  * @property {Record.<number, Object>} clicksByButton - Holds clicking data for each button of the pointer.
- * @property {PIXI.DisplayObject} overTarget - The DisplayObject over which the pointer is hovering.
+ * @property {PIXI.DisplayObject[]} overTargets - The DisplayObject propagation path over which the pointer is hovering.
  * @memberof PIXI
  */
 type TrackingData = {
@@ -49,7 +49,7 @@ type TrackingData = {
             timeStamp: number;
         }
     };
-    overTarget: FederatedEventTarget;
+    overTargets: FederatedEventTarget[];
 };
 
 /**
@@ -612,22 +612,23 @@ export class EventBoundary
         const e = this.createPointerEvent(from);
         const isMouse = e.pointerType === 'mouse' || e.pointerType === 'pen';
         const trackingData = this.trackingData(from.pointerId);
+        const outTarget = this.findMountedTarget(trackingData.overTargets);
 
         // First pointerout/pointerleave
-        if (trackingData.overTarget && trackingData.overTarget !== e.target)
+        if (trackingData.overTargets && outTarget !== e.target)
         {
             // pointerout always occurs on the overTarget when the pointer hovers over another element.
             const outType = from.type === 'mousemove' ? 'mouseout' : 'pointerout';
-            const outEvent = this.createPointerEvent(from, outType, trackingData.overTarget);
+            const outEvent = this.createPointerEvent(from, outType, outTarget);
 
             this.dispatchEvent(outEvent, 'pointerout');
             if (isMouse) this.dispatchEvent(outEvent, 'mouseout');
 
             // If the pointer exits overTarget and its descendants, then a pointerleave event is also fired. This event
             // is dispatched to all ancestors that no longer capture the pointer.
-            if (!e.composedPath().includes(trackingData.overTarget))
+            if (!e.composedPath().includes(outTarget))
             {
-                const leaveEvent = this.createPointerEvent(from, 'pointerleave', trackingData.overTarget);
+                const leaveEvent = this.createPointerEvent(from, 'pointerleave', outTarget);
 
                 leaveEvent.eventPhase = leaveEvent.AT_TARGET;
 
@@ -648,7 +649,7 @@ export class EventBoundary
         }
 
         // Then pointerover
-        if (trackingData.overTarget !== e.target)
+        if (outTarget !== e.target)
         {
             // pointerover always occurs on the new overTarget
             const overType = from.type === 'mousemove' ? 'mouseover' : 'pointerover';
@@ -658,7 +659,7 @@ export class EventBoundary
             if (isMouse) this.dispatchEvent(overEvent, 'mouseover');
 
             // Probe whether the newly hovered DisplayObject is an ancestor of the original overTarget.
-            let overTargetAncestor = trackingData.overTarget?.parent;
+            let overTargetAncestor = outTarget?.parent;
 
             while (overTargetAncestor && overTargetAncestor !== this.rootTarget.parent)
             {
@@ -678,7 +679,7 @@ export class EventBoundary
                 enterEvent.eventPhase = enterEvent.AT_TARGET;
 
                 while (enterEvent.target
-                        && enterEvent.target !== trackingData.overTarget
+                        && enterEvent.target !== outTarget
                         && enterEvent.target !== this.rootTarget.parent)
                 {
                     enterEvent.currentTarget = enterEvent.target;
@@ -708,7 +709,7 @@ export class EventBoundary
             this.cursor = e.target?.cursor;
         }
 
-        trackingData.overTarget = e.target;
+        trackingData.overTargets = e.composedPath();
 
         this.freeEvent(e);
     }
@@ -752,7 +753,7 @@ export class EventBoundary
             enterEvent.target = enterEvent.target.parent;
         }
 
-        trackingData.overTarget = e.target;
+        trackingData.overTargets = e.composedPath();
 
         this.freeEvent(e);
         this.freeEvent(enterEvent);
@@ -776,19 +777,20 @@ export class EventBoundary
 
         const trackingData = this.trackingData(from.pointerId);
 
-        if (trackingData.overTarget)
+        if (trackingData.overTargets)
         {
             const isMouse = from.pointerType === 'mouse' || from.pointerType === 'pen';
+            const outTarget = this.findMountedTarget(trackingData.overTargets);
 
             // pointerout first
-            const outEvent = this.createPointerEvent(from, 'pointerout', trackingData.overTarget);
+            const outEvent = this.createPointerEvent(from, 'pointerout', outTarget);
 
             this.dispatchEvent(outEvent);
             if (isMouse) this.dispatchEvent(outEvent, 'mouseout');
 
             // pointerleave(s) are also dispatched b/c the pointer must've left rootTarget and its descendants to
             // get an upstream pointerout event (upstream events do not know rootTarget has descendants).
-            const leaveEvent = this.createPointerEvent(from, 'pointerleave', trackingData.overTarget);
+            const leaveEvent = this.createPointerEvent(from, 'pointerleave', outTarget);
 
             leaveEvent.eventPhase = leaveEvent.AT_TARGET;
 
@@ -802,7 +804,7 @@ export class EventBoundary
                 leaveEvent.target = leaveEvent.target.parent;
             }
 
-            trackingData.overTarget = null;
+            trackingData.overTargets = null;
 
             this.freeEvent(outEvent);
             this.freeEvent(leaveEvent);

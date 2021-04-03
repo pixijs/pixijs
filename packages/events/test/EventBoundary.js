@@ -71,6 +71,7 @@ describe.only('PIXI.EventBoundary', function ()
         const container = stage.addChild(new Container());
         const pressed = container.addChild(new Graphics().beginFill(0).drawRect(0, 0, 100, 100));
         const outside = stage.addChild(new Graphics().beginFill(0).drawRect(100, 0, 100, 100));
+
         const eventSpy = sinon.spy();
         const containerSpy = sinon.spy();
         const stageSpy = sinon.spy();
@@ -114,5 +115,61 @@ describe.only('PIXI.EventBoundary', function ()
         expect(stageOutsideSpy).to.not.have.been.called;
         // not a "pointerupoutside"
         expect(stageSpy).to.have.been.calledOnce;
+    });
+
+    it('should fire pointerout on the most specific mounted ancestor of pointerover target', function ()
+    {
+        const stage = new Container();
+        const boundary = new EventBoundary(stage);
+        const container = stage.addChild(new Container());
+        const over = container.addChild(new Graphics().beginFill(0).drawRect(0, 0, 100, 100));
+        const to = stage.addChild(new Graphics().beginFill(0).drawRect(100, 0, 100, 100));
+
+        const orgOverSpy = sinon.spy();
+        const orgContainerOverSpy = sinon.spy();
+        const outSpy = sinon.spy();
+        const containerOutSpy = sinon.spy();
+        const toOverSpy = sinon.spy();
+
+        over.addEventListener('pointerover', orgOverSpy);
+        container.addEventListener('pointerover', function (e)
+        {
+            expect(e.target).to.equal(over);
+            orgContainerOverSpy();
+        });
+        over.addEventListener('pointerout', outSpy);
+        container.addEventListener('pointerout', function (e)
+        {
+            expect(e.target).to.equal(container);
+            containerOutSpy();
+        });
+        to.addEventListener('pointerover', toOverSpy);
+
+        container.interactive = true;
+        over.interactive = true;
+        to.interactive = true;
+
+        const on = new FederatedPointerEvent(boundary);
+        const off = new FederatedPointerEvent(boundary);
+
+        on.pointerId = 1;
+        on.type = 'pointerover';
+        on.global.set(50, 50);
+
+        off.pointerId = 1;
+        off.type = 'pointermove';
+        off.global.set(150, 50);
+
+        boundary.mapEvent(on);
+
+        expect(orgOverSpy).to.have.been.calledOnce;
+        expect(orgContainerOverSpy).to.have.been.calledOnce;
+
+        over.destroy();
+        boundary.mapEvent(off);
+
+        expect(outSpy).to.not.have.been.called;
+        expect(containerOutSpy).to.have.been.calledOnce;
+        expect(toOverSpy).to.have.been.calledOnce;
     });
 });
