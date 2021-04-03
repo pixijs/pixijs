@@ -28,7 +28,7 @@ const tempLocalMapping = new Point();
  *         timeStamp: number;
  *     }
  * };
- * overTarget: FederatedEventTarget;
+ * overTargets: FederatedEventTarget[];
  * ```
  *
  * @typedef {object} TrackingData
