@@ -3,7 +3,7 @@ const { FederatedPointerEvent, EventBoundary } = require('../');
 const { Graphics } = require('../../graphics');
 const { expect } = require('chai');
 
-describe.only('PIXI.EventBoundary', function ()
+describe('PIXI.EventBoundary', function ()
 {
     it('should fire capture, bubble events on the correct target', function ()
     {
