@@ -169,6 +169,7 @@ export class FramebufferSystem implements ISystem
                 this.renderer.texture.unbind(framebuffer.depthTexture);
             }
 
+            //TODO: might be different for non pow2
             const mipWidth = (framebuffer.width >> mipLevel);
             const mipHeight = (framebuffer.height >> mipLevel);
 
@@ -177,10 +178,10 @@ export class FramebufferSystem implements ISystem
                 const scale = mipWidth / framebuffer.width;
 
                 this.setViewport(
-                    (frame.x * scale) | 0,
-                    (frame.y * scale) | 0,
-                    mipWidth,
-                    mipHeight
+                    Math.round(frame.x * scale),
+                    Math.round(frame.y * scale),
+                    Math.round(frame.width * scale),
+                    Math.round(frame.height * scale),
                 );
             }
             else
