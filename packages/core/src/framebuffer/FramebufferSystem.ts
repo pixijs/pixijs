@@ -169,12 +169,12 @@ export class FramebufferSystem implements ISystem
                 this.renderer.texture.unbind(framebuffer.depthTexture);
             }
 
-            const mipWidth = (framebuffer.width >> mipLevel);
-            const mipHeight = (framebuffer.height >> mipLevel);
-
             if (frame)
             {
-                const scale = mipWidth / framebuffer.width;
+                const mipWidth = (frame.width >> mipLevel);
+                const mipHeight = (frame.height >> mipLevel);
+
+                const scale = mipWidth / frame.width;
 
                 this.setViewport(
                     (frame.x * scale) | 0,
@@ -185,6 +185,9 @@ export class FramebufferSystem implements ISystem
             }
             else
             {
+                const mipWidth = (framebuffer.width >> mipLevel);
+                const mipHeight = (framebuffer.height >> mipLevel);
+
                 this.setViewport(0, 0, mipWidth, mipHeight);
             }
         }
