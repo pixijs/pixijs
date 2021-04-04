@@ -316,13 +316,22 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
      */
     clone(): Texture
     {
-        return new Texture(this.baseTexture,
-            this.frame.clone(),
-            this.orig.clone(),
+        const clonedFrame = this._frame.clone();
+        const clonedOrig = this._frame === this.orig ? clonedFrame : this.orig.clone();
+        const clonedTexture = new Texture(this.baseTexture,
+            !this.noFrame && clonedFrame,
+            clonedOrig,
             this.trim && this.trim.clone(),
             this.rotate,
             this.defaultAnchor
         );
+
+        if (this.noFrame)
+        {
+            clonedTexture._frame = clonedFrame;
+        }
+
+        return clonedTexture;
     }
 
     /**

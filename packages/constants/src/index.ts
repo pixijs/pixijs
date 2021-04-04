@@ -172,6 +172,7 @@ export enum DRAW_MODES {
 export enum FORMATS {
     RGBA = 6408,
     RGB = 6407,
+    RED = 6403,
     ALPHA = 6406,
     LUMINANCE = 6409,
     LUMINANCE_ALPHA = 6410,

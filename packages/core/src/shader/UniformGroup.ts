@@ -1,4 +1,4 @@
-import { BUFFER_TYPE } from '@pixi/constants/src';
+import { BUFFER_TYPE } from '@pixi/constants';
 import type { Dict } from '@pixi/utils';
 import { Buffer } from '../geometry/Buffer';
 import type { UniformsSyncCallback } from './utils';

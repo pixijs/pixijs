@@ -1,4 +1,5 @@
-const { Renderer } = require('../');
+const { Renderer, Framebuffer } = require('../');
+const { Rectangle } = require('../../math');
 
 describe('PIXI.FramebufferSystem', function ()
 {
@@ -31,5 +32,37 @@ describe('PIXI.FramebufferSystem', function ()
         // no MSAA
         framebuffer.msaaSamples = null;
         expect(framebuffer.detectSamples(8)).to.equal(0);
+    });
+
+    it('should render to mip levels', function ()
+    {
+        const { gl, CONTEXT_UID } = this.renderer;
+
+        const framebuffer = new Framebuffer(4, 4);
+
+        this.renderer.framebuffer.bind(framebuffer, null, 1);
+
+        expect(framebuffer.glFramebuffers[CONTEXT_UID].mipLevel).to.equal(1);
+
+        expect(Array.from(gl.getParameter(gl.VIEWPORT))).to.deep.equal([0, 0, 2, 2]);
+
+        this.renderer.framebuffer.bind(framebuffer, null, 0);
+
+        expect(framebuffer.glFramebuffers[CONTEXT_UID].mipLevel).to.equal(0);
+
+        expect(Array.from(gl.getParameter(gl.VIEWPORT))).to.deep.equal([0, 0, 4, 4]);
+    });
+
+    it('should render to with correct frame', function ()
+    {
+        const { gl, CONTEXT_UID } = this.renderer;
+
+        const framebuffer = new Framebuffer(4, 4);
+
+        const frame = new Rectangle(2, 2, 2, 2);
+
+        this.renderer.framebuffer.bind(framebuffer, frame, 0);
+
+        expect(Array.from(gl.getParameter(gl.VIEWPORT))).to.deep.equal([2, 2, 2, 2]);
     });
 });

@@ -183,6 +183,8 @@ describe('PIXI.Texture', function ()
         expect(clone.trim).to.be.undefined;
         expect(clone.orig).to.not.equal(texture.orig);
         expect(toJSON(clone.orig)).to.deep.equal(toJSON(texture.orig));
+        expect(clone.frame === clone.orig).to.equal(texture.frame === texture.orig);
+        expect(clone.noFrame).to.equal(texture.noFrame);
 
         clone.destroy();
         texture.destroy(true);
@@ -211,6 +213,8 @@ describe('PIXI.Texture', function ()
         expect(clone.orig).to.not.equal(texture.orig);
         expect(toJSON(clone.orig)).to.deep.equal(toJSON(texture.orig));
         expect(clone.rotate).to.equal(texture.rotate);
+        expect(clone.frame === clone.orig).to.equal(texture.frame === texture.orig);
+        expect(clone.noFrame).to.equal(texture.noFrame);
 
         clone.destroy();
         texture.destroy(true);
@@ -225,6 +229,7 @@ describe('PIXI.Texture', function ()
 
         const texture = Texture.from(canvas);
 
+        expect(texture.noFrame).to.equal(true);
         expect(texture.width).to.equal(50);
         canvas.width = 100;
         texture.update();
@@ -232,6 +237,20 @@ describe('PIXI.Texture', function ()
         canvas.height = 70;
         texture.update();
         expect(texture.height).to.equal(70);
+
+        const clone = texture.clone();
+
+        expect(texture.noFrame).to.equal(true);
+        expect(clone.width).to.equal(100);
+        expect(clone.height).to.equal(70);
+        canvas.width = 40;
+        clone.update();
+        expect(clone.width).to.equal(40);
+        canvas.height = 60;
+        clone.update();
+        expect(clone.height).to.equal(60);
+
+        clone.destroy();
         texture.destroy(true);
     });
 
@@ -243,12 +262,14 @@ describe('PIXI.Texture', function ()
 
         let texture = new Texture(baseTexture);
 
+        expect(texture.noFrame).to.equal(true);
         expect(texture.width).to.equal(50);
         baseTexture.setSize(100, 70);
         expect(texture.width).to.equal(100);
         expect(texture.height).to.equal(70);
 
         texture.frame = new Rectangle(1, 1, 10, 20);
+        expect(texture.noFrame).to.equal(false);
         baseTexture.setSize(110, 80);
         expect(texture.width).to.equal(10);
         expect(texture.height).to.equal(20);
@@ -256,6 +277,7 @@ describe('PIXI.Texture', function ()
 
         baseTexture = new BaseTexture();
         texture = new Texture(baseTexture, new Rectangle(1, 1, 10, 20));
+        expect(texture.noFrame).to.equal(false);
         baseTexture.setSize(50, 50);
         expect(texture.width).to.equal(10);
         expect(texture.height).to.equal(20);
