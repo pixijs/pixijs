@@ -1,4 +1,5 @@
 const { Renderer, Framebuffer } = require('../');
+const { Rectangle } = require('../../math');
 
 describe('PIXI.FramebufferSystem', function ()
 {
@@ -50,5 +51,18 @@ describe('PIXI.FramebufferSystem', function ()
         expect(framebuffer.glFramebuffers[CONTEXT_UID].mipLevel).to.equal(0);
 
         expect(Array.from(gl.getParameter(gl.VIEWPORT))).to.deep.equal([0, 0, 4, 4]);
+    });
+
+    it('should render to with correct frame', function ()
+    {
+        const { gl, CONTEXT_UID } = this.renderer;
+
+        const framebuffer = new Framebuffer(4, 4);
+
+        const frame = new Rectangle(2, 2, 2, 2);
+
+        this.renderer.framebuffer.bind(framebuffer, frame, 0);
+
+        expect(Array.from(gl.getParameter(gl.VIEWPORT))).to.deep.equal([2, 2, 2, 2]);
     });
 });
