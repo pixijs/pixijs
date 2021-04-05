@@ -19,7 +19,7 @@ const tempLocalMapping = new Point();
  *
  * ```ts
  * pressTargetsByButton: {
- *      [id: number]: FederatedEventTarget;
+ *      [id: number]: FederatedEventTarget[];
  * };
  * clicksByButton: {
  *     [id: number]: {
@@ -28,19 +28,19 @@ const tempLocalMapping = new Point();
  *         timeStamp: number;
  *     }
  * };
- * overTarget: FederatedEventTarget;
+ * overTargets: FederatedEventTarget[];
  * ```
  *
  * @typedef {object} TrackingData
- * @property {Record.<number, PIXI.FederatedEventTarget>} pressTargetsByButton - The pressed display objects
- *  by each button of the pointer.
+ * @property {Record.<number, PIXI.FederatedEventTarget>} pressTargetsByButton - The pressed display objects'
+ *  propagation paths by each button of the pointer.
  * @property {Record.<number, Object>} clicksByButton - Holds clicking data for each button of the pointer.
- * @property {PIXI.DisplayObject} overTarget - The DisplayObject over which the pointer is hovering.
+ * @property {PIXI.DisplayObject[]} overTargets - The DisplayObject propagation path over which the pointer is hovering.
  * @memberof PIXI
  */
 type TrackingData = {
     pressTargetsByButton: {
-        [id: number]: FederatedEventTarget;
+        [id: number]: FederatedEventTarget[];
     };
     clicksByButton: {
         [id: number]: {
@@ -49,7 +49,7 @@ type TrackingData = {
             timeStamp: number;
         }
     };
-    overTarget: FederatedEventTarget;
+    overTargets: FederatedEventTarget[];
 };
 
 /**
@@ -587,7 +587,7 @@ export class EventBoundary
 
         const trackingData = this.trackingData(from.pointerId);
 
-        trackingData.pressTargetsByButton[from.button] = e.target;
+        trackingData.pressTargetsByButton[from.button] = e.composedPath();
 
         this.freeEvent(e);
     }
@@ -612,22 +612,23 @@ export class EventBoundary
         const e = this.createPointerEvent(from);
         const isMouse = e.pointerType === 'mouse' || e.pointerType === 'pen';
         const trackingData = this.trackingData(from.pointerId);
+        const outTarget = this.findMountedTarget(trackingData.overTargets);
 
         // First pointerout/pointerleave
-        if (trackingData.overTarget && trackingData.overTarget !== e.target)
+        if (trackingData.overTargets && outTarget !== e.target)
         {
             // pointerout always occurs on the overTarget when the pointer hovers over another element.
             const outType = from.type === 'mousemove' ? 'mouseout' : 'pointerout';
-            const outEvent = this.createPointerEvent(from, outType, trackingData.overTarget);
+            const outEvent = this.createPointerEvent(from, outType, outTarget);
 
             this.dispatchEvent(outEvent, 'pointerout');
             if (isMouse) this.dispatchEvent(outEvent, 'mouseout');
 
             // If the pointer exits overTarget and its descendants, then a pointerleave event is also fired. This event
             // is dispatched to all ancestors that no longer capture the pointer.
-            if (!e.composedPath().includes(trackingData.overTarget))
+            if (!e.composedPath().includes(outTarget))
             {
-                const leaveEvent = this.createPointerEvent(from, 'pointerleave', trackingData.overTarget);
+                const leaveEvent = this.createPointerEvent(from, 'pointerleave', outTarget);
 
                 leaveEvent.eventPhase = leaveEvent.AT_TARGET;
 
@@ -648,7 +649,7 @@ export class EventBoundary
         }
 
         // Then pointerover
-        if (trackingData.overTarget !== e.target)
+        if (outTarget !== e.target)
         {
             // pointerover always occurs on the new overTarget
             const overType = from.type === 'mousemove' ? 'mouseover' : 'pointerover';
@@ -658,7 +659,7 @@ export class EventBoundary
             if (isMouse) this.dispatchEvent(overEvent, 'mouseover');
 
             // Probe whether the newly hovered DisplayObject is an ancestor of the original overTarget.
-            let overTargetAncestor = trackingData.overTarget?.parent;
+            let overTargetAncestor = outTarget?.parent;
 
             while (overTargetAncestor && overTargetAncestor !== this.rootTarget.parent)
             {
@@ -678,7 +679,7 @@ export class EventBoundary
                 enterEvent.eventPhase = enterEvent.AT_TARGET;
 
                 while (enterEvent.target
-                        && enterEvent.target !== trackingData.overTarget
+                        && enterEvent.target !== outTarget
                         && enterEvent.target !== this.rootTarget.parent)
                 {
                     enterEvent.currentTarget = enterEvent.target;
@@ -708,7 +709,7 @@ export class EventBoundary
             this.cursor = e.target?.cursor;
         }
 
-        trackingData.overTarget = e.target;
+        trackingData.overTargets = e.composedPath();
 
         this.freeEvent(e);
     }
@@ -752,7 +753,7 @@ export class EventBoundary
             enterEvent.target = enterEvent.target.parent;
         }
 
-        trackingData.overTarget = e.target;
+        trackingData.overTargets = e.composedPath();
 
         this.freeEvent(e);
         this.freeEvent(enterEvent);
@@ -776,19 +777,20 @@ export class EventBoundary
 
         const trackingData = this.trackingData(from.pointerId);
 
-        if (trackingData.overTarget)
+        if (trackingData.overTargets)
         {
             const isMouse = from.pointerType === 'mouse' || from.pointerType === 'pen';
+            const outTarget = this.findMountedTarget(trackingData.overTargets);
 
             // pointerout first
-            const outEvent = this.createPointerEvent(from, 'pointerout', trackingData.overTarget);
+            const outEvent = this.createPointerEvent(from, 'pointerout', outTarget);
 
             this.dispatchEvent(outEvent);
             if (isMouse) this.dispatchEvent(outEvent, 'mouseout');
 
             // pointerleave(s) are also dispatched b/c the pointer must've left rootTarget and its descendants to
             // get an upstream pointerout event (upstream events do not know rootTarget has descendants).
-            const leaveEvent = this.createPointerEvent(from, 'pointerleave', trackingData.overTarget);
+            const leaveEvent = this.createPointerEvent(from, 'pointerleave', outTarget);
 
             leaveEvent.eventPhase = leaveEvent.AT_TARGET;
 
@@ -802,7 +804,7 @@ export class EventBoundary
                 leaveEvent.target = leaveEvent.target.parent;
             }
 
-            trackingData.overTarget = null;
+            trackingData.overTargets = null;
 
             this.freeEvent(outEvent);
             this.freeEvent(leaveEvent);
@@ -848,7 +850,7 @@ export class EventBoundary
         }
 
         const trackingData = this.trackingData(from.pointerId);
-        const pressTarget = trackingData.pressTargetsByButton[from.button];
+        const pressTarget = this.findMountedTarget(trackingData.pressTargetsByButton[from.button]);
 
         let clickTarget = pressTarget;
 
@@ -882,7 +884,7 @@ export class EventBoundary
 
             // currentTarget is the most specific ancestor holding both the pointerdown and pointerup
             // targets. That is - it's our click target!
-            clickTarget = pressTarget;
+            clickTarget = currentTarget;
         }
 
         // click!
@@ -960,7 +962,7 @@ export class EventBoundary
         }
 
         const trackingData = this.trackingData(from.pointerId);
-        const pressTarget = trackingData.pressTargetsByButton[from.button];
+        const pressTarget = this.findMountedTarget(trackingData.pressTargetsByButton[from.button]);
         const e = this.createPointerEvent(from);
 
         if (pressTarget)
@@ -1009,6 +1011,41 @@ export class EventBoundary
 
         this.dispatchEvent(wheelEvent);
         this.freeEvent(wheelEvent);
+    }
+
+    /**
+     * Finds the most specific event-target in the given propagation path that is still mounted in the scene graph.
+     *
+     * This is used to find the correct `pointerup` and `pointerout` target in the case that the original `pointerdown`
+     * or `pointerover` target was unmounted from the scene graph.
+     *
+     * @param propagationPath - The propagation path was valid in the past.
+     * @return - The most specific event-target still mounted at the same location in the scene graph.
+     */
+    protected findMountedTarget(propagationPath: FederatedEventTarget[]): FederatedEventTarget
+    {
+        if (!propagationPath)
+        {
+            return null;
+        }
+
+        let currentTarget = propagationPath[0];
+
+        for (let i = 1; i < propagationPath.length; i++)
+        {
+            // Set currentTarget to the next target in the path only if it is still attached to the
+            // scene graph (i.e. parent still points to the expected ancestor).
+            if (propagationPath[i].parent === currentTarget)
+            {
+                currentTarget = propagationPath[i];
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        return currentTarget;
     }
 
     /**
