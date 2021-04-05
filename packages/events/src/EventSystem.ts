@@ -1,10 +1,10 @@
 import { EventBoundary } from './EventBoundary';
+import { FederatedMouseEvent } from './FederatedMouseEvent';
 import { FederatedPointerEvent } from './FederatedPointerEvent';
 import { FederatedWheelEvent } from './FederatedWheelEvent';
 
 import type { DisplayObject } from '@pixi/display';
 import type { IPointData } from '@pixi/math';
-import { FederatedMouseEvent } from './FederatedMouseEvent';
 
 const MOUSE_POINTER_ID = 1;
 const TOUCH_TO_POINTER: Record<string, string> = {
