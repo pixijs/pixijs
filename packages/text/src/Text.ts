@@ -261,7 +261,8 @@ export class Text extends Sprite
             for (let i = 0; i < lines.length; i++)
             {
                 linePositionX = style.strokeThickness / 2;
-                linePositionY = ((style.strokeThickness / 2) + (i * lineHeight)) + fontProperties.ascent;
+                linePositionY = ((style.strokeThickness / 2) + (i * lineHeight)) + fontProperties.ascent
+                    + ((lineHeight - fontProperties.fontSize) / 2);
 
                 if (style.align === 'right')
                 {
