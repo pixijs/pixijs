@@ -1026,17 +1026,15 @@ export class EventBoundary
         target?: FederatedEventTarget
     ): FederatedPointerEvent
     {
-        target = target ?? this.hitTest(from.global.x, from.global.y) as FederatedEventTarget;
-
         const event = this.allocateEvent(FederatedPointerEvent);
-
-        event.nativeEvent = from.nativeEvent;
-        event.originalEvent = from;
-        event.target = target;
 
         this.copyPointerData(from, event);
         this.copyMouseData(from, event);
         this.copyData(from, event);
+
+        event.nativeEvent = from.nativeEvent;
+        event.originalEvent = from;
+        event.target = target ?? this.hitTest(event.global.x, event.global.y) as FederatedEventTarget;
 
         if (typeof type === 'string')
         {
@@ -1057,13 +1055,13 @@ export class EventBoundary
     {
         const event = this.allocateEvent(FederatedWheelEvent);
 
-        event.nativeEvent = from.nativeEvent;
-        event.originalEvent = from;
-        event.target = this.hitTest(from.global.x, from.global.y);
-
         this.copyWheelData(from, event);
         this.copyMouseData(from, event);
         this.copyData(from, event);
+
+        event.nativeEvent = from.nativeEvent;
+        event.originalEvent = from;
+        event.target = this.hitTest(event.global.x, event.global.y);
 
         return event;
     }
