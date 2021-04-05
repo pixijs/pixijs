@@ -6,6 +6,6 @@ declare namespace GlobalMixins
         spritesheet?: import('@pixi/spritesheet').Spritesheet;
 
         /** Dictionary of textures from Spritesheet. */
-        textures?: {[name: string]: Texture};
+        textures?: {[name: string]: import('@pixi/core').Texture};
     }
 }
