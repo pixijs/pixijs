@@ -78,7 +78,7 @@ export class CanvasRenderTarget
 
     set width(val: number)
     {
-        this.canvas.width = val;
+        this.canvas.width = Math.round(val);
     }
 
     /**
@@ -93,6 +93,6 @@ export class CanvasRenderTarget
 
     set height(val: number)
     {
-        this.canvas.height = val;
+        this.canvas.height = Math.round(val);
     }
 }
