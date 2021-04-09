@@ -19,7 +19,7 @@ export class AppLoaderPlugin
      * @param {object} options
      * @private
      */
-    static init(options?: { sharedLoader: boolean }): void
+    static init(options?: GlobalMixins.IApplicationOptions): void
     {
         options = Object.assign({
             sharedLoader: false,
