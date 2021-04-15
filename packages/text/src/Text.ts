@@ -257,12 +257,19 @@ export class Text extends Sprite
                 context.shadowOffsetY = 0;
             }
 
+            let linePositionYShift = (lineHeight - fontProperties.fontSize) / 2;
+
+            if (lineHeight - fontProperties.fontSize < 0)
+            {
+                linePositionYShift = 0;
+            }
+
             // draw lines line by line
             for (let i = 0; i < lines.length; i++)
             {
                 linePositionX = style.strokeThickness / 2;
                 linePositionY = ((style.strokeThickness / 2) + (i * lineHeight)) + fontProperties.ascent
-                    + ((lineHeight - fontProperties.fontSize) / 2);
+                    + linePositionYShift;
 
                 if (style.align === 'right')
                 {
