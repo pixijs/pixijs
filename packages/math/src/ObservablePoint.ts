@@ -2,28 +2,35 @@ import type { IPointData } from './IPointData';
 import type { IPoint } from './IPoint';
 
 /**
- * The Point object represents a location in a two-dimensional coordinate system, where x represents
- * the horizontal axis and y represents the vertical axis.
+ * The ObservablePoint object represents a location in a two-dimensional coordinate system, where `x` represents
+ * the position on the horizontal axis and `y` represents the position on the vertical axis.
  *
- * An ObservablePoint is a point that triggers a callback when the point's position is changed.
+ * An `ObservablePoint` is a point that triggers a callback when the point's position is changed.
  *
  * @class
  * @memberof PIXI
  * @implements IPoint
  */
+
 export class ObservablePoint<T = any> implements IPoint
 {
+    /** callback function triggered when `x` and/or `y` are changed */
     public cb: (this: T) => any;
+
+    /** owner of callback */
     public scope: any;
+
     _x: number;
     _y: number;
 
     /**
-     * @param {Function} cb - callback when changed
-     * @param {object} scope - owner of callback
+     * Creates a new `ObservablePoint`
+     *
+     * @param cb - callback function triggered when `x` and/or `y` are changed
+     * @param scope - owner of callback
      * @param {number} [x=0] - position of the point on the x axis
      * @param {number} [y=0] - position of the point on the y axis
-     */
+    */
     constructor(cb: (this: T) => any, scope: T, x = 0, y = 0)
     {
         this._x = x;
@@ -39,9 +46,9 @@ export class ObservablePoint<T = any> implements IPoint
      * to the clone object's values.
      *
      * @override
-     * @param {Function} [cb=null] - callback when changed
-     * @param {object} [scope=null] - owner of callback
-     * @return {PIXI.ObservablePoint} a copy of the point
+     * @param cb - callback function triggered when `x` and/or `y` are changed
+     * @param scope - owner of callback
+     * @return a copy of this observable point
      */
     clone(cb = this.cb, scope = this.scope): ObservablePoint
     {
@@ -49,12 +56,12 @@ export class ObservablePoint<T = any> implements IPoint
     }
 
     /**
-     * Sets the point to a new x and y position.
-     * If y is omitted, both x and y will be set to x.
+     * Sets the point to a new `x` and `y` position.
+     * If `y` is omitted, both `x` and `y` will be set to `x`.
      *
      * @param {number} [x=0] - position of the point on the x axis
      * @param {number} [y=x] - position of the point on the y axis
-     * @returns {this} Returns itself.
+     * @returns The observable point instance itself
      */
     set(x = 0, y = x): this
     {
@@ -69,10 +76,10 @@ export class ObservablePoint<T = any> implements IPoint
     }
 
     /**
-     * Copies x and y from the given point
+     * Copies x and y from the given point (`p`)
      *
-     * @param {PIXI.IPointData} p - The point to copy from.
-     * @returns {this} Returns itself.
+     * @param p - The point to copy from. Can be any of type that is or extends `IPointData`
+     * @returns The observable point instance itself
      */
     copyFrom(p: IPointData): this
     {
@@ -87,10 +94,10 @@ export class ObservablePoint<T = any> implements IPoint
     }
 
     /**
-     * Copies x and y into the given point
+     * Copies this point's x and y into that of the given point (`p`)
      *
-     * @param {PIXI.IPoint} p - The point to copy.
-     * @returns {PIXI.IPoint} Given point with values updated
+     * @param p - The point to copy to. Can be any of type that is or extends `IPointData`
+     * @returns The point (`p`) with values updated
      */
     copyTo<T extends IPoint>(p: T): T
     {
@@ -100,10 +107,10 @@ export class ObservablePoint<T = any> implements IPoint
     }
 
     /**
-     * Returns true if the given point is equal to this point
+     * Accepts another point (`p`) and returns `true` if the given point is equal to this point
      *
-     * @param {PIXI.IPointData} p - The point to check
-     * @returns {boolean} Whether the given point equal to this point
+     * @param p - The point to check
+     * @returns Returns `true` if both `x` and `y` are equal
      */
     equals(p: IPointData): boolean
     {
@@ -117,11 +124,7 @@ export class ObservablePoint<T = any> implements IPoint
     }
     // #endif
 
-    /**
-     * The position of the displayObject on the x axis relative to the local coordinates of the parent.
-     *
-     * @member {number}
-     */
+    /** Position of the observable point on the x axis */
     get x(): number
     {
         return this._x;
@@ -136,11 +139,7 @@ export class ObservablePoint<T = any> implements IPoint
         }
     }
 
-    /**
-     * The position of the displayObject on the x axis relative to the local coordinates of the parent.
-     *
-     * @member {number}
-     */
+    /** Position of the observable point on the y axis */
     get y(): number
     {
         return this._y;
