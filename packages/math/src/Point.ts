@@ -16,6 +16,10 @@ export class Point implements IPoint
     /** Position of the point on the y axis */
     public y = 0;
 
+    /** Creates a new `Point`
+     * @param {number} [x=0] - position of the point on the x axis
+     * @param {number} [y=0] - position of the point on the y axis
+     */
     constructor(x = 0, y = 0)
     {
         this.x = x;
@@ -31,7 +35,7 @@ export class Point implements IPoint
     }
 
     /**
-     * Copies `x` and `y` from the given point
+     * Copies `x` and `y` from the given point into this point
      *
      * @param p - The point to copy from
      * @returns The point instance itself
@@ -44,9 +48,9 @@ export class Point implements IPoint
     }
 
     /**
-     * Copies x and y into the given point (`p`).
+     * Copies this point's x and y into the given point (`p`).
      *
-     * @param p - The point to copy. Can be any of type that is or extends `IPointData`
+     * @param p - The point to copy to. Can be any of type that is or extends `IPointData`
      * @returns The point (`p`) with values updated
      */
     copyTo<T extends IPoint>(p: T): T
