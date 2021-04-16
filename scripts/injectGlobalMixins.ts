@@ -39,6 +39,14 @@ function writeToIndex(basePath: string, dataToWrite: string): void
     fs.writeFileSync(indexDtsPath, file.join('\n'));
 }
 
+function writeNamespace(basePath: string)
+{
+    const indexDtsPath = path.resolve(basePath, './index.d.ts');
+    const file = fs.readFileSync(indexDtsPath, { encoding: 'utf8' }).replace('export { }', 'export as namespace PIXI;');
+
+    fs.writeFileSync(indexDtsPath, file);
+}
+
 /**
  * This is a workaround for https://github.com/pixijs/pixi.js/issues/6993
  *
@@ -97,8 +105,11 @@ async function start(): Promise<void>
     let basePath = path.relative(process.cwd(), pixiLocation);
 
     writeToIndex(basePath, pixiGlobalMixins);
+    writeNamespace(basePath);
+
     basePath = path.relative(process.cwd(), pixiLegacyLocation);
     writeToIndex(basePath, pixiLegacyGlobalMixins);
+    writeNamespace(basePath);
 }
 
 start();
