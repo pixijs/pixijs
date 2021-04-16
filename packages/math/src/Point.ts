@@ -2,8 +2,8 @@ import type { IPoint } from './IPoint';
 import type { IPointData } from './IPointData';
 
 /**
- * The Point object represents a location in a two-dimensional coordinate system, where x represents
- * the horizontal axis and y represents the vertical axis.
+ * The Point object represents a location in a two-dimensional coordinate system, where `x` represents
+ * the position on the horizontal axis and `y` represents the position on the vertical axis
  *
  * @class
  * @memberof PIXI
@@ -22,17 +22,19 @@ export class Point implements IPoint
         this.y = y;
     }
 
-    /** Creates a clone of this point */
+    /** Creates a clone of this point
+     * @returns A clone of this point
+     */
     clone(): Point
     {
         return new Point(this.x, this.y);
     }
 
     /**
-     * Copies x and y from the given point
+     * Copies `x` and `y` from the given point
      *
      * @param p - The point to copy from
-     * @returns Returns itself
+     * @returns The point instance itself
      */
     copyFrom(p: IPointData): this
     {
@@ -42,10 +44,10 @@ export class Point implements IPoint
     }
 
     /**
-     * Copies x and y into the given point
+     * Copies x and y into the given point (`p`).
      *
-     * @param p - The point to copy
-     * @returns Given point with values updated
+     * @param p - The point to copy. Can be any of type that is or extends `IPointData`
+     * @returns The point (`p`) with values updated
      */
     copyTo<T extends IPoint>(p: T): T
     {
@@ -55,10 +57,10 @@ export class Point implements IPoint
     }
 
     /**
-     * Returns true if the given point is equal to this point
+     * Accepts another point (`p`) and returns `true` if the given point is equal to this point
      *
      * @param p - The point to check
-     * @returns `true` if the given point equal to this point
+     * @returns Returns `true` if both `x` and `y` are equal
      */
     equals(p: IPointData): boolean
     {
@@ -66,12 +68,12 @@ export class Point implements IPoint
     }
 
     /**
-     * Sets the point to a new x and y position.
-     * If y is omitted, both x and y will be set to x.
+     * Sets the point to a new `x` and `y` position.
+     * If `y` is omitted, both `x` and `y` will be set to `x`.
      *
-     * @param x - position of the point on the x axis
-     * @param y - position of the point on the y axis
-     * @returns Returns itself
+     * @param {number} [x=0] - position of the point on the `x` axis
+     * @param {number} [y=x] - position of the point on the `y` axis
+     * @returns The point instance itself
      */
     set(x = 0, y = x): this
     {
