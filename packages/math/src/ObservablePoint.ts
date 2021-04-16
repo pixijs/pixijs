@@ -14,10 +14,10 @@ import type { IPoint } from './IPoint';
 
 export class ObservablePoint<T = any> implements IPoint
 {
-    /** callback function triggered when `x` and/or `y` are changed */
+    /** The callback function triggered when `x` and/or `y` are changed */
     public cb: (this: T) => any;
 
-    /** owner of callback */
+    /** The owner of callback */
     public scope: any;
 
     _x: number;
@@ -124,7 +124,9 @@ export class ObservablePoint<T = any> implements IPoint
     }
     // #endif
 
-    /** Position of the observable point on the x axis */
+    /** Position of the observable point on the x axis
+     * @type {number}
+     */
     get x(): number
     {
         return this._x;
@@ -139,7 +141,9 @@ export class ObservablePoint<T = any> implements IPoint
         }
     }
 
-    /** Position of the observable point on the y axis */
+    /** Position of the observable point on the y axis
+     * @type {number}
+     */
     get y(): number
     {
         return this._y;
