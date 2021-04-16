@@ -77,8 +77,8 @@ export class RenderTexturePool
     {
         let key: number|string = RenderTexturePool.SCREEN_KEY;
 
-        minWidth = Math.round(minWidth * resolution);
-        minHeight = Math.round(minHeight * resolution);
+        minWidth = Math.ceil(minWidth * resolution);
+        minHeight = Math.ceil(minHeight * resolution);
 
         if (!this.enableFullScreen || minWidth !== this._pixelsWidth || minHeight !== this._pixelsHeight)
         {
