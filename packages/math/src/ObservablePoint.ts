@@ -17,7 +17,7 @@ export class ObservablePoint<T = any> implements IPoint
     /** The callback function triggered when `x` and/or `y` are changed */
     public cb: (this: T) => any;
 
-    /** The owner of callback */
+    /** The owner of the callback */
     public scope: any;
 
     _x: number;
@@ -46,8 +46,8 @@ export class ObservablePoint<T = any> implements IPoint
      * to the clone object's values.
      *
      * @override
-     * @param cb - callback function triggered when `x` and/or `y` are changed
-     * @param scope - owner of callback
+     * @param cb - The callback function triggered when `x` and/or `y` are changed
+     * @param scope - The owner of the callback
      * @return a copy of this observable point
      */
     clone(cb = this.cb, scope = this.scope): ObservablePoint
