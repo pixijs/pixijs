@@ -74,7 +74,7 @@ _Note: `5.1.3` can be replaced by any [released](https://github.com/pixijs/pixi.
 
 ### Demos ###
 
-- [Filters Demo](http://pixijs.io/pixi-filters/tools/demo/)
+- [Filters Demo](https://pixijs.io/filters/tools/demo/)
 - [Run Pixie Run](http://work.goodboydigital.com/runpixierun/)
 - [Flash vs HTML](http://flashvhtml.com)
 - [Bunny Demo](http://www.goodboydigital.com/pixijs/bunnymark)
