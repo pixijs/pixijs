@@ -231,7 +231,7 @@ export class Filter extends Shader
          *
          * @member {PIXI.MSAA_QUALITY}
          */
-        this.multisample = MSAA_QUALITY.NONE;
+        this.multisample = settings.FILTER_MULTISAMPLE;
 
         /**
          * If enabled is true the filter is applied, if false it will not.

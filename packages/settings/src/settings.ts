@@ -1,6 +1,7 @@
 import { isMobile } from './utils/isMobile';
 import { maxRecommendedTextures } from './utils/maxRecommendedTextures';
 import { canUploadSameBuffer } from './utils/canUploadSameBuffer';
+import { MSAA_QUALITY } from '@pixi/constants';
 
 export interface IRenderOptions {
     view: HTMLCanvasElement;
@@ -21,6 +22,7 @@ export interface ISettings {
     ANISOTROPIC_LEVEL: number;
     RESOLUTION: number;
     FILTER_RESOLUTION: number;
+    FILTER_MULTISAMPLE: MSAA_QUALITY;
     SPRITE_MAX_TEXTURES: number;
     SPRITE_BATCH_SIZE: number;
     RENDER_OPTIONS: IRenderOptions;
@@ -103,6 +105,17 @@ export const settings: ISettings = {
      * @default 1
      */
     FILTER_RESOLUTION: 1,
+
+    /**
+     * Default filter samples.
+     *
+     * @static
+     * @name FILTER_MULTISAMPLE
+     * @memberof PIXI.settings
+     * @type {PIXI.MSAA_QUALITY}
+     * @default PIXI.MSAA_QUALITY.NONE
+     */
+    FILTER_MULTISAMPLE: MSAA_QUALITY.NONE,
 
     /**
      * The maximum textures that this device supports.
