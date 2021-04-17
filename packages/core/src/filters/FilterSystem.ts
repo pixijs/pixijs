@@ -3,7 +3,7 @@ import { Quad } from '../utils/Quad';
 import { QuadUv } from '../utils/QuadUv';
 import { Rectangle, Matrix, Point } from '@pixi/math';
 import { UniformGroup } from '../shader/UniformGroup';
-import { DRAW_MODES, CLEAR_MODES } from '@pixi/constants';
+import { DRAW_MODES, CLEAR_MODES, MSAA_QUALITY } from '@pixi/constants';
 import { FilterState } from './FilterState';
 
 import type { ISystem } from '../ISystem';
@@ -163,6 +163,7 @@ export class FilterSystem implements ISystem
         const renderTextureSystem = this.renderer.renderTexture;
 
         let resolution = filters[0].resolution;
+        let multisample = filters[0].multisample;
         let padding = filters[0].padding;
         let autoFit = filters[0].autoFit;
         let legacy = filters[0].legacy;
@@ -171,8 +172,10 @@ export class FilterSystem implements ISystem
         {
             const filter = filters[i];
 
-            // lets use the lowest resolution..
+            // let's use the lowest resolution
             resolution = Math.min(resolution, filter.resolution);
+            // let's use the lowest number of samples
+            multisample = Math.min(multisample, filter.multisample);
             // figure out the padding required for filters
             padding = this.useMaxPadding
                 // old behavior: use largest amount of padding!
@@ -193,6 +196,7 @@ export class FilterSystem implements ISystem
         filterStack.push(state);
 
         state.resolution = resolution;
+        state.multisample = multisample;
 
         state.legacy = legacy;
 
@@ -226,7 +230,8 @@ export class FilterSystem implements ISystem
             renderer.projection.transform,
         );
 
-        state.renderTexture = this.getOptimalFilterTexture(state.sourceFrame.width, state.sourceFrame.height, resolution);
+        state.renderTexture = this.getOptimalFilterTexture(state.sourceFrame.width, state.sourceFrame.height,
+            resolution, multisample);
         state.filters = filters;
 
         state.destinationFrame.width = state.renderTexture.width;
@@ -318,7 +323,8 @@ export class FilterSystem implements ISystem
             let flop = this.getOptimalFilterTexture(
                 flip.width,
                 flip.height,
-                state.resolution
+                state.resolution,
+                state.multisample
             );
 
             flop.filterFrame = flip.filterFrame;
@@ -328,6 +334,8 @@ export class FilterSystem implements ISystem
             for (i = 0; i < filters.length - 1; ++i)
             {
                 filters[i].apply(this, flip, flop, CLEAR_MODES.CLEAR, state);
+
+                this.renderer.framebuffer.blit();
 
                 const t = flip;
 
@@ -493,11 +501,13 @@ export class FilterSystem implements ISystem
      * @param {number} minWidth - The minimum width of the render texture in real pixels.
      * @param {number} minHeight - The minimum height of the render texture in real pixels.
      * @param {number} [resolution=1] - The resolution of the render texture.
+     * @param {PIXI.MSAA_QUALITY} [multisample=MSAA_QUALITY.NONE] - Numer of samples of the render texture.
      * @return {PIXI.RenderTexture} The new render texture.
      */
-    protected getOptimalFilterTexture(minWidth: number, minHeight: number, resolution = 1): RenderTexture
+    protected getOptimalFilterTexture(minWidth: number, minHeight: number, resolution = 1,
+        multisample = MSAA_QUALITY.NONE): RenderTexture
     {
-        return this.texturePool.getOptimalTexture(minWidth, minHeight, resolution);
+        return this.texturePool.getOptimalTexture(minWidth, minHeight, resolution, multisample);
     }
 
     /**
@@ -506,9 +516,10 @@ export class FilterSystem implements ISystem
      *
      * @param {PIXI.RenderTexture} [input] - renderTexture from which size and resolution will be copied
      * @param {number} [resolution] - override resolution of the renderTexture
+     * @param {PIXI.MSAA_QUALITY} [multisample] - override multisample of the renderTexture
      * @returns {PIXI.RenderTexture}
      */
-    getFilterTexture(input?: RenderTexture, resolution?: number): RenderTexture
+    getFilterTexture(input?: RenderTexture, resolution?: number, multisample?: MSAA_QUALITY): RenderTexture
     {
         if (typeof input === 'number')
         {
@@ -520,7 +531,8 @@ export class FilterSystem implements ISystem
 
         input = input || this.activeState.renderTexture;
 
-        const filterTexture = this.texturePool.getOptimalTexture(input.width, input.height, resolution || input.resolution);
+        const filterTexture = this.texturePool.getOptimalTexture(input.width, input.height, resolution || input.resolution,
+            multisample || input.framebuffer.multisample);
 
         filterTexture.filterFrame = input.filterFrame;
 

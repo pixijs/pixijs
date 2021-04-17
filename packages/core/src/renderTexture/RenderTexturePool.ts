@@ -1,6 +1,7 @@
 import { RenderTexture } from './RenderTexture';
 import { BaseRenderTexture } from './BaseRenderTexture';
 import { nextPow2 } from '@pixi/utils';
+import { MSAA_QUALITY } from '@pixi/constants';
 
 import type { IBaseTextureOptions } from '../textures/BaseTexture';
 import type { ISize } from '@pixi/math';
@@ -71,9 +72,10 @@ export class RenderTexturePool
      * @param {number} minWidth - The minimum width of the render texture in real pixels.
      * @param {number} minHeight - The minimum height of the render texture in real pixels.
      * @param {number} [resolution=1] - The resolution of the render texture.
+     * @param {PIXI.MSAA_QUALITY} [multisample=MSAA_QUALITY.NONE] - Numer of samples of the render texture.
      * @return {PIXI.RenderTexture} The new render texture.
      */
-    getOptimalTexture(minWidth: number, minHeight: number, resolution = 1): RenderTexture
+    getOptimalTexture(minWidth: number, minHeight: number, resolution = 1, multisample = MSAA_QUALITY.NONE): RenderTexture
     {
         let key: number|string = RenderTexturePool.SCREEN_KEY;
 
@@ -101,6 +103,7 @@ export class RenderTexturePool
 
         renderTexture.filterPoolKey = key;
         renderTexture.setResolution(resolution);
+        renderTexture.framebuffer.multisample = multisample;
 
         return renderTexture;
     }
@@ -112,12 +115,14 @@ export class RenderTexturePool
      *
      * @param {PIXI.RenderTexture} input - renderTexture from which size and resolution will be copied
      * @param {number} [resolution] - override resolution of the renderTexture
+     * @param {PIXI.MSAA_QUALITY} [multisample] - override multisample of the renderTexture
      *  It overrides, it does not multiply
      * @returns {PIXI.RenderTexture}
      */
-    getFilterTexture(input: RenderTexture, resolution?: number): RenderTexture
+    getFilterTexture(input: RenderTexture, resolution?: number, multisample?: MSAA_QUALITY): RenderTexture
     {
-        const filterTexture = this.getOptimalTexture(input.width, input.height, resolution || input.resolution);
+        const filterTexture = this.getOptimalTexture(input.width, input.height, resolution || input.resolution,
+            multisample || input.framebuffer.multisample);
 
         filterTexture.filterFrame = input.filterFrame;
 
