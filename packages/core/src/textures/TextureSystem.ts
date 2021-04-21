@@ -15,6 +15,7 @@ import type { Renderer } from '../Renderer';
  * @extends PIXI.System
  * @memberof PIXI
  */
+
 export class TextureSystem implements ISystem
 {
     public boundTextures: BaseTexture[];
@@ -159,6 +160,7 @@ export class TextureSystem implements ISystem
                         this.currentLocation = location;
                         gl.activeTexture(gl.TEXTURE0 + location);
                     }
+
                     gl.bindTexture(texture.target, glTexture.texture);
                 }
 
@@ -303,17 +305,23 @@ export class TextureSystem implements ISystem
         {
             return;
         }
+
         const gl = this.renderer.gl;
 
-        if (texture.type === gl.FLOAT
-            && texture.format === gl.RGBA)
+        if (texture.type === gl.FLOAT)
         {
-            glTexture.internalFormat = gl.RGBA32F;
-        }
-        if (texture.type === gl.FLOAT
-            && texture.format === gl.RED)
-        {
-            glTexture.internalFormat = gl.R32F;
+            if (texture.format === gl.RGBA)
+            {
+                glTexture.internalFormat = gl.RGBA32F;
+            }
+            else if (texture.format === gl.RGB)
+            {
+                glTexture.internalFormat = gl.RGB32F;
+            }
+            else if (texture.format === gl.RED)
+            {
+                glTexture.internalFormat = gl.R32F;
+            }
         }
 
         // that's WebGL1 HALF_FLOAT_OES
@@ -322,10 +330,17 @@ export class TextureSystem implements ISystem
         {
             glTexture.type = gl.HALF_FLOAT;
         }
-        if (glTexture.type === gl.HALF_FLOAT
-            && texture.format === gl.RGBA)
+
+        if (glTexture.type === gl.HALF_FLOAT)
         {
-            glTexture.internalFormat = gl.RGBA16F;
+            if (texture.format === gl.RGBA)
+            {
+                glTexture.internalFormat = gl.RGBA16F;
+            }
+            else if (texture.format === gl.RGB)
+            {
+                glTexture.internalFormat = gl.RGB16F;
+            }
         }
     }
 

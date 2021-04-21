@@ -77,6 +77,18 @@ describe('PIXI.TextureSystem', function ()
         expect(glTex.internalFormat).to.equal(this.renderer.gl.R32F);
     });
 
+    it('should set internalFormat correctly for RGB FLOAT textures', function ()
+    {
+        const baseTex = createTempTexture({ type: TYPES.FLOAT, format: FORMATS.RGB });
+
+        this.renderer.texture.bind(baseTex);
+
+        const glTex = baseTex._glTextures[this.renderer.CONTEXT_UID];
+
+        expect(glTex).to.be.notnull;
+        expect(glTex.internalFormat).to.equal(this.renderer.gl.RGB32F);
+    });
+
     function createIntegerTexture()
     {
         const baseTexture = BaseTexture.fromBuffer(new Uint32Array([0, 0, 0, 0]), 1, 1);
