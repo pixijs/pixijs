@@ -940,7 +940,7 @@ export class GraphicsGeometry extends BatchGeometry
 
                 if (type === SHAPES.POLY)
                 {
-                    lineWidth = lineWidth * (0.5 + Math.abs(0.5 - alignment));
+                    lineWidth = lineWidth * alignment;
                 }
                 else
                 {
