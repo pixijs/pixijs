@@ -33,18 +33,13 @@ async function getSortedPackages(): Promise<SimplePackageJson[]>
 function writeToIndex(basePath: string, dataToWrite: string): void
 {
     const indexDtsPath = path.resolve(basePath, './index.d.ts');
-    const file = fs.readFileSync(indexDtsPath, { encoding: 'utf8' }).toString().split('\n');
+    const file = fs.readFileSync(indexDtsPath, { encoding: 'utf8' })
+        .toString()
+        .replace('export { }', 'export as namespace PIXI;')
+        .split('\n');
 
     file.unshift(dataToWrite);
     fs.writeFileSync(indexDtsPath, file.join('\n'));
-}
-
-function writeNamespace(basePath: string)
-{
-    const indexDtsPath = path.resolve(basePath, './index.d.ts');
-    const file = fs.readFileSync(indexDtsPath, { encoding: 'utf8' }).replace('export { }', 'export as namespace PIXI;');
-
-    fs.writeFileSync(indexDtsPath, file);
 }
 
 /**
@@ -99,17 +94,18 @@ async function start(): Promise<void>
 
             writeToIndex(basePath, packageTypeData);
         }
+        else
+        {
+            writeToIndex(basePath, '');
+        }
     });
 
     // write the total types to the main packages
     let basePath = path.relative(process.cwd(), pixiLocation);
 
     writeToIndex(basePath, pixiGlobalMixins);
-    writeNamespace(basePath);
-
     basePath = path.relative(process.cwd(), pixiLegacyLocation);
     writeToIndex(basePath, pixiLegacyGlobalMixins);
-    writeNamespace(basePath);
 }
 
 start();
