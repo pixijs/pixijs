@@ -276,6 +276,8 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
 
     this._mask = null;
     this.filterArea = null;
+    this.alpha = cacheAlpha;
+
 
     // create our cached sprite
     const cachedSprite = new Sprite(renderTexture);
@@ -391,6 +393,7 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
 
     this._mask = null;
     this.filterArea = null;
+    this.alpha = cacheAlpha;
 
     // create our cached sprite
     const cachedSprite = new Sprite(renderTexture);
