@@ -379,7 +379,7 @@ export class Text extends Sprite
 
         const texture = this._texture;
         const style = this._style;
-        const padding = style.trim ? 0 : Math.round(style.padding * this._resolution) / this._resolution;
+        const padding = style.trim ? 0 : style.padding;
         const baseTexture = texture.baseTexture;
 
         texture.trim.width = texture._frame.width = canvas.width / this._resolution;
