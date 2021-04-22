@@ -66,13 +66,13 @@ export class GLTexture
          * Type copied from baseTexture
          * @member {number}
          */
-        this.type = 6408;
+        this.type = 5121;
 
         /**
          * Type copied from baseTexture
          * @member {number}
          */
-        this.internalFormat = 5121;
+        this.internalFormat = 6408;
 
         this.samplerType = 0;
     }
