@@ -167,10 +167,8 @@ export class RenderTexture extends Texture
      * @param {number} [height]
      * @param {PIXI.SCALE_MODES} [scaleMode=PIXI.settings.SCALE_MODE]
      * @param {number} [resolution=1]
-     * @param {PIXI.MSAA_QUALITY} [multisample=PIXI.MSAA_QUALITY.NONE]
      */
-    static create(width: number, height: number, scaleMode?: SCALE_MODES, resolution?: number,
-        multisample?: MSAA_QUALITY): RenderTexture;
+    static create(width: number, height: number, scaleMode?: SCALE_MODES, resolution?: number): RenderTexture;
 
     /**
      * A short hand way of creating a render texture.
@@ -200,7 +198,6 @@ export class RenderTexture extends Texture
                 height: rest[0],
                 scaleMode: rest[1],
                 resolution: rest[2],
-                multisample: rest[3],
             };
             /* eslint-enable prefer-rest-params */
         }

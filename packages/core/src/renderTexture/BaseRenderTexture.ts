@@ -72,9 +72,8 @@ export class BaseRenderTexture extends BaseTexture
             const height = arguments[1];
             const scaleMode = arguments[2];
             const resolution = arguments[3];
-            const multisample = arguments[4];
 
-            options = { width, height, scaleMode, resolution, multisample };
+            options = { width, height, scaleMode, resolution };
             /* eslint-enable prefer-rest-params */
         }
 
