@@ -4,6 +4,7 @@ import { Container, DisplayObject, IDestroyOptions } from '@pixi/display';
 import { IPointData, Matrix, Rectangle } from '@pixi/math';
 import { uid } from '@pixi/utils';
 import { settings } from '@pixi/settings';
+import { MSAA_QUALITY } from '@pixi/constants';
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
 
 const _tempMatrix = new Matrix();
@@ -11,6 +12,7 @@ const _tempMatrix = new Matrix();
 DisplayObject.prototype._cacheAsBitmap = false;
 DisplayObject.prototype._cacheData = null;
 DisplayObject.prototype._cacheAsBitmapResolution = null;
+DisplayObject.prototype._cacheAsBitmapMultisample = undefined;
 
 // figured there's no point adding ALL the extra variables to prototype.
 // this model can hold the information needed. This can also be generated on demand as
@@ -80,6 +82,39 @@ Object.defineProperties(DisplayObject.prototype, {
             if (this.cacheAsBitmap)
             {
                 // Toggle to re-render at the new resolution
+                this.cacheAsBitmap = false;
+                this.cacheAsBitmap = true;
+            }
+        },
+    },
+
+    /**
+     * The number of samples to use for cacheAsBitmap. By default this will use PIXI.MSAA_QUALITY.HIGH
+     * if the renderer has antialias enabled; otherwise it will use PIXI.MSAA_QUALITY.NONE by default.
+     * If set to `undefined`, it will use the default as described.
+     * If `cacheAsBitmap` is set to `true`, this will re-render with the new multisample.
+     *
+     * @member {number} cacheAsBitmapMultisample
+     * @memberof PIXI.DisplayObject#
+     * @default undefined
+     */
+    cacheAsBitmapMultisample: {
+        get(): MSAA_QUALITY
+        {
+            return this._cacheAsBitmapMultisample;
+        },
+        set(multisample: MSAA_QUALITY): void
+        {
+            if (multisample === this._cacheAsBitmapMultisample)
+            {
+                return;
+            }
+
+            this._cacheAsBitmapMultisample = multisample;
+
+            if (this.cacheAsBitmap)
+            {
+                // Toggle to re-render with new multisample
                 this.cacheAsBitmap = false;
                 this.cacheAsBitmap = true;
             }
@@ -247,6 +282,15 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
         resolution: this.cacheAsBitmapResolution || renderer.resolution,
     });
 
+    if (this.cacheAsBitmapMultisample !== undefined)
+    {
+        renderTexture.framebuffer.multisample = this.cacheAsBitmapMultisample;
+    }
+    else if (renderer.gl.getContextAttributes().antialias)
+    {
+        renderTexture.framebuffer.multisample = MSAA_QUALITY.HIGH;
+    }
+
     const textureCacheId = `cacheAsBitmap_${uid()}`;
 
     this._cacheData.textureCacheId = textureCacheId;
@@ -261,6 +305,7 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
     this.render = this._cacheData.originalRender;
 
     renderer.render(this, { renderTexture, clear: true, transform: m, skipUpdateTransform: false });
+    renderer.framebuffer.blit();
 
     // now restore the state be setting the new properties
     renderer.projection.transform = cachedProjectionTransform;
