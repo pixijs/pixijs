@@ -148,6 +148,7 @@ export class FramebufferSystem implements ISystem
                 if (fbo.dirtyFormat !== framebuffer.dirtyFormat)
                 {
                     fbo.dirtyFormat = framebuffer.dirtyFormat;
+                    fbo.dirtySize = framebuffer.dirtySize;
                     this.updateFramebuffer(framebuffer, mipLevel);
                 }
                 else if (fbo.dirtySize !== framebuffer.dirtySize)
