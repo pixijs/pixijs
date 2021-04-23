@@ -306,7 +306,7 @@ export class FramebufferSystem implements ISystem
         {
             gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.stencil);
 
-            if (fbo.multisample > 1 && this.canMultisampleFramebuffer(framebuffer))
+            if (fbo.msaaBuffer)
             {
                 gl.renderbufferStorageMultisample(gl.RENDERBUFFER, fbo.multisample,
                     gl.DEPTH24_STENCIL8, framebuffer.width, framebuffer.height);
@@ -353,22 +353,25 @@ export class FramebufferSystem implements ISystem
             count = Math.min(count, 1);
         }
 
-        const canMultisample = this.canMultisampleFramebuffer(framebuffer);
-
-        if (fbo.multisample > 1 && canMultisample)
+        if (fbo.multisample > 1 && this.canMultisampleFramebuffer(framebuffer))
         {
-            fbo.msaaBuffer = gl.createRenderbuffer();
+            fbo.msaaBuffer = fbo.msaaBuffer || gl.createRenderbuffer();
             gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.msaaBuffer);
             gl.renderbufferStorageMultisample(gl.RENDERBUFFER, fbo.multisample,
                 gl.RGBA8, framebuffer.width, framebuffer.height);
             gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.RENDERBUFFER, fbo.msaaBuffer);
+        }
+        else if (fbo.msaaBuffer)
+        {
+            gl.deleteRenderbuffer(fbo.msaaBuffer);
+            fbo.msaaBuffer = null;
         }
 
         const activeTextures = [];
 
         for (let i = 0; i < count; i++)
         {
-            if (i === 0 && fbo.multisample > 1 && canMultisample)
+            if (i === 0 && fbo.msaaBuffer)
             {
                 continue;
             }
@@ -416,7 +419,7 @@ export class FramebufferSystem implements ISystem
 
             gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.stencil);
 
-            if (fbo.multisample > 1 && canMultisample)
+            if (fbo.msaaBuffer)
             {
                 gl.renderbufferStorageMultisample(gl.RENDERBUFFER, fbo.multisample,
                     gl.DEPTH24_STENCIL8, framebuffer.width, framebuffer.height);
@@ -510,7 +513,7 @@ export class FramebufferSystem implements ISystem
         }
         if (!framebuffer)
         {
-            if (fbo.multisample <= 1 || !this.canMultisampleFramebuffer(current))
+            if (!fbo.msaaBuffer)
             {
                 return;
             }
@@ -635,7 +638,7 @@ export class FramebufferSystem implements ISystem
 
         gl.bindRenderbuffer(gl.RENDERBUFFER, stencil);
 
-        if (fbo.multisample > 1 && this.canMultisampleFramebuffer(framebuffer))
+        if (fbo.msaaBuffer)
         {
             gl.renderbufferStorageMultisample(gl.RENDERBUFFER, fbo.multisample, gl.DEPTH24_STENCIL8, w, h);
         }
