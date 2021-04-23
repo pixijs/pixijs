@@ -441,6 +441,20 @@ export class FramebufferSystem implements ISystem
                 gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, fbo.stencil);
             }
         }
+        else if (fbo.stencil)
+        {
+            gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.stencil);
+
+            if (fbo.msaaBuffer)
+            {
+                gl.renderbufferStorageMultisample(gl.RENDERBUFFER, fbo.multisample,
+                    gl.DEPTH24_STENCIL8, framebuffer.width, framebuffer.height);
+            }
+            else
+            {
+                gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, framebuffer.width, framebuffer.height);
+            }
+        }
     }
 
     /**
