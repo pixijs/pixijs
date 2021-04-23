@@ -575,6 +575,11 @@ export class FramebufferSystem implements ISystem
         {
             gl.deleteFramebuffer(fbo.framebuffer);
 
+            if (fbo.msaaBuffer)
+            {
+                gl.deleteRenderbuffer(fbo.msaaBuffer);
+            }
+
             if (fbo.stencil)
             {
                 gl.deleteRenderbuffer(fbo.stencil);
