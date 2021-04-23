@@ -378,15 +378,15 @@ export class FramebufferSystem implements ISystem
 
         for (let i = 0; i < count; i++)
         {
-            if (i === 0 && fbo.msaaBuffer)
-            {
-                continue;
-            }
-
             const texture = framebuffer.colorTextures[i];
             const parentTexture = texture.parentTextureArray || texture;
 
             this.renderer.texture.bind(parentTexture, 0);
+
+            if (i === 0 && fbo.msaaBuffer)
+            {
+                continue;
+            }
 
             gl.framebufferTexture2D(gl.FRAMEBUFFER,
                 gl.COLOR_ATTACHMENT0 + i,
