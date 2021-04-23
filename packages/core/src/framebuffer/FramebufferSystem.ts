@@ -329,7 +329,10 @@ export class FramebufferSystem implements ISystem
 
         for (let i = 0; i < colorTextures.length; i++)
         {
-            this.renderer.texture.bind(colorTextures[i], 0);
+            const texture = colorTextures[i];
+            const parentTexture = texture.parentTextureArray || texture;
+
+            this.renderer.texture.bind(parentTexture, 0);
         }
 
         if (framebuffer.depthTexture)
@@ -379,7 +382,7 @@ export class FramebufferSystem implements ISystem
 
         for (let i = 0; i < count; i++)
         {
-            const texture = framebuffer.colorTextures[i];
+            const texture = colorTextures[i];
             const parentTexture = texture.parentTextureArray || texture;
 
             this.renderer.texture.bind(parentTexture, 0);
