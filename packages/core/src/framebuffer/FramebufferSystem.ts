@@ -302,6 +302,13 @@ export class FramebufferSystem implements ISystem
 
         const fbo = framebuffer.glFramebuffers[this.CONTEXT_UID];
 
+        if (fbo.msaaBuffer)
+        {
+            gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.msaaBuffer);
+            gl.renderbufferStorageMultisample(gl.RENDERBUFFER, fbo.multisample,
+                gl.RGBA8, framebuffer.width, framebuffer.height);
+        }
+
         if (fbo.stencil)
         {
             gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.stencil);
