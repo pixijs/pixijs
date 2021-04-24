@@ -216,10 +216,10 @@ export class ImageResource extends BaseImageResource
             })
             .then((r) => r.blob())
             .then((blob) => createImageBitmap(blob,
-            0, 0, source.width, source.height,
-            {
-                premultiplyAlpha: this.alphaMode === ALPHA_MODES.UNPACK ? 'premultiply' : 'none',
-            }))
+                0, 0, source.width, source.height,
+                {
+                    premultiplyAlpha: this.alphaMode === ALPHA_MODES.UNPACK ? 'premultiply' : 'none',
+                }))
             .then((bitmap: ImageBitmap) =>
             {
                 if (this.destroyed)
