@@ -286,8 +286,8 @@ export class Sprite extends Container
         const b = wt.b;
         const c = wt.c;
         const d = wt.d;
-        const tx = wt.tx;
-        const ty = wt.ty;
+        let tx = wt.tx;
+        let ty = wt.ty;
         const vertexData = this.vertexData;
         const trim = texture.trim;
         const orig = texture.orig;
@@ -303,19 +303,36 @@ export class Sprite extends Container
             // if the sprite is trimmed and is not a tilingsprite then we need to add the extra
             // space before transforming the sprite coords.
             w1 = trim.x - (anchor._x * orig.width);
-            w0 = w1 + trim.width;
+            w0 = trim.width;
 
             h1 = trim.y - (anchor._y * orig.height);
-            h0 = h1 + trim.height;
+            h0 = trim.height;
         }
         else
         {
             w1 = -anchor._x * orig.width;
-            w0 = w1 + orig.width;
+            w0 = orig.width;
 
             h1 = -anchor._y * orig.height;
-            h0 = h1 + orig.height;
+            h0 = orig.height;
         }
+
+        if (this._roundPixels)
+        {
+            tx = Math.round(tx);
+            ty = Math.round(ty);
+
+            const sx = Math.sqrt((a * a) + (b * b));
+            const sy = Math.sqrt((c * c) + (d * d));
+
+            w0 = Math.round(w0 * sx) / sx;
+            w1 = Math.round(w1 * sx) / sx;
+            h0 = Math.round(h0 * sy) / sy;
+            h1 = Math.round(h1 * sy) / sy;
+        }
+
+        w0 += w1;
+        h0 += h1;
 
         // xy
         vertexData[0] = (a * w1) + (c * h1) + tx;
@@ -332,16 +349,6 @@ export class Sprite extends Container
         // xy
         vertexData[6] = (a * w1) + (c * h0) + tx;
         vertexData[7] = (d * h0) + (b * w1) + ty;
-
-        if (this._roundPixels)
-        {
-            const resolution = settings.RESOLUTION;
-
-            for (let i = 0; i < vertexData.length; ++i)
-            {
-                vertexData[i] = Math.round((vertexData[i] * resolution | 0) / resolution);
-            }
-        }
     }
 
     /**
@@ -374,14 +381,31 @@ export class Sprite extends Container
         const b = wt.b;
         const c = wt.c;
         const d = wt.d;
-        const tx = wt.tx;
-        const ty = wt.ty;
+        let tx = wt.tx;
+        let ty = wt.ty;
 
-        const w1 = -anchor._x * orig.width;
-        const w0 = w1 + orig.width;
+        let w1 = -anchor._x * orig.width;
+        let w0 = orig.width;
 
-        const h1 = -anchor._y * orig.height;
-        const h0 = h1 + orig.height;
+        let h1 = -anchor._y * orig.height;
+        let h0 = orig.height;
+
+        if (this._roundPixels)
+        {
+            tx = Math.round(tx);
+            ty = Math.round(ty);
+
+            const sx = Math.sqrt((a * a) + (b * b));
+            const sy = Math.sqrt((c * c) + (d * d));
+
+            w0 = Math.round(w0 * sx) / sx;
+            w1 = Math.round(w1 * sx) / sx;
+            h0 = Math.round(h0 * sy) / sy;
+            h1 = Math.round(h1 * sy) / sy;
+        }
+
+        w0 += w1;
+        h0 += h1;
 
         // xy
         vertexData[0] = (a * w1) + (c * h1) + tx;
