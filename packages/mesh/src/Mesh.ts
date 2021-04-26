@@ -140,7 +140,7 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
          * @member {number}
          * @private
          */
-        this.vertexDirty = 0;
+        this.vertexDirty = -1;
 
         this._transformID = -1;
 
