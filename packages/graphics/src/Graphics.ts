@@ -918,6 +918,7 @@ export class Graphics extends Container
 
         return data.length === 1
             && data[0].shape.type === SHAPES.RECT
+            && !data[0].holes.length
             && !(data[0].lineStyle.visible && data[0].lineStyle.width);
     }
 
