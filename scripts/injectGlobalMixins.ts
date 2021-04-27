@@ -33,7 +33,10 @@ async function getSortedPackages(): Promise<SimplePackageJson[]>
 function writeToIndex(basePath: string, dataToWrite: string): void
 {
     const indexDtsPath = path.resolve(basePath, './index.d.ts');
-    const file = fs.readFileSync(indexDtsPath, { encoding: 'utf8' }).toString().split('\n');
+    const file = fs.readFileSync(indexDtsPath, { encoding: 'utf8' })
+        .toString()
+        .replace('export { }', 'export as namespace PIXI;')
+        .split('\n');
 
     file.unshift(dataToWrite);
     fs.writeFileSync(indexDtsPath, file.join('\n'));
@@ -90,6 +93,10 @@ async function start(): Promise<void>
             }
 
             writeToIndex(basePath, packageTypeData);
+        }
+        else
+        {
+            writeToIndex(basePath, '');
         }
     });
 
