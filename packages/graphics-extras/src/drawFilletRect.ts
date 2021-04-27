@@ -6,9 +6,7 @@ import type { Graphics } from '@pixi/graphics';
  *
  * _Note: Only available with **@pixi/graphics-extras**._
  *
- * @instance
- * @memberof PIXI.Graphics
- * @method drawFilletRect
+ * @method PIXI.Graphics#drawFilletRect
  * @param {number} x - Upper left corner of rect
  * @param {number} y - Upper right corner of rect
  * @param {number} width - Width of rect

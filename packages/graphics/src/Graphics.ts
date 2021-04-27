@@ -525,7 +525,6 @@ export class Graphics extends Container
     /**
      * Initialize the curve
      *
-     * @protected
      * @param {number} [x=0]
      * @param {number} [y=0]
      */
@@ -925,7 +924,6 @@ export class Graphics extends Container
     /**
      * Renders the object using the WebGL renderer
      *
-     * @protected
      * @param {PIXI.Renderer} renderer - The renderer
      */
     protected _render(renderer: Renderer): void
@@ -957,11 +955,7 @@ export class Graphics extends Container
         }
     }
 
-    /**
-     * Populating batches for rendering
-     *
-     * @protected
-     */
+    /** Populating batches for rendering. */
     protected _populateBatches(): void
     {
         const geometry = this._geometry;
@@ -1009,7 +1003,6 @@ export class Graphics extends Container
     /**
      * Renders the batches using the BathedRenderer plugin
      *
-     * @protected
      * @param {PIXI.Renderer} renderer - The renderer
      */
     protected _renderBatched(renderer: Renderer): void
@@ -1037,7 +1030,6 @@ export class Graphics extends Container
     /**
      * Renders the graphics direct
      *
-     * @protected
      * @param {PIXI.Renderer} renderer - The renderer
      */
     protected _renderDirect(renderer: Renderer): void
@@ -1099,7 +1091,6 @@ export class Graphics extends Container
     /**
      * Resolves shader for direct rendering
      *
-     * @protected
      * @param {PIXI.Renderer} renderer - The renderer
      */
     protected _resolveDirectShader(renderer: Renderer): Shader
@@ -1140,11 +1131,7 @@ export class Graphics extends Container
         return shader;
     }
 
-    /**
-     * Retrieves the bounds of the graphic shape as a rectangle object
-     *
-     * @protected
-     */
+    /** Retrieves the bounds of the graphic shape as a rectangle object. */
     protected _calculateBounds(): void
     {
         this.finishPoly();
@@ -1175,10 +1162,7 @@ export class Graphics extends Container
         return this._geometry.containsPoint(Graphics._TEMP_POINT);
     }
 
-    /**
-     * Recalculate the tint by applying tint to batches using Graphics tint.
-     * @protected
-     */
+    /** Recalculate the tint by applying tint to batches using Graphics tint. */
     protected calculateTints(): void
     {
         if (this.batchTint !== this.tint)
@@ -1210,7 +1194,6 @@ export class Graphics extends Container
     /**
      * If there's a transform update or a change to the shape of the
      * geometry, recalculate the vertices.
-     * @protected
      */
     protected calculateVertices(): void
     {
