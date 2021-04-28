@@ -53,9 +53,6 @@ export enum BUFFER_BITS {
 /**
  * Various blend modes supported by PIXI.
  *
- * IMPORTANT - The WebGL renderer only supports the NORMAL, ADD, MULTIPLY and SCREEN blend modes.
- * Anything else will silently act like NORMAL.
- *
  * @memberof PIXI
  * @name BLEND_MODES
  * @enum {number}
