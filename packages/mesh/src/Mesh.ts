@@ -140,7 +140,7 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
          * @member {number}
          * @private
          */
-        this.vertexDirty = 0;
+        this.vertexDirty = -1;
 
         this._transformID = -1;
 
@@ -362,9 +362,11 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
     public calculateVertices(): void
     {
         const geometry = this.geometry;
-        const vertices = geometry.buffers[0].data;
+        const verticesBuffer = geometry.buffers[0];
+        const vertices = verticesBuffer.data;
+        const vertexDirtyId = verticesBuffer._updateID;
 
-        if ((geometry as any).vertexDirtyId === this.vertexDirty && this._transformID === this.transform._worldID)
+        if (vertexDirtyId === this.vertexDirty && this._transformID === this.transform._worldID)
         {
             return;
         }
@@ -405,7 +407,7 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
             }
         }
 
-        this.vertexDirty = (geometry as any).vertexDirtyId;
+        this.vertexDirty = vertexDirtyId;
     }
 
     /**
