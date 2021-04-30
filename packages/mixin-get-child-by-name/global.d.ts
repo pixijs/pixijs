@@ -2,7 +2,7 @@ declare namespace GlobalMixins
 {
     interface DisplayObject
     {
-        name?: string;
+        name: string;
     }
 
     interface Container
