@@ -163,6 +163,7 @@ export enum DRAW_MODES {
  * @enum {number}
  * @property {number} RGBA=6408
  * @property {number} RGB=6407
+ * @property {number} RED=6403
  * @property {number} ALPHA=6406
  * @property {number} LUMINANCE=6409
  * @property {number} LUMINANCE_ALPHA=6410

@@ -121,8 +121,7 @@ export class Renderer extends AbstractRenderer
      *   resolutions other than 1.
      * @param {boolean} [options.antialias=false] - Sets antialias. If not available natively then FXAA
      *  antialiasing is used.
-     * @param {number} [options.resolution=1] - The resolution / device pixel ratio of the renderer.
-     *  The resolution of the renderer retina would be 2.
+     * @param {number} [options.resolution=PIXI.settings.RESOLUTION] - The resolution / device pixel ratio of the renderer.
      * @param {boolean} [options.clearBeforeRender=true] - This sets if the renderer will clear
      *  the canvas or not before the new render pass. If you wish to set this to false, you *must* set
      *  preserveDrawingBuffer to `true`.

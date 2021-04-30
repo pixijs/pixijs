@@ -25,7 +25,8 @@ export class TextureGCSystem extends System
     public checkCount: number;
     public maxIdle: number;
     public checkCountMax: number;
-    public mode: number;
+    public mode: GC_MODES;
+
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
