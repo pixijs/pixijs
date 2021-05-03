@@ -148,34 +148,40 @@ export class CanvasMeshRenderer
 
         if (canvasPadding > 0)
         {
-            const paddingX = canvasPadding / Math.abs(mesh.worldTransform.a);
-            const paddingY = canvasPadding / Math.abs(mesh.worldTransform.d);
+            const { a, b, c, d } = mesh.worldTransform;
+
             const centerX = (x0 + x1 + x2) / 3;
             const centerY = (y0 + y1 + y2) / 3;
 
             let normX = x0 - centerX;
             let normY = y0 - centerY;
 
-            let dist = Math.sqrt((normX * normX) + (normY * normY));
+            let dx = (a * normX) + (c * normY);
+            let dy = (b * normX) + (d * normY);
+            let dist = Math.sqrt((dx * dx) + (dy * dy));
 
-            x0 = centerX + ((normX / dist) * (dist + paddingX));
-            y0 = centerY + ((normY / dist) * (dist + paddingY));
-
-            //
+            x0 = centerX + ((normX / dist) * (dist + canvasPadding));
+            y0 = centerY + ((normY / dist) * (dist + canvasPadding));
 
             normX = x1 - centerX;
             normY = y1 - centerY;
 
-            dist = Math.sqrt((normX * normX) + (normY * normY));
-            x1 = centerX + ((normX / dist) * (dist + paddingX));
-            y1 = centerY + ((normY / dist) * (dist + paddingY));
+            dx = (a * normX) + (c * normY);
+            dy = (b * normX) + (d * normY);
+            dist = Math.sqrt((dx * dx) + (dy * dy));
+
+            x1 = centerX + ((normX / dist) * (dist + canvasPadding));
+            y1 = centerY + ((normY / dist) * (dist + canvasPadding));
 
             normX = x2 - centerX;
             normY = y2 - centerY;
 
-            dist = Math.sqrt((normX * normX) + (normY * normY));
-            x2 = centerX + ((normX / dist) * (dist + paddingX));
-            y2 = centerY + ((normY / dist) * (dist + paddingY));
+            dx = (a * normX) + (c * normY);
+            dy = (b * normX) + (d * normY);
+            dist = Math.sqrt((dx * dx) + (dy * dy));
+
+            x2 = centerX + ((normX / dist) * (dist + canvasPadding));
+            y2 = centerY + ((normY / dist) * (dist + canvasPadding));
         }
 
         context.save();
