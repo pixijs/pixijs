@@ -151,7 +151,7 @@ export class ParticleContainer extends Container
         this.autoResize = autoResize;
 
         /**
-         * If true PixiJS will Math.floor() x/y values when rendering, stopping pixel interpolation.
+         * If true PixiJS will Math.round() x/y values when rendering, stopping pixel interpolation.
          * Advantages can include sharper image quality (like text) and faster rendering on canvas.
          * The main disadvantage is movement of objects may appear less smooth.
          * Default to true here as performance is usually the priority for particles.

@@ -219,6 +219,7 @@ export class Sprite extends Container
          * Internal roundPixels field
          *
          * @member {boolean}
+         * @default PIXI.settings.ROUND_PIXELS
          * @private
          */
         this._roundPixels = settings.ROUND_PIXELS;
@@ -575,13 +576,13 @@ export class Sprite extends Container
     }
 
     /**
-     * If true PixiJS will Math.floor() x/y values when rendering, stopping pixel interpolation.
+     * If true PixiJS will Math.round() x/y values when rendering, stopping pixel interpolation.
      * Advantages can include sharper image quality (like text) and faster rendering on canvas.
      * The main disadvantage is movement of objects may appear less smooth.
-     * To set the global default, change {@link PIXI.settings.ROUND_PIXELS}
+     * To set the global default, change {@link PIXI.settings.ROUND_PIXELS}.
      *
      * @member {boolean}
-     * @default false
+     * @default PIXI.settings.ROUND_PIXELS
      */
     set roundPixels(value: boolean)
     {
