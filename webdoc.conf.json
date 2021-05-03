@@ -24,6 +24,8 @@
         "default"       : {
             "outputSourceFiles" : true
         },
+        "siteDomain": "https://pixijs.io/",
+        "siteRoot": "release/docs",
         "applicationName": "PixiJS",
         "footer"        : "Made with ♥ by Goodboy Digital (goodboydigital.com)",
         "copyright"     : "PixiJS Copyright © 2013-2017 Mat Groves.",
