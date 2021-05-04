@@ -6,12 +6,12 @@ import { PRECISION } from '@pixi/constants';
  *
  * @private
  * @param {string} src - The shader source
- * @param {string} requestedPrecision - The request float precision of the shader. Options are 'lowp', 'mediump' or 'highp'.
- * @param {string} maxSupportedPrecision - The maximum precision the shader supports.
+ * @param {PIXI.PRECISION} requestedPrecision - The request float precision of the shader.
+ * @param {PIXI.PRECISION} maxSupportedPrecision - The maximum precision the shader supports.
  *
  * @return {string} modified shader source
  */
-export function setPrecision(src: string, requestedPrecision: string, maxSupportedPrecision: string): string
+export function setPrecision(src: string, requestedPrecision: PRECISION, maxSupportedPrecision: PRECISION): string
 {
     if (src.substring(0, 9) !== 'precision')
     {

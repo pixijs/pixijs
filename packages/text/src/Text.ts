@@ -45,6 +45,19 @@ const defaultDestroyOptions: IDestroyOptions = {
  */
 export class Text extends Sprite
 {
+    /**
+     * New behavior for `lineHeight` that's meant to mimic HTML text. A value of `true` will
+     * make sure the first baseline is offset by the `lineHeight` value if it is greater than `fontSize`.
+     * A value of `false` will use the legacy behavior and not change the baseline of the first line.
+     * In the next major release, we'll enable this by default.
+     *
+     * @static
+     * @memberof PIXI.Text
+     * @member {boolean} nextLineHeightBehavior
+     * @default false
+     */
+    public static nextLineHeightBehavior = false;
+
     public canvas: HTMLCanvasElement;
     public context: CanvasRenderingContext2D;
     public localStyleID: number;
@@ -111,7 +124,7 @@ export class Text extends Sprite
          * The resolution / device pixel ratio of the canvas.
          * This is set to automatically match the renderer resolution by default, but can be overridden by setting manually.
          * @member {number}
-         * @default 1
+         * @default PIXI.settings.RESOLUTION
          */
         this._resolution = settings.RESOLUTION;
         this._autoResolution = true;
@@ -257,11 +270,19 @@ export class Text extends Sprite
                 context.shadowOffsetY = 0;
             }
 
+            let linePositionYShift = (lineHeight - fontProperties.fontSize) / 2;
+
+            if (!Text.nextLineHeightBehavior || lineHeight - fontProperties.fontSize < 0)
+            {
+                linePositionYShift = 0;
+            }
+
             // draw lines line by line
             for (let i = 0; i < lines.length; i++)
             {
                 linePositionX = style.strokeThickness / 2;
-                linePositionY = ((style.strokeThickness / 2) + (i * lineHeight)) + fontProperties.ascent;
+                linePositionY = ((style.strokeThickness / 2) + (i * lineHeight)) + fontProperties.ascent
+                    + linePositionYShift;
 
                 if (style.align === 'right')
                 {
