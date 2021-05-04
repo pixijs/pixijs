@@ -6,7 +6,7 @@ varying vec2 v_rgbM;
 
 varying vec2 vFragCoord;
 uniform sampler2D uSampler;
-uniform highp vec4 inputPixel;
+uniform highp vec4 inputSize;
 
 
 /**
@@ -115,7 +115,7 @@ void main() {
 
       vec4 color;
 
-      color = fxaa(uSampler, vFragCoord, inputPixel.zw, v_rgbNW, v_rgbNE, v_rgbSW, v_rgbSE, v_rgbM);
+      color = fxaa(uSampler, vFragCoord, inputSize.zw, v_rgbNW, v_rgbNE, v_rgbSW, v_rgbSE, v_rgbM);
 
       gl_FragColor = color;
 }
