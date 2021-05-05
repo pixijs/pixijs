@@ -124,7 +124,7 @@ export class Text extends Sprite
          * The resolution / device pixel ratio of the canvas.
          * This is set to automatically match the renderer resolution by default, but can be overridden by setting manually.
          * @member {number}
-         * @default 1
+         * @default PIXI.settings.RESOLUTION
          */
         this._resolution = settings.RESOLUTION;
         this._autoResolution = true;

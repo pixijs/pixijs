@@ -83,8 +83,7 @@ export abstract class AbstractRenderer extends EventEmitter
      * @param {boolean} [options.autoDensity=false] - Resizes renderer view in CSS pixels to allow for
      *   resolutions other than 1.
      * @param {boolean} [options.antialias=false] - Sets antialias
-     * @param {number} [options.resolution=1] - The resolution / device pixel ratio of the renderer. The
-     *  resolution of the renderer retina would be 2.
+     * @param {number} [options.resolution=PIXI.settings.RESOLUTION] - The resolution / device pixel ratio of the renderer.
      * @param {boolean} [options.preserveDrawingBuffer=false] - Enables drawing buffer preservation,
      *  enable this if you need to call toDataUrl on the WebGL context.
      * @param {boolean} [options.clearBeforeRender=true] - This sets if the renderer will clear the canvas or
@@ -137,7 +136,7 @@ export abstract class AbstractRenderer extends EventEmitter
          * The resolution / device pixel ratio of the renderer.
          *
          * @member {number}
-         * @default 1
+         * @default PIXI.settings.RESOLUTION
          */
         this.resolution = options.resolution || settings.RESOLUTION;
 

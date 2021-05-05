@@ -2,11 +2,11 @@ declare namespace GlobalMixins
 {
     interface DisplayObject
     {
-        name?: string;
+        name: string;
     }
 
     interface Container
     {
-        getChildByName?(name: string, isRecursive?: boolean): import('@pixi/display').DisplayObject;
+        getChildByName(name: string, isRecursive?: boolean): import('@pixi/display').DisplayObject;
     }
 }

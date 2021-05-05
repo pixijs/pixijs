@@ -29,7 +29,7 @@ export interface IRendererOptionsAuto extends IRendererOptions
  * @param {number} [options.backgroundAlpha=1] - Value from 0 (fully transparent) to 1 (fully opaque).
  * @param {boolean} [options.clearBeforeRender=true] - This sets if the renderer will clear the canvas or
  *   not before the new render pass.
- * @param {number} [options.resolution=1] - The resolution / device pixel ratio of the renderer, retina would be 2
+ * @param {number} [options.resolution=PIXI.settings.RESOLUTION] - The resolution / device pixel ratio of the renderer.
  * @param {boolean} [options.forceCanvas=false] - prevents selection of WebGL renderer, even if such is present, this
  *   option only is available when using **pixi.js-legacy** or **@pixi/canvas-renderer** modules, otherwise
  *   it is ignored.
