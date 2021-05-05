@@ -271,8 +271,12 @@ export class TilingSprite extends Sprite
      */
     static from(source: TextureSource, options: ISize & IBaseTextureOptions): TilingSprite
     {
+        const texture = (source instanceof Texture)
+            ? source
+            : Texture.from(source, options);
+
         return new TilingSprite(
-            Texture.from(source, options),
+            texture,
             options.width,
             options.height
         );
