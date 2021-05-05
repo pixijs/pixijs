@@ -5,6 +5,7 @@ import { BufferResource } from './resources/BufferResource';
 import { autoDetectResource } from './resources/autoDetectResource';
 import { settings } from '@pixi/settings';
 
+import type { MSAA_QUALITY } from '@pixi/constants';
 import type { IAutoDetectOptions } from './resources/autoDetectResource';
 import type { GLTexture } from './GLTexture';
 
@@ -28,6 +29,7 @@ export interface IBaseTextureOptions<RO = any> {
     type?: TYPES;
     target?: TARGETS;
     resolution?: number;
+    multisample?: MSAA_QUALITY;
     resourceOptions?: RO;
     pixiIdPrefix?: string;
 }

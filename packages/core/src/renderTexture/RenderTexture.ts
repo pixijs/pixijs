@@ -4,7 +4,7 @@ import { Texture } from '../textures/Texture';
 import type { Rectangle } from '@pixi/math';
 import type { Framebuffer } from '../framebuffer/Framebuffer';
 import type { IBaseTextureOptions } from '../textures/BaseTexture';
-import type { SCALE_MODES } from '@pixi/constants';
+import type { MSAA_QUALITY, SCALE_MODES } from '@pixi/constants';
 import { deprecation } from '@pixi/utils';
 
 /**
@@ -99,6 +99,22 @@ export class RenderTexture extends Texture
     }
 
     /**
+     * Shortcut to `this.framebuffer.multisample`.
+     *
+     * @member {PIXI.MSAA_QUALITY}
+     * @default PIXI.MSAA_QUALITY.NONE
+     */
+    get multisample(): MSAA_QUALITY
+    {
+        return this.framebuffer.multisample;
+    }
+
+    set multisample(value: MSAA_QUALITY)
+    {
+        this.framebuffer.multisample = value;
+    }
+
+    /**
      * Resizes the RenderTexture.
      *
      * @param {number} width - The width to resize to.
@@ -165,6 +181,7 @@ export class RenderTexture extends Texture
      *    for possible values
      * @param {number} [options.resolution=PIXI.settings.RESOLUTION] - The resolution / device pixel ratio of the texture
      *    being generated
+     * @param {PIXI.MSAA_QUALITY} [options.multisample=PIXI.MSAA_QUALITY.NONE] - The number of samples of the frame buffer
      * @return {PIXI.RenderTexture} The new render texture
      */
     static create(options?: IBaseTextureOptions): RenderTexture;
