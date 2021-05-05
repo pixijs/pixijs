@@ -90,7 +90,7 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
      * @param {PIXI.ALPHA_MODES} [options.alphaMode=PIXI.ALPHA_MODES.UNPACK] - Pre multiply the image alpha
      * @param {number} [options.width=0] - Width of the texture
      * @param {number} [options.height=0] - Height of the texture
-     * @param {number} [options.resolution] - Resolution of the base texture
+     * @param {number} [options.resolution=PIXI.settings.RESOLUTION] - Resolution of the base texture
      * @param {object} [options.resourceOptions] - Optional resource options,
      *        see {@link PIXI.autoDetectResource autoDetectResource}
      */
@@ -115,6 +115,7 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
          *
          * @readonly
          * @member {number}
+         * @default PIXI.settings.RESOLUTION
          */
         this.width = width || 0;
 
@@ -152,7 +153,8 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
 
         /**
          * How the texture wraps
-         * @member {number}
+         * @member {PIXI.WRAP_MODES}
+         * @default PIXI.settings.WRAP_MODE
          */
         this.wrapMode = wrapMode || settings.WRAP_MODE;
 
