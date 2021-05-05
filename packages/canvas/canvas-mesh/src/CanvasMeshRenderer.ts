@@ -144,9 +144,9 @@ export class CanvasMeshRenderer
         let y1 = vertices[index1 + 1];
         let y2 = vertices[index2 + 1];
 
-        const canvasPadding = mesh.canvasPadding / this.renderer.resolution;
+        const screenPadding = mesh.canvasPadding / this.renderer.resolution;
 
-        if (canvasPadding > 0)
+        if (screenPadding > 0)
         {
             const { a, b, c, d } = mesh.worldTransform;
 
@@ -156,32 +156,40 @@ export class CanvasMeshRenderer
             let normX = x0 - centerX;
             let normY = y0 - centerY;
 
-            let dx = (a * normX) + (c * normY);
-            let dy = (b * normX) + (d * normY);
-            let dist = Math.sqrt((dx * dx) + (dy * dy));
+            // Transform to screen space and calculate the distance
+            let screenX = (a * normX) + (c * normY);
+            let screenY = (b * normX) + (d * normY);
+            let screenDist = Math.sqrt((screenX * screenX) + (screenY * screenY));
 
-            x0 = centerX + ((normX / dist) * (dist + canvasPadding));
-            y0 = centerY + ((normY / dist) * (dist + canvasPadding));
+            // Factor by which to scale in order to add padding equal to screenPadding
+            let paddingFactor = 1 + (screenPadding / screenDist);
+
+            x0 = centerX + (normX * paddingFactor);
+            y0 = centerY + (normY * paddingFactor);
 
             normX = x1 - centerX;
             normY = y1 - centerY;
 
-            dx = (a * normX) + (c * normY);
-            dy = (b * normX) + (d * normY);
-            dist = Math.sqrt((dx * dx) + (dy * dy));
+            screenX = (a * normX) + (c * normY);
+            screenY = (b * normX) + (d * normY);
+            screenDist = Math.sqrt((screenX * screenX) + (screenY * screenY));
 
-            x1 = centerX + ((normX / dist) * (dist + canvasPadding));
-            y1 = centerY + ((normY / dist) * (dist + canvasPadding));
+            paddingFactor = 1 + (screenPadding / screenDist);
+
+            x1 = centerX + (normX * paddingFactor);
+            y1 = centerY + (normY * paddingFactor);
 
             normX = x2 - centerX;
             normY = y2 - centerY;
 
-            dx = (a * normX) + (c * normY);
-            dy = (b * normX) + (d * normY);
-            dist = Math.sqrt((dx * dx) + (dy * dy));
+            screenX = (a * normX) + (c * normY);
+            screenY = (b * normX) + (d * normY);
+            screenDist = Math.sqrt((screenX * screenX) + (screenY * screenY));
 
-            x2 = centerX + ((normX / dist) * (dist + canvasPadding));
-            y2 = centerY + ((normY / dist) * (dist + canvasPadding));
+            paddingFactor = 1 + (screenPadding / screenDist);
+
+            x2 = centerX + (normX * paddingFactor);
+            y2 = centerY + (normY * paddingFactor);
         }
 
         context.save();
