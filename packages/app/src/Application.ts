@@ -80,7 +80,7 @@ export class Application
      * @param {boolean} [options.antialias=false] - Sets antialias
      * @param {boolean} [options.preserveDrawingBuffer=false] - Enables drawing buffer preservation, enable this if you
      *  need to call toDataUrl on the WebGL context.
-     * @param {number} [options.resolution=1] - The resolution / device pixel ratio of the renderer, retina would be 2.
+     * @param {number} [options.resolution=PIXI.settings.RESOLUTION] - The resolution / device pixel ratio of the renderer.
      * @param {boolean} [options.forceCanvas=false] - prevents selection of WebGL renderer, even if such is present, this
      *   option only is available when using **pixi.js-legacy** or **@pixi/canvas-renderer** modules, otherwise
      *   it is ignored.
