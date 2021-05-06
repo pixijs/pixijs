@@ -25,7 +25,7 @@ export class TextureGCSystem implements ISystem
     public checkCount: number;
     public maxIdle: number;
     public checkCountMax: number;
-    public mode: number;
+    public mode: GC_MODES;
     private renderer: Renderer;
 
     /**

@@ -5,6 +5,7 @@ import { BufferResource } from './resources/BufferResource';
 import { autoDetectResource } from './resources/autoDetectResource';
 import { settings } from '@pixi/settings';
 
+import type { MSAA_QUALITY } from '@pixi/constants';
 import type { IAutoDetectOptions } from './resources/autoDetectResource';
 import type { GLTexture } from './GLTexture';
 
@@ -28,6 +29,7 @@ export interface IBaseTextureOptions<RO = any> {
     type?: TYPES;
     target?: TARGETS;
     resolution?: number;
+    multisample?: MSAA_QUALITY;
     resourceOptions?: RO;
     pixiIdPrefix?: string;
 }
@@ -90,7 +92,7 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
      * @param {PIXI.ALPHA_MODES} [options.alphaMode=PIXI.ALPHA_MODES.UNPACK] - Pre multiply the image alpha
      * @param {number} [options.width=0] - Width of the texture
      * @param {number} [options.height=0] - Height of the texture
-     * @param {number} [options.resolution] - Resolution of the base texture
+     * @param {number} [options.resolution=PIXI.settings.RESOLUTION] - Resolution of the base texture
      * @param {object} [options.resourceOptions] - Optional resource options,
      *        see {@link PIXI.autoDetectResource autoDetectResource}
      */
@@ -113,13 +115,16 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
         /**
          * The resolution / device pixel ratio of the texture
          *
+         * @readonly
          * @member {number}
+         * @default PIXI.settings.RESOLUTION
          */
         this.resolution = resolution || settings.RESOLUTION;
 
         /**
          * The width of the base texture set when the image has loaded
          *
+         * @readonly
          * @member {number}
          */
         this.width = Math.round((width || 0) * this.resolution) / this.resolution;
@@ -150,7 +155,8 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
 
         /**
          * How the texture wraps
-         * @member {number}
+         * @member {PIXI.WRAP_MODES}
+         * @default PIXI.settings.WRAP_MODE
          */
         this.wrapMode = wrapMode || settings.WRAP_MODE;
 

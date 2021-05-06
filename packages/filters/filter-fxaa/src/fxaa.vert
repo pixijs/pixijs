@@ -11,7 +11,7 @@ varying vec2 v_rgbM;
 
 varying vec2 vFragCoord;
 
-uniform vec4 inputPixel;
+uniform vec4 inputSize;
 uniform vec4 outputFrame;
 
 vec4 filterVertexPosition( void )
@@ -38,5 +38,5 @@ void main(void) {
 
    vFragCoord = aVertexPosition * outputFrame.zw;
 
-   texcoords(vFragCoord, inputPixel.zw, v_rgbNW, v_rgbNE, v_rgbSW, v_rgbSE, v_rgbM);
+   texcoords(vFragCoord, inputSize.zw, v_rgbNW, v_rgbNE, v_rgbSW, v_rgbSE, v_rgbM);
 }

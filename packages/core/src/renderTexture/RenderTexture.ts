@@ -4,7 +4,7 @@ import { Texture } from '../textures/Texture';
 import type { Rectangle } from '@pixi/math';
 import type { Framebuffer } from '../framebuffer/Framebuffer';
 import type { IBaseTextureOptions } from '../textures/BaseTexture';
-import type { SCALE_MODES } from '@pixi/constants';
+import type { MSAA_QUALITY, SCALE_MODES } from '@pixi/constants';
 import { deprecation } from '@pixi/utils';
 
 /**
@@ -99,6 +99,22 @@ export class RenderTexture extends Texture
     }
 
     /**
+     * Shortcut to `this.framebuffer.multisample`.
+     *
+     * @member {PIXI.MSAA_QUALITY}
+     * @default PIXI.MSAA_QUALITY.NONE
+     */
+    get multisample(): MSAA_QUALITY
+    {
+        return this.framebuffer.multisample;
+    }
+
+    set multisample(value: MSAA_QUALITY)
+    {
+        this.framebuffer.multisample = value;
+    }
+
+    /**
      * Resizes the RenderTexture.
      *
      * @param {number} desiredWidth - The desired width to resize to.
@@ -151,7 +167,7 @@ export class RenderTexture extends Texture
      * @param {number} [width]
      * @param {number} [height]
      * @param {PIXI.SCALE_MODES} [scaleMode=PIXI.settings.SCALE_MODE]
-     * @param {number} [resolution=1]
+     * @param {number} [resolution=PIXI.settings.FILTER_RESOLUTION]
      */
     static create(width: number, height: number, scaleMode?: SCALE_MODES, resolution?: number): RenderTexture;
 
@@ -162,8 +178,11 @@ export class RenderTexture extends Texture
      * @param {object} [options] - Options
      * @param {number} [options.width=100] - The width of the render texture
      * @param {number} [options.height=100] - The height of the render texture
-     * @param {number} [options.scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES} for possible values
-     * @param {number} [options.resolution=1] - The resolution / device pixel ratio of the texture being generated
+     * @param {PIXI.SCALE_MODES} [options.scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES}
+     *    for possible values
+     * @param {number} [options.resolution=PIXI.settings.RESOLUTION] - The resolution / device pixel ratio of the texture
+     *    being generated
+     * @param {PIXI.MSAA_QUALITY} [options.multisample=PIXI.MSAA_QUALITY.NONE] - The number of samples of the frame buffer
      * @return {PIXI.RenderTexture} The new render texture
      */
     static create(options?: IBaseTextureOptions): RenderTexture;

@@ -23,7 +23,7 @@ export class CanvasRenderTarget
     /**
      * @param width - the width for the newly created canvas
      * @param height - the height for the newly created canvas
-     * @param {number} [resolution=1] - The resolution / device pixel ratio of the canvas
+     * @param {number} [resolution=PIXI.settings.RESOLUTION] - The resolution / device pixel ratio of the canvas
      */
     constructor(width: number, height: number, resolution?: number)
     {
