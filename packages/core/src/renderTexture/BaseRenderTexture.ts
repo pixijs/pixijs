@@ -1,6 +1,6 @@
 import { BaseTexture } from '../textures/BaseTexture';
 import { Framebuffer } from '../framebuffer/Framebuffer';
-import { MIPMAP_MODES } from '@pixi/constants';
+import { MIPMAP_MODES, MSAA_QUALITY } from '@pixi/constants';
 
 import type { IBaseTextureOptions } from '../textures/BaseTexture';
 import type { MaskData } from '../mask/MaskData';
@@ -62,6 +62,7 @@ export class BaseRenderTexture extends BaseTexture
      *   for possible values.
      * @param {number} [options.resolution=PIXI.settings.RESOLUTION] - The resolution / device pixel ratio
      *   of the texture being generated.
+     * @param {PIXI.MSAA_QUALITY} [options.multisample=PIXI.MSAA_QUALITY.NONE] - The number of samples of the frame buffer.
      */
     constructor(options?: IBaseTextureOptions)
     {
@@ -80,7 +81,7 @@ export class BaseRenderTexture extends BaseTexture
 
         super(null, options);
 
-        const { width, height } = options || {};
+        const { width, height, multisample } = options || {};
 
         // Set defaults
         this.mipmap = MIPMAP_MODES.OFF;
@@ -92,6 +93,7 @@ export class BaseRenderTexture extends BaseTexture
 
         this.framebuffer = new Framebuffer(this.width * this.resolution, this.height * this.resolution)
             .addColorTexture(0, this);
+        this.framebuffer.multisample = multisample !== undefined ? multisample : MSAA_QUALITY.NONE;
 
         // TODO - could this be added the systems?
 

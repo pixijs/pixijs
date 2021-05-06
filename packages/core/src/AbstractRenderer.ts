@@ -1,6 +1,6 @@
 import { hex2string, hex2rgb, EventEmitter, deprecation } from '@pixi/utils';
 import { Matrix, Rectangle } from '@pixi/math';
-import { RENDERER_TYPE } from '@pixi/constants';
+import { MSAA_QUALITY, RENDERER_TYPE } from '@pixi/constants';
 import { settings } from '@pixi/settings';
 import { RenderTexture } from './renderTexture/RenderTexture';
 
@@ -306,10 +306,11 @@ export abstract class AbstractRenderer extends EventEmitter
      * @param resolution - The resolution / device pixel ratio of the texture being generated.
      * @param [region] - The region of the displayObject, that shall be rendered,
      *        if no region is specified, defaults to the local bounds of the displayObject.
+     * @param multisample - The number of samples of the frame buffer.
      * @return A texture of the graphics object.
      */
     generateTexture(displayObject: IRenderableObject,
-        scaleMode?: SCALE_MODES, resolution?: number, region?: Rectangle): RenderTexture
+        scaleMode?: SCALE_MODES, resolution?: number, region?: Rectangle, multisample?: MSAA_QUALITY): RenderTexture
     {
         region = region || (displayObject as IRenderableContainer).getLocalBounds(null, true);
 
@@ -323,6 +324,7 @@ export abstract class AbstractRenderer extends EventEmitter
                 height: region.height | 0,
                 scaleMode,
                 resolution,
+                multisample,
             });
 
         tempMatrix.tx = -region.x;

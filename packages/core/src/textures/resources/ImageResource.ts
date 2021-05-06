@@ -207,11 +207,19 @@ export class ImageResource extends BaseImageResource
             return Promise.resolve(this);
         }
 
-        this._process = (self.createImageBitmap as any)(source,
-            0, 0, source.width, source.height,
+        const createImageBitmap = self.createImageBitmap as any;
+        const cors = !source.crossOrigin || source.crossOrigin === 'anonymous';
+
+        this._process = fetch(source.src,
             {
-                premultiplyAlpha: this.alphaMode === ALPHA_MODES.UNPACK ? 'premultiply' : 'none',
+                mode: cors ? 'cors' : 'no-cors'
             })
+            .then((r) => r.blob())
+            .then((blob) => createImageBitmap(blob,
+                0, 0, source.width, source.height,
+                {
+                    premultiplyAlpha: this.alphaMode === ALPHA_MODES.UNPACK ? 'premultiply' : 'none',
+                }))
             .then((bitmap: ImageBitmap) =>
             {
                 if (this.destroyed)
