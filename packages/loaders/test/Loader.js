@@ -35,6 +35,8 @@ describe('PIXI.Loader', function ()
 
     it('should basic load an image using the TextureLoader', function (done)
     {
+        this.timeout(10000);
+
         const loader = new Loader();
         const name = createRandomName();
         const url = `${this.baseUrl}/bunny.png`;
