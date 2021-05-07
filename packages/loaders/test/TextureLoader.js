@@ -23,8 +23,6 @@ describe('PIXI.TextureLoader', function ()
 
     it('should create a texture if resource is an image', function (done)
     {
-        this.timeout(10000);
-
         const name = `${(Math.random() * 10000) | 0}`;
         const url = `http://localhost/doesnt_exist/${name}`;
         const data = new Image();
