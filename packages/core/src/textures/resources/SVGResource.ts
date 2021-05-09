@@ -253,7 +253,7 @@ export class SVGResource extends BaseImageResource
      *
      * @example &lt;?xml version="1.0" encoding="utf-8" ?&gt;&lt;!-- image/svg --&gt;&lt;svg
      */
-    static SVG_XML = /^(<\?xml[^?]+\?>)?\s*(<!--[^(-->)]*-->)?\s*\<svg/gm;
+    static SVG_XML = /^(<\?xml[^?]+\?>)?\s*(<!--[^(-->)]*-->)?\s*\<svg/m;
 
     /**
      * RegExp for SVG size.
