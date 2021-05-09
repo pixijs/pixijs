@@ -241,15 +241,18 @@ export class SVGResource extends BaseImageResource
     static test(source: unknown, extension?: string): boolean
     {
         // URL file extension is SVG
-        if (extension === 'svg') {
+        if (extension === 'svg')
+        {
             return true;
         }
         // Skip if the source isn't a string
-        if (typeof source !== 'string') {
+        if (typeof source !== 'string')
+        {
             return false;
         }
         // Source is SVG data-uri
-        if ((/^data:image\/svg\+xml(;(charset=utf8|utf8))?;base64/).test(source)) {
+        if ((/^data:image\/svg\+xml(;(charset=utf8|utf8))?;base64/).test(source))
+        {
             return true;
         }
 

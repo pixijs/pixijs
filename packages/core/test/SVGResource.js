@@ -192,14 +192,17 @@ describe('PIXI.SVGResource', function ()
         });
     });
 
-    describe('test', function () {
-        it('should pass simple SVG document', function () {
+    describe('test', function ()
+    {
+        it('should pass simple SVG document', function ()
+        {
             const didPass = SVGResource.test(`<svg></svg>`, 'xml');
 
             expect(didPass).to.equal(true);
         });
 
-        it('should pass SVG document with prolog', function () {
+        it('should pass SVG document with prolog', function ()
+        {
             const didPass = SVGResource.test(`
                 <?xml version="1.0" encoding="utf-8" ?>
                 <!-- This image/svg document is being tested! Not leaving a space at the end on purpose.-->
@@ -209,7 +212,8 @@ describe('PIXI.SVGResource', function ()
             expect(didPass).to.equal(true);
         });
 
-        it('should pass SVG document with only prolog, no comments', function () {
+        it('should pass SVG document with only prolog, no comments', function ()
+        {
             const didPass = SVGResource.test(
                 `<?xml version="1.0" encoding="utf-8" ?><svg>Hello world</svg>`,
                 'xml');
@@ -217,7 +221,8 @@ describe('PIXI.SVGResource', function ()
             expect(didPass).to.equal(true);
         });
 
-        it('should not pass HTML fragment', function () {
+        it('should not pass HTML fragment', function ()
+        {
             const didPass = SVGResource.test(
                 `<html><body>This is a mistake</body></html>`,
                 'xml');
