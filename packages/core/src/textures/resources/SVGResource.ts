@@ -240,42 +240,20 @@ export class SVGResource extends BaseImageResource
      */
     static test(source: unknown, extension?: string): boolean
     {
-        // URL file extension is SVG
-        if (extension === 'svg')
-        {
-            return true;
-        }
-        // Skip if the source isn't a string
-        if (typeof source !== 'string')
-        {
-            return false;
-        }
-        // Source is SVG data-uri
-        if ((/^data:image\/svg\+xml(;(charset=utf8|utf8))?;base64/).test(source))
-        {
-            return true;
-        }
-
-        const XML_SPACES = /[\n ]*/;// Match newlines & spaces
-        const XML_PROLOG = /<\?xml[^?]+\?>/;// Match XML prolog <?xml ... ?>
-        const XML_COMMENT_NEWLINE = /([\n ]|(<!--[^(-->)]*-->))*/;// Match newlines, spaces, or <!-- comments -->
-
-        // Strip out initial spaces/newlines
-        const sourceTrimmed = source[0] === '\n' || source[0] === '' ? source.replace(XML_SPACES, '') : source;
-
-        // Strip out <?xml prolog
-        const sourceWithoutProlog = sourceTrimmed.startsWith('<?xml')
-            ? sourceTrimmed.replace(XML_PROLOG, '')
-            : sourceTrimmed;
-
-        // Strip out all initial comments and newlines/spaces
-        const sourceDocumentRoot = sourceWithoutProlog.match(XML_COMMENT_NEWLINE)?.index === 0
-            ? sourceWithoutProlog.replace(XML_COMMENT_NEWLINE, '')
-            : sourceWithoutProlog;
-
-        // Check if the XML document starts with a <svg tag
-        return sourceDocumentRoot.startsWith('<svg');
+        // url file extension is SVG
+        return extension === 'svg'
+            // source is SVG data-uri
+            || (typeof source === 'string' && (/^data:image\/svg\+xml(;(charset=utf8|utf8))?;base64/).test(source))
+            // source is SVG inline
+            || (typeof source === 'string' && !!source.match(SVGResource.SVG_XML));
     }
+
+    /**
+     * RegExp for SVG XML document.
+     *
+     * @example &lt;?xml version="1.0" encoding="utf-8" ?&gt;&lt;!-- image/svg --&gt;&lt;svg
+     */
+    static SVG_XML = /^(<\?xml[^?]+\?>)?\s*(<!--[^(-->)]*-->)?\s*\<svg/gm
 
     /**
      * RegExp for SVG size.
