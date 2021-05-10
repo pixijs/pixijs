@@ -1,6 +1,6 @@
 {
   "name": "@pixi/canvas-particles",
-  "version": "6.0.2",
+  "version": "6.0.3",
   "main": "dist/cjs/canvas-particles.js",
   "module": "dist/esm/canvas-particles.js",
   "bundle": "dist/browser/canvas-particles.js",
@@ -26,6 +26,6 @@
     "*.d.ts"
   ],
   "dependencies": {
-    "@pixi/particles": "6.0.2"
+    "@pixi/particles": "6.0.3"
   }
 }
