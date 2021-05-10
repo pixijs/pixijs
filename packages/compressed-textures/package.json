@@ -37,6 +37,7 @@
   "dependencies": {
     "@pixi/constants": "6.0.2",
     "@pixi/core": "6.0.2",
-    "@pixi/loaders": "6.0.2"
+    "@pixi/loaders": "6.0.2",
+    "@pixi/utils": "6.0.2"
   }
 }
