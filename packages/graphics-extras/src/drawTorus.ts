@@ -5,9 +5,7 @@ import type { Graphics } from '@pixi/graphics';
  *
  * _Note: Only available with **@pixi/graphics-extras**._
  *
- * @instance
- * @memberof PIXI.Graphics
- * @method drawTorus
+ * @method PIXI.Graphics#drawTorus
  * @param {number} x - X position
  * @param {number} y - Y position
  * @param {number} innerRadius - Inner circle radius

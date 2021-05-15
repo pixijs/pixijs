@@ -791,7 +791,7 @@ export class GraphicsGeometry extends BatchGeometry
 
                     nextTexture._batchEnabled = TICK;
                     nextTexture._batchLocation = textureCount;
-                    nextTexture.wrapMode = 10497;
+                    nextTexture.wrapMode = WRAP_MODES.REPEAT;
 
                     currentGroup.texArray.elements[currentGroup.texArray.count++] = nextTexture;
                     textureCount++;

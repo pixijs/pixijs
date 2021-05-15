@@ -45,9 +45,7 @@ class Star extends Polygon
  *
  * _Note: Only available with **@pixi/graphics-extras**._
  *
- * @instance
- * @memberof PIXI.Graphics
- * @method drawStar
+ * @method PIXI.Graphics#drawStar
  * @param {number} x - Center X position of the star
  * @param {number} y - Center Y position of the star
  * @param {number} points - The number of points of the star, must be > 1

@@ -29,6 +29,34 @@ describe('PIXI.TilingSprite', function ()
         });
     });
 
+    describe('.from()', function ()
+    {
+        it('should build from texture', function ()
+        {
+            const sprite = TilingSprite.from(Texture.EMPTY, {
+                width: 1,
+                height: 2,
+            });
+
+            sprite.destroy();
+        });
+
+        it('should build a texture from source', function ()
+        {
+            const canvas = document.createElement('canvas');
+
+            canvas.width = 10;
+            canvas.height = 10;
+
+            const sprite = TilingSprite.from(canvas, {
+                width: 10,
+                height: 10,
+            });
+
+            sprite.destroy(true);
+        });
+    });
+
     describe('.getLocalBounds()', function ()
     {
         before(function ()
