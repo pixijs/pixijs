@@ -103,7 +103,8 @@ describe('PIXI.Geometry', function ()
         }
     });
 
-    it('should correctly merge the index buffers of geometries with different length', function () {
+    it('should correctly merge the index buffers of geometries with different length', function ()
+    {
         const geom0 = new Geometry()
             .addAttribute('aVertexPosition', [0, 0, 1, 1, 2, 2], 2)
             .addIndex([0, 1, 2]);
