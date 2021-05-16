@@ -306,10 +306,8 @@ export class FilterSystem implements ISystem
 
         const lastState = filterStack[filterStack.length - 1];
 
-        if (state.renderTexture.framebuffer.multisample > 1)
-        {
-            this.renderer.framebuffer.blit();
-        }
+        // we need to blit state.renderTexture before we can use it as input
+        this.renderer.framebuffer.blit();
 
         if (filters.length === 1)
         {
@@ -335,6 +333,7 @@ export class FilterSystem implements ISystem
             {
                 filters[i].apply(this, flip, flop, CLEAR_MODES.CLEAR, state);
 
+                // blit flop because it's used as input immediately once it becomes flip
                 this.renderer.framebuffer.blit();
 
                 const t = flip;
@@ -348,6 +347,8 @@ export class FilterSystem implements ISystem
             this.returnFilterTexture(flip);
             this.returnFilterTexture(flop);
         }
+
+        // lastState.renderTexture is blitted when lastState is popped
 
         state.clear();
         this.statePool.push(state);
