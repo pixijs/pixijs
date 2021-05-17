@@ -89,14 +89,14 @@ Object.defineProperties(DisplayObject.prototype, {
     },
 
     /**
-     * The number of samples to use for cacheAsBitmap. By default this will use PIXI.MSAA_QUALITY.HIGH
-     * if the renderer has antialias enabled; otherwise it will use PIXI.MSAA_QUALITY.NONE by default.
-     * If set to `undefined`, it will use the default as described.
+     * The number of samples to use for cacheAsBitmap. By default multisampling is disabled.
+     * If set to `undefined`, this will use `PIXI.MSAA_QUALITY.HIGH` if the renderer has
+     * antialias enabled; otherwise it will use `PIXI.MSAA_QUALITY.NONE`.
      * If `cacheAsBitmap` is set to `true`, this will re-render with the new multisample.
      *
      * @member {number} cacheAsBitmapMultisample
      * @memberof PIXI.DisplayObject#
-     * @default undefined
+     * @default PIXI.MSAA_QUALITY.NONE
      */
     cacheAsBitmapMultisample: {
         get(): MSAA_QUALITY
