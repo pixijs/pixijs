@@ -12,7 +12,7 @@ const _tempMatrix = new Matrix();
 DisplayObject.prototype._cacheAsBitmap = false;
 DisplayObject.prototype._cacheData = null;
 DisplayObject.prototype._cacheAsBitmapResolution = null;
-DisplayObject.prototype._cacheAsBitmapMultisample = undefined;
+DisplayObject.prototype._cacheAsBitmapMultisample = MSAA_QUALITY.NONE;
 
 // figured there's no point adding ALL the extra variables to prototype.
 // this model can hold the information needed. This can also be generated on demand as
