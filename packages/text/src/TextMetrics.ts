@@ -652,7 +652,7 @@ export class TextMetrics
         const metricsString = TextMetrics.METRICS_STRING + TextMetrics.BASELINE_SYMBOL;
         const width = Math.ceil(context.measureText(metricsString).width);
         let baseline = Math.ceil(context.measureText(TextMetrics.BASELINE_SYMBOL).width);
-        const height = TextMetrics.HEIGHT_MULTIPLIER * baseline;
+        const height = Math.ceil(TextMetrics.HEIGHT_MULTIPLIER * baseline);
 
         baseline = baseline * TextMetrics.BASELINE_MULTIPLIER | 0;
 

@@ -15,6 +15,7 @@ import {
     Texture,
 } from '@pixi/core';
 
+import { isPolygonClockwise } from './utils/isPolygonClockwise';
 import { DRAW_MODES, WRAP_MODES } from '@pixi/constants';
 import { SHAPES, Point, Matrix } from '@pixi/math';
 import { GraphicsData } from './GraphicsData';
@@ -790,7 +791,7 @@ export class GraphicsGeometry extends BatchGeometry
 
                     nextTexture._batchEnabled = TICK;
                     nextTexture._batchLocation = textureCount;
-                    nextTexture.wrapMode = 10497;
+                    nextTexture.wrapMode = WRAP_MODES.REPEAT;
 
                     currentGroup.texArray.elements[currentGroup.texArray.count++] = nextTexture;
                     textureCount++;
@@ -940,7 +941,14 @@ export class GraphicsGeometry extends BatchGeometry
 
                 if (type === SHAPES.POLY)
                 {
-                    lineWidth = lineWidth * (0.5 + Math.abs(0.5 - alignment));
+                    if (isPolygonClockwise(shape as Polygon))
+                    {
+                        lineWidth = lineWidth * (1 - alignment);
+                    }
+                    else
+                    {
+                        lineWidth = lineWidth * alignment;
+                    }
                 }
                 else
                 {

@@ -102,4 +102,18 @@ describe('PIXI.Geometry', function ()
             renderer.destroy();
         }
     });
+
+    it('should correctly merge the index buffers of geometries with different length', function ()
+    {
+        const geom0 = new Geometry()
+            .addAttribute('aVertexPosition', [0, 0, 1, 1, 2, 2], 2)
+            .addIndex([0, 1, 2]);
+        const geom1 = new Geometry()
+            .addAttribute('aVertexPosition', [0, 0, 1, 1, 2, 2, 3, 3], 2)
+            .addIndex([0, 1, 2, 3]);
+
+        const geom = Geometry.merge([geom0, geom1]);
+
+        expect([...geom.getIndex().data]).to.have.members([0, 1, 2, 3, 4, 5, 6]);
+    });
 });
