@@ -66,10 +66,17 @@ export const uniformParsers: IUniformParser[] = [
             `
                 var ${name}_matrix = uv.${name}.toArray(true);
 
-                for(var i = 0; i < 9; i++)
-                {
-                    data[offset + i] = ${name}_matrix[i];
-                }
+                data[offset] = ${name}_matrix[0];
+                data[offset+1] = ${name}_matrix[1];
+                data[offset+2] = ${name}_matrix[2];
+        
+                data[offset + 4] = ${name}_matrix[3];
+                data[offset + 5] = ${name}_matrix[4];
+                data[offset + 6] = ${name}_matrix[5];
+        
+                data[offset + 8] = ${name}_matrix[6];
+                data[offset + 9] = ${name}_matrix[7];
+                data[offset + 10] = ${name}_matrix[8];
             `
         ,
 
