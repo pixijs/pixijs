@@ -1,3 +1,5 @@
+import { FORMATS, TYPES } from '@pixi/constants';
+
 /**
  * Internal texture for WebGL context
  * @class
@@ -66,13 +68,13 @@ export class GLTexture
          * Type copied from baseTexture
          * @member {number}
          */
-        this.type = 6408;
+        this.type = TYPES.UNSIGNED_BYTE;
 
         /**
          * Type copied from baseTexture
          * @member {number}
          */
-        this.internalFormat = 5121;
+        this.internalFormat = FORMATS.RGBA;
 
         this.samplerType = 0;
     }
