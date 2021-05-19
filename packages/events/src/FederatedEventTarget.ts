@@ -113,6 +113,9 @@ export const FederatedDisplayObject: Omit<
     hitArea: null,
 
     /**
+     * Unlike `on` or `addListener` which are methods from EventEmitter, `addEventListener`
+     * seeks to be compatible with the DOM's `addEventListener` with support for options.
+     * **IMPORTANT:** _Only_ available if using the `@pixi/events` package.
      * @memberof PIXI.DisplayObject
      * @param type - The type of event to listen to.
      * @param listener - The listener callback or object.
@@ -159,6 +162,9 @@ export const FederatedDisplayObject: Omit<
     },
 
     /**
+     * Unlike `off` or `removeListener` which are methods from EventEmitter, `removeEventListener`
+     * seeks to be compatible with the DOM's `removeEventListener` with support for options.
+     * **IMPORTANT:** _Only_ available if using the `@pixi/events` package.
      * @memberof PIXI.DisplayObject
      * @param type - The type of event the listener is bound to.
      * @param listener - The listener callback or object.
@@ -185,6 +191,7 @@ export const FederatedDisplayObject: Omit<
      *
      * The target of the event is set to `this` and the `defaultPrevented` flag is cleared before dispatch.
      *
+     * **IMPORTANT:** _Only_ available if using the `@pixi/events` package.
      * @memberof PIXI.DisplayObject
      * @param e - The event to dispatch.
      * @return Whether the {@link PIXI.FederatedEvent.preventDefault preventDefault}() method was not invoked.
