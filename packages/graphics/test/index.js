@@ -513,6 +513,54 @@ describe('PIXI.Graphics', function ()
         });
     });
 
+    describe('drawing same rectangle with drawPolygon and drawRect', function ()
+    {
+        before(function ()
+        {
+            this.width = 100;
+            this.height = 100;
+            this.points = [
+                new Point(0, 0),
+                new Point(this.width, 0),
+                new Point(this.width, this.height),
+                new Point(0, this.height)
+            ];
+        });
+
+        it('should have the same bounds for any line alignment value', function ()
+        {
+            const polyGraphics = new Graphics();
+            const rectGraphics = new Graphics();
+
+            const lineWidth = 10;
+            const lineAlignments = [0, 0.2, 0.5, 1];
+
+            lineAlignments.forEach((lineAlignment) =>
+            {
+                polyGraphics.clear();
+                rectGraphics.clear();
+
+                polyGraphics.beginFill(0x0000ff);
+                polyGraphics.lineStyle(lineWidth, 0xff0000, 1, lineAlignment);
+                polyGraphics.drawPolygon(this.points);
+                polyGraphics.endFill();
+
+                rectGraphics.beginFill(0x0000ff);
+                rectGraphics.lineStyle(lineWidth, 0xff0000, 1, lineAlignment);
+                rectGraphics.drawRect(0, 0, this.width, this.height);
+                rectGraphics.endFill();
+
+                const polyBounds = polyGraphics.getBounds();
+                const rectBounds = rectGraphics.getBounds();
+
+                expect(polyBounds.x).to.equal(rectBounds.x);
+                expect(polyBounds.y).to.equal(rectBounds.y);
+                expect(polyBounds.width).to.equal(rectBounds.width);
+                expect(polyBounds.height).to.equal(rectBounds.height);
+            });
+        });
+    });
+
     describe('arc', function ()
     {
         it('should draw an arc', function ()
