@@ -1,6 +1,6 @@
 {
   "name": "@pixi/mesh",
-  "version": "6.0.3",
+  "version": "6.0.4",
   "main": "dist/cjs/mesh.js",
   "module": "dist/esm/mesh.js",
   "bundle": "dist/browser/mesh.js",
@@ -25,11 +25,11 @@
     "*.d.ts"
   ],
   "dependencies": {
-    "@pixi/constants": "6.0.3",
-    "@pixi/core": "6.0.3",
-    "@pixi/display": "6.0.3",
-    "@pixi/math": "6.0.3",
-    "@pixi/settings": "6.0.3",
-    "@pixi/utils": "6.0.3"
+    "@pixi/constants": "6.0.4",
+    "@pixi/core": "6.0.4",
+    "@pixi/display": "6.0.4",
+    "@pixi/math": "6.0.4",
+    "@pixi/settings": "6.0.4",
+    "@pixi/utils": "6.0.4"
   }
 }

@@ -105,8 +105,8 @@ export class ScissorSystem extends AbstractMaskSystem
 
         let x = (((rect.x - sourceFrame.x) * sx) + destinationFrame.x) * resolution;
         let y = (((rect.y - sourceFrame.y) * sy) + destinationFrame.y) * resolution;
-        const width = rect.width * sx * resolution;
-        const height = rect.height * sy * resolution;
+        let width = rect.width * sx * resolution;
+        let height = rect.height * sy * resolution;
 
         if (transform)
         {
@@ -118,6 +118,11 @@ export class ScissorSystem extends AbstractMaskSystem
             // flipY. In future we'll have it over renderTextures as an option
             y = this.renderer.height - height - y;
         }
+
+        x = Math.round(x);
+        y = Math.round(y);
+        width = Math.round(width);
+        height = Math.round(height);
 
         this.renderer.gl.scissor(x, y, width, height);
     }
