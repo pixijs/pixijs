@@ -438,7 +438,7 @@ export class Geometry
                     geometryOut.indexBuffer.data[j + offset2] += offset;
                 }
 
-                offset += geometry.buffers[bufferIndexToCount].data.length / (stride);
+                offset += geometries[i].buffers[bufferIndexToCount].data.length / (stride);
                 offset2 += indexBufferData.length;
             }
         }
