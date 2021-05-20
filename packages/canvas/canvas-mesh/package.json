@@ -1,6 +1,6 @@
 {
   "name": "@pixi/canvas-mesh",
-  "version": "6.0.3",
+  "version": "6.0.4",
   "main": "dist/cjs/canvas-mesh.js",
   "module": "dist/esm/canvas-mesh.js",
   "bundle": "dist/browser/canvas-mesh.js",
@@ -25,15 +25,15 @@
     "*.d.ts"
   ],
   "dependencies": {
-    "@pixi/canvas-display": "6.0.3",
-    "@pixi/canvas-renderer": "6.0.3",
-    "@pixi/constants": "6.0.3",
-    "@pixi/mesh": "6.0.3",
-    "@pixi/mesh-extras": "6.0.3",
-    "@pixi/settings": "6.0.3"
+    "@pixi/canvas-display": "6.0.4",
+    "@pixi/canvas-renderer": "6.0.4",
+    "@pixi/constants": "6.0.4",
+    "@pixi/mesh": "6.0.4",
+    "@pixi/mesh-extras": "6.0.4",
+    "@pixi/settings": "6.0.4"
   },
   "devDependencies": {
-    "@pixi/core": "6.0.3",
-    "@pixi/sprite": "6.0.3"
+    "@pixi/core": "6.0.4",
+    "@pixi/sprite": "6.0.4"
   }
 }
