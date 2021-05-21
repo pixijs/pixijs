@@ -89,10 +89,8 @@ Object.defineProperties(DisplayObject.prototype, {
     },
 
     /**
-     * The number of samples to use for cacheAsBitmap. By default multisampling is disabled.
-     * If set to `undefined`, this will use `PIXI.MSAA_QUALITY.HIGH` if the renderer has
-     * antialias enabled; otherwise it will use `PIXI.MSAA_QUALITY.NONE`.
-     * If `cacheAsBitmap` is set to `true`, this will re-render with the new multisample.
+     * The number of samples to use for cacheAsBitmap.
+     * If `cacheAsBitmap` is set to `true`, this will re-render with the new number of samples.
      *
      * @member {number} cacheAsBitmapMultisample
      * @memberof PIXI.DisplayObject#
@@ -280,16 +278,8 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
         width: bounds.width,
         height: bounds.height,
         resolution: this.cacheAsBitmapResolution || renderer.resolution,
+        multisample: this.cacheAsBitmapMultisample,
     });
-
-    if (this.cacheAsBitmapMultisample !== undefined)
-    {
-        renderTexture.framebuffer.multisample = this.cacheAsBitmapMultisample;
-    }
-    else if (renderer.gl.getContextAttributes().antialias)
-    {
-        renderTexture.framebuffer.multisample = MSAA_QUALITY.HIGH;
-    }
 
     const textureCacheId = `cacheAsBitmap_${uid()}`;
 
