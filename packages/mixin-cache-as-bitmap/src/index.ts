@@ -4,6 +4,7 @@ import { Container, DisplayObject, IDestroyOptions } from '@pixi/display';
 import { IPointData, Matrix, Rectangle } from '@pixi/math';
 import { uid } from '@pixi/utils';
 import { settings } from '@pixi/settings';
+import { MSAA_QUALITY } from '@pixi/constants';
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
 
 const _tempMatrix = new Matrix();
@@ -11,6 +12,7 @@ const _tempMatrix = new Matrix();
 DisplayObject.prototype._cacheAsBitmap = false;
 DisplayObject.prototype._cacheData = null;
 DisplayObject.prototype._cacheAsBitmapResolution = null;
+DisplayObject.prototype._cacheAsBitmapMultisample = MSAA_QUALITY.NONE;
 
 // figured there's no point adding ALL the extra variables to prototype.
 // this model can hold the information needed. This can also be generated on demand as
@@ -80,6 +82,37 @@ Object.defineProperties(DisplayObject.prototype, {
             if (this.cacheAsBitmap)
             {
                 // Toggle to re-render at the new resolution
+                this.cacheAsBitmap = false;
+                this.cacheAsBitmap = true;
+            }
+        },
+    },
+
+    /**
+     * The number of samples to use for cacheAsBitmap.
+     * If `cacheAsBitmap` is set to `true`, this will re-render with the new number of samples.
+     *
+     * @member {number} cacheAsBitmapMultisample
+     * @memberof PIXI.DisplayObject#
+     * @default PIXI.MSAA_QUALITY.NONE
+     */
+    cacheAsBitmapMultisample: {
+        get(): MSAA_QUALITY
+        {
+            return this._cacheAsBitmapMultisample;
+        },
+        set(multisample: MSAA_QUALITY): void
+        {
+            if (multisample === this._cacheAsBitmapMultisample)
+            {
+                return;
+            }
+
+            this._cacheAsBitmapMultisample = multisample;
+
+            if (this.cacheAsBitmap)
+            {
+                // Toggle to re-render with new multisample
                 this.cacheAsBitmap = false;
                 this.cacheAsBitmap = true;
             }
@@ -245,6 +278,7 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
         width: bounds.width,
         height: bounds.height,
         resolution: this.cacheAsBitmapResolution || renderer.resolution,
+        multisample: this.cacheAsBitmapMultisample,
     });
 
     const textureCacheId = `cacheAsBitmap_${uid()}`;
@@ -261,6 +295,7 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
     this.render = this._cacheData.originalRender;
 
     renderer.render(this, { renderTexture, clear: true, transform: m, skipUpdateTransform: false });
+    renderer.framebuffer.blit();
 
     // now restore the state be setting the new properties
     renderer.projection.transform = cachedProjectionTransform;
