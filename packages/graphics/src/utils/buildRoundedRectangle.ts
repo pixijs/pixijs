@@ -100,7 +100,10 @@ export const buildRoundedRectangle: IShapeBuildCommand = {
         const height = rrectData.height;
 
         // Don't allow negative radius or greater than half the smallest width
-        const radius = Math.max(0, Math.min(rrectData.radius, Math.min(width, height) / 2));
+        // this tiny number deals with the issue that occurs when points overlap and earcut fails to triangulate the item.
+        // TODO - fix this properly, this is not very elegant.. but it works for now.
+        const maxRadius = (Math.min(width, height) / 2) - 0.0000000001;
+        const radius = Math.max(0, Math.min(rrectData.radius, maxRadius));
 
         points.length = 0;
 
@@ -131,9 +134,6 @@ export const buildRoundedRectangle: IShapeBuildCommand = {
                 x, y + height - radius,
                 points);
         }
-
-        // this tiny number deals with the issue that occurs when points overlap and earcut fails to triangulate the item.
-        // TODO - fix this properly, this is not very elegant.. but it works for now.
     },
 
     triangulate(graphicsData, graphicsGeometry)
