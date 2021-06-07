@@ -1038,7 +1038,7 @@ export class GraphicsGeometry extends BatchGeometry
         color: number,
         alpha: number,
         size: number,
-        offset: number = 0): void
+        offset = 0): void
     {
         // TODO use the premultiply bits Ivan added
         const rgb = (color >> 16) + (color & 0xff00) + ((color & 0xff) << 16);
@@ -1066,7 +1066,7 @@ export class GraphicsGeometry extends BatchGeometry
         textureIds: Array<number>,
         id: number,
         size: number,
-        offset: number = 0): void
+        offset = 0): void
     {
         textureIds.length = Math.max(textureIds.length, offset + size);
 
