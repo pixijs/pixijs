@@ -802,8 +802,8 @@ export class GraphicsGeometry extends BatchGeometry
 
             textureId = nextTexture._batchLocation;
 
-            this.addColors(colors, style.color, style.alpha, data.attribSize);
-            this.addTextureIds(textureIds, textureId, data.attribSize);
+            this.addColors(colors, style.color, style.alpha, data.attribSize, data.attribStart);
+            this.addTextureIds(textureIds, textureId, data.attribSize, data.attribStart);
         }
 
         BaseTexture._globalBatch = TICK;
@@ -1023,17 +1023,25 @@ export class GraphicsGeometry extends BatchGeometry
      * @param {number} color - Color to add
      * @param {number} alpha - Alpha to use
      * @param {number} size - Number of colors to add
+     * @param {number} offset
      */
-    protected addColors(colors: Array<number>, color: number, alpha: number, size: number): void
+    protected addColors(
+        colors: Array<number>,
+        color: number,
+        alpha: number,
+        size: number,
+        offset = 0): void
     {
         // TODO use the premultiply bits Ivan added
         const rgb = (color >> 16) + (color & 0xff00) + ((color & 0xff) << 16);
 
         const rgba =  premultiplyTint(rgb, alpha);
 
-        while (size-- > 0)
+        colors.length = Math.max(colors.length, offset + size);
+
+        for (let i = 0; i < size; i++)
         {
-            colors.push(rgba);
+            colors[offset + i] = rgba;
         }
     }
 
@@ -1044,12 +1052,19 @@ export class GraphicsGeometry extends BatchGeometry
      * @param {number[]} textureIds
      * @param {number} id
      * @param {number} size
+     * @param {number} offset
      */
-    protected addTextureIds(textureIds: Array<number>, id: number, size: number): void
+    protected addTextureIds(
+        textureIds: Array<number>,
+        id: number,
+        size: number,
+        offset = 0): void
     {
-        while (size-- > 0)
+        textureIds.length = Math.max(textureIds.length, offset + size);
+
+        for (let i = 0; i < size; i++)
         {
-            textureIds.push(id);
+            textureIds[offset + i] = id;
         }
     }
 
