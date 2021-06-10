@@ -3,9 +3,8 @@ name: Node.js CI
 on:
   push:
     branches: [ '**' ]
-    tags: [ '**' ]
   release:
-    types: [ 'created' ]
+    types: [ published ]
   pull_request:
     branches: [ '**' ]
 
@@ -45,15 +44,14 @@ jobs:
       if: env.CODECOV_TOKEN != ''
       run: codecov
 
-    # All the below are deploy-related steps
     - name: Extract Branch Name
       id: branch_name
-      if: github.event_name == 'push' && !contains(github.ref, 'refs/tags')
+      if: github.event_name == 'push'
       run: echo ::set-output name=BRANCH_NAME::${GITHUB_REF/refs\/heads\//}
 
     - name: Extract Tag Name
       id: tag_name
-      if: github.event_name == 'release' || contains(github.ref, 'refs/tags')
+      if: github.event_name == 'release'
       run: echo ::set-output name=TAG_NAME::${GITHUB_REF/refs\/tags\//}
 
     - name: Build for Distribution
@@ -65,7 +63,7 @@ jobs:
     # 3) branch A pushed directly to git
     - name: Deploy Non-Tag Branches
       uses: jakejarvis/s3-sync-action@master
-      if: github.event_name == 'push' && !contains(github.ref, 'refs/tags') && env.AWS_ACCESS_KEY_ID != ''
+      if: github.event_name == 'push' && env.AWS_ACCESS_KEY_ID != ''
       with:
         args: --acl public-read --follow-symlinks --delete --cache-control "max-age=60"
       env:
@@ -74,7 +72,7 @@ jobs:
     # Release is published and deployed into s3://bucket-name/v5.22/
     - name: Deploy Released Branches
       uses: jakejarvis/s3-sync-action@master
-      if: (github.event_name == 'release' || contains(github.ref, 'refs/tags')) && env.AWS_ACCESS_KEY_ID != ''
+      if: github.event_name == 'release' && env.AWS_ACCESS_KEY_ID != ''
       with:
         args: --acl public-read --follow-symlinks --delete --cache-control "max-age=2592000"
       env:
@@ -83,7 +81,7 @@ jobs:
     # Same release from previous deployed into s3://bucket-name/release/
     - name: Deploy Latest Release
       uses: jakejarvis/s3-sync-action@master
-      if: (github.event_name == 'release' || contains(github.ref, 'refs/tags')) && env.AWS_ACCESS_KEY_ID != ''
+      if: github.event_name == 'release' && !github.event.release.prerelease && env.AWS_ACCESS_KEY_ID != ''
       with:
         args: --acl public-read --follow-symlinks --delete --cache-control "max-age=1209600"
       env:
@@ -91,5 +89,10 @@ jobs:
 
     # Publish to NPM
     - name: Publish Latest Release
-      if: (github.event_name == 'release' || contains(github.ref, 'refs/tags')) && env.NODE_AUTH_TOKEN != ''
+      if: github.event_name == 'release' && !github.event.release.prerelease && env.NODE_AUTH_TOKEN != ''
       run: npm run publish-ci
+
+    # Publish to NPM with prerelease dist-tag
+    - name: Publish Latest Prerelease
+      if: github.event_name == 'release' && github.event.release.prerelease && env.NODE_AUTH_TOKEN != ''
+      run: npm run publish-ci -- --dist-tag prerelease
