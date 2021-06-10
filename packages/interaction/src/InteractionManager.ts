@@ -90,6 +90,7 @@ export class InteractionManager extends EventEmitter
     private _deltaTime: number;
     private _didMove: boolean;
     private _tempDisplayObject: DisplayObject;
+    private readonly _eventListenerOptions: { capture: true, passive: false };
 
     /**
      * @param {PIXI.CanvasRenderer|PIXI.Renderer} renderer - A reference to the current renderer
@@ -330,6 +331,14 @@ export class InteractionManager extends EventEmitter
          * @private
          */
         this._tempDisplayObject = new TemporaryDisplayObject();
+
+        /**
+         * An options object specifies characteristics about the event listener.
+         * @private
+         * @readonly
+         * @member {Object.<string, boolean>}
+         */
+        this._eventListenerOptions = { capture: true, passive: false };
 
         /**
          * Fired when a pointer device button (usually a mouse left-button) is pressed on the display
@@ -930,23 +939,23 @@ export class InteractionManager extends EventEmitter
          */
         if (this.supportsPointerEvents)
         {
-            self.document.addEventListener('pointermove', this.onPointerMove, true);
-            this.interactionDOMElement.addEventListener('pointerdown', this.onPointerDown, true);
+            self.document.addEventListener('pointermove', this.onPointerMove, this._eventListenerOptions);
+            this.interactionDOMElement.addEventListener('pointerdown', this.onPointerDown, this._eventListenerOptions);
             // pointerout is fired in addition to pointerup (for touch events) and pointercancel
             // we already handle those, so for the purposes of what we do in onPointerOut, we only
             // care about the pointerleave event
-            this.interactionDOMElement.addEventListener('pointerleave', this.onPointerOut, true);
-            this.interactionDOMElement.addEventListener('pointerover', this.onPointerOver, true);
-            self.addEventListener('pointercancel', this.onPointerCancel, true);
-            self.addEventListener('pointerup', this.onPointerUp, true);
+            this.interactionDOMElement.addEventListener('pointerleave', this.onPointerOut, this._eventListenerOptions);
+            this.interactionDOMElement.addEventListener('pointerover', this.onPointerOver, this._eventListenerOptions);
+            self.addEventListener('pointercancel', this.onPointerCancel, this._eventListenerOptions);
+            self.addEventListener('pointerup', this.onPointerUp, this._eventListenerOptions);
         }
         else
         {
-            self.document.addEventListener('mousemove', this.onPointerMove, true);
-            this.interactionDOMElement.addEventListener('mousedown', this.onPointerDown, true);
-            this.interactionDOMElement.addEventListener('mouseout', this.onPointerOut, true);
-            this.interactionDOMElement.addEventListener('mouseover', this.onPointerOver, true);
-            self.addEventListener('mouseup', this.onPointerUp, true);
+            self.document.addEventListener('mousemove', this.onPointerMove, this._eventListenerOptions);
+            this.interactionDOMElement.addEventListener('mousedown', this.onPointerDown, this._eventListenerOptions);
+            this.interactionDOMElement.addEventListener('mouseout', this.onPointerOut, this._eventListenerOptions);
+            this.interactionDOMElement.addEventListener('mouseover', this.onPointerOver, this._eventListenerOptions);
+            self.addEventListener('mouseup', this.onPointerUp, this._eventListenerOptions);
         }
 
         // always look directly for touch events so that we can provide original data
@@ -954,10 +963,10 @@ export class InteractionManager extends EventEmitter
         // PointerEvents whenever available
         if (this.supportsTouchEvents)
         {
-            this.interactionDOMElement.addEventListener('touchstart', this.onPointerDown, true);
-            this.interactionDOMElement.addEventListener('touchcancel', this.onPointerCancel, true);
-            this.interactionDOMElement.addEventListener('touchend', this.onPointerUp, true);
-            this.interactionDOMElement.addEventListener('touchmove', this.onPointerMove, true);
+            this.interactionDOMElement.addEventListener('touchstart', this.onPointerDown, this._eventListenerOptions);
+            this.interactionDOMElement.addEventListener('touchcancel', this.onPointerCancel, this._eventListenerOptions);
+            this.interactionDOMElement.addEventListener('touchend', this.onPointerUp, this._eventListenerOptions);
+            this.interactionDOMElement.addEventListener('touchmove', this.onPointerMove, this._eventListenerOptions);
         }
 
         this.eventsAdded = true;
@@ -989,28 +998,28 @@ export class InteractionManager extends EventEmitter
 
         if (this.supportsPointerEvents)
         {
-            self.document.removeEventListener('pointermove', this.onPointerMove, true);
-            this.interactionDOMElement.removeEventListener('pointerdown', this.onPointerDown, true);
-            this.interactionDOMElement.removeEventListener('pointerleave', this.onPointerOut, true);
-            this.interactionDOMElement.removeEventListener('pointerover', this.onPointerOver, true);
-            self.removeEventListener('pointercancel', this.onPointerCancel, true);
-            self.removeEventListener('pointerup', this.onPointerUp, true);
+            self.document.removeEventListener('pointermove', this.onPointerMove, this._eventListenerOptions);
+            this.interactionDOMElement.removeEventListener('pointerdown', this.onPointerDown, this._eventListenerOptions);
+            this.interactionDOMElement.removeEventListener('pointerleave', this.onPointerOut, this._eventListenerOptions);
+            this.interactionDOMElement.removeEventListener('pointerover', this.onPointerOver, this._eventListenerOptions);
+            self.removeEventListener('pointercancel', this.onPointerCancel, this._eventListenerOptions);
+            self.removeEventListener('pointerup', this.onPointerUp, this._eventListenerOptions);
         }
         else
         {
-            self.document.removeEventListener('mousemove', this.onPointerMove, true);
-            this.interactionDOMElement.removeEventListener('mousedown', this.onPointerDown, true);
-            this.interactionDOMElement.removeEventListener('mouseout', this.onPointerOut, true);
-            this.interactionDOMElement.removeEventListener('mouseover', this.onPointerOver, true);
-            self.removeEventListener('mouseup', this.onPointerUp, true);
+            self.document.removeEventListener('mousemove', this.onPointerMove, this._eventListenerOptions);
+            this.interactionDOMElement.removeEventListener('mousedown', this.onPointerDown, this._eventListenerOptions);
+            this.interactionDOMElement.removeEventListener('mouseout', this.onPointerOut, this._eventListenerOptions);
+            this.interactionDOMElement.removeEventListener('mouseover', this.onPointerOver, this._eventListenerOptions);
+            self.removeEventListener('mouseup', this.onPointerUp, this._eventListenerOptions);
         }
 
         if (this.supportsTouchEvents)
         {
-            this.interactionDOMElement.removeEventListener('touchstart', this.onPointerDown, true);
-            this.interactionDOMElement.removeEventListener('touchcancel', this.onPointerCancel, true);
-            this.interactionDOMElement.removeEventListener('touchend', this.onPointerUp, true);
-            this.interactionDOMElement.removeEventListener('touchmove', this.onPointerMove, true);
+            this.interactionDOMElement.removeEventListener('touchstart', this.onPointerDown, this._eventListenerOptions);
+            this.interactionDOMElement.removeEventListener('touchcancel', this.onPointerCancel, this._eventListenerOptions);
+            this.interactionDOMElement.removeEventListener('touchend', this.onPointerUp, this._eventListenerOptions);
+            this.interactionDOMElement.removeEventListener('touchmove', this.onPointerMove, this._eventListenerOptions);
         }
 
         this.interactionDOMElement = null;

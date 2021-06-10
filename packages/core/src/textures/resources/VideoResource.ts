@@ -333,6 +333,7 @@ export class VideoResource extends BaseImageResource
         if (this._isConnectedToTicker)
         {
             Ticker.shared.remove(this.update, this);
+            this._isConnectedToTicker = false;
         }
 
         const source = this.source as HTMLVideoElement;

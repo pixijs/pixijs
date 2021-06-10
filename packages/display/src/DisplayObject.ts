@@ -1,8 +1,8 @@
 import { DEG_TO_RAD, Matrix, Point, RAD_TO_DEG, Rectangle, Transform } from '@pixi/math';
 import { EventEmitter } from '@pixi/utils';
-import { Container } from './Container';
 import { Bounds } from './Bounds';
 
+import type { Container } from './Container';
 import type { Filter, MaskData, Renderer } from '@pixi/core';
 import type { IPointData, ObservablePoint } from '@pixi/math';
 import type { Dict } from '@pixi/utils';
@@ -207,7 +207,7 @@ export abstract class DisplayObject extends EventEmitter
 {
     abstract sortDirty: boolean;
 
-    public parent: DisplayObject;
+    public parent: Container;
     public worldAlpha: number;
     public transform: Transform;
     public alpha: number;
@@ -536,7 +536,7 @@ export abstract class DisplayObject extends EventEmitter
         {
             if (!this.parent)
             {
-                this.parent = this._tempDisplayObjectParent;
+                this.parent = this._tempDisplayObjectParent as Container;
                 this.updateTransform();
                 this.parent = null;
             }
@@ -631,7 +631,7 @@ export abstract class DisplayObject extends EventEmitter
             // this is mainly to avoid a parent check in the main loop. Every little helps for performance :)
             if (!this.parent)
             {
-                this.parent = this._tempDisplayObjectParent;
+                this.parent = this._tempDisplayObjectParent as Container;
                 this.displayObjectUpdateTransform();
                 this.parent = null;
             }
@@ -671,7 +671,7 @@ export abstract class DisplayObject extends EventEmitter
             // this is mainly to avoid a parent check in the main loop. Every little helps for performance :)
             if (!this.parent)
             {
-                this.parent = this._tempDisplayObjectParent;
+                this.parent = this._tempDisplayObjectParent as Container;
                 this.displayObjectUpdateTransform();
                 this.parent = null;
             }
@@ -787,13 +787,13 @@ export abstract class DisplayObject extends EventEmitter
      * elem.disableTempParent(cacheParent);
      * ```
      *
-     * @returns {PIXI.DisplayObject} current parent
+     * @returns {PIXI.Container} current parent
      */
-    enableTempParent(): DisplayObject
+    enableTempParent(): Container
     {
         const myParent = this.parent;
 
-        this.parent = this._tempDisplayObjectParent;
+        this.parent = this._tempDisplayObjectParent as Container;
 
         return myParent;
     }
@@ -801,9 +801,9 @@ export abstract class DisplayObject extends EventEmitter
     /**
      * Pair method for `enableTempParent`
      *
-     * @param {PIXI.DisplayObject} cacheParent - Actual parent of element
+     * @param {PIXI.Container} cacheParent - Actual parent of element
      */
-    disableTempParent(cacheParent: DisplayObject): void
+    disableTempParent(cacheParent: Container): void
     {
         this.parent = cacheParent;
     }

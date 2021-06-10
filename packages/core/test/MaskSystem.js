@@ -127,9 +127,9 @@ describe('PIXI.MaskSystem', function ()
 
         expect(scissor.calledTwice).to.be.true;
         // result Y is 2 because after transform y=8 h=10 and renderer H=20 is inverted , 8-18 becomes 12-2, e.g. Y=2
-        expect(scissor.args[0]).to.eql([5, 2, 12, 10]);
+        expect(scissor.args[0]).to.eql([Math.round(5), Math.round(2), Math.round(12), Math.round(10)]);
         // resolution is 3 , and Y is not reversed
-        expect(scissor.args[1]).to.eql([7.5, 12, 18, 15]);
+        expect(scissor.args[1]).to.eql([Math.round(7.5), Math.round(12), Math.round(18), Math.round(15)]);
 
         rt.destroy(true);
         this.renderer.projection.transform = null;
