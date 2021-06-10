@@ -1,5 +1,6 @@
 const { CLEAR_MODES, BLEND_MODES } = require('@pixi/constants');
 const { Rectangle, Matrix } = require('@pixi/math');
+const { expect } = require('chai');
 const { Renderer, Filter } = require('../');
 
 describe('PIXI.FilterSystem', function ()
@@ -121,5 +122,36 @@ describe('PIXI.FilterSystem', function ()
         expect(rectToString(renderer.projection.sourceFrame)).equal(rectToString(src));
         expect(rectToString(renderer.projection.destinationFrame)).equal(rectToString(dst));
         renderer.projection.transform = null;
+    });
+
+    it('should round the source frame in screen space even when rotated by 90°', function ()
+    {
+        const obj = {
+            getBounds() { return new Rectangle(0.1, 0.1, 100, 100); },
+            render() { /* Mock */ },
+        };
+        const { renderer } = this;
+        const src = new Rectangle(0, 0, 101, 101);
+        const dst = new Rectangle(0, 0, 50, 50);
+        const transform = new Matrix()
+            .translate(-50.05, -50.05)
+            .rotate(Math.PI)
+            .translate(50.05, 50.05);
+
+        renderer.projection.transform = transform;
+        renderer.renderTexture.bind(null, src, dst);
+
+        const filters = [new Filter()];
+
+        renderer.filter.push(obj, filters);
+
+        const newSrc = renderer.projection.sourceFrame;
+        const newDst = renderer.projection.destinationFrame;
+
+        // Coords are shifted by 2x (0.1, 0.1)
+        expect(newSrc.x).to.be.closeTo(-0.9, 1e-5);
+        expect(newSrc.y).to.be.closeTo(-0.9, 1e-5);
+        expect(newSrc.width).to.closeTo(101, 1e-5);
+        expect(newSrc.height).to.closeTo(101, 1e-5);
     });
 });

@@ -130,13 +130,13 @@ describe('PIXI.BitmapText', function ()
         bmpText.text = 'A A A A A A A ';
         bmpText.updateText();
 
-        expect(bmpText.textWidth).to.lessThan(bmpText.maxWidth);
+        expect(bmpText.textWidth).to.be.at.most(bmpText.maxWidth);
 
         bmpText.maxWidth = 40;
         bmpText.text = 'A A A A A A A';
         bmpText.updateText();
 
-        expect(bmpText.textWidth).to.lessThan(bmpText.maxWidth);
+        expect(bmpText.textWidth).to.be.at.most(bmpText.maxWidth);
     });
     it('letterSpacing should add extra space between characters', function ()
     {

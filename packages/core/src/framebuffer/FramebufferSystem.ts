@@ -177,8 +177,8 @@ export class FramebufferSystem implements ISystem
                 const scale = mipWidth / frame.width;
 
                 this.setViewport(
-                    (frame.x * scale) | 0,
-                    (frame.y * scale) | 0,
+                    frame.x * scale,
+                    frame.y * scale,
                     mipWidth,
                     mipHeight
                 );
@@ -221,6 +221,11 @@ export class FramebufferSystem implements ISystem
     setViewport(x: number, y: number, width: number, height: number): void
     {
         const v = this.viewport;
+
+        x = Math.round(x);
+        y = Math.round(y);
+        width = Math.round(width);
+        height = Math.round(height);
 
         if (v.width !== width || v.height !== height || v.x !== x || v.y !== y)
         {

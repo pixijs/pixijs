@@ -245,8 +245,15 @@ export class SVGResource extends BaseImageResource
             // source is SVG data-uri
             || (typeof source === 'string' && (/^data:image\/svg\+xml(;(charset=utf8|utf8))?;base64/).test(source))
             // source is SVG inline
-            || (typeof source === 'string' && source.indexOf('<svg') === 0);
+            || (typeof source === 'string' && SVGResource.SVG_XML.test(source));
     }
+
+    /**
+     * RegExp for SVG XML document.
+     *
+     * @example &lt;?xml version="1.0" encoding="utf-8" ?&gt;&lt;!-- image/svg --&gt;&lt;svg
+     */
+    static SVG_XML = /^(<\?xml[^?]+\?>)?\s*(<!--[^(-->)]*-->)?\s*\<svg/m;
 
     /**
      * RegExp for SVG size.
