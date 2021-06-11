@@ -149,7 +149,7 @@ export class ColorMatrixFilter extends Filter
      * @param {boolean} multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
      */
-    public tint(color: number, multiply: boolean): void
+    public tint(color: number, multiply?: boolean): void
     {
         const r = (color >> 16) & 0xff;
         const g = (color >> 8) & 0xff;
