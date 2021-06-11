@@ -517,7 +517,7 @@ export class FilterSystem implements ISystem
      *
      * @param {PIXI.RenderTexture} [input] - renderTexture from which size and resolution will be copied
      * @param {number} [resolution] - override resolution of the renderTexture
-     * @param {PIXI.MSAA_QUALITY} [multisample] - override multisample of the renderTexture
+     * @param {PIXI.MSAA_QUALITY} [multisample=PIXI.MSAA_QUALITY.NONE] - override multisample of the renderTexture
      * @returns {PIXI.RenderTexture}
      */
     getFilterTexture(input?: RenderTexture, resolution?: number, multisample?: MSAA_QUALITY): RenderTexture
@@ -533,7 +533,7 @@ export class FilterSystem implements ISystem
         input = input || this.activeState.renderTexture;
 
         const filterTexture = this.texturePool.getOptimalTexture(input.width, input.height, resolution || input.resolution,
-            multisample || input.framebuffer.multisample);
+            multisample || MSAA_QUALITY.NONE);
 
         filterTexture.filterFrame = input.filterFrame;
 
