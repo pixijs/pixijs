@@ -52,14 +52,16 @@ export class RenderTexturePool
      *
      * @param {number} realWidth - width of texture in pixels
      * @param {number} realHeight - height of texture in pixels
+     * @param {PIXI.MSAA_QUALITY} [multisample=MSAA_QUALITY.NONE] - number of samples of the framebuffer
      * @returns {RenderTexture}
      */
-    createTexture(realWidth: number, realHeight: number): RenderTexture
+    createTexture(realWidth: number, realHeight: number, multisample = MSAA_QUALITY.NONE): RenderTexture
     {
         const baseRenderTexture = new BaseRenderTexture(Object.assign({
             width: realWidth,
             height: realHeight,
             resolution: 1,
+            multisample,
         }, this.textureOptions));
 
         return new RenderTexture(baseRenderTexture);
@@ -87,6 +89,11 @@ export class RenderTexturePool
             minWidth = nextPow2(minWidth);
             minHeight = nextPow2(minHeight);
             key = ((minWidth & 0xFFFF) << 16) | (minHeight & 0xFFFF);
+
+            if (multisample > 1)
+            {
+                key += multisample * 0x100000000;
+            }
         }
 
         if (!this.texturePool[key])
@@ -98,12 +105,11 @@ export class RenderTexturePool
 
         if (!renderTexture)
         {
-            renderTexture = this.createTexture(minWidth, minHeight);
+            renderTexture = this.createTexture(minWidth, minHeight, multisample);
         }
 
         renderTexture.filterPoolKey = key;
         renderTexture.setResolution(resolution);
-        renderTexture.framebuffer.multisample = multisample;
 
         return renderTexture;
     }
