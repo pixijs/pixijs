@@ -143,7 +143,8 @@ export class ColorMatrixFilter extends Filter
 
     /**
      * Sets each channel on the diagonal of the color matrix.
-     * This achieves a tinting effect.
+     * This can be used to achieve a tinting effect on Containers similar to the tint field of some
+     * display objects like Sprite, Text, Graphics, and Mesh.
      *
      * @param {number} color - Color of the tint. This is a hex value.
      * @param {boolean} multiply - if true, current matrix and matrix are multiplied. If false,
