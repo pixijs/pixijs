@@ -52,7 +52,7 @@ export class RenderTexturePool
      *
      * @param {number} realWidth - width of texture in pixels
      * @param {number} realHeight - height of texture in pixels
-     * @param {PIXI.MSAA_QUALITY} [multisample=MSAA_QUALITY.NONE] - number of samples of the framebuffer
+     * @param {PIXI.MSAA_QUALITY} [multisample=PIXI.MSAA_QUALITY.NONE] - number of samples of the framebuffer
      * @returns {RenderTexture}
      */
     createTexture(realWidth: number, realHeight: number, multisample = MSAA_QUALITY.NONE): RenderTexture
@@ -74,7 +74,7 @@ export class RenderTexturePool
      * @param {number} minWidth - The minimum width of the render texture in real pixels.
      * @param {number} minHeight - The minimum height of the render texture in real pixels.
      * @param {number} [resolution=1] - The resolution of the render texture.
-     * @param {PIXI.MSAA_QUALITY} [multisample=MSAA_QUALITY.NONE] - Numer of samples of the render texture.
+     * @param {PIXI.MSAA_QUALITY} [multisample=PIXI.MSAA_QUALITY.NONE] - Number of samples of the render texture.
      * @return {PIXI.RenderTexture} The new render texture.
      */
     getOptimalTexture(minWidth: number, minHeight: number, resolution = 1, multisample = MSAA_QUALITY.NONE): RenderTexture
@@ -121,8 +121,8 @@ export class RenderTexturePool
      *
      * @param {PIXI.RenderTexture} input - renderTexture from which size and resolution will be copied
      * @param {number} [resolution] - override resolution of the renderTexture
-     * @param {PIXI.MSAA_QUALITY} [multisample=PIXI.MSAA_QUALITY.NONE] - override multisample of the renderTexture
      *  It overrides, it does not multiply
+     * @param {PIXI.MSAA_QUALITY} [multisample=PIXI.MSAA_QUALITY.NONE] - number of samples of the renderTexture
      * @returns {PIXI.RenderTexture}
      */
     getFilterTexture(input: RenderTexture, resolution?: number, multisample?: MSAA_QUALITY): RenderTexture
