@@ -1,6 +1,6 @@
 {
   "name": "@pixi/particles",
-  "version": "6.1.0-rc",
+  "version": "6.1.0-rc.2",
   "main": "dist/cjs/particles.js",
   "module": "dist/esm/particles.js",
   "bundle": "dist/browser/particles.js",
@@ -25,10 +25,10 @@
     "*.d.ts"
   ],
   "dependencies": {
-    "@pixi/constants": "6.1.0-rc",
-    "@pixi/core": "6.1.0-rc",
-    "@pixi/display": "6.1.0-rc",
-    "@pixi/math": "6.1.0-rc",
-    "@pixi/utils": "6.1.0-rc"
+    "@pixi/constants": "6.1.0-rc.2",
+    "@pixi/core": "6.1.0-rc.2",
+    "@pixi/display": "6.1.0-rc.2",
+    "@pixi/math": "6.1.0-rc.2",
+    "@pixi/utils": "6.1.0-rc.2"
   }
 }

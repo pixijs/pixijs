@@ -1,6 +1,6 @@
 {
   "name": "@pixi/accessibility",
-  "version": "6.1.0-rc",
+  "version": "6.1.0-rc.2",
   "main": "dist/cjs/accessibility.js",
   "module": "dist/esm/accessibility.js",
   "bundle": "dist/browser/accessibility.js",
@@ -25,9 +25,9 @@
     "*.d.ts"
   ],
   "dependencies": {
-    "@pixi/canvas-renderer": "6.1.0-rc",
-    "@pixi/core": "6.1.0-rc",
-    "@pixi/display": "6.1.0-rc",
-    "@pixi/utils": "6.1.0-rc"
+    "@pixi/canvas-renderer": "6.1.0-rc.2",
+    "@pixi/core": "6.1.0-rc.2",
+    "@pixi/display": "6.1.0-rc.2",
+    "@pixi/utils": "6.1.0-rc.2"
   }
 }
