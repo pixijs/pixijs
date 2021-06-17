@@ -1,6 +1,6 @@
 {
   "name": "@pixi/display",
-  "version": "6.0.4",
+  "version": "6.1.0-rc",
   "main": "dist/cjs/display.js",
   "module": "dist/esm/display.js",
   "bundle": "dist/browser/display.js",
@@ -25,8 +25,8 @@
     "*.d.ts"
   ],
   "dependencies": {
-    "@pixi/math": "6.0.4",
-    "@pixi/settings": "6.0.4",
-    "@pixi/utils": "6.0.4"
+    "@pixi/math": "6.1.0-rc",
+    "@pixi/settings": "6.1.0-rc",
+    "@pixi/utils": "6.1.0-rc"
   }
 }

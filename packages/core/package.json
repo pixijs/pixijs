@@ -1,6 +1,6 @@
 {
   "name": "@pixi/core",
-  "version": "6.0.4",
+  "version": "6.1.0-rc",
   "main": "dist/cjs/core.js",
   "module": "dist/esm/core.js",
   "bundle": "dist/browser/core.js",
@@ -29,11 +29,11 @@
     "url": "https://opencollective.com/pixijs"
   },
   "dependencies": {
-    "@pixi/constants": "6.0.4",
-    "@pixi/math": "6.0.4",
-    "@pixi/runner": "6.0.4",
-    "@pixi/settings": "6.0.4",
-    "@pixi/ticker": "6.0.4",
-    "@pixi/utils": "6.0.4"
+    "@pixi/constants": "6.1.0-rc",
+    "@pixi/math": "6.1.0-rc",
+    "@pixi/runner": "6.1.0-rc",
+    "@pixi/settings": "6.1.0-rc",
+    "@pixi/ticker": "6.1.0-rc",
+    "@pixi/utils": "6.1.0-rc"
   }
 }
