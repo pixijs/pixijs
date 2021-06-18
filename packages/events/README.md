@@ -15,10 +15,6 @@ npm install @pixi/events
 import { Application, Renderer } from '@pixi/core';
 import { EventSystem } from '@pixi/events';
 
-// If you are using the pixi.js/pixi.js-legacy bundles, you'll need to remove the interaction
-// plugin. This is not needed when using the scoped (@pixi/) packages directly.
-delete Renderer.__plugins.interaction;
-
 const app = new PIXI.Application();
 const { renderer} = app;
 

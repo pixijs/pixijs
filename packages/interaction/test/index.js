@@ -1,2 +1,0 @@
-require('./InteractionData');
-require('./InteractionManager');

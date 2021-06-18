@@ -100,11 +100,6 @@ export class EventSystem
      */
     constructor(renderer: Renderer)
     {
-        if (renderer.plugins.interaction)
-        {
-            throw new Error('EventSystem cannot initialize with the InteractionManager installed!');
-        }
-
         this.renderer = renderer;
         this.rootBoundary = new EventBoundary(null);
 

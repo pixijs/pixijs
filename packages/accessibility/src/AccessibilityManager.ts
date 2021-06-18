@@ -495,7 +495,7 @@ export class AccessibilityManager
     }
 
     /**
-     * Maps the div button press to pixi's InteractionManager (click)
+     * Maps the div button press to pixi's EventSystem (click)
      *
      * @private
      * @param {MouseEvent} e - The click event.
