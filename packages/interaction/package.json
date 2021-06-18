@@ -32,10 +32,6 @@
     "@pixi/utils": "6.1.0-rc.2"
   },
   "devDependencies": {
-    "@pixi/canvas-display": "6.1.0-rc.2",
-    "@pixi/canvas-graphics": "6.1.0-rc.2",
-    "@pixi/canvas-renderer": "6.1.0-rc.2",
-    "@pixi/canvas-sprite": "6.1.0-rc.2",
     "@pixi/graphics": "6.1.0-rc.2",
     "@pixi/sprite": "6.1.0-rc.2"
   }

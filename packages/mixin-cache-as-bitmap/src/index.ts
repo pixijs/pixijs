@@ -5,7 +5,6 @@ import { IPointData, Matrix, Rectangle } from '@pixi/math';
 import { uid } from '@pixi/utils';
 import { settings } from '@pixi/settings';
 import { MSAA_QUALITY } from '@pixi/constants';
-import type { CanvasRenderer } from '@pixi/canvas-renderer';
 
 const _tempMatrix = new Matrix();
 
@@ -26,7 +25,6 @@ export class CacheData
 {
     public textureCacheId: string;
     public originalRender: (renderer: Renderer) => void;
-    public originalRenderCanvas: (renderer: CanvasRenderer) => void;
     public originalCalculateBounds: () => void;
     public originalGetLocalBounds: (rect?: Rectangle) => Rectangle;
     public originalUpdateTransform: () => void;
@@ -41,7 +39,6 @@ export class CacheData
         this.textureCacheId = null;
 
         this.originalRender = null;
-        this.originalRenderCanvas = null;
         this.originalCalculateBounds = null;
         this.originalGetLocalBounds = null;
 
@@ -157,7 +154,6 @@ Object.defineProperties(DisplayObject.prototype, {
                 data = this._cacheData;
 
                 data.originalRender = this.render;
-                data.originalRenderCanvas = this.renderCanvas;
 
                 data.originalUpdateTransform = this.updateTransform;
                 data.originalCalculateBounds = this.calculateBounds;
@@ -171,8 +167,6 @@ Object.defineProperties(DisplayObject.prototype, {
                 data.originalFilterArea = this.filterArea;
 
                 this.render = this._renderCached;
-                this.renderCanvas = this._renderCachedCanvas;
-
                 this.destroy = this._cacheAsBitmapDestroy;
             }
             else
@@ -185,7 +179,6 @@ Object.defineProperties(DisplayObject.prototype, {
                 }
 
                 this.render = data.originalRender;
-                this.renderCanvas = data.originalRenderCanvas;
                 this.calculateBounds = data.originalCalculateBounds;
                 this.getLocalBounds = data.originalGetLocalBounds;
 
@@ -331,122 +324,6 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
         this.enableTempParent();
         this.updateTransform();
         this.disableTempParent(null);
-    }
-    else
-    {
-        this.updateTransform();
-    }
-
-    // map the hit test..
-    (this as Sprite).containsPoint = cachedSprite.containsPoint.bind(cachedSprite);
-};
-
-/**
- * Renders a cached version of the sprite with canvas
- *
- * @private
- * @method _renderCachedCanvas
- * @memberof PIXI.DisplayObject#
- * @param {PIXI.CanvasRenderer} renderer - The canvas renderer
- */
-DisplayObject.prototype._renderCachedCanvas = function _renderCachedCanvas(renderer: CanvasRenderer): void
-{
-    if (!this.visible || this.worldAlpha <= 0 || !this.renderable)
-    {
-        return;
-    }
-
-    this._initCachedDisplayObjectCanvas(renderer);
-
-    this._cacheData.sprite.worldAlpha = this.worldAlpha;
-    (this._cacheData.sprite as any)._renderCanvas(renderer);
-};
-
-// TODO this can be the same as the WebGL version.. will need to do a little tweaking first though..
-/**
- * Prepares the Canvas renderer to cache the sprite
- *
- * @private
- * @method _initCachedDisplayObjectCanvas
- * @memberof PIXI.DisplayObject#
- * @param {PIXI.CanvasRenderer} renderer - The canvas renderer
- */
-DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDisplayObjectCanvas(
-    renderer: CanvasRenderer
-): void
-{
-    if (this._cacheData && this._cacheData.sprite)
-    {
-        return;
-    }
-
-    // get bounds actually transforms the object for us already!
-    const bounds = (this as Container).getLocalBounds(null, true);
-
-    const cacheAlpha = this.alpha;
-
-    this.alpha = 1;
-
-    const cachedRenderTarget = renderer.context;
-    const cachedProjectionTransform = (renderer as any)._projTransform;
-
-    bounds.ceil(settings.RESOLUTION);
-
-    const renderTexture = RenderTexture.create({ width: bounds.width, height: bounds.height });
-
-    const textureCacheId = `cacheAsBitmap_${uid()}`;
-
-    this._cacheData.textureCacheId = textureCacheId;
-
-    BaseTexture.addToCache(renderTexture.baseTexture, textureCacheId);
-    Texture.addToCache(renderTexture, textureCacheId);
-
-    // need to set //
-    const m = _tempMatrix;
-
-    this.transform.localTransform.copyTo(m);
-    m.invert();
-
-    m.tx -= bounds.x;
-    m.ty -= bounds.y;
-
-    // m.append(this.transform.worldTransform.)
-    // set all properties to there original so we can render to a texture
-    this.renderCanvas = this._cacheData.originalRenderCanvas;
-
-    renderer.render(this, { renderTexture, clear: true, transform: m, skipUpdateTransform: false });
-    // now restore the state be setting the new properties
-    renderer.context = cachedRenderTarget;
-    (renderer as any)._projTransform = cachedProjectionTransform;
-
-    this.renderCanvas = this._renderCachedCanvas;
-    // the rest is the same as for WebGL
-    this.updateTransform = this.displayObjectUpdateTransform;
-    this.calculateBounds = this._calculateCachedBounds;
-    this.getLocalBounds = this._getCachedLocalBounds;
-
-    this._mask = null;
-    this.filterArea = null;
-    this.alpha = cacheAlpha;
-
-    // create our cached sprite
-    const cachedSprite = new Sprite(renderTexture);
-
-    cachedSprite.transform.worldTransform = this.transform.worldTransform;
-    cachedSprite.anchor.x = -(bounds.x / bounds.width);
-    cachedSprite.anchor.y = -(bounds.y / bounds.height);
-    cachedSprite.alpha = cacheAlpha;
-    cachedSprite._bounds = this._bounds;
-
-    this._cacheData.sprite = cachedSprite;
-
-    this.transform._parentID = -1;
-    // restore the transform of the cached sprite to avoid the nasty flicker..
-    if (!this.parent)
-    {
-        this.parent = (renderer as any)._tempDisplayObjectParent;
-        this.updateTransform();
-        this.parent = null;
     }
     else
     {

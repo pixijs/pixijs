@@ -12,8 +12,6 @@ declare namespace GlobalMixins
         _initCachedDisplayObject(renderer: import('@pixi/core').Renderer): void;
         _calculateCachedBounds(): void;
         _getCachedLocalBounds(): import('@pixi/math').Rectangle;
-        _renderCachedCanvas(renderer: import('@pixi/canvas-renderer').CanvasRenderer): void;
-        _initCachedDisplayObjectCanvas(renderer: import('@pixi/canvas-renderer').CanvasRenderer): void;
         _destroyCachedDisplayObject(): void;
         _cacheAsBitmapDestroy(options?: import('@pixi/display').IDestroyOptions|boolean): void;
     }

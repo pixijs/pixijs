@@ -1,8 +1,8 @@
 import { Container } from '@pixi/display';
-import { autoDetectRenderer } from '@pixi/core';
+import { Renderer } from '@pixi/core';
 
 import type { Rectangle } from '@pixi/math';
-import type { Renderer, IRendererOptionsAuto, AbstractRenderer } from '@pixi/core';
+import type { IRendererOptions } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
 
 /**
@@ -24,7 +24,7 @@ export interface IApplicationPlugin {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface IApplicationOptions extends IRendererOptionsAuto, GlobalMixins.IApplicationOptions {}
+export interface IApplicationOptions extends IRendererOptions, GlobalMixins.IApplicationOptions {}
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface Application extends GlobalMixins.Application {}
@@ -59,10 +59,10 @@ export class Application
     public stage: Container = new Container();
 
     /**
-     * WebGL renderer if available, otherwise CanvasRenderer.
-     * @member {PIXI.Renderer|PIXI.CanvasRenderer}
+     * Main renderer.
+     * @member {PIXI.Renderer}
      */
-    public renderer: Renderer|AbstractRenderer;
+    public renderer: Renderer;
 
     /**
      * @param {object} [options] - The optional renderer parameters.
@@ -81,9 +81,6 @@ export class Application
      * @param {boolean} [options.preserveDrawingBuffer=false] - Enables drawing buffer preservation, enable this if you
      *  need to call toDataUrl on the WebGL context.
      * @param {number} [options.resolution=PIXI.settings.RESOLUTION] - The resolution / device pixel ratio of the renderer.
-     * @param {boolean} [options.forceCanvas=false] - prevents selection of WebGL renderer, even if such is present, this
-     *   option only is available when using **pixi.js-legacy** or **@pixi/canvas-renderer** modules, otherwise
-     *   it is ignored.
      * @param {number} [options.backgroundColor=0x000000] - The background color of the rendered area
      *  (shown if not transparent).
      * @param {number} [options.backgroundAlpha=1] - Value from 0 (fully transparent) to 1 (fully opaque).
@@ -97,14 +94,9 @@ export class Application
      * @param {boolean} [options.sharedLoader=false] - `true` to use PIXI.Loader.shared, `false` to create new Loader.
      * @param {Window|HTMLElement} [options.resizeTo] - Element to automatically resize stage to.
      */
-    constructor(options?: IApplicationOptions)
+    constructor(options: IApplicationOptions = {})
     {
-        // The default options
-        options = Object.assign({
-            forceCanvas: false,
-        }, options);
-
-        this.renderer = autoDetectRenderer(options);
+        this.renderer = Renderer.create(options);
 
         // install plugins here
         Application._plugins.forEach((plugin) =>

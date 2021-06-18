@@ -17,8 +17,7 @@
         "paths": {
             "@pixi/*": [
                 "packages/*/src",
-                "packages/filters/*/src",
-                "packages/canvas/*/src"
+                "packages/filters/*/src"
             ],
             "pixi.js": [
                 "bundles/pixi.js/src"

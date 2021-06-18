@@ -7,7 +7,7 @@ import { TreeSearch } from './TreeSearch';
 import { EventEmitter } from '@pixi/utils';
 import { interactiveTarget } from './interactiveTarget';
 
-import type { AbstractRenderer } from '@pixi/core';
+import type { Renderer } from '@pixi/core';
 import type { Point, IPointData } from '@pixi/math';
 import type { Dict } from '@pixi/utils';
 
@@ -71,7 +71,7 @@ export class InteractionManager extends EventEmitter
     public cursor: string;
     public delayedEvents: DelayedEvent[];
     public search: TreeSearch;
-    public renderer: AbstractRenderer;
+    public renderer: Renderer;
     public autoPreventDefault: boolean;
     public interactionFrequency: number;
     public mouse: InteractionData;
@@ -93,13 +93,13 @@ export class InteractionManager extends EventEmitter
     private readonly _eventListenerOptions: { capture: true, passive: false };
 
     /**
-     * @param {PIXI.CanvasRenderer|PIXI.Renderer} renderer - A reference to the current renderer
+     * @param {PIXI.Renderer} renderer - A reference to the current renderer
      * @param {object} [options] - The options for the manager.
      * @param {boolean} [options.autoPreventDefault=true] - Should the manager automatically prevent default browser actions.
      * @param {number} [options.interactionFrequency=10] - Maximum frequency (ms) at pointer over/out states will be checked.
      * @param {number} [options.useSystemTicker=true] - Whether to add {@link tickerUpdate} to {@link PIXI.Ticker.system}.
      */
-    constructor(renderer: AbstractRenderer, options?: InteractionManagerOptions)
+    constructor(renderer: Renderer, options?: InteractionManagerOptions)
     {
         super();
 

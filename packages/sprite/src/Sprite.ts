@@ -154,7 +154,6 @@ export class Sprite extends Container
 
         /**
          * Cached tint value so we can tell when the tint is changed.
-         * Value is used for 2d CanvasRenderer.
          *
          * @protected
          * @member {number}
@@ -202,7 +201,7 @@ export class Sprite extends Container
 
         /**
          * Plugin that is responsible for rendering this element.
-         * Allows to customize the rendering process without overriding '_render' & '_renderCanvas' methods.
+         * Allows to customize the rendering process without overriding '_render' method.
          *
          * @member {string}
          * @default 'batch'

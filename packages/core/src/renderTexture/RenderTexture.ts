@@ -19,7 +19,7 @@ import { deprecation } from '@pixi/utils';
  * A RenderTexture takes a snapshot of any Display Object given to its render method. For example:
  *
  * ```js
- * let renderer = PIXI.autoDetectRenderer();
+ * let renderer = PIXI.Renderer.create();
  * let renderTexture = PIXI.RenderTexture.create({ width: 800, height: 600 });
  * let sprite = PIXI.Sprite.from("spinObj_01.png");
  *

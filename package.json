@@ -4,7 +4,6 @@
   "workspaces": [
     "bundles/*",
     "packages/*",
-    "packages/canvas/*",
     "packages/filters/*",
     "tools/*"
   ],

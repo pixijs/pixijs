@@ -1027,7 +1027,6 @@ export abstract class DisplayObject extends EventEmitter
      * const sprite = new PIXI.Sprite(texture);
      * sprite.mask = graphics;
      *
-     * @todo At the moment, PIXI.CanvasRenderer doesn't support PIXI.Sprite as mask.
      * @member {PIXI.Container|PIXI.MaskData|null}
      */
     get mask(): Container|MaskData|null

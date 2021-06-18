@@ -1,4 +1,3 @@
-import type { CanvasRenderer } from '@pixi/canvas-renderer';
 import type { Renderer } from '@pixi/core';
 import type { IApplicationOptions } from './Application';
 
@@ -11,7 +10,7 @@ export class ResizePlugin
 {
     public static resizeTo: Window|HTMLElement;
     public static resize: () => void;
-    public static renderer: Renderer|CanvasRenderer;
+    public static renderer: Renderer;
     public static queueResize: () => void;
     private static _resizeId: number;
     private static _resizeTo: Window|HTMLElement;

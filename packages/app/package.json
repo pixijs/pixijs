@@ -29,7 +29,6 @@
     "@pixi/display": "6.1.0-rc.2"
   },
   "devDependencies": {
-    "@pixi/canvas-renderer": "6.1.0-rc.2",
     "@pixi/utils": "6.1.0-rc.2"
   }
 }

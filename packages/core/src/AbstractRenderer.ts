@@ -45,8 +45,8 @@ export interface IRendererRenderOptions {
 }
 
 /**
- * The AbstractRenderer is the base for a PixiJS Renderer. It is extended by the {@link PIXI.CanvasRenderer}
- * and {@link PIXI.Renderer} which can be used for rendering a PixiJS scene.
+ * The AbstractRenderer is the base for a PixiJS Renderer. It is extended by the
+ * {@link PIXI.Renderer} which can be used for rendering a PixiJS scene.
  *
  * @abstract
  * @class
@@ -164,7 +164,7 @@ export abstract class AbstractRenderer extends EventEmitter
         this.preserveDrawingBuffer = options.preserveDrawingBuffer;
 
         /**
-         * This sets if the CanvasRenderer will clear the canvas or not before the new render pass.
+         * This sets if the Renderer will clear the canvas or not before the new render pass.
          * If the scene is NOT transparent PixiJS will use a canvas sized fillRect operation every
          * frame to set the canvas background color. If the scene is transparent PixiJS will use clearRect
          * to clear the canvas every frame. Disable this by setting this to false. For example, if

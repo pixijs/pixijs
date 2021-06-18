@@ -134,8 +134,7 @@ export const settings: ISettings = {
     SPRITE_BATCH_SIZE: 4096,
 
     /**
-     * The default render options if none are supplied to {@link PIXI.Renderer}
-     * or {@link PIXI.CanvasRenderer}.
+     * The default render options if none are supplied to {@link PIXI.Renderer}.
      *
      * @static
      * @name RENDER_OPTIONS

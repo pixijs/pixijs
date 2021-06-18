@@ -98,7 +98,7 @@ function findGraphics(item: IDisplayObjectExtended, queue: Array<any>): boolean
  * asynchronously preparing and uploading to the GPU assets, textures, graphics waiting to be displayed.
  *
  * Do not instantiate this plugin directly. It is available from the `renderer.plugins` property.
- * See {@link PIXI.CanvasRenderer#plugins} or {@link PIXI.Renderer#plugins}.
+ * See {@link PIXI.Renderer#plugins}.
  * @example
  * // Create a new application
  * const app = new PIXI.Application();

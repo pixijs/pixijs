@@ -4,12 +4,6 @@
   "version": "6.1.0-rc.2",
   "description": "Integration tests for PixiJS packages",
   "devDependencies": {
-    "@pixi/canvas-display": "6.1.0-rc.2",
-    "@pixi/canvas-graphics": "6.1.0-rc.2",
-    "@pixi/canvas-mesh": "6.1.0-rc.2",
-    "@pixi/canvas-renderer": "6.1.0-rc.2",
-    "@pixi/canvas-sprite": "6.1.0-rc.2",
-    "@pixi/canvas-text": "6.1.0-rc.2",
     "@pixi/core": "6.1.0-rc.2",
     "@pixi/display": "6.1.0-rc.2",
     "@pixi/graphics": "6.1.0-rc.2",

@@ -4,7 +4,6 @@ export * from './textures/resources';
 export * from './systems';
 export * from './IRenderingContext';
 export * from './IRenderableObject';
-export * from './autoDetectRenderer';
 export * from './fragments';
 export * from './ISystem';
 export * from './Renderer';

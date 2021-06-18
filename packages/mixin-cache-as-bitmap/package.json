@@ -26,7 +26,6 @@
     "*.d.ts"
   ],
   "dependencies": {
-    "@pixi/canvas-renderer": "6.1.0-rc.2",
     "@pixi/core": "6.1.0-rc.2",
     "@pixi/display": "6.1.0-rc.2",
     "@pixi/math": "6.1.0-rc.2",

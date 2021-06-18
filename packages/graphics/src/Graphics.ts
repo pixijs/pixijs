@@ -1264,8 +1264,6 @@ export class Graphics extends Container
      * Begin adding holes to the last draw shape
      * IMPORTANT: holes must be fully inside a shape to work
      * Also weirdness ensues if holes overlap!
-     * Ellipses, Circles, Rectangles and Rounded Rectangles cannot be holes or host for holes in CanvasRenderer,
-     * please use `moveTo` `lineTo`, `quadraticCurveTo` if you rely on pixi-legacy bundle.
      * @return {PIXI.Graphics} Returns itself.
      */
     public beginHole(): this

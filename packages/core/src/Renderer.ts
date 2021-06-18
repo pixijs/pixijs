@@ -95,20 +95,19 @@ export class Renderer extends AbstractRenderer
     runners: {[key: string]: Runner};
 
     /**
-     * Create renderer if WebGL is available. Overrideable
-     * by the **@pixi/canvas-renderer** package to allow fallback.
-     * throws error if WebGL is not available.
+     * Create renderer if WebGL is available.
+     * Throws error if WebGL is not available.
      * @static
      * @private
      */
-    static create(options?: IRendererOptions): AbstractRenderer
+    static create(options?: IRendererOptions): Renderer
     {
         if (isWebGLSupported())
         {
             return new Renderer(options);
         }
 
-        throw new Error('WebGL unsupported in this browser, use "pixi.js-legacy" for fallback canvas2d support.');
+        throw new Error('WebGL unsupported in this browser.');
     }
 
     /**

@@ -507,12 +507,6 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
             this.geometry.dispose();
         }
 
-        if (this._cachedTexture)
-        {
-            this._cachedTexture.destroy();
-            this._cachedTexture = null;
-        }
-
         (this as any).geometry = null;
         this.shader = null;
         this.state = null;

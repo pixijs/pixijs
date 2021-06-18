@@ -17,7 +17,7 @@ export interface BaseRenderTexture extends GlobalMixins.BaseRenderTexture, BaseT
  * and rotation of the given Display Objects is ignored. For example:
  *
  * ```js
- * let renderer = PIXI.autoDetectRenderer();
+ * let renderer = PIXI.Renderer.create();
  * let baseRenderTexture = new PIXI.BaseRenderTexture({ width: 800, height: 600 });
  * let renderTexture = new PIXI.RenderTexture(baseRenderTexture);
  * let sprite = PIXI.Sprite.from("spinObj_01.png");
