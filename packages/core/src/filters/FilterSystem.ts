@@ -321,8 +321,7 @@ export class FilterSystem implements ISystem
             let flop = this.getOptimalFilterTexture(
                 flip.width,
                 flip.height,
-                state.resolution,
-                state.multisample
+                state.resolution
             );
 
             flop.filterFrame = flip.filterFrame;
@@ -331,10 +330,18 @@ export class FilterSystem implements ISystem
 
             for (i = 0; i < filters.length - 1; ++i)
             {
-                filters[i].apply(this, flip, flop, CLEAR_MODES.CLEAR, state);
+                if (i === 1 && state.multisample > 1)
+                {
+                    flop = this.getOptimalFilterTexture(
+                        flip.width,
+                        flip.height,
+                        state.resolution
+                    );
 
-                // blit flop because it's used as input immediately once it becomes flip
-                this.renderer.framebuffer.blit();
+                    flop.filterFrame = flip.filterFrame;
+                }
+
+                filters[i].apply(this, flip, flop, CLEAR_MODES.CLEAR, state);
 
                 const t = flip;
 
@@ -343,6 +350,11 @@ export class FilterSystem implements ISystem
             }
 
             filters[i].apply(this, flip, lastState.renderTexture, CLEAR_MODES.BLEND, state);
+
+            if (i > 1 && state.multisample > 1)
+            {
+                this.returnFilterTexture(state.renderTexture);
+            }
 
             this.returnFilterTexture(flip);
             this.returnFilterTexture(flop);
