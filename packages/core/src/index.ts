@@ -7,7 +7,6 @@ export * from './IRenderableObject';
 export * from './fragments';
 export * from './ISystem';
 export * from './Renderer';
-export * from './AbstractRenderer';
 export * from './framebuffer/Framebuffer';
 export * from './framebuffer/GLFramebuffer';
 export * from './textures/Texture';

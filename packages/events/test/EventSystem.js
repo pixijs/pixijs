@@ -4,6 +4,8 @@ const { EventSystem } = require('../');
 const { Graphics } = require('../../graphics');
 const { expect } = require('chai');
 
+Renderer.registerSystem('events', EventSystem);
+
 function createRenderer(view, supportsPointerEvents)
 {
     const renderer = Renderer.create({
@@ -11,11 +13,6 @@ function createRenderer(view, supportsPointerEvents)
         height: 100,
         view,
     });
-
-    if (!renderer.events)
-    {
-        renderer.addSystem(EventSystem, 'events');
-    }
 
     if (supportsPointerEvents === false)
     {

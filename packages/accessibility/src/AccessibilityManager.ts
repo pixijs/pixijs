@@ -4,7 +4,7 @@ import { accessibleTarget } from './accessibleTarget';
 
 import type { Rectangle } from '@pixi/math';
 import type { Container } from '@pixi/display';
-import type { Renderer } from '@pixi/core';
+import type { IRendererPlugin, Renderer } from '@pixi/core';
 import type { IAccessibleHTMLElement } from './accessibleTarget';
 
 // add some extra variables to the container..
@@ -34,7 +34,7 @@ const DIV_HOOK_ZINDEX = 2;
  * @class
  * @memberof PIXI
  */
-export class AccessibilityManager
+export class AccessibilityManager implements IRendererPlugin
 {
     /** Setting this to true will visually show the divs. */
     public debug = false;
@@ -500,15 +500,15 @@ export class AccessibilityManager
      * @private
      * @param {MouseEvent} e - The click event.
      */
-    private _onClick(e: MouseEvent): void
+    private _onClick(_e: MouseEvent): void
     {
-        const interactionManager = this.renderer.plugins.interaction;
-        const { displayObject } = e.target as IAccessibleHTMLElement;
-        const { eventData } = interactionManager;
+        // const interactionManager = this.renderer.plugins.interaction;
+        // const { displayObject } = e.target as IAccessibleHTMLElement;
+        // const { eventData } = interactionManager;
 
-        interactionManager.dispatchEvent(displayObject, 'click', eventData);
-        interactionManager.dispatchEvent(displayObject, 'pointertap', eventData);
-        interactionManager.dispatchEvent(displayObject, 'tap', eventData);
+        // interactionManager.dispatchEvent(displayObject, 'click', eventData);
+        // interactionManager.dispatchEvent(displayObject, 'pointertap', eventData);
+        // interactionManager.dispatchEvent(displayObject, 'tap', eventData);
     }
 
     /**
@@ -524,11 +524,11 @@ export class AccessibilityManager
             (e.target as Element).setAttribute('aria-live', 'assertive');
         }
 
-        const interactionManager = this.renderer.plugins.interaction;
-        const { displayObject } = e.target as IAccessibleHTMLElement;
-        const { eventData } = interactionManager;
+        // const interactionManager = this.renderer.events;
+        // const { displayObject } = e.target as IAccessibleHTMLElement;
+        // const { eventData } = interactionManager;
 
-        interactionManager.dispatchEvent(displayObject, 'mouseover', eventData);
+        // interactionManager.dispatchEvent(displayObject, 'mouseover', eventData);
     }
 
     /**
@@ -544,11 +544,11 @@ export class AccessibilityManager
             (e.target as Element).setAttribute('aria-live', 'polite');
         }
 
-        const interactionManager = this.renderer.plugins.interaction;
-        const { displayObject } = e.target as IAccessibleHTMLElement;
-        const { eventData } = interactionManager;
+        // const interactionManager = this.renderer.events;
+        // const { displayObject } = e.target as IAccessibleHTMLElement;
+        // const { eventData } = interactionManager;
 
-        interactionManager.dispatchEvent(displayObject, 'mouseout', eventData);
+        // interactionManager.dispatchEvent(displayObject, 'mouseout', eventData);
     }
 
     /**

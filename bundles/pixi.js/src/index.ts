@@ -3,7 +3,7 @@ import '@pixi/polyfill';
 import * as utils from '@pixi/utils';
 import { AccessibilityManager } from '@pixi/accessibility';
 import { Application } from '@pixi/app';
-import { Renderer, BatchRenderer } from '@pixi/core';
+import { Renderer } from '@pixi/core';
 import { Extract } from '@pixi/extract';
 import { Loader, AppLoaderPlugin } from '@pixi/loaders';
 import { CompressedTextureLoader, DDSLoader, KTXLoader } from '@pixi/compressed-textures';
@@ -28,7 +28,6 @@ Renderer.registerPlugin('accessibility', AccessibilityManager);
 Renderer.registerPlugin('extract', Extract);
 Renderer.registerPlugin('particle', ParticleRenderer);
 Renderer.registerPlugin('prepare', Prepare);
-Renderer.registerPlugin('batch', BatchRenderer);
 Renderer.registerPlugin('tilingSprite', TilingSpriteRenderer);
 
 // Install loader plugins

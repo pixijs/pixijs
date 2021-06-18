@@ -6,8 +6,6 @@ const { Renderer, BatchRenderer } = require('@pixi/core');
 
 skipHello();
 
-Renderer.registerPlugin('batch', BatchRenderer);
-
 describe('PIXI.Text', function ()
 {
     describe('properties', function ()

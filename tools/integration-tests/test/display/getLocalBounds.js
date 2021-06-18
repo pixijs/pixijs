@@ -5,8 +5,6 @@ const { Graphics } = require('@pixi/graphics');
 const { Text } = require('@pixi/text');
 const { SimplePlane } = require('@pixi/mesh-extras');
 
-Renderer.registerPlugin('batch', BatchRenderer);
-
 function withGL(fn)
 {
     return !process.env.DISABLE_WEBGL ? fn : undefined;

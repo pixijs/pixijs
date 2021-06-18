@@ -15,13 +15,11 @@ npm install @pixi/events
 import { Application, Renderer } from '@pixi/core';
 import { EventSystem } from '@pixi/events';
 
-const app = new PIXI.Application();
-const { renderer} = app;
+Renderer.registerSystem('events', EventSystem);
+
+const app = new Application();
 
 document.body.appendChild(app.view);
-
-// Install the EventSystem
-renderer.addSystem(EventSystem, 'events');
 
 // Add a click listener!
 stage.addEventListener('click', function handleClick()
@@ -30,10 +28,10 @@ stage.addEventListener('click', function handleClick()
 });
 
 // Render stage so that it becomes the root target for UI events
-renderer.render(stage);
+app.renderer.render(stage);
 
 // Dispatch a synthetic event on the canvas to test it.
-renderer.view.dispatchEvent(new PointerEvent('click', {
+app.renderer.view.dispatchEvent(new PointerEvent('click', {
     pointerType: 'mouse',
     clientX: 1,
     clientY: 1,

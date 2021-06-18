@@ -5,4 +5,9 @@ declare namespace GlobalMixins
     {
 
     }
+
+    interface IRendererPlugins
+    {
+        accessibility: import('@pixi/accessibility').AccessibilityManager;
+    }
 }

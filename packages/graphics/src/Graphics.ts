@@ -10,7 +10,13 @@ import {
     SHAPES,
 } from '@pixi/math';
 
-import { Texture, UniformGroup, State, Renderer, BatchDrawCall, Shader } from '@pixi/core';
+import {
+    Texture,
+    UniformGroup,
+    State,
+    Renderer,
+    BatchDrawCall,
+    Shader } from '@pixi/core';
 import { BezierUtils, QuadraticUtils, ArcUtils } from './utils';
 import { hex2rgb } from '@pixi/utils';
 import { GraphicsGeometry } from './GraphicsGeometry';
@@ -18,10 +24,11 @@ import { FillStyle } from './styles/FillStyle';
 import { LineStyle } from './styles/LineStyle';
 import { BLEND_MODES } from '@pixi/constants';
 import { Container } from '@pixi/display';
+import { LINE_JOIN, LINE_CAP } from './const';
 
 import type { IShape, IPointData } from '@pixi/math';
 import type { IDestroyOptions } from '@pixi/display';
-import { LINE_JOIN, LINE_CAP } from './const';
+import type { AbstractBatchRenderer, IRendererPlugins } from '@pixi/core';
 
 /**
  * Batch element computed from Graphics geometry
@@ -95,7 +102,7 @@ export class Graphics extends Container
     static _TEMP_POINT = new Point();
 
     public shader: Shader;
-    public pluginName: string;
+    public pluginName: keyof IRendererPlugins;
     public currentPath: Polygon;
 
     protected batches: Array<IGraphicsBatchElement>;
@@ -1012,7 +1019,9 @@ export class Graphics extends Container
             return;
         }
 
-        renderer.batch.setObjectRenderer(renderer.plugins[this.pluginName]);
+        const plugin = renderer.plugins[this.pluginName] as AbstractBatchRenderer;
+
+        renderer.batch.setObjectRenderer(plugin);
 
         this.calculateVertices();
         this.calculateTints();
@@ -1023,7 +1032,7 @@ export class Graphics extends Container
 
             batch.worldAlpha = this.worldAlpha * batch.alpha;
 
-            renderer.plugins[this.pluginName].render(batch);
+            plugin.render(batch);
         }
     }
 
@@ -1120,7 +1129,8 @@ export class Graphics extends Container
                     default: UniformGroup.from({ uSamplers: sampleValues }, true),
                 };
 
-                const program = renderer.plugins[pluginName]._shader.program;
+                const plugin = renderer.plugins[pluginName] as AbstractBatchRenderer;
+                const program = plugin.program;
 
                 DEFAULT_SHADERS[pluginName] = new Shader(program, uniforms);
             }

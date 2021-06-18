@@ -6,8 +6,6 @@ const { BLEND_MODES } = require('@pixi/constants');
 const { Point, Matrix, SHAPES, Polygon } = require('@pixi/math');
 const { skipHello } = require('@pixi/utils');
 
-Renderer.registerPlugin('batch', BatchRenderer);
-
 skipHello();
 
 describe('PIXI.Graphics', function ()

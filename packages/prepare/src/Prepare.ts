@@ -2,7 +2,7 @@ import { BaseTexture } from '@pixi/core';
 import { Graphics } from '@pixi/graphics';
 import { BasePrepare, IDisplayObjectExtended } from './BasePrepare';
 
-import type { AbstractRenderer, Renderer } from '@pixi/core';
+import type { Renderer } from '@pixi/core';
 
 /**
  * Built-in hook to upload PIXI.Texture objects to the GPU.
@@ -12,7 +12,7 @@ import type { AbstractRenderer, Renderer } from '@pixi/core';
  * @param {PIXI.BaseTexture} item - Item to check
  * @return {boolean} If item was uploaded.
  */
-function uploadBaseTextures(renderer: AbstractRenderer | BasePrepare, item: IDisplayObjectExtended | BaseTexture): boolean
+function uploadBaseTextures(renderer: Renderer | BasePrepare, item: IDisplayObjectExtended | BaseTexture): boolean
 {
     if (item instanceof BaseTexture)
     {
@@ -38,7 +38,7 @@ function uploadBaseTextures(renderer: AbstractRenderer | BasePrepare, item: IDis
  * @param {PIXI.DisplayObject} item - Item to check
  * @return {boolean} If item was uploaded.
  */
-function uploadGraphics(renderer: AbstractRenderer | BasePrepare, item: IDisplayObjectExtended): boolean
+function uploadGraphics(renderer: Renderer | BasePrepare, item: IDisplayObjectExtended): boolean
 {
     if (!(item instanceof Graphics))
     {

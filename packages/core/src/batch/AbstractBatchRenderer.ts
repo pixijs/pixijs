@@ -17,6 +17,7 @@ import type { BatchShaderGenerator } from './BatchShaderGenerator';
 import type { BatchGeometry } from './BatchGeometry';
 import type { Texture } from '../textures/Texture';
 import type { BLEND_MODES } from '@pixi/constants';
+import { Program } from 'pixi.js';
 
 /**
  * Interface for elements like Sprite, Mesh etc. for batching.
@@ -284,6 +285,14 @@ export class AbstractBatchRenderer extends ObjectRenderer
         this._attributeBuffer = null;
         this._indexBuffer = null;
         this._tempBoundTextures = [];
+    }
+
+    /**
+     * Access to the shader program.
+     */
+    get program(): Program
+    {
+        return this._shader.program;
     }
 
     /**

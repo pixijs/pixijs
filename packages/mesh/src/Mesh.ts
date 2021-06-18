@@ -1,4 +1,4 @@
-import { Shader, State } from '@pixi/core';
+import { IRendererPlugins, ObjectRenderer, Shader, State } from '@pixi/core';
 import { Point, Polygon } from '@pixi/math';
 import { BLEND_MODES, DRAW_MODES } from '@pixi/constants';
 import { Container } from '@pixi/display';
@@ -350,10 +350,11 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
         this._tintRGB = shader._tintRGB;
         this._texture = shader.texture;
 
-        const pluginName = (this.material as unknown as MeshMaterial).pluginName;
+        const pluginName = (this.material as unknown as MeshMaterial).pluginName as keyof IRendererPlugins;
+        const plugin = renderer.plugins[pluginName] as ObjectRenderer;
 
-        renderer.batch.setObjectRenderer(renderer.plugins[pluginName]);
-        renderer.plugins[pluginName].render(this);
+        renderer.batch.setObjectRenderer(plugin);
+        plugin.render(this);
     }
 
     /**

@@ -5,4 +5,9 @@ declare namespace GlobalMixins
     {
 
     }
+
+    interface IRendererSystems
+    {
+        events: import('@pixi/events').EventSystem;
+    }
 }

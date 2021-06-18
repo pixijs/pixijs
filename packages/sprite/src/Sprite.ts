@@ -1,5 +1,5 @@
 import { BLEND_MODES } from '@pixi/constants';
-import { Texture } from '@pixi/core';
+import { IRendererPlugins, ObjectRenderer, Texture } from '@pixi/core';
 import { Container } from '@pixi/display';
 import { ObservablePoint, Point, Rectangle } from '@pixi/math';
 import { settings } from '@pixi/settings';
@@ -46,17 +46,17 @@ export class Sprite extends Container
 {
     public blendMode: BLEND_MODES;
     public indices: Uint16Array;
-    public pluginName: string;
+    public pluginName: keyof IRendererPlugins;
 
     _width: number;
     _height: number;
     _texture: Texture;
     _textureID: number;
     _cachedTint: number;
+    vertexData: Float32Array;
+    uvs: Float32Array;
     protected _textureTrimmedID: number;
-    protected uvs: Float32Array;
     protected _anchor: ObservablePoint;
-    protected vertexData: Float32Array;
 
     private vertexTrimmedData: Float32Array;
     private _roundPixels: boolean;
@@ -410,8 +410,10 @@ export class Sprite extends Container
     {
         this.calculateVertices();
 
-        renderer.batch.setObjectRenderer(renderer.plugins[this.pluginName]);
-        renderer.plugins[this.pluginName].render(this);
+        const plugin = renderer.plugins[this.pluginName] as ObjectRenderer;
+
+        renderer.batch.setObjectRenderer(plugin);
+        plugin.render(this);
     }
 
     /**

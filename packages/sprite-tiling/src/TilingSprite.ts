@@ -1,4 +1,4 @@
-import { Texture, TextureMatrix } from '@pixi/core';
+import { ObjectRenderer, Texture, TextureMatrix } from '@pixi/core';
 import { Point, Rectangle, Transform  } from '@pixi/math';
 import { Sprite } from '@pixi/sprite';
 import type { Renderer, IBaseTextureOptions, TextureSource } from '@pixi/core';
@@ -162,8 +162,10 @@ export class TilingSprite extends Sprite
         this.tileTransform.updateLocalTransform();
         this.uvMatrix.update();
 
-        renderer.batch.setObjectRenderer(renderer.plugins[this.pluginName]);
-        renderer.plugins[this.pluginName].render(this);
+        const plugin = renderer.plugins[this.pluginName] as ObjectRenderer;
+
+        renderer.batch.setObjectRenderer(plugin);
+        plugin.render(this);
     }
 
     /**

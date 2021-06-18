@@ -5,13 +5,13 @@ import { Container, DisplayObject } from '@pixi/display';
 import { Text, TextStyle, TextMetrics } from '@pixi/text';
 import { CountLimiter } from './CountLimiter';
 
-import type { AbstractRenderer } from '@pixi/core';
+import type { Renderer } from '@pixi/core';
 
 interface IArrowFunction {
     (): void;
 }
 interface IUploadHook {
-    (helper: AbstractRenderer | BasePrepare, item: IDisplayObjectExtended): boolean;
+    (helper: Renderer | BasePrepare, item: IDisplayObjectExtended): boolean;
 }
 
 interface IFindHook {
@@ -112,11 +112,11 @@ function findTexture(item: IDisplayObjectExtended, queue: Array<any>): boolean
  * Built-in hook to draw PIXI.Text to its texture.
  *
  * @private
- * @param {PIXI.AbstractRenderer|PIXI.BasePrepare} helper - Not used by this upload handler
+ * @param {PIXI.Renderer|PIXI.BasePrepare} helper - Not used by this upload handler
  * @param {PIXI.DisplayObject} item - Item to check
  * @return {boolean} If item was uploaded.
  */
-function drawText(_helper: AbstractRenderer | BasePrepare, item: IDisplayObjectExtended): boolean
+function drawText(_helper: Renderer | BasePrepare, item: IDisplayObjectExtended): boolean
 {
     if (item instanceof Text)
     {
@@ -133,11 +133,11 @@ function drawText(_helper: AbstractRenderer | BasePrepare, item: IDisplayObjectE
  * Built-in hook to calculate a text style for a PIXI.Text object.
  *
  * @private
- * @param {PIXI.AbstractRenderer|PIXI.BasePrepare} helper - Not used by this upload handler
+ * @param {PIXI.Renderer|PIXI.BasePrepare} helper - Not used by this upload handler
  * @param {PIXI.DisplayObject} item - Item to check
  * @return {boolean} If item was uploaded.
  */
-function calculateTextStyle(_helper: AbstractRenderer | BasePrepare, item: IDisplayObjectExtended): boolean
+function calculateTextStyle(_helper: Renderer | BasePrepare, item: IDisplayObjectExtended): boolean
 {
     if (item instanceof TextStyle)
     {
@@ -236,7 +236,7 @@ function findTextStyle(item: TextStyle, queue: Array<any>): boolean
 export class BasePrepare
 {
     private limiter: CountLimiter;
-    protected renderer: AbstractRenderer;
+    protected renderer: Renderer;
     protected uploadHookHelper: any;
     protected queue: Array<any>;
     public addHooks: Array<any>;
@@ -245,9 +245,9 @@ export class BasePrepare
     public ticking: boolean;
     private delayedTick: IArrowFunction;
     /**
-     * @param {PIXI.AbstractRenderer} renderer - A reference to the current renderer
+     * @param {PIXI.Renderer} renderer - A reference to the current renderer
      */
-    constructor(renderer: AbstractRenderer)
+    constructor(renderer: Renderer)
     {
         /**
          * The limiter to be used to control how quickly items are prepared.
@@ -257,7 +257,7 @@ export class BasePrepare
 
         /**
          * Reference to the renderer.
-         * @type {PIXI.AbstractRenderer}
+         * @type {PIXI.Renderer}
          * @protected
          */
         this.renderer = renderer;

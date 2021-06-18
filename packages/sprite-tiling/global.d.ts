@@ -5,4 +5,9 @@ declare namespace GlobalMixins
     {
 
     }
+
+    interface IRendererPlugins
+    {
+        tilingSprite: import('@pixi/sprite-tiling').TilingSpriteRenderer;
+    }
 }

@@ -17,23 +17,6 @@ export enum ENV {
 }
 
 /**
- * Constant to identify the Renderer Type.
- *
- * @static
- * @memberof PIXI
- * @name RENDERER_TYPE
- * @enum {number}
- * @property {number} UNKNOWN - Unknown render type.
- * @property {number} WEBGL - WebGL render type.
- * @property {number} CANVAS - Canvas render type.
- */
-export enum RENDERER_TYPE {
-    UNKNOWN,
-    WEBGL,
-    CANVAS,
-}
-
-/**
  * Bitwise OR of masks that indicate the buffers to be cleared.
  *
  * @static
