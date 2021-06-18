@@ -60,7 +60,6 @@
     "@pixi/mixin-get-child-by-name": "7.0.0-alpha",
     "@pixi/mixin-get-global-position": "7.0.0-alpha",
     "@pixi/particles": "7.0.0-alpha",
-    "@pixi/polyfill": "7.0.0-alpha",
     "@pixi/prepare": "7.0.0-alpha",
     "@pixi/runner": "7.0.0-alpha",
     "@pixi/settings": "7.0.0-alpha",

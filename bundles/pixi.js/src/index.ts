@@ -1,5 +1,3 @@
-import '@pixi/polyfill';
-
 import * as utils from '@pixi/utils';
 import { AccessibilityManager } from '@pixi/accessibility';
 import { Application } from '@pixi/app';

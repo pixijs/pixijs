@@ -72,7 +72,7 @@ describe('PIXI.Sprite', function ()
         it('must have correct value according to texture size, width, height and anchor', function ()
         {
             const parent = new Container();
-            const texture = new RenderTexture.create({ width: 20, height: 30 });
+            const texture = RenderTexture.create({ width: 20, height: 30 });
             const sprite = new Sprite(texture);
 
             sprite.width = 200;
@@ -98,7 +98,7 @@ describe('PIXI.Sprite', function ()
     {
         it('must have correct value according to texture size, width, height and anchor', function ()
         {
-            const texture = new RenderTexture.create({ width: 20, height: 30 });
+            const texture = RenderTexture.create({ width: 20, height: 30 });
             const sprite = new Sprite(texture);
 
             sprite.anchor.set(0.5, 0.5);
@@ -114,7 +114,7 @@ describe('PIXI.Sprite', function ()
 
     describe('containsPoint', function ()
     {
-        const texture = new RenderTexture.create({ width: 20, height: 30 });
+        const texture = RenderTexture.create({ width: 20, height: 30 });
         const sprite = new Sprite(texture);
 
         it('should return true when point inside', function ()
