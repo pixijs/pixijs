@@ -15,7 +15,7 @@ describe('getLocalBounds', function ()
     it('should register correct local-bounds with a LOADED Sprite', function ()
     {
         const parent = new Container();
-        const texture = RenderTexture.create(10, 10);
+        const texture = RenderTexture.create({ width: 10, height: 10 });
 
         const sprite = new Sprite(texture);
 
@@ -164,7 +164,7 @@ describe('getLocalBounds', function ()
     {
         const parent = new Container();
 
-        const texture = RenderTexture.create(10, 10);
+        const texture = RenderTexture.create({ width: 10, height: 10 });
 
         const plane = new SimplePlane(texture);
 

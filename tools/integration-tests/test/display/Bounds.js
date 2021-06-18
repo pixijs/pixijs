@@ -11,7 +11,7 @@ describe('getBounds', function ()
     it('should register correct width/height with a LOADED Sprite', function ()
     {
         const parent = new Container();
-        const texture = RenderTexture.create(10, 10);
+        const texture = RenderTexture.create({ width: 10, height: 10 });
 
         const sprite = new Sprite(texture);
 
@@ -126,7 +126,7 @@ describe('getBounds', function ()
 
         const graphics = new Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10);
 
-        const texture = RenderTexture.create(10, 10);
+        const texture = RenderTexture.create({ width: 10, height: 10 });
         const sprite = new Sprite(texture);
 
         container.addChild(sprite);
@@ -197,7 +197,7 @@ describe('getBounds', function ()
     {
         const parent = new Container();
 
-        const texture = RenderTexture.create(10, 10);
+        const texture = RenderTexture.create({ width: 10, height: 10 });
 
         const plane = new SimplePlane(texture);
 
@@ -233,7 +233,7 @@ describe('getBounds', function ()
 
         const graphics = new Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10);
 
-        const texture = RenderTexture.create(10, 10);
+        const texture = RenderTexture.create({ width: 10, height: 10 });
         const sprite = new Sprite(texture);
 
         container.addChild(sprite);
@@ -278,7 +278,7 @@ describe('getBounds', function ()
 
         const container = new Container();
 
-        const texture = RenderTexture.create(10, 10);
+        const texture = RenderTexture.create({ width: 10, height: 10 });
         const sprite = new Sprite(texture);
 
         container.addChild(sprite);
@@ -304,7 +304,7 @@ describe('getBounds', function ()
 
         const graphics = new Graphics().beginFill(0xFF0000).drawRect(0, 0, 10, 10);
 
-        const texture = RenderTexture.create(10, 10);
+        const texture = RenderTexture.create({ width: 10, height: 10 });
         const sprite = new Sprite(texture);
 
         container.addChild(sprite);
@@ -389,7 +389,7 @@ describe('getBounds', function ()
     it('should return a different rectangle if getting local bounds after global bounds ', function ()
     {
         const parent = new Container();
-        const texture = RenderTexture.create(10, 10);
+        const texture = RenderTexture.create({ width: 10, height: 10 });
         const sprite = new Sprite(texture);
 
         sprite.position.x = 20;
