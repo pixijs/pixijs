@@ -4,8 +4,7 @@ import { Texture } from '../textures/Texture';
 import type { Rectangle } from '@pixi/math';
 import type { Framebuffer } from '../framebuffer/Framebuffer';
 import type { IBaseTextureOptions } from '../textures/BaseTexture';
-import type { MSAA_QUALITY, SCALE_MODES } from '@pixi/constants';
-import { deprecation } from '@pixi/utils';
+import type { MSAA_QUALITY } from '@pixi/constants';
 
 /**
  * A RenderTexture is a special texture that allows any PixiJS display object to be rendered to it.
@@ -159,18 +158,6 @@ export class RenderTexture extends Texture
     }
 
     /**
-     * Use the object-based construction instead.
-     *
-     * @method
-     * @deprecated since 6.0.0
-     * @param {number} [width]
-     * @param {number} [height]
-     * @param {PIXI.SCALE_MODES} [scaleMode=PIXI.settings.SCALE_MODE]
-     * @param {number} [resolution=PIXI.settings.FILTER_RESOLUTION]
-     */
-    static create(width: number, height: number, scaleMode?: SCALE_MODES, resolution?: number): RenderTexture;
-
-    /**
      * A short hand way of creating a render texture.
      *
      * @method
@@ -184,26 +171,8 @@ export class RenderTexture extends Texture
      * @param {PIXI.MSAA_QUALITY} [options.multisample=PIXI.MSAA_QUALITY.NONE] - The number of samples of the frame buffer
      * @return {PIXI.RenderTexture} The new render texture
      */
-    static create(options?: IBaseTextureOptions): RenderTexture;
-    static create(options?: IBaseTextureOptions | number, ...rest: any[]): RenderTexture
+    static create(options?: IBaseTextureOptions): RenderTexture
     {
-        // @deprecated fallback, old-style: create(width, height, scaleMode, resolution)
-        if (typeof options === 'number')
-        {
-            // #if _DEBUG
-            deprecation('6.0.0', 'Arguments (width, height, scaleMode, resolution) have been deprecated.');
-            // #endif
-
-            /* eslint-disable prefer-rest-params */
-            options = {
-                width: options,
-                height: rest[0],
-                scaleMode: rest[1],
-                resolution: rest[2],
-            };
-            /* eslint-enable prefer-rest-params */
-        }
-
         return new RenderTexture(new BaseRenderTexture(options));
     }
 }
