@@ -2,14 +2,11 @@ const { Text } = require('../');
 const { Sprite } = require('@pixi/sprite');
 const { skipHello } = require('@pixi/utils');
 const { settings } = require('@pixi/settings');
-const { CanvasRenderer } = require('@pixi/canvas-renderer');
-const { CanvasSpriteRenderer } = require('@pixi/canvas-sprite');
-
-require('@pixi/canvas-display');
+const { Renderer, BatchRenderer } = require('@pixi/core');
 
 skipHello();
 
-CanvasRenderer.registerPlugin('sprite', CanvasSpriteRenderer);
+Renderer.registerPlugin('batch', BatchRenderer);
 
 describe('PIXI.Text', function ()
 {
@@ -46,7 +43,7 @@ describe('PIXI.Text', function ()
 
             expect(text.resolution).to.equal(settings.RESOLUTION);
 
-            const renderer = new CanvasRenderer({ resolution: 2 });
+            const renderer = new Renderer({ resolution: 2 });
 
             renderer.render(text);
 
@@ -63,7 +60,7 @@ describe('PIXI.Text', function ()
 
             expect(text.resolution).to.equal(3);
 
-            const renderer = new CanvasRenderer({ resolution: 2 });
+            const renderer = new Renderer({ resolution: 2 });
 
             renderer.render(text);
 

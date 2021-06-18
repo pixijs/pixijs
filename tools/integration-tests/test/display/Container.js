@@ -3,8 +3,6 @@ const { Graphics } = require('@pixi/graphics');
 const { Transform } = require('@pixi/math');
 const { MaskData } = require('@pixi/core');
 
-require('@pixi/canvas-display');
-
 describe('PIXI.Container', function ()
 {
     describe('addChild', function ()
@@ -135,7 +133,7 @@ describe('PIXI.Container', function ()
         it('should take into account mask bounds after mask is set', function ()
         {
             const maskedObject = createSquareContainer(1, 15, 11, 31);
-            const parentContainer = new PIXI.Container();
+            const parentContainer = new Container();
             let bounds;
 
             parentContainer.addChild(maskedObject);

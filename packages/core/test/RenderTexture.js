@@ -1,10 +1,10 @@
-const { RenderTexture, autoDetectRenderer } = require('../');
+const { RenderTexture, Renderer } = require('../');
 
 describe('RenderTexture', function ()
 {
     it('should destroy the depth texture too', function ()
     {
-        const renderer = autoDetectRenderer();
+        const renderer = new Renderer();
 
         const renderTexture = RenderTexture.create({ width: 32, height: 32 });
         const framebuffer = renderTexture.framebuffer;

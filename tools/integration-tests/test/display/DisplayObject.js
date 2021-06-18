@@ -1,8 +1,6 @@
 const { DisplayObject } = require('@pixi/display');
 const { MaskData } = require('@pixi/core');
 
-require('@pixi/canvas-display');
-
 describe('PIXI.DisplayObject', function ()
 {
     describe('mask', function ()

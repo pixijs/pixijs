@@ -1,20 +1,11 @@
 const { Container } = require('@pixi/display');
-const { RenderTexture } = require('@pixi/core');
-const { CanvasRenderer } = require('@pixi/canvas-renderer');
+const { Renderer, BatchRenderer, RenderTexture } = require('@pixi/core');
 const { Sprite } = require('@pixi/sprite');
-const { CanvasSpriteRenderer } = require('@pixi/canvas-sprite');
 const { Graphics } = require('@pixi/graphics');
-const { CanvasGraphicsRenderer } = require('@pixi/canvas-graphics');
 const { Text } = require('@pixi/text');
 const { SimplePlane } = require('@pixi/mesh-extras');
-const { CanvasMeshRenderer } = require('@pixi/canvas-mesh');
 
-require('@pixi/canvas-display');
-require('@pixi/canvas-text');
-
-CanvasRenderer.registerPlugin('sprite', CanvasSpriteRenderer);
-CanvasRenderer.registerPlugin('graphics', CanvasGraphicsRenderer);
-CanvasRenderer.registerPlugin('mesh', CanvasMeshRenderer);
+Renderer.registerPlugin('batch', BatchRenderer);
 
 function withGL(fn)
 {
@@ -101,7 +92,7 @@ describe('getLocalBounds', function ()
         expect(bounds.height).to.equal(10);
     });
 
-    it('should register correct local-bounds with Graphics after generateCanvasTexture and clear', function ()
+    it.skip('should register correct local-bounds with Graphics after generateCanvasTexture and clear', function ()
     {
         const parent = new Container();
 
@@ -205,7 +196,7 @@ describe('getLocalBounds', function ()
 
         parent.addChild(graphic);
 
-        const renderer = new CanvasRenderer(100, 100);
+        const renderer = new Renderer({ width: 100, height: 100 });
 
         renderer.sayHello = () => { /* empty */ };
         renderer.render(parent);

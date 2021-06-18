@@ -1,5 +1,5 @@
 const { AccessibilityManager } = require('../');
-const { CanvasRenderer } = require('@pixi/canvas-renderer');
+const { Renderer } = require('@pixi/core');
 const { isMobile } = require('@pixi/utils');
 
 describe('PIXI.AccessibilityManager', function ()
@@ -19,9 +19,9 @@ describe('PIXI.AccessibilityManager', function ()
 
     it('should be plugin for renderer', function ()
     {
-        CanvasRenderer.registerPlugin('accessibility', AccessibilityManager);
+        Renderer.registerPlugin('accessibility', AccessibilityManager);
 
-        const renderer = new CanvasRenderer();
+        const renderer = new Renderer();
 
         expect(renderer.plugins.accessibility).to.be.instanceof(AccessibilityManager);
         renderer.destroy();

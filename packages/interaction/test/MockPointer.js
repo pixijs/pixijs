@@ -1,4 +1,4 @@
-const { CanvasRenderer } = require('@pixi/canvas-renderer');
+const { Renderer } = require('@pixi/core');
 const { Ticker } = require('@pixi/ticker');
 const { Rectangle } = require('@pixi/math');
 const { system } = Ticker;
@@ -35,7 +35,7 @@ class MockPointer
 
         this.activeTouches = [];
         this.stage = stage;
-        this.renderer = new CanvasRenderer(width || 100, height || 100);
+        this.renderer = new Renderer(width || 100, height || 100);
         this.renderer.sayHello = () => { /* empty */ };
         this.interaction = this.renderer.plugins.interaction;
         this.interaction.supportsTouchEvents = true;
