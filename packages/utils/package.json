@@ -1,6 +1,6 @@
 {
   "name": "@pixi/utils",
-  "version": "6.1.0-rc.2",
+  "version": "7.0.0-alpha",
   "main": "dist/cjs/utils.js",
   "module": "dist/esm/utils.js",
   "bundle": "dist/browser/utils.js",
@@ -26,8 +26,8 @@
     "*.d.ts"
   ],
   "dependencies": {
-    "@pixi/constants": "6.1.0-rc.2",
-    "@pixi/settings": "6.1.0-rc.2",
+    "@pixi/constants": "7.0.0-alpha",
+    "@pixi/settings": "7.0.0-alpha",
     "@types/earcut": "^2.1.0",
     "earcut": "^2.2.2",
     "eventemitter3": "^3.1.0",

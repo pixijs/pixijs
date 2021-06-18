@@ -1,6 +1,6 @@
 {
   "name": "@pixi/accessibility",
-  "version": "6.1.0-rc.2",
+  "version": "7.0.0-alpha",
   "main": "dist/cjs/accessibility.js",
   "module": "dist/esm/accessibility.js",
   "bundle": "dist/browser/accessibility.js",
@@ -25,8 +25,8 @@
     "*.d.ts"
   ],
   "dependencies": {
-    "@pixi/core": "6.1.0-rc.2",
-    "@pixi/display": "6.1.0-rc.2",
-    "@pixi/utils": "6.1.0-rc.2"
+    "@pixi/core": "7.0.0-alpha",
+    "@pixi/display": "7.0.0-alpha",
+    "@pixi/utils": "7.0.0-alpha"
   }
 }

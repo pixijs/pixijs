@@ -1,17 +1,17 @@
 {
   "name": "@internal/integration-tests",
   "private": true,
-  "version": "6.1.0-rc.2",
+  "version": "7.0.0-alpha",
   "description": "Integration tests for PixiJS packages",
   "devDependencies": {
-    "@pixi/core": "6.1.0-rc.2",
-    "@pixi/display": "6.1.0-rc.2",
-    "@pixi/graphics": "6.1.0-rc.2",
-    "@pixi/math": "6.1.0-rc.2",
-    "@pixi/mesh": "6.1.0-rc.2",
-    "@pixi/mesh-extras": "6.1.0-rc.2",
-    "@pixi/sprite": "6.1.0-rc.2",
-    "@pixi/text": "6.1.0-rc.2",
-    "@pixi/utils": "6.1.0-rc.2"
+    "@pixi/core": "7.0.0-alpha",
+    "@pixi/display": "7.0.0-alpha",
+    "@pixi/graphics": "7.0.0-alpha",
+    "@pixi/math": "7.0.0-alpha",
+    "@pixi/mesh": "7.0.0-alpha",
+    "@pixi/mesh-extras": "7.0.0-alpha",
+    "@pixi/sprite": "7.0.0-alpha",
+    "@pixi/text": "7.0.0-alpha",
+    "@pixi/utils": "7.0.0-alpha"
   }
 }

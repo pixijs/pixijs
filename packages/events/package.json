@@ -1,6 +1,6 @@
 {
   "name": "@pixi/events",
-  "version": "6.1.0-rc.2",
+  "version": "7.0.0-alpha",
   "main": "dist/cjs/events.js",
   "module": "dist/esm/events.js",
   "bundle": "dist/browser/events.js",
@@ -32,8 +32,8 @@
     "url": "https://github.com/pixijs/pixi.js/issues"
   },
   "dependencies": {
-    "@pixi/display": "6.1.0-rc.2",
-    "@pixi/math": "6.1.0-rc.2",
-    "@pixi/utils": "6.1.0-rc.2"
+    "@pixi/display": "7.0.0-alpha",
+    "@pixi/math": "7.0.0-alpha",
+    "@pixi/utils": "7.0.0-alpha"
   }
 }
