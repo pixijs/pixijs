@@ -1,6 +1,9 @@
 import { SHAPES } from './../const';
 import { Rectangle } from './Rectangle';
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface Circle extends GlobalMixins.Circle {}
+
 /**
  * The Circle object is used to help draw graphics and can also be used to specify a hit area for displayObjects.
  *

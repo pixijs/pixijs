@@ -1,6 +1,6 @@
 import { IPointData } from './IPointData';
 
-export interface IPoint extends IPointData
+export interface IPoint extends GlobalMixins.IPoint, IPointData
 {
     copyFrom(p: IPointData): this;
     copyTo<T extends IPoint>(p: T): T;
