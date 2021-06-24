@@ -4,9 +4,6 @@ import { PI_2 } from './const';
 import type { Transform } from './Transform';
 import type { IPointData } from './IPointData';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface Matrix extends GlobalMixins.Matrix {}
-
 /**
  * The PixiJS Matrix as a class makes it a lot faster.
  *

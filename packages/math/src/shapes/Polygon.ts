@@ -1,9 +1,6 @@
 import { SHAPES } from '../const';
 import type { IPointData } from '../IPointData';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface Polygon extends GlobalMixins.Polygon {}
-
 /**
  * A class to define a shape via user defined coordinates.
  *
