@@ -59,7 +59,7 @@
     "@pixi/mixin-cache-as-bitmap": "6.1.0-rc.2",
     "@pixi/mixin-get-child-by-name": "6.1.0-rc.2",
     "@pixi/mixin-get-global-position": "6.1.0-rc.2",
-    "@pixi/particles": "6.1.0-rc.2",
+    "@pixi/particle-container": "6.1.0-rc.2",
     "@pixi/polyfill": "6.1.0-rc.2",
     "@pixi/prepare": "6.1.0-rc.2",
     "@pixi/runner": "6.1.0-rc.2",

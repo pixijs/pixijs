@@ -38,7 +38,7 @@
     "@pixi/canvas-extract": "6.1.0-rc.2",
     "@pixi/canvas-graphics": "6.1.0-rc.2",
     "@pixi/canvas-mesh": "6.1.0-rc.2",
-    "@pixi/canvas-particles": "6.1.0-rc.2",
+    "@pixi/canvas-particle-container": "6.1.0-rc.2",
     "@pixi/canvas-prepare": "6.1.0-rc.2",
     "@pixi/canvas-renderer": "6.1.0-rc.2",
     "@pixi/canvas-sprite": "6.1.0-rc.2",
