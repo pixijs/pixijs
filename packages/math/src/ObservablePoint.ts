@@ -1,6 +1,8 @@
 import type { IPointData } from './IPointData';
 import type { IPoint } from './IPoint';
 
+export interface ObservablePoint extends GlobalMixins.Point, IPoint {}
+
 /**
  * The ObservablePoint object represents a location in a two-dimensional coordinate system, where `x` represents
  * the position on the horizontal axis and `y` represents the position on the vertical axis.
