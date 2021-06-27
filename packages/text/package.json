@@ -1,6 +1,6 @@
 {
   "name": "@pixi/text",
-  "version": "6.1.0-rc.2",
+  "version": "6.1.0-rc.3",
   "main": "dist/cjs/text.js",
   "module": "dist/esm/text.js",
   "bundle": "dist/browser/text.js",
@@ -25,15 +25,15 @@
     "*.d.ts"
   ],
   "dependencies": {
-    "@pixi/core": "6.1.0-rc.2",
-    "@pixi/math": "6.1.0-rc.2",
-    "@pixi/settings": "6.1.0-rc.2",
-    "@pixi/sprite": "6.1.0-rc.2",
-    "@pixi/utils": "6.1.0-rc.2"
+    "@pixi/core": "6.1.0-rc.3",
+    "@pixi/math": "6.1.0-rc.3",
+    "@pixi/settings": "6.1.0-rc.3",
+    "@pixi/sprite": "6.1.0-rc.3",
+    "@pixi/utils": "6.1.0-rc.3"
   },
   "devDependencies": {
-    "@pixi/canvas-display": "6.1.0-rc.2",
-    "@pixi/canvas-renderer": "6.1.0-rc.2",
-    "@pixi/canvas-sprite": "6.1.0-rc.2"
+    "@pixi/canvas-display": "6.1.0-rc.3",
+    "@pixi/canvas-renderer": "6.1.0-rc.3",
+    "@pixi/canvas-sprite": "6.1.0-rc.3"
   }
 }
