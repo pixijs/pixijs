@@ -28,7 +28,7 @@
     "type": "opencollective",
     "url": "https://opencollective.com/pixijs"
   },
-  "dependencies": {
+  "peerDependencies": {
     "@pixi/constants": "6.1.0-rc.3",
     "@pixi/math": "6.1.0-rc.3",
     "@pixi/runner": "6.1.0-rc.3",

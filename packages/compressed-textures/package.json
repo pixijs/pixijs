@@ -34,7 +34,7 @@
   "bugs": {
     "url": "https://github.com/pixijs/pixi.js/issues"
   },
-  "dependencies": {
+  "peerDependencies": {
     "@pixi/constants": "6.1.0-rc.3",
     "@pixi/core": "6.1.0-rc.3",
     "@pixi/loaders": "6.1.0-rc.3",
