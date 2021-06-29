@@ -138,7 +138,8 @@ async function main()
         ].join('\n');
 
         // Check for bundle folder
-        const external = Object.keys(pkg.dependencies || []);
+        const external = Object.keys(pkg.dependencies || [])
+            .concat(Object.keys(pkg.peerDependencies || []));
         const basePath = path.relative(__dirname, pkg.location);
         let input = path.join(basePath, 'src/index.ts');
 

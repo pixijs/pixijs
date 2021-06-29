@@ -24,7 +24,7 @@
     "dist",
     "*.d.ts"
   ],
-  "dependencies": {
+  "peerDependencies": {
     "@pixi/settings": "6.1.0-rc.3"
   }
 }

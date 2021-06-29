@@ -22,7 +22,7 @@
     "dist",
     "*.d.ts"
   ],
-  "dependencies": {
+  "peerDependencies": {
     "@pixi/graphics": "6.1.0-rc.3",
     "@pixi/math": "6.1.0-rc.3"
   }
