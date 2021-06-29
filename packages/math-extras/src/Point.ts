@@ -128,14 +128,19 @@ ObservablePoint.prototype.projection
 
 ObservablePoint.prototype.reflection
         = Point.prototype.reflection
-        = function reflection<T extends IPointData>(onto: IPointData, outPoint?: T): T
+        = function reflection<T extends IPointData>(normal: IPointData, outPoint?: T): T
         {
             if (!outPoint)
             {
                 outPoint = new Point();
             }
 
-            // brain.exe stopped working...
+            // Given an incident vector i and a normal vector n, returns the reflection vector r = i - 2 * dot(i, n) * n
+
+            const dotProduct = (this.x * normal.x) + (this.y * normal.y);
+
+            outPoint.x = this.x - (2 * dotProduct * normal.x);
+            outPoint.y = this.y - (2 * dotProduct * normal.y);
 
             return outPoint;
         };
