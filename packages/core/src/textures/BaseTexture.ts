@@ -363,8 +363,11 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
     }
     set mipmap(value: MIPMAP_MODES)
     {
-        this._mipmap = value;
-        this.dirtyStyleId++;
+        if (this._mipmap !== value)
+        {
+            this._mipmap = value;
+            this.dirtyStyleId++;
+        }
     }
 
     /**
@@ -379,8 +382,11 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
     }
     set scaleMode(value: SCALE_MODES)
     {
-        this._scaleMode = value;
-        this.dirtyStyleId++;
+        if (this._scaleMode !== value)
+        {
+            this._scaleMode = value;
+            this.dirtyStyleId++;
+        }
     }
 
     /**
@@ -394,8 +400,11 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
     }
     set wrapMode(value: WRAP_MODES)
     {
-        this._wrapMode = value;
-        this.dirtyStyleId++;
+        if (this._wrapMode !== value)
+        {
+            this._wrapMode = value;
+            this.dirtyStyleId++;
+        }
     }
 
     /**
