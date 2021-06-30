@@ -40,7 +40,7 @@ Rectangle.prototype.intersection = function intersection<T extends Rectangle>(ot
 {
     if (!outRect)
     {
-        outRect = new Rectangle();
+        (outRect as any) = new Rectangle();
     }
 
     const x0 = this.x < other.x ? other.x : this.x;
@@ -75,7 +75,7 @@ Rectangle.prototype.union = function union<T extends Rectangle>(other: Rectangle
 {
     if (!outRect)
     {
-        outRect = new Rectangle();
+        (outRect as any) = new Rectangle();
     }
 
     const x1 = Math.min(this.x, other.x);

@@ -1,73 +1,62 @@
 import { Point, IPointData, ObservablePoint } from '@pixi/math';
 
-ObservablePoint.prototype.addition
-= Point.prototype.addition
-= function addition<T extends IPointData>(other: IPointData, outPoint?: T): T
+const mixins = {
+    add<T extends IPointData>(other: IPointData, outPoint?: T): T
+    {
+        if (!outPoint)
         {
-            if (!outPoint)
-            {
-                outPoint = new Point();
-            }
-            outPoint.x = this.x + other.x;
-            outPoint.y = this.y + other.y;
+            (outPoint as any) = new Point();
+        }
+        outPoint.x = this.x + other.x;
+        outPoint.y = this.y + other.y;
 
-            return outPoint;
-        };
+        return outPoint;
+    },
 
-ObservablePoint.prototype.subtraction
-        = Point.prototype.subtraction
-        = function subtraction<T extends IPointData>(other: IPointData, outPoint?: T): T
+    subtract<T extends IPointData>(other: IPointData, outPoint?: T): T
+    {
+        if (!outPoint)
         {
-            if (!outPoint)
-            {
-                outPoint = new Point();
-            }
-            outPoint.x = this.x - other.x;
-            outPoint.y = this.y - other.y;
+            (outPoint as any) = new Point();
+        }
+        outPoint.x = this.x - other.x;
+        outPoint.y = this.y - other.y;
 
-            return outPoint;
-        };
+        return outPoint;
+    },
 
-ObservablePoint.prototype.multiplication
-        = Point.prototype.multiplication
-        = function multiplication<T extends IPointData>(other: IPointData, outPoint?: T): T
+    multiply<T extends IPointData>(other: IPointData, outPoint?: T): T
+    {
+        if (!outPoint)
         {
-            if (!outPoint)
-            {
-                outPoint = new Point();
-            }
-            outPoint.x = this.x * other.x;
-            outPoint.y = this.y * other.y;
+            (outPoint as any) = new Point();
+        }
+        outPoint.x = this.x * other.x;
+        outPoint.y = this.y * other.y;
 
-            return outPoint;
-        };
+        return outPoint;
+    },
 
-ObservablePoint.prototype.scalarMultiplication
-        = Point.prototype.scalarMultiplication
-        = function scalarMultiplication<T extends IPointData>(scalar: number, outPoint?: T): T
+    multiplyScalar<T extends IPointData>(scalar: number, outPoint?: T): T
+    {
+        if (!outPoint)
         {
-            if (!outPoint)
-            {
-                outPoint = new Point();
-            }
-            outPoint.x = this.x * scalar;
-            outPoint.y = this.y * scalar;
+            (outPoint as any) = new Point();
+        }
+        outPoint.x = this.x * scalar;
+        outPoint.y = this.y * scalar;
 
-            return outPoint;
-        };
+        return outPoint;
+    },
 
-ObservablePoint.prototype.dotProduct
-        = Point.prototype.dotProduct
-        = function dotProduct(other: IPointData): number
-        {
-            return (this.x * other.x) + (this.y * other.y);
-        };
+    dot(other: IPointData): number
+    {
+        return (this.x * other.x) + (this.y * other.y);
+    },
 
-ObservablePoint.prototype.crossProduct
-        = Point.prototype.crossProduct
-        = function crossProduct(other: IPointData): number
-        {
-            /*
+    cross(other: IPointData): number
+    {
+        /*
              * Returns the magnitude of the vector that would result
              * from a regular 3D cross product of the input vectors,
              * taking their Z values implicitly as 0
@@ -76,78 +65,70 @@ ObservablePoint.prototype.crossProduct
              * and thus have 0 X & Y components
              * (thus the scalar returned is the Z value of the 3D cross product vector).
              */
-            return (this.x * other.y) - (this.y * other.x);
-        };
+        return (this.x * other.y) - (this.y * other.x);
+    },
 
-ObservablePoint.prototype.normalized
-= Point.prototype.normalized
-= function normalized<T extends IPointData>(outPoint?: T): T
+    normalize<T extends IPointData>(outPoint?: T): T
+    {
+        if (!outPoint)
         {
-            if (!outPoint)
-            {
-                outPoint = new Point();
-            }
-            const magnitude = Math.sqrt((this.x * this.x) + (this.y * this.y));
+            (outPoint as any) = new Point();
+        }
+        const magnitude = Math.sqrt((this.x * this.x) + (this.y * this.y));
 
-            outPoint.x = this.x / magnitude;
-            outPoint.y = this.y / magnitude;
+        outPoint.x = this.x / magnitude;
+        outPoint.y = this.y / magnitude;
 
-            return outPoint;
-        };
+        return outPoint;
+    },
 
-ObservablePoint.prototype.magnitude
-= Point.prototype.magnitude
-= function magnitude(): number
+    magnitude(): number
+    {
+        return Math.sqrt((this.x * this.x) + (this.y * this.y));
+    },
+
+    magnitudeSquared(): number
+    {
+        return (this.x * this.x) + (this.y * this.y);
+    },
+
+    project<T extends IPointData>(onto: IPointData, outPoint?: T): T
+    {
+        if (!outPoint)
         {
-            return Math.sqrt((this.x * this.x) + (this.y * this.y));
-        };
+            (outPoint as any) = new Point();
+        }
+        // Math says: a Projected over b = [(a·b) / (b·b)] * b;
+        const scalarProjection = ((this.x * onto.x) + (this.y * onto.y)) / ((onto.x * onto.x) + (onto.y * onto.y));
 
-ObservablePoint.prototype.magnitudeSquared
-= Point.prototype.magnitudeSquared
-= function magnitudeSquared(): number
+        outPoint.x = onto.x * scalarProjection;
+        outPoint.y = onto.y * scalarProjection;
+
+        return outPoint;
+    },
+
+    reflect<T extends IPointData>(normal: IPointData, outPoint?: T): T
+    {
+        if (!outPoint)
         {
-            return (this.x * this.x) + (this.y * this.y);
-        };
+            (outPoint as any) = new Point();
+        }
 
-ObservablePoint.prototype.projection
-= Point.prototype.projection
-= function projection<T extends IPointData>(onto: IPointData, outPoint?: T): T
-        {
-            if (!outPoint)
-            {
-                outPoint = new Point();
-            }
-            // Math says: a Projected over b = [(a·b) / (b·b)] * b;
-            const scalarProjection = ((this.x * onto.x) + (this.y * onto.y)) / ((onto.x * onto.x) + (onto.y * onto.y));
+        // Given an incident vector i and a normal vector n, returns the reflection vector r = i - 2 * dot(i, n) * n
 
-            outPoint.x = onto.x * scalarProjection;
-            outPoint.y = onto.y * scalarProjection;
+        const dotProduct = (this.x * normal.x) + (this.y * normal.y);
 
-            return outPoint;
-        };
+        outPoint.x = this.x - (2 * dotProduct * normal.x);
+        outPoint.y = this.y - (2 * dotProduct * normal.y);
 
-ObservablePoint.prototype.reflection
-        = Point.prototype.reflection
-        = function reflection<T extends IPointData>(normal: IPointData, outPoint?: T): T
-        {
-            if (!outPoint)
-            {
-                outPoint = new Point();
-            }
+        return outPoint;
+    },
 
-            // Given an incident vector i and a normal vector n, returns the reflection vector r = i - 2 * dot(i, n) * n
+    equals(other: IPointData): boolean
+    {
+        return this.x === other.x && this.y === other.y;
+    },
+};
 
-            const dotProduct = (this.x * normal.x) + (this.y * normal.y);
-
-            outPoint.x = this.x - (2 * dotProduct * normal.x);
-            outPoint.y = this.y - (2 * dotProduct * normal.y);
-
-            return outPoint;
-        };
-
-ObservablePoint.prototype.equals
-        = Point.prototype.equals
-        = function equals(other: IPointData): boolean
-        {
-            return this.x === other.x && this.y === other.y;
-        };
+Object.assign(Point.prototype, mixins);
+Object.assign(ObservablePoint.prototype, mixins);
