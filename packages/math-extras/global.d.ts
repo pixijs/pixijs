@@ -27,37 +27,37 @@ declare namespace GlobalMixins
 }
 
 interface Vector2Math {
-    addition(other: import('@pixi/math').IPointData): Point;
-    addition<T extends import('@pixi/math').IPointData>(other: import('@pixi/math').IPointData, outPoint: T): T;
+    add(other: import('@pixi/math').IPointData): import('@pixi/math').Point;
+    add<T extends import('@pixi/math').IPointData>(other: import('@pixi/math').IPointData, outPoint: T): T;
 
-    subtraction(other: import('@pixi/math').IPointData): Point;
-    subtraction<T extends import('@pixi/math').IPointData>(other: import('@pixi/math').IPointData, outPoint: T): T;
+    subtract(other: import('@pixi/math').IPointData): import('@pixi/math').Point;
+    subtract<T extends import('@pixi/math').IPointData>(other: import('@pixi/math').IPointData, outPoint: T): T;
 
-    multiplication(other: import('@pixi/math').IPointData): Point;
-    multiplication<T extends import('@pixi/math').IPointData>(other: import('@pixi/math').IPointData, outPoint: T): T;
+    multiply(other: import('@pixi/math').IPointData): import('@pixi/math').Point;
+    multiply<T extends import('@pixi/math').IPointData>(other: import('@pixi/math').IPointData, outPoint: T): T;
 
-    division(other: import('@pixi/math').IPointData): Point;
-    division<T extends import('@pixi/math').IPointData>(other: import('@pixi/math').IPointData, outPoint: T): T;
+    divide(other: import('@pixi/math').IPointData): import('@pixi/math').Point;
+    divide<T extends import('@pixi/math').IPointData>(other: import('@pixi/math').IPointData, outPoint: T): T;
 
-    scalarMultiplication(scalar: number): Point;
-    scalarMultiplication<T extends import('@pixi/math').IPointData>(scalar: number, outPoint: T): T;
+    multiplyScalar(scalar: number): import('@pixi/math').Point;
+    multiplyScalar<T extends import('@pixi/math').IPointData>(scalar: number, outPoint: T): T;
 
-    dotProduct(other: import('@pixi/math').IPointData): number;
+    dot(other: import('@pixi/math').IPointData): number;
 
-    crossProduct(other: import('@pixi/math').IPointData): number;
+    cross(other: import('@pixi/math').IPointData): number;
 
-    normalized(): Point;
-    normalized<T extends import('@pixi/math').IPointData>(outPoint: T): T;
+    normalize(): import('@pixi/math').Point;
+    normalize<T extends import('@pixi/math').IPointData>(outPoint: T): T;
 
     magnitude(): number;
 
     magnitudeSquared(): number;
 
-    projection(onto: import('@pixi/math').IPointData): Point;
-    projection<T extends import('@pixi/math').IPointData>(onto: import('@pixi/math').IPointData, outPoint: T): T;
+    project(onto: import('@pixi/math').IPointData): import('@pixi/math').Point;
+    project<T extends import('@pixi/math').IPointData>(onto: import('@pixi/math').IPointData, outPoint: T): T;
 
-    reflection(normal: Point): Point;
-    reflection<T extends import('@pixi/math').IPointData>(normal: Point, outPoint: T): T;
+    reflect(normal: import('@pixi/math').IPointData): import('@pixi/math').Point;
+    reflect<T extends import('@pixi/math').IPointData>(normal: import('@pixi/math').IPointData, outPoint: T): T;
 
     equals(other: import('@pixi/math').IPointData): boolean;
 }
