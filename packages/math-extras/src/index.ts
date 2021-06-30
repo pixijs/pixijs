@@ -25,7 +25,7 @@ export function lineIntersection
 {
     if (!outPoint)
     {
-        outPoint = new Point();
+        (outPoint as any) = new Point();
     }
 
     const denominator = (((bEnd.y - bStart.y) * (aEnd.x - aStart.x)) - ((bEnd.x - bStart.x) * (aEnd.y - aStart.y)));
