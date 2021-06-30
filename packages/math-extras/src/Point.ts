@@ -1,6 +1,6 @@
 import { Point, IPointData, ObservablePoint } from '@pixi/math';
 
-const mixins = {
+const mixins: any = {
     add<T extends IPointData>(other: IPointData, outPoint?: T): T
     {
         if (!outPoint)
