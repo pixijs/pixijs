@@ -84,8 +84,8 @@ Rectangle.prototype.union = function union<T extends Rectangle>(other: Rectangle
     const y2 = Math.max(this.y + this.height, other.y + other.height);
 
     outRect.x = x1;
-    outRect.y = x2 - x1;
-    outRect.width = y1;
+    outRect.y = y1;
+    outRect.width = x2 - x1;
     outRect.height = y2 - y1;
 
     return outRect;
