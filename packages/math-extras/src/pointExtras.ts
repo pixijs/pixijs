@@ -1,6 +1,15 @@
 import { Point, IPointData, ObservablePoint } from '@pixi/math';
 
 const mixins: any = {
+    /**
+     * Adds `other` to `this` point and outputs into `outPoint` or a new Point
+     * @method add
+     * @memberof PIXI.Point#
+     * @alias PIXI.ObservablePoint.add
+     * @param other The point to add to `this`
+     * @param [outPoint] A Point-like object in which to store the value, optional (otherwise will create a new Point).
+     * @returns The `outPoint` reference or a new Point, with the result of the addition.
+     */
     add<T extends IPointData>(other: IPointData, outPoint?: T): T
     {
         if (!outPoint)

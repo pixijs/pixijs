@@ -1,5 +1,5 @@
-import './Point';
-import './Rectangle';
+import './pointExtras';
+import './rectangleExtras';
 
 import { IPointData, Point } from '@pixi/math';
 
