@@ -202,8 +202,8 @@ export class Text extends Sprite
         const maxLineWidth = measured.maxLineWidth;
         const fontProperties = measured.fontProperties;
 
-        this.canvas.width = Math.ceil((Math.max(1, width) + (style.padding * 2)) * this._resolution);
-        this.canvas.height = Math.ceil((Math.max(1, height) + (style.padding * 2)) * this._resolution);
+        this.canvas.width = Math.ceil((Math.max(1, width) + (style.padding * 2))) * this._resolution;
+        this.canvas.height = Math.ceil((Math.max(1, height) + (style.padding * 2))) * this._resolution;
 
         context.scale(this._resolution, this._resolution);
 
