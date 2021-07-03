@@ -2,13 +2,22 @@ import { Point, IPointData, ObservablePoint } from '@pixi/math';
 
 const mixins: any = {
     /**
-     * Adds `other` to `this` point and outputs into `outPoint` or a new Point
+     * Adds `other` to `this` point and outputs into `outPoint` or a new Point.
      * @method add
      * @memberof PIXI.Point#
-     * @alias PIXI.ObservablePoint.add
-     * @param other The point to add to `this`
-     * @param [outPoint] A Point-like object in which to store the value, optional (otherwise will create a new Point).
-     * @returns The `outPoint` reference or a new Point, with the result of the addition.
+     * @param {IPointData} other - The point to add to `this`.
+     * @param {IPointData} [outPoint] - A Point-like object in which to store the value,
+     * optional (otherwise will create a new Point).
+     * @returns {IPointData} The `outPoint` reference or a new Point, with the result of the addition.
+     */
+    /**
+     * Adds `other` to `this` point and outputs into `outPoint` or a new Point.
+     * @method add
+     * @memberof PIXI.ObservablePoint#
+     * @param {IPointData} other - The point to add to `this`.
+     * @param {IPointData} [outPoint] - A Point-like object in which to store the value,
+     * optional (otherwise will create a new Point).
+     * @returns {IPointData} The `outPoint` reference or a new Point, with the result of the addition.
      */
     add<T extends IPointData>(other: IPointData, outPoint?: T): T
     {
@@ -22,6 +31,24 @@ const mixins: any = {
         return outPoint;
     },
 
+    /**
+     * Subtracts `other` from `this` point and outputs into `outPoint` or a new Point.
+     * @method subtract
+     * @memberof PIXI.Point#
+     * @param {IPointData} other - The point to subtract to `this`.
+     * @param {IPointData} [outPoint] - A Point-like object in which to store the value,
+     * optional (otherwise will create a new Point).
+     * @returns {IPointData} The `outPoint` reference or a new Point, with the result of the subtraction.
+     */
+    /**
+     * Subtracts `other` from `this` point and outputs into `outPoint` or a new Point.
+     * @method subtract
+     * @memberof PIXI.ObservablePoint#
+     * @param {IPointData} other - The point to subtract to `this`.
+     * @param {IPointData} [outPoint] - A Point-like object in which to store the value,
+     * optional (otherwise will create a new Point).
+     * @returns {IPointData} The `outPoint` reference or a new Point, with the result of the subtraction.
+     */
     subtract<T extends IPointData>(other: IPointData, outPoint?: T): T
     {
         if (!outPoint)
@@ -34,6 +61,24 @@ const mixins: any = {
         return outPoint;
     },
 
+    /**
+     * Multiplies component-wise `other` and `this` points and outputs into `outPoint` or a new Point.
+     * @method multiply
+     * @memberof PIXI.Point#
+     * @param {IPointData} other - The point to multiply with `this`.
+     * @param {IPointData} [outPoint] - A Point-like object in which to store the value,
+     * optional (otherwise will create a new Point).
+     * @returns {IPointData} The `outPoint` reference or a new Point, with the component-wise multiplication.
+     */
+    /**
+     * Multiplies component-wise `other` and `this` points and outputs into `outPoint` or a new Point.
+     * @method multiply
+     * @memberof PIXI.ObservablePoint#
+     * @param {IPointData} other - The point to multiply with `this`.
+     * @param {IPointData} [outPoint] - A Point-like object in which to store the value,
+     * optional (otherwise will create a new Point).
+     * @returns {IPointData} The `outPoint` reference or a new Point, with the component-wise multiplication.
+     */
     multiply<T extends IPointData>(other: IPointData, outPoint?: T): T
     {
         if (!outPoint)
@@ -46,6 +91,24 @@ const mixins: any = {
         return outPoint;
     },
 
+    /**
+     * Multiplies each component of `this` point with the number `scalar` and outputs into `outPoint` or a new Point.
+     * @method multiplyScalar
+     * @memberof PIXI.Point#
+     * @param {number} scalar - The number to multiply both components of `this`.
+     * @param {IPointData} [outPoint] - A Point-like object in which to store the value,
+     * optional (otherwise will create a new Point).
+     * @returns {IPointData} The `outPoint` reference or a new Point, with the multiplication.
+     */
+    /**
+     * Multiplies each component of `this` point with the number `scalar` and outputs into `outPoint` or a new Point.
+     * @method multiplyScalar
+     * @memberof PIXI.ObservablePoint#
+     * @param {number} scalar - The number to multiply both components of `this`.
+     * @param {IPointData} [outPoint] - A Point-like object in which to store the value,
+     * optional (otherwise will create a new Point).
+     * @returns {IPointData} The `outPoint` reference or a new Point, with the multiplication.
+     */
     multiplyScalar<T extends IPointData>(scalar: number, outPoint?: T): T
     {
         if (!outPoint)
@@ -58,11 +121,53 @@ const mixins: any = {
         return outPoint;
     },
 
+    /**
+     * Computes the dot product of `other` with `this` point.
+     * The dot product is the sum of the products of the corresponding components of two vectors.
+     * @method dot
+     * @memberof PIXI.Point#
+     * @param {IPointData} other - The other point to calculate the dot product with `this`.
+     * @returns {number} The result of the dot product. This is an scalar value.
+     */
+    /**
+     * Computes the dot product of `other` with `this` point.
+     * The dot product is the sum of the products of the corresponding components of two vectors.
+     * @method dot
+     * @memberof PIXI.ObservablePoint#
+     * @param {IPointData} other - The other point to calculate the dot product with `this`.
+     * @returns {number} The result of the dot product. This is an scalar value.
+     */
     dot(other: IPointData): number
     {
         return (this.x * other.x) + (this.y * other.y);
     },
 
+    /**
+     * Computes the cross product of `other` with `this` point.
+     * Given two linearly independent R3 vectors a and b, the cross product, a × b (read "a cross b"),
+     * is a vector that is perpendicular to both a and b, and thus normal to the plane containing them.
+     * While cross product only exists on 3D space, we can assume the z component of 2D to be zero and
+     * the result becomes a vector that will only have magnitude on the z axis.
+     *
+     * This function returns the z component of the cross product of the two points.
+     * @method cross
+     * @memberof PIXI.Point#
+     * @param {IPointData} other - The other point to calculate the cross product with `this`.
+     * @returns {number} The z component of the result of the cross product.
+     */
+    /**
+     * Computes the cross product of `other` with `this` point.
+     * Given two linearly independent R3 vectors a and b, the cross product, a × b (read "a cross b"),
+     * is a vector that is perpendicular to both a and b, and thus normal to the plane containing them.
+     * While cross product only exists on 3D space, we can assume the z component of 2D to be zero and
+     * the result becomes a vector that will only have magnitude on the z axis.
+     *
+     * This function returns the z component of the cross product of the two points.
+     * @method cross
+     * @memberof PIXI.ObservablePoint#
+     * @param {IPointData} other - The other point to calculate the cross product with `this`.
+     * @returns {number} The z component of the result of the cross product.
+     */
     cross(other: IPointData): number
     {
         /*
@@ -77,6 +182,26 @@ const mixins: any = {
         return (this.x * other.y) - (this.y * other.x);
     },
 
+    /**
+     * Computes a normalized version of `this` point.
+     *
+     * A normalized vector is a vector of magnitude (length) 1
+     * @method normalize
+     * @memberof PIXI.Point#
+     * @param {IPointData} [outPoint] - A Point-like object in which to store the value,
+     * optional (otherwise will create a new Point).
+     * @returns {IPointData} The normalized point.
+     */
+    /**
+     * Computes a normalized version of `this` point.
+     *
+     * A normalized vector is a vector of magnitude (length) 1
+     * @method normalize
+     * @memberof PIXI.ObservablePoint#
+     * @param {IPointData} [outPoint] - A Point-like object in which to store the value,
+     * optional (otherwise will create a new Point).
+     * @returns {IPointData} The normalized point.
+     */
     normalize<T extends IPointData>(outPoint?: T): T
     {
         if (!outPoint)
@@ -91,16 +216,78 @@ const mixins: any = {
         return outPoint;
     },
 
+    /**
+     * Computes the magnitude of this point (Euclidean distance from 0, 0).
+     *
+     * Defined as the square root of the sum of the squares of each component.
+     * @method magnitude
+     * @memberof PIXI.Point#
+     * @returns {number} The magnitude (length) of the vector.
+     */
+    /**
+     * Computes the magnitude of this point (Euclidean distance from 0, 0).
+     *
+     * Defined as the square root of the sum of the squares of each component.
+     * @method magnitude
+     * @memberof PIXI.ObservablePoint#
+     * @returns {number} The magnitude (length) of the vector.
+     */
     magnitude(): number
     {
         return Math.sqrt((this.x * this.x) + (this.y * this.y));
     },
 
+    /**
+     * Computes the square magnitude of this point.
+     * If you are comparing the lengths of vectors, you should compare the length squared instead
+     * as it is slightly more efficient to calculate.
+     *
+     * Defined as the sum of the squares of each component.
+     * @method magnitudeSquared
+     * @memberof PIXI.Point#
+     * @returns {number} The magnitude squared (length squared) of the vector.
+     */
+    /**
+     * Computes the square magnitude of this point.
+     * If you are comparing the lengths of vectors, you should compare the length squared instead
+     * as it is slightly more efficient to calculate.
+     *
+     * Defined as the sum of the squares of each component.
+     * @method magnitudeSquared
+     * @memberof PIXI.ObservablePoint#
+     * @returns {number} The magnitude squared (length squared) of the vector.
+     */
     magnitudeSquared(): number
     {
         return (this.x * this.x) + (this.y * this.y);
     },
 
+    /**
+     * Computes vector projection of `this` on `onto`.
+     *
+     * Imagine a light source, parallel to `onto`, above `this`.
+     * The light would cast rays perpendicular to `onto`.
+     * `this.project(onto)` is the shadow cast by `this` on the line defined by `onto` .
+     * @method project
+     * @memberof PIXI.Point#
+     * @param {IPointData} onto - A non zero vector describing a line on which to project `this`.
+     * @param {IPointData} [outPoint] - A Point-like object in which to store the value,
+     * optional (otherwise will create a new Point).
+     * @returns {IPointData} The `this` on `onto` projection.
+     */
+    /**
+     * Computes vector projection of `this` on `onto`.
+     *
+     * Imagine a light source, parallel to `onto`, above `this`.
+     * The light would cast rays perpendicular to `onto`.
+     * `this.project(onto)` is the shadow cast by `this` on the line defined by `onto` .
+     * @method project
+     * @memberof PIXI.ObservablePoint#
+     * @param {IPointData} onto - A non zero vector describing a line on which to project `this`.
+     * @param {IPointData} [outPoint] - A Point-like object in which to store the value,
+     * optional (otherwise will create a new Point).
+     * @returns {IPointData} The `this` on `onto` projection.
+     */
     project<T extends IPointData>(onto: IPointData, outPoint?: T): T
     {
         if (!outPoint)
@@ -116,6 +303,34 @@ const mixins: any = {
         return outPoint;
     },
 
+    /**
+     * Reflect `this` vector off of a plane orthogonal to `normal`.
+     * `normal` is not normalized during this process. Consider normalizing your `normal` before use.
+     *
+     * Imagine a light source bouncing onto a mirror.
+     * `this` vector is the light and `normal` is a vector perpendicular to the mirror.
+     * `this.reflect(normal)` is the reflection of `this` on that mirror.
+     * @method reflect
+     * @memberof PIXI.Point#
+     * @param {IPointData} normal - The normal vector of your reflecting plane.
+     * @param {IPointData} [outPoint] - A Point-like object in which to store the value,
+     * optional (otherwise will create a new Point).
+     * @returns {IPointData} The reflection of `this` on your reflecting plane.
+     */
+    /**
+     * Reflect `this` vector off of a plane orthogonal to `normal`.
+     * `normal` is not normalized during this process. Consider normalizing your `normal` before use.
+     *
+     * Imagine a light source bouncing onto a mirror.
+     * `this` vector is the light and `normal` is a vector perpendicular to the mirror.
+     * `this.reflect(normal)` is the reflection of `this` on that mirror.
+     * @method reflect
+     * @memberof PIXI.ObservablePoint#
+     * @param {IPointData} normal - The normal vector of your reflecting plane.
+     * @param {IPointData} [outPoint] - A Point-like object in which to store the value,
+     * optional (otherwise will create a new Point).
+     * @returns {IPointData} The reflection of `this` on your reflecting plane.
+     */
     reflect<T extends IPointData>(normal: IPointData, outPoint?: T): T
     {
         if (!outPoint)
@@ -133,6 +348,20 @@ const mixins: any = {
         return outPoint;
     },
 
+    /**
+     * Two Points are equal only if their corresponding components are equal.
+     * @method equals
+     * @memberof PIXI.Point#
+     * @param {IPointData} other - The other point to compare to.
+     * @returns true if the corresponding components are equal, false otherwise.
+     */
+    /**
+     * Two Points are equal only if their corresponding components are equal.
+     * @method equals
+     * @memberof PIXI.ObservablePoint#
+     * @param {IPointData} other - The other point to compare to.
+     * @returns true if the corresponding components are equal, false otherwise.
+     */
     equals(other: IPointData): boolean
     {
         return this.x === other.x && this.y === other.y;
