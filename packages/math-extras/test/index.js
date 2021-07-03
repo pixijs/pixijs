@@ -562,28 +562,6 @@ describe('@pixi/math-extras#Point.reflect', function ()
     });
 });
 
-describe('@pixi/math-extras#Point.equals', function ()
-{
-    it('equals() should return true only if both components are equal', function ()
-    {
-        // Point
-        const a = new Point(1, 2);
-        const b = new Point(3, 4);
-        const c = new Point(1, 2);
-
-        expect(a.equals(b)).to.equal(false);
-        expect(a.equals(c)).to.equal(true);
-
-        // ObservablePoint
-        const oa = new ObservablePoint(() => { /* empty */ }, {}, 1, 2);
-        const ob = new ObservablePoint(() => { /* empty */ }, {}, 3, 4);
-        const oc = new ObservablePoint(() => { /* empty */ }, {}, 1, 2);
-
-        expect(oa.equals(ob)).to.equal(false);
-        expect(oa.equals(oc)).to.equal(true);
-    });
-});
-
 describe('@pixi/math-extras#Rectangle.intersects', function ()
 {
     it('intersects() should return true if the area of the intersection > 0', function ()

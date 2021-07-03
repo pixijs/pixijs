@@ -58,6 +58,4 @@ interface Vector2Math {
 
     reflect(normal: import('@pixi/math').IPointData): import('@pixi/math').Point;
     reflect<T extends import('@pixi/math').IPointData>(normal: import('@pixi/math').IPointData, outPoint: T): T;
-
-    equals(other: import('@pixi/math').IPointData): boolean;
 }

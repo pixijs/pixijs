@@ -346,26 +346,7 @@ const mixins: any = {
         outPoint.y = this.y - (2 * dotProduct * normal.y);
 
         return outPoint;
-    },
-
-    /**
-     * Two Points are equal only if their corresponding components are equal.
-     * @method equals
-     * @memberof PIXI.Point#
-     * @param {IPointData} other - The other point to compare to.
-     * @returns true if the corresponding components are equal, false otherwise.
-     */
-    /**
-     * Two Points are equal only if their corresponding components are equal.
-     * @method equals
-     * @memberof PIXI.ObservablePoint#
-     * @param {IPointData} other - The other point to compare to.
-     * @returns true if the corresponding components are equal, false otherwise.
-     */
-    equals(other: IPointData): boolean
-    {
-        return this.x === other.x && this.y === other.y;
-    },
+    }
 };
 
 Object.assign(Point.prototype, mixins);
