@@ -304,7 +304,7 @@ const mixins: any = {
     },
 
     /**
-     * Reflect `this` vector off of a plane orthogonal to `normal`.
+     * Reflects `this` vector off of a plane orthogonal to `normal`.
      * `normal` is not normalized during this process. Consider normalizing your `normal` before use.
      *
      * Imagine a light source bouncing onto a mirror.
@@ -318,7 +318,7 @@ const mixins: any = {
      * @returns {IPointData} The reflection of `this` on your reflecting plane.
      */
     /**
-     * Reflect `this` vector off of a plane orthogonal to `normal`.
+     * Reflects `this` vector off of a plane orthogonal to `normal`.
      * `normal` is not normalized during this process. Consider normalizing your `normal` before use.
      *
      * Imagine a light source bouncing onto a mirror.

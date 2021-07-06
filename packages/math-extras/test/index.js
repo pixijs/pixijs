@@ -685,11 +685,26 @@ describe('@pixi/math-extras#Rectangle.intersection', function ()
     it('intersection() should return a rectangle with the intersection if the area is > 0, otherwise an empty rectangle',
         function ()
         {
+            /*
+            +--------+
+            |   A    |
+            |   +---+---+
+            |   | 🄴 | B |
+            +---|---+---|-----+
+                |   |   |     |
+                +---+---+ C   |
+                    |         |
+                    +---------+
+            */
             const a = new Rectangle(0, 0, 100, 100);
             const b = new Rectangle(50, 50, 100, 100);
             const c = new Rectangle(100, 100, 100, 100);
+            const empty = new Rectangle(75, 75, 0, 0);
             const d = a.intersection(b);
             const e = a.intersection(c);
+            const emptyIntersects = empty.intersection(b);
+            const intersectingEmpty = b.intersection(empty);
+            const emptyIntersectsItself = empty.intersection(empty);
 
             expect(d.x).to.equal(50);
             expect(d.y).to.equal(50);
@@ -700,6 +715,22 @@ describe('@pixi/math-extras#Rectangle.intersection', function ()
             expect(e.y).to.equal(0);
             expect(e.width).to.equal(0);
             expect(e.height).to.equal(0);
+
+            // empty rectangles can't intersect or be intersected
+            expect(emptyIntersects.x).to.equal(0);
+            expect(emptyIntersects.y).to.equal(0);
+            expect(emptyIntersects.width).to.equal(0);
+            expect(emptyIntersects.height).to.equal(0);
+
+            expect(intersectingEmpty.x).to.equal(0);
+            expect(intersectingEmpty.y).to.equal(0);
+            expect(intersectingEmpty.width).to.equal(0);
+            expect(intersectingEmpty.height).to.equal(0);
+
+            expect(emptyIntersectsItself.x).to.equal(0);
+            expect(emptyIntersectsItself.y).to.equal(0);
+            expect(emptyIntersectsItself.width).to.equal(0);
+            expect(emptyIntersectsItself.height).to.equal(0);
         });
 
     it('intersection() should return the same reference given', function ()
@@ -782,7 +813,7 @@ describe('@pixi/math-extras#lineIntersection', function ()
             expect(intersect.y).to.equal(7.25);
         });
 
-    it('lineIntersection() should return infinity if the lines are parallel',
+    it('lineIntersection() should return NaN if the lines are parallel',
         function ()
         {
             const aStart = new Point(1, 2);
@@ -792,8 +823,8 @@ describe('@pixi/math-extras#lineIntersection', function ()
 
             const parallel = lineIntersection(aStart, aEnd, parallelStart, parallelEnd);
 
-            expect(parallel.x).to.equal(Infinity);
-            expect(parallel.y).to.equal(Infinity);
+            expect(parallel.x).to.be.NaN;
+            expect(parallel.y).to.be.NaN;
         });
     it('lineIntersection() should return the same reference given', function ()
     {

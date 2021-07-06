@@ -1,5 +1,15 @@
 import { Rectangle } from '@pixi/math';
 
+/**
+ * Determines whether the `other` Rectangle intersects with `this` Rectangle object.
+ * Returns true only if the area of the intersection is >0, this means that Rectangles
+ * sharing a side are not overlapping. Another side effect is that an arealess rectangle
+ * (width or height equal to zero) can't intersect any other rectangle.
+ * @method intersects
+ * @memberof PIXI.Rectangle#
+ * @param {Rectangle} other - The Rectangle to intersect with `this`.
+ * @returns {boolean} A value of `true` if the `other` Rectangle intersects with `this`; otherwise `false`.
+ */
 Rectangle.prototype.intersects = function intersects(other: Rectangle): boolean
 {
     const x0 = this.x < other.x ? other.x : this.x;
@@ -16,6 +26,16 @@ Rectangle.prototype.intersects = function intersects(other: Rectangle): boolean
     return y1 > y0;
 };
 
+/**
+ * Determines whether the `other` Rectangle is contained within `this` Rectangle object.
+ * Rectangles that occupy the same space are considered to be containing each other.
+ * Rectangles without area (width or height equal to zero) can't contain anything,
+ * not even other arealess rectangles.
+ * @method containsRect
+ * @memberof PIXI.Rectangle#
+ * @param {Rectangle} other - The Rectangle to fit inside `this`.
+ * @returns {boolean} A value of `true` if `this` Rectangle contains `other`; otherwise `false`.
+ */
 Rectangle.prototype.containsRect = function containsRect(other: Rectangle): boolean
 {
     if (other.width <= 0 || other.height <= 0)
@@ -26,6 +46,13 @@ Rectangle.prototype.containsRect = function containsRect(other: Rectangle): bool
     return other.x >= this.x && other.y >= this.y && other.right <= this.right && other.bottom <= this.bottom;
 };
 
+/**
+ * Accepts `other` Rectangle and returns true if the given Rectangle is equal to `this` Rectangle.
+ * @method equals
+ * @memberof PIXI.Rectangle#
+ * @param {Rectangle} other - The Rectangle to compare with `this`
+ * @returns {boolean} Returns true if all `x`, `y`, `width`, and `height` are equal.
+ */
 Rectangle.prototype.equals = function equals(other: Rectangle): boolean
 {
     if (other === this)
@@ -36,6 +63,19 @@ Rectangle.prototype.equals = function equals(other: Rectangle): boolean
     return other && this.x === other.x && this.y === other.y && this.width === other.width && this.height === other.height;
 };
 
+/**
+ * If the area of the intersection between the Rectangles `other` and `this` is not zero,
+ * returns the area of intersection as a Rectangle object. Otherwise, return an empty Rectangle
+ * with its properties set to zero.
+ * Rectangles without area (width or height equal to zero) can't intersect or be intersected
+ * and will always return an empty rectangle with its properties set to zero.
+ * @method intersects
+ * @memberof PIXI.Rectangle#
+ * @param {Rectangle} other - The Rectangle to intersect with `this`.
+ * @param {Rectangle} [outRect] - A Rectangle object in which to store the value,
+ * optional (otherwise will create a new Rectangle).
+ * @returns {Rectangle} The intersection of `this` and `other`.
+ */
 Rectangle.prototype.intersection = function intersection<T extends Rectangle>(other: Rectangle, outRect?: T): T
 {
     if (!outRect)
@@ -71,6 +111,16 @@ Rectangle.prototype.intersection = function intersection<T extends Rectangle>(ot
     return outRect;
 };
 
+/**
+ * Adds `this` and `other` Rectangles together to create a new Rectangle object filling
+ * the horizontal and vertical space between the two rectangles.
+ * @method intersects
+ * @memberof PIXI.Rectangle#
+ * @param {Rectangle} other - The Rectangle to unite with `this`.
+ * @param {Rectangle} [outRect] - A Rectangle object in which to store the value,
+ * optional (otherwise will create a new Rectangle).
+ * @returns {Rectangle} The union of `this` and `other`.
+ */
 Rectangle.prototype.union = function union<T extends Rectangle>(other: Rectangle, outRect?: T): T
 {
     if (!outRect)
