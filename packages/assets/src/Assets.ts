@@ -11,6 +11,16 @@ class AssetsClass
 {
     texture: AssetCache<ImageMeta, Texture> = new AssetCache();
 
+    constructor()
+    {
+        this.texture.prefer({
+
+            resolution: [2, 1],
+            format: ['png', 'jpg'],
+            priority: ['format', 'resolution']
+
+        });
+    }
     async load(assets: string[])
     {
         let singleAsset = false;
