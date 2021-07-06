@@ -1,0 +1,30 @@
+{
+  "name": "@pixi/assets",
+  "version": "1.0.0",
+  "main": "dist/cjs/assets.js",
+  "module": "dist/esm/assets.js",
+  "bundle": "dist/browser/assets.js",
+  "description": "Asset manager used across PixiJS",
+  "author": "Mat Groves",
+  "contributors": [],
+  "homepage": "http://pixijs.com/",
+  "bugs": "https://github.com/pixijs/pixi.js/issues",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pixijs/pixi.js.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "lib",
+    "dist",
+    "*.d.ts"
+  ],
+  "peerDependencies": {
+    "@pixi/constants": "6.1.0-rc.4",
+    "@pixi/core": "6.1.0-rc.4",
+    "@pixi/utils": "6.1.0-rc.4"
+  }
+}

@@ -71,6 +71,7 @@
     "@pixi/text": "6.1.0-rc.4",
     "@pixi/text-bitmap": "6.1.0-rc.4",
     "@pixi/ticker": "6.1.0-rc.4",
-    "@pixi/utils": "6.1.0-rc.4"
+    "@pixi/utils": "6.1.0-rc.4",
+    "@pixi/assets": "1.0.0"
   }
 }
