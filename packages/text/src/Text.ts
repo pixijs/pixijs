@@ -547,7 +547,7 @@ export class Text extends Sprite
                 // Handle case where last & this line overlap
                 if (i > 0 && lastLineBottom > thisLineTop)
                 {
-                    thisLineGradientStart = (thisLineTop + lastLineBottom) / 2;
+                    thisLineGradientStart = thisLineTop;
                 }
 
                 const thisLineBottom = thisLineTop + textHeight;
@@ -557,7 +557,7 @@ export class Text extends Sprite
                 // Handle case where this & next line overlap
                 if (i + 1 < lines.length && nextLineTop < thisLineBottom)
                 {
-                    thisLineGradientEnd = (thisLineBottom + nextLineTop) / 2;
+                    thisLineGradientEnd = nextLineTop;
                 }
 
                 // textHeight, but as a 0-1 size in global gradient stop space
