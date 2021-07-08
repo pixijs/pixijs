@@ -3,6 +3,9 @@ import { Point, IPointData, ObservablePoint } from '@pixi/math';
 const mixins: any = {
     /**
      * Adds `other` to `this` point and outputs into `outPoint` or a new Point.
+     *
+     * _Note: Only available with **@pixi/math-extras**._
+     *
      * @method add
      * @memberof PIXI.Point#
      * @param {IPointData} other - The point to add to `this`.
@@ -12,6 +15,9 @@ const mixins: any = {
      */
     /**
      * Adds `other` to `this` point and outputs into `outPoint` or a new Point.
+     *
+     * _Note: Only available with **@pixi/math-extras**._
+     *
      * @method add
      * @memberof PIXI.ObservablePoint#
      * @param {IPointData} other - The point to add to `this`.
@@ -33,6 +39,9 @@ const mixins: any = {
 
     /**
      * Subtracts `other` from `this` point and outputs into `outPoint` or a new Point.
+     *
+     * _Note: Only available with **@pixi/math-extras**._
+     *
      * @method subtract
      * @memberof PIXI.Point#
      * @param {IPointData} other - The point to subtract to `this`.
@@ -42,6 +51,9 @@ const mixins: any = {
      */
     /**
      * Subtracts `other` from `this` point and outputs into `outPoint` or a new Point.
+     *
+     * _Note: Only available with **@pixi/math-extras**._
+     *
      * @method subtract
      * @memberof PIXI.ObservablePoint#
      * @param {IPointData} other - The point to subtract to `this`.
@@ -63,6 +75,9 @@ const mixins: any = {
 
     /**
      * Multiplies component-wise `other` and `this` points and outputs into `outPoint` or a new Point.
+     *
+     * _Note: Only available with **@pixi/math-extras**._
+     *
      * @method multiply
      * @memberof PIXI.Point#
      * @param {IPointData} other - The point to multiply with `this`.
@@ -72,6 +87,9 @@ const mixins: any = {
      */
     /**
      * Multiplies component-wise `other` and `this` points and outputs into `outPoint` or a new Point.
+     *
+     * _Note: Only available with **@pixi/math-extras**._
+     *
      * @method multiply
      * @memberof PIXI.ObservablePoint#
      * @param {IPointData} other - The point to multiply with `this`.
@@ -93,6 +111,9 @@ const mixins: any = {
 
     /**
      * Multiplies each component of `this` point with the number `scalar` and outputs into `outPoint` or a new Point.
+     *
+     * _Note: Only available with **@pixi/math-extras**._
+     *
      * @method multiplyScalar
      * @memberof PIXI.Point#
      * @param {number} scalar - The number to multiply both components of `this`.
@@ -102,6 +123,9 @@ const mixins: any = {
      */
     /**
      * Multiplies each component of `this` point with the number `scalar` and outputs into `outPoint` or a new Point.
+     *
+     * _Note: Only available with **@pixi/math-extras**._
+     *
      * @method multiplyScalar
      * @memberof PIXI.ObservablePoint#
      * @param {number} scalar - The number to multiply both components of `this`.
@@ -124,6 +148,9 @@ const mixins: any = {
     /**
      * Computes the dot product of `other` with `this` point.
      * The dot product is the sum of the products of the corresponding components of two vectors.
+     *
+     * _Note: Only available with **@pixi/math-extras**._
+     *
      * @method dot
      * @memberof PIXI.Point#
      * @param {IPointData} other - The other point to calculate the dot product with `this`.
@@ -132,6 +159,9 @@ const mixins: any = {
     /**
      * Computes the dot product of `other` with `this` point.
      * The dot product is the sum of the products of the corresponding components of two vectors.
+     *
+     * _Note: Only available with **@pixi/math-extras**._
+     *
      * @method dot
      * @memberof PIXI.ObservablePoint#
      * @param {IPointData} other - The other point to calculate the dot product with `this`.
@@ -150,6 +180,9 @@ const mixins: any = {
      * the result becomes a vector that will only have magnitude on the z axis.
      *
      * This function returns the z component of the cross product of the two points.
+     *
+     * _Note: Only available with **@pixi/math-extras**._
+     *
      * @method cross
      * @memberof PIXI.Point#
      * @param {IPointData} other - The other point to calculate the cross product with `this`.
@@ -163,6 +196,9 @@ const mixins: any = {
      * the result becomes a vector that will only have magnitude on the z axis.
      *
      * This function returns the z component of the cross product of the two points.
+     *
+     * _Note: Only available with **@pixi/math-extras**._
+     *
      * @method cross
      * @memberof PIXI.ObservablePoint#
      * @param {IPointData} other - The other point to calculate the cross product with `this`.
@@ -186,6 +222,9 @@ const mixins: any = {
      * Computes a normalized version of `this` point.
      *
      * A normalized vector is a vector of magnitude (length) 1
+     *
+     * _Note: Only available with **@pixi/math-extras**._
+     *
      * @method normalize
      * @memberof PIXI.Point#
      * @param {IPointData} [outPoint] - A Point-like object in which to store the value,
@@ -196,6 +235,9 @@ const mixins: any = {
      * Computes a normalized version of `this` point.
      *
      * A normalized vector is a vector of magnitude (length) 1
+     *
+     * _Note: Only available with **@pixi/math-extras**._
+     *
      * @method normalize
      * @memberof PIXI.ObservablePoint#
      * @param {IPointData} [outPoint] - A Point-like object in which to store the value,
@@ -220,6 +262,9 @@ const mixins: any = {
      * Computes the magnitude of this point (Euclidean distance from 0, 0).
      *
      * Defined as the square root of the sum of the squares of each component.
+     *
+     * _Note: Only available with **@pixi/math-extras**._
+     *
      * @method magnitude
      * @memberof PIXI.Point#
      * @returns {number} The magnitude (length) of the vector.
@@ -228,6 +273,9 @@ const mixins: any = {
      * Computes the magnitude of this point (Euclidean distance from 0, 0).
      *
      * Defined as the square root of the sum of the squares of each component.
+     *
+     * _Note: Only available with **@pixi/math-extras**._
+     *
      * @method magnitude
      * @memberof PIXI.ObservablePoint#
      * @returns {number} The magnitude (length) of the vector.
@@ -243,6 +291,9 @@ const mixins: any = {
      * as it is slightly more efficient to calculate.
      *
      * Defined as the sum of the squares of each component.
+     *
+     * _Note: Only available with **@pixi/math-extras**._
+     *
      * @method magnitudeSquared
      * @memberof PIXI.Point#
      * @returns {number} The magnitude squared (length squared) of the vector.
@@ -253,6 +304,9 @@ const mixins: any = {
      * as it is slightly more efficient to calculate.
      *
      * Defined as the sum of the squares of each component.
+     *
+     * _Note: Only available with **@pixi/math-extras**._
+     *
      * @method magnitudeSquared
      * @memberof PIXI.ObservablePoint#
      * @returns {number} The magnitude squared (length squared) of the vector.
@@ -268,6 +322,9 @@ const mixins: any = {
      * Imagine a light source, parallel to `onto`, above `this`.
      * The light would cast rays perpendicular to `onto`.
      * `this.project(onto)` is the shadow cast by `this` on the line defined by `onto` .
+     *
+     * _Note: Only available with **@pixi/math-extras**._
+     *
      * @method project
      * @memberof PIXI.Point#
      * @param {IPointData} onto - A non zero vector describing a line on which to project `this`.
@@ -281,6 +338,9 @@ const mixins: any = {
      * Imagine a light source, parallel to `onto`, above `this`.
      * The light would cast rays perpendicular to `onto`.
      * `this.project(onto)` is the shadow cast by `this` on the line defined by `onto` .
+     *
+     * _Note: Only available with **@pixi/math-extras**._
+     *
      * @method project
      * @memberof PIXI.ObservablePoint#
      * @param {IPointData} onto - A non zero vector describing a line on which to project `this`.
@@ -310,6 +370,9 @@ const mixins: any = {
      * Imagine a light source bouncing onto a mirror.
      * `this` vector is the light and `normal` is a vector perpendicular to the mirror.
      * `this.reflect(normal)` is the reflection of `this` on that mirror.
+     *
+     * _Note: Only available with **@pixi/math-extras**._
+     *
      * @method reflect
      * @memberof PIXI.Point#
      * @param {IPointData} normal - The normal vector of your reflecting plane.
@@ -324,6 +387,9 @@ const mixins: any = {
      * Imagine a light source bouncing onto a mirror.
      * `this` vector is the light and `normal` is a vector perpendicular to the mirror.
      * `this.reflect(normal)` is the reflection of `this` on that mirror.
+     *
+     * _Note: Only available with **@pixi/math-extras**._
+     *
      * @method reflect
      * @memberof PIXI.ObservablePoint#
      * @param {IPointData} normal - The normal vector of your reflecting plane.

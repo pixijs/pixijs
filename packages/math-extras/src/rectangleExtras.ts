@@ -5,6 +5,9 @@ import { Rectangle } from '@pixi/math';
  * Returns true only if the area of the intersection is >0, this means that Rectangles
  * sharing a side are not overlapping. Another side effect is that an arealess rectangle
  * (width or height equal to zero) can't intersect any other rectangle.
+ *
+ * _Note: Only available with **@pixi/math-extras**._
+ *
  * @method intersects
  * @memberof PIXI.Rectangle#
  * @param {Rectangle} other - The Rectangle to intersect with `this`.
@@ -31,6 +34,9 @@ Rectangle.prototype.intersects = function intersects(other: Rectangle): boolean
  * Rectangles that occupy the same space are considered to be containing each other.
  * Rectangles without area (width or height equal to zero) can't contain anything,
  * not even other arealess rectangles.
+ *
+ * _Note: Only available with **@pixi/math-extras**._
+ *
  * @method containsRect
  * @memberof PIXI.Rectangle#
  * @param {Rectangle} other - The Rectangle to fit inside `this`.
@@ -48,6 +54,9 @@ Rectangle.prototype.containsRect = function containsRect(other: Rectangle): bool
 
 /**
  * Accepts `other` Rectangle and returns true if the given Rectangle is equal to `this` Rectangle.
+ *
+ * _Note: Only available with **@pixi/math-extras**._
+ *
  * @method equals
  * @memberof PIXI.Rectangle#
  * @param {Rectangle} other - The Rectangle to compare with `this`
@@ -69,6 +78,9 @@ Rectangle.prototype.equals = function equals(other: Rectangle): boolean
  * with its properties set to zero.
  * Rectangles without area (width or height equal to zero) can't intersect or be intersected
  * and will always return an empty rectangle with its properties set to zero.
+ *
+ * _Note: Only available with **@pixi/math-extras**._
+ *
  * @method intersects
  * @memberof PIXI.Rectangle#
  * @param {Rectangle} other - The Rectangle to intersect with `this`.
@@ -114,6 +126,9 @@ Rectangle.prototype.intersection = function intersection<T extends Rectangle>(ot
 /**
  * Adds `this` and `other` Rectangles together to create a new Rectangle object filling
  * the horizontal and vertical space between the two rectangles.
+ *
+ * _Note: Only available with **@pixi/math-extras**._
+ *
  * @method intersects
  * @memberof PIXI.Rectangle#
  * @param {Rectangle} other - The Rectangle to unite with `this`.
