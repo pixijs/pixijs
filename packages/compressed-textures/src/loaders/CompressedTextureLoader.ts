@@ -168,7 +168,7 @@ export class CompressedTextureLoader
         if (!gl)
         {
             // #if _DEBUG
-            console.error('WebGL not available for compressed textures. Silently failing.');
+            console.warn('WebGL not available for compressed textures. Silently failing.');
             // #endif
 
             return;
