@@ -1,4 +1,4 @@
-import { SHAPES } from '@pixi/math';
+import { Polygon, SHAPES } from '@pixi/math';
 
 import type { CanvasRenderer } from '../CanvasRenderer';
 import type { Graphics } from '@pixi/graphics';
@@ -116,7 +116,12 @@ export class CanvasMaskManager
 
             if (shape.type === SHAPES.POLY)
             {
-                const points = shape.points;
+                let points = shape.points;
+                const holes = data.holes;
+                let outerArea;
+                let innerArea;
+                let px;
+                let py;
 
                 context.moveTo(points[0], points[1]);
 
@@ -124,7 +129,60 @@ export class CanvasMaskManager
                 {
                     context.lineTo(points[j * 2], points[(j * 2) + 1]);
                 }
+                if (holes.length > 0)
+                {
+                    outerArea = 0;
+                    px = points[0];
+                    py = points[1];
+                    for (let j = 2; j + 2 < points.length; j += 2)
+                    {
+                        outerArea += ((points[j] - px) * (points[j + 3] - py))
+                            - ((points[j + 2] - px) * (points[j + 1] - py));
+                    }
 
+                    for (let k = 0; k < holes.length; k++)
+                    {
+                        points = (holes[k].shape as Polygon).points;
+
+                        if (!points)
+                        {
+                            continue;
+                        }
+
+                        innerArea = 0;
+                        px = points[0];
+                        py = points[1];
+                        for (let j = 2; j + 2 < points.length; j += 2)
+                        {
+                            innerArea += ((points[j] - px) * (points[j + 3] - py))
+                                - ((points[j + 2] - px) * (points[j + 1] - py));
+                        }
+
+                        if (innerArea * outerArea < 0)
+                        {
+                            context.moveTo(points[0], points[1]);
+
+                            for (let j = 2; j < points.length; j += 2)
+                            {
+                                context.lineTo(points[j], points[j + 1]);
+                            }
+                        }
+                        else
+                        {
+                            context.moveTo(points[points.length - 2], points[points.length - 1]);
+
+                            for (let j = points.length - 4; j >= 0; j -= 2)
+                            {
+                                context.lineTo(points[j], points[j + 1]);
+                            }
+                        }
+
+                        if ((holes[k].shape as Polygon).closeStroke)
+                        {
+                            context.closePath();
+                        }
+                    }
+                }
                 // if the first and last point are the same close the path - much neater :)
                 if (points[0] === points[points.length - 2] && points[1] === points[points.length - 1])
                 {

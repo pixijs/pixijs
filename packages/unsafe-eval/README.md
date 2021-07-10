@@ -13,14 +13,14 @@ npm install @pixi/unsafe-eval
 If you are using a bundler, you need to pass the core bundle into the `install` method. This function takes one arguments, either the global `PIXI` object, or the core.
 
 ```js
-import * as PIXI from '@pixi/core';
+import { ShaderSystem, Renderer } from '@pixi/core';
 import { install } from '@pixi/unsafe-eval';
 
 // Apply the patch to PIXI
-install(PIXI);
+install({ ShaderSystem });
 
 // Create the renderer with patch applied
-const renderer = new PIXI.Renderer();
+const renderer = new Renderer();
 ```
 
 If you are including **unsafe-eval.js** direct, you do not need to do anything else:

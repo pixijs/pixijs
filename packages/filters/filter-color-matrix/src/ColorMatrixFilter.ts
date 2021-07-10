@@ -142,6 +142,31 @@ export class ColorMatrixFilter extends Filter
     }
 
     /**
+     * Sets each channel on the diagonal of the color matrix.
+     * This can be used to achieve a tinting effect on Containers similar to the tint field of some
+     * display objects like Sprite, Text, Graphics, and Mesh.
+     *
+     * @param {number} color - Color of the tint. This is a hex value.
+     * @param {boolean} multiply - if true, current matrix and matrix are multiplied. If false,
+     *  just set the current matrix with @param matrix
+     */
+    public tint(color: number, multiply?: boolean): void
+    {
+        const r = (color >> 16) & 0xff;
+        const g = (color >> 8) & 0xff;
+        const b = color & 0xff;
+
+        const matrix: ColorMatrix = [
+            r / 255, 0, 0, 0, 0,
+            0, g / 255, 0, 0, 0,
+            0, 0, b / 255, 0, 0,
+            0, 0, 0, 1, 0,
+        ];
+
+        this._loadMatrix(matrix, multiply);
+    }
+
+    /**
      * Set the matrices in grey scales
      *
      * @param {number} scale - value of the grey (0-1, where 0 is black)

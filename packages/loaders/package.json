@@ -1,6 +1,6 @@
 {
   "name": "@pixi/loaders",
-  "version": "6.0.4",
+  "version": "6.1.0-rc.4",
   "main": "dist/cjs/loaders.js",
   "module": "dist/esm/loaders.js",
   "bundle": "dist/browser/loaders.js",
@@ -25,12 +25,11 @@
     "*.d.ts"
   ],
   "dependencies": {
-    "@pixi/constants": "6.0.4",
-    "@pixi/core": "6.0.4",
-    "@pixi/utils": "6.0.4",
     "resource-loader": "^3.0.1"
   },
-  "devDependencies": {
-    "@pixi/utils": "5.2.1"
+  "peerDependencies": {
+    "@pixi/constants": "6.1.0-rc.4",
+    "@pixi/core": "6.1.0-rc.4",
+    "@pixi/utils": "6.1.0-rc.4"
   }
 }
