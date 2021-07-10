@@ -1,7 +1,7 @@
 import { BaseTexture } from './BaseTexture';
 import { GLTexture } from './GLTexture';
 import { removeItems } from '@pixi/utils';
-import { MIPMAP_MODES, WRAP_MODES, SCALE_MODES, TYPES, SAMPLER_TYPES } from '@pixi/constants';
+import { FORMATS, MIPMAP_MODES, WRAP_MODES, SCALE_MODES, TYPES, SAMPLER_TYPES } from '@pixi/constants';
 
 import type { ISystem } from '../ISystem';
 import type { Texture } from './Texture';
@@ -301,6 +301,7 @@ export class TextureSystem implements ISystem
     {
         glTexture.internalFormat = texture.format;
         glTexture.type = texture.type;
+
         if (this.webGLVersion !== 2)
         {
             return;
@@ -308,38 +309,264 @@ export class TextureSystem implements ISystem
 
         const gl = this.renderer.gl;
 
-        if (texture.type === gl.FLOAT)
+        if (texture.type === TYPES.UNSIGNED_BYTE)
         {
-            if (texture.format === gl.RGBA)
+            if (texture.format === FORMATS.RGBA)
+            {
+                glTexture.internalFormat = gl.RGBA8;
+            }
+            else if (texture.format === FORMATS.RGB)
+            {
+                glTexture.internalFormat = gl.RGB8;
+            }
+            else if (texture.format === FORMATS.RG)
+            {
+                glTexture.internalFormat = gl.RG8;
+            }
+            else if (texture.format === FORMATS.RED)
+            {
+                glTexture.internalFormat = gl.R8;
+            }
+            else if (texture.format === FORMATS.RGBA_INTEGER)
+            {
+                glTexture.internalFormat = gl.RGBA8UI;
+            }
+            else if (texture.format === FORMATS.RGB_INTEGER)
+            {
+                glTexture.internalFormat = gl.RGB8UI;
+            }
+            else if (texture.format === FORMATS.RG_INTEGER)
+            {
+                glTexture.internalFormat = gl.RG8UI;
+            }
+            else if (texture.format === FORMATS.RED_INTEGER)
+            {
+                glTexture.internalFormat = gl.R8UI;
+            }
+        }
+        else if (texture.type === TYPES.BYTE)
+        {
+            if (texture.format === FORMATS.RGBA)
+            {
+                glTexture.internalFormat = gl.RGBA8_SNORM;
+            }
+            else if (texture.format === FORMATS.RGB)
+            {
+                glTexture.internalFormat = gl.RGB8_SNORM;
+            }
+            else if (texture.format === FORMATS.RG)
+            {
+                glTexture.internalFormat = gl.RG8_SNORM;
+            }
+            else if (texture.format === FORMATS.RED)
+            {
+                glTexture.internalFormat = gl.R8_SNORM;
+            }
+            else if (texture.format === FORMATS.RGBA_INTEGER)
+            {
+                glTexture.internalFormat = gl.RGBA8I;
+            }
+            else if (texture.format === FORMATS.RGB_INTEGER)
+            {
+                glTexture.internalFormat = gl.RGB8I;
+            }
+            else if (texture.format === FORMATS.RG_INTEGER)
+            {
+                glTexture.internalFormat = gl.RG8I;
+            }
+            else if (texture.format === FORMATS.RED_INTEGER)
+            {
+                glTexture.internalFormat = gl.R8I;
+            }
+        }
+        else if (texture.type === TYPES.UNSIGNED_SHORT)
+        {
+            if (texture.format === FORMATS.RGBA_INTEGER)
+            {
+                glTexture.internalFormat = gl.RGBA16UI;
+            }
+            else if (texture.format === FORMATS.RGB_INTEGER)
+            {
+                glTexture.internalFormat = gl.RGB16UI;
+            }
+            else if (texture.format === FORMATS.RG_INTEGER)
+            {
+                glTexture.internalFormat = gl.RG16UI;
+            }
+            else if (texture.format === FORMATS.RED_INTEGER)
+            {
+                glTexture.internalFormat = gl.R16UI;
+            }
+            else if (texture.format === FORMATS.DEPTH_COMPONENT)
+            {
+                glTexture.internalFormat = gl.DEPTH_COMPONENT16;
+            }
+        }
+        else if (texture.type === TYPES.SHORT)
+        {
+            if (texture.format === FORMATS.RGBA_INTEGER)
+            {
+                glTexture.internalFormat = gl.RGBA16I;
+            }
+            else if (texture.format === FORMATS.RGB_INTEGER)
+            {
+                glTexture.internalFormat = gl.RGB16I;
+            }
+            else if (texture.format === FORMATS.RG_INTEGER)
+            {
+                glTexture.internalFormat = gl.RG16I;
+            }
+            else if (texture.format === FORMATS.RED_INTEGER)
+            {
+                glTexture.internalFormat = gl.R16I;
+            }
+        }
+        else if (texture.type === TYPES.UNSIGNED_INT)
+        {
+            if (texture.format === FORMATS.RGBA_INTEGER)
+            {
+                glTexture.internalFormat = gl.RGBA32UI;
+            }
+            else if (texture.format === FORMATS.RGB_INTEGER)
+            {
+                glTexture.internalFormat = gl.RGB32UI;
+            }
+            else if (texture.format === FORMATS.RG_INTEGER)
+            {
+                glTexture.internalFormat = gl.RG32UI;
+            }
+            else if (texture.format === FORMATS.RED_INTEGER)
+            {
+                glTexture.internalFormat = gl.R32UI;
+            }
+            else if (texture.format === FORMATS.DEPTH_COMPONENT)
+            {
+                glTexture.internalFormat = gl.DEPTH_COMPONENT24;
+            }
+        }
+        else if (texture.type === TYPES.INT)
+        {
+            if (texture.format === FORMATS.RGBA_INTEGER)
+            {
+                glTexture.internalFormat = gl.RGBA32I;
+            }
+            else if (texture.format === FORMATS.RGB_INTEGER)
+            {
+                glTexture.internalFormat = gl.RGB32I;
+            }
+            else if (texture.format === FORMATS.RG_INTEGER)
+            {
+                glTexture.internalFormat = gl.RG32I;
+            }
+            else if (texture.format === FORMATS.RED_INTEGER)
+            {
+                glTexture.internalFormat = gl.R32I;
+            }
+        }
+        else if (texture.type === TYPES.FLOAT)
+        {
+            if (texture.format === FORMATS.RGBA)
             {
                 glTexture.internalFormat = gl.RGBA32F;
             }
-            else if (texture.format === gl.RGB)
+            else if (texture.format === FORMATS.RGB)
             {
                 glTexture.internalFormat = gl.RGB32F;
             }
-            else if (texture.format === gl.RED)
+            else if (texture.format === FORMATS.RG)
+            {
+                glTexture.internalFormat = gl.RG32F;
+            }
+            else if (texture.format === FORMATS.RED)
             {
                 glTexture.internalFormat = gl.R32F;
             }
+            else if (texture.format === FORMATS.DEPTH_COMPONENT)
+            {
+                glTexture.internalFormat = gl.DEPTH_COMPONENT32F;
+            }
         }
-
-        // that's WebGL1 HALF_FLOAT_OES
-        // we have to convert it to WebGL HALF_FLOAT
-        if (texture.type === TYPES.HALF_FLOAT)
+        else if (texture.type === TYPES.HALF_FLOAT)
         {
+            // TYPES.HALF_FLOAT is WebGL1 HALF_FLOAT_OES
+            // we have to convert it to WebGL HALF_FLOAT
             glTexture.type = gl.HALF_FLOAT;
-        }
 
-        if (glTexture.type === gl.HALF_FLOAT)
-        {
-            if (texture.format === gl.RGBA)
+            if (texture.format === FORMATS.RGBA)
             {
                 glTexture.internalFormat = gl.RGBA16F;
             }
-            else if (texture.format === gl.RGB)
+            else if (texture.format === FORMATS.RGB)
             {
                 glTexture.internalFormat = gl.RGB16F;
+            }
+            else if (texture.format === FORMATS.RG)
+            {
+                glTexture.internalFormat = gl.RG16F;
+            }
+            else if (texture.format === FORMATS.RED)
+            {
+                glTexture.internalFormat = gl.R16F;
+            }
+        }
+        else if (texture.type === TYPES.UNSIGNED_SHORT_5_6_5)
+        {
+            if (texture.format === FORMATS.RGB)
+            {
+                glTexture.internalFormat = gl.RGB565;
+            }
+        }
+        else if (texture.type === TYPES.UNSIGNED_SHORT_4_4_4_4)
+        {
+            if (texture.format === FORMATS.RGBA)
+            {
+                glTexture.internalFormat = gl.RGBA4;
+            }
+        }
+        else if (texture.type === TYPES.UNSIGNED_SHORT_5_5_5_1)
+        {
+            if (texture.format === FORMATS.RGBA)
+            {
+                glTexture.internalFormat = gl.RGB5_A1;
+            }
+        }
+        else if (texture.type === TYPES.UNSIGNED_INT_2_10_10_10_REV)
+        {
+            if (texture.format === FORMATS.RGBA)
+            {
+                glTexture.internalFormat = gl.RGB10_A2;
+            }
+            else if (texture.format === FORMATS.RGBA_INTEGER)
+            {
+                glTexture.internalFormat = gl.RGB10_A2UI;
+            }
+        }
+        else if (texture.type === TYPES.UNSIGNED_INT_10F_11F_11F_REV)
+        {
+            if (texture.format === FORMATS.RGB)
+            {
+                glTexture.internalFormat = gl.R11F_G11F_B10F;
+            }
+        }
+        else if (texture.type === TYPES.UNSIGNED_INT_5_9_9_9_REV)
+        {
+            if (texture.format === FORMATS.RGB)
+            {
+                glTexture.internalFormat = gl.RGB9_E5;
+            }
+        }
+        else if (texture.type === TYPES.UNSIGNED_INT_24_8)
+        {
+            if (texture.format === FORMATS.DEPTH_STENCIL)
+            {
+                glTexture.internalFormat = gl.DEPTH24_STENCIL8;
+            }
+        }
+        else if (texture.type === TYPES.FLOAT_32_UNSIGNED_INT_24_8_REV)
+        {
+            if (texture.format === FORMATS.DEPTH_STENCIL)
+            {
+                glTexture.internalFormat = gl.DEPTH32F_STENCIL8;
             }
         }
     }
