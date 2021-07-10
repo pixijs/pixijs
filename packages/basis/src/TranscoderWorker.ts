@@ -17,9 +17,7 @@ export class TranscoderWorker
     // the response, the transcodeAsync promise is fulfilled or rejected.
 
     // TODO: Publish our own @pixi/basis package & set default URL to jsdelivr/cdnjs
-    /**
-     * URL for the script containing the basis_universal library.
-     */
+    /** URL for the script containing the basis_universal library. */
     static bindingURL: string;
     static jsSource: string;
     static wasmSource: ArrayBuffer;
@@ -36,9 +34,7 @@ export class TranscoderWorker
     private static _workerURL: string;
     private static _tempID = 0;
 
-    /**
-     * Generated URL for the transcoder worker script.
-     */
+    /** Generated URL for the transcoder worker script. */
     static get workerURL(): string
     {
         if (!TranscoderWorker._workerURL)
@@ -85,15 +81,14 @@ export class TranscoderWorker
         });
     }
 
-    /**
-     * @returns a promise that is resolved when the web-worker is initialized
-     */
+    /** @returns a promise that is resolved when the web-worker is initialized */
     initAsync(): Promise<void>
     {
         return this.initPromise;
     }
 
     /**
+     * Creates a promise that will resolve when the transcoding of a *.basis file is complete.
      * @param basisData - *.basis file contents
      * @param rgbaFormat - transcoding format for RGBA files
      * @param rgbFormat - transcoding format for RGB files
@@ -130,7 +125,7 @@ export class TranscoderWorker
     /**
      * Handles responses from the web-worker
      *
-     * @param e
+     * @param e - a message event containing the transcoded response
      */
     protected onMessage = (e: MessageEvent): void =>
     {
@@ -168,8 +163,9 @@ export class TranscoderWorker
     /**
      * Loads the transcoder source code
      *
-     * @param jsURL
-     * @param wasmURL
+     * @param jsURL - URL to the javascript basis transcoder
+     * @param wasmURL - URL to the wasm basis transcoder
+     * @returns A promise that resolves when both the js and wasm transcoders have been loaded.
      */
     static loadTranscoder(jsURL: string, wasmURL: string): Promise<[void, void]>
     {
@@ -191,8 +187,8 @@ export class TranscoderWorker
     /**
      * Set the transcoder source code directly
      *
-     * @param jsSource
-     * @param wasmSource
+     * @param jsSource - source for the javascript basis transcoder
+     * @param wasmSource - source for the wasm basis transcoder
      */
     static setTranscoder(jsSource: string, wasmSource: ArrayBuffer): void
     {
