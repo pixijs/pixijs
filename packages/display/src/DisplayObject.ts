@@ -451,6 +451,14 @@ export abstract class DisplayObject extends EventEmitter
      */
 
     /**
+     * Readonly flag for destroyed display objects.
+     */
+    get destroyed(): boolean
+    {
+        return this._destroyed;
+    }
+
+    /**
      * Recalculates the bounds of the display object.
      */
     abstract calculateBounds(): void;
