@@ -1,102 +1,13 @@
+import { mapTypeAndFormatToInternalFormat } from './utils/mapTypeAndFormatToInternalFormat';
 import { BaseTexture } from './BaseTexture';
 import { GLTexture } from './GLTexture';
 import { removeItems } from '@pixi/utils';
-import { FORMATS, MIPMAP_MODES, WRAP_MODES, SCALE_MODES, TYPES, SAMPLER_TYPES } from '@pixi/constants';
+import { MIPMAP_MODES, WRAP_MODES, SCALE_MODES, TYPES, SAMPLER_TYPES } from '@pixi/constants';
 
 import type { ISystem } from '../ISystem';
 import type { Texture } from './Texture';
 import type { IRenderingContext } from '../IRenderingContext';
 import type { Renderer } from '../Renderer';
-
-const glTypeFormatLookup: { [type: number]: { [format: number]: number } } = ('WebGL2RenderingContext' in self ? {
-    [TYPES.UNSIGNED_BYTE]: {
-        [FORMATS.RGBA]: WebGL2RenderingContext.RGBA8,
-        [FORMATS.RGB]: WebGL2RenderingContext.RGB8,
-        [FORMATS.RG]: WebGL2RenderingContext.RG8,
-        [FORMATS.RED]: WebGL2RenderingContext.R8,
-        [FORMATS.RGBA_INTEGER]: WebGL2RenderingContext.RGBA8UI,
-        [FORMATS.RGB_INTEGER]: WebGL2RenderingContext.RGB8UI,
-        [FORMATS.RG_INTEGER]: WebGL2RenderingContext.RG8UI,
-        [FORMATS.RED_INTEGER]: WebGL2RenderingContext.R8UI,
-        [FORMATS.ALPHA]: WebGL2RenderingContext.ALPHA,
-        [FORMATS.LUMINANCE]: WebGL2RenderingContext.LUMINANCE,
-        [FORMATS.LUMINANCE_ALPHA]: WebGL2RenderingContext.LUMINANCE_ALPHA,
-    },
-    [TYPES.BYTE]: {
-        [FORMATS.RGBA]: WebGL2RenderingContext.RGBA8_SNORM,
-        [FORMATS.RGB]: WebGL2RenderingContext.RGB8_SNORM,
-        [FORMATS.RG]: WebGL2RenderingContext.RG8_SNORM,
-        [FORMATS.RED]: WebGL2RenderingContext.R8_SNORM,
-        [FORMATS.RGBA_INTEGER]: WebGL2RenderingContext.RGBA8I,
-        [FORMATS.RGB_INTEGER]: WebGL2RenderingContext.RGB8I,
-        [FORMATS.RG_INTEGER]: WebGL2RenderingContext.RG8I,
-        [FORMATS.RED_INTEGER]: WebGL2RenderingContext.R8I,
-    },
-    [TYPES.UNSIGNED_SHORT]: {
-        [FORMATS.RGBA_INTEGER]: WebGL2RenderingContext.RGBA16UI,
-        [FORMATS.RGB_INTEGER]: WebGL2RenderingContext.RGB16UI,
-        [FORMATS.RG_INTEGER]: WebGL2RenderingContext.RG16UI,
-        [FORMATS.RED_INTEGER]: WebGL2RenderingContext.R16UI,
-        [FORMATS.DEPTH_COMPONENT]: WebGL2RenderingContext.DEPTH_COMPONENT16,
-    },
-    [TYPES.SHORT]: {
-        [FORMATS.RGBA_INTEGER]: WebGL2RenderingContext.RGBA16I,
-        [FORMATS.RGB_INTEGER]: WebGL2RenderingContext.RGB16I,
-        [FORMATS.RG_INTEGER]: WebGL2RenderingContext.RG16I,
-        [FORMATS.RED_INTEGER]: WebGL2RenderingContext.R16I,
-    },
-    [TYPES.UNSIGNED_INT]: {
-        [FORMATS.RGBA_INTEGER]: WebGL2RenderingContext.RGBA32UI,
-        [FORMATS.RGB_INTEGER]: WebGL2RenderingContext.RGB32UI,
-        [FORMATS.RG_INTEGER]: WebGL2RenderingContext.RG32UI,
-        [FORMATS.RED_INTEGER]: WebGL2RenderingContext.R32UI,
-        [FORMATS.DEPTH_COMPONENT]: WebGL2RenderingContext.DEPTH_COMPONENT24,
-    },
-    [TYPES.INT]: {
-        [FORMATS.RGBA_INTEGER]: WebGL2RenderingContext.RGBA32I,
-        [FORMATS.RGB_INTEGER]: WebGL2RenderingContext.RGB32I,
-        [FORMATS.RG_INTEGER]: WebGL2RenderingContext.RG32I,
-        [FORMATS.RED_INTEGER]: WebGL2RenderingContext.R32I,
-    },
-    [TYPES.FLOAT]: {
-        [FORMATS.RGBA]: WebGL2RenderingContext.RGBA32F,
-        [FORMATS.RGB]: WebGL2RenderingContext.RGB32F,
-        [FORMATS.RG]: WebGL2RenderingContext.RG32F,
-        [FORMATS.RED]: WebGL2RenderingContext.R32F,
-        [FORMATS.DEPTH_COMPONENT]: WebGL2RenderingContext.DEPTH_COMPONENT32F,
-    },
-    [TYPES.HALF_FLOAT]: {
-        [FORMATS.RGBA]: WebGL2RenderingContext.RGBA16F,
-        [FORMATS.RGB]: WebGL2RenderingContext.RGB16F,
-        [FORMATS.RG]: WebGL2RenderingContext.RG16F,
-        [FORMATS.RED]: WebGL2RenderingContext.R16F,
-    },
-    [TYPES.UNSIGNED_SHORT_5_6_5]: {
-        [FORMATS.RGB]: WebGL2RenderingContext.RGB565,
-    },
-    [TYPES.UNSIGNED_SHORT_4_4_4_4]: {
-        [FORMATS.RGBA]: WebGL2RenderingContext.RGBA4,
-    },
-    [TYPES.UNSIGNED_SHORT_5_5_5_1]: {
-        [FORMATS.RGBA]: WebGL2RenderingContext.RGB5_A1,
-    },
-    [TYPES.UNSIGNED_INT_2_10_10_10_REV]: {
-        [FORMATS.RGBA]: WebGL2RenderingContext.RGB10_A2,
-        [FORMATS.RGBA_INTEGER]: WebGL2RenderingContext.RGB10_A2UI,
-    },
-    [TYPES.UNSIGNED_INT_10F_11F_11F_REV]: {
-        [FORMATS.RGB]: WebGL2RenderingContext.R11F_G11F_B10F,
-    },
-    [TYPES.UNSIGNED_INT_5_9_9_9_REV]: {
-        [FORMATS.RGB]: WebGL2RenderingContext.RGB9_E5,
-    },
-    [TYPES.UNSIGNED_INT_24_8]: {
-        [FORMATS.DEPTH_STENCIL]: WebGL2RenderingContext.DEPTH24_STENCIL8,
-    },
-    [TYPES.FLOAT_32_UNSIGNED_INT_24_8_REV]: {
-        [FORMATS.DEPTH_STENCIL]: WebGL2RenderingContext.DEPTH32F_STENCIL8,
-    },
-} : undefined);
 
 /**
  * System plugin to the renderer to manage textures.
@@ -114,6 +25,7 @@ export class TextureSystem implements ISystem
     protected hasIntegerTextures: boolean;
     protected CONTEXT_UID: number;
     protected gl: IRenderingContext;
+    protected internalFormats: { [type: number]: { [format: number]: number } };
     protected webGLVersion: number;
     protected unknownTexture: BaseTexture;
     protected _unknownBoundTextures: boolean;
@@ -177,6 +89,8 @@ export class TextureSystem implements ISystem
         this.CONTEXT_UID = this.renderer.CONTEXT_UID;
 
         this.webGLVersion = this.renderer.context.webGLVersion;
+
+        this.internalFormats = mapTypeAndFormatToInternalFormat(gl);
 
         const maxTextures = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
 
@@ -389,25 +303,17 @@ export class TextureSystem implements ISystem
 
     initTextureType(texture: BaseTexture, glTexture: GLTexture): void
     {
-        if (this.webGLVersion !== 2)
+        glTexture.internalFormat = this.internalFormats[texture.type]?.[texture.format] ?? texture.format;
+
+        if (this.webGLVersion === 2 && texture.type === TYPES.HALF_FLOAT)
         {
-            glTexture.internalFormat = texture.format;
-            glTexture.type = texture.type;
+            // TYPES.HALF_FLOAT is WebGL1 HALF_FLOAT_OES
+            // we have to convert it to WebGL HALF_FLOAT
+            glTexture.type = this.gl.HALF_FLOAT;
         }
         else
         {
-            glTexture.internalFormat = glTypeFormatLookup[texture.type]?.[texture.format] ?? texture.format;
-
-            if (texture.type === TYPES.HALF_FLOAT)
-            {
-                // TYPES.HALF_FLOAT is WebGL1 HALF_FLOAT_OES
-                // we have to convert it to WebGL HALF_FLOAT
-                glTexture.type = WebGL2RenderingContext.HALF_FLOAT;
-            }
-            else
-            {
-                glTexture.type = texture.type;
-            }
+            glTexture.type = texture.type;
         }
     }
 
