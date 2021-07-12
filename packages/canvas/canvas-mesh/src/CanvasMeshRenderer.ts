@@ -14,11 +14,10 @@ import type { Mesh } from '@pixi/mesh';
  */
 export class CanvasMeshRenderer
 {
+    /** A reference to the current renderer */
     public renderer: CanvasRenderer;
 
-    /**
-     * @param {PIXI.CanvasRenderer} renderer - The renderer this downport works for
-     */
+    /** @param renderer - A reference to the current renderer */
     constructor(renderer: CanvasRenderer)
     {
         this.renderer = renderer;
@@ -27,7 +26,7 @@ export class CanvasMeshRenderer
     /**
      * Renders the Mesh
      *
-     * @param {PIXI.Mesh} mesh - the Mesh to render
+     * @param mesh - the Mesh to render
      */
     public render(mesh: Mesh): void
     {
@@ -52,7 +51,7 @@ export class CanvasMeshRenderer
      * Draws the object in Triangle Mesh mode
      *
      * @private
-     * @param {PIXI.Mesh} mesh - the Mesh to render
+     * @param mesh - the Mesh to render
      */
     private _renderTriangleMesh(mesh: Mesh): void
     {
@@ -72,7 +71,7 @@ export class CanvasMeshRenderer
      * Draws the object in triangle mode using canvas
      *
      * @private
-     * @param {PIXI.Mesh} mesh - the current mesh
+     * @param mesh - the current mesh
      */
     private _renderTriangles(mesh: Mesh): void
     {
@@ -95,10 +94,10 @@ export class CanvasMeshRenderer
      * Draws one of the triangles that from the Mesh
      *
      * @private
-     * @param {PIXI.Mesh} mesh - the current mesh
-     * @param {number} index0 - the index of the first vertex
-     * @param {number} index1 - the index of the second vertex
-     * @param {number} index2 - the index of the third vertex
+     * @param mesh - the current mesh
+     * @param index0 - the index of the first vertex
+     * @param index1 - the index of the second vertex
+     * @param index2 - the index of the third vertex
      */
     private _renderDrawTriangle(mesh: Mesh, index0: number, index1: number, index2: number): void
     {
@@ -241,7 +240,7 @@ export class CanvasMeshRenderer
      * Renders a flat Mesh
      *
      * @private
-     * @param {PIXI.Mesh} mesh - The Mesh to render
+     * @param mesh - The Mesh to render
      */
     renderMeshFlat(mesh: Mesh): void
     {
@@ -277,10 +276,7 @@ export class CanvasMeshRenderer
         context.closePath();
     }
 
-    /**
-     * destroy the the renderer.
-     *
-     */
+    /** destroy the the renderer */
     public destroy(): void
     {
         this.renderer = null;

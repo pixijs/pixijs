@@ -61,21 +61,41 @@ export interface CrossPlatformCanvasRenderingContext2D extends CanvasRenderingCo
  */
 export class CanvasRenderer extends AbstractRenderer
 {
+    /**
+     * Fired after rendering finishes.
+     * @event PIXI.CanvasRenderer#postrender
+     */
+    /**
+     * Fired before rendering starts.
+     * @event PIXI.CanvasRenderer#prerender
+     */
+
+    /** The root canvas 2d context that everything is drawn with. */
     public readonly rootContext: CrossPlatformCanvasRenderingContext2D;
+    /** The currently active canvas 2d context (could change with renderTextures) */
     public context: CrossPlatformCanvasRenderingContext2D;
-    public refresh: boolean;
-    public maskManager: CanvasMaskManager;
-    public smoothProperty: SmoothingEnabledProperties;
-    public readonly blendModes: string[];
-    public renderingToScreen: boolean;
+    /** Boolean flag controlling canvas refresh. */
+    public refresh = true;
+    /**
+     * Instance of a CanvasMaskManager, handles masking when using the canvas renderer.
+     * @member {PIXI.CanvasMaskManager}
+     */
+    public maskManager: CanvasMaskManager = new CanvasMaskManager(this);
+    /** The canvas property used to set the canvas smoothing property. */
+    public smoothProperty: SmoothingEnabledProperties = 'imageSmoothingEnabled';
+    /** Tracks the blend modes useful for this renderer. */
+    public readonly blendModes: string[] = mapCanvasBlendModesToPixi();
+    public renderingToScreen = false;
 
-    private _activeBlendMode: BLEND_MODES;
-    private _projTransform: Matrix;
+    private _activeBlendMode: BLEND_MODES =null;
+    /** Projection transform, passed in render() stored here */
+    private _projTransform: Matrix = null;
 
-    _outerBlend: boolean;
+    /** @private */
+    _outerBlend = false;
 
     /**
-     * @param {object} [options] - The optional renderer parameters
+     * @param options - The optional renderer parameters
      * @param {number} [options.width=800] - the width of the screen
      * @param {number} [options.height=600] - the height of the screen
      * @param {HTMLCanvasElement} [options.view] - the canvas to use as a view, optional
@@ -98,41 +118,10 @@ export class CanvasRenderer extends AbstractRenderer
     {
         super(RENDERER_TYPE.CANVAS, options);
 
-        /**
-         * The root canvas 2d context that everything is drawn with.
-         *
-         * @member {CanvasRenderingContext2D}
-         */
         this.rootContext = this.view.getContext('2d', { alpha: this.useContextAlpha }) as
             CrossPlatformCanvasRenderingContext2D;
 
-        /**
-         * The currently active canvas 2d context (could change with renderTextures)
-         *
-         * @member {CanvasRenderingContext2D}
-         */
         this.context = this.rootContext;
-
-        /**
-         * Boolean flag controlling canvas refresh.
-         *
-         * @member {boolean}
-         */
-        this.refresh = true;
-
-        /**
-         * Instance of a CanvasMaskManager, handles masking when using the canvas renderer.
-         *
-         * @member {PIXI.CanvasMaskManager}
-         */
-        this.maskManager = new CanvasMaskManager(this);
-
-        /**
-         * The canvas property used to set the canvas smoothing property.
-         *
-         * @member {string}
-         */
-        this.smoothProperty = 'imageSmoothingEnabled';
 
         if (!this.rootContext.imageSmoothingEnabled)
         {
@@ -158,37 +147,7 @@ export class CanvasRenderer extends AbstractRenderer
 
         this.initPlugins(CanvasRenderer.__plugins);
 
-        /**
-         * Tracks the blend modes useful for this renderer.
-         *
-         * @member {object<number, string>}
-         */
-        this.blendModes = mapCanvasBlendModesToPixi();
-        this._activeBlendMode = null;
-        this._outerBlend = false;
-
-        /**
-         * Projection transform, passed in render() stored here
-         * @type {null}
-         * @private
-         */
-        this._projTransform = null;
-
-        this.renderingToScreen = false;
-
         sayHello('Canvas');
-
-        /**
-         * Fired after rendering finishes.
-         *
-         * @event PIXI.CanvasRenderer#postrender
-         */
-
-        /**
-         * Fired before rendering starts.
-         *
-         * @event PIXI.CanvasRenderer#prerender
-         */
 
         this.resize(this.options.width, this.options.height);
     }
@@ -197,7 +156,7 @@ export class CanvasRenderer extends AbstractRenderer
      * Renders the object to its WebGL view.
      *
      * @param displayObject - The object to be rendered.
-     * @param {object} [options] - Object to use for render options.
+     * @param options - Object to use for render options.
      * @param {PIXI.RenderTexture} [options.renderTexture] - The render texture to render to.
      * @param {boolean} [options.clear=true] - Should the canvas be cleared before the new render.
      * @param {PIXI.Matrix} [options.transform] - A transform to apply to the render texture before rendering.
@@ -209,18 +168,16 @@ export class CanvasRenderer extends AbstractRenderer
      * Please use the `option` render arguments instead.
      *
      * @deprecated Since 6.0.0
-     * @param displayObject
-     * @param renderTexture
-     * @param clear
-     * @param transform
-     * @param skipUpdateTransform
+     * @param displayObject - The object to be rendered.
+     * @param renderTexture - The render texture to render to.
+     * @param clear - Should the canvas be cleared before the new render.
+     * @param transform - A transform to apply to the render texture before rendering.
+     * @param skipUpdateTransform - Should we skip the update transform pass?
      */
     render(displayObject: DisplayObject, renderTexture?: RenderTexture | BaseRenderTexture,
         clear?: boolean, transform?: Matrix, skipUpdateTransform?: boolean): void;
 
-    /**
-     * @ignore
-     */
+    /** @ignore */
     public render(displayObject: DisplayObject, options?: IRendererRenderOptions | RenderTexture | BaseRenderTexture): void
     {
         if (!this.view)
@@ -359,12 +316,12 @@ export class CanvasRenderer extends AbstractRenderer
     }
 
     /**
-     * sets matrix of context
+     * Sets matrix of context.
      * called only from render() methods
      * takes care about resolution
-     * @param {PIXI.Matrix} transform - world matrix of current element
-     * @param {boolean} [roundPixels] - whether to round (tx,ty) coords
-     * @param {number} [localResolution] - If specified, used instead of `renderer.resolution` for local scaling
+     * @param transform - world matrix of current element
+     * @param roundPixels - whether to round (tx,ty) coords
+     * @param localResolution - If specified, used instead of `renderer.resolution` for local scaling
      */
     setContextTransform(transform: Matrix, roundPixels?: boolean, localResolution?: number): void
     {
@@ -480,8 +437,8 @@ export class CanvasRenderer extends AbstractRenderer
      *
      * @extends PIXI.AbstractRenderer#resize
      *
-     * @param {number} desiredScreenWidth - the desired width of the screen
-     * @param {number} desiredScreenHeight - the desired height of the screen
+     * @param desiredScreenWidth - the desired width of the screen
+     * @param desiredScreenHeight - the desired height of the screen
      */
     public resize(desiredScreenWidth: number, desiredScreenHeight: number): void
     {
@@ -495,9 +452,7 @@ export class CanvasRenderer extends AbstractRenderer
         }
     }
 
-    /**
-     * Checks if blend mode has changed.
-     */
+    /** Checks if blend mode has changed. */
     invalidateBlendMode(): void
     {
         this._activeBlendMode = this.blendModes.indexOf(this.context.globalCompositeOperation);
@@ -520,8 +475,8 @@ export class CanvasRenderer extends AbstractRenderer
     /**
      * Adds a plugin to the renderer.
      *
-     * @param {string} pluginName - The name of the plugin.
-     * @param {Function} ctor - The constructor function or class for the plugin.
+     * @param pluginName - The name of the plugin.
+     * @param ctor - The constructor function or class for the plugin.
      */
     static registerPlugin(pluginName: string, ctor: ICanvasRendererPluginConstructor): void
     {

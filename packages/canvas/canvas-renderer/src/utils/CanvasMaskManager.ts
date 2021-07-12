@@ -15,23 +15,20 @@ import type { Container } from '@pixi/display';
  */
 export class CanvasMaskManager
 {
+    /** A reference to the current renderer */
     private renderer: CanvasRenderer;
-    private _foundShapes: Array<Graphics>;
+    private _foundShapes: Array<Graphics> = [];
 
-    /**
-     * @param {PIXI.CanvasRenderer} renderer - The canvas renderer.
-     */
+    /** @param renderer - A reference to the current renderer */
     constructor(renderer: CanvasRenderer)
     {
         this.renderer = renderer;
-
-        this._foundShapes = [];
     }
 
     /**
      * This method adds it to the current stack of masks.
      *
-     * @param {PIXI.MaskData | PIXI.Graphics} maskData - the maskData that will be pushed
+     * @param maskData - the maskData that will be pushed
      */
     pushMask(maskData: MaskData | Graphics): void
     {
@@ -70,8 +67,8 @@ export class CanvasMaskManager
     /**
      * Renders all PIXI.Graphics shapes in a subtree.
      *
-     * @param {PIXI.Container} container - container to scan.
-     * @param {PIXI.Graphics[]} out - where to put found shapes
+     * @param container - container to scan.
+     * @param out - where to put found shapes
      */
     recursiveFindShapes(container: Container, out: Array<Graphics>): void
     {
@@ -94,7 +91,7 @@ export class CanvasMaskManager
     /**
      * Renders a PIXI.Graphics shape.
      *
-     * @param {PIXI.Graphics} graphics - The object to render.
+     * @param graphics - The object to render.
      */
     renderGraphicsShape(graphics: Graphics): void
     {
@@ -254,7 +251,7 @@ export class CanvasMaskManager
     /**
      * Restores the current drawing context to the state it was before the mask was applied.
      *
-     * @param {PIXI.CanvasRenderer} renderer - The renderer context to use.
+     * @param renderer - The renderer context to use.
      */
     popMask(renderer: CanvasRenderer): void
     {
@@ -262,10 +259,7 @@ export class CanvasMaskManager
         renderer.invalidateBlendMode();
     }
 
-    /**
-     * Destroys this canvas mask manager.
-     *
-     */
+    /** Destroys this canvas mask manager. */
     public destroy(): void
     {
         /* empty */
