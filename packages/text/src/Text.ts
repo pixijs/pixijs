@@ -202,8 +202,8 @@ export class Text extends Sprite
         const maxLineWidth = measured.maxLineWidth;
         const fontProperties = measured.fontProperties;
 
-        this.canvas.width = Math.ceil((Math.max(1, width) + (style.padding * 2)) * this._resolution);
-        this.canvas.height = Math.ceil((Math.max(1, height) + (style.padding * 2)) * this._resolution);
+        this.canvas.width = Math.ceil(Math.ceil((Math.max(1, width) + (style.padding * 2))) * this._resolution);
+        this.canvas.height = Math.ceil(Math.ceil((Math.max(1, height) + (style.padding * 2))) * this._resolution);
 
         context.scale(this._resolution, this._resolution);
 
@@ -538,12 +538,30 @@ export class Text extends Sprite
             // Actual height of the text itself, not counting spacing for lineHeight/leading/dropShadow etc
             const textHeight = metrics.fontProperties.fontSize + style.strokeThickness;
 
-            // textHeight, but as a 0-1 size in global gradient stop space
-            const gradStopLineHeight = textHeight / height;
-
             for (let i = 0; i < lines.length; i++)
             {
+                const lastLineBottom = (metrics.lineHeight * (i - 1)) + textHeight;
                 const thisLineTop = metrics.lineHeight * i;
+                let thisLineGradientStart = thisLineTop;
+
+                // Handle case where last & this line overlap
+                if (i > 0 && lastLineBottom > thisLineTop)
+                {
+                    thisLineGradientStart = (thisLineTop + lastLineBottom) / 2;
+                }
+
+                const thisLineBottom = thisLineTop + textHeight;
+                const nextLineTop = metrics.lineHeight * (i + 1);
+                let thisLineGradientEnd = thisLineBottom;
+
+                // Handle case where this & next line overlap
+                if (i + 1 < lines.length && nextLineTop < thisLineBottom)
+                {
+                    thisLineGradientEnd = (thisLineBottom + nextLineTop) / 2;
+                }
+
+                // textHeight, but as a 0-1 size in global gradient stop space
+                const gradStopLineHeight = (thisLineGradientEnd - thisLineGradientStart) / height;
 
                 for (let j = 0; j < fill.length; j++)
                 {
@@ -559,7 +577,8 @@ export class Text extends Sprite
                         lineStop = j / fill.length;
                     }
 
-                    let globalStop = Math.min(1, Math.max(0, (thisLineTop / height) + (lineStop * gradStopLineHeight)));
+                    let globalStop = Math.min(1, Math.max(0,
+                        (thisLineGradientStart / height) + (lineStop * gradStopLineHeight)));
 
                     // There's potential for floating point precision issues at the seams between gradient repeats.
                     globalStop = Number(globalStop.toFixed(5));

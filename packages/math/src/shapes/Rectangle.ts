@@ -1,5 +1,8 @@
 import { SHAPES } from '../const';
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface Rectangle extends GlobalMixins.Rectangle {}
+
 /**
  * Size object, contains width and height
  *

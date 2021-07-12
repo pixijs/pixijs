@@ -35,7 +35,7 @@
     "prerelease": "npm run clean:build && npm test",
     "postversion": "npm run build:prod && npm run build:types",
     "release": "lerna version --exact --force-publish --no-push --no-git-tag-version",
-    "postrelease": "./scripts/tag-release.sh",
+    "postrelease": "ts-node scripts/fixPeerVersions.ts && ./scripts/tag-release.sh",
     "publish-ci": "lerna publish from-package --yes --no-verify-access",
     "webdoc": "webdoc"
   },

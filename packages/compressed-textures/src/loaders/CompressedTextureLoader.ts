@@ -41,14 +41,10 @@ export type CompressedTextureExtensionRef = keyof CompressedTextureExtensions;
  */
 export class CompressedTextureLoader
 {
-    /**
-     * Map of available texture extensions.
-     */
+    /**  Map of available texture extensions. */
     static textureExtensions: Partial<CompressedTextureExtensions>;
 
-    /**
-     * Map of available texture formats.
-     */
+    /** Map of available texture formats. */
     static textureFormats: { [P in keyof INTERNAL_FORMATS]?: number };
 
     /**
@@ -156,7 +152,6 @@ export class CompressedTextureLoader
 
     /**
      * Detects the available compressed texture extensions on the device.
-     *
      * @ignore
      */
     static add(): void
@@ -168,7 +163,7 @@ export class CompressedTextureLoader
         if (!gl)
         {
             // #if _DEBUG
-            console.error('WebGL not available for compressed textures. Silently failing.');
+            console.warn('WebGL not available for compressed textures. Silently failing.');
             // #endif
 
             return;
