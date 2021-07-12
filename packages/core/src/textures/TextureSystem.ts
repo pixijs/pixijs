@@ -18,6 +18,9 @@ const glTypeFormatLookup: { [type: number]: { [format: number]: number } } = ('W
         [FORMATS.RGB_INTEGER]: WebGL2RenderingContext.RGB8UI,
         [FORMATS.RG_INTEGER]: WebGL2RenderingContext.RG8UI,
         [FORMATS.RED_INTEGER]: WebGL2RenderingContext.R8UI,
+        [FORMATS.ALPHA]: WebGL2RenderingContext.ALPHA,
+        [FORMATS.LUMINANCE]: WebGL2RenderingContext.LUMINANCE,
+        [FORMATS.LUMINANCE_ALPHA]: WebGL2RenderingContext.LUMINANCE_ALPHA,
     },
     [TYPES.BYTE]: {
         [FORMATS.RGBA]: WebGL2RenderingContext.RGBA8_SNORM,
