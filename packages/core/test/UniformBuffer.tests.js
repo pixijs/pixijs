@@ -1,18 +1,14 @@
 const {
-    Renderer,
     Shader,
-    Geometry,
     createUBOElements,
     generateUniformBufferSync,
     getUBOData,
     Buffer,
     UniformGroup,
-} = require('../../');
-const chai = require('chai');
+} = require('../');
 
 const { skipHello } = require('@pixi/utils');
 const { Matrix, Rectangle, Point } = require('@pixi/math');
-const { expect } = require('chai');
 
 skipHello();
 
@@ -38,7 +34,7 @@ const stubRenderer = {
     gl: {}
 };
 
-describe('generateUniformBufferSync', function ()
+describe('UniformBuffer', function ()
 {
     it('should generate the correct correctly ordered UBO data', function ()
     {
@@ -85,7 +81,7 @@ describe('generateUniformBufferSync', function ()
             value: 0,
         }];
 
-        chai.expect(usedUniformData).to.deep.equal(expectedResult);
+        expect(usedUniformData).to.deep.equal(expectedResult);
 
         const group2 = UniformGroup.uboFrom({
             uAlpha: 1,
@@ -94,7 +90,7 @@ describe('generateUniformBufferSync', function ()
 
         const usedUniformData2 = getUBOData(group2.uniforms, uniformData);
 
-        chai.expect(usedUniformData2).to.deep.equal(expectedResult);
+        expect(usedUniformData2).to.deep.equal(expectedResult);
 
         const group3 = UniformGroup.uboFrom({
             uAlpha: 1,
@@ -104,7 +100,7 @@ describe('generateUniformBufferSync', function ()
 
         const usedUniformData3 = getUBOData(group3.uniforms, uniformData);
 
-        chai.expect(usedUniformData3).to.deep.equal(expectedResult);
+        expect(usedUniformData3).to.deep.equal(expectedResult);
     });
 
     it('should generate correct UBO elements', function ()
@@ -147,10 +143,10 @@ describe('generateUniformBufferSync', function ()
             size: 16
         };
 
-        chai.expect(uboData).to.deep.equal(expectedObject);
+        expect(uboData).to.deep.equal(expectedObject);
     });
 
-    it('should generate the correct update function using the parsers', function ()
+    it.skip('should generate the correct update function using the parsers', function ()
     {
         const fragmentSrc = `
         #version 300 es
@@ -163,11 +159,11 @@ describe('generateUniformBufferSync', function ()
             vec2 uPoint;
             vec4 uRect;
         };
-      
+
         void main() {
-        
+
             color = vec4( 0.);
-         
+
         }`;
 
         const shader = Shader.from(vertexSrc, fragmentSrc);
@@ -192,10 +188,10 @@ describe('generateUniformBufferSync', function ()
             0, 0, 33, 33
         ]);
 
-        chai.expect(buffer.data).to.deep.equal(expectedBufferValue);
+        expect(buffer.data).to.deep.equal(expectedBufferValue);
     });
 
-    it.only('should write arrays types to buffer correctly', function ()
+    it.skip('should write arrays types to buffer correctly', function ()
     {
         [
             {
@@ -278,7 +274,7 @@ describe('generateUniformBufferSync', function ()
             {
                 uboSrc: ` uniform uboTest {
                     float uFirst;
-                    vec2 uSecond; 
+                    vec2 uSecond;
                 };`,
                 debug: true,
                 groupData: {
@@ -291,7 +287,7 @@ describe('generateUniformBufferSync', function ()
             },
             {
                 uboSrc: ` uniform uboTest {
-                    vec2 uSecond; 
+                    vec2 uSecond;
                     float uFirst;
                 };`,
                 groupData: {
@@ -305,7 +301,7 @@ describe('generateUniformBufferSync', function ()
             {
                 uboSrc: ` uniform uboTest {
                     mat3 uMatrixArray[2];
-                    vec2 uSecond; 
+                    vec2 uSecond;
                 };`,
                 groupData: {
                     uMatrixArray: [
@@ -348,7 +344,7 @@ describe('generateUniformBufferSync', function ()
             },
             {
                 uboSrc: ` uniform uboTest {
-                    float uFirst; 
+                    float uFirst;
                     float uFloatArray[5];
                 };`,
                 groupData: {
@@ -367,10 +363,10 @@ describe('generateUniformBufferSync', function ()
             },
             {
                 uboSrc: ` uniform uboTest {
-                    float uFirst; 
-                    float uSecond; 
-                    float uThird; 
-                    float uForth; 
+                    float uFirst;
+                    float uSecond;
+                    float uThird;
+                    float uForth;
                     float uFloatArray[5];
                 };`,
                 groupData: {
@@ -392,11 +388,11 @@ describe('generateUniformBufferSync', function ()
             },
             {
                 uboSrc: ` uniform uboTest {
-                    float uFirst; 
-                    float uSecond; 
-                    float uThird; 
-                    float uForth; 
-                    float uFifth; 
+                    float uFirst;
+                    float uSecond;
+                    float uThird;
+                    float uForth;
+                    float uFifth;
                     float uFloatArray[5];
                 };`,
                 groupData: {
@@ -420,9 +416,9 @@ describe('generateUniformBufferSync', function ()
             },
             {
                 uboSrc: ` uniform uboTest {
-                    float uFirst; 
+                    float uFirst;
                     vec2 uFirstVec2Array[2];
-                    vec2 uSecond; 
+                    vec2 uSecond;
                     float uSecondFloatArray[2];
 
                 };`,
@@ -442,8 +438,8 @@ describe('generateUniformBufferSync', function ()
             },
             {
                 uboSrc: ` uniform uboTest {
-                    float uFirst[3]; 
-                    vec3 uVec3[3]; 
+                    float uFirst[3];
+                    vec3 uVec3[3];
                     mat4 uMat4[2];
                 };`,
                 groupData: {
@@ -485,8 +481,8 @@ describe('generateUniformBufferSync', function ()
             },
             {
                 uboSrc: ` uniform uboTest {
-                    float uFirst[3]; 
-                    vec3 uVec3[3]; 
+                    float uFirst[3];
+                    vec3 uVec3[3];
                     mat4 uMat4[2];
                 };`,
                 groupData: new Buffer(new Float32Array([1, 0, 0, 0, 2, 0, 0, 0])),
@@ -533,19 +529,19 @@ describe('generateUniformBufferSync', function ()
                 ])
 
             },
-        ].forEach((toTest) =>
+        ].forEach((toTest, i) =>
         {
             const fragmentSrc = `
             #version 300 es
             precision highp float;
             out vec4 color;
-            
+
             ${toTest.uboSrc}
-          
+
             void main() {
-            
+
                 color = vec4(0.);
-             
+
             }`;
 
             const shader = Shader.from(vertexSrc, fragmentSrc);
@@ -570,7 +566,7 @@ describe('generateUniformBufferSync', function ()
             //     console.log('actual  ', buffer.data);
             // }
 
-            chai.expect(buffer.data).to.deep.equal(toTest.expectedBuffer);
+            expect(buffer.data).to.deep.equal(toTest.expectedBuffer);
         });
     });
 });

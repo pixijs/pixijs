@@ -1,3 +1,4 @@
+/* global PIXI */
 /* eslint-disable global-require */
 describe('PIXI', function ()
 {

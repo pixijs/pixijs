@@ -1,2 +1,0 @@
-require('./Spritesheet');
-require('./SpritesheetLoader');

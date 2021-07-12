@@ -3,6 +3,7 @@ const { execFileSync } = require('child_process');
 const chai = require('chai');
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
+const fs = require('fs');
 
 global.chai = chai;
 global.sinon = sinon;
@@ -32,5 +33,11 @@ if (!enabledSuites.length)
     console.log(`WARNING: Invalid package name${invalidNames.length > 1 ? 's' : ''}:`, `"${invalidNames.join('", "')}"`);
 }
 
-// eslint-disable-next-line global-require
-enabledSuites.forEach((pkg) => require(pkg));
+for (const pkg of enabledSuites)
+{
+    fs.readdirSync(pkg)
+        .filter((file) => file.endsWith('.tests.js'))
+        .map((file) => path.join(pkg, file))
+        // eslint-disable-next-line global-require
+        .forEach((file) => require(file));
+}

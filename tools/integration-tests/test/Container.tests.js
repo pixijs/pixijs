@@ -135,7 +135,7 @@ describe('PIXI.Container', function ()
         it('should take into account mask bounds after mask is set', function ()
         {
             const maskedObject = createSquareContainer(1, 15, 11, 31);
-            const parentContainer = new PIXI.Container();
+            const parentContainer = new Container();
             let bounds;
 
             parentContainer.addChild(maskedObject);

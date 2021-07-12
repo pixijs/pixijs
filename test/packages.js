@@ -31,7 +31,7 @@ async function main()
     console.log(JSON.stringify({
         availableSuites: buffer.filter(fs.existsSync),
         locations,
-    }));
+    }, null, '  '));
 }
 
 main();

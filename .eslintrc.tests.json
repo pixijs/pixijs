@@ -1,9 +1,9 @@
 {
-	"globals": {
+    "extends": "./.eslintrc.json",
+    "globals": {
 		"expect": false,
 		"assert": false,
-		"sinon": false,
-		"PIXI": false
+		"sinon": false
 	},
 	"rules": {
 		"func-names": 0,

@@ -1,3 +1,4 @@
+/* global sinon */
 const { CanvasRenderer } = require('@pixi/canvas-renderer');
 const { Ticker } = require('@pixi/ticker');
 const { Rectangle } = require('@pixi/math');
