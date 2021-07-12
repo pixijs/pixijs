@@ -396,7 +396,7 @@ export class TextureSystem implements ISystem
         }
         else
         {
-            glTexture.internalFormat = glTypeFormatLookup[texture.type][texture.format];
+            glTexture.internalFormat = glTypeFormatLookup[texture.type]?.[texture.format] ?? texture.format;
 
             if (texture.type === TYPES.HALF_FLOAT)
             {
