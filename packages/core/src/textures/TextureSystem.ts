@@ -8,6 +8,93 @@ import type { Texture } from './Texture';
 import type { IRenderingContext } from '../IRenderingContext';
 import type { Renderer } from '../Renderer';
 
+const glTypeFormatLookup: { [type: number]: { [format: number]: number } } = ('WebGL2RenderingContext' in self ? {
+    [TYPES.UNSIGNED_BYTE]: {
+        [FORMATS.RGBA]: WebGL2RenderingContext.RGBA8,
+        [FORMATS.RGB]: WebGL2RenderingContext.RGB8,
+        [FORMATS.RG]: WebGL2RenderingContext.RG8,
+        [FORMATS.RED]: WebGL2RenderingContext.R8,
+        [FORMATS.RGBA_INTEGER]: WebGL2RenderingContext.RGBA8UI,
+        [FORMATS.RGB_INTEGER]: WebGL2RenderingContext.RGB8UI,
+        [FORMATS.RG_INTEGER]: WebGL2RenderingContext.RG8UI,
+        [FORMATS.RED_INTEGER]: WebGL2RenderingContext.R8UI,
+    },
+    [TYPES.BYTE]: {
+        [FORMATS.RGBA]: WebGL2RenderingContext.RGBA8_SNORM,
+        [FORMATS.RGB]: WebGL2RenderingContext.RGB8_SNORM,
+        [FORMATS.RG]: WebGL2RenderingContext.RG8_SNORM,
+        [FORMATS.RED]: WebGL2RenderingContext.R8_SNORM,
+        [FORMATS.RGBA_INTEGER]: WebGL2RenderingContext.RGBA8I,
+        [FORMATS.RGB_INTEGER]: WebGL2RenderingContext.RGB8I,
+        [FORMATS.RG_INTEGER]: WebGL2RenderingContext.RG8I,
+        [FORMATS.RED_INTEGER]: WebGL2RenderingContext.R8I,
+    },
+    [TYPES.UNSIGNED_SHORT]: {
+        [FORMATS.RGBA_INTEGER]: WebGL2RenderingContext.RGBA16UI,
+        [FORMATS.RGB_INTEGER]: WebGL2RenderingContext.RGB16UI,
+        [FORMATS.RG_INTEGER]: WebGL2RenderingContext.RG16UI,
+        [FORMATS.RED_INTEGER]: WebGL2RenderingContext.R16UI,
+        [FORMATS.DEPTH_COMPONENT]: WebGL2RenderingContext.DEPTH_COMPONENT16,
+    },
+    [TYPES.SHORT]: {
+        [FORMATS.RGBA_INTEGER]: WebGL2RenderingContext.RGBA16I,
+        [FORMATS.RGB_INTEGER]: WebGL2RenderingContext.RGB16I,
+        [FORMATS.RG_INTEGER]: WebGL2RenderingContext.RG16I,
+        [FORMATS.RED_INTEGER]: WebGL2RenderingContext.R16I,
+    },
+    [TYPES.UNSIGNED_INT]: {
+        [FORMATS.RGBA_INTEGER]: WebGL2RenderingContext.RGBA32UI,
+        [FORMATS.RGB_INTEGER]: WebGL2RenderingContext.RGB32UI,
+        [FORMATS.RG_INTEGER]: WebGL2RenderingContext.RG32UI,
+        [FORMATS.RED_INTEGER]: WebGL2RenderingContext.R32UI,
+        [FORMATS.DEPTH_COMPONENT]: WebGL2RenderingContext.DEPTH_COMPONENT24,
+    },
+    [TYPES.INT]: {
+        [FORMATS.RGBA_INTEGER]: WebGL2RenderingContext.RGBA32I,
+        [FORMATS.RGB_INTEGER]: WebGL2RenderingContext.RGB32I,
+        [FORMATS.RG_INTEGER]: WebGL2RenderingContext.RG32I,
+        [FORMATS.RED_INTEGER]: WebGL2RenderingContext.R32I,
+    },
+    [TYPES.FLOAT]: {
+        [FORMATS.RGBA]: WebGL2RenderingContext.RGBA32F,
+        [FORMATS.RGB]: WebGL2RenderingContext.RGB32F,
+        [FORMATS.RG]: WebGL2RenderingContext.RG32F,
+        [FORMATS.RED]: WebGL2RenderingContext.R32F,
+        [FORMATS.DEPTH_COMPONENT]: WebGL2RenderingContext.DEPTH_COMPONENT32F,
+    },
+    [TYPES.HALF_FLOAT]: {
+        [FORMATS.RGBA]: WebGL2RenderingContext.RGBA16F,
+        [FORMATS.RGB]: WebGL2RenderingContext.RGB16F,
+        [FORMATS.RG]: WebGL2RenderingContext.RG16F,
+        [FORMATS.RED]: WebGL2RenderingContext.R16F,
+    },
+    [TYPES.UNSIGNED_SHORT_5_6_5]: {
+        [FORMATS.RGB]: WebGL2RenderingContext.RGB565,
+    },
+    [TYPES.UNSIGNED_SHORT_4_4_4_4]: {
+        [FORMATS.RGBA]: WebGL2RenderingContext.RGBA4,
+    },
+    [TYPES.UNSIGNED_SHORT_5_5_5_1]: {
+        [FORMATS.RGBA]: WebGL2RenderingContext.RGB5_A1,
+    },
+    [TYPES.UNSIGNED_INT_2_10_10_10_REV]: {
+        [FORMATS.RGBA]: WebGL2RenderingContext.RGB10_A2,
+        [FORMATS.RGBA_INTEGER]: WebGL2RenderingContext.RGB10_A2UI,
+    },
+    [TYPES.UNSIGNED_INT_10F_11F_11F_REV]: {
+        [FORMATS.RGB]: WebGL2RenderingContext.R11F_G11F_B10F,
+    },
+    [TYPES.UNSIGNED_INT_5_9_9_9_REV]: {
+        [FORMATS.RGB]: WebGL2RenderingContext.RGB9_E5,
+    },
+    [TYPES.UNSIGNED_INT_24_8]: {
+        [FORMATS.DEPTH_STENCIL]: WebGL2RenderingContext.DEPTH24_STENCIL8,
+    },
+    [TYPES.FLOAT_32_UNSIGNED_INT_24_8_REV]: {
+        [FORMATS.DEPTH_STENCIL]: WebGL2RenderingContext.DEPTH32F_STENCIL8,
+    },
+} : undefined);
+
 /**
  * System plugin to the renderer to manage textures.
  *
@@ -299,274 +386,24 @@ export class TextureSystem implements ISystem
 
     initTextureType(texture: BaseTexture, glTexture: GLTexture): void
     {
-        glTexture.internalFormat = texture.format;
-        glTexture.type = texture.type;
-
         if (this.webGLVersion !== 2)
         {
-            return;
+            glTexture.internalFormat = texture.format;
+            glTexture.type = texture.type;
         }
+        else
+        {
+            glTexture.internalFormat = glTypeFormatLookup[texture.type][texture.format];
 
-        const gl = this.renderer.gl;
-
-        if (texture.type === TYPES.UNSIGNED_BYTE)
-        {
-            if (texture.format === FORMATS.RGBA)
+            if (texture.type === TYPES.HALF_FLOAT)
             {
-                glTexture.internalFormat = gl.RGBA8;
+                // TYPES.HALF_FLOAT is WebGL1 HALF_FLOAT_OES
+                // we have to convert it to WebGL HALF_FLOAT
+                glTexture.type = WebGL2RenderingContext.HALF_FLOAT;
             }
-            else if (texture.format === FORMATS.RGB)
+            else
             {
-                glTexture.internalFormat = gl.RGB8;
-            }
-            else if (texture.format === FORMATS.RG)
-            {
-                glTexture.internalFormat = gl.RG8;
-            }
-            else if (texture.format === FORMATS.RED)
-            {
-                glTexture.internalFormat = gl.R8;
-            }
-            else if (texture.format === FORMATS.RGBA_INTEGER)
-            {
-                glTexture.internalFormat = gl.RGBA8UI;
-            }
-            else if (texture.format === FORMATS.RGB_INTEGER)
-            {
-                glTexture.internalFormat = gl.RGB8UI;
-            }
-            else if (texture.format === FORMATS.RG_INTEGER)
-            {
-                glTexture.internalFormat = gl.RG8UI;
-            }
-            else if (texture.format === FORMATS.RED_INTEGER)
-            {
-                glTexture.internalFormat = gl.R8UI;
-            }
-        }
-        else if (texture.type === TYPES.BYTE)
-        {
-            if (texture.format === FORMATS.RGBA)
-            {
-                glTexture.internalFormat = gl.RGBA8_SNORM;
-            }
-            else if (texture.format === FORMATS.RGB)
-            {
-                glTexture.internalFormat = gl.RGB8_SNORM;
-            }
-            else if (texture.format === FORMATS.RG)
-            {
-                glTexture.internalFormat = gl.RG8_SNORM;
-            }
-            else if (texture.format === FORMATS.RED)
-            {
-                glTexture.internalFormat = gl.R8_SNORM;
-            }
-            else if (texture.format === FORMATS.RGBA_INTEGER)
-            {
-                glTexture.internalFormat = gl.RGBA8I;
-            }
-            else if (texture.format === FORMATS.RGB_INTEGER)
-            {
-                glTexture.internalFormat = gl.RGB8I;
-            }
-            else if (texture.format === FORMATS.RG_INTEGER)
-            {
-                glTexture.internalFormat = gl.RG8I;
-            }
-            else if (texture.format === FORMATS.RED_INTEGER)
-            {
-                glTexture.internalFormat = gl.R8I;
-            }
-        }
-        else if (texture.type === TYPES.UNSIGNED_SHORT)
-        {
-            if (texture.format === FORMATS.RGBA_INTEGER)
-            {
-                glTexture.internalFormat = gl.RGBA16UI;
-            }
-            else if (texture.format === FORMATS.RGB_INTEGER)
-            {
-                glTexture.internalFormat = gl.RGB16UI;
-            }
-            else if (texture.format === FORMATS.RG_INTEGER)
-            {
-                glTexture.internalFormat = gl.RG16UI;
-            }
-            else if (texture.format === FORMATS.RED_INTEGER)
-            {
-                glTexture.internalFormat = gl.R16UI;
-            }
-            else if (texture.format === FORMATS.DEPTH_COMPONENT)
-            {
-                glTexture.internalFormat = gl.DEPTH_COMPONENT16;
-            }
-        }
-        else if (texture.type === TYPES.SHORT)
-        {
-            if (texture.format === FORMATS.RGBA_INTEGER)
-            {
-                glTexture.internalFormat = gl.RGBA16I;
-            }
-            else if (texture.format === FORMATS.RGB_INTEGER)
-            {
-                glTexture.internalFormat = gl.RGB16I;
-            }
-            else if (texture.format === FORMATS.RG_INTEGER)
-            {
-                glTexture.internalFormat = gl.RG16I;
-            }
-            else if (texture.format === FORMATS.RED_INTEGER)
-            {
-                glTexture.internalFormat = gl.R16I;
-            }
-        }
-        else if (texture.type === TYPES.UNSIGNED_INT)
-        {
-            if (texture.format === FORMATS.RGBA_INTEGER)
-            {
-                glTexture.internalFormat = gl.RGBA32UI;
-            }
-            else if (texture.format === FORMATS.RGB_INTEGER)
-            {
-                glTexture.internalFormat = gl.RGB32UI;
-            }
-            else if (texture.format === FORMATS.RG_INTEGER)
-            {
-                glTexture.internalFormat = gl.RG32UI;
-            }
-            else if (texture.format === FORMATS.RED_INTEGER)
-            {
-                glTexture.internalFormat = gl.R32UI;
-            }
-            else if (texture.format === FORMATS.DEPTH_COMPONENT)
-            {
-                glTexture.internalFormat = gl.DEPTH_COMPONENT24;
-            }
-        }
-        else if (texture.type === TYPES.INT)
-        {
-            if (texture.format === FORMATS.RGBA_INTEGER)
-            {
-                glTexture.internalFormat = gl.RGBA32I;
-            }
-            else if (texture.format === FORMATS.RGB_INTEGER)
-            {
-                glTexture.internalFormat = gl.RGB32I;
-            }
-            else if (texture.format === FORMATS.RG_INTEGER)
-            {
-                glTexture.internalFormat = gl.RG32I;
-            }
-            else if (texture.format === FORMATS.RED_INTEGER)
-            {
-                glTexture.internalFormat = gl.R32I;
-            }
-        }
-        else if (texture.type === TYPES.FLOAT)
-        {
-            if (texture.format === FORMATS.RGBA)
-            {
-                glTexture.internalFormat = gl.RGBA32F;
-            }
-            else if (texture.format === FORMATS.RGB)
-            {
-                glTexture.internalFormat = gl.RGB32F;
-            }
-            else if (texture.format === FORMATS.RG)
-            {
-                glTexture.internalFormat = gl.RG32F;
-            }
-            else if (texture.format === FORMATS.RED)
-            {
-                glTexture.internalFormat = gl.R32F;
-            }
-            else if (texture.format === FORMATS.DEPTH_COMPONENT)
-            {
-                glTexture.internalFormat = gl.DEPTH_COMPONENT32F;
-            }
-        }
-        else if (texture.type === TYPES.HALF_FLOAT)
-        {
-            // TYPES.HALF_FLOAT is WebGL1 HALF_FLOAT_OES
-            // we have to convert it to WebGL HALF_FLOAT
-            glTexture.type = gl.HALF_FLOAT;
-
-            if (texture.format === FORMATS.RGBA)
-            {
-                glTexture.internalFormat = gl.RGBA16F;
-            }
-            else if (texture.format === FORMATS.RGB)
-            {
-                glTexture.internalFormat = gl.RGB16F;
-            }
-            else if (texture.format === FORMATS.RG)
-            {
-                glTexture.internalFormat = gl.RG16F;
-            }
-            else if (texture.format === FORMATS.RED)
-            {
-                glTexture.internalFormat = gl.R16F;
-            }
-        }
-        else if (texture.type === TYPES.UNSIGNED_SHORT_5_6_5)
-        {
-            if (texture.format === FORMATS.RGB)
-            {
-                glTexture.internalFormat = gl.RGB565;
-            }
-        }
-        else if (texture.type === TYPES.UNSIGNED_SHORT_4_4_4_4)
-        {
-            if (texture.format === FORMATS.RGBA)
-            {
-                glTexture.internalFormat = gl.RGBA4;
-            }
-        }
-        else if (texture.type === TYPES.UNSIGNED_SHORT_5_5_5_1)
-        {
-            if (texture.format === FORMATS.RGBA)
-            {
-                glTexture.internalFormat = gl.RGB5_A1;
-            }
-        }
-        else if (texture.type === TYPES.UNSIGNED_INT_2_10_10_10_REV)
-        {
-            if (texture.format === FORMATS.RGBA)
-            {
-                glTexture.internalFormat = gl.RGB10_A2;
-            }
-            else if (texture.format === FORMATS.RGBA_INTEGER)
-            {
-                glTexture.internalFormat = gl.RGB10_A2UI;
-            }
-        }
-        else if (texture.type === TYPES.UNSIGNED_INT_10F_11F_11F_REV)
-        {
-            if (texture.format === FORMATS.RGB)
-            {
-                glTexture.internalFormat = gl.R11F_G11F_B10F;
-            }
-        }
-        else if (texture.type === TYPES.UNSIGNED_INT_5_9_9_9_REV)
-        {
-            if (texture.format === FORMATS.RGB)
-            {
-                glTexture.internalFormat = gl.RGB9_E5;
-            }
-        }
-        else if (texture.type === TYPES.UNSIGNED_INT_24_8)
-        {
-            if (texture.format === FORMATS.DEPTH_STENCIL)
-            {
-                glTexture.internalFormat = gl.DEPTH24_STENCIL8;
-            }
-        }
-        else if (texture.type === TYPES.FLOAT_32_UNSIGNED_INT_24_8_REV)
-        {
-            if (texture.format === FORMATS.DEPTH_STENCIL)
-            {
-                glTexture.internalFormat = gl.DEPTH32F_STENCIL8;
+                glTexture.type = texture.type;
             }
         }
     }
