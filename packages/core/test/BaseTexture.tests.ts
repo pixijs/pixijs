@@ -17,7 +17,7 @@ function cleanCache()
     delete TextureCache[NAME2];
 }
 
-describe('PIXI.BaseTexture', function ()
+describe('BaseTexture', function ()
 {
     /*
     describe('updateImageType', function ()

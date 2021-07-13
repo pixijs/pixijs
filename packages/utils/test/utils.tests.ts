@@ -1,6 +1,6 @@
 import * as utils from '@pixi/utils';
 
-describe('PIXI.utils', function ()
+describe('utils', function ()
 {
     describe('uid', function ()
     {

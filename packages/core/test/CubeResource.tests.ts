@@ -1,7 +1,7 @@
 import { CubeResource, BaseTexture } from '@pixi/core';
 import path from 'path';
 
-describe('PIXI.CubeResource', function ()
+describe('CubeResource', function ()
 {
     before(function ()
     {

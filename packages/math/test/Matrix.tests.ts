@@ -1,6 +1,6 @@
 import { Matrix, Transform } from '@pixi/math';
 
-describe('PIXI.Matrix', function ()
+describe('Matrix', function ()
 {
     it('should create a new matrix', function ()
     {

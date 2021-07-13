@@ -2,7 +2,7 @@ import { CLEAR_MODES, BLEND_MODES } from '@pixi/constants';
 import { Rectangle, Matrix } from '@pixi/math';
 import { Renderer, Filter } from '@pixi/core';
 
-describe('PIXI.FilterSystem', function ()
+describe('FilterSystem', function ()
 {
     function onePixelObject(worldTransform, size = 1)
     {

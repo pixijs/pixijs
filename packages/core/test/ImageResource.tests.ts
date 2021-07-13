@@ -2,7 +2,7 @@ import { ImageResource, BaseTexture, Renderer } from '@pixi/core';
 import { settings } from '@pixi/settings';
 import path from 'path';
 
-describe('PIXI.ImageResource', function ()
+describe('ImageResource', function ()
 {
     before(function ()
     {

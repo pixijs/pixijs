@@ -1,7 +1,7 @@
 import { AnimatedSprite } from '@pixi/sprite-animated';
 import { Texture } from '@pixi/core';
 
-describe('PIXI.AnimatedSprite', function ()
+describe('AnimatedSprite', function ()
 {
     describe('instance', function ()
     {

@@ -10,7 +10,7 @@ Renderer.registerPlugin('batch', BatchRenderer);
 
 skipHello();
 
-describe('PIXI.Graphics', function ()
+describe('Graphics', function ()
 {
     describe('constructor', function ()
     {

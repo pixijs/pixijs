@@ -1,6 +1,6 @@
 import { ObservablePoint } from '@pixi/math';
 
-describe('PIXI.ObservablePoint', function ()
+describe('ObservablePoint', function ()
 {
     it('should create a new observable point', function ()
     {

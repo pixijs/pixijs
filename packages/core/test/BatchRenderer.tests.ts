@@ -4,7 +4,7 @@ import { BLEND_MODES } from '@pixi/constants';
 
 skipHello();
 
-describe('PIXI.BatchRenderer', function ()
+describe('BatchRenderer', function ()
 {
     function createTexture(w, h)
     {

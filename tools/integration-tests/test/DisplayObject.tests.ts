@@ -3,7 +3,7 @@ import { MaskData } from '@pixi/core';
 
 import '@pixi/canvas-display';
 
-describe('PIXI.DisplayObject', function ()
+describe('DisplayObject', function ()
 {
     describe('mask', function ()
     {

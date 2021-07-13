@@ -1,6 +1,6 @@
 import { ImageBitmapResource } from '@pixi/core';
 
-describe('PIXI.ImageBitmapResource', function ()
+describe('ImageBitmapResource', function ()
 {
     it('should create new dimension-less resource', async function ()
     {

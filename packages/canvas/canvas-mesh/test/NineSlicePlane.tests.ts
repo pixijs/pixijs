@@ -3,7 +3,7 @@ import { Sprite } from '@pixi/sprite';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
 import { NineSlicePlane } from '@pixi/mesh-extras';
 
-describe('PIXI.NineSlicePlane', function ()
+describe('NineSlicePlane', function ()
 {
     before(function ()
     {

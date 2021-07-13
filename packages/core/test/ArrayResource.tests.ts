@@ -1,7 +1,7 @@
 import { ArrayResource, ImageResource } from '@pixi/core';
 import { join } from 'path';
 
-describe('PIXI.ArrayResource', function ()
+describe('ArrayResource', function ()
 {
     before(function ()
     {

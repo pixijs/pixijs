@@ -43,7 +43,7 @@ const breakingSpaces = [
     '\u3000',
 ];
 
-describe('PIXI.TextMetrics', function ()
+describe('TextMetrics', function ()
 {
     const defaultStyle = {
         breakWords: true,

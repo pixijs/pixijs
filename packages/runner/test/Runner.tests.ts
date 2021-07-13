@@ -1,6 +1,6 @@
 import { Runner } from '@pixi/runner';
 
-describe('PIXI.Runner', function ()
+describe('Runner', function ()
 {
     it('should should exist', function ()
     {

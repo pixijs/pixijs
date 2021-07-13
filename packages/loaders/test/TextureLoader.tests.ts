@@ -2,7 +2,7 @@ import { TextureLoader, LoaderResource } from '@pixi/loaders';
 import { Texture } from '@pixi/core';
 import { BaseTextureCache, TextureCache } from '@pixi/utils';
 
-describe('PIXI.TextureLoader', function ()
+describe('TextureLoader', function ()
 {
     it('should exist and return a function', function ()
     {

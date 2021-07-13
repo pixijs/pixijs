@@ -4,7 +4,7 @@ import { Rectangle } from '@pixi/math';
 
 import '@pixi/mixin-cache-as-bitmap';
 
-describe('PIXI.DisplayObject#cacheAsBitmap', function ()
+describe('DisplayObject#cacheAsBitmap', function ()
 {
     it('should contain property', function ()
     {

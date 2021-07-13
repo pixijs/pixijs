@@ -1,7 +1,7 @@
 import { Renderer } from '@pixi/core';
 import { Rectangle } from '@pixi/math';
 
-describe('PIXI.RenderTextureSystem', function ()
+describe('RenderTextureSystem', function ()
 {
     before(function ()
     {

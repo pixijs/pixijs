@@ -7,7 +7,7 @@ import { RenderTexture, Texture } from '@pixi/core';
 skipHello();
 
 // TODO: fix with webglrenderer
-describe('PIXI.SimplePlane', function ()
+describe('SimplePlane', function ()
 {
     it('should create a plane from an external image', function (done)
     {

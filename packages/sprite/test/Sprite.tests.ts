@@ -5,7 +5,7 @@ import { Point } from '@pixi/math';
 
 import path from 'path';
 
-describe('PIXI.Sprite', function ()
+describe('Sprite', function ()
 {
     describe('width', function ()
     {

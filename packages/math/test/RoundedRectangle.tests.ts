@@ -1,6 +1,6 @@
 import { RoundedRectangle } from '@pixi/math';
 
-describe('PIXI.RoundedRectangle', function ()
+describe('RoundedRectangle', function ()
 {
     it('should create a new rounded rectangle', function ()
     {

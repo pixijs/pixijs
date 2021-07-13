@@ -2,7 +2,7 @@ import { DisplayObject, Container } from '@pixi/display';
 
 import '@pixi/mixin-get-child-by-name';
 
-describe('PIXI.DisplayObject#name', function ()
+describe('DisplayObject#name', function ()
 {
     it('should contain property', function ()
     {
@@ -13,7 +13,7 @@ describe('PIXI.DisplayObject#name', function ()
     });
 });
 
-describe('PIXI.Container#getChildByName', function ()
+describe('Container#getChildByName', function ()
 {
     it('should exist', function ()
     {

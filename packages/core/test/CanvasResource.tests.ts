@@ -1,6 +1,6 @@
 import { CanvasResource, BaseTexture } from '@pixi/core';
 
-describe('PIXI.CanvasResource', function ()
+describe('CanvasResource', function ()
 {
     it('should create new dimension-less resource', function ()
     {

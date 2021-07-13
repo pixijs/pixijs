@@ -1,6 +1,6 @@
 import { Ellipse } from '@pixi/math';
 
-describe('PIXI.Ellipse', function ()
+describe('Ellipse', function ()
 {
     it('should create a new ellipse', function ()
     {

@@ -4,7 +4,7 @@ import { Point } from '@pixi/math';
 
 import '@pixi/canvas-display';
 
-describe('PIXI.InteractionData', function ()
+describe('InteractionData', function ()
 {
     describe('getLocalPosition', function ()
     {

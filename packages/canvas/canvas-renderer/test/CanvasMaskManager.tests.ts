@@ -3,7 +3,7 @@ import { Graphics } from '@pixi/graphics';
 import { Sprite } from '@pixi/sprite';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
 
-describe('PIXI.CanvasMaskManager', function ()
+describe('CanvasMaskManager', function ()
 {
     it('should work on all graphics masks inside container', function ()
     {

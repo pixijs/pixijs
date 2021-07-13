@@ -1,7 +1,7 @@
 import { Renderer, Framebuffer } from '@pixi/core';
 import { Rectangle } from '@pixi/math';
 
-describe('PIXI.FramebufferSystem', function ()
+describe('FramebufferSystem', function ()
 {
     before(function ()
     {

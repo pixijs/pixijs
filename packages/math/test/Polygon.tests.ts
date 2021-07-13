@@ -1,6 +1,6 @@
 import { Polygon, Point } from '@pixi/math';
 
-describe('PIXI.Polygon', function ()
+describe('Polygon', function ()
 {
     describe('constructor', function ()
     {

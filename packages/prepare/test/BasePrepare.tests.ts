@@ -1,6 +1,6 @@
 import { BasePrepare } from '@pixi/prepare';
 
-describe('PIXI.BasePrepare', function ()
+describe('BasePrepare', function ()
 {
     it('should create a new, empty, BasePrepare', function ()
     {

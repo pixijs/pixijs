@@ -1,6 +1,6 @@
 import { settings } from '@pixi/settings';
 
-describe('PIXI.settings', function ()
+describe('settings', function ()
 {
     it('should have MIPMAP_TEXTURES', function ()
     {

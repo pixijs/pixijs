@@ -1,6 +1,6 @@
 import { Point } from '@pixi/math';
 
-describe('PIXI.Point', function ()
+describe('Point', function ()
 {
     it('should create a new point', function ()
     {

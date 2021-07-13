@@ -8,7 +8,7 @@ skipHello();
 
 Renderer.registerPlugin('batch', BatchRenderer);
 
-describe('PIXI.Text', function ()
+describe('Text', function ()
 {
     describe('properties', function ()
     {

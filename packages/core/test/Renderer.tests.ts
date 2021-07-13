@@ -5,7 +5,7 @@ import { skipHello } from '@pixi/utils';
 
 skipHello();
 
-describe('PIXI.Renderer', function ()
+describe('Renderer', function ()
 {
     it('setting option legacy should disable VAOs and SPRITE_MAX_TEXTURES', function ()
     {

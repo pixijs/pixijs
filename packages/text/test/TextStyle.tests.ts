@@ -1,6 +1,6 @@
 import { TextStyle } from '@pixi/text';
 
-describe('PIXI.TextStyle', function ()
+describe('TextStyle', function ()
 {
     it('reset reverts style to default', function ()
     {

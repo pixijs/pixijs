@@ -6,7 +6,7 @@ import { createServer } from './resources';
 
 const createRandomName = () => `image${(Math.random() * 10000) | 0}`;
 
-describe('PIXI.Loader', function ()
+describe('Loader', function ()
 {
     before(function ()
     {

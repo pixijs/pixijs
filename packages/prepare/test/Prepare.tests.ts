@@ -3,7 +3,7 @@ import { Renderer, Texture } from '@pixi/core';
 import { Container } from '@pixi/display';
 import { Graphics } from '@pixi/graphics';
 
-describe('PIXI.Prepare', function ()
+describe('Prepare', function ()
 {
     it('should upload graphics vao and textures', function ()
     {

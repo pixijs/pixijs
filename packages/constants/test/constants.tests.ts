@@ -1,6 +1,6 @@
 import * as lib from '@pixi/constants';
 
-describe('PIXI', function ()
+describe('Constants', function ()
 {
     it('should have ENV', function ()
     {

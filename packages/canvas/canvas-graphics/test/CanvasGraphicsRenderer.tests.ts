@@ -3,7 +3,7 @@ import { Graphics } from '@pixi/graphics';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
 import { CanvasGraphicsRenderer } from '@pixi/canvas-graphics';
 
-describe('PIXI.CanvasGraphicsRenderer', function ()
+describe('CanvasGraphicsRenderer', function ()
 {
     it('should not create pattern for White Texture', function ()
     {

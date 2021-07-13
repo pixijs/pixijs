@@ -1,6 +1,6 @@
 import { AppLoaderPlugin, Loader } from '@pixi/loaders';
 
-describe('PIXI.AppLoaderPlugin', function ()
+describe('AppLoaderPlugin', function ()
 {
     it('should contain loader property', function ()
     {

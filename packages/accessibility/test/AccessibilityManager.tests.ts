@@ -2,7 +2,7 @@ import { AccessibilityManager } from '@pixi/accessibility';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
 import { isMobile } from '@pixi/utils';
 
-describe('PIXI.AccessibilityManager', function ()
+describe('AccessibilityManager', function ()
 {
     it('should exist', function ()
     {

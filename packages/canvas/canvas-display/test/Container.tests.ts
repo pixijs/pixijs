@@ -2,7 +2,7 @@ import { Container } from '@pixi/display';
 
 import '@pixi/canvas-display';
 
-describe('PIXI.Container', function ()
+describe('Container', function ()
 {
     describe('render', function ()
     {

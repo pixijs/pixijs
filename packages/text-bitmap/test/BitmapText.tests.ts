@@ -3,7 +3,7 @@ import fs from 'fs';
 import { BitmapText, BitmapFont } from '@pixi/text-bitmap';
 import { Texture } from '@pixi/core';
 
-describe('PIXI.BitmapText', function ()
+describe('BitmapText', function ()
 {
     before(function (done)
     {

@@ -1,7 +1,7 @@
 import { VideoResource } from '@pixi/core';
 import path from 'path';
 
-describe('PIXI.VideoResource', function ()
+describe('VideoResource', function ()
 {
     before(function ()
     {

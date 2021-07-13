@@ -34,7 +34,7 @@ function testRemoveChild(fn)
     };
 }
 
-describe('PIXI.Container', function ()
+describe('Container', function ()
 {
     describe('parent', function ()
     {

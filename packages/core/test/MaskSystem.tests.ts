@@ -2,7 +2,7 @@ import { MASK_TYPES } from '@pixi/constants';
 import { Rectangle, Matrix } from '@pixi/math';
 import { Renderer, MaskData, RenderTexture, Filter, Texture } from '@pixi/core';
 
-describe('PIXI.MaskSystem', function ()
+describe('MaskSystem', function ()
 {
     function onePixelMask(worldTransform)
     {

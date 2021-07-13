@@ -1,6 +1,6 @@
 import { CountLimiter } from '@pixi/prepare';
 
-describe('PIXI.CountLimiter', function ()
+describe('CountLimiter', function ()
 {
     it('should limit to specified number per beginFrame()', function ()
     {

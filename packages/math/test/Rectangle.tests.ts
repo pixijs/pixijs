@@ -1,6 +1,6 @@
 import { Rectangle } from '@pixi/math';
 
-describe('PIXI.Rectangle', function ()
+describe('Rectangle', function ()
 {
     it('should create a new rectangle', function ()
     {

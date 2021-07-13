@@ -1,7 +1,7 @@
 import { WRAP_MODES, TYPES, FORMATS, SAMPLER_TYPES } from '@pixi/constants';
 import { Renderer, Texture, BaseTexture, BufferResource } from '@pixi/core';
 
-describe('PIXI.TextureSystem', function ()
+describe('TextureSystem', function ()
 {
     function createTempTexture(options)
     {

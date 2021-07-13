@@ -2,7 +2,7 @@ import { Container, DisplayObject } from '@pixi/display';
 
 import '@pixi/mixin-get-global-position';
 
-describe('PIXI.DisplayObject#getGlobalPosition', function ()
+describe('DisplayObject#getGlobalPosition', function ()
 {
     it('should exist', function ()
     {

@@ -1,6 +1,6 @@
 import { Circle } from '@pixi/math';
 
-describe('PIXI.Circle', function ()
+describe('Circle', function ()
 {
     it('should create a new circle', function ()
     {

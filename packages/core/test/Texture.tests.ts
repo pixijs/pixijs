@@ -18,7 +18,7 @@ function cleanCache()
     delete TextureCache[NAME2];
 }
 
-describe('PIXI.Texture', function ()
+describe('Texture', function ()
 {
     it('should register Texture from Loader', function (done)
     {

@@ -1,6 +1,6 @@
 import { TimeLimiter } from '@pixi/prepare';
 
-describe('PIXI.TimeLimiter', function ()
+describe('TimeLimiter', function ()
 {
     it('should limit to stop after time from beginFrame()', function (done)
     {

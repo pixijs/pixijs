@@ -5,7 +5,7 @@ import { autoDetectResource,
     VideoResource,
     SVGResource } from '@pixi/core';
 
-describe('PIXI.autoDetectResource', function ()
+describe('autoDetectResource', function ()
 {
     it('should have api', function ()
     {

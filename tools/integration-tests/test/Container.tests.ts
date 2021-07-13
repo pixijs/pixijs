@@ -5,7 +5,7 @@ import { MaskData } from '@pixi/core';
 
 import '@pixi/canvas-display';
 
-describe('PIXI.Container', function ()
+describe('Container', function ()
 {
     describe('addChild', function ()
     {

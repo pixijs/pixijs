@@ -2,7 +2,7 @@ import { DisplayObject } from '@pixi/display';
 
 import '@pixi/accessibility';
 
-describe('PIXI.accessibleTarget', function ()
+describe('accessibleTarget', function ()
 {
     it('should have target public properties', function ()
     {

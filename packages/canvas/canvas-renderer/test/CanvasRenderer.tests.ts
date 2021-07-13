@@ -2,7 +2,7 @@ import { Container } from '@pixi/display';
 import { Matrix } from '@pixi/math';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
 
-describe('PIXI.CanvasRenderer', function ()
+describe('CanvasRenderer', function ()
 {
     it('should default context to rootContext', function ()
     {

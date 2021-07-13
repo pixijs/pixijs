@@ -2,7 +2,7 @@ import { SVGResource } from '@pixi/core';
 import fs from 'fs';
 import path from 'path';
 
-describe('PIXI.SVGResource', function ()
+describe('SVGResource', function ()
 {
     before(function ()
     {

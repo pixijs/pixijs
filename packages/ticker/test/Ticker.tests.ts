@@ -1,7 +1,7 @@
 import { Ticker, UPDATE_PRIORITY } from '@pixi/ticker';
 const { shared, system } = Ticker;
 
-describe('PIXI.Ticker', function ()
+describe('Ticker', function ()
 {
     before(function ()
     {

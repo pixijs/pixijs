@@ -42,7 +42,7 @@ function createScene()
     return [stage, graphics];
 }
 
-describe('PIXI.EventSystem', function ()
+describe('EventSystem', function ()
 {
     // Share WebGL context for performance
     const view = document.createElement('canvas');

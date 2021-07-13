@@ -4,7 +4,7 @@ import { Point, Rectangle } from '@pixi/math';
 import { Sprite } from '@pixi/sprite';
 import { TilingSprite } from '@pixi/sprite-tiling';
 
-describe('PIXI.TilingSprite', function ()
+describe('TilingSprite', function ()
 {
     describe('getBounds()', function ()
     {

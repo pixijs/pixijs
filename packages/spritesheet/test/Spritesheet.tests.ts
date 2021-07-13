@@ -2,7 +2,7 @@ import { Spritesheet } from '@pixi/spritesheet';
 import { BaseTexture, Texture } from '@pixi/core';
 import path from 'path';
 
-describe('PIXI.Spritesheet', function ()
+describe('Spritesheet', function ()
 {
     before(function ()
     {

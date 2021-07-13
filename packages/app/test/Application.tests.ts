@@ -8,7 +8,7 @@ skipHello();
 // Use fallback if no webgl
 Application.prototype.createRenderer = autoDetectRenderer;
 
-describe('PIXI.Application', function ()
+describe('Application', function ()
 {
     it('should generate application', function ()
     {

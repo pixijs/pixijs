@@ -1,7 +1,7 @@
 import { Renderer } from '@pixi/core';
 import { Point, Rectangle } from '@pixi/math';
 
-describe('PIXI.ProjectionSystem', function ()
+describe('ProjectionSystem', function ()
 {
     before(function ()
     {

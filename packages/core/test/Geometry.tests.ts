@@ -29,7 +29,7 @@ void main() {
     gl_FragColor = texture2D(uSampler, vUvs);
 }`;
 
-describe('PIXI.Geometry', function ()
+describe('Geometry', function ()
 {
     it('should dispose shared index buffer after all geometries were disposed/destroyed', function ()
     {

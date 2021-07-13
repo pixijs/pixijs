@@ -1,6 +1,6 @@
 import { TickerPlugin, UPDATE_PRIORITY, Ticker } from '@pixi/ticker';
 
-describe('PIXI.TickerPlugin', function ()
+describe('TickerPlugin', function ()
 {
     it('should not start application before calling start method if options.autoStart is false', function (done)
     {

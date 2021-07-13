@@ -6,7 +6,7 @@ import { Texture, BaseTexture } from '@pixi/core';
 import { Spritesheet } from '@pixi/spritesheet';
 import { BitmapFont, BitmapFontLoader } from '@pixi/text-bitmap';
 
-describe('PIXI.BitmapFontLoader', function ()
+describe('BitmapFontLoader', function ()
 {
     afterEach(function ()
     {

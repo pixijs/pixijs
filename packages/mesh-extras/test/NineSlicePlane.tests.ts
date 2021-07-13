@@ -4,7 +4,7 @@ import { Texture } from '@pixi/core';
 
 skipHello();
 
-describe('PIXI.NineSlicePlane', function ()
+describe('NineSlicePlane', function ()
 {
     it('shold return correct scaling for NineSlicePlane corners', function ()
     {

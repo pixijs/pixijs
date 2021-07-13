@@ -4,7 +4,7 @@ import { Texture, BaseTexture } from '@pixi/core';
 import { BaseTextureCache, TextureCache, url, clearTextureCache } from '@pixi/utils';
 import { SpritesheetLoader, Spritesheet } from '@pixi/spritesheet';
 
-describe('PIXI.SpritesheetLoader', function ()
+describe('SpritesheetLoader', function ()
 {
     it('should exist and return a function', function ()
     {

@@ -1,6 +1,6 @@
 import { Transform } from '@pixi/math';
 
-describe('PIXI.Transform', function ()
+describe('Transform', function ()
 {
     describe('setFromMatrix', function ()
     {

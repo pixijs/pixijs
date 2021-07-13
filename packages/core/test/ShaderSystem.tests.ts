@@ -3,7 +3,7 @@ import { skipHello } from '@pixi/utils';
 
 skipHello();
 
-describe('PIXI.ShaderSystem', function ()
+describe('ShaderSystem', function ()
 {
     const vertexSrc = `
 attribute vec2 aVertexPosition;

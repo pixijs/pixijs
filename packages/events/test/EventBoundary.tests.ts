@@ -2,7 +2,7 @@ import { Container } from '@pixi/display';
 import { FederatedPointerEvent, EventBoundary } from '@pixi/events';
 import { Graphics } from '@pixi/graphics';
 
-describe('PIXI.EventBoundary', function ()
+describe('EventBoundary', function ()
 {
     it('should fire capture, bubble events on the correct target', function ()
     {
