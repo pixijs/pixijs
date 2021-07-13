@@ -207,14 +207,14 @@ const mixins: any = {
     cross(other: IPointData): number
     {
         /*
-             * Returns the magnitude of the vector that would result
-             * from a regular 3D cross product of the input vectors,
-             * taking their Z values implicitly as 0
-             * (i.e. treating the 2D space as a plane in the 3D space).
-             * The 3D cross product will be perpendicular to that plane,
-             * and thus have 0 X & Y components
-             * (thus the scalar returned is the Z value of the 3D cross product vector).
-             */
+         * Returns the magnitude of the vector that would result
+         * from a regular 3D cross product of the input vectors,
+         * taking their Z values implicitly as 0
+         * (i.e. treating the 2D space as a plane in the 3D space).
+         * The 3D cross product will be perpendicular to that plane,
+         * and thus have 0 X & Y components
+         * (thus the scalar returned is the Z value of the 3D cross product vector).
+         */
         return (this.x * other.y) - (this.y * other.x);
     },
 
