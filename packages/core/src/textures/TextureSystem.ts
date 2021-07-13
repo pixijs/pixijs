@@ -342,6 +342,11 @@ export class TextureSystem implements ISystem
                 glTexture.internalFormat = gl.RGB16F;
             }
         }
+
+        if (this.webGLVersion === 2 && texture.internalFormat)
+        {
+            glTexture.internalFormat = texture.internalFormat;
+        }
     }
 
     /**
