@@ -1,6 +1,8 @@
 import { TextureLoader, LoaderResource } from '@pixi/loaders';
 import { Texture } from '@pixi/core';
 import { BaseTextureCache, TextureCache } from '@pixi/utils';
+import sinon from 'sinon';
+import { expect } from 'chai';
 
 describe('TextureLoader', function ()
 {

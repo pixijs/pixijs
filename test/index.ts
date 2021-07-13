@@ -1,17 +1,19 @@
 import path from 'path';
 import { execFileSync } from 'child_process';
 import chai from 'chai';
-import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import fs from 'fs';
+import { FlossOptions } from 'floss';
 
+// Support for global otpions
+declare global {
+    let options: FlossOptions;
+}
+
+// Support for the tsconfig path aliasing
 import 'tsconfig-paths/register';
 
-global.chai = chai;
-global.sinon = sinon;
-global.assert = chai.assert;
-global.expect = chai.expect;
-
+// We only need to do this one time
 chai.use(sinonChai);
 
 const requireAsStrings = (module, filename) =>
@@ -30,7 +32,7 @@ const packagesBuffer = execFileSync('ts-node-transpile-only', [script]).toString
 const { availableSuites, locations } = JSON.parse(packagesBuffer);
 
 // Filter any packages from the commandline options
-const onlyPackages = global.options.args
+const onlyPackages = options.args
     .filter((arg) => arg.startsWith('--package='))
     .map((arg) => arg.replace('--package=', ''));
 

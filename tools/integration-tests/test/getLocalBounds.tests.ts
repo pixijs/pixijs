@@ -8,6 +8,7 @@ import { CanvasGraphicsRenderer } from '@pixi/canvas-graphics';
 import { Text } from '@pixi/text';
 import { SimplePlane } from '@pixi/mesh-extras';
 import { CanvasMeshRenderer } from '@pixi/canvas-mesh';
+import { expect } from 'chai';
 
 import '@pixi/canvas-display';
 import '@pixi/canvas-text';

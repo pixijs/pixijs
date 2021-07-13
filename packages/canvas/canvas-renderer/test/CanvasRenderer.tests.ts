@@ -1,12 +1,13 @@
 import { Container } from '@pixi/display';
 import { Matrix } from '@pixi/math';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
+import { expect } from 'chai';
 
 describe('CanvasRenderer', function ()
 {
     it('should default context to rootContext', function ()
     {
-        const renderer = new CanvasRenderer(1, 1);
+        const renderer = new CanvasRenderer({ width: 1, height: 1 });
 
         try
         {
@@ -20,7 +21,7 @@ describe('CanvasRenderer', function ()
 
     it('should allow clear() to work despite no containers added to the renderer', function ()
     {
-        const renderer = new CanvasRenderer(1, 1);
+        const renderer = new CanvasRenderer({ width: 1, height: 1 });
 
         try
         {
@@ -35,7 +36,7 @@ describe('CanvasRenderer', function ()
     it('should update transform in case of temp parent', function ()
     {
         // this test works only for CanvasRenderer, WebGLRenderer behaviour is different
-        const renderer = new CanvasRenderer(1, 1);
+        const renderer = new CanvasRenderer({ width: 1, height: 1 });
         const cont = new Container();
         const par = new Container();
 

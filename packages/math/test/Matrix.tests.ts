@@ -1,4 +1,5 @@
 import { Matrix, Transform } from '@pixi/math';
+import { expect } from 'chai';
 
 describe('Matrix', function ()
 {

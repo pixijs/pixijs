@@ -2,6 +2,8 @@ import { Renderer } from '@pixi/core';
 import { settings } from '@pixi/settings';
 import { ENV } from '@pixi/constants';
 import { skipHello } from '@pixi/utils';
+import sinon from 'sinon';
+import { expect } from 'chai';
 
 skipHello();
 
@@ -10,7 +12,7 @@ describe('Renderer', function ()
     it('setting option legacy should disable VAOs and SPRITE_MAX_TEXTURES', function ()
     {
         settings.PREFER_ENV = ENV.WEBGL_LEGACY;
-        const renderer = new Renderer(1, 1);
+        const renderer = new Renderer({ width: 1, height: 1 });
 
         try
         {
@@ -26,7 +28,7 @@ describe('Renderer', function ()
 
     it('should allow clear() to work despite no containers added to the renderer', function ()
     {
-        const renderer = new Renderer(1, 1);
+        const renderer = new Renderer({ width: 1, height: 1 });
 
         try
         {
@@ -40,7 +42,7 @@ describe('Renderer', function ()
 
     it('should emit resize event', function ()
     {
-        const renderer = new Renderer(1, 1);
+        const renderer = new Renderer({ width: 1, height: 1 });
         const spy = sinon.spy();
 
         renderer.on('resize', spy);

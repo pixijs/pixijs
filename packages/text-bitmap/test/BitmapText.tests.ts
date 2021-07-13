@@ -2,6 +2,8 @@ import path from 'path';
 import fs from 'fs';
 import { BitmapText, BitmapFont } from '@pixi/text-bitmap';
 import { Texture } from '@pixi/core';
+import sinon from 'sinon';
+import { expect } from 'chai';
 
 describe('BitmapText', function ()
 {

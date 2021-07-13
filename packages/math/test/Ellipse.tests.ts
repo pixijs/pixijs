@@ -1,4 +1,5 @@
 import { Ellipse } from '@pixi/math';
+import { expect } from 'chai';
 
 describe('Ellipse', function ()
 {

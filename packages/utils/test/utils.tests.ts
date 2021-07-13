@@ -1,4 +1,5 @@
 import * as utils from '@pixi/utils';
+import { expect } from 'chai';
 
 describe('utils', function ()
 {

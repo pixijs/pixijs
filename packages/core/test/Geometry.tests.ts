@@ -1,4 +1,5 @@
 import { Buffer, Geometry, Program, Renderer, Shader, Texture } from '@pixi/core';
+import { expect } from 'chai';
 
 const vert = `
 attribute vec2 aVertexPosition;
@@ -33,7 +34,7 @@ describe('Geometry', function ()
 {
     it('should dispose shared index buffer after all geometries were disposed/destroyed', function ()
     {
-        const renderer = new Renderer(1, 1);
+        const renderer = new Renderer({ width: 1, height: 1 });
 
         try
         {
@@ -67,7 +68,7 @@ describe('Geometry', function ()
 
     it('should dispose buffer if geometry is used by two shaders', function ()
     {
-        const renderer = new Renderer(1, 1);
+        const renderer = new Renderer({ width: 1, height: 1 });
 
         try
         {

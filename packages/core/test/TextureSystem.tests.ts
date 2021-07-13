@@ -1,5 +1,6 @@
 import { WRAP_MODES, TYPES, FORMATS, SAMPLER_TYPES } from '@pixi/constants';
 import { Renderer, Texture, BaseTexture, BufferResource } from '@pixi/core';
+import { expect } from 'chai';
 
 describe('TextureSystem', function ()
 {

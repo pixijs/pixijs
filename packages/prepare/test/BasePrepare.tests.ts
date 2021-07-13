@@ -1,4 +1,6 @@
 import { BasePrepare } from '@pixi/prepare';
+import sinon from 'sinon';
+import { expect } from 'chai';
 
 describe('BasePrepare', function ()
 {

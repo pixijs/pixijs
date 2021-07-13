@@ -1,5 +1,6 @@
 import { Renderer } from '@pixi/core';
 import { Rectangle } from '@pixi/math';
+import { expect } from 'chai';
 
 describe('RenderTextureSystem', function ()
 {

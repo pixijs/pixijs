@@ -1,5 +1,6 @@
 import { Container } from '@pixi/display';
 import { Point } from '@pixi/math';
+import { expect } from 'chai';
 
 describe('toGlobal', function ()
 {

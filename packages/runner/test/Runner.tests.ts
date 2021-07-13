@@ -1,10 +1,12 @@
 import { Runner } from '@pixi/runner';
+import sinon from 'sinon';
+import { expect } from 'chai';
 
 describe('Runner', function ()
 {
     it('should should exist', function ()
     {
-        expect(Runner).to.be.defined;
+        expect(Runner).to.be.not.undefined;
         expect(typeof Runner).to.equal('function');
     });
 

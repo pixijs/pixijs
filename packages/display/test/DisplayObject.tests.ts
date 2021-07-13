@@ -1,5 +1,7 @@
 import { DisplayObject, Container } from '@pixi/display';
 import { RAD_TO_DEG, DEG_TO_RAD } from '@pixi/math';
+import sinon from 'sinon';
+import { expect } from 'chai';
 
 describe('DisplayObject', function ()
 {

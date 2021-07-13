@@ -1,4 +1,6 @@
 import { Container } from '@pixi/display';
+import sinon from 'sinon';
+import { expect } from 'chai';
 
 import '@pixi/canvas-display';
 

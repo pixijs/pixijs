@@ -2,6 +2,8 @@ import { Application } from '@pixi/app';
 import { autoDetectRenderer } from '@pixi/canvas-renderer';
 import { Container, DisplayObject } from '@pixi/display';
 import { skipHello } from '@pixi/utils';
+import sinon from 'sinon';
+import { expect } from 'chai';
 
 skipHello();
 
@@ -12,7 +14,7 @@ describe('Application', function ()
 {
     it('should generate application', function ()
     {
-        expect(Application).to.be.a.function;
+        expect(Application).to.be.a('function');
         const app = new Application();
 
         expect(app.stage).to.be.instanceof(Container);

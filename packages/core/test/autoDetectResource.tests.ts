@@ -1,3 +1,4 @@
+import { expect } from 'chai';
 import { autoDetectResource,
     INSTALLED,
     CanvasResource,
@@ -9,7 +10,7 @@ describe('autoDetectResource', function ()
 {
     it('should have api', function ()
     {
-        expect(autoDetectResource).to.be.a.function;
+        expect(autoDetectResource).to.be.a('function');
     });
 
     it('should have installed resources', function ()

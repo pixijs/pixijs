@@ -1,5 +1,6 @@
 import { VideoResource } from '@pixi/core';
 import path from 'path';
+import { expect } from 'chai';
 
 describe('VideoResource', function ()
 {

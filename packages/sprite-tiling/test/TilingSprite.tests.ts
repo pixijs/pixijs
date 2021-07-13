@@ -3,6 +3,8 @@ import { Texture, BaseTexture } from '@pixi/core';
 import { Point, Rectangle } from '@pixi/math';
 import { Sprite } from '@pixi/sprite';
 import { TilingSprite } from '@pixi/sprite-tiling';
+import sinon from 'sinon';
+import { expect } from 'chai';
 
 describe('TilingSprite', function ()
 {

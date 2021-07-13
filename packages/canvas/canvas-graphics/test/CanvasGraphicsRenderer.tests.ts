@@ -2,12 +2,13 @@ import { BaseTexture, Texture } from '@pixi/core';
 import { Graphics } from '@pixi/graphics';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
 import { CanvasGraphicsRenderer } from '@pixi/canvas-graphics';
+import { expect } from 'chai';
 
 describe('CanvasGraphicsRenderer', function ()
 {
     it('should not create pattern for White Texture', function ()
     {
-        const renderer = new CanvasRenderer(1, 1);
+        const renderer = new CanvasRenderer({ width: 1, height: 1 });
 
         renderer.plugins.graphics = new CanvasGraphicsRenderer(renderer);
 
@@ -30,7 +31,7 @@ describe('CanvasGraphicsRenderer', function ()
 
     it('should create pattern for textures', function ()
     {
-        const renderer = new CanvasRenderer(1, 1);
+        const renderer = new CanvasRenderer({ width: 1, height: 1 });
 
         renderer.plugins.graphics = new CanvasGraphicsRenderer(renderer);
 

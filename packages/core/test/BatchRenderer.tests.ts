@@ -1,6 +1,8 @@
 import { Renderer, BatchRenderer, CanvasResource, Texture, BaseTexture } from '@pixi/core';
 import { skipHello } from '@pixi/utils';
 import { BLEND_MODES } from '@pixi/constants';
+import sinon from 'sinon';
+import { expect } from 'chai';
 
 skipHello();
 
@@ -35,7 +37,7 @@ describe('BatchRenderer', function ()
 
     it('should pass the batching test', function ()
     {
-        const renderer = new Renderer(1, 1);
+        const renderer = new Renderer({ width: 1, height: 1 });
         const batchRenderer = new BatchRenderer(renderer);
         const drawCalls = [];
 
@@ -136,7 +138,7 @@ describe('BatchRenderer', function ()
 
     it('should ask StateSystem to call gl.disable(gl.BLEND) if sprite has BLEND_MODES.NONE', function ()
     {
-        const renderer = new Renderer(1, 1);
+        const renderer = new Renderer({ width: 1, height: 1 });
         const batchRenderer = new BatchRenderer(renderer);
         const { gl } = renderer;
 

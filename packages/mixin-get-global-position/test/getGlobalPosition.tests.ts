@@ -1,4 +1,5 @@
 import { Container, DisplayObject } from '@pixi/display';
+import { expect } from 'chai';
 
 import '@pixi/mixin-get-global-position';
 
@@ -9,7 +10,7 @@ describe('DisplayObject#getGlobalPosition', function ()
         const obj = new DisplayObject();
 
         expect(obj.getGlobalPosition).to.be.not.undefined;
-        expect(obj.getGlobalPosition).to.be.function;
+        expect(obj.getGlobalPosition).to.be.a('function');
     });
 
     it('should return correct global coordinates of a displayObject, without depending on its pivot', function ()

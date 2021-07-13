@@ -1,4 +1,5 @@
 import { AppLoaderPlugin, Loader } from '@pixi/loaders';
+import { expect } from 'chai';
 
 describe('AppLoaderPlugin', function ()
 {

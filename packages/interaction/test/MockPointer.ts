@@ -1,8 +1,8 @@
-/* global sinon */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { CanvasRenderer } from '@pixi/canvas-renderer';
 import { Ticker } from '@pixi/ticker';
 import { Rectangle } from '@pixi/math';
+import sinon from 'sinon';
 
 const { system } = Ticker;
 

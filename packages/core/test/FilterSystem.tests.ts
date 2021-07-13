@@ -1,6 +1,8 @@
 import { CLEAR_MODES, BLEND_MODES } from '@pixi/constants';
 import { Rectangle, Matrix } from '@pixi/math';
 import { Renderer, Filter } from '@pixi/core';
+import sinon from 'sinon';
+import { expect } from 'chai';
 
 describe('FilterSystem', function ()
 {
@@ -75,7 +77,7 @@ describe('FilterSystem', function ()
         // check that there are two temp textures of same size
         const keys = Object.keys(filterSystem.texturePool.texturePool);
 
-        expect(keys.sort()).to.deep.eql(['65537', 'screen']);
+        expect(keys.sort()).to.deep.eq(['65537', 'screen']);
         expect(filterSystem.texturePool.texturePool[65537].length).to.equal(2);
     });
 

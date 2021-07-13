@@ -1,5 +1,7 @@
 import { ArrayResource, ImageResource } from '@pixi/core';
 import { join } from 'path';
+import sinon from 'sinon';
+import { expect } from 'chai';
 
 describe('ArrayResource', function ()
 {

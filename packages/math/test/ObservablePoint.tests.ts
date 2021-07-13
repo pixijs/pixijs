@@ -1,4 +1,6 @@
 import { ObservablePoint } from '@pixi/math';
+import sinon from 'sinon';
+import { expect } from 'chai';
 
 describe('ObservablePoint', function ()
 {

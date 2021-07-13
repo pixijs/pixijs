@@ -1,6 +1,7 @@
 import { AccessibilityManager } from '@pixi/accessibility';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
 import { isMobile } from '@pixi/utils';
+import { expect } from 'chai';
 
 describe('AccessibilityManager', function ()
 {

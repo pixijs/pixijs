@@ -2,6 +2,7 @@ import { Sprite } from '@pixi/sprite';
 import { Texture, BaseTexture, RenderTexture } from '@pixi/core';
 import { Container } from '@pixi/display';
 import { Point } from '@pixi/math';
+import { expect } from 'chai';
 
 import path from 'path';
 

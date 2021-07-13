@@ -1,6 +1,7 @@
 import { Spritesheet } from '@pixi/spritesheet';
 import { BaseTexture, Texture } from '@pixi/core';
 import path from 'path';
+import { expect } from 'chai';
 
 describe('Spritesheet', function ()
 {
@@ -65,7 +66,7 @@ describe('Spritesheet', function ()
 
     it('should exist on PIXI', function ()
     {
-        expect(Spritesheet).to.be.a.function;
+        expect(Spritesheet).to.be.a('function');
         expect(Spritesheet.BATCH_SIZE).to.be.a.number;
     });
 
@@ -97,7 +98,7 @@ describe('Spritesheet', function ()
             const baseTexture = new BaseTexture(image, null, 1);
             const spritesheet = new Spritesheet(baseTexture, data);
 
-            expect(data).to.be.an.object;
+            expect(data).to.be.an('object');
             expect(data.meta.image).to.equal('building1.png');
             expect(spritesheet.resolution).to.equal(0.5);
             this.validate(spritesheet, done);
@@ -110,7 +111,7 @@ describe('Spritesheet', function ()
         const baseTexture = BaseTexture.from(data.meta.image);// , undefined, undefined, 1.5);
         const spritesheet = new Spritesheet(baseTexture, data);
 
-        expect(data).to.be.an.object;
+        expect(data).to.be.an('object');
         expect(data.meta.image).to.equal('building1.png');
         expect(spritesheet.resolution).to.equal(0.5);
 
@@ -129,7 +130,7 @@ describe('Spritesheet', function ()
             const baseTexture = new BaseTexture(image, { resolution: 1 });
             const spritesheet = new Spritesheet(baseTexture, data, uri);
 
-            expect(data).to.be.an.object;
+            expect(data).to.be.an('object');
             expect(data.meta.image).to.equal('building1@2x.png');
             expect(spritesheet.resolution).to.equal(2);
 

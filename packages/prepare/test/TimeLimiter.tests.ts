@@ -1,4 +1,5 @@
 import { TimeLimiter } from '@pixi/prepare';
+import { expect } from 'chai';
 
 describe('TimeLimiter', function ()
 {

@@ -1,6 +1,7 @@
 import { DisplayObject, Container } from '@pixi/display';
 import { Renderer, Filter } from '@pixi/core';
 import { Rectangle } from '@pixi/math';
+import { expect } from 'chai';
 
 import '@pixi/mixin-cache-as-bitmap';
 
@@ -11,7 +12,7 @@ describe('DisplayObject#cacheAsBitmap', function ()
         const obj = new DisplayObject();
 
         expect(obj.cacheAsBitmap).to.be.not.undefined;
-        expect(obj.cacheAsBitmap).to.be.boolean;
+        expect(obj.cacheAsBitmap).to.be.a('boolean');
         expect(obj.cacheAsBitmap).to.be.false;
     });
 

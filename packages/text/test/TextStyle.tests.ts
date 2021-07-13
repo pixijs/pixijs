@@ -1,4 +1,5 @@
 import { TextStyle } from '@pixi/text';
+import { expect } from 'chai';
 
 describe('TextStyle', function ()
 {

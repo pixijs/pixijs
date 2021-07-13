@@ -5,6 +5,7 @@ import { Rectangle } from '@pixi/math';
 import { Graphics } from '@pixi/graphics';
 import { Text } from '@pixi/text';
 // import { SimplePlane } from '@pixi/mesh-extras';
+import { expect } from 'chai';
 
 describe('getBounds', function ()
 {

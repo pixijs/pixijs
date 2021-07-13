@@ -1,4 +1,6 @@
 import { Container, DisplayObject } from '@pixi/display';
+import sinon from 'sinon';
+import { expect } from 'chai';
 
 function testAddChild(fn)
 {

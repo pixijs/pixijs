@@ -8,6 +8,8 @@ import { InteractionManager } from '@pixi/interaction';
 import { CanvasGraphicsRenderer } from '@pixi/canvas-graphics';
 import { CanvasSpriteRenderer } from '@pixi/canvas-sprite';
 import { Sprite } from '@pixi/sprite';
+import sinon from 'sinon';
+import { expect } from 'chai';
 
 import '@pixi/canvas-display';
 

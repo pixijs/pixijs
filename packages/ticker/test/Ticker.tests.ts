@@ -1,4 +1,7 @@
 import { Ticker, UPDATE_PRIORITY } from '@pixi/ticker';
+import sinon from 'sinon';
+import { expect } from 'chai';
+
 const { shared, system } = Ticker;
 
 describe('Ticker', function ()
@@ -29,7 +32,7 @@ describe('Ticker', function ()
 
     it('should be available', function ()
     {
-        expect(Ticker).to.be.a.function;
+        expect(Ticker).to.be.a('function');
         expect(shared).to.be.an.instanceof(Ticker);
         expect(system).to.be.an.instanceof(Ticker);
     });

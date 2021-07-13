@@ -5,6 +5,8 @@ import { BaseTextureCache, TextureCache, destroyTextureCache } from '@pixi/utils
 import { Texture, BaseTexture } from '@pixi/core';
 import { Spritesheet } from '@pixi/spritesheet';
 import { BitmapFont, BitmapFontLoader } from '@pixi/text-bitmap';
+import sinon from 'sinon';
+import { expect } from 'chai';
 
 describe('BitmapFontLoader', function ()
 {
@@ -160,7 +162,7 @@ describe('BitmapFontLoader', function ()
         const texture = Texture.from(this.fontImage);
         const font = BitmapFont.install(this.fontXML, texture);
 
-        expect(font).to.be.an.object;
+        expect(font).to.be.an('object');
         expect(BitmapFont.available.font).to.equal(font);
         expect(font).to.have.property('chars');
         const charA = font.chars['A'.charCodeAt(0)];
@@ -206,7 +208,7 @@ describe('BitmapFontLoader', function ()
         const texture = Texture.from(this.fontTXTImage);
         const font = BitmapFont.install(this.fontTXT, texture);
 
-        expect(font).to.be.an.object;
+        expect(font).to.be.an('object');
         expect(font).to.have.property('chars');
 
         const charA = font.chars['A'.charCodeAt(0)];
@@ -256,7 +258,7 @@ describe('BitmapFontLoader', function ()
         const texture = new Texture(baseTexture);
         const font = BitmapFont.install(this.fontScaledXML, texture);
 
-        expect(font).to.be.an.object;
+        expect(font).to.be.an('object');
         expect(BitmapFont.available.font).to.equal(font);
         expect(font).to.have.property('chars');
         const charA = font.chars['A'.charCodeAt(0)];
@@ -309,7 +311,7 @@ describe('BitmapFontLoader', function ()
             const fontX = 158; // bare value from spritesheet frame
             const fontY = 2; // bare value from spritesheet frame
 
-            expect(font).to.be.an.object;
+            expect(font).to.be.an('object');
             expect(BitmapFont.available.font).to.equal(font);
             expect(font).to.have.property('chars');
             const charA = font.chars['A'.charCodeAt(0)];
@@ -365,7 +367,7 @@ describe('BitmapFontLoader', function ()
             const fontX = 158; // bare value from spritesheet frame
             const fontY = 2; // bare value from spritesheet frame
 
-            expect(font).to.be.an.object;
+            expect(font).to.be.an('object');
             expect(BitmapFont.available.font).to.equal(font);
             expect(font).to.have.property('chars');
             const charA = font.chars['A'.charCodeAt(0)];
@@ -417,7 +419,7 @@ describe('BitmapFontLoader', function ()
         {
             const font = BitmapFont.available.split_font;
 
-            expect(font).to.be.an.object;
+            expect(font).to.be.an('object');
             expect(BitmapFont.available.split_font).to.equal(font);
             expect(font).to.have.property('chars');
             const charA = font.chars['A'.charCodeAt(0)];
@@ -558,7 +560,7 @@ describe('BitmapFontLoader', function ()
         const texture = Texture.from(this.fontImage);
         const font = BitmapFont.install(this.fontText, texture);
 
-        expect(font).to.be.an.object;
+        expect(font).to.be.an('object');
         expect(BitmapFont.available.fontText).to.equal(font);
         expect(font).to.have.property('chars');
         const charA = font.chars['A'.charCodeAt(0)];
@@ -604,7 +606,7 @@ describe('BitmapFontLoader', function ()
         const texture = Texture.from(this.fontImage);
         const font = BitmapFont.install(this.fontRandomArgs, texture);
 
-        expect(font).to.be.an.object;
+        expect(font).to.be.an('object');
         expect(BitmapFont.available.font).to.equal(font);
         expect(font).to.have.property('chars');
         const charA = font.chars['A'.charCodeAt(0)];

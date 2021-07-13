@@ -1,5 +1,6 @@
 import { CubeResource, BaseTexture } from '@pixi/core';
 import path from 'path';
+import { expect } from 'chai';
 
 describe('CubeResource', function ()
 {

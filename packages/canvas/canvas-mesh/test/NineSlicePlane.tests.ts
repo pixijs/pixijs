@@ -2,6 +2,7 @@ import { Texture, RenderTexture } from '@pixi/core';
 import { Sprite } from '@pixi/sprite';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
 import { NineSlicePlane } from '@pixi/mesh-extras';
+import { expect } from 'chai';
 
 describe('NineSlicePlane', function ()
 {

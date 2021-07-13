@@ -1,6 +1,7 @@
 import { ImageResource, BaseTexture, Renderer } from '@pixi/core';
 import { settings } from '@pixi/settings';
 import path from 'path';
+import { expect } from 'chai';
 
 describe('ImageResource', function ()
 {

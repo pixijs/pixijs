@@ -3,6 +3,7 @@ import { Sprite } from '@pixi/sprite';
 import { skipHello } from '@pixi/utils';
 import { settings } from '@pixi/settings';
 import { Renderer, BatchRenderer } from '@pixi/core';
+import { expect } from 'chai';
 
 skipHello();
 

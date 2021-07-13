@@ -3,6 +3,7 @@ import { skipHello } from '@pixi/utils';
 import { Loader } from '@pixi/loaders';
 import { Point } from '@pixi/math';
 import { RenderTexture, Texture } from '@pixi/core';
+import { expect } from 'chai';
 
 skipHello();
 

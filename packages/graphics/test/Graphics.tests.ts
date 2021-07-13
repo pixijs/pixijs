@@ -5,6 +5,8 @@ const { FILL_COMMANDS, buildLine } = graphicsUtils;
 import { BLEND_MODES } from '@pixi/constants';
 import { Point, Matrix, SHAPES, Polygon } from '@pixi/math';
 import { skipHello } from '@pixi/utils';
+import sinon from 'sinon';
+import { expect } from 'chai';
 
 Renderer.registerPlugin('batch', BatchRenderer);
 

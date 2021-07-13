@@ -1,6 +1,8 @@
 import { MASK_TYPES } from '@pixi/constants';
 import { Rectangle, Matrix } from '@pixi/math';
 import { Renderer, MaskData, RenderTexture, Filter, Texture } from '@pixi/core';
+import sinon from 'sinon';
+import { expect } from 'chai';
 
 describe('MaskSystem', function ()
 {

@@ -1,6 +1,8 @@
 import { Container } from '@pixi/display';
 import { FederatedPointerEvent, EventBoundary } from '@pixi/events';
 import { Graphics } from '@pixi/graphics';
+import sinon from 'sinon';
+import { expect } from 'chai';
 
 describe('EventBoundary', function ()
 {

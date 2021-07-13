@@ -1,4 +1,5 @@
 import { RenderTexture, autoDetectRenderer } from '@pixi/core';
+import { expect } from 'chai';
 
 describe('RenderTexture', function ()
 {

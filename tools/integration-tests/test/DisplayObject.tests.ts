@@ -1,5 +1,6 @@
 import { DisplayObject } from '@pixi/display';
 import { MaskData } from '@pixi/core';
+import { expect } from 'chai';
 
 import '@pixi/canvas-display';
 

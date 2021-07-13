@@ -2,12 +2,13 @@ import { Prepare } from '@pixi/prepare';
 import { Renderer, Texture } from '@pixi/core';
 import { Container } from '@pixi/display';
 import { Graphics } from '@pixi/graphics';
+import { expect } from 'chai';
 
 describe('Prepare', function ()
 {
     it('should upload graphics vao and textures', function ()
     {
-        const renderer = new Renderer(1, 1);
+        const renderer = new Renderer({ width: 1, height: 1 });
         const prepare = new Prepare(renderer);
         const { CONTEXT_UID } = renderer;
 

@@ -1,4 +1,5 @@
 import { RoundedRectangle } from '@pixi/math';
+import { expect } from 'chai';
 
 describe('RoundedRectangle', function ()
 {

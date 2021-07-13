@@ -1,4 +1,5 @@
 import { DisplayObject, Container } from '@pixi/display';
+import { expect } from 'chai';
 
 import '@pixi/mixin-get-child-by-name';
 
@@ -20,7 +21,7 @@ describe('Container#getChildByName', function ()
         const parent = new Container();
 
         expect(parent.getChildByName).to.be.not.undefined;
-        expect(parent.getChildByName).to.be.function;
+        expect(parent.getChildByName).to.be.a('function');
     });
 
     it('should correctly find a child by its name', function ()

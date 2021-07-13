@@ -2,12 +2,14 @@ import { Container } from '@pixi/display';
 import { Graphics } from '@pixi/graphics';
 import { Sprite } from '@pixi/sprite';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
+import sinon from 'sinon';
+import { expect } from 'chai';
 
 describe('CanvasMaskManager', function ()
 {
     it('should work on all graphics masks inside container', function ()
     {
-        const renderer = new CanvasRenderer(1, 1);
+        const renderer = new CanvasRenderer({ width: 1, height: 1 });
         const shapeSpy = sinon.spy(renderer.maskManager, 'renderGraphicsShape');
         const contextPath = sinon.spy(renderer.context, 'closePath');
         const cont = new Container();
@@ -40,7 +42,7 @@ describe('CanvasMaskManager', function ()
 
     it('should set correct transform for graphics', function ()
     {
-        const renderer = new CanvasRenderer(1, 1);
+        const renderer = new CanvasRenderer({ width: 1, height: 1 });
         const transformSpy = sinon.spy(renderer.context, 'setTransform');
         const cont = new Container();
         const graphics1 = new Graphics();
