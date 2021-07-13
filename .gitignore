@@ -28,6 +28,7 @@ lerna-debug.log
 node_modules
 docs
 coverage
+coverage.lcov
 .nyc_output
 dist
 bundles/*/*.d.ts

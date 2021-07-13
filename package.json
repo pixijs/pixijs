@@ -18,7 +18,7 @@
     "unit-test": "npm run floss -- --",
     "unit-test:debug": "npm run floss -- --debug --",
     "coverage": "nyc run-s floss && nyc report --reporter=html",
-    "coverage:ci": "nyc run-s floss && nyc report --reporter=text-lcov > coverage.lcov",
+    "coverage:ci": "run-s coverage && nyc report --reporter=text-lcov > coverage.lcov",
     "docs": "mkdirp dist && webdoc -R README.md",
     "lint:src": "eslint --ext .js --ext .ts test bundles packages scripts --ignore-path .gitignore --ignore-pattern \"**/*.tests.ts\" --max-warnings 0",
     "lint:tests": "eslint -c .eslintrc.tests.json --ext .ts \"**/*.tests.ts\" --max-warnings 0",
@@ -48,7 +48,14 @@
     "yarn": "please-use-npm",
     "npm": ">=7"
   },
+  "nyc": {
+    "all": true,
+    "extends": "@istanbuljs/nyc-config-typescript",
+    "include": ["packages/**/src/**"],
+    "report-dir": "dist/coverage"
+  },
   "devDependencies": {
+    "@istanbuljs/nyc-config-typescript": "^1.0.1",
     "@lerna/batch-packages": "^3.13.0",
     "@lerna/filter-packages": "^3.13.0",
     "@lerna/project": "^3.13.1",
@@ -73,7 +80,7 @@
     "lerna": "^3.13.3",
     "minimist": "^1.2.0",
     "npm-run-all": "^4.1.5",
-    "nyc": "^14.1.1",
+    "nyc": "^15.1.0",
     "pre-commit": "^1.2.2",
     "rimraf": "^2.6.3",
     "rollup": "^1.32.1",
