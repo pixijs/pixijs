@@ -11,9 +11,9 @@ const CANVAS_START_SIZE = 16;
  * Built-in hook to upload PIXI.Texture objects to the GPU.
  *
  * @private
- * @param {*} prepare - Instance of CanvasPrepare
- * @param {*} item - Item to check
- * @return {boolean} If item was uploaded.
+ * @param prepare - Instance of CanvasPrepare
+ * @param item - Item to check
+ * @return If item was uploaded.
  */
 function uploadBaseTextures(prepare: AbstractRenderer | BasePrepare, item: IDisplayObjectExtended): boolean
 {
@@ -57,13 +57,19 @@ function uploadBaseTextures(prepare: AbstractRenderer | BasePrepare, item: IDisp
  */
 export class CanvasPrepare extends BasePrepare
 {
-    /** @internal */
+    /**
+     * An offline canvas to render textures to
+     * @internal
+     */
     canvas: HTMLCanvasElement;
-    /** @internal */
+    /**
+     * The context to the canvas
+     * @internal
+     */
     ctx: CanvasRenderingContext2D;
 
     /**
-     * @param {PIXI.CanvasRenderer} renderer - A reference to the current renderer
+     * @param renderer - A reference to the current renderer
      */
     constructor(renderer: CanvasRenderer)
     {
@@ -71,30 +77,17 @@ export class CanvasPrepare extends BasePrepare
 
         this.uploadHookHelper = this;
 
-        /**
-        * An offline canvas to render textures to
-        * @type {HTMLCanvasElement}
-        * @private
-        */
         this.canvas = document.createElement('canvas');
         this.canvas.width = CANVAS_START_SIZE;
         this.canvas.height = CANVAS_START_SIZE;
 
-        /**
-         * The context to the canvas
-        * @type {CanvasRenderingContext2D}
-        * @private
-        */
         this.ctx = this.canvas.getContext('2d');
 
         // Add textures to upload
         this.registerUploadHook(uploadBaseTextures);
     }
 
-    /**
-     * Destroys the plugin, don't use after this.
-     *
-     */
+    /** Destroys the plugin, don't use after this */
     public destroy(): void
     {
         super.destroy();
