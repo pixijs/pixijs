@@ -1,6 +1,6 @@
 {
   "name": "@pixi/canvas-text",
-  "version": "6.1.0-rc.3",
+  "version": "6.1.0-rc.4",
   "main": "dist/cjs/canvas-text.js",
   "module": "dist/esm/canvas-text.js",
   "bundle": "dist/browser/canvas-text.js",
@@ -22,9 +22,9 @@
     "dist",
     "*.d.ts"
   ],
-  "dependencies": {
-    "@pixi/canvas-sprite": "6.1.0-rc.3",
-    "@pixi/sprite": "6.1.0-rc.3",
-    "@pixi/text": "6.1.0-rc.3"
+  "peerDependencies": {
+    "@pixi/canvas-sprite": "6.1.0-rc.4",
+    "@pixi/sprite": "6.1.0-rc.4",
+    "@pixi/text": "6.1.0-rc.4"
   }
 }

@@ -2,7 +2,6 @@ import type { BASIS, BASIS_FORMATS, BasisBinding } from './Basis';
 
 /**
  * Initialization message sent by the main thread.
- *
  * @ignore
  */
 export interface IInitializeTranscoderMessage {
@@ -12,7 +11,6 @@ export interface IInitializeTranscoderMessage {
 
 /**
  * Request parameters for transcoding basis files. It only supports transcoding all of the basis file at once.
- *
  * @ignore
  */
 export interface ITranscodeMessage
@@ -24,9 +22,7 @@ export interface ITranscodeMessage
     type: 'transcode';
 }
 
-/**
- * @ignore
- */
+/** @ignore */
 export interface ITranscodedImage {
     imageID: number;
     levelArray: Array<{
@@ -41,7 +37,6 @@ export interface ITranscodedImage {
 
 /**
  * Response format for {@link TranscoderWorker}.
- *
  * @ignore
  */
 export interface ITranscodeResponse {
