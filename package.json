@@ -71,6 +71,7 @@
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^9.0.0",
     "@rollup/plugin-typescript": "^6.0.0",
+    "@types/mocha": "^8.2.3",
     "@webdoc/cli": "^1.3.4",
     "chai": "~3.5.0",
     "copyfiles": "^2.1.0",
