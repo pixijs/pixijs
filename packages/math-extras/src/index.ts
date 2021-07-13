@@ -67,10 +67,19 @@ function genericLineIntersection<T extends IPointData>(
         (outPoint as any) = new Point();
     }
 
-    const denominator = (((bEnd.y - bStart.y) * (aEnd.x - aStart.x)) - ((bEnd.x - bStart.x) * (aEnd.y - aStart.y)));
+    const dxa = aEnd.x - aStart.x;
+    const dya = aEnd.y - aStart.y;
+    const dxb = bEnd.x - bStart.x;
+    const dyb = bEnd.y - bStart.y;
+
+    // In order to find the position of the intersection in respect to the line segments, we can define lines
+    // in terms of first degree Bézier parameters, and find the two parameters `ua` and `ub` for the two lines to touch.
+    // both `ua` and `ub` formula share the same denominator so it is only calculated once.
+
+    const denominator = ((dyb * dxa) - (dxb * dya));
 
     // If lines are parallel or overlapping, the intersection can be nowhere or everywhere... NaN.
-    if (denominator === 0)
+    if (floatEqual(denominator, 0))
     {
         outPoint.x = NaN;
         outPoint.y = NaN;
@@ -79,10 +88,11 @@ function genericLineIntersection<T extends IPointData>(
     }
 
     // ua is the factor of line a where the intersection occurs. ub is the factor of line b where the intersection occurs.
-    const ua = (((bEnd.x - bStart.x) * (aStart.y - bStart.y)) - ((bEnd.y - bStart.y) * (aStart.x - bStart.x))) / denominator;
-    const ub = (((aEnd.x - aStart.x) * (aStart.y - bStart.y)) - ((aEnd.y - aStart.y) * (aStart.x - bStart.x))) / denominator;
+    const ua = ((dxb * (aStart.y - bStart.y)) - (dyb * (aStart.x - bStart.x))) / denominator;
+    const ub = ((dxa * (aStart.y - bStart.y)) - (dya * (aStart.x - bStart.x))) / denominator;
 
     // Line intersection extends beyond the bounds of the segment.
+    // The intersection is inside the segments if 0.0 ≤ ua ≤ 1.0 and 0.0 ≤ ub ≤ 1.0
     if (!isLine && (ua < 0 || ua > 1 || ub < 0 || ub > 1))
     {
         outPoint.x = NaN;
@@ -91,8 +101,8 @@ function genericLineIntersection<T extends IPointData>(
         return outPoint;
     }
 
-    outPoint.x = aStart.x + (ua * (aEnd.x - aStart.x));
-    outPoint.y = bStart.y + (ub * (bEnd.y - bStart.y));
+    outPoint.x = aStart.x + (ua * dxa);
+    outPoint.y = bStart.y + (ub * dyb);
 
     return outPoint;
 }
