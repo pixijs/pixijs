@@ -355,10 +355,10 @@ const mixins: any = {
             (outPoint as any) = new Point();
         }
         // Math says: a Projected over b = [(a·b) / (b·b)] * b;
-        const scalarProjection = ((this.x * onto.x) + (this.y * onto.y)) / ((onto.x * onto.x) + (onto.y * onto.y));
+        const normalizedScalarProjection = ((this.x * onto.x) + (this.y * onto.y)) / ((onto.x * onto.x) + (onto.y * onto.y));
 
-        outPoint.x = onto.x * scalarProjection;
-        outPoint.y = onto.y * scalarProjection;
+        outPoint.x = onto.x * normalizedScalarProjection;
+        outPoint.y = onto.y * normalizedScalarProjection;
 
         return outPoint;
     },
