@@ -237,7 +237,7 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
      * @param {number} [options.anisotropicLevel=PIXI.settings.ANISOTROPIC_LEVEL] - Anisotropic filtering level of texture
      * @param {PIXI.WRAP_MODES} [options.wrapMode=PIXI.settings.WRAP_MODE] - Wrap mode for textures
      * @param {PIXI.SCALE_MODES} [options.scaleMode=PIXI.settings.SCALE_MODE] - Default scale mode, linear, nearest
-     * @param {PIXI.INTERNAL_FORMAT} [options.internalFormat] - GL internal format type
+     * @param {PIXI.INTERNAL_FORMATS} [options.internalFormat] - GL internal format type
      * @param {PIXI.FORMATS} [options.format=PIXI.FORMATS.RGBA] - GL format type
      * @param {PIXI.TYPES} [options.type=PIXI.TYPES.UNSIGNED_BYTE] - GL data type
      * @param {PIXI.TARGETS} [options.target=PIXI.TARGETS.TEXTURE_2D] - GL texture target
