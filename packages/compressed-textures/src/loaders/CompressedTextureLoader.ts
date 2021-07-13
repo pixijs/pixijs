@@ -68,10 +68,10 @@ export class CompressedTextureLoader
      * {
      *   "cacheID":"asset",
      *   "textures":[
-     *     { "url":"asset.fallback.png" },
-     *     { "format":"COMPRESSED_RGBA_S3TC_DXT5_EXT", "url":"asset.s3tc.ktx" },
-     *     { "format":"COMPRESSED_RGBA8_ETC2_EAC", "url":"asset.etc.ktx" },
-     *     { "format":"RGBA_PVRTC_4BPPV1_IMG", "url":"asset.pvrtc.ktx" }
+     *     { "src":"asset.fallback.png" },
+     *     { "format":"COMPRESSED_RGBA_S3TC_DXT5_EXT", "src":"asset.s3tc.ktx" },
+     *     { "format":"COMPRESSED_RGBA8_ETC2_EAC", "src":"asset.etc.ktx" },
+     *     { "format":"RGBA_PVRTC_4BPPV1_IMG", "src":"asset.pvrtc.ktx" }
      *   ]
      * }
      * ```
