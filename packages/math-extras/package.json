@@ -1,0 +1,32 @@
+{
+  "name": "@pixi/math-extras",
+  "version": "6.1.0-rc.4",
+  "main": "dist/cjs/math-extras.js",
+  "module": "dist/esm/math-extras.js",
+  "bundle": "dist/browser/math-extras.js",
+  "bundleNoExports": true,
+  "description": "Useful methods for some math structures",
+  "author": "Milton Candelero",
+  "contributors": [
+    "Milton Candelero <miltoncandelero@gmail.com>",
+    "Marcelo Alberto <malberto@killabunnies.com.ar>"
+  ],
+  "homepage": "http://pixijs.com/",
+  "bugs": "https://github.com/pixijs/pixi.js/issues",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pixijs/pixi.js.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "lib",
+    "dist",
+    "*.d.ts"
+  ],
+  "peerDependencies": {
+    "@pixi/math": "6.1.0-rc.4"
+  }
+}
