@@ -1,2 +1,0 @@
-require('./accessibleTarget');
-require('./AccessibilityManager');

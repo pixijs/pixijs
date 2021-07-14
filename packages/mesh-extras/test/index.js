@@ -1,2 +1,0 @@
-require('./SimplePlane');
-require('./NineSlicePlane');
