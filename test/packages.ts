@@ -17,21 +17,32 @@ async function getSortedPackages()
         .reduce((arr, batch) => arr.concat(batch), []);
 }
 
+interface PackageResult {
+    name: string;
+    location: string;
+    tests: string;
+    available: boolean;
+}
+
 async function main()
 {
-    const buffer = [];
-    const locations = {};
-
-    (await getSortedPackages()).forEach((pkg) =>
+    const packages: PackageResult[] = (await getSortedPackages()).map((pkg) =>
     {
-        locations[pkg.name] = pkg.location;
-        buffer.push(`${pkg.location}/test`);
+        const tests = path.join(pkg.location, 'test');
+        const available = fs.existsSync(tests);
+
+        return {
+            name: pkg.name,
+            location: pkg.location,
+            tests,
+            available,
+        };
     });
+
     // eslint-disable-next-line no-console
-    console.log(JSON.stringify({
-        availableSuites: buffer.filter(fs.existsSync),
-        locations,
-    }, null, '  '));
+    console.log(JSON.stringify(packages, null, '  '));
 }
 
 main();
+
+export type { PackageResult };
