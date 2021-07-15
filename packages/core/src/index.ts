@@ -32,6 +32,8 @@ export * from './utils/QuadUv';
 export * from './shader/utils/checkMaxIfStatementsInShader';
 export * from './shader/utils/uniformParsers';
 export * from './shader/utils/generateUniformBufferSync';
+export * from './shader/utils/getTestContext';
+export * from './shader/utils/generateProgram';
 export * from './shader/Shader';
 export * from './shader/Program';
 export * from './shader/GLProgram';
