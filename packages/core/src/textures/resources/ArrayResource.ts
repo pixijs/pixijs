@@ -104,7 +104,7 @@ export class ArrayResource extends AbstractMultiResource
                 length,
                 0,
                 texture.format,
-                texture.type,
+                glTexture.type,
                 null
             );
         }
@@ -128,7 +128,7 @@ export class ArrayResource extends AbstractMultiResource
                         item.resource.height,
                         1,
                         texture.format,
-                        texture.type,
+                        glTexture.type,
                         (item.resource as BaseImageResource).source
                     );
                 }

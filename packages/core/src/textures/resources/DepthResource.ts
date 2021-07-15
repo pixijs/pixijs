@@ -38,7 +38,7 @@ export class DepthResource extends BufferResource
                 width,
                 height,
                 baseTexture.format,
-                baseTexture.type,
+                glTexture.type,
                 this.data,
             );
         }
@@ -55,7 +55,7 @@ export class DepthResource extends BufferResource
                 height,
                 0,
                 baseTexture.format,
-                baseTexture.type,
+                glTexture.type,
                 this.data,
             );
         }
