@@ -98,7 +98,7 @@ export class ArrayResource extends AbstractMultiResource
             gl.texImage3D(
                 gl.TEXTURE_2D_ARRAY,
                 0,
-                texture.format,
+                glTexture.internalFormat,
                 this._width,
                 this._height,
                 length,

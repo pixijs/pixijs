@@ -93,7 +93,7 @@ export class BaseImageResource extends Resource
             glTexture.width = width;
             glTexture.height = height;
 
-            gl.texImage2D(baseTexture.target, 0, baseTexture.format, baseTexture.format, baseTexture.type, source);
+            gl.texImage2D(baseTexture.target, 0, glTexture.internalFormat, baseTexture.format, baseTexture.type, source);
         }
 
         return true;
