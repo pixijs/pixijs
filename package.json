@@ -54,6 +54,9 @@
     "include": [
       "packages/**/src/**"
     ],
+    "exclude": [
+      "packages/polyfill/src**"
+    ],
     "report-dir": "dist/coverage"
   },
   "devDependencies": {
