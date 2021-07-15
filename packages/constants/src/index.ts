@@ -163,7 +163,12 @@ export enum DRAW_MODES {
  * @enum {number}
  * @property {number} RGBA=6408
  * @property {number} RGB=6407
+ * @property {number} RG=33319
  * @property {number} RED=6403
+ * @property {number} RGBA_INTEGER=36249
+ * @property {number} RGB_INTEGER=36248
+ * @property {number} RG_INTEGER=33320
+ * @property {number} RED_INTEGER=36244
  * @property {number} ALPHA=6406
  * @property {number} LUMINANCE=6409
  * @property {number} LUMINANCE_ALPHA=6410
@@ -173,7 +178,12 @@ export enum DRAW_MODES {
 export enum FORMATS {
     RGBA = 6408,
     RGB = 6407,
+    RG = 33319,
     RED = 6403,
+    RGBA_INTEGER = 36249,
+    RGB_INTEGER = 36248,
+    RG_INTEGER = 33320,
+    RED_INTEGER = 36244,
     ALPHA = 6406,
     LUMINANCE = 6409,
     LUMINANCE_ALPHA = 6410,
@@ -222,7 +232,16 @@ export enum TARGETS {
  * @property {number} UNSIGNED_SHORT_5_6_5=33635
  * @property {number} UNSIGNED_SHORT_4_4_4_4=32819
  * @property {number} UNSIGNED_SHORT_5_5_5_1=32820
+ * @property {number} UNSIGNED_INT=5125
+ * @property {number} UNSIGNED_INT_10F_11F_11F_REV=35899
+ * @property {number} UNSIGNED_INT_2_10_10_10_REV=33640
+ * @property {number} UNSIGNED_INT_24_8=34042
+ * @property {number} UNSIGNED_INT_5_9_9_9_REV=35902
+ * @property {number} BYTE=5120
+ * @property {number} SHORT=5122
+ * @property {number} INT=5124
  * @property {number} FLOAT=5126
+ * @property {number} FLOAT_32_UNSIGNED_INT_24_8_REV=36269
  * @property {number} HALF_FLOAT=36193
  */
 export enum TYPES {
@@ -231,7 +250,16 @@ export enum TYPES {
     UNSIGNED_SHORT_5_6_5 = 33635,
     UNSIGNED_SHORT_4_4_4_4 = 32819,
     UNSIGNED_SHORT_5_5_5_1 = 32820,
+    UNSIGNED_INT = 5125,
+    UNSIGNED_INT_10F_11F_11F_REV = 35899,
+    UNSIGNED_INT_2_10_10_10_REV = 33640,
+    UNSIGNED_INT_24_8 = 34042,
+    UNSIGNED_INT_5_9_9_9_REV = 35902,
+    BYTE = 5120,
+    SHORT = 5122,
+    INT = 5124,
     FLOAT = 5126,
+    FLOAT_32_UNSIGNED_INT_24_8_REV = 36269,
     HALF_FLOAT = 36193,
 }
 
