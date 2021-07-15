@@ -287,7 +287,7 @@ export class GeometrySystem implements ISystem
 
         if (!program.glPrograms[CONTEXT_UID])
         {
-            this.renderer.shader.generateShader(shader);
+            this.renderer.shader.generateProgram(shader);
         }
 
         this.checkCompatibility(geometry, program);

@@ -5,6 +5,8 @@ import {
     getUBOData,
     Buffer,
     UniformGroup,
+    generateProgram,
+    getTestContext,
 } from '@pixi/core';
 import { expect } from 'chai';
 import { skipHello } from '@pixi/utils';
@@ -146,7 +148,7 @@ describe('UniformBuffer', function ()
         expect(uboData).to.deep.equal(expectedObject);
     });
 
-    it.skip('should generate the correct update function using the parsers', function ()
+    it('should generate the correct update function using the parsers', () =>
     {
         const fragmentSrc = `
         #version 300 es
@@ -167,6 +169,7 @@ describe('UniformBuffer', function ()
         }`;
 
         const shader = Shader.from(vertexSrc, fragmentSrc);
+        // init the data..
 
         const group = UniformGroup.uboFrom({
             uFloat: 23,
@@ -175,24 +178,39 @@ describe('UniformBuffer', function ()
             uRect: new Rectangle(0, 0, 33, 33),
         });
 
-        const f = generateUniformBufferSync(group, shader.program.uniformData);
+        const gl = getTestContext();
+
+        generateProgram(gl, shader.program);
+
+        const { size, syncFunc } = generateUniformBufferSync(group, shader.program.uniformData);
 
         const buffer = group.buffer;
 
-        f(shader.program.uniformData, group.uniforms, stubRenderer, {}, buffer);
+        buffer.data = new Float32Array(size / 4);
+
+        syncFunc(shader.program.uniformData, group.uniforms, stubRenderer, {}, buffer);
 
         const expectedBufferValue = new Float32Array([
+            // uFloat
             23, 0, 0, 0,
-            10, 20, 0, 30, 40, 0, 50, 60, 1, 0, 0, 0,
+            // uMat3
+            10, 20, 0, 0,
+            30, 40, 0, 0,
+            50, 60, 1, 0,
+            // uPoint
             23, 11, 0, 0,
+            // uRect
             0, 0, 33, 33
         ]);
 
+        expect(size).to.equal(96);
         expect(buffer.data).to.deep.equal(expectedBufferValue);
     });
 
-    it.skip('should write arrays types to buffer correctly', function ()
+    it('should write arrays types to buffer correctly', () =>
     {
+        const gl = getTestContext();
+
         [
             {
                 debug: true,
@@ -547,6 +565,8 @@ describe('UniformBuffer', function ()
             const shader = Shader.from(vertexSrc, fragmentSrc);
 
             const group =  UniformGroup.uboFrom(toTest.groupData);
+
+            generateProgram(gl, shader.program);
 
             const f = generateUniformBufferSync(group, shader.program.uniformData);
 
