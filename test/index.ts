@@ -29,7 +29,7 @@ require.extensions['.vert'] = requireAsStrings;
 // Synchronously generate the list of testable packages
 const script = path.join(__dirname, './packages.ts');
 
-const isWin = /^win/.test(process.platform);
+const isWin = (/^win/).test(process.platform);
 const cmd = `ts-node-transpile-only${isWin ? '.cmd' : ''}`;
 const packagesBuffer = execFileSync(cmd, [script]).toString();
 const packages = JSON.parse(packagesBuffer) as PackageResult[];
