@@ -142,7 +142,7 @@ export class EventBoundary
     /**
      * The cursor preferred by the event targets underneath this boundary.
      */
-    public cursor: Cursor;
+    public cursor: Cursor | string;
 
     /**
      * This flag would emit `pointermove`, `touchmove`, and `mousemove` events on all DisplayObjects.
