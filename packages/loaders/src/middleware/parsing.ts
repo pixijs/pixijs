@@ -1,7 +1,7 @@
 import { LoaderResource } from '../LoaderResource';
 import { encodeBinary } from '../base/encodeBinary';
 
-const Url = window.URL || window.webkitURL;
+const Url = self.URL || self.webkitURL;
 
 /**
  * A middleware for transforming XHR loaded Blobs into more useful objects
@@ -28,7 +28,7 @@ export function parsing(resource: LoaderResource, next: (...args: any) => void):
     if (resource.xhr && resource.xhrType === LoaderResource.XHR_RESPONSE_TYPE.BLOB)
     {
         // if there is no blob support we probably got a binary string back
-        if (!window.Blob || typeof resource.data === 'string')
+        if (!self.Blob || typeof resource.data === 'string')
         {
             const type = resource.xhr.getResponseHeader('content-type');
 
