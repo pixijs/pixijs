@@ -14,6 +14,13 @@ declare namespace GlobalMixins
 
     }
 
+    /** @deprecated Use LoaderResource instead */
+    // eslint-disable-next-line @typescript-eslint/no-empty-interface
+    interface ILoaderResource
+    {
+
+    }
+
     interface Application
     {
         loader: import('@pixi/loaders').Loader;

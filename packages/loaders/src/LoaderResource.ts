@@ -86,7 +86,7 @@ export interface IResourceMetadata extends GlobalMixins.IResourceMetadata, IBase
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface LoaderResource extends GlobalMixins.LoaderResource {}
+interface LoaderResource extends GlobalMixins.LoaderResource, GlobalMixins.ILoaderResource {}
 
 /**
  * Manages the state and loading of a resource and all child resources.
@@ -1405,5 +1405,5 @@ namespace LoaderResource {
 
 export { LoaderResource };
 
-/** @deprecated */
+/** @deprecated - Use LoaderResource instead */
 export type ILoaderResource = LoaderResource;
