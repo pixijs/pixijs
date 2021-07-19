@@ -89,7 +89,7 @@ export const BASIS_FORMATS_ALPHA: { [id: number]: boolean } = {
  * Binding to C++ {@code BasisFile} wrapper class.
  *
  * @see https://github.com/BinomialLLC/basis_universal/blob/master/webgl/transcoder/basis_wrappers.cpp
- * @ignore
+ * @private
  */
 export declare class BasisFile
 {

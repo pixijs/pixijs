@@ -52,7 +52,7 @@ export interface IHitArea {
  */
 export interface FederatedEventTarget extends EventEmitter, EventTarget {
     /** The cursor preferred when the mouse pointer is hovering over. */
-    readonly cursor?: Cursor;
+    cursor: Cursor | string;
 
     /** The parent of this event target. */
     readonly parent?: FederatedEventTarget;
@@ -75,7 +75,7 @@ export interface FederatedEventTarget extends EventEmitter, EventTarget {
 
 export const FederatedDisplayObject: Omit<
     FederatedEventTarget,
-    'parent' | 'children' | keyof EventEmitter
+    'parent' | 'children' | keyof EventEmitter | 'cursor'
 > = {
     /**
      * Enable interaction events for the DisplayObject. Touch, pointer and mouse
