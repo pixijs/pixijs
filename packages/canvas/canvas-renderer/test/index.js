@@ -1,2 +1,0 @@
-require('./CanvasRenderer');
-require('./CanvasMaskManager');

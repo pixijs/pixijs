@@ -1,2 +1,0 @@
-require('./Ticker');
-require('./TickerPlugin');

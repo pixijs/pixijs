@@ -1,3 +1,4 @@
+import { mapTypeAndFormatToInternalFormat } from './utils/mapTypeAndFormatToInternalFormat';
 import { BaseTexture } from './BaseTexture';
 import { GLTexture } from './GLTexture';
 import { removeItems } from '@pixi/utils';
@@ -24,6 +25,7 @@ export class TextureSystem implements ISystem
     protected hasIntegerTextures: boolean;
     protected CONTEXT_UID: number;
     protected gl: IRenderingContext;
+    protected internalFormats: { [type: number]: { [format: number]: number } };
     protected webGLVersion: number;
     protected unknownTexture: BaseTexture;
     protected _unknownBoundTextures: boolean;
@@ -87,6 +89,8 @@ export class TextureSystem implements ISystem
         this.CONTEXT_UID = this.renderer.CONTEXT_UID;
 
         this.webGLVersion = this.renderer.context.webGLVersion;
+
+        this.internalFormats = mapTypeAndFormatToInternalFormat(gl);
 
         const maxTextures = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
 
@@ -299,48 +303,17 @@ export class TextureSystem implements ISystem
 
     initTextureType(texture: BaseTexture, glTexture: GLTexture): void
     {
-        glTexture.internalFormat = texture.format;
-        glTexture.type = texture.type;
-        if (this.webGLVersion !== 2)
+        glTexture.internalFormat = this.internalFormats[texture.type]?.[texture.format] ?? texture.format;
+
+        if (this.webGLVersion === 2 && texture.type === TYPES.HALF_FLOAT)
         {
-            return;
+            // TYPES.HALF_FLOAT is WebGL1 HALF_FLOAT_OES
+            // we have to convert it to WebGL HALF_FLOAT
+            glTexture.type = this.gl.HALF_FLOAT;
         }
-
-        const gl = this.renderer.gl;
-
-        if (texture.type === gl.FLOAT)
+        else
         {
-            if (texture.format === gl.RGBA)
-            {
-                glTexture.internalFormat = gl.RGBA32F;
-            }
-            else if (texture.format === gl.RGB)
-            {
-                glTexture.internalFormat = gl.RGB32F;
-            }
-            else if (texture.format === gl.RED)
-            {
-                glTexture.internalFormat = gl.R32F;
-            }
-        }
-
-        // that's WebGL1 HALF_FLOAT_OES
-        // we have to convert it to WebGL HALF_FLOAT
-        if (texture.type === TYPES.HALF_FLOAT)
-        {
-            glTexture.type = gl.HALF_FLOAT;
-        }
-
-        if (glTexture.type === gl.HALF_FLOAT)
-        {
-            if (texture.format === gl.RGBA)
-            {
-                glTexture.internalFormat = gl.RGBA16F;
-            }
-            else if (texture.format === gl.RGB)
-            {
-                glTexture.internalFormat = gl.RGB16F;
-            }
+            glTexture.type = texture.type;
         }
     }
 
