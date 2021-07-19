@@ -1065,6 +1065,9 @@ export abstract class DisplayObject extends EventEmitter
     }
 }
 
+/**
+ * @private
+ */
 export class TemporaryDisplayObject extends DisplayObject
 {
     calculateBounds: () => null;
