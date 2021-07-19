@@ -1,8 +1,8 @@
 /**
  * function from npm package `parseUri`, converted to TS to avoid leftpad incident
  * @param {string} str
- * @param [opts] options
- * @param {boolean} [opts.strictMode] type of parser
+ * @param [opts] - options
+ * @param {boolean} [opts.strictMode] - type of parser
  */
 export function parseUri(str: string, opts: { strictMode?: boolean }): any
 {
