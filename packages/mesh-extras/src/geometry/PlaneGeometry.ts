@@ -1,5 +1,8 @@
 import { MeshGeometry } from '@pixi/mesh';
 
+/**
+ * @memberof PIXI
+ */
 export class PlaneGeometry extends MeshGeometry
 {
     public segWidth: number;
@@ -7,6 +10,12 @@ export class PlaneGeometry extends MeshGeometry
     public width: number;
     public height: number;
 
+    /**
+     * @param width - The width of the plane.
+     * @param height - The height of the plane.
+     * @param segWidth - Number of horizontal segments.
+     * @param segHeight - Number of vertical segments.
+     */
     constructor(width = 100, height = 100, segWidth = 10, segHeight = 10)
     {
         super();
