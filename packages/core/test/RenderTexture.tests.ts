@@ -131,8 +131,12 @@ describe('RenderTexture', function ()
         const container = new Container();
 
         container.addChild(graphics);
-        container.mask = container.addChild(new Graphics());
-        container.mask.beginFill(0xffffff).drawRect(0, 0, 1, 1).endFill();
+        container.mask = container.addChild(
+            new Graphics()
+                .beginFill(0xffffff)
+                .drawRect(0, 0, 1, 1)
+                .endFill()
+        );
 
         this.renderer.render(container, { renderTexture, clear: true });
 
@@ -176,8 +180,12 @@ describe('RenderTexture', function ()
         const container = new Container();
 
         container.addChild(graphics);
-        container.mask = container.addChild(new Graphics());
-        container.mask.beginFill(0xffffff).drawRect(0, 0, 1, 1).endFill();
+        container.mask = container.addChild(
+            new Graphics()
+                .beginFill(0xffffff)
+                .drawRect(0, 0, 1, 1)
+                .endFill()
+        );
 
         this.renderer.render(container, { renderTexture, clear: true });
         this.renderer.framebuffer.blit();
