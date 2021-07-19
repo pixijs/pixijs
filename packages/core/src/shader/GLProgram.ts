@@ -1,5 +1,8 @@
 import type { Dict } from '@pixi/utils';
 
+/**
+ * @private
+ */
 export class IGLUniformData
 {
     location: WebGLUniformLocation;

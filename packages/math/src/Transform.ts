@@ -1,6 +1,9 @@
 import { ObservablePoint } from './ObservablePoint';
 import { Matrix } from './Matrix';
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface Transform extends GlobalMixins.Transform {}
+
 /**
  * Transform that takes care about its versions
  *

@@ -1,5 +1,5 @@
 import { SHAPES } from '../const';
-import type { IPoint } from '../IPoint';
+import type { IPointData } from '../IPointData';
 
 /**
  * A class to define a shape via user defined coordinates.
@@ -13,10 +13,10 @@ export class Polygon
     public closeStroke: boolean;
     public readonly type: SHAPES.POLY;
 
-    constructor(points: IPoint[]|number[]);
-    constructor(...points: IPoint[]|number[]);
+    constructor(points: IPointData[]|number[]);
+    constructor(...points: IPointData[]|number[]);
     /**
-     * @param {PIXI.IPoint[]|number[]} points - This can be an array of Points
+     * @param {PIXI.IPointData[]|number[]} points - This can be an array of Points
      *  that form the polygon, a flat array of numbers that will be interpreted as [x,y, x,y, ...], or
      *  the arguments passed can be all the points of the polygon e.g.
      *  `new PIXI.Polygon(new PIXI.Point(), new PIXI.Point(), ...)`, or the arguments passed can be flat
@@ -24,7 +24,7 @@ export class Polygon
      */
     constructor(...points: any[])
     {
-        let flat: IPoint[]|number[] = Array.isArray(points[0]) ? points[0] : points;
+        let flat: IPointData[]|number[] = Array.isArray(points[0]) ? points[0] : points;
 
         // if this is an array of points, convert it to a flat array of numbers
         if (typeof flat[0] !== 'number')
@@ -33,7 +33,7 @@ export class Polygon
 
             for (let i = 0, il = flat.length; i < il; i++)
             {
-                p.push((flat[i] as IPoint).x, (flat[i] as IPoint).y);
+                p.push((flat[i] as IPointData).x, (flat[i] as IPointData).y);
             }
 
             flat = p;

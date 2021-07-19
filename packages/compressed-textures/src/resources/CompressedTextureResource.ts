@@ -78,7 +78,12 @@ export interface ICompressedTextureResourceOptions
  */
 export class CompressedTextureResource extends BlobResource
 {
+    /** The compression format */
     public format: INTERNAL_FORMATS;
+    /**
+     * The number of mipmap levels stored in the resource buffer.
+     * @default 1
+     */
     public levels: number;
 
     // Easy access to the WebGL extension providing support for the compression format via ContextSystem
@@ -92,24 +97,15 @@ export class CompressedTextureResource extends BlobResource
      * @param {PIXI.INTERNAL_FORMATS} options.format - the compression format
      * @param {number} options.width - the image width in pixels.
      * @param {number} options.height - the image height in pixels.
-     * @param {number}[options.level=1] - the mipmap levels stored in the compressed texture, including level 0.
-     * @param {number}[options.levelBuffers] - the buffers for each mipmap level. `CompressedTextureResource` can allows you
+     * @param {number} [options.level=1] - the mipmap levels stored in the compressed texture, including level 0.
+     * @param {number} [options.levelBuffers] - the buffers for each mipmap level. `CompressedTextureResource` can allows you
      *      to pass `null` for `source`, for cases where each level is stored in non-contiguous memory.
      */
     constructor(source: string | Uint8Array | Uint32Array, options: ICompressedTextureResourceOptions)
     {
         super(source, options);
 
-        /**
-         * The compression format
-         */
         this.format = options.format;
-
-        /**
-         * The number of mipmap levels stored in the resource buffer.
-         *
-         * @default 1
-         */
         this.levels = options.levels || 1;
 
         this._width = options.width;
@@ -133,9 +129,9 @@ export class CompressedTextureResource extends BlobResource
 
     /**
      * @override
-     * @param renderer
-     * @param _texture
-     * @param _glTexture
+     * @param renderer - A reference to the current renderer
+     * @param _texture - the texture
+     * @param _glTexture - texture instance for this webgl context
      */
     upload(renderer: Renderer, _texture: BaseTexture, _glTexture: GLTexture): boolean
     {
@@ -162,9 +158,7 @@ export class CompressedTextureResource extends BlobResource
         return true;
     }
 
-    /**
-     * @protected
-     */
+    /** @protected */
     protected onBlobLoaded(): void
     {
         this._levelBuffers = CompressedTextureResource._createLevelBuffers(
@@ -180,8 +174,7 @@ export class CompressedTextureResource extends BlobResource
      * Returns the key (to ContextSystem#extensions) for the WebGL extension supporting the compression format
      *
      * @private
-     * @param {PIXI.INTERNAL_FORMATS} format
-     * @return {string}
+     * @param format - the compression format to get the extension for.
      */
     private static _formatToExtension(format: INTERNAL_FORMATS):
         's3tc' | 's3tc_sRGB' | 'atc' |
@@ -215,13 +208,13 @@ export class CompressedTextureResource extends BlobResource
      * Pre-creates buffer views for each mipmap level
      *
      * @private
-     * @param {Uint8Array} buffer
-     * @param {PIXI.INTERNAL_FORMATS} format
-     * @param {number} levels
-     * @param {number} blockWidth
-     * @param {number} blockHeight
-     * @param {number} imageWidth
-     * @param {number} imageHeight
+     * @param buffer -
+     * @param format - compression formats
+     * @param levels - mipmap levels
+     * @param blockWidth -
+     * @param blockHeight -
+     * @param imageWidth - width of the image in pixels
+     * @param imageHeight - height of the image in pixels
      */
     private static _createLevelBuffers(
         buffer: Uint8Array,

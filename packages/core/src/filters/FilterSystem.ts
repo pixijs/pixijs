@@ -279,8 +279,8 @@ export class FilterSystem implements ISystem
         inputSize[2] = 1.0 / inputSize[0];
         inputSize[3] = 1.0 / inputSize[1];
 
-        inputPixel[0] = inputSize[0] * state.resolution;
-        inputPixel[1] = inputSize[1] * state.resolution;
+        inputPixel[0] = Math.round(inputSize[0] * state.resolution);
+        inputPixel[1] = Math.round(inputSize[1] * state.resolution);
         inputPixel[2] = 1.0 / inputPixel[0];
         inputPixel[3] = 1.0 / inputPixel[1];
 
@@ -306,7 +306,6 @@ export class FilterSystem implements ISystem
 
         const lastState = filterStack[filterStack.length - 1];
 
-        // we need to blit state.renderTexture before we can use it as input
         this.renderer.framebuffer.blit();
 
         if (filters.length === 1)
@@ -624,7 +623,8 @@ export class FilterSystem implements ISystem
 
             // Skip if skew/rotation present in matrix, except for multiple of 90° rotation. If rotation
             // is a multiple of 90°, then either pair of (b,c) or (a,d) will be (0,0).
-            if ((b !== 0 || c !== 0) && (a !== 0 || d !== 0))
+            if ((Math.abs(b) > 1e-4 || Math.abs(c) > 1e-4)
+                && (Math.abs(a) > 1e-4 || Math.abs(d) > 1e-4))
             {
                 return;
             }

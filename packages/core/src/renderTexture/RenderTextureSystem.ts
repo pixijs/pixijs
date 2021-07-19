@@ -183,6 +183,8 @@ export class RenderTextureSystem implements ISystem
             viewportFrame.y = renderer.view.height - (viewportFrame.y + viewportFrame.height);
         }
 
+        viewportFrame.ceil();
+
         this.renderer.framebuffer.bind(framebuffer, viewportFrame);
         this.renderer.projection.update(destinationFrame, sourceFrame, resolution, !framebuffer);
 
@@ -224,7 +226,12 @@ export class RenderTextureSystem implements ISystem
 
         if (clearMask)
         {
-            const { x, y, width, height } = this.viewportFrame;
+            let { x, y, width, height } = this.viewportFrame;
+
+            x = Math.round(x);
+            y = Math.round(y);
+            width = Math.round(width);
+            height = Math.round(height);
 
             // TODO: ScissorSystem should cache whether the scissor test is enabled or not.
             this.renderer.gl.enable(this.renderer.gl.SCISSOR_TEST);

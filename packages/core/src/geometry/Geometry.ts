@@ -1,7 +1,7 @@
 import { Attribute } from './Attribute';
 import { Buffer } from './Buffer';
 import { interleaveTypedArrays } from './utils/interleaveTypedArrays';
-import { getBufferType } from './utils/getBufferType';
+import { getBufferType } from '@pixi/utils';
 import { Runner } from '@pixi/runner';
 
 import { BUFFER_TYPE, TYPES } from '@pixi/constants';
@@ -438,7 +438,7 @@ export class Geometry
                     geometryOut.indexBuffer.data[j + offset2] += offset;
                 }
 
-                offset += geometry.buffers[bufferIndexToCount].data.length / (stride);
+                offset += geometries[i].buffers[bufferIndexToCount].data.length / (stride);
                 offset2 += indexBufferData.length;
             }
         }

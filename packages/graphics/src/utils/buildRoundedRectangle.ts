@@ -71,6 +71,12 @@ function quadraticBezierCurve(
         x = getPt(xa, xb, j);
         y = getPt(ya, yb, j);
 
+        // Handle case when first curve points overlaps and earcut fails to triangulate
+        if (i === 0 && points[points.length - 2] === x && points[points.length - 1] === y)
+        {
+            continue;
+        }
+
         points.push(x, y);
     }
 
@@ -131,9 +137,6 @@ export const buildRoundedRectangle: IShapeBuildCommand = {
                 x, y + height - radius,
                 points);
         }
-
-        // this tiny number deals with the issue that occurs when points overlap and earcut fails to triangulate the item.
-        // TODO - fix this properly, this is not very elegant.. but it works for now.
     },
 
     triangulate(graphicsData, graphicsGeometry)

@@ -1,0 +1,34 @@
+{
+  "name": "@pixi/particle-container",
+  "version": "6.1.0-rc.5",
+  "main": "dist/cjs/particle-container.js",
+  "module": "dist/esm/particle-container.js",
+  "bundle": "dist/browser/particle-container.js",
+  "description": "Render many sprite particles as efficiently as possible",
+  "author": "Mat Groves",
+  "contributors": [
+    "Matt Karl <matt@mattkarl.com>"
+  ],
+  "homepage": "http://pixijs.com/",
+  "bugs": "https://github.com/pixijs/pixi.js/issues",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pixijs/pixi.js.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "lib",
+    "dist",
+    "*.d.ts"
+  ],
+  "peerDependencies": {
+    "@pixi/constants": "6.1.0-rc.5",
+    "@pixi/core": "6.1.0-rc.5",
+    "@pixi/display": "6.1.0-rc.5",
+    "@pixi/math": "6.1.0-rc.5",
+    "@pixi/utils": "6.1.0-rc.5"
+  }
+}

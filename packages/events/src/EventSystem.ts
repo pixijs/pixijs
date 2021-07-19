@@ -579,7 +579,7 @@ export class EventSystem
      * The returned {@link PIXI.FederatedWheelEvent} is a shared instance. It will not persist across
      * multiple native wheel events.
      *
-     * @param nativeEvent - The native wheel event that occured on the canvas.
+     * @param nativeEvent - The native wheel event that occurred on the canvas.
      * @return A federated wheel event.
      */
     protected normalizeWheelEvent(nativeEvent: WheelEvent): FederatedWheelEvent

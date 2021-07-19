@@ -1,6 +1,6 @@
 {
   "name": "@pixi/filter-noise",
-  "version": "6.0.4",
+  "version": "6.1.0-rc.5",
   "main": "dist/cjs/filter-noise.js",
   "module": "dist/esm/filter-noise.js",
   "bundle": "dist/browser/filter-noise.js",
@@ -25,7 +25,7 @@
     "dist",
     "*.d.ts"
   ],
-  "dependencies": {
-    "@pixi/core": "6.0.4"
+  "peerDependencies": {
+    "@pixi/core": "6.1.0-rc.5"
   }
 }

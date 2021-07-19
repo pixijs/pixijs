@@ -41,14 +41,10 @@ export type CompressedTextureExtensionRef = keyof CompressedTextureExtensions;
  */
 export class CompressedTextureLoader
 {
-    /**
-     * Map of available texture extensions.
-     */
+    /**  Map of available texture extensions. */
     static textureExtensions: Partial<CompressedTextureExtensions>;
 
-    /**
-     * Map of available texture formats.
-     */
+    /** Map of available texture formats. */
     static textureFormats: { [P in keyof INTERNAL_FORMATS]?: number };
 
     /**
@@ -60,14 +56,24 @@ export class CompressedTextureLoader
      * ```js
      * import { INTERNAL_FORMATS } from '@pixi/constants';
      *
-     * // The following should be present in a *.compressed-texture.json file!
-     * const manifest = JSON.stringify({
-     *   COMPRESSED_RGBA_S3TC_DXT5_EXT: "asset.s3tc.ktx",
-     *   COMPRESSED_RGBA8_ETC2_EAC: "asset.etc.ktx",
-     *   RGBA_PVRTC_4BPPV1_IMG: "asset.pvrtc.ktx",
-     *   textureID: "asset.png",
-     *   fallback: "asset.png"
-     * });
+     * type CompressedTextureManifest = {
+     *  textures: Array<{ src: string, format?: keyof INTERNAL_FORMATS}>,
+     *  cacheID: string;
+     * };
+     * ```
+     *
+     * This is an example of a .json manifest file
+     *
+     * ```json
+     * {
+     *   "cacheID":"asset",
+     *   "textures":[
+     *     { "src":"asset.fallback.png" },
+     *     { "format":"COMPRESSED_RGBA_S3TC_DXT5_EXT", "src":"asset.s3tc.ktx" },
+     *     { "format":"COMPRESSED_RGBA8_ETC2_EAC", "src":"asset.etc.ktx" },
+     *     { "format":"RGBA_PVRTC_4BPPV1_IMG", "src":"asset.pvrtc.ktx" }
+     *   ]
+     * }
      * ```
      */
     static use(resource: ILoaderResource, next: (...args: any[]) => void): void
@@ -156,7 +162,6 @@ export class CompressedTextureLoader
 
     /**
      * Detects the available compressed texture extensions on the device.
-     *
      * @ignore
      */
     static add(): void
@@ -168,7 +173,7 @@ export class CompressedTextureLoader
         if (!gl)
         {
             // #if _DEBUG
-            console.error('WebGL not available for compressed textures. Silently failing.');
+            console.warn('WebGL not available for compressed textures. Silently failing.');
             // #endif
 
             return;
