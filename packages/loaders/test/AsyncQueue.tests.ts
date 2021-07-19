@@ -1,4 +1,4 @@
-import { AsyncQueue as async } from '@pixi/loaders';
+import { AsyncQueue as async } from '../src/base/AsyncQueue'; // testing internal package!
 import { expect } from 'chai';
 
 describe('async', () =>

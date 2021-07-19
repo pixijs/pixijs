@@ -1,6 +1,6 @@
 /**
  * Smaller version of the async library constructs.
- *
+ * @ignore
  */
 function _noop(): void
 { /* empty */
@@ -8,7 +8,7 @@ function _noop(): void
 
 /**
  * Ensures a function is only called once.
- *
+ * @ignore
  * @param {function} fn - The function to wrap.
  * @return {function} The wrapping function.
  */
@@ -33,11 +33,18 @@ export interface IQueue {
 
 }
 
+/**
+ * @private
+ * @memberof PIXI
+ */
 export class AsyncQueueItem<TaskData>
 {
     data: TaskData;
     callback: (...args: any[]) => void;
 
+    /**
+     * @private
+     */
     constructor(data: TaskData, callback: (...args: any[]) => void)
     {
         this.data = data;
@@ -45,6 +52,10 @@ export class AsyncQueueItem<TaskData>
     }
 }
 
+/**
+ * @private
+ * @memberof PIXI
+ */
 export class AsyncQueue<TaskData>
 {
     workers = 0;
@@ -64,6 +75,9 @@ export class AsyncQueue<TaskData>
     private _worker: (x: TaskData, next: () => void) => void;
     _tasks: Array<AsyncQueueItem<TaskData>> = [];
 
+    /**
+     * @private
+     */
     constructor(worker: (x: TaskData, next: () => void) => void, concurrency = 1)
     {
         this._worker = worker;
@@ -134,6 +148,9 @@ export class AsyncQueue<TaskData>
         }
     };
 
+    /**
+     * @private
+     */
     _next(task: AsyncQueueItem<TaskData>): (...args: any) => void
     {
         return (...args: any) =>

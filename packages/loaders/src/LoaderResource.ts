@@ -57,6 +57,8 @@ function reqType(xhr: XMLHttpRequest)
  * Metadata for loader resource. It is very messy way to pass options for loader middlewares
  *
  * Can be extended in `GlobalMixins.IResourceMetadata`
+ *
+ * @memberof PIXI
  */
 export interface IResourceMetadata extends GlobalMixins.IResourceMetadata, IBaseTextureOptions
 {
@@ -84,17 +86,20 @@ export interface IResourceMetadata extends GlobalMixins.IResourceMetadata, IBase
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface LoaderResource extends GlobalMixins.ILoaderResource {}
+interface LoaderResource extends GlobalMixins.LoaderResource {}
 
 /**
  * Manages the state and loading of a resource and all child resources.
  *
- * Can be extended in `GlobalMixins.ILoaderResource`
+ * Can be extended in `GlobalMixins.LoaderResource`.
+ *
+ * @memberof PIXI
  */
 class LoaderResource
 {
     /**
      * Texture reference for loading images and other textures.
+     * @type {PIXI.Texture}
      */
     texture?: Texture;
 
@@ -107,33 +112,29 @@ class LoaderResource
      * The name of this resource.
      *
      * @readonly
-     * @member {string}
+     * @type {string}
      */
     readonly name: string;
     /**
      * The url used to load this resource.
      *
      * @readonly
-     * @member {string}
+     * @type {string}
      */
     readonly url: string;
     /**
      * The extension used to load this resource.
      *
      * @readonly
-     * @member {string}
+     * @type {string}
      */
     readonly extension: string;
     /**
      * The data that was loaded by the resource.
-     *
-     * @member {any}
      */
     data: any;
     /**
      * Is this request cross-origin? If unset, determined automatically.
-     *
-     * @member {string}
      */
     crossOrigin: string | boolean;
     /**
@@ -141,13 +142,13 @@ class LoaderResource
      * it is cancelled and the load is considered a failure. If this value is set to `0`
      * then there is no explicit timeout.
      *
-     * @member {number}
+     * @type {number}
      */
     timeout: number;
     /**
      * The method of loading to use for this resource.
      *
-     * @member {LoaderResource.LOAD_TYPE}
+     * @type {PIXI.LoaderResource.LOAD_TYPE}
      */
     loadType: LoaderResource.LOAD_TYPE;
     /**
@@ -162,6 +163,8 @@ class LoaderResource
      *
      * Note that if you pass in a `loadElement`, the Resource class takes ownership of it.
      * Meaning it will modify it as it sees fit.
+     *
+     * @type {PIXI.IResourceMetadata}
      */
     metadata: IResourceMetadata;
     /**
@@ -176,7 +179,6 @@ class LoaderResource
      * when `loadType` is `LoaderResource.LOAD_TYPE.XHR`.
      *
      * @readonly
-     * @member {XMLHttpRequest}
      */
     xhr: XMLHttpRequest;
 
@@ -184,15 +186,14 @@ class LoaderResource
     /**
      * The child resources this resource owns.
      *
-     * @readonly
-     * @member {Resource[]}
+     * @type {PIXI.LoaderResource[]}
      */
     readonly children: LoaderResource[];
     /**
      * The resource type.
      *
      * @readonly
-     * @member {LoaderResource.TYPE}
+     * @type {PIXI.LoaderResource.TYPE}
      */
     type: LoaderResource.TYPE;
     /**
@@ -207,7 +208,7 @@ class LoaderResource
      *
      * The callback looks like {@link LoaderResource.OnStartSignal}.
      *
-     * @member {Signal<LoaderResource.OnStartSignal>}
+     * @type {PIXI.Signal}
      */
     onStart: Signal<LoaderResource.OnStartSignal>;
     /**
@@ -219,7 +220,7 @@ class LoaderResource
      *
      * The callback looks like {@link LoaderResource.OnProgressSignal}.
      *
-     * @member {Signal<LoaderResource.OnProgressSignal>}
+     * @type {PIXI.Signal}
      */
     onProgress: Signal<LoaderResource.OnProgressSignal>;
     /**
@@ -228,7 +229,7 @@ class LoaderResource
      *
      * The callback looks like {@link LoaderResource.OnCompleteSignal}.
      *
-     * @member {Signal<LoaderResource.OnCompleteSignal>}
+     * @type {PIXI.Signal}
      */
     onComplete: Signal<LoaderResource.OnCompleteSignal>;
     /**
@@ -236,7 +237,7 @@ class LoaderResource
      *
      * The callback looks like {@link LoaderResource.OnCompleteSignal}.
      *
-     * @member {Signal<LoaderResource.OnCompleteSignal>}
+     * @type {PIXI.Signal}
      */
     onAfterMiddleware: Signal<LoaderResource.OnCompleteSignal>;
 
@@ -269,7 +270,6 @@ class LoaderResource
      * The timer for element loads to check if they timeout.
      *
      * @private
-     * @member {number}
      */
     private _elementTimer = 0;
 
@@ -277,7 +277,7 @@ class LoaderResource
      * The `complete` function bound to this resource's context.
      *
      * @private
-     * @member {function}
+     * @type {function}
      */
     private _boundComplete: any = null;
 
@@ -285,7 +285,7 @@ class LoaderResource
      * The `_onError` function bound to this resource's context.
      *
      * @private
-     * @member {function}
+     * @type {function}
      */
     private _boundOnError: any = null;
 
@@ -293,7 +293,7 @@ class LoaderResource
      * The `_onProgress` function bound to this resource's context.
      *
      * @private
-     * @member {function}
+     * @type {function}
      */
     private _boundOnProgress: any = null;
 
@@ -301,7 +301,7 @@ class LoaderResource
      * The `_onTimeout` function bound to this resource's context.
      *
      * @private
-     * @member {function}
+     * @type {function}
      */
     private _boundOnTimeout: any = null;
 
@@ -315,7 +315,7 @@ class LoaderResource
      *
      * @static
      * @param {string} extname - The extension to set the type for, e.g. "png" or "fnt"
-     * @param {LoaderResource.LOAD_TYPE} loadType - The load type to set it to.
+     * @param {PIXI.LoaderResource.LOAD_TYPE} loadType - The load type to set it to.
      */
     static setExtensionLoadType(extname: string, loadType: LoaderResource.LOAD_TYPE): void
     {
@@ -326,7 +326,7 @@ class LoaderResource
      *
      * @static
      * @param {string} extname - The extension to set the type for, e.g. "png" or "fnt"
-     * @param {LoaderResource.XHR_RESPONSE_TYPE} xhrType - The xhr type to set it to.
+     * @param {PIXI.LoaderResource.XHR_RESPONSE_TYPE} xhrType - The xhr type to set it to.
      */
     static setExtensionXhrType(extname: string, xhrType: LoaderResource.XHR_RESPONSE_TYPE): void
     {
@@ -343,11 +343,12 @@ class LoaderResource
      * @param {number} [options.timeout=0] - A timeout in milliseconds for the load. If the load takes
      *      longer than this time it is cancelled and the load is considered a failure. If this value is
      *      set to `0` then there is no explicit timeout.
-     * @param {LoaderResource.LOAD_TYPE} [options.loadType=LoaderResource.LOAD_TYPE.XHR] - How should this resource
+     * @param {PIXI.LoaderResource.LOAD_TYPE} [options.loadType=LOAD_TYPE.XHR] - How should this resource
      *      be loaded?
-     * @param {LoaderResource.XHR_RESPONSE_TYPE} [options.xhrType=LoaderResource.XHR_RESPONSE_TYPE.DEFAULT] - How
+     * @param {PIXI.LoaderResource.XHR_RESPONSE_TYPE} [options.xhrType=XHR_RESPONSE_TYPE.DEFAULT] - How
      *      should the data being loaded be interpreted when using XHR?
-     * @param {LoaderResource.IMetadata} [options.metadata] - Extra configuration for middleware and the Resource object.
+     * @param {PIXI.LoaderResource.IMetadata} [options.metadata] - Extra configuration for middleware
+     *      and the Resource object.
      */
     constructor(name: string, url: string | string[], options?: {
         crossOrigin?: string | boolean;
@@ -383,87 +384,38 @@ class LoaderResource
 
         this.loadType = options.loadType || this._determineLoadType();
 
-        /**
-         * The type used to load the resource via XHR. If unset, determined automatically.
-         *
-         * @member {string}
-         */
+        // The type used to load the resource via XHR. If unset, determined automatically.
         this.xhrType = options.xhrType;
 
-        /**
-         * Extra info for middleware, and controlling specifics about how the resource loads.
-         *
-         * Note that if you pass in a `loadElement`, the Resource class takes ownership of it.
-         * Meaning it will modify it as it sees fit.
-         *
-         * @member {LoaderResource.IMetadata}
-         */
+        // Extra info for middleware, and controlling specifics about how the resource loads.
+        // Note that if you pass in a `loadElement`, the Resource class takes ownership of it.
+        // Meaning it will modify it as it sees fit.
         this.metadata = options.metadata || {};
 
-        /**
-         * The error that occurred while loading (if any).
-         *
-         * @readonly
-         * @member {Error}
-         */
+        // The error that occurred while loading (if any).
         this.error = null;
 
-        /**
-         * The XHR object that was used to load this resource. This is only set
-         * when `loadType` is `LoaderResource.LOAD_TYPE.XHR`.
-         *
-         * @readonly
-         * @member {XMLHttpRequest}
-         */
+        // The XHR object that was used to load this resource. This is only set
+        // when `loadType` is `LoaderResource.LOAD_TYPE.XHR`.
         this.xhr = null;
 
-        /**
-         * The child resources this resource owns.
-         *
-         * @readonly
-         * @member {Resource[]}
-         */
+        // The child resources this resource owns.
         this.children = [];
 
-        /**
-         * The resource type.
-         *
-         * @readonly
-         * @member {LoaderResource.TYPE}
-         */
+        // The resource type.
         this.type = LoaderResource.TYPE.UNKNOWN;
 
-        /**
-         * The progress chunk owned by this resource.
-         *
-         * @readonly
-         * @member {number}
-         */
+        // The progress chunk owned by this resource.
         this.progressChunk = 0;
 
-        /**
-         * The `dequeue` method that will be used a storage place for the async queue dequeue method
-         * used privately by the loader.
-         *
-         * @private
-         * @member {function}
-         */
+        // The `dequeue` method that will be used a storage place for the async queue dequeue method
+        // used privately by the loader.
         this._dequeue = _noop;
 
-        /**
-         * Used a storage place for the on load binding used privately by the loader.
-         *
-         * @private
-         * @member {function}
-         */
+        // Used a storage place for the on load binding used privately by the loader.
         this._onLoadBinding = null;
 
-        /**
-         * The timer for element loads to check if they timeout.
-         *
-         * @private
-         * @member {number}
-         */
+        // The timer for element loads to check if they timeout.
         this._elementTimer = 0;
 
         this._boundComplete = this.complete.bind(this);
@@ -477,52 +429,28 @@ class LoaderResource
         this._boundXhrOnAbort = this._xhrOnAbort.bind(this);
         this._boundXhrOnLoad = this._xhrOnLoad.bind(this);
 
-        /**
-         * Dispatched when the resource beings to load.
-         *
-         * The callback looks like {@link LoaderResource.OnStartSignal}.
-         *
-         * @member {Signal<LoaderResource.OnStartSignal>}
-         */
+        // Dispatched when the resource beings to load.
         this.onStart = new Signal();
 
-        /**
-         * Dispatched each time progress of this resource load updates.
-         * Not all resources types and loader systems can support this event
-         * so sometimes it may not be available. If the resource
-         * is being loaded on a modern browser, using XHR, and the remote server
-         * properly sets Content-Length headers, then this will be available.
-         *
-         * The callback looks like {@link LoaderResource.OnProgressSignal}.
-         *
-         * @member {Signal<LoaderResource.OnProgressSignal>}
-         */
+        // Dispatched each time progress of this resource load updates.
+        // Not all resources types and loader systems can support this event
+        // so sometimes it may not be available. If the resource
+        // is being loaded on a modern browser, using XHR, and the remote server
+        // properly sets Content-Length headers, then this will be available.
         this.onProgress = new Signal();
 
-        /**
-         * Dispatched once this resource has loaded, if there was an error it will
-         * be in the `error` property.
-         *
-         * The callback looks like {@link LoaderResource.OnCompleteSignal}.
-         *
-         * @member {Signal<LoaderResource.OnCompleteSignal>}
-         */
+        // Dispatched once this resource has loaded, if there was an error it will
+        // be in the `error` property.
         this.onComplete = new Signal();
 
-        /**
-         * Dispatched after this resource has had all the *after* middleware run on it.
-         *
-         * The callback looks like {@link LoaderResource.OnCompleteSignal}.
-         *
-         * @member {Signal<LoaderResource.OnCompleteSignal>}
-         */
+        // Dispatched after this resource has had all the *after* middleware run on it.
         this.onAfterMiddleware = new Signal();
     }
 
     /**
      * When the resource starts to load.
      *
-     * @memberof Resource
+     * @memberof PIXI.LoaderResource
      * @callback OnStartSignal
      * @param {Resource} resource - The resource that the event happened on.
      */
@@ -530,7 +458,7 @@ class LoaderResource
     /**
      * When the resource reports loading progress.
      *
-     * @memberof Resource
+     * @memberof PIXI.LoaderResource
      * @callback OnProgressSignal
      * @param {Resource} resource - The resource that the event happened on.
      * @param {number} percentage - The progress of the load in the range [0, 1].
@@ -539,13 +467,13 @@ class LoaderResource
     /**
      * When the resource finishes loading.
      *
-     * @memberof Resource
+     * @memberof PIXI.LoaderResource
      * @callback OnCompleteSignal
      * @param {Resource} resource - The resource that the event happened on.
      */
 
     /**
-     * @memberof Resource
+     * @memberof PIXI.LoaderResource
      * @typedef {object} IMetadata
      * @property {HTMLImageElement|HTMLAudioElement|HTMLVideoElement} [loadElement=null] - The
      *      element to use for loading, instead of creating one.
@@ -653,7 +581,7 @@ class LoaderResource
     /**
      * Kicks off loading of this resource. This method is asynchronous.
      *
-     * @param {LoaderResource.OnCompleteSignal} [cb] - Optional callback to call once the resource is loaded.
+     * @param {PIXI.LoaderResource.OnCompleteSignal} [cb] - Optional callback to call once the resource is loaded.
      */
     load(cb?: LoaderResource.OnCompleteSignal): void
     {
@@ -794,6 +722,7 @@ class LoaderResource
     /**
      * Loads this resources using an element that has a single source,
      * like an HTMLImageElement.
+     * @private
      * @param type - The type of element to use.
      */
     _loadElement(type: string): void
@@ -1158,7 +1087,7 @@ class LoaderResource
      * Sets the `crossOrigin` property for this resource based on if the url
      * for this resource is cross-origin. If crossOrigin was manually set, this
      * function does nothing.
-     *
+     * @private
      * @param url - The url to test.
      * @param [loc=window.location] - The location object to test against.
      * @return The crossOrigin value to use (or empty string for none).
@@ -1211,7 +1140,7 @@ class LoaderResource
      * resource being loaded.
      *
      * @private
-     * @return {LoaderResource.XHR_RESPONSE_TYPE} The responseType to use.
+     * @return {PIXI.LoaderResource.XHR_RESPONSE_TYPE} The responseType to use.
      */
     private _determineXhrType(): LoaderResource.XHR_RESPONSE_TYPE
     {
@@ -1223,7 +1152,7 @@ class LoaderResource
      * resource being loaded.
      *
      * @private
-     * @return {LoaderResource.LOAD_TYPE} The loadType to use.
+     * @return {PIXI.LoaderResource.LOAD_TYPE} The loadType to use.
      */
     private _determineLoadType(): LoaderResource.LOAD_TYPE
     {
@@ -1267,6 +1196,7 @@ class LoaderResource
      * resource being loaded.
      *
      * @param type - The type to get a mime type for.
+     * @private
      * @return The mime type to use.
      */
     _getMimeFromXhrType(type: LoaderResource.XHR_RESPONSE_TYPE): string
@@ -1299,7 +1229,7 @@ namespace LoaderResource {
     /**
      * When the resource starts to load.
      *
-     * @memberof Resource
+     * @memberof PIXI.LoaderResource
      * @callback OnStartSignal
      * @param {Resource} resource - The resource that the event happened on.
      */
@@ -1307,7 +1237,7 @@ namespace LoaderResource {
     /**
      * When the resource reports loading progress.
      *
-     * @memberof Resource
+     * @memberof PIXI.LoaderResource
      * @callback OnProgressSignal
      * @param {Resource} resource - The resource that the event happened on.
      * @param {number} percentage - The progress of the load in the range [0, 1].
@@ -1316,7 +1246,7 @@ namespace LoaderResource {
     /**
      * When the resource finishes loading.
      *
-     * @memberof Resource
+     * @memberof PIXI.LoaderResource
      * @callback OnCompleteSignal
      * @param {Resource} resource - The resource that the event happened on.
      */
@@ -1328,11 +1258,16 @@ namespace LoaderResource {
      * @static
      * @readonly
      * @enum {number}
+     * @memberof PIXI.LoaderResource
      */
     export enum STATUS_FLAGS {
+        /** None */
         NONE= 0,
+        /** Data URL */
         DATA_URL= (1 << 0),
+        /** Complete */
         COMPLETE= (1 << 1),
+        /** Loading */
         LOADING= (1 << 2),
     }
 
@@ -1342,14 +1277,22 @@ namespace LoaderResource {
      * @static
      * @readonly
      * @enum {number}
+     * @memberof PIXI.LoaderResource
      */
     export enum TYPE {
+        /** Unknown */
         UNKNOWN= 0,
+        /** JSON */
         JSON= 1,
+        /** XML */
         XML= 2,
+        /** Image */
         IMAGE= 3,
+        /** Audio */
         AUDIO= 4,
+        /** Video */
         VIDEO= 5,
+        /** Plain text */
         TEXT= 6,
     }
 
@@ -1359,6 +1302,7 @@ namespace LoaderResource {
      * @static
      * @readonly
      * @enum {number}
+     * @memberof PIXI.LoaderResource
      */
     export enum LOAD_TYPE {
         /** Uses XMLHttpRequest to load the resource. */
@@ -1377,6 +1321,7 @@ namespace LoaderResource {
      * @static
      * @readonly
      * @enum {string}
+     * @memberof PIXI.LoaderResource
      */
     export enum XHR_RESPONSE_TYPE {
         /** string */
@@ -1460,4 +1405,5 @@ namespace LoaderResource {
 
 export { LoaderResource };
 
+/** @deprecated */
 export type ILoaderResource = LoaderResource;

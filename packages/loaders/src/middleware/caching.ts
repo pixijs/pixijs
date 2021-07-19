@@ -7,7 +7,7 @@ const cache: Dict<any> = {};
 /**
  * A simple in-memory cache for resource.
  *
- * @memberof middleware
+ * @ignore
  * @function caching
  * @example
  * import { Loader, middleware } from 'resource-loader';

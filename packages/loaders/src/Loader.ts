@@ -33,13 +33,13 @@ export interface ILoaderAdd {
  * @property {number} [timeout=0] - A timeout in milliseconds for the load. If the load takes
  *      longer than this time it is cancelled and the load is considered a failure. If this value is
  *      set to `0` then there is no explicit timeout.
- * @property {LoaderResource.LOAD_TYPE} [loadType=LoaderResource.LOAD_TYPE.XHR] - How should this resource
+ * @property {PIXI.LoaderResource.LOAD_TYPE} [loadType=LoaderResource.LOAD_TYPE.XHR] - How should this resource
  *      be loaded?
- * @property {LoaderResource.XHR_RESPONSE_TYPE} [xhrType=LoaderResource.XHR_RESPONSE_TYPE.DEFAULT] - How
+ * @property {PIXI.LoaderResource.XHR_RESPONSE_TYPE} [xhrType=LoaderResource.XHR_RESPONSE_TYPE.DEFAULT] - How
  *      should the data being loaded be interpreted when using XHR?
- * @property {LoaderResource.OnCompleteSignal} [onComplete] - Callback to add an an onComplete signal istener.
- * @property {LoaderResource.OnCompleteSignal} [callback] - Alias for `onComplete`.
- * @property {LoaderResource.IMetadata} [metadata] - Extra configuration for middleware and the Resource object.
+ * @property {PIXI.LoaderResource.OnCompleteSignal} [onComplete] - Callback to add an an onComplete signal istener.
+ * @property {PIXI.LoaderResource.OnCompleteSignal} [callback] - Alias for `onComplete`.
+ * @property {PIXI.LoaderResource.IMetadata} [metadata] - Extra configuration for middleware and the Resource object.
  */
 export interface IAddOptions {
     name?: string;
@@ -56,7 +56,7 @@ export interface IAddOptions {
 }
 
 /**
- * The new loader, extends Resource Loader by Chad Engler: https://github.com/englercj/resource-loader
+ * The new loader, forked from Resource Loader by Chad Engler: https://github.com/englercj/resource-loader
  *
  * ```js
  * const loader = PIXI.Loader.shared; // PixiJS exposes a premade instance for you to use.
@@ -98,8 +98,6 @@ export interface IAddOptions {
  * loader.onLoad.add(() => {}); // called once per loaded file
  * loader.onComplete.add(() => {}); // called once when the queued resources all load.
  * ```
- *
- * @see https://github.com/englercj/resource-loader
  *
  * @class Loader
  * @memberof PIXI
@@ -174,7 +172,7 @@ class Loader
      *
      * @private
      * @member {function}
-     * @param {Resource} r - The resource to load
+     * @param {PIXI.LoaderResource} r - The resource to load
      * @param {Function} d - The dequeue function
      * @return {undefined}
      */
@@ -182,48 +180,49 @@ class Loader
 
     /**
      * The resources waiting to be loaded.
+     * @private
      */
     _queue: AsyncQueue<any>;
 
     /**
      * All the resources for this loader keyed by name.
      *
-     * @member {object<string, Resource>}
+     * @member {object<string, PIXI.LoaderResource>}
      */
     resources: Dict<LoaderResource> = {};
 
     /**
      * Dispatched once per loaded or errored resource.
      *
-     * The callback looks like {@link Loader.OnProgressSignal}.
+     * @member {PIXI.Signal}
      */
     onProgress: Signal<Loader.OnProgressSignal>;
 
     /**
      * Dispatched once per errored resource.
      *
-     * The callback looks like {@link Loader.OnErrorSignal}.
+     * @member {PIXI.Signal}
      */
     onError: Signal<Loader.OnErrorSignal>;
 
     /**
      * Dispatched once per loaded resource.
      *
-     * The callback looks like {@link Loader.OnLoadSignal}.
+     * @member {PIXI.Signal}
      */
     onLoad: Signal<Loader.OnLoadSignal>;
 
     /**
      * Dispatched when the loader begins to process the queue.
      *
-     * The callback looks like {@link Loader.OnStartSignal}.
+     * @member {PIXI.Signal}
      */
     onStart: Signal<Loader.OnStartSignal>;
 
     /**
      * Dispatched when the queued resources all load.
      *
-     * The callback looks like {@link Loader.OnCompleteSignal}.
+     * @member {PIXI.Signal}
      */
     onComplete: Signal<Loader.OnCompleteSignal>;
 
@@ -318,6 +317,7 @@ class Loader
 
     /**
      * Same as add, params have strict order
+     * @private
      * @param name - The name of the resource to load.
      * @param url - The url for this resource, relative to the baseUrl of this loader.
      * @param options - The options for the load.
@@ -562,7 +562,7 @@ class Loader
      * Loads a single resource.
      *
      * @private
-     * @param {Resource} resource - The resource to load.
+     * @param {PIXI.LoaderResource} resource - The resource to load.
      * @param {function} dequeue - The function to call when we need to dequeue this item.
      */
     _loadResource(resource: LoaderResource, dequeue: () => void): void
@@ -674,9 +674,6 @@ class Loader
 
     /**
      * Destroy the loader, removes references.
-     * @memberof PIXI.Loader#
-     * @method destroy
-     * @public
      */
     public destroy(): void
     {

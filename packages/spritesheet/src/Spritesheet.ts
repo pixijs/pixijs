@@ -391,13 +391,13 @@ export class Spritesheet
 /**
  * Reference to Spritesheet object created.
  * @member {PIXI.Spritesheet} spritesheet
- * @memberof PIXI.ILoaderResource
+ * @memberof PIXI.LoaderResource
  * @instance
  */
 
 /**
  * Dictionary of textures from Spritesheet.
  * @member {object<string, PIXI.Texture>} textures
- * @memberof PIXI.ILoaderResource
+ * @memberof PIXI.LoaderResource
  * @instance
  */

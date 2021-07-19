@@ -1,20 +1,23 @@
 /* jshint -W097 */
 
-export class MiniSignalBinding<CbType>
+/**
+ * @memberof PIXI
+ */
+export class SignalBinding<CbType>
 {
     _fn: any;
     _once: boolean;
-    _next: MiniSignalBinding<CbType>;
-    _prev: MiniSignalBinding<CbType>;
+    _next: SignalBinding<CbType>;
+    _prev: SignalBinding<CbType>;
     _owner: Signal<CbType>;
     _thisArg: any;
 
     /**
-     * MiniSignalBinding constructor.
-     * @constructs MiniSignalBinding
-     * @param {Function} fn Event handler to be called.
-     * @param {Boolean} [once=false] Should this listener be removed after dispatch
-     * @param {object} [thisArg] The context of the callback function.
+     * SignalBinding constructor.
+     * @constructs SignalBinding
+     * @param {Function} fn - Event handler to be called.
+     * @param {Boolean} [once=false] - Should this listener be removed after dispatch
+     * @param {object} [thisArg] - The context of the callback function.
      * @api private
      */
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -38,7 +41,7 @@ export class MiniSignalBinding<CbType>
 /**
  * @private
  */
-function _addMiniSignalBinding<CbType>(self: Signal<CbType>, node: MiniSignalBinding<CbType>)
+function _addSignalBinding<CbType>(self: Signal<CbType>, node: SignalBinding<CbType>)
 {
     if (!self._head)
     {
@@ -57,18 +60,18 @@ function _addMiniSignalBinding<CbType>(self: Signal<CbType>, node: MiniSignalBin
     return node;
 }
 
+/**
+ * @memberof PIXI
+ */
 export class Signal<CbType = (...args: any) => void>
 {
-    _head: MiniSignalBinding<CbType>;
-    _tail: MiniSignalBinding<CbType>;
+    _head: SignalBinding<CbType>;
+    _tail: SignalBinding<CbType>;
 
     /**
      * MiniSignal constructor.
-     * @constructs MiniSignal
-     * @api public
-     *
      * @example
-     * let mySignal = new MiniSignal();
+     * let mySignal = new Signal();
      * let binding = mySignal.add(onSignal);
      * mySignal.dispatch('foo', 'bar');
      * mySignal.detach(binding);
@@ -79,13 +82,13 @@ export class Signal<CbType = (...args: any) => void>
     }
 
     /**
-     * Return an array of attached MiniSignalBinding.
+     * Return an array of attached SignalBinding.
      *
-     * @param {Boolean} [exists=false] We only need to know if there are handlers.
-     * @returns {MiniSignalBinding[]|Boolean} Array of attached MiniSignalBinding or Boolean if called with exists = true
+     * @param {Boolean} [exists=false] - We only need to know if there are handlers.
+     * @returns {PIXI.SignalBinding[]|Boolean} Array of attached SignalBinding or Boolean if called with exists = true
      * @api public
      */
-    handlers(exists = false): Array<MiniSignalBinding<CbType>> | boolean
+    handlers(exists = false): Array<SignalBinding<CbType>> | boolean
     {
         let node = this._head;
 
@@ -103,17 +106,16 @@ export class Signal<CbType = (...args: any) => void>
     }
 
     /**
-     * Return true if node is a MiniSignalBinding attached to this MiniSignal
+     * Return true if node is a SignalBinding attached to this MiniSignal
      *
-     * @param {MiniSignalBinding} node Node to check.
+     * @param {PIXI.SignalBinding} node - Node to check.
      * @returns {Boolean} True if node is attache to mini-signal
-     * @api public
      */
-    has(node: MiniSignalBinding<CbType>): boolean
+    has(node: SignalBinding<CbType>): boolean
     {
-        if (!(node instanceof MiniSignalBinding))
+        if (!(node instanceof SignalBinding))
         {
-            throw new Error('MiniSignal#has(): First arg must be a MiniSignalBinding object.');
+            throw new Error('MiniSignal#has(): First arg must be a SignalBinding object.');
         }
 
         return node._owner === this;
@@ -123,7 +125,6 @@ export class Signal<CbType = (...args: any) => void>
      * Dispaches a signal to all registered listeners.
      *
      * @returns {Boolean} Indication if we've emitted an event.
-     * @api public
      */
     dispatch(...args: any[]): boolean
     {
@@ -144,50 +145,48 @@ export class Signal<CbType = (...args: any) => void>
     /**
      * Register a new listener.
      *
-     * @param {Function} fn Callback function.
-     * @param {object} [thisArg] The context of the callback function.
-     * @returns {MiniSignalBinding} The MiniSignalBinding node that was added.
-     * @api public
+     * @param {Function} fn - Callback function.
+     * @param {object} [thisArg] - The context of the callback function.
+     * @returns {PIXI.SignalBinding} The SignalBinding node that was added.
      */
-    add(fn: CbType, thisArg: any = null): MiniSignalBinding<CbType>
+    add(fn: CbType, thisArg: any = null): SignalBinding<CbType>
     {
         if (typeof fn !== 'function')
         {
             throw new Error('MiniSignal#add(): First arg must be a Function.');
         }
 
-        return _addMiniSignalBinding<CbType>(this, new MiniSignalBinding<CbType>(fn, false, thisArg));
+        return _addSignalBinding<CbType>(this, new SignalBinding<CbType>(fn, false, thisArg));
     }
 
     /**
      * Register a new listener that will be executed only once.
      *
-     * @param {Function} fn Callback function.
-     * @param {object} [thisArg] The context of the callback function.
-     * @returns {MiniSignalBinding} The MiniSignalBinding node that was added.
-     * @api public
+     * @param {Function} fn - Callback function.
+     * @param {object} [thisArg] - The context of the callback function.
+     * @returns {PIXI.SignalBinding} The SignalBinding node that was added.
      */
-    once(fn: CbType, thisArg: any = null): MiniSignalBinding<CbType>
+    once(fn: CbType, thisArg: any = null): SignalBinding<CbType>
     {
         if (typeof fn !== 'function')
         {
             throw new Error('MiniSignal#once(): First arg must be a Function.');
         }
 
-        return _addMiniSignalBinding<CbType>(this, new MiniSignalBinding<CbType>(fn, true, thisArg));
+        return _addSignalBinding<CbType>(this, new SignalBinding<CbType>(fn, true, thisArg));
     }
 
     /**
      * Remove binding object.
      *
-     * @param {MiniSignalBinding} node The binding node that will be removed.
-     * @returns {MiniSignal} The instance on which this method was called.
+     * @param {PIXI.SignalBinding} node - The binding node that will be removed.
+     * @returns {Signal} The instance on which this method was called.
      * @api public */
-    detach(node: MiniSignalBinding<CbType>): this
+    detach(node: SignalBinding<CbType>): this
     {
-        if (!(node instanceof MiniSignalBinding))
+        if (!(node instanceof SignalBinding))
         {
-            throw new Error('MiniSignal#detach(): First arg must be a MiniSignalBinding object.');
+            throw new Error('MiniSignal#detach(): First arg must be a SignalBinding object.');
         }
         if (node._owner !== this) return this; // todo: or error?
 
@@ -216,8 +215,7 @@ export class Signal<CbType = (...args: any) => void>
     /**
      * Detach all listeners.
      *
-     * @returns {MiniSignal} The instance on which this method was called.
-     * @api public
+     * @returns {Signal} The instance on which this method was called.
      */
     detachAll(): this
     {

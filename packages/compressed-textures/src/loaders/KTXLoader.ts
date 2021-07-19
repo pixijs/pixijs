@@ -4,8 +4,6 @@ import { CompressedTextureResource, CompressedLevelBuffer } from '../resources/C
 import { LoaderResource } from '@pixi/loaders';
 import { registerCompressedTextures } from './registerCompressedTextures';
 
-import type { ILoaderResource } from '@pixi/loaders';
-
 // Set KTX files to be loaded as an ArrayBuffer
 LoaderResource.setExtensionXhrType('ktx', LoaderResource.XHR_RESPONSE_TYPE.BUFFER);
 
@@ -120,7 +118,7 @@ export class KTXLoader
      * @param resource - loader resource that is checked to see if it is a KTX file
      * @param next - callback Function to call when done
      */
-    public static use(resource: ILoaderResource, next: (...args: any[]) => void): void
+    public static use(resource: LoaderResource, next: (...args: any[]) => void): void
     {
         if (resource.extension === 'ktx' && resource.data)
         {

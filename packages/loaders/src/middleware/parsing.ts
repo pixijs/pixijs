@@ -6,7 +6,7 @@ const Url = window.URL || window.webkitURL;
 /**
  * A middleware for transforming XHR loaded Blobs into more useful objects
  *
- * @memberof middleware
+ * @ignore
  * @function parsing
  * @example
  * import { Loader, middleware } from 'resource-loader';

@@ -4,7 +4,8 @@ import { ILoaderPlugin } from './Loader';
 
 /**
  * Loader plugin for handling Texture resources.
- * @class
+ *
+ * @memberof PIXI
  */
 export class TextureLoader implements ILoaderPlugin
 {
