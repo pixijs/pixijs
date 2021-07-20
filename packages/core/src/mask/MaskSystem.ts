@@ -1,6 +1,6 @@
 import { MaskData } from './MaskData';
 import { SpriteMaskFilter } from '../filters/spriteMask/SpriteMaskFilter';
-import { MASK_TYPES } from '@pixi/constants';
+import { MASK_TYPES, MSAA_QUALITY } from '@pixi/constants';
 
 import type { ISystem } from '../ISystem';
 import type { IMaskTarget } from './MaskData';
@@ -241,13 +241,41 @@ export class MaskSystem implements ISystem
             alphaMaskFilter = this.alphaMaskPool[this.alphaMaskIndex] = [new SpriteMaskFilter(maskObject)];
         }
 
-        alphaMaskFilter[0].resolution = this.renderer.resolution;
+        const renderer = this.renderer;
+        const renderTextureSystem = renderer.renderTexture;
+
+        let resolution;
+        let multisample;
+
+        if (renderTextureSystem.current)
+        {
+            const renderTexture = renderTextureSystem.current;
+
+            resolution = renderTexture.resolution;
+            multisample = renderTexture.multisample;
+        }
+        else
+        {
+            resolution = renderer.resolution;
+
+            if (renderer.gl.getContextAttributes().antialias)
+            {
+                multisample = MSAA_QUALITY.HIGH;
+            }
+            else
+            {
+                multisample = MSAA_QUALITY.NONE;
+            }
+        }
+
+        alphaMaskFilter[0].resolution = resolution;
+        alphaMaskFilter[0].multisample = multisample;
         alphaMaskFilter[0].maskSprite = maskObject;
 
         const stashFilterArea = target.filterArea;
 
         target.filterArea = maskObject.getBounds(true);
-        this.renderer.filter.push(target, alphaMaskFilter);
+        renderer.filter.push(target, alphaMaskFilter);
         target.filterArea = stashFilterArea;
 
         this.alphaMaskIndex++;
