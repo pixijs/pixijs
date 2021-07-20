@@ -1,7 +1,7 @@
 import { RenderTexture, autoDetectRenderer, Framebuffer, Renderer, BatchRenderer } from '@pixi/core';
 import { Graphics } from '@pixi/graphics';
 import { Container } from '@pixi/display';
-import { MSAA_QUALITY } from '@pixi/constants';
+import { MSAA_QUALITY, FORMATS, TYPES } from '@pixi/constants';
 import { expect } from 'chai';
 
 describe('RenderTexture', function ()
@@ -215,6 +215,60 @@ describe('RenderTexture', function ()
         expect(pixel[3]).to.equal(51);
     });
 
+    it('should render correctly with mask, multisampling, and format RED / type FLOAT', function ()
+    {
+        if (this.renderer.context.webGLVersion === 1
+            || !this.renderer.context.extensions.colorBufferFloat)
+        {
+            this.skip();
+        }
+
+        const { gl } = this.renderer;
+
+        const renderTexture = RenderTexture.create({ width: 2, height: 2, format: FORMATS.RED, type: TYPES.FLOAT });
+
+        renderTexture.baseTexture.clearColor = [0.5, 0.5, 0.5, 0.5];
+
+        const framebuffer = renderTexture.framebuffer;
+
+        framebuffer.multisample = MSAA_QUALITY.HIGH;
+
+        const graphics = new Graphics();
+
+        graphics.beginFill(0xffffff).drawRect(0, 0, 2, 2).endFill();
+
+        const container = new Container();
+
+        container.addChild(graphics);
+        container.mask = container.addChild(
+            new Graphics()
+                .beginFill(0xffffff)
+                .drawRect(0, 0, 1, 1)
+                .endFill()
+        );
+
+        this.renderer.render(container, { renderTexture, clear: true });
+        this.renderer.framebuffer.blit();
+
+        const textureFramebuffer = new Framebuffer(framebuffer.width, framebuffer.height);
+
+        textureFramebuffer.addColorTexture(0, framebuffer.colorTextures[0]);
+
+        this.renderer.framebuffer.bind(textureFramebuffer);
+
+        const pixel = new Float32Array([0.3]);
+
+        gl.readPixels(0, 0, 1, 1, gl.RED, gl.FLOAT, pixel);
+
+        expect(pixel[0]).to.equal(1.0);
+
+        pixel.set([0.1]);
+
+        gl.readPixels(1, 1, 1, 1, gl.RED, gl.FLOAT, pixel);
+
+        expect(pixel[0]).to.equal(0.5);
+    });
+
     it('should resize framebuffer', function ()
     {
         const { gl } = this.renderer;
@@ -287,5 +341,48 @@ describe('RenderTexture', function ()
         expect(pixel[1]).to.equal(0xff);
         expect(pixel[2]).to.equal(0xff);
         expect(pixel[3]).to.equal(0xff);
+    });
+
+    it('should resize multisampled framebuffer with format RED / type FLOAT', function ()
+    {
+        if (this.renderer.context.webGLVersion === 1
+            || !this.renderer.context.extensions.colorBufferFloat)
+        {
+            this.skip();
+        }
+
+        const { gl } = this.renderer;
+
+        const renderTexture = RenderTexture.create({ width: 1, height: 1, format: FORMATS.RED, type: TYPES.FLOAT });
+
+        renderTexture.baseTexture.clearColor = [0.5, 0.5, 0.5, 0.5];
+
+        const framebuffer = renderTexture.framebuffer;
+
+        framebuffer.multisample = MSAA_QUALITY.HIGH;
+
+        const graphics = new Graphics();
+
+        graphics.beginFill(0xffffff).drawRect(0, 0, 2, 2).endFill();
+
+        this.renderer.render(graphics, { renderTexture, clear: true });
+        this.renderer.framebuffer.blit();
+
+        renderTexture.resize(2, 2);
+
+        this.renderer.render(graphics, { renderTexture, clear: true });
+        this.renderer.framebuffer.blit();
+
+        const textureFramebuffer = new Framebuffer(framebuffer.width, framebuffer.height);
+
+        textureFramebuffer.addColorTexture(0, framebuffer.colorTextures[0]);
+
+        this.renderer.framebuffer.bind(textureFramebuffer);
+
+        const pixel = new Float32Array([0.3]);
+
+        gl.readPixels(1, 1, 1, 1, gl.RED, gl.FLOAT, pixel);
+
+        expect(pixel[0]).to.equal(1.0);
     });
 });
