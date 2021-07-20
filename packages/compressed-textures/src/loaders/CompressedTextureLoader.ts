@@ -1,7 +1,7 @@
 import { LoaderResource } from '@pixi/loaders';
 import { url } from '@pixi/utils';
 
-import type { Loader, ILoaderResource } from '@pixi/loaders';
+import type { Loader } from '@pixi/loaders';
 import type { INTERNAL_FORMATS } from '../const';
 
 /**
@@ -76,7 +76,7 @@ export class CompressedTextureLoader
      * }
      * ```
      */
-    static use(resource: ILoaderResource, next: (...args: any[]) => void): void
+    static use(resource: LoaderResource, next: (...args: any[]) => void): void
     {
         const data: CompressedTextureManifest = resource.data;
         const loader = this as unknown as Loader;
@@ -136,7 +136,7 @@ export class CompressedTextureLoader
             const resourceName = data.cacheID;
 
             // The appropriate loader should register the texture
-            loader.add(resourceName, resourcePath, loadOptions, (res: ILoaderResource) =>
+            loader.add(resourceName, resourcePath, loadOptions, (res: LoaderResource) =>
             {
                 if (res.error)
                 {

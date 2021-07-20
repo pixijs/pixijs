@@ -3,8 +3,6 @@ import { INTERNAL_FORMATS, INTERNAL_FORMAT_TO_BYTES_PER_PIXEL } from '../const';
 import { LoaderResource } from '@pixi/loaders';
 import { registerCompressedTextures } from './registerCompressedTextures';
 
-import type { ILoaderResource } from '@pixi/loaders';
-
 // Set DDS files to be loaded as an ArrayBuffer
 LoaderResource.setExtensionXhrType('dds', LoaderResource.XHR_RESPONSE_TYPE.BUFFER);
 
@@ -264,7 +262,7 @@ export class DDSLoader
      * @param resource - loader resource that is checked to see if it is a DDS file
      * @param next - callback Function to call when done
      */
-    public static use(resource: ILoaderResource, next: (...args: any[]) => void): void
+    public static use(resource: LoaderResource, next: (...args: any[]) => void): void
     {
         if (resource.extension === 'dds' && resource.data)
         {

@@ -13,7 +13,7 @@ import {
 import { TranscoderWorker } from './TranscoderWorker';
 import { LoaderResource } from '@pixi/loaders';
 
-import type { ILoaderResource, IResourceMetadata } from '@pixi/loaders';
+import type { IResourceMetadata } from '@pixi/loaders';
 import type { CompressedLevelBuffer } from '@pixi/compressed-textures';
 
 type TranscodedResourcesArray = (Array<CompressedTextureResource> | Array<BufferResource>) & {
@@ -24,7 +24,7 @@ type TranscodedResourcesArray = (Array<CompressedTextureResource> | Array<Buffer
  * Result when calling registerCompressedTextures.
  * @ignore
  */
- type BasisTexturesResult = Pick<ILoaderResource, 'textures' | 'texture'>;
+ type BasisTexturesResult = Pick<LoaderResource, 'textures' | 'texture'>;
 
 LoaderResource.setExtensionXhrType('basis', LoaderResource.XHR_RESPONSE_TYPE.BUFFER);
 
@@ -79,7 +79,7 @@ export class BasisLoader
      * @param resource - loader resource that is checked to see if it is a basis file
      * @param next - callback Function to call when done
      */
-    public static use(resource: ILoaderResource, next: (...args: any[]) => void): void
+    public static use(resource: LoaderResource, next: (...args: any[]) => void): void
     {
         if (resource.extension === 'basis' && resource.data)
         {
@@ -107,7 +107,7 @@ export class BasisLoader
      *
      * @private
      */
-    private static async transcode(resource: ILoaderResource, next: (...args: any[]) => void): Promise<void>
+    private static async transcode(resource: LoaderResource, next: (...args: any[]) => void): Promise<void>
     {
         try
         {
