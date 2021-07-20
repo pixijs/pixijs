@@ -88,7 +88,7 @@ export class RenderTexturePool
         {
             minWidth = nextPow2(minWidth);
             minHeight = nextPow2(minHeight);
-            key = ((minWidth & 0xFFFF) << 16) | (minHeight & 0xFFFF);
+            key = (((minWidth & 0xFFFF) << 16) | (minHeight & 0xFFFF)) >>> 0;
 
             if (multisample > 1)
             {
