@@ -436,9 +436,9 @@ export class FramebufferSystem implements ISystem
             }
         }
 
-        if (!fbo.stencil && (framebuffer.stencil || framebuffer.depth))
+        if ((framebuffer.stencil || framebuffer.depth) && !(framebuffer.depthTexture && this.writeDepthTexture))
         {
-            fbo.stencil = gl.createRenderbuffer();
+            fbo.stencil = fbo.stencil || gl.createRenderbuffer();
 
             gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.stencil);
 
@@ -451,25 +451,13 @@ export class FramebufferSystem implements ISystem
             {
                 gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, framebuffer.width, framebuffer.height);
             }
-            // TODO.. this is depth AND stencil?
-            if (!framebuffer.depthTexture)
-            { // you can't have both, so one should take priority if enabled
-                gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, fbo.stencil);
-            }
+
+            gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, fbo.stencil);
         }
         else if (fbo.stencil)
         {
-            gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.stencil);
-
-            if (fbo.msaaBuffer)
-            {
-                gl.renderbufferStorageMultisample(gl.RENDERBUFFER, fbo.multisample,
-                    gl.DEPTH24_STENCIL8, framebuffer.width, framebuffer.height);
-            }
-            else
-            {
-                gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, framebuffer.width, framebuffer.height);
-            }
+            gl.deleteRenderbuffer(fbo.stencil);
+            fbo.stencil = null;
         }
     }
 
