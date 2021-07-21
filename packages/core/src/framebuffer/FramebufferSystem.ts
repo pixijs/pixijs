@@ -332,7 +332,14 @@ export class FramebufferSystem implements ISystem
 
         const colorTextures = framebuffer.colorTextures;
 
-        for (let i = 0; i < colorTextures.length; i++)
+        let count = colorTextures.length;
+
+        if (!gl.drawBuffers)
+        {
+            count = Math.min(count, 1);
+        }
+
+        for (let i = 0; i < count; i++)
         {
             const texture = colorTextures[i];
             const parentTexture = texture.parentTextureArray || texture;
@@ -340,7 +347,7 @@ export class FramebufferSystem implements ISystem
             this.renderer.texture.bind(parentTexture, 0);
         }
 
-        if (framebuffer.depthTexture)
+        if (framebuffer.depthTexture && this.writeDepthTexture)
         {
             this.renderer.texture.bind(framebuffer.depthTexture, 0);
         }
