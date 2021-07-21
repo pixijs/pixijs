@@ -654,7 +654,8 @@ export class FramebufferSystem implements ISystem
         {
             return;
         }
-        framebuffer.enableStencil();
+
+        framebuffer.stencil = true;
 
         const w = framebuffer.width;
         const h = framebuffer.height;
