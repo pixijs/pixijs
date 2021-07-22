@@ -16,15 +16,17 @@ import { BatchSystem } from './batch/BatchSystem';
 import { TextureGCSystem } from './textures/TextureGCSystem';
 import { RENDERER_TYPE } from '@pixi/constants';
 import { UniformGroup } from './shader/UniformGroup';
-import { Matrix } from '@pixi/math';
+import { Matrix, Rectangle } from '@pixi/math';
 import { Runner } from '@pixi/runner';
 import { BufferSystem } from './geometry/BufferSystem';
 import { RenderTexture } from './renderTexture/RenderTexture';
 
-import type { IRendererOptions, IRendererPlugins, IRendererRenderOptions } from './AbstractRenderer';
-import type { IRenderableObject } from './IRenderableObject';
+import type { SCALE_MODES } from '@pixi/constants';
+import type { IRendererOptions, IRendererPlugins, IRendererRenderOptions,
+    IGenerateTextureOptions } from './AbstractRenderer';
 import type { ISystemConstructor } from './ISystem';
 import type { IRenderingContext } from './IRenderingContext';
+import type { IRenderableObject } from './IRenderableObject';
 
 export interface IRendererPluginConstructor {
     new (renderer: Renderer, options?: any): IRendererPlugin;
@@ -489,6 +491,56 @@ export class Renderer extends AbstractRenderer
         this.projection.transform = null;
 
         this.emit('postrender');
+    }
+
+    /**
+     * Please use the options argument instead.
+     *
+     * @override
+     * @method PIXI.Renderer#generateTexture
+     * @deprecated Since 6.1.0
+     * @param displayObject - The displayObject the object will be generated from.
+     * @param scaleMode - The scale mode of the texture.
+     * @param resolution - The resolution / device pixel ratio of the texture being generated.
+     * @param region - The region of the displayObject, that shall be rendered,
+     *        if no region is specified, defaults to the local bounds of the displayObject.
+     * @return A texture of the graphics object.
+     */
+    generateTexture(
+        displayObject: IRenderableObject,
+        scaleMode?: SCALE_MODES,
+        resolution?: number,
+        region?: Rectangle): RenderTexture;
+
+    /**
+     * Useful function that returns a texture of the display object that can then be used to create sprites
+     * This can be quite useful if your displayObject is complicated and needs to be reused multiple times.
+     * @override
+     * @method PIXI.Renderer#generateTexture
+     * @param displayObject - The displayObject the object will be generated from.
+     * @param {object} options - Generate texture options.
+     * @param {PIXI.SCALE_MODES} options.scaleMode - The scale mode of the texture.
+     * @param {number} options.resolution - The resolution / device pixel ratio of the texture being generated.
+     * @param {PIXI.Rectangle} options.region - The region of the displayObject, that shall be rendered,
+     *        if no region is specified, defaults to the local bounds of the displayObject.
+     * @param {PIXI.MSAA_QUALITY} options.multisample - The number of samples of the frame buffer.
+     * @return A texture of the graphics object.
+     */
+    generateTexture(displayObject: IRenderableObject, options?: IGenerateTextureOptions): RenderTexture;
+
+    /**
+     * @override
+     * @ignore
+     */
+    generateTexture(displayObject: IRenderableObject,
+        options: IGenerateTextureOptions | SCALE_MODES = {},
+        resolution?: number, region?: Rectangle): RenderTexture
+    {
+        const renderTexture = super.generateTexture(displayObject, options as any, resolution, region);
+
+        this.framebuffer.blit();
+
+        return renderTexture;
     }
 
     /**
