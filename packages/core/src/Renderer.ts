@@ -341,7 +341,30 @@ export class Renderer extends AbstractRenderer
 
     protected contextChange(): void
     {
-        const samples = this.gl.getParameter(this.gl.SAMPLES);
+        const gl = this.gl;
+
+        let samples;
+
+        if (this.context.webGLVersion === 1)
+        {
+            const framebuffer = gl.getParameter(gl.FRAMEBUFFER_BINDING);
+
+            gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+
+            samples = gl.getParameter(gl.SAMPLES);
+
+            gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
+        }
+        else
+        {
+            const framebuffer = gl.getParameter(gl.DRAW_FRAMEBUFFER_BINDING);
+
+            gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, null);
+
+            samples = gl.getParameter(gl.SAMPLES);
+
+            gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, framebuffer);
+        }
 
         if (samples >= MSAA_QUALITY.HIGH)
         {
