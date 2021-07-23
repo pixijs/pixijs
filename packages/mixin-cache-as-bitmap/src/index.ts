@@ -89,7 +89,8 @@ Object.defineProperties(DisplayObject.prototype, {
     },
 
     /**
-     * The number of samples to use for cacheAsBitmap.
+     * The number of samples to use for cacheAsBitmap. If set to `null`, the renderer's
+     * sample count is used.
      * If `cacheAsBitmap` is set to `true`, this will re-render with the new number of samples.
      *
      * @member {number} cacheAsBitmapMultisample
@@ -278,7 +279,7 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
         width: bounds.width,
         height: bounds.height,
         resolution: this.cacheAsBitmapResolution || renderer.resolution,
-        multisample: this.cacheAsBitmapMultisample,
+        multisample: this.cacheAsBitmapMultisample ?? renderer.multisample,
     });
 
     const textureCacheId = `cacheAsBitmap_${uid()}`;
