@@ -16,15 +16,17 @@ import { BatchSystem } from './batch/BatchSystem';
 import { TextureGCSystem } from './textures/TextureGCSystem';
 import { RENDERER_TYPE } from '@pixi/constants';
 import { UniformGroup } from './shader/UniformGroup';
-import { Matrix } from '@pixi/math';
+import { Matrix, Rectangle } from '@pixi/math';
 import { Runner } from '@pixi/runner';
 import { BufferSystem } from './geometry/BufferSystem';
 import { RenderTexture } from './renderTexture/RenderTexture';
 
-import type { IRendererOptions, IRendererPlugins, IRendererRenderOptions } from './AbstractRenderer';
-import type { IRenderableObject } from './IRenderableObject';
+import type { SCALE_MODES } from '@pixi/constants';
+import type { IRendererOptions, IRendererPlugins, IRendererRenderOptions,
+    IGenerateTextureOptions } from './AbstractRenderer';
 import type { ISystemConstructor } from './ISystem';
 import type { IRenderingContext } from './IRenderingContext';
+import type { IRenderableObject } from './IRenderableObject';
 
 export interface IRendererPluginConstructor {
     new (renderer: Renderer, options?: any): IRendererPlugin;
@@ -489,6 +491,21 @@ export class Renderer extends AbstractRenderer
         this.projection.transform = null;
 
         this.emit('postrender');
+    }
+
+    /**
+     * @override
+     * @ignore
+     */
+    generateTexture(displayObject: IRenderableObject,
+        options: IGenerateTextureOptions | SCALE_MODES = {},
+        resolution?: number, region?: Rectangle): RenderTexture
+    {
+        const renderTexture = super.generateTexture(displayObject, options as any, resolution, region);
+
+        this.framebuffer.blit();
+
+        return renderTexture;
     }
 
     /**
