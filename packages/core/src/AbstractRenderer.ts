@@ -44,6 +44,13 @@ export interface IRendererRenderOptions {
     skipUpdateTransform?: boolean;
 }
 
+export interface IGenerateTextureOptions {
+    scaleMode?: SCALE_MODES;
+    resolution?: number;
+    region?: Rectangle;
+    multisample?: MSAA_QUALITY;
+}
+
 /**
  * The AbstractRenderer is the base for a PixiJS Renderer. It is extended by the {@link PIXI.CanvasRenderer}
  * and {@link PIXI.Renderer} which can be used for rendering a PixiJS scene.
@@ -304,19 +311,56 @@ export abstract class AbstractRenderer extends EventEmitter
     /**
      * Useful function that returns a texture of the display object that can then be used to create sprites
      * This can be quite useful if your displayObject is complicated and needs to be reused multiple times.
+     * @method PIXI.AbstractRenderer#generateTexture
+     * @param displayObject - The displayObject the object will be generated from.
+     * @param {object} options - Generate texture options.
+     * @param {PIXI.SCALE_MODES} options.scaleMode - The scale mode of the texture.
+     * @param {number} options.resolution - The resolution / device pixel ratio of the texture being generated.
+     * @param {PIXI.Rectangle} options.region - The region of the displayObject, that shall be rendered,
+     *        if no region is specified, defaults to the local bounds of the displayObject.
+     * @param {PIXI.MSAA_QUALITY} options.multisample - The number of samples of the frame buffer.
+     * @return A texture of the graphics object.
+     */
+    generateTexture(displayObject: IRenderableObject, options?: IGenerateTextureOptions): RenderTexture;
+
+    /**
+     * Please use the options argument instead.
      *
+     * @method PIXI.AbstractRenderer#generateTexture
+     * @deprecated Since 6.1.0
      * @param displayObject - The displayObject the object will be generated from.
      * @param scaleMode - The scale mode of the texture.
      * @param resolution - The resolution / device pixel ratio of the texture being generated.
-     * @param [region] - The region of the displayObject, that shall be rendered,
+     * @param region - The region of the displayObject, that shall be rendered,
      *        if no region is specified, defaults to the local bounds of the displayObject.
-     * @param multisample - The number of samples of the frame buffer.
      * @return A texture of the graphics object.
      */
+    generateTexture(
+        displayObject: IRenderableObject,
+        scaleMode?: SCALE_MODES,
+        resolution?: number,
+        region?: Rectangle): RenderTexture;
+
+    /**
+     * @ignore
+     */
     generateTexture(displayObject: IRenderableObject,
-        scaleMode?: SCALE_MODES, resolution?: number, region?: Rectangle, multisample?: MSAA_QUALITY): RenderTexture
+        options: IGenerateTextureOptions | SCALE_MODES = {},
+        resolution?: number, region?: Rectangle): RenderTexture
     {
-        region = region || (displayObject as IRenderableContainer).getLocalBounds(null, true);
+        // @deprecated parameters spread, use options instead
+        if (typeof options === 'number')
+        {
+            // #if _DEBUG
+            deprecation('6.1.0', 'generateTexture options (scaleMode, resolution, region) are now object options.');
+            // #endif
+
+            options = { scaleMode: options, resolution, region };
+        }
+
+        const { region: manualRegion, ...textureOptions } = options;
+
+        region = manualRegion || (displayObject as IRenderableContainer).getLocalBounds(null, true);
 
         // minimum texture size is 1x1, 0x0 will throw an error
         if (region.width === 0) region.width = 1;
@@ -326,9 +370,7 @@ export abstract class AbstractRenderer extends EventEmitter
             {
                 width: region.width,
                 height: region.height,
-                scaleMode,
-                resolution,
-                multisample,
+                ...textureOptions,
             });
 
         tempMatrix.tx = -region.x;

@@ -140,46 +140,38 @@ export class TextureSystem implements ISystem
     {
         const { gl } = this;
 
-        if (texture)
+        texture = texture?.castToBaseTexture();
+
+        // cannot bind partial texture
+        // TODO: report a warning
+        if (texture && texture.valid && !texture.parentTextureArray)
         {
-            texture = texture.castToBaseTexture();
+            texture.touched = this.renderer.textureGC.count;
 
-            if (texture.parentTextureArray)
+            const glTexture = texture._glTextures[this.CONTEXT_UID] || this.initTexture(texture);
+
+            if (this.boundTextures[location] !== texture)
             {
-                // cannot bind partial texture
-                // TODO: report a warning
-                return;
-            }
-
-            if (texture.valid)
-            {
-                texture.touched = this.renderer.textureGC.count;
-
-                const glTexture = texture._glTextures[this.CONTEXT_UID] || this.initTexture(texture);
-
-                if (this.boundTextures[location] !== texture)
+                if (this.currentLocation !== location)
                 {
-                    if (this.currentLocation !== location)
-                    {
-                        this.currentLocation = location;
-                        gl.activeTexture(gl.TEXTURE0 + location);
-                    }
-
-                    gl.bindTexture(texture.target, glTexture.texture);
+                    this.currentLocation = location;
+                    gl.activeTexture(gl.TEXTURE0 + location);
                 }
 
-                if (glTexture.dirtyId !== texture.dirtyId)
-                {
-                    if (this.currentLocation !== location)
-                    {
-                        this.currentLocation = location;
-                        gl.activeTexture(gl.TEXTURE0 + location);
-                    }
-                    this.updateTexture(texture);
-                }
-
-                this.boundTextures[location] = texture;
+                gl.bindTexture(texture.target, glTexture.texture);
             }
+
+            if (glTexture.dirtyId !== texture.dirtyId)
+            {
+                if (this.currentLocation !== location)
+                {
+                    this.currentLocation = location;
+                    gl.activeTexture(gl.TEXTURE0 + location);
+                }
+                this.updateTexture(texture);
+            }
+
+            this.boundTextures[location] = texture;
         }
         else
         {

@@ -14,17 +14,19 @@ import { ShaderSystem } from './shader/ShaderSystem';
 import { ContextSystem } from './context/ContextSystem';
 import { BatchSystem } from './batch/BatchSystem';
 import { TextureGCSystem } from './textures/TextureGCSystem';
-import { RENDERER_TYPE } from '@pixi/constants';
+import { MSAA_QUALITY, RENDERER_TYPE } from '@pixi/constants';
 import { UniformGroup } from './shader/UniformGroup';
-import { Matrix } from '@pixi/math';
+import { Matrix, Rectangle } from '@pixi/math';
 import { Runner } from '@pixi/runner';
 import { BufferSystem } from './geometry/BufferSystem';
 import { RenderTexture } from './renderTexture/RenderTexture';
 
-import type { IRendererOptions, IRendererPlugins, IRendererRenderOptions } from './AbstractRenderer';
-import type { IRenderableObject } from './IRenderableObject';
+import type { SCALE_MODES } from '@pixi/constants';
+import type { IRendererOptions, IRendererPlugins, IRendererRenderOptions,
+    IGenerateTextureOptions } from './AbstractRenderer';
 import type { ISystemConstructor } from './ISystem';
 import type { IRenderingContext } from './IRenderingContext';
+import type { IRenderableObject } from './IRenderableObject';
 
 export interface IRendererPluginConstructor {
     new (renderer: Renderer, options?: any): IRendererPlugin;
@@ -75,6 +77,7 @@ export class Renderer extends AbstractRenderer
     public globalUniforms: UniformGroup;
     public CONTEXT_UID: number;
     public renderingToScreen: boolean;
+    public multisample: MSAA_QUALITY;
     // systems
     public mask: MaskSystem;
     public context: ContextSystem;
@@ -179,6 +182,8 @@ export class Renderer extends AbstractRenderer
             prerender: new Runner('prerender'),
             resize: new Runner('resize'),
         };
+
+        this.runners.contextChange.add(this);
 
         /**
          * Global uniforms
@@ -297,6 +302,13 @@ export class Renderer extends AbstractRenderer
 
         this.initPlugins(Renderer.__plugins);
 
+        /**
+         * The number of msaa samples of the canvas.
+         * @member {PIXI.MSAA_QUALITY}
+         * @readonly
+         */
+        this.multisample = undefined;
+
         /*
          * The options passed in to create a new WebGL context.
          */
@@ -327,6 +339,51 @@ export class Renderer extends AbstractRenderer
         sayHello(this.context.webGLVersion === 2 ? 'WebGL 2' : 'WebGL 1');
 
         this.resize(this.options.width, this.options.height);
+    }
+
+    protected contextChange(): void
+    {
+        const gl = this.gl;
+
+        let samples;
+
+        if (this.context.webGLVersion === 1)
+        {
+            const framebuffer = gl.getParameter(gl.FRAMEBUFFER_BINDING);
+
+            gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+
+            samples = gl.getParameter(gl.SAMPLES);
+
+            gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
+        }
+        else
+        {
+            const framebuffer = gl.getParameter(gl.DRAW_FRAMEBUFFER_BINDING);
+
+            gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, null);
+
+            samples = gl.getParameter(gl.SAMPLES);
+
+            gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, framebuffer);
+        }
+
+        if (samples >= MSAA_QUALITY.HIGH)
+        {
+            this.multisample = MSAA_QUALITY.HIGH;
+        }
+        else if (samples >= MSAA_QUALITY.MEDIUM)
+        {
+            this.multisample = MSAA_QUALITY.MEDIUM;
+        }
+        else if (samples >= MSAA_QUALITY.LOW)
+        {
+            this.multisample = MSAA_QUALITY.LOW;
+        }
+        else
+        {
+            this.multisample = MSAA_QUALITY.NONE;
+        }
     }
 
     /**
@@ -489,6 +546,21 @@ export class Renderer extends AbstractRenderer
         this.projection.transform = null;
 
         this.emit('postrender');
+    }
+
+    /**
+     * @override
+     * @ignore
+     */
+    generateTexture(displayObject: IRenderableObject,
+        options: IGenerateTextureOptions | SCALE_MODES = {},
+        resolution?: number, region?: Rectangle): RenderTexture
+    {
+        const renderTexture = super.generateTexture(displayObject, options as any, resolution, region);
+
+        this.framebuffer.blit();
+
+        return renderTexture;
     }
 
     /**

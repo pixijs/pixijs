@@ -2,6 +2,7 @@ import { RenderTexture, autoDetectRenderer, Framebuffer, Renderer, BatchRenderer
 import { Graphics } from '@pixi/graphics';
 import { Container } from '@pixi/display';
 import { MSAA_QUALITY } from '@pixi/constants';
+import { AlphaFilter } from '@pixi/filter-alpha';
 import { expect } from 'chai';
 
 describe('RenderTexture', function ()
@@ -159,6 +160,48 @@ describe('RenderTexture', function ()
         expect(pixel[1]).to.equal(51);
         expect(pixel[2]).to.equal(51);
         expect(pixel[3]).to.equal(51);
+    });
+
+    it('should render correctly with stencil mask and filter', function ()
+    {
+        const { gl } = this.renderer;
+
+        const renderTexture = RenderTexture.create({ width: 1, height: 1 });
+
+        renderTexture.baseTexture.clearColor = [0.2, 0.2, 0.2, 0.2];
+
+        const framebuffer = renderTexture.framebuffer;
+
+        framebuffer.multisample = MSAA_QUALITY.NONE;
+
+        const graphics = new Graphics();
+
+        graphics.beginFill(0xffffff).drawRect(0, 0, 1, 1).endFill();
+
+        graphics.filters = [new AlphaFilter()];
+
+        const container = new Container();
+
+        container.addChild(graphics);
+        container.mask = container.addChild(
+            new Graphics()
+                .beginFill(0xffffff)
+                .drawCircle(0, 0, 4, 4)
+                .endFill()
+        );
+
+        this.renderer.render(container, { renderTexture, clear: true });
+
+        this.renderer.renderTexture.bind(renderTexture);
+
+        const pixel = new Uint8Array([0x80, 0x80, 0x80, 0x80]);
+
+        gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixel);
+
+        expect(pixel[0]).to.equal(0xff);
+        expect(pixel[1]).to.equal(0xff);
+        expect(pixel[2]).to.equal(0xff);
+        expect(pixel[3]).to.equal(0xff);
     });
 
     it('should render correctly with mask and multisampling', function ()
