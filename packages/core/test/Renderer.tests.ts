@@ -1,6 +1,7 @@
-import { Renderer } from '@pixi/core';
+import { Renderer, Framebuffer } from '@pixi/core';
+import { Graphics } from '@pixi/graphics';
 import { settings } from '@pixi/settings';
-import { ENV } from '@pixi/constants';
+import { ENV, MSAA_QUALITY } from '@pixi/constants';
 import { skipHello } from '@pixi/utils';
 import sinon from 'sinon';
 import { expect } from 'chai';
@@ -97,6 +98,34 @@ describe('Renderer', function ()
             expect(this.renderer.batch.currentRenderer).to.be.equal(this.curRenderer);
             expect(this.curRenderer.stop).to.not.be.called;
             expect(this.curRenderer.start).to.not.be.called;
+        });
+
+        it('should generate a multisampled texture', function ()
+        {
+            const { gl } = this.renderer;
+
+            const graphics = new Graphics();
+
+            graphics.beginFill(0xffffff).drawRect(0, 0, 1, 1).endFill();
+
+            const renderTexture = this.renderer.generateTexture(graphics, { multisample: MSAA_QUALITY.HIGH });
+
+            const framebuffer = renderTexture.framebuffer;
+
+            const textureFramebuffer = new Framebuffer(framebuffer.width, framebuffer.height);
+
+            textureFramebuffer.addColorTexture(0, framebuffer.colorTextures[0]);
+
+            this.renderer.framebuffer.bind(textureFramebuffer);
+
+            const pixel = new Uint8Array([0x80, 0x80, 0x80, 0x80]);
+
+            gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixel);
+
+            expect(pixel[0]).to.equal(0xff);
+            expect(pixel[1]).to.equal(0xff);
+            expect(pixel[2]).to.equal(0xff);
+            expect(pixel[3]).to.equal(0xff);
         });
     });
 });
