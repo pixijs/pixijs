@@ -251,13 +251,13 @@ export class MaskSystem implements ISystem
         {
             const renderTexture = renderTextureSystem.current;
 
-            resolution = renderTexture.resolution;
-            multisample = renderTexture.multisample;
+            resolution = maskData.resolution || renderTexture.resolution;
+            multisample = maskData.multisample ?? renderTexture.multisample;
         }
         else
         {
-            resolution = renderer.resolution;
-            multisample = renderer.multisample;
+            resolution = maskData.resolution || renderer.resolution;
+            multisample = maskData.multisample ?? renderer.multisample;
         }
 
         alphaMaskFilter[0].resolution = resolution;
