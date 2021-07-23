@@ -294,7 +294,7 @@ describe('Graphics', function ()
 
     describe('containsPoint', function ()
     {
-        it('should return true when point inside', function ()
+        it('should return true when point inside a standard shape', function ()
         {
             const point = new Point(1, 1);
             const graphics = new Graphics();
@@ -305,13 +305,44 @@ describe('Graphics', function ()
             expect(graphics.containsPoint(point)).to.be.true;
         });
 
-        it('should return false when point outside', function ()
+        it('should return false when point outside a standard shape', function ()
         {
             const point = new Point(20, 20);
             const graphics = new Graphics();
 
             graphics.beginFill(0);
             graphics.drawRect(0, 0, 10, 10);
+
+            expect(graphics.containsPoint(point)).to.be.false;
+        });
+
+        it('should return true when point inside just lines', function ()
+        {
+            const point = new Point(1, 1);
+            const graphics = new Graphics();
+
+            graphics.beginFill(0);
+            graphics.moveTo(0, 0);
+            graphics.lineTo(0, 10);
+            graphics.lineTo(10, 10);
+            graphics.lineTo(10, 0);
+            graphics.lineTo(0, 0);
+            graphics.closePath();
+
+            expect(graphics.containsPoint(point)).to.be.true;
+        });
+
+        it('should return false when point outside just lines', function ()
+        {
+            const point = new Point(20, 20);
+            const graphics = new Graphics();
+
+            graphics.moveTo(0, 0);
+            graphics.lineTo(0, 10);
+            graphics.lineTo(10, 10);
+            graphics.lineTo(10, 0);
+            graphics.lineTo(0, 0);
+            graphics.closePath();
 
             expect(graphics.containsPoint(point)).to.be.false;
         });

@@ -1242,6 +1242,9 @@ export class Graphics extends Container
         {
             // we don't need to add extra point in the end because buildLine will take care of that
             currentPath.closeStroke = true;
+            // ensure that the polygon is completed, and is available for hit detection
+            // (even if the graphics is not rendered yet)
+            this.finishPoly();
         }
 
         return this;
