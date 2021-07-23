@@ -125,4 +125,20 @@ describe('TextureSystem', function ()
         expect(boundTextures[1]).to.be.null;
         expect(boundTextures[2]).to.equal(sampleTex2);
     });
+
+    it('should bind empty texture if texture is invalid', function ()
+    {
+        const textureSystem = this.renderer.texture;
+
+        expect(Texture.WHITE.baseTexture.valid).to.be.true;
+
+        textureSystem.bind(Texture.WHITE.baseTexture, 0);
+
+        expect(textureSystem.boundTextures[0]).to.equal(Texture.WHITE.baseTexture);
+        expect(Texture.EMPTY.baseTexture.valid).to.be.false;
+
+        textureSystem.bind(Texture.EMPTY.baseTexture, 0);
+
+        expect(textureSystem.boundTextures[0]).to.equal(null);
+    });
 });
