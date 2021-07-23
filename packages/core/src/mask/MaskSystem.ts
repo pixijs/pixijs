@@ -1,6 +1,6 @@
 import { MaskData } from './MaskData';
 import { SpriteMaskFilter } from '../filters/spriteMask/SpriteMaskFilter';
-import { MASK_TYPES, MSAA_QUALITY } from '@pixi/constants';
+import { MASK_TYPES } from '@pixi/constants';
 
 import type { ISystem } from '../ISystem';
 import type { IMaskTarget } from './MaskData';
@@ -257,15 +257,7 @@ export class MaskSystem implements ISystem
         else
         {
             resolution = renderer.resolution;
-
-            if (renderer.gl.getContextAttributes().antialias)
-            {
-                multisample = MSAA_QUALITY.HIGH;
-            }
-            else
-            {
-                multisample = MSAA_QUALITY.NONE;
-            }
+            multisample = renderer.multisample;
         }
 
         alphaMaskFilter[0].resolution = resolution;
