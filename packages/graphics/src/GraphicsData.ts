@@ -15,8 +15,16 @@ export class GraphicsData
     fillStyle: FillStyle;
     matrix: Matrix;
     type: SHAPES;
-    points: number[];
-    holes: Array<GraphicsData>;
+
+    /**  The collection of points. */
+    points: number[] = [];
+
+    /**
+     * The collection of holes.
+     *
+     * @member {PIXI.GraphicsData[]}
+     */
+    holes: Array<GraphicsData> = [];
     /**
      *
      * @param {PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.Rectangle|PIXI.RoundedRectangle} shape - The shape object to draw.
@@ -55,18 +63,6 @@ export class GraphicsData
          * @member {number}
          */
         this.type = shape.type;
-
-        /**
-         * The collection of points.
-         * @member {number[]}
-         */
-        this.points = [];
-
-        /**
-         * The collection of holes.
-         * @member {PIXI.GraphicsData[]}
-         */
-        this.holes = [];
     }
 
     /**
