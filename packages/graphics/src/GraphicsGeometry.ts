@@ -51,184 +51,77 @@ export class GraphicsGeometry extends BatchGeometry
     /**
      * The maximum number of points to consider an object "batchable",
      * able to be batched by the renderer's batch system.
-     *
-     * @memberof PIXI.GraphicsGeometry
-     * @static
-     * @member {number} BATCHABLE_SIZE
-     * @default 100
-     */
+\    */
     public static BATCHABLE_SIZE = 100;
 
-    public closePointEps: number;
-    public boundsPadding: number;
+    /** Minimal distance between points that are considered different.
+     * Affects line tesselation.
+     */
+    public closePointEps = 1e-4;
+
+    /**  Padding to add to the bounds. */
+    public boundsPadding = 0;
 
     uvsFloat32: Float32Array = null;
     indicesUint16: Uint16Array | Uint32Array = null;
-    batchable: boolean;
-    points: Array<number>;
-    colors: Array<number>;
-    uvs: Array<number>;
-    indices: Array<number>;
-    textureIds: Array<number>;
-    graphicsData: Array<GraphicsData>;
-    drawCalls: Array<BatchDrawCall>;
-    batchDirty: number;
-    batches: Array<BatchPart>;
+    batchable = false;
 
-    protected dirty: number;
-    protected cacheDirty: number;
-    protected clearDirty: number;
-    protected shapeIndex: number;
-    protected _bounds: Bounds;
-    protected boundsDirty: number;
+    /**  An array of points to draw, 2 numbers per point */
+    points: Array<number> = [];
 
+    /**  The collection of colors */
+    colors: Array<number> = [];
+
+    /**  The UVs collection */
+    uvs: Array<number> = [];
+
+    /**  The indices of the vertices */
+    indices: Array<number> = [];
+
+    /**  Reference to the texture IDs. */
+    textureIds: Array<number> = [];
+
+    /**  The collection of drawn shapes. */
+    graphicsData: Array<GraphicsData> = [];
+
+    /**  List of current draw calls drived from the batches. */
+    drawCalls: Array<BatchDrawCall> = [];
+
+    /**  Batches need to regenerated if the geometry is updated. */
+    batchDirty = -1;
+
+    /**
+     * Intermediate abstract format sent to batch system.
+     * Can be converted to drawCalls or to batchable objects.
+     */
+    batches: Array<BatchPart> = [];
+
+    /**  Used to detect if the graphics object has changed. */
+    protected dirty = 0;
+
+    /**  Used to check if the cache is dirty. */
+    protected cacheDirty = -1;
+
+    /**  Used to detect if we cleared the graphicsData. */
+    protected clearDirty = 0;
+
+    /**  Index of the last batched shape in the stack of calls. */
+    protected shapeIndex = 0;
+
+    /**
+     * Cached bounds.
+     *
+     * @member {PIXI.Bounds}
+     */
+    protected _bounds: Bounds = new Bounds();
+
+    /**  The bounds dirty flag. */
+    protected boundsDirty = -1;
+
+    // eslint-disable-next-line @typescript-eslint/no-useless-constructor
     constructor()
     {
         super();
-
-        /**
-         * An array of points to draw, 2 numbers per point
-         *
-         * @member {number[]}
-         * @protected
-         */
-        this.points = [];
-
-        /**
-         * The collection of colors
-         *
-         * @member {number[]}
-         * @protected
-         */
-        this.colors = [];
-
-        /**
-         * The UVs collection
-         *
-         * @member {number[]}
-         * @protected
-         */
-        this.uvs = [];
-
-        /**
-         * The indices of the vertices
-         *
-         * @member {number[]}
-         * @protected
-         */
-        this.indices = [];
-
-        /**
-         * Reference to the texture IDs.
-         *
-         * @member {number[]}
-         * @protected
-         */
-        this.textureIds = [];
-
-        /**
-         * The collection of drawn shapes.
-         *
-         * @member {PIXI.GraphicsData[]}
-         * @protected
-         */
-        this.graphicsData = [];
-
-        /**
-         * Used to detect if the graphics object has changed.
-         *
-         * @member {number}
-         * @protected
-         */
-        this.dirty = 0;
-
-        /**
-         * Batches need to regenerated if the geometry is updated.
-         *
-         * @member {number}
-         * @protected
-         */
-        this.batchDirty = -1;
-
-        /**
-         * Used to check if the cache is dirty.
-         *
-         * @member {number}
-         * @protected
-         */
-        this.cacheDirty = -1;
-
-        /**
-         * Used to detect if we cleared the graphicsData.
-         *
-         * @member {number}
-         * @default 0
-         * @protected
-         */
-        this.clearDirty = 0;
-
-        /**
-         * List of current draw calls drived from the batches.
-         *
-         * @member {object[]}
-         * @protected
-         */
-        this.drawCalls = [];
-
-        /**
-         * Intermediate abstract format sent to batch system.
-         * Can be converted to drawCalls or to batchable objects.
-         *
-         * @member {PIXI.graphicsUtils.BatchPart[]}
-         * @protected
-         */
-        this.batches = [];
-
-        /**
-         * Index of the last batched shape in the stack of calls.
-         *
-         * @member {number}
-         * @protected
-         */
-        this.shapeIndex = 0;
-
-        /**
-         * Cached bounds.
-         *
-         * @member {PIXI.Bounds}
-         * @protected
-         */
-        this._bounds = new Bounds();
-
-        /**
-         * The bounds dirty flag.
-         *
-         * @member {number}
-         * @protected
-         */
-        this.boundsDirty = -1;
-
-        /**
-         * Padding to add to the bounds.
-         *
-         * @member {number}
-         * @default 0
-         */
-        this.boundsPadding = 0;
-
-        this.batchable = false;
-
-        this.indicesUint16 = null;
-
-        this.uvsFloat32 = null;
-
-        /**
-         * Minimal distance between points that are considered different.
-         * Affects line tesselation.
-         *
-         * @member {number}
-         */
-        this.closePointEps = 1e-4;
     }
 
     /**
