@@ -207,7 +207,7 @@ export class RenderTexturePool
 
         for (const i in this.texturePool)
         {
-            if (typeof i !== 'number' || i >= 0)
+            if (!(Number(i) < 0))
             {
                 continue;
             }
