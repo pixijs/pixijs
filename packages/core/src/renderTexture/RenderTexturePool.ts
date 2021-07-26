@@ -79,7 +79,7 @@ export class RenderTexturePool
      */
     getOptimalTexture(minWidth: number, minHeight: number, resolution = 1, multisample = MSAA_QUALITY.NONE): RenderTexture
     {
-        let key: number|string = RenderTexturePool.SCREEN_KEY;
+        let key;
 
         minWidth = Math.ceil(minWidth * resolution);
         minHeight = Math.ceil(minHeight * resolution);
@@ -88,12 +88,16 @@ export class RenderTexturePool
         {
             minWidth = nextPow2(minWidth);
             minHeight = nextPow2(minHeight);
-            key = ((minWidth & 0xFFFF) << 16) | (minHeight & 0xFFFF);
+            key = (((minWidth & 0xFFFF) << 16) | (minHeight & 0xFFFF)) >>> 0;
 
             if (multisample > 1)
             {
                 key += multisample * 0x100000000;
             }
+        }
+        else
+        {
+            key = multisample > 1 ? -multisample : -1;
         }
 
         if (!this.texturePool[key])
@@ -199,19 +203,27 @@ export class RenderTexturePool
             return;
         }
 
-        const screenKey = RenderTexturePool.SCREEN_KEY;
-        const textures = this.texturePool[screenKey];
-
         this.enableFullScreen = size.width > 0 && size.height > 0;
 
-        if (textures)
+        for (const i in this.texturePool)
         {
-            for (let j = 0; j < textures.length; j++)
+            if (!(Number(i) < 0))
             {
-                textures[j].destroy(true);
+                continue;
             }
+
+            const textures = this.texturePool[i];
+
+            if (textures)
+            {
+                for (let j = 0; j < textures.length; j++)
+                {
+                    textures[j].destroy(true);
+                }
+            }
+
+            this.texturePool[i] = [];
         }
-        this.texturePool[screenKey] = [];
 
         this._pixelsWidth = size.width;
         this._pixelsHeight = size.height;
@@ -221,7 +233,7 @@ export class RenderTexturePool
      * Key that is used to store fullscreen renderTextures in a pool
      *
      * @static
-     * @const {string}
+     * @const {number}
      */
-    static SCREEN_KEY = 'screen';
+    static SCREEN_KEY = -1;
 }
