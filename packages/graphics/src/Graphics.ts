@@ -112,7 +112,11 @@ export class Graphics extends Container
      */
     public currentPath: Polygon = null;
 
-    /** A collections of batches! These can be drawn by the renderer batch system. */
+    /**
+     * A collections of batches! These can be drawn by the renderer batch system.
+     *
+     * @member {PIXI.IGraphicsBatchElement[]}
+     */
     protected batches: Array<IGraphicsBatchElement> = [];
 
     /** Update dirty for limiting calculating tints for batches. */

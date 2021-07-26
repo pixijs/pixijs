@@ -67,25 +67,53 @@ export class GraphicsGeometry extends BatchGeometry
     indicesUint16: Uint16Array | Uint32Array = null;
     batchable = false;
 
-    /** An array of points to draw, 2 numbers per point */
+    /**
+     * An array of points to draw, 2 numbers per point
+     *
+     * @member {number[]}
+     * */
     points: Array<number> = [];
 
-    /** The collection of colors */
+    /**
+     * The collection of colors
+     *
+     * @member {number[]}
+     * */
     colors: Array<number> = [];
 
-    /** The UVs collection */
+    /**
+     * The UVs collection
+     *
+     * @member {number[]}
+     * */
     uvs: Array<number> = [];
 
-    /** The indices of the vertices */
+    /**
+     * The indices of the vertices
+     *
+     * @member {number[]}
+     * */
     indices: Array<number> = [];
 
-    /** Reference to the texture IDs. */
+    /**
+     * Reference to the texture IDs.
+     *
+     * @member {number[]}
+     * */
     textureIds: Array<number> = [];
 
-    /** The collection of drawn shapes. */
+    /**
+     * The collection of drawn shapes.
+     *
+     * @member {PIXI.GraphicsData[]}
+     */
     graphicsData: Array<GraphicsData> = [];
 
-    /** List of current draw calls drived from the batches. */
+    /**
+     * List of current draw calls drived from the batches.
+     *
+     * @member {PIXI.BatchDrawCall[]}
+     */
     drawCalls: Array<BatchDrawCall> = [];
 
     /** Batches need to regenerated if the geometry is updated. */
@@ -94,6 +122,8 @@ export class GraphicsGeometry extends BatchGeometry
     /**
      * Intermediate abstract format sent to batch system.
      * Can be converted to drawCalls or to batchable objects.
+     *
+     * @member {PIXI.graphicsUtils.BatchPart[]}
      */
     batches: Array<BatchPart> = [];
 
