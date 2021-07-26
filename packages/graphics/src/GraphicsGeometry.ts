@@ -54,40 +54,41 @@ export class GraphicsGeometry extends BatchGeometry
 \    */
     public static BATCHABLE_SIZE = 100;
 
-    /** Minimal distance between points that are considered different.
+    /**
+     * Minimal distance between points that are considered different.
      * Affects line tesselation.
      */
     public closePointEps = 1e-4;
 
-    /**  Padding to add to the bounds. */
+    /** Padding to add to the bounds. */
     public boundsPadding = 0;
 
     uvsFloat32: Float32Array = null;
     indicesUint16: Uint16Array | Uint32Array = null;
     batchable = false;
 
-    /**  An array of points to draw, 2 numbers per point */
+    /** An array of points to draw, 2 numbers per point */
     points: Array<number> = [];
 
-    /**  The collection of colors */
+    /** The collection of colors */
     colors: Array<number> = [];
 
-    /**  The UVs collection */
+    /** The UVs collection */
     uvs: Array<number> = [];
 
-    /**  The indices of the vertices */
+    /** The indices of the vertices */
     indices: Array<number> = [];
 
-    /**  Reference to the texture IDs. */
+    /** Reference to the texture IDs. */
     textureIds: Array<number> = [];
 
-    /**  The collection of drawn shapes. */
+    /** The collection of drawn shapes. */
     graphicsData: Array<GraphicsData> = [];
 
-    /**  List of current draw calls drived from the batches. */
+    /** List of current draw calls drived from the batches. */
     drawCalls: Array<BatchDrawCall> = [];
 
-    /**  Batches need to regenerated if the geometry is updated. */
+    /** Batches need to regenerated if the geometry is updated. */
     batchDirty = -1;
 
     /**
@@ -96,16 +97,16 @@ export class GraphicsGeometry extends BatchGeometry
      */
     batches: Array<BatchPart> = [];
 
-    /**  Used to detect if the graphics object has changed. */
+    /** Used to detect if the graphics object has changed. */
     protected dirty = 0;
 
-    /**  Used to check if the cache is dirty. */
+    /** Used to check if the cache is dirty. */
     protected cacheDirty = -1;
 
-    /**  Used to detect if we cleared the graphicsData. */
+    /** Used to detect if we cleared the graphicsData. */
     protected clearDirty = 0;
 
-    /**  Index of the last batched shape in the stack of calls. */
+    /** Index of the last batched shape in the stack of calls. */
     protected shapeIndex = 0;
 
     /**
@@ -115,7 +116,7 @@ export class GraphicsGeometry extends BatchGeometry
      */
     protected _bounds: Bounds = new Bounds();
 
-    /**  The bounds dirty flag. */
+    /** The bounds dirty flag. */
     protected boundsDirty = -1;
 
     // eslint-disable-next-line @typescript-eslint/no-useless-constructor

@@ -9,12 +9,14 @@ import type { Matrix } from '@pixi/math';
  */
 export class FillStyle
 {
-    /**  The hex color value used when coloring the Graphics object.
+    /**
+     * The hex color value used when coloring the Graphics object.
+     *
      * @default 0xFFFFFF
      */
     public color = 0xFFFFFF;
 
-    /**  The alpha value used when filling the Graphics object. */
+    /** The alpha value used when filling the Graphics object. */
     public alpha = 1.0;
 
     /**
@@ -33,7 +35,7 @@ export class FillStyle
      */
     public matrix: Matrix = null;
 
-    /**  If the current fill is visible. */
+    /** If the current fill is visible. */
     public visible = false;
 
     constructor()

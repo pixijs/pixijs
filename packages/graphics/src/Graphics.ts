@@ -101,7 +101,7 @@ export class Graphics extends Container
      */
     public shader: Shader = null;
 
-    /**  Renderer plugin for batching */
+    /** Renderer plugin for batching */
     public pluginName = 'batch';
 
     /**
