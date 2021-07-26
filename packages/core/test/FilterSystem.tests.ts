@@ -77,7 +77,7 @@ describe('FilterSystem', function ()
         // check that there are two temp textures of same size
         const keys = Object.keys(filterSystem.texturePool.texturePool);
 
-        expect(keys.sort()).to.deep.eq(['65537', 'screen']);
+        expect(keys.sort()).to.deep.eq(['65537']);
         expect(filterSystem.texturePool.texturePool[65537].length).to.equal(2);
     });
 

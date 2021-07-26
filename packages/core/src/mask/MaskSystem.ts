@@ -241,13 +241,33 @@ export class MaskSystem implements ISystem
             alphaMaskFilter = this.alphaMaskPool[this.alphaMaskIndex] = [new SpriteMaskFilter(maskObject)];
         }
 
-        alphaMaskFilter[0].resolution = this.renderer.resolution;
+        const renderer = this.renderer;
+        const renderTextureSystem = renderer.renderTexture;
+
+        let resolution;
+        let multisample;
+
+        if (renderTextureSystem.current)
+        {
+            const renderTexture = renderTextureSystem.current;
+
+            resolution = maskData.resolution || renderTexture.resolution;
+            multisample = maskData.multisample ?? renderTexture.multisample;
+        }
+        else
+        {
+            resolution = maskData.resolution || renderer.resolution;
+            multisample = maskData.multisample ?? renderer.multisample;
+        }
+
+        alphaMaskFilter[0].resolution = resolution;
+        alphaMaskFilter[0].multisample = multisample;
         alphaMaskFilter[0].maskSprite = maskObject;
 
         const stashFilterArea = target.filterArea;
 
         target.filterArea = maskObject.getBounds(true);
-        this.renderer.filter.push(target, alphaMaskFilter);
+        renderer.filter.push(target, alphaMaskFilter);
         target.filterArea = stashFilterArea;
 
         this.alphaMaskIndex++;
