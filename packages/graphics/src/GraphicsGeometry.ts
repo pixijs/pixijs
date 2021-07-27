@@ -67,40 +67,20 @@ export class GraphicsGeometry extends BatchGeometry
     indicesUint16: Uint16Array | Uint32Array = null;
     batchable = false;
 
-    /**
-     * An array of points to draw, 2 numbers per point
-     *
-     * @member {number[]}
-     */
-    points: Array<number> = [];
+    /** An array of points to draw, 2 numbers per point */
+    points: number[] = [];
 
-    /**
-     * The collection of colors
-     *
-     * @member {number[]}
-     * */
-    colors: Array<number> = [];
+    /** The collection of colors */
+    colors: number[] = [];
 
-    /**
-     * The UVs collection
-     *
-     * @member {number[]}
-     * */
-    uvs: Array<number> = [];
+    /** The UVs collection */
+    uvs: number[] = [];
 
-    /**
-     * The indices of the vertices
-     *
-     * @member {number[]}
-     * */
-    indices: Array<number> = [];
+    /** The indices of the vertices */
+    indices: number[] = [];
 
-    /**
-     * Reference to the texture IDs.
-     *
-     * @member {number[]}
-     * */
-    textureIds: Array<number> = [];
+    /** Reference to the texture IDs. */
+    textureIds: number[] = [];
 
     /**
      * The collection of drawn shapes.

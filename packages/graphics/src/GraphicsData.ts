@@ -16,11 +16,7 @@ export class GraphicsData
     matrix: Matrix;
     type: SHAPES;
 
-    /**
-     * The collection of points.
-     *
-     * @member {number[]}
-     */
+    /** The collection of points. */
     points: number[] = [];
 
     /**
