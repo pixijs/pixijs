@@ -71,7 +71,7 @@ export class GraphicsGeometry extends BatchGeometry
      * An array of points to draw, 2 numbers per point
      *
      * @member {number[]}
-     * */
+     */
     points: Array<number> = [];
 
     /**
