@@ -96,6 +96,8 @@ export class Graphics extends Container
     /**
      * Represents the vertex and fragment shaders that processes the geometry and runs on the GPU.
      * Can be shared between multiple Graphics objects.
+     *
+     * @member {PIXI.Shader}
      */
     public shader: Shader = null;
 
@@ -105,6 +107,7 @@ export class Graphics extends Container
     /**
      * Current path
      *
+     * @member {PIXI.Polygon}
      * @readonly
      */
     public currentPath: Polygon = null;
@@ -125,16 +128,28 @@ export class Graphics extends Container
     /** Copy of the object vertex data. */
     protected vertexData: Float32Array = null;
 
-    /** Current fill style */
+    /**
+     * Current fill style
+     *
+     * @member {PIXI.FillStyle}
+     */
     protected _fillStyle: FillStyle = new FillStyle();
 
-    /** Current line style */
+    /**
+     * Current line style
+     *
+     * @member {PIXI.LineStyle}
+     */
     protected _lineStyle: LineStyle = new LineStyle();
 
-    /** Current shape transform matrix. */
+    /**
+     * Current shape transform matrix.
+     *
+     * @member {PIXI.Matrix}
+     */
     protected _matrix: Matrix = null;
 
-    /** Current hole mode is enabled. */
+    /**  Current hole mode is enabled. */
     protected _holeMode = false;
     protected _transformID: number;
     protected _tint: number;
