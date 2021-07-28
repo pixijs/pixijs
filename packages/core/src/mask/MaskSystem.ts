@@ -169,7 +169,7 @@ export class MaskSystem implements ISystem
                 this.renderer.stencil.pop(maskData.maskObject);
                 break;
             case MASK_TYPES.SPRITE:
-                this.popSpriteMask();
+                this.popSpriteMask(maskData);
                 break;
             default:
                 break;
@@ -275,8 +275,10 @@ export class MaskSystem implements ISystem
 
     /**
      * Removes the last filter from the filter stack and doesn't return it.
+     *
+     * @param {PIXI.MaskData} maskData - Sprite to be used as the mask
      */
-    popSpriteMask(): void
+    popSpriteMask(_maskData: MaskData): void
     {
         this.renderer.filter.pop();
         this.alphaMaskIndex--;
