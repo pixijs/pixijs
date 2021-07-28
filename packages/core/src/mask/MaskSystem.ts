@@ -280,6 +280,7 @@ export class MaskSystem implements ISystem
     {
         this.renderer.filter.pop();
         this.alphaMaskIndex--;
+        this.alphaMaskPool[this.alphaMaskIndex][0].maskSprite = null;
     }
 
     /**
