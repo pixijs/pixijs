@@ -234,11 +234,20 @@ export class MaskSystem implements ISystem
     {
         const { maskObject } = maskData;
         const target = maskData._target;
-        let alphaMaskFilter = this.alphaMaskPool[this.alphaMaskIndex];
+        let alphaMaskFilter;
 
-        if (!alphaMaskFilter)
+        if (maskData.filter)
         {
-            alphaMaskFilter = this.alphaMaskPool[this.alphaMaskIndex] = [new SpriteMaskFilter(maskObject)];
+            alphaMaskFilter = [maskData.filter];
+        }
+        else
+        {
+            alphaMaskFilter = this.alphaMaskPool[this.alphaMaskIndex];
+
+            if (!alphaMaskFilter)
+            {
+                alphaMaskFilter = this.alphaMaskPool[this.alphaMaskIndex] = [new SpriteMaskFilter(maskObject)];
+            }
         }
 
         const renderer = this.renderer;
@@ -270,7 +279,10 @@ export class MaskSystem implements ISystem
         renderer.filter.push(target, alphaMaskFilter);
         target.filterArea = stashFilterArea;
 
-        this.alphaMaskIndex++;
+        if (!maskData.filter)
+        {
+            this.alphaMaskIndex++;
+        }
     }
 
     /**
@@ -278,11 +290,19 @@ export class MaskSystem implements ISystem
      *
      * @param {PIXI.MaskData} maskData - Sprite to be used as the mask
      */
-    popSpriteMask(_maskData: MaskData): void
+    popSpriteMask(maskData: MaskData): void
     {
         this.renderer.filter.pop();
-        this.alphaMaskIndex--;
-        this.alphaMaskPool[this.alphaMaskIndex][0].maskSprite = null;
+
+        if (maskData.filter)
+        {
+            maskData.filter.maskSprite = null;
+        }
+        else
+        {
+            this.alphaMaskIndex--;
+            this.alphaMaskPool[this.alphaMaskIndex][0].maskSprite = null;
+        }
     }
 
     /**
