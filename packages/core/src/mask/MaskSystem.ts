@@ -242,7 +242,7 @@ export class MaskSystem implements ISystem
 
             if (!alphaMaskFilter)
             {
-                alphaMaskFilter = this.alphaMaskPool[this.alphaMaskIndex] = [new SpriteMaskFilter(maskObject)];
+                alphaMaskFilter = this.alphaMaskPool[this.alphaMaskIndex] = [new SpriteMaskFilter()];
             }
         }
 
