@@ -234,13 +234,9 @@ export class MaskSystem implements ISystem
     {
         const { maskObject } = maskData;
         const target = maskData._target;
-        let alphaMaskFilter;
+        let alphaMaskFilter = maskData._filters;
 
-        if (maskData.filter)
-        {
-            alphaMaskFilter = [maskData.filter];
-        }
-        else
+        if (!alphaMaskFilter)
         {
             alphaMaskFilter = this.alphaMaskPool[this.alphaMaskIndex];
 
@@ -279,7 +275,7 @@ export class MaskSystem implements ISystem
         renderer.filter.push(target, alphaMaskFilter);
         target.filterArea = stashFilterArea;
 
-        if (!maskData.filter)
+        if (!maskData._filters)
         {
             this.alphaMaskIndex++;
         }
@@ -294,9 +290,9 @@ export class MaskSystem implements ISystem
     {
         this.renderer.filter.pop();
 
-        if (maskData.filter)
+        if (maskData._filters)
         {
-            maskData.filter.maskSprite = null;
+            maskData._filters[0].maskSprite = null;
         }
         else
         {
