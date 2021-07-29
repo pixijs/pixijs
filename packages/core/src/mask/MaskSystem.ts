@@ -119,7 +119,9 @@ export class MaskSystem implements ISystem
             this.detect(maskData);
         }
 
-        maskData.copyCountersOrReset(this.maskStack[this.maskStack.length - 1]);
+        const maskAbove = this.maskStack.length !== 0 ? this.maskStack[this.maskStack.length - 1] : null;
+
+        maskData.copyCountersOrReset(maskAbove);
         maskData._target = target;
 
         switch (maskData.type)
@@ -180,6 +182,16 @@ export class MaskSystem implements ISystem
         if (maskData.pooled)
         {
             this.maskDataPool.push(maskData);
+        }
+
+        if (this.maskStack.length !== 0)
+        {
+            const maskCurrent = this.maskStack[this.maskStack.length - 1];
+
+            if (maskCurrent.type === MASK_TYPES.SPRITE && maskCurrent._filters)
+            {
+                maskCurrent._filters[0].maskSprite = maskCurrent.maskObject;
+            }
         }
     }
 

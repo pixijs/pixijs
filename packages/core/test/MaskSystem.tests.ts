@@ -1,4 +1,4 @@
-import { MASK_TYPES } from '@pixi/constants';
+import { MASK_TYPES, MSAA_QUALITY } from '@pixi/constants';
 import { Rectangle, Matrix } from '@pixi/math';
 import { Renderer, MaskData, RenderTexture, Filter, Texture, BaseTexture, CanvasResource,
     SpriteMaskFilter } from '@pixi/core';
@@ -351,5 +351,49 @@ describe('MaskSystem', function ()
         expect(g).to.equal(0xff);
         expect(b).to.equal(0xff);
         expect(a).to.equal(0xff);
+    });
+
+    it('should restore sprite of current sprite mask filter after pop', function ()
+    {
+        const renderTexture = RenderTexture.create({ width: 1, height: 1 });
+
+        this.renderer.renderTexture.bind(renderTexture);
+
+        const graphics1 = new Graphics();
+        const graphics2 = new Graphics();
+
+        const sprite1 = new Sprite(this.textureRed);
+        const sprite2 = new Sprite(this.textureGreen);
+
+        const maskData1 = new MaskData(sprite1);
+        const maskData2 = new MaskData(sprite2);
+
+        maskData1.filter = this.spriteMaskFilterGreen;
+        maskData2.filter = this.spriteMaskFilterGreen;
+
+        expect(maskData1.filter.maskSprite).to.be.null;
+        expect(maskData2.filter.maskSprite).to.be.null;
+
+        graphics1.mask = maskData1;
+        graphics2.mask = maskData2;
+
+        this.renderer.mask.push(graphics1, maskData1);
+
+        expect(maskData1.filter.maskSprite).to.equal(sprite1);
+
+        this.renderer.mask.push(graphics2, maskData2);
+
+        expect(maskData2.filter.maskSprite).to.equal(sprite2);
+
+        this.renderer.mask.pop(graphics2);
+
+        expect(maskData1.filter.maskSprite).to.equal(sprite1);
+
+        this.renderer.mask.pop(graphics1);
+
+        expect(maskData1.filter.maskSprite).to.be.null;
+        expect(maskData2.filter.maskSprite).to.be.null;
+
+        renderTexture.destroy(true);
     });
 });
