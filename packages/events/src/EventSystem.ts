@@ -459,6 +459,7 @@ export class EventSystem
         this.domElement.removeEventListener('wheel', this.onWheel, true);
 
         this.domElement = null;
+        this.eventsAdded = false;
     }
 
     /**
