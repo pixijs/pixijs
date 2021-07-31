@@ -257,6 +257,10 @@ export class MaskSystem implements ISystem
                 alphaMaskFilter = this.alphaMaskPool[this.alphaMaskIndex] = [new SpriteMaskFilter()];
             }
         }
+        else if (!alphaMaskFilter[0].enabled)
+        {
+            return;
+        }
 
         const renderer = this.renderer;
         const renderTextureSystem = renderer.renderTexture;
@@ -300,14 +304,17 @@ export class MaskSystem implements ISystem
      */
     popSpriteMask(maskData: MaskData): void
     {
-        this.renderer.filter.pop();
-
         if (maskData._filters)
         {
-            maskData._filters[0].maskSprite = null;
+            if (maskData._filters[0].enabled)
+            {
+                this.renderer.filter.pop();
+                maskData._filters[0].maskSprite = null;
+            }
         }
         else
         {
+            this.renderer.filter.pop();
             this.alphaMaskIndex--;
             this.alphaMaskPool[this.alphaMaskIndex][0].maskSprite = null;
         }
