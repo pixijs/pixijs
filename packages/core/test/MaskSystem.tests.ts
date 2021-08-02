@@ -353,36 +353,6 @@ describe('MaskSystem', function ()
         expect(a).to.equal(0xff);
     });
 
-    it('should not mask if sprite mask filter is disabled', function ()
-    {
-        const graphics = new Graphics().beginFill(0xffffff, 1.0).drawRect(0, 0, 1, 1).endFill();
-
-        graphics.mask = new MaskData(new Sprite(this.textureRed));
-        graphics.mask.filter = this.spriteMaskFilterGreen;
-        graphics.mask.filter.enabled = false;
-
-        const renderTexture = this.renderer.generateTexture(graphics);
-
-        graphics.mask.filter.enabled = true;
-        graphics.destroy(true);
-
-        this.renderer.renderTexture.bind(renderTexture);
-
-        const pixel = new Uint8Array(4);
-        const gl = this.renderer.gl;
-
-        gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixel);
-
-        renderTexture.destroy(true);
-
-        const [r, g, b, a] = pixel;
-
-        expect(r).to.equal(0xff);
-        expect(g).to.equal(0xff);
-        expect(b).to.equal(0xff);
-        expect(a).to.equal(0xff);
-    });
-
     it('should restore sprite of current sprite mask filter after pop', function ()
     {
         const renderTexture = RenderTexture.create({ width: 1, height: 1 });
