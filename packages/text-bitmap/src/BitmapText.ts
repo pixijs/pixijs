@@ -3,6 +3,7 @@ import { settings } from '@pixi/settings';
 import { Mesh, MeshGeometry, MeshMaterial } from '@pixi/mesh';
 import { removeItems } from '@pixi/utils';
 import { BitmapFont } from './BitmapFont';
+import { splitTextToCharacters, extractCharCode } from './utils';
 
 import type { Rectangle } from '@pixi/math';
 import { Texture } from '@pixi/core';
@@ -245,7 +246,7 @@ export class BitmapText extends Container
         const lineWidths = [];
         const lineSpaces = [];
         const text = this._text.replace(/(?:\r\n|\r)/g, '\n') || ' ';
-        const textLength = text.length;
+        const charsInput = splitTextToCharacters(text);
         const maxWidth = this._maxWidth * data.size / this._fontSize;
 
         let prevCharCode = null;
@@ -258,10 +259,10 @@ export class BitmapText extends Container
         let maxLineHeight = 0;
         let spaceCount = 0;
 
-        for (let i = 0; i < textLength; i++)
+        for (let i = 0; i < charsInput.length; i++)
         {
-            const charCode = text.charCodeAt(i);
-            const char = text.charAt(i);
+            const char = charsInput[i];
+            const charCode = extractCharCode(char);
 
             if ((/(?:\s)/).test(char))
             {
@@ -297,7 +298,7 @@ export class BitmapText extends Container
                 pos.x += charData.kerning[prevCharCode];
             }
 
-            const charRenderData = charRenderDataPool.pop() || {
+            const charRenderData: CharRenderData = charRenderDataPool.pop() || {
                 texture: Texture.EMPTY,
                 line: 0,
                 charCode: 0,
@@ -338,7 +339,7 @@ export class BitmapText extends Container
             }
         }
 
-        const lastChar = text.charAt(text.length - 1);
+        const lastChar = charsInput[charsInput.length - 1];
 
         if (lastChar !== '\r' && lastChar !== '\n')
         {
