@@ -1,6 +1,4 @@
 import { getPackages } from '@lerna/project';
-import batchPackages from '@lerna/batch-packages';
-import filterPackages from '@lerna/filter-packages';
 import path from 'path';
 import fs from 'fs';
 
@@ -12,19 +10,6 @@ interface SimplePackageJson
     location: string
     name: string
     dependencies: Record<string, string>
-}
-
-/**
- * Gets all the non-private packages package.json data
- */
-async function getSortedPackages(): Promise<SimplePackageJson[]>
-{
-    const packages = await getPackages(process.cwd());
-
-    const filtered = filterPackages(packages, undefined, undefined, false);
-
-    return batchPackages(filtered)
-        .reduce((arr: SimplePackageJson[], batch: SimplePackageJson[]) => arr.concat(batch), []);
 }
 
 /**
@@ -52,7 +37,7 @@ async function start(): Promise<void>
     let pixiGlobalMixins = '';
     let pixiLegacyGlobalMixins = '';
 
-    const packages = await getSortedPackages();
+    const packages: SimplePackageJson[] = await getPackages(process.cwd());
     const legacyPackages = Object.keys(packages.find((pkg) => pkg.name === 'pixi.js-legacy').dependencies);
     const pixiPackages = Object.keys(packages.find((pkg) => pkg.name === 'pixi.js').dependencies);
 

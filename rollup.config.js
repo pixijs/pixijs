@@ -4,12 +4,9 @@ import resolve from '@rollup/plugin-node-resolve';
 import { string } from 'rollup-plugin-string';
 import sourcemaps from 'rollup-plugin-sourcemaps';
 import typescript from 'rollup-plugin-typescript';
-import minimist from 'minimist';
 import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
 import { terser } from 'rollup-plugin-terser';
-import batchPackages from '@lerna/batch-packages';
-import filterPackages from '@lerna/filter-packages';
 import jscc from 'rollup-plugin-jscc';
 import alias from '@rollup/plugin-alias';
 import { getPackages } from '@lerna/project';
@@ -17,26 +14,6 @@ import repo from './lerna.json';
 import fs from 'fs';
 
 const isProduction = process.env.NODE_ENV === 'production';
-
-/**
- * Get a list of the non-private sorted packages with Lerna v3
- * @see https://github.com/lerna/lerna/issues/1848
- * @return {Promise<Package[]>} List of packages
- */
-
-async function getSortedPackages(scope, ignore)
-{
-    const packages = await getPackages(__dirname);
-    const filtered = filterPackages(
-        packages,
-        scope,
-        ignore,
-        false
-    );
-
-    return batchPackages(filtered)
-        .reduce((arr, batch) => arr.concat(batch), []);
-}
 
 /**
  * Get the JSCC plugin for preprocessing code.
@@ -109,9 +86,12 @@ async function main()
     const sourcemap = true;
     const results = [];
 
-    // Support --scope and --ignore globs if passed in via commandline
-    const { scope, ignore } = minimist(process.argv.slice(2));
-    const packages = await getSortedPackages(scope, ignore);
+    const packages = (await getPackages(__dirname))
+        // Hide private packages
+        .filter(pkg => !pkg.private)
+        // Make sure the bundles are last in the list
+        // simple alphabetaistical sort will do
+        .sort((a, b) => a.name.localeCompare(b.name));
 
     const namespaces = {};
     const pkgData = {};
