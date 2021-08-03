@@ -11,4 +11,3 @@ declare module '*.vert' {
 }
 
 declare module 'es6-promise-polyfill'
-declare module '@lerna/project'

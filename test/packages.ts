@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs';
-import { getPackages } from '@lerna/project';
+import workspacesRun from 'workspaces-run';
 
 interface PackageResult {
     name: string;
@@ -11,17 +11,15 @@ interface PackageResult {
 
 async function main()
 {
-    const packages: PackageResult[] = (await getPackages(path.dirname(__dirname))).map((pkg) =>
+    const packages: PackageResult[] = [];
+    const cwd = path.dirname(__dirname);
+
+    await workspacesRun({ cwd, orderByDeps: true }, async ({ name, dir: location }) =>
     {
-        const tests = path.join(pkg.location, 'test');
+        const tests = path.join(location, 'test');
         const available = fs.existsSync(tests);
 
-        return {
-            name: pkg.name,
-            location: pkg.location,
-            tests,
-            available,
-        };
+        packages.push({ name, location, tests, available });
     });
 
     // eslint-disable-next-line no-console

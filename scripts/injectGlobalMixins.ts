@@ -1,4 +1,4 @@
-import { getPackages } from '@lerna/project';
+import workspacesRun from 'workspaces-run';
 import path from 'path';
 import fs from 'fs';
 
@@ -25,6 +25,23 @@ function writeToIndex(basePath: string, dataToWrite: string): void
 }
 
 /**
+ * Collect the list of packages in the project
+ */
+async function getPackages(result: SimplePackageJson[] = []): Promise<SimplePackageJson[]>
+{
+    await workspacesRun({ cwd: process.cwd() }, async (pkg) =>
+    {
+        result.push({
+            location: pkg.dir,
+            name: pkg.name,
+            dependencies: pkg.config.dependencies,
+        });
+    });
+
+    return result;
+}
+
+/**
  * This is a workaround for https://github.com/pixijs/pixi.js/issues/6993
  *
  * All this script does is inject a path reference into a packages `index.d.ts` if a `global.d.ts`
@@ -37,7 +54,7 @@ async function start(): Promise<void>
     let pixiGlobalMixins = '';
     let pixiLegacyGlobalMixins = '';
 
-    const packages: SimplePackageJson[] = await getPackages(process.cwd());
+    const packages = await getPackages();
     const legacyPackages = Object.keys(packages.find((pkg) => pkg.name === 'pixi.js-legacy').dependencies);
     const pixiPackages = Object.keys(packages.find((pkg) => pkg.name === 'pixi.js').dependencies);
 

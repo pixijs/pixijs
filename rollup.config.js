@@ -9,7 +9,7 @@ import json from '@rollup/plugin-json';
 import { terser } from 'rollup-plugin-terser';
 import jscc from 'rollup-plugin-jscc';
 import alias from '@rollup/plugin-alias';
-import { getPackages } from '@lerna/project';
+import workspacesRun from 'workspaces-run';
 import repo from './lerna.json';
 import fs from 'fs';
 
@@ -85,44 +85,27 @@ async function main()
     const compiled = (new Date()).toUTCString().replace(/GMT/g, 'UTC');
     const sourcemap = true;
     const results = [];
+    const packages = [];
 
-    const packages = (await getPackages(__dirname))
-        // Hide private packages
-        .filter(pkg => !pkg.private)
-        // Make sure the bundles are last in the list
-        // simple alphabetical sort will do
-        .sort((a, b) => a.name.localeCompare(b.name));
+    // Collect the list of packages
+    await workspacesRun({ cwd: __dirname, orderByDeps: true }, async (pkg) =>
+    {
+        if (!pkg.config.private)
+        {
+            packages.push(pkg);
+        }
+    });
 
     const namespaces = {};
-    const pkgData = {};
 
     // Create a map of globals to use for bundled packages
     packages.forEach((pkg) =>
     {
-        const data = pkg.toJSON();
-
-        pkgData[pkg.name] = data;
-        namespaces[pkg.name] = data.namespace || 'PIXI';
+        namespaces[pkg.name] = pkg.config.namespace || 'PIXI';
     });
 
     packages.forEach((pkg) =>
     {
-        let banner = [
-            `/*!`,
-            ` * ${pkg.name} - v${pkg.version}`,
-            ` * Compiled ${compiled}`,
-            ` *`,
-            ` * ${pkg.name} is licensed under the MIT License.`,
-            ` * http://www.opensource.org/licenses/mit-license`,
-            ` */`,
-        ].join('\n');
-
-        // Check for bundle folder
-        const external = Object.keys(pkg.dependencies || [])
-            .concat(Object.keys(pkg.peerDependencies || []));
-        const basePath = path.relative(__dirname, pkg.location);
-        let input = path.join(basePath, 'src/index.ts');
-
         const {
             main,
             module,
@@ -131,7 +114,26 @@ async function main()
             bundleInput,
             bundleOutput,
             bundleNoExports,
-            standalone } = pkgData[pkg.name];
+            standalone,
+            version,
+            dependencies,
+            peerDependencies } = pkg.config;
+
+        let banner = [
+            `/*!`,
+            ` * ${pkg.name} - v${version}`,
+            ` * Compiled ${compiled}`,
+            ` *`,
+            ` * ${pkg.name} is licensed under the MIT License.`,
+            ` * http://www.opensource.org/licenses/mit-license`,
+            ` */`,
+        ].join('\n');
+
+        // Check for bundle folder
+        const external = Object.keys(dependencies || [])
+            .concat(Object.keys(peerDependencies || []));
+        const basePath = path.relative(__dirname, pkg.dir);
+        let input = path.join(basePath, 'src/index.ts');
         const freeze = false;
 
         results.push({

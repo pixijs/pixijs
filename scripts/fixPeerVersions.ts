@@ -1,4 +1,4 @@
-import { getPackages } from '@lerna/project';
+import workspacesRun from 'workspaces-run';
 import path from 'path';
 import fs from 'fs';
 import util from 'util';
@@ -8,11 +8,12 @@ import util from 'util';
  */
 interface Package
 {
-    location: string;
     name: string;
-    version: string;
-    peerDependencies: Record<string, string>;
-    toJSON(): { peerDependencies: Record<string, string> };
+    dir: string;
+    config: {
+        version: string;
+        peerDependencies?: Record<string, string>;
+    }
 }
 
 // Create utils for writing JSON file
@@ -25,20 +26,22 @@ const writeJson = (file: string, data: unknown) => writeFile(file, `${JSON.strin
  */
 async function main(): Promise<void>
 {
-    const packages = await getPackages(process.cwd()) as Package[];
-    const packagesHavePeers = packages.filter((p) => !!p.peerDependencies);
+    const versions: Record<string, string> = {};
+    const packagesWithPeers: Package[] = [];
 
-    // We are using exact version now, but this
-    // will insulate us if we decide to not do this
-    // and use fuzzy versioning again.
-    const versions = packages.reduce(
-        (list, pkg) => ({ ...list, [pkg.name]: pkg.version }),
-        {} as Record<string, string>
-    );
-
-    for (const p of packagesHavePeers)
+    await workspacesRun({ cwd: process.cwd() }, async (pkg) =>
     {
-        const json = p.toJSON();
+        versions[pkg.name] = pkg.config.version;
+
+        if (pkg.config.peerDependencies)
+        {
+            packagesWithPeers.push(pkg);
+        }
+    });
+
+    for (const p of packagesWithPeers)
+    {
+        const json = p.config;
         const peers = json.peerDependencies;
 
         for (const n in peers)
@@ -49,7 +52,7 @@ async function main(): Promise<void>
             }
         }
 
-        await writeJson(path.join(p.location, 'package.json'), json);
+        await writeJson(path.join(p.dir, 'package.json'), json);
     }
 }
 
