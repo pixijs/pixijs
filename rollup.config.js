@@ -90,7 +90,7 @@ async function main()
         // Hide private packages
         .filter(pkg => !pkg.private)
         // Make sure the bundles are last in the list
-        // simple alphabetaistical sort will do
+        // simple alphabetical sort will do
         .sort((a, b) => a.name.localeCompare(b.name));
 
     const namespaces = {};
