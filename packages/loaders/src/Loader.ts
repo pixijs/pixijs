@@ -789,13 +789,13 @@ namespace Loader
      * When the loader starts loading resources it dispatches this callback.
      * @param loader - The loader that has started loading resources.
      */
-    export type OnCompleteSignal = (loader: Loader, resource: LoaderResource) => void;
+    export type OnCompleteSignal = (loader: Loader, resources: Dict<LoaderResource>) => void;
     /**
      * When an error occurrs the loader and resource are disaptched.
      * @param loader - The loader the error happened in.
      * @param resource - The resource that caused the error.
      */
-    export type OnErrorSignal = (loader: Loader, resource: LoaderResource) => void;
+    export type OnErrorSignal = (error: Error, loader: Loader, resource: LoaderResource) => void;
 }
 
 export { Loader };
