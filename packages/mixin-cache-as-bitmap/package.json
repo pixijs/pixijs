@@ -26,7 +26,6 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/canvas-renderer": "6.1.1",
     "@pixi/core": "6.1.1",
     "@pixi/display": "6.1.1",
     "@pixi/math": "6.1.1",
