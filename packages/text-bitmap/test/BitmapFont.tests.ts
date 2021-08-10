@@ -37,6 +37,18 @@ describe('BitmapFont', function ()
             expect(Object.keys(font.chars).length).to.equal(26);
         });
 
+        it('should draw emojis', function ()
+        {
+            const emojis = ['🔥', '🌏', '😀'];
+            const font = BitmapFont.from('foo', {}, { chars: [emojis.join('')] });
+
+            expect(Object.keys(font.chars).length).to.equal(emojis.length);
+            for (const emoji of emojis)
+            {
+                expect(font.chars).to.have.property(emoji.codePointAt(0));
+            }
+        });
+
         it('should throw an error when an invalid range is given', function ()
         {
             expect(() => BitmapFont.from('foo', {}, { chars: [['l', 'i', 'm']] })).to.throw;
