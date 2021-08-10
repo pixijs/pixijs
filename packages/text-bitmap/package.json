@@ -33,8 +33,5 @@
     "@pixi/settings": "6.1.1",
     "@pixi/text": "6.1.1",
     "@pixi/utils": "6.1.1"
-  },
-  "devDependencies": {
-    "@pixi/spritesheet": "6.1.1"
   }
 }

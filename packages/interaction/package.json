@@ -30,13 +30,5 @@
     "@pixi/math": "6.1.1",
     "@pixi/ticker": "6.1.1",
     "@pixi/utils": "6.1.1"
-  },
-  "devDependencies": {
-    "@pixi/canvas-display": "6.1.1",
-    "@pixi/canvas-graphics": "6.1.1",
-    "@pixi/canvas-renderer": "6.1.1",
-    "@pixi/canvas-sprite": "6.1.1",
-    "@pixi/graphics": "6.1.1",
-    "@pixi/sprite": "6.1.1"
   }
 }

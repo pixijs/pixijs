@@ -31,9 +31,5 @@
     "@pixi/mesh": "6.1.1",
     "@pixi/mesh-extras": "6.1.1",
     "@pixi/settings": "6.1.1"
-  },
-  "devDependencies": {
-    "@pixi/core": "6.1.1",
-    "@pixi/sprite": "6.1.1"
   }
 }

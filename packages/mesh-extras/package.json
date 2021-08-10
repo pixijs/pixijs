@@ -30,8 +30,5 @@
     "@pixi/math": "6.1.1",
     "@pixi/mesh": "6.1.1",
     "@pixi/utils": "6.1.1"
-  },
-  "devDependencies": {
-    "@pixi/loaders": "6.1.1"
   }
 }
