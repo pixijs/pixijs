@@ -10,6 +10,11 @@ import type { IRenderableContainer, IRenderableObject } from './IRenderableObjec
 
 const tempMatrix = new Matrix();
 
+export type RendererEventEmitterTypes = {
+    prerender: [];
+    postrender: [];
+    resize: [number, number];
+};
 export interface IRendererOptions extends GlobalMixins.IRendererOptions
 {
     width?: number;
@@ -60,7 +65,7 @@ export interface IGenerateTextureOptions {
  * @extends PIXI.utils.EventEmitter
  * @memberof PIXI
  */
-export abstract class AbstractRenderer extends EventEmitter
+export abstract class AbstractRenderer extends EventEmitter<RendererEventEmitterTypes>
 {
     public resolution: number;
     public clearBeforeRender?: boolean;
