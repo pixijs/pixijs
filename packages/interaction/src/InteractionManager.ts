@@ -1,7 +1,12 @@
 import { Ticker, UPDATE_PRIORITY } from '@pixi/ticker';
 import { DisplayObject, TemporaryDisplayObject } from '@pixi/display';
 import { InteractionData, InteractivePointerEvent } from './InteractionData';
-import { InteractionEvent, InteractionCallback } from './InteractionEvent';
+import {
+    InteractionEvent,
+    InteractionCallback,
+    InteractionEventTrigger,
+    InteractionEventEmitterTypes,
+} from './InteractionEvent';
 import { InteractionTrackingData } from './InteractionTrackingData';
 import { TreeSearch } from './TreeSearch';
 import { EventEmitter } from '@pixi/utils';
@@ -39,7 +44,7 @@ export interface InteractionManagerOptions {
 
 export interface DelayedEvent {
     displayObject: DisplayObject;
-    eventString: string;
+    eventString: InteractionEventTrigger;
     eventData: InteractionEvent;
 }
 
@@ -62,7 +67,7 @@ interface CrossCSSStyleDeclaration extends CSSStyleDeclaration
  * @extends PIXI.utils.EventEmitter
  * @memberof PIXI
  */
-export class InteractionManager extends EventEmitter
+export class InteractionManager extends EventEmitter<InteractionEventEmitterTypes>
 {
     public readonly activeInteractionData: { [key: number]: InteractionData };
     public readonly supportsTouchEvents: boolean;
@@ -1166,7 +1171,11 @@ export class InteractionManager extends EventEmitter
      * @param {PIXI.InteractionEvent} eventData - the event data object
      * @private
      */
-    private dispatchEvent(displayObject: DisplayObject, eventString: string, eventData: InteractionEvent): void
+
+    private dispatchEvent(
+        displayObject: DisplayObject,
+        eventString: InteractionEventTrigger,
+        eventData: InteractionEvent): void
     {
         // Even if the event was stopped, at least dispatch any remaining events
         // for the same display object.
@@ -1193,7 +1202,12 @@ export class InteractionManager extends EventEmitter
      * @param {object} eventData - the event data object
      * @private
      */
-    private delayDispatchEvent(displayObject: DisplayObject, eventString: string, eventData: InteractionEvent): void
+
+    private delayDispatchEvent(
+        displayObject: DisplayObject,
+        eventString: InteractionEventTrigger,
+        eventData: InteractionEvent
+    ): void
     {
         this.delayedEvents.push({ displayObject, eventString, eventData });
     }
@@ -1419,17 +1433,22 @@ export class InteractionManager extends EventEmitter
             // perform hit testing for events targeting our canvas or cancel events
             this.processInteractive(interactionEvent, this.lastObjectRendered, func, cancelled || !eventAppend);
 
-            this.emit(cancelled ? 'pointercancel' : `pointerup${eventAppend}`, interactionEvent);
+            this.emit(cancelled ? 'pointercancel' : `pointerup${eventAppend}` as InteractionEventTrigger, interactionEvent);
 
             if (event.pointerType === 'mouse' || event.pointerType === 'pen')
             {
                 const isRightButton = event.button === 2;
 
-                this.emit(isRightButton ? `rightup${eventAppend}` : `mouseup${eventAppend}`, interactionEvent);
+                this.emit(
+                    (isRightButton
+                        ? `rightup${eventAppend}`
+                        : `mouseup${eventAppend}`) as InteractionEventTrigger,
+                    interactionEvent
+                );
             }
             else if (event.pointerType === 'touch')
             {
-                this.emit(cancelled ? 'touchcancel' : `touchend${eventAppend}`, interactionEvent);
+                this.emit(cancelled ? 'touchcancel' : `touchend${eventAppend}` as InteractionEventTrigger, interactionEvent);
                 this.releaseInteractionDataForPointerId(event.pointerId);
             }
         }
