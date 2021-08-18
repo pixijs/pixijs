@@ -200,7 +200,8 @@ export class AccessibilityManager
         self.document.addEventListener('mousemove', this._onMouseMove, true);
         self.removeEventListener('keydown', this._onKeyDown, false);
 
-        this.renderer.on('postrender', this.update, this);
+        // explicit cast to fix typescript 3.9.5 error - "this expression is not callable"
+        (this.renderer as AbstractRenderer).on('postrender', this.update, this);
         this.renderer.view.parentNode?.appendChild(this.div);
     }
 
@@ -222,7 +223,8 @@ export class AccessibilityManager
         self.document.removeEventListener('mousemove', this._onMouseMove, true);
         self.addEventListener('keydown', this._onKeyDown, false);
 
-        this.renderer.off('postrender', this.update);
+        // explicit cast to fix typescript 3.9.5 error - "this expression is not callable"
+        (this.renderer as AbstractRenderer).off('postrender', this.update);
         this.div.parentNode?.removeChild(this.div);
     }
 
