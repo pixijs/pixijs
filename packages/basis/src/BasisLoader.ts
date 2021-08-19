@@ -13,7 +13,7 @@ import {
 import { TranscoderWorker } from './TranscoderWorker';
 import { LoaderResource } from '@pixi/loaders';
 
-import type { ILoaderResource, IResourceMetadata } from '@pixi/loaders';
+import type { IResourceMetadata } from '@pixi/loaders';
 import type { CompressedLevelBuffer } from '@pixi/compressed-textures';
 
 type TranscodedResourcesArray = (Array<CompressedTextureResource> | Array<BufferResource>) & {
@@ -24,7 +24,7 @@ type TranscodedResourcesArray = (Array<CompressedTextureResource> | Array<Buffer
  * Result when calling registerCompressedTextures.
  * @ignore
  */
- type BasisTexturesResult = Pick<ILoaderResource, 'textures' | 'texture'>;
+ type BasisTexturesResult = Pick<LoaderResource, 'textures' | 'texture'>;
 
 LoaderResource.setExtensionXhrType('basis', LoaderResource.XHR_RESPONSE_TYPE.BUFFER);
 
@@ -75,10 +75,11 @@ export class BasisLoader
      * Transcodes the *.basis data when the data is loaded. If the transcoder is not bound yet, it
      * will hook transcoding to {@link BasisResource#onTranscoderInitialized}.
      *
-     * @param resource
-     * @param next
+     * @see PIXI.Loader.loaderMiddleware
+     * @param resource - loader resource that is checked to see if it is a basis file
+     * @param next - callback Function to call when done
      */
-    public static use(resource: ILoaderResource, next: (...args: any[]) => void): void
+    public static use(resource: LoaderResource, next: (...args: any[]) => void): void
     {
         if (resource.extension === 'basis' && resource.data)
         {
@@ -106,7 +107,7 @@ export class BasisLoader
      *
      * @private
      */
-    private static async transcode(resource: ILoaderResource, next: (...args: any[]) => void): Promise<void>
+    private static async transcode(resource: LoaderResource, next: (...args: any[]) => void): Promise<void>
     {
         try
         {
@@ -139,13 +140,17 @@ export class BasisLoader
     }
 
     /**
-     * @param {string} url
-     * @param {TranscodedResourcesArray} resources
+     * Creates textures and adds them to the texture cache
      * @private
+     * @param url - url of the texture to be used as its ID for the texture cache
+     * @param resources - the transcoded resources
+     * @param metadata - resource metadata
      */
-    private static registerTextures(url: string,
+    private static registerTextures(
+        url: string,
         resources: TranscodedResourcesArray,
-        metadata: IResourceMetadata): BasisTexturesResult
+        metadata: IResourceMetadata
+    ): BasisTexturesResult
     {
         const result: BasisTexturesResult = {
             textures: {},
@@ -500,7 +505,7 @@ export class BasisLoader
      * });
      * ```
      *
-     * @param {BasisBinding} basisLibrary - the initialized transcoder library
+     * @param basisLibrary - the initialized transcoder library
      * @private
      */
     static bindTranscoder(basisLibrary: BasisBinding): void
@@ -511,9 +516,9 @@ export class BasisLoader
     /**
      * Loads the transcoder source code for use in {@link PIXI.BasisLoader.TranscoderWorker}.
      *
-     * @param jsURL
-     * @param wasmURL
      * @private
+     * @param jsURL - URL to the javascript basis transcoder
+     * @param wasmURL - URL to the wasm basis transcoder
      */
     static loadTranscoder(jsURL: string, wasmURL: string): Promise<[void, void]>
     {
@@ -523,9 +528,9 @@ export class BasisLoader
     /**
      * Set the transcoder source code directly
      *
-     * @param jsSource
-     * @param wasmSource
      * @private
+     * @param jsSource - source for the javascript basis transcoder
+     * @param wasmSource - source for the wasm basis transcoder
      */
     static setTranscoder(jsSource: string, wasmSource: ArrayBuffer): void
     {

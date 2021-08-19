@@ -1,11 +1,8 @@
 declare namespace GlobalMixins
 {
-    // @deprecated
+    type InteractiveTarget = import('@pixi/interaction').InteractiveTarget;
     // eslint-disable-next-line @typescript-eslint/no-empty-interface
-    interface DisplayObject extends Omit<
-        Partial<import('@pixi/interaction').InteractiveTarget>,
-        'cursor' | 'interactive' | 'interactiveChildren' | 'hitArea'
-    >
+    interface DisplayObject extends InteractiveTarget
     {
 
     }

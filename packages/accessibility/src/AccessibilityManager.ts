@@ -4,8 +4,7 @@ import { accessibleTarget } from './accessibleTarget';
 
 import type { Rectangle } from '@pixi/math';
 import type { Container } from '@pixi/display';
-import type { Renderer } from '@pixi/core';
-import type { CanvasRenderer } from '@pixi/canvas-renderer';
+import type { Renderer, AbstractRenderer } from '@pixi/core';
 import type { IAccessibleHTMLElement } from './accessibleTarget';
 
 // add some extra variables to the container..
@@ -45,7 +44,7 @@ export class AccessibilityManager
      *
      * @type {PIXI.CanvasRenderer|PIXI.Renderer}
      */
-    public renderer: CanvasRenderer|Renderer;
+    public renderer: AbstractRenderer|Renderer;
 
     /** Internal variable, see isActive getter. */
     private _isActive = false;
@@ -77,7 +76,7 @@ export class AccessibilityManager
     /**
      * @param {PIXI.CanvasRenderer|PIXI.Renderer} renderer - A reference to the current renderer
      */
-    constructor(renderer: CanvasRenderer|Renderer)
+    constructor(renderer: AbstractRenderer|Renderer)
     {
         this._hookDiv = null;
 

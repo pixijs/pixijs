@@ -148,6 +148,7 @@ export class FramebufferSystem implements ISystem
                 if (fbo.dirtyFormat !== framebuffer.dirtyFormat)
                 {
                     fbo.dirtyFormat = framebuffer.dirtyFormat;
+                    fbo.dirtySize = framebuffer.dirtySize;
                     this.updateFramebuffer(framebuffer, mipLevel);
                 }
                 else if (fbo.dirtySize !== framebuffer.dirtySize)
@@ -307,20 +308,46 @@ export class FramebufferSystem implements ISystem
 
         const fbo = framebuffer.glFramebuffers[this.CONTEXT_UID];
 
+        if (fbo.msaaBuffer)
+        {
+            gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.msaaBuffer);
+            gl.renderbufferStorageMultisample(gl.RENDERBUFFER, fbo.multisample,
+                gl.RGBA8, framebuffer.width, framebuffer.height);
+        }
+
         if (fbo.stencil)
         {
             gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.stencil);
-            gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, framebuffer.width, framebuffer.height);
+
+            if (fbo.msaaBuffer)
+            {
+                gl.renderbufferStorageMultisample(gl.RENDERBUFFER, fbo.multisample,
+                    gl.DEPTH24_STENCIL8, framebuffer.width, framebuffer.height);
+            }
+            else
+            {
+                gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, framebuffer.width, framebuffer.height);
+            }
         }
 
         const colorTextures = framebuffer.colorTextures;
 
-        for (let i = 0; i < colorTextures.length; i++)
+        let count = colorTextures.length;
+
+        if (!gl.drawBuffers)
         {
-            this.renderer.texture.bind(colorTextures[i], 0);
+            count = Math.min(count, 1);
         }
 
-        if (framebuffer.depthTexture)
+        for (let i = 0; i < count; i++)
+        {
+            const texture = colorTextures[i];
+            const parentTexture = texture.parentTextureArray || texture;
+
+            this.renderer.texture.bind(parentTexture, 0);
+        }
+
+        if (framebuffer.depthTexture && this.writeDepthTexture)
         {
             this.renderer.texture.bind(framebuffer.depthTexture, 0);
         }
@@ -349,28 +376,33 @@ export class FramebufferSystem implements ISystem
             count = Math.min(count, 1);
         }
 
-        if (fbo.multisample > 1)
+        if (fbo.multisample > 1 && this.canMultisampleFramebuffer(framebuffer))
         {
-            fbo.msaaBuffer = gl.createRenderbuffer();
+            fbo.msaaBuffer = fbo.msaaBuffer || gl.createRenderbuffer();
             gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.msaaBuffer);
             gl.renderbufferStorageMultisample(gl.RENDERBUFFER, fbo.multisample,
                 gl.RGBA8, framebuffer.width, framebuffer.height);
             gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.RENDERBUFFER, fbo.msaaBuffer);
+        }
+        else if (fbo.msaaBuffer)
+        {
+            gl.deleteRenderbuffer(fbo.msaaBuffer);
+            fbo.msaaBuffer = null;
         }
 
         const activeTextures = [];
 
         for (let i = 0; i < count; i++)
         {
-            if (i === 0 && fbo.multisample > 1)
-            {
-                continue;
-            }
-
-            const texture = framebuffer.colorTextures[i];
+            const texture = colorTextures[i];
             const parentTexture = texture.parentTextureArray || texture;
 
             this.renderer.texture.bind(parentTexture, 0);
+
+            if (i === 0 && fbo.msaaBuffer)
+            {
+                continue;
+            }
 
             gl.framebufferTexture2D(gl.FRAMEBUFFER,
                 gl.COLOR_ATTACHMENT0 + i,
@@ -404,19 +436,41 @@ export class FramebufferSystem implements ISystem
             }
         }
 
-        if (!fbo.stencil && (framebuffer.stencil || framebuffer.depth))
+        if ((framebuffer.stencil || framebuffer.depth) && !(framebuffer.depthTexture && this.writeDepthTexture))
         {
-            fbo.stencil = gl.createRenderbuffer();
+            fbo.stencil = fbo.stencil || gl.createRenderbuffer();
 
             gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.stencil);
 
-            gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, framebuffer.width, framebuffer.height);
-            // TODO.. this is depth AND stencil?
-            if (!framebuffer.depthTexture)
-            { // you can't have both, so one should take priority if enabled
-                gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, fbo.stencil);
+            if (fbo.msaaBuffer)
+            {
+                gl.renderbufferStorageMultisample(gl.RENDERBUFFER, fbo.multisample,
+                    gl.DEPTH24_STENCIL8, framebuffer.width, framebuffer.height);
             }
+            else
+            {
+                gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, framebuffer.width, framebuffer.height);
+            }
+
+            gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, fbo.stencil);
         }
+        else if (fbo.stencil)
+        {
+            gl.deleteRenderbuffer(fbo.stencil);
+            fbo.stencil = null;
+        }
+    }
+
+    /**
+     * Returns true if the frame buffer can be multisampled
+     *
+     * @protected
+     * @param {PIXI.Framebuffer} framebuffer
+     */
+    protected canMultisampleFramebuffer(framebuffer: Framebuffer): boolean
+    {
+        return this.renderer.context.webGLVersion !== 1
+            && framebuffer.colorTextures.length <= 1 && !framebuffer.depthTexture;
     }
 
     /**
@@ -484,7 +538,7 @@ export class FramebufferSystem implements ISystem
         }
         if (!framebuffer)
         {
-            if (fbo.multisample <= 1)
+            if (!fbo.msaaBuffer)
             {
                 return;
             }
@@ -549,6 +603,11 @@ export class FramebufferSystem implements ISystem
         {
             gl.deleteFramebuffer(fbo.framebuffer);
 
+            if (fbo.msaaBuffer)
+            {
+                gl.deleteRenderbuffer(fbo.msaaBuffer);
+            }
+
             if (fbo.stencil)
             {
                 gl.deleteRenderbuffer(fbo.stencil);
@@ -595,7 +654,8 @@ export class FramebufferSystem implements ISystem
         {
             return;
         }
-        framebuffer.enableStencil();
+
+        framebuffer.stencil = true;
 
         const w = framebuffer.width;
         const h = framebuffer.height;
@@ -603,7 +663,15 @@ export class FramebufferSystem implements ISystem
         const stencil = gl.createRenderbuffer();
 
         gl.bindRenderbuffer(gl.RENDERBUFFER, stencil);
-        gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, w, h);
+
+        if (fbo.msaaBuffer)
+        {
+            gl.renderbufferStorageMultisample(gl.RENDERBUFFER, fbo.multisample, gl.DEPTH24_STENCIL8, w, h);
+        }
+        else
+        {
+            gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, w, h);
+        }
 
         fbo.stencil = stencil;
         gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, stencil);

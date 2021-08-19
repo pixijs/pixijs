@@ -27,27 +27,26 @@ import { PolygonUtils } from './utils/PolygonUtils';
  */
 export class CanvasGraphicsRenderer
 {
+    /** A reference to the current renderer */
     public renderer: CanvasRenderer;
-    private _svgMatrix: DOMMatrix|boolean;
-    private _tempMatrix: Matrix;
+    private _svgMatrix: DOMMatrix|boolean = null;
+    private _tempMatrix: Matrix = new Matrix();
 
     /**
-     * @param {PIXI.CanvasRenderer} renderer - The current PIXI renderer.
+     * @param renderer - A reference to the current renderer.
      */
     constructor(renderer: CanvasRenderer)
     {
         this.renderer = renderer;
-        this._svgMatrix = null;
-        this._tempMatrix = new Matrix();
     }
 
     /**
      * calculates fill/stroke style for canvas
      *
      * @private
-     * @param {PIXI.FillStyle} style
-     * @param {number} tint
-     * @returns {string|CanvasPattern}
+     * @param style - A graphics {@link PIXI.FILL_STYLE} where if `texture` is specified then a tinted CanvasPattern
+     * will be used for the fill.stroke
+     * @param tint - color to set the fill/stroke too.
      */
     private _calcCanvasStyle(style: FillStyle, tint: number): string|CanvasPattern
     {
@@ -76,7 +75,7 @@ export class CanvasGraphicsRenderer
     /**
      * Renders a Graphics object to a canvas.
      *
-     * @param {PIXI.Graphics} graphics - the actual graphics object to render
+     * @param graphics - the actual graphics object to render
      */
     public render(graphics: Graphics): void
     {
@@ -359,7 +358,7 @@ export class CanvasGraphicsRenderer
                         const radiusOffset = alignmentOffset * (lineStyle.alignment >= 1
                             ? Math.min(sWidth / width, sHeight / height) : Math.min(width / sWidth, height / sHeight));
                         let sRadius = tempShape.radius + radiusOffset;
-                        const sMaxRadius = Math.min(sWidth, sHeight) / 2 | 0;
+                        const sMaxRadius = Math.min(sWidth, sHeight) / 2;
 
                         sRadius = sRadius > sMaxRadius ? sMaxRadius : sRadius;
 
@@ -393,13 +392,13 @@ export class CanvasGraphicsRenderer
      * Paint stroke for polygon and holes
      *
      * @private
-     * @param {PIXI.Polygon} shape
-     * @param {PIXI.LineStyle} lineStyle
-     * @param {string|PIXI.CanvasPattern} contextStrokeStyle
-     * @param {GraphicsData[]} holes
-     * @param {boolean[]} holesDirection
-     * @param {number} worldAlpha
-     * @param {PIXI.CrossPlatformCanvasRenderingContext2D} context
+     * @param shape - Shape to be drawn
+     * @param lineStyle - Line style for the shape
+     * @param contextStrokeStyle - The strokeStyle for the canvas context
+     * @param holes - Holes to be added to the shape
+     * @param holesDirection -
+     * @param worldAlpha - The multiplied alpha of the displayObject
+     * @param context - The canvas context
      */
     private paintPolygonStroke(
         shape: Polygon, lineStyle: LineStyle, contextStrokeStyle: string|CanvasPattern,
@@ -466,12 +465,12 @@ export class CanvasGraphicsRenderer
      * Paint Ellipse
      *
      * @private
-     * @param {PIXI.Ellipse} shape
-     * @param {PIXI.FillStyle} fillStyle
-     * @param {PIXI.LineStyle} lineStyle
-     * @param {string|PIXI.CanvasPattern} contextFillStyle
-     * @param {number} worldAlpha
-     * @param {PIXI.CrossPlatformCanvasRenderingContext2D} context
+     * @param shape - Shape to be drawn
+     * @param fillStyle - Fill for the shape
+     * @param lineStyle - Line style for the shape
+     * @param contextFillStyle - The canvas context fill style
+     * @param worldAlpha - The multiplied alpha of the displayObject
+     * @param context - The canvas context
      */
     private paintEllipse(
         shape: Ellipse, fillStyle: FillStyle, lineStyle: LineStyle,
@@ -518,12 +517,12 @@ export class CanvasGraphicsRenderer
      * Paint Rounded Rectangle
      *
      * @private
-     * @param {PIXI.RoundedRectangle} shape
-     * @param {PIXI.FillStyle} fillStyle
-     * @param {PIXI.LineStyle} lineStyle
-     * @param {string|PIXI.CanvasPattern} contextFillStyle
-     * @param {number} worldAlpha
-     * @param {PIXI.CrossPlatformCanvasRenderingContext2D} context
+     * @param shape - Shape to be drawn
+     * @param fillStyle - Fill for the shape
+     * @param lineStyle - Line style for the shape
+     * @param contextFillStyle - The canvas context fill style
+     * @param worldAlpha - The multiplied alpha of the displayObject
+     * @param context - The canvas context
      */
     private paintRoundedRectangle(
         shape: RoundedRectangle, fillStyle: FillStyle, lineStyle: LineStyle,
@@ -537,7 +536,7 @@ export class CanvasGraphicsRenderer
         const height = shape.height;
         let radius = shape.radius;
 
-        const maxRadius = Math.min(width, height) / 2 | 0;
+        const maxRadius = Math.min(width, height) / 2;
 
         radius = radius > maxRadius ? maxRadius : radius;
 
@@ -596,10 +595,8 @@ export class CanvasGraphicsRenderer
         (this._svgMatrix as DOMMatrix).f = matrix.ty;
         pattern.setTransform((this._svgMatrix as DOMMatrix).inverse());
     }
-    /**
-     * destroy graphics object
-     *
-     */
+
+    /** destroy graphics object */
     public destroy(): void
     {
         this.renderer = null;

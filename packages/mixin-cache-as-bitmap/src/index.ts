@@ -1,11 +1,16 @@
-import { Texture, BaseTexture, RenderTexture, Renderer, MaskData } from '@pixi/core';
+import { Texture, BaseTexture, RenderTexture, Renderer, MaskData, AbstractRenderer } from '@pixi/core';
 import { Sprite } from '@pixi/sprite';
 import { Container, DisplayObject, IDestroyOptions } from '@pixi/display';
 import { IPointData, Matrix, Rectangle } from '@pixi/math';
 import { uid } from '@pixi/utils';
 import { settings } from '@pixi/settings';
 import { MSAA_QUALITY } from '@pixi/constants';
-import type { CanvasRenderer } from '@pixi/canvas-renderer';
+
+// Don't import CanvasRender to remove dependency on this optional package
+// this type should satisify these requirements for cacheAsBitmap types
+interface CanvasRenderer extends AbstractRenderer {
+    context: CanvasRenderingContext2D;
+}
 
 const _tempMatrix = new Matrix();
 
@@ -26,7 +31,7 @@ export class CacheData
 {
     public textureCacheId: string;
     public originalRender: (renderer: Renderer) => void;
-    public originalRenderCanvas: (renderer: CanvasRenderer) => void;
+    public originalRenderCanvas: (renderer: AbstractRenderer) => void;
     public originalCalculateBounds: () => void;
     public originalGetLocalBounds: (rect?: Rectangle) => Rectangle;
     public originalUpdateTransform: () => void;
@@ -89,7 +94,8 @@ Object.defineProperties(DisplayObject.prototype, {
     },
 
     /**
-     * The number of samples to use for cacheAsBitmap.
+     * The number of samples to use for cacheAsBitmap. If set to `null`, the renderer's
+     * sample count is used.
      * If `cacheAsBitmap` is set to `true`, this will re-render with the new number of samples.
      *
      * @member {number} cacheAsBitmapMultisample
@@ -278,7 +284,7 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
         width: bounds.width,
         height: bounds.height,
         resolution: this.cacheAsBitmapResolution || renderer.resolution,
-        multisample: this.cacheAsBitmapMultisample,
+        multisample: this.cacheAsBitmapMultisample ?? renderer.multisample,
     });
 
     const textureCacheId = `cacheAsBitmap_${uid()}`;
@@ -349,7 +355,7 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
  * @memberof PIXI.DisplayObject#
  * @param {PIXI.CanvasRenderer} renderer - The canvas renderer
  */
-DisplayObject.prototype._renderCachedCanvas = function _renderCachedCanvas(renderer: CanvasRenderer): void
+DisplayObject.prototype._renderCachedCanvas = function _renderCachedCanvas(renderer: AbstractRenderer): void
 {
     if (!this.visible || this.worldAlpha <= 0 || !this.renderable)
     {

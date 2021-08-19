@@ -3,8 +3,6 @@ import { INTERNAL_FORMATS, INTERNAL_FORMAT_TO_BYTES_PER_PIXEL } from '../const';
 import { LoaderResource } from '@pixi/loaders';
 import { registerCompressedTextures } from './registerCompressedTextures';
 
-import type { ILoaderResource } from '@pixi/loaders';
-
 // Set DDS files to be loaded as an ArrayBuffer
 LoaderResource.setExtensionXhrType('dds', LoaderResource.XHR_RESPONSE_TYPE.BUFFER);
 
@@ -258,7 +256,13 @@ const DXGI_TO_FORMAT: { [id: number]: number } = {
  */
 export class DDSLoader
 {
-    public static use(resource: ILoaderResource, next: (...args: any[]) => void): void
+    /**
+     * Registers a DDS compressed texture
+     * @see PIXI.Loader.loaderMiddleware
+     * @param resource - loader resource that is checked to see if it is a DDS file
+     * @param next - callback Function to call when done
+     */
+    public static use(resource: LoaderResource, next: (...args: any[]) => void): void
     {
         if (resource.extension === 'dds' && resource.data)
         {
@@ -281,10 +285,7 @@ export class DDSLoader
         next();
     }
 
-    /**
-     * Parses the DDS file header, generates base-textures, and puts them into the texture
-     * cache.
-     */
+    /** Parses the DDS file header, generates base-textures, and puts them into the texture cache. */
     private static parse(arrayBuffer: ArrayBuffer): CompressedTextureResource[]
     {
         const data = new Uint32Array(arrayBuffer);

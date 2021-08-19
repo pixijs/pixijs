@@ -4,8 +4,6 @@ import { CompressedTextureResource, CompressedLevelBuffer } from '../resources/C
 import { LoaderResource } from '@pixi/loaders';
 import { registerCompressedTextures } from './registerCompressedTextures';
 
-import type { ILoaderResource } from '@pixi/loaders';
-
 // Set KTX files to be loaded as an ArrayBuffer
 LoaderResource.setExtensionXhrType('ktx', LoaderResource.XHR_RESPONSE_TYPE.BUFFER);
 
@@ -117,10 +115,10 @@ export class KTXLoader
      * cache.
      *
      * @see PIXI.Loader.loaderMiddleware
-     * @param {PIXI.LoaderResource} resource
-     * @param {function} next
+     * @param resource - loader resource that is checked to see if it is a KTX file
+     * @param next - callback Function to call when done
      */
-    public static use(resource: ILoaderResource, next: (...args: any[]) => void): void
+    public static use(resource: LoaderResource, next: (...args: any[]) => void): void
     {
         if (resource.extension === 'ktx' && resource.data)
         {
@@ -145,10 +143,7 @@ export class KTXLoader
         next();
     }
 
-    /**
-     * Parses the KTX file header, generates base-textures, and puts them into the texture
-     * cache.
-     */
+    /** Parses the KTX file header, generates base-textures, and puts them into the texture cache. */
     private static parse(url: string, arrayBuffer: ArrayBuffer): CompressedTextureResource[] | null
     {
         const dataView = new DataView(arrayBuffer);
@@ -292,9 +287,7 @@ export class KTXLoader
         }));
     }
 
-    /**
-     * Checks whether the arrayBuffer contains a valid *.ktx file.
-     */
+    /** Checks whether the arrayBuffer contains a valid *.ktx file. */
     private static validate(url: string, dataView: DataView): boolean
     {
         // NOTE: Do not optimize this into 3 32-bit integer comparison because the endianness

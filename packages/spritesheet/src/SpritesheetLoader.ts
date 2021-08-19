@@ -1,7 +1,7 @@
 import { url } from '@pixi/utils';
 import { Spritesheet } from './Spritesheet';
 import { LoaderResource } from '@pixi/loaders';
-import type { Loader, ILoaderResource } from '@pixi/loaders';
+import type { Loader } from '@pixi/loaders';
 
 /**
  * {@link PIXI.Loader} middleware for loading texture atlases that have been created with
@@ -35,7 +35,7 @@ export class SpritesheetLoader
      * @param {PIXI.LoaderResource} resource
      * @param {function} next
      */
-    static use(resource: ILoaderResource, next: (...args: unknown[]) => void): void
+    static use(resource: LoaderResource, next: (...args: unknown[]) => void): void
     {
         // because this is middleware, it execute in loader context. `this` = loader
         const loader = (this as any) as Loader;
@@ -97,7 +97,7 @@ export class SpritesheetLoader
         const resourcePath = SpritesheetLoader.getResourcePath(resource, loader.baseUrl);
 
         // load the image for this sheet
-        loader.add(imageResourceName, resourcePath, loadOptions, function onImageLoad(res: ILoaderResource)
+        loader.add(imageResourceName, resourcePath, loadOptions, function onImageLoad(res: LoaderResource)
         {
             if (res.error)
             {
@@ -126,7 +126,7 @@ export class SpritesheetLoader
      * @param {PIXI.LoaderResource} resource - Resource to check path
      * @param {string} baseUrl - Base root url
      */
-    static getResourcePath(resource: ILoaderResource, baseUrl: string): string
+    static getResourcePath(resource: LoaderResource, baseUrl: string): string
     {
         // Prepend url path unless the resource image is a data url
         if (resource.isDataUrl)

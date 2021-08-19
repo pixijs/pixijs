@@ -2,7 +2,7 @@ import { LoaderResource } from '@pixi/loaders';
 import { autoDetectFormat } from './formats';
 import { BitmapFont } from './BitmapFont';
 
-import type { ILoaderResource, Loader } from '@pixi/loaders';
+import type { Loader } from '@pixi/loaders';
 import type { Dict } from '@pixi/utils';
 import type { Texture } from '@pixi/core';
 
@@ -31,7 +31,7 @@ export class BitmapFontLoader
      * @param {PIXI.LoaderResource} resource
      * @param {function} next
      */
-    static use(this: Loader, resource: ILoaderResource, next: (...args: any[]) => void): void
+    static use(this: Loader, resource: LoaderResource, next: (...args: any[]) => void): void
     {
         const format = autoDetectFormat(resource.data);
 
@@ -49,7 +49,7 @@ export class BitmapFontLoader
 
         // Handle completed, when the number of textures
         // load is the same number as references in the fnt file
-        const completed = (page: ILoaderResource): void =>
+        const completed = (page: LoaderResource): void =>
         {
             textures[page.metadata.pageFile] = page.texture;
 
@@ -70,7 +70,7 @@ export class BitmapFontLoader
             // using the same loader, resource will be available
             for (const name in this.resources)
             {
-                const bitmapResource: ILoaderResource = this.resources[name];
+                const bitmapResource: LoaderResource = this.resources[name];
 
                 if (bitmapResource.url === url)
                 {
@@ -115,7 +115,7 @@ export class BitmapFontLoader
      * @param {PIXI.LoaderResource} resource
      * @return {string}
      */
-    private static getBaseUrl(loader: Loader, resource: ILoaderResource): string
+    private static getBaseUrl(loader: Loader, resource: LoaderResource): string
     {
         let resUrl = !resource.isDataUrl ? BitmapFontLoader.dirname(resource.url) : '';
 

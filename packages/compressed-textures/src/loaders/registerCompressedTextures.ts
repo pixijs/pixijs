@@ -1,14 +1,14 @@
 import { MIPMAP_MODES, ALPHA_MODES } from '@pixi/constants';
 import { BaseTexture, Texture } from '@pixi/core';
 
-import type { ILoaderResource, IResourceMetadata } from '@pixi/loaders';
+import type { LoaderResource, IResourceMetadata } from '@pixi/loaders';
 import type { CompressedTextureResource } from '../resources/CompressedTextureResource';
 
 /**
  * Result when calling registerCompressedTextures.
  * @ignore
  */
-type CompressedTexturesResult = Pick<ILoaderResource, 'textures' | 'texture'>;
+type CompressedTexturesResult = Pick<LoaderResource, 'textures' | 'texture'>;
 
 /**
  * Creates base-textures and textures for each compressed-texture resource and adds them into the global

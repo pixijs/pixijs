@@ -1,4 +1,5 @@
-import { MASK_TYPES } from '@pixi/constants';
+import { MASK_TYPES, MSAA_QUALITY } from '@pixi/constants';
+import { settings } from '@pixi/settings';
 
 import type { Rectangle, Matrix } from '@pixi/math';
 import type { IFilterTarget } from '../filters/IFilterTarget';
@@ -28,6 +29,8 @@ export class MaskData
     public maskObject: IMaskTarget;
     public pooled: boolean;
     public isMaskData: true;
+    public resolution: number;
+    public multisample: MSAA_QUALITY;
     _stencilCounter: number;
     _scissorCounter: number;
     _scissorRect: Rectangle;
@@ -70,6 +73,21 @@ export class MaskData
          * @member {boolean}
          */
         this.isMaskData = true;
+
+        /**
+         * Resolution of the sprite mask filter.
+         * If set to `null` or `0`, the resolution of the current render target is used.
+         * @member {number}
+         */
+        this.resolution = null;
+
+        /**
+         * Number of samples of the sprite mask filter.
+         * If set to `null`, the sample count of the current render target is used.
+         * @member {PIXI.MSAA_QUALITY}
+         * @default {PIXI.settings.FILTER_MULTISAMPLE}
+         */
+        this.multisample = settings.FILTER_MULTISAMPLE;
 
         /**
          * Stencil counter above the mask in stack

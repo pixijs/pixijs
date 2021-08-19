@@ -1,12 +1,22 @@
 declare namespace GlobalMixins
 {
     // eslint-disable-next-line @typescript-eslint/no-empty-interface
-    interface ILoaderResource
+    interface LoaderResource
     {
-
+        /**
+         * Texture reference for loading images and other textures.
+         */
+        texture?: Texture;
     }
     // eslint-disable-next-line @typescript-eslint/no-empty-interface
     interface IResourceMetadata
+    {
+
+    }
+
+    /** @deprecated Use LoaderResource instead */
+    // eslint-disable-next-line @typescript-eslint/no-empty-interface
+    interface ILoaderResource
     {
 
     }

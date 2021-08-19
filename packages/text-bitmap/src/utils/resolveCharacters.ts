@@ -1,3 +1,5 @@
+import { splitTextToCharacters } from './splitTextToCharacters';
+
 /**
  * Processes the passed character set data and returns a flattened array of all the characters.
  *
@@ -46,7 +48,7 @@ export function resolveCharacters(chars: string | (string | string[])[]): string
         // Handle a character set string
         else
         {
-            result.push(...item.split(''));
+            result.push(...splitTextToCharacters(item));
         }
     }
 

@@ -25,9 +25,6 @@
             ],
             "pixi.js-legacy": [
                 "bundles/pixi.js-legacy/src"
-            ],
-            "mini-signals": [
-                "node_modules/resource-loader/typings/mini-signals.d.ts"
             ]
         },
         "outDir": "./out",

@@ -9,6 +9,7 @@ import type { IRenderingContext } from '../IRenderingContext';
 import type { Geometry } from './Geometry';
 import type { Shader } from '../shader/Shader';
 import type { Program } from '../shader/Program';
+import type { Buffer } from './Buffer';
 import type { Dict } from '@pixi/utils';
 
 const byteSizeMap: {[key: number]: number} = { 5126: 4, 5123: 2, 5121: 1 };
@@ -287,7 +288,7 @@ export class GeometrySystem implements ISystem
 
         if (!program.glPrograms[CONTEXT_UID])
         {
-            this.renderer.shader.generateShader(shader);
+            this.renderer.shader.generateProgram(shader);
         }
 
         this.checkCompatibility(geometry, program);

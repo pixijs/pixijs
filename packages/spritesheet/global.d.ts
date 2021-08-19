@@ -1,6 +1,6 @@
 declare namespace GlobalMixins
 {
-    interface ILoaderResource
+    interface LoaderResource
     {
         /** Reference to Spritesheet object created. */
         spritesheet?: import('@pixi/spritesheet').Spritesheet;
