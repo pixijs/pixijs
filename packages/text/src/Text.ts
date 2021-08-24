@@ -333,8 +333,16 @@ export class Text extends Sprite
         // letterSpacing of 0 means normal
         const letterSpacing = style.letterSpacing;
 
-        if (letterSpacing === 0)
+        // Checking that we can use moddern canvas2D api
+        // https://developer.chrome.com/origintrials/#/view_trial/3585991203293757441
+        const modernAPI = 'letterSpacing' in this.context;
+
+        if (letterSpacing === 0 || modernAPI)
         {
+            if (modernAPI) {
+                (<any> this.context).letterSpacing = letterSpacing;
+            }
+
             if (isStroke)
             {
                 this.context.strokeText(text, x, y);
