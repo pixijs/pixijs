@@ -18,6 +18,19 @@ const defaultDestroyOptions: IDestroyOptions = {
     baseTexture: true,
 };
 
+interface ModernContext2D extends ContextRenderingContext2D {
+   // for chrome less 94
+   textLetterSpacing?: number;
+   // for chrome greater 94
+   letterSpacing?: number;
+}
+
+// Checking that we can use moddern canvas2D api
+// https://developer.chrome.com/origintrials/#/view_trial/3585991203293757441
+// note: this is unstable API, Chrome less 94 use a `textLetterSpacing`, newest use a letterSpacing
+// eslint-disable-next-line max-len
+const supportLetterSpacing = 'letterSpacing' in CanvasRenderingContext2D.prototype || 'textLetterSpacing' in CanvasRenderingContext2D.prototype;
+
 /**
  * A Text Object will create a line or multiple lines of text.
  *
@@ -59,7 +72,7 @@ export class Text extends Sprite
     public static nextLineHeightBehavior = false;
 
     public canvas: HTMLCanvasElement;
-    public context: CanvasRenderingContext2D;
+    public context: ModernContext2D;
     public localStyleID: number;
     public dirty: boolean;
 
@@ -333,18 +346,12 @@ export class Text extends Sprite
         // letterSpacing of 0 means normal
         const letterSpacing = style.letterSpacing;
 
-        // Checking that we can use moddern canvas2D api
-        // https://developer.chrome.com/origintrials/#/view_trial/3585991203293757441
-        // note: this is unstable API, Chrome less 94 use a `textLetterSpacing`, newest use a letterSpacing
-        // eslint-disable-next-line max-len
-        const modernAPI = 'letterSpacing' in CanvasRenderingContext2D.prototype || 'textLetterSpacing' in CanvasRenderingContext2D.prototype;
-
-        if (letterSpacing === 0 || modernAPI)
+        if (letterSpacing === 0 || supportLetterSpacing)
         {
-            if (modernAPI)
+            if (supportLetterSpacing)
             {
-                (<any> this.context).letterSpacing = letterSpacing;
-                (<any> this.context).textLetterSpacing = letterSpacing;
+                this.context.letterSpacing = letterSpacing;
+                this.context.textLetterSpacing = letterSpacing;
             }
 
             if (isStroke)
