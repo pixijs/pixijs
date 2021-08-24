@@ -335,13 +335,16 @@ export class Text extends Sprite
 
         // Checking that we can use moddern canvas2D api
         // https://developer.chrome.com/origintrials/#/view_trial/3585991203293757441
-        const modernAPI = 'letterSpacing' in this.context;
+        // note: this is unstable API, Chrome less 94 use a `textLetterSpacing`, newest use a letterSpacing
+        const modernAPI = 'letterSpacing' in CanvasRenderingContext2D.prototype || 
+              'textLetterSpacing' in CanvasRenderingContext2D.prototype;
 
         if (letterSpacing === 0 || modernAPI)
         {
             if (modernAPI)
             {
                 (<any> this.context).letterSpacing = letterSpacing;
+                (<any> this.context).textLetterSpacing = letterSpacing;
             }
 
             if (isStroke)
