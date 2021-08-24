@@ -339,7 +339,8 @@ export class Text extends Sprite
 
         if (letterSpacing === 0 || modernAPI)
         {
-            if (modernAPI) {
+            if (modernAPI)
+            {
                 (<any> this.context).letterSpacing = letterSpacing;
             }
 
