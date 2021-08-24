@@ -18,7 +18,7 @@ const defaultDestroyOptions: IDestroyOptions = {
     baseTexture: true,
 };
 
-interface ModernContext2D extends ContextRenderingContext2D {
+interface ModernContext2D extends CanvasRenderingContext2D {
    // for chrome less 94
    textLetterSpacing?: number;
    // for chrome greater 94
