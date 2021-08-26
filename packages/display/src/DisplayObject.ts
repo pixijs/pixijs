@@ -222,7 +222,6 @@ export abstract class DisplayObject extends EventEmitter
     public _bounds: Bounds;
     public _localBounds: Bounds;
 
-    protected _maskRefCount: number;
     protected _zIndex: number;
     protected _enabledFilters: Filter[];
     protected _boundsID: number;
@@ -230,6 +229,7 @@ export abstract class DisplayObject extends EventEmitter
     protected _localBoundsRect: Rectangle;
     protected _destroyed: boolean;
 
+    private _maskRefCount: number;
     private tempDisplayObjectParent: TemporaryDisplayObject;
     public displayObjectUpdateTransform: () => void;
 
