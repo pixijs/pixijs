@@ -768,7 +768,7 @@ export abstract class DisplayObject extends EventEmitter
 
         this.parent = null;
         this._bounds = null;
-        this._mask = null;
+        this.mask = null;
 
         this.filters = null;
         this.filterArea = null;

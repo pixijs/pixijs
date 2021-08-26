@@ -209,6 +209,16 @@ describe('DisplayObject', function ()
                 expect(mask1.renderable).to.be.true;
                 expect(mask2.isMask).to.be.false;
                 expect(mask2.renderable).to.be.true;
+
+                container1.mask = mask1;
+
+                expect(mask1.isMask).to.be.true;
+                expect(mask1.renderable).to.be.false;
+
+                container1.destroy();
+
+                expect(mask1.isMask).to.be.false;
+                expect(mask1.renderable).to.be.true;
             }
         );
     });
