@@ -411,7 +411,7 @@ export abstract class DisplayObject extends EventEmitter
          * The number of times this object is used as a mask by another object.
          *
          * @member {number}
-         * @protected
+         * @private
          */
         this._maskRefCount = 0;
 
