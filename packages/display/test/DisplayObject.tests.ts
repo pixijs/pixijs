@@ -146,6 +146,73 @@ describe('DisplayObject', function ()
         });
     });
 
+    describe('mask', function ()
+    {
+        it('should set isMask and renderable properties correctly even if the same mask is used by multiple objects',
+            function ()
+            {
+                const mask1 = new DisplayObject();
+                const mask2 = new DisplayObject();
+                const container1 = new Container();
+                const container2 = new Container();
+
+                expect(mask1.isMask).to.be.false;
+                expect(mask1.renderable).to.be.true;
+                expect(mask2.isMask).to.be.false;
+                expect(mask2.renderable).to.be.true;
+
+                container1.mask = mask1;
+
+                expect(mask1.isMask).to.be.true;
+                expect(mask1.renderable).to.be.false;
+                expect(mask2.isMask).to.be.false;
+                expect(mask2.renderable).to.be.true;
+
+                container1.mask = mask1;
+
+                expect(mask1.isMask).to.be.true;
+                expect(mask1.renderable).to.be.false;
+                expect(mask2.isMask).to.be.false;
+                expect(mask2.renderable).to.be.true;
+
+                container2.mask = mask1;
+
+                expect(mask1.isMask).to.be.true;
+                expect(mask2.isMask).to.be.false;
+                expect(mask1.renderable).to.be.false;
+                expect(mask2.renderable).to.be.true;
+
+                container1.mask = mask2;
+
+                expect(mask1.isMask).to.be.true;
+                expect(mask1.renderable).to.be.false;
+                expect(mask2.isMask).to.be.true;
+                expect(mask2.renderable).to.be.false;
+
+                container2.mask = mask2;
+
+                expect(mask1.isMask).to.be.false;
+                expect(mask1.renderable).to.be.true;
+                expect(mask2.isMask).to.be.true;
+                expect(mask2.renderable).to.be.false;
+
+                container1.mask = null;
+
+                expect(mask1.isMask).to.be.false;
+                expect(mask1.renderable).to.be.true;
+                expect(mask2.isMask).to.be.true;
+                expect(mask2.renderable).to.be.false;
+
+                container2.mask = null;
+
+                expect(mask1.isMask).to.be.false;
+                expect(mask1.renderable).to.be.true;
+                expect(mask2.isMask).to.be.false;
+                expect(mask2.renderable).to.be.true;
+            }
+        );
+    });
+
     describe('remove', function ()
     {
         it('should trigger removed listeners', function ()
