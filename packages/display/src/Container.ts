@@ -2,6 +2,7 @@ import { settings } from '@pixi/settings';
 import { removeItems } from '@pixi/utils';
 import { DisplayObject } from './DisplayObject';
 import { Rectangle } from '@pixi/math';
+import { MASK_TYPES } from '@pixi/constants';
 
 import type { MaskData, Renderer } from '@pixi/core';
 import type { IDestroyOptions } from './DisplayObject';
@@ -607,10 +608,8 @@ export class Container extends DisplayObject
      */
     protected renderAdvanced(renderer: Renderer): void
     {
-        renderer.batch.flush();
-
         const filters = this.filters;
-        const mask = this._mask;
+        const mask = this._mask as MaskData;
 
         // push filter first as we need to ensure the stencil buffer is correct for any masking
         if (filters)
@@ -636,6 +635,14 @@ export class Container extends DisplayObject
             }
         }
 
+        const flush = (filters && this._enabledFilters && this._enabledFilters.length)
+            || (mask && (!mask.isMaskData || (/* TODO mask.enabled && */ mask.type !== MASK_TYPES.NONE)));
+
+        if (flush)
+        {
+            renderer.batch.flush();
+        }
+
         if (mask)
         {
             renderer.mask.push(this, this._mask);
@@ -650,7 +657,10 @@ export class Container extends DisplayObject
             this.children[i].render(renderer);
         }
 
-        renderer.batch.flush();
+        if (flush)
+        {
+            renderer.batch.flush();
+        }
 
         if (mask)
         {
