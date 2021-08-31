@@ -32,7 +32,6 @@
     "build:dev": "rollup -c",
     "build:types": "rimraf out && tsc && api-extractor-lerna-monorepo && rimraf out && ts-node-script ./scripts/injectGlobalMixins.ts",
     "watch": "rollup -cw",
-    "lerna": "lerna",
     "dist": "run-s lint:src types build:prod docs",
     "postdist": "copyfiles -f bundles/*/dist/browser/* dist && copyfiles -f \"packages/**/dist/browser/*\" dist/packages",
     "prerelease": "run-s clean:build test",
@@ -64,9 +63,6 @@
   },
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
-    "@lerna/batch-packages": "^3.13.0",
-    "@lerna/filter-packages": "^3.13.0",
-    "@lerna/project": "^3.13.1",
     "@microsoft/api-extractor": "^7.9.11",
     "@pixi-build-tools/api-extractor-lerna-monorepo": "^1.0.3",
     "@pixi/eslint-config": "^2.0.1",
@@ -87,7 +83,6 @@
     "floss": "^5.0.0",
     "glob": "^7.1.3",
     "lerna": "^3.13.3",
-    "minimist": "^1.2.0",
     "npm-run-all": "^4.1.5",
     "nyc": "^15.1.0",
     "pre-commit": "^1.2.2",
@@ -102,6 +97,7 @@
     "sinon-chai": "^3.3.0",
     "ts-node": "^9.0.0",
     "tsconfig-paths": "^3.10.1",
-    "typescript": "^3.9.5"
+    "typescript": "^3.9.5",
+    "workspaces-run": "^1.0.1"
   }
 }

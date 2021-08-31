@@ -4,7 +4,7 @@ import { Texture, BaseTexture } from '@pixi/core';
 import { TextStyle, TextMetrics } from '@pixi/text';
 import { autoDetectFormat } from './formats';
 import { BitmapFontData } from './BitmapFontData';
-import { resolveCharacters, drawGlyph } from './utils';
+import { resolveCharacters, drawGlyph, extractCharCode } from './utils';
 
 import type { Dict } from '@pixi/utils';
 import type { ITextStyle } from '@pixi/text';
@@ -472,7 +472,7 @@ export class BitmapFont
             drawGlyph(canvas, context, metrics, positionX, positionY, resolution, style);
 
             // Unique (numeric) ID mapping to this glyph
-            const id = metrics.text.charCodeAt(0);
+            const id = extractCharCode(metrics.text);
 
             // Create a texture holding just the glyph
             fontData.char.push({
@@ -510,8 +510,8 @@ export class BitmapFont
                 if (amount)
                 {
                     fontData.kerning.push({
-                        first: first.charCodeAt(0),
-                        second: second.charCodeAt(0),
+                        first: extractCharCode(first),
+                        second: extractCharCode(second),
                         amount,
                     });
                 }
