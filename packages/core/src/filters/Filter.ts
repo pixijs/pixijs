@@ -187,7 +187,6 @@ import type { Dict } from '@pixi/utils';
 export class Filter extends Shader
 {
     public padding: number;
-    public resolution: number;
     public multisample: MSAA_QUALITY;
     public enabled: boolean;
     public autoFit: boolean;
@@ -197,6 +196,8 @@ export class Filter extends Shader
      */
     public legacy: boolean;
     state: State;
+    
+    private _resolution: number;
     /**
      * @param {string} [vertexSrc] - The source of the vertex shader.
      * @param {string} [fragmentSrc] - The source of the fragment shader.
@@ -218,12 +219,6 @@ export class Filter extends Shader
          */
         this.padding = 0;
 
-        /**
-         * The resolution of the filter. Setting this to be lower will lower the quality but
-         * increase the performance of the filter.
-         *
-         * @member {number}
-         */
         this.resolution = settings.FILTER_RESOLUTION;
 
         /**
@@ -292,6 +287,22 @@ export class Filter extends Shader
         this.state.blendMode = value;
     }
 
+    /**
+     * The resolution of the filter. Setting this to be lower will lower the quality but
+     * increase the performance of the filter.
+     *
+     * @member {number}
+     */
+    get resolution(): number
+    {
+        return this._resolution;
+    }
+
+    set resolution(value: number)
+    {
+        this._resolution = value;
+    }
+    
     /**
      * The default vertex shader source
      *
