@@ -196,7 +196,7 @@ export class Filter extends Shader
      */
     public legacy: boolean;
     state: State;
-    
+
     private _resolution: number;
     /**
      * @param {string} [vertexSrc] - The source of the vertex shader.
@@ -302,7 +302,7 @@ export class Filter extends Shader
     {
         this._resolution = value;
     }
-    
+
     /**
      * The default vertex shader source
      *
