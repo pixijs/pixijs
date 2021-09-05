@@ -628,11 +628,6 @@ export class Container extends DisplayObject
                     this._enabledFilters.push(filters[i]);
                 }
             }
-
-            if (this._enabledFilters.length)
-            {
-                renderer.filter.push(this, this._enabledFilters);
-            }
         }
 
         const flush = (filters && this._enabledFilters && this._enabledFilters.length)
@@ -642,6 +637,11 @@ export class Container extends DisplayObject
         if (flush)
         {
             renderer.batch.flush();
+        }
+
+        if (filters && this._enabledFilters && this._enabledFilters.length)
+        {
+            renderer.filter.push(this, this._enabledFilters);
         }
 
         if (mask)
