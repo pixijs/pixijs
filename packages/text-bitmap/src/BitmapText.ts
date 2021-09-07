@@ -4,9 +4,10 @@ import { Mesh, MeshGeometry, MeshMaterial } from '@pixi/mesh';
 import { removeItems } from '@pixi/utils';
 import { BitmapFont } from './BitmapFont';
 import { splitTextToCharacters, extractCharCode } from './utils';
-
+import msdfFrag from './shader/msdf.frag';
+import msdfVert from './shader/msdf.vert';
 import type { Rectangle } from '@pixi/math';
-import { Texture } from '@pixi/core';
+import { Program, Renderer, Texture } from '@pixi/core';
 import type { IBitmapTextStyle } from './BitmapTextStyle';
 import type { TextStyleAlign } from '@pixi/text';
 import { Container } from '@pixi/display';
@@ -400,7 +401,8 @@ export class BitmapText extends Container
                 if (!pageMeshData)
                 {
                     const geometry = new MeshGeometry();
-                    const material = new MeshMaterial(Texture.EMPTY);
+                    const material = new MeshMaterial(Texture.EMPTY,
+                        { program: new Program(msdfVert, msdfFrag), uniforms: { uFWidth: 0 } });
 
                     const mesh = new Mesh(geometry, material);
 
@@ -607,6 +609,39 @@ export class BitmapText extends Container
     {
         this.validate();
         this.containerUpdateTransform();
+    }
+
+    _render(renderer: Renderer): void
+    {
+        // Update the uniform
+        // ? Should we avoid writing the uniform every frame?
+        const { distanceFieldRange, distanceFieldType, size } = BitmapFont.available[this._fontName];
+
+        if (distanceFieldType === 'none')
+        {
+            for (const mesh of this._activePagesMeshData)
+            {
+                mesh.mesh.shader.uniforms.uFWidth = 0;
+            }
+        }
+        else
+        {
+            // Inject the shader code with the correct value
+            const { a, b, c, d } = this.worldTransform;
+
+            const dx = Math.sqrt((a * a) + (b * b));
+            const dy = Math.sqrt((c * c) + (d * d));
+            const worldScale = (Math.abs(dx) + Math.abs(dy)) / 2;
+
+            const fontScale = this._fontSize / size;
+
+            for (const mesh of this._activePagesMeshData)
+            {
+                mesh.mesh.shader.uniforms.uFWidth = worldScale * distanceFieldRange * fontScale;
+            }
+        }
+
+        super._render(renderer);
     }
 
     /**

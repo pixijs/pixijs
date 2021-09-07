@@ -25,6 +25,7 @@
     "*.d.ts"
   ],
   "peerDependencies": {
+    "@pixi/constants": "6.1.2",
     "@pixi/core": "6.1.2",
     "@pixi/display": "6.1.2",
     "@pixi/loaders": "6.1.2",

@@ -108,6 +108,7 @@ export class BitmapFont
     public readonly chars: Dict<IBitmapFontCharacter>;
     public readonly pageTextures: Dict<Texture>;
     public readonly distanceFieldRange: number;
+    public readonly distanceFieldType: string;
     private _ownsTextures: boolean;
 
     /**
@@ -228,7 +229,8 @@ export class BitmapFont
         }
 
         // Store distance field information
-        this.distanceFieldRange = distanceField?.distanceRange ?? -1; // ? Should we keep an extra boolean variable?
+        this.distanceFieldRange = distanceField?.distanceRange;
+        this.distanceFieldType = distanceField?.fieldType ?? 'none';
     }
 
     /**

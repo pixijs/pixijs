@@ -5,24 +5,31 @@ uniform sampler2D uSampler;
 // Tint
 uniform vec4 uColor;
 
-// fwidth equivalent smoothing factor (in our case, spread * scale)
+// on 2D applications fwidth is screenScale / glyphAtlasScale * distanceFieldRange
 uniform float uFWidth;
 
 void main(void) {
   // Outline and drop shadow can be done via shader.
   // https://github.com/libgdx/libgdx/wiki/Distance-field-fonts
 
-  float smoothing = 0.25 / uFWidth;
+  vec4 texColor = texture2D(uSampler, vTextureCoord);
 
-  vec4 fontColor = texture2D(uSampler, vTextureCoord);
+  if (uFWidth > 0.0) {
 
-  // MSDF
-  float median = fontColor.r + fontColor.g + fontColor.b -
-                 min(fontColor.r, min(fontColor.g, fontColor.b)) -
-                 max(fontColor.r, max(fontColor.g, fontColor.b));
-  // SDF
-  median = min(median, fontColor.a);
+    // To stack MSDF and SDF we need a non-pre-multiplied-alpha texture.
 
-  float alpha = smoothstep(0.5 - smoothing, 0.5 + smoothing, median);
-  gl_FragColor = vec4(uColor * alpha);
+    // MSDF
+    float median = texColor.r + texColor.g + texColor.b -
+                   min(texColor.r, min(texColor.g, texColor.b)) -
+                   max(texColor.r, max(texColor.g, texColor.b));
+    // SDF
+    median = min(median, texColor.a);
+
+    float screenPxDistance = uFWidth * (median - 0.5);
+    float alpha = clamp(screenPxDistance + 0.5, 0.0, 1.0);
+
+    gl_FragColor = vec4(uColor * alpha);
+  } else {
+    gl_FragColor = texColor * uColor;
+  }
 }
