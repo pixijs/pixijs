@@ -107,6 +107,7 @@ export class BitmapFont
     public readonly lineHeight: number;
     public readonly chars: Dict<IBitmapFontCharacter>;
     public readonly pageTextures: Dict<Texture>;
+    public readonly distanceFieldRange: number;
     private _ownsTextures: boolean;
 
     /**
@@ -120,6 +121,7 @@ export class BitmapFont
         const [info] = data.info;
         const [common] = data.common;
         const [page] = data.page;
+        const [distanceField] = data.distanceField;
         const res = getResolutionOfUrl(page.file);
         const pageTextures: Dict<Texture> = {};
 
@@ -224,6 +226,9 @@ export class BitmapFont
                 this.chars[second].kerning[first] = amount;
             }
         }
+
+        // Store distance field information
+        this.distanceFieldRange = distanceField?.distanceRange ?? -1; // ? Should we keep an extra boolean variable?
     }
 
     /**
