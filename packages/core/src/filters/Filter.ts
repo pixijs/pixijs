@@ -197,7 +197,7 @@ export class Filter extends Shader
     public legacy: boolean;
     state: State;
 
-    private _resolution: number;
+    protected _resolution: number;
     /**
      * @param {string} [vertexSrc] - The source of the vertex shader.
      * @param {string} [fragmentSrc] - The source of the fragment shader.
