@@ -36,6 +36,10 @@ interface IBitmapFontRawData {
         second: string;
         amount: string;
     }[];
+    distanceField?: {
+        fieldType: string;
+        distanceRange: number;
+    }[]
 }
 
 /**
@@ -79,6 +83,7 @@ export class TextFormat
             chars: [],
             kerning: [],
             kernings: [],
+            distanceField: [],
         };
 
         for (const i in items)
