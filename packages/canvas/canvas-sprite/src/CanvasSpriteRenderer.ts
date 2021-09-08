@@ -53,6 +53,11 @@ export class CanvasSpriteRenderer
         const renderer = this.renderer;
         const context = renderer.context;
 
+        if (!texture.valid)
+        {
+            return;
+        }
+
         const width = texture._frame.width;
         const height = texture._frame.height;
 
@@ -63,11 +68,6 @@ export class CanvasSpriteRenderer
         const source = texture.baseTexture.getDrawableSource();
 
         if (texture.orig.width <= 0 || texture.orig.height <= 0 || !texture.valid || !source)
-        {
-            return;
-        }
-
-        if (!texture.valid)
         {
             return;
         }
