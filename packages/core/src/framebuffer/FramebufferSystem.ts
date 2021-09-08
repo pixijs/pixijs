@@ -482,7 +482,7 @@ export class FramebufferSystem implements ISystem
     protected detectSamples(samples: MSAA_QUALITY): MSAA_QUALITY
     {
         const { msaaSamples } = this;
-        let res = MSAA_QUALITY.NONE;
+        let res: number = MSAA_QUALITY.NONE;
 
         if (samples <= 1 || msaaSamples === null)
         {

@@ -210,7 +210,7 @@ export class Spritesheet
      * @param {Function} callback - Callback when complete returns
      *        a map of the Textures for this spritesheet.
      */
-    public parse(callback: () => void): void
+    public parse(callback: (textures?: Dict<Texture>) => void): void
     {
         this._batchIndex = 0;
         this._callback = callback;
