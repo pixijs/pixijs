@@ -14,22 +14,21 @@ void main(void) {
 
   vec4 texColor = texture2D(uSampler, vTextureCoord);
 
-  if (uFWidth > 0.0) {
 
-    // To stack MSDF and SDF we need a non-pre-multiplied-alpha texture.
 
-    // MSDF
-    float median = texColor.r + texColor.g + texColor.b -
-                   min(texColor.r, min(texColor.g, texColor.b)) -
-                   max(texColor.r, max(texColor.g, texColor.b));
-    // SDF
-    median = min(median, texColor.a);
+  // To stack MSDF and SDF we need a non-pre-multiplied-alpha texture.
 
-    float screenPxDistance = uFWidth * (median - 0.5);
-    float alpha = clamp(screenPxDistance + 0.5, 0.0, 1.0);
+  // MSDF
+  float median = texColor.r + texColor.g + texColor.b -
+                  min(texColor.r, min(texColor.g, texColor.b)) -
+                  max(texColor.r, max(texColor.g, texColor.b));
+  // SDF
+  median = min(median, texColor.a);
 
-    gl_FragColor = vec4(uColor * alpha);
-  } else {
-    gl_FragColor = texColor * uColor;
-  }
+  float screenPxDistance = uFWidth * (median - 0.5);
+  float alpha = clamp(screenPxDistance + 0.5, 0.0, 1.0);
+
+  // NPM Textures, NPM outputs
+  gl_FragColor = vec4(uColor.rgb, uColor.a * alpha);
+
 }

@@ -12,6 +12,7 @@ import type { IBitmapTextStyle } from './BitmapTextStyle';
 import type { TextStyleAlign } from '@pixi/text';
 import { Container } from '@pixi/display';
 import type { IDestroyOptions } from '@pixi/display';
+import { BLEND_MODES } from '@pixi/constants';
 
 interface PageMeshData {
     index: number;
@@ -66,6 +67,7 @@ const charRenderDataPool: CharRenderData[] = [];
  */
 export class BitmapText extends Container
 {
+    private static msdfProgram = new Program(msdfVert, msdfFrag);
     public static styleDefaults: Partial<IBitmapTextStyle> = {
         align: 'left',
         tint: 0xFFFFFF,
@@ -402,7 +404,7 @@ export class BitmapText extends Container
                 {
                     const geometry = new MeshGeometry();
                     const material = new MeshMaterial(Texture.EMPTY,
-                        { program: new Program(msdfVert, msdfFrag), uniforms: { uFWidth: 0 } });
+                        { program: BitmapText.msdfProgram, uniforms: { uFWidth: 0 } });
 
                     const mesh = new Mesh(geometry, material);
 
@@ -614,7 +616,6 @@ export class BitmapText extends Container
     _render(renderer: Renderer): void
     {
         // Update the uniform
-        // ? Should we avoid writing the uniform every frame?
         const { distanceFieldRange, distanceFieldType, size } = BitmapFont.available[this._fontName];
 
         if (distanceFieldType === 'none')
@@ -622,6 +623,8 @@ export class BitmapText extends Container
             for (const mesh of this._activePagesMeshData)
             {
                 mesh.mesh.shader.uniforms.uFWidth = 0;
+                mesh.mesh.shader.batchable = true;
+                mesh.mesh.blendMode = BLEND_MODES.NORMAL;
             }
         }
         else
@@ -638,6 +641,8 @@ export class BitmapText extends Container
             for (const mesh of this._activePagesMeshData)
             {
                 mesh.mesh.shader.uniforms.uFWidth = worldScale * distanceFieldRange * fontScale;
+                mesh.mesh.shader.batchable = false;
+                mesh.mesh.blendMode = BLEND_MODES.NORMAL_NPM;
             }
         }
 
