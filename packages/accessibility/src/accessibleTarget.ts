@@ -21,7 +21,7 @@ export interface IAccessibleTarget {
     _accessibleDiv: IAccessibleHTMLElement;
     accessibleType: string;
     accessiblePointerEvents: PointerEvents;
-    accessibleChildren: true;
+    accessibleChildren: boolean;
     renderId: number;
 }
 
