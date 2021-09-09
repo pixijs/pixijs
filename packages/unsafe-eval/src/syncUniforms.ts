@@ -46,7 +46,14 @@ const GLSL_TO_SINGLE_SETTERS = {
     uvec3(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: number[]): void { gl.uniform3ui(location, value[0], value[1], value[2]); },
     uvec4(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: number[]): void { gl.uniform4ui(location, value[0], value[1], value[2], value[3]); },
 
-    bool(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: number): void { gl.uniform1i(location, value); },
+    bool(gl: IRenderingContext, location: WebGLUniformLocation, cv: any, v: boolean): void
+    {
+        if (cv !== v)
+        {
+            cv.v = v;
+            gl.uniform1i(location, Number(v));
+        }
+    },
     bvec2(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: number[]): void { gl.uniform2i(location, value[0], value[1]); },
     bvec3(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: number[]): void { gl.uniform3i(location, value[0], value[1], value[2]); },
     bvec4(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: number[]): void { gl.uniform4i(location, value[0], value[1], value[2], value[3]); },
