@@ -51,7 +51,7 @@ export class Transform
      * the first column of the local transformation matrix without a scale.
      */
     protected _sx: number;
-    
+
     /**
      * The X-coordinate value of the normalized local Y axis,
      * the second column of the local transformation matrix without a scale.
@@ -66,7 +66,7 @@ export class Transform
 
     /** The locally unique ID of the local transform. */
     protected _localID: number;
-    
+
     /**
      * The locally unique ID of the local transform
      * used to calculate the current local transformation matrix.
