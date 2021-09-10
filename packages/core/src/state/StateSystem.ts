@@ -20,7 +20,7 @@ export class StateSystem implements ISystem
      * @readonly
      */
     public stateId: number;
-    
+
     /**
      * Polygon offset
      * @readonly
@@ -31,7 +31,7 @@ export class StateSystem implements ISystem
      * Blend mode
      * @default PIXI.BLEND_MODES.NONE
      * @readonly
-     */   
+     */
     public blendMode: BLEND_MODES;
 
     /** Whether current blend equation is different */
@@ -43,7 +43,6 @@ export class StateSystem implements ISystem
      * @readonly
      */
     protected gl: IRenderingContext;
-
 
     protected blendModes: number[][];
 
@@ -64,7 +63,7 @@ export class StateSystem implements ISystem
      * @readonly
      */
     protected defaultState: State;
- 
+
     constructor()
     {
         this.gl = null;
