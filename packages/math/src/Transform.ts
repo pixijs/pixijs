@@ -4,178 +4,103 @@ import { Matrix } from './Matrix';
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface Transform extends GlobalMixins.Transform {}
 
-/**
- * Transform that takes care about its versions
- *
- * @class
- * @memberof PIXI
- */
+/** Transform that takes care about its versions. */
 export class Transform
 {
-    /**
-     * A default (identity) transform
-     *
-     * @static
-     * @constant
-     * @member {PIXI.Transform}
-     */
+    /** A default (identity) transform. */
     public static readonly IDENTITY = new Transform();
 
+    /** The world transformation matrix. */
     public worldTransform: Matrix;
+
+    /** The local transformation matrix. */
     public localTransform: Matrix;
+
+    /** The coordinate of the object relative to the local coordinates of the parent. */
     public position: ObservablePoint;
+
+    /** The scale factor of the object. */
     public scale: ObservablePoint;
+
+    /** The pivot point of the displayObject that it rotates around. */
     public pivot: ObservablePoint;
+
+    /** The skew amount, on the x and y axis. */
     public skew: ObservablePoint;
+
+    /**
+     * The locally unique ID of the parent's world transform
+     * used to calculate the current world transformation matrix.
+     */
     public _parentID: number;
+
+    /** The locally unique ID of the world transform. */
     _worldID: number;
 
+    /** The rotation amount. */
     protected _rotation: number;
+
+    /**
+     * The X-coordinate value of the normalized local X axis,
+     * the first column of the local transformation matrix without a scale.
+     */
     protected _cx: number;
+
+    /**
+     * The Y-coordinate value of the normalized local X axis,
+     * the first column of the local transformation matrix without a scale.
+     */
     protected _sx: number;
+    
+    /**
+     * The X-coordinate value of the normalized local Y axis,
+     * the second column of the local transformation matrix without a scale.
+     */
     protected _cy: number;
+
+    /**
+     * The Y-coordinate value of the normalized local Y axis,
+     * the second column of the local transformation matrix without a scale.
+     */
     protected _sy: number;
+
+    /** The locally unique ID of the local transform. */
     protected _localID: number;
+    
+    /**
+     * The locally unique ID of the local transform
+     * used to calculate the current local transformation matrix.
+     */
     protected _currentLocalID: number;
 
     constructor()
     {
-        /**
-         * The world transformation matrix.
-         *
-         * @member {PIXI.Matrix}
-         */
         this.worldTransform = new Matrix();
-
-        /**
-         * The local transformation matrix.
-         *
-         * @member {PIXI.Matrix}
-         */
         this.localTransform = new Matrix();
-
-        /**
-         * The coordinate of the object relative to the local coordinates of the parent.
-         *
-         * @member {PIXI.ObservablePoint}
-         */
         this.position = new ObservablePoint(this.onChange, this, 0, 0);
-
-        /**
-         * The scale factor of the object.
-         *
-         * @member {PIXI.ObservablePoint}
-         */
         this.scale = new ObservablePoint(this.onChange, this, 1, 1);
-
-        /**
-         * The pivot point of the displayObject that it rotates around.
-         *
-         * @member {PIXI.ObservablePoint}
-         */
         this.pivot = new ObservablePoint(this.onChange, this, 0, 0);
-
-        /**
-         * The skew amount, on the x and y axis.
-         *
-         * @member {PIXI.ObservablePoint}
-         */
         this.skew = new ObservablePoint(this.updateSkew, this, 0, 0);
 
-        /**
-         * The rotation amount.
-         *
-         * @protected
-         * @member {number}
-         */
         this._rotation = 0;
-
-        /**
-         * The X-coordinate value of the normalized local X axis,
-         * the first column of the local transformation matrix without a scale.
-         *
-         * @protected
-         * @member {number}
-         */
         this._cx = 1;
-
-        /**
-         * The Y-coordinate value of the normalized local X axis,
-         * the first column of the local transformation matrix without a scale.
-         *
-         * @protected
-         * @member {number}
-         */
         this._sx = 0;
-
-        /**
-         * The X-coordinate value of the normalized local Y axis,
-         * the second column of the local transformation matrix without a scale.
-         *
-         * @protected
-         * @member {number}
-         */
         this._cy = 0;
-
-        /**
-         * The Y-coordinate value of the normalized local Y axis,
-         * the second column of the local transformation matrix without a scale.
-         *
-         * @protected
-         * @member {number}
-         */
         this._sy = 1;
-
-        /**
-         * The locally unique ID of the local transform.
-         *
-         * @protected
-         * @member {number}
-         */
         this._localID = 0;
-
-        /**
-         * The locally unique ID of the local transform
-         * used to calculate the current local transformation matrix.
-         *
-         * @protected
-         * @member {number}
-         */
         this._currentLocalID = 0;
 
-        /**
-         * The locally unique ID of the world transform.
-         *
-         * @protected
-         * @member {number}
-         */
         this._worldID = 0;
-
-        /**
-         * The locally unique ID of the parent's world transform
-         * used to calculate the current world transformation matrix.
-         *
-         * @protected
-         * @member {number}
-         */
         this._parentID = 0;
     }
 
-    /**
-     * Called when a value changes.
-     *
-     * @protected
-     */
+    /** Called when a value changes. */
     protected onChange(): void
     {
         this._localID++;
     }
 
-    /**
-     * Called when the skew or the rotation changes.
-     *
-     * @protected
-     */
+    /** Called when the skew or the rotation changes. */
     protected updateSkew(): void
     {
         this._cx = Math.cos(this._rotation + this.skew.y);
@@ -198,9 +123,7 @@ export class Transform
     }
     // #endif
 
-    /**
-     * Updates the local transformation matrix.
-     */
+    /** Updates the local transformation matrix. */
     updateLocalTransform(): void
     {
         const lt = this.localTransform;
@@ -225,7 +148,7 @@ export class Transform
     /**
      * Updates the local and the world transformation matrices.
      *
-     * @param {PIXI.Transform} parentTransform - The parent transform
+     * @param parentTransform - The parent transform
      */
     updateTransform(parentTransform: Transform): void
     {
@@ -270,7 +193,7 @@ export class Transform
     /**
      * Decomposes a matrix and sets the transforms properties based on it.
      *
-     * @param {PIXI.Matrix} matrix - The matrix to decompose
+     * @param matrix - The matrix to decompose
      */
     setFromMatrix(matrix: Matrix): void
     {
@@ -278,11 +201,7 @@ export class Transform
         this._localID++;
     }
 
-    /**
-     * The rotation of the object in radians.
-     *
-     * @member {number}
-     */
+    /** The rotation of the object in radians. */
     get rotation(): number
     {
         return this._rotation;
