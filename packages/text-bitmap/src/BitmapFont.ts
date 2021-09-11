@@ -8,6 +8,7 @@ import { resolveCharacters, drawGlyph, extractCharCode } from './utils';
 
 import type { Dict } from '@pixi/utils';
 import type { ITextStyle } from '@pixi/text';
+import { ALPHA_MODES } from '@pixi/constants';
 
 export interface IBitmapFontCharacter
 {
@@ -177,6 +178,12 @@ export class BitmapFont
 
             pageTextures[id] = textures instanceof Array
                 ? textures[i] : textures[file];
+
+            // only MSDF and SDF fonts need no-premultiplied-alpha
+            if (distanceField?.fieldType && distanceField.fieldType !== 'none')
+            {
+                pageTextures[id].baseTexture.alphaMode = ALPHA_MODES.NO_PREMULTIPLIED_ALPHA;
+            }
         }
 
         // parse letters

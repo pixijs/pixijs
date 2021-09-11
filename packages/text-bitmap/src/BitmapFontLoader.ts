@@ -5,7 +5,6 @@ import { BitmapFont } from './BitmapFont';
 import type { Loader } from '@pixi/loaders';
 import type { Dict } from '@pixi/utils';
 import type { Texture } from '@pixi/core';
-import { ALPHA_MODES } from '@pixi/constants';
 
 /**
  * {@link PIXI.Loader Loader} middleware for loading
@@ -53,12 +52,6 @@ export class BitmapFontLoader
         const completed = (page: LoaderResource): void =>
         {
             textures[page.metadata.pageFile] = page.texture;
-
-            // Textures for MTSDF need to be NPM
-            if (data.distanceField.length > 0)
-            {
-                page.texture.baseTexture.alphaMode = ALPHA_MODES.NO_PREMULTIPLIED_ALPHA;
-            }
 
             if (Object.keys(textures).length === data.page.length)
             {

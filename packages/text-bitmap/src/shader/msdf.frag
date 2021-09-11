@@ -9,14 +9,9 @@ uniform vec4 uColor;
 uniform float uFWidth;
 
 void main(void) {
-  // Outline and drop shadow can be done via shader.
-  // https://github.com/libgdx/libgdx/wiki/Distance-field-fonts
-
-  vec4 texColor = texture2D(uSampler, vTextureCoord);
-
-
 
   // To stack MSDF and SDF we need a non-pre-multiplied-alpha texture.
+  vec4 texColor = texture2D(uSampler, vTextureCoord);
 
   // MSDF
   float median = texColor.r + texColor.g + texColor.b -
