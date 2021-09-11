@@ -50,6 +50,9 @@ const charRenderDataPool: CharRenderData[] = [];
  * http://www.angelcode.com/products/bmfont/ for Windows or
  * http://www.bmglyph.com/ for Mac.
  *
+ * You can also use SDF and MSDF BitmapFonts for vector-like scaling appearance.
+ * Create yours using https://github.com/soimy/msdf-bmfont-xml
+ *
  * A BitmapText can only be created when the font is loaded.
  *
  * ```js
@@ -88,7 +91,7 @@ export class BitmapText extends Container
     protected _activePagesMeshData: PageMeshData[];
     protected _tint = 0xFFFFFF;
     protected _roundPixels: boolean;
-    protected _textureCache: Record<number, Texture>;
+    private _textureCache: Record<number, Texture>;
 
     /**
      * @param {string} text - A string that you would like the text to display.

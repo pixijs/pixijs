@@ -236,7 +236,21 @@ export class BitmapFont
         }
 
         // Store distance field information
+
+        /**
+         * The range of the distance field in pixels.
+         *
+         * @member {number}
+         * @readonly
+         */
         this.distanceFieldRange = distanceField?.distanceRange;
+
+        /**
+         * The kind of distance field for this font or "none".
+         *
+         * @member {string}
+         * @readonly
+         */
         this.distanceFieldType = distanceField?.fieldType ?? 'none';
     }
 
