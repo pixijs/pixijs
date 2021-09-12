@@ -89,15 +89,12 @@ export class Graphics extends Container
      *
      * @static
      * @private
-     * @member {PIXI.Point}
      */
     static _TEMP_POINT = new Point();
 
     /**
      * Represents the vertex and fragment shaders that processes the geometry and runs on the GPU.
      * Can be shared between multiple Graphics objects.
-     *
-     * @member {PIXI.Shader}
      */
     public shader: Shader = null;
 
@@ -149,7 +146,7 @@ export class Graphics extends Container
      */
     protected _matrix: Matrix = null;
 
-    /**  Current hole mode is enabled. */
+    /** Current hole mode is enabled. */
     protected _holeMode = false;
     protected _transformID: number;
     protected _tint: number;
