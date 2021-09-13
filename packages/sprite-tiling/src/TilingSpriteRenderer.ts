@@ -37,6 +37,7 @@ export class TilingSpriteRenderer extends ObjectRenderer
     {
         super(renderer);
 
+        // WebGL version is not available during initialization!
         renderer.runners.contextChange.add(this);
 
         this.quad = new QuadUv();
