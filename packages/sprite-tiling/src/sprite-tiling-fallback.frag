@@ -1,3 +1,11 @@
+#version 100
+#ifdef GL_EXT_shader_texture_lod
+    #extension GL_EXT_shader_texture_lod : enable
+#endif
+#define SHADER_NAME Tiling-Sprite-100
+
+precision lowp float;
+
 varying vec2 vTextureCoord;
 
 uniform sampler2D uSampler;
@@ -10,8 +18,14 @@ void main(void)
 {
     vec2 coord = vTextureCoord + ceil(uClampOffset - vTextureCoord);
     coord = (uMapCoord * vec3(coord, 1.0)).xy;
+    vec2 unclamped = coord;
     coord = clamp(coord, uClampFrame.xy, uClampFrame.zw);
 
-    vec4 texSample = texture2D(uSampler, coord);
+    #ifdef GL_EXT_shader_texture_lod
+        vec4 texSample = texture2DLodEXT(uSampler, coord, 0);
+    #else
+        vec4 texSample = texture2D(uSampler, coord);
+    #endif
+
     gl_FragColor = texSample * uColor;
 }

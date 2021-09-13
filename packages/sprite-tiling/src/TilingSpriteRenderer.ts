@@ -3,9 +3,11 @@ import { WRAP_MODES } from '@pixi/constants';
 import { Matrix } from '@pixi/math';
 import { premultiplyTintToRgba, correctBlendMode } from '@pixi/utils';
 
-import vertex from './tilingSprite.vert';
-import fragment from './tilingSprite.frag';
-import fragmentSimple from './tilingSprite_simple.frag';
+import fragmentSimpleSrc from './sprite-tiling-simple.frag';
+import gl1VertexSrc from './sprite-tiling-fallback.vert';
+import gl1FragmentSrc from './sprite-tiling-fallback.frag';
+import gl2VertexSrc from './sprite-tiling.vert';
+import gl2FragmentSrc from './sprite-tiling.frag';
 
 import type { Renderer } from '@pixi/core';
 import type { TilingSprite } from './TilingSprite';
@@ -35,11 +37,7 @@ export class TilingSpriteRenderer extends ObjectRenderer
     {
         super(renderer);
 
-        const uniforms = { globals: this.renderer.globalUniforms };
-
-        this.shader = Shader.from(vertex, fragment, uniforms);
-
-        this.simpleShader = Shader.from(vertex, fragmentSimple, uniforms);
+        renderer.runners.contextChange.add(this);
 
         this.quad = new QuadUv();
 
@@ -53,7 +51,19 @@ export class TilingSpriteRenderer extends ObjectRenderer
     }
 
     /**
-     *
+     * Creates shaders when context is initialized.
+     */
+    contextChange(): void {
+        const renderer = this.renderer;
+        const uniforms = { globals: renderer.globalUniforms };
+
+        this.simpleShader = Shader.from(gl1VertexSrc, fragmentSimpleSrc, uniforms);
+        this.shader = renderer.context.webGLVersion > 1
+            ? Shader.from(gl2VertexSrc, gl2FragmentSrc, uniforms)
+            : Shader.from(gl1VertexSrc, gl1FragmentSrc, uniforms);
+    }
+
+    /**
      * @param {PIXI.TilingSprite} ts - tilingSprite to be rendered
      */
     public render(ts: TilingSprite): void
