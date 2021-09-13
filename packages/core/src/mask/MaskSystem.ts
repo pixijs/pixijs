@@ -122,23 +122,33 @@ export class MaskSystem implements ISystem
         maskData.copyCountersOrReset(this.maskStack[this.maskStack.length - 1]);
         maskData._target = target;
 
-        switch (maskData.type)
+        if (maskData.type !== MASK_TYPES.SPRITE)
         {
-            case MASK_TYPES.SCISSOR:
-                this.maskStack.push(maskData);
-                this.renderer.scissor.push(maskData);
-                break;
-            case MASK_TYPES.STENCIL:
-                this.maskStack.push(maskData);
-                this.renderer.stencil.push(maskData);
-                break;
-            case MASK_TYPES.SPRITE:
-                maskData.copyCountersOrReset(null);
-                this.pushSpriteMask(maskData);
-                this.maskStack.push(maskData);
-                break;
-            default:
-                break;
+            this.maskStack.push(maskData);
+        }
+
+        if (maskData.enabled)
+        {
+            switch (maskData.type)
+            {
+                case MASK_TYPES.SCISSOR:
+                    this.renderer.scissor.push(maskData);
+                    break;
+                case MASK_TYPES.STENCIL:
+                    this.renderer.stencil.push(maskData);
+                    break;
+                case MASK_TYPES.SPRITE:
+                    maskData.copyCountersOrReset(null);
+                    this.pushSpriteMask(maskData);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        if (maskData.type === MASK_TYPES.SPRITE)
+        {
+            this.maskStack.push(maskData);
         }
     }
 
@@ -160,19 +170,22 @@ export class MaskSystem implements ISystem
             return;
         }
 
-        switch (maskData.type)
+        if (maskData.enabled)
         {
-            case MASK_TYPES.SCISSOR:
-                this.renderer.scissor.pop();
-                break;
-            case MASK_TYPES.STENCIL:
-                this.renderer.stencil.pop(maskData.maskObject);
-                break;
-            case MASK_TYPES.SPRITE:
-                this.popSpriteMask();
-                break;
-            default:
-                break;
+            switch (maskData.type)
+            {
+                case MASK_TYPES.SCISSOR:
+                    this.renderer.scissor.pop();
+                    break;
+                case MASK_TYPES.STENCIL:
+                    this.renderer.stencil.pop(maskData.maskObject);
+                    break;
+                case MASK_TYPES.SPRITE:
+                    this.popSpriteMask();
+                    break;
+                default:
+                    break;
+            }
         }
 
         maskData.reset();
