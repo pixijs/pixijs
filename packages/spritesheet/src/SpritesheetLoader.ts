@@ -82,6 +82,7 @@ export class SpritesheetLoader
                     loadType: LoaderResource.LOAD_TYPE.XHR,
                     xhrType: LoaderResource.XHR_RESPONSE_TYPE.JSON,
                     parentResource: resource,
+                    metadata: resource.metadata
                 };
 
                 loader.add(itemName, itemUrl, options);
