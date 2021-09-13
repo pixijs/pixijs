@@ -264,6 +264,24 @@ describe('SpritesheetLoader', function ()
         result = url.resolve('/some/dir/spritesheet.json', '../spritesheet-1.json');
         expect(result).to.be.equals('/some/spritesheet-1.json');
     });
+
+    it('should use metadata to load all multipack resources', function (done)
+    {
+        // clear the caches only to avoid cluttering the output
+        clearTextureCache();
+
+        const loader = new Loader();
+        const metadata = { key: 'value' };
+
+        loader.add('building1-0', path.join(__dirname, 'resources', 'building1-0.json'), { metadata });
+        loader.load((loader, resources) =>
+        {
+            expect(resources['building1-0'].metadata).to.be.equals(metadata);
+            expect(resources['building1-1'].metadata).to.be.equals(metadata);
+
+            done();
+        });
+    });
 });
 
 function createMockResource(type, data)
