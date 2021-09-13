@@ -22,7 +22,9 @@ void main(void)
     coord = clamp(coord, uClampFrame.xy, uClampFrame.zw);
 
     #ifdef GL_EXT_shader_texture_lod
-        vec4 texSample = texture2DLodEXT(uSampler, coord, 0);
+        vec4 texSample = unclamped == coord
+            ? texture2D(uSampler, coord) 
+            : texture2DLodEXT(uSampler, coord, 0);
     #else
         vec4 texSample = texture2D(uSampler, coord);
     #endif
