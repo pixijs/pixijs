@@ -53,7 +53,8 @@ export class TilingSpriteRenderer extends ObjectRenderer
     /**
      * Creates shaders when context is initialized.
      */
-    contextChange(): void {
+    contextChange(): void
+    {
         const renderer = this.renderer;
         const uniforms = { globals: renderer.globalUniforms };
 
