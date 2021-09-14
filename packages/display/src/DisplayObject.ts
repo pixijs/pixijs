@@ -229,6 +229,7 @@ export abstract class DisplayObject extends EventEmitter
     protected _localBoundsRect: Rectangle;
     protected _destroyed: boolean;
 
+    private _maskRefCount: number;
     private tempDisplayObjectParent: TemporaryDisplayObject;
     public displayObjectUpdateTransform: () => void;
 
@@ -405,6 +406,14 @@ export abstract class DisplayObject extends EventEmitter
          * @protected
          */
         this._mask = null;
+
+        /**
+         * The number of times this object is used as a mask by another object.
+         *
+         * @member {number}
+         * @private
+         */
+        this._maskRefCount = 0;
 
         /**
          * If the object has been destroyed via destroy(). If true, it should not be used.
@@ -759,7 +768,7 @@ export abstract class DisplayObject extends EventEmitter
 
         this.parent = null;
         this._bounds = null;
-        this._mask = null;
+        this.mask = null;
 
         this.filters = null;
         this.filterArea = null;
@@ -1045,12 +1054,22 @@ export abstract class DisplayObject extends EventEmitter
 
     set mask(value: Container|MaskData|null)
     {
+        if (this._mask === value)
+        {
+            return;
+        }
+
         if (this._mask)
         {
             const maskObject = ((this._mask as MaskData).maskObject || this._mask) as Container;
 
-            maskObject.renderable = true;
-            maskObject.isMask = false;
+            maskObject._maskRefCount--;
+
+            if (maskObject._maskRefCount === 0)
+            {
+                maskObject.renderable = true;
+                maskObject.isMask = false;
+            }
         }
 
         this._mask = value;
@@ -1059,8 +1078,13 @@ export abstract class DisplayObject extends EventEmitter
         {
             const maskObject = ((this._mask as MaskData).maskObject || this._mask) as Container;
 
-            maskObject.renderable = false;
-            maskObject.isMask = true;
+            if (maskObject._maskRefCount === 0)
+            {
+                maskObject.renderable = false;
+                maskObject.isMask = true;
+            }
+
+            maskObject._maskRefCount++;
         }
     }
 }
