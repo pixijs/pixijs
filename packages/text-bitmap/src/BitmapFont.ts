@@ -251,7 +251,7 @@ export class BitmapFont
          * @member {string}
          * @readonly
          */
-        this.distanceFieldType = distanceField?.fieldType ?? 'none';
+        this.distanceFieldType = distanceField?.fieldType?.toLowerCase() ?? 'none';
     }
 
     /**

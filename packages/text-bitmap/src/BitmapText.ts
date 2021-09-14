@@ -33,7 +33,9 @@ interface CharRenderData {
     prevSpaces: number;
 }
 
-const pageMeshDataPool: PageMeshData[] = [];
+// If we ever need more than two pools, please make a Dict or something better.
+const pageMeshDataDefaultPageMeshData: PageMeshData[] = [];
+const pageMeshDataMSDFPageMeshData: PageMeshData[] = [];
 const charRenderDataPool: CharRenderData[] = [];
 
 /**
@@ -50,8 +52,9 @@ const charRenderDataPool: CharRenderData[] = [];
  * http://www.angelcode.com/products/bmfont/ for Windows or
  * http://www.bmglyph.com/ for Mac.
  *
- * You can also use SDF and MSDF BitmapFonts for vector-like scaling appearance.
- * Create yours using https://github.com/soimy/msdf-bmfont-xml
+ * You can also use SDF, MSDF and MTSDF BitmapFonts for vector-like scaling appearance provided by:
+ * https://github.com/soimy/msdf-bmfont-xml for SDF and MSDF fnt files or
+ * https://github.com/Chlumsky/msdf-atlas-gen for SDF, MSDF and MTSDF json files
  *
  * A BitmapText can only be created when the font is loaded.
  *
@@ -70,7 +73,6 @@ const charRenderDataPool: CharRenderData[] = [];
  */
 export class BitmapText extends Container
 {
-    private static msdfProgram = new Program(msdfVert, msdfFrag);
     public static styleDefaults: Partial<IBitmapTextStyle> = {
         align: 'left',
         tint: 0xFFFFFF,
@@ -254,6 +256,8 @@ export class BitmapText extends Container
         const text = this._text.replace(/(?:\r\n|\r)/g, '\n') || ' ';
         const charsInput = splitTextToCharacters(text);
         const maxWidth = this._maxWidth * data.size / this._fontSize;
+        const pageMeshDataPool = data.distanceFieldType === 'none'
+            ? pageMeshDataDefaultPageMeshData : pageMeshDataMSDFPageMeshData;
 
         let prevCharCode = null;
         let lastLineWidth = 0;
@@ -406,10 +410,24 @@ export class BitmapText extends Container
                 if (!pageMeshData)
                 {
                     const geometry = new MeshGeometry();
-                    const material = new MeshMaterial(Texture.EMPTY,
-                        { program: BitmapText.msdfProgram, uniforms: { uFWidth: 0 } });
+                    let material: MeshMaterial;
+                    let meshBlendMode: BLEND_MODES;
+
+                    if (data.distanceFieldType === 'none')
+                    {
+                        material = new MeshMaterial(Texture.EMPTY);
+                        meshBlendMode = BLEND_MODES.NORMAL;
+                    }
+                    else
+                    {
+                        material = new MeshMaterial(Texture.EMPTY,
+                            { program: Program.from(msdfVert, msdfFrag), uniforms: { uFWidth: 0 } });
+                        meshBlendMode = BLEND_MODES.NORMAL_NPM;
+                    }
 
                     const mesh = new Mesh(geometry, material);
+
+                    mesh.blendMode = meshBlendMode;
 
                     pageMeshData = {
                         index: 0,
@@ -621,16 +639,7 @@ export class BitmapText extends Container
         // Update the uniform
         const { distanceFieldRange, distanceFieldType, size } = BitmapFont.available[this._fontName];
 
-        if (distanceFieldType === 'none')
-        {
-            for (const mesh of this._activePagesMeshData)
-            {
-                mesh.mesh.shader.uniforms.uFWidth = 0;
-                mesh.mesh.shader.batchable = true;
-                mesh.mesh.blendMode = BLEND_MODES.NORMAL;
-            }
-        }
-        else
+        if (distanceFieldType !== 'none')
         {
             // Inject the shader code with the correct value
             const { a, b, c, d } = this.worldTransform;
@@ -644,8 +653,6 @@ export class BitmapText extends Container
             for (const mesh of this._activePagesMeshData)
             {
                 mesh.mesh.shader.uniforms.uFWidth = worldScale * distanceFieldRange * fontScale * renderer.resolution;
-                mesh.mesh.shader.batchable = false;
-                mesh.mesh.blendMode = BLEND_MODES.NORMAL_NPM;
             }
         }
 
