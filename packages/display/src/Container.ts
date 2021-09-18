@@ -632,7 +632,7 @@ export class Container extends DisplayObject
 
         const flush = (filters && this._enabledFilters && this._enabledFilters.length)
             || (mask && (!mask.isMaskData
-                || (/* TODO mask.enabled && */ (mask.autoDetect || mask.type !== MASK_TYPES.NONE))));
+                || (mask.enabled && (mask.autoDetect || mask.type !== MASK_TYPES.NONE))));
 
         if (flush)
         {
