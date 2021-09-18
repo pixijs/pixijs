@@ -49,7 +49,12 @@ const GLSL_TO_SINGLE_SETTERS_CACHED: Dict<string> = {
     uvec3:    'gl.uniform3ui(location, v[0], v[1], v[2])',
     uvec4:    'gl.uniform4ui(location, v[0], v[1], v[2], v[3])',
 
-    bool:     'gl.uniform1i(location, v)',
+    bool: `
+    if(cv !== v)
+    {
+        cv.v = v;
+        gl.uniform1i(location, v)
+    }`,
     bvec2:    'gl.uniform2i(location, v[0], v[1])',
     bvec3:    'gl.uniform3i(location, v[0], v[1], v[2])',
     bvec4:    'gl.uniform4i(location, v[0], v[1], v[2], v[3])',
