@@ -277,7 +277,6 @@ export class Renderer extends AbstractRenderer
             projectionMatrix: new Matrix(),
         }, true);
 
-
         this.addSystem(MaskSystem, 'mask')
             .addSystem(ContextSystem, 'context')
             .addSystem(StateSystem, 'state')
