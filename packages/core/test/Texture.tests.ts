@@ -313,4 +313,17 @@ describe('Texture', function ()
         expect(() => Texture.from(id)).to.throw(`The cacheId "${id}" does not exist in TextureCache.`);
         settings.STRICT_TEXTURE_CACHE = false;
     });
+
+    describe('Texture.from', () => {
+        it('should accept & cache a BaseTexture', () => {
+            const baseTexture = new BaseTexture(null, { width: 100, height: 100 });
+            const texture1 = Texture.from(baseTexture);
+
+            expect(baseTexture.cacheId).to.not.equal(null);
+            expect(BaseTextureCache[baseTexture.cacheId]).to.equal(baseTexture);
+            expect(texture1.baseTexture).to.equal(baseTexture);
+
+            expect(Texture.from(baseTexture)).to.equal(texture1);
+        });
+    });
 });
