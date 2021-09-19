@@ -4,7 +4,7 @@ import { Rectangle } from './Rectangle';
 /**
  * The Circle object is used to help draw graphics and can also be used to specify a hit area for displayObjects.
  *
- * @namespace PIXI
+ * @memberof PIXI
  */
 export class Circle
 {
