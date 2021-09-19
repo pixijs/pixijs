@@ -20,7 +20,7 @@ import type { BLEND_MODES } from '@pixi/constants';
 
 /**
  * Interface for elements like Sprite, Mesh etc. for batching.
- * 
+ *
  * @memberof PIXI
  */
 export interface IBatchableElement {
@@ -108,11 +108,11 @@ export class AbstractBatchRenderer extends ObjectRenderer
 
     /** Total count of all indices used by the currently buffered objects. */
     protected _indexCount: number;
-    
+
     /**
      * Buffer of objects that are yet to be rendered.
      *
-     * @member {PIXI.DisplayObject[]} 
+     * @member {PIXI.DisplayObject[]}
      */
     protected _bufferedElements: Array<IBatchableElement>;
 
