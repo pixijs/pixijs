@@ -7,7 +7,7 @@ export interface Transform extends GlobalMixins.Transform {}
 /**
  * Transform that takes care about its versions.
  *
- * @namespace PIXI 
+ * @namespace PIXI
  */
 export class Transform
 {
