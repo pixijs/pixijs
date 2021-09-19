@@ -4,7 +4,7 @@ import { SHAPES } from '../const';
 /**
  * The Ellipse object is used to help draw graphics and can also be used to specify a hit area for displayObjects.
  *
- * @namespace PIXI 
+ * @namespace PIXI
  */
 export class Ellipse
 {
