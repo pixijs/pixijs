@@ -36,13 +36,13 @@ export interface Mesh extends GlobalMixins.Mesh {}
  */
 export class Mesh<T extends Shader = MeshMaterial> extends Container
 {
-    public readonly geometry: Geometry;
     public shader: T;
     public state: State;
     public drawMode: DRAW_MODES;
     public start: number;
     public size: number;
 
+    private _geometry: Geometry;
     private vertexData: Float32Array;
     private vertexDirty: number;
     private _transformID: number;
@@ -66,16 +66,7 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
     {
         super();
 
-        /**
-         * Includes vertex positions, face indices, normals, colors, UVs, and
-         * custom attributes within buffers, reducing the cost of passing all
-         * this data to the GPU. Can be shared between multiple Mesh objects.
-         * @member {PIXI.Geometry}
-         * @readonly
-         */
         this.geometry = geometry;
-
-        geometry.refCount++;
 
         /**
          * Represents the vertex and fragment shaders that processes the geometry and runs on the GPU.
@@ -158,6 +149,44 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
          * @private
          */
         this.batchUvs = null;
+    }
+
+    /**
+     * Includes vertex positions, face indices, normals, colors, UVs, and
+     * custom attributes within buffers, reducing the cost of passing all
+     * this data to the GPU. Can be shared between multiple Mesh objects.
+     * @member {PIXI.Geometry}
+     */
+    get geometry(): Geometry
+    {
+        return this._geometry;
+    }
+
+    set geometry(value: Geometry)
+    {
+        if (this._geometry === value)
+        {
+            return;
+        }
+
+        if (this._geometry)
+        {
+            this._geometry.refCount--;
+
+            if (this._geometry.refCount === 0)
+            {
+                this._geometry.dispose();
+            }
+        }
+
+        this._geometry = value;
+
+        if (this._geometry)
+        {
+            this._geometry.refCount++;
+        }
+
+        this.vertexDirty = -1;
     }
 
     /**
@@ -501,19 +530,13 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
     {
         super.destroy(options);
 
-        this.geometry.refCount--;
-        if (this.geometry.refCount === 0)
-        {
-            this.geometry.dispose();
-        }
-
         if (this._cachedTexture)
         {
             this._cachedTexture.destroy();
             this._cachedTexture = null;
         }
 
-        (this as any).geometry = null;
+        this.geometry = null;
         this.shader = null;
         this.state = null;
         this.uvs = null;
