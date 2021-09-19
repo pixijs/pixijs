@@ -314,8 +314,10 @@ describe('Texture', function ()
         settings.STRICT_TEXTURE_CACHE = false;
     });
 
-    describe('Texture.from', () => {
-        it('should accept & cache a BaseTexture', () => {
+    describe('Texture.from', () =>
+    {
+        it('should accept & cache a BaseTexture', () =>
+        {
             const baseTexture = new BaseTexture(null, { width: 100, height: 100 });
             const texture1 = Texture.from(baseTexture);
 
