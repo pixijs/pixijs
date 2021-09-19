@@ -1,7 +1,11 @@
 import { Rectangle } from './Rectangle';
 import { SHAPES } from '../const';
 
-/** The Ellipse object is used to help draw graphics and can also be used to specify a hit area for displayObjects. */
+/**
+ * The Ellipse object is used to help draw graphics and can also be used to specify a hit area for displayObjects.
+ *
+ * @namespace PIXI 
+ */
 export class Ellipse
 {
     /** @default 0 */
