@@ -14,14 +14,12 @@ import fragment from './alpha.frag';
  *
  * 2. To use clipping in display coordinates, assign a filterArea to the same container that has this filter.
  *
- * @class
- * @extends PIXI.Filter
  * @memberof PIXI.filters
  */
 export class AlphaFilter extends Filter
 {
     /**
-     * @param {number} [alpha=1] - Amount of alpha from 0 to 1, where 0 is transparent
+     * @param alpha - Amount of alpha from 0 to 1, where 0 is transparent
      */
     constructor(alpha = 1.0)
     {
@@ -33,7 +31,6 @@ export class AlphaFilter extends Filter
     /**
      * Coefficient for alpha multiplication
      *
-     * @member {number}
      * @default 1
      */
     get alpha(): number
