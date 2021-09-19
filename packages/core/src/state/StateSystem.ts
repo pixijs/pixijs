@@ -15,7 +15,7 @@ const DEPTH_MASK = 5;
 /**
  * System plugin to the renderer to manage WebGL state machines.
  *
- * @namespace PIXI
+ * @memberof PIXI
  */
 export class StateSystem implements ISystem
 {
