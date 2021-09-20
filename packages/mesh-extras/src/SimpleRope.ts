@@ -15,19 +15,16 @@ import type { IPoint } from '@pixi/math';
  * let rope = new PIXI.SimpleRope(PIXI.Texture.from("snake.png"), points);
  *  ```
  *
- * @class
- * @extends PIXI.Mesh
  * @memberof PIXI
- *
  */
 export class SimpleRope extends Mesh
 {
     public autoUpdate: boolean;
 
     /**
-     * @param {PIXI.Texture} texture - The texture to use on the rope.
-     * @param {PIXI.Point[]} points - An array of {@link PIXI.Point} objects to construct this rope.
-     * @param {number} [textureScale=0] - Optional. Positive values scale rope texture
+     * @param texture - The texture to use on the rope.
+     * @param points - An array of {@link PIXI.Point} objects to construct this rope.
+     * @param {number} textureScale - Optional. Positive values scale rope texture
      * keeping its aspect ratio. You can reduce alpha channel artifacts by providing a larger texture
      * and downsampling here. If set to zero, texture will be stretched instead.
      */
