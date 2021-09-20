@@ -89,28 +89,75 @@ export class Graphics extends Container
      *
      * @static
      * @private
-     * @member {PIXI.Point}
      */
-
     static _TEMP_POINT = new Point();
 
-    public shader: Shader;
-    public pluginName: string;
-    public currentPath: Polygon;
+    /**
+     * Represents the vertex and fragment shaders that processes the geometry and runs on the GPU.
+     * Can be shared between multiple Graphics objects.
+     */
+    public shader: Shader = null;
 
-    protected batches: Array<IGraphicsBatchElement>;
-    protected batchTint: number;
-    protected batchDirty: number;
-    protected vertexData: Float32Array;
+    /** Renderer plugin for batching */
+    public pluginName = 'batch';
 
-    protected _fillStyle: FillStyle;
-    protected _lineStyle: LineStyle;
-    protected _matrix: Matrix;
-    protected _holeMode: boolean;
+    /**
+     * Current path
+     *
+     * @member {PIXI.Polygon}
+     * @readonly
+     */
+    public currentPath: Polygon = null;
+
+    /**
+     * A collections of batches! These can be drawn by the renderer batch system.
+     *
+     * @member {PIXI.IGraphicsBatchElement[]}
+     */
+    protected batches: Array<IGraphicsBatchElement> = [];
+
+    /** Update dirty for limiting calculating tints for batches. */
+    protected batchTint = -1;
+
+    /** Update dirty for limiting calculating batches.*/
+    protected batchDirty = -1;
+
+    /** Copy of the object vertex data. */
+    protected vertexData: Float32Array = null;
+
+    /**
+     * Current fill style
+     *
+     * @member {PIXI.FillStyle}
+     */
+    protected _fillStyle: FillStyle = new FillStyle();
+
+    /**
+     * Current line style
+     *
+     * @member {PIXI.LineStyle}
+     */
+    protected _lineStyle: LineStyle = new LineStyle();
+
+    /**
+     * Current shape transform matrix.
+     *
+     * @member {PIXI.Matrix}
+     */
+    protected _matrix: Matrix = null;
+
+    /** Current hole mode is enabled. */
+    protected _holeMode = false;
     protected _transformID: number;
     protected _tint: number;
 
-    private state: State;
+    /**
+     * Represents the WebGL state the Graphics required to render, excludes shader and geometry. E.g.,
+     * blend mode, culling, depth testing, direction of rendering triangles, backface, etc.
+     *
+     * @member {PIXI.State}
+     */
+    private state: State = State.for2d();
     private _geometry: GraphicsGeometry;
 
     /**
@@ -138,63 +185,6 @@ export class Graphics extends Container
         this._geometry.refCount++;
 
         /**
-         * Represents the vertex and fragment shaders that processes the geometry and runs on the GPU.
-         * Can be shared between multiple Graphics objects.
-         *
-         * @member {PIXI.Shader}
-         */
-        this.shader = null;
-
-        /**
-         * Represents the WebGL state the Graphics required to render, excludes shader and geometry. E.g.,
-         * blend mode, culling, depth testing, direction of rendering triangles, backface, etc.
-         *
-         * @member {PIXI.State}
-         */
-        this.state = State.for2d();
-
-        /**
-         * Current fill style
-         *
-         * @member {PIXI.FillStyle}
-         * @protected
-         */
-        this._fillStyle = new FillStyle();
-
-        /**
-         * Current line style
-         *
-         * @member {PIXI.LineStyle}
-         * @protected
-         */
-        this._lineStyle = new LineStyle();
-
-        /**
-         * Current shape transform matrix.
-         *
-         * @member {PIXI.Matrix}
-         * @protected
-         */
-        this._matrix = null;
-
-        /**
-         * Current hole mode is enabled.
-         *
-         * @member {boolean}
-         * @default false
-         * @protected
-         */
-        this._holeMode = false;
-
-        /**
-         * Current path
-         *
-         * @member {PIXI.Polygon}
-         * @readonly
-         */
-        this.currentPath = null;
-
-        /**
          * When cacheAsBitmap is set to true the graphics object will be rendered as if it was a sprite.
          * This is useful if your graphics element does not change often, as it will speed up the rendering
          * of the object in exchange for taking up texture memory. It is also useful if you need the graphics
@@ -206,48 +196,6 @@ export class Graphics extends Container
          * @memberof PIXI.Graphics#
          * @default false
          */
-
-        /**
-         * A collections of batches! These can be drawn by the renderer batch system.
-         *
-         * @protected
-         * @member {object[]}
-         */
-        this.batches = [];
-
-        /**
-         * Update dirty for limiting calculating tints for batches.
-         *
-         * @protected
-         * @member {number}
-         * @default -1
-         */
-        this.batchTint = -1;
-
-        /**
-         * Update dirty for limiting calculating batches.
-         *
-         * @protected
-         * @member {number}
-         * @default -1
-         */
-        this.batchDirty = -1;
-
-        /**
-         * Copy of the object vertex data.
-         *
-         * @protected
-         * @member {Float32Array}
-         */
-        this.vertexData = null;
-
-        /**
-         * Renderer plugin for batching
-         *
-         * @member {string}
-         * @default 'batch'
-         */
-        this.pluginName = 'batch';
 
         this._transformID = -1;
 

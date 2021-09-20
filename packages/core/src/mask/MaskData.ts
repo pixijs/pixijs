@@ -32,6 +32,7 @@ export class MaskData
     public isMaskData: true;
     public resolution: number;
     public multisample: MSAA_QUALITY;
+    public enabled: boolean;
     _filters: ISpriteMaskFilter[];
     _stencilCounter: number;
     _scissorCounter: number;
@@ -91,6 +92,13 @@ export class MaskData
          * @default PIXI.settings.FILTER_MULTISAMPLE
          */
         this.multisample = settings.FILTER_MULTISAMPLE;
+
+        /**
+         * If enabled is true the mask is applied, if false it will not.
+         *
+         * @member {boolean}
+         */
+        this.enabled = true;
 
         /**
          * The sprite mask filter wrapped in an array.
