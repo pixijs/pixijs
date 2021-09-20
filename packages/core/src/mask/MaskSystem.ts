@@ -119,7 +119,9 @@ export class MaskSystem implements ISystem
             this.detect(maskData);
         }
 
-        maskData.copyCountersOrReset(this.maskStack[this.maskStack.length - 1]);
+        const maskAbove = this.maskStack.length !== 0 ? this.maskStack[this.maskStack.length - 1] : null;
+
+        maskData.copyCountersOrReset(maskAbove);
         maskData._target = target;
 
         if (maskData.type !== MASK_TYPES.SPRITE)
@@ -181,7 +183,7 @@ export class MaskSystem implements ISystem
                     this.renderer.stencil.pop(maskData.maskObject);
                     break;
                 case MASK_TYPES.SPRITE:
-                    this.popSpriteMask();
+                    this.popSpriteMask(maskData);
                     break;
                 default:
                     break;
@@ -193,6 +195,16 @@ export class MaskSystem implements ISystem
         if (maskData.pooled)
         {
             this.maskDataPool.push(maskData);
+        }
+
+        if (this.maskStack.length !== 0)
+        {
+            const maskCurrent = this.maskStack[this.maskStack.length - 1];
+
+            if (maskCurrent.type === MASK_TYPES.SPRITE && maskCurrent._filters)
+            {
+                maskCurrent._filters[0].maskSprite = maskCurrent.maskObject;
+            }
         }
     }
 
@@ -247,11 +259,16 @@ export class MaskSystem implements ISystem
     {
         const { maskObject } = maskData;
         const target = maskData._target;
-        let alphaMaskFilter = this.alphaMaskPool[this.alphaMaskIndex];
+        let alphaMaskFilter = maskData._filters;
 
         if (!alphaMaskFilter)
         {
-            alphaMaskFilter = this.alphaMaskPool[this.alphaMaskIndex] = [new SpriteMaskFilter(maskObject)];
+            alphaMaskFilter = this.alphaMaskPool[this.alphaMaskIndex];
+
+            if (!alphaMaskFilter)
+            {
+                alphaMaskFilter = this.alphaMaskPool[this.alphaMaskIndex] = [new SpriteMaskFilter()];
+            }
         }
 
         const renderer = this.renderer;
@@ -283,16 +300,30 @@ export class MaskSystem implements ISystem
         renderer.filter.push(target, alphaMaskFilter);
         target.filterArea = stashFilterArea;
 
-        this.alphaMaskIndex++;
+        if (!maskData._filters)
+        {
+            this.alphaMaskIndex++;
+        }
     }
 
     /**
      * Removes the last filter from the filter stack and doesn't return it.
+     *
+     * @param {PIXI.MaskData} maskData - Sprite to be used as the mask
      */
-    popSpriteMask(): void
+    popSpriteMask(maskData: MaskData): void
     {
         this.renderer.filter.pop();
-        this.alphaMaskIndex--;
+
+        if (maskData._filters)
+        {
+            maskData._filters[0].maskSprite = null;
+        }
+        else
+        {
+            this.alphaMaskIndex--;
+            this.alphaMaskPool[this.alphaMaskIndex][0].maskSprite = null;
+        }
     }
 
     /**

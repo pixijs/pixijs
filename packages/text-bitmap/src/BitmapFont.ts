@@ -8,6 +8,7 @@ import { resolveCharacters, drawGlyph, extractCharCode } from './utils';
 
 import type { Dict } from '@pixi/utils';
 import type { ITextStyle } from '@pixi/text';
+import { ALPHA_MODES } from '@pixi/constants';
 
 export interface IBitmapFontCharacter
 {
@@ -107,6 +108,8 @@ export class BitmapFont
     public readonly lineHeight: number;
     public readonly chars: Dict<IBitmapFontCharacter>;
     public readonly pageTextures: Dict<Texture>;
+    public readonly distanceFieldRange: number;
+    public readonly distanceFieldType: string;
     private _ownsTextures: boolean;
 
     /**
@@ -120,6 +123,7 @@ export class BitmapFont
         const [info] = data.info;
         const [common] = data.common;
         const [page] = data.page;
+        const [distanceField] = data.distanceField;
         const res = getResolutionOfUrl(page.file);
         const pageTextures: Dict<Texture> = {};
 
@@ -174,6 +178,12 @@ export class BitmapFont
 
             pageTextures[id] = textures instanceof Array
                 ? textures[i] : textures[file];
+
+            // only MSDF and SDF fonts need no-premultiplied-alpha
+            if (distanceField?.fieldType && distanceField.fieldType !== 'none')
+            {
+                pageTextures[id].baseTexture.alphaMode = ALPHA_MODES.NO_PREMULTIPLIED_ALPHA;
+            }
         }
 
         // parse letters
@@ -224,6 +234,24 @@ export class BitmapFont
                 this.chars[second].kerning[first] = amount;
             }
         }
+
+        // Store distance field information
+
+        /**
+         * The range of the distance field in pixels.
+         *
+         * @member {number}
+         * @readonly
+         */
+        this.distanceFieldRange = distanceField?.distanceRange;
+
+        /**
+         * The kind of distance field for this font or "none".
+         *
+         * @member {string}
+         * @readonly
+         */
+        this.distanceFieldType = distanceField?.fieldType?.toLowerCase() ?? 'none';
     }
 
     /**

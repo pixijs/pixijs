@@ -4,13 +4,15 @@ import { Mesh, MeshGeometry, MeshMaterial } from '@pixi/mesh';
 import { removeItems } from '@pixi/utils';
 import { BitmapFont } from './BitmapFont';
 import { splitTextToCharacters, extractCharCode } from './utils';
-
+import msdfFrag from './shader/msdf.frag';
+import msdfVert from './shader/msdf.vert';
 import type { Rectangle } from '@pixi/math';
-import { Texture } from '@pixi/core';
+import { Program, Renderer, Texture } from '@pixi/core';
 import type { IBitmapTextStyle } from './BitmapTextStyle';
 import type { TextStyleAlign } from '@pixi/text';
 import { Container } from '@pixi/display';
 import type { IDestroyOptions } from '@pixi/display';
+import { BLEND_MODES } from '@pixi/constants';
 
 interface PageMeshData {
     index: number;
@@ -31,7 +33,9 @@ interface CharRenderData {
     prevSpaces: number;
 }
 
-const pageMeshDataPool: PageMeshData[] = [];
+// If we ever need more than two pools, please make a Dict or something better.
+const pageMeshDataDefaultPageMeshData: PageMeshData[] = [];
+const pageMeshDataMSDFPageMeshData: PageMeshData[] = [];
 const charRenderDataPool: CharRenderData[] = [];
 
 /**
@@ -47,6 +51,10 @@ const charRenderDataPool: CharRenderData[] = [];
  * PixiJS can auto-generate fonts on-the-fly using BitmapFont or use fnt files provided by:
  * http://www.angelcode.com/products/bmfont/ for Windows or
  * http://www.bmglyph.com/ for Mac.
+ *
+ * You can also use SDF, MSDF and MTSDF BitmapFonts for vector-like scaling appearance provided by:
+ * https://github.com/soimy/msdf-bmfont-xml for SDF and MSDF fnt files or
+ * https://github.com/Chlumsky/msdf-atlas-gen for SDF, MSDF and MTSDF json files
  *
  * A BitmapText can only be created when the font is loaded.
  *
@@ -248,6 +256,8 @@ export class BitmapText extends Container
         const text = this._text.replace(/(?:\r\n|\r)/g, '\n') || ' ';
         const charsInput = splitTextToCharacters(text);
         const maxWidth = this._maxWidth * data.size / this._fontSize;
+        const pageMeshDataPool = data.distanceFieldType === 'none'
+            ? pageMeshDataDefaultPageMeshData : pageMeshDataMSDFPageMeshData;
 
         let prevCharCode = null;
         let lastLineWidth = 0;
@@ -400,9 +410,24 @@ export class BitmapText extends Container
                 if (!pageMeshData)
                 {
                     const geometry = new MeshGeometry();
-                    const material = new MeshMaterial(Texture.EMPTY);
+                    let material: MeshMaterial;
+                    let meshBlendMode: BLEND_MODES;
+
+                    if (data.distanceFieldType === 'none')
+                    {
+                        material = new MeshMaterial(Texture.EMPTY);
+                        meshBlendMode = BLEND_MODES.NORMAL;
+                    }
+                    else
+                    {
+                        material = new MeshMaterial(Texture.EMPTY,
+                            { program: Program.from(msdfVert, msdfFrag), uniforms: { uFWidth: 0 } });
+                        meshBlendMode = BLEND_MODES.NORMAL_NPM;
+                    }
 
                     const mesh = new Mesh(geometry, material);
+
+                    mesh.blendMode = meshBlendMode;
 
                     pageMeshData = {
                         index: 0,
@@ -607,6 +632,31 @@ export class BitmapText extends Container
     {
         this.validate();
         this.containerUpdateTransform();
+    }
+
+    _render(renderer: Renderer): void
+    {
+        // Update the uniform
+        const { distanceFieldRange, distanceFieldType, size } = BitmapFont.available[this._fontName];
+
+        if (distanceFieldType !== 'none')
+        {
+            // Inject the shader code with the correct value
+            const { a, b, c, d } = this.worldTransform;
+
+            const dx = Math.sqrt((a * a) + (b * b));
+            const dy = Math.sqrt((c * c) + (d * d));
+            const worldScale = (Math.abs(dx) + Math.abs(dy)) / 2;
+
+            const fontScale = this._fontSize / size;
+
+            for (const mesh of this._activePagesMeshData)
+            {
+                mesh.mesh.shader.uniforms.uFWidth = worldScale * distanceFieldRange * fontScale * renderer.resolution;
+            }
+        }
+
+        super._render(renderer);
     }
 
     /**

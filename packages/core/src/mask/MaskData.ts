@@ -1,5 +1,6 @@
 import { MASK_TYPES, MSAA_QUALITY } from '@pixi/constants';
 import { settings } from '@pixi/settings';
+import { ISpriteMaskFilter } from '@pixi/core';
 
 import type { Rectangle, Matrix } from '@pixi/math';
 import type { IFilterTarget } from '../filters/IFilterTarget';
@@ -32,6 +33,7 @@ export class MaskData
     public resolution: number;
     public multisample: MSAA_QUALITY;
     public enabled: boolean;
+    _filters: ISpriteMaskFilter[];
     _stencilCounter: number;
     _scissorCounter: number;
     _scissorRect: Rectangle;
@@ -79,6 +81,7 @@ export class MaskData
          * Resolution of the sprite mask filter.
          * If set to `null` or `0`, the resolution of the current render target is used.
          * @member {number}
+         * @default null
          */
         this.resolution = null;
 
@@ -86,7 +89,7 @@ export class MaskData
          * Number of samples of the sprite mask filter.
          * If set to `null`, the sample count of the current render target is used.
          * @member {PIXI.MSAA_QUALITY}
-         * @default {PIXI.settings.FILTER_MULTISAMPLE}
+         * @default PIXI.settings.FILTER_MULTISAMPLE
          */
         this.multisample = settings.FILTER_MULTISAMPLE;
 
@@ -96,6 +99,13 @@ export class MaskData
          * @member {boolean}
          */
         this.enabled = true;
+
+        /**
+         * The sprite mask filter wrapped in an array.
+         * @member {PIXI.ISpriteMaskFilter[]}
+         * @private
+         */
+        this._filters = null;
 
         /**
          * Stencil counter above the mask in stack
@@ -123,6 +133,36 @@ export class MaskData
          * @private
          */
         this._target = null;
+    }
+
+    /**
+     * The sprite mask filter.
+     * If set to `null`, the default sprite mask filter is used.
+     * @member {PIXI.ISpriteMaskFilter}
+     * @default null
+     */
+    get filter(): ISpriteMaskFilter
+    {
+        return this._filters ? this._filters[0] : null;
+    }
+
+    set filter(value: ISpriteMaskFilter)
+    {
+        if (value)
+        {
+            if (this._filters)
+            {
+                this._filters[0] = value;
+            }
+            else
+            {
+                this._filters = [value];
+            }
+        }
+        else
+        {
+            this._filters = null;
+        }
     }
 
     /**
