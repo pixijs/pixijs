@@ -40,6 +40,10 @@ describe('BitmapFontLoader', function ()
         this.fontScaledImage = null;
         this.atlasImage = null;
         this.atlasScaledImage = null;
+        this.sdfXML = null;
+        this.msdfXML = null;
+        this.sdfImage = null;
+        this.msdfImage = null;
         this.atlasJSON = require(resolveURL('atlas.json')); // eslint-disable-line global-require
         this.atlasScaledJSON = require(resolveURL('atlas@0.5x.json')); // eslint-disable-line global-require
 
@@ -71,22 +75,30 @@ describe('BitmapFontLoader', function ()
             loadTxt('font-text.fnt'),
             loadTxt('font-random-args.fnt'),
             loadXML('font@0.5x.fnt'),
+            loadXML('sdf.fnt'),
+            loadXML('msdf.fnt'),
             loadImage('bmtxt-test.png'),
             loadImage('font.png'),
             loadImage('font@0.5x.png'),
             loadImage('atlas.png'),
             loadImage('atlas@0.5x.png'),
+            loadImage('sdf.png'),
+            loadImage('msdf.png'),
         ]).then(([
             fontTXT,
             fontXML,
             fontText,
             fontRandomArgs,
             fontScaledXML,
+            sdfXML,
+            msdfXML,
             fontTXTImage,
             fontImage,
             fontScaledImage,
             atlasImage,
             atlasScaledImage,
+            sdfImage,
+            msdfImage,
         ]) =>
         {
             this.fontTXT = fontTXT;
@@ -94,11 +106,15 @@ describe('BitmapFontLoader', function ()
             this.fontText = fontText;
             this.fontRandomArgs = fontRandomArgs;
             this.fontScaledXML = fontScaledXML;
+            this.sdfXML = sdfXML;
+            this.msdfXML = msdfXML;
             this.fontTXTImage = fontTXTImage;
             this.fontImage = fontImage;
             this.fontScaledImage = fontScaledImage;
             this.atlasImage = atlasImage;
             this.atlasScaledImage = atlasScaledImage;
+            this.sdfImage = sdfImage;
+            this.msdfImage = msdfImage;
             done();
         });
     });
@@ -598,6 +614,38 @@ describe('BitmapFontLoader', function ()
         const charE = font.chars['E'.charCodeAt(0)];
 
         expect(charE).to.be.undefined;
+        done();
+    });
+
+    it('should set the texture to NPM on SDF fonts', function (done)
+    {
+        const sdfTexture = Texture.from(this.sdfImage);
+        const msdfTexture = Texture.from(this.msdfImage);
+        const regularTexture = Texture.from(this.fontImage);
+        const sdfFont = BitmapFont.install(this.sdfXML, sdfTexture);
+        const msdfFont = BitmapFont.install(this.msdfXML, msdfTexture);
+        const regularFont = BitmapFont.install(this.fontText, regularTexture);
+
+        expect(sdfFont.chars['A'.charCodeAt(0)].texture.baseTexture.alphaMode).to.equal(0);
+        expect(msdfFont.chars['A'.charCodeAt(0)].texture.baseTexture.alphaMode).to.equal(0);
+        expect(regularFont.chars['A'.charCodeAt(0)].texture.baseTexture.alphaMode).to.not.equal(0);
+
+        done();
+    });
+
+    it('should set the distanceFieldType correctly', function (done)
+    {
+        const sdfTexture = Texture.from(this.sdfImage);
+        const msdfTexture = Texture.from(this.msdfImage);
+        const regularTexture = Texture.from(this.fontImage);
+        const sdfFont = BitmapFont.install(this.sdfXML, sdfTexture);
+        const msdfFont = BitmapFont.install(this.msdfXML, msdfTexture);
+        const regularFont = BitmapFont.install(this.fontText, regularTexture);
+
+        expect(sdfFont.distanceFieldType).to.equal('sdf');
+        expect(msdfFont.distanceFieldType).to.equal('msdf');
+        expect(regularFont.distanceFieldType).to.equal('none');
+
         done();
     });
 
