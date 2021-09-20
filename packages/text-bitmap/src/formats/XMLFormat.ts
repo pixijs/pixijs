@@ -39,6 +39,7 @@ export class XMLFormat
         const page = xml.getElementsByTagName('page');
         const char = xml.getElementsByTagName('char');
         const kerning = xml.getElementsByTagName('kerning');
+        const distanceField = xml.getElementsByTagName('distanceField');
 
         for (let i = 0; i < info.length; i++)
         {
@@ -86,6 +87,14 @@ export class XMLFormat
                 first: parseInt(kerning[i].getAttribute('first'), 10),
                 second: parseInt(kerning[i].getAttribute('second'), 10),
                 amount: parseInt(kerning[i].getAttribute('amount'), 10),
+            });
+        }
+
+        for (let i = 0; i < distanceField.length; i++)
+        {
+            data.distanceField.push({
+                fieldType: distanceField[i].getAttribute('fieldType'),
+                distanceRange: parseInt(distanceField[i].getAttribute('distanceRange'), 10),
             });
         }
 

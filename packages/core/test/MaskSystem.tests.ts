@@ -1,6 +1,9 @@
-import { MASK_TYPES } from '@pixi/constants';
+import { MASK_TYPES, MSAA_QUALITY } from '@pixi/constants';
 import { Rectangle, Matrix } from '@pixi/math';
-import { Renderer, MaskData, RenderTexture, Filter, Texture } from '@pixi/core';
+import { Renderer, MaskData, RenderTexture, Filter, Texture, BaseTexture, CanvasResource,
+    SpriteMaskFilter } from '@pixi/core';
+import { Graphics } from '@pixi/graphics';
+import { Sprite } from '@pixi/sprite';
 import sinon from 'sinon';
 import { expect } from 'chai';
 
@@ -16,16 +19,66 @@ describe('MaskSystem', function ()
         };
     }
 
+    function createColorTexture(color)
+    {
+        const canvas = document.createElement('canvas');
+
+        canvas.width = 16;
+        canvas.height = 16;
+
+        const context = canvas.getContext('2d');
+
+        context.fillStyle = color;
+        context.fillRect(0, 0, 16, 16);
+
+        return new Texture(new BaseTexture(new CanvasResource(canvas)));
+    }
+
     before(function ()
     {
         this.renderer = new Renderer();
         this.renderer.mask.enableScissor = true;
+        this.textureRed = createColorTexture('#ff0000');
+        this.textureGreen = createColorTexture('#00ff00');
+        // Like SpriteMaskFilter, but with green instead of red channel
+        this.spriteMaskFilterGreen = new SpriteMaskFilter(undefined, `\
+            varying vec2 vMaskCoord;
+            varying vec2 vTextureCoord;
+
+            uniform sampler2D uSampler;
+            uniform sampler2D mask;
+            uniform float alpha;
+            uniform float npmAlpha;
+            uniform vec4 maskClamp;
+
+            void main(void)
+            {
+                float clip = step(3.5,
+                    step(maskClamp.x, vMaskCoord.x) +
+                    step(maskClamp.y, vMaskCoord.y) +
+                    step(vMaskCoord.x, maskClamp.z) +
+                    step(vMaskCoord.y, maskClamp.w));
+
+                vec4 original = texture2D(uSampler, vTextureCoord);
+                vec4 masky = texture2D(mask, vMaskCoord);
+                float alphaMul = 1.0 - npmAlpha * (1.0 - masky.a);
+
+                original *= (alphaMul * masky.g * alpha * clip);
+
+                gl_FragColor = original;
+            }`);
     });
 
     after(function ()
     {
         this.renderer.destroy();
         this.renderer = null;
+        this.textureRed.destroy(true);
+        this.textureRed = null;
+        this.textureGreen.destroy(true);
+        this.textureGreen = null;
+        this.spriteMaskFilterGreen.destroy();
+        this.spriteMaskFilterGreen = null;
     });
 
     it('should have scissor-masks enabled', function ()
@@ -188,5 +241,159 @@ describe('MaskSystem', function ()
             maskBounds.x += 1.0;
             maskBounds.y += 0.5;
         }
+    });
+
+    it('should render correctly without a custom sprite mask filter and a red texture sprite mask', function ()
+    {
+        const graphics = new Graphics().beginFill(0xffffff, 1.0).drawRect(0, 0, 1, 1).endFill();
+
+        graphics.mask = new MaskData(new Sprite(this.textureRed));
+
+        const renderTexture = this.renderer.generateTexture(graphics);
+
+        graphics.destroy(true);
+
+        this.renderer.renderTexture.bind(renderTexture);
+
+        const pixel = new Uint8Array(4);
+        const gl = this.renderer.gl;
+
+        gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixel);
+
+        renderTexture.destroy(true);
+
+        const [r, g, b, a] = pixel;
+
+        expect(r).to.equal(0xff);
+        expect(g).to.equal(0xff);
+        expect(b).to.equal(0xff);
+        expect(a).to.equal(0xff);
+    });
+
+    it('should render correctly without a custom sprite mask filter and a green texture sprite mask', function ()
+    {
+        const graphics = new Graphics().beginFill(0xffffff, 1.0).drawRect(0, 0, 1, 1).endFill();
+
+        graphics.mask = new MaskData(new Sprite(this.textureGreen));
+
+        const renderTexture = this.renderer.generateTexture(graphics);
+
+        graphics.destroy(true);
+
+        this.renderer.renderTexture.bind(renderTexture);
+
+        const pixel = new Uint8Array(4);
+        const gl = this.renderer.gl;
+
+        gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixel);
+
+        renderTexture.destroy(true);
+
+        const [r, g, b, a] = pixel;
+
+        expect(r).to.equal(0x00);
+        expect(g).to.equal(0x00);
+        expect(b).to.equal(0x00);
+        expect(a).to.equal(0x00);
+    });
+
+    it('should render correctly with acustom sprite mask filter and a red texture sprite mask', function ()
+    {
+        const graphics = new Graphics().beginFill(0xffffff, 1.0).drawRect(0, 0, 1, 1).endFill();
+
+        graphics.mask = new MaskData(new Sprite(this.textureRed));
+        graphics.mask.filter = this.spriteMaskFilterGreen;
+
+        const renderTexture = this.renderer.generateTexture(graphics);
+
+        graphics.destroy(true);
+
+        this.renderer.renderTexture.bind(renderTexture);
+
+        const pixel = new Uint8Array(4);
+        const gl = this.renderer.gl;
+
+        gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixel);
+
+        renderTexture.destroy(true);
+
+        const [r, g, b, a] = pixel;
+
+        expect(r).to.equal(0x00);
+        expect(g).to.equal(0x00);
+        expect(b).to.equal(0x00);
+        expect(a).to.equal(0x00);
+    });
+
+    it('should render correctly with a custom sprite mask filter and a green texture sprite mask', function ()
+    {
+        const graphics = new Graphics().beginFill(0xffffff, 1.0).drawRect(0, 0, 1, 1).endFill();
+
+        graphics.mask = new MaskData(new Sprite(this.textureGreen));
+        graphics.mask.filter = this.spriteMaskFilterGreen;
+
+        const renderTexture = this.renderer.generateTexture(graphics);
+
+        graphics.destroy(true);
+
+        this.renderer.renderTexture.bind(renderTexture);
+
+        const pixel = new Uint8Array(4);
+        const gl = this.renderer.gl;
+
+        gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixel);
+
+        renderTexture.destroy(true);
+
+        const [r, g, b, a] = pixel;
+
+        expect(r).to.equal(0xff);
+        expect(g).to.equal(0xff);
+        expect(b).to.equal(0xff);
+        expect(a).to.equal(0xff);
+    });
+
+    it('should restore sprite of current sprite mask filter after pop', function ()
+    {
+        const renderTexture = RenderTexture.create({ width: 1, height: 1 });
+
+        this.renderer.renderTexture.bind(renderTexture);
+
+        const graphics1 = new Graphics();
+        const graphics2 = new Graphics();
+
+        const sprite1 = new Sprite(this.textureRed);
+        const sprite2 = new Sprite(this.textureGreen);
+
+        const maskData1 = new MaskData(sprite1);
+        const maskData2 = new MaskData(sprite2);
+
+        maskData1.filter = this.spriteMaskFilterGreen;
+        maskData2.filter = this.spriteMaskFilterGreen;
+
+        expect(maskData1.filter.maskSprite).to.be.null;
+        expect(maskData2.filter.maskSprite).to.be.null;
+
+        graphics1.mask = maskData1;
+        graphics2.mask = maskData2;
+
+        this.renderer.mask.push(graphics1, maskData1);
+
+        expect(maskData1.filter.maskSprite).to.equal(sprite1);
+
+        this.renderer.mask.push(graphics2, maskData2);
+
+        expect(maskData2.filter.maskSprite).to.equal(sprite2);
+
+        this.renderer.mask.pop(graphics2);
+
+        expect(maskData1.filter.maskSprite).to.equal(sprite1);
+
+        this.renderer.mask.pop(graphics1);
+
+        expect(maskData1.filter.maskSprite).to.be.null;
+        expect(maskData2.filter.maskSprite).to.be.null;
+
+        renderTexture.destroy(true);
     });
 });

@@ -8,9 +8,9 @@ import type { AbstractRenderer, Renderer } from '@pixi/core';
  * Built-in hook to upload PIXI.Texture objects to the GPU.
  *
  * @private
- * @param {PIXI.Renderer} renderer - instance of the webgl renderer
- * @param {PIXI.BaseTexture} item - Item to check
- * @return {boolean} If item was uploaded.
+ * @param renderer - instance of the webgl renderer
+ * @param item - Item to check
+ * @return If item was uploaded.
  */
 function uploadBaseTextures(renderer: AbstractRenderer | BasePrepare, item: IDisplayObjectExtended | BaseTexture): boolean
 {
@@ -34,9 +34,9 @@ function uploadBaseTextures(renderer: AbstractRenderer | BasePrepare, item: IDis
  * Built-in hook to upload PIXI.Graphics to the GPU.
  *
  * @private
- * @param {PIXI.Renderer} renderer - instance of the webgl renderer
- * @param {PIXI.DisplayObject} item - Item to check
- * @return {boolean} If item was uploaded.
+ * @param renderer - instance of the webgl renderer
+ * @param item - Item to check
+ * @return If item was uploaded.
  */
 function uploadGraphics(renderer: AbstractRenderer | BasePrepare, item: IDisplayObjectExtended): boolean
 {
@@ -77,9 +77,9 @@ function uploadGraphics(renderer: AbstractRenderer | BasePrepare, item: IDisplay
  * Built-in hook to find graphics.
  *
  * @private
- * @param {PIXI.DisplayObject} item - Display object to check
- * @param {Array<*>} queue - Collection of items to upload
- * @return {boolean} if a PIXI.Graphics object was found.
+ * @param item - Display object to check
+ * @param queue - Collection of items to upload
+ * @return if a PIXI.Graphics object was found.
  */
 function findGraphics(item: IDisplayObjectExtended, queue: Array<any>): boolean
 {
@@ -120,8 +120,7 @@ function findGraphics(item: IDisplayObjectExtended, queue: Array<any>): boolean
  *     app.start();
  * });
  *
- * @class
- * @extends PIXI.BasePrepare
+ *
  * @memberof PIXI
  */
 export class Prepare extends BasePrepare
