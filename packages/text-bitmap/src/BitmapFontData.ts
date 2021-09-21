@@ -13,6 +13,7 @@ export class BitmapFontData
     public page: IBitmapFontDataPage[];
     public char: IBitmapFontDataChar[];
     public kerning: IBitmapFontDataKerning[];
+    public distanceField: IBitmapFontDataDistanceField[];
 
     constructor()
     {
@@ -45,6 +46,8 @@ export class BitmapFontData
          * @readOnly
          */
         this.kerning = [];
+
+        this.distanceField = [];
     }
 }
 
@@ -78,6 +81,11 @@ export interface IBitmapFontDataKerning {
     first: number;
     second: number;
     amount: number;
+}
+
+export interface IBitmapFontDataDistanceField {
+    fieldType: string;
+    distanceRange: number;
 }
 
 /**
