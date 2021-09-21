@@ -35,7 +35,7 @@ export class MaskSystem implements ISystem
     /**
      * Flag to enable scissor masking.
      *
-     * @default true 
+     * @default true
      */
     public enableScissor: boolean;
 
