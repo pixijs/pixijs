@@ -25,6 +25,8 @@ export interface IVideoResourceOptionsElement
  */
 export class VideoResource extends BaseImageResource
 {
+    /** Override the source to be the video element. */
+    public source: HTMLVideoElement;
     protected _autoUpdate: boolean;
     protected _isConnectedToTicker: boolean;
     protected _updateFPS: number;

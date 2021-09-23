@@ -372,6 +372,18 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
         {
             cacheId = source;
         }
+        else if (source instanceof BaseTexture)
+        {
+            if (!source.cacheId)
+            {
+                const prefix = (options && options.pixiIdPrefix) || 'pixiid';
+
+                source.cacheId = `${prefix}-${uid()}`;
+                BaseTexture.addToCache(source, source.cacheId);
+            }
+
+            cacheId = source.cacheId;
+        }
         else
         {
             if (!(source as any)._pixiId)
@@ -392,7 +404,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
             throw new Error(`The cacheId "${cacheId}" does not exist in TextureCache.`);
         }
 
-        if (!texture)
+        if (!texture && !(source instanceof BaseTexture))
         {
             if (!options.resolution)
             {
@@ -403,6 +415,12 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
             texture.baseTexture.cacheId = cacheId;
 
             BaseTexture.addToCache(texture.baseTexture, cacheId);
+            Texture.addToCache(texture, cacheId);
+        }
+        else if (!texture && (source instanceof BaseTexture))
+        {
+            texture = new Texture<R>(source as BaseTexture<R>);
+
             Texture.addToCache(texture, cacheId);
         }
 
