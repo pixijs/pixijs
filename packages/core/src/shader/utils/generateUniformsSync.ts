@@ -5,30 +5,32 @@ import type { Dict } from '@pixi/utils';
 
 export type UniformsSyncCallback = (...args: any[]) => void;
 
-// cv = CachedValue
-// v = value
+// cu = Cached value's uniform data field
+// cv = Cached value
+// v = value to upload
 // ud = uniformData
 // uv = uniformValue
 // l = location
 const GLSL_TO_SINGLE_SETTERS_CACHED: Dict<string> = {
 
     float: `
-    if(cv !== v)
+    if (cv !== v)
     {
-        cv.v = v;
-        gl.uniform1f(location, v)
+        cu.value = v;
+        gl.uniform1f(location, v);
     }`,
 
     vec2: `
-    if(cv[0] !== v[0] || cv[1] !== v[1])
+    if (cv[0] !== v[0] || cv[1] !== v[1])
     {
         cv[0] = v[0];
         cv[1] = v[1];
+
         gl.uniform2f(location, v[0], v[1])
     }`,
 
     vec3: `
-    if(cv[0] !== v[0] || cv[1] !== v[1] || cv[2] !== v[2])
+    if (cv[0] !== v[0] || cv[1] !== v[1] || cv[2] !== v[2])
     {
         cv[0] = v[0];
         cv[1] = v[1];
@@ -37,22 +39,120 @@ const GLSL_TO_SINGLE_SETTERS_CACHED: Dict<string> = {
         gl.uniform3f(location, v[0], v[1], v[2])
     }`,
 
-    vec4:     'gl.uniform4f(location, v[0], v[1], v[2], v[3])',
+    vec4: `
+    if (cv[0] !== v[0] || cv[1] !== v[1] || cv[2] !== v[2] || cv[3] !== v[3])
+    {
+        cv[0] = v[0];
+        cv[1] = v[1];
+        cv[2] = v[2];
+        cv[3] = v[3];
 
-    int:      'gl.uniform1i(location, v)',
-    ivec2:    'gl.uniform2i(location, v[0], v[1])',
-    ivec3:    'gl.uniform3i(location, v[0], v[1], v[2])',
-    ivec4:    'gl.uniform4i(location, v[0], v[1], v[2], v[3])',
+        gl.uniform4f(location, v[0], v[1], v[2], v[3]);
+    }`,
 
-    uint:     'gl.uniform1ui(location, v)',
-    uvec2:    'gl.uniform2ui(location, v[0], v[1])',
-    uvec3:    'gl.uniform3ui(location, v[0], v[1], v[2])',
-    uvec4:    'gl.uniform4ui(location, v[0], v[1], v[2], v[3])',
+    int: `
+    if (cv !== v)
+    {
+        cu.value = v;
 
-    bool:     'gl.uniform1i(location, v)',
-    bvec2:    'gl.uniform2i(location, v[0], v[1])',
-    bvec3:    'gl.uniform3i(location, v[0], v[1], v[2])',
-    bvec4:    'gl.uniform4i(location, v[0], v[1], v[2], v[3])',
+        gl.uniform1i(location, v);
+    }`,
+    ivec2: `
+    if (cv[0] !== v[0] || cv[1] !== v[1])
+    {
+        cv[0] = v[0];
+        cv[1] = v[1];
+
+        gl.uniform2i(location, v[0], v[1]);
+    }`,
+    ivec3: `
+    if (cv[0] !== v[0] || cv[1] !== v[1] || cv[2] !== v[2])
+    {
+        cv[0] = v[0];
+        cv[1] = v[1];
+        cv[2] = v[2];
+
+        gl.uniform3i(location, v[0], v[1], v[2]);
+    }`,
+    ivec4: `
+    if (cv[0] !== v[0] || cv[1] !== v[1] || cv[2] !== v[2] || cv[3] !== v[3])
+    {
+        cv[0] = v[0];
+        cv[1] = v[1];
+        cv[2] = v[2];
+        cv[3] = v[3];
+
+        gl.uniform4i(location, v[0], v[1], v[2], v[3]);
+    }`,
+
+    uint: `
+    if (cv !== v)
+    {
+        cu.value = v;
+
+        gl.uniform1ui(location, v);
+    }`,
+    uvec2: `
+    if (cv[0] !== v[0] || cv[1] !== v[1])
+    {
+        cv[0] = v[0];
+        cv[1] = v[1];
+
+        gl.uniform2ui(location, v[0], v[1]);
+    }`,
+    uvec3: `
+    if (cv[0] !== v[0] || cv[1] !== v[1] || cv[2] !== v[2])
+    {
+        cv[0] = v[0];
+        cv[1] = v[1];
+        cv[2] = v[2];
+
+        gl.uniform3ui(location, v[0], v[1], v[2]);
+    }`,
+    uvec4: `
+    if (cv[0] !== v[0] || cv[1] !== v[1] || cv[2] !== v[2] || cv[3] !== v[3])
+    {
+        cv[0] = v[0];
+        cv[1] = v[1];
+        cv[2] = v[2];
+        cv[3] = v[3];
+
+        gl.uniform4ui(location, v[0], v[1], v[2], v[3]);
+    }`,
+
+    bool: `
+    if (cv !== v)
+    {
+        cu.value = v;
+        gl.uniform1i(location, v);
+    }`,
+    bvec2: `
+    if (cv[0] != v[0] || cv[1] != v[1])
+    {
+        cv[0] = v[0];
+        cv[1] = v[1];
+
+        gl.uniform2i(location, v[0], v[1]);
+    }`,
+    bvec3: `
+    if (cv[0] !== v[0] || cv[1] !== v[1] || cv[2] !== v[2])
+    {
+        cv[0] = v[0];
+        cv[1] = v[1];
+        cv[2] = v[2];
+
+        gl.uniform3i(location, v[0], v[1], v[2]);
+    }`,
+    bvec4: `
+    if (cv[0] !== v[0] || cv[1] !== v[1] || cv[2] !== v[2] || cv[3] !== v[3])
+    {
+        cv[0] = v[0];
+        cv[1] = v[1];
+        cv[2] = v[2];
+        cv[3] = v[3];
+
+        gl.uniform4i(location, v[0], v[1], v[2], v[3]);
+    }`,
 
     mat2:     'gl.uniformMatrix2fv(location, false, v)',
     mat3:     'gl.uniformMatrix3fv(location, false, v)',
@@ -99,9 +199,10 @@ export function generateUniformsSync(group: UniformGroup, uniformData: Dict<any>
 {
     const funcFragments = [`
         var v = null;
-        var cv = null
+        var cv = null;
+        var cu = null;
         var t = 0;
-        var gl = renderer.gl
+        var gl = renderer.gl;
     `];
 
     for (const i in group.uniforms)
@@ -151,7 +252,8 @@ export function generateUniformsSync(group: UniformGroup, uniformData: Dict<any>
             const template =  templateType[data.type].replace('location', `ud["${i}"].location`);
 
             funcFragments.push(`
-            cv = ud["${i}"].value;
+            cu = ud["${i}"];
+            cv = cu.value;
             v = uv["${i}"];
             ${template};`);
         }

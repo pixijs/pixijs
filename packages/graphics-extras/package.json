@@ -1,6 +1,6 @@
 {
   "name": "@pixi/graphics-extras",
-  "version": "6.1.2",
+  "version": "6.1.3",
   "main": "dist/cjs/graphics-extras.js",
   "module": "dist/esm/graphics-extras.js",
   "bundle": "dist/browser/graphics-extras.js",
@@ -23,7 +23,7 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/graphics": "6.1.2",
-    "@pixi/math": "6.1.2"
+    "@pixi/graphics": "6.1.3",
+    "@pixi/math": "6.1.3"
   }
 }

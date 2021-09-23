@@ -1,11 +1,16 @@
-attribute vec2 aVertexPosition;
-attribute vec2 aTextureCoord;
+#version 300 es
+#define SHADER_NAME Tiling-Sprite-300
+
+precision lowp float;
+
+in vec2 aVertexPosition;
+in vec2 aTextureCoord;
 
 uniform mat3 projectionMatrix;
 uniform mat3 translationMatrix;
 uniform mat3 uTransform;
 
-varying vec2 vTextureCoord;
+out vec2 vTextureCoord;
 
 void main(void)
 {

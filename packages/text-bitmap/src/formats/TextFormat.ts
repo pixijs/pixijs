@@ -36,6 +36,10 @@ interface IBitmapFontRawData {
         second: string;
         amount: string;
     }[];
+    distanceField?: {
+        fieldType: string;
+        distanceRange: string;
+    }[]
 }
 
 /**
@@ -79,6 +83,7 @@ export class TextFormat
             chars: [],
             kerning: [],
             kernings: [],
+            distanceField: [],
         };
 
         for (const i in items)
@@ -146,6 +151,11 @@ export class TextFormat
             first: parseInt(kerning.first, 10),
             second: parseInt(kerning.second, 10),
             amount: parseInt(kerning.amount, 10),
+        }));
+
+        rawData.distanceField.forEach((df) => font.distanceField.push({
+            distanceRange: parseInt(df.distanceRange, 10),
+            fieldType: df.fieldType,
         }));
 
         return font;
