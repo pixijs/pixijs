@@ -15,24 +15,19 @@ import type { IDestroyOptions } from '@pixi/display';
  * let SimplePlane = new PIXI.SimplePlane(PIXI.Texture.from("snake.png"), points);
  *  ```
  *
- * @class
- * @extends PIXI.Mesh
  * @memberof PIXI
- *
  */
 export class SimplePlane extends Mesh
 {
-    /**
-     * The geometry is automatically updated when the texture size changes
-     */
+    /** The geometry is automatically updated when the texture size changes. */
     public autoResize: boolean;
 
     protected _textureID: number;
 
     /**
-     * @param {PIXI.Texture} texture - The texture to use on the SimplePlane.
-     * @param {number} verticesX - The number of vertices in the x-axis
-     * @param {number} verticesY - The number of vertices in the y-axis
+     * @param texture - The texture to use on the SimplePlane.
+     * @param verticesX - The number of vertices in the x-axis
+     * @param verticesY - The number of vertices in the y-axis
      */
     constructor(texture: Texture, verticesX: number, verticesY: number)
     {

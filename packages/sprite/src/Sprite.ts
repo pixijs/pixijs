@@ -573,11 +573,7 @@ export class Sprite extends Container
         return this._roundPixels;
     }
 
-    /**
-     * The width of the sprite, setting this will actually modify the scale to achieve the value set
-     *
-     * @member {number}
-     */
+    /** The width of the sprite, setting this will actually modify the scale to achieve the value set. */
     get width(): number
     {
         return Math.abs(this.scale.x) * this._texture.orig.width;
@@ -591,11 +587,7 @@ export class Sprite extends Container
         this._width = value;
     }
 
-    /**
-     * The height of the sprite, setting this will actually modify the scale to achieve the value set
-     *
-     * @member {number}
-     */
+    /** The height of the sprite, setting this will actually modify the scale to achieve the value set. */
     get height(): number
     {
         return Math.abs(this.scale.y) * this._texture.orig.height;
