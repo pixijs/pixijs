@@ -34,19 +34,6 @@ export function generateProgram(gl: IRenderingContext, program: Program): GLProg
     program.attributeData = getAttributeData(webGLProgram, gl);
     program.uniformData = getUniformData(webGLProgram, gl);
 
-    const keys = Object.keys(program.attributeData);
-
-    keys.sort((a, b) => (a > b) ? 1 : -1); // eslint-disable-line no-confusing-arrow
-
-    for (let i = 0; i < keys.length; i++)
-    {
-        program.attributeData[keys[i]].location = i;
-
-        gl.bindAttribLocation(webGLProgram, i, keys[i]);
-    }
-
-    gl.linkProgram(webGLProgram);
-
     gl.deleteShader(glVertShader);
     gl.deleteShader(glFragShader);
 
