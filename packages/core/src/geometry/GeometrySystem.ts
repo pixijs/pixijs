@@ -262,7 +262,7 @@ export class GeometrySystem implements ISystem
         {
             if (shaderAttributes[i])
             {
-                strings.push(i);
+                strings.push(i, shaderAttributes[i].location);
             }
         }
 
