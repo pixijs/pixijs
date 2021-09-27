@@ -25,7 +25,7 @@ export class Attribute
      * @param {Number} [size=0] - the size of the attribute. If you have 2 floats per vertex (eg position x and y) this would be 2.
      * @param {Boolean} [normalized=false] - should the data be normalized.
      * @param {PIXI.TYPES} [type=PIXI.TYPES.FLOAT] - what type of number is the attribute. Check {@link PIXI.TYPES} to see the ones available
-     * @param {Number} [stride=0] - How far apart (in floats) the start of each value is. (used for interleaving data)
+     * @param {Number} [stride=0] - How far apart the start of each value is. (used for interleaving data)
      * @param {Number} [start=0] - How far into the array to start reading values (used for interleaving data)
      */
     constructor(buffer: number, size = 0, normalized = false, type = TYPES.FLOAT, stride?: number, start?: number, instance?: boolean)
@@ -55,7 +55,7 @@ export class Attribute
      * @param {Number} [size=0] - the size of the attribute. If you have 2 floats per vertex (eg position x and y) this would be 2
      * @param {Boolean} [normalized=false] - should the data be normalized.
      * @param {PIXI.TYPES} [type=PIXI.TYPES.FLOAT] - what type of number is the attribute. Check {@link PIXI.TYPES} to see the ones available
-     * @param {Number} [stride=0] - How far apart (in floats) the start of each value is. (used for interleaving data)
+     * @param {Number} [stride=0] - How far apart the start of each value is. (used for interleaving data)
      *
      * @returns {PIXI.Attribute} A new {@link PIXI.Attribute} based on the information provided
      */
