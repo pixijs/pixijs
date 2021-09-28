@@ -102,7 +102,7 @@ export class Geometry
     * @param {Number} [size=0] - the size of the attribute. If you have 2 floats per vertex (eg position x and y) this would be 2
     * @param {Boolean} [normalized=false] - should the data be normalized.
     * @param {PIXI.TYPES} [type=PIXI.TYPES.FLOAT] - what type of number is the attribute. Check {PIXI.TYPES} to see the ones available
-    * @param {Number} [stride] - How far apart (in floats) the start of each value is. (used for interleaving data)
+    * @param {Number} [stride] - How far apart, in bytes, the start of each value is. (used for interleaving data)
     * @param {Number} [start] - How far into the array to start reading values (used for interleaving data)
     * @param {boolean} [instance=false] - Instancing flag
     *
