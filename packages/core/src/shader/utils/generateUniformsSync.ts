@@ -211,7 +211,7 @@ export function generateUniformsSync(group: UniformGroup, uniformData: Dict<any>
 
         if (!data)
         {
-            if (group.uniforms[i].group)
+            if (group.uniforms[i]?.group)
             {
                 if (group.uniforms[i].ubo)
                 {
