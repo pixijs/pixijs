@@ -34,6 +34,25 @@ export function generateProgram(gl: IRenderingContext, program: Program): GLProg
     program.attributeData = getAttributeData(webGLProgram, gl);
     program.uniformData = getUniformData(webGLProgram, gl);
 
+    // GLSL 1.00: bind attributes sorted by name in ascending order
+    // GLSL 3.00: don't change the attribute locations that where chosen by the compiler
+    //            or assigned by the layout specifier in the shader source code
+    if (!(/^[ \t]*#[ \t]*version[ \t]+300[ \t]+es[ \t]*$/m).test(program.vertexSrc))
+    {
+        const keys = Object.keys(program.attributeData);
+
+        keys.sort((a, b) => (a > b) ? 1 : -1); // eslint-disable-line no-confusing-arrow
+
+        for (let i = 0; i < keys.length; i++)
+        {
+            program.attributeData[keys[i]].location = i;
+
+            gl.bindAttribLocation(webGLProgram, i, keys[i]);
+        }
+
+        gl.linkProgram(webGLProgram);
+    }
+
     gl.deleteShader(glVertShader);
     gl.deleteShader(glFragShader);
 
