@@ -44,7 +44,11 @@ export class TextMetrics
     /** The maximum line width for all measured lines. */
     public maxLineWidth: number;
 
-    /** The font properties object from TextMetrics.measureFont. */
+    /**
+     * The font properties object from TextMetrics.measureFont.
+     *
+     * @type {PIXI.IFontMetrics}
+     */
     public fontProperties: IFontMetrics;
 
     public static METRICS_STRING: string;
