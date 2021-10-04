@@ -5,41 +5,35 @@ import type { Renderer } from '../Renderer';
 /**
  * System plugin to the renderer to manage specific types of masking operations.
  *
- * @class
- * @extends PIXI.System
  * @memberof PIXI
  */
 export class AbstractMaskSystem implements ISystem
 {
+    /**
+     * The mask stack
+     * @member {PIXI.MaskData[]}
+     */
     protected maskStack: Array<MaskData>;
+
+    /**
+     * Constant for gl.enable
+     * @private
+     */
     protected glConst: number;
     protected renderer: Renderer;
 
     /**
-     * @param {PIXI.Renderer} renderer - The renderer this System works for.
+     * @param renderer - The renderer this System works for.
      */
     constructor(renderer: Renderer)
     {
         this.renderer = renderer;
 
-        /**
-         * The mask stack
-         * @member {PIXI.MaskData[]}
-         */
         this.maskStack = [];
-
-        /**
-         * Constant for gl.enable
-         * @member {number}
-         * @private
-         */
         this.glConst = 0;
     }
 
-    /**
-     * gets count of masks of certain type
-     * @returns {number}
-     */
+    /** Gets count of masks of certain type. */
     getStackLength(): number
     {
         return this.maskStack.length;
@@ -82,10 +76,7 @@ export class AbstractMaskSystem implements ISystem
         // OVERWRITE;
     }
 
-    /**
-     * Destroys the mask stack.
-     *
-     */
+    /** Destroys the mask stack. */
     destroy(): void
     {
         this.renderer = null;
