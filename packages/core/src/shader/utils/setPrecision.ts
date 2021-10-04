@@ -13,7 +13,7 @@ import { PRECISION } from '@pixi/constants';
  */
 export function setPrecision(src: string, requestedPrecision: PRECISION, maxSupportedPrecision: PRECISION): string
 {
-    if (src.substring(0, 9) !== 'precision')
+    if (!(/^\s*precision\s+(lowp|mediump|highp)\s+float\s*;/m).test(src))
     {
         // no precision supplied, so PixiJS will add the requested level.
         let precision = requestedPrecision;
@@ -26,10 +26,10 @@ export function setPrecision(src: string, requestedPrecision: PRECISION, maxSupp
 
         return `precision ${precision} float;\n${src}`;
     }
-    else if (maxSupportedPrecision !== PRECISION.HIGH && src.substring(0, 15) === 'precision highp')
+    else if (maxSupportedPrecision !== PRECISION.HIGH)
     {
         // precision was supplied, but at a level this device does not support, so downgrading to mediump.
-        return src.replace('precision highp', 'precision mediump');
+        return src.replace(/^\s*precision\s+highp\s+float\s*;/mg, 'precision mediump float;');
     }
 
     return src;
