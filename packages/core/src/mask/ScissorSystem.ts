@@ -10,8 +10,6 @@ import type { MaskData } from './MaskData';
  * viewport's space; however, the mask's rectangle is projected from world-space to viewport space automatically
  * by this system.
  *
- * @class
- * @extends PIXI.System
  * @memberof PIXI
  */
 export class ScissorSystem extends AbstractMaskSystem
@@ -42,7 +40,7 @@ export class ScissorSystem extends AbstractMaskSystem
      * Applies the Mask and adds it to the current stencil stack.
      *
      * @author alvin
-     * @param {PIXI.MaskData} maskData - The mask data
+     * @param maskData - The mask data.
      */
     push(maskData: MaskData): void
     {
