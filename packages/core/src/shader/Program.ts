@@ -75,32 +75,26 @@ export class Program
         this.vertexSrc = this.vertexSrc.trim();
         this.fragmentSrc = this.fragmentSrc.trim();
 
-        const splitRegex = /^(?:.|\n|\r)*?[ \t]*#[ \t]*version[ \t].*(?:\r\n|\n|\r|$)/;
-        let vertexSrcHead = this.vertexSrc.match(splitRegex)?.[0] ?? '';
-        let vertexSrcBody = this.vertexSrc.substring(vertexSrcHead.length);
-        let fragmentSrcHead = this.fragmentSrc.match(splitRegex)?.[0] ?? '';
-        let fragmentSrcBody = this.fragmentSrc.substring(fragmentSrcHead.length);
-
-        name = name.replace(/\s+/g, '-');
-
-        if (nameCache[name])
+        if (this.vertexSrc.substring(0, 8) !== '#version')
         {
-            nameCache[name]++;
-            name += `-${nameCache[name]}`;
+            name = name.replace(/\s+/g, '-');
+
+            if (nameCache[name])
+            {
+                nameCache[name]++;
+                name += `-${nameCache[name]}`;
+            }
+            else
+            {
+                nameCache[name] = 1;
+            }
+
+            this.vertexSrc = `#define SHADER_NAME ${name}\n${this.vertexSrc}`;
+            this.fragmentSrc = `#define SHADER_NAME ${name}\n${this.fragmentSrc}`;
+
+            this.vertexSrc = setPrecision(this.vertexSrc, settings.PRECISION_VERTEX, PRECISION.HIGH);
+            this.fragmentSrc = setPrecision(this.fragmentSrc, settings.PRECISION_FRAGMENT, getMaxFragmentPrecision());
         }
-        else
-        {
-            nameCache[name] = 1;
-        }
-
-        vertexSrcHead = `${vertexSrcHead}\n#define SHADER_NAME ${name}`;
-        fragmentSrcHead = `${fragmentSrcHead}\n#define SHADER_NAME ${name}`;
-
-        vertexSrcBody = setPrecision(vertexSrcBody, settings.PRECISION_VERTEX, PRECISION.HIGH);
-        fragmentSrcBody = setPrecision(fragmentSrcBody, settings.PRECISION_FRAGMENT, getMaxFragmentPrecision());
-
-        this.vertexSrc = `${vertexSrcHead}\n${vertexSrcBody}`;
-        this.fragmentSrc = `${fragmentSrcHead}\n${fragmentSrcBody}`;
 
         // currently this does not extract structs only default types
         // this is where we store shader references..
