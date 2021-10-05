@@ -28,63 +28,51 @@ import type { Renderer } from '../Renderer';
  * stack stores the currently applied masks in order. Each {@link PIXI.BaseRenderTexture} holds its own mask stack, i.e.
  * when you switch render-textures, the old masks only applied when you switch back to rendering to the old render-target.
  *
- * @class
- * @extends PIXI.System
  * @memberof PIXI
  */
 export class MaskSystem implements ISystem
 {
+    /**
+     * Flag to enable scissor masking.
+     *
+     * @default true
+     */
     public enableScissor: boolean;
+
+    /** Pool of used sprite mask filters. */
     protected readonly alphaMaskPool: Array<SpriteMaskFilter[]>;
+
+    /**
+     * Current index of alpha mask pool.
+     * @default 0
+     * @readonly
+     */
     protected alphaMaskIndex: number;
+
+    /** Pool of mask data. */
     private readonly maskDataPool: Array<MaskData>;
     private maskStack: Array<MaskData>;
     private renderer: Renderer;
 
     /**
-     * @param {PIXI.Renderer} renderer - The renderer this System works for.
+     * @param renderer - The renderer this System works for.
      */
     constructor(renderer: Renderer)
     {
         this.renderer = renderer;
 
-        /**
-         * Enable scissor masking.
-         *
-         * @member {boolean}
-         * @readonly
-         */
         this.enableScissor = true;
-
-        /**
-         * Pool of used sprite mask filters
-         * @member {PIXI.SpriteMaskFilter[]}
-         * @readonly
-         */
         this.alphaMaskPool = [];
-
-        /**
-         * Pool of mask data
-         * @member {PIXI.MaskData[]}
-         * @readonly
-         */
         this.maskDataPool = [];
 
         this.maskStack = [];
-
-        /**
-         * Current index of alpha mask pool
-         * @member {number}
-         * @default 0
-         * @readonly
-         */
         this.alphaMaskIndex = 0;
     }
 
     /**
      * Changes the mask stack that is used by this System.
      *
-     * @param {PIXI.MaskData[]} maskStack - The mask stack
+     * @param maskStack - The mask stack
      */
     setMaskStack(maskStack: Array<MaskData>): void
     {
@@ -208,10 +196,7 @@ export class MaskSystem implements ISystem
         }
     }
 
-    /**
-     * Sets type of MaskData based on its maskObject
-     * @param {PIXI.MaskData} maskData
-     */
+    /** Sets type of MaskData based on its maskObject. */
     detect(maskData: MaskData): void
     {
         const maskObject = maskData.maskObject;
@@ -253,7 +238,7 @@ export class MaskSystem implements ISystem
     /**
      * Applies the Mask and adds it to the current filter stack.
      *
-     * @param {PIXI.MaskData} maskData - Sprite to be used as the mask
+     * @param maskData - Sprite to be used as the mask.
      */
     pushSpriteMask(maskData: MaskData): void
     {
@@ -309,7 +294,7 @@ export class MaskSystem implements ISystem
     /**
      * Removes the last filter from the filter stack and doesn't return it.
      *
-     * @param {PIXI.MaskData} maskData - Sprite to be used as the mask
+     * @param maskData - Sprite to be used as the mask.
      */
     popSpriteMask(maskData: MaskData): void
     {
@@ -326,9 +311,6 @@ export class MaskSystem implements ISystem
         }
     }
 
-    /**
-     * @ignore
-     */
     destroy(): void
     {
         this.renderer = null;

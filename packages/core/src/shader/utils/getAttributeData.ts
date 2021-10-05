@@ -31,7 +31,7 @@ export function getAttributeData(program: WebGLProgram, gl: WebGLRenderingContex
             type,
             name: attribData.name,
             size: mapSize(type),
-            location: i,
+            location: gl.getAttribLocation(program, attribData.name),
         };
 
         attributes[attribData.name] = data;
