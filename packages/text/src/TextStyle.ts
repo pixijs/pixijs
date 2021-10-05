@@ -93,7 +93,6 @@ const genericFontFamilies = [
  *
  * A tool can be used to generate a text style [here](https://pixijs.io/pixi-text-style).
  *
- * @class
  * @memberof PIXI
  */
 export class TextStyle implements ITextStyle
@@ -191,7 +190,7 @@ export class TextStyle implements ITextStyle
      * Creates a new TextStyle object with the same values as this one.
      * Note that the only the properties of the object are cloned.
      *
-     * @return {PIXI.TextStyle} New cloned TextStyle object
+     * @return New cloned TextStyle object
      */
     public clone(): TextStyle
     {
@@ -202,9 +201,7 @@ export class TextStyle implements ITextStyle
         return new TextStyle(clonedProperties);
     }
 
-    /**
-     * Resets all properties to the defaults specified in TextStyle.prototype._default
-     */
+    /** Resets all properties to the defaults specified in TextStyle.prototype._default */
     public reset(): void
     {
         deepCopyProperties(this, defaultStyle, defaultStyle);
@@ -228,11 +225,7 @@ export class TextStyle implements ITextStyle
         }
     }
 
-    /**
-     * Indicates if lines can be wrapped within words, it needs wordWrap to be set to true
-     *
-     * @member {boolean}
-     */
+    /** Indicates if lines can be wrapped within words, it needs wordWrap to be set to true. */
     get breakWords(): boolean
     {
         return this._breakWords;
@@ -246,11 +239,7 @@ export class TextStyle implements ITextStyle
         }
     }
 
-    /**
-     * Set a drop shadow for the text
-     *
-     * @member {boolean}
-     */
+    /** Set a drop shadow for the text. */
     get dropShadow(): boolean
     {
         return this._dropShadow;
@@ -264,11 +253,7 @@ export class TextStyle implements ITextStyle
         }
     }
 
-    /**
-     * Set alpha for the drop shadow
-     *
-     * @member {number}
-     */
+    /** Set alpha for the drop shadow. */
     get dropShadowAlpha(): number
     {
         return this._dropShadowAlpha;
@@ -282,11 +267,7 @@ export class TextStyle implements ITextStyle
         }
     }
 
-    /**
-     * Set a angle of the drop shadow
-     *
-     * @member {number}
-     */
+    /** Set a angle of the drop shadow. */
     get dropShadowAngle(): number
     {
         return this._dropShadowAngle;
@@ -300,11 +281,7 @@ export class TextStyle implements ITextStyle
         }
     }
 
-    /**
-     * Set a shadow blur radius
-     *
-     * @member {number}
-     */
+    /** Set a shadow blur radius. */
     get dropShadowBlur(): number
     {
         return this._dropShadowBlur;
@@ -318,11 +295,7 @@ export class TextStyle implements ITextStyle
         }
     }
 
-    /**
-     * A fill style to be used on the dropshadow e.g 'red', '#00FF00'
-     *
-     * @member {string|number}
-     */
+    /** A fill style to be used on the dropshadow e.g 'red', '#00FF00'. */
     get dropShadowColor(): number | string
     {
         return this._dropShadowColor;
@@ -337,11 +310,7 @@ export class TextStyle implements ITextStyle
         }
     }
 
-    /**
-     * Set a distance of the drop shadow
-     *
-     * @member {number}
-     */
+    /** Set a distance of the drop shadow. */
     get dropShadowDistance(): number
     {
         return this._dropShadowDistance;
@@ -357,6 +326,7 @@ export class TextStyle implements ITextStyle
 
     /**
      * A canvas fillstyle that will be used on the text e.g 'red', '#00FF00'.
+     *
      * Can be an array to create a gradient eg ['#000000','#FFFFFF']
      * {@link https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillStyle|MDN}
      *
@@ -383,9 +353,8 @@ export class TextStyle implements ITextStyle
 
     /**
      * If fill is an array of colours to create a gradient, this can change the type/direction of the gradient.
-     * See {@link PIXI.TEXT_GRADIENT}
      *
-     * @member {number}
+     * @see PIXI.TEXT_GRADIENT
      */
     get fillGradientType(): TEXT_GRADIENT
     {
@@ -403,8 +372,6 @@ export class TextStyle implements ITextStyle
     /**
      * If fill is an array of colours to create a gradient, this array can set the stop points
      * (numbers between 0 and 1) for the color, overriding the default behaviour of evenly spacing them.
-     *
-     * @member {number[]}
      */
     get fillGradientStops(): number[]
     {
@@ -419,11 +386,7 @@ export class TextStyle implements ITextStyle
         }
     }
 
-    /**
-     * The font family
-     *
-     * @member {string|string[]}
-     */
+    /** The font family. */
     get fontFamily(): string | string[]
     {
         return this._fontFamily;
@@ -440,8 +403,6 @@ export class TextStyle implements ITextStyle
     /**
      * The font size
      * (as a number it converts to px, but as a string, equivalents are '26px','20pt','160%' or '1.6em')
-     *
-     * @member {number|string}
      */
     get fontSize(): number | string
     {
@@ -513,11 +474,7 @@ export class TextStyle implements ITextStyle
         }
     }
 
-    /**
-     * The amount of spacing between letters, default is 0
-     *
-     * @member {number}
-     */
+    /** The amount of spacing between letters, default is 0. */
     get letterSpacing(): number
     {
         return this._letterSpacing;
@@ -531,11 +488,7 @@ export class TextStyle implements ITextStyle
         }
     }
 
-    /**
-     * The line height, a number that represents the vertical space that a letter uses
-     *
-     * @member {number}
-     */
+    /** The line height, a number that represents the vertical space that a letter uses. */
     get lineHeight(): number
     {
         return this._lineHeight;
@@ -549,11 +502,7 @@ export class TextStyle implements ITextStyle
         }
     }
 
-    /**
-     * The space between lines
-     *
-     * @member {number}
-     */
+    /** The space between lines. */
     get leading(): number
     {
         return this._leading;
@@ -587,10 +536,9 @@ export class TextStyle implements ITextStyle
     }
 
     /**
-     * The miter limit to use when using the 'miter' lineJoin mode
-     * This can reduce or increase the spikiness of rendered text.
+     * The miter limit to use when using the 'miter' lineJoin mode.
      *
-     * @member {number}
+     * This can reduce or increase the spikiness of rendered text.
      */
     get miterLimit(): number
     {
@@ -608,8 +556,6 @@ export class TextStyle implements ITextStyle
     /**
      * Occasionally some fonts are cropped. Adding some padding will prevent this from happening
      * by adding padding to all sides of the text.
-     *
-     * @member {number}
      */
     get padding(): number
     {
@@ -627,8 +573,6 @@ export class TextStyle implements ITextStyle
     /**
      * A canvas fillstyle that will be used on the text stroke
      * e.g 'blue', '#FCFF00'
-     *
-     * @member {string|number}
      */
     get stroke(): string | number
     {
@@ -649,9 +593,8 @@ export class TextStyle implements ITextStyle
 
     /**
      * A number that represents the thickness of the stroke.
-     * Default is 0 (no stroke)
      *
-     * @member {number}
+     * @default 0
      */
     get strokeThickness(): number
     {
@@ -684,11 +627,7 @@ export class TextStyle implements ITextStyle
         }
     }
 
-    /**
-     * Trim transparent borders
-     *
-     * @member {boolean}
-     */
+    /** Trim transparent borders. */
     get trim(): boolean
     {
         return this._trim;
@@ -727,11 +666,7 @@ export class TextStyle implements ITextStyle
         }
     }
 
-    /**
-     * Indicates if word wrap should be used
-     *
-     * @member {boolean}
-     */
+    /** Indicates if word wrap should be used. */
     get wordWrap(): boolean
     {
         return this._wordWrap;
@@ -745,11 +680,7 @@ export class TextStyle implements ITextStyle
         }
     }
 
-    /**
-     * The width at which text will wrap, it needs wordWrap to be set to true
-     *
-     * @member {number}
-     */
+    /** The width at which text will wrap, it needs wordWrap to be set to true. */
     get wordWrapWidth(): number
     {
         return this._wordWrapWidth;
@@ -766,7 +697,7 @@ export class TextStyle implements ITextStyle
     /**
      * Generates a font style string to use for `TextMetrics.measureFont()`.
      *
-     * @return {string} Font style string, for passing to `TextMetrics.measureFont()`
+     * @return Font style string, for passing to `TextMetrics.measureFont()`
      */
     public toFontString(): string
     {
@@ -802,8 +733,8 @@ export class TextStyle implements ITextStyle
 /**
  * Utility function to convert hexadecimal colors to strings, and simply return the color if it's a string.
  * @private
- * @param {string|number} color
- * @return {string} The color as a string.
+ * @param color
+ * @return The color as a string.
  */
 function getSingleColor(color: string|number): string
 {
@@ -826,8 +757,8 @@ function getSingleColor(color: string|number): string
  * Utility function to convert hexadecimal colors to strings, and simply return the color if it's a string.
  * This version can also convert array of colors
  * @private
- * @param {string|number|number[]} color
- * @return {string} The color as a string.
+ * @param color
+ * @return The color as a string.
  */
 function getColor(color: (string|number)[]): string[];
 function getColor(color: string|number): string;
@@ -852,9 +783,9 @@ function getColor(color: string|number|(string|number)[]): string|string[]
  * Utility function to convert hexadecimal colors to strings, and simply return the color if it's a string.
  * This version can also convert array of colors
  * @private
- * @param {Array} array1 - First array to compare
- * @param {Array} array2 - Second array to compare
- * @return {boolean} Do the arrays contain the same values in the same order
+ * @param array1 - First array to compare
+ * @param array2 - Second array to compare
+ * @return Do the arrays contain the same values in the same order
  */
 function areArraysEqual<T>(array1: T[], array2: T[]): boolean
 {
@@ -882,9 +813,9 @@ function areArraysEqual<T>(array1: T[], array2: T[]): boolean
 /**
  * Utility function to ensure that object properties are copied by value, and not by reference
  * @private
- * @param {Object} target - Target object to copy properties into
- * @param {Object} source - Source object for the properties to copy
- * @param {string} propertyObj - Object containing properties names we want to loop over
+ * @param target - Target object to copy properties into
+ * @param source - Source object for the properties to copy
+ * @param propertyObj - Object containing properties names we want to loop over
  */
 function deepCopyProperties(target: Record<string, any>, source: Record<string, any>, propertyObj: Record<string, any>): void {
     for (const prop in propertyObj) {
