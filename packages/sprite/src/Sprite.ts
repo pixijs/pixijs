@@ -38,60 +38,128 @@ export interface Sprite extends GlobalMixins.Sprite, Container {}
  * }
  * ```
  *
- * @class
- * @extends PIXI.Container
  * @memberof PIXI
  */
 export class Sprite extends Container
 {
+    /**
+     * The blend mode to be applied to the sprite. Apply a value of `PIXI.BLEND_MODES.NORMAL` to reset the blend mode.
+     *
+     * @default PIXI.BLEND_MODES.NORMAL
+     */
     public blendMode: BLEND_MODES;
     public indices: Uint16Array;
+
+    /**
+     * Plugin that is responsible for rendering this element.
+     * Allows to customize the rendering process without overriding '_render' & '_renderCanvas' methods.
+     *
+     * @default 'batch'
+     */
     public pluginName: string;
 
+    /**
+     * The width of the sprite (this is initially set by the texture).
+     *
+     * @protected
+     */
     _width: number;
+
+    /**
+     * The height of the sprite (this is initially set by the texture)
+     *
+     * @protected
+     */
     _height: number;
+
+    /**
+     * The texture that the sprite is using.
+     *
+     * @private
+     */
     _texture: Texture;
     _textureID: number;
+
+    /**
+     * Cached tint value so we can tell when the tint is changed.
+     * Value is used for 2d CanvasRenderer.
+     *
+     * @protected
+     * @default 0xFFFFFF
+     */
     _cachedTint: number;
     protected _textureTrimmedID: number;
+
+    /**
+     * This is used to store the uvs data of the sprite, assigned at the same time
+     * as the vertexData in calculateVertices().
+     *
+     * @member {Float32Array}
+     */
     protected uvs: Float32Array;
+
+    /**
+     * The anchor point defines the normalized coordinates
+     * in the texture that map to the position of this
+     * sprite.
+     *
+     * By default, this is `(0,0)` (or `texture.defaultAnchor`
+     * if you have modified that), which means the position
+     * `(x,y)` of this `Sprite` will be the top-left corner.
+     *
+     * Note: Updating `texture.defaultAnchor` after
+     * constructing a `Sprite` does _not_ update its anchor.
+     *
+     * {@link https://docs.cocos2d-x.org/cocos2d-x/en/sprites/manipulation.html}
+     *
+     * @default `this.texture.defaultAnchor`
+     */
     protected _anchor: ObservablePoint;
+
+    /**
+     * This is used to store the vertex data of the sprite (basically a quad).
+     *
+     * @member {Float32Array}
+     */
     protected vertexData: Float32Array;
 
+    /**
+     * This is used to calculate the bounds of the object IF it is a trimmed sprite.
+     *
+     * @member {Float32Array}
+     */
     private vertexTrimmedData: Float32Array;
+
+    /**
+     * Internal roundPixels field
+     *
+     * @private
+     */
     private _roundPixels: boolean;
     private _transformID: number;
     private _transformTrimmedID: number;
+
+    /**
+     * The tint applied to the sprite. This is a hex value. A value of 0xFFFFFF will remove any tint effect.
+     *
+     * @default 0xFFFFFF
+     */
     private _tint: number;
 
     // Internal-only properties
+    /**
+     * The tint applied to the sprite. This is a RGB value. A value of 0xFFFFFF will remove any tint effect.
+     *
+     * @private
+     * @default 16777215
+     */
     _tintRGB: number;
 
-    /**
-     * @param {PIXI.Texture} [texture] - The texture for this sprite.
-     */
+    /** @param texture - The texture for this sprite. */
     constructor(texture?: Texture)
     {
         super();
 
-        /**
-         * The anchor point defines the normalized coordinates
-         * in the texture that map to the position of this
-         * sprite.
-         *
-         * By default, this is `(0,0)` (or `texture.defaultAnchor`
-         * if you have modified that), which means the position
-         * `(x,y)` of this `Sprite` will be the top-left corner.
-         *
-         * Note: Updating `texture.defaultAnchor` after
-         * constructing a `Sprite` does _not_ update its anchor.
-         *
-         * {@link https://docs.cocos2d-x.org/cocos2d-x/en/sprites/manipulation.html}
-         *
-         * @default `texture.defaultAnchor`
-         * @member {PIXI.ObservablePoint}
-         * @private
-         */
         this._anchor = new ObservablePoint(
             this._onAnchorUpdate,
             this,
@@ -99,95 +167,21 @@ export class Sprite extends Container
             (texture ? texture.defaultAnchor.y : 0)
         );
 
-        /**
-         * The texture that the sprite is using
-         *
-         * @private
-         * @member {PIXI.Texture}
-         */
         this._texture = null;
 
-        /**
-         * The width of the sprite (this is initially set by the texture)
-         *
-         * @protected
-         * @member {number}
-         */
         this._width = 0;
-
-        /**
-         * The height of the sprite (this is initially set by the texture)
-         *
-         * @protected
-         * @member {number}
-         */
         this._height = 0;
-
-        /**
-         * The tint applied to the sprite. This is a hex value. A value of 0xFFFFFF will remove any tint effect.
-         *
-         * @private
-         * @member {number}
-         * @default 0xFFFFFF
-         */
         this._tint = null;
-
-        /**
-         * The tint applied to the sprite. This is a RGB value. A value of 0xFFFFFF will remove any tint effect.
-         *
-         * @private
-         * @member {number}
-         * @default 16777215
-         */
         this._tintRGB = null;
 
         this.tint = 0xFFFFFF;
-
-        /**
-         * The blend mode to be applied to the sprite. Apply a value of `PIXI.BLEND_MODES.NORMAL` to reset the blend mode.
-         *
-         * @member {number}
-         * @default PIXI.BLEND_MODES.NORMAL
-         * @see PIXI.BLEND_MODES
-         */
         this.blendMode = BLEND_MODES.NORMAL;
-
-        /**
-         * Cached tint value so we can tell when the tint is changed.
-         * Value is used for 2d CanvasRenderer.
-         *
-         * @protected
-         * @member {number}
-         * @default 0xFFFFFF
-         */
         this._cachedTint = 0xFFFFFF;
-
-        /**
-         * this is used to store the uvs data of the sprite, assigned at the same time
-         * as the vertexData in calculateVertices()
-         *
-         * @private
-         * @member {Float32Array}
-         */
         this.uvs = null;
 
         // call texture setter
         this.texture = texture || Texture.EMPTY;
-
-        /**
-         * this is used to store the vertex data of the sprite (basically a quad)
-         *
-         * @private
-         * @member {Float32Array}
-         */
         this.vertexData = new Float32Array(8);
-
-        /**
-         * This is used to calculate the bounds of the object IF it is a trimmed sprite
-         *
-         * @private
-         * @member {Float32Array}
-         */
         this.vertexTrimmedData = null;
 
         this._transformID = -1;
@@ -200,35 +194,17 @@ export class Sprite extends Container
         // TODO could make this a mixin?
         this.indices = indices;
 
-        /**
-         * Plugin that is responsible for rendering this element.
-         * Allows to customize the rendering process without overriding '_render' & '_renderCanvas' methods.
-         *
-         * @member {string}
-         * @default 'batch'
-         */
         this.pluginName = 'batch';
 
         /**
-         * used to fast check if a sprite is.. a sprite!
+         * Used to fast check if a sprite is.. a sprite!
          * @member {boolean}
          */
         this.isSprite = true;
-
-        /**
-         * Internal roundPixels field
-         *
-         * @member {boolean}
-         * @private
-         */
         this._roundPixels = settings.ROUND_PIXELS;
     }
 
-    /**
-     * When the texture is updated, this event will fire to update the scale and frame
-     *
-     * @protected
-     */
+    /** When the texture is updated, this event will fire to update the scale and frame. */
     protected _onTextureUpdate(): void
     {
         this._textureID = -1;
@@ -247,20 +223,14 @@ export class Sprite extends Container
         }
     }
 
-    /**
-     * Called when the anchor position updates.
-     *
-     * @private
-     */
+    /** Called when the anchor position updates. */
     private _onAnchorUpdate(): void
     {
         this._transformID = -1;
         this._transformTrimmedID = -1;
     }
 
-    /**
-     * calculates worldTransform * vertices, store it in vertexData
-     */
+    /** Calculates worldTransform * vertices, store it in vertexData. */
     public calculateVertices(): void
     {
         const texture = this._texture;
@@ -345,8 +315,9 @@ export class Sprite extends Container
     }
 
     /**
-     * calculates worldTransform * vertices for a non texture with a trim. store it in vertexTrimmedData
-     * This is used to ensure that the true width and height of a trimmed texture is respected
+     * Calculates worldTransform * vertices for a non texture with a trim. store it in vertexTrimmedData.
+     *
+     * This is used to ensure that the true width and height of a trimmed texture is respected.
      */
     public calculateTrimmedVertices(): void
     {
@@ -401,12 +372,11 @@ export class Sprite extends Container
     }
 
     /**
-    *
-    * Renders the object using the WebGL renderer
-    *
-    * @protected
-    * @param {PIXI.Renderer} renderer - The webgl renderer to use.
-    */
+     *
+     * Renders the object using the WebGL renderer
+     *
+     * @param renderer - The webgl renderer to use.
+     */
     protected _render(renderer: Renderer): void
     {
         this.calculateVertices();
@@ -415,11 +385,7 @@ export class Sprite extends Container
         renderer.plugins[this.pluginName].render(this);
     }
 
-    /**
-     * Updates the bounds of the sprite.
-     *
-     * @protected
-     */
+    /** Updates the bounds of the sprite. */
     protected _calculateBounds(): void
     {
         const trim = this._texture.trim;
@@ -443,8 +409,8 @@ export class Sprite extends Container
     /**
      * Gets the local bounds of the sprite object.
      *
-     * @param {PIXI.Rectangle} [rect] - Optional output rectangle.
-     * @return {PIXI.Rectangle} The bounds.
+     * @param rect - Optional output rectangle.
+     * @return The bounds.
      */
     public getLocalBounds(rect?: Rectangle): Rectangle
     {
@@ -475,8 +441,8 @@ export class Sprite extends Container
     /**
      * Tests if a point is inside this sprite
      *
-     * @param {PIXI.IPointData} point - the point to test
-     * @return {boolean} the result of the test
+     * @param point - the point to test
+     * @return The result of the test
      */
     public containsPoint(point: IPointData): boolean
     {
@@ -501,14 +467,14 @@ export class Sprite extends Container
     }
 
     /**
-     * Destroys this sprite and optionally its texture and children
+     * Destroys this sprite and optionally its texture and children.
      *
-     * @param {object|boolean} [options] - Options parameter. A boolean will act as if all options
+     * @param options - Options parameter. A boolean will act as if all options
      *  have been set to that value
-     * @param {boolean} [options.children=false] - if set to true, all the children will have their destroy
+     * @param [options.children=false] - if set to true, all the children will have their destroy
      *      method called as well. 'options' will be passed on to those calls.
-     * @param {boolean} [options.texture=false] - Should it destroy the current texture of the sprite as well
-     * @param {boolean} [options.baseTexture=false] - Should it destroy the base texture of the sprite as well
+     * @param [options.texture=false] - Should it destroy the current texture of the sprite as well
+     * @param [options.baseTexture=false] - Should it destroy the base texture of the sprite as well
      */
     public destroy(options?: IDestroyOptions|boolean): void
     {
@@ -536,10 +502,9 @@ export class Sprite extends Container
      * Helper function that creates a new sprite based on the source you provide.
      * The source can be - frame id, image url, video url, canvas element, video element, base texture
      *
-     * @static
      * @param {string|PIXI.Texture|HTMLCanvasElement|HTMLVideoElement} source - Source to create texture from
      * @param {object} [options] - See {@link PIXI.BaseTexture}'s constructor for options.
-     * @return {PIXI.Sprite} The newly created sprite
+     * @return The newly created sprite
      */
     static from(source: SpriteSource, options?: IBaseTextureOptions): Sprite
     {
@@ -552,11 +517,12 @@ export class Sprite extends Container
 
     /**
      * If true PixiJS will Math.floor() x/y values when rendering, stopping pixel interpolation.
+     *
      * Advantages can include sharper image quality (like text) and faster rendering on canvas.
      * The main disadvantage is movement of objects may appear less smooth.
-     * To set the global default, change {@link PIXI.settings.ROUND_PIXELS}
      *
-     * @member {boolean}
+     * To set the global default, change {@link PIXI.settings.ROUND_PIXELS}.
+     *
      * @default false
      */
     set roundPixels(value: boolean)
@@ -616,8 +582,6 @@ export class Sprite extends Container
      * @example
      * const sprite = new PIXI.Sprite(texture);
      * sprite.anchor.set(0.5); // This will set the origin to center. (0.5) is same as (0.5, 0.5).
-     *
-     * @member {PIXI.ObservablePoint}
      */
     get anchor(): ObservablePoint
     {
@@ -631,9 +595,9 @@ export class Sprite extends Container
 
     /**
      * The tint applied to the sprite. This is a hex value.
+     *
      * A value of 0xFFFFFF will remove any tint effect.
      *
-     * @member {number}
      * @default 0xFFFFFF
      */
     get tint(): number
@@ -647,11 +611,7 @@ export class Sprite extends Container
         this._tintRGB = (value >> 16) + (value & 0xff00) + ((value & 0xff) << 16);
     }
 
-    /**
-     * The texture that the sprite is using
-     *
-     * @member {PIXI.Texture}
-     */
+    /** The texture that the sprite is using. */
     get texture(): Texture
     {
         return this._texture;
