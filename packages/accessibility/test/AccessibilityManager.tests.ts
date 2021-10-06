@@ -1,5 +1,7 @@
 import { AccessibilityManager } from '@pixi/accessibility';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
+import { DisplayObject, Container } from '@pixi/display';
+import { Renderer } from '@pixi/core';
 import { isMobile } from '@pixi/utils';
 import { expect } from 'chai';
 
@@ -41,5 +43,34 @@ describe('AccessibilityManager', function ()
         manager.destroy();
         expect(document.body.contains(hookDiv)).to.be.false;
         isMobile.phone = phone;
+    });
+
+    it('should activate when tab is pressed and deactivate when mouse moved', function ()
+    {
+        const renderer = new Renderer();
+        const manager = new AccessibilityManager(renderer);
+
+        self.dispatchEvent(new KeyboardEvent('keydown', { keyCode: 9, key: 'tab' }));
+        expect(manager.isActive).to.be.true;
+        self.document.dispatchEvent(new MouseEvent('mousemove', { movementX: 10, movementY: 10 }));
+        expect(manager.isActive).to.be.false;
+    });
+
+    it('should not crash when scene graph contains DisplayObjects without children', function ()
+    {
+        class CompleteDisplayObject extends DisplayObject
+        {
+            calculateBounds() { /* noop */ }
+            render() { /* noop */ }
+        }
+
+        const renderer = new Renderer();
+        const stage = new Container().addChild(new CompleteDisplayObject());
+        const manager = new AccessibilityManager(renderer);
+
+        self.dispatchEvent(new KeyboardEvent('keydown', { keyCode: 9, key: 'tab' }));
+
+        expect(() => renderer.render(stage)).not.to.throw();
+        expect(manager.isActive).to.be.true;
     });
 });
