@@ -13,74 +13,54 @@ export interface TilingSprite extends GlobalMixins.TilingSprite {}
 /**
  * A tiling sprite is a fast way of rendering a tiling image.
  *
- * @class
- * @extends PIXI.Sprite
  * @memberof PIXI
  */
 export class TilingSprite extends Sprite
 {
+    /** Tile transform */
     public tileTransform: Transform;
+
+    /** Matrix that is applied to UV to get the coords in Texture normalized space to coords in BaseTexture space. */
     public uvMatrix: TextureMatrix;
+
+    /**
+     * Flags whether the tiling pattern should originate from the origin instead of the top-left corner in
+     * local space.
+     *
+     * This will make the texture coordinates assigned to each vertex dependent on the value of the anchor. Without
+     * this, the top-left corner always gets the (0, 0) texture coordinate.
+     *
+     * @default false
+     */
     public uvRespectAnchor: boolean;
 
     /**
-     * @param {PIXI.Texture} texture - the texture of the tiling sprite
-     * @param {number} [width=100] - the width of the tiling sprite
-     * @param {number} [height=100] - the height of the tiling sprite
+     * @param texture - The texture of the tiling sprite.
+     * @param width - The width of the tiling sprite.
+     * @param height - The height of the tiling sprite.
      */
     constructor(texture: Texture, width = 100, height = 100)
     {
         super(texture);
 
-        /**
-         * Tile transform
-         *
-         * @member {PIXI.Transform}
-         */
         this.tileTransform = new Transform();
 
-        /**
-         * The with of the tiling sprite
-         *
-         * @member {number}
-         * @private
-         */
+        // The width of the tiling sprite
         this._width = width;
 
-        /**
-         * The height of the tiling sprite
-         *
-         * @member {number}
-         * @private
-         */
+        // The height of the tiling sprite
         this._height = height;
 
-        /**
-         * matrix that is applied to UV to get the coords in Texture normalized space to coords in BaseTexture space
-         *
-         * @member {PIXI.TextureMatrix}
-         */
         this.uvMatrix = this.texture.uvMatrix || new TextureMatrix(texture);
 
         /**
          * Plugin that is responsible for rendering this element.
          * Allows to customize the rendering process without overriding '_render' method.
          *
-         * @member {string}
          * @default 'tilingSprite'
          */
         this.pluginName = 'tilingSprite';
 
-        /**
-         * Flags whether the tiling pattern should originate from the origin instead of the top-left corner in
-         * local space.
-         *
-         * This will make the texture coordinates assigned to each vertex dependent on the value of the anchor. Without
-         * this, the top-left corner always gets the (0, 0) texture coordinate.
-         *
-         * @member {boolean}
-         * @default false
-         */
         this.uvRespectAnchor = false;
     }
     /**
@@ -101,11 +81,7 @@ export class TilingSprite extends Sprite
         this.uvMatrix.update(true);
     }
 
-    /**
-     * The scaling of the image that is being tiled
-     *
-     * @member {PIXI.ObservablePoint}
-     */
+    /** The scaling of the image that is being tiled. */
     get tileScale(): ObservablePoint
     {
         return this.tileTransform.scale;
@@ -116,11 +92,7 @@ export class TilingSprite extends Sprite
         this.tileTransform.scale.copyFrom(value as IPoint);
     }
 
-    /**
-     * The offset of the image that is being tiled
-     *
-     * @member {PIXI.ObservablePoint}
-     */
+    /** The offset of the image that is being tiled. */
     get tilePosition(): ObservablePoint
     {
         return this.tileTransform.position;
@@ -146,8 +118,7 @@ export class TilingSprite extends Sprite
     /**
      * Renders the object using the WebGL renderer
      *
-     * @protected
-     * @param {PIXI.Renderer} renderer - The renderer
+     * @param renderer - The renderer
      */
     protected _render(renderer: Renderer): void
     {
@@ -166,11 +137,7 @@ export class TilingSprite extends Sprite
         renderer.plugins[this.pluginName].render(this);
     }
 
-    /**
-     * Updates the bounds of the tiling sprite.
-     *
-     * @protected
-     */
+    /** Updates the bounds of the tiling sprite. */
     protected _calculateBounds(): void
     {
         const minX = this._width * -this._anchor._x;
@@ -184,8 +151,8 @@ export class TilingSprite extends Sprite
     /**
      * Gets the local bounds of the sprite object.
      *
-     * @param {PIXI.Rectangle} [rect] - Optional output rectangle.
-     * @return {PIXI.Rectangle} The bounds.
+     * @param rect - Optional output rectangle.
+     * @return The bounds.
      */
     public getLocalBounds(rect?: Rectangle): Rectangle
     {
@@ -216,8 +183,8 @@ export class TilingSprite extends Sprite
     /**
      * Checks if a point is inside this tiling sprite.
      *
-     * @param {PIXI.IPointData} point - the point to check
-     * @return {boolean} Whether or not the sprite contains the point.
+     * @param point - The point to check.
+     * @return Whether or not the sprite contains the point.
      */
     public containsPoint(point: IPointData): boolean
     {
@@ -282,11 +249,7 @@ export class TilingSprite extends Sprite
         );
     }
 
-    /**
-     * The width of the sprite, setting this will actually modify the scale to achieve the value set
-     *
-     * @member {number}
-     */
+    /** The width of the sprite, setting this will actually modify the scale to achieve the value set. */
     get width(): number
     {
         return this._width;
@@ -297,11 +260,7 @@ export class TilingSprite extends Sprite
         this._width = value;
     }
 
-    /**
-     * The height of the TilingSprite, setting this will actually modify the scale to achieve the value set
-     *
-     * @member {number}
-     */
+    /** The height of the TilingSprite, setting this will actually modify the scale to achieve the value set. */
     get height(): number
     {
         return this._height;

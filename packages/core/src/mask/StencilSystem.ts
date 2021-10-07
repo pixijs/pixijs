@@ -6,14 +6,12 @@ import type { IMaskTarget, MaskData } from './MaskData';
 /**
  * System plugin to the renderer to manage stencils (used for masks).
  *
- * @class
- * @extends PIXI.System
  * @memberof PIXI
  */
 export class StencilSystem extends AbstractMaskSystem
 {
     /**
-     * @param {PIXI.Renderer} renderer - The renderer this System works for.
+     * @param renderer - The renderer this System works for.
      */
     constructor(renderer: Renderer)
     {
@@ -37,7 +35,7 @@ export class StencilSystem extends AbstractMaskSystem
     /**
      * Applies the Mask and adds it to the current stencil stack.
      *
-     * @param {PIXI.MaskData} maskData - The mask data
+     * @param maskData - The mask data
      */
     push(maskData: MaskData): void
     {
@@ -56,7 +54,7 @@ export class StencilSystem extends AbstractMaskSystem
 
         // Increment the reference stencil value where the new mask overlaps with the old ones.
         gl.colorMask(false, false, false, false);
-        gl.stencilFunc(gl.EQUAL, prevMaskCount, this._getBitwiseMask());
+        gl.stencilFunc(gl.EQUAL, prevMaskCount, 0xFFFFFFFF);
         gl.stencilOp(gl.KEEP, gl.KEEP, gl.INCR);
 
         maskObject.renderable = true;
@@ -80,8 +78,8 @@ export class StencilSystem extends AbstractMaskSystem
         {
             // the stack is empty!
             gl.disable(gl.STENCIL_TEST);
-            gl.clear(gl.STENCIL_BUFFER_BIT);
             gl.clearStencil(0);
+            gl.clear(gl.STENCIL_BUFFER_BIT);
         }
         else
         {
@@ -107,17 +105,7 @@ export class StencilSystem extends AbstractMaskSystem
         const gl = this.renderer.gl;
 
         gl.colorMask(true, true, true, true);
-        gl.stencilFunc(gl.EQUAL, this.getStackLength(), this._getBitwiseMask());
+        gl.stencilFunc(gl.EQUAL, this.getStackLength(), 0xFFFFFFFF);
         gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
-    }
-
-    /**
-     * Fill 1s equal to the number of acitve stencil masks.
-     * @private
-     * @return {number} The bitwise mask.
-     */
-    _getBitwiseMask(): number
-    {
-        return (1 << this.getStackLength()) - 1;
     }
 }

@@ -21,7 +21,7 @@ export function getAttributeData(program: WebGLProgram, gl: WebGLRenderingContex
     {
         const attribData = gl.getActiveAttrib(program, i);
 
-        if (attribData.name.startsWith('gl_'))
+        if (attribData.name.indexOf('gl_') === 0)
         {
             continue;
         }
@@ -31,7 +31,7 @@ export function getAttributeData(program: WebGLProgram, gl: WebGLRenderingContex
             type,
             name: attribData.name,
             size: mapSize(type),
-            location: i,
+            location: gl.getAttribLocation(program, attribData.name),
         };
 
         attributes[attribData.name] = data;
