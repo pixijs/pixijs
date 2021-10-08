@@ -74,7 +74,7 @@
     "@rollup/plugin-node-resolve": "^9.0.0",
     "@rollup/plugin-typescript": "^6.0.0",
     "@types/mocha": "^8.2.3",
-    "@webdoc/cli": "^1.5.4",
+    "@webdoc/cli": "^1.5.5",
     "chai": "~3.5.0",
     "copyfiles": "^2.1.0",
     "cross-env": "^5.2.0",
