@@ -2,6 +2,7 @@ import { DisplayObject } from '@pixi/display';
 import { FederatedEvent } from './FederatedEvent';
 
 import type { EventEmitter } from '@pixi/utils';
+import type { FederatedEventsMap } from './FederatedEventsMap';
 
 export type Cursor = 'auto'
     | 'default'
@@ -73,10 +74,37 @@ export interface FederatedEventTarget extends EventEmitter, EventTarget {
     hitArea: IHitArea;
 }
 
-export const FederatedDisplayObject: Omit<
+type AddListenerOptions = boolean | AddEventListenerOptions;
+type RemoveListenerOptions = boolean | EventListenerOptions;
+
+export interface IFederatedDisplayObject extends Omit<
     FederatedEventTarget,
     'parent' | 'children' | keyof EventEmitter | 'cursor'
-> = {
+>
+{
+    addEventListener<K extends keyof FederatedEventsMap>(
+        type: K,
+        listener: (e: FederatedEventsMap[K]) => any,
+        options?: AddListenerOptions
+    ): void;
+    addEventListener(
+        type: string,
+        listener: EventListenerOrEventListenerObject,
+        options?: AddListenerOptions
+    ): void;
+    removeEventListener<K extends keyof FederatedEventsMap>(
+        type: K,
+        listener: (e: FederatedEventsMap[K]) => any,
+        options?: RemoveListenerOptions
+    ): void;
+    removeEventListener(
+        type: string,
+        listener: EventListenerOrEventListenerObject,
+        options?: RemoveListenerOptions
+    ): void;
+}
+
+export const FederatedDisplayObject: IFederatedDisplayObject = {
     /**
      * Enable interaction events for the DisplayObject. Touch, pointer and mouse
      * events will not be emitted unless `interactive` is set to `true`.
@@ -148,7 +176,7 @@ export const FederatedDisplayObject: Omit<
     addEventListener(
         type: string,
         listener: EventListenerOrEventListenerObject,
-        options?: boolean | AddEventListenerOptions,
+        options?: AddListenerOptions
     )
     {
         const capture = (typeof options === 'boolean' && options)
@@ -173,7 +201,7 @@ export const FederatedDisplayObject: Omit<
     removeEventListener(
         type: string,
         listener: EventListenerOrEventListenerObject,
-        options?: boolean | AddEventListenerOptions,
+        options?: RemoveListenerOptions
     )
     {
         const capture = (typeof options === 'boolean' && options)
