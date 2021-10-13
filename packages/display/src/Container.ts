@@ -142,7 +142,7 @@ export class Container extends DisplayObject
      * @param {...PIXI.DisplayObject} children - The DisplayObject(s) to add to the container
      * @return {PIXI.DisplayObject} The first child that was added.
      */
-    addChild<T extends DisplayObject[]>(...children: T): T[0]
+    addChild<T extends DisplayObject[]>(...children: [T, ...T[]]): T[0]
     {
         // if there is only one argument we can bypass looping through the them
         if (children.length > 1)
