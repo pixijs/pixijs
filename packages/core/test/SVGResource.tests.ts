@@ -191,6 +191,36 @@ describe('SVGResource', function ()
             expect(Object.keys(svgSize).length)
                 .to.equal(0);
         });
+
+        it('should get size from viewBox', function ()
+        {
+            const url = path.join(this.resources, 'viewBoxOnly.svg');
+            const svgString = fs.readFileSync(url, 'utf8');
+            const svgSize = SVGResource.parseWidthHeightFromViewBox(svgString);
+
+            expect(svgString.includes('viewBox')).to.equal(true);
+            expect(svgSize.width).to.equal(8);
+            expect(svgSize.height).to.equal(11);
+        });
+
+        it('should get scaled size from viewBox', function ()
+        {
+            const url = path.join(this.resources, 'viewBoxOnly.svg');
+            const svgString = fs.readFileSync(url, 'utf8');
+            let scale = { width: 16, height: 100 };
+            let svgSize = SVGResource.parseWidthHeightFromViewBox(svgString, scale);
+
+            expect(svgString.includes('viewBox')).to.equal(true);
+            expect(svgSize.width).to.equal(16);
+            expect(svgSize.height).to.equal(22);
+
+            scale = { width: 100, height: 33 };
+            svgSize = SVGResource.parseWidthHeightFromViewBox(svgString, scale);
+
+            expect(svgString.includes('viewBox')).to.equal(true);
+            expect(svgSize.width).to.equal(24);
+            expect(svgSize.height).to.equal(33);
+        });
     });
 
     describe('test', function ()

@@ -116,6 +116,8 @@ export class SVGResource extends BaseImageResource
                 resolve(this);
             };
 
+            const svgString = this.svg;
+
             // Convert SVG inline string to data-uri
             if ((/^\<svg/).test(this.svg.trim()))
             {
@@ -126,7 +128,7 @@ export class SVGResource extends BaseImageResource
                 (this as any).svg = `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(this.svg)))}`;
             }
 
-            this._loadSvg();
+            this._loadSvg(svgString);
         });
 
         return this._load;
@@ -134,10 +136,11 @@ export class SVGResource extends BaseImageResource
 
     /**
      * Loads an SVG image from `imageUrl` or `data URL`.
-     *
+     * @param {string} svgString - the raw string of SVG for falling back to
+     * viewBox when width or height is not specified. This happens in Firefox.
      * @private
      */
-    private _loadSvg(): void
+    private _loadSvg(svgString: string): void
     {
         const tempImage = new Image();
 
@@ -162,12 +165,21 @@ export class SVGResource extends BaseImageResource
                 return;
             }
 
-            const svgWidth = tempImage.width;
-            const svgHeight = tempImage.height;
+            let svgWidth = tempImage.width;
+            let svgHeight = tempImage.height;
 
             if (!svgWidth || !svgHeight)
             {
-                throw new Error('The SVG image must have width and height defined (in pixels), canvas API needs them.');
+                const size = SVGResource.parseWidthHeightFromViewBox(svgString);
+
+                svgWidth = size.width;
+                svgHeight = size.height;
+            }
+
+            if (!svgWidth || !svgHeight)
+            {
+                throw new Error('The SVG image must have width, height'
+                   + 'or viewBox defined (in pixels), canvas API needs them.');
             }
 
             // Set render size
@@ -197,6 +209,46 @@ export class SVGResource extends BaseImageResource
             this._resolve();
             this._resolve = null;
         };
+    }
+
+    /**
+     * This function gets the width and height from the viewBox attribute from
+     * provided SVG.
+     * @param {string} svg - the string of the SVG, not base64 encoded.
+     * @param {ISize} scaleTo - optional, if provide, will try to scale viewBox
+     * the provided size.
+     * @return {PIXI.ISize} scaled viewBox size if parse success, return (0, 0)
+     * otherwise.
+     */
+    static parseWidthHeightFromViewBox(svg: string, scaleTo?: ISize): ISize
+    {
+        const size: ISize = { width: 0, height: 0 };
+
+        try
+        {
+            const parser = new DOMParser();
+            const svgDocument = parser.parseFromString(svg, 'image/svg+xml');
+            const element = svgDocument.querySelector('svg');
+
+            size.width = element.viewBox.baseVal.width;
+            size.height = element.viewBox.baseVal.height;
+            if (scaleTo === null || scaleTo === undefined) return size;
+
+            const factor = scaleTo.height < scaleTo.width
+                ? scaleTo.height / size.height : scaleTo.width / size.width;
+
+            size.width *= factor;
+            size.height *= factor;
+
+            return size;
+        }
+        catch (err)
+        {
+            size.width = 0;
+            size.height = 0;
+
+            return size;
+        }
     }
 
     /**

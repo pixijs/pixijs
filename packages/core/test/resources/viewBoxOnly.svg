@@ -1,0 +1,13 @@
+<svg 
+  id="numbers" 
+  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 11">
+  <defs>
+    <style>.cls-1,.cls-2{fill:none;stroke:#231f20;stroke-width:1.01px;}.cls-2{stroke-linecap:round;stroke-linejoin:round;}</style>
+  </defs>
+  <title>9</title>
+    <path 
+      class="cls-1" 
+      d="M717.59,551c-0.1-1.37,1.18-2.89,2.93-3.36,2.41-.65,3.48.51,3.64,1.52,0.23,1.49-1.42,3.25-3.25,3.52S717.68,552.22,717.59,551Z" transform="translate(-717.08 -546.91)"/><path class="cls-2" d="M717.77,556.64a8.92,8.92,0,0,0,4.64-2.81,11.12,11.12,0,0,0,1.68-3.85" 
+      transform="translate(-717.08 -546.91)"
+    />
+</svg>
