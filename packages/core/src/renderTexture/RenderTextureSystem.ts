@@ -88,6 +88,7 @@ export class RenderTextureSystem implements ISystem
         this.defaultMaskStack = [];
         this.current = null;
         this.sourceFrame = new Rectangle();
+        this.destinationFrame = new Rectangle();
         this.viewportFrame = new Rectangle();
     }
 
