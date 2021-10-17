@@ -101,7 +101,8 @@ export class ProjectionSystem implements ISystem
      * @param destinationFrame - The rectangle in the render-target to render the contents into. If rendering to the canvas,
      *  the origin is on the top-left; if rendering to a render-texture, the origin is on the bottom-left.
      * @param sourceFrame - The rectangle in world space that contains the contents being rendered.
-     * @param resolution - The resolution of the render-target, which is the ratio of world-space (or CSS) pixels to physical pixels.
+     * @param resolution - The resolution of the render-target, which is the ratio of
+     *  world-space (or CSS) pixels to physical pixels.
      * @param root - Whether the render-target is the screen. This is required because rendering to textures
      *  is y-flipped (i.e. upside down relative to the screen).
      */
