@@ -38,7 +38,7 @@ export class State
     /**
      * Activates blending of the computed fragment color values.
      *
-     * @default true 
+     * @default true
      */
     get blend(): boolean
     {
