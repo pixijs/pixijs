@@ -8,7 +8,7 @@ import type { ISize } from '@pixi/math';
 
 /**
  * Texture pool, used by FilterSystem and plugins.
- * 
+ *
  * Stores collection of temporary pow2 or screen-sized renderTextures
  *
  * If you use custom RenderTexturePool for your filters, you can use methods
