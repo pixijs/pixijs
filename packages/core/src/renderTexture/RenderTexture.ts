@@ -53,15 +53,15 @@ export class RenderTexture extends Texture
     /**
      * Stores `sourceFrame` when this texture is inside current filter stack.
      *
-     * You can read it inside filters.   
-     * 
+     * You can read it inside filters.
+     *
      * @readonly
      */
     public filterFrame: Rectangle|null;
 
     /**
      * The key for pooled texture of FilterSystem.
-     * 
+     *
      * @see PIXI.RenderTexturePool
      */
     public filterPoolKey: string|number|null;
