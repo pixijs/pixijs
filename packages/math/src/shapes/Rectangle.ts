@@ -35,7 +35,6 @@ export class Rectangle
      * @default PIXI.SHAPES.RECT
      * @see PIXI.SHAPES
      */
-
     public readonly type: SHAPES.RECT;
 
     /**
