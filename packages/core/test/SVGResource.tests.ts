@@ -138,6 +138,24 @@ describe('SVGResource', function ()
                 done();
             });
         });
+
+        it('should create resource from SVG with XML Prolog', function (done)
+        {
+            const url = path.join(this.resources, 'circle-with-prolog.svg');
+            const buffer = fs.readFileSync(url, 'utf8');
+            const resource = new SVGResource(buffer, { autoLoad: false });
+
+            expect(buffer.startsWith('<?xml')).to.equal(true);
+            expect(resource.valid).to.equal(false);
+            resource.load().then(function ()
+            {
+                expect(resource.valid).to.equal(true);
+                expect(resource.width).to.equal(48);
+                expect(resource.height).to.equal(48);
+
+                done();
+            });
+        });
     });
 
     describe('getSize', function ()

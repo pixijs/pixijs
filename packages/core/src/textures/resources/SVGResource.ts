@@ -119,7 +119,7 @@ export class SVGResource extends BaseImageResource
             const svgString = this.svg;
 
             // Convert SVG inline string to data-uri
-            if ((/^\<svg/).test(this.svg.trim()))
+            if (SVGResource.SVG_XML.test(this.svg.trim()))
             {
                 if (!btoa)
                 {
