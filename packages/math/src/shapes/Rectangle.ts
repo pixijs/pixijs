@@ -30,11 +30,11 @@ export class Rectangle
     /** @default 0 */
     public height: number;
 
-     /**
-     * The type of the object, mainly used to avoid `instanceof` checks
-     * @default PIXI.SHAPES.RECT
-     * @see PIXI.SHAPES
-     */
+    /**
+    * The type of the object, mainly used to avoid `instanceof` checks
+    * @default PIXI.SHAPES.RECT
+    * @see PIXI.SHAPES
+    */
     public readonly type: SHAPES.RECT;
 
     /**
