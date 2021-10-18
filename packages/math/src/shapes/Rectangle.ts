@@ -7,7 +7,7 @@ export interface Rectangle extends GlobalMixins.Rectangle {}
  * Size object, contains width and height
  *
  * @memberof PIXI
- * @typedef  ISize
+ * @typedef {object} ISize
  */
 
 /**
