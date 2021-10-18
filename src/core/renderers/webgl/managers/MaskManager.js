@@ -24,6 +24,10 @@ export default class MaskManager extends WebGLManager
 
         this.alphaMaskPool = [];
         this.alphaMaskIndex = 0;
+
+        // color mask mode
+        this.scissorEmpty = false;
+        this.colorMaskCounter = 0;
     }
 
     /**
@@ -170,12 +174,21 @@ export default class MaskManager extends WebGLManager
 
         const resolution = this.renderer.resolution;
 
-        this.renderer.gl.scissor(
-            bounds.x * resolution,
-            (renderTarget.root ? renderTarget.size.height - bounds.y - bounds.height : bounds.y) * resolution,
-            bounds.width * resolution,
-            bounds.height * resolution
-        );
+        const x = Math.floor(bounds.x * resolution);
+        const y = Math.floor((renderTarget.root ? renderTarget.size.height - bounds.y - bounds.height
+            : bounds.y) * resolution);
+        const w = Math.floor(bounds.width * resolution);
+        const h = Math.floor(bounds.height * resolution);
+
+        if (w > 0 && h > 0)
+        {
+            this.renderer.gl.scissor(x, y, w, h);
+        }
+        else
+        {
+            this.pushEmptyColorMask();
+            this.scissorEmpty = true;
+        }
 
         this.scissorRenderTarget = renderTarget;
         this.scissorData = maskData;
@@ -195,6 +208,35 @@ export default class MaskManager extends WebGLManager
         // must be scissor!
         const gl = this.renderer.gl;
 
+        if (this.scissorEmpty)
+        {
+            this.scissorEmpty = false;
+            this.popEmptyColorMask();
+        }
         gl.disable(gl.SCISSOR_TEST);
+    }
+
+    /**
+     * stops rendering colors
+     */
+    pushEmptyColorMask()
+    {
+        if (this.colorMaskCounter === 0)
+        {
+            this.renderer.gl.colorMask(true, true, true, true);
+        }
+        this.colorMaskCounter++;
+    }
+
+    /**
+     * starts rendering colors
+     */
+    popEmptyColorMask()
+    {
+        this.colorMaskCounter--;
+        if (this.colorMaskCounter === 0)
+        {
+            this.renderer.gl.colorMask(false, false, false, false);
+        }
     }
 }

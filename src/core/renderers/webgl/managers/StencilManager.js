@@ -59,10 +59,11 @@ export default class StencilManager extends WebGLManager
         this.stencilMaskStack.push(graphics);
 
         // Increment the reference stencil value where the new mask overlaps with the old ones.
-        gl.colorMask(false, false, false, false);
+        this.renderer.maskManager.pushEmptyColorMask();
         gl.stencilFunc(gl.EQUAL, prevMaskCount, this._getBitwiseMask());
         gl.stencilOp(gl.KEEP, gl.KEEP, gl.INCR);
         this.renderer.plugins.graphics.render(graphics);
+        this.renderer.maskManager.popEmptyColorMask();
 
         this._useCurrent();
     }
@@ -87,9 +88,10 @@ export default class StencilManager extends WebGLManager
         else
         {
             // Decrement the reference stencil value where the popped mask overlaps with the other ones
-            gl.colorMask(false, false, false, false);
+            this.renderer.maskManager.pushEmptyColorMask();
             gl.stencilOp(gl.KEEP, gl.KEEP, gl.DECR);
             this.renderer.plugins.graphics.render(graphics);
+            this.renderer.maskManager.popEmptyColorMask();
 
             this._useCurrent();
         }
@@ -102,7 +104,6 @@ export default class StencilManager extends WebGLManager
     {
         const gl = this.renderer.gl;
 
-        gl.colorMask(true, true, true, true);
         gl.stencilFunc(gl.EQUAL, this.stencilMaskStack.length, this._getBitwiseMask());
         gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
     }
