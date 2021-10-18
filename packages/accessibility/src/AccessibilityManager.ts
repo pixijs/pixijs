@@ -251,9 +251,12 @@ export class AccessibilityManager
 
         const children = displayObject.children;
 
-        for (let i = 0; i < children.length; i++)
+        if (children)
         {
-            this.updateAccessibleObjects(children[i] as Container);
+            for (let i = 0; i < children.length; i++)
+            {
+                this.updateAccessibleObjects(children[i] as Container);
+            }
         }
     }
 
