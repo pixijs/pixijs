@@ -223,7 +223,7 @@ export default class MaskManager extends WebGLManager
     {
         if (this.colorMaskCounter === 0)
         {
-            this.renderer.gl.colorMask(true, true, true, true);
+            this.renderer.gl.colorMask(false, false, false, false);
         }
         this.colorMaskCounter++;
     }
@@ -236,7 +236,7 @@ export default class MaskManager extends WebGLManager
         this.colorMaskCounter--;
         if (this.colorMaskCounter === 0)
         {
-            this.renderer.gl.colorMask(false, false, false, false);
+            this.renderer.gl.colorMask(true, true, true, true);
         }
     }
 }
