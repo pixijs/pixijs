@@ -31,10 +31,10 @@ export class Rectangle
     public height: number;
 
     /**
-    * The type of the object, mainly used to avoid `instanceof` checks
-    * @default PIXI.SHAPES.RECT
-    * @see PIXI.SHAPES
-    */
+     * The type of the object, mainly used to avoid `instanceof` checks
+     * @default PIXI.SHAPES.RECT
+     * @see PIXI.SHAPES
+     */
     public readonly type: SHAPES.RECT;
 
     /**
@@ -43,6 +43,7 @@ export class Rectangle
      * @param width - The overall width of the rectangle
      * @param height - The overall height of the rectangle
      */
+    
     constructor(x = 0, y = 0, width = 0, height = 0)
     {
         this.x = Number(x);
