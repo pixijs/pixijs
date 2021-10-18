@@ -117,8 +117,8 @@ export class ScissorSystem extends AbstractMaskSystem
             y = this.renderer.height - height - y;
         }
 
-        x = Math.round(x);
-        y = Math.round(y);
+        x = Math.max(Math.round(x), 0);
+        y = Math.max(Math.round(y), 0);
         width = Math.round(width);
         height = Math.round(height);
 
