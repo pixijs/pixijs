@@ -52,25 +52,25 @@ export class Rectangle
         this.type = SHAPES.RECT;
     }
 
-    /** Returns the left edge of the rectangle */
+    /** Returns the left edge of the rectangle. */
     get left(): number
     {
         return this.x;
     }
 
-    /** Returns the right edge of the rectangle */
+    /** Returns the right edge of the rectangle. */
     get right(): number
     {
         return this.x + this.width;
     }
 
-    /** Returns the top edge of the rectangle */
+    /** Returns the top edge of the rectangle. */
     get top(): number
     {
         return this.y;
     }
 
-    /** Returns the bottom edge of the rectangle */
+    /** Returns the bottom edge of the rectangle. */
     get bottom(): number
     {
         return this.y + this.height;
