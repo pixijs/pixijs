@@ -197,7 +197,6 @@ export default class MaskManager extends WebGLManager
 
     /**
      *
-     *
      */
     popScissorMask()
     {
@@ -226,6 +225,7 @@ export default class MaskManager extends WebGLManager
 
     /**
      * stops rendering colors
+     * @private
      */
     pushEmptyColorMask()
     {
@@ -238,6 +238,7 @@ export default class MaskManager extends WebGLManager
 
     /**
      * starts rendering colors
+     * @private
      */
     popEmptyColorMask()
     {
