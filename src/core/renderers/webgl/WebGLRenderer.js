@@ -503,6 +503,20 @@ export default class WebGLRenderer extends SystemRenderer
             }
 
             this.stencilManager.setMaskStack(renderTarget.stencilMaskStack);
+
+            const { maskManager } = this;
+            const { scissorRenderTarget } = maskManager;
+
+            // in case we had scissor mask
+            if (this._activeRenderTarget === scissorRenderTarget)
+            {
+                maskManager._popScissorInternal();
+            }
+            // in case we return to renderTarget with scissor mask
+            if (renderTarget === scissorRenderTarget)
+            {
+                maskManager.pushScissorMask(null, maskManager.scissorData);
+            }
         }
 
         return this;

@@ -205,6 +205,15 @@ export default class MaskManager extends WebGLManager
         this.scissorData = null;
         this.scissor = false;
 
+        this._popScissorInternal();
+    }
+
+    /**
+     * turn off scissor but dont forget about it!
+     * @private
+     */
+    _popScissorInternal()
+    {
         // must be scissor!
         const gl = this.renderer.gl;
 

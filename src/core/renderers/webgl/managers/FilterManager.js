@@ -279,15 +279,7 @@ export default class FilterManager extends WebGLManager
 
         if (clear)
         {
-            gl.disable(gl.SCISSOR_TEST);
             renderer.clear();// [1, 1, 1, 1]);
-            gl.enable(gl.SCISSOR_TEST);
-        }
-
-        // in case the render target is being masked using a scissor rect
-        if (output === renderer.maskManager.scissorRenderTarget)
-        {
-            renderer.maskManager.pushScissorMask(null, renderer.maskManager.scissorData);
         }
 
         renderer.bindShader(shader);
