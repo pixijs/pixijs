@@ -201,11 +201,11 @@ export default class MaskManager extends WebGLManager
      */
     popScissorMask()
     {
+        this._popScissorInternal();
         this.scissorRenderTarget = null;
         this.scissorData = null;
         this.scissor = false;
-
-        this._popScissorInternal();
+        this.scissorEmpty = false;
     }
 
     /**
@@ -219,7 +219,6 @@ export default class MaskManager extends WebGLManager
 
         if (this.scissorEmpty)
         {
-            this.scissorEmpty = false;
             this.popEmptyColorMask();
         }
         gl.disable(gl.SCISSOR_TEST);
