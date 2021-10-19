@@ -35,3 +35,4 @@ require('./Texture');
 require('./VideoBaseTexture');
 require('./Ticker');
 require('./filters');
+require('./scissor');

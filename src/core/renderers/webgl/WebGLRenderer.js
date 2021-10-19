@@ -494,6 +494,8 @@ export default class WebGLRenderer extends SystemRenderer
     {
         if (renderTarget !== this._activeRenderTarget)
         {
+            const oldRT = this._activeRenderTarget;
+
             this._activeRenderTarget = renderTarget;
             renderTarget.activate();
 
@@ -508,7 +510,7 @@ export default class WebGLRenderer extends SystemRenderer
             const { scissorRenderTarget } = maskManager;
 
             // in case we had scissor mask
-            if (this._activeRenderTarget === scissorRenderTarget)
+            if (oldRT === scissorRenderTarget)
             {
                 maskManager._popScissorInternal();
             }

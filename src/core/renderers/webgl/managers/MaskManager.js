@@ -170,8 +170,6 @@ export default class MaskManager extends WebGLManager
         bounds.fit(renderTarget.size);
         maskData.renderable = false;
 
-        this.renderer.gl.enable(this.renderer.gl.SCISSOR_TEST);
-
         const resolution = this.renderer.resolution;
 
         const x = Math.floor(bounds.x * resolution);
@@ -182,6 +180,7 @@ export default class MaskManager extends WebGLManager
 
         if (w > 0 && h > 0)
         {
+            this.renderer.gl.enable(this.renderer.gl.SCISSOR_TEST);
             this.renderer.gl.scissor(x, y, w, h);
         }
         else
