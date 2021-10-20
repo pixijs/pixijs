@@ -100,7 +100,7 @@ export class MaskSystem implements ISystem
      * NOTE: The batch renderer should be flushed beforehand to prevent pending renders from being masked.
      *
      * @param {PIXI.DisplayObject} target - Display Object to push the mask to
-     * @param {PIXI.MaskData|PIXI.Sprite|PIXI.Graphics|PIXI.DisplayObject} maskData - The masking data.
+     * @param {PIXI.MaskData|PIXI.Sprite|PIXI.Graphics|PIXI.DisplayObject} maskDataOrTarget - The masking data.
      * @param handler - affects mask logic, can stop it from applying
      * @returns all the data about applied mask. Please do not store it, it might be pooled!
      */

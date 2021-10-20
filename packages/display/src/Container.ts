@@ -644,7 +644,7 @@ export class Container extends DisplayObject
             renderer.filter.push(this, this._enabledFilters);
         }
 
-        let doRender = false;
+        let doRender = true;
 
         if (mask)
         {
