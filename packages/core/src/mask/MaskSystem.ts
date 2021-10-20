@@ -9,7 +9,7 @@ import { ScissorMaskHandler } from '@pixi/core';
 
 export interface IMaskHandler
 {
-    checkMask(renderer: Renderer, maskData: MaskData): FILTER_CHECK_RESULT;
+    beforeMaskPush(renderer: Renderer, maskData: MaskData): void;
 }
 
 /**
@@ -134,11 +134,7 @@ export class MaskSystem implements ISystem
 
         if (handler)
         {
-            maskData.checkResult = handler.checkMask(this.renderer, maskData);
-            if (maskData.checkResult === FILTER_CHECK_RESULT.DONT_RENDER)
-            {
-                return maskData;
-            }
+            handler.beforeMaskPush(this.renderer, maskData);
         }
 
         if (maskData.enabled && maskData.checkResult === FILTER_CHECK_RESULT.RENDER)

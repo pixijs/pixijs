@@ -8,23 +8,21 @@ import { Matrix, Rectangle } from '@pixi/math';
 
 export class ScissorMaskHandler implements IMaskHandler
 {
-    checkMask(renderer: Renderer, maskData: MaskData): FILTER_CHECK_RESULT
+    beforeMaskPush(renderer: Renderer, maskData: MaskData): void
     {
         if (maskData.type !== MASK_TYPES.SCISSOR)
         {
-            return FILTER_CHECK_RESULT.RENDER;
+            return;
         }
 
         renderer.scissor.calcScissorRect(maskData);
 
         const rect = maskData._scissorRect;
 
-        if (rect.x < 1 || rect.y < 1)
+        if (rect.width < 1 || rect.height < 1)
         {
-            return FILTER_CHECK_RESULT.DONT_RENDER;
+            maskData.checkResult = FILTER_CHECK_RESULT.DONT_RENDER;
         }
-
-        return FILTER_CHECK_RESULT.DRY_RUN;
     }
 }
 

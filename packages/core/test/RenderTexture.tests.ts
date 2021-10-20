@@ -186,7 +186,7 @@ describe('RenderTexture', function ()
         container.mask = container.addChild(
             new Graphics()
                 .beginFill(0xffffff)
-                .drawCircle(0, 0, 4, 4)
+                .drawCircle(0, 0, 4)
                 .endFill()
         );
 
